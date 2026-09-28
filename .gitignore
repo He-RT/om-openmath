@@ -1,0 +1,6 @@
+.DS_Store
+.omc/
+.superpowers/
+target/
+node_modules/
+app/dist/

@@ -8,6 +8,8 @@ mod evaluator;
 mod logic;
 mod scalar;
 mod scalar_registry;
+mod structure;
+mod structure_registry;
 mod types;
 
 /// Structural patterns, variable bindings and simultaneous raw substitution.

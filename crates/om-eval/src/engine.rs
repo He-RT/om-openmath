@@ -3,6 +3,9 @@
 use crate::{Attributes as A, EvalError, Evaluator};
 use om_core::{BUILTIN as B, Expr, ExprKind, Interrupt, MsgLevel, with_canonical_messages};
 
+#[path = "engine_control.rs"]
+mod control;
+
 struct Arguments {
     head: Expr,
     source: Vec<Expr>,
@@ -39,13 +42,6 @@ struct Rules {
     condition: usize,
     waiting: bool,
 }
-struct Logical {
-    head: om_core::Symbol,
-    args: Vec<Expr>,
-    next: usize,
-    unknown: Vec<Expr>,
-    depth: u32,
-}
 enum Frame {
     Evaluate {
         expr: Expr,
@@ -60,7 +56,10 @@ enum Frame {
     Arguments(Arguments),
     Thread(Thread),
     Rules(Rules),
-    Logical(Logical),
+    Logical(control::Logical),
+    Iterator(control::Iteration),
+    IteratorSetup(control::Setup),
+    RuleSyntax(control::RuleSyntax),
     Sequence {
         args: Vec<Expr>,
         old: Expr,
@@ -98,7 +97,7 @@ impl Evaluator {
                     match expr.kind() {
                         ExprKind::Number(_) | ExprKind::String(_) => values.push(expr),
                         ExprKind::Symbol(s) => {
-                            if let Some(value) = self.defs.own.get(s) {
+                            if let Some(value) = self.own(*s) {
                                 frames.push(Frame::Evaluate {
                                     expr: value.clone(),
                                     depth: depth + 1,
@@ -130,9 +129,14 @@ impl Evaluator {
                     let head = values
                         .pop()
                         .expect("invariant: head evaluation produced one value");
-                    let attrs = head
+                    let mut attrs = head
                         .as_symbol()
                         .map_or(A::default(), |s| self.attributes(s));
+                    if matches!(head.as_symbol(), Some(B::RULE | B::RULE_DELAYED))
+                        && args.len() == 2
+                    {
+                        attrs = attrs | A::HOLD_ALL;
+                    }
                     frames.push(Frame::Arguments(Arguments {
                         head,
                         source: args,
@@ -240,46 +244,15 @@ impl Evaluator {
                         iterations: 0,
                     });
                 }
-                Frame::Logical(mut state) => {
-                    let decisive = if state.head == B::AND {
-                        B::FALSE
-                    } else {
-                        B::TRUE
-                    };
-                    let identity = if state.head == B::AND {
-                        B::TRUE
-                    } else {
-                        B::FALSE
-                    };
-                    if state.next > 0 {
-                        let value = values
-                            .pop()
-                            .expect("invariant: logical argument produced a value");
-                        if value.as_symbol() == Some(decisive) {
-                            values.push(Expr::sym(decisive));
-                            continue;
-                        }
-                        if value.as_symbol() != Some(identity) {
-                            state.unknown.push(value);
-                        }
-                    }
-                    if state.next == state.args.len() {
-                        values.push(match state.unknown.len() {
-                            0 => Expr::sym(identity),
-                            1 => state.unknown.remove(0),
-                            _ => Expr::call(state.head, state.unknown),
-                        });
-                    } else {
-                        let expr = state.args[state.next].clone();
-                        let depth = state.depth + 1;
-                        state.next += 1;
-                        frames.push(Frame::Logical(state));
-                        frames.push(Frame::Evaluate {
-                            expr,
-                            depth,
-                            iterations: 0,
-                        });
-                    }
+                Frame::Logical(state) => self.run_logical(state, &mut frames, &mut values)?,
+                Frame::RuleSyntax(state) => {
+                    self.run_rule_syntax(state, &mut frames, &mut values)?
+                }
+                Frame::IteratorSetup(state) => {
+                    self.run_iterator_setup(state, &mut frames, &mut values, ctx)?
+                }
+                Frame::Iterator(state) => {
+                    self.run_iterator(state, &mut frames, &mut values, ctx)?
                 }
                 Frame::Rules(state) => self.run_rules(state, &mut frames, &mut values, ctx)?,
                 Frame::Rewrite {
@@ -344,6 +317,7 @@ impl Evaluator {
                 .collect();
         }
         let symbol = head.as_symbol();
+        let pure_head = head.clone();
         let spec = symbol.and_then(|s| self.builtins.get(s));
         if let Some(spec) = spec
             && !spec.arity.accepts(args.len())
@@ -411,6 +385,19 @@ impl Evaluator {
         for message in messages {
             self.messages.push(message);
         }
+        if pure_head.is_head(B::FUNCTION) {
+            if let Some(new) = crate::structure::apply_function(self, &pure_head, &args) {
+                frames.push(Frame::Rewrite {
+                    old: rebuilt,
+                    new,
+                    depth,
+                    iterations,
+                });
+            } else {
+                values.push(rebuilt);
+            }
+            return Ok(());
+        }
         let rules = symbol
             .and_then(|s| self.defs.down.get(&s))
             .cloned()
@@ -454,14 +441,33 @@ impl Evaluator {
         } = state;
         self.depth = depth;
         let spec = symbol.and_then(|s| self.builtins.get(s));
-        if matches!(symbol, Some(B::AND | B::OR)) {
-            frames.push(Frame::Logical(Logical {
-                head: symbol.expect("invariant: logical head checked"),
+        if matches!(symbol, Some(B::RULE | B::RULE_DELAYED)) {
+            self.schedule_rule_syntax(
+                symbol.expect("invariant: rule symbol checked"),
                 args,
-                next: 0,
-                unknown: vec![],
                 depth,
-            }));
+                frames,
+            );
+        } else if symbol.is_some_and(|s| matches!(s.name(), "Table" | "Sum" | "Product")) {
+            self.schedule_iterator(
+                Dispatch {
+                    symbol,
+                    rebuilt,
+                    args,
+                    depth,
+                    iterations,
+                },
+                frames,
+                values,
+                ctx,
+            )?;
+        } else if matches!(symbol, Some(B::AND | B::OR)) {
+            self.schedule_logical(
+                symbol.expect("invariant: logical head checked"),
+                args,
+                depth,
+                frames,
+            );
         } else if symbol == Some(B::COMPOUND_EXPRESSION) {
             frames.push(Frame::Sequence {
                 args,

@@ -162,6 +162,7 @@ pub(crate) fn table() -> &'static BuiltinTable {
                 .collect(),
         };
         crate::scalar_registry::register(&mut table.specs);
+        crate::structure_registry::register(&mut table.specs);
         table
     })
 }
@@ -213,7 +214,7 @@ fn assign(
         return Ok(None);
     };
     if lhs.as_symbol().is_some() {
-        ev.defs.own.insert(symbol, args[1].clone());
+        ev.set_own(symbol, Some(args[1].clone()));
     } else {
         ev.defs.set_down(
             symbol,
@@ -247,7 +248,7 @@ fn unset(ev: &mut Evaluator, args: &[Expr], ctx: &Interrupt) -> Result<Option<Ex
         return Ok(None);
     };
     if args[0].as_symbol().is_some() {
-        ev.defs.own.remove(&symbol);
+        ev.set_own(symbol, None);
     } else if let Some(rules) = ev.defs.down.get_mut(&symbol) {
         rules.retain(|r| r.lhs != lhs);
     }

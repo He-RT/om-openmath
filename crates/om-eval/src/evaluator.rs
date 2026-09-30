@@ -16,6 +16,7 @@ pub struct Evaluator {
     pub settings: EvalSettings,
     pub(crate) depth: u32,
     pub(crate) readonly: bool,
+    pub(crate) scopes: Vec<std::collections::BTreeMap<Symbol, Option<Expr>>>,
 }
 impl Default for Evaluator {
     fn default() -> Self {
@@ -33,13 +34,16 @@ impl Evaluator {
             settings: EvalSettings::default(),
             depth: 0,
             readonly: false,
+            scopes: vec![],
         }
     }
     /// Evaluate without recording history. All Result paths restore logical depth.
     pub fn evaluate(&mut self, e: &Expr, ctx: &Interrupt) -> Result<Expr, EvalError> {
         let previous = self.depth;
+        let scopes = self.scopes.len();
         let result = self.run_frames(e.clone(), ctx);
         self.depth = previous;
+        self.scopes.truncate(scopes);
         result
     }
     /// Record a successful statement once, including its original input tree.
@@ -66,6 +70,7 @@ impl Evaluator {
             settings: self.settings.clone(),
             depth: 0,
             readonly: true,
+            scopes: self.scopes.clone(),
         }
     }
     pub(crate) fn attributes(&self, symbol: Symbol) -> A {
@@ -79,6 +84,11 @@ impl Evaluator {
             A::default()
         };
         let intrinsic = match symbol {
+            om_core::BUILTIN::PATTERN
+            | om_core::BUILTIN::BLANK
+            | om_core::BUILTIN::BLANK_SEQUENCE
+            | om_core::BUILTIN::BLANK_NULL_SEQUENCE
+            | om_core::BUILTIN::CONDITION => A::HOLD_ALL,
             om_core::BUILTIN::PLUS | om_core::BUILTIN::TIMES => {
                 A::LISTABLE | A::NUMERIC_FUNCTION | A::ORDERLESS | A::FLAT | A::ONE_IDENTITY
             }
@@ -99,5 +109,30 @@ impl Evaluator {
             text,
             level,
         });
+    }
+}
+
+impl Evaluator {
+    pub(crate) fn own(&self, symbol: Symbol) -> Option<Expr> {
+        for scope in self.scopes.iter().rev() {
+            if let Some(value) = scope.get(&symbol) {
+                return value.clone();
+            }
+        }
+        self.defs.own.get(&symbol).cloned()
+    }
+    pub(crate) fn set_own(&mut self, symbol: Symbol, value: Option<Expr>) {
+        if let Some(scope) = self
+            .scopes
+            .iter_mut()
+            .rev()
+            .find(|scope| scope.contains_key(&symbol))
+        {
+            scope.insert(symbol, value);
+        } else if let Some(value) = value {
+            self.defs.own.insert(symbol, value);
+        } else {
+            self.defs.own.remove(&symbol);
+        }
     }
 }

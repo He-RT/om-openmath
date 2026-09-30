@@ -4,6 +4,7 @@
 mod content;
 mod division;
 mod field_alg;
+mod finite_factor;
 mod fp;
 mod gcd;
 mod mpoly;

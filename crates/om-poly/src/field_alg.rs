@@ -1,6 +1,9 @@
 //! Formal derivatives and monic normalization for the first field-GCD consumers.
 use crate::{Field, Ring, UPoly};
-use om_num::ctx::{Abort, Interrupt};
+use om_num::{
+    Integer,
+    ctx::{Abort, Interrupt},
+};
 
 impl<R: Ring> UPoly<R> {
     /// Formal derivative in the coefficient ring's characteristic, without numerical division.
@@ -30,6 +33,44 @@ impl<R: Ring> UPoly<R> {
     }
 }
 impl<R: Field> UPoly<R> {
+    /// Modular exponentiation over a compatible field, reducing after every product.
+    /// None rejects negative exponents, zero moduli or unavailable leading inverses.
+    pub fn pow_mod(
+        &self,
+        exponent: &Integer,
+        modulus: &Self,
+        ctx: &Interrupt,
+    ) -> Result<Option<Self>, Abort> {
+        ctx.tick()?;
+        if exponent < &Integer::ZERO || modulus.is_zero() {
+            return Ok(None);
+        }
+        let Some((_, mut result)) = Self::one().divrem(modulus, ctx)? else {
+            return Ok(None);
+        };
+        let Some((_, mut base)) = self.divrem(modulus, ctx)? else {
+            return Ok(None);
+        };
+        let mut exponent = exponent.clone();
+        while !exponent.is_zero() {
+            ctx.tick()?;
+            if &exponent % 2 == 1 {
+                let Some((_, remainder)) = result.mul(&base, ctx)?.divrem(modulus, ctx)? else {
+                    return Ok(None);
+                };
+                result = remainder;
+            }
+            exponent >>= 1;
+            if !exponent.is_zero() {
+                let Some((_, remainder)) = base.mul(&base, ctx)?.divrem(modulus, ctx)? else {
+                    return Ok(None);
+                };
+                base = remainder;
+            }
+        }
+        Ok(Some(result))
+    }
+
     /// Divide by the leading coefficient; zero returns zero, a failed inverse returns None.
     pub fn monic(&self, ctx: &Interrupt) -> Result<Option<Self>, Abort> {
         ctx.tick()?;

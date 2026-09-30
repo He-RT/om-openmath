@@ -129,7 +129,7 @@ pub struct Monomial { pub exps: SmallVec<[u32; 4]>, pub deg: u32 }
 pub enum MonoOrder { Lex, GrevLex }
 pub struct MPoly<R: Ring> { pub nvars: usize, pub terms: Vec<(Monomial, R)>, pub order: MonoOrder } // 按 order 降序，无零系数
 ```
-所有可能耗时的函数最后一个参数都是 `ctx: &Interrupt`，返回 `Result<_, Abort>`。
+所有可能耗时的函数最后一个参数都是 `ctx: &om_num::ctx::Interrupt`，返回 `Result<_, om_num::ctx::Abort>`（om-core 重导出相同类型）。
 
 #### 8.2a 除法、伪余式、容量
 - `divrem(f, g)`（在域上）：教科书长除法。

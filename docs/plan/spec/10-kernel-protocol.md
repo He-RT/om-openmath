@@ -89,7 +89,7 @@ pub enum OutputItem {
 }
 pub struct SolutionSetView { pub kind: SolutionKind /*finite|all|none|region*/, pub vars: Vec<String>,
     pub solutions: Vec<SolutionView>, pub region_latex: Option<String>, pub intervals: Vec<IntervalView> }
-pub struct SolutionView { pub bindings: Vec<BindingView>, pub condition_latex: Option<String>, pub verified: Verified }
+pub struct SolutionView { pub bindings: Vec<BindingView>, pub condition_latex: Option<String>, pub verified: Verification }
 pub struct BindingView { pub var: String, pub latex: String, pub input_form: String, pub modern_form: String,
     pub numeric: Option<String> /*N[…, 10] 的结果；复数 a+bi 形式*/ }
 pub struct IntervalView { pub lo: Option<String>, pub hi: Option<String>, pub lo_closed: bool, pub hi_closed: bool,

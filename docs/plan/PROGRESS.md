@@ -1,0 +1,97 @@
+# Implementation progress
+
+Branch: `dev`. No automatic merge or push.
+
+Task hashes are added in the next commit; immediate hashes live in the execution ledger.
+
+- [x] **M0.1** 初始化仓库结构与工具链 — build/fmt/clippy/test、workspace policy、WASM build、cargo-deny 通过；CI YAML 已本地解析。首次检查 workspace 缺失而失败，建立后通过。数学测试尚无，Cargo 测试为 0。提交哈希待下一任务补记。
+- [ ] **M0.2** 建立所有 crate 的空壳与依赖关系
+- [ ] **M0.3** 前端骨架
+- [ ] **M1.1** Number 类型与算术（6.1 节接口；测试见 8.1.5 表中数字相关用例的数值部分）
+- [ ] **M1.2** 数论工具（ntheory.rs：gcd/ext_gcd/isqrt/exact_root/perfect_power/is_probable_prime/factor_integer/extract_root_factor）
+- [ ] **M1.3** SplitMix64、Fp、Ball 球算术骨架
+- [ ] **M1.4** Ball 初等函数（若 M1.3 未完成 exp/ln/sin/cos/atan，在此实现；否则本任务改为“用 dashu-float 包一层误差边界”）
+- [ ] **M2.1** Symbol 驻留与内置符号表（6.2 节 Symbol、6.2 节 define_builtins! 宏）
+- [ ] **M2.2** Expr/ExprNode 与访问器（6.2 节其余部分，不含 canon 构造器——此时 `Expr::normal` 是唯一构造方式）
+- [ ] **M2.3** canonical_cmp 全序（8.1.1 节）
+- [ ] **M2.4** add()/Plus 规范构造器（8.1.2 节 + 8.1.5 表中 #1,2,3,6,7,8,28,29,34,35,36,38 等 Plus 相关用例）
+- [ ] **M2.5** mul()/Times 规范构造器（8.1.3 节 + 表中 #4,5,9,10,11,12,13,14,15,16,17,27,30,31,32,33,37,39 等）
+- [ ] **M2.6** pow()/Power 规范构造器（8.1.4 节 + 表中 #18–26,40 及 M2.4/M2.5 未覆盖的其余项）
+- [ ] **M2.7** canonicalize() 与其余构造器（neg/sub/div/sqrt/exp/func；func 的 E^Log[z]→z 规则）
+- [ ] **M2.8** Interrupt/Clock/Message（6.4 节）
+- [ ] **M3.1** 词法分析器（两种方言共用 token 流；7.2/7.3 的 token 种类）
+- [ ] **M3.2** 现代方言 Pratt 解析器（7.2 节全部表格 + 优先级 + 歧义裁决 W001/W002/E010）
+- [ ] **M3.3** Wolfram 方言解析器（7.3 节列出的全部构造）
+- [ ] **M3.4** 诊断与 Fix（7.2 节 W001/W002/E010 + 通用括号不匹配等）
+- [ ] **M3.5** om-format：FullForm/InputForm/modern_form
+- [ ] **M3.6** om-format：LaTeX 与 Unicode
+- [ ] **M4.1** Evaluator 骨架与求值循环（9.1/9.2 节步骤 1–4，先不含模式匹配与属性线程化）
+- [ ] **M4.2** 属性与 Hold（HoldAll/HoldFirst/HoldRest/Listable 线程化）
+- [ ] **M4.3** 模式匹配（9.2 节 pattern.rs：Blank/Pattern/Condition/BlankSequence/BlankNullSequence）
+- [ ] **M4.4** 基础内置函数（M4 清单）（9.3 节 M4 分类的全部函数 + DocEntry 登记）
+- [ ] **M4.5** N[] 与球算术求值（9.4 节）
+- [ ] **M5.1** UPoly/MPoly 类型与 Ring/Field/EuclideanRing trait（8.2 节开头）
+- [ ] **M5.2** 除法/伪余式/容量（8.2a）— 测试向量见该节。
+- [ ] **M5.3** GCDHEU + subresultant PRS 兜底（8.2b）— 测试向量 + proptest 一致性。
+- [ ] **M5.4** Yun 无平方分解（Q 与 Fp）（8.2c）— 测试向量。
+- [ ] **M5.5** 结式与判别式（8.2e）— 测试向量。
+- [ ] **M6.1** DDF/EDF（Cantor-Zassenhaus）（8.2d 相关部分）
+- [ ] **M6.2** 二次 Hensel 提升（8.2d hensel_step/hensel_lift）
+- [ ] **M6.3** Zassenhaus 重组 + Mignotte 界（8.2d zassenhaus，含常数项剪枝与 tick 预算）
+- [ ] **M6.4** 多元 GCD 与多元因式分解（Kronecker 代换）（8.2b 多元部分 + 8.2d 最后一段）
+- [ ] **M6.5** 实根隔离（Descartes + 二分 VCA）（8.2f 前半）
+- [ ] **M6.6** Aberth-Ehrlich 复根 + 球算术认证（8.2f 后半）
+- [ ] **M6.7** om-poly/alg.rs：RealAlg/ComplexAlg 与 RootReduce（8.2i）
+- [ ] **M7.1** Buchberger + Gebauer-Möller + sugar（8.2h 前半）— 测试向量。
+- [ ] **M7.2** FGLM（8.2h 后半）— 测试向量；与直接 lex Buchberger 结果一致性 proptest。
+- [ ] **M7.3** 零维/维数判定
+- [ ] **M7.4** Bareiss 无分数消元（8.8.1）— 测试向量。
+- [ ] **M7.5** 整数线性方程的 Hermite 标准形（8.8.3 Integers 部分）
+- [ ] **M8.1** 生成元归一化与 Expr↔多项式转换（8.3 节）— 测试向量。
+- [ ] **M8.2** together/cancel/expand/factor（8.5 节相关部分）
+- [ ] **M8.3** is_zero 判定器（L0–L3）（8.4 节）— 测试向量 + proptest（L1 对有理表达式不返回 Unknown）。
+- [ ] **M8.4** simplify 最佳优先搜索（8.5 节其余部分）
+- [ ] **M8.5** 初等函数特殊值表（8.1.6 节）— 全部测试向量。
+- [ ] **M9.1** Steps 数据模型与 StepRecorder（8.10 节）
+- [ ] **M9.2** 输入归一化 P0/P1（8.6 节）
+- [ ] **M9.3** poly_uni：因式分解路径 + 线性/二次公式（8.7.1、8.7.2 前三条）
+- [ ] **M9.4** poly_uni：二项式/回文/p(x^k) 代换（8.7.2 中间部分）
+- [ ] **M9.5** poly_uni：Cardano 三次式与 Ferrari 四次式（含 Root 兜底）（8.7.2 后半）
+- [ ] **M9.6** 实根判定（Reals 域）（8.7.2 最后一段）
+- [ ] **M9.7** 根式方程（8.7.3）
+- [ ] **M9.8** 超越方程：核统一 + 反函数表（8.7.4）
+- [ ] **M9.9** 线性方程组（8.8.1，复用 M7.4）
+- [ ] **M9.10** 多项式方程组（8.8.2，复用 M7.1/M7.2）
+- [ ] **M9.11** 非多项式方程组（代换法）（8.8.2 最后一段）
+- [ ] **M9.12** Integers/Rationals 定义域（8.8.3，复用 M7.5）
+- [ ] **M9.13** 验证策略（8.8.4）— 贯穿全部路径接入
+- [ ] **M9.14** Reduce-lite 不等式（8.9）
+- [ ] **M9.15** NSolve/FindRoot/Eliminate（8.8.2 最后三段）
+- [ ] **M9.16** Solve 验收语料第一轮：跑第 14 节全部 P0 用例，逐条修 bug 直到全绿。
+- [ ] **M10.1** 代数类内置函数（9.3 节 M10.1 分类：Expand/Factor/Together/Cancel/Simplify/Collect/D 等）
+- [ ] **M10.2** Solve/NSolve/FindRoot/Reduce/Eliminate/SolveValues 内置函数（9.3 节 M10.2 分类，把 om-solve 接入求值循环；`Unsupported` 错误的降级处理见 6.6 节最后一段）
+- [ ] **M11.1** 协议类型与 ts-rs 导出（10.2 节，先只做类型定义与导出，不做业务逻辑）
+- [ ] **M11.2** Session::handle 基础请求（Evaluate/GetConfig/SetConfig/LoadNotebook/SaveNotebook）
+- [ ] **M11.3** 响应式笔记本依赖图（10.3 节）— 该节两条测试场景。
+- [ ] **M11.4** 输出打包（10.4 节）
+- [ ] **M11.5** 绘图采样（一元自适应 + 隐函数 marching squares）（10.5 节）— 该节测试。
+- [ ] **M11.6** Solve 自动可视化（10.6 节）
+- [ ] **M11.7** 补全/悬停/预览（10.7 节）— 性能测试（<5ms）。
+- [ ] **M11.8** 配置持久化（10.8 节，TOML 读写 + directories）
+- [ ] **M12.1** 请求构造 + SSE/NDJSON 解码器（11.1/11.2 节）— fixture 随机切块测试（11.5 节）。
+- [ ] **M12.2** FIM 请求与响应解析（11.2 节 FIM 部分）
+- [ ] **M12.3** Job 状态机（11.4 节）— 两轮工具调用 fixture 测试。
+- [ ] **M12.4** translate/explain/complete/fix/chat 提示词与后处理（11.3 节，含解析失败重试逻辑）
+- [ ] **M12.5** native 驱动（reqwest + wiremock 端到端）（11.1 节 drive_native）
+- [ ] **M12.6** kernel 接入 LLM 请求/事件（10.2 节 Llm* 系列 Request/Response/Event）
+- [ ] **M13.1** KernelClient 三种实现（12.10 节 wasmClient/tauriClient + om-wasm bindgen 导出、12.11 节 Tauri commands）
+- [ ] **M13.2** 笔记本核心 UI（TopBar/Notebook/Cell/编辑器高亮+诊断+补全，12.2/12.3 节）
+- [ ] **M13.3** 输出渲染（ExprView/SolutionCards/NumberLine/Messages，12.4 节）
+- [ ] **M13.4** 步骤面板（12.5 节）
+- [ ] **M13.5** 绘图组件（12.6 节，含滑块交互）
+- [ ] **M13.6** 幽灵文本补全（12.7 节）— mock kernel 测试。
+- [ ] **M13.7** AI 界面（Ask cell/助手面板/错误修复/隐私提示）（12.8 节）
+- [ ] **M13.8** 设置对话框（12.9 节）
+- [ ] **M13.9** CLI 完整实现（12.12 节）
+- [ ] **M13.10** 桌面打包 + Web 构建（`npx tauri build`；`npm run build` 产出可部署的静态站点）
+- [ ] **M13.11** 端到端验证（见第 15 节）与文档收尾（`docs/language.md`、`docs/solve.md`、`docs/llm.md`、双语 README）

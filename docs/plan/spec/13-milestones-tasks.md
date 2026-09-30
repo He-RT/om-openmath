@@ -26,7 +26,7 @@
 ### M1：om-num（3–4 人日）
 - [ ] **M1.1 Number 类型与算术**（6.1 节接口；测试见 8.1.5 表中数字相关用例的数值部分）
   Files: `crates/om-num/src/number.rs`（Number/Real/Complex + normalize/add/mul/neg/recip/pow_int/precision/cmp_real）、`src/lib.rs` 重导出。
-  Steps 覆盖：精确算术（Int/Rat）、传染规则（8.1.0）、`1/0`→NumError::DivByZero、`recip(0.)` 返回 `Real(inf)` 处理为特殊值（由上层 Power 转 ComplexInfinity，这里只需不 panic）。
+  Steps 覆盖：精确算术（Int/Rat）、传染规则（8.1.0）、`1/0`→NumError::DivByZero、`recip(0.)` 同样返回 `NumError::DivByZero`；无穷由上层 Power 转成符号特殊值，数值层不制造 inf/NaN。
   Done: `cargo test -p om-num number::` 通过，包含至少 20 条覆盖传染规则的用例。
 
 - [ ] **M1.2 数论工具**（ntheory.rs：gcd/ext_gcd/isqrt/exact_root/perfect_power/is_probable_prime/factor_integer/extract_root_factor）
@@ -37,7 +37,7 @@
 - [ ] **M1.3 SplitMix64、Fp、Ball 球算术骨架**
   Files: `rng.rs`（SplitMix64）、`modp.rs`（Fp：add/sub/mul/inv/pow，u128 中间值）、`ball.rs`（6.1 节最后一段接口：`exact/add/sub/mul/div/contains_zero/excludes_zero/to_f64`；`sqrt`）。
   Steps: 先确认 `dashu-float 0.6.1` 提供哪些函数（跑 `cargo doc -p dashu-float --open` 或查 docs.rs），有 exp/ln/powf 就直接用，误差半径按“≤1 ulp”加；没有的话本任务只交付 sqrt（用牛顿迭代），exp/ln/sin/cos/atan 移到 M1.4。
-  Done: `Ball::sqrt(Ball::exact(2, 64)).contains(1.41421356...)` 通过；`(a*b - b*a).excludes_zero() == false` 对任意 a,b 恒成立（交换律测试其实应该是 contains_zero，写反了——测试写 `(a.mul(&b)).sub(&b.mul(&a))).contains_zero()`）。
+  Done: `Ball::exact(&Rational::from(2), 64).sqrt()` 严格包围 sqrt(2)；`a.mul(&b).sub(&b.mul(&a)).contains_zero()` 对测试的任意有限球 a,b 成立。
 
 - [ ] **M1.4 Ball 初等函数**（若 M1.3 未完成 exp/ln/sin/cos/atan，在此实现；否则本任务改为“用 dashu-float 包一层误差边界”）
   Steps: pi(bits) 用 Machin 公式并按精度缓存（`OnceLock<Mutex<BTreeMap<u32, BigFloat>>>`）；exp/ln/sin/cos/atan 按 8 节前言约定的参数约简 + Taylor，误差上界显式计入 rad。
@@ -67,7 +67,7 @@
   Done: `canonicalize(Expr::normal(...未规范化的树...))` 与手写规范树结构相等的用例（至少 10 条，覆盖嵌套 Plus/Times/Power）。
 
 - [ ] **M2.8 Interrupt/Clock/Message**（6.4 节）
-  Done: `Interrupt::tick()` 在 flag 置位后返回 `Err(Aborted)`；在 steps_left 耗尽后返回 `Err(Budget)`；wasm target 下编译通过（`cargo build -p om-core --target wasm32-unknown-unknown`，此时不注入 Clock，`deadline_ms` 恒为 None 分支）。
+  Done: `Interrupt::tick()` 在 flag 置位后返回 `Err(Abort::Interrupted)`；在 steps_left 耗尽后返回 `Err(Budget)`；wasm target 下编译通过（`cargo build -p om-core --target wasm32-unknown-unknown`，此时不注入 Clock，`deadline_ms` 恒为 None 分支）。
 
 ### M3：om-parse + om-format（4 人日）
 - [ ] **M3.1 词法分析器**（两种方言共用 token 流；7.2/7.3 的 token 种类）
@@ -162,8 +162,8 @@
 - [ ] **M9.16 Solve 验收语料第一轮**：跑第 14 节全部 P0 用例，逐条修 bug 直到全绿。
 
 ### M10：om-eval 代数层 + Solve 接入（3 人日）
-- [ ] **M10.1 代数类内置函数**（9.3 节 M6 分类：Expand/Factor/Together/Cancel/Simplify/Collect/D 等）
-- [ ] **M10.2 Solve/NSolve/FindRoot/Reduce/Eliminate/SolveValues 内置函数**（9.3 节 M7/M8 分类，把 om-solve 接入求值循环；`Unsupported` 错误的降级处理见 6.6 节最后一段）
+- [ ] **M10.1 代数类内置函数**（9.3 节 M10.1 分类：Expand/Factor/Together/Cancel/Simplify/Collect/D 等）
+- [ ] **M10.2 Solve/NSolve/FindRoot/Reduce/Eliminate/SolveValues 内置函数**（9.3 节 M10.2 分类，把 om-solve 接入求值循环；`Unsupported` 错误的降级处理见 6.6 节最后一段）
   Done: 第 14 节全部 P0 + P1 用例通过（通过 `om-cli -e` 端到端跑）。
 
 ### M11：om-kernel（6 人日）

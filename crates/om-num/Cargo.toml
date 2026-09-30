@@ -1,0 +1,10 @@
+[package]
+name = "om-num"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+description = "Exact and arbitrary-precision arithmetic for OpenMath"
+
+[lints]
+workspace = true

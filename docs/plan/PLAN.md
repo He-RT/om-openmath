@@ -8,7 +8,7 @@
 
 **Tech Stack（技术栈）：** Rust 1.94（edition 2024）、纯 Rust 依赖（可编译到 `wasm32-unknown-unknown`）、Tauri 2、React 19 + TypeScript + Vite、CodeMirror 6、KaTeX、reedline。具体版本见第 3 节。
 
-**Spec（规格）：** 本文件即规格与计划合一。第 6–11 节是规格，第 12 节是逐任务计划，第 13 节是验收语料。执行时把本文件复制到仓库 `docs/plan/PLAN.md`（任务 M0.1 会做）。
+**Spec（规格）：** 本文件即规格与计划合一。第 6–12 节是规格，第 13 节是逐任务计划，第 14 节是验收语料。仓库 `docs/plan/PLAN.md` 是实施时的权威版本。
 
 ---
 
@@ -47,7 +47,7 @@
    cargo test --workspace
    ```
    前端任务另外运行 `cd app && npm run lint && npm run test && npm run build`。
-5. **进度账本。** 每完成一个任务，在 `docs/plan/PROGRESS.md` 里把对应行改成 `[x]` 并附上提交哈希。新会话开始时先读 `PROGRESS.md` 找到下一个任务。
+5. **进度账本。** 每完成一个任务，在同一次提交的 `docs/plan/PROGRESS.md` 里把对应行改成 `[x]` 并记录验证命令。该提交哈希在下一次任务提交中补记（避免提交引用自身哈希的循环）。新会话开始时先读 `PROGRESS.md` 找到下一个任务。
 6. **禁止事项：** 库代码中不用 `unwrap()`/`expect()`（测试除外；确属不变量时用 `expect("invariant: …")` 并写清原因）；不用 `unsafe`（所有 crate 顶部 `#![forbid(unsafe_code)]`）；输出中不得依赖 `HashMap` 迭代顺序（用 `BTreeMap`/`IndexMap` 或排序）；不引入第 3 节白名单以外的依赖（需要时记录到 `DEVIATIONS.md`）。
 7. **文件大小：** 单个源文件超过约 600 行就拆分模块。
 8. **确定性：** 所有随机性（数值探测、素数选择）使用固定种子的 `SplitMix64`（`om-num/src/rng.rs`），测试结果必须可复现。
@@ -105,8 +105,8 @@
 每个任务都隐式包含本节全部要求。
 
 - **Rust：** stable 1.94，`edition = "2024"`，`rust-version = "1.94"`。workspace 共享 `[workspace.package]` 与 `[workspace.dependencies]`。
-- **WASM：** `om-num`、`om-core`、`om-parse`、`om-format`、`om-poly`、`om-simplify`、`om-solve`、`om-eval`、`om-kernel`（关闭 `native` feature 时）、`om-llm`（关闭 `http` feature 时）必须能编译到 `wasm32-unknown-unknown`。所以：这些 crate 不得依赖 `std::time::Instant`（在 wasm32 上会 panic）、线程、文件系统、`getrandom`、`tokio`。时钟与取消通过 `om_core::ctx::Interrupt` 注入（见 6.6）。CI 里有专门任务：`cargo build -p om-kernel --no-default-features --target wasm32-unknown-unknown`。
-- **许可证：** 每个 crate 的 `license = "MIT OR Apache-2.0"`；根目录放 `LICENSE-MIT`、`LICENSE-APACHE`；`deny.toml`（cargo-deny）只允许 `MIT, Apache-2.0, Apache-2.0 WITH LLVM-exception, BSD-2-Clause, BSD-3-Clause, ISC, Zlib, Unicode-3.0, CC0-1.0, MPL-2.0`（MPL 仅允许作为传递依赖）。**禁止：malachite（LGPL）、rug/gmp-mpfr-sys（LGPL）、algebraics（LGPL）、symbolica（非 OSI）、flint 绑定。**
+- **WASM：** `om-num`、`om-core`、`om-parse`、`om-format`、`om-poly`、`om-simplify`、`om-solve`、`om-eval`、`om-kernel`（关闭 `native` feature 时）、`om-llm`（关闭 `http` feature 时）必须能编译到 `wasm32-unknown-unknown`。所以：这些 crate 不得依赖 `std::time::Instant`（在 wasm32 上会 panic）、线程、文件系统、`getrandom`、`tokio`。时钟与取消通过 `om_num::ctx::Interrupt` 注入（`om_core::ctx` 重导出相同类型，见 6.4），使 om-poly 不依赖表达式层。CI 里有专门任务：`cargo build -p om-kernel --no-default-features --target wasm32-unknown-unknown`。
+- **许可证：** 每个 crate 的 `license = "MIT OR Apache-2.0"`；根目录放 `LICENSE-MIT`、`LICENSE-APACHE`；`deny.toml`（cargo-deny）只允许 `MIT, Apache-2.0, Apache-2.0 WITH LLVM-exception, BSD-2-Clause, BSD-3-Clause, ISC, Zlib, Unicode-3.0, CC0-1.0, MPL-2.0`（MPL 不作通用许可，只通过 deny.toml 中逐包例外允许必要的传递依赖）。**禁止：malachite（LGPL）、rug/gmp-mpfr-sys（LGPL）、algebraics（LGPL）、symbolica（非 OSI）、flint 绑定。**
 - **依赖白名单**（版本为 2026-09-28 在 crates.io 查到的最新稳定版，Cargo.toml 中写 `"0.6"` 这种兼容版本即可）：
 
   | 用途 | crate | 版本 | 许可证 |
@@ -123,7 +123,7 @@
   | 密钥存储（仅 native） | `keyring` | 4.2 | MIT OR Apache-2.0 |
   | HTTP（仅 native） | `reqwest`（features: `json`, `stream`, `rustls`），版本 0.13 | 0.13.5 | MIT OR Apache-2.0 |
   | 异步（仅 native） | `tokio` 1.53、`futures` 0.3、`tokio-util` 0.7 | | MIT |
-  | 终端 REPL | `reedline` 0.52、`nu-ansi-term` 0.50 | | MIT |
+  | 终端 REPL | `reedline` =0.49.0（0.50+ 要求 Rust 1.95）、`nu-ansi-term` 0.50 | | MIT |
   | 诊断美化（CLI） | `ariadne` | 0.6 | MIT |
   | 日志 | `tracing` 0.1 | | MIT |
   | WASM 绑定 | `wasm-bindgen` 0.2.129、`js-sys` 0.3.106、`console_error_panic_hook` 0.1.7 | | MIT OR Apache-2.0 |
@@ -164,10 +164,10 @@
                    special: 初等函数特殊值表；is_zero 零判定；expand/together/cancel/factor/simplify)
           ▼                                    ▼
       om-core (Expr、Symbol 驻留、规范构造器、      om-poly (**只依赖 om-num**：UPoly/MPoly 泛型环、GCD、
-      排序、Interrupt、消息)                       无平方分解、Z[x] 因式分解、结式、实根隔离、Aberth、
+      排序、消息、重导出 Interrupt)                       无平方分解、Z[x] 因式分解、结式、实根隔离、Aberth、
           ▲         ▲                              Gröbner/FGLM、alg: 实/复代数数与 RootReduce)
    om-parse   om-format                                   ▼
-          ▼                                             om-num (Integer/Rational/Real/Complex、Ball 球算术、
+          ▼                                             om-num (Interrupt/Clock/Abort、Integer/Rational/Real/Complex、Ball 球算术、
       om-num ◄──────────────────────────────────────── 初等函数任意精度实现、数论、Fp、SplitMix64)
 ```
 
@@ -289,6 +289,7 @@ impl Ball {
     pub fn to_f64(&self) -> f64;
 }
 // CBall 同样提供 add/sub/mul/div/pow_int/exp/ln/sqrt(主值)/sin/cos，由实数 Ball 组合
+// ctx 模块（Clock/Interrupt/Abort）亦属于 om-num，具体签名见 6.4。
 ```
 > **执行前核对：** `dashu-float 0.6.1` 已经提供哪些初等函数（exp/ln/sqrt/powf）？已提供的直接用于 `mid` 的计算，但误差半径 `rad` 仍须自己按“结果误差 ≤ 1 ulp(prec)”加上。sin/cos/atan 必须自己实现。
 
@@ -396,7 +397,8 @@ pub fn canonical_cmp(a: &Expr, b: &Expr) -> std::cmp::Ordering;  // 见 8.1.1
 ### 6.4 om-core：求值上下文、中断与消息
 
 ```rust
-// crates/om-core/src/ctx.rs
+// 定义于 crates/om-num/src/ctx.rs；crates/om-core/src/ctx.rs 重导出 Clock/Interrupt/Abort。
+// Message/MsgLevel/Messages 仍定义于 om-core。
 pub trait Clock: Send + Sync { fn now_ms(&self) -> f64; }   // native: Instant；wasm: js Date.now()（由 om-wasm 注入）
 pub struct Interrupt {
     pub flag: std::sync::Arc<std::sync::atomic::AtomicBool>, // 外部置 true 即中止
@@ -705,7 +707,7 @@ pub struct Monomial { pub exps: SmallVec<[u32; 4]>, pub deg: u32 }
 pub enum MonoOrder { Lex, GrevLex }
 pub struct MPoly<R: Ring> { pub nvars: usize, pub terms: Vec<(Monomial, R)>, pub order: MonoOrder } // 按 order 降序，无零系数
 ```
-所有可能耗时的函数最后一个参数都是 `ctx: &Interrupt`，返回 `Result<_, Abort>`。
+所有可能耗时的函数最后一个参数都是 `ctx: &om_num::ctx::Interrupt`，返回 `Result<_, om_num::ctx::Abort>`（om-core 重导出相同类型）。
 
 #### 8.2a 除法、伪余式、容量
 - `divrem(f, g)`（在域上）：教科书长除法。
@@ -1150,9 +1152,9 @@ pub enum EvalError { #[error(transparent)] Abort(#[from] Abort), #[error("recurs
 
 ### 9.3 内置函数清单（分里程碑实现；每个函数都要登记 DocEntry）
 - **M4（基础）：** `Plus Times Power Subtract Divide Minus Sqrt Exp Log Abs Sign Re Im Conjugate Arg Floor Ceiling Round Mod Quotient GCD LCM Factorial Binomial FactorInteger PrimeQ Numerator Denominator N`、三角/反三角/双曲/反双曲（精确特殊值表见 8.1.6）、`List Part Length First Last Rest Append Table Range Map Apply Sum(有限) Product(有限)`、`Equal Unequal Less LessEqual Greater GreaterEqual And Or Not SameQ`、`Rule RuleDelayed ReplaceAll ReplaceRepeated Set SetDelayed Unset Clear CompoundExpression Hold HoldForm Out`、`Element`（仅保持）、`Function Slot`（纯函数应用）。
-- **M6（代数）：** `Expand Factor Together Cancel Apart(仅 Q 上一元) Simplify FullSimplify(=Simplify 加更多变换) Collect Coefficient CoefficientList Exponent PolynomialQ PolynomialGCD PolynomialLCM PolynomialQuotient PolynomialRemainder Resultant Discriminant Variables D RootReduce ToRadicals`。
-- **M7/M8（求解）：** `Solve NSolve FindRoot Reduce Eliminate SolveValues NSolveValues Roots(=Solve 后转 Or 形式) Root ConditionalExpression`。
-- **M9（绘图，kernel 侧）：** `Plot ContourPlot` 仅返回 HoldAll 的原样表达式，kernel 识别后采样（见 10.5）。
+- **M10.1（代数）：** `Expand Factor Together Cancel Apart(仅 Q 上一元) Simplify FullSimplify(=Simplify 加更多变换) Collect Coefficient CoefficientList Exponent PolynomialQ PolynomialGCD PolynomialLCM PolynomialQuotient PolynomialRemainder Resultant Discriminant Variables D RootReduce ToRadicals`。
+- **M10.2（求解）：** `Solve NSolve FindRoot Reduce Eliminate SolveValues NSolveValues Roots(=Solve 后转 Or 形式) Root ConditionalExpression`。
+- **M11.5（绘图，kernel 侧）：** `Plot ContourPlot` 仅返回 HoldAll 的原样表达式，kernel 识别后采样（见 10.5）。
 
 ### 9.4 数值求值 `N`
 - `N[e]` → 机器精度：递归把精确数转 f64（复数用 `(f64, f64)`），已知函数调用 `om_num::elem` 的 f64 实现；溢出或非有限值 → 自动切换到 BigFloat（精度 64 bit）重算。
@@ -1251,7 +1253,7 @@ pub enum OutputItem {
 }
 pub struct SolutionSetView { pub kind: SolutionKind /*finite|all|none|region*/, pub vars: Vec<String>,
     pub solutions: Vec<SolutionView>, pub region_latex: Option<String>, pub intervals: Vec<IntervalView> }
-pub struct SolutionView { pub bindings: Vec<BindingView>, pub condition_latex: Option<String>, pub verified: Verified }
+pub struct SolutionView { pub bindings: Vec<BindingView>, pub condition_latex: Option<String>, pub verified: Verification }
 pub struct BindingView { pub var: String, pub latex: String, pub input_form: String, pub modern_form: String,
     pub numeric: Option<String> /*N[…, 10] 的结果；复数 a+bi 形式*/ }
 pub struct IntervalView { pub lo: Option<String>, pub hi: Option<String>, pub lo_closed: bool, pub hi_closed: bool,
@@ -1660,7 +1662,7 @@ app/src/
 ### M1：om-num（3–4 人日）
 - [ ] **M1.1 Number 类型与算术**（6.1 节接口；测试见 8.1.5 表中数字相关用例的数值部分）
   Files: `crates/om-num/src/number.rs`（Number/Real/Complex + normalize/add/mul/neg/recip/pow_int/precision/cmp_real）、`src/lib.rs` 重导出。
-  Steps 覆盖：精确算术（Int/Rat）、传染规则（8.1.0）、`1/0`→NumError::DivByZero、`recip(0.)` 返回 `Real(inf)` 处理为特殊值（由上层 Power 转 ComplexInfinity，这里只需不 panic）。
+  Steps 覆盖：精确算术（Int/Rat）、传染规则（8.1.0）、`1/0`→NumError::DivByZero、`recip(0.)` 同样返回 `NumError::DivByZero`；无穷由上层 Power 转成符号特殊值，数值层不制造 inf/NaN。
   Done: `cargo test -p om-num number::` 通过，包含至少 20 条覆盖传染规则的用例。
 
 - [ ] **M1.2 数论工具**（ntheory.rs：gcd/ext_gcd/isqrt/exact_root/perfect_power/is_probable_prime/factor_integer/extract_root_factor）
@@ -1671,7 +1673,7 @@ app/src/
 - [ ] **M1.3 SplitMix64、Fp、Ball 球算术骨架**
   Files: `rng.rs`（SplitMix64）、`modp.rs`（Fp：add/sub/mul/inv/pow，u128 中间值）、`ball.rs`（6.1 节最后一段接口：`exact/add/sub/mul/div/contains_zero/excludes_zero/to_f64`；`sqrt`）。
   Steps: 先确认 `dashu-float 0.6.1` 提供哪些函数（跑 `cargo doc -p dashu-float --open` 或查 docs.rs），有 exp/ln/powf 就直接用，误差半径按“≤1 ulp”加；没有的话本任务只交付 sqrt（用牛顿迭代），exp/ln/sin/cos/atan 移到 M1.4。
-  Done: `Ball::sqrt(Ball::exact(2, 64)).contains(1.41421356...)` 通过；`(a*b - b*a).excludes_zero() == false` 对任意 a,b 恒成立（交换律测试其实应该是 contains_zero，写反了——测试写 `(a.mul(&b)).sub(&b.mul(&a))).contains_zero()`）。
+  Done: `Ball::exact(&Rational::from(2), 64).sqrt()` 严格包围 sqrt(2)；`a.mul(&b).sub(&b.mul(&a)).contains_zero()` 对测试的任意有限球 a,b 成立。
 
 - [ ] **M1.4 Ball 初等函数**（若 M1.3 未完成 exp/ln/sin/cos/atan，在此实现；否则本任务改为“用 dashu-float 包一层误差边界”）
   Steps: pi(bits) 用 Machin 公式并按精度缓存（`OnceLock<Mutex<BTreeMap<u32, BigFloat>>>`）；exp/ln/sin/cos/atan 按 8 节前言约定的参数约简 + Taylor，误差上界显式计入 rad。
@@ -1701,7 +1703,7 @@ app/src/
   Done: `canonicalize(Expr::normal(...未规范化的树...))` 与手写规范树结构相等的用例（至少 10 条，覆盖嵌套 Plus/Times/Power）。
 
 - [ ] **M2.8 Interrupt/Clock/Message**（6.4 节）
-  Done: `Interrupt::tick()` 在 flag 置位后返回 `Err(Aborted)`；在 steps_left 耗尽后返回 `Err(Budget)`；wasm target 下编译通过（`cargo build -p om-core --target wasm32-unknown-unknown`，此时不注入 Clock，`deadline_ms` 恒为 None 分支）。
+  Done: `Interrupt::tick()` 在 flag 置位后返回 `Err(Abort::Interrupted)`；在 steps_left 耗尽后返回 `Err(Budget)`；wasm target 下编译通过（`cargo build -p om-core --target wasm32-unknown-unknown`，此时不注入 Clock，`deadline_ms` 恒为 None 分支）。
 
 ### M3：om-parse + om-format（4 人日）
 - [ ] **M3.1 词法分析器**（两种方言共用 token 流；7.2/7.3 的 token 种类）
@@ -1796,8 +1798,8 @@ app/src/
 - [ ] **M9.16 Solve 验收语料第一轮**：跑第 14 节全部 P0 用例，逐条修 bug 直到全绿。
 
 ### M10：om-eval 代数层 + Solve 接入（3 人日）
-- [ ] **M10.1 代数类内置函数**（9.3 节 M6 分类：Expand/Factor/Together/Cancel/Simplify/Collect/D 等）
-- [ ] **M10.2 Solve/NSolve/FindRoot/Reduce/Eliminate/SolveValues 内置函数**（9.3 节 M7/M8 分类，把 om-solve 接入求值循环；`Unsupported` 错误的降级处理见 6.6 节最后一段）
+- [ ] **M10.1 代数类内置函数**（9.3 节 M10.1 分类：Expand/Factor/Together/Cancel/Simplify/Collect/D 等）
+- [ ] **M10.2 Solve/NSolve/FindRoot/Reduce/Eliminate/SolveValues 内置函数**（9.3 节 M10.2 分类，把 om-solve 接入求值循环；`Unsupported` 错误的降级处理见 6.6 节最后一段）
   Done: 第 14 节全部 P0 + P1 用例通过（通过 `om-cli -e` 端到端跑）。
 
 ### M11：om-kernel（6 人日）

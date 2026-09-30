@@ -78,6 +78,7 @@ impl Ball {
     pub fn to_f64(&self) -> f64;
 }
 // CBall 同样提供 add/sub/mul/div/pow_int/exp/ln/sqrt(主值)/sin/cos，由实数 Ball 组合
+// ctx 模块（Clock/Interrupt/Abort）亦属于 om-num，具体签名见 6.4。
 ```
 > **执行前核对：** `dashu-float 0.6.1` 已经提供哪些初等函数（exp/ln/sqrt/powf）？已提供的直接用于 `mid` 的计算，但误差半径 `rad` 仍须自己按“结果误差 ≤ 1 ulp(prec)”加上。sin/cos/atan 必须自己实现。
 
@@ -185,7 +186,8 @@ pub fn canonical_cmp(a: &Expr, b: &Expr) -> std::cmp::Ordering;  // 见 8.1.1
 ### 6.4 om-core：求值上下文、中断与消息
 
 ```rust
-// crates/om-core/src/ctx.rs
+// 定义于 crates/om-num/src/ctx.rs；crates/om-core/src/ctx.rs 重导出 Clock/Interrupt/Abort。
+// Message/MsgLevel/Messages 仍定义于 om-core。
 pub trait Clock: Send + Sync { fn now_ms(&self) -> f64; }   // native: Instant；wasm: js Date.now()（由 om-wasm 注入）
 pub struct Interrupt {
     pub flag: std::sync::Arc<std::sync::atomic::AtomicBool>, // 外部置 true 即中止

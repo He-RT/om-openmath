@@ -62,9 +62,9 @@ pub enum EvalError { #[error(transparent)] Abort(#[from] Abort), #[error("recurs
 
 ### 9.3 内置函数清单（分里程碑实现；每个函数都要登记 DocEntry）
 - **M4（基础）：** `Plus Times Power Subtract Divide Minus Sqrt Exp Log Abs Sign Re Im Conjugate Arg Floor Ceiling Round Mod Quotient GCD LCM Factorial Binomial FactorInteger PrimeQ Numerator Denominator N`、三角/反三角/双曲/反双曲（精确特殊值表见 8.1.6）、`List Part Length First Last Rest Append Table Range Map Apply Sum(有限) Product(有限)`、`Equal Unequal Less LessEqual Greater GreaterEqual And Or Not SameQ`、`Rule RuleDelayed ReplaceAll ReplaceRepeated Set SetDelayed Unset Clear CompoundExpression Hold HoldForm Out`、`Element`（仅保持）、`Function Slot`（纯函数应用）。
-- **M6（代数）：** `Expand Factor Together Cancel Apart(仅 Q 上一元) Simplify FullSimplify(=Simplify 加更多变换) Collect Coefficient CoefficientList Exponent PolynomialQ PolynomialGCD PolynomialLCM PolynomialQuotient PolynomialRemainder Resultant Discriminant Variables D RootReduce ToRadicals`。
-- **M7/M8（求解）：** `Solve NSolve FindRoot Reduce Eliminate SolveValues NSolveValues Roots(=Solve 后转 Or 形式) Root ConditionalExpression`。
-- **M9（绘图，kernel 侧）：** `Plot ContourPlot` 仅返回 HoldAll 的原样表达式，kernel 识别后采样（见 10.5）。
+- **M10.1（代数）：** `Expand Factor Together Cancel Apart(仅 Q 上一元) Simplify FullSimplify(=Simplify 加更多变换) Collect Coefficient CoefficientList Exponent PolynomialQ PolynomialGCD PolynomialLCM PolynomialQuotient PolynomialRemainder Resultant Discriminant Variables D RootReduce ToRadicals`。
+- **M10.2（求解）：** `Solve NSolve FindRoot Reduce Eliminate SolveValues NSolveValues Roots(=Solve 后转 Or 形式) Root ConditionalExpression`。
+- **M11.5（绘图，kernel 侧）：** `Plot ContourPlot` 仅返回 HoldAll 的原样表达式，kernel 识别后采样（见 10.5）。
 
 ### 9.4 数值求值 `N`
 - `N[e]` → 机器精度：递归把精确数转 f64（复数用 `(f64, f64)`），已知函数调用 `om_num::elem` 的 f64 实现；溢出或非有限值 → 自动切换到 BigFloat（精度 64 bit）重算。

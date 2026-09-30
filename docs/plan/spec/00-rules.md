@@ -12,7 +12,7 @@
    cargo test --workspace
    ```
    前端任务另外运行 `cd app && npm run lint && npm run test && npm run build`。
-5. **进度账本。** 每完成一个任务，在 `docs/plan/PROGRESS.md` 里把对应行改成 `[x]` 并附上提交哈希。新会话开始时先读 `PROGRESS.md` 找到下一个任务。
+5. **进度账本。** 每完成一个任务，在同一次提交的 `docs/plan/PROGRESS.md` 里把对应行改成 `[x]` 并记录验证命令。该提交哈希在下一次任务提交中补记（避免提交引用自身哈希的循环）。新会话开始时先读 `PROGRESS.md` 找到下一个任务。
 6. **禁止事项：** 库代码中不用 `unwrap()`/`expect()`（测试除外；确属不变量时用 `expect("invariant: …")` 并写清原因）；不用 `unsafe`（所有 crate 顶部 `#![forbid(unsafe_code)]`）；输出中不得依赖 `HashMap` 迭代顺序（用 `BTreeMap`/`IndexMap` 或排序）；不引入第 3 节白名单以外的依赖（需要时记录到 `DEVIATIONS.md`）。
 7. **文件大小：** 单个源文件超过约 600 行就拆分模块。
 8. **确定性：** 所有随机性（数值探测、素数选择）使用固定种子的 `SplitMix64`（`om-num/src/rng.rs`），测试结果必须可复现。

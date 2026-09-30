@@ -5,8 +5,8 @@
 每个任务都隐式包含本节全部要求。
 
 - **Rust：** stable 1.94，`edition = "2024"`，`rust-version = "1.94"`。workspace 共享 `[workspace.package]` 与 `[workspace.dependencies]`。
-- **WASM：** `om-num`、`om-core`、`om-parse`、`om-format`、`om-poly`、`om-simplify`、`om-solve`、`om-eval`、`om-kernel`（关闭 `native` feature 时）、`om-llm`（关闭 `http` feature 时）必须能编译到 `wasm32-unknown-unknown`。所以：这些 crate 不得依赖 `std::time::Instant`（在 wasm32 上会 panic）、线程、文件系统、`getrandom`、`tokio`。时钟与取消通过 `om_core::ctx::Interrupt` 注入（见 6.6）。CI 里有专门任务：`cargo build -p om-kernel --no-default-features --target wasm32-unknown-unknown`。
-- **许可证：** 每个 crate 的 `license = "MIT OR Apache-2.0"`；根目录放 `LICENSE-MIT`、`LICENSE-APACHE`；`deny.toml`（cargo-deny）只允许 `MIT, Apache-2.0, Apache-2.0 WITH LLVM-exception, BSD-2-Clause, BSD-3-Clause, ISC, Zlib, Unicode-3.0, CC0-1.0, MPL-2.0`（MPL 仅允许作为传递依赖）。**禁止：malachite（LGPL）、rug/gmp-mpfr-sys（LGPL）、algebraics（LGPL）、symbolica（非 OSI）、flint 绑定。**
+- **WASM：** `om-num`、`om-core`、`om-parse`、`om-format`、`om-poly`、`om-simplify`、`om-solve`、`om-eval`、`om-kernel`（关闭 `native` feature 时）、`om-llm`（关闭 `http` feature 时）必须能编译到 `wasm32-unknown-unknown`。所以：这些 crate 不得依赖 `std::time::Instant`（在 wasm32 上会 panic）、线程、文件系统、`getrandom`、`tokio`。时钟与取消通过 `om_num::ctx::Interrupt` 注入（`om_core::ctx` 重导出相同类型，见 6.4），使 om-poly 不依赖表达式层。CI 里有专门任务：`cargo build -p om-kernel --no-default-features --target wasm32-unknown-unknown`。
+- **许可证：** 每个 crate 的 `license = "MIT OR Apache-2.0"`；根目录放 `LICENSE-MIT`、`LICENSE-APACHE`；`deny.toml`（cargo-deny）只允许 `MIT, Apache-2.0, Apache-2.0 WITH LLVM-exception, BSD-2-Clause, BSD-3-Clause, ISC, Zlib, Unicode-3.0, CC0-1.0, MPL-2.0`（MPL 不作通用许可，只通过 deny.toml 中逐包例外允许必要的传递依赖）。**禁止：malachite（LGPL）、rug/gmp-mpfr-sys（LGPL）、algebraics（LGPL）、symbolica（非 OSI）、flint 绑定。**
 - **依赖白名单**（版本为 2026-09-28 在 crates.io 查到的最新稳定版，Cargo.toml 中写 `"0.6"` 这种兼容版本即可）：
 
   | 用途 | crate | 版本 | 许可证 |
@@ -23,7 +23,7 @@
   | 密钥存储（仅 native） | `keyring` | 4.2 | MIT OR Apache-2.0 |
   | HTTP（仅 native） | `reqwest`（features: `json`, `stream`, `rustls`），版本 0.13 | 0.13.5 | MIT OR Apache-2.0 |
   | 异步（仅 native） | `tokio` 1.53、`futures` 0.3、`tokio-util` 0.7 | | MIT |
-  | 终端 REPL | `reedline` 0.52、`nu-ansi-term` 0.50 | | MIT |
+  | 终端 REPL | `reedline` =0.49.0（0.50+ 要求 Rust 1.95）、`nu-ansi-term` 0.50 | | MIT |
   | 诊断美化（CLI） | `ariadne` | 0.6 | MIT |
   | 日志 | `tracing` 0.1 | | MIT |
   | WASM 绑定 | `wasm-bindgen` 0.2.129、`js-sys` 0.3.106、`console_error_panic_hook` 0.1.7 | | MIT OR Apache-2.0 |

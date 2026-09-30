@@ -23,10 +23,10 @@
                    special: 初等函数特殊值表；is_zero 零判定；expand/together/cancel/factor/simplify)
           ▼                                    ▼
       om-core (Expr、Symbol 驻留、规范构造器、      om-poly (**只依赖 om-num**：UPoly/MPoly 泛型环、GCD、
-      排序、Interrupt、消息)                       无平方分解、Z[x] 因式分解、结式、实根隔离、Aberth、
+      排序、消息、重导出 Interrupt)                       无平方分解、Z[x] 因式分解、结式、实根隔离、Aberth、
           ▲         ▲                              Gröbner/FGLM、alg: 实/复代数数与 RootReduce)
    om-parse   om-format                                   ▼
-          ▼                                             om-num (Integer/Rational/Real/Complex、Ball 球算术、
+          ▼                                             om-num (Interrupt/Clock/Abort、Integer/Rational/Real/Complex、Ball 球算术、
       om-num ◄──────────────────────────────────────── 初等函数任意精度实现、数论、Fp、SplitMix64)
 ```
 

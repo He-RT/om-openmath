@@ -3,6 +3,7 @@
 
 mod source;
 mod text;
+mod visual;
 
 use om_core::Expr;
 
@@ -42,4 +43,15 @@ pub fn input_form_with(e: &Expr, options: &FormatOptions) -> String {
 /// Modern source using explicit display preferences.
 pub fn modern_form_with(e: &Expr, options: &FormatOptions) -> String {
     source::format(e, true, options)
+}
+
+/// Mathematical LaTeX with escaped text, suitable for KaTeX rendering.
+pub fn latex(e: &Expr) -> String {
+    visual::format(e, true)
+}
+
+/// Terminal mathematical display with Unicode roots, powers and operators.
+/// Use a source form for persistence or reparsing.
+pub fn unicode_form(e: &Expr) -> String {
+    visual::format(e, false)
 }

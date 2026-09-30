@@ -294,7 +294,7 @@ impl Printer {
     }
 }
 
-fn positive(e: &Expr) -> Option<Expr> {
+pub(crate) fn positive(e: &Expr) -> Option<Expr> {
     if let Some(n) = e.as_number() {
         let negative = match n {
             Number::Integer(n) => n < &om_num::Integer::ZERO,
@@ -314,7 +314,7 @@ fn positive(e: &Expr) -> Option<Expr> {
     }
     None
 }
-fn degree(e: &Expr) -> i64 {
+pub(crate) fn degree(e: &Expr) -> i64 {
     if e.as_number().is_some() {
         0
     } else if e.is_head(B::POWER) && e.args().len() == 2 {
@@ -333,7 +333,7 @@ fn implicit_target(e: &Expr) -> bool {
     e.as_symbol().is_some()
         || (e.is_head(B::POWER) && e.args().len() == 2 && e.args()[0].as_symbol().is_some())
 }
-fn modern_name(s: Symbol) -> &'static str {
+pub(crate) fn modern_name(s: Symbol) -> &'static str {
     match s {
         B::SIN => "sin",
         B::COS => "cos",

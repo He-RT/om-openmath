@@ -5,6 +5,9 @@ mod builtins;
 mod definitions;
 mod engine;
 mod evaluator;
+mod logic;
+mod scalar;
+mod scalar_registry;
 mod types;
 
 /// Structural patterns, variable bindings and simultaneous raw substitution.

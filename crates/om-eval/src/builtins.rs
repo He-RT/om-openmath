@@ -123,7 +123,7 @@ pub(crate) fn table() -> &'static BuiltinTable {
                 "Evaluate the left side and hold the right side for replacement.",
             ),
         ];
-        BuiltinTable {
+        let mut table = BuiltinTable {
             specs: entries
                 .into_iter()
                 .map(
@@ -160,7 +160,9 @@ pub(crate) fn table() -> &'static BuiltinTable {
                     },
                 )
                 .collect(),
-        }
+        };
+        crate::scalar_registry::register(&mut table.specs);
+        table
     })
 }
 fn writable(ev: &Evaluator) -> Result<(), EvalError> {

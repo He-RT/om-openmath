@@ -23,6 +23,7 @@ struct Thread {
     waiting: bool,
 }
 struct Dispatch {
+    symbol: Option<om_core::Symbol>,
     rebuilt: Expr,
     args: Vec<Expr>,
     depth: u32,
@@ -38,6 +39,13 @@ struct Rules {
     condition: usize,
     waiting: bool,
 }
+struct Logical {
+    head: om_core::Symbol,
+    args: Vec<Expr>,
+    next: usize,
+    unknown: Vec<Expr>,
+    depth: u32,
+}
 enum Frame {
     Evaluate {
         expr: Expr,
@@ -52,6 +60,7 @@ enum Frame {
     Arguments(Arguments),
     Thread(Thread),
     Rules(Rules),
+    Logical(Logical),
     Sequence {
         args: Vec<Expr>,
         old: Expr,
@@ -231,6 +240,47 @@ impl Evaluator {
                         iterations: 0,
                     });
                 }
+                Frame::Logical(mut state) => {
+                    let decisive = if state.head == B::AND {
+                        B::FALSE
+                    } else {
+                        B::TRUE
+                    };
+                    let identity = if state.head == B::AND {
+                        B::TRUE
+                    } else {
+                        B::FALSE
+                    };
+                    if state.next > 0 {
+                        let value = values
+                            .pop()
+                            .expect("invariant: logical argument produced a value");
+                        if value.as_symbol() == Some(decisive) {
+                            values.push(Expr::sym(decisive));
+                            continue;
+                        }
+                        if value.as_symbol() != Some(identity) {
+                            state.unknown.push(value);
+                        }
+                    }
+                    if state.next == state.args.len() {
+                        values.push(match state.unknown.len() {
+                            0 => Expr::sym(identity),
+                            1 => state.unknown.remove(0),
+                            _ => Expr::call(state.head, state.unknown),
+                        });
+                    } else {
+                        let expr = state.args[state.next].clone();
+                        let depth = state.depth + 1;
+                        state.next += 1;
+                        frames.push(Frame::Logical(state));
+                        frames.push(Frame::Evaluate {
+                            expr,
+                            depth,
+                            iterations: 0,
+                        });
+                    }
+                }
                 Frame::Rules(state) => self.run_rules(state, &mut frames, &mut values, ctx)?,
                 Frame::Rewrite {
                     old,
@@ -366,6 +416,7 @@ impl Evaluator {
             .cloned()
             .unwrap_or_default();
         let dispatch = Dispatch {
+            symbol,
             rebuilt,
             args,
             depth,
@@ -395,15 +446,23 @@ impl Evaluator {
         ctx: &Interrupt,
     ) -> Result<(), EvalError> {
         let Dispatch {
+            symbol,
             rebuilt,
             args,
             depth,
             iterations,
         } = state;
         self.depth = depth;
-        let symbol = rebuilt.head_symbol();
         let spec = symbol.and_then(|s| self.builtins.get(s));
-        if symbol == Some(B::COMPOUND_EXPRESSION) {
+        if matches!(symbol, Some(B::AND | B::OR)) {
+            frames.push(Frame::Logical(Logical {
+                head: symbol.expect("invariant: logical head checked"),
+                args,
+                next: 0,
+                unknown: vec![],
+                depth,
+            }));
+        } else if symbol == Some(B::COMPOUND_EXPRESSION) {
             frames.push(Frame::Sequence {
                 args,
                 old: rebuilt,

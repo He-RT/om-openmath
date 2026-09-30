@@ -22,6 +22,22 @@ struct Thread {
     depth: u32,
     waiting: bool,
 }
+struct Dispatch {
+    rebuilt: Expr,
+    args: Vec<Expr>,
+    depth: u32,
+    iterations: u32,
+}
+struct Rules {
+    dispatch: Dispatch,
+    rules: Vec<crate::Rule>,
+    next: usize,
+    matcher: Option<crate::pattern::Matcher>,
+    rhs: Expr,
+    candidate: Option<crate::pattern::Candidate>,
+    condition: usize,
+    waiting: bool,
+}
 enum Frame {
     Evaluate {
         expr: Expr,
@@ -35,6 +51,7 @@ enum Frame {
     },
     Arguments(Arguments),
     Thread(Thread),
+    Rules(Rules),
     Sequence {
         args: Vec<Expr>,
         old: Expr,
@@ -214,6 +231,7 @@ impl Evaluator {
                         iterations: 0,
                     });
                 }
+                Frame::Rules(state) => self.run_rules(state, &mut frames, &mut values, ctx)?,
                 Frame::Rewrite {
                     old,
                     new,
@@ -343,18 +361,49 @@ impl Evaluator {
         for message in messages {
             self.messages.push(message);
         }
-        let down = symbol
+        let rules = symbol
             .and_then(|s| self.defs.down.get(&s))
-            .and_then(|rules| rules.iter().find(|r| r.lhs == rebuilt))
-            .map(|r| r.rhs.clone());
-        if let Some(new) = down {
-            frames.push(Frame::Rewrite {
-                old: rebuilt,
-                new,
-                depth,
-                iterations,
-            });
-        } else if symbol == Some(B::COMPOUND_EXPRESSION) {
+            .cloned()
+            .unwrap_or_default();
+        let dispatch = Dispatch {
+            rebuilt,
+            args,
+            depth,
+            iterations,
+        };
+        if rules.is_empty() {
+            self.dispatch(dispatch, frames, values, ctx)?;
+        } else {
+            frames.push(Frame::Rules(Rules {
+                dispatch,
+                rules,
+                next: 0,
+                matcher: None,
+                rhs: Expr::sym(B::NULL),
+                candidate: None,
+                condition: 0,
+                waiting: false,
+            }));
+        }
+        Ok(())
+    }
+    fn dispatch(
+        &mut self,
+        state: Dispatch,
+        frames: &mut Vec<Frame>,
+        values: &mut Vec<Expr>,
+        ctx: &Interrupt,
+    ) -> Result<(), EvalError> {
+        let Dispatch {
+            rebuilt,
+            args,
+            depth,
+            iterations,
+        } = state;
+        self.depth = depth;
+        let symbol = rebuilt.head_symbol();
+        let spec = symbol.and_then(|s| self.builtins.get(s));
+        if symbol == Some(B::COMPOUND_EXPRESSION) {
             frames.push(Frame::Sequence {
                 args,
                 old: rebuilt,
@@ -377,5 +426,75 @@ impl Evaluator {
             values.push(rebuilt);
         }
         Ok(())
+    }
+    fn run_rules(
+        &mut self,
+        mut state: Rules,
+        frames: &mut Vec<Frame>,
+        values: &mut Vec<Expr>,
+        ctx: &Interrupt,
+    ) -> Result<(), EvalError> {
+        self.depth = state.dispatch.depth;
+        if state.waiting {
+            let result = values
+                .pop()
+                .expect("invariant: predicate evaluation produced a value");
+            state.waiting = false;
+            if result.as_symbol() != Some(B::TRUE) {
+                state.candidate = None;
+            }
+        }
+        loop {
+            ctx.tick()?;
+            if let Some(candidate) = &state.candidate {
+                if state.condition < candidate.conditions.len() {
+                    let expr = crate::pattern::substitute(
+                        &candidate.conditions[state.condition],
+                        &candidate.bindings,
+                    );
+                    let depth = state.dispatch.depth + 1;
+                    state.condition += 1;
+                    state.waiting = true;
+                    frames.push(Frame::Rules(state));
+                    frames.push(Frame::Evaluate {
+                        expr,
+                        depth,
+                        iterations: 0,
+                    });
+                    return Ok(());
+                }
+                let new = crate::pattern::substitute(&state.rhs, &candidate.bindings);
+                frames.push(Frame::Rewrite {
+                    old: state.dispatch.rebuilt,
+                    new,
+                    depth: state.dispatch.depth,
+                    iterations: state.dispatch.iterations,
+                });
+                return Ok(());
+            }
+            if let Some(matcher) = &mut state.matcher {
+                if let Some(candidate) = matcher.next(ctx)? {
+                    state.candidate = Some(candidate);
+                    state.condition = 0;
+                    continue;
+                }
+                state.matcher = None;
+            }
+            let Some(rule) = state.rules.get(state.next) else {
+                return self.dispatch(state.dispatch, frames, values, ctx);
+            };
+            state.next += 1;
+            let (lhs, rhs) =
+                if rule.delayed && rule.rhs.is_head(B::CONDITION) && rule.rhs.args().len() == 2 {
+                    (
+                        Expr::call(B::CONDITION, [rule.lhs.clone(), rule.rhs.args()[1].clone()]),
+                        rule.rhs.args()[0].clone(),
+                    )
+                } else {
+                    (rule.lhs.clone(), rule.rhs.clone())
+                };
+            state.rhs = rhs;
+            state.matcher = crate::pattern::Matcher::new(&lhs, &state.dispatch.rebuilt, self, ctx)?;
+        }
     }
 }

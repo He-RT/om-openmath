@@ -173,7 +173,7 @@ fn writable(ev: &Evaluator) -> Result<(), EvalError> {
     }
 }
 fn target(ev: &mut Evaluator, e: &Expr, operation: &str) -> Option<Symbol> {
-    let symbol = e.as_symbol().or_else(|| e.head_symbol());
+    let symbol = crate::pattern::definition_head(e);
     if let Some(symbol) = symbol {
         if !ev.attributes(symbol).contains(A::PROTECTED) {
             return Some(symbol);
@@ -198,19 +198,25 @@ fn target(ev: &mut Evaluator, e: &Expr, operation: &str) -> Option<Symbol> {
     }
     None
 }
-fn assign(ev: &mut Evaluator, args: &[Expr], delayed: bool) -> Result<Option<Expr>, EvalError> {
+fn assign(
+    ev: &mut Evaluator,
+    args: &[Expr],
+    delayed: bool,
+    ctx: &Interrupt,
+) -> Result<Option<Expr>, EvalError> {
     writable(ev)?;
     let operation = if delayed { "SetDelayed" } else { "Set" };
-    let Some(symbol) = target(ev, &args[0], operation) else {
+    let lhs = crate::pattern::prepare_target(ev, &args[0], ctx)?;
+    let Some(symbol) = target(ev, &lhs, operation) else {
         return Ok(None);
     };
-    if args[0].as_symbol().is_some() {
+    if lhs.as_symbol().is_some() {
         ev.defs.own.insert(symbol, args[1].clone());
     } else {
         ev.defs.set_down(
             symbol,
             Rule {
-                lhs: args[0].clone(),
+                lhs,
                 rhs: args[1].clone(),
                 delayed,
             },
@@ -222,25 +228,26 @@ fn assign(ev: &mut Evaluator, args: &[Expr], delayed: bool) -> Result<Option<Exp
         args[1].clone()
     }))
 }
-fn set(ev: &mut Evaluator, args: &[Expr], _: &Interrupt) -> Result<Option<Expr>, EvalError> {
-    assign(ev, args, false)
+fn set(ev: &mut Evaluator, args: &[Expr], ctx: &Interrupt) -> Result<Option<Expr>, EvalError> {
+    assign(ev, args, false, ctx)
 }
 fn set_delayed(
     ev: &mut Evaluator,
     args: &[Expr],
-    _: &Interrupt,
+    ctx: &Interrupt,
 ) -> Result<Option<Expr>, EvalError> {
-    assign(ev, args, true)
+    assign(ev, args, true, ctx)
 }
-fn unset(ev: &mut Evaluator, args: &[Expr], _: &Interrupt) -> Result<Option<Expr>, EvalError> {
+fn unset(ev: &mut Evaluator, args: &[Expr], ctx: &Interrupt) -> Result<Option<Expr>, EvalError> {
     writable(ev)?;
-    let Some(symbol) = target(ev, &args[0], "Unset") else {
+    let lhs = crate::pattern::prepare_target(ev, &args[0], ctx)?;
+    let Some(symbol) = target(ev, &lhs, "Unset") else {
         return Ok(None);
     };
     if args[0].as_symbol().is_some() {
         ev.defs.own.remove(&symbol);
     } else if let Some(rules) = ev.defs.down.get_mut(&symbol) {
-        rules.retain(|r| r.lhs != args[0]);
+        rules.retain(|r| r.lhs != lhs);
     }
     Ok(Some(Expr::sym(B::NULL)))
 }

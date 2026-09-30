@@ -7,6 +7,9 @@ mod engine;
 mod evaluator;
 mod types;
 
+/// Structural patterns, variable bindings and simultaneous raw substitution.
+pub mod pattern;
+
 pub use builtins::BuiltinTable;
 pub use definitions::{Definitions, Rule};
 pub use evaluator::Evaluator;

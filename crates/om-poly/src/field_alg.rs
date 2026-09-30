@@ -33,6 +33,45 @@ impl<R: Ring> UPoly<R> {
     }
 }
 impl<R: Field> UPoly<R> {
+    /// Monic extended GCD (g,s,t), certifying s*self+t*other=g.
+    /// The zero pair returns (0,0,0); None means an unavailable leading inverse.
+    pub fn extended_gcd(
+        &self,
+        other: &Self,
+        ctx: &Interrupt,
+    ) -> Result<Option<(Self, Self, Self)>, Abort> {
+        ctx.tick()?;
+        let (mut old_r, mut r) = (self.clone(), other.clone());
+        let (mut old_s, mut s) = (Self::one(), Self::zero());
+        let (mut old_t, mut t) = (Self::zero(), Self::one());
+        while !r.is_zero() {
+            ctx.tick()?;
+            let Some((q, remainder)) = old_r.divrem(&r, ctx)? else {
+                return Ok(None);
+            };
+            let next_s = old_s.sub(&q.mul(&s, ctx)?, ctx)?;
+            let next_t = old_t.sub(&q.mul(&t, ctx)?, ctx)?;
+            old_r = r;
+            r = remainder;
+            old_s = s;
+            s = next_s;
+            old_t = t;
+            t = next_t;
+        }
+        let Some(lc) = old_r.lc() else {
+            return Ok(Some((Self::zero(), Self::zero(), Self::zero())));
+        };
+        let zero = context_zero(&old_r.coeffs, ctx)?;
+        let Some(inverse) = lc.add(&zero).inv() else {
+            return Ok(None);
+        };
+        Ok(Some((
+            old_r.scale(&inverse, ctx)?,
+            old_s.scale(&inverse, ctx)?,
+            old_t.scale(&inverse, ctx)?,
+        )))
+    }
+
     /// Modular exponentiation over a compatible field, reducing after every product.
     /// None rejects negative exponents, zero moduli or unavailable leading inverses.
     pub fn pow_mod(

@@ -11,5 +11,8 @@ om-num.workspace = true
 smallvec.workspace = true
 thiserror.workspace = true
 
+[dev-dependencies]
+proptest.workspace = true
+
 [lints]
 workspace = true

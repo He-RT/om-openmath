@@ -4,6 +4,7 @@
 mod content;
 mod division;
 mod fp;
+mod gcd;
 mod mpoly;
 mod ring;
 mod upoly;

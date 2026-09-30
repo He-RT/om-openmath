@@ -3,6 +3,7 @@
 
 mod content;
 mod division;
+mod factor_z;
 mod field_alg;
 mod finite_factor;
 mod fp;
@@ -14,6 +15,7 @@ mod ring;
 mod squarefree;
 mod upoly;
 
+pub use factor_z::{FactorStatus, IntegerFactorization};
 pub use fp::FpElem;
 pub use hensel::{HenselPair, hensel_lift, hensel_step};
 pub use mpoly::{MPoly, MonoOrder, Monomial};

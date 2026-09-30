@@ -4,7 +4,7 @@ use super::{
     add,
     order::canonical_cmp,
     pow,
-    special::{infinity_direction, rational},
+    special::{infinity_direction, literal_alias, rational},
 };
 use crate::{BUILTIN as B, Expr};
 use om_num::{Number, Rational};
@@ -65,6 +65,7 @@ impl Product {
         let mut stack: Vec<_> = args.into_iter().collect();
         stack.reverse();
         while let Some(e) = stack.pop() {
+            let e = literal_alias(e);
             if e.is_head(B::TIMES) {
                 stack.extend(e.args().iter().rev().cloned());
             } else if e.as_symbol() == Some(B::INDETERMINATE) {

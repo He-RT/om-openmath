@@ -150,7 +150,7 @@ fn replacements_are_simultaneous_first_match_including_heads() {
     let e = Expr::call(B::PLUS, [x.clone(), y.clone()]);
     assert_eq!(
         e.replace_all(&[(x.clone(), y.clone()), (y.clone(), Expr::int(1))]),
-        Expr::call(B::PLUS, [y.clone(), Expr::int(1)])
+        Expr::call(B::PLUS, [Expr::int(1), y.clone()])
     );
     assert_eq!(
         x.replace_all(&[(x.clone(), Expr::int(1)), (x.clone(), Expr::int(2))]),

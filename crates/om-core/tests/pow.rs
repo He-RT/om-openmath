@@ -1,6 +1,8 @@
 //! The forty contract vectors and principal Power boundary cases.
 
-use om_core::{BUILTIN as B, Expr, ExprKind, add, mul, pow, with_canonical_messages};
+use om_core::{
+    BUILTIN as B, Expr, canonicalize as arithmetic_tree, mul, pow, with_canonical_messages,
+};
 use om_num::{BigFloat, Complex, Integer, Number, Real};
 
 fn x() -> Expr {
@@ -29,27 +31,6 @@ fn i() -> Expr {
         re: Number::Integer(0.into()),
         im: Number::Integer(1.into()),
     })))
-}
-
-// M2.7 introduces the public traversal; this harness tests the constructors now.
-fn arithmetic_tree(e: &Expr) -> Expr {
-    match e.kind() {
-        ExprKind::Symbol(sym) if *sym == B::I => i(),
-        ExprKind::Symbol(sym) if *sym == B::INFINITY => {
-            Expr::call(B::DIRECTED_INFINITY, [Expr::int(1)])
-        }
-        ExprKind::Normal(n) => {
-            let args: Vec<_> = n.args.iter().map(arithmetic_tree).collect();
-            match n.head.as_symbol() {
-                Some(B::PLUS) => add(args),
-                Some(B::TIMES) => mul(args),
-                Some(B::POWER) if args.len() == 2 => pow(args[0].clone(), args[1].clone()),
-                Some(B::SQRT) if args.len() == 1 => pow(args[0].clone(), Expr::rational(1, 2)),
-                _ => Expr::normal(arithmetic_tree(&n.head), args),
-            }
-        }
-        _ => e.clone(),
-    }
 }
 
 #[test]

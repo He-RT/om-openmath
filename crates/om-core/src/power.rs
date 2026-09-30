@@ -4,13 +4,15 @@ use super::{
     mul,
     power_numeric::{numeric_exp, numeric_power},
     power_roots::{minus_one_power, rational_power},
-    special::{infinity_direction, rational},
+    special::{infinity_direction, literal_alias, rational},
 };
 use crate::{BUILTIN as B, Expr, message::emit};
 use om_num::{NumError, Number, Rational};
 
 /// Construct a canonical principal power, retaining unsupported or oversized powers.
 pub fn pow(base: Expr, exp: Expr) -> Expr {
+    let base = literal_alias(base);
+    let exp = literal_alias(exp);
     if base.as_symbol() == Some(B::INDETERMINATE) || exp.as_symbol() == Some(B::INDETERMINATE) {
         return Expr::sym(B::INDETERMINATE);
     }

@@ -201,14 +201,17 @@ impl Expr {
         symbols
     }
     /// Apply the first matching structural rule to each subtree simultaneously.
-    /// Replacements are not revisited. Canonical rebuilding is added in M2.7.
+    /// Replacements are not revisited; the final result is canonicalized.
     pub fn replace_all(&self, rules: &[(Expr, Expr)]) -> Expr {
+        crate::canonicalize(&self.replace_raw(rules))
+    }
+    fn replace_raw(&self, rules: &[(Expr, Expr)]) -> Expr {
         if let Some((_, value)) = rules.iter().find(|(key, _)| key == self) {
             return value.clone();
         }
         if let ExprKind::Normal(n) = self.kind() {
-            let head = n.head.replace_all(rules);
-            let args: SmallVec<[Expr; 3]> = n.args.iter().map(|e| e.replace_all(rules)).collect();
+            let head = n.head.replace_raw(rules);
+            let args: SmallVec<[Expr; 3]> = n.args.iter().map(|e| e.replace_raw(rules)).collect();
             if head != n.head || args != n.args {
                 return Self::normal(head, args);
             }
@@ -216,10 +219,10 @@ impl Expr {
         self.clone()
     }
     /// Map immediate arguments in order. Atoms are returned unchanged.
-    /// Canonical rebuilding is added in M2.7.
+    /// Canonicalize the rebuilt compound tree, including mapped results.
     pub fn map_args(&self, f: impl FnMut(&Expr) -> Expr) -> Expr {
         if let ExprKind::Normal(n) = self.kind() {
-            Self::normal(n.head.clone(), n.args.iter().map(f))
+            crate::canonicalize(&Self::normal(n.head.clone(), n.args.iter().map(f)))
         } else {
             self.clone()
         }

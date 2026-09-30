@@ -1,7 +1,10 @@
 //! Sorting then merging keeps Plus construction O(n log n).
 
 use super::order::canonical_cmp;
-use super::{mul, special::infinity_direction};
+use super::{
+    mul,
+    special::{infinity_direction, literal_alias},
+};
 use crate::{BUILTIN as B, Expr};
 use om_num::Number;
 
@@ -13,6 +16,7 @@ pub fn add(terms: impl IntoIterator<Item = Expr>) -> Expr {
     let mut symbolic = Vec::new();
     let mut infinity: Option<Option<Expr>> = None;
     while let Some(term) = stack.pop() {
+        let term = literal_alias(term);
         if term.is_head(B::PLUS) {
             stack.extend(term.args().iter().rev().cloned());
         } else if term.as_symbol() == Some(B::INDETERMINATE) {

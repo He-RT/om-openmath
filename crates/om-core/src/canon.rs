@@ -16,6 +16,10 @@ mod power;
 pub use power::pow;
 #[path = "power_numeric.rs"]
 mod power_numeric;
+
+#[path = "construct.rs"]
+mod construct;
+pub use construct::{canonicalize, div, exp, func, neg, sqrt, sub};
 #[path = "power_roots.rs"]
 mod power_roots;
 #[path = "special.rs"]

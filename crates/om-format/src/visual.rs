@@ -40,6 +40,7 @@ impl Printer {
             ExprKind::Normal(n) => {
                 let args = &n.args;
                 match n.head.as_symbol() {
+                    Some(B::HOLD_FORM) if args.len() == 1 => self.emit(&args[0]),
                     Some(B::PLUS) if args.len() > 1 => self.sum(args),
                     Some(B::TIMES) if args.len() > 1 => self.product(args),
                     Some(B::POWER) if args.len() == 2 => self.power(&args[0], &args[1]),

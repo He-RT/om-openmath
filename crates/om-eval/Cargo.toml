@@ -16,6 +16,7 @@ thiserror.workspace = true
 
 [dev-dependencies]
 om-parse.workspace = true
+om-format.workspace = true
 
 [lints]
 workspace = true

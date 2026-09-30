@@ -78,7 +78,19 @@ impl Evaluator {
         } else {
             A::default()
         };
-        registered | protected | self.defs.attrs.get(&symbol).copied().unwrap_or_default()
+        let intrinsic = match symbol {
+            om_core::BUILTIN::PLUS | om_core::BUILTIN::TIMES => {
+                A::LISTABLE | A::NUMERIC_FUNCTION | A::ORDERLESS | A::FLAT | A::ONE_IDENTITY
+            }
+            om_core::BUILTIN::POWER | om_core::BUILTIN::SQRT | om_core::BUILTIN::EXP => {
+                A::LISTABLE | A::NUMERIC_FUNCTION
+            }
+            _ => A::default(),
+        };
+        registered
+            | protected
+            | intrinsic
+            | self.defs.attrs.get(&symbol).copied().unwrap_or_default()
     }
     pub(crate) fn message(&mut self, symbol: &str, tag: &str, text: String, level: MsgLevel) {
         self.messages.push(Message {

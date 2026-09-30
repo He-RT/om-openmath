@@ -2221,6 +2221,7 @@ name = "om-eval"
 version = "0.1.0"
 dependencies = [
  "om-core",
+ "om-format",
  "om-num",
  "om-parse",
  "om-simplify",

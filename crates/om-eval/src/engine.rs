@@ -13,6 +13,15 @@ struct Arguments {
     next: usize,
     waiting: bool,
 }
+struct Thread {
+    head: Expr,
+    args: Vec<Expr>,
+    results: Vec<Expr>,
+    len: usize,
+    next: usize,
+    depth: u32,
+    waiting: bool,
+}
 enum Frame {
     Evaluate {
         expr: Expr,
@@ -25,6 +34,7 @@ enum Frame {
         iterations: u32,
     },
     Arguments(Arguments),
+    Thread(Thread),
     Sequence {
         args: Vec<Expr>,
         old: Expr,
@@ -174,6 +184,36 @@ impl Evaluator {
                         iterations: 0,
                     });
                 }
+                Frame::Thread(mut state) => {
+                    if state.waiting {
+                        state.results.push(
+                            values
+                                .pop()
+                                .expect("invariant: threaded row produced one value"),
+                        );
+                    }
+                    if state.next == state.len {
+                        values.push(Expr::call(B::LIST, state.results));
+                        continue;
+                    }
+                    let row = state.args.iter().map(|e| {
+                        if e.is_head(B::LIST) {
+                            e.args()[state.next].clone()
+                        } else {
+                            e.clone()
+                        }
+                    });
+                    let expr = Expr::normal(state.head.clone(), row);
+                    state.next += 1;
+                    state.waiting = true;
+                    let depth = state.depth + 1;
+                    frames.push(Frame::Thread(state));
+                    frames.push(Frame::Evaluate {
+                        expr,
+                        depth,
+                        iterations: 0,
+                    });
+                }
                 Frame::Rewrite {
                     old,
                     new,
@@ -216,12 +256,25 @@ impl Evaluator {
     ) -> Result<(), EvalError> {
         let Arguments {
             head,
-            evaluated: args,
+            evaluated: mut args,
+            attrs,
             depth,
             iterations,
             ..
         } = state;
         self.depth = depth;
+        if !attrs.contains(A::HOLD_ALL) {
+            args = args
+                .into_iter()
+                .flat_map(|e| {
+                    if e.is_head(B::SEQUENCE) {
+                        e.args().to_vec()
+                    } else {
+                        vec![e]
+                    }
+                })
+                .collect();
+        }
         let symbol = head.as_symbol();
         let spec = symbol.and_then(|s| self.builtins.get(s));
         if let Some(spec) = spec
@@ -248,6 +301,36 @@ impl Evaluator {
                 MsgLevel::Warning,
             );
             values.push(Expr::normal(head, args));
+            return Ok(());
+        }
+        if attrs.contains(A::LISTABLE)
+            && let Some(len) = args
+                .iter()
+                .find(|e| e.is_head(B::LIST))
+                .map(|e| e.args().len())
+        {
+            if args
+                .iter()
+                .any(|e| e.is_head(B::LIST) && e.args().len() != len)
+            {
+                self.message(
+                    "Thread",
+                    "tdlen",
+                    "Objects of unequal length cannot be combined.".into(),
+                    MsgLevel::Warning,
+                );
+                values.push(Expr::normal(head, args));
+            } else {
+                frames.push(Frame::Thread(Thread {
+                    head,
+                    args,
+                    results: Vec::with_capacity(len),
+                    len,
+                    next: 0,
+                    depth,
+                    waiting: false,
+                }));
+            }
             return Ok(());
         }
         let (rebuilt, messages) = with_canonical_messages(|| {

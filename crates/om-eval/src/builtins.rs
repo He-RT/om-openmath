@@ -31,7 +31,7 @@ type Entry = (
 pub(crate) fn table() -> &'static BuiltinTable {
     static TABLE: OnceLock<BuiltinTable> = OnceLock::new();
     TABLE.get_or_init(|| {
-        let entries: [Entry; 6] = [
+        let entries: [Entry; 9] = [
             (
                 B::SET,
                 set,
@@ -92,6 +92,36 @@ pub(crate) fn table() -> &'static BuiltinTable {
                 "读取已记录的输出；省略序号则取最近一次。",
                 "Read recorded output; omit the index for the most recent result.",
             ),
+            (
+                B::HOLD,
+                held,
+                A::HOLD_ALL,
+                Arity::Any,
+                "Hold(expr, …)",
+                "Hold[expr, …]",
+                "保持参数原始结构，不求值。",
+                "Keep the original arguments without evaluating them.",
+            ),
+            (
+                B::HOLD_FORM,
+                held,
+                A::HOLD_ALL,
+                Arity::Exactly(1),
+                "HoldForm(expr)",
+                "HoldForm[expr]",
+                "显示表达式而不求值。",
+                "Display an expression without evaluating it.",
+            ),
+            (
+                B::RULE_DELAYED,
+                held,
+                A::HOLD_REST,
+                Arity::Exactly(2),
+                "RuleDelayed(lhs, rhs)",
+                "lhs :> rhs",
+                "求值左侧，保持右侧供替换时使用。",
+                "Evaluate the left side and hold the right side for replacement.",
+            ),
         ];
         BuiltinTable {
             specs: entries
@@ -118,6 +148,9 @@ pub(crate) fn table() -> &'static BuiltinTable {
                                         "Unset" => &["x =."],
                                         "Clear" => &["Clear[x]"],
                                         "Out" => &["Out[]"],
+                                        "Hold" => &["Hold[1 + 1]"],
+                                        "HoldForm" => &["HoldForm[1 + 1]"],
+                                        "RuleDelayed" => &["x :> 1 + 1"],
                                         _ => &["1; 2"],
                                     },
                                     category: "Evaluation",
@@ -255,4 +288,8 @@ fn out(ev: &mut Evaluator, args: &[Expr], _: &Interrupt) -> Result<Option<Expr>,
     Ok(index
         .and_then(|i| ev.history.get(i))
         .map(|(_, out)| out.clone()))
+}
+
+fn held(_: &mut Evaluator, _: &[Expr], _: &Interrupt) -> Result<Option<Expr>, EvalError> {
+    Ok(None)
 }

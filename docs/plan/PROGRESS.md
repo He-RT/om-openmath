@@ -5,8 +5,8 @@ Branch: `dev`. Pushes to `https://github.com/He-RT/om-openmath.git` authorized b
 Task hashes are added in the next commit; immediate hashes live in the execution ledger.
 
 - [x] **M0.1** 初始化仓库结构与工具链 — build/fmt/clippy/test、workspace policy、WASM build、cargo-deny 通过；CI YAML 已本地解析。首次检查 workspace 缺失而失败，建立后通过。数学测试尚无，Cargo 测试为 0。提交 `a09f223`。
-- [x] **M0.2** 建立所有 crate 的空壳与依赖关系 — 12 crate 原生编译/lint/test、2 项 workspace policy、om-kernel WASM build、cargo-deny 通过；om-poly 不依赖 om-core。尚无数学实现。
-- [ ] **M0.3** 前端骨架
+- [x] **M0.2** 建立所有 crate 的空壳与依赖关系 — 12 crate 原生编译/lint/test、2 项 workspace policy、om-kernel WASM build、cargo-deny 通过；om-poly 不依赖 om-core。尚无数学实现。提交 `a2165a3`；GitHub CI 的 rust/dependencies 均通过。
+- [x] **M0.3** 前端骨架 — React 界面测试 RED→GREEN；Node 26 锁定安装、lint/typecheck/build、真实 Tauri/Wry check、Rust 全工作区 fmt/clippy/test、3 项 workspace 契约、WASM build、cargo-deny 通过。页面仅展示建设状态，不伪造求解能力。
 - [ ] **M1.1** Number 类型与算术（6.1 节接口；测试见 8.1.5 表中数字相关用例的数值部分）
 - [ ] **M1.2** 数论工具（ntheory.rs：gcd/ext_gcd/isqrt/exact_root/perfect_power/is_probable_prime/factor_integer/extract_root_factor）
 - [ ] **M1.3** SplitMix64、Fp、Ball 球算术骨架

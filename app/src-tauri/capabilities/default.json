@@ -1,0 +1,7 @@
+{
+  "$schema": "../gen/schemas/desktop-schema.json",
+  "identifier": "default",
+  "description": "Basic desktop window access; file and network plugins are not enabled yet.",
+  "windows": ["main"],
+  "permissions": ["core:default"]
+}

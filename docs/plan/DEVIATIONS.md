@@ -17,6 +17,13 @@ The approved product scope is unchanged. Entries below resolve engineering confl
 - **P10 — scaffold API:** omit meaningless `placeholder()` exports and tests. Cargo package-graph boundary tests and actual native/WASM builds verify scaffolding without creating fake runtime functionality. Source modules are otherwise empty until their implementation task.
 - **P11 — dependencies:** reserve approved external versions in workspace.dependencies and activate each dependency at its first consumer. `ctrlc` is included because §12.12 already requires it, despite its omission from the main whitelist. HTTP and native config feature slots exist now; their transports are introduced and tested in M11/M12.
 
+- **P12 — frontend runtime:** preserve Vitest 5/jsdom 30 and pin Node 26.0.0 in app/.nvmrc and CI. Their declared engines exclude the installed Node 25.9. Local verification uses an ignored project-local Node binary; the global runtime is unchanged. Cost if wrong: update the runtime pin.
+- **P13 — TypeScript/linter compatibility:** typescript-eslint 8.70.1 declares TypeScript >=4.8.4 <6.1.0. Use TypeScript 6.0 rather than the incompatible planned 7.0; do not use --force or --legacy-peer-deps. Cost if wrong: a compiler upgrade once lint tooling supports it.
+
+- **P14 — desktop scaffold:** compile a real Tauri/Wry window in M0.3, not a headless facade. File/dialog/opener plugins and their permissions remain deferred to M13, when their consumers and tests exist. Cost if wrong: native build prerequisites, rather than a silently nonfunctional desktop app.
+
+- **P15 — desktop dependency policy:** allow MPL-2.0 only for the five exact-version, unmodified Tauri transitives named in `deny.toml`/`THIRD_PARTY_NOTICES.md`. Except only RUSTSEC-2024-0370 (unmaintained proc-macro-error in Linux GTK build macros, no safe upstream upgrade); do not suppress vulnerability advisories or broaden license policy. Cost if wrong: revisit the desktop dependency chain before release.
+
 ## Deferred contract checks (resolve before first consumer)
 
 - M4.4/M4.5 use exact special values and numeric expression evaluation assigned to M8. Implement the shared special/numeval modules before their first evaluator consumer; do not add an upward dependency.

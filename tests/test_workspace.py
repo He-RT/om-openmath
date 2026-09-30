@@ -68,6 +68,18 @@ class WorkspaceTests(unittest.TestCase):
         self.assertIn("native", packages["om-kernel"]["features"])
         self.assertIn("http", packages["om-llm"]["features"])
 
+    def test_desktop_is_a_workspace_binary_with_native_kernel(self):
+        result = subprocess.run(
+            ["cargo", "metadata", "--format-version", "1", "--no-deps"],
+            cwd=ROOT, capture_output=True, text=True, check=True,
+        )
+        packages = {p["name"]: p for p in json.loads(result.stdout)["packages"]}
+        self.assertIn("om-desktop", packages)
+        desktop = packages["om-desktop"]
+        self.assertTrue(any("bin" in t["kind"] for t in desktop["targets"]))
+        kernel = next(d for d in desktop["dependencies"] if d["name"] == "om-kernel")
+        self.assertIn("native", kernel["features"])
+
 
 if __name__ == "__main__":
     unittest.main()

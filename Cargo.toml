@@ -1,5 +1,5 @@
 [workspace]
-members = ["crates/*"]
+members = ["crates/*", "app/src-tauri"]
 resolver = "3"
 
 [workspace.package]
@@ -49,6 +49,8 @@ criterion = "0.8.2"
 wiremock = "0.6.5"
 wasm-bindgen-test = "=0.3.79"
 ctrlc = "3.5.2"
+tauri = "=2.12.0"
+tauri-build = "=2.7.0"
 
 [workspace.lints.rust]
 unsafe_code = "forbid"

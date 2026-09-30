@@ -8,13 +8,21 @@
 
 `rust-toolchain.toml` 固定 Rust 1.94.0，rustup 会安装 WASM target、rustfmt 和 clippy。
 
+前端使用 Node 26.0.0（见 `app/.nvmrc`）。编译桌面 workspace 前先安装锁定依赖并构建前端资源；Linux 桌面构建还需 Tauri 的 GTK/WebKit 系统依赖。
+
 ```sh
+npm ci --prefix app
+npm test --prefix app
+npm run lint --prefix app
+npm run build --prefix app
+# 浏览器骨架：npm run dev --prefix app
+# 桌面骨架：npm run tauri --prefix app -- dev
 cargo build --workspace
 cargo fmt --all -- --check
 cargo clippy --workspace --all-targets -- -D warnings
 cargo test --workspace
 python3 -m unittest discover -s tests -v
-cargo build -p om-num --target wasm32-unknown-unknown
+cargo build -p om-kernel --no-default-features --target wasm32-unknown-unknown
 cargo install cargo-deny --version 0.20.2 --locked
 cargo deny check
 ```

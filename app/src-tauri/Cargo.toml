@@ -1,0 +1,20 @@
+[package]
+name = "om-desktop"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+description = "OpenMath desktop frontend"
+
+[features]
+custom-protocol = ["tauri/custom-protocol"]
+
+[build-dependencies]
+tauri-build.workspace = true
+
+[dependencies]
+om-kernel = { workspace = true, features = ["native"] }
+tauri.workspace = true
+
+[lints]
+workspace = true

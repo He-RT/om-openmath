@@ -3,13 +3,16 @@
 
 mod content;
 mod division;
+mod field_alg;
 mod fp;
 mod gcd;
 mod mpoly;
 mod ring;
+mod squarefree;
 mod upoly;
 
 pub use fp::FpElem;
 pub use mpoly::{MPoly, MonoOrder, Monomial};
 pub use ring::{EuclideanRing, Field, Ring};
+pub use squarefree::SquareFree;
 pub use upoly::UPoly;

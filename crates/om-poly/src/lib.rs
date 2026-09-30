@@ -7,6 +7,7 @@ mod field_alg;
 mod fp;
 mod gcd;
 mod mpoly;
+mod resultant;
 mod ring;
 mod squarefree;
 mod upoly;

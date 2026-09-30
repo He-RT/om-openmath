@@ -3,3 +3,6 @@
 
 /// Exact elementary-function values shared by evaluation and solving.
 pub mod special;
+
+/// Interruptible numerical expression evaluation with guarded precision.
+pub mod numeval;

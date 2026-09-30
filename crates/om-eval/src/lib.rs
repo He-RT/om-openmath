@@ -6,6 +6,7 @@ mod definitions;
 mod engine;
 mod evaluator;
 mod logic;
+mod numeric;
 mod scalar;
 mod scalar_registry;
 mod structure;

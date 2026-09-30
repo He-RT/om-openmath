@@ -239,7 +239,7 @@ impl Parser<'_> {
         self.groups += 1;
         let result = (|| {
             let mut args = vec![];
-            if self.kind() != Some(close) {
+            if self.current().is_some() && self.kind() != Some(close) {
                 loop {
                     args.push(self.wl_expression(0)?);
                     if self.kind() != Some(K::Comma) {

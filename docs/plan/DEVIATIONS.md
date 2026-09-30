@@ -66,3 +66,7 @@ The approved product scope is unchanged. Entries below resolve engineering confl
 - Kernel view/envelope/span and LLM transport ownership gaps will be resolved and fixture-tested before M11/M12, retaining the public fields where possible.
 
 No preflight agent returned a completed report; neither math nor protocol correctness has been certified by those failed runs.
+
+## Parser diagnostic repairs
+
+- **P36 — diagnostics and Fix (M3.4):** keep the prescribed optional Fix fields. W001 spans only the separating whitespace, W002 the unknown function identifier, and E010 the complete missing-parenthesis application. Add E023 for unclosed grouping delimiters (point at the innermost opener and insert all outstanding closers) and E024 for unexpected/mismatched closers (delete or replace the exact token). Inspect lexical bracket tokens, ignoring comments and strings, and suppress duplicate generic parser errors at the same delimiter. Append a newline before closers when the source ends in a line comment. Unterminated string/comment diagnostics also offer insertion repairs, retaining original text. Optional Fix remains absent when the intended replacement is ambiguous or an error is a resource limit; no arbitrary source deletion is proposed for unknown characters or malformed numbers.

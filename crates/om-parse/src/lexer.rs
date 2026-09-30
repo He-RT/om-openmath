@@ -1,6 +1,6 @@
 //! Lossless token spellings and UTF-8 byte positions for both dialects.
 
-use crate::{Diagnostic, Dialect, Severity, Span, TokenClass};
+use crate::{Diagnostic, Dialect, Fix, Severity, Span, TokenClass};
 
 #[path = "lexer_chars.rs"]
 pub(crate) mod named;
@@ -356,11 +356,21 @@ impl Scanner<'_> {
                 self.bump();
             }
         }
-        self.error(start, "E003", "注释缺少结束符 *)")
+        let kind = self.error(start, "E003", "注释缺少结束符 *)");
+        let span = self.span(self.pos);
+        if let Some(d) = self.output.diagnostics.last_mut() {
+            d.fix = Some(Fix {
+                span,
+                replacement: "*)".repeat(depth),
+                label: "补全注释结束符".into(),
+            });
+        }
+        kind
     }
     fn string(&mut self, start: usize) -> TokenKind {
         self.bump();
         let mut invalid_escape = false;
+        let mut dangling_escape = false;
         while let Some(ch) = self.bump() {
             if ch == '"' {
                 return if invalid_escape {
@@ -396,11 +406,27 @@ impl Scanner<'_> {
                         invalid_escape |= !valid;
                     }
                     Some(_) => invalid_escape = true,
-                    None => break,
+                    None => {
+                        dangling_escape = true;
+                        break;
+                    }
                 }
             }
         }
-        self.error(start, "E002", "字符串缺少结束引号")
+        let kind = self.error(start, "E002", "字符串缺少结束引号");
+        let span = self.span(self.pos);
+        if let Some(d) = self.output.diagnostics.last_mut() {
+            d.fix = Some(Fix {
+                span,
+                replacement: if dangling_escape {
+                    "\\\"".into()
+                } else {
+                    "\"".into()
+                },
+                label: "补全字符串结束引号".into(),
+            });
+        }
+        kind
     }
     fn named_character(&mut self, start: usize) -> TokenKind {
         self.pos += 2;

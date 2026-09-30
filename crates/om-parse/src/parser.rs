@@ -95,6 +95,8 @@ pub fn parse_with(src: &str, dialect: Dialect, env: &ParseEnv) -> ParseOutput {
         d.span.start += offset as u32;
         d.span.end += offset as u32;
     }
+    out.diagnostics
+        .extend(crate::diagnostics::brackets(src, &out.tokens, dialect));
     let mut highlights = Vec::new();
     if offset > 0 {
         highlights.push((
@@ -266,6 +268,15 @@ impl Parser<'_> {
         message: &str,
         fix: Option<Fix>,
     ) {
+        if severity == Severity::Error
+            && matches!(code, "E020" | "E022")
+            && self
+                .diagnostics
+                .iter()
+                .any(|d| d.code == "E024" && d.span == span)
+        {
+            return;
+        }
         self.diagnostics.push(Diagnostic {
             span,
             severity,
@@ -283,6 +294,12 @@ impl Parser<'_> {
         if self.kind() == Some(kind) {
             self.bump().ok_or(())
         } else {
+            if matches!(kind, K::RParen | K::RBracket | K::RBrace | K::Bar)
+                && self.current().is_none()
+                && self.diagnostics.iter().any(|d| d.code == "E023")
+            {
+                return Err(());
+            }
             self.fail("E022", "缺少预期的分隔符")
         }
     }

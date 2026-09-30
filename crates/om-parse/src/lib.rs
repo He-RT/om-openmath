@@ -4,6 +4,7 @@
 /// Shared tokenization for both input dialects.
 pub mod lexer;
 
+mod diagnostics;
 mod literals;
 mod modern;
 mod names;

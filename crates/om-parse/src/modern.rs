@@ -136,7 +136,12 @@ impl Parser<'_> {
                 if 80 < min {
                     break;
                 }
-                if kind == K::LParen && left.direct_name {
+                if kind == K::LParen
+                    && left.direct_name
+                    && self.src[left.span.end as usize..token.span.start as usize]
+                        .chars()
+                        .all(char::is_whitespace)
+                {
                     let gap = Span {
                         start: left.span.end,
                         end: token.span.start,
@@ -215,11 +220,12 @@ impl Parser<'_> {
                         name,
                         &self.src[right.span.start as usize..right.span.end as usize]
                     );
+                    let message = format!("函数需要括号：{replacement}");
                     self.report(
                         span,
                         Severity::Error,
                         "E010",
-                        "函数需要括号",
+                        &message,
                         Some(Fix {
                             span,
                             replacement,
@@ -394,7 +400,7 @@ impl Parser<'_> {
         self.groups += 1;
         let result = (|| {
             let mut args = vec![];
-            if self.kind() != Some(close) {
+            if self.current().is_some() && self.kind() != Some(close) {
                 loop {
                     args.push(self.expression(0, false)?);
                     if self.kind() != Some(K::Comma) {

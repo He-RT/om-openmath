@@ -17,7 +17,7 @@ impl Parser<'_> {
         let result = (|| {
             let mut args = vec![];
             let mut domain = None;
-            if self.kind() != Some(K::RParen) {
+            if self.current().is_some() && self.kind() != Some(K::RParen) {
                 loop {
                     if self.kind() == Some(K::Identifier)
                         && self

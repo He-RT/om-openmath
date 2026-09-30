@@ -7,7 +7,9 @@ impl Scanner<'_> {
     pub(super) fn number(&mut self, start: usize) -> TokenKind {
         let separators = self.dialect != Dialect::Wolfram;
         let mut valid = true;
-        if self.rest().starts_with("0x") || self.rest().starts_with("0X") {
+        if self.dialect != Dialect::Wolfram
+            && (self.rest().starts_with("0x") || self.rest().starts_with("0X"))
+        {
             self.pos += 2;
             let (digits, correct) = self.digits(16, separators);
             valid = correct && digits > 0;
@@ -51,7 +53,8 @@ impl Scanner<'_> {
                 let exponent = if self.rest().starts_with("*^") {
                     self.pos += 2;
                     true
-                } else if self.peek().is_some_and(|c| c == 'e' || c == 'E')
+                } else if self.dialect != Dialect::Wolfram
+                    && self.peek().is_some_and(|c| c == 'e' || c == 'E')
                     && self
                         .rest()
                         .as_bytes()

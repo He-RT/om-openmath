@@ -128,3 +128,13 @@ pub(crate) fn option(name: &str) -> Symbol {
     }
     Symbol::intern(&camel)
 }
+
+pub(crate) fn wolfram(name: &str) -> Result<Symbol, &'static str> {
+    let expanded = crate::lexer::named::expand(name)?;
+    let name = match expanded.as_str() {
+        "π" => "Pi",
+        "∞" => "Infinity",
+        other => other,
+    };
+    Ok(Symbol::intern(name))
+}

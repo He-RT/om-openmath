@@ -106,11 +106,24 @@ pub fn parse_with(src: &str, dialect: Dialect, env: &ParseEnv) -> ParseOutput {
         ));
     }
     for (index, token) in out.tokens.iter().enumerate() {
-        if dialect != Dialect::Modern || token.kind != K::Identifier {
+        if token.kind != K::Identifier {
             highlights.push((token.span, token.class));
             continue;
         }
         let name = text(src, *token);
+        if dialect == Dialect::Wolfram {
+            let builtin = crate::names::wolfram(name)
+                .is_ok_and(|symbol| om_core::builtins::names().contains(&symbol.name()));
+            highlights.push((
+                token.span,
+                if builtin {
+                    TokenClass::Builtin
+                } else {
+                    token.class
+                },
+            ));
+            continue;
+        }
         let is_call = out
             .tokens
             .get(index + 1)
@@ -140,31 +153,9 @@ pub fn parse_with(src: &str, dialect: Dialect, env: &ParseEnv) -> ParseOutput {
         depth: 0,
         groups: 0,
         bindings: Default::default(),
+        dialect,
     };
-    let statements = if dialect == Dialect::Wolfram {
-        // The Wolfram expression parser is supplied by M3.3.
-        if let Some(token) = parser.current() {
-            parser.report(
-                token.span,
-                Severity::Error,
-                "E020",
-                "Wolfram 解析器尚未实现",
-                None,
-            );
-            vec![Stmt {
-                expr: Expr::symbol("$Failed"),
-                span: Span {
-                    start: token.span.start,
-                    end: src.len().min(u32::MAX as usize) as u32,
-                },
-                suppress_output: false,
-            }]
-        } else {
-            vec![]
-        }
-    } else {
-        parser.statements()
-    };
+    let statements = parser.statements();
     parser
         .diagnostics
         .sort_by_key(|d| (d.span.start, d.span.end));
@@ -235,6 +226,7 @@ pub(crate) struct Parser<'a> {
     pub depth: usize,
     pub groups: usize,
     pub bindings: std::collections::BTreeSet<Symbol>,
+    pub dialect: Dialect,
 }
 impl Parser<'_> {
     pub fn current(&mut self) -> Option<Token> {
@@ -342,7 +334,9 @@ impl Parser<'_> {
                 continue;
             }
             let start = self.at_span().start;
-            let result = if self.kind() == Some(K::Let) {
+            let result = if self.dialect == Dialect::Wolfram {
+                self.wl_expression(0)
+            } else if self.kind() == Some(K::Let) {
                 self.declaration()
             } else {
                 self.expression(0, false)
@@ -362,8 +356,16 @@ impl Parser<'_> {
                 .tokens
                 .get(self.pos.saturating_sub(1))
                 .map_or(start, |t| t.span.end);
-            let suppress_output = self.kind() == Some(K::Semicolon);
-            if suppress_output && let Some(token) = self.bump() {
+            let trailing_null = self.dialect == Dialect::Wolfram
+                && expr.is_head(om_core::BUILTIN::COMPOUND_EXPRESSION)
+                && expr
+                    .args()
+                    .last()
+                    .is_some_and(|e| e.as_symbol() == Some(om_core::BUILTIN::NULL));
+            let suppress_output = self.kind() == Some(K::Semicolon) || trailing_null;
+            if self.kind() == Some(K::Semicolon)
+                && let Some(token) = self.bump()
+            {
                 end = token.span.end;
             }
             statements.push(Stmt {
@@ -373,6 +375,22 @@ impl Parser<'_> {
             });
         }
         statements
+    }
+
+    pub(crate) fn apply(&mut self, head: Node, args: Vec<Node>, span: Span) -> Parsed {
+        let height = head
+            .height
+            .max(args.iter().map(|n| n.height).max().unwrap_or(1))
+            + 1;
+        if height > 128 {
+            return self.fail("E013", "表达式嵌套超出解析限制");
+        }
+        Ok(Node {
+            expr: Expr::normal(head.expr, args.into_iter().map(|n| n.expr)),
+            span,
+            height,
+            direct_name: false,
+        })
     }
     fn recover(&mut self) {
         self.groups = 0;

@@ -3,7 +3,7 @@
 use crate::{Diagnostic, Dialect, Severity, Span, TokenClass};
 
 #[path = "lexer_chars.rs"]
-mod named;
+pub(crate) mod named;
 #[path = "lexer_numbers.rs"]
 mod numbers;
 
@@ -382,6 +382,19 @@ impl Scanner<'_> {
                             }
                         }
                     }
+                    Some('[') if self.dialect == Dialect::Wolfram => {
+                        let name_start = self.pos;
+                        while self.peek().is_some_and(|c| c.is_ascii_alphabetic()) {
+                            self.bump();
+                        }
+                        let valid = named::value(&self.src[name_start..self.pos]).is_some();
+                        if self.peek() == Some(']') {
+                            self.bump();
+                        } else {
+                            invalid_escape = true;
+                        }
+                        invalid_escape |= !valid;
+                    }
                     Some(_) => invalid_escape = true,
                     None => break,
                 }
@@ -428,6 +441,8 @@ fn superscript(c: char) -> bool {
 
 use TokenKind as K;
 const OPERATORS: &[(&str, TokenKind)] = &[
+    ("\u{f431}", K::Equal),
+    ("\u{f522}", K::Rule),
     ("//.", K::ReplaceRepeated),
     ("===", K::SameQ),
     ("___", K::BlankNullSequence),

@@ -8,6 +8,7 @@ mod literals;
 mod modern;
 mod names;
 mod parser;
+mod wolfram;
 
 pub use parser::{detect_dialect, parse, parse_expr, parse_with};
 

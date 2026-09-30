@@ -8,8 +8,12 @@ description = "Symbolic simplification and expression-polynomial conversion"
 
 [dependencies]
 om-core.workspace = true
+om-num.workspace = true
 om-poly.workspace = true
 thiserror.workspace = true
+
+[dev-dependencies]
+om-parse.workspace = true
 
 [lints]
 workspace = true

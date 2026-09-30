@@ -1,6 +1,7 @@
 //! Sorting then merging keeps Plus construction O(n log n).
 
 use super::order::canonical_cmp;
+use super::{mul, special::infinity_direction};
 use crate::{BUILTIN as B, Expr};
 use om_num::Number;
 
@@ -50,7 +51,7 @@ pub fn add(terms: impl IntoIterator<Item = Expr>) -> Expr {
         if coefficient.is_exact() && coefficient.is_zero() {
             continue;
         }
-        let term = scaled_term(coefficient, rest);
+        let term = mul([Expr::number(coefficient), rest]);
         // An approximate cancelled coefficient becomes literal 0., not a dropped term.
         if let Some(n) = term.as_number() {
             sum = sum.add(n);
@@ -61,28 +62,15 @@ pub fn add(terms: impl IntoIterator<Item = Expr>) -> Expr {
     if !sum.is_exact() || !sum.is_zero() {
         result.push(Expr::number(sum));
     }
+    // Distribution of -1 can introduce terms already present in other groups.
+    if result.iter().any(|e| e.is_head(B::PLUS)) {
+        return add(result);
+    }
     result.sort_by(canonical_cmp);
     match result.len() {
         0 => Expr::int(0),
         1 => result.remove(0),
         _ => Expr::call(B::PLUS, result),
-    }
-}
-
-fn infinity_direction(e: &Expr) -> Option<Option<Expr>> {
-    match e.as_symbol() {
-        Some(B::INFINITY) => return Some(Some(Expr::int(1))),
-        Some(B::COMPLEX_INFINITY) => return Some(None),
-        _ => {}
-    }
-    if e.is_head(B::DIRECTED_INFINITY) {
-        match e.args() {
-            [] => Some(None),
-            [direction] => Some(Some(direction.clone())),
-            _ => None,
-        }
-    } else {
-        None
     }
 }
 
@@ -99,24 +87,4 @@ fn split_term(term: Expr) -> (Number, Expr) {
         }
     }
     (Number::Integer(1.into()), term)
-}
-
-// M2.5 replaces this narrow coefficient assembly with the complete mul constructor.
-fn scaled_term(coefficient: Number, rest: Expr) -> Expr {
-    if coefficient.is_zero() {
-        return Expr::number(coefficient);
-    }
-    if let Some(n) = rest.as_number() {
-        return Expr::number(coefficient.mul(n));
-    }
-    if coefficient.is_exact() && coefficient.is_one() {
-        return rest;
-    }
-    let mut factors = vec![Expr::number(coefficient)];
-    if rest.is_head(B::TIMES) {
-        factors.extend(rest.args().iter().cloned());
-    } else {
-        factors.push(rest);
-    }
-    Expr::call(B::TIMES, factors)
 }

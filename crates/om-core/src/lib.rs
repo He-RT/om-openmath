@@ -11,6 +11,6 @@ pub mod expr;
 pub mod symbol;
 
 pub use builtins::BUILTIN;
-pub use canon::{add, canonical_cmp};
+pub use canon::{add, canonical_cmp, mul};
 pub use expr::{Expr, ExprKind, ExprNode, Normal};
 pub use symbol::Symbol;

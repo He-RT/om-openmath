@@ -26,6 +26,9 @@ The approved product scope is unchanged. Entries below resolve engineering confl
 
 ## Deferred contract checks (resolve before first consumer)
 
+- **P16 — Number invariants (M1.1):** §8.1.0's explicit rule wins over §6.1's abbreviated `im != 0` comment: retain approximate zero imaginary parts. Complex normalization flattens nested components and propagates precision to both; if a component cannot fit binary64, both use 53-bit Big. Direct construction of Real assumes finite values; arithmetic enforces that precondition. Big serialization uses explicit binary significand/exponent/precision so JSON retains values and bit precision independently of decimal formatting. `to_complex_f64` is a lossy export boundary: out-of-range components become signed infinity, while `to_f64` returns None and Number arithmetic remains finite.
+- **P17 — exact integer-power resource limit (M1.1):** add `NumError::ExactOverflow` for the §8.1.4 `2^24`-bit exact-result limit. Check growth during exponentiation, including arbitrary-size exponents, so the primitive cannot allocate without bound before M2.6 handles the error symbolically. Unit bases remain valid for arbitrarily large exponents. No existing signature changes.
+
 - M4.4/M4.5 use exact special values and numeric expression evaluation assigned to M8. Implement the shared special/numeval modules before their first evaluator consumer; do not add an upward dependency.
 - Ball domains, outward rounding and full-range representation need a rigorous interface decision in M1.3, not a guessed `1 ulp` bound for every operation.
 - Ring static zero/one cannot select a runtime finite-field modulus; settle coefficient-context construction in M5.1.

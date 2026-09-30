@@ -6,8 +6,8 @@ Task hashes are added in the next commit; immediate hashes live in the execution
 
 - [x] **M0.1** 初始化仓库结构与工具链 — build/fmt/clippy/test、workspace policy、WASM build、cargo-deny 通过；CI YAML 已本地解析。首次检查 workspace 缺失而失败，建立后通过。数学测试尚无，Cargo 测试为 0。提交 `a09f223`。
 - [x] **M0.2** 建立所有 crate 的空壳与依赖关系 — 12 crate 原生编译/lint/test、2 项 workspace policy、om-kernel WASM build、cargo-deny 通过；om-poly 不依赖 om-core。尚无数学实现。提交 `a2165a3`；GitHub CI 的 rust/dependencies 均通过。
-- [x] **M0.3** 前端骨架 — React 界面测试 RED→GREEN；Node 26 锁定安装、lint/typecheck/build、真实 Tauri/Wry check、Rust 全工作区 fmt/clippy/test、3 项 workspace 契约、WASM build、cargo-deny 通过。页面仅展示建设状态，不伪造求解能力。
-- [ ] **M1.1** Number 类型与算术（6.1 节接口；测试见 8.1.5 表中数字相关用例的数值部分）
+- [x] **M0.3** 前端骨架 — React 界面测试 RED→GREEN；Node 26 锁定安装、lint/typecheck/build、真实 Tauri/Wry check、Rust 全工作区 fmt/clippy/test、3 项 workspace 契约、WASM build、cargo-deny 通过。页面仅展示建设状态，不伪造求解能力。提交 `d2f3050`。
+- [x] **M1.1** Number 类型与算术 — 接续已有 34 项失败测试；实现精确 Int/Rat、机器/任意精度传染、复数归一化与算术、精确实数比较、整数幂、机器溢出 Big 重算和二进制序列化。48 项测试通过（含 2 组固定种子、各 256 例的有理数环/复数逆元属性测试），覆盖倒数上溢/下溢与 exact bit-size limit。验证：`cargo fmt --all`、`cargo clippy --workspace --all-targets --locked -- -D warnings`、`cargo test --workspace --locked`、`python3 -m unittest discover -s tests -v`、`cargo build -p om-kernel --no-default-features --locked --target wasm32-unknown-unknown`、`cargo deny --locked check` 全通过。裁决见 P16/P17。
 - [ ] **M1.2** 数论工具（ntheory.rs：gcd/ext_gcd/isqrt/exact_root/perfect_power/is_probable_prime/factor_integer/extract_root_factor）
 - [ ] **M1.3** SplitMix64、Fp、Ball 球算术骨架
 - [ ] **M1.4** Ball 初等函数（若 M1.3 未完成 exp/ln/sin/cos/atan，在此实现；否则本任务改为“用 dashu-float 包一层误差边界”）

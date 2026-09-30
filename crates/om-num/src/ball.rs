@@ -313,3 +313,11 @@ impl CBall {
 #[cfg(test)]
 #[path = "ball_tests.rs"]
 mod tests;
+
+#[path = "ball_complex_elementary.rs"]
+mod complex_elementary;
+#[path = "ball_elementary.rs"]
+mod elementary;
+#[cfg(test)]
+#[path = "ball_elementary_tests.rs"]
+mod elementary_tests;

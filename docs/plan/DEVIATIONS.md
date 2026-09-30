@@ -12,7 +12,10 @@ The approved product scope is unchanged. Entries below resolve engineering confl
 - **P6 — bootstrap CI:** M0.1 validates WASM with om-num, the only crate that exists; switch to om-kernel in M0.2. Reserve frontend/type-generation checks for their introducing tasks so CI never invokes nonexistent packages.
 - **P7 — license policy:** MPL is not globally allowed; any required MPL-only transitive package needs a named exception. This enforces the plan's transitive-only allowance rather than permitting new direct MPL dependencies.
 - **P8 — task tooling:** existing task-start extracts `Task N` headings, not this plan's `M<n>.<n>` checkboxes. Generate per-task briefs directly from the authoritative plan, retaining BASE and task-done test logs. Cost if wrong: only execution tooling, not application behavior.
-- **P9 — execution:** the user prohibited further workflows/subagents. Implement and perform separate review passes inline, with fmt/clippy/test gates. No automatic merge/push/publication.
+- **P9 — execution:** the user prohibited further workflows/subagents. Implement and perform separate review passes inline, with fmt/clippy/test gates. No automatic merge/publication; the user authorized pushing verified commits to `https://github.com/He-RT/om-openmath.git` on 2026-09-30.
+
+- **P10 — scaffold API:** omit meaningless `placeholder()` exports and tests. Cargo package-graph boundary tests and actual native/WASM builds verify scaffolding without creating fake runtime functionality. Source modules are otherwise empty until their implementation task.
+- **P11 — dependencies:** reserve approved external versions in workspace.dependencies and activate each dependency at its first consumer. `ctrlc` is included because §12.12 already requires it, despite its omission from the main whitelist. HTTP and native config feature slots exist now; their transports are introduced and tested in M11/M12.
 
 ## Deferred contract checks (resolve before first consumer)
 

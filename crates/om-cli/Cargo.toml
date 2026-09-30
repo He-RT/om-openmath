@@ -1,0 +1,17 @@
+[package]
+name = "om-cli"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+description = "OpenMath terminal frontend"
+
+[[bin]]
+name = "om"
+path = "src/main.rs"
+
+[dependencies]
+om-kernel.workspace = true
+
+[lints]
+workspace = true

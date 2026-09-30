@@ -29,6 +29,45 @@ class WorkspaceTests(unittest.TestCase):
                 self.assertEqual(package["rust_version"], "1.94")
                 self.assertTrue(package["name"].startswith("om-"))
 
+    def test_kernel_packages_form_expression_independent_polynomial_graph(self):
+        result = subprocess.run(
+            ["cargo", "metadata", "--format-version", "1", "--no-deps"],
+            cwd=ROOT, capture_output=True, text=True, check=True,
+        )
+        packages = {p["name"]: p for p in json.loads(result.stdout)["packages"]}
+        expected = {
+            "om-num": set(),
+            "om-core": {"om-num"},
+            "om-parse": {"om-core"},
+            "om-format": {"om-core"},
+            "om-poly": {"om-num"},
+            "om-simplify": {"om-core", "om-poly"},
+            "om-solve": {"om-simplify"},
+            "om-eval": {"om-solve"},
+            "om-llm": {"om-num"},
+            "om-kernel": {"om-eval", "om-parse", "om-format", "om-llm"},
+            "om-cli": {"om-kernel"},
+            "om-wasm": {"om-kernel"},
+        }
+        self.assertTrue(set(expected).issubset(packages), set(expected) - packages.keys())
+        graph = {}
+        for name, package in packages.items():
+            graph[name] = {
+                d["name"] for d in package["dependencies"]
+                if d["kind"] != "dev" and d["name"].startswith("om-")
+            }
+        for name, dependencies in expected.items():
+            self.assertTrue(dependencies.issubset(graph[name]), (name, graph[name]))
+        pending, reachable = ["om-poly"], set()
+        while pending:
+            node = pending.pop()
+            if node not in reachable:
+                reachable.add(node)
+                pending.extend(graph[node])
+        self.assertNotIn("om-core", reachable)
+        self.assertIn("native", packages["om-kernel"]["features"])
+        self.assertIn("http", packages["om-llm"]["features"])
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -1,5 +1,5 @@
 [workspace]
-members = ["crates/om-num"]
+members = ["crates/*"]
 resolver = "3"
 
 [workspace.package]
@@ -7,6 +7,48 @@ version = "0.1.0"
 edition = "2024"
 rust-version = "1.94"
 license = "MIT OR Apache-2.0"
+
+[workspace.dependencies]
+om-num = { path = "crates/om-num", version = "0.1.0" }
+om-core = { path = "crates/om-core", version = "0.1.0" }
+om-parse = { path = "crates/om-parse", version = "0.1.0" }
+om-format = { path = "crates/om-format", version = "0.1.0" }
+om-poly = { path = "crates/om-poly", version = "0.1.0" }
+om-simplify = { path = "crates/om-simplify", version = "0.1.0" }
+om-solve = { path = "crates/om-solve", version = "0.1.0" }
+om-eval = { path = "crates/om-eval", version = "0.1.0" }
+om-llm = { path = "crates/om-llm", version = "0.1.0", default-features = false }
+om-kernel = { path = "crates/om-kernel", version = "0.1.0", default-features = false }
+dashu = { version = "=0.6.1", default-features = false, features = ["std", "num-traits", "serde"] }
+num-traits = "0.2.19"
+smallvec = "1.16.2"
+rustc-hash = "2.1.3"
+indexmap = "2.14.2"
+thiserror = "2.0.21"
+serde = { version = "1.0.229", features = ["derive"] }
+serde_json = "1.0.151"
+ts-rs = { version = "12.0.1", features = ["serde-json-impl"] }
+toml = "1.1.6"
+directories = "6.0.0"
+keyring = "4.2.0"
+reqwest = { version = "0.13.5", default-features = false, features = ["json", "stream", "rustls"] }
+tokio = { version = "1.53.1", features = ["rt-multi-thread", "macros", "sync", "time"] }
+futures = "0.3.34"
+tokio-util = { version = "0.7.19", features = ["rt"] }
+reedline = "=0.49.0"
+nu-ansi-term = "0.50"
+ariadne = "0.6.0"
+tracing = "0.1.44"
+wasm-bindgen = "=0.2.129"
+js-sys = "=0.3.106"
+console_error_panic_hook = "0.1.7"
+proptest = { version = "1.11.0", default-features = false, features = ["std"] }
+insta = { version = "1.48.0", features = ["json", "yaml"] }
+pretty_assertions = "1.4.1"
+criterion = "0.8.2"
+wiremock = "0.6.5"
+wasm-bindgen-test = "=0.3.79"
+ctrlc = "3.5.2"
 
 [workspace.lints.rust]
 unsafe_code = "forbid"

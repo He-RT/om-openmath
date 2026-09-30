@@ -1,0 +1,18 @@
+[package]
+name = "om-solve"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+description = "Equation solving with structured derivation steps"
+
+[dependencies]
+om-core.workspace = true
+om-num.workspace = true
+om-poly.workspace = true
+om-simplify.workspace = true
+serde.workspace = true
+thiserror.workspace = true
+
+[lints]
+workspace = true

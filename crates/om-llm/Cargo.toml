@@ -1,0 +1,20 @@
+[package]
+name = "om-llm"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+description = "Sans-IO configurable LLM integration"
+
+[features]
+default = []
+http = []
+
+[dependencies]
+om-num.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+thiserror.workspace = true
+
+[lints]
+workspace = true

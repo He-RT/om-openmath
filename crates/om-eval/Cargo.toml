@@ -1,0 +1,18 @@
+[package]
+name = "om-eval"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+description = "OpenMath expression evaluator"
+
+[dependencies]
+om-core.workspace = true
+om-num.workspace = true
+om-simplify.workspace = true
+om-solve.workspace = true
+serde.workspace = true
+thiserror.workspace = true
+
+[lints]
+workspace = true

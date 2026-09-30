@@ -1,0 +1,19 @@
+[package]
+name = "om-wasm"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+description = "OpenMath WebAssembly bindings"
+
+[lib]
+crate-type = ["cdylib", "rlib"]
+
+[dependencies]
+om-kernel.workspace = true
+wasm-bindgen.workspace = true
+js-sys.workspace = true
+console_error_panic_hook.workspace = true
+
+[lints]
+workspace = true

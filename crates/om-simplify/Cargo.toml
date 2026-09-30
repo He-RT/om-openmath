@@ -1,0 +1,15 @@
+[package]
+name = "om-simplify"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+description = "Symbolic simplification and expression-polynomial conversion"
+
+[dependencies]
+om-core.workspace = true
+om-poly.workspace = true
+thiserror.workspace = true
+
+[lints]
+workspace = true

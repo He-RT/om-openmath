@@ -1,0 +1,27 @@
+[package]
+name = "om-kernel"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+description = "Shared sessions and notebook kernel protocol"
+
+[features]
+default = []
+native = ["om-llm/http"]
+
+[dependencies]
+om-core.workspace = true
+om-num.workspace = true
+om-eval.workspace = true
+om-parse.workspace = true
+om-format.workspace = true
+om-solve.workspace = true
+om-llm.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+ts-rs.workspace = true
+thiserror.workspace = true
+
+[lints]
+workspace = true

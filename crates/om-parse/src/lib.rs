@@ -4,6 +4,59 @@
 /// Shared tokenization for both input dialects.
 pub mod lexer;
 
+mod literals;
+mod modern;
+mod names;
+mod parser;
+
+pub use parser::{detect_dialect, parse, parse_expr, parse_with};
+
+use om_core::{Expr, Symbol};
+use std::collections::BTreeSet;
+
+/// Constants recognized in mathematical input.
+#[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
+pub enum ConstantMode {
+    /// Recognize e and i as E and I.
+    #[default]
+    Math,
+    /// Keep e and i as user symbols.
+    Strict,
+}
+
+/// Session information used to resolve modern syntax.
+#[derive(Clone, Debug, Default)]
+pub struct ParseEnv {
+    /// Previously declared user functions.
+    pub known_functions: BTreeSet<Symbol>,
+    /// Interpretation of the mathematical e and i aliases.
+    pub constants: ConstantMode,
+}
+
+/// Statements, diagnostics and highlighting for a source cell.
+#[derive(Debug)]
+pub struct ParseOutput {
+    /// Statements in source order, including partial results after errors.
+    pub statements: Vec<Stmt>,
+    /// Lexical and syntactic diagnostics.
+    pub diagnostics: Vec<Diagnostic>,
+    /// Effective dialect, with Auto resolved.
+    pub dialect: Dialect,
+    /// Highlighting spans into the original source.
+    pub tokens: Vec<(Span, TokenClass)>,
+}
+
+/// A source statement and its raw expression tree.
+#[derive(Debug)]
+pub struct Stmt {
+    /// Expression before canonicalization or evaluation.
+    pub expr: Expr,
+    /// Source byte range, including an output-suppressing semicolon if present.
+    pub span: Span,
+    /// Whether a trailing semicolon hides its output.
+    pub suppress_output: bool,
+}
+
 /// Input syntax requested by the caller.
 #[derive(Clone, Copy, Debug, PartialEq, Eq, serde::Serialize, serde::Deserialize)]
 pub enum Dialect {

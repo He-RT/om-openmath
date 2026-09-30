@@ -2278,6 +2278,7 @@ name = "om-parse"
 version = "0.1.0"
 dependencies = [
  "om-core",
+ "om-num",
  "serde",
 ]
 

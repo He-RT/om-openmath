@@ -1,5 +1,10 @@
 //! Built-in names in contract order; append new entries to preserve all existing IDs.
 
+/// Built-in names in the stable contract order, for syntax and completion lookup.
+pub fn names() -> &'static [&'static str] {
+    NAMES
+}
+
 macro_rules! define_builtins {
     ($($ident:ident=$name:literal),* $(,)?) => {
         // The private ordinal enum mirrors the contract's public constant identifiers.

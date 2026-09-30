@@ -1,6 +1,7 @@
 //! Expression-independent polynomial algorithms.
 #![forbid(unsafe_code)]
 
+mod complex_roots;
 mod content;
 mod division;
 mod factor_z;
@@ -17,6 +18,7 @@ mod ring;
 mod squarefree;
 mod upoly;
 
+pub use complex_roots::{RootDisk, complex_roots};
 pub use factor_z::{FactorStatus, IntegerFactorization};
 pub use fp::FpElem;
 pub use hensel::{HenselPair, hensel_lift, hensel_step};

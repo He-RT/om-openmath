@@ -99,7 +99,7 @@ fn prepare(f: &Poly, ctx: &Interrupt) -> Result<Option<Poly>, Abort> {
     }
     Ok(Some(f))
 }
-fn cauchy_power_of_two(f: &Poly, ctx: &Interrupt) -> Result<Integer, Abort> {
+pub(crate) fn cauchy_power_of_two(f: &Poly, ctx: &Interrupt) -> Result<Integer, Abort> {
     ctx.tick()?;
     let n = f.degree().expect("invariant: nonzero bound input");
     let lc = f.coeffs[n].clone().max(-&f.coeffs[n]);

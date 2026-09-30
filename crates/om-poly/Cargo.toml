@@ -8,6 +8,7 @@ description = "Expression-independent polynomial algorithms"
 
 [dependencies]
 om-num.workspace = true
+dashu.workspace = true
 smallvec.workspace = true
 thiserror.workspace = true
 

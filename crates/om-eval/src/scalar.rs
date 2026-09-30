@@ -14,6 +14,9 @@ pub(crate) fn dispatch(
     ctx: &Interrupt,
 ) -> Result<Option<Expr>, EvalError> {
     ctx.tick()?;
+    if let Some(value) = crate::elementary::numeric(head, args, ctx)? {
+        return Ok(Some(value));
+    }
     let result = match head.name() {
         "Plus" | "Times" | "Power" | "Sqrt" | "Exp" => None,
         "Subtract" => Some(sub(args[0].clone(), args[1].clone())),
@@ -39,7 +42,7 @@ pub(crate) fn dispatch(
         "Arg" => argument(&args[0]),
         "ArcTan" if args.len() == 2 => angle(&args[0], &args[1]),
         "Log" if args.len() == 2 => base_log(&args[0], &args[1], ctx)?,
-        _ => om_simplify::special::eval(&Expr::call(head, args.iter().cloned())),
+        _ => crate::elementary::exact(head, args),
     };
     Ok(result)
 }

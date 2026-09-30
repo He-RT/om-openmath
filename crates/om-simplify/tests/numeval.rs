@@ -256,4 +256,12 @@ fn huge_binary_exponents_do_not_materialize_enormous_rationals() {
         .unwrap()
         .unwrap();
     assert_eq!(n, Number::Real(Real::Big(huge)));
+    for s in ["Sin[2^(10^9)]", "Exp[I*2^(10^9)]"] {
+        assert!(
+            evaluate(&e(s), 128, &Interrupt::default())
+                .unwrap()
+                .is_none(),
+            "{s}"
+        );
+    }
 }

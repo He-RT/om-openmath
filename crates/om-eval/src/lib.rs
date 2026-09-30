@@ -3,6 +3,8 @@
 
 mod builtins;
 mod definitions;
+mod elementary;
+mod elementary_registry;
 mod engine;
 mod evaluator;
 mod logic;

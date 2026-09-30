@@ -82,7 +82,9 @@ pub(super) fn apply(
         return Ok(Some(value));
     }
     let z = &args[0];
-    if matches!(head, B::SIN | B::COS | B::TAN | B::COT | B::SEC | B::CSC) && !exp_range(&z.im) {
+    if matches!(head, B::SIN | B::COS | B::TAN | B::COT | B::SEC | B::CSC)
+        && (!exp_range(&z.im) || !trig_range(&z.re))
+    {
         return Ok(None);
     }
     Ok(Some(match head.name() {
@@ -177,7 +179,7 @@ fn ln(z: &CBall) -> CBall {
     z.ln()
 }
 fn exp(z: &CBall) -> Option<CBall> {
-    if !exp_range(&z.re) {
+    if !exp_range(&z.re) || !trig_range(&z.im) {
         return None;
     }
     Some(if is_real(z) {
@@ -195,6 +197,16 @@ fn exp_range(b: &Ball) -> bool {
     let max_log = (isize::MAX - 16_384) as f64 * std::f64::consts::LN_2;
     let x = magnitude.to_f64().value();
     x.is_finite() && x <= max_log
+}
+fn trig_range(b: &Ball) -> bool {
+    // Argument reduction needs pi with as many extra bits as the argument's
+    // exponent. Compact huge-exponent floats must not request a gigabit pi.
+    b.mid == BigFloat::ZERO
+        || b.mid
+            .repr()
+            .exponent()
+            .saturating_add(b.mid.repr().significand().clone().into_parts().1.bit_len() as isize)
+            <= 16_384
 }
 fn magnitude(z: &CBall) -> CBall {
     if is_real(z) {

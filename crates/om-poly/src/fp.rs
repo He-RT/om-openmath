@@ -1,5 +1,5 @@
 //! Runtime prime-field coefficients and neutral generic identity factories.
-use crate::{Field, Ring};
+use crate::{EuclideanRing, Field, Ring};
 use om_num::Fp;
 
 /// A residue in F_p. Bound values require prime p>=2 and v<p.
@@ -112,5 +112,18 @@ impl Field for FpElem {
             return matches!(self.v as i64, 1 | -1).then_some(*self);
         }
         Fp { p: self.p }.inv(self.v).map(|v| Self { v, p: self.p })
+    }
+}
+impl EuclideanRing for FpElem {
+    fn divrem(&self, o: &Self) -> (Self, Self) {
+        (
+            self.exact_div(o)
+                .expect("invariant: finite-field Euclidean divisor is a nonzero bound unit"),
+            Self::zero(),
+        )
+    }
+    fn exact_div(&self, o: &Self) -> Option<Self> {
+        let divisor = o.add(&self.sub(self));
+        divisor.inv().map(|inverse| self.mul(&inverse))
     }
 }

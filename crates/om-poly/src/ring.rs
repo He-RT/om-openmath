@@ -105,3 +105,15 @@ impl Field for Rational {
         (!self.is_zero()).then(|| Self::ONE / self)
     }
 }
+impl EuclideanRing for Rational {
+    fn divrem(&self, o: &Self) -> (Self, Self) {
+        (
+            self.exact_div(o)
+                .expect("invariant: rational Euclidean divisor is nonzero"),
+            Self::ZERO,
+        )
+    }
+    fn exact_div(&self, o: &Self) -> Option<Self> {
+        o.inv().map(|inverse| self.mul(&inverse))
+    }
+}

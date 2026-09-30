@@ -1,6 +1,8 @@
 //! Expression-independent polynomial algorithms.
 #![forbid(unsafe_code)]
 
+mod content;
+mod division;
 mod fp;
 mod mpoly;
 mod ring;

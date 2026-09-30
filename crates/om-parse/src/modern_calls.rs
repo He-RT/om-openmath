@@ -110,7 +110,10 @@ impl Parser<'_> {
             }
         })();
         self.groups -= 1;
-        result
+        result.map(|mut node| {
+            node.call_syntax = true;
+            node
+        })
     }
 
     fn domain_options(

@@ -28,6 +28,16 @@ impl Parser<'_> {
             if kind == K::Bar && stop_bar {
                 break;
             }
+            if kind == K::LParen && left.call_syntax && left.span.end == token.span.start {
+                if 120 < min {
+                    break;
+                }
+                let start = left.span.start;
+                let (args, end) = self.arguments(K::LParen, K::RParen)?;
+                left = self.apply(left, args, Span { start, end })?;
+                left.call_syntax = true;
+                continue;
+            }
             if kind == K::LParen && left.direct_name && left.span.end == token.span.start {
                 if 120 < min {
                     break;
@@ -287,6 +297,7 @@ impl Parser<'_> {
                     } else {
                         inner.span = span;
                         inner.direct_name = false;
+                        inner.call_syntax = false;
                         Ok(inner)
                     }
                 })();
@@ -361,6 +372,7 @@ impl Parser<'_> {
                 span: right.span,
                 height: right.height,
                 direct_name: right.direct_name,
+                call_syntax: right.call_syntax,
             };
             comparisons.push(self.call(head, vec![left, right], span)?);
             left = next;

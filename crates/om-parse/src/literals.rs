@@ -13,7 +13,10 @@ pub(crate) fn number(text: &str) -> Result<Expr, &'static str> {
             .map(Expr::integer)
             .map_err(|_| "非法整数");
     }
-    if text.contains(['`', '*']) || text.contains("^^") {
+    if text.contains('`') {
+        return wolfram_number(&text);
+    }
+    if text.contains('*') || text.contains("^^") {
         return Err("现代数字格式不支持 Wolfram 后缀");
     }
     if !text.contains(['.', 'e', 'E']) {

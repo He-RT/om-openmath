@@ -4,6 +4,9 @@ use crate::ConstantMode;
 use om_core::{Symbol, builtins};
 
 pub(crate) fn modern(name: &str, mode: ConstantMode) -> Option<Symbol> {
+    if name == "Derivative" {
+        return Some(Symbol::intern(name));
+    }
     let lower = name.to_ascii_lowercase();
     if mode == ConstantMode::Strict && matches!(name, "e" | "i") {
         return None;
@@ -46,7 +49,7 @@ pub(crate) fn modern(name: &str, mode: ConstantMode) -> Option<Symbol> {
 
 pub(crate) fn is_function(symbol: Symbol) -> bool {
     let name = symbol.name();
-    (builtins::names().contains(&name) || name == "CubeRoot")
+    (builtins::names().contains(&name) || matches!(name, "CubeRoot" | "Derivative"))
         && !matches!(
             name,
             "True"

@@ -206,6 +206,7 @@ pub(crate) struct Node {
     pub span: Span,
     pub height: usize,
     pub direct_name: bool,
+    pub call_syntax: bool,
 }
 impl Node {
     pub fn atom(expr: Expr, span: Span) -> Self {
@@ -214,6 +215,7 @@ impl Node {
             span,
             height: 1,
             direct_name: false,
+            call_syntax: false,
         }
     }
 }
@@ -313,6 +315,7 @@ impl Parser<'_> {
             span,
             height,
             direct_name: false,
+            call_syntax: false,
         })
     }
     pub fn chain(&mut self, head: Symbol, left: Node, right: Node) -> Parsed {
@@ -341,6 +344,7 @@ impl Parser<'_> {
             span,
             height,
             direct_name: false,
+            call_syntax: false,
         })
     }
     fn statements(&mut self) -> Vec<Stmt> {
@@ -407,6 +411,7 @@ impl Parser<'_> {
             span,
             height,
             direct_name: false,
+            call_syntax: false,
         })
     }
     fn recover(&mut self) {

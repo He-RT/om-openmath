@@ -2233,6 +2233,9 @@ name = "om-format"
 version = "0.1.0"
 dependencies = [
  "om-core",
+ "om-num",
+ "om-parse",
+ "proptest",
 ]
 
 [[package]]

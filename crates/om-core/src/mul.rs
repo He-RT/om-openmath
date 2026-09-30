@@ -3,7 +3,7 @@
 use super::{
     add,
     order::canonical_cmp,
-    product_power::power_for_product,
+    pow,
     special::{infinity_direction, rational},
 };
 use crate::{BUILTIN as B, Expr};
@@ -36,9 +36,7 @@ pub fn mul(factors: impl IntoIterator<Item = Expr>) -> Expr {
                 groups.push((base, vec![exp]));
             }
         }
-        let rebuilt = groups
-            .into_iter()
-            .map(|(base, exps)| power_for_product(base, add(exps)));
+        let rebuilt = groups.into_iter().map(|(base, exps)| pow(base, add(exps)));
         if let Err(e) = product.absorb(rebuilt) {
             return e;
         }
@@ -96,8 +94,8 @@ impl Product {
             if self.infinities.iter().any(Option::is_none) {
                 return Expr::call(B::DIRECTED_INFINITY, []);
             }
-            let mut directions = vec![Expr::number(self.coefficient)];
-            directions.extend(self.infinities.into_iter().flatten());
+            let mut directions = vec![phase(Expr::number(self.coefficient))];
+            directions.extend(self.infinities.into_iter().flatten().map(phase));
             let direction = phase(mul(directions));
             if direction.as_symbol() == Some(B::INDETERMINATE) {
                 return direction;
@@ -167,7 +165,7 @@ fn merge_radicals(factors: &[Expr]) -> Option<(usize, usize, Expr)> {
             return Some((
                 i,
                 j,
-                power_for_product(
+                pow(
                     Expr::number(Number::Rational(base)),
                     Expr::number(Number::Rational(exp)),
                 ),
@@ -177,7 +175,22 @@ fn merge_radicals(factors: &[Expr]) -> Option<(usize, usize, Expr)> {
     None
 }
 
-fn phase(e: Expr) -> Expr {
+pub(super) fn phase(e: Expr) -> Expr {
+    if e.is_head(B::SIGN) && e.args().len() == 1 {
+        return e;
+    }
+    if e.is_head(B::TIMES)
+        && let [coefficient, root] = e.args()
+        && let Some(Number::Complex(c)) = coefficient.as_number()
+        && c.re.is_exact()
+        && c.im.is_exact()
+        && root.is_head(B::POWER)
+        && let [base, exponent] = root.args()
+        && *exponent == Expr::rational(-1, 2)
+        && base.as_number() == Some(&c.re.mul(&c.re).add(&c.im.mul(&c.im)))
+    {
+        return e;
+    }
     let Some(n) = e.as_number() else {
         return Expr::call(B::SIGN, [e]);
     };
@@ -185,11 +198,11 @@ fn phase(e: Expr) -> Expr {
         return Expr::sym(B::INDETERMINATE);
     }
     if let Number::Complex(c) = n {
+        if !n.is_exact() {
+            return Expr::call(B::SIGN, [e]);
+        }
         let norm = c.re.mul(&c.re).add(&c.im.mul(&c.im));
-        mul([
-            e.clone(),
-            power_for_product(Expr::number(norm), Expr::rational(-1, 2)),
-        ])
+        mul([e.clone(), pow(Expr::number(norm), Expr::rational(-1, 2))])
     } else {
         Expr::int(if n.is_negative() { -1 } else { 1 })
     }

@@ -1,4 +1,4 @@
-//! Canonical expression ordering and, in later tasks, canonical constructors.
+//! Canonical expression ordering and arithmetic constructors.
 
 #[path = "order.rs"]
 mod order;
@@ -11,7 +11,12 @@ pub use add::add;
 #[path = "mul.rs"]
 mod mul;
 pub use mul::mul;
-#[path = "product_power.rs"]
-mod product_power;
+#[path = "power.rs"]
+mod power;
+pub use power::pow;
+#[path = "power_numeric.rs"]
+mod power_numeric;
+#[path = "power_roots.rs"]
+mod power_roots;
 #[path = "special.rs"]
 mod special;

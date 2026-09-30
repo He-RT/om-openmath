@@ -1,0 +1,7 @@
+# Seeds for failure cases proptest has generated in the past. It is
+# automatically read and these particular cases re-run before any
+# novel cases are generated.
+#
+# It is recommended to check this file in to source control so that
+# everyone who runs the test benefits from these saved cases.
+cc 60b48bb30d7801a0be95ae0803932acee971f6095a75e62d80db5bf9ba896349 # shrinks to tree = Power[Power[-1, -1], Rational[1, 2]], xn = 0, xd = 1, yn = 0, yd = 1

@@ -11,6 +11,9 @@ impl fmt::Debug for Expr {
             ExprKind::Symbol(s) => f.write_str(s.name()),
             ExprKind::String(s) => write!(f, "{s:?}"),
             ExprKind::Normal(n) => {
+                if self.is_head(crate::BUILTIN::DIRECTED_INFINITY) && n.args.is_empty() {
+                    return f.write_str("ComplexInfinity");
+                }
                 write!(f, "{:?}[", n.head)?;
                 for (i, arg) in n.args.iter().enumerate() {
                     if i > 0 {

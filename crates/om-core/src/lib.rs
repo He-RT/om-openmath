@@ -11,6 +11,9 @@ pub mod expr;
 pub mod symbol;
 
 pub use builtins::BUILTIN;
-pub use canon::{add, canonical_cmp, mul};
+pub use canon::{add, canonical_cmp, mul, pow};
+/// Evaluation messages and scoped constructor diagnostic capture.
+pub mod message;
 pub use expr::{Expr, ExprKind, ExprNode, Normal};
+pub use message::{Message, Messages, MsgLevel, with_canonical_messages};
 pub use symbol::Symbol;

@@ -14,6 +14,7 @@ pub mod ntheory;
 pub mod rng;
 
 pub use ball::{Ball, CBall};
+pub use dashu::base::BitTest;
 pub use dashu::integer::IBig;
 pub use dashu::rational::RBig;
 pub use modp::Fp;

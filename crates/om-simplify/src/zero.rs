@@ -1,5 +1,5 @@
 //! Exact algebra precedes interval tests; sampling establishes nonidentity, never identity.
-mod radicals;
+pub(crate) mod radicals;
 use crate::convert::{normalize, to_rational_function_with};
 use om_core::{BUILTIN as B, Expr, ExprKind, Symbol};
 use om_num::{
@@ -66,6 +66,13 @@ pub fn is_zero_with(e: &Expr, ctx: &Interrupt) -> Result<Tri, Abort> {
     numerical(&denested, ctx)
 }
 pub(crate) fn numerical(e: &Expr, ctx: &Interrupt) -> Result<Tri, Abort> {
+    numerical_assuming(e, &[], ctx)
+}
+pub(crate) fn numerical_assuming(
+    e: &Expr,
+    positive: &[Symbol],
+    ctx: &Interrupt,
+) -> Result<Tri, Abort> {
     let vars = free_symbols(e, ctx)?;
     if vars.is_empty() {
         return numeric_value(e, ctx);
@@ -77,10 +84,17 @@ pub(crate) fn numerical(e: &Expr, ctx: &Interrupt) -> Result<Tri, Abort> {
         let mut rules = vec![];
         for s in &vars {
             ctx.tick()?;
-            let re = Rational::from(rng.next_range(0, 6) as i64 - 3)
-                / Rational::from(rng.next_range(1, 5));
-            let im = Rational::from(rng.next_range(0, 6) as i64 - 3)
-                / Rational::from(rng.next_range(1, 5));
+            let re = if positive.contains(s) {
+                Rational::from(rng.next_range(1, 6))
+            } else {
+                Rational::from(rng.next_range(0, 6) as i64 - 3)
+            } / Rational::from(rng.next_range(1, 5));
+            let im = if positive.contains(s) {
+                Rational::ZERO
+            } else {
+                Rational::from(rng.next_range(0, 6) as i64 - 3)
+                    / Rational::from(rng.next_range(1, 5))
+            };
             let z = Number::Complex(Box::new(Complex {
                 re: Number::Rational(re),
                 im: Number::Rational(im),

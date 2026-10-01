@@ -18,3 +18,6 @@ pub mod root_reduce;
 
 /// Layered exact and numerical zero decisions, with explicit inconclusive results.
 pub mod zero;
+
+/// Bounded best-first expression simplification with explicit positive assumptions.
+pub mod simplify;

@@ -14,6 +14,7 @@ fn request(kind: PlotKind, expr: &str, x: (f64, f64), y: Option<(f64, f64)>) -> 
         points: vec![],
         shade: vec![],
         param_ranges: Default::default(),
+        solve: None,
     }
 }
 fn sample(s: &mut Session, r: PlotRequest) -> PlotData {

@@ -206,7 +206,12 @@ impl Session {
                         solver: self.eval.take_solver_result(),
                     };
                     if !record.suppress_output {
-                        match crate::output::pack(&record, &self.eval, ctx) {
+                        match crate::output::pack(
+                            &record,
+                            &self.eval,
+                            ctx,
+                            self.config.general.auto_plot,
+                        ) {
                             Ok(item) => result.output.items.push(item),
                             Err(error) => {
                                 let (tag, text) = self.plot_error(&error);

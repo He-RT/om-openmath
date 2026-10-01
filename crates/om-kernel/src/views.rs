@@ -281,6 +281,42 @@ pub struct PlotRequest {
     pub shade: Vec<(f64, f64)>,
     /// Slider ranges.
     pub param_ranges: BTreeMap<String, (f64, f64)>,
+    /// Resolved original solving source for genuine highlight updates.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[ts(optional)]
+    pub solve: Option<PlotSolveSource>,
+}
+
+/// Selected solver domain, independent of display coordinates.
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Serialize, Deserialize, TS)]
+#[ts(export_to = concat!(env!("CARGO_MANIFEST_DIR"), "/../../app/src/kernel/generated/"))]
+pub enum PlotDomain {
+    /// All finite complex values.
+    Complexes,
+    /// Real values.
+    Reals,
+    /// Integer values.
+    Integers,
+    /// Exact rational values.
+    Rationals,
+}
+/// Transported raw source and actual domain for parameter re-solving.
+#[derive(Clone, Debug, Serialize, Deserialize, TS)]
+#[ts(export_to = concat!(env!("CARGO_MANIFEST_DIR"), "/../../app/src/kernel/generated/"))]
+pub struct PlotSolveSource {
+    /// Resolved raw equation/inequality source in InputForm.
+    pub source: String,
+    /// Actual domain selected by the original solver.
+    pub domain: PlotDomain,
+}
+/// Actual current finite solution coordinates and region shading.
+#[derive(Clone, Debug, Serialize, Deserialize, TS)]
+#[ts(export_to = concat!(env!("CARGO_MANIFEST_DIR"), "/../../app/src/kernel/generated/"))]
+pub struct PlotHighlights {
+    /// Recomputed real complete assignments.
+    pub points: Vec<(f64, f64)>,
+    /// Current actual real intervals, using infinity sentinels.
+    pub shade: Vec<(f64, f64)>,
 }
 
 /// Sampled continuous segments and actual viewport.
@@ -293,6 +329,10 @@ pub struct PlotData {
     pub x_range: (f64, f64),
     /// Vertical viewport.
     pub y_range: (f64, f64),
+    /// Current highlights; absent for legacy curves without highlights/source.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[ts(optional)]
+    pub highlights: Option<PlotHighlights>,
 }
 
 /// One labeled curve split at discontinuities.

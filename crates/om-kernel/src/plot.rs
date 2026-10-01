@@ -1,11 +1,15 @@
 //! Real readonly preparation, compilation and finite plot geometry.
 mod explicit;
 mod function;
+mod highlights;
 mod implicit;
+mod shape;
+mod visualization;
 use crate::protocol::*;
 pub(crate) use explicit::from_expr;
 use om_core::{BUILTIN as B, Expr, Interrupt, Symbol};
 use om_eval::{Evaluator, numeric::compile_f64_with_ctx};
+pub(crate) use visualization::automatic;
 
 #[derive(Debug, thiserror::Error)]
 pub(crate) enum PlotError {
@@ -135,10 +139,13 @@ pub(crate) fn sample(
         let prepared = eval.prepare_numeric(&raw, &locals, ctx)?;
         compiled.push(compile_f64_with_ctx(&prepared, &vars, ctx)?);
     }
-    match r.kind {
+    let highlights = visualization::refresh(r, eval, ctx)?;
+    let mut data = match r.kind {
         PlotKind::Function => function::sample(r, &compiled, ctx),
         PlotKind::Implicit => implicit::sample(r, &compiled, ctx),
-    }
+    }?;
+    data.highlights = highlights;
+    Ok(data)
 }
 
 #[cfg(test)]
@@ -164,6 +171,7 @@ mod tests {
             points: vec![],
             shade: vec![],
             param_ranges: Default::default(),
+            solve: None,
         }
     }
     #[test]

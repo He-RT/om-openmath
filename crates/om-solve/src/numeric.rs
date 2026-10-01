@@ -128,12 +128,40 @@ pub fn nsolve_with_options(
                     "NSolve requires complete finite assignments".into(),
                 ));
             }
+            let exact_rules = root.rules.clone();
             for (_, v) in &mut root.rules {
                 *v = Expr::number(coordinate(v, precision, &mut cache, ctx)?);
             }
             let mut valid = false;
             for branch in &prepared.branches {
-                if crate::local::verify(branch, &root.rules, bits, ctx)? {
+                let mut numeric_branch = branch.clone();
+                let mut membership = true;
+                for (var, domain) in &mut numeric_branch.domains {
+                    if matches!(domain, crate::Domain::Integers | crate::Domain::Rationals) {
+                        let Some((_, value)) = exact_rules.iter().find(|(v, _)| v == var) else {
+                            membership = false;
+                            break;
+                        };
+                        let symbol = if *domain == crate::Domain::Integers {
+                            om_core::BUILTIN::INTEGERS
+                        } else {
+                            om_core::BUILTIN::RATIONALS
+                        };
+                        let condition = Expr::call(
+                            om_core::BUILTIN::ELEMENT,
+                            [value.clone(), Expr::sym(symbol)],
+                        );
+                        if crate::univariate::transcendental::check::allows(&condition, ctx)?
+                            != Some(true)
+                        {
+                            membership = false;
+                            break;
+                        }
+                        // Rounding is presentation: exact membership has been proved above.
+                        *domain = crate::Domain::Reals;
+                    }
+                }
+                if membership && crate::local::verify(&numeric_branch, &root.rules, bits, ctx)? {
                     valid = true;
                     for original in &branch.original {
                         append(&mut result.steps, || {

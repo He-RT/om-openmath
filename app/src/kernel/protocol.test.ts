@@ -49,3 +49,21 @@ describe('generated kernel wire contract', () => {
     expect([wrongDialect, wrongTag, wrongEnvelope]).toHaveLength(3);
   });
 });
+
+it('roundtrips optional solving source and actual updated plot highlights', () => {
+  const legacy: import('./generated/PlotRequest').PlotRequest = {
+    kind: 'Function', exprs: ['x^2', 'a'], var_x: 'x', var_y: null,
+    x_range: [-5, 5], y_range: null, params: { a: 9 },
+    points: [[-1, 1], [1, 1]], shade: [], param_ranges: { a: [-5, 5] },
+  };
+  const request = { type: 'sample_plot', request: {
+    ...legacy, solve: { source: 'x^2 == a', domain: 'Reals' },
+  } } satisfies Request;
+  const response = { type: 'plot', data: {
+    curves: [], x_range: [-5, 5], y_range: [-1, 10],
+    highlights: { points: [[-3, 9], [3, 9]], shade: [] },
+  } } satisfies Response;
+  expect(JSON.parse(JSON.stringify(request)).request.solve.domain).toBe('Reals');
+  expect(response.data.highlights.points).toEqual([[-3, 9], [3, 9]]);
+  expect(JSON.parse(JSON.stringify(legacy)).solve).toBeUndefined();
+});

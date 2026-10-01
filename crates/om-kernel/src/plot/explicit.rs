@@ -104,5 +104,6 @@ pub(crate) fn from_expr(
         points: vec![],
         shade: vec![],
         param_ranges: Default::default(),
+        solve: None,
     }))
 }

@@ -23,6 +23,8 @@ pub struct SolverResult {
     pub set: SolutionSet,
     /// Actual returned expression, including value-only or boolean formats.
     pub value: Expr,
+    /// Actual selected solving domain.
+    pub domain: Domain,
 }
 
 pub(super) fn capture(
@@ -31,6 +33,7 @@ pub(super) fn capture(
     source: Expr,
     vars: Vec<Expr>,
     set: SolutionSet,
+    domain: Domain,
     value: &Option<Expr>,
 ) {
     ev.last_solver_result = value
@@ -42,6 +45,7 @@ pub(super) fn capture(
             vars,
             set,
             value: value.clone(),
+            domain,
         });
 }
 pub(crate) fn terminal(s: Symbol) -> bool {
@@ -171,7 +175,7 @@ fn solve(
             }
         }
     };
-    capture(ev, name, source, vars, set, &value);
+    capture(ev, name, source, vars, set, opts.solve.domain, &value);
     Ok(value)
 }
 fn domain_expr(d: Domain) -> Expr {

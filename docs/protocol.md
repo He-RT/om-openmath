@@ -60,7 +60,7 @@ statement index. `Cell::input(index)` and `Cell::steps(index)` expose the actual
 raw statement and solver derivation through Rust, including suppressed outputs.
 Actual solver results are packed as Solutions with genuine verification,
 conditions, bindings and optional renderable derivations. Other values retain
-accurate Expr/Error items; explicit plotting is sampled by the shared compiler; automatic solver plots remain M11.6.
+accurate Expr/Error items; explicit plotting is sampled by the shared compiler; supported solver results also carry actual automatic visualization requests.
 
 LoadNotebook validates version 1 and unique nonempty IDs before replacing state.
 It resets definitions/history and cached outputs, while preserving configuration.
@@ -141,7 +141,7 @@ StepsView preserves real IDs, rule IDs, levels and children. title_key is
 step.<rule_id>, expression params and before/after snapshots use LaTeX, and
 structured operation/reason/domain/count/message params remain deterministic
 strings. No computational expression tree or StepKind is serialized. plot is
-null until the subsequent automatic solver visualization milestone.
+optional and follows the actual supported source/solution shape and auto_plot setting.
 
 
 SamplePlot validates finite ordered ranges, distinct user axes, real parameter
@@ -172,3 +172,32 @@ retains the real completed statement record, reports Error and stops subsequent
 statements/dependents. Standalone sampling records no history. Actual injected
 flag/deadline/budget applies to preparation, every stack instruction, refinement
 and stitching; the next initiating request can recover.
+
+
+Automatic solver plots use the actual resolved source, selected domain and
+existing complete solution set. One-axis equalities display lhs/rhs curves and
+real (root,lhs(root)) points, with at least six units of x width. Two-axis systems
+display both implicit residuals and complete real assignments. Rational region
+results supply actual interval shading; unbounded shade uses +/-1e308. Unsupported
+shapes, free axes/infinite families and nonreal initial one-axis solution sets
+leave plot absent. auto_plot=false disables this optional output.
+
+PlotRequest has an optional solve object with InputForm source and selected
+domain (Complexes/Reals/Integers/Rationals). PlotData has optional highlights
+with current points/shade. Both extensions are omitted when absent, preserving
+legacy JSON shapes. These fields carry the equation provenance and updated
+geometry through serialized native/WASM requests without a Session cache.
+Clients must use data.highlights when present, including empty arrays that clear
+previous points or shade, rather than retaining old request highlights.
+
+Every source parameter is an explicit params binding, with default one (two
+when one violates an original nonzero restriction) and slider range [-5,5].
+Finite binary64 parameter points are substituted exactly as binary rationals.
+SamplePlot verifies source/curve/axis correspondence and complete bindings,
+then runs genuine NSolve for assignments or Reduce for regions under the original
+domain and raw pole/condition restrictions. It returns actual finite real current
+highlights. Nonreal updated roots clear real points; a parameter setting violating
+all original source branches reports err.plot. Valid union branches are retained.
+Requests without solve preserve explicitly supplied legacy highlights. All this
+work shares the existing interruption scope, records no extra history and never
+changes live definitions or original card verification/steps.

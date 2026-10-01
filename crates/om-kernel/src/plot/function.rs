@@ -152,5 +152,6 @@ pub(super) fn sample(
         curves,
         x_range: r.x_range,
         y_range,
+        highlights: None,
     })
 }

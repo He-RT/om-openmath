@@ -109,6 +109,7 @@ pub(super) fn apply(
             source,
             starts.iter().map(|(v, _)| v.clone()).collect(),
             set,
+            om_solve::Domain::Complexes,
             &value,
         );
         Ok(value)

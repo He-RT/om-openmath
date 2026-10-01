@@ -9,6 +9,7 @@ pub(crate) fn pack(
     record: &StatementRecord,
     eval: &Evaluator,
     ctx: &Interrupt,
+    auto_plot: bool,
 ) -> Result<OutputItem, crate::plot::PlotError> {
     if let Some(request) = crate::plot::from_expr(&record.value, eval, ctx)? {
         let data = crate::plot::sample(&request, eval, ctx)?;
@@ -25,7 +26,11 @@ pub(crate) fn pack(
                 modern_form,
                 view,
                 steps: record.steps.as_ref().map(steps::render),
-                plot: None,
+                plot: if auto_plot {
+                    crate::plot::automatic(result, eval, ctx)?
+                } else {
+                    None
+                },
             });
         }
     }

@@ -4,12 +4,7 @@ use om_kernel::{Session, protocol::*};
 use support::{expressions, output, same, sequential};
 fn solutions(o: &CellOutput) -> (&SolutionSetView, Option<&StepsView>) {
     match &o.items[0] {
-        OutputItem::Solutions {
-            view, steps, plot, ..
-        } => {
-            assert!(plot.is_none());
-            (view, steps.as_ref())
-        }
+        OutputItem::Solutions { view, steps, .. } => (view, steps.as_ref()),
         other => panic!("expected Solutions: {other:?}"),
     }
 }

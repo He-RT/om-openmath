@@ -15,6 +15,7 @@ mod gcd;
 mod groebner;
 mod hensel;
 mod isolation;
+mod linear;
 mod mpoly;
 mod multivariate_factor;
 mod resultant;
@@ -31,6 +32,10 @@ pub use fp::FpElem;
 pub use groebner::{groebner, normal_form, s_polynomial};
 pub use hensel::{HenselPair, hensel_lift, hensel_step};
 pub use isolation::{RootInterval, isolate, refine};
+pub use linear::{
+    BareissResult, ExactDomain, ExactFraction, LinearResult, LinearSolution, bareiss, determinant,
+    linear_solve,
+};
 pub use mpoly::{MPoly, MonoOrder, Monomial};
 pub use multivariate_factor::MultivariateFactorization;
 pub use ring::{EuclideanRing, Field, Ring};

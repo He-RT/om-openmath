@@ -4,6 +4,7 @@
 mod alg;
 mod complex_roots;
 mod content;
+mod dimension;
 mod division;
 mod factor_z;
 mod fglm;
@@ -23,6 +24,7 @@ mod upoly;
 
 pub use alg::{Algebraic, ComplexAlg, RealAlg, algebraic_root, real_alg};
 pub use complex_roots::{RootDisk, complex_roots};
+pub use dimension::{IdealDimension, ideal_dimension, is_zero_dimensional};
 pub use factor_z::{FactorStatus, IntegerFactorization};
 pub use fglm::fglm;
 pub use fp::FpElem;

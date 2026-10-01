@@ -34,6 +34,11 @@ jobs:
         run: cargo clippy --workspace --all-targets --locked -- -D warnings
       - name: Run tests
         run: cargo test --workspace --locked
+      - name: Check generated kernel protocol
+        run: |
+          cargo test -p om-kernel export_bindings --locked
+          git diff --exit-code app/src/kernel/generated
+          test -z "$(git ls-files --others --exclude-standard app/src/kernel/generated)"
       - name: Check workspace contracts
         run: python3 -m unittest discover -s tests -v
       - name: Build WASM core

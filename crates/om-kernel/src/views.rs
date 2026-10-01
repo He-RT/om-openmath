@@ -1,0 +1,353 @@
+//! Renderable protocol data, separate from expressions and computational step kinds.
+use crate::protocol::CellId;
+use crate::wire::{Diagnostic, Dialect, Level, Message, Span, TokenClass, Verification};
+use serde::{Deserialize, Serialize};
+use std::collections::BTreeMap;
+use ts_rs::TS;
+/// CellKind values accepted by the wire protocol.
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Serialize, Deserialize, TS)]
+#[ts(export_to = concat!(env!("CARGO_MANIFEST_DIR"), "/../../app/src/kernel/generated/"))]
+pub enum CellKind {
+    /// Math.
+    Math,
+    /// Text.
+    Text,
+    /// Ask.
+    Ask,
+}
+
+/// CellStatus values accepted by the wire protocol.
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Serialize, Deserialize, TS)]
+#[ts(export_to = concat!(env!("CARGO_MANIFEST_DIR"), "/../../app/src/kernel/generated/"))]
+pub enum CellStatus {
+    /// Queued.
+    Queued,
+    /// Running.
+    Running,
+    /// Done.
+    Done,
+    /// Error.
+    Error,
+    /// Stale.
+    Stale,
+}
+
+/// CompletionKind values accepted by the wire protocol.
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Serialize, Deserialize, TS)]
+#[ts(export_to = concat!(env!("CARGO_MANIFEST_DIR"), "/../../app/src/kernel/generated/"))]
+pub enum CompletionKind {
+    /// Function.
+    Function,
+    /// Symbol.
+    Symbol,
+    /// Keyword.
+    Keyword,
+    /// Snippet.
+    Snippet,
+}
+
+/// PlotKind values accepted by the wire protocol.
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Serialize, Deserialize, TS)]
+#[ts(export_to = concat!(env!("CARGO_MANIFEST_DIR"), "/../../app/src/kernel/generated/"))]
+pub enum PlotKind {
+    /// Function.
+    Function,
+    /// Implicit.
+    Implicit,
+}
+
+/// SolutionKind values accepted by the wire protocol.
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Serialize, Deserialize, TS)]
+#[ts(export_to = concat!(env!("CARGO_MANIFEST_DIR"), "/../../app/src/kernel/generated/"))]
+#[serde(rename_all = "snake_case")]
+pub enum SolutionKind {
+    /// Finite.
+    Finite,
+    /// All.
+    All,
+    /// None.
+    None,
+    /// Region.
+    Region,
+}
+
+/// Versioned source-only notebook; configuration and secrets cannot enter this schema.
+#[derive(Clone, Debug, Serialize, Deserialize, TS)]
+#[ts(export_to = concat!(env!("CARGO_MANIFEST_DIR"), "/../../app/src/kernel/generated/"))]
+pub struct NotebookFile {
+    /// Notebook format version (currently 1).
+    pub version: u32,
+    /// Notebook title.
+    pub title: String,
+    /// Source cells in document order.
+    pub cells: Vec<CellInput>,
+}
+
+/// Editable source cell without runtime state.
+#[derive(Clone, Debug, Serialize, Deserialize, TS)]
+#[ts(export_to = concat!(env!("CARGO_MANIFEST_DIR"), "/../../app/src/kernel/generated/"))]
+pub struct CellInput {
+    /// Frontend-generated cell identifier.
+    pub id: CellId,
+    /// Cell presentation kind.
+    pub kind: CellKind,
+    /// Original editable source.
+    pub source: String,
+    /// Requested source dialect.
+    pub dialect: Dialect,
+}
+
+/// One local editor completion.
+#[derive(Clone, Debug, Serialize, Deserialize, TS)]
+#[ts(export_to = concat!(env!("CARGO_MANIFEST_DIR"), "/../../app/src/kernel/generated/"))]
+pub struct CompletionItem {
+    /// Displayed candidate name.
+    pub label: String,
+    /// Insertion text or snippet.
+    pub insert_text: String,
+    /// Short signature or explanation.
+    pub detail: Option<String>,
+    /// Candidate category.
+    pub kind: CompletionKind,
+}
+
+/// Documentation or current symbol value under the cursor.
+#[derive(Clone, Debug, Serialize, Deserialize, TS)]
+#[ts(export_to = concat!(env!("CARGO_MANIFEST_DIR"), "/../../app/src/kernel/generated/"))]
+pub struct HoverInfo {
+    /// Built-in signature when available.
+    pub signature: Option<String>,
+    /// Localized description.
+    pub summary: String,
+    /// Executable examples.
+    pub examples: Vec<String>,
+    /// Current InputForm value, truncated by the handler.
+    pub value: Option<String>,
+    /// Cell defining a user symbol.
+    pub cell_id: Option<CellId>,
+}
+
+/// Fast non-evaluating source preview.
+#[derive(Clone, Debug, Serialize, Deserialize, TS)]
+#[ts(export_to = concat!(env!("CARGO_MANIFEST_DIR"), "/../../app/src/kernel/generated/"))]
+pub struct PreviewResult {
+    /// Rendered expression when available.
+    pub latex: Option<String>,
+    /// Source diagnostics.
+    pub diagnostics: Vec<Diagnostic>,
+    /// Highlighting spans and categories.
+    pub tokens: Vec<(Span, TokenClass)>,
+    /// Effective dialect.
+    pub dialect: Dialect,
+    /// Suggested explicit actions.
+    pub actions: Vec<CellAction>,
+}
+
+/// A localized action carrying editable CAS source.
+#[derive(Clone, Debug, Serialize, Deserialize, TS)]
+#[ts(export_to = concat!(env!("CARGO_MANIFEST_DIR"), "/../../app/src/kernel/generated/"))]
+pub struct CellAction {
+    /// Internationalization key.
+    pub label_key: String,
+    /// Source to insert or run on user action.
+    pub source: String,
+}
+
+/// Items and messages emitted by a completed cell evaluation.
+#[derive(Clone, Debug, Serialize, Deserialize, TS)]
+#[ts(export_to = concat!(env!("CARGO_MANIFEST_DIR"), "/../../app/src/kernel/generated/"))]
+pub struct CellOutput {
+    /// Visible outputs in statement order.
+    pub items: Vec<OutputItem>,
+    /// Evaluation messages, including suppressed statements.
+    pub messages: Vec<Message>,
+    /// Elapsed evaluation milliseconds.
+    pub timing_ms: f64,
+}
+
+/// Renderable solution set and optional real intervals.
+#[derive(Clone, Debug, Serialize, Deserialize, TS)]
+#[ts(export_to = concat!(env!("CARGO_MANIFEST_DIR"), "/../../app/src/kernel/generated/"))]
+pub struct SolutionSetView {
+    /// Set presentation kind.
+    pub kind: SolutionKind,
+    /// Requested variable names.
+    pub vars: Vec<String>,
+    /// Individual solutions.
+    pub solutions: Vec<SolutionView>,
+    /// Region condition in LaTeX.
+    pub region_latex: Option<String>,
+    /// Real number-line intervals.
+    pub intervals: Vec<IntervalView>,
+}
+
+/// One solution with conditions and verification evidence.
+#[derive(Clone, Debug, Serialize, Deserialize, TS)]
+#[ts(export_to = concat!(env!("CARGO_MANIFEST_DIR"), "/../../app/src/kernel/generated/"))]
+pub struct SolutionView {
+    /// Assigned variable values.
+    pub bindings: Vec<BindingView>,
+    /// Condition attached to this solution.
+    pub condition_latex: Option<String>,
+    /// Actual verification evidence.
+    pub verified: Verification,
+}
+
+/// A variable value rendered for display, copy and numeric inspection.
+#[derive(Clone, Debug, Serialize, Deserialize, TS)]
+#[ts(export_to = concat!(env!("CARGO_MANIFEST_DIR"), "/../../app/src/kernel/generated/"))]
+pub struct BindingView {
+    /// Variable name.
+    pub var: String,
+    /// LaTeX value.
+    pub latex: String,
+    /// Wolfram source value.
+    pub input_form: String,
+    /// Modern source value.
+    pub modern_form: String,
+    /// Ten-digit numeric form for exact values.
+    pub numeric: Option<String>,
+}
+
+/// A real interval with optional finite numeric endpoints.
+#[derive(Clone, Debug, Serialize, Deserialize, TS)]
+#[ts(export_to = concat!(env!("CARGO_MANIFEST_DIR"), "/../../app/src/kernel/generated/"))]
+pub struct IntervalView {
+    /// LaTeX lower bound; None means negative infinity.
+    pub lo: Option<String>,
+    /// LaTeX upper bound; None means positive infinity.
+    pub hi: Option<String>,
+    /// Whether the lower bound is included.
+    pub lo_closed: bool,
+    /// Whether the upper bound is included.
+    pub hi_closed: bool,
+    /// Finite lower coordinate.
+    pub lo_value: Option<f64>,
+    /// Finite upper coordinate.
+    pub hi_value: Option<f64>,
+}
+
+/// A renderable hierarchy of actual solver steps.
+#[derive(Clone, Debug, Serialize, Deserialize, TS)]
+#[ts(export_to = concat!(env!("CARGO_MANIFEST_DIR"), "/../../app/src/kernel/generated/"))]
+pub struct StepsView {
+    /// Top-level steps in execution order.
+    pub root: Vec<StepView>,
+}
+
+/// Only renderable strings and child steps; contains no expression internals.
+#[derive(Clone, Debug, Serialize, Deserialize, TS)]
+#[ts(export_to = concat!(env!("CARGO_MANIFEST_DIR"), "/../../app/src/kernel/generated/"))]
+pub struct StepView {
+    /// Stable hierarchical step identifier.
+    pub id: String,
+    /// Stable computational rule identifier.
+    pub rule_id: String,
+    /// Default expansion level.
+    pub level: Level,
+    /// Internationalization key: step. plus rule_id.
+    pub title_key: String,
+    /// LaTeX strings for template substitutions.
+    pub params: BTreeMap<String, String>,
+    /// Before expressions in LaTeX.
+    pub before_latex: Vec<String>,
+    /// After expressions in LaTeX.
+    pub after_latex: Vec<String>,
+    /// Nested computational steps.
+    pub children: Vec<StepView>,
+}
+
+/// Portable plot source, viewport, highlights and parameter sliders.
+#[derive(Clone, Debug, Serialize, Deserialize, TS)]
+#[ts(export_to = concat!(env!("CARGO_MANIFEST_DIR"), "/../../app/src/kernel/generated/"))]
+pub struct PlotRequest {
+    /// Function or implicit sampling.
+    pub kind: PlotKind,
+    /// InputForm source expressions.
+    pub exprs: Vec<String>,
+    /// Horizontal variable.
+    pub var_x: String,
+    /// Vertical variable for implicit sampling.
+    pub var_y: Option<String>,
+    /// Horizontal viewport.
+    pub x_range: (f64, f64),
+    /// Optional vertical viewport.
+    pub y_range: Option<(f64, f64)>,
+    /// Current parameter values.
+    pub params: BTreeMap<String, f64>,
+    /// Highlighted solution coordinates.
+    pub points: Vec<(f64, f64)>,
+    /// Shaded x intervals; use +/-1e308 for infinity.
+    pub shade: Vec<(f64, f64)>,
+    /// Slider ranges.
+    pub param_ranges: BTreeMap<String, (f64, f64)>,
+}
+
+/// Sampled continuous segments and actual viewport.
+#[derive(Clone, Debug, Serialize, Deserialize, TS)]
+#[ts(export_to = concat!(env!("CARGO_MANIFEST_DIR"), "/../../app/src/kernel/generated/"))]
+pub struct PlotData {
+    /// Sampled curves.
+    pub curves: Vec<Curve>,
+    /// Horizontal viewport.
+    pub x_range: (f64, f64),
+    /// Vertical viewport.
+    pub y_range: (f64, f64),
+}
+
+/// One labeled curve split at discontinuities.
+#[derive(Clone, Debug, Serialize, Deserialize, TS)]
+#[ts(export_to = concat!(env!("CARGO_MANIFEST_DIR"), "/../../app/src/kernel/generated/"))]
+pub struct Curve {
+    /// Curve label.
+    pub label: String,
+    /// Continuous polylines.
+    pub segments: Vec<Vec<(f64, f64)>>,
+}
+
+/// Visible statement output, tagged independently of responses.
+#[derive(Clone, Debug, Serialize, Deserialize, TS)]
+#[ts(export_to = concat!(env!("CARGO_MANIFEST_DIR"), "/../../app/src/kernel/generated/"))]
+#[serde(tag = "type", rename_all = "snake_case")]
+pub enum OutputItem {
+    /// A symbolic or numeric expression.
+    Expr {
+        /// Output history index.
+        out_index: u32,
+        /// Wolfram source form.
+        input_form: String,
+        /// Modern source form.
+        modern_form: String,
+        /// LaTeX display form.
+        latex: String,
+    },
+    /// Solver output with actual derivation and an optional visualization.
+    Solutions {
+        /// Output history index.
+        out_index: u32,
+        /// Wolfram source form.
+        input_form: String,
+        /// Modern source form.
+        modern_form: String,
+        /// Solution cards and region.
+        view: SolutionSetView,
+        /// Renderable computational steps when enabled.
+        steps: Option<StepsView>,
+        /// Automatic visualization request when supported.
+        plot: Option<PlotRequest>,
+    },
+    /// An explicitly requested plot.
+    Plot {
+        /// Source and sampling options.
+        request: PlotRequest,
+        /// Sampled result.
+        data: PlotData,
+    },
+    /// Statement failure.
+    Error {
+        /// Failure explanation.
+        message: String,
+        /// Responsible source span, if available.
+        span: Option<Span>,
+    },
+}

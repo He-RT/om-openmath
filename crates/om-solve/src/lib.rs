@@ -5,6 +5,12 @@ mod dispatch;
 mod domain;
 mod inequality;
 pub use inequality::reduce;
+mod elimination;
+pub use elimination::eliminate;
+mod numeric;
+pub use numeric::nsolve;
+mod local;
+pub use local::find_root;
 mod verification;
 pub use dispatch::solve;
 mod steps;
@@ -14,8 +20,8 @@ pub use steps::{
     Steps, rule_ids,
 };
 pub use types::{
-    Bound, Domain, Interval, MaxExtra, Solution, SolutionSet, SolveError, SolveOptions,
-    SolveOutcome, Verification, VerifyMode,
+    Bound, Domain, FindRootOptions, Interval, MaxExtra, Solution, SolutionSet, SolveError,
+    SolveOptions, SolveOutcome, Verification, VerifyMode,
 };
 mod linear;
 /// Original-input normalization with preserved domain exclusions.

@@ -51,6 +51,28 @@ impl Default for SolveOptions {
         }
     }
 }
+/// Local numerical root search with optional one-variable real bracketing.
+#[derive(Clone, Debug)]
+pub struct FindRootOptions {
+    /// Requested numeric output precision; Exact is invalid.
+    pub precision: om_num::Precision,
+    /// Maximum Newton or Brent iterations.
+    pub max_iterations: u32,
+    /// Ordered real endpoints for the one-variable Brent method.
+    pub bracket: Option<(om_num::Number, om_num::Number)>,
+    /// Record actual iteration and final verification steps.
+    pub record_steps: bool,
+}
+impl Default for FindRootOptions {
+    fn default() -> Self {
+        Self {
+            precision: om_num::Precision::Machine,
+            max_iterations: 100,
+            bracket: None,
+            record_steps: true,
+        }
+    }
+}
 /// Original-equation verification preference.
 #[derive(Clone, Debug)]
 pub enum VerifyMode {

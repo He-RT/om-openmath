@@ -14,6 +14,7 @@ mod fp;
 mod gcd;
 mod groebner;
 mod hensel;
+mod hermite;
 mod isolation;
 mod linear;
 mod mpoly;
@@ -31,6 +32,9 @@ pub use fglm::fglm;
 pub use fp::FpElem;
 pub use groebner::{groebner, normal_form, s_polynomial};
 pub use hensel::{HenselPair, hensel_lift, hensel_step};
+pub use hermite::{
+    HermiteForm, IntegerLinearResult, IntegerLinearSolution, column_hnf, integer_linear_solve,
+};
 pub use isolation::{RootInterval, isolate, refine};
 pub use linear::{
     BareissResult, ExactDomain, ExactFraction, LinearResult, LinearSolution, bareiss, determinant,

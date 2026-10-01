@@ -8,6 +8,16 @@ mod elementary;
 
 const MAX_BITS: u32 = 16_384;
 
+/// Enclose a numeric expression with directed ball arithmetic at 1..=16384 bits.
+/// Unsupported expressions, undefined values and resource limits return None.
+pub fn enclose(e: &Expr, bits: u32, ctx: &Interrupt) -> Result<Option<CBall>, Abort> {
+    ctx.tick()?;
+    if !(1..=MAX_BITS).contains(&bits) {
+        return Ok(None);
+    }
+    evaluate_ball(e, bits, ctx)
+}
+
 /// Evaluate a fully numeric expression at the requested working bit precision.
 /// Unsupported trees, singularities and exponent/resource overflow return None.
 pub fn evaluate(e: &Expr, bits: u32, ctx: &Interrupt) -> Result<Option<Number>, Abort> {
@@ -80,6 +90,16 @@ fn evaluate_ball(e: &Expr, bits: u32, ctx: &Interrupt) -> Result<Option<CBall>, 
                     values.push(z);
                 }
                 ExprKind::Normal(_) => {
+                    if e.is_head(B::ROOT) {
+                        let Some(value) = crate::root_reduce::root_value(e, ctx)? else {
+                            return Ok(None);
+                        };
+                        let Some(z) = value.enclosure(bits, ctx)? else {
+                            return Ok(None);
+                        };
+                        values.push(z);
+                        continue;
+                    }
                     if !e
                         .head_symbol()
                         .is_some_and(|h| elementary::accepts(h, e.args().len()))

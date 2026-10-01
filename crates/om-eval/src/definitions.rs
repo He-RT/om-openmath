@@ -23,6 +23,14 @@ pub struct Definitions {
     pub(crate) changed: BTreeSet<Symbol>,
 }
 impl Definitions {
+    /// Actual stored global ownvalue, including delayed syntax, without evaluation.
+    pub fn own_value(&self, symbol: Symbol) -> Option<&Expr> {
+        self.own.get(&symbol)
+    }
+    /// Actual global downvalues in definition order, without evaluating patterns or RHSs.
+    pub fn down_values(&self, symbol: Symbol) -> &[Rule] {
+        self.down.get(&symbol).map_or(&[], Vec::as_slice)
+    }
     /// Symbols with actual ownvalues or nonempty downvalues, without evaluating them.
     pub fn defined_symbols(&self) -> BTreeSet<Symbol> {
         self.own

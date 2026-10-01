@@ -66,7 +66,7 @@ LoadNotebook validates version 1 and unique nonempty IDs before replacing state.
 It resets definitions/history and cached outputs, while preserving configuration.
 Restored Math/Ask cells are Stale and Text cells are Done. Text/Ask Evaluate
 requests are rejected; natural-language requests will use LLM handlers.
-Preview/completion/hover and LLM handlers remain later milestones and
+LLM handlers remain the subsequent M12 milestone and
 return an explicit err.not_implemented error at this stage.
 
 Hosts supply an optional `Arc<dyn Clock>` for deadlines and timing. Without it,
@@ -201,3 +201,36 @@ all original source branches reports err.plot. Valid union branches are retained
 Requests without solve preserve explicitly supplied legacy highlights. All this
 work shares the existing interruption scope, records no extra history and never
 changes live definitions or original card verification/steps.
+
+
+Complete, Hover and Preview are actual non-evaluating editor services. Cursor
+positions and replacement ranges are UTF-8 bytes; invalid boundaries return
+err.cursor atomically. Effective dialect/constants follow configuration, including
+%wl/%modern source markers. They never reset interruption or write history,
+definitions, source cells or stored solver provenance.
+
+Complete replaces the whole identifier while matching its prefix before the
+cursor. It ranks executable registered names, live symbols, language keywords,
+snippets and supported innermost-call options: prefix, then camel/underscore
+initials, then subsequence; Solving/Algebra docs lead ties, stable order caps at 50.
+Modern labels use lowercase/aliases; logical And/Or/Not and algebraic Root require
+capitalized callable insertions, distinct from keywords and root(expr,degree).
+Comments, strings, numbers, markers, lists/Part/groupings and completed calls do
+not leak keyword options. Extended implemented names share actual parser mapping.
+
+Hover returns real localized builtin documentation or the stored unevaluated
+ownvalue/downvalue rules (at most 200 Unicode chars) with the actual live owner
+cell. Edited source may be Stale while the previously executed definition remains
+inspectable; transfer/Clear/Unset/delete/load follow real evaluator ownership.
+Bare defined symbols take precedence over lookalike builtin aliases; actual call
+positions use their real builtin mapping. No delayed or computed value is run.
+
+Preview returns real parser diagnostics/fixes/highlights/dialect. Any Error
+suppresses LaTeX/actions; empty source displays none. Multiple valid statements
+select the cursor's containing/preceding statement (first when before all math),
+or the last when cursor is absent. Display canonicalizes raw syntax only. A bare
+Equal offers action.solve for up to three lexical free axes, excluding function
+heads/binders, wrapping original source in dialect-correct Solve syntax so original
+poles/comments survive. Generated actions execute through the same Session.
+The explicit native warm-release <=1000-char acceptance measures real calls
+against <5ms; representative final maximum was about .662ms.

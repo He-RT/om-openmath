@@ -30,12 +30,16 @@ impl Session {
                 Constants::Strict => om_parse::ConstantMode::Strict,
             },
         };
-        let effective = match (dialect, self.config.general.dialect) {
+        let effective = self.effective_dialect(source, dialect);
+        om_parse::parse_with(source, effective, &env)
+    }
+    pub(super) fn effective_dialect(&self, source: &str, dialect: Dialect) -> om_parse::Dialect {
+        match (dialect, self.config.general.dialect) {
             (Dialect::Auto, ConfigDialect::Modern) => om_parse::Dialect::Modern,
             (Dialect::Auto, ConfigDialect::Wolfram) => om_parse::Dialect::Wolfram,
+            (Dialect::Auto, _) => om_parse::detect_dialect(source),
             _ => dialect.into(),
-        };
-        om_parse::parse_with(source, effective, &env)
+        }
     }
 
     pub(super) fn analyze_cell(&mut self, index: usize) {

@@ -114,8 +114,9 @@ pub fn parse_with(src: &str, dialect: Dialect, env: &ParseEnv) -> ParseOutput {
         }
         let name = text(src, *token);
         if dialect == Dialect::Wolfram {
-            let builtin = crate::names::wolfram(name)
-                .is_ok_and(|symbol| om_core::builtins::names().contains(&symbol.name()));
+            let builtin = crate::names::wolfram(name).is_ok_and(|symbol| {
+                om_core::builtins::names().contains(&symbol.name()) || names::is_function(symbol)
+            });
             highlights.push((
                 token.span,
                 if builtin {

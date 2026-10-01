@@ -7,6 +7,7 @@ pub mod config;
 pub mod protocol;
 
 mod dependency;
+mod editor;
 mod notebook;
 mod output;
 mod plot;

@@ -1,5 +1,6 @@
 //! Synchronous shared-kernel entry point with host-injected time and cancellation.
 mod editing;
+mod editor;
 mod evaluation;
 mod graph;
 mod plotting;
@@ -60,6 +61,21 @@ impl Session {
             }
             Request::RunAll => return self.run_all(),
             Request::SamplePlot { request } => return (self.sample_plot(request), vec![]),
+            Request::Preview {
+                source,
+                dialect,
+                cursor,
+            } => return (self.preview(source, dialect, cursor), vec![]),
+            Request::Complete {
+                source,
+                dialect,
+                cursor,
+            } => return (self.complete(source, dialect, cursor), vec![]),
+            Request::Hover {
+                source,
+                dialect,
+                cursor,
+            } => return (self.hover(source, dialect, cursor), vec![]),
             _ => {}
         }
         let response = match req {

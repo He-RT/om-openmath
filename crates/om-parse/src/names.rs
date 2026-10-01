@@ -37,6 +37,7 @@ pub(crate) fn modern(name: &str, mode: ConstantMode) -> Option<Symbol> {
         _ => {
             return builtins::names()
                 .iter()
+                .chain(super::names_editor::EXTRA.iter())
                 .find(|n| {
                     n.eq_ignore_ascii_case(name)
                         && (name.len() > 1 || **n == name || matches!(name, "n" | "d"))
@@ -49,7 +50,9 @@ pub(crate) fn modern(name: &str, mode: ConstantMode) -> Option<Symbol> {
 
 pub(crate) fn is_function(symbol: Symbol) -> bool {
     let name = symbol.name();
-    (builtins::names().contains(&name) || matches!(name, "CubeRoot" | "Derivative"))
+    (builtins::names().contains(&name)
+        || super::names_editor::EXTRA.contains(&name)
+        || name == "Derivative")
         && !matches!(
             name,
             "True"
@@ -86,7 +89,7 @@ pub(crate) fn known_lowercase(name: &str) -> bool {
 }
 
 pub(crate) fn atom(name: &str, mode: ConstantMode) -> Symbol {
-    if builtins::names().contains(&name) {
+    if builtins::names().contains(&name) || super::names_editor::EXTRA.contains(&name) {
         return Symbol::intern(name);
     }
     let constant = matches!(

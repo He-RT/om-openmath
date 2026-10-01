@@ -8,6 +8,8 @@ mod diagnostics;
 mod literals;
 mod modern;
 mod names;
+mod names_editor;
+pub use names_editor::{identifier_symbol, modern_name};
 mod parser;
 mod wolfram;
 

@@ -21,7 +21,7 @@ pub fn output(session: &mut Session, id: &str, source: &str, dialect: Dialect) -
         source: source.into(),
         dialect,
     });
-    assert!(events.is_empty()); // automatic dependent events start in M11.3.
+    assert!(events.is_empty()); // These fixtures use sequential sessions or cells without dependents.
     match response {
         Response::Evaluated {
             cell_id,
@@ -36,13 +36,18 @@ pub fn output(session: &mut Session, id: &str, source: &str, dialect: Dialect) -
     }
 }
 
-/// Inspect the basic expression outputs.
+/// Inspect actual source forms of expression and solver outputs.
 pub fn expressions(output: &CellOutput) -> Vec<(u32, String)> {
     output
         .items
         .iter()
         .filter_map(|item| match item {
             OutputItem::Expr {
+                out_index,
+                input_form,
+                ..
+            }
+            | OutputItem::Solutions {
                 out_index,
                 input_form,
                 ..

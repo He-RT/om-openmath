@@ -203,14 +203,13 @@ impl Session {
                         steps,
                         suppress_output: statement.suppress_output,
                         out_index,
+                        solver: self.eval.take_solver_result(),
                     };
                     if !record.suppress_output {
-                        result.output.items.push(OutputItem::Expr {
-                            out_index: record.out_index,
-                            input_form: om_format::input_form(&record.value),
-                            modern_form: om_format::modern_form(&record.value),
-                            latex: om_format::latex(&record.value),
-                        });
+                        result
+                            .output
+                            .items
+                            .push(crate::output::pack(&record, &self.eval, ctx));
                     }
                     result.records.push(record);
                     result.exec_count = Some(out_index);

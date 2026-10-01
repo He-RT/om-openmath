@@ -19,6 +19,8 @@ pub struct Evaluator {
     pub(crate) depth: u32,
     pub(crate) readonly: bool,
     pub(crate) scopes: Vec<std::collections::BTreeMap<Symbol, Option<Expr>>>,
+    pub(crate) last_solver_result: Option<crate::SolverResult>,
+    pub(crate) evaluating: u32,
 }
 impl Default for Evaluator {
     fn default() -> Self {
@@ -38,15 +40,31 @@ impl Evaluator {
             depth: 0,
             readonly: false,
             scopes: vec![],
+            last_solver_result: None,
+            evaluating: 0,
         }
     }
     /// Evaluate without recording history. All Result paths restore logical depth.
     pub fn evaluate(&mut self, e: &Expr, ctx: &Interrupt) -> Result<Expr, EvalError> {
+        let evaluating = self.evaluating;
+        if evaluating == 0 {
+            self.last_solver_result = None;
+        }
+        self.evaluating += 1;
         let previous = self.depth;
         let scopes = self.scopes.len();
         let result = self.run_frames(e.clone(), ctx);
         self.depth = previous;
         self.scopes.truncate(scopes);
+        self.evaluating = evaluating;
+        if evaluating == 0
+            && self
+                .last_solver_result
+                .as_ref()
+                .is_some_and(|r| result.as_ref().ok() != Some(&r.value))
+        {
+            self.last_solver_result = None;
+        }
         result
     }
     /// Record a successful statement once, including its original input tree.
@@ -55,6 +73,11 @@ impl Evaluator {
         let out = self.evaluate(e, ctx)?;
         self.history.push((e.clone(), out.clone()));
         Ok(out)
+    }
+    /// Take actual evidence for the most recent returned tail solver result.
+    /// Absent for cached literals, unrelated wrappers, failures and discarded calls.
+    pub fn take_solver_result(&mut self) -> Option<crate::SolverResult> {
+        self.last_solver_result.take()
     }
     /// Help for an implemented builtin.
     pub fn doc(sym: Symbol) -> Option<&'static DocEntry> {
@@ -76,6 +99,8 @@ impl Evaluator {
             depth: 0,
             readonly: true,
             scopes: self.scopes.clone(),
+            last_solver_result: None,
+            evaluating: 0,
         }
     }
     pub(crate) fn attributes(&self, symbol: Symbol) -> A {

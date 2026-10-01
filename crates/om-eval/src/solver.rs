@@ -10,6 +10,40 @@ mod root;
 use crate::{EvalError, Evaluator};
 use om_core::{BUILTIN as B, Expr, Interrupt, MsgLevel, Symbol};
 use om_solve::{Domain, Solution, SolutionSet, SolveError, SolveOutcome};
+/// Actual successful solver callback data, before display formatting loses evidence.
+#[derive(Clone, Debug)]
+pub struct SolverResult {
+    /// Builtin that produced the result.
+    pub name: Symbol,
+    /// Resolved original source, preserving raw domain restrictions.
+    pub source: Expr,
+    /// Actual requested or inferred variable order.
+    pub vars: Vec<Expr>,
+    /// Complete solution set and its verification evidence.
+    pub set: SolutionSet,
+    /// Actual returned expression, including value-only or boolean formats.
+    pub value: Expr,
+}
+
+pub(super) fn capture(
+    ev: &mut Evaluator,
+    name: &str,
+    source: Expr,
+    vars: Vec<Expr>,
+    set: SolutionSet,
+    value: &Option<Expr>,
+) {
+    ev.last_solver_result = value
+        .as_ref()
+        .filter(|_| !matches!(set, SolutionSet::Unevaluated))
+        .map(|value| SolverResult {
+            name: Symbol::intern(name),
+            source,
+            vars,
+            set,
+            value: value.clone(),
+        });
+}
 pub(crate) fn terminal(s: Symbol) -> bool {
     matches!(
         s.name(),
@@ -36,6 +70,9 @@ pub(crate) fn dispatch(
     ctx: &Interrupt,
 ) -> Result<Option<Expr>, EvalError> {
     ctx.tick()?;
+    if terminal(Symbol::intern(name)) {
+        ev.last_solver_result = None;
+    }
     let result = match name {
         "FindRoot" => local::apply(ev, args, ctx),
         "Root" => root::apply(ev, args, ctx),
@@ -116,7 +153,7 @@ fn solve(
     }
     .map_err(error)?;
     let set = outcome(ev, name, result);
-    Ok(match name {
+    let value = match name {
         "Roots" => boolean(&set, ctx)?,
         "SolveValues" | "NSolveValues" => values(&set, &vars, single, ctx)?,
         _ => {
@@ -126,7 +163,9 @@ fn solve(
                 Some(set.to_expr())
             }
         }
-    })
+    };
+    capture(ev, name, source, vars, set, &value);
+    Ok(value)
 }
 fn domain_expr(d: Domain) -> Expr {
     Expr::sym(match d {

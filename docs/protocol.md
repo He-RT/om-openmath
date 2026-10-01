@@ -58,8 +58,9 @@ later statements and retains earlier effects; suppressed statements still enter
 history and retain messages. The cell's exec_count is its last successful
 statement index. `Cell::input(index)` and `Cell::steps(index)` expose the actual
 raw statement and solver derivation through Rust, including suppressed outputs.
-Specialized solution cards and step JSON conversion are M11.4; current results
-use accurate Expr/Error items.
+Actual solver results are packed as Solutions with genuine verification,
+conditions, bindings and optional renderable derivations. Other values retain
+accurate Expr/Error items; plotting remains M11.5/M11.6.
 
 LoadNotebook validates version 1 and unique nonempty IDs before replacing state.
 It resets definitions/history and cached outputs, while preserving configuration.
@@ -118,3 +119,26 @@ than the number of cells and changes only document order. Empty IDs, missing
 cells and invalid positions fail atomically. RunAll executes Math cells once in
 document order through the same real evaluator path and emits status/output
 events; Text/Ask sources are not executed and cyclic/blocked cells are reported.
+
+
+Solver cards use actual evaluator callback metadata, including the resolved raw
+source, requested/inferred variable order, full SolutionSet and returned value.
+Provenance follows actual tail calls and forwarded Set/final compound results;
+ordinary lists, cached values, unrelated wrappers, discarded earlier calls and
+unsupported results retain Expr. Disabling steps removes derivation JSON while
+keeping real solution evidence. SolveValues/NSolveValues and flat FindRoot rules
+retain their actual source forms alongside the original solution bindings;
+Reduce/Roots can display actual boolean regions and interval endpoints.
+
+Finite multiplicities become repeated solution rows. Conditional/free-variable
+solutions and generated parameter domains remain intact. Exact binding values
+receive a real read-only N[value,10] numeric string when supported; approximate
+values or failed supplemental numerics leave numeric null. The string keeps
+existing InputForm precision notation. Formatting never records new history or
+mutates live definitions, and infinite interval ends serialize as null.
+
+StepsView preserves real IDs, rule IDs, levels and children. title_key is
+step.<rule_id>, expression params and before/after snapshots use LaTeX, and
+structured operation/reason/domain/count/message params remain deterministic
+strings. No computational expression tree or StepKind is serialized. plot is
+null until the subsequent automatic visualization milestone.

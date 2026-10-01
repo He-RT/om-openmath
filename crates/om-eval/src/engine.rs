@@ -479,6 +479,14 @@ impl Evaluator {
         } else if let Some(spec) = spec {
             if let Some(new) = (spec.f)(self, &args, ctx)? {
                 if crate::solver::terminal(spec.symbol) {
+                    let tail = self.evaluating == 1 && frames.iter().all(|frame| {
+                        matches!(frame,Frame::Sequence {args,next,..} if *next==args.len())
+                            || matches!(frame,Frame::Arguments(state) if state.head.as_symbol()==Some(B::SET)
+                                && state.source.len()==2 && state.next==2 && state.waiting)
+                    });
+                    if !tail {
+                        self.last_solver_result = None;
+                    }
                     values.push(new);
                     return Ok(());
                 }

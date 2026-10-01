@@ -42,6 +42,7 @@ pub(crate) struct StatementRecord {
     pub steps: Option<Steps>,
     pub suppress_output: bool,
     pub out_index: u32,
+    pub solver: Option<om_eval::SolverResult>,
 }
 
 impl Cell {

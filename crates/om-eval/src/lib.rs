@@ -25,4 +25,5 @@ pub mod pattern;
 pub use builtins::BuiltinTable;
 pub use definitions::{Definitions, Rule};
 pub use evaluator::Evaluator;
+pub use solver::SolverResult;
 pub use types::{Arity, Attributes, BuiltinFn, BuiltinSpec, DocEntry, EvalError, EvalSettings};

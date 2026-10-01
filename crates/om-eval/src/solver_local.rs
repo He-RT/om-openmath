@@ -1,5 +1,5 @@
 //! Localize FindRoot axes before parameter and starting-value evaluation.
-use super::{error, options, outcome, resolve};
+use super::{capture, error, options, outcome, resolve};
 use crate::{EvalError, Evaluator};
 use om_core::{BUILTIN as B, Expr, Interrupt};
 use om_num::Number;
@@ -92,7 +92,7 @@ pub(super) fn apply(
         )
         .map_err(error)?;
         let set = outcome(ev, "FindRoot", result);
-        match set {
+        let value = match &set {
             SolutionSet::Finite(roots) if roots.len() == 1 => Ok(Some(Expr::call(
                 B::LIST,
                 roots[0]
@@ -102,7 +102,16 @@ pub(super) fn apply(
             ))),
             SolutionSet::Unevaluated => Ok(None),
             _ => Err(invalid("FindRoot did not produce one complete assignment")),
-        }
+        }?;
+        capture(
+            ev,
+            "FindRoot",
+            source,
+            starts.iter().map(|(v, _)| v.clone()).collect(),
+            set,
+            &value,
+        );
+        Ok(value)
     })();
     ev.scopes.truncate(previous);
     result

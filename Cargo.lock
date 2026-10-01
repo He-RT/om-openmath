@@ -2270,6 +2270,7 @@ dependencies = [
  "om-format",
  "om-num",
  "om-parse",
+ "om-poly",
  "om-simplify",
  "om-solve",
  "serde",

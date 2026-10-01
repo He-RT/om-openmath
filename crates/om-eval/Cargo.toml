@@ -9,6 +9,7 @@ description = "OpenMath expression evaluator"
 [dependencies]
 om-core.workspace = true
 om-num.workspace = true
+om-poly.workspace = true
 om-simplify.workspace = true
 om-solve.workspace = true
 serde.workspace = true

@@ -1,6 +1,8 @@
 //! OpenMath expression evaluator.
 #![forbid(unsafe_code)]
 
+mod algebra;
+mod algebra_registry;
 mod builtins;
 mod definitions;
 mod elementary;

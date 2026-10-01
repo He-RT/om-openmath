@@ -63,6 +63,13 @@ pub(super) fn error(e: SolveError) -> EvalError {
         e => EvalError::Other(e.to_string()),
     }
 }
+pub(crate) fn prepare_numeric(
+    ev: &mut Evaluator,
+    e: &Expr,
+    ctx: &Interrupt,
+) -> Result<Expr, EvalError> {
+    resolve::resolve(ev, e, ctx)
+}
 pub(crate) fn dispatch(
     ev: &mut Evaluator,
     name: &str,

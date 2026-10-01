@@ -2,6 +2,7 @@
 mod editing;
 mod evaluation;
 mod graph;
+mod plotting;
 mod reactive;
 
 use crate::{KernelConfig, Notebook, config::Language, notebook::FileError, protocol::*};
@@ -58,6 +59,7 @@ impl Session {
                 return (self.move_cell(cell_id, to_index), vec![]);
             }
             Request::RunAll => return self.run_all(),
+            Request::SamplePlot { request } => return (self.sample_plot(request), vec![]),
             _ => {}
         }
         let response = match req {

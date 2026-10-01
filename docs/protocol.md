@@ -60,20 +60,20 @@ statement index. `Cell::input(index)` and `Cell::steps(index)` expose the actual
 raw statement and solver derivation through Rust, including suppressed outputs.
 Actual solver results are packed as Solutions with genuine verification,
 conditions, bindings and optional renderable derivations. Other values retain
-accurate Expr/Error items; plotting remains M11.5/M11.6.
+accurate Expr/Error items; explicit plotting is sampled by the shared compiler; automatic solver plots remain M11.6.
 
 LoadNotebook validates version 1 and unique nonempty IDs before replacing state.
 It resets definitions/history and cached outputs, while preserving configuration.
 Restored Math/Ask cells are Stale and Text cells are Done. Text/Ask Evaluate
 requests are rejected; natural-language requests will use LLM handlers.
-Preview/completion/hover/plot and LLM handlers remain later milestones and
+Preview/completion/hover and LLM handlers remain later milestones and
 return an explicit err.not_implemented error at this stage.
 
 Hosts supply an optional `Arc<dyn Clock>` for deadlines and timing. Without it,
 timing_ms is zero and the wall-clock deadline is disabled; step budgets and the
 shared cancellation flag still work. Each cell shares one Interrupt across all
 statements. Hosts can set interrupt_handle during synchronous execution. An initiating
-Math evaluation, RunAll or automatic Delete cascade resets the previous flag
+Math evaluation, SamplePlot, RunAll or automatic Delete cascade resets the previous flag
 once; automatic cells share it. Config/save/load/source-only edits do not.
 SetConfig validates profile-name uniqueness and resolves masks before installing
 settings. Kernel error strings retain stable err.* keys with Chinese/English text.
@@ -141,4 +141,34 @@ StepsView preserves real IDs, rule IDs, levels and children. title_key is
 step.<rule_id>, expression params and before/after snapshots use LaTeX, and
 structured operation/reason/domain/count/message params remain deterministic
 strings. No computational expression tree or StepKind is serialized. plot is
-null until the subsequent automatic visualization milestone.
+null until the subsequent automatic solver visualization milestone.
+
+
+SamplePlot validates finite ordered ranges, distinct user axes, real parameter
+values and the request's source expressions before producing finite PlotData.
+Function plots start at 400 points and refine curvature/domain boundaries up to
+six levels; implicit plots use 160×160 squares and deterministic contour stitching.
+Pole or jump sign changes do not become implicit zeros. Default function y
+viewport uses finite 2%–98% quantiles plus padding; explicit y_range is honored.
+Non-real/undefined samples are omitted, infinite geometry is never serialized.
+
+Plot and ContourPlot are protected HoldAll builtins. Examples:
+
+```text
+Plot[Sin[x],{x,0,2*Pi}]
+Plot[{x,x^2},{x,-2,2},PlotRange->{-1,5}]
+ContourPlot[x^2+y^2==1,{x,-2,2},{y,-2,2}]
+plot(sin(x),[x,0,2pi])
+implicitplot(x^2+y^2=1,[x,-2,2],[y,-2,2])
+```
+
+Their visible held results become OutputItem::Plot through the same sampler.
+Bodies bind axes locally while bounds read outer values; readonly source
+preparation resolves genuine functions/parameters without cancelling raw poles.
+PlotRange accepts a y pair or an x/y pair of ranges for Plot; other explicit
+options report err.plot. Plot axis/option dependencies follow those scopes.
+Suppression retains held history without sampling. A visible rendering failure
+retains the real completed statement record, reports Error and stops subsequent
+statements/dependents. Standalone sampling records no history. Actual injected
+flag/deadline/budget applies to preparation, every stack instruction, refinement
+and stitching; the next initiating request can recover.

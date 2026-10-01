@@ -10,7 +10,9 @@ mod elementary_registry;
 mod engine;
 mod evaluator;
 mod logic;
-mod numeric;
+/// Real numeric compilation and existing N support.
+pub mod numeric;
+mod plot_registry;
 mod scalar;
 mod scalar_registry;
 mod solver;

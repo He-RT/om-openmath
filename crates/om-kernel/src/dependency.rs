@@ -98,6 +98,37 @@ fn walk(e: &Expr, scope: &Symbols, defines: &mut Symbols, uses: &mut Symbols) {
         }
         return;
     }
+    if matches!(head, Some(B::PLOT | B::CONTOUR_PLOT)) && !args.is_empty() {
+        let mut locals = scope.clone();
+        let count = if head == Some(B::PLOT) { 1 } else { 2 };
+        for iterator in args[1..].iter().take(count) {
+            if iterator.is_head(B::LIST)
+                && iterator.args().len() == 3
+                && let Some(s) = iterator.args()[0].as_symbol()
+            {
+                locals.insert(s);
+                for bound in &iterator.args()[1..] {
+                    walk(bound, scope, defines, uses);
+                }
+            } else {
+                walk(iterator, scope, defines, uses);
+            }
+        }
+        for option in args[1..].iter().skip(count) {
+            if option.is_head(B::RULE)
+                && option.args().len() == 2
+                && option.args()[0]
+                    .as_symbol()
+                    .is_some_and(|s| s.name() == "PlotRange")
+            {
+                walk(&option.args()[1], scope, defines, uses);
+            } else {
+                walk(option, scope, defines, uses);
+            }
+        }
+        walk(&args[0], &locals, defines, uses);
+        return;
+    }
     if head.is_some_and(|s| matches!(s.name(), "Table" | "Sum" | "Product")) && !args.is_empty() {
         let mut locals = scope.clone();
         for iterator in &args[1..] {

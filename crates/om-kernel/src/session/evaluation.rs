@@ -206,13 +206,29 @@ impl Session {
                         solver: self.eval.take_solver_result(),
                     };
                     if !record.suppress_output {
-                        result
-                            .output
-                            .items
-                            .push(crate::output::pack(&record, &self.eval, ctx));
+                        match crate::output::pack(&record, &self.eval, ctx) {
+                            Ok(item) => result.output.items.push(item),
+                            Err(error) => {
+                                let (tag, text) = self.plot_error(&error);
+                                result.output.items.push(OutputItem::Error {
+                                    message: text.clone(),
+                                    span: Some(statement.span.into()),
+                                });
+                                result.output.messages.push(Message {
+                                    symbol: "Plot".into(),
+                                    tag: tag.into(),
+                                    text,
+                                    level: MsgLevel::Error,
+                                });
+                                result.status = CellStatus::Error;
+                            }
+                        }
                     }
                     result.records.push(record);
                     result.exec_count = Some(out_index);
+                    if result.status == CellStatus::Error {
+                        break;
+                    }
                 }
                 Err(error) => {
                     let (tag, text) = self.execution_error(&error);
@@ -242,7 +258,7 @@ impl Session {
         result
     }
 
-    fn execution_error(&self, error: &EvalError) -> (&'static str, String) {
+    pub(super) fn execution_error(&self, error: &EvalError) -> (&'static str, String) {
         match error {
             EvalError::Abort(Abort::Interrupted) => (
                 "interrupted",

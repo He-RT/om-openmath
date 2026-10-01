@@ -79,6 +79,18 @@ impl Evaluator {
     pub fn take_solver_result(&mut self) -> Option<crate::SolverResult> {
         self.last_solver_result.take()
     }
+    /// Expand numeric source in a readonly local scope without cancelling raw poles.
+    /// None masks an axis's global value; Some supplies an actual local parameter value.
+    pub fn prepare_numeric(
+        &self,
+        source: &Expr,
+        locals: &[(Symbol, Option<Expr>)],
+        ctx: &Interrupt,
+    ) -> Result<Expr, EvalError> {
+        let mut fork = self.fork_readonly();
+        fork.scopes.push(locals.iter().cloned().collect());
+        crate::solver::prepare_numeric(&mut fork, source, ctx)
+    }
     /// Help for an implemented builtin.
     pub fn doc(sym: Symbol) -> Option<&'static DocEntry> {
         crate::builtins::table().get(sym).map(|spec| &spec.doc)

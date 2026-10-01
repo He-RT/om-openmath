@@ -5,28 +5,36 @@ use om_core::{BUILTIN as B, Expr, ExprKind, Interrupt};
 use om_eval::Evaluator;
 use om_solve::{Bound, Domain, Solution, SolutionSet};
 
-pub(crate) fn pack(record: &StatementRecord, eval: &Evaluator, ctx: &Interrupt) -> OutputItem {
+pub(crate) fn pack(
+    record: &StatementRecord,
+    eval: &Evaluator,
+    ctx: &Interrupt,
+) -> Result<OutputItem, crate::plot::PlotError> {
+    if let Some(request) = crate::plot::from_expr(&record.value, eval, ctx)? {
+        let data = crate::plot::sample(&request, eval, ctx)?;
+        return Ok(OutputItem::Plot { request, data });
+    }
     let input_form = om_format::input_form(&record.value);
     let modern_form = om_format::modern_form(&record.value);
     if let Some(result) = &record.solver {
         let mut readonly = eval.fork_readonly();
         if let Some(view) = view(&result.set, &result.vars, &mut readonly, ctx) {
-            return OutputItem::Solutions {
+            return Ok(OutputItem::Solutions {
                 out_index: record.out_index,
                 input_form,
                 modern_form,
                 view,
                 steps: record.steps.as_ref().map(steps::render),
                 plot: None,
-            };
+            });
         }
     }
-    OutputItem::Expr {
+    Ok(OutputItem::Expr {
         out_index: record.out_index,
         input_form,
         modern_form,
         latex: om_format::latex(&record.value),
-    }
+    })
 }
 
 fn numeric(value: &Expr, eval: &mut Evaluator, ctx: &Interrupt) -> Option<Expr> {

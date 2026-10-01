@@ -9,6 +9,7 @@ pub mod protocol;
 mod dependency;
 mod notebook;
 mod output;
+mod plot;
 mod session;
 mod views;
 mod wire;

@@ -167,6 +167,7 @@ pub(crate) fn table() -> &'static BuiltinTable {
         crate::elementary_registry::register(&mut table.specs);
         crate::algebra_registry::register(&mut table.specs);
         crate::solver_registry::register(&mut table.specs);
+        crate::plot_registry::register(&mut table.specs);
         table
     })
 }

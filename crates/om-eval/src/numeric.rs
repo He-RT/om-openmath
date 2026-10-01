@@ -1,5 +1,8 @@
 //! N's precision parsing and iterative approximation of symbolic subtrees.
+mod compiled;
+mod instruction;
 use crate::{Arity, Attributes as A, BuiltinSpec, DocEntry, EvalError, Evaluator};
+pub use compiled::{CompileError, CompiledFn, compile_f64, compile_f64_with_ctx};
 use om_core::{BUILTIN as B, Expr, ExprKind, Interrupt, MsgLevel};
 use om_num::{Number, Precision};
 use std::collections::BTreeMap;

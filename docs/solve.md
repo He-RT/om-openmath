@@ -1,3 +1,9 @@
 # Equation solving
 
 The solver is specified in [PLAN.md §8](plan/PLAN.md#8-算法规格) and the acceptance corpus in §14. No Solve implementation is available yet. Supported methods and compatibility differences will be documented here as verified solver tasks land.
+
+P0/P1 preparation is implemented as `om_solve::normalize::normalize`. It preserves original denominator/function exclusions and raw residuals, separates logical branches, infers variable domains and prepares uncanceled polynomial numerators. The public Solve algorithms and frontend integration remain in subsequent M9/M10 tasks.
+
+When variables are inferred and there are more variables than equality constraints, OpenMath emits `Solve::svars` and solves for the first n variables in name order; remaining symbols are parameters (PLAN §7.5). Constraint-only input retains its inferred variables. Explicit variable lists preserve their requested order. These are OpenMath compatibility choices. Multivariate inequalities and logical expansion beyond 64 branches are marked unsupported rather than reported as an empty solution.
+
+Chained `Unequal[a,b,c]` produces all pairwise nonzero restrictions; `Element[{x,y}, Reals]` and `Element[x|y, Reals]` apply the domain to each variable. These follow the official [Unequal](https://reference.wolfram.com/language/ref/Unequal.html) and [Element](https://reference.wolfram.com/language/ref/Element.html) documentation.

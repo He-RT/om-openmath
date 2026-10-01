@@ -14,5 +14,9 @@ om-simplify.workspace = true
 serde.workspace = true
 thiserror.workspace = true
 
+[dev-dependencies]
+om-parse.workspace = true
+proptest.workspace = true
+
 [lints]
 workspace = true

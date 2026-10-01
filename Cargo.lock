@@ -2316,8 +2316,10 @@ version = "0.1.0"
 dependencies = [
  "om-core",
  "om-num",
+ "om-parse",
  "om-poly",
  "om-simplify",
+ "proptest",
  "serde",
  "thiserror 2.0.21",
 ]

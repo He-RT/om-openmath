@@ -227,6 +227,10 @@ pub(super) fn integer_power(e: &Expr) -> Option<Integer> {
     let q = exact(&e.args()[1])?;
     (q.denominator() == &1_u8.into()).then(|| q.numerator().clone())
 }
+/// Interruptible structural canonicalization, without polynomial transforms.
+pub fn canonicalize_with(e: &Expr, ctx: &Interrupt) -> Result<Expr, Abort> {
+    normalize(e, ctx)
+}
 pub(crate) fn normalize(e: &Expr, ctx: &Interrupt) -> Result<Expr, Abort> {
     enum Visit<'a> {
         Enter(&'a Expr),

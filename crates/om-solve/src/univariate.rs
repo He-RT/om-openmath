@@ -3,7 +3,7 @@ mod extract;
 mod formulas;
 mod irreducible;
 use formulas::formula;
-mod order;
+pub(crate) mod order;
 mod radical;
 mod real;
 pub use radical::radical_path;

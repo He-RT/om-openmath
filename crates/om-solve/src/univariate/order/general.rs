@@ -127,7 +127,7 @@ fn enclosure_of(value: &Algebraic, bits: u32, ctx: &Interrupt) -> Result<CBall, 
         .enclosure(bits, ctx)?
         .ok_or_else(|| SolveError::Unsupported("certified root enclosure failed".into()))
 }
-fn bounds(b: &Ball) -> Option<(Rational, Rational)> {
+pub(super) fn bounds(b: &Ball) -> Option<(Rational, Rational)> {
     fn dyadic(v: &BigFloat) -> Option<Rational> {
         let r = v.repr();
         if !r.is_finite() || r.exponent().unsigned_abs() > 262144 {
@@ -142,6 +142,39 @@ fn bounds(b: &Ball) -> Option<(Rational, Rational)> {
     }
     let (m, r) = (dyadic(&b.mid)?, dyadic(&b.rad)?);
     Some((&m - &r, m + r))
+}
+pub(super) fn key(value: Algebraic, ctx: &Interrupt) -> Result<Key, SolveError> {
+    if let Algebraic::Complex(c) = &value {
+        let real_count = om_poly::isolate(&c.minpoly, ctx)?
+            .ok_or_else(|| SolveError::Unsupported("coordinate real count unavailable".into()))?
+            .len();
+        let offset = c.index - 1 - real_count;
+        let pair = if offset.is_multiple_of(2) {
+            c.index + 1
+        } else {
+            c.index - 1
+        };
+        let conjugate = algebraic_root(&c.minpoly, pair, ctx)?
+            .ok_or_else(|| SolveError::Unsupported("coordinate conjugate unavailable".into()))?;
+        Ok(Key {
+            nonreal: true,
+            re: Algebraic::Rational(Rational::ZERO),
+            im: Algebraic::Rational(Rational::ZERO),
+            general: Some(ComplexKey {
+                value,
+                conjugate,
+                re: RefCell::new(None),
+                im: RefCell::new(None),
+            }),
+        })
+    } else {
+        Ok(Key {
+            nonreal: false,
+            re: value,
+            im: Algebraic::Rational(Rational::ZERO),
+            general: None,
+        })
+    }
 }
 fn overlaps(a: &CBall, b: &CBall) -> bool {
     [&a.re, &a.im]

@@ -17,3 +17,5 @@ pub mod normalize;
 /// Polynomial candidate solving with exact multiplicities and recorded formulas.
 pub mod univariate;
 pub use linear::linear_system;
+mod polynomial_system;
+pub use polynomial_system::poly_system;

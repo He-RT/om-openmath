@@ -4,13 +4,101 @@ use crate::SolveError;
 use om_core::{Expr, canonical_cmp};
 use om_num::{Integer, Rational, ctx::Interrupt};
 use om_poly::{Algebraic, UPoly, isolate, real_alg};
+use std::cell::RefCell;
 use std::cmp::Ordering;
 mod general;
-pub(super) struct Key {
+pub(crate) struct Key {
     pub nonreal: bool,
     pub re: Algebraic,
     pub im: Algebraic,
     general: Option<general::ComplexKey>,
+}
+pub(crate) struct Coordinate {
+    value: Expr,
+    key: RefCell<Option<Key>>,
+}
+pub(crate) fn coordinate(value: &Expr) -> Coordinate {
+    Coordinate {
+        value: value.clone(),
+        key: RefCell::new(None),
+    }
+}
+/// Compare numeric coordinates using directed projections, then exact algebraic ties.
+/// Parameter expressions retain the canonical symbolic ordering policy.
+pub(crate) fn compare_coordinates(
+    a_coordinate: &Coordinate,
+    b_coordinate: &Coordinate,
+    ctx: &Interrupt,
+) -> Result<Ordering, SolveError> {
+    ctx.tick()?;
+    let a = &a_coordinate.value;
+    let b = &b_coordinate.value;
+    if a == b {
+        return Ok(Ordering::Equal);
+    }
+    if !a.free_symbols().is_empty() || !b.free_symbols().is_empty() {
+        return Ok(canonical_cmp(a, b));
+    }
+    if let (Some(a), Some(b)) = (
+        om_simplify::numeval::enclose(a, 128, ctx)?,
+        om_simplify::numeval::enclose(b, 128, ctx)?,
+    ) {
+        let classify = |b: &om_num::Ball| {
+            if b.mid == om_num::BigFloat::ZERO && b.rad == om_num::BigFloat::ZERO {
+                Some(false)
+            } else if b.excludes_zero() {
+                Some(true)
+            } else {
+                None
+            }
+        };
+        if let (Some(ar), Some(br)) = (classify(&a.im), classify(&b.im)) {
+            let real = ar.cmp(&br);
+            if real != Ordering::Equal {
+                return Ok(real);
+            }
+            for (aa, bb) in [(&a.re, &b.re), (&a.im, &b.im)] {
+                let (Some(aa), Some(bb)) = (general::bounds(aa), general::bounds(bb)) else {
+                    break;
+                };
+                if aa.1 < bb.0 {
+                    return Ok(Ordering::Less);
+                }
+                if bb.1 < aa.0 {
+                    return Ok(Ordering::Greater);
+                }
+                if aa.0 != aa.1 || bb.0 != bb.1 {
+                    break;
+                }
+            }
+        }
+    }
+    for c in [a_coordinate, b_coordinate] {
+        if c.key.borrow().is_none() {
+            let value =
+                om_simplify::root_reduce::to_algebraic(&c.value, ctx)?.ok_or_else(|| {
+                    SolveError::Unsupported("coordinate ordering certification unavailable".into())
+                })?;
+            *c.key.borrow_mut() = Some(general::key(value, ctx)?);
+        }
+    }
+    let a_key = a_coordinate.key.borrow();
+    let b_key = b_coordinate.key.borrow();
+    let a = a_key
+        .as_ref()
+        .expect("invariant: coordinate key just certified");
+    let b = b_key
+        .as_ref()
+        .expect("invariant: coordinate key just certified");
+    let real = a.nonreal.cmp(&b.nonreal);
+    if real != Ordering::Equal {
+        return Ok(real);
+    }
+    let re = general::compare(a, b, false, ctx)?;
+    if re != Ordering::Equal {
+        return Ok(re);
+    }
+    general::compare(a, b, true, ctx)
 }
 pub(super) fn assign(
     p: &UPoly<Integer>,

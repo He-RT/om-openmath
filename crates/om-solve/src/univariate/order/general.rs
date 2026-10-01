@@ -41,6 +41,7 @@ pub(super) fn assign(
             ctx,
         )?],
     );
+    let mut proofs = vec![];
     for candidate in found {
         let mut bits = 128;
         let index = loop {
@@ -84,6 +85,7 @@ pub(super) fn assign(
         }
         used[index] = true;
         let value = roots[index].clone();
+        proofs.push((candidate.value.clone(), value.clone()));
         if index < real_count {
             om_simplify::numeval::remember_real(&candidate.value, &value);
         }
@@ -112,6 +114,9 @@ pub(super) fn assign(
                 }),
             }
         });
+    }
+    for (e, value) in proofs {
+        super::remember(&e, &value);
     }
     Ok(())
 }

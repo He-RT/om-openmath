@@ -146,9 +146,11 @@ fn approximation_threads_and_uses_the_complex_principal_branch() {
 fn all_docs_matches_implemented_milestones_and_elementary_functions_check_arity() {
     let names = "Abs And Append Apply ArcCos ArcCosh ArcCot ArcCsc ArcSec ArcSin ArcSinh ArcTan ArcTanh Arg Binomial Ceiling Clear CompoundExpression Conjugate Cos Cosh Cot Coth Csc Csch Denominator Divide Element Equal Exp FactorInteger Factorial First Floor Function GCD Greater GreaterEqual Hold HoldForm Im Inequality LCM Last Length Less LessEqual List Log Map Minus Mod N Not Numerator Or Out Part Plus Power PrimeQ Product ProductLog Quotient Range Re ReplaceAll ReplaceRepeated Rest Round Rule RuleDelayed SameQ Sec Sech Set SetDelayed Sign Sin Sinh Slot Sqrt Subtract Sum Table Tan Tanh Times Unequal Unset";
     let algebra = "Expand Factor Together Cancel Apart Simplify FullSimplify Collect Coefficient CoefficientList Exponent PolynomialQ PolynomialGCD PolynomialLCM PolynomialQuotient PolynomialRemainder Resultant Discriminant Variables D RootReduce ToRadicals";
+    let solving = "Solve NSolve FindRoot Reduce Eliminate SolveValues NSolveValues Roots Root ConditionalExpression";
     let mut expected: Vec<_> = names
         .split_whitespace()
         .chain(algebra.split_whitespace())
+        .chain(solving.split_whitespace())
         .collect();
     expected.sort();
     let actual: Vec<_> = Evaluator::all_docs().map(|d| d.name).collect();

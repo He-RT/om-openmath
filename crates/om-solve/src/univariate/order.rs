@@ -2,11 +2,48 @@
 use super::Candidate;
 use crate::SolveError;
 use om_core::{Expr, canonical_cmp};
-use om_num::{Integer, Rational, ctx::Interrupt};
+use om_num::{
+    Integer, Rational,
+    ctx::{Abort, Interrupt},
+};
 use om_poly::{Algebraic, UPoly, isolate, real_alg};
 use std::cell::RefCell;
 use std::cmp::Ordering;
 mod general;
+thread_local! {
+    static CERTIFICATES: RefCell<Vec<(Expr,Algebraic)>> = const {RefCell::new(Vec::new())};
+}
+pub(super) fn remember(e: &Expr, value: &Algebraic) {
+    CERTIFICATES.with(|cache| {
+        let mut cache = cache.borrow_mut();
+        if let Some((_, a)) = cache.iter_mut().find(|(v, _)| v == e) {
+            *a = value.clone();
+        } else {
+            if cache.len() == 256 {
+                cache.remove(0);
+            }
+            cache.push((e.clone(), value.clone()));
+        }
+    });
+}
+pub(crate) fn certified(e: &Expr) -> Option<Algebraic> {
+    CERTIFICATES.with(|cache| {
+        cache
+            .borrow()
+            .iter()
+            .rev()
+            .find(|(v, _)| v == e)
+            .map(|(_, a)| a.clone())
+    })
+}
+pub(crate) fn algebraic(e: &Expr, ctx: &Interrupt) -> Result<Option<Algebraic>, Abort> {
+    ctx.tick()?;
+    if let Some(value) = certified(e) {
+        Ok(Some(value))
+    } else {
+        om_simplify::root_reduce::to_algebraic(e, ctx)
+    }
+}
 pub(crate) struct Key {
     pub nonreal: bool,
     pub re: Algebraic,
@@ -75,10 +112,9 @@ pub(crate) fn compare_coordinates(
     }
     for c in [a_coordinate, b_coordinate] {
         if c.key.borrow().is_none() {
-            let value =
-                om_simplify::root_reduce::to_algebraic(&c.value, ctx)?.ok_or_else(|| {
-                    SolveError::Unsupported("coordinate ordering certification unavailable".into())
-                })?;
+            let value = algebraic(&c.value, ctx)?.ok_or_else(|| {
+                SolveError::Unsupported("coordinate ordering certification unavailable".into())
+            })?;
             *c.key.borrow_mut() = Some(general::key(value, ctx)?);
         }
     }

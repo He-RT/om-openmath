@@ -13,6 +13,8 @@ mod logic;
 mod numeric;
 mod scalar;
 mod scalar_registry;
+mod solver;
+mod solver_registry;
 mod structure;
 mod structure_registry;
 mod types;

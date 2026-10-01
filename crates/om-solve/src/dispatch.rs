@@ -176,12 +176,25 @@ fn same(a: &Solution, b: &Solution, ctx: &Interrupt) -> Result<bool, SolveError>
         return Ok(false);
     }
     for ((av, a), (bv, b)) in a.rules.iter().zip(&b.rules) {
-        if av != bv
-            || (a != b
-                && crate::univariate::verification_zero(&om_core::sub(a.clone(), b.clone()), ctx)?
-                    != om_simplify::zero::Tri::Zero)
-        {
+        if av != bv {
             return Ok(false);
+        }
+        if a != b {
+            if let (Some(aa), Some(bb)) = (
+                crate::univariate::order::certified(a),
+                crate::univariate::order::certified(b),
+            ) && let Some(equal) = aa.equals(&bb, ctx)?
+            {
+                if !equal {
+                    return Ok(false);
+                }
+                continue;
+            }
+            if crate::univariate::verification_zero(&om_core::sub(a.clone(), b.clone()), ctx)?
+                != om_simplify::zero::Tri::Zero
+            {
+                return Ok(false);
+            }
         }
     }
     Ok(true)

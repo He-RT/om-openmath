@@ -478,6 +478,10 @@ impl Evaluator {
             });
         } else if let Some(spec) = spec {
             if let Some(new) = (spec.f)(self, &args, ctx)? {
+                if crate::solver::terminal(spec.symbol) {
+                    values.push(new);
+                    return Ok(());
+                }
                 frames.push(Frame::Rewrite {
                     old: rebuilt,
                     new,

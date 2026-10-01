@@ -31,7 +31,7 @@ fn coordinate(
     cache: &mut Vec<(UPoly<om_num::Integer>, Vec<RootDisk>)>,
     ctx: &Interrupt,
 ) -> Result<Number, SolveError> {
-    let value = om_simplify::root_reduce::to_algebraic(e, ctx)?.ok_or_else(|| {
+    let value = crate::univariate::order::algebraic(e, ctx)?.ok_or_else(|| {
         SolveError::Unsupported("NSolve requires closed algebraic coordinates".into())
     })?;
     if let Algebraic::Rational(q) = &value {
@@ -94,17 +94,23 @@ pub fn nsolve(
     precision: Precision,
     ctx: &Interrupt,
 ) -> Result<SolveOutcome, SolveError> {
+    nsolve_with_options(eqs, vars, precision, &SolveOptions::default(), ctx)
+}
+/// Numerical solving with domain, construction and lazy recording preferences.
+/// The precision and raw-source verification contract matches [`nsolve`].
+pub fn nsolve_with_options(
+    eqs: &Expr,
+    vars: &[Expr],
+    precision: Precision,
+    opts: &SolveOptions,
+    ctx: &Interrupt,
+) -> Result<SolveOutcome, SolveError> {
     ctx.tick()?;
     let bits = bits(precision)?;
-    let prepared = crate::normalize::normalize(
-        eqs,
-        Some(vars),
-        crate::Domain::Complexes,
-        ctx,
-        &mut crate::NoSteps,
-    )?;
+    let prepared =
+        crate::normalize::normalize(eqs, Some(vars), opts.domain, ctx, &mut crate::NoSteps)?;
     let exact = exactify::input(eqs, ctx)?;
-    let mut result = crate::solve(&exact, vars, &SolveOptions::default(), ctx)?;
+    let mut result = crate::solve(&exact, vars, opts, ctx)?;
     let SolutionSet::Finite(roots) = &mut result.set else {
         for m in &mut result.messages {
             m.symbol = "NSolve".into();

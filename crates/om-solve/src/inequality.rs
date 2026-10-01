@@ -37,15 +37,24 @@ pub fn reduce(
         domain,
         ..SolveOptions::default()
     };
+    reduce_with_options(expr, vars, &opts, ctx)
+}
+/// Reduction with construction options and computation-time recording control.
+pub fn reduce_with_options(
+    expr: &Expr,
+    vars: &[Expr],
+    opts: &SolveOptions,
+    ctx: &Interrupt,
+) -> Result<SolveOutcome, SolveError> {
     if !has(expr, ctx)? {
-        let mut result = crate::solve(expr, vars, &opts, ctx)?;
+        let mut result = crate::solve(expr, vars, opts, ctx)?;
         result.set = equations(result.set, vars, ctx)?;
         for m in &mut result.messages {
             m.symbol = "Reduce".into();
         }
         return Ok(result);
     }
-    reduce_with(expr, vars, &opts, ctx, "Reduce")
+    reduce_with(expr, vars, opts, ctx, "Reduce")
 }
 fn equations(set: SolutionSet, vars: &[Expr], ctx: &Interrupt) -> Result<SolutionSet, SolveError> {
     let mut intervals = vec![];
@@ -60,7 +69,7 @@ fn equations(set: SolutionSet, vars: &[Expr], ctx: &Interrupt) -> Result<Solutio
                     && root.constants.is_empty()
                     && root.condition.is_none()
                     && matches!(
-                        om_simplify::root_reduce::to_algebraic(&root.rules[0].1, ctx)?,
+                        crate::univariate::order::algebraic(&root.rules[0].1, ctx)?,
                         Some(om_poly::Algebraic::Rational(_) | om_poly::Algebraic::Real(_))
                     )
                 {
@@ -273,7 +282,7 @@ fn complex_alternatives(
                         || root.condition.is_some()
                         || !root.constants.is_empty()
                         || !matches!(
-                            om_simplify::root_reduce::to_algebraic(&root.rules[0].1, ctx)?,
+                            crate::univariate::order::algebraic(&root.rules[0].1, ctx)?,
                             Some(om_poly::Algebraic::Rational(_) | om_poly::Algebraic::Real(_))
                         )
                     {

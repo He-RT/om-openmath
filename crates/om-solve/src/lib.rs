@@ -4,11 +4,11 @@
 mod dispatch;
 mod domain;
 mod inequality;
-pub use inequality::reduce;
+pub use inequality::{reduce, reduce_with_options};
 mod elimination;
 pub use elimination::eliminate;
 mod numeric;
-pub use numeric::nsolve;
+pub use numeric::{nsolve, nsolve_with_options};
 mod local;
 pub use local::find_root;
 mod verification;

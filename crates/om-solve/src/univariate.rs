@@ -4,7 +4,9 @@ mod formulas;
 mod irreducible;
 use formulas::formula;
 mod order;
+mod radical;
 mod real;
+pub use radical::radical_path;
 mod reductions;
 mod symbolic;
 use crate::{

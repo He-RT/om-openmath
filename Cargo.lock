@@ -2306,6 +2306,7 @@ dependencies = [
  "om-num",
  "om-parse",
  "om-poly",
+ "proptest",
  "thiserror 2.0.21",
 ]
 

@@ -13,6 +13,7 @@ om-poly.workspace = true
 thiserror.workspace = true
 
 [dev-dependencies]
+proptest.workspace = true
 om-parse.workspace = true
 
 [lints]

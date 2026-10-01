@@ -132,7 +132,7 @@ fn constants_exact_special_coefficients_and_unsupported_paths_are_honest() {
     for input in ["7/3", "a"] {
         assert!(values(&roots(input).set).is_empty(), "{input}");
     }
-    for input in ["x^3-2", "x^5-x+1", "Sin[x]-1", "1/x-1", "(x-1)*(x^3-2)"] {
+    for input in ["x^5-x+1", "Sin[x]-1", "1/x-1", "(x-1)*(x^5-x+1)"] {
         assert!(
             matches!(roots(input).set, SolutionSet::Unevaluated),
             "{input}"

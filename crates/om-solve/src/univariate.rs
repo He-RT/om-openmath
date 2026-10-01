@@ -1,6 +1,7 @@
 //! Complex polynomial candidates; original-equation validation belongs to the dispatcher.
 mod extract;
 mod order;
+mod reductions;
 mod symbolic;
 use crate::{
     ExclReason, Formula, Level, MaxExtra, Solution, SolutionSet, SolveError, SolveOptions, Step,
@@ -303,26 +304,20 @@ fn numeric(
             .iter()
             .map(|c| Expr::integer(c.clone()))
             .collect::<Vec<_>>();
-        let computed = formula(&coefficients, &polynomial, ctx, sink);
+        let computed = reductions::roots(&coefficients, &polynomial, x, ctx, sink);
         if sink.enabled() {
             sink.exit();
         }
         let Some(mut found) = computed? else {
             return Ok(None);
         };
-        let keys = order::keys(&f, ctx)?;
-        if found.len() != keys.len() {
-            return Err(SolveError::Unsupported(
-                "root ordering count mismatch".into(),
-            ));
-        }
-        for (root, key) in found.iter_mut().zip(keys) {
+        order::assign(&f, &mut found, ctx)?;
+        for root in &mut found {
             ctx.tick()?;
             root.multiplicity = root
                 .multiplicity
                 .checked_mul(m)
                 .ok_or_else(|| SolveError::Unsupported("root multiplicity overflow".into()))?;
-            root.key = Some(key);
         }
         roots.extend(found);
     }

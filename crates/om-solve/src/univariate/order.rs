@@ -5,10 +5,31 @@ use om_core::{Expr, canonical_cmp};
 use om_num::{Integer, Rational, ctx::Interrupt};
 use om_poly::{Algebraic, UPoly, isolate, real_alg};
 use std::cmp::Ordering;
+mod general;
 pub(super) struct Key {
     pub nonreal: bool,
     pub re: Algebraic,
     pub im: Algebraic,
+    general: Option<general::ComplexKey>,
+}
+pub(super) fn assign(
+    p: &UPoly<Integer>,
+    found: &mut [Candidate],
+    ctx: &Interrupt,
+) -> Result<(), SolveError> {
+    if p.degree().is_some_and(|n| n > 2) {
+        return general::assign(p, found, ctx);
+    }
+    let keys = keys(p, ctx)?;
+    if found.len() != keys.len() {
+        return Err(SolveError::Unsupported(
+            "root ordering count mismatch".into(),
+        ));
+    }
+    for (root, key) in found.iter_mut().zip(keys) {
+        root.key = Some(key);
+    }
+    Ok(())
 }
 pub(super) fn keys(p: &UPoly<Integer>, ctx: &Interrupt) -> Result<Vec<Key>, SolveError> {
     if p.degree() == Some(1) {
@@ -18,6 +39,7 @@ pub(super) fn keys(p: &UPoly<Integer>, ctx: &Interrupt) -> Result<Vec<Key>, Solv
                 -Rational::from(p.coeffs[0].clone()) / Rational::from(p.coeffs[1].clone()),
             ),
             im: Algebraic::Rational(Rational::ZERO),
+            general: None,
         }]);
     }
     let a = &p.coeffs[2];
@@ -42,6 +64,7 @@ pub(super) fn keys(p: &UPoly<Integer>, ctx: &Interrupt) -> Result<Vec<Key>, Solv
                 nonreal: false,
                 re: value,
                 im: Algebraic::Rational(Rational::ZERO),
+                general: None,
             }
         } else {
             Key {
@@ -50,6 +73,7 @@ pub(super) fn keys(p: &UPoly<Integer>, ctx: &Interrupt) -> Result<Vec<Key>, Solv
                     -Rational::from(b.clone()) / Rational::from(Integer::from(2) * a),
                 ),
                 im: value,
+                general: None,
             }
         });
     }
@@ -75,16 +99,11 @@ fn compare(a: &Candidate, b: &Candidate, ctx: &Interrupt) -> Result<Ordering, So
         if real != Ordering::Equal {
             return Ok(real);
         }
-        let re =
-            a.re.cmp_real(&b.re, ctx)?
-                .ok_or_else(|| SolveError::Unsupported("real root comparison failed".into()))?;
+        let re = general::compare(a, b, false, ctx)?;
         if re != Ordering::Equal {
             return Ok(re);
         }
-        let im = a
-            .im
-            .cmp_real(&b.im, ctx)?
-            .ok_or_else(|| SolveError::Unsupported("imaginary root comparison failed".into()))?;
+        let im = general::compare(a, b, true, ctx)?;
         if im != Ordering::Equal {
             return Ok(im);
         }

@@ -265,3 +265,16 @@ fn huge_binary_exponents_do_not_materialize_enormous_rationals() {
         );
     }
 }
+#[test]
+fn positive_integer_powers_enclose_bases_whose_balls_contain_zero() {
+    let z = om_simplify::numeval::enclose(&e("Sin[Pi]^2"), 128, &Interrupt::default())
+        .unwrap()
+        .unwrap();
+    assert!(z.re.contains_zero());
+    assert!(z.re.rad.repr().is_finite() && z.im.rad.repr().is_finite());
+    assert!(
+        om_simplify::numeval::enclose(&e("1/Sin[Pi]"), 128, &Interrupt::default())
+            .unwrap()
+            .is_none()
+    );
+}

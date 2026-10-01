@@ -3,7 +3,7 @@ use om_num::{
     Integer, Rational,
     ctx::{Abort, Interrupt},
 };
-use om_poly::{Algebraic, ComplexAlg, RealAlg, UPoly, algebraic_root, real_alg};
+use om_poly::{Algebraic, ComplexAlg, RealAlg, UPoly, algebraic_root, algebraic_roots, real_alg};
 use proptest::prelude::*;
 use std::cmp::Ordering;
 fn z(c: &[i64]) -> UPoly<Integer> {
@@ -19,6 +19,28 @@ fn rational(a: &Algebraic) -> Rational {
         Algebraic::Rational(q) => q.clone(),
         _ => panic!("expected rational: {a:?}"),
     }
+}
+#[test]
+fn batch_certified_roots_preserve_distinct_identity_and_index_numbering() {
+    let ctx = Interrupt::default();
+    let p = z(&[-2, 0, 0, 1]).mul(&z(&[1, -2, 1]), &ctx).unwrap();
+    let roots = algebraic_roots(&p, &ctx).unwrap().unwrap();
+    assert_eq!(roots.len(), 4);
+    assert_eq!(rational(&roots[0]), Rational::ONE);
+    assert!(matches!(roots[1], Algebraic::Real(_)));
+    for (i, root) in roots.iter().enumerate() {
+        assert_eq!(
+            root.equals(&algebraic_root(&p, i + 1, &ctx).unwrap().unwrap(), &ctx)
+                .unwrap(),
+            Some(true)
+        );
+    }
+    for p in [z(&[]), z(&[1])] {
+        assert!(algebraic_roots(&p, &ctx).unwrap().is_none());
+    }
+    let ctx = Interrupt::default();
+    ctx.steps_left.set(0);
+    assert!(matches!(algebraic_roots(&p, &ctx), Err(Abort::Budget)));
 }
 #[test]
 fn authority_sum_and_product_have_irreducible_minpolys_and_correct_real_roots() {

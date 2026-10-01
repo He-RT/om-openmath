@@ -1,5 +1,5 @@
 //! Extract the exact zero-root valuation before applying parameter coefficient formulas.
-use super::{Candidate, formula};
+use super::{Candidate, reductions};
 use crate::{Level, SolveError, Step, StepKind, StepSink};
 use om_core::{Expr, add, mul, pow};
 use om_num::{Integer, ctx::Interrupt};
@@ -59,7 +59,7 @@ pub(super) fn roots(
     let mut roots = if rest.len() == 1 {
         vec![]
     } else {
-        let Some(roots) = formula(rest, &quotient, ctx, sink)? else {
+        let Some(roots) = reductions::roots(rest, &quotient, x, ctx, sink)? else {
             return Ok(None);
         };
         roots

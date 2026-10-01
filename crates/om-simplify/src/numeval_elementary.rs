@@ -189,6 +189,9 @@ fn exp(z: &CBall) -> Option<CBall> {
     })
 }
 fn exp_range(b: &Ball) -> bool {
+    if !b.mid.repr().is_finite() || !b.rad.repr().is_finite() {
+        return false;
+    }
     let magnitude = (if b.mid < BigFloat::ZERO {
         -&b.mid
     } else {
@@ -343,7 +346,13 @@ fn power(
         if zero(&base.re) && zero(&base.im) {
             return Ok((n > &Integer::ZERO).then(|| integer(0, bits)));
         }
-        if !n.is_zero() && !exp_range(&ln(base).mul(exponent).re) {
+        let contains_zero = base.re.contains_zero() && base.im.contains_zero();
+        if n < &Integer::ZERO && contains_zero {
+            return Ok(None);
+        }
+        // Positive integer powers are analytic at zero. A logarithmic range probe
+        // would be undefined on a valid base enclosure spanning zero.
+        if !n.is_zero() && !contains_zero && !exp_range(&ln(base).mul(exponent).re) {
             return Ok(None);
         }
         let mut base = if n < &Integer::ZERO {

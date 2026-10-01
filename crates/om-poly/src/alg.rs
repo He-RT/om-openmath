@@ -191,6 +191,16 @@ pub fn algebraic_root(
     if index == 0 {
         return Ok(None);
     }
+    Ok(algebraic_roots(f, ctx)?.and_then(|roots| roots.into_iter().nth(index - 1)))
+}
+/// Certify all distinct roots in the same one-based order used by algebraic_root.
+/// Shares one factorization/isolation/sort; multiplicities are ignored.
+/// Zero/constant input, degree >64 or exhausted certification returns None.
+pub fn algebraic_roots(
+    f: &UPoly<Integer>,
+    ctx: &Interrupt,
+) -> Result<Option<Vec<Algebraic>>, Abort> {
+    ctx.tick()?;
     let Some(factors) = factors(f, ctx)? else {
         return Ok(None);
     };
@@ -205,7 +215,7 @@ pub fn algebraic_root(
     let Some(all) = ordering::sort(all, ctx)? else {
         return Ok(None);
     };
-    Ok(all.into_iter().nth(index - 1))
+    Ok(Some(all))
 }
 pub(super) fn factors(f: &Poly, ctx: &Interrupt) -> Result<Option<Vec<Poly>>, Abort> {
     ctx.tick()?;

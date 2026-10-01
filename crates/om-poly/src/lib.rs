@@ -24,7 +24,7 @@ mod ring;
 mod squarefree;
 mod upoly;
 
-pub use alg::{Algebraic, ComplexAlg, RealAlg, algebraic_root, real_alg};
+pub use alg::{Algebraic, ComplexAlg, RealAlg, algebraic_root, algebraic_roots, real_alg};
 pub use complex_roots::{RootDisk, complex_roots};
 pub use dimension::{IdealDimension, ideal_dimension, is_zero_dimensional};
 pub use factor_z::{FactorStatus, IntegerFactorization};

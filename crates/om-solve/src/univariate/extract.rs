@@ -154,7 +154,7 @@ pub(super) fn depends(e: &Expr, x: &Expr, ctx: &Interrupt) -> Result<bool, om_nu
     }
     Ok(false)
 }
-fn special(e: &Expr, ctx: &Interrupt) -> Result<Expr, om_num::ctx::Abort> {
+pub(super) fn special(e: &Expr, ctx: &Interrupt) -> Result<Expr, om_num::ctx::Abort> {
     enum Frame<'a> {
         Enter(&'a Expr),
         Build(&'a om_core::Normal),

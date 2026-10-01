@@ -9,6 +9,7 @@ mod real;
 pub use radical::radical_path;
 mod reductions;
 mod symbolic;
+mod transcendental;
 use crate::{
     Domain, ExclReason, Level, MaxExtra, Solution, SolutionSet, SolveError, SolveOptions, Step,
     StepKind, StepSink, Verification,
@@ -20,6 +21,7 @@ use om_simplify::{
     algebra::cancel_with,
     zero::{Tri, is_zero_with},
 };
+pub use transcendental::transcendental_path;
 /// Candidate solutions with the generic conditions under which they were constructed.
 #[derive(Clone, Debug)]
 pub struct PolynomialRoots {

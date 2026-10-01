@@ -12,7 +12,7 @@ use om_num::{
 use om_simplify::zero::{Tri, UnknownReason, is_zero_with};
 use std::cell::Cell;
 
-pub(super) fn zero(e: &Expr, ctx: &Interrupt) -> Result<Tri, SolveError> {
+pub(in crate::univariate) fn zero(e: &Expr, ctx: &Interrupt) -> Result<Tri, SolveError> {
     const LIMIT: u64 = 16_384;
     let available = ctx.steps_left.get();
     let budget = available.min(LIMIT);
@@ -30,7 +30,7 @@ pub(super) fn zero(e: &Expr, ctx: &Interrupt) -> Result<Tri, SolveError> {
         result => Ok(result?),
     }
 }
-fn numeric(e: &Expr, ctx: &Interrupt) -> Result<bool, SolveError> {
+pub(in crate::univariate) fn numeric(e: &Expr, ctx: &Interrupt) -> Result<bool, SolveError> {
     for bits in [128, 512] {
         ctx.tick()?;
         let Some(z) = om_simplify::numeval::enclose(e, bits, ctx)? else {
@@ -58,7 +58,7 @@ fn nonzero(e: &Expr, ctx: &Interrupt) -> Result<bool, SolveError> {
         }
     }
 }
-pub(super) fn global_exclusions(
+pub(in crate::univariate) fn global_exclusions(
     exclusions: &[Exclusion],
     ctx: &Interrupt,
 ) -> Result<bool, SolveError> {

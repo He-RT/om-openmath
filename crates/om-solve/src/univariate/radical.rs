@@ -1,7 +1,7 @@
 //! Radical elimination generates candidates; original principal values accept them.
 mod collect;
 mod eliminate;
-mod verify;
+pub(super) mod verify;
 use super::{PolynomialRoots, extract, poly_uni, reductions};
 use crate::{
     Level, MaxExtra, NoSteps, SolutionSet, SolveError, SolveOptions, Step, StepKind, StepSink,
@@ -75,6 +75,15 @@ fn run(
         });
     };
     let Some(work) = branch.equations.first() else {
+        if verify::zero(e, ctx)? == om_simplify::zero::Tri::Zero
+            && verify::global_exclusions(&branch.exclusions, ctx)?
+        {
+            return Ok(PolynomialRoots {
+                set: SolutionSet::All,
+                assumptions: vec![],
+                messages: normalized.messages,
+            });
+        }
         return Ok(unsupported(e, normalized.messages, sink));
     };
     let polynomial = extract::coefficients(work, x, ctx)?.is_some();

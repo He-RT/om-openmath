@@ -100,3 +100,6 @@ M9.12 discrete-membership policy: the exact rational 1+2^−100 rounds to one in
 
 
 M9.13 final review regressions: conditioned identities must retain the requested Reals/Integers/Rationals domain even with no assignment rules, while plain identities stay All. Exact symbolic identities keep their exact proof after parameter-domain probes. A failed numeric evaluation of a closed equality is Unknown unless a nonzero enclosure proves false. Equivalent union guards are flattened, sorted and deduplicated before assignment comparison; duplicate alternatives retain maximum root multiplicity. Each behavior was confirmed RED before repair; original authority expectations are unchanged.
+
+
+M9.14 review regressions: an 80-fold linear root is supported because certification applies after factorization, rather than rejecting the original dense degree above 64. The dense-degree limit remains 4096. For default Complexes logical unions such as x<0||x^2+1==0, a real interval chart cannot silently omit the imaginary solutions; decline atomically unless another unconditional All branch absorbs the union, independently of source order. Explicit Reals still reduces this example to x<0. These regressions retain the original expressions and were RED before repair.

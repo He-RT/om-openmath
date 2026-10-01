@@ -17,6 +17,9 @@ pub fn solve(
     opts: &SolveOptions,
     ctx: &Interrupt,
 ) -> Result<SolveOutcome, SolveError> {
+    if crate::inequality::has(eqs, ctx)? {
+        return crate::inequality::reduce_with(eqs, vars, opts, ctx, "Solve");
+    }
     if opts.record_steps {
         let mut recorder = StepRecorder::new();
         let (set, messages) = run(eqs, vars, opts, ctx, &mut recorder)?;
@@ -34,7 +37,7 @@ pub fn solve(
         })
     }
 }
-fn input(branch: &normalize::NormalizedBranch) -> Expr {
+pub(crate) fn input(branch: &normalize::NormalizedBranch) -> Expr {
     Expr::call(
         B::LIST,
         branch

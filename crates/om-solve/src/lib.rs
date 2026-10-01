@@ -3,6 +3,8 @@
 
 mod dispatch;
 mod domain;
+mod inequality;
+pub use inequality::reduce;
 mod verification;
 pub use dispatch::solve;
 mod steps;

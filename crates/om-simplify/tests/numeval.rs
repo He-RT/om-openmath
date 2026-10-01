@@ -346,3 +346,49 @@ fn certified_real_sum_survives_rational_distribution_without_replacing_real_part
         .unwrap();
     assert!(z.im.excludes_zero());
 }
+
+#[test]
+fn principal_product_log_has_certified_two_hundred_digit_real_residuals() {
+    use om_num::Precision;
+    use om_simplify::numeval::enclose;
+    for argument in ["0", "1", "1/1000", "10", "10^100", "10^-100"] {
+        let w = format!("ProductLog[{argument}]");
+        let z = enclose(&e(&w), 700, &Interrupt::default())
+            .unwrap()
+            .expect(&w);
+        assert_eq!(z.im.mid, BigFloat::ZERO);
+        assert_eq!(z.im.rad, BigFloat::ZERO);
+        let residual = e(&format!("({w} Exp[{w}]-({argument}))/(1+({argument}))"));
+        let z = enclose(&residual, 700, &Interrupt::default())
+            .unwrap()
+            .unwrap();
+        let limit = BigFloat::from_parts(1.into(), -400);
+        assert!(
+            z.re.contains_zero() && z.re.rad < limit,
+            "{argument}: {z:?}"
+        );
+    }
+    for precision in [Precision::Machine, Precision::Bits(200)] {
+        let w = approximate(&e("ProductLog[1]"), precision, &Interrupt::default())
+            .unwrap()
+            .unwrap();
+        assert!((w.to_f64().unwrap() - 0.5671432904097838).abs() < 1e-15);
+        assert_eq!(w.precision(), precision);
+    }
+    for src in [
+        "ProductLog[-1]",
+        "ProductLog[I]",
+        "ProductLog[1,1]",
+        "ProductLog[x]",
+    ] {
+        assert!(
+            enclose(&e(src), 128, &Interrupt::default())
+                .unwrap()
+                .is_none(),
+            "{src}"
+        );
+    }
+    let ctx = Interrupt::default();
+    ctx.steps_left.set(20);
+    assert!(enclose(&e("ProductLog[1]"), 700, &ctx).is_err());
+}

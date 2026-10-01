@@ -71,6 +71,14 @@ pub(super) fn formula(
             let denominator = mul([Expr::int(2), a.clone()]);
             let values = if is_zero_with(&d, ctx)? == Tri::Zero {
                 vec![(simplified(div(neg(b.clone()), denominator), ctx)?, 2)]
+            } else if b.is_zero()
+                && extract::exact(a).is_some()
+                && extract::exact(constant).is_some()
+            {
+                // Taking the square root of the exact ratio retains the compact
+                // reciprocal radical instead of expanding its denominator.
+                let s = sqrt(div(neg(constant.clone()), a.clone()));
+                vec![(neg(s.clone()), 1), (s, 1)]
             } else {
                 let s = sqrt(d);
                 vec![

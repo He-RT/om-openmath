@@ -23,7 +23,11 @@ pub(crate) fn empty() -> Solution {
         numeric: None,
     }
 }
-pub(crate) fn simplify_condition(c: &Expr, ctx: &Interrupt) -> Result<Expr, SolveError> {
+fn simplify_condition_in(
+    c: &Expr,
+    constants: &[(Expr, Domain)],
+    ctx: &Interrupt,
+) -> Result<Expr, SolveError> {
     ctx.tick()?;
     if c.is_head(B::AND) || c.is_head(B::OR) {
         let all = c.is_head(B::AND);
@@ -31,7 +35,7 @@ pub(crate) fn simplify_condition(c: &Expr, ctx: &Interrupt) -> Result<Expr, Solv
         let absorbing = if all { B::FALSE } else { B::TRUE };
         let neutral = if all { B::TRUE } else { B::FALSE };
         for arg in c.args() {
-            let v = simplify_condition(arg, ctx)?;
+            let v = simplify_condition_in(arg, constants, ctx)?;
             if v.as_symbol() == Some(absorbing) {
                 return Ok(v);
             }
@@ -51,6 +55,13 @@ pub(crate) fn simplify_condition(c: &Expr, ctx: &Interrupt) -> Result<Expr, Solv
             1 => conditions.remove(0),
             _ => Expr::normal(c.head(), conditions),
         });
+    }
+    if c.is_head(B::UNEQUAL)
+        && c.args().len() == 2
+        && c.args()[1].is_zero()
+        && check::periodic_nonzero(&c.args()[0], constants, ctx)?
+    {
+        return Ok(Expr::sym(B::TRUE));
     }
     Ok(match check::allows(c, ctx)? {
         Some(b) => Expr::sym(if b { B::TRUE } else { B::FALSE }),
@@ -121,7 +132,15 @@ fn constructed(
                 break;
             }
             let r = check::residual(&original.replace_all(&root.rules), ctx)?;
-            let outcome = verification_zero(&r, ctx)?;
+            let mut outcome = verification_zero(&r, ctx)?;
+            // Independent radical generators can hide a polynomial identity
+            // until expansion exposes their exact squared-base relations.
+            if outcome == Tri::NonZero
+                && let Some(expanded) = om_simplify::algebra::expand_with(&r, ctx)?
+                && verification_zero(&expanded, ctx)? == Tri::Zero
+            {
+                outcome = Tri::Zero;
+            }
             sink.record(|| {
                 Step::new(
                     StepKind::Verify {
@@ -285,7 +304,7 @@ pub(crate) fn apply(
             }
         }
         if let Some(c) = root.condition.take() {
-            let c = simplify_condition(&c, ctx)?;
+            let c = simplify_condition_in(&c, &root.constants, ctx)?;
             if c.as_symbol() == Some(B::FALSE) {
                 continue;
             }

@@ -60,6 +60,38 @@ impl Printer {
                 if head == Some(B::DIRECTED_INFINITY) && args.is_empty() {
                     return ("ComplexInfinity".into(), 130);
                 }
+                if head == Some(B::INEQUALITY)
+                    && !self.modern
+                    && args.len() >= 3
+                    && args.len() % 2 == 1
+                    && args.iter().skip(1).step_by(2).all(|e| {
+                        matches!(
+                            e.as_symbol(),
+                            Some(
+                                B::LESS
+                                    | B::LESS_EQUAL
+                                    | B::GREATER
+                                    | B::GREATER_EQUAL
+                                    | B::EQUAL
+                                    | B::UNEQUAL
+                            )
+                        )
+                    })
+                {
+                    let mut s = self.wrapped(&args[0], 61);
+                    for pair in args[1..].chunks_exact(2) {
+                        let (op, _) = self
+                            .operator(
+                                pair[0]
+                                    .as_symbol()
+                                    .expect("invariant: comparison symbol checked"),
+                            )
+                            .expect("invariant: comparison operator checked");
+                        s.push_str(op);
+                        s.push_str(&self.wrapped(&pair[1], 61));
+                    }
+                    return (s, 60);
+                }
                 if let Some(head) = head
                     && let Some((op, bp)) = self.operator(head)
                 {

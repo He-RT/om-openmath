@@ -244,3 +244,41 @@ fn equivalent_union_guards_deduplicate_without_summing_multiplicities() {
         Err(SolveError::Invalid(_))
     ));
 }
+
+#[test]
+fn generic_quadratic_original_residuals_keep_both_constructed_roots() {
+    let got = outcome("a x^2+b x+c==0", &["x"], Domain::Complexes);
+    let SolutionSet::Finite(roots) = got.set else {
+        panic!("generic quadratic")
+    };
+    assert_eq!(roots.len(), 2);
+    assert!(roots.iter().all(|r| r.verification == Verification::Exact));
+    for step in flatten(&got.steps.unwrap().root) {
+        if let StepKind::Verify {
+            outcome, residual, ..
+        } = &step.kind
+        {
+            assert_eq!(*outcome, om_simplify::zero::Tri::Zero);
+            assert!(residual.is_some());
+        }
+    }
+}
+
+#[test]
+fn pure_rational_quadratics_preserve_compact_exact_radicals() {
+    for (source, want) in [("2x^2==1", "1/Sqrt[2]"), ("3x^2==1", "1/Sqrt[3]")] {
+        let roots = finite(source, &["x"], Domain::Complexes);
+        assert_eq!(roots[0].rules[0].1, om_core::neg(e(want)));
+        assert_eq!(roots[1].rules[0].1, e(want));
+    }
+}
+
+#[test]
+fn tangent_integer_periods_do_not_expose_redundant_pole_conditions() {
+    for src in ["Tan[x]==1", "Tan[x]==0", "Cot[x]==1"] {
+        let roots = finite(src, &["x"], Domain::Complexes);
+        assert_eq!(roots.len(), 1);
+        assert_eq!(roots[0].constants.len(), 1);
+        assert_eq!(roots[0].condition, None, "{src}");
+    }
+}

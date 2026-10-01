@@ -12,7 +12,7 @@ pub(super) fn accepts(h: Symbol, n: usize) -> bool {
         "Minus" | "Sqrt" | "Exp" | "Sin" | "Cos" | "Tan" | "Cot" | "Sec" | "Csc" | "ArcSin"
         | "ArcCos" | "ArcCot" | "ArcSec" | "ArcCsc" | "Sinh" | "Cosh" | "Tanh" | "Coth"
         | "Sech" | "Csch" | "ArcSinh" | "ArcCosh" | "ArcTanh" | "Abs" | "Sign" | "Re" | "Im"
-        | "Conjugate" | "Arg" => n == 1,
+        | "Conjugate" | "Arg" | "ProductLog" => n == 1,
         _ => false,
     }
 }
@@ -92,6 +92,7 @@ pub(super) fn apply(
         "Divide" => z.div(&args[1]),
         "Minus" => neg(z),
         "Power" => return power(e, z, &args[1], bits, ctx),
+        "ProductLog" => return super::lambert::principal(z, bits, ctx),
         "Sqrt" => sqrt(z),
         "Exp" => {
             let Some(value) = exp(z) else {

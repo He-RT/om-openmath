@@ -5,6 +5,8 @@ use om_num::{Ball, BigFloat, BitTest, CBall, Complex, Integer, Number, Precision
 
 #[path = "numeval_elementary.rs"]
 mod elementary;
+#[path = "numeval_lambert.rs"]
+mod lambert;
 #[path = "numeval_real.rs"]
 mod realness;
 pub use realness::remember_real;

@@ -11,7 +11,7 @@ use crate::{
     Domain, Level, Solution, SolveError, SolveOptions, Step, StepKind, StepSink, Verification,
     normalize::Exclusion,
 };
-pub(crate) use condition::{allows, nonzero, residual};
+pub(crate) use condition::{allows, nonzero, periodic_nonzero, residual};
 use om_core::{BUILTIN as B, Expr, Message, MsgLevel};
 use om_num::{BigFloat, ctx::Interrupt};
 use om_simplify::{

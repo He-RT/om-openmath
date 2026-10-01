@@ -93,6 +93,55 @@ pub(crate) fn nonzero(e: &Expr, ctx: &Interrupt) -> Result<bool, SolveError> {
         }
     }
 }
+/// Sin and Cos change only sign under an integer multiple of Pi.
+pub(crate) fn periodic_nonzero(
+    e: &Expr,
+    constants: &[(Expr, crate::Domain)],
+    ctx: &Interrupt,
+) -> Result<bool, SolveError> {
+    if !matches!(e.head_symbol(), Some(B::SIN | B::COS)) || e.args().len() != 1 {
+        return Ok(false);
+    }
+    let Some(mut offset) = om_simplify::algebra::cancel_with(
+        &om_core::div(e.args()[0].clone(), Expr::sym(B::PI)),
+        &[],
+        ctx,
+    )?
+    else {
+        return Ok(false);
+    };
+    for (c, d) in constants {
+        ctx.tick()?;
+        if offset.free_of(c) {
+            continue;
+        }
+        if *d != crate::Domain::Integers {
+            return Ok(false);
+        }
+        let Some(p) = super::super::super::extract::coefficients(&offset, c, ctx)? else {
+            return Ok(false);
+        };
+        if p.values.len() > 2
+            || p.values.get(1).is_some_and(|v| {
+                super::super::super::extract::exact(v).is_none_or(|q| !q.denominator().is_one())
+            })
+        {
+            return Ok(false);
+        }
+        offset = p.values.first().cloned().unwrap_or_else(|| Expr::int(0));
+    }
+    if !offset.free_symbols().is_empty() || constants.iter().any(|(c, _)| !offset.free_of(c)) {
+        return Ok(false);
+    }
+    let value = residual(
+        &Expr::call(
+            e.head_symbol().expect("invariant: trig head checked"),
+            [om_core::mul([offset, Expr::sym(B::PI)])],
+        ),
+        ctx,
+    )?;
+    nonzero(&value, ctx)
+}
 pub(crate) fn allows(e: &Expr, ctx: &Interrupt) -> Result<Option<bool>, SolveError> {
     ctx.tick()?;
     if e.as_symbol() == Some(B::TRUE) {

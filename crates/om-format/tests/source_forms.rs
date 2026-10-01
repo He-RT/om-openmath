@@ -188,3 +188,26 @@ fn display_order_can_be_disabled_and_does_not_mutate_the_tree() {
     assert_eq!(om_format::modern_form_with(&e, &options), "1 + x + x^2");
     assert_eq!(full_form(&e), "Plus[1, x, Power[x, 2]]");
 }
+
+#[test]
+fn inequality_nodes_print_valid_wolfram_chains_and_keep_grouping() {
+    for (src, want) in [
+        ("Inequality[-2,Less,x,Less,2]", "-2 < x < 2"),
+        ("Inequality[0,LessEqual,x,Less,1]", "0 <= x < 1"),
+        (
+            "Or[Inequality[0,Less,x,Less,1],x==2]",
+            "0 < x < 1 || x == 2",
+        ),
+    ] {
+        let expr = canonicalize(&parse_expr(src, Dialect::Wolfram).unwrap());
+        assert_eq!(input_form(&expr), want);
+        let parsed = canonicalize(&parse_expr(want, Dialect::Wolfram).unwrap());
+        assert_eq!(input_form(&parsed), want);
+    }
+    for malformed in ["Inequality[x,Less,y,Plus,z]", "Inequality[x,Less]"] {
+        assert!(
+            input_form(&parse_expr(malformed, Dialect::Wolfram).unwrap())
+                .starts_with("Inequality[")
+        );
+    }
+}

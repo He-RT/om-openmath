@@ -77,7 +77,46 @@ fn exact_parameter_identity_keeps_exact_evidence_after_domain_probes() {
 #[test]
 fn unavailable_numeric_equality_is_unknown_in_a_condition() {
     assert_eq!(
-        allows(&e("ProductLog[2]==1"), &Interrupt::default()).unwrap(),
+        allows(&e("ProductLog[-2]==1"), &Interrupt::default()).unwrap(),
         None
+    );
+}
+
+#[test]
+fn numeric_product_log_can_disprove_a_closed_equality() {
+    assert_eq!(
+        allows(&e("ProductLog[2]==1"), &Interrupt::default()).unwrap(),
+        Some(false)
+    );
+}
+
+#[test]
+fn periodic_nonzero_requires_integer_pi_steps_and_a_nonzero_offset() {
+    let constants = [(e("C[1]"), Domain::Integers), (e("C[2]"), Domain::Integers)];
+    for src in ["Cos[Pi/4+Pi C[1]]", "Sin[Pi/6+2Pi C[1]-3Pi C[2]]"] {
+        assert!(
+            periodic_nonzero(&e(src), &constants, &Interrupt::default()).unwrap(),
+            "{src}"
+        );
+    }
+    for src in [
+        "Cos[Pi/2+Pi C[1]]",
+        "Cos[Pi C[1]/2]",
+        "Cos[Pi/4+C[1]]",
+        "Cos[a+Pi C[1]]",
+        "Sin[Pi C[1]]",
+    ] {
+        assert!(
+            !periodic_nonzero(&e(src), &constants, &Interrupt::default()).unwrap(),
+            "{src}"
+        );
+    }
+    assert!(
+        !periodic_nonzero(
+            &e("Cos[Pi/4+Pi C[1]]"),
+            &[(e("C[1]"), Domain::Reals)],
+            &Interrupt::default()
+        )
+        .unwrap()
     );
 }

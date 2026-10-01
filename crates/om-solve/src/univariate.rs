@@ -6,10 +6,11 @@ use formulas::formula;
 pub(crate) mod order;
 mod radical;
 mod real;
+pub(crate) use radical::candidates as radical_candidates;
 pub use radical::radical_path;
 mod reductions;
 mod symbolic;
-mod transcendental;
+pub(crate) mod transcendental;
 use crate::{
     Domain, ExclReason, Level, MaxExtra, Solution, SolutionSet, SolveError, SolveOptions, Step,
     StepKind, StepSink, Verification,
@@ -21,6 +22,7 @@ use om_simplify::{
     algebra::cancel_with,
     zero::{Tri, is_zero_with},
 };
+pub(crate) use transcendental::candidates as transcendental_candidates;
 pub use transcendental::transcendental_path;
 /// Candidate solutions with the generic conditions under which they were constructed.
 #[derive(Clone, Debug)]

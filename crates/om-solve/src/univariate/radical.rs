@@ -23,9 +23,19 @@ pub fn radical_path(
     sink: &mut impl StepSink,
 ) -> Result<PolynomialRoots, SolveError> {
     if !opts.record_steps {
-        return run(e, x, opts, ctx, &mut NoSteps);
+        return run(e, x, opts, ctx, &mut NoSteps, true);
     }
-    run(e, x, opts, ctx, sink)
+    run(e, x, opts, ctx, sink, true)
+}
+/// Internal candidates defer principal checks until all system parameters are solved.
+pub(crate) fn candidates(
+    e: &Expr,
+    x: &Expr,
+    opts: &SolveOptions,
+    ctx: &Interrupt,
+    sink: &mut impl StepSink,
+) -> Result<PolynomialRoots, SolveError> {
+    run(e, x, opts, ctx, sink, false)
 }
 fn unsupported(e: &Expr, mut messages: Vec<Message>, sink: &mut impl StepSink) -> PolynomialRoots {
     let msg = Message {
@@ -55,6 +65,7 @@ fn run(
     opts: &SolveOptions,
     ctx: &Interrupt,
     sink: &mut impl StepSink,
+    verify_original: bool,
 ) -> Result<PolynomialRoots, SolveError> {
     ctx.tick()?;
     let normalized = normalize::normalize(
@@ -115,18 +126,20 @@ fn run(
     }
     match &mut result.set {
         SolutionSet::Finite(roots) => {
-            verify::candidates(
-                verify::Source {
-                    original: e,
-                    exclusions: &branch.exclusions,
-                    guards: &result.assumptions,
-                },
-                roots,
-                &mut result.messages,
-                opts,
-                ctx,
-                sink,
-            )?;
+            if verify_original {
+                verify::candidates(
+                    verify::Source {
+                        original: e,
+                        exclusions: &branch.exclusions,
+                        guards: &result.assumptions,
+                    },
+                    roots,
+                    &mut result.messages,
+                    opts,
+                    ctx,
+                    sink,
+                )?;
+            }
             let expose = match opts.max_extra_conditions {
                 MaxExtra::Zero => false,
                 MaxExtra::All => true,
@@ -144,6 +157,9 @@ fn run(
                 root.condition = condition.clone();
                 if !polynomial {
                     root.multiplicity = 1;
+                    if !verify_original {
+                        root.verification = crate::Verification::Unverified;
+                    }
                 }
             }
         }

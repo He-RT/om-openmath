@@ -1,5 +1,5 @@
 //! Commensurate kernels reduce to algebra; explicit inverses retain their periods.
-mod check;
+pub(crate) mod check;
 mod inverse;
 mod kernel;
 use super::{PolynomialRoots, extract, poly_uni, radical_path};
@@ -24,6 +24,38 @@ pub fn transcendental_path(
         return run(e, x, opts, ctx, &mut NoSteps);
     }
     run(e, x, opts, ctx, sink)
+}
+/// Internal inversion candidates are verified after all system substitutions.
+pub(crate) fn candidates(
+    e: &Expr,
+    x: &Expr,
+    opts: &SolveOptions,
+    ctx: &Interrupt,
+    sink: &mut impl StepSink,
+) -> Result<PolynomialRoots, SolveError> {
+    let mut engine = Engine {
+        opts,
+        ctx,
+        sink,
+        next: first_constant(e, opts, ctx)?,
+        assumptions: vec![],
+        messages: vec![],
+        real_values: vec![],
+    };
+    let set = if let Some(mut roots) = engine.solve(e, x, 0)? {
+        check::real_filter(&mut roots, &engine.real_values, opts, ctx, engine.sink)?;
+        for root in &mut roots {
+            root.verification = crate::Verification::Unverified;
+        }
+        SolutionSet::Finite(roots)
+    } else {
+        SolutionSet::Unevaluated
+    };
+    Ok(PolynomialRoots {
+        set,
+        assumptions: engine.assumptions,
+        messages: engine.messages,
+    })
 }
 struct Engine<'a, S> {
     opts: &'a SolveOptions,

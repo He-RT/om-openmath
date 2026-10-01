@@ -269,12 +269,12 @@ fn sample(
     }
     Ok(None)
 }
-pub(super) struct Source<'a> {
+pub(crate) struct Source<'a> {
     pub original: &'a Expr,
     pub exclusions: &'a [Exclusion],
     pub guards: &'a [Expr],
 }
-pub(super) fn candidates(
+pub(crate) fn candidates(
     source: Source<'_>,
     roots: &mut Vec<Solution>,
     opts: &SolveOptions,

@@ -19,3 +19,5 @@ pub mod univariate;
 pub use linear::linear_system;
 mod polynomial_system;
 pub use polynomial_system::poly_system;
+mod substitution;
+pub use substitution::substitution_system;

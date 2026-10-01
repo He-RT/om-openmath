@@ -12,6 +12,8 @@ pub struct Evaluator {
     pub messages: Messages,
     /// Successful statement inputs and outputs.
     pub history: Vec<(Expr, Expr)>,
+    /// Most recent solver steps, taken by the kernel before the next statement.
+    pub last_steps: Option<om_solve::Steps>,
     /// Evaluation limits and solver preferences.
     pub settings: EvalSettings,
     pub(crate) depth: u32,
@@ -31,6 +33,7 @@ impl Evaluator {
             builtins: crate::builtins::table(),
             messages: Messages::default(),
             history: vec![],
+            last_steps: None,
             settings: EvalSettings::default(),
             depth: 0,
             readonly: false,
@@ -48,6 +51,7 @@ impl Evaluator {
     }
     /// Record a successful statement once, including its original input tree.
     pub fn evaluate_statement(&mut self, e: &Expr, ctx: &Interrupt) -> Result<Expr, EvalError> {
+        self.last_steps = None;
         let out = self.evaluate(e, ctx)?;
         self.history.push((e.clone(), out.clone()));
         Ok(out)
@@ -67,6 +71,7 @@ impl Evaluator {
             builtins: self.builtins,
             messages: Messages::default(),
             history: self.history.clone(),
+            last_steps: None,
             settings: self.settings.clone(),
             depth: 0,
             readonly: true,

@@ -1,0 +1,80 @@
+//! Stable identifiers shared by recording, UI templates and LLM references.
+use super::{Formula, StepKind};
+/// Sorted closed set of language-independent step rule IDs.
+pub fn rule_ids() -> &'static [&'static str] {
+    &[
+        "back_substitute",
+        "binomial_formula",
+        "branch",
+        "cardano_formula",
+        "clear_denominators",
+        "discriminant",
+        "domain_filter",
+        "drop_extraneous",
+        "eliminant",
+        "expand",
+        "factor",
+        "ferrari_formula",
+        "generic_assumption",
+        "groebner",
+        "invert_function",
+        "isolate_term",
+        "linear_formula",
+        "normalize",
+        "note",
+        "palindromic_formula",
+        "quadratic_formula",
+        "raise_to_power",
+        "record_exclusion",
+        "resultant",
+        "root_objects",
+        "row_reduce",
+        "sign_chart",
+        "split_component",
+        "square_free",
+        "substitute",
+        "verify",
+        "zero_product",
+    ]
+}
+impl StepKind {
+    /// Canonical stable ID, including the specific ApplyFormula family.
+    pub fn rule_id(&self) -> &'static str {
+        match self {
+            Self::Normalize => "normalize",
+            Self::RecordExclusion { .. } => "record_exclusion",
+            Self::GenericAssumption { .. } => "generic_assumption",
+            Self::ClearDenominators { .. } => "clear_denominators",
+            Self::Expand => "expand",
+            Self::Factor { .. } => "factor",
+            Self::ZeroProduct => "zero_product",
+            Self::SquareFree { .. } => "square_free",
+            Self::Substitute { .. } => "substitute",
+            Self::BackSubstitute { .. } => "back_substitute",
+            Self::ApplyFormula { formula, .. } => match formula {
+                Formula::Linear => "linear_formula",
+                Formula::Quadratic => "quadratic_formula",
+                Formula::Cardano => "cardano_formula",
+                Formula::Ferrari => "ferrari_formula",
+                Formula::Binomial => "binomial_formula",
+                Formula::Palindromic => "palindromic_formula",
+            },
+            Self::Discriminant { .. } => "discriminant",
+            Self::IsolateTerm { .. } => "isolate_term",
+            Self::RaiseToPower { .. } => "raise_to_power",
+            Self::Resultant { .. } => "resultant",
+            Self::InvertFunction { .. } => "invert_function",
+            Self::RowReduce { .. } => "row_reduce",
+            Self::Groebner { .. } => "groebner",
+            Self::Eliminant { .. } => "eliminant",
+            Self::SplitComponent { .. } => "split_component",
+            Self::RootObjects { .. } => "root_objects",
+            Self::Verify { .. } => "verify",
+            Self::DropExtraneous { .. } => "drop_extraneous",
+            Self::DomainFilter { .. } => "domain_filter",
+            Self::SignChart { .. } => "sign_chart",
+            Self::Branch { .. } => "branch",
+            Self::Note { .. } => "note",
+        }
+    }
+}

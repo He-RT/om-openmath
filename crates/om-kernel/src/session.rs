@@ -1,5 +1,8 @@
 //! Synchronous shared-kernel entry point with host-injected time and cancellation.
+mod editing;
 mod evaluation;
+mod graph;
+mod reactive;
 
 use crate::{KernelConfig, Notebook, config::Language, notebook::FileError, protocol::*};
 use om_eval::Evaluator;
@@ -18,6 +21,7 @@ pub struct Session {
     pub config: KernelConfig,
     interrupt: Arc<AtomicBool>,
     clock: Option<Arc<dyn Clock>>,
+    owners: std::collections::BTreeMap<om_core::Symbol, CellId>,
 }
 
 impl Session {
@@ -29,6 +33,7 @@ impl Session {
             config,
             interrupt: Arc::new(AtomicBool::new(false)),
             clock,
+            owners: Default::default(),
         };
         session.apply_settings();
         session
@@ -41,12 +46,21 @@ impl Session {
 
     /// Handle one client request and return its reply plus any asynchronous events.
     pub fn handle(&mut self, req: Request) -> (Response, Vec<Event>) {
-        let response = match req {
+        match req {
             Request::Evaluate {
                 cell_id,
                 source,
                 dialect,
-            } => self.evaluate_cell(cell_id, source, dialect),
+            } => return self.evaluate_cell(cell_id, source, dialect),
+            Request::UpsertCell { cell } => return self.upsert_cell(cell),
+            Request::DeleteCell { cell_id } => return self.delete_cell(cell_id),
+            Request::MoveCell { cell_id, to_index } => {
+                return (self.move_cell(cell_id, to_index), vec![]);
+            }
+            Request::RunAll => return self.run_all(),
+            _ => {}
+        }
+        let response = match req {
             Request::GetConfig => Response::Config {
                 config: self.config.clone(),
             },
@@ -74,7 +88,11 @@ impl Session {
                 Ok(notebook) => {
                     self.notebook = notebook;
                     self.eval = Evaluator::new();
+                    self.owners.clear();
                     self.apply_settings();
+                    for index in 0..self.notebook.cells.len() {
+                        self.analyze_cell(index);
+                    }
                     Response::Ok
                 }
                 Err(FileError::Version(version)) => self.error(

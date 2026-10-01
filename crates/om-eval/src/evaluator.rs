@@ -135,8 +135,10 @@ impl Evaluator {
         {
             scope.insert(symbol, value);
         } else if let Some(value) = value {
+            self.defs.changed.insert(symbol);
             self.defs.own.insert(symbol, value);
         } else {
+            self.defs.changed.insert(symbol);
             self.defs.own.remove(&symbol);
         }
     }

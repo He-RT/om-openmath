@@ -229,10 +229,22 @@ fn load_save_preserves_only_sources_and_resets_definitions_without_changing_conf
             .collect::<Vec<_>>(),
         vec![CellStatus::Stale, CellStatus::Done, CellStatus::Stale]
     );
-    assert!(session.notebook.cells.iter().all(|c| c.output.is_none()
-        && c.exec_count.is_none()
-        && c.defines.is_empty()
-        && c.uses.is_empty()));
+    assert!(
+        session
+            .notebook
+            .cells
+            .iter()
+            .all(|c| c.output.is_none() && c.exec_count.is_none() && c.defines.is_empty())
+    );
+    assert_eq!(
+        session.notebook.cells[0].uses,
+        [om_core::Symbol::intern("a")].into()
+    );
+    assert!(
+        session.notebook.cells[1..]
+            .iter()
+            .all(|c| c.uses.is_empty())
+    );
     let (saved, events) = session.handle(Request::SaveNotebook);
     assert!(events.is_empty());
     let json = serde_json::to_value(saved).unwrap();

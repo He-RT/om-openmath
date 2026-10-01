@@ -1,7 +1,6 @@
 //! Parse preflight and sequential evaluation preserve raw provenance and actual history.
 use super::Session;
 use crate::{
-    Cell,
     config::{ConfigDialect, Constants},
     notebook::StatementRecord,
     protocol::*,
@@ -9,7 +8,6 @@ use crate::{
 use om_core::{Abort, Interrupt};
 use om_eval::EvalError;
 use om_parse::{ParseEnv, ParseOutput};
-use std::sync::atomic::Ordering;
 
 struct Execution {
     output: CellOutput,
@@ -18,57 +16,13 @@ struct Execution {
     status: CellStatus,
 }
 
+pub(super) struct CellRun {
+    pub changed: std::collections::BTreeSet<om_core::Symbol>,
+    pub rejected: bool,
+}
+
 impl Session {
-    pub(super) fn evaluate_cell(
-        &mut self,
-        cell_id: CellId,
-        source: String,
-        dialect: Dialect,
-    ) -> Response {
-        if cell_id.is_empty() {
-            return self.error(
-                "err.empty_cell_id",
-                "单元格 ID 不能为空",
-                "Cell IDs must not be empty",
-            );
-        }
-        let index = if let Some(index) = self
-            .notebook
-            .cells
-            .iter()
-            .position(|cell| cell.id == cell_id)
-        {
-            if self.notebook.cells[index].kind != CellKind::Math {
-                return self.error(
-                    "err.non_math_cell",
-                    "只有数学单元格可以执行 CAS 求值",
-                    "Only Math cells can run CAS evaluation",
-                );
-            }
-            index
-        } else {
-            self.notebook.cells.push(Cell::from_input(CellInput {
-                id: cell_id.clone(),
-                kind: CellKind::Math,
-                source: String::new(),
-                dialect,
-            }));
-            self.notebook.cells.len() - 1
-        };
-        self.notebook.cells[index].source = source.clone();
-        self.notebook.cells[index].dialect = dialect;
-        self.notebook.cells[index].status = CellStatus::Running;
-        self.interrupt.store(false, Ordering::Relaxed);
-        self.apply_settings();
-        let start = self.clock.as_ref().map(|clock| clock.now_ms());
-        let ctx = Interrupt {
-            flag: self.interrupt.clone(),
-            clock: self.clock.clone(),
-            deadline_ms: start
-                .map(|ms| ms + self.config.general.eval_timeout_ms as f64)
-                .filter(|ms| ms.is_finite()),
-            ..Interrupt::default()
-        };
+    pub(super) fn parse_source(&self, source: &str, dialect: Dialect) -> ParseOutput {
         let env = ParseEnv {
             known_functions: self.eval.defs.known_functions(),
             constants: match self.config.general.constants {
@@ -81,24 +35,103 @@ impl Session {
             (Dialect::Auto, ConfigDialect::Wolfram) => om_parse::Dialect::Wolfram,
             _ => dialect.into(),
         };
-        let parsed = om_parse::parse_with(&source, effective, &env);
+        om_parse::parse_with(source, effective, &env)
+    }
+
+    pub(super) fn analyze_cell(&mut self, index: usize) {
+        let cell = &self.notebook.cells[index];
+        let (defines, uses) = if cell.kind == CellKind::Math {
+            crate::dependency::analyze(&self.parse_source(&cell.source, cell.dialect))
+        } else {
+            Default::default()
+        };
+        let cell = &mut self.notebook.cells[index];
+        cell.defines = defines;
+        cell.uses = uses;
+    }
+
+    pub(super) fn run_cell(&mut self, index: usize) -> CellRun {
+        let cell = &self.notebook.cells[index];
+        let id = cell.id.clone();
+        let parsed = self.parse_source(&cell.source, cell.dialect);
+        let (defines, uses) = crate::dependency::analyze(&parsed);
+        let mut changed = self.cell_symbols(index);
+        changed.extend(defines.iter().copied());
+        self.notebook.cells[index].defines = defines;
+        self.notebook.cells[index].uses = uses;
+        let valid = !parsed
+            .diagnostics
+            .iter()
+            .any(|d| d.severity == om_parse::Severity::Error);
+        if valid && self.config.general.reactive {
+            let mut targets: Vec<_> = self.notebook.cells[index].defines.iter().copied().collect();
+            targets.sort_by_key(|s| s.name());
+            for symbol in &targets {
+                if let Some(owner) = self.owners.get(symbol)
+                    && owner != &id
+                {
+                    let number = self
+                        .notebook
+                        .cells
+                        .iter()
+                        .position(|c| &c.id == owner)
+                        .map_or(0, |i| i + 1);
+                    let text = self.localized(
+                        &format!(
+                            "err.multiple_definitions: \"{}\" 已在第 {number} 个 cell 中定义",
+                            symbol.name()
+                        ),
+                        &format!(
+                            "err.multiple_definitions: \"{}\" is already defined in cell {number}",
+                            symbol.name()
+                        ),
+                    );
+                    self.cell_error(index, "err.multiple_definitions", text);
+                    return CellRun {
+                        changed,
+                        rejected: true,
+                    };
+                }
+            }
+            changed.extend(self.release_owned(&id));
+        }
+        self.apply_settings();
+        let start = self.clock.as_ref().map(|clock| clock.now_ms());
+        let ctx = Interrupt {
+            flag: self.interrupt.clone(),
+            clock: self.clock.clone(),
+            deadline_ms: start
+                .map(|ms| ms + self.config.general.eval_timeout_ms as f64)
+                .filter(|ms| ms.is_finite()),
+            ..Interrupt::default()
+        };
+        self.eval.defs.take_changed_symbols();
         let mut execution = self.execute(&parsed, &ctx);
+        let mutations = self.eval.defs.take_changed_symbols();
+        let live = self.eval.defs.defined_symbols();
+        self.owners.retain(|symbol, _| live.contains(symbol));
+        for &symbol in &mutations {
+            if live.contains(&symbol) {
+                self.owners.insert(symbol, id.clone());
+            } else {
+                self.owners.remove(&symbol);
+            }
+        }
+        changed.extend(mutations);
         if let (Some(start), Some(clock)) = (start, &self.clock) {
             let elapsed = (clock.now_ms() - start).max(0.0);
             if elapsed.is_finite() {
                 execution.output.timing_ms = elapsed;
             }
         }
-        // The index cannot change during this exclusive Session borrow.
         let cell = &mut self.notebook.cells[index];
-        cell.output = Some(execution.output.clone());
+        cell.output = Some(execution.output);
         cell.status = execution.status;
         cell.exec_count = execution.exec_count;
         cell.records = execution.records;
-        Response::Evaluated {
-            cell_id,
-            output: execution.output,
-            reran: vec![],
+        CellRun {
+            changed,
+            rejected: false,
         }
     }
 

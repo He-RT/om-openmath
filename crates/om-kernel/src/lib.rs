@@ -6,6 +6,7 @@ pub mod config;
 /// Shared JSON transport types.
 pub mod protocol;
 
+mod dependency;
 mod notebook;
 mod session;
 mod views;

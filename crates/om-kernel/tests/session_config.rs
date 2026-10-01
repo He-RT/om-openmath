@@ -63,7 +63,14 @@ fn config_roundtrip_resolves_masks_and_pure_requests_do_not_reset_the_interrupt(
     ));
     assert_eq!(session.config.llm.profiles.len(), 2);
     session.config.general.language = Language::En;
-    let Response::Error { message } = session.handle(Request::RunAll).0 else {
+    let Response::Error { message } = session
+        .handle(Request::Preview {
+            source: String::new(),
+            dialect: Dialect::Auto,
+            cursor: None,
+        })
+        .0
+    else {
         panic!()
     };
     assert!(message.contains("err.not_implemented"));

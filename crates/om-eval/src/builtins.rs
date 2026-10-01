@@ -255,6 +255,7 @@ fn unset(ev: &mut Evaluator, args: &[Expr], ctx: &Interrupt) -> Result<Option<Ex
         ev.set_own(symbol, None);
     } else if let Some(rules) = ev.defs.down.get_mut(&symbol) {
         rules.retain(|r| r.lhs != lhs);
+        ev.defs.changed.insert(symbol);
     }
     Ok(Some(Expr::sym(B::NULL)))
 }

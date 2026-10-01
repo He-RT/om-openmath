@@ -27,9 +27,9 @@ pub struct Cell {
     pub output: Option<CellOutput>,
     /// Current execution state.
     pub status: CellStatus,
-    /// Defined symbols; populated by M11.3 dependency analysis.
+    /// Potential definitions in the current raw source.
     pub defines: BTreeSet<Symbol>,
-    /// Used symbols; populated by M11.3 dependency analysis.
+    /// Free dependencies in the current raw source, including user function heads.
     pub uses: BTreeSet<Symbol>,
     /// Last successful statement history index in the current execution.
     pub exec_count: Option<u32>,

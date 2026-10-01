@@ -20,8 +20,27 @@ pub struct Definitions {
     pub(crate) own: BTreeMap<Symbol, Expr>,
     pub(crate) down: BTreeMap<Symbol, Vec<Rule>>,
     pub(crate) attrs: BTreeMap<Symbol, Attributes>,
+    pub(crate) changed: BTreeSet<Symbol>,
 }
 impl Definitions {
+    /// Symbols with actual ownvalues or nonempty downvalues, without evaluating them.
+    pub fn defined_symbols(&self) -> BTreeSet<Symbol> {
+        self.own
+            .keys()
+            .copied()
+            .chain(
+                self.down
+                    .iter()
+                    .filter(|(_, rules)| !rules.is_empty())
+                    .map(|(&s, _)| s),
+            )
+            .collect()
+    }
+    /// Take global definition mutations since the previous observation.
+    /// Lexical evaluator bindings are excluded; identical writes are included.
+    pub fn take_changed_symbols(&mut self) -> BTreeSet<Symbol> {
+        std::mem::take(&mut self.changed)
+    }
     /// Current function heads and literal callable aliases, without evaluating definitions.
     /// Ownvalues shadow downvalues; alias cycles and non-callable values are excluded.
     pub fn known_functions(&self) -> BTreeSet<Symbol> {
@@ -65,6 +84,7 @@ impl Definitions {
         known
     }
     pub(crate) fn set_down(&mut self, head: Symbol, rule: Rule) {
+        self.changed.insert(head);
         let rules = self.down.entry(head).or_default();
         if let Some(old) = rules.iter_mut().find(|old| old.lhs == rule.lhs) {
             *old = rule;
@@ -72,7 +92,9 @@ impl Definitions {
             rules.push(rule);
         }
     }
-    pub(crate) fn clear(&mut self, symbol: Symbol) {
+    /// Remove ownvalues and downvalues without evaluation, messages or history.
+    pub fn clear(&mut self, symbol: Symbol) {
+        self.changed.insert(symbol);
         self.own.remove(&symbol);
         self.down.remove(&symbol);
     }

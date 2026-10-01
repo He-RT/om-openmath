@@ -65,13 +65,15 @@ LoadNotebook validates version 1 and unique nonempty IDs before replacing state.
 It resets definitions/history and cached outputs, while preserving configuration.
 Restored Math/Ask cells are Stale and Text cells are Done. Text/Ask Evaluate
 requests are rejected; natural-language requests will use LLM handlers.
-Other pending handlers return an explicit err.not_implemented error at this stage.
+Preview/completion/hover/plot and LLM handlers remain later milestones and
+return an explicit err.not_implemented error at this stage.
 
 Hosts supply an optional `Arc<dyn Clock>` for deadlines and timing. Without it,
 timing_ms is zero and the wall-clock deadline is disabled; step budgets and the
 shared cancellation flag still work. Each cell shares one Interrupt across all
-statements. Hosts can set interrupt_handle during synchronous execution. A new
-Math evaluation resets the previous flag; config/save/load operations do not.
+statements. Hosts can set interrupt_handle during synchronous execution. An initiating
+Math evaluation, RunAll or automatic Delete cascade resets the previous flag
+once; automatic cells share it. Config/save/load/source-only edits do not.
 SetConfig validates profile-name uniqueness and resolves masks before installing
 settings. Kernel error strings retain stable err.* keys with Chinese/English text.
 
@@ -83,3 +85,36 @@ checks both tracked differences and unexpected files; frontend typecheck and
 tests validate imports, discriminant narrowing and representative JSON shapes.
 The single export test also removes trailing line whitespace from ts-rs output;
 per-type automatic exporters are disabled to keep regeneration consistent.
+
+
+Reactive Math cells analyze raw source without evaluation. Current `defines`
+contains potential assignment targets; `uses` includes free user function heads,
+excluding builtins, cell definitions and lexical pattern/function/iterator names.
+Live definition ownership is tracked separately from edited source and follows
+actual global evaluator writes, including partial effects before failure.
+
+With reactive enabled, a definition owned by another cell produces
+`err.multiple_definitions` before execution or clearing. Valid execution clears
+only this cell's live definitions. Changes propagate transitively through uses,
+with each topological layer in document order. True cycle members receive
+`err.cycle`; blocked downstream cells remain Stale. A stale or failed prerequisite
+also blocks automatic execution, including prerequisites outside the triggering
+closure. Cycle reporting retains actual previous history and statement records.
+
+Automatic dependent attempts emit Queued, Running, final CellStatus, then
+CellOutput. `Evaluated.reran` lists only attempted automatic executions in their
+actual order. Disabling auto_run_dependents marks the dependency closure Stale
+and retains old output; disabling reactive permits normal sequential redefinition
+without automatic propagation or pre-clearing.
+
+UpsertCell synchronizes source without CAS execution, preserves an existing
+position, and appends new IDs. It analyzes Math source and marks the edited cell
+and affected dependents Stale. Changing Math to Text/Ask releases its live
+symbols and removes its CAS output; Text is Done and Ask is Stale. Repeating an
+identical upsert leaves current execution state intact. DeleteCell removes only
+that cell's source and actually owned definitions, then propagates stale status
+or automatic recalculation. MoveCell accepts a final zero-based index smaller
+than the number of cells and changes only document order. Empty IDs, missing
+cells and invalid positions fail atomically. RunAll executes Math cells once in
+document order through the same real evaluator path and emits status/output
+events; Text/Ask sources are not executed and cyclic/blocked cells are reported.

@@ -23,9 +23,11 @@ pub fn radical_path(
     sink: &mut impl StepSink,
 ) -> Result<PolynomialRoots, SolveError> {
     if !opts.record_steps {
-        return run(e, x, opts, ctx, &mut NoSteps, true);
+        let result = run(e, x, opts, ctx, &mut NoSteps, true)?;
+        return crate::domain::filter(result, &[(x.clone(), opts.domain)], ctx, &mut NoSteps);
     }
-    run(e, x, opts, ctx, sink, true)
+    let result = run(e, x, opts, ctx, sink, true)?;
+    crate::domain::filter(result, &[(x.clone(), opts.domain)], ctx, sink)
 }
 /// Internal candidates defer principal checks until all system parameters are solved.
 pub(crate) fn candidates(

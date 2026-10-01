@@ -1,6 +1,7 @@
 //! Equation solving with structured derivation steps.
 #![forbid(unsafe_code)]
 
+mod domain;
 mod steps;
 mod types;
 pub use steps::{

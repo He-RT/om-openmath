@@ -1,5 +1,5 @@
 //! Affine solving preserves original restrictions and observes the shared Bareiss kernel.
-mod convert;
+pub(crate) mod convert;
 mod trace;
 use crate::{
     Domain, Level, MaxExtra, NoSteps, Solution, SolutionSet, SolveError, SolveOptions, Step,
@@ -22,9 +22,11 @@ pub fn linear_system(
     sink: &mut impl StepSink,
 ) -> Result<PolynomialRoots, SolveError> {
     if !opts.record_steps {
-        return run(eqs, vars, opts, ctx, &mut NoSteps);
+        let result = run(eqs, vars, opts, ctx, &mut NoSteps)?;
+        return crate::domain::filter_input(eqs, vars, opts, result, ctx, &mut NoSteps);
     }
-    run(eqs, vars, opts, ctx, sink)
+    let result = run(eqs, vars, opts, ctx, sink)?;
+    crate::domain::filter_input(eqs, vars, opts, result, ctx, sink)
 }
 fn note(
     tag: &str,
@@ -114,6 +116,10 @@ fn run(
             assumptions: vec![],
             messages,
         });
+    }
+    let vars = &prepared.vars;
+    if !vars.is_empty() && branch.domains.iter().all(|(_, d)| *d == Domain::Integers) {
+        return crate::domain::integer_linear(eqs, vars, branch, opts, ctx, sink, messages);
     }
     let Some(matrix) = convert::build(&branch.equations, vars, ctx, sink)? else {
         note(

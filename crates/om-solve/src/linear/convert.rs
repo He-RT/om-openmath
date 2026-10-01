@@ -8,7 +8,7 @@ use om_num::{
 };
 use om_poly::{MPoly, Monomial};
 use om_simplify::convert::{from_mpoly_with, to_rational_function_with};
-pub(super) struct Matrix {
+pub(crate) struct Matrix {
     pub a: Vec<Vec<MPoly<Integer>>>,
     pub b: Vec<MPoly<Integer>>,
     pub parameters: Vec<Expr>,
@@ -27,7 +27,7 @@ fn depends(e: &Expr, vars: &[Expr], ctx: &Interrupt) -> Result<bool, Abort> {
     }
     Ok(false)
 }
-pub(super) fn build(
+pub(crate) fn build(
     equations: &[Expr],
     vars: &[Expr],
     ctx: &Interrupt,

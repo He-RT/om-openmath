@@ -50,9 +50,16 @@ pub fn poly_uni(
     sink: &mut impl StepSink,
 ) -> Result<PolynomialRoots, SolveError> {
     if !opts.record_steps {
-        return poly_uni_impl(e, x, opts, ctx, &mut crate::NoSteps);
+        let result = poly_uni_impl(e, x, opts, ctx, &mut crate::NoSteps)?;
+        return crate::domain::filter(
+            result,
+            &[(x.clone(), opts.domain)],
+            ctx,
+            &mut crate::NoSteps,
+        );
     }
-    poly_uni_impl(e, x, opts, ctx, sink)
+    let result = poly_uni_impl(e, x, opts, ctx, sink)?;
+    crate::domain::filter(result, &[(x.clone(), opts.domain)], ctx, sink)
 }
 fn poly_uni_impl(
     e: &Expr,

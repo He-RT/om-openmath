@@ -20,10 +20,16 @@ pub fn transcendental_path(
     ctx: &Interrupt,
     sink: &mut impl StepSink,
 ) -> Result<PolynomialRoots, SolveError> {
-    if !opts.record_steps {
-        return run(e, x, opts, ctx, &mut NoSteps);
+    let mut inner = opts.clone();
+    if matches!(inner.domain, Domain::Integers | Domain::Rationals) {
+        inner.domain = Domain::Reals
     }
-    run(e, x, opts, ctx, sink)
+    if !opts.record_steps {
+        let result = run(e, x, &inner, ctx, &mut NoSteps)?;
+        return crate::domain::filter(result, &[(x.clone(), opts.domain)], ctx, &mut NoSteps);
+    }
+    let result = run(e, x, &inner, ctx, sink)?;
+    crate::domain::filter(result, &[(x.clone(), opts.domain)], ctx, sink)
 }
 /// Internal inversion candidates are verified after all system substitutions.
 pub(crate) fn candidates(

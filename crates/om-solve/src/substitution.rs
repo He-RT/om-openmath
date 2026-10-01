@@ -21,9 +21,11 @@ pub fn substitution_system(
     sink: &mut impl StepSink,
 ) -> Result<PolynomialRoots, SolveError> {
     if !opts.record_steps {
-        return run(eqs, vars, opts, ctx, &mut NoSteps);
+        let result = run(eqs, vars, opts, ctx, &mut NoSteps)?;
+        return crate::domain::filter_input(eqs, vars, opts, result, ctx, &mut NoSteps);
     }
-    run(eqs, vars, opts, ctx, sink)
+    let result = run(eqs, vars, opts, ctx, sink)?;
+    crate::domain::filter_input(eqs, vars, opts, result, ctx, sink)
 }
 fn and(a: Option<Expr>, b: Option<Expr>) -> Option<Expr> {
     match (a, b) {
@@ -419,6 +421,9 @@ fn run(
     ctx: &Interrupt,
     sink: &mut impl StepSink,
 ) -> Result<PolynomialRoots, SolveError> {
+    if let Some(result) = crate::domain::affine(eqs, vars, opts, ctx, sink)? {
+        return Ok(result);
+    }
     let prepared = normalize::normalize(eqs, Some(vars), opts.domain, ctx, sink)?;
     let Some(branch) = prepared.branches.first() else {
         return Ok(PolynomialRoots {

@@ -5,6 +5,9 @@ use om_num::{Ball, BigFloat, BitTest, CBall, Complex, Integer, Number, Precision
 
 #[path = "numeval_elementary.rs"]
 mod elementary;
+#[path = "numeval_real.rs"]
+mod realness;
+pub use realness::remember_real;
 
 const MAX_BITS: u32 = 16_384;
 
@@ -113,14 +116,20 @@ fn evaluate_ball(e: &Expr, bits: u32, ctx: &Interrupt) -> Result<Option<CBall>, 
             },
             Frame::Apply(e) => {
                 let start = values.len() - e.args().len();
-                let args = values.split_off(start);
+                let mut args = values.split_off(start);
+                let principal = matches!(e.head_symbol(), Some(B::SQRT | B::LOG))
+                    || (e.is_head(B::POWER)
+                        && !matches!(e.args()[1].as_number(), Some(Number::Integer(_))));
+                if principal && !args.is_empty() {
+                    args[0] = realness::resolve(&e.args()[0], args[0].clone(), ctx)?;
+                }
                 let Some(z) = elementary::apply(e, &args, bits, ctx)? else {
                     return Ok(None);
                 };
                 if !finite(&z) {
                     return Ok(None);
                 }
-                values.push(z);
+                values.push(realness::project_sum(e, &args, z, ctx)?);
             }
         }
     }

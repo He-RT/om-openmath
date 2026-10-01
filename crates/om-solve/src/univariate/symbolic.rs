@@ -1,6 +1,6 @@
 //! Extract the exact zero-root valuation before applying parameter coefficient formulas.
-use super::{Candidate, reductions};
-use crate::{Level, SolveError, Step, StepKind, StepSink};
+use super::{Candidate, irreducible};
+use crate::{Level, SolveError, SolveOptions, Step, StepKind, StepSink};
 use om_core::{Expr, add, mul, pow};
 use om_num::{Integer, ctx::Interrupt};
 use om_simplify::zero::{Tri, is_zero_with};
@@ -9,6 +9,7 @@ pub(super) fn roots(
     c: &[Expr],
     original: &Expr,
     x: &Expr,
+    opts: &SolveOptions,
     ctx: &Interrupt,
     sink: &mut impl StepSink,
 ) -> Result<Option<Vec<Candidate>>, SolveError> {
@@ -59,7 +60,7 @@ pub(super) fn roots(
     let mut roots = if rest.len() == 1 {
         vec![]
     } else {
-        let Some(roots) = reductions::roots(rest, &quotient, x, ctx, sink)? else {
+        let Some(roots) = irreducible::roots(rest, &quotient, x, opts, ctx, sink)? else {
             return Ok(None);
         };
         roots

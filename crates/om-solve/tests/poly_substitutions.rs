@@ -151,7 +151,8 @@ fn symbolic_binomial_content_zero_powers_and_unsupported_components() {
         5,
     );
     assert_eq!(solve("a*x^7"), [(e("0"), 7)]);
-    for input in ["x^5-x+1", "x^9+x^3+1", "(x-1)*(x^5-x+1)"] {
+    // M9.5 covers those general polynomial cases with Root fallback.
+    for input in ["Sin[x]+1", "1/x-1", "(x-1)*(Sin[x]+1)"] {
         let got = poly_uni(
             &e(input),
             &e("x"),

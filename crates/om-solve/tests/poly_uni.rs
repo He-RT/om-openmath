@@ -132,7 +132,8 @@ fn constants_exact_special_coefficients_and_unsupported_paths_are_honest() {
     for input in ["7/3", "a"] {
         assert!(values(&roots(input).set).is_empty(), "{input}");
     }
-    for input in ["x^5-x+1", "Sin[x]-1", "1/x-1", "(x-1)*(x^5-x+1)"] {
+    // General polynomial factors gained Root support in M9.5.
+    for input in ["Sin[x]-1", "1/x-1", "(x-1)*(Sin[x]+1)"] {
         assert!(
             matches!(roots(input).set, SolutionSet::Unevaluated),
             "{input}"
@@ -157,10 +158,23 @@ fn symbolic_monomial_factors_are_extracted_with_multiplicity() {
         );
         assert_eq!(got.assumptions, [e("a!=0")]);
     }
-    assert!(matches!(
-        roots("x^2*(a*x^3+x+1)").set,
-        SolutionSet::Unevaluated
-    ));
+    // M9.5 adds symbolic Root candidates after the same zero-root extraction.
+    let SolutionSet::Finite(general) = roots("x^2*(a*x^3+x+1)").set else {
+        panic!("general polynomial must have Root candidates");
+    };
+    assert_eq!(general.len(), 4);
+    assert!(
+        general
+            .iter()
+            .any(|r| r.rules[0].1.is_zero() && r.multiplicity == 2)
+    );
+    assert_eq!(
+        general
+            .iter()
+            .filter(|r| r.rules[0].1.is_head(om_core::BUILTIN::ROOT))
+            .count(),
+        3
+    );
 }
 #[test]
 fn symbolic_coefficient_content_is_removed_before_root_formulas() {

@@ -1,13 +1,16 @@
 //! Complex polynomial candidates; original-equation validation belongs to the dispatcher.
 mod extract;
+mod formulas;
+mod irreducible;
+use formulas::formula;
 mod order;
 mod reductions;
 mod symbolic;
 use crate::{
-    ExclReason, Formula, Level, MaxExtra, Solution, SolutionSet, SolveError, SolveOptions, Step,
-    StepKind, StepSink, Verification,
+    ExclReason, Level, MaxExtra, Solution, SolutionSet, SolveError, SolveOptions, Step, StepKind,
+    StepSink, Verification,
 };
-use om_core::{BUILTIN as B, Expr, add, div, mul, neg, pow, sqrt, sub};
+use om_core::{BUILTIN as B, Expr, add, div, mul, pow};
 use om_num::{Integer, Number, Rational, ctx::Interrupt, gcd};
 use om_poly::{FactorStatus, UPoly};
 use om_simplify::{
@@ -27,9 +30,21 @@ struct Candidate {
     multiplicity: u32,
     key: Option<order::Key>,
 }
-/// Solve Q or symbolic degree-one/two polynomial factors, retaining multiplicity.
+/// Solve exact polynomial factors with radicals or Root objects, retaining multiplicity.
 /// This is a complex candidate kernel; the caller owns original exclusions and domain filters.
 pub fn poly_uni(
+    e: &Expr,
+    x: &Expr,
+    opts: &SolveOptions,
+    ctx: &Interrupt,
+    sink: &mut impl StepSink,
+) -> Result<PolynomialRoots, SolveError> {
+    if !opts.record_steps {
+        return poly_uni_impl(e, x, opts, ctx, &mut crate::NoSteps);
+    }
+    poly_uni_impl(e, x, opts, ctx, sink)
+}
+fn poly_uni_impl(
     e: &Expr,
     x: &Expr,
     opts: &SolveOptions,
@@ -144,9 +159,9 @@ pub fn poly_uni(
         .map(extract::exact)
         .collect::<Option<Vec<_>>>();
     let mut candidates = if let Some(q) = rational {
-        numeric(&UPoly::new(q), &primitive, x, ctx, sink)?
+        numeric(&UPoly::new(q), &primitive, x, opts, ctx, sink)?
     } else {
-        symbolic::roots(&coefficients.values, &primitive, x, ctx, sink)?
+        symbolic::roots(&coefficients.values, &primitive, x, opts, ctx, sink)?
     };
     let Some(ref mut candidates) = candidates else {
         return Ok(PolynomialRoots {
@@ -188,6 +203,7 @@ fn numeric(
     p: &UPoly<Rational>,
     original: &Expr,
     x: &Expr,
+    opts: &SolveOptions,
     ctx: &Interrupt,
     sink: &mut impl StepSink,
 ) -> Result<Option<Vec<Candidate>>, SolveError> {
@@ -304,14 +320,23 @@ fn numeric(
             .iter()
             .map(|c| Expr::integer(c.clone()))
             .collect::<Vec<_>>();
-        let computed = reductions::roots(&coefficients, &polynomial, x, ctx, sink);
+        let computed = irreducible::roots(&coefficients, &polynomial, x, opts, ctx, sink);
         if sink.enabled() {
             sink.exit();
         }
         let Some(mut found) = computed? else {
             return Ok(None);
         };
-        order::assign(&f, &mut found, ctx)?;
+        if let Err(error) = order::assign(&f, &mut found, ctx) {
+            if matches!(error, SolveError::Unsupported(_))
+                && found.iter().all(|r| !r.value.is_head(B::ROOT))
+            {
+                found = irreducible::root_objects(&coefficients, &polynomial, ctx, sink)?;
+                order::assign(&f, &mut found, ctx)?;
+            } else {
+                return Err(error);
+            }
+        }
         for root in &mut found {
             ctx.tick()?;
             root.multiplicity = root
@@ -322,115 +347,4 @@ fn numeric(
         roots.extend(found);
     }
     Ok(Some(roots))
-}
-fn simplified(e: Expr, ctx: &Interrupt) -> Result<Expr, SolveError> {
-    let canceled = cancel_with(&e, &[], ctx)?
-        .ok_or_else(|| SolveError::Unsupported("formula simplification failed".into()))?;
-    // Generic formulas retain their canonical numerator/denominator presentation.
-    // Cancel is still useful when it proves a numeric value or reduces a numeric radical.
-    Ok(
-        if canceled.as_number().is_some() || e.free_symbols().is_empty() {
-            canceled
-        } else {
-            e
-        },
-    )
-}
-fn formula(
-    c: &[Expr],
-    polynomial: &Expr,
-    ctx: &Interrupt,
-    sink: &mut impl StepSink,
-) -> Result<Option<Vec<Candidate>>, SolveError> {
-    let (family, bindings, values) = match c.len() {
-        2 => {
-            let value = simplified(div(neg(c[0].clone()), c[1].clone()), ctx)?;
-            (
-                Formula::Linear,
-                vec![("a".into(), c[1].clone()), ("b".into(), c[0].clone())],
-                vec![(value, 1)],
-            )
-        }
-        3 => {
-            let (a, b, constant) = (&c[2], &c[1], &c[0]);
-            let d = simplified(
-                sub(
-                    pow(b.clone(), Expr::int(2)),
-                    mul([Expr::int(4), a.clone(), constant.clone()]),
-                ),
-                ctx,
-            )?;
-            let sign = extract::exact(&d).map(|q| {
-                if q < Rational::ZERO {
-                    crate::Sign::Negative
-                } else if q == Rational::ZERO {
-                    crate::Sign::Zero
-                } else {
-                    crate::Sign::Positive
-                }
-            });
-            sink.record(|| {
-                Step::new(
-                    StepKind::Discriminant {
-                        value: d.clone(),
-                        sign,
-                    },
-                    vec![polynomial.clone()],
-                    vec![d.clone()],
-                    Level::Minor,
-                )
-            });
-            let denominator = mul([Expr::int(2), a.clone()]);
-            let values = if is_zero_with(&d, ctx)? == Tri::Zero {
-                vec![(simplified(div(neg(b.clone()), denominator), ctx)?, 2)]
-            } else {
-                let s = sqrt(d);
-                vec![
-                    (
-                        simplified(
-                            div(sub(neg(b.clone()), s.clone()), denominator.clone()),
-                            ctx,
-                        )?,
-                        1,
-                    ),
-                    (
-                        simplified(div(add([neg(b.clone()), s]), denominator), ctx)?,
-                        1,
-                    ),
-                ]
-            };
-            (
-                Formula::Quadratic,
-                vec![
-                    ("a".into(), a.clone()),
-                    ("b".into(), b.clone()),
-                    ("c".into(), constant.clone()),
-                ],
-                values,
-            )
-        }
-        _ => return Ok(None),
-    };
-    sink.record(|| {
-        Step::new(
-            StepKind::ApplyFormula {
-                formula: family,
-                bindings,
-                results: values.iter().map(|(e, _)| e.clone()).collect(),
-            },
-            vec![polynomial.clone()],
-            values.iter().map(|(e, _)| e.clone()).collect(),
-            Level::Major,
-        )
-    });
-    Ok(Some(
-        values
-            .into_iter()
-            .map(|(value, multiplicity)| Candidate {
-                value,
-                multiplicity,
-                key: None,
-            })
-            .collect(),
-    ))
 }

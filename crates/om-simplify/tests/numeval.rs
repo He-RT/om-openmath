@@ -278,3 +278,71 @@ fn positive_integer_powers_enclose_bases_whose_balls_contain_zero() {
             .is_none()
     );
 }
+#[test]
+fn certified_realness_keeps_formula_real_parts_and_resolves_principal_cuts() {
+    let ctx = Interrupt::default();
+    let base = e("(-1/2+I*Sqrt[3]/2)^(1/3)");
+    let real = om_core::add([base.clone(), om_core::pow(base, Expr::int(-1))]);
+    let source = om_poly::UPoly::new(vec![
+        om_num::Integer::from(1),
+        (-3).into(),
+        0.into(),
+        1.into(),
+    ]);
+    let value = om_poly::algebraic_root(&source, 3, &ctx).unwrap().unwrap();
+    assert!(om_simplify::numeval::remember_real(&real, &value));
+    assert!(!om_simplify::numeval::remember_real(&e("x"), &value));
+    let imaginary = om_poly::algebraic_root(
+        &om_poly::UPoly::new(vec![1.into(), 0.into(), 1.into()]),
+        2,
+        &ctx,
+    )
+    .unwrap()
+    .unwrap();
+    assert!(!om_simplify::numeval::remember_real(&e("I"), &imaginary));
+    let expr = om_core::sqrt(om_core::sub(Expr::int(-1), real));
+    let z = om_simplify::numeval::enclose(&expr, 256, &ctx)
+        .unwrap()
+        .unwrap();
+    assert!(z.im.excludes_zero() && z.im.mid > BigFloat::ZERO);
+    assert!(z.re.contains_zero());
+    ctx.steps_left.set(0);
+    assert!(matches!(
+        om_simplify::numeval::enclose(&expr, 256, &ctx),
+        Err(om_num::ctx::Abort::Budget)
+    ));
+}
+
+#[test]
+fn certified_real_sum_survives_rational_distribution_without_replacing_real_part() {
+    let ctx = Interrupt::default();
+    let base = e("(-1/2+I*Sqrt[3]/2)^(1/3)");
+    let real = om_core::add([base.clone(), om_core::pow(base, Expr::int(-1))]);
+    let before = om_simplify::numeval::enclose(&real, 256, &ctx)
+        .unwrap()
+        .unwrap();
+    let source = om_poly::UPoly::new(vec![1.into(), (-3).into(), 0.into(), 1.into()]);
+    let value = om_poly::algebraic_root(&source, 3, &ctx).unwrap().unwrap();
+    assert!(om_simplify::numeval::remember_real(&real, &value));
+    let after = om_simplify::numeval::enclose(&real, 256, &ctx)
+        .unwrap()
+        .unwrap();
+    assert_eq!(before.re.mid, after.re.mid);
+    assert_eq!(before.re.rad, after.re.rad);
+    assert_eq!(before.re.prec, after.re.prec);
+    assert_eq!(after.im.mid, BigFloat::ZERO);
+    assert_eq!(after.im.rad, BigFloat::ZERO);
+    let distributed = om_core::sub(Expr::int(-1), real.clone());
+    let principal = om_core::sqrt(distributed);
+    ctx.steps_left.set(10_000);
+    let z = om_simplify::numeval::enclose(&principal, 256, &ctx)
+        .unwrap()
+        .unwrap();
+    assert!(z.im.mid > z.im.rad && z.re.contains_zero());
+    // A tiny but exactly nonzero imaginary part is never projected away.
+    let nonreal = om_core::add([real, e("I/2^300")]);
+    let z = om_simplify::numeval::enclose(&nonreal, 1024, &Interrupt::default())
+        .unwrap()
+        .unwrap();
+    assert!(z.im.excludes_zero());
+}

@@ -1,6 +1,6 @@
 //! Degree-decreasing radical reductions, preserving multiplicities of inverse maps.
 use super::{Candidate, extract, formula, numeric, symbolic};
-use crate::{Formula, Level, SolveError, Step, StepKind, StepSink};
+use crate::{Formula, Level, SolveError, SolveOptions, Step, StepKind, StepSink};
 use om_core::{Expr, Symbol, add, div, mul, neg, pow};
 use om_num::{Integer, Rational, ctx::Interrupt};
 use om_poly::UPoly;
@@ -13,6 +13,7 @@ pub(super) fn roots(
     c: &[Expr],
     p: &Expr,
     x: &Expr,
+    opts: &SolveOptions,
     ctx: &Interrupt,
     sink: &mut impl StepSink,
 ) -> Result<Option<Vec<Candidate>>, SolveError> {
@@ -42,7 +43,7 @@ pub(super) fn roots(
         )?));
     }
     if common > 1 {
-        return power(c, p, x, common, ctx, sink);
+        return power(c, p, x, common, opts, ctx, sink);
     }
     if degree.is_multiple_of(2) {
         let mut reciprocal = true;
@@ -54,7 +55,7 @@ pub(super) fn roots(
             }
         }
         if reciprocal {
-            return palindromic(c, p, x, ctx, sink);
+            return palindromic(c, p, x, opts, ctx, sink);
         }
     }
     Ok(None)
@@ -124,7 +125,7 @@ fn binomial_roots(
     });
     Ok(roots)
 }
-fn fresh(p: &Expr, x: &Expr, ctx: &Interrupt) -> Result<Expr, SolveError> {
+pub(super) fn fresh(p: &Expr, x: &Expr, ctx: &Interrupt) -> Result<Expr, SolveError> {
     for i in 1u64.. {
         ctx.tick()?;
         let y = Expr::sym(Symbol::intern(&format!("OmSolve${i}")));
@@ -136,7 +137,7 @@ fn fresh(p: &Expr, x: &Expr, ctx: &Interrupt) -> Result<Expr, SolveError> {
         "auxiliary variable namespace exhausted".into(),
     ))
 }
-fn polynomial(c: &[Expr], x: &Expr, ctx: &Interrupt) -> Result<Expr, SolveError> {
+pub(super) fn polynomial(c: &[Expr], x: &Expr, ctx: &Interrupt) -> Result<Expr, SolveError> {
     let mut terms = vec![];
     for (i, a) in c.iter().enumerate() {
         ctx.tick()?;
@@ -151,13 +152,14 @@ fn reduced(
     c: &[Expr],
     p: &Expr,
     x: &Expr,
+    opts: &SolveOptions,
     ctx: &Interrupt,
     sink: &mut impl StepSink,
 ) -> Result<Option<Vec<Candidate>>, SolveError> {
     if let Some(q) = c.iter().map(extract::exact).collect::<Option<Vec<_>>>() {
-        numeric(&UPoly::new(q), p, x, ctx, sink)
+        numeric(&UPoly::new(q), p, x, opts, ctx, sink)
     } else {
-        symbolic::roots(c, p, x, ctx, sink)
+        symbolic::roots(c, p, x, opts, ctx, sink)
     }
 }
 fn compose(mut root: Candidate, m: u32) -> Result<Candidate, SolveError> {
@@ -173,6 +175,7 @@ fn power(
     p: &Expr,
     x: &Expr,
     n: usize,
+    opts: &SolveOptions,
     ctx: &Interrupt,
     sink: &mut impl StepSink,
 ) -> Result<Option<Vec<Candidate>>, SolveError> {
@@ -190,9 +193,12 @@ fn power(
             Level::Major,
         )
     });
-    let Some(ys) = reduced(&coefficients, &q, &y, ctx, sink)? else {
+    let Some(ys) = reduced(&coefficients, &q, &y, opts, ctx, sink)? else {
         return Ok(None);
     };
+    if ys.iter().any(|r| contains_root(&r.value)) {
+        return Ok(None);
+    }
     let mut all = vec![];
     for root in ys {
         ctx.tick()?;
@@ -222,6 +228,7 @@ fn palindromic(
     c: &[Expr],
     p: &Expr,
     x: &Expr,
+    opts: &SolveOptions,
     ctx: &Interrupt,
     sink: &mut impl StepSink,
 ) -> Result<Option<Vec<Candidate>>, SolveError> {
@@ -267,9 +274,12 @@ fn palindromic(
             Level::Major,
         )
     });
-    let Some(ys) = reduced(&coefficients, &q, &y, ctx, sink)? else {
+    let Some(ys) = reduced(&coefficients, &q, &y, opts, ctx, sink)? else {
         return Ok(None);
     };
+    if ys.iter().any(|r| contains_root(&r.value)) {
+        return Ok(None);
+    }
     let mut all = vec![];
     for root in ys {
         ctx.tick()?;
@@ -307,4 +317,8 @@ fn palindromic(
         )
     });
     Ok(Some(all))
+}
+
+fn contains_root(e: &Expr) -> bool {
+    e.is_head(om_core::BUILTIN::ROOT) || e.args().iter().any(contains_root)
 }

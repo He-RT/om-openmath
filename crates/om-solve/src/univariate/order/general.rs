@@ -1,6 +1,7 @@
 //! Exact root identities break projection ties; disjoint balls certify strict order.
 use super::{Candidate, Key};
 use crate::SolveError;
+use om_core::{BUILTIN as B, Expr};
 use om_num::{Ball, BigFloat, CBall, Integer, Rational, ctx::Interrupt};
 use om_poly::{Algebraic, UPoly, algebraic_root, algebraic_roots};
 use std::{cell::RefCell, cmp::Ordering};
@@ -32,10 +33,27 @@ pub(super) fn assign(
         .iter()
         .map(|r| enclosure_of(r, 128, ctx))
         .collect::<Result<Vec<_>, _>>()?;
+    let function = Expr::call(
+        B::FUNCTION,
+        [super::polynomial(
+            p,
+            &Expr::call(B::SLOT, [Expr::int(1)]),
+            ctx,
+        )?],
+    );
     for candidate in found {
         let mut bits = 128;
         let index = loop {
             ctx.tick()?;
+            if candidate.value.is_head(B::ROOT)
+                && candidate.value.args().len() == 2
+                && candidate.value.args()[0] == function
+                && let Some(om_num::Number::Integer(k)) = candidate.value.args()[1].as_number()
+                && let Ok(k) = usize::try_from(k)
+                && (1..=n).contains(&k)
+            {
+                break k - 1;
+            }
             let z = om_simplify::numeval::enclose(&candidate.value, bits, ctx)?
                 .ok_or_else(|| SolveError::Unsupported("radical enclosure failed".into()))?;
             let mut matching = vec![];
@@ -66,6 +84,9 @@ pub(super) fn assign(
         }
         used[index] = true;
         let value = roots[index].clone();
+        if index < real_count {
+            om_simplify::numeval::remember_real(&candidate.value, &value);
+        }
         candidate.key = Some(if index < real_count {
             Key {
                 nonreal: false,

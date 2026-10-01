@@ -3,6 +3,9 @@
 
 /// Shared configuration and key masking.
 pub mod config;
+/// Explicit host-native configuration IO and credential resolution.
+#[cfg(feature = "native")]
+pub mod native;
 /// Shared JSON transport types.
 pub mod protocol;
 

@@ -8,7 +8,7 @@ description = "Shared sessions and notebook kernel protocol"
 
 [features]
 default = []
-native = ["om-llm/http"]
+native = ["om-llm/http","dep:toml","dep:directories","dep:keyring"]
 
 [dependencies]
 om-core.workspace = true
@@ -22,6 +22,9 @@ serde.workspace = true
 serde_json.workspace = true
 ts-rs.workspace = true
 thiserror.workspace = true
+toml = {workspace=true,optional=true}
+directories = {workspace=true,optional=true}
+keyring = {workspace=true,optional=true}
 
 [lints]
 workspace = true

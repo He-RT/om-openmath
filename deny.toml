@@ -28,7 +28,7 @@ allow = [
     "CC0-1.0",
 ]
 
-# Unmodified Tauri transitive dependencies only; not a global MPL allowance.
+# Specific unmodified Tauri/native-directories transitive dependencies only; not a global MPL allowance.
 exceptions = [
     { crate = "cssparser@0.37.0", allow = ["MPL-2.0"] },
     { crate = "cssparser-macros@0.7.1", allow = ["MPL-2.0"] },

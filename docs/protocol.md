@@ -49,7 +49,7 @@ the current configuration: masks retain the existing key by profile name, while
 null/missing keys clear it. A mask for a new profile resolves to no key. Real
 credentials in a browser `HttpRequest` belong to the explicit transport request;
 configuration masking does not alter HTTP headers. Native persistence and key
-resolution are implemented in M11.8.
+resolution use the explicit store binding described below.
 
 Session parses each Math cell with its configured constants and actual function
 definitions, then passes raw statements to the existing Evaluator. Parse errors
@@ -234,3 +234,37 @@ heads/binders, wrapping original source in dialect-correct Solve syntax so origi
 poles/comments survive. Generated actions execute through the same Session.
 The explicit native warm-release <=1000-char acceptance measures real calls
 against <5ms; representative final maximum was about .662ms.
+
+
+The native feature provides ConfigStore and Session::new_native for real
+config.toml persistence. The default path comes from
+ProjectDirs::from("org","openmath","OpenMath"). Missing files return documented
+defaults; partial TOML preserves defaults, invalid files remain unchanged.
+Session::new remains pure even when the native feature is enabled, so portable
+clients/tests have no implicit user-directory or credential access. Real native
+hosts explicitly bind the store at initialization.
+
+Bound SetConfig validates and commits before installing new state. Wire masks
+preserve key fields by profile name, null/missing clears managed fallback/vault
+values, empty strings are explicit values, and removed profiles release their
+managed entries. Newly entered native keys default to keyring
+service="openmath", user=profile name; explicit Plaintext storage supports the
+prescribed file fallback with private Unix permissions. Unchanged legacy keys
+are not silently migrated. Trusted TOML encoding writes actual fallback data,
+never the wire's *** mask; corrupt stored masks are rejected.
+
+Runtime credential resolution is environment variable, then vault, then fallback
+field. Resolved values are accessed only through SecretKey for a real transport
+request. Config presentation exposes only the literal *** presence marker; it
+never copies resolved env/vault values back into persistent inputs. Missing or
+unavailable vaults permit existing fallback use; locked/encoding failures remain
+explicit, and a requested new vault write does not silently become plaintext.
+External environment variables are not deleted by clearing stored fields.
+
+Actual adjacent temporary files use create_new, private Unix mode, flush/sync
+and atomic replacement. All attempted vault updates are restored on reported
+write/replace failure; an unsuccessful rollback is reported explicitly. Error
+messages carry safe syntax offsets/IO kinds without credential/source excerpts.
+Notebook loading preserves the bound config store; notebook files still contain
+only source cells. Native tests use isolated paths and synthetic providers and
+never query or change live user credentials.

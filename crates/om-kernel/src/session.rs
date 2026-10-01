@@ -3,6 +3,8 @@ mod editing;
 mod editor;
 mod evaluation;
 mod graph;
+#[cfg(feature = "native")]
+mod native;
 mod plotting;
 mod reactive;
 
@@ -24,6 +26,8 @@ pub struct Session {
     interrupt: Arc<AtomicBool>,
     clock: Option<Arc<dyn Clock>>,
     owners: std::collections::BTreeMap<om_core::Symbol, CellId>,
+    #[cfg(feature = "native")]
+    config_store: Option<crate::native::ConfigStore>,
 }
 
 impl Session {
@@ -36,6 +40,8 @@ impl Session {
             interrupt: Arc::new(AtomicBool::new(false)),
             clock,
             owners: Default::default(),
+            #[cfg(feature = "native")]
+            config_store: None,
         };
         session.apply_settings();
         session
@@ -76,6 +82,8 @@ impl Session {
                 dialect,
                 cursor,
             } => return (self.hover(source, dialect, cursor), vec![]),
+            #[cfg(feature = "native")]
+            Request::GetConfig => return (self.stored_config(), vec![]),
             _ => {}
         }
         let response = match req {
@@ -96,6 +104,13 @@ impl Session {
                         "Profile names must be nonempty and unique",
                     )
                 } else {
+                    #[cfg(feature = "native")]
+                    if let Some(store) = &self.config_store {
+                        config = match store.submit(&config, &self.config) {
+                            Ok(config) => config,
+                            Err(error) => return (self.config_error(&error), vec![]),
+                        };
+                    }
                     config.merge_redacted_keys(&self.config);
                     self.config = config;
                     self.apply_settings();

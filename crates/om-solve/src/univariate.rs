@@ -1,16 +1,17 @@
-//! Complex polynomial candidates; original-equation validation belongs to the dispatcher.
+//! Polynomial candidates with real-domain filtering; original validation belongs to the dispatcher.
 mod extract;
 mod formulas;
 mod irreducible;
 use formulas::formula;
 mod order;
+mod real;
 mod reductions;
 mod symbolic;
 use crate::{
-    ExclReason, Level, MaxExtra, Solution, SolutionSet, SolveError, SolveOptions, Step, StepKind,
-    StepSink, Verification,
+    Domain, ExclReason, Level, MaxExtra, Solution, SolutionSet, SolveError, SolveOptions, Step,
+    StepKind, StepSink, Verification,
 };
-use om_core::{BUILTIN as B, Expr, add, div, mul, pow};
+use om_core::{BUILTIN as B, Expr, Message, add, div, mul, pow};
 use om_num::{Integer, Number, Rational, ctx::Interrupt, gcd};
 use om_poly::{FactorStatus, UPoly};
 use om_simplify::{
@@ -24,6 +25,8 @@ pub struct PolynomialRoots {
     pub set: SolutionSet,
     /// Nonzero conditions for parameter coefficients and their denominators.
     pub assumptions: Vec<Expr>,
+    /// Domain diagnostics, including retained candidates of unknown realness.
+    pub messages: Vec<Message>,
 }
 struct Candidate {
     value: Expr,
@@ -31,7 +34,8 @@ struct Candidate {
     key: Option<order::Key>,
 }
 /// Solve exact polynomial factors with radicals or Root objects, retaining multiplicity.
-/// This is a complex candidate kernel; the caller owns original exclusions and domain filters.
+/// Reals is filtered with certified enclosures/root counts. Original exclusions,
+/// verification and the remaining domain filters belong to the dispatcher.
 pub fn poly_uni(
     e: &Expr,
     x: &Expr,
@@ -56,6 +60,7 @@ fn poly_uni_impl(
         return Ok(PolynomialRoots {
             set: SolutionSet::Unevaluated,
             assumptions: vec![],
+            messages: vec![],
         });
     };
     let mut assumptions = vec![];
@@ -63,6 +68,7 @@ fn poly_uni_impl(
         return Ok(PolynomialRoots {
             set: SolutionSet::All,
             assumptions,
+            messages: vec![],
         });
     }
     if extract::exact(&coefficients.denominator).is_none() {
@@ -92,6 +98,7 @@ fn poly_uni_impl(
         return Ok(PolynomialRoots {
             set: SolutionSet::All,
             assumptions,
+            messages: vec![],
         });
     }
     let lead = coefficients
@@ -115,12 +122,14 @@ fn poly_uni_impl(
         return Ok(PolynomialRoots {
             set: SolutionSet::Unevaluated,
             assumptions,
+            messages: vec![],
         });
     }
     if coefficients.values.len() == 1 {
         return Ok(PolynomialRoots {
             set: SolutionSet::Finite(vec![]),
             assumptions,
+            messages: vec![],
         });
     }
     let mut primitive = e.clone();
@@ -167,9 +176,15 @@ fn poly_uni_impl(
         return Ok(PolynomialRoots {
             set: SolutionSet::Unevaluated,
             assumptions,
+            messages: vec![],
         });
     };
     order::sort(candidates, ctx)?;
+    let messages = if opts.domain == Domain::Reals {
+        real::filter(candidates, &coefficients.values, ctx, sink)?
+    } else {
+        vec![]
+    };
     let show = match opts.max_extra_conditions {
         MaxExtra::Zero => false,
         MaxExtra::All => true,
@@ -197,6 +212,7 @@ fn poly_uni_impl(
     Ok(PolynomialRoots {
         set: SolutionSet::Finite(solutions),
         assumptions,
+        messages,
     })
 }
 fn numeric(

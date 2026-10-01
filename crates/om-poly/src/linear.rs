@@ -4,6 +4,30 @@ mod fraction;
 pub use domain::ExactDomain;
 pub use fraction::ExactFraction;
 use om_num::ctx::{Abort, Interrupt};
+/// Exact operation just performed by fraction-free elimination.
+#[derive(Clone, Debug)]
+pub enum BareissOp<D: ExactDomain> {
+    /// Exchange two rows.
+    Swap {
+        /// First row.
+        a: usize,
+        /// Second row.
+        b: usize,
+    },
+    /// Replace target by (pivot*target-entry*source)/previous.
+    Eliminate {
+        /// Target row.
+        target: usize,
+        /// Pivot row.
+        source: usize,
+        /// Current pivot coefficient.
+        pivot: D,
+        /// Original target coefficient in the pivot column.
+        entry: D,
+        /// Previous pivot, whose division is exact in every updated cell.
+        previous: D,
+    },
+}
 /// Fraction-free echelon matrix and its exact pivot/parameter certificates.
 #[derive(Clone, Debug)]
 pub struct BareissResult<D: ExactDomain> {
@@ -49,6 +73,14 @@ pub fn bareiss<D: ExactDomain>(
     matrix: &[Vec<D>],
     pivot_columns: usize,
     ctx: &Interrupt,
+) -> Result<Option<BareissResult<D>>, Abort> {
+    bareiss_observed(matrix, pivot_columns, ctx, &mut |_, _| Ok(()))
+}
+fn bareiss_observed<D: ExactDomain>(
+    matrix: &[Vec<D>],
+    pivot_columns: usize,
+    ctx: &Interrupt,
+    observer: &mut impl FnMut(BareissOp<D>, &[Vec<D>]) -> Result<(), Abort>,
 ) -> Result<Option<BareissResult<D>>, Abort> {
     ctx.tick()?;
     let columns = matrix.first().map_or(pivot_columns, |r| r.len());
@@ -103,6 +135,13 @@ pub fn bareiss<D: ExactDomain>(
         if candidate != rank {
             out.swap(candidate, rank);
             row_swaps.push((rank, candidate));
+            observer(
+                BareissOp::Swap {
+                    a: rank,
+                    b: candidate,
+                },
+                &out,
+            )?;
         }
         let pivot = out[rank][column].clone();
         if pivot.parameter() {
@@ -112,7 +151,8 @@ pub fn bareiss<D: ExactDomain>(
             }
         }
         let pivot_row = out[rank].clone();
-        for row in out.iter_mut().skip(rank + 1) {
+        for i in rank + 1..out.len() {
+            let row = &mut out[i];
             ctx.tick()?;
             let entry = row[column].clone();
             for j in column + 1..columns {
@@ -129,6 +169,16 @@ pub fn bareiss<D: ExactDomain>(
                 row[j] = value;
             }
             row[column] = D::zero().add(&context);
+            observer(
+                BareissOp::Eliminate {
+                    target: i,
+                    source: rank,
+                    pivot: pivot.clone(),
+                    entry,
+                    previous: previous.clone(),
+                },
+                &out,
+            )?;
         }
         previous = pivot;
         pivots.push((rank, column));
@@ -172,6 +222,19 @@ pub fn linear_solve<D: ExactDomain>(
     nvars: usize,
     ctx: &Interrupt,
 ) -> Result<Option<LinearResult<D>>, Abort> {
+    linear_solve_observed(a, b, nvars, ctx, &mut |_, _| Ok(()))
+}
+/// Solve with observations of actual row swaps and completed fraction-free updates.
+/// The callback borrows the current integral matrix; no snapshots are allocated by
+/// this adapter. Its Abort propagates before further elimination/back substitution.
+/// An observer must not change caller arithmetic state; output matches linear_solve.
+pub fn linear_solve_observed<D: ExactDomain>(
+    a: &[Vec<D>],
+    b: &[D],
+    nvars: usize,
+    ctx: &Interrupt,
+    observer: &mut impl FnMut(BareissOp<D>, &[Vec<D>]) -> Result<(), Abort>,
+) -> Result<Option<LinearResult<D>>, Abort> {
     ctx.tick()?;
     if a.len() != b.len() {
         return Ok(None);
@@ -186,7 +249,7 @@ pub fn linear_solve<D: ExactDomain>(
         row.push(b.clone());
         augmented.push(row);
     }
-    let Some(result) = bareiss(&augmented, nvars, ctx)? else {
+    let Some(result) = bareiss_observed(&augmented, nvars, ctx, observer)? else {
         return Ok(None);
     };
     for row in &result.matrix {

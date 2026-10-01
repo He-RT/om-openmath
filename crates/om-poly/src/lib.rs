@@ -37,8 +37,8 @@ pub use hermite::{
 };
 pub use isolation::{RootInterval, isolate, refine};
 pub use linear::{
-    BareissResult, ExactDomain, ExactFraction, LinearResult, LinearSolution, bareiss, determinant,
-    linear_solve,
+    BareissOp, BareissResult, ExactDomain, ExactFraction, LinearResult, LinearSolution, bareiss,
+    determinant, linear_solve, linear_solve_observed,
 };
 pub use mpoly::{MPoly, MonoOrder, Monomial};
 pub use multivariate_factor::MultivariateFactorization;

@@ -11,7 +11,9 @@ pub use types::{
     Bound, Domain, Interval, MaxExtra, Solution, SolutionSet, SolveError, SolveOptions,
     SolveOutcome, Verification, VerifyMode,
 };
+mod linear;
 /// Original-input normalization with preserved domain exclusions.
 pub mod normalize;
 /// Polynomial candidate solving with exact multiplicities and recorded formulas.
 pub mod univariate;
+pub use linear::linear_system;

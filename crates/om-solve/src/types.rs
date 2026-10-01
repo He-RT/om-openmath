@@ -17,7 +17,7 @@ pub enum Domain {
 /// Solve behavior and reproducible computation preferences.
 #[derive(Clone, Debug)]
 pub struct SolveOptions {
-    /// Requested solution domain; poly_uni filters Reals, others are dispatcher stages.
+    /// Requested solution domain, enforced by candidate kernels and the dispatcher.
     pub domain: Domain,
     /// Use Cardano rather than Root for general cubics.
     pub cubics: bool,

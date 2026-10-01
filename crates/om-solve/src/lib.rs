@@ -1,7 +1,10 @@
 //! Equation solving with structured derivation steps.
 #![forbid(unsafe_code)]
 
+mod dispatch;
 mod domain;
+mod verification;
+pub use dispatch::solve;
 mod steps;
 mod types;
 pub use steps::{

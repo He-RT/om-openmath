@@ -8,6 +8,7 @@ mod radical;
 mod real;
 pub(crate) use radical::candidates as radical_candidates;
 pub use radical::radical_path;
+pub(crate) use radical::verify::zero as verification_zero;
 mod reductions;
 mod symbolic;
 pub(crate) mod transcendental;

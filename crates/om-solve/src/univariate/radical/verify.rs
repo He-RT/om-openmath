@@ -12,7 +12,7 @@ use om_num::{
 use om_simplify::zero::{Tri, UnknownReason, is_zero_with};
 use std::cell::Cell;
 
-pub(in crate::univariate) fn zero(e: &Expr, ctx: &Interrupt) -> Result<Tri, SolveError> {
+pub(crate) fn zero(e: &Expr, ctx: &Interrupt) -> Result<Tri, SolveError> {
     const LIMIT: u64 = 16_384;
     let available = ctx.steps_left.get();
     let budget = available.min(LIMIT);

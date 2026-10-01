@@ -1,7 +1,7 @@
 //! Radical elimination generates candidates; original principal values accept them.
 mod collect;
 mod eliminate;
-pub(super) mod verify;
+pub(crate) mod verify;
 use super::{PolynomialRoots, extract, poly_uni, reductions};
 use crate::{
     Level, MaxExtra, NoSteps, SolutionSet, SolveError, SolveOptions, Step, StepKind, StepSink,

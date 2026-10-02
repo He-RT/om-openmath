@@ -1,0 +1,2 @@
+# SSE messages must end with a blank line; retain all other whitespace checks.
+crates/om-llm/tests/fixtures/*.sse whitespace=blank-at-eol,space-before-tab,-blank-at-eof

@@ -268,3 +268,38 @@ messages carry safe syntax offsets/IO kinds without credential/source excerpts.
 Notebook loading preserves the bound config store; notebook files still contain
 only source cells. Native tests use isolated paths and synthetic providers and
 never query or change live user credentials.
+
+
+om-llm now builds actual sans-IO OpenAI-compatible/Anthropic chat requests from
+runtime Profile, actual message/tool replay and configured capabilities. Runtime
+paths use try_build_chat_request: malformed profile/header/schema/conversation
+returns a typed secret-safe error. The fixed-signature build_chat_request is a
+validated-input convenience that panics on invalid construction. Tool-call/result
+associations are checked per active round while actual provider IDs are retained.
+Custom headers merge deterministically/case-insensitively; browser Anthropic
+direct-access is target-specific. Configured models/endpoints remain editable.
+
+HttpRequest transport JSON retains actual authorization for explicit transport;
+Debug shows no endpoint/body/header values. Runtime Profile keys and configuration
+extra-header values are likewise excluded from Debug. Construction performs no
+network IO, does not retrieve a live key and never invokes CAS or a Job yet.
+
+SseDecoder checked byte/text feeds preserve arbitrary split UTF-8, BOM, CR/LF/CRLF
+and multiline data under a one-MiB frame/line budget. Finish discards incomplete
+SSE events and rejects incomplete encoding; NDJSON validates and returns a final
+complete JSON record at EOF. Failure is terminal and checked callers receive no
+partial events from that failing call. Legacy feed is a validated-stream
+convenience; runtime routes must use feed_bytes/try_feed and handle LlmError.
+
+Provider deltas preserve actual text, tool indices/IDs/names/argument fragments,
+finish reasons and errors. Only OpenAI choice0 is selected; reasoning and unknown
+metadata are ignored. Anthropic initial empty tool input does not add {} ahead of
+streamed JSON fragments. Specific finish reasons followed by terminal done
+markers remain separate events; the later Job consumer must handle these
+idempotently and wait for HTTP completion before running tools or reporting Done.
+
+Protocol reference checks used the primary [OpenAI chat reference](https://developers.openai.com/api/reference/resources/chat/subresources/completions/methods/create),
+[Claude streaming documentation](https://platform.claude.com/docs/en/build-with-claude/streaming)
+and [WHATWG SSE framing standard](https://html.spec.whatwg.org/multipage/server-sent-events.html#event-stream-interpretation).
+The project's prescribed compatibility max_tokens/json_object shape is retained;
+model-specific migration or live-provider validation is not claimed.

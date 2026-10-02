@@ -34,7 +34,7 @@ pub enum Role {
 }
 
 /// A complete sans-IO request for native or browser transport.
-#[derive(Clone, Debug, Serialize, Deserialize, TS)]
+#[derive(Clone, Serialize, Deserialize, TS)]
 #[ts(export_to = concat!(env!("CARGO_MANIFEST_DIR"), "/../../app/src/kernel/generated/"))]
 pub struct HttpRequest {
     /// HTTP method.
@@ -87,4 +87,22 @@ pub struct Suggestion {
     pub latex: String,
     /// Short model explanation.
     pub explanation: String,
+}
+
+impl std::fmt::Debug for HttpRequest {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.debug_struct("HttpRequest")
+            .field("method", &self.method)
+            .field(
+                "headers",
+                &self
+                    .headers
+                    .iter()
+                    .map(|(name, _)| name)
+                    .collect::<Vec<_>>(),
+            )
+            .field("body_bytes", &self.body.len())
+            .field("stream", &self.stream)
+            .finish_non_exhaustive()
+    }
 }

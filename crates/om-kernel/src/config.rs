@@ -246,7 +246,10 @@ impl std::fmt::Debug for ProfileConfig {
             .field("supports_tools", &self.supports_tools)
             .field("supports_json_mode", &self.supports_json_mode)
             .field("timeout_ms", &self.timeout_ms)
-            .field("extra_headers", &self.extra_headers)
+            .field(
+                "extra_headers",
+                &self.extra_headers.keys().collect::<Vec<_>>(),
+            )
             .finish()
     }
 }

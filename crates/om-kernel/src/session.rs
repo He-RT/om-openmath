@@ -1,4 +1,5 @@
 //! Synchronous shared-kernel entry point with host-injected time and cancellation.
+mod assistant;
 mod editing;
 mod editor;
 mod evaluation;

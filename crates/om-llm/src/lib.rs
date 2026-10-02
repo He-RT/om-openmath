@@ -3,6 +3,8 @@
 
 mod chat;
 mod job;
+/// Embedded prompts and actual host tool schemas, without IO or CAS dependencies.
+pub mod prompts;
 pub use job::{Feature, Job, JobInput, JobResult, JobStep, SuggestionValidator};
 mod fim;
 pub use fim::{build_fim_request, parse_fim_response, try_build_fim_request};

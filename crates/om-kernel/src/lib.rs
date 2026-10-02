@@ -1,6 +1,9 @@
 //! Shared sessions and notebook kernel protocol.
 #![forbid(unsafe_code)]
 
+/// Pure LLM proposal verification and completion post-processing at the CAS host layer.
+pub mod assistant;
+
 /// Shared configuration and key masking.
 pub mod config;
 /// Explicit host-native configuration IO and credential resolution.

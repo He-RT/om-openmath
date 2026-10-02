@@ -1,5 +1,9 @@
 # Open questions
 
+M12.4 initial host APIs were confirmed RED. Seven initial production cases passed after implementation; the eighth new fixture expected `Solve[x^2 - 4 == 0, x]` while the existing raw InputForm printer emits `Solve[(x^2 - 4) == 0, x]`. Correct only this new display spelling to the genuine recorded-input transport, retaining the same equation, original raw tree and real StepsView expectations. No existing parser/formatter/math authority expectation changes.
+
+M12.4 malformed-envelope RED exposed a panic when the first opening brace follows the last closing brace. Reject reversed bounds before slicing. A new recursion fixture incorrectly assumed every error produces OutputItem::Error; direct output inspection and the existing evaluation regression show iteration exhaustion deliberately retains Hold[...] and reports an Error-level $IterationLimit::itlim message. Check the actual retained error message in the repair prompt, preserving the existing held-value behavior. The original identical self-rewrite fixture converges immediately, so the fixture now increments its argument to exercise real exhaustion. No evaluator/math expectation changes.
+
 No blocking question for workspace initialization.
 
 Known engineering contract checks are tracked in [DEVIATIONS.md](DEVIATIONS.md). Resolve them with evidence before the task that consumes the affected interface; do not silently change mathematical test expectations.

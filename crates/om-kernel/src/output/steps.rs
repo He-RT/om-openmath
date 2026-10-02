@@ -4,7 +4,7 @@ use om_core::{BUILTIN as B, Expr};
 use om_solve::{RowOp, Step, StepKind, Steps};
 use std::collections::BTreeMap;
 
-pub(super) fn render(steps: &Steps) -> StepsView {
+pub(crate) fn render(steps: &Steps) -> StepsView {
     StepsView {
         root: steps.root.iter().map(step).collect(),
     }

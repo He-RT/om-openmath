@@ -4,6 +4,7 @@ use crate::{notebook::StatementRecord, protocol::*};
 use om_core::{BUILTIN as B, Expr, ExprKind, Interrupt};
 use om_eval::Evaluator;
 use om_solve::{Bound, Domain, Solution, SolutionSet};
+pub(crate) use steps::render as render_steps;
 
 pub(crate) fn pack(
     record: &StatementRecord,

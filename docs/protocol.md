@@ -345,9 +345,9 @@ are allowed; a seventh invocation fails. The core never invokes CAS or network.
 
 Structured results require a supplied SuggestionValidator; no model modern/latex
 is trusted and no default validator fabricates a Suggestion. Failed actual host
-validation can retry twice with real sanitized diagnostics. Production prompt/
-parser/formatter hookup is the next host integration stage. FIM completion uses
-actual raw parsing; filtering remains later. TestProfile probes use eight tokens
+validation can retry twice with real sanitized diagnostics. Production prompt/parser/formatter hookup and completion filtering are now
+available through the pure host helpers described below. FIM decoding preserves
+actual raw response bytes before filtering. TestProfile probes use eight tokens
 and actual provider formats.
 
 Done/Failed/cancel are terminal and cached. Late chunks cannot resurrect work.
@@ -355,4 +355,41 @@ An actual still-open HTTP round can supply real failure status after stream erro
 while ended failures remain unchanged. Provider/transport/retry error messages
 exclude known keys/custom-header credentials and 401/403 includes a key hint.
 Raw transport authorization remains real. Source insertion, native transport
-and kernel LLM request/event orchestration remain M12.4–M12.6/M13.
+and kernel LLM request/event orchestration remain M12.5/M12.6/M13.
+
+
+`om_llm::prompts` embeds translate/explain/fix/chat instructions with `include_str!`.
+The eight translation examples match PLAN. Template substitution scans only the
+original template, while task/source/diagnostic data remains in separate user
+messages. Actual readonly evaluate/solve/propose_cell schemas accompany chat;
+the core still performs no tool execution.
+
+`Session::prepare_llm_input` reads actual registered functions, live symbol names,
+source, parser diagnostics, CAS messages and retained statement records. Explain
+requires a current successful cell with actual recorded steps. It sends genuine
+InputForm input/result and the same StepsView used for output rendering; selecting
+a step sends only that recorded step and its descendants with stable IDs. Missing,
+stale or failed derivations return an error, never a fabricated explanation.
+
+The production SuggestionParser extracts the first opening through last closing
+JSON brace (rejecting reversed/missing bounds), requires unique string wolfram and
+explanation fields, and ignores all extra model fields. It requires one nonempty
+unsuppressed Wolfram expression using the real parser. Wolfram/modern/LaTeX are
+rendered from its raw tree, preserving x/x and other original poles. It performs
+no evaluation, source insertion, notebook/history or cancellation changes. Job
+uses the actual diagnostics for at most two correction retries.
+
+Completion context includes only the preceding three Math sources, using the last
+matching current source to identify its notebook position, or the last three
+Math cells if no match exists. send_context=false sends only the current prefix
+and suffix. Wolfram comment delimiters are escaped; Modern logical lines are
+individually commented, including Unicode line separators and dialect markers.
+No settings, credentials, rendered output or Text/Ask cell data enters context.
+Inputs/context/responses have a deterministic one-MiB bound.
+
+`filter_llm_completion` preserves insertion spacing, strips boundary line breaks,
+truncates the first logical newline, and uses real parser lexical diagnostics to
+reject illegal characters/escapes/named characters while allowing incomplete
+syntax. It checks prefix+insertion+suffix and suppresses the first actual local
+completion or its untyped suffix. Protocol job dispatch, native/browser transport
+and user-controlled proposal/ghost UI remain subsequent tasks.

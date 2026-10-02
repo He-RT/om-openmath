@@ -19,6 +19,8 @@ jobs:
       - uses: actions/checkout@v4
       - name: Install Rust toolchain
         run: rustup show active-toolchain
+      - name: Install matching WASM bindings generator
+        run: cargo install wasm-bindgen-cli --version 0.2.129 --locked
       - uses: actions/setup-node@v4
         with:
           node-version-file: app/.nvmrc
@@ -57,9 +59,15 @@ jobs:
           cache: npm
           cache-dependency-path: app/package-lock.json
       - run: npm ci
+      - name: Install WASM toolchain
+        run: |
+          rustup show active-toolchain
+          cargo install wasm-bindgen-cli --version 0.2.129 --locked
       - run: npm run lint
       - run: npm test
       - run: npm run build
+      - run: npx playwright install --with-deps chromium
+      - run: npm run test:e2e
 
   dependencies:
     runs-on: ubuntu-latest

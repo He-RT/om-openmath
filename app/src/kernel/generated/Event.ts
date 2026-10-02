@@ -7,7 +7,11 @@ import type { Suggestion } from "./Suggestion";
 /**
  * Asynchronous notification; envelope correlation id is zero.
  */
-export type Event = { "type": "llm_profile_test",
+export type Event = { "type": "kernel_restarted",
+/**
+ * Localized recovery notice.
+ */
+message: string, } | { "type": "llm_profile_test",
 /**
  * Job identifier.
  */

@@ -43,7 +43,12 @@ impl Session {
         }
     }
 
-    fn notify_status(&mut self, index: usize, status: CellStatus, events: &mut Vec<Event>) {
+    pub(super) fn notify_status(
+        &mut self,
+        index: usize,
+        status: CellStatus,
+        events: &mut Vec<Event>,
+    ) {
         let cell = &mut self.notebook.cells[index];
         cell.status = status;
         events.push(Event::CellStatus {
@@ -52,7 +57,7 @@ impl Session {
         });
     }
 
-    fn notify_output(&self, index: usize, events: &mut Vec<Event>) {
+    pub(super) fn notify_output(&self, index: usize, events: &mut Vec<Event>) {
         let cell = &self.notebook.cells[index];
         if let Some(output) = &cell.output {
             events.push(Event::CellOutput {

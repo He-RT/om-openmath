@@ -81,7 +81,7 @@ request: PlotRequest, } | { "type": "interrupt" } | { "type": "load_notebook",
 /**
  * Versioned source notebook.
  */
-file: NotebookFile, } | { "type": "save_notebook" } | { "type": "get_config" } | { "type": "set_config",
+file: NotebookFile, } | { "type": "save_notebook" } | { "type": "get_notebook_state" } | { "type": "restore_definitions" } | { "type": "get_config" } | { "type": "set_config",
 /**
  * Submitted settings.
  */

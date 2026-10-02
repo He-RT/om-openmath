@@ -4,6 +4,9 @@
 target/
 node_modules/
 app/dist/
+app/src/kernel/wasm/
+app/playwright-report/
+app/test-results/
 app/src-tauri/gen/
 .playwright-mcp/
 __pycache__/

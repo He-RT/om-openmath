@@ -7,6 +7,16 @@ use crate::{
 use om_num::ctx::Clock;
 use std::sync::Arc;
 impl Session {
+    /// Update the actual vault for a configured profile, preserving environment/file precedence.
+    pub fn set_profile_secret(&self, name: &str, key: Option<&str>) -> Result<(), ConfigError> {
+        if !self.config.llm.profiles.iter().any(|p| p.name == name) {
+            return Err(ConfigError::MissingProfile);
+        }
+        self.config_store
+            .as_ref()
+            .ok_or(ConfigError::Unbound)?
+            .set_secret(name, key)
+    }
     /// Load and bind an actual native store; pure Session::new remains IO-free.
     pub fn new_native(
         store: ConfigStore,

@@ -477,3 +477,48 @@ fixtures include action execution, retries, CAS/tool limitations, deadlines,
 cancellation, context/lexical completion filtering, byte/status handling and
 synthetic native credential precedence. User-facing clients/UI/CLI/packaging and
 full actual CLI corpus acceptance remain M13 work.
+
+
+The native desktop KernelHost now owns a genuine Session::new_native on a dedicated
+thread with bounded64-entry messages, matching envelope replies and Channel event
+IDs zero. TauriClient subscribes and invokes the actual kernel_request,
+kernel_subscribe and kernel_interrupt commands; named secret_set/delete delegate
+to the bound profile vault, never echoing raw credentials. Startup storage errors
+fail explicitly. Native HTTP DTOs are intercepted before every public reply/event;
+the host sends only LlmStarted{http:null} and public tool/text/suggestion/timing or
+terminal events. Acknowledged raw byte messages feed the sole Session Job.
+The two async IO workers and16 blocking byte workers are bounded; enqueue/ack waits
+poll cancellation and the whole request deadline. Host disposal cancels jobs,
+interrupts CAS and joins the owner. Real isolated native tests prove math, synthetic
+secret operations, actual loopback HTTP, cancellation, interruption/recovery and
+busy-owner deadline behavior. The debug desktop executable was built/launched;
+visible packaged-window inspection is retained for final desktop acceptance.
+
+The actual om-wasm Kernel class exposes a constructor accepting optional config
+JSON and request(JSON Envelope). It injects a browser Date clock and returns
+{response: Envelope<Response>, events: Envelope<Event>[]} using genuine Session
+dispatch. Bad JSON/zero/unsafe-JS correlation IDs do not execute. A Worker loads
+the built bindgen binary; WasmClient pairs replies by ID, distributes events,
+disposes waiters on failure and runs one byte-safe browser LlmDriver. Initial
+LlmStarted and subsequent LlmHttp events trigger real fetch rounds with actual
+status, redirect:error, bounded streaming UTF8, per-profile deadlines and abort.
+HTTP continuations come from events, correcting the older PLAN pseudo-code that
+expected a nonexistent LlmStarted response after HTTP end.
+
+GetNotebookState returns source-only NotebookFile, per-cell static defines/uses
+and status, actual topological definition_order and cycles. RestoreDefinitions
+resets the evaluator/records, executes only definition cells through the existing
+planner, reports cycles/failure and marks other math cells Stale. KernelRestarted
+is the recovery notice. Worker interrupt saves the latest synchronized source and
+in-memory config, terminates/replaces the real Worker, rejects pending requests,
+loads source and restores definitions; it never runs every computation to recover.
+Secrets stay in runtime config and never enter notebook files/recovery metadata.
+
+npm run build:wasm uses exactly wasm-bindgen-cli0.2.129 and the locked release
+wasm32 target. dev/test/build generate the ignored JS/WASM package automatically;
+no unexplained precompiled artifact is committed. Browser Playwright tests use
+this real Worker/binary for Solve, diagnostics, running-computation termination,
+definition restore and local mocked provider fetch through the real Job validator.
+MockKernel/transport units cover correlation and lifecycle only. Notebook/editor
+UI, output/plot/steps/AI/settings, full CLI authority, packages and final docs/E2E
+remain subsequent M13 tasks.

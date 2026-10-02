@@ -50,6 +50,9 @@ pub enum ConfigError {
     /// The requested routing profile is not configured.
     #[error("requested LLM profile is not configured")]
     MissingProfile,
+    /// The pure Session has no explicitly bound native store.
+    #[error("native credential store is not bound")]
+    Unbound,
 }
 /// Explicit policy for new entered keys; legacy fallback keys are preserved by masks.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
@@ -66,6 +69,12 @@ pub struct ConfigStore {
     policy: KeyStorage,
 }
 impl ConfigStore {
+    /// Set/delete one actual named vault entry without persisting a raw fallback key.
+    pub fn set_secret(&self, profile: &str, key: Option<&str>) -> Result<(), ConfigError> {
+        self.credentials
+            .store(profile, key)
+            .map_err(ConfigError::from)
+    }
     /// Bind a concrete path/provider/policy without reading files or credentials yet.
     pub fn new(
         path: impl Into<PathBuf>,

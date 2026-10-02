@@ -7,6 +7,7 @@ export default defineConfig({
   clearScreen: false,
   server: { host: '127.0.0.1', port: 5173, strictPort: true },
   test: {
+    exclude: ['e2e/**', 'node_modules/**'],
     environment: 'jsdom',
     setupFiles: ['./src/test/setup.ts'],
   },

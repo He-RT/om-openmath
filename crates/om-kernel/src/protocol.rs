@@ -85,6 +85,10 @@ pub enum Request {
     },
     /// Return the source-only notebook file DTO.
     SaveNotebook,
+    /// Source and actual static dependency metadata for client recovery.
+    GetNotebookState,
+    /// Rebuild only definition cells after an interrupted Worker restart.
+    RestoreDefinitions,
     /// Return settings with masked keys.
     GetConfig,
     /// Install submitted settings after resolving masked keys.
@@ -216,6 +220,11 @@ pub enum Response {
         /// Portable file DTO.
         file: NotebookFile,
     },
+    /// Source-only notebook state and dependency restoration order.
+    NotebookState {
+        /// Actual current state.
+        state: NotebookState,
+    },
     /// Current configuration with masked keys.
     Config {
         /// Settings.
@@ -235,6 +244,11 @@ pub enum Response {
 #[ts(export_to = concat!(env!("CARGO_MANIFEST_DIR"), "/../../app/src/kernel/generated/"))]
 #[serde(tag = "type", rename_all = "snake_case")]
 pub enum Event {
+    /// A terminated worker was replaced and its definition cells restored.
+    KernelRestarted {
+        /// Localized recovery notice.
+        message: String,
+    },
     /// Actual provider probe response and injected-clock measurements.
     LlmProfileTest {
         /// Job identifier.

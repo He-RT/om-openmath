@@ -2945,8 +2945,14 @@ name = "om-desktop"
 version = "0.1.0"
 dependencies = [
  "om-kernel",
+ "om-llm",
+ "om-num",
+ "reqwest",
+ "serde_json",
  "tauri",
  "tauri-build",
+ "tokio",
+ "wiremock",
 ]
 
 [[package]]
@@ -3083,6 +3089,9 @@ dependencies = [
  "console_error_panic_hook",
  "js-sys",
  "om-kernel",
+ "om-num",
+ "serde",
+ "serde_json",
  "wasm-bindgen",
 ]
 

@@ -10,6 +10,7 @@ pub use llm::LlmCancellation;
 mod native;
 mod plotting;
 mod reactive;
+mod recovery;
 
 use crate::{KernelConfig, Notebook, config::Language, notebook::FileError, protocol::*};
 use om_eval::Evaluator;
@@ -71,6 +72,8 @@ impl Session {
                 return (self.move_cell(cell_id, to_index), vec![]);
             }
             Request::RunAll => return self.run_all(),
+            Request::GetNotebookState => return (self.notebook_state(), vec![]),
+            Request::RestoreDefinitions => return self.restore_definitions(),
             Request::SamplePlot { request } => return (self.sample_plot(request), vec![]),
             Request::Preview {
                 source,

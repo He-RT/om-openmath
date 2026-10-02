@@ -4,6 +4,32 @@ use crate::wire::{Diagnostic, Dialect, Level, Message, Span, TokenClass, Verific
 use serde::{Deserialize, Serialize};
 use std::collections::BTreeMap;
 use ts_rs::TS;
+/// Current source file and actual metadata; no secrets or expression internals.
+#[derive(Clone, Debug, Serialize, Deserialize, TS)]
+#[ts(export_to = concat!(env!("CARGO_MANIFEST_DIR"), "/../../app/src/kernel/generated/"))]
+pub struct NotebookState {
+    /// Source-only persistence DTO.
+    pub file: crate::protocol::NotebookFile,
+    /// Cells in document order.
+    pub cells: Vec<CellState>,
+    /// Definition cells in dependency order.
+    pub definition_order: Vec<crate::protocol::CellId>,
+    /// Definition cells in dependency cycles or blocked by cycles.
+    pub cycles: Vec<crate::protocol::CellId>,
+}
+/// Actual static source dependencies and current execution status.
+#[derive(Clone, Debug, Serialize, Deserialize, TS)]
+#[ts(export_to = concat!(env!("CARGO_MANIFEST_DIR"), "/../../app/src/kernel/generated/"))]
+pub struct CellState {
+    /// Source cell ID.
+    pub id: crate::protocol::CellId,
+    /// Current execution state.
+    pub status: crate::protocol::CellStatus,
+    /// Defined names, sorted by spelling.
+    pub defines: Vec<String>,
+    /// Used names, sorted by spelling.
+    pub uses: Vec<String>,
+}
 /// CellKind values accepted by the wire protocol.
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Serialize, Deserialize, TS)]
 #[ts(export_to = concat!(env!("CARGO_MANIFEST_DIR"), "/../../app/src/kernel/generated/"))]

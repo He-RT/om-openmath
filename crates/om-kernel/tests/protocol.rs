@@ -232,6 +232,16 @@ fn actual_http_status_and_probe_metrics_are_additive_wire_fields() {
 }
 
 #[test]
+fn actual_recovery_metadata_has_source_only_files_and_separate_variants() {
+    roundtrip::<Request>(json!({"type":"get_notebook_state"}));
+    roundtrip::<Request>(json!({"type":"restore_definitions"}));
+    roundtrip::<Response>(
+        json!({"type":"notebook_state","state":{"file":notebook(),"cells":[{"id":"a","status":"Stale","defines":["a"],"uses":["b"]}],"definition_order":["a"],"cycles":[]}}),
+    );
+    roundtrip::<Event>(json!({"type":"kernel_restarted","message":"actual restart notice"}));
+}
+
+#[test]
 fn parser_and_solver_adapters_keep_existing_json_without_static_string_leaks() {
     let parsed = om_parse::parse("α  (x)", om_parse::Dialect::Modern);
     assert!(!parsed.diagnostics.is_empty());

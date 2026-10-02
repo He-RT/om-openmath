@@ -5,6 +5,7 @@ import type { HoverInfo } from "./HoverInfo";
 import type { HttpRequest } from "./HttpRequest";
 import type { KernelConfig } from "./KernelConfig";
 import type { NotebookFile } from "./NotebookFile";
+import type { NotebookState } from "./NotebookState";
 import type { PlotData } from "./PlotData";
 import type { PreviewResult } from "./PreviewResult";
 
@@ -51,7 +52,11 @@ data: PlotData, } | { "type": "notebook",
 /**
  * Portable file DTO.
  */
-file: NotebookFile, } | { "type": "config",
+file: NotebookFile, } | { "type": "notebook_state",
+/**
+ * Actual current state.
+ */
+state: NotebookState, } | { "type": "config",
 /**
  * Settings.
  */

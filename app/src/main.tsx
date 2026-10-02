@@ -6,6 +6,7 @@ import './styles/chrome.css';
 import './styles/notebook.css';
 import './styles/output.css';
 import './styles/steps.css';
+import './styles/plot.css';
 import './styles/responsive.css';
 import { KernelProvider } from './kernel/provider';
 

@@ -1,0 +1,153 @@
+.plot-view {
+  margin: 18px 0;
+  max-width: none;
+  width: 100%;
+}
+.plot-toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  font-size: 11px;
+  color: var(--muted);
+  margin-bottom: 8px;
+}
+.plot-toolbar button {
+  font-size: 11px;
+  padding: 4px 7px;
+}
+.plot-view > svg {
+  display: block;
+  width: 100%;
+  height: 320px;
+  border-radius: 5px;
+  background: var(--surface);
+  touch-action: none;
+  user-select: none;
+  cursor: crosshair;
+}
+.plot-grid line {
+  stroke: var(--line);
+  stroke-width: 1;
+}
+.plot-axis {
+  stroke: var(--muted);
+  stroke-width: 1;
+}
+.plot-ticks text,
+.plot-axis-name {
+  fill: var(--muted);
+  font:
+    10px -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    sans-serif;
+}
+.plot-frame {
+  fill: none;
+  stroke: var(--line);
+  stroke-width: 1;
+}
+.plot-curve path {
+  fill: none;
+  stroke-width: 1.8;
+  stroke-linejoin: round;
+  stroke-linecap: round;
+}
+.plot-point-label {
+  fill: var(--accent);
+  font:
+    10px -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    sans-serif;
+  paint-order: stroke;
+  stroke: var(--surface);
+  stroke-width: 3px;
+  stroke-linejoin: round;
+}
+.plot-crosshair {
+  pointer-events: none;
+}
+.plot-crosshair line {
+  stroke: var(--muted);
+  stroke-width: 1;
+  stroke-dasharray: 3 4;
+  opacity: 0.65;
+}
+.plot-shade {
+  fill: var(--accent-soft);
+  opacity: 0.7;
+}
+.plot-readout {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  min-height: 23px;
+  margin-top: 7px;
+  font-size: 10px;
+  color: var(--muted);
+}
+.plot-pending .plot-curve,
+.plot-pending .plot-solution {
+  opacity: 0.5;
+}
+.plot-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 16px;
+  font-size: 11px;
+  margin: 5px 0 12px;
+}
+.plot-legend > span {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+}
+.plot-legend i {
+  height: 2px;
+  width: 13px;
+  flex-shrink: 0;
+}
+.plot-legend code {
+  overflow-wrap: anywhere;
+}
+.plot-sliders {
+  display: grid;
+  gap: 9px;
+  margin-top: 12px;
+}
+.plot-slider {
+  display: grid;
+  grid-template-columns: 40px minmax(0, 1fr) 48px;
+  align-items: center;
+  gap: 12px;
+  font-size: 11px;
+}
+.plot-slider input {
+  width: 100%;
+  accent-color: var(--accent);
+  padding: 0;
+  cursor: ew-resize;
+}
+.plot-slider output {
+  text-align: right;
+  color: var(--muted);
+}
+.plot-parameter {
+  display: flex;
+  gap: 12px;
+  font-size: 11px;
+}
+.plot-view .output-error {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  font-size: 11px;
+}
+.plot-view .output-error button {
+  font-size: 11px;
+}

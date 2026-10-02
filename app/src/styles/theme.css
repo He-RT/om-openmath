@@ -9,6 +9,12 @@
   --line: #e1e7e1;
   --error: #b4433f;
   --warning: #a37720;
+  --plot-1: #286650;
+  --plot-2: #476d9e;
+  --plot-3: #a87837;
+  --plot-4: #946b90;
+  --plot-5: #407f80;
+  --plot-6: #a7645f;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   font-synthesis: none;
   text-rendering: optimizeLegibility;
@@ -25,6 +31,12 @@
   --line: #303c33;
   --error: #ed9892;
   --warning: #d9b469;
+  --plot-1: #8ac9a8;
+  --plot-2: #8cadd4;
+  --plot-3: #d6b175;
+  --plot-4: #c69cbd;
+  --plot-5: #88c0bf;
+  --plot-6: #dca19a;
 }
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
@@ -38,6 +50,12 @@
     --line: #303c33;
     --error: #ed9892;
     --warning: #d9b469;
+    --plot-1: #8ac9a8;
+    --plot-2: #8cadd4;
+    --plot-3: #d6b175;
+    --plot-4: #c69cbd;
+    --plot-5: #88c0bf;
+    --plot-6: #dca19a;
   }
 }
 * {

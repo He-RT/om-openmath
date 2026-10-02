@@ -4,6 +4,7 @@ import type { KernelClient } from "../../kernel/client";
 import { ExprView } from "./ExprView";
 import { SolutionCards } from "./SolutionCards";
 import { Messages as OutputMessages } from "./Messages";
+import { PlotView } from "../plot/PlotView";
 export function OutputView({
   output,
   stale,
@@ -45,18 +46,20 @@ export function OutputView({
               t={t}
               onInsert={onInsert}
               onSteps={() => onSteps(item.out_index)}
+              active={!stale}
             />
           ) : item.type === "error" ? (
             <div role="alert" className="output-error">
               {item.message}
             </div>
           ) : (
-            <div className="plot-summary">
-              <code>{item.request.exprs.join(", ")}</code>
-              <span>
-                {item.data.curves.length} {t.plot}
-              </span>
-            </div>
+            <PlotView
+              request={item.request}
+              data={item.data}
+              kernel={kernel}
+              t={t}
+              active={!stale}
+            />
           )}
         </div>
       ))}

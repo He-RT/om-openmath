@@ -66,12 +66,14 @@ export function SolutionCards({
   onInsert,
   onSteps,
   kernel,
+  active = true,
 }: {
   item: Extract<OutputItem, { type: "solutions" }>;
   t: Messages;
   onInsert: (source: string) => void;
   onSteps: () => void;
   kernel: KernelClient;
+  active?: boolean;
 }) {
   const [plotVisible, setPlotVisible] = useState(false);
   const { view } = item;
@@ -173,7 +175,12 @@ export function SolutionCards({
         <CopyButton label={t.copyAll} source={item.input_form} t={t} />
       </div>
       {plotVisible && item.plot && (
-        <PlotPreview request={item.plot} kernel={kernel} t={t} />
+        <PlotPreview
+          request={item.plot}
+          kernel={kernel}
+          t={t}
+          active={active}
+        />
       )}
       <details className="solution-source">
         <summary>{t.source}</summary>

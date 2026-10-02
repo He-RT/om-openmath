@@ -603,3 +603,20 @@ base URL; explicit remember is ephemeral per client/destination, never notebook
 or credential storage. Explain sends no additional notebook context.
 Known [S1.2] citations become local expand/scroll/highlight controls only in
 Markdown text, preserving literal code/math/links and unknown references.
+
+PlotView now renders genuine explicit PlotData or invokes SamplePlot for a
+solver-proposed PlotRequest. Viewport and parameter interaction keep the same
+transported exprs/solve/source/domain metadata and source-only notebook contract.
+The SVG renderer does not evaluate expressions or derive mathematical points;
+all changed curves, intersections and shade come from actual kernel responses.
+Empty current highlights clear old geometry, preserving the legacy request
+fallback only when PlotData.highlights is genuinely absent.
+
+Per-plot sampling has one in-flight request, a newest queued tail, viewport
+debounce150ms and slider throttle33ms. Revision checks isolate superseded replies;
+unmount, stale output and Worker restart cannot install old geometry. Pending
+geometry is visibly dimmed, errors retain explicit failure/retry state. Reset
+restores initial viewport behavior while retaining selected parameter values.
+SVG coordinates/ticks are presentation only, with keyboard/pointer/touch control,
+nonpassive cursor-centered wheel zoom, measured responsive width and320px height.
+No protocol field, model/math evaluation path, dependency or secret storage changed.

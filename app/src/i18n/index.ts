@@ -11,6 +11,13 @@ export function locale(
     : language;
 }
 const en = {
+  zoomIn: "Zoom in",
+  zoomOut: "Zoom out",
+  resetView: "Reset view",
+  coordinates: "Coordinates",
+  plotControls:
+    "Drag to pan, scroll to zoom, double-click or Home to reset. Arrow keys pan; + and − zoom.",
+
   goToStep: "Go to",
   explanationError: "Explanation request failed",
   showDetails: "Show all details",
@@ -156,6 +163,13 @@ const en = {
   messages: "Messages",
 };
 const zh: typeof en = {
+  zoomIn: "放大",
+  zoomOut: "缩小",
+  resetView: "复位视窗",
+  coordinates: "坐标",
+  plotControls:
+    "拖动平移，滚轮缩放，双击或 Home 复位。方向键平移，+ 和 − 缩放。",
+
   goToStep: "跳转到",
   explanationError: "讲解请求失败",
   showDetails: "显示全部细节",

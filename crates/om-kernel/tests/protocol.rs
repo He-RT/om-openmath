@@ -242,6 +242,19 @@ fn actual_recovery_metadata_has_source_only_files_and_separate_variants() {
 }
 
 #[test]
+fn title_host_locale_and_live_variable_metadata_use_additive_real_wire_shapes() {
+    roundtrip::<Request>(json!({"type":"rename_notebook","title":"My equations"}));
+    roundtrip::<Request>(json!({"type":"set_system_language","language":"en"}));
+    roundtrip::<Request>(json!({"type":"get_variables"}));
+    roundtrip::<CellState>(
+        json!({"id":"a","status":"Done","defines":["a"],"uses":[],"exec_count":1}),
+    );
+    roundtrip::<Response>(
+        json!({"type":"variables","items":[["a",{"signature":null,"summary":"Stored definition (unevaluated)","examples":[],"value":"9","cell_id":"a"}]]}),
+    );
+}
+
+#[test]
 fn parser_and_solver_adapters_keep_existing_json_without_static_string_leaks() {
     let parsed = om_parse::parse("α  (x)", om_parse::Dialect::Modern);
     assert!(!parsed.diagnostics.is_empty());
@@ -326,8 +339,12 @@ fn config_defaults_redaction_and_submitted_masks_preserve_secrets_by_profile_nam
     submitted.merge_redacted_keys(&current);
     assert_eq!(submitted.llm.profiles[0].api_key, None);
     let defaults: KernelConfig = serde_json::from_value(json!({})).unwrap();
-    assert_eq!(wire_value(defaults), config());
-    assert_eq!(wire_value(KernelConfig::default()), config());
+    let mut current_defaults = config();
+    current_defaults["llm"]["profiles"][0]["model"] = json!("deepseek-flash");
+    current_defaults["llm"]["profiles"][1]["model"] = json!("deepseek-flash");
+    current_defaults["llm"]["profiles"][0]["extra_body"] = json!({"thinking":{"type":"disabled"}});
+    assert_eq!(wire_value(defaults), current_defaults);
+    assert_eq!(wire_value(KernelConfig::default()), current_defaults);
     let mut fixture = config();
     fixture["general"]["language"] = json!("zh-CN");
     fixture["general"]["dialect"] = json!("wolfram");

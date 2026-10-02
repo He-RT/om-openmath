@@ -29,6 +29,7 @@ pub struct Session {
     pub config: KernelConfig,
     interrupt: Arc<AtomicBool>,
     clock: Option<Arc<dyn Clock>>,
+    system_language: Language,
     owners: std::collections::BTreeMap<om_core::Symbol, CellId>,
     llm: llm::LlmState,
     #[cfg(feature = "native")]
@@ -44,6 +45,7 @@ impl Session {
             config,
             interrupt: Arc::new(AtomicBool::new(false)),
             clock,
+            system_language: Language::ZhCn,
             owners: Default::default(),
             llm: Default::default(),
             #[cfg(feature = "native")]
@@ -73,7 +75,16 @@ impl Session {
             }
             Request::RunAll => return self.run_all(),
             Request::GetNotebookState => return (self.notebook_state(), vec![]),
+            Request::GetVariables => return (self.variables(), vec![]),
             Request::RestoreDefinitions => return self.restore_definitions(),
+            Request::RenameNotebook { title } => {
+                self.notebook.title = title;
+                return (Response::Ok, vec![]);
+            }
+            Request::SetSystemLanguage { language } => {
+                self.system_language = language;
+                return (Response::Ok, vec![]);
+            }
             Request::SamplePlot { request } => return (self.sample_plot(request), vec![]),
             Request::Preview {
                 source,
@@ -183,10 +194,17 @@ impl Session {
     }
 
     fn localized(&self, zh: &str, en: &str) -> String {
-        if self.config.general.language == Language::En {
+        if self.effective_language() == Language::En {
             en.into()
         } else {
             zh.into()
+        }
+    }
+    /// User language or the injected host locale when the preference remains Auto.
+    pub fn effective_language(&self) -> Language {
+        match self.config.general.language {
+            Language::Auto => self.system_language,
+            language => language,
         }
     }
 

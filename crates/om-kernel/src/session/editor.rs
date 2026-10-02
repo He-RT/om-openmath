@@ -144,6 +144,24 @@ impl Session {
         });
         Response::Hover { info }
     }
+    pub(super) fn variables(&self) -> Response {
+        let mut symbols = self
+            .eval
+            .defs
+            .defined_symbols()
+            .into_iter()
+            .collect::<Vec<_>>();
+        symbols.sort_by_key(|s| s.name());
+        Response::Variables {
+            items: symbols
+                .into_iter()
+                .filter_map(|symbol| {
+                    self.user_hover(symbol, om_parse::Dialect::Wolfram)
+                        .map(|info| (symbol.name().into(), info))
+                })
+                .collect(),
+        }
+    }
     fn user_hover(&self, symbol: Symbol, dialect: om_parse::Dialect) -> Option<HoverInfo> {
         let own = self.eval.defs.own_value(symbol);
         let down = self.eval.defs.down_values(symbol);
@@ -182,7 +200,7 @@ impl Session {
         };
         Some(HoverInfo {
             signature,
-            summary: if self.config.general.language == Language::En {
+            summary: if self.effective_language() == Language::En {
                 "Stored definition (unevaluated)".into()
             } else {
                 "当前存储的定义（未求值）".into()

@@ -20,6 +20,8 @@ om-llm = {workspace=true,features=["http"]}
 serde_json.workspace = true
 tokio.workspace = true
 reqwest.workspace = true
+tauri-plugin-dialog.workspace = true
+tauri-plugin-fs.workspace = true
 
 [dev-dependencies]
 wiremock.workspace = true

@@ -67,6 +67,7 @@ impl Session {
             supports_json_mode: p.supports_json_mode,
             timeout_ms: p.timeout_ms,
             extra_headers: p.extra_headers.clone(),
+            extra_body: p.extra_body.clone(),
         })
     }
 }

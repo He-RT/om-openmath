@@ -29,6 +29,10 @@ pub struct CellState {
     pub defines: Vec<String>,
     /// Used names, sorted by spelling.
     pub uses: Vec<String>,
+    /// Actual last successful statement index, including suppressed statements.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[ts(optional)]
+    pub exec_count: Option<u32>,
 }
 /// CellKind values accepted by the wire protocol.
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Serialize, Deserialize, TS)]

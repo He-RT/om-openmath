@@ -70,7 +70,10 @@ pub fn try_build_fim_request(
         method: "POST".into(),
         url: format!("{}{endpoint}", p.base_url.trim_end_matches('/')),
         headers: crate::chat::build_headers(p, target)?,
-        body: serde_json::to_string(&body).map_err(|_| LlmError::Json)?,
+        body: crate::chat::merge_extra(
+            p,
+            &serde_json::to_string(&body).map_err(|_| LlmError::Json)?,
+        )?,
         stream: false,
     })
 }

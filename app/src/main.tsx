@@ -2,6 +2,9 @@ import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import App from './App';
 import './styles/theme.css';
+import './styles/chrome.css';
+import './styles/notebook.css';
+import './styles/responsive.css';
 import { KernelProvider } from './kernel/provider';
 
 const root = document.getElementById('root');

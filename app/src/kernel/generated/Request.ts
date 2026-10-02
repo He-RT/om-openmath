@@ -3,6 +3,7 @@ import type { CellInput } from "./CellInput";
 import type { ChatMessage } from "./ChatMessage";
 import type { Dialect } from "./Dialect";
 import type { KernelConfig } from "./KernelConfig";
+import type { Language } from "./Language";
 import type { NotebookFile } from "./NotebookFile";
 import type { PlotRequest } from "./PlotRequest";
 
@@ -81,7 +82,15 @@ request: PlotRequest, } | { "type": "interrupt" } | { "type": "load_notebook",
 /**
  * Versioned source notebook.
  */
-file: NotebookFile, } | { "type": "save_notebook" } | { "type": "get_notebook_state" } | { "type": "restore_definitions" } | { "type": "get_config" } | { "type": "set_config",
+file: NotebookFile, } | { "type": "save_notebook" } | { "type": "rename_notebook",
+/**
+ * New source notebook title.
+ */
+title: string, } | { "type": "set_system_language",
+/**
+ * Actual host language.
+ */
+language: Language, } | { "type": "get_notebook_state" } | { "type": "get_variables" } | { "type": "restore_definitions" } | { "type": "get_config" } | { "type": "set_config",
 /**
  * Submitted settings.
  */

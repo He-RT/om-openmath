@@ -20,4 +20,8 @@ defines: Array<string>,
 /**
  * Used names, sorted by spelling.
  */
-uses: Array<string>, };
+uses: Array<string>,
+/**
+ * Actual last successful statement index, including suppressed statements.
+ */
+exec_count?: number, };

@@ -32,6 +32,8 @@ pub struct Profile {
     pub timeout_ms: u64,
     /// Configured additional headers.
     pub extra_headers: BTreeMap<String, String>,
+    /// Explicit bounded vendor body fields that cannot override protocol-owned fields.
+    pub extra_body: BTreeMap<String, Value>,
 }
 impl std::fmt::Debug for Profile {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
@@ -49,6 +51,7 @@ impl std::fmt::Debug for Profile {
                 "extra_headers",
                 &self.extra_headers.keys().collect::<Vec<_>>(),
             )
+            .field("extra_body", &self.extra_body.keys().collect::<Vec<_>>())
             .finish_non_exhaustive()
     }
 }
@@ -198,6 +201,36 @@ pub(crate) fn validate_profile(p: &Profile) -> Result<(), LlmError> {
         return Err(LlmError::Profile("temperature"));
     }
     validate_base(&p.base_url)?;
+    if p.extra_body.keys().any(|name| {
+        matches!(
+            name.as_str(),
+            "model"
+                | "messages"
+                | "tools"
+                | "stream"
+                | "temperature"
+                | "max_tokens"
+                | "prompt"
+                | "suffix"
+                | "stop"
+                | "stop_sequences"
+                | "response_format"
+                | "system"
+                | "options"
+                | "headers"
+                | "base_url"
+                | "api_key"
+        )
+    }) {
+        return Err(LlmError::Profile("extra_body"));
+    }
+    if serde_json::to_vec(&p.extra_body)
+        .map_err(|_| LlmError::Json)?
+        .len()
+        > 1_048_576
+    {
+        return Err(LlmError::Limit { limit: 1_048_576 });
+    }
     Ok(())
 }
 impl std::fmt::Debug for LlmError {
@@ -344,6 +377,7 @@ pub fn try_build_chat_request(
     } else {
         openai(p, msgs, tools, json_mode)?
     };
+    let body = merge_extra(p, &body)?;
     Ok(HttpRequest {
         method: "POST".into(),
         url: format!("{}{suffix}", p.base_url.trim_end_matches('/')),
@@ -351,4 +385,18 @@ pub fn try_build_chat_request(
         body,
         stream: true,
     })
+}
+pub(crate) fn merge_extra(p: &Profile, body: &str) -> Result<String, LlmError> {
+    if p.extra_body.is_empty() {
+        return Ok(body.into());
+    }
+    let mut value: Value = serde_json::from_str(body).map_err(|_| LlmError::Json)?;
+    let object = value.as_object_mut().ok_or(LlmError::Json)?;
+    for (name, value) in &p.extra_body {
+        if object.contains_key(name) {
+            return Err(LlmError::Profile("extra_body"));
+        }
+        object.insert(name.clone(), value.clone());
+    }
+    serde_json::to_string(&value).map_err(|_| LlmError::Json)
 }

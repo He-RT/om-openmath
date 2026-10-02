@@ -34,6 +34,7 @@ impl Session {
                         status: c.status,
                         defines: names(&c.defines),
                         uses: names(&c.uses),
+                        exec_count: c.exec_count,
                     })
                     .collect(),
                 definition_order: plan

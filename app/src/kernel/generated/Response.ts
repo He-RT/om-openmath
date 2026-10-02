@@ -56,7 +56,11 @@ file: NotebookFile, } | { "type": "notebook_state",
 /**
  * Actual current state.
  */
-state: NotebookState, } | { "type": "config",
+state: NotebookState, } | { "type": "variables",
+/**
+ * Names sorted by spelling, paired with genuine stored-value metadata.
+ */
+items: Array<[string, HoverInfo]>, } | { "type": "config",
 /**
  * Settings.
  */

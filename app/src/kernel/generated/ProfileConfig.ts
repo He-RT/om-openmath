@@ -52,4 +52,8 @@ timeout_ms: number,
 /**
  * Additional configured headers.
  */
-extra_headers: { [key in string]: string }, };
+extra_headers: { [key in string]: string },
+/**
+ * Optional explicit provider parameters, omitted when unused.
+ */
+extra_body?: Record<string, unknown>, };

@@ -522,3 +522,48 @@ definition restore and local mocked provider fetch through the real Job validato
 MockKernel/transport units cover correlation and lifecycle only. Notebook/editor
 UI, output/plot/steps/AI/settings, full CLI authority, packages and final docs/E2E
 remain subsequent M13 tasks.
+
+
+The notebook/editor UI now uses real CodeMirror Preview tokens/diagnostics/fixes,
+Complete/Hover and byte-to-UTF16 mappings (Greek/surrogate boundaries preserved).
+Title edits use RenameNotebook without reloading definitions; ephemeral host
+SetSystemLanguage makes persisted Auto follow the UI locale. GetVariables lists
+actual live stored definitions rather than treating static source declarations as
+live values. Optional CellState.exec_count supplies genuine suppressed execution
+indices while old absent-field JSON remains unchanged.
+
+Each UI cell has a source/run generation. Edits synchronize before execution;
+outputs/cascade responses are accepted only with matching current-source metadata
+after queued edits. Worker interruption reconciles the latest frontend source,
+including mutations still waiting in the serialized queue, and restores only
+actual definition cells; native interruption preserves the existing evaluator.
+Old request cleanup cannot mutate a newer run. Snapshot saves leave unsaved
+changes flagged if the user edits during a file save. Browser source-only download
+and native explicitly picked dialog/fs files contain only title/version/cells.
+
+Safe conventional Markdown uses a token AST rendered by React, literal raw HTML,
+restricted links, no unsolicited remote images and trust:false KaTeX math/code
+boundaries. Theme preference alone persists in browser storage. General controls,
+keyboard palette, text/math/question cell sources, real docs/variables, restart
+notices and responsive375/720/1280 layouts are present; richer solution/region
+objects, full steps/plots/ghost/AI/profile panels are still upcoming tasks.
+
+Following the user's authorized current DeepSeek test, extra_body adds optional
+explicit provider JSON fields to ProfileConfig/runtime Profile. Empty maps preserve
+all old wire/request fixtures. Protocol-owned routing/model/messages/tools/prompt/
+stream/sampling/limit fields cannot be overridden; parameters are bounded and their
+values are not Debug printed. The verified current editable preset uses
+deepseek-flash with thinking disabled for chat/tool/probe requests, preserving
+this project's specified no-private-reasoning replay contract. Dedicated FIM uses
+the current model on the existing beta endpoint. Thinking-mode tool reasoning
+replay is not claimed by this implementation.
+
+The opt-in native example live_deepseek accepts an ephemeral stdin key; ordinary
+CI/tests do not invoke it. With the user-provided test credential, actual shared
+Session/native driver calls returned200 for probe(pong,~644ms), translation(real
+parsed Solve[x^2==4,x,Reals],~675ms), FIM(filtered insertion x,~515ms), and a two-round
+chat that actually invoked the readonly solve tool and cited its x=-2/x=2 CAS
+result(~1907ms). No key was written to config/notebook/source/logs and no existing
+user notebook context was transmitted. These live results are separate evidence
+from offline fixture gates. Official sources: https://api-docs.deepseek.com/ and
+https://api-docs.deepseek.com/api/create-chat-completion/.

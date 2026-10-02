@@ -23,6 +23,7 @@ fn profile() -> Profile {
         supports_json_mode: true,
         timeout_ms: 1000,
         extra_headers: BTreeMap::new(),
+        extra_body: BTreeMap::new(),
     }
 }
 fn evaluate(s: &mut Session, id: &str, source: &str) -> CellOutput {

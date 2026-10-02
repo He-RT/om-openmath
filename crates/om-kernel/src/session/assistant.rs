@@ -12,7 +12,7 @@ use std::sync::Arc;
 impl Session {
     /// Prepare actual feature messages without evaluation, IO or state/history changes.
     pub fn prepare_llm_input(&self, request: &Request) -> Result<(Feature, JobInput), String> {
-        let lang = if self.config.general.language == Language::En {
+        let lang = if self.effective_language() == Language::En {
             "English"
         } else {
             "Simplified Chinese"

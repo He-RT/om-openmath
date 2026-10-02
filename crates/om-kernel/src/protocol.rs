@@ -85,8 +85,20 @@ pub enum Request {
     },
     /// Return the source-only notebook file DTO.
     SaveNotebook,
+    /// Rename the current source notebook without resetting live definitions/history.
+    RenameNotebook {
+        /// New source notebook title.
+        title: String,
+    },
+    /// Inject the host UI locale for Auto; this never changes persisted preference.
+    SetSystemLanguage {
+        /// Actual host language.
+        language: crate::config::Language,
+    },
     /// Source and actual static dependency metadata for client recovery.
     GetNotebookState,
+    /// Inspect actual live stored definitions without evaluating them.
+    GetVariables,
     /// Rebuild only definition cells after an interrupted Worker restart.
     RestoreDefinitions,
     /// Return settings with masked keys.
@@ -224,6 +236,11 @@ pub enum Response {
     NotebookState {
         /// Actual current state.
         state: NotebookState,
+    },
+    /// Actual live definition names and their readonly stored-value descriptions.
+    Variables {
+        /// Names sorted by spelling, paired with genuine stored-value metadata.
+        items: Vec<(String, HoverInfo)>,
     },
     /// Current configuration with masked keys.
     Config {

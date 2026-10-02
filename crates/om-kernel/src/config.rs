@@ -131,6 +131,10 @@ pub struct ProfileConfig {
     pub timeout_ms: u64,
     /// Additional configured headers.
     pub extra_headers: BTreeMap<String, String>,
+    /// Optional explicit provider parameters, omitted when unused.
+    #[serde(default, skip_serializing_if = "BTreeMap::is_empty")]
+    #[ts(optional, type = "Record<string, unknown>")]
+    pub extra_body: BTreeMap<String, serde_json::Value>,
 }
 
 impl Default for GeneralConfig {
@@ -162,6 +166,7 @@ impl Default for ProfileConfig {
             supports_json_mode: false,
             timeout_ms: 60_000,
             extra_headers: BTreeMap::new(),
+            extra_body: BTreeMap::new(),
         }
     }
 }
@@ -180,7 +185,11 @@ impl Default for LlmConfig {
                     name: "deepseek".into(),
                     kind: ProviderKind::OpenaiChat,
                     base_url: "https://api.deepseek.com/v1".into(),
-                    model: "deepseek-chat".into(),
+                    model: "deepseek-flash".into(),
+                    extra_body: BTreeMap::from([(
+                        "thinking".into(),
+                        serde_json::json!({"type":"disabled"}),
+                    )]),
                     api_key_env: Some("DEEPSEEK_API_KEY".into()),
                     supports_tools: true,
                     supports_json_mode: true,
@@ -190,7 +199,7 @@ impl Default for LlmConfig {
                     name: "deepseek-fim".into(),
                     kind: ProviderKind::OpenaiFim,
                     base_url: "https://api.deepseek.com/beta".into(),
-                    model: "deepseek-chat".into(),
+                    model: "deepseek-flash".into(),
                     api_key_env: Some("DEEPSEEK_API_KEY".into()),
                     max_tokens: 64,
                     ..ProfileConfig::default()

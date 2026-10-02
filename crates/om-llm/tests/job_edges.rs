@@ -15,6 +15,7 @@ fn p() -> Profile {
         supports_json_mode: true,
         timeout_ms: 10,
         extra_headers: BTreeMap::new(),
+        extra_body: BTreeMap::new(),
     }
 }
 fn msg(s: &str) -> ChatMessage {

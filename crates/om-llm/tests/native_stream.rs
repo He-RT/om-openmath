@@ -21,6 +21,7 @@ fn job(base: String, timeout_ms: u64) -> Job {
         supports_json_mode: false,
         timeout_ms,
         extra_headers: BTreeMap::new(),
+        extra_body: BTreeMap::new(),
     };
     Job::new(
         Feature::Explain,

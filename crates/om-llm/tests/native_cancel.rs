@@ -24,6 +24,7 @@ async fn callback_cancel_does_not_forward_later_events_from_the_same_response_ch
         supports_json_mode: false,
         timeout_ms: 5000,
         extra_headers: BTreeMap::new(),
+        extra_body: BTreeMap::new(),
     };
     let (mut job, _) = Job::new(
         Feature::Explain,

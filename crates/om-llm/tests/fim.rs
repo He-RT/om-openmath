@@ -15,6 +15,7 @@ fn p(kind: ProviderKind) -> Profile {
         supports_json_mode: true,
         timeout_ms: 2500,
         extra_headers: BTreeMap::new(),
+        extra_body: BTreeMap::new(),
     }
 }
 #[test]

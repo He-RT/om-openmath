@@ -99,6 +99,7 @@ fn chat_tools_have_actual_plan_schemas_and_roundtrip_into_checked_request() {
         supports_json_mode: false,
         timeout_ms: 5000,
         extra_headers: BTreeMap::new(),
+        extra_body: BTreeMap::new(),
     };
     let (mut job, step) = Job::new(
         Feature::Chat,

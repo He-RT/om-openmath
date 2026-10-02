@@ -1,0 +1,186 @@
+@media (max-width: 1100px) {
+  .with-panel .workspace-layout {
+    grid-template-columns: minmax(0, 1fr) 300px;
+  }
+  .inspector-content {
+    padding: 20px;
+  }
+  .topbar {
+    padding: 0 12px;
+  }
+  .notebook {
+    padding-left: 24px;
+    padding-right: 24px;
+  }
+  .notebook-title {
+    max-width: 170px;
+  }
+}
+@media (max-width: 900px) {
+  .with-panel .workspace-layout {
+    grid-template-columns: 1fr;
+  }
+  .inspector {
+    position: fixed;
+    top: auto;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 230px;
+    z-index: 18;
+    border-left: 0;
+    border-top: 1px solid var(--line);
+    box-shadow: 0 -8px 30px #0001;
+  }
+  .inspector-content {
+    padding: 14px 22px;
+  }
+  .doc-picker {
+    margin-bottom: 14px;
+  }
+  .inspector-content h2 {
+    font-size: 18px;
+  }
+  .with-panel .notebook {
+    padding-bottom: 260px;
+  }
+  .notebook {
+    padding-top: 28px;
+  }
+  .empty-notebook {
+    margin-top: 18px;
+    padding-left: 20px;
+  }
+  .notebook-title {
+    max-width: none;
+  }
+}
+@media (max-width: 480px) {
+  .topbar {
+    padding: 0 10px;
+    gap: 5px;
+  }
+  .brand strong {
+    font-size: 15px;
+  }
+  .brand-symbol {
+    font-size: 21px;
+  }
+  .brand-separator {
+    display: none;
+  }
+  .notebook-title {
+    font-size: 11px;
+  }
+  .default-dialect,
+  .run-all,
+  .toolbar-save,
+  .command-trigger {
+    display: none;
+  }
+  .top-actions {
+    gap: 1px;
+  }
+  .notebook {
+    padding: 20px 12px;
+  }
+  .notebook-cell {
+    grid-template-columns: 23px minmax(0, 1fr);
+    gap: 4px;
+    margin-bottom: 20px;
+  }
+  .cell-body {
+    padding-left: 8px;
+    padding-right: 3px;
+  }
+  .cell-toolbar {
+    gap: 3px;
+    font-size: 10px;
+    flex-wrap: wrap;
+  }
+  .cell-status-label {
+    display: none;
+  }
+  .cell-toolbar select {
+    font-size: 10px;
+  }
+  .cell-actions {
+    opacity: 0.75;
+  }
+  .math-editor .cm-editor {
+    font-size: 14px;
+  }
+  .empty-notebook {
+    padding-left: 6px;
+    margin: 16px 0 30px;
+  }
+  .empty-notebook h1 {
+    font-size: 28px;
+  }
+  .empty-formula {
+    font-size: 25px;
+  }
+  .example-list button {
+    grid-template-columns: 100px minmax(0, 1fr) 12px;
+    gap: 8px;
+    font-size: 11px;
+  }
+  .notebook-footer {
+    font-size: 9px;
+    flex-wrap: wrap;
+  }
+  .inspector {
+    height: 220px;
+  }
+  .variable-prompt {
+    flex-wrap: wrap;
+  }
+  .notice {
+    font-size: 11px;
+  }
+  .add-cell-bar {
+    gap: 2px;
+    font-size: 11px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *:before,
+  *:after {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+.syntax-number {
+  color: var(--warning);
+}
+.markdown a {
+  color: var(--accent);
+}
+.markdown blockquote {
+  border-left: 2px solid var(--line);
+  margin: 12px 0;
+  padding-left: 16px;
+  color: var(--muted);
+}
+.markdown-table {
+  overflow-x: auto;
+}
+.markdown table {
+  border-collapse: collapse;
+  font-size: 12px;
+  width: 100%;
+}
+.markdown td,
+.markdown th {
+  padding: 7px 10px;
+  text-align: left;
+  border-bottom: 1px solid var(--line);
+}
+.markdown ul,
+.markdown ol {
+  padding-left: 24px;
+}
+.markdown li p {
+  margin: 3px 0;
+}

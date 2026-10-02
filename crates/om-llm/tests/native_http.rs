@@ -28,6 +28,7 @@ fn profile(kind: ProviderKind, base: String) -> Profile {
         supports_json_mode: true,
         timeout_ms: 2000,
         extra_headers: BTreeMap::new(),
+        extra_body: BTreeMap::new(),
     }
 }
 fn message(role: Role, text: &str) -> ChatMessage {

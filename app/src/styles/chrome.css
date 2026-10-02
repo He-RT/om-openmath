@@ -1,0 +1,342 @@
+.topbar {
+  height: 48px;
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 0 18px;
+  background: var(--surface);
+  border-bottom: 1px solid var(--line);
+  font-size: 12px;
+}
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+.brand strong {
+  font-size: 17px;
+  letter-spacing: -0.6px;
+}
+.brand-symbol {
+  color: var(--accent);
+  font-size: 24px;
+  line-height: 1;
+}
+.brand-separator {
+  margin: 0 8px;
+  color: var(--line);
+  font-size: 20px;
+}
+.notebook-title {
+  border: 0;
+  max-width: 240px;
+  flex: 1;
+  padding: 4px;
+  font-size: 12px;
+}
+.notebook-title::placeholder {
+  color: var(--muted);
+}
+.save-dot {
+  font-size: 16px;
+  color: var(--warning);
+  width: 8px;
+}
+.top-actions {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  margin-left: auto;
+  flex-shrink: 0;
+}
+.default-dialect select {
+  border: 0;
+  color: var(--muted);
+  font-size: 12px;
+  max-width: 96px;
+}
+.primary {
+  background: var(--accent);
+  color: var(--surface);
+}
+.primary:hover {
+  background: var(--accent);
+  color: var(--surface);
+  filter: brightness(1.1);
+}
+.run-all {
+  padding: 5px 11px;
+}
+.interrupt {
+  color: var(--error);
+}
+.command-trigger {
+  border: 1px solid var(--line);
+  font-size: 11px;
+  color: var(--muted);
+}
+.file-menu {
+  position: relative;
+}
+.file-menu summary {
+  cursor: pointer;
+  list-style: none;
+  padding: 6px;
+  font-size: 18px;
+  line-height: 1;
+}
+.file-menu[open] > div {
+  position: absolute;
+  right: 0;
+  top: 32px;
+  width: 180px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  padding: 5px;
+  box-shadow: 0 12px 32px #0001;
+  border-radius: 6px;
+}
+.file-menu button {
+  display: block;
+  width: 100%;
+  text-align: left;
+}
+.inspector {
+  border-left: 1px solid var(--line);
+  background: var(--surface);
+  position: sticky;
+  top: 48px;
+  height: calc(100dvh - 48px);
+  min-width: 0;
+  overflow: auto;
+}
+.inspector-header {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 13px 11px;
+  border-bottom: 1px solid var(--line);
+  font-size: 11px;
+}
+.inspector-header nav {
+  display: flex;
+  flex: 1;
+  gap: 2px;
+  min-width: 0;
+}
+.inspector-header button {
+  padding: 4px 6px;
+}
+.inspector-header button[aria-pressed="true"] {
+  color: var(--accent);
+  background: var(--accent-soft);
+}
+.inspector-content {
+  padding: 24px;
+}
+.inspector-content h2 {
+  font-size: 22px;
+  font-weight: 450;
+  letter-spacing: -0.6px;
+  margin: 6px 0 16px;
+}
+.inspector-content p {
+  font-size: 12px;
+  color: var(--muted);
+  line-height: 1.8;
+}
+.doc-picker {
+  display: flex;
+  gap: 4px;
+  flex-wrap: wrap;
+  margin-bottom: 32px;
+}
+.doc-picker button {
+  font-family: monospace;
+  font-size: 11px;
+  padding: 4px 5px;
+  color: var(--muted);
+}
+.doc-picker .selected {
+  color: var(--accent);
+  background: var(--accent-soft);
+}
+.function-doc .signature {
+  display: block;
+  color: var(--accent);
+  font-size: 11px;
+  overflow-wrap: anywhere;
+  margin-bottom: 24px;
+}
+.doc-example {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  justify-content: space-between;
+  text-align: left;
+  width: 100%;
+  border-bottom: 1px solid var(--line);
+  padding: 14px 0;
+  font-size: 12px;
+}
+.doc-example code {
+  overflow-wrap: anywhere;
+}
+.variable-row {
+  display: grid;
+  grid-template-columns: 60px minmax(0, 1fr);
+  gap: 12px;
+  border-bottom: 1px solid var(--line);
+  padding: 12px 0;
+  font-size: 12px;
+}
+.variable-row code:last-child {
+  overflow-wrap: anywhere;
+  color: var(--muted);
+}
+.show-inspector {
+  position: fixed;
+  right: 16px;
+  bottom: 16px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  font-size: 12px;
+  z-index: 15;
+}
+.notice {
+  position: fixed;
+  bottom: 18px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 40;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  padding: 8px 10px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 12px;
+  max-width: calc(100vw - 32px);
+  box-shadow: 0 5px 20px #0001;
+  border-radius: 5px;
+}
+.notice-error {
+  color: var(--error);
+  bottom: 62px;
+}
+.notice span {
+  overflow-wrap: anywhere;
+}
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  background: #17271a44;
+  backdrop-filter: blur(2px);
+}
+.preferences {
+  background: var(--surface);
+  width: 420px;
+  max-width: 100%;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 24px;
+  box-shadow: 0 18px 80px #0002;
+}
+.preferences header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+.preferences h2 {
+  font-size: 20px;
+  font-weight: 500;
+  margin: 0;
+}
+.preferences-fields {
+  display: grid;
+  gap: 18px;
+}
+.preferences-fields label {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 12px;
+}
+.preferences-fields select {
+  max-width: 210px;
+}
+.preferences-fields input[type="number"] {
+  width: 130px;
+}
+.preferences-fields input[type="checkbox"] {
+  accent-color: var(--accent);
+}
+.command-dialog {
+  position: fixed;
+  top: 18vh;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 60;
+  width: 480px;
+  max-width: calc(100vw - 32px);
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 10px;
+  box-shadow: 0 20px 80px #0003;
+}
+.command-dialog [cmdk-input] {
+  width: 100%;
+  border: 0;
+  border-bottom: 1px solid var(--line);
+  border-radius: 0;
+  padding: 12px;
+  margin-bottom: 5px;
+  outline: 0;
+}
+.command-dialog [cmdk-list] {
+  max-height: 320px;
+  overflow: auto;
+}
+.command-dialog [cmdk-item] {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 20px;
+  padding: 9px 12px;
+  border-radius: 4px;
+  font-size: 13px;
+  cursor: pointer;
+}
+.command-dialog [cmdk-item][data-selected="true"] {
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+.command-dialog kbd {
+  color: var(--muted);
+  font-size: 11px;
+}
+.kernel-loading {
+  padding: 56px 32px;
+  max-width: 900px;
+  margin: auto;
+}
+.kernel-loading strong {
+  font-size: 23px;
+  letter-spacing: -0.8px;
+}
+.kernel-loading p {
+  font-size: 13px;
+  color: var(--muted);
+}

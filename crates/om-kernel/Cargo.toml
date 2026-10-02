@@ -34,3 +34,7 @@ workspace = true
 reqwest.workspace = true
 tokio.workspace = true
 wiremock.workspace = true
+
+[[example]]
+name = "live_deepseek"
+required-features = ["native"]

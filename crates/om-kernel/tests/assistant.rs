@@ -177,7 +177,8 @@ fn explanation_contains_real_input_result_step_tree_and_selected_descendants() {
         s.prepare_llm_input(&Request::LlmExplain {
             request_id: "e".into(),
             cell_id: "missing".into(),
-            step_id: None
+            step_id: None,
+            out_index: None,
         })
         .is_err()
     );
@@ -195,6 +196,7 @@ fn explanation_contains_real_input_result_step_tree_and_selected_descendants() {
             request_id: "e".into(),
             cell_id: "solve".into(),
             step_id: None,
+            out_index: None,
         })
         .unwrap();
     let msgs = messages(input);
@@ -209,6 +211,7 @@ fn explanation_contains_real_input_result_step_tree_and_selected_descendants() {
             request_id: "e".into(),
             cell_id: "solve".into(),
             step_id: Some(root.id.clone()),
+            out_index: None,
         })
         .unwrap();
     let data: Value = serde_json::from_str(&messages(input)[1].content).unwrap();
@@ -217,7 +220,8 @@ fn explanation_contains_real_input_result_step_tree_and_selected_descendants() {
         s.prepare_llm_input(&Request::LlmExplain {
             request_id: "e".into(),
             cell_id: "solve".into(),
-            step_id: Some("S999999".into())
+            step_id: Some("S999999".into()),
+            out_index: None,
         })
         .is_err()
     );
@@ -226,7 +230,8 @@ fn explanation_contains_real_input_result_step_tree_and_selected_descendants() {
         s.prepare_llm_input(&Request::LlmExplain {
             request_id: "e".into(),
             cell_id: "plain".into(),
-            step_id: None
+            step_id: None,
+            out_index: None,
         })
         .is_err()
     );

@@ -11,6 +11,26 @@ export function locale(
     : language;
 }
 const en = {
+  goToStep: "Go to",
+  explanationError: "Explanation request failed",
+  showDetails: "Show all details",
+  explainAll: "Explain all",
+  why: "Why?",
+  configureAI: "Configure AI in settings",
+  staleExplanation: "Run this cell to explain its current steps.",
+  explaining: "Explaining…",
+  cancelExplanation: "Cancel explanation",
+  explanationCancelled: "Explanation cancelled",
+  toggleStep: "Toggle step",
+  becomes: "Becomes",
+  aiPrivacy: "Send computation to AI",
+  explainPrivacy:
+    "The selected computation input, result and recorded steps will be sent to this provider:",
+  rememberConsent: "Remember for this session and destination",
+  sendAI: "Send to AI",
+  cancel: "Cancel",
+  stepsOutput: "Steps output",
+
   sampling: "Sampling…",
   plotError: "Could not sample this plot",
   copyLatex: "Copy LaTeX",
@@ -136,6 +156,25 @@ const en = {
   messages: "Messages",
 };
 const zh: typeof en = {
+  goToStep: "跳转到",
+  explanationError: "讲解请求失败",
+  showDetails: "显示全部细节",
+  explainAll: "AI 讲解全部",
+  why: "为什么？",
+  configureAI: "在设置中配置 AI",
+  staleExplanation: "运行此单元格后可讲解最新步骤。",
+  explaining: "正在讲解…",
+  cancelExplanation: "取消讲解",
+  explanationCancelled: "讲解已取消",
+  toggleStep: "展开步骤",
+  becomes: "得到",
+  aiPrivacy: "将计算内容发送给 AI",
+  explainPrivacy: "将把选中的计算输入、结果和已记录步骤发送给以下提供商：",
+  rememberConsent: "本次会话中记住对此目标的选择",
+  sendAI: "发送给 AI",
+  cancel: "取消",
+  stepsOutput: "步骤输出",
+
   sampling: "正在采样…",
   plotError: "无法采样该图像",
   copyLatex: "复制 LaTeX",

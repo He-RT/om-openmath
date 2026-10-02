@@ -1,0 +1,238 @@
+.steps-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 26px;
+}
+.steps-header > div:first-child {
+  width: 100%;
+}
+.steps-header h2 {
+  margin-bottom: 4px;
+}
+.steps-header span {
+  color: var(--muted);
+  font-size: 10px;
+}
+.steps-header label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 10px;
+  color: var(--muted);
+}
+.explain-all,
+.step-why {
+  color: var(--accent);
+  font-size: 11px;
+}
+.explanation-hint {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  font-size: 10px;
+}
+.explanation-hint button {
+  font-size: 10px;
+  padding: 2px 0;
+  color: var(--accent);
+}
+.step-timeline,
+.step-children {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.step-node {
+  position: relative;
+  border-left: 1px solid var(--line);
+  padding: 0 0 22px 16px;
+  margin-left: 4px;
+  min-width: 0;
+}
+.step-node::before {
+  content: "";
+  position: absolute;
+  width: 5px;
+  height: 5px;
+  border-radius: 100%;
+  top: 13px;
+  left: -3px;
+  background: var(--accent);
+}
+.step-toggle {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  gap: 9px;
+  align-items: baseline;
+  width: 100%;
+  padding: 4px 0;
+  text-align: left;
+  font-size: 12px;
+  line-height: 1.7;
+}
+.step-id {
+  font-family: "SFMono-Regular", Consolas, monospace;
+  font-size: 10px;
+  color: var(--accent);
+}
+.step-chevron {
+  color: var(--muted);
+  font-size: 10px;
+}
+.step-detail {
+  padding-top: 8px;
+}
+.step-params {
+  margin: 0 0 12px;
+  font-size: 10px;
+}
+.step-params > div {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 9px;
+  margin: 6px 0;
+}
+.step-params dt {
+  color: var(--muted);
+}
+.step-params dd {
+  margin: 0;
+  overflow-x: auto;
+  overflow-wrap: anywhere;
+}
+.step-params .formula {
+  font-size: 12px;
+}
+.step-transformation {
+  color: var(--ink);
+  font-size: 12px;
+}
+.step-transformation .formula {
+  display: block;
+  overflow-x: auto;
+  max-width: 100%;
+}
+.step-arrow {
+  color: var(--muted);
+  display: block;
+  padding: 4px 0;
+  font-size: 14px;
+}
+.step-why {
+  margin: 8px 0;
+  padding: 3px 0;
+}
+.step-children {
+  margin-top: 12px;
+}
+.step-explanation {
+  border-top: 1px solid var(--line);
+  margin: 8px 0 16px;
+  padding-top: 10px;
+  overflow-wrap: anywhere;
+}
+.step-explanation .markdown {
+  font-size: 12px;
+}
+.step-reference {
+  font: inherit;
+  color: var(--accent);
+  padding: 0 2px;
+  border-radius: 3px;
+}
+.explanation-status {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 8px;
+  font-size: 10px;
+  color: var(--muted);
+}
+.explanation-status button {
+  color: var(--accent);
+  font-size: 10px;
+}
+.step-highlight {
+  animation: step-highlight 1.2s ease-out;
+}
+@keyframes step-highlight {
+  from {
+    background: var(--accent-soft);
+  }
+  to {
+    background: transparent;
+  }
+}
+.steps-output-picker {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 14px;
+  font-size: 11px;
+  color: var(--muted);
+}
+.privacy-dialog {
+  width: min(420px, calc(100vw - 32px));
+  max-height: calc(100dvh - 32px);
+  overflow: auto;
+  padding: 24px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+}
+.privacy-dialog h2 {
+  font-size: 20px;
+  font-weight: 500;
+  margin: 0 0 15px;
+}
+.privacy-dialog p {
+  font-size: 13px;
+}
+.privacy-destination {
+  display: block;
+  overflow-wrap: anywhere;
+  color: var(--accent);
+}
+.privacy-dialog label {
+  display: flex;
+  gap: 8px;
+  align-items: baseline;
+  font-size: 11px;
+  color: var(--muted);
+  margin: 22px 0;
+}
+.privacy-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  font-size: 12px;
+}
+.privacy-actions button:last-child {
+  color: var(--surface);
+  background: var(--accent);
+}
+@media (max-width: 900px) {
+  .inspector.inspector-steps {
+    height: min(58dvh, 540px);
+  }
+  .inspector-steps .inspector-header {
+    position: sticky;
+    top: 0;
+    z-index: 2;
+    background: var(--surface);
+  }
+  .with-panel:has(.inspector-steps) .notebook {
+    padding-bottom: min(60dvh, 560px);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .step-highlight {
+    animation: none;
+    background: var(--accent-soft);
+  }
+}

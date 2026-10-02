@@ -287,6 +287,7 @@ fn effective_profiles_capabilities_legacy_status_and_genuine_fix_explain_request
             request_id: "explain".into(),
             cell_id: "real".into(),
             step_id: None,
+            out_index: None,
         })
         .0
     else {

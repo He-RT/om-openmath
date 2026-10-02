@@ -586,3 +586,20 @@ Repeated rows are grouped only for chip display; copy-all retains multiplicity.
 No solutions, all values, finite roots and regions retain their genuine set kind
 and actual Exact/ByConstruction/Numeric/Unverified evidence. Basic inline plots
 use actual SamplePlot data; viewport/slider interactions remain M13.5.
+
+LlmExplain accepts optional `out_index` for the selected statement's actual
+recorded input/result/steps. Omitted fields retain the latest recorded-result
+behavior and older JSON shapes. An unknown output index or step ID fails, and
+stale/error cells remain ineligible. This resolves repeated S1 IDs across
+multiple output trees without renumbering any computational record.
+
+The steps panel displays the selected genuine tree, with Minor details folded,
+localized templates and actual math/text params. Explain requests register an
+independent event scope before starting transport. Cancel, source/result/profile
+changes, panel unmount and Worker restart isolate old events. A cancelled request
+whose start reply arrives later is cancelled again, preventing orphan transport.
+First-use consent discloses the selected input/result/steps and actual provider
+base URL; explicit remember is ephemeral per client/destination, never notebook
+or credential storage. Explain sends no additional notebook context.
+Known [S1.2] citations become local expand/scroll/highlight controls only in
+Markdown text, preserving literal code/math/links and unknown references.

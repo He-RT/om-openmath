@@ -27,6 +27,7 @@ export interface UiState {
   notice: string | null;
   dirty: boolean;
   panel: "variables" | "docs" | "steps" | "assistant" | null;
+  stepSelection: {cellId:string;outIndex:number} | null;
 }
 const initial: UiState = {
   title: "",
@@ -40,6 +41,7 @@ const initial: UiState = {
   notice: null,
   dirty: false,
   panel: "docs",
+  stepSelection: null,
 };
 const uiCell = (cell: CellInput): UiCell => ({
   ...cell,

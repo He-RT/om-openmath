@@ -132,6 +132,10 @@ pub enum Request {
         cell_id: CellId,
         /// Optional single step to explain.
         step_id: Option<String>,
+        /// Actual statement history index; omitted means latest recorded result.
+        #[serde(default, skip_serializing_if = "Option::is_none")]
+        #[ts(optional)]
+        out_index: Option<u32>,
     },
     /// Request insertion text at the cursor.
     LlmComplete {

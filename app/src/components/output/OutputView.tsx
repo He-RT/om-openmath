@@ -19,7 +19,7 @@ export function OutputView({
   language: Locale;
   kernel: KernelClient;
   onInsert: (source: string) => void;
-  onSteps: () => void;
+  onSteps: (outIndex: number) => void;
 }) {
   return (
     <div
@@ -44,7 +44,7 @@ export function OutputView({
               kernel={kernel}
               t={t}
               onInsert={onInsert}
-              onSteps={onSteps}
+              onSteps={() => onSteps(item.out_index)}
             />
           ) : item.type === "error" ? (
             <div role="alert" className="output-error">

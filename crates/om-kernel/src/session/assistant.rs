@@ -46,7 +46,10 @@ impl Session {
                 )
             }
             Request::LlmExplain {
-                cell_id, step_id, ..
+                cell_id,
+                step_id,
+                out_index,
+                ..
             } => {
                 let cell = self
                     .notebook
@@ -61,7 +64,9 @@ impl Session {
                     .records
                     .iter()
                     .rev()
-                    .find(|r| r.steps.is_some())
+                    .find(|r| {
+                        r.steps.is_some() && out_index.is_none_or(|index| index == r.out_index)
+                    })
                     .ok_or("No recorded computation steps for this cell")?;
                 let mut steps =
                     crate::output::render_steps(record.steps.as_ref().ok_or("No recorded steps")?);

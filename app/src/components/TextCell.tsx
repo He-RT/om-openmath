@@ -39,10 +39,38 @@ function safeUrl(href: string) {
     return undefined;
   }
 }
-function renderTokens(tokens: Token[], depth = 0): ReactNode[] {
+export interface StepReferences {
+  knownIds: Set<string>;
+  onReference: (id: string) => void;
+  label?: string;
+}
+function referenceText(text: string, references?: StepReferences): ReactNode {
+  if (!references) return text;
+  return text.split(/(\[S\d+(?:\.\d+)*\])/).map((part, i) => {
+    const id = /^\[(S\d+(?:\.\d+)*)\]$/.exec(part)?.[1];
+    return id && references.knownIds.has(id) ? (
+      <button
+        className="step-reference"
+        key={i}
+        aria-label={`${references.label ?? "Go to"} ${id}`}
+        onClick={() => references.onReference(id)}
+      >
+        {part}
+      </button>
+    ) : (
+      part
+    );
+  });
+}
+function renderTokens(
+  tokens: Token[],
+  depth = 0,
+  references?: StepReferences,
+): ReactNode[] {
   if (depth > 24) return [];
   return tokens.slice(0, 5000).map((token, index) => {
-    const child = (tokens: Token[]) => renderTokens(tokens, depth + 1);
+    const child = (tokens: Token[]) =>
+      renderTokens(tokens, depth + 1, references);
     switch (token.type) {
       case "space":
         return null;
@@ -72,7 +100,9 @@ function renderTokens(tokens: Token[], depth = 0): ReactNode[] {
         const value = token as Tokens.Text;
         return (
           <span key={index}>
-            {value.tokens ? child(value.tokens) : value.text}
+            {value.tokens
+              ? child(value.tokens)
+              : referenceText(value.text, references)}
           </span>
         );
       }
@@ -153,7 +183,7 @@ function renderTokens(tokens: Token[], depth = 0): ReactNode[] {
             rel="noopener noreferrer"
             target={value.href.startsWith("#") ? undefined : "_blank"}
           >
-            {child(value.tokens)}
+            {renderTokens(value.tokens, depth + 1)}
           </a>
         );
       }
@@ -183,7 +213,15 @@ function renderTokens(tokens: Token[], depth = 0): ReactNode[] {
     }
   });
 }
-export function Markdown({ source }: { source: string }) {
+export function Markdown({
+  source,
+  stepReferences,
+}: {
+  source: string;
+  stepReferences?: StepReferences;
+}) {
   const tokens = useMemo(() => markdown.lexer(source), [source]);
-  return <div className="markdown">{renderTokens(tokens)}</div>;
+  return (
+    <div className="markdown">{renderTokens(tokens, 0, stepReferences)}</div>
+  );
 }

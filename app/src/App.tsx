@@ -156,7 +156,7 @@ function Workspace({ controller }: { controller: NotebookController }) {
           t={t}
           language={language}
         />
-        <Inspector state={state} controller={controller} t={t} />
+        <Inspector state={state} controller={controller} t={t} onSettings={()=>setPreferences(true)}/>
       </div>
       {!state.panel && (
         <button

@@ -1,16 +1,19 @@
 import { useEffect, useState } from "react";
 import type { NotebookController, UiState } from "../state/notebookStore";
-import type { Messages } from "../i18n";
+import { locale, type Messages } from "../i18n";
+import { StepsPanel } from "./steps/StepsPanel";
 import type { HoverInfo } from "../kernel/generated/HoverInfo";
 import { toByte } from "./editor/positions";
 export function Inspector({
   state,
   controller,
   t,
+  onSettings,
 }: {
   state: UiState;
   controller: NotebookController;
   t: Messages;
+  onSettings: () => void;
 }) {
   const [docs, setDocs] = useState<HoverInfo | null>(null);
   const [functionName, setFunctionName] = useState("Solve");
@@ -49,21 +52,21 @@ export function Inspector({
   }, [controller, state.cells, state.config?.general.language]);
   if (!state.panel) return null;
   const cell = state.cells.find((c) => c.id === state.active);
-  const steps =
-    cell?.output?.items.flatMap((i) =>
-      i.type === "solutions" && i.steps ? i.steps.root : [],
-    ) ?? [];
-  let stepCount = 0;
-  const work = [...steps];
-  while (work.length) {
-    const step = work.pop();
-    if (step) {
-      stepCount++;
-      work.push(...step.children);
-    }
-  }
+  const results =
+    cell?.output?.items.filter((i) => i.type === "solutions" && i.steps) ?? [];
+  const selected =
+    results.find(
+      (i) =>
+        i.type === "solutions" &&
+        i.out_index ===
+          (state.stepSelection?.cellId === cell?.id
+            ? state.stepSelection?.outIndex
+            : undefined),
+    ) ?? results.at(-1);
   return (
-    <aside className="inspector">
+    <aside
+      className={`inspector ${state.panel === "steps" ? "inspector-steps" : ""}`}
+    >
       <div className="inspector-header">
         <nav>
           {(["docs", "variables", "steps", "assistant"] as const).map(
@@ -149,10 +152,53 @@ export function Inspector({
           </>
         ) : state.panel === "steps" ? (
           <>
-            <h2>{t.steps}</h2>
-            <p className="muted">
-              {stepCount ? `${stepCount} ${t.stepsRecorded}` : t.selectResult}
-            </p>
+            {results.length > 1 && (
+              <label className="steps-output-picker">
+                {t.allOutputs}
+                <select
+                  aria-label={t.stepsOutput}
+                  value={
+                    selected?.type === "solutions" ? selected.out_index : ""
+                  }
+                  onChange={(e) => {
+                    if (cell)
+                      controller.store.setState({
+                        stepSelection: {
+                          cellId: cell.id,
+                          outIndex: Number(e.target.value),
+                        },
+                      });
+                  }}
+                >
+                  {results.map(
+                    (i) =>
+                      i.type === "solutions" && (
+                        <option key={i.out_index} value={i.out_index}>
+                          Out[{i.out_index}]
+                        </option>
+                      ),
+                  )}
+                </select>
+              </label>
+            )}
+            {cell && selected?.type === "solutions" && selected.steps ? (
+              <StepsPanel
+                cellId={cell.id}
+                outIndex={selected.out_index}
+                steps={selected.steps}
+                current={cell.status === "Done" && !state.busy}
+                config={state.config}
+                kernel={controller.kernel}
+                t={t}
+                language={locale(state.config?.general.language)}
+                onSettings={onSettings}
+              />
+            ) : (
+              <>
+                <h2>{t.steps}</h2>
+                <p className="muted">{t.selectResult}</p>
+              </>
+            )}
           </>
         ) : (
           <>

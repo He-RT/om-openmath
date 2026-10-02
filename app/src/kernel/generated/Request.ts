@@ -126,7 +126,11 @@ cell_id: string,
 /**
  * Optional single step to explain.
  */
-step_id: string | null, } | { "type": "llm_complete",
+step_id: string | null,
+/**
+ * Actual statement history index; omitted means latest recorded result.
+ */
+out_index?: number, } | { "type": "llm_complete",
 /**
  * Job identifier.
  */

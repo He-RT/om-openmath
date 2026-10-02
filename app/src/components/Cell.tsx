@@ -199,9 +199,12 @@ export function Cell({
               const id = controller.add("Math", source, cell.id);
               controller.edit(id, { dialect: "Wolfram" });
             }}
-            onSteps={() => {
+            onSteps={(outIndex) => {
               controller.select(cell.id);
-              controller.store.setState({ panel: "steps" });
+              controller.store.setState({
+                panel: "steps",
+                stepSelection: { cellId: cell.id, outIndex },
+              });
             }}
           />
         )}

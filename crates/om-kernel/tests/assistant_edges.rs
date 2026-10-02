@@ -96,7 +96,8 @@ fn stale_steps_cannot_be_explained_and_real_evaluation_errors_reach_fix_prompt()
         s.prepare_llm_input(&Request::LlmExplain {
             request_id: "e".into(),
             cell_id: "solve".into(),
-            step_id: None
+            step_id: None,
+            out_index: None,
         })
         .is_err()
     );

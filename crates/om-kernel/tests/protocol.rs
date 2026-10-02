@@ -242,6 +242,16 @@ fn actual_inspection_fields_keep_old_binding_fixtures_compatible() {
 }
 
 #[test]
+fn explanation_output_selection_is_optional_without_changing_legacy_shape() {
+    roundtrip::<Request>(
+        json!({"type":"llm_explain","request_id":"all","cell_id":"multi","step_id":null}),
+    );
+    roundtrip::<Request>(
+        json!({"type":"llm_explain","request_id":"selected","cell_id":"multi","step_id":"S1.2","out_index":2}),
+    );
+}
+
+#[test]
 fn actual_recovery_metadata_has_source_only_files_and_separate_variants() {
     roundtrip::<Request>(json!({"type":"get_notebook_state"}));
     roundtrip::<Request>(json!({"type":"restore_definitions"}));

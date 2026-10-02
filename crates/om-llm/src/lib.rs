@@ -5,6 +5,8 @@ mod chat;
 mod job;
 /// Embedded prompts and actual host tool schemas, without IO or CAS dependencies.
 pub mod prompts;
+#[cfg(feature = "http")]
+pub use job::native::{drive_native, drive_native_cancellable, native_client};
 pub use job::{Feature, Job, JobInput, JobResult, JobStep, SuggestionValidator};
 mod fim;
 pub use fim::{build_fim_request, parse_fim_response, try_build_fim_request};

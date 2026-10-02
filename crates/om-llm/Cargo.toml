@@ -8,7 +8,7 @@ description = "Sans-IO configurable LLM integration"
 
 [features]
 default = []
-http = []
+http = ["dep:reqwest", "dep:tokio", "dep:tokio-util"]
 
 [dependencies]
 om-num.workspace = true
@@ -16,6 +16,9 @@ serde.workspace = true
 serde_json.workspace = true
 ts-rs.workspace = true
 thiserror.workspace = true
+reqwest = { workspace = true, optional = true }
+tokio = { workspace = true, optional = true }
+tokio-util = { workspace = true, optional = true }
 
 [lints]
 workspace = true
@@ -23,3 +26,5 @@ workspace = true
 [dev-dependencies]
 om-parse.workspace = true
 om-format.workspace = true
+wiremock.workspace = true
+tokio.workspace = true

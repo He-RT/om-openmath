@@ -393,3 +393,35 @@ reject illegal characters/escapes/named characters while allowing incomplete
 syntax. It checks prefix+insertion+suffix and suppresses the first actual local
 completion or its untyped suffix. Protocol job dispatch, native/browser transport
 and user-controlled proposal/ghost UI remain subsequent tasks.
+
+
+With `om-llm/http`, `drive_native(&mut Job, &reqwest::Client, on_event)` drives
+actual fresh HTTP rounds using the same checked requests and arbitrary-byte Job
+adapter. It automatically follows genuine parse-correction HTTP rounds and stops
+at Done/Failed or RunTools for the host to execute; calling it again in terminal
+or waiting-tool state does not issue duplicate HTTP. The host resumes after
+supplying actual tool_results. Partly pre-fed rounds are rejected instead of
+being replayed. This module performs no CAS tool execution or secret lookup.
+
+`drive_native_cancellable` accepts a CancellationToken. Each profile timeout
+covers both headers and the complete body of that round. Cancellation drops the
+in-flight request and is checked between events in a single received byte chunk,
+so a callback cancellation cannot forward later deltas or finish successfully.
+Only successful HTTP responses forward model stream events. All bodies, including
+non2xx errors, stay within the shared one-MiB limit. Real provider status/messages
+pass through Job's sanitizer/key hint; transport failures are classified without
+formatting reqwest errors or including URLs, bodies or credentials.
+
+Native product hosts must use `native_client()` (or explicitly disable redirects
+on their supplied client). reqwest0.13.5 exposes redirect policy only at client
+construction; this API cannot inspect arbitrary external clients. The factory
+keeps normal TLS verification and environment proxy settings, and refuses
+redirects that might forward provider/custom credentials. The browser transport
+and actual kernel native-job lifecycle remain M12.6/M13 integration work.
+
+Thirteen native tests use only loopback wiremock or a controlled chunked socket,
+synthetic credentials, real response fixtures and genuine parser delegation.
+They cover actual provider authorization/body/text/FIM, two tool rounds, two parse
+correction rounds, one-byte UTF-8 chunks, HTTP/key errors, malformed/bounded data,
+connection/headers/body failures and cancellation within one response chunk.
+Native TLS certificate-data license text is retained in the repository notices.

@@ -18,3 +18,17 @@ Their source and license text are available in those upstream repositories and t
 `proc-macro-error 1.0.4` is an unmaintained build-time transitive dependency of Linux GTK/glib macros through Tauri. RUSTSEC-2024-0370 reports lack of maintenance, not a known vulnerability, and no safe upgrade is available within the current upstream chain. Only that advisory is excepted, with a reason, in `deny.toml`; all other advisories remain enforced.
 
 Dependencies and their licensing are checked with `cargo deny check`. If algorithm source is adapted later, record its provenance and required license notice here before committing that adaptation.
+
+## Native HTTPS certificate data
+
+The prescribed reqwest 0.13.5 `rustls` transport includes unmodified
+`webpki-root-certs 1.0.9` through rustls-platform-verifier on supported targets.
+It contains Mozilla X.509 root certificate data under CDLA-Permissive-2.0.
+Only that package/version has a certificate-data exception in `deny.toml`.
+The upstream license text is preserved in `licenses/CDLA-Permissive-2.0.txt` and
+must accompany distributed certificate data in release packages.
+Upstream: https://github.com/rustls/webpki-roots
+
+reqwest's specified `rustls` feature also selects its native AWS-LC cryptographic
+provider. These native transport dependencies do not enter the default pure CAS
+or WebAssembly runtime graph; their upstream permissive licenses remain enforced.

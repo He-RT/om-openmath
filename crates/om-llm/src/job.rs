@@ -1,5 +1,7 @@
 //! Pure Job lifecycle owns genuine provider state; no HTTP or CAS execution here.
 mod ingest;
+#[cfg(feature = "http")]
+pub(crate) mod native;
 mod response;
 mod types;
 use crate::{

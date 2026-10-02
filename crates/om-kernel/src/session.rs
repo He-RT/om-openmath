@@ -4,6 +4,8 @@ mod editing;
 mod editor;
 mod evaluation;
 mod graph;
+mod llm;
+pub use llm::LlmCancellation;
 #[cfg(feature = "native")]
 mod native;
 mod plotting;
@@ -27,6 +29,7 @@ pub struct Session {
     interrupt: Arc<AtomicBool>,
     clock: Option<Arc<dyn Clock>>,
     owners: std::collections::BTreeMap<om_core::Symbol, CellId>,
+    llm: llm::LlmState,
     #[cfg(feature = "native")]
     config_store: Option<crate::native::ConfigStore>,
 }
@@ -41,6 +44,7 @@ impl Session {
             interrupt: Arc::new(AtomicBool::new(false)),
             clock,
             owners: Default::default(),
+            llm: Default::default(),
             #[cfg(feature = "native")]
             config_store: None,
         };
@@ -83,6 +87,15 @@ impl Session {
                 dialect,
                 cursor,
             } => return (self.hover(source, dialect, cursor), vec![]),
+            Request::LlmTranslate { .. }
+            | Request::LlmExplain { .. }
+            | Request::LlmComplete { .. }
+            | Request::LlmChat { .. }
+            | Request::LlmFixError { .. }
+            | Request::LlmTestProfile { .. }
+            | Request::LlmCancel { .. }
+            | Request::LlmHttpChunk { .. }
+            | Request::LlmHttpEnd { .. } => return self.handle_llm(req),
             #[cfg(feature = "native")]
             Request::GetConfig => return (self.stored_config(), vec![]),
             _ => {}
@@ -120,6 +133,7 @@ impl Session {
             }
             Request::LoadNotebook { file } => match Notebook::from_file(file) {
                 Ok(notebook) => {
+                    let events = self.cancel_all_llm();
                     self.notebook = notebook;
                     self.eval = Evaluator::new();
                     self.owners.clear();
@@ -127,7 +141,7 @@ impl Session {
                     for index in 0..self.notebook.cells.len() {
                         self.analyze_cell(index);
                     }
-                    Response::Ok
+                    return (Response::Ok, events);
                 }
                 Err(FileError::Version(version)) => self.error(
                     "err.notebook_version",

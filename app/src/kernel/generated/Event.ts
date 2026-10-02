@@ -7,7 +7,27 @@ import type { Suggestion } from "./Suggestion";
 /**
  * Asynchronous notification; envelope correlation id is zero.
  */
-export type Event = { "type": "cell_status",
+export type Event = { "type": "llm_profile_test",
+/**
+ * Job identifier.
+ */
+request_id: string,
+/**
+ * Configured profile name.
+ */
+profile: string,
+/**
+ * Total time to the completed response; absent without a clock.
+ */
+latency_ms: number | null,
+/**
+ * Time to the first nonempty response bytes; absent without a clock or bytes.
+ */
+first_byte_ms: number | null,
+/**
+ * Actual model reply, never a fabricated pong.
+ */
+response: string, } | { "type": "cell_status",
 /**
  * Affected cell.
  */

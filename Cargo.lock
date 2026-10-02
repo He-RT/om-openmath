@@ -2988,11 +2988,15 @@ dependencies = [
  "om-num",
  "om-parse",
  "om-solve",
+ "reqwest",
  "serde",
  "serde_json",
  "thiserror 2.0.21",
+ "tokio",
+ "tokio-util",
  "toml 1.1.6+spec-1.1.0",
  "ts-rs",
+ "wiremock",
 ]
 
 [[package]]

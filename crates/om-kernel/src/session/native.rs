@@ -15,6 +15,7 @@ impl Session {
         let config = store.load()?;
         let mut session = Self::new(config, clock);
         session.config_store = Some(store);
+        session.llm.target = om_llm::Target::Native;
         Ok(session)
     }
     /// Resolve a configured native routing key without exposing it through config serialization.

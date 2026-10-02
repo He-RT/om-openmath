@@ -1,9 +1,10 @@
 //! Optional actual HTTP IO wraps the same pure Job; CAS tools remain the host's responsibility.
 use super::{Job, JobStep, State};
 use crate::{HttpRequest, LlmError, StreamEvent};
-use reqwest::{Client, Method, redirect::Policy};
-use std::time::Duration;
+mod transport;
+use reqwest::{Client, redirect::Policy};
 use tokio_util::sync::CancellationToken;
+pub use transport::drive_native_http;
 
 /// Build the product native transport without redirects that could forward custom credentials.
 /// Environment proxy settings and TLS verification remain reqwest defaults.
@@ -55,15 +56,7 @@ pub async fn drive_native_cancellable(
             Ok(r) => r,
             Err(e) => return job.fail(e),
         };
-        let timeout = Duration::from_millis(job.profile.timeout_ms);
-        let step = tokio::select! {
-            biased;
-            _=cancel.cancelled()=>job.cancel(),
-            result=tokio::time::timeout(timeout,round(job,client,request,cancel,&mut on_event))=>match result {
-                Ok(step)=>step,
-                Err(_)=>job.on_http_end(0,Some("HTTP request timed out".into())),
-            },
-        };
+        let step = round(job, client, request, cancel, &mut on_event).await;
         if matches!(step, JobStep::Http(_)) {
             continue;
         }
@@ -78,43 +71,29 @@ async fn round(
     cancel: &CancellationToken,
     on_event: &mut impl FnMut(StreamEvent),
 ) -> JobStep {
-    let method = match http.method.parse::<Method>() {
-        Ok(method) => method,
-        Err(_) => return job.on_http_end(0, Some("invalid HTTP method".into())),
-    };
-    let mut request = client.request(method, &http.url).body(http.body);
-    for (name, value) in http.headers {
-        request = request.header(name, value);
-    }
-    let mut response = match request.send().await {
-        Ok(response) => response,
-        Err(error) => return job.on_http_end(0, Some(transport_error(&error).into())),
-    };
-    let status = response.status().as_u16();
-    loop {
-        match response.chunk().await {
-            Ok(Some(bytes)) => {
-                let events = job.on_raw_bytes(&bytes);
-                if (200..300).contains(&status) {
-                    for event in events {
-                        if cancel.is_cancelled() {
-                            return job.cancel();
-                        }
-                        on_event(event);
-                    }
-                }
+    let timeout = job.profile.timeout_ms;
+    let (status, error) = drive_native_http(&http, timeout, client, cancel, |status, bytes| {
+        let events = job.on_raw_bytes(bytes);
+        if (200..300).contains(&status) {
+            for event in events {
                 if cancel.is_cancelled() {
-                    return job.cancel();
+                    return false;
                 }
-                if job.is_finished() {
-                    return job.on_http_end(status, None);
-                }
+                on_event(event);
             }
-            Ok(None) => return job.on_http_end(status, None),
-            Err(error) => return job.on_http_end(status, Some(transport_error(&error).into())),
         }
+        !cancel.is_cancelled() && !job.is_finished()
+    })
+    .await;
+    if cancel.is_cancelled() {
+        return job.cancel();
     }
+    if job.is_finished() {
+        return job.on_http_end(status, None);
+    }
+    job.on_http_end(status, error)
 }
+
 fn transport_error(error: &reqwest::Error) -> &'static str {
     // reqwest errors can contain credentials embedded in a configured URL; never format them.
     if error.is_timeout() {

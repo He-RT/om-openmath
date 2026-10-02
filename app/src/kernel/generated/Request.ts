@@ -161,7 +161,11 @@ request_id: string,
 /**
  * Decoded response text fragment.
  */
-chunk: string, } | { "type": "llm_http_end",
+chunk: string,
+/**
+ * Actual response status when supplied by the transport (legacy clients omit it).
+ */
+status?: number, } | { "type": "llm_http_end",
 /**
  * Job identifier.
  */

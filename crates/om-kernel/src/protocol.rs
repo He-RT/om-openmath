@@ -153,6 +153,10 @@ pub enum Request {
         request_id: RequestId,
         /// Decoded response text fragment.
         chunk: String,
+        /// Actual response status when supplied by the transport (legacy clients omit it).
+        #[serde(default, skip_serializing_if = "Option::is_none")]
+        #[ts(optional)]
+        status: Option<u16>,
     },
     /// Report browser HTTP completion or failure.
     LlmHttpEnd {
@@ -231,6 +235,19 @@ pub enum Response {
 #[ts(export_to = concat!(env!("CARGO_MANIFEST_DIR"), "/../../app/src/kernel/generated/"))]
 #[serde(tag = "type", rename_all = "snake_case")]
 pub enum Event {
+    /// Actual provider probe response and injected-clock measurements.
+    LlmProfileTest {
+        /// Job identifier.
+        request_id: RequestId,
+        /// Configured profile name.
+        profile: String,
+        /// Total time to the completed response; absent without a clock.
+        latency_ms: Option<f64>,
+        /// Time to the first nonempty response bytes; absent without a clock or bytes.
+        first_byte_ms: Option<f64>,
+        /// Actual model reply, never a fabricated pong.
+        response: String,
+    },
     /// Cell execution state changed.
     CellStatus {
         /// Affected cell.

@@ -219,6 +219,19 @@ fn nullable_fields_enum_spellings_and_required_fields_are_preserved() {
 }
 
 #[test]
+fn actual_http_status_and_probe_metrics_are_additive_wire_fields() {
+    roundtrip::<Request>(
+        json!({"type":"llm_http_chunk","request_id":"actual","chunk":"data: []\n\n","status":403}),
+    );
+    roundtrip::<Event>(
+        json!({"type":"llm_profile_test","request_id":"probe","profile":"editable","latency_ms":80.0,"first_byte_ms":30.0,"response":"actual reply"}),
+    );
+    roundtrip::<Event>(
+        json!({"type":"llm_profile_test","request_id":"probe","profile":"editable","latency_ms":null,"first_byte_ms":null,"response":"actual reply"}),
+    );
+}
+
+#[test]
 fn parser_and_solver_adapters_keep_existing_json_without_static_string_leaks() {
     let parsed = om_parse::parse("α  (x)", om_parse::Dialect::Modern);
     assert!(!parsed.diagnostics.is_empty());

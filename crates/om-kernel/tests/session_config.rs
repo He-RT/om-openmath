@@ -72,7 +72,7 @@ fn config_roundtrip_resolves_masks_and_pure_requests_do_not_reset_the_interrupt(
     else {
         panic!()
     };
-    assert!(message.contains("err.not_implemented"));
+    assert!(message.contains("err.llm"));
     assert!(message.is_ascii());
     assert_eq!(
         expressions(&output(&mut session, "history", "Out[1]", Dialect::Wolfram)),

@@ -215,10 +215,17 @@ impl Job {
         if actual.len() != calls.len() || calls.iter().any(|c| !actual.contains_key(&c.id)) {
             return self.fail(LlmError::Tools);
         }
-        let calls = calls.clone();
+        let calls = calls
+            .iter()
+            .map(|call| ToolCall {
+                id: call.id.clone(),
+                name: call.name.clone(),
+                arguments: self.clean(&call.arguments),
+            })
+            .collect::<Vec<_>>();
         self.messages.push(ChatMessage {
             role: Role::Assistant,
-            content: self.round.text.clone(),
+            content: self.clean(&self.round.text),
             tool_calls: calls.clone(),
             tool_call_id: None,
         });
@@ -228,7 +235,7 @@ impl Job {
             };
             self.messages.push(ChatMessage {
                 role: Role::Tool,
-                content,
+                content: self.clean(&content),
                 tool_calls: vec![],
                 tool_call_id: Some(call.id),
             });
@@ -238,6 +245,11 @@ impl Job {
     /// Terminal result/failure state; late data cannot resurrect a finished job.
     pub fn is_finished(&self) -> bool {
         matches!(self.state, State::Done(_) | State::Failed(_))
+    }
+    /// Remove configured credentials from host-owned tool/error text before public delivery.
+    /// This uses the same profile sanitizer as HTTP and validation failures.
+    pub fn redact_credentials(&self, text: &str) -> String {
+        self.clean(text)
     }
     /// Cancel active work without transport IO; terminal work retains its actual result.
     pub fn cancel(&mut self) -> JobStep {
@@ -268,6 +280,14 @@ impl Job {
         secrets.sort_by_key(|s| std::cmp::Reverse(s.len()));
         secrets.dedup();
         for secret in secrets {
+            let mut escaped = secret.to_owned();
+            // Tool arguments and retry history may contain nested JSON-escaped credentials.
+            for _ in 0..2 {
+                if let Ok(encoded) = serde_json::to_string(&escaped) {
+                    escaped = encoded[1..encoded.len() - 1].to_owned();
+                    value = value.replace(&escaped, "***");
+                }
+            }
             value = value.replace(secret, "***");
         }
         value

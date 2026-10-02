@@ -2,9 +2,9 @@
 
 `om_kernel::protocol` defines the shared request, response and event schema.
 `om_kernel::Session` implements Evaluate, GetConfig, SetConfig, LoadNotebook,
-SaveNotebook and Interrupt in M11.2. Reactive notebook execution, specialized
-output views, plotting/editor helpers and LLM jobs follow in the remaining
-M11/M12 tasks. The CLI, WASM worker and desktop host will use this same contract.
+SaveNotebook and Interrupt in M11.2. Reactive notebook execution, specialized output views, plotting/editor helpers
+and shared LLM jobs are implemented. Actual CLI, WASM worker and desktop host
+clients remain the M13 integration tasks, using this same contract.
 
 Requests and responses use `Envelope<T> { id, body }`. Their numeric IDs match;
 events use ID zero. Browser clients must keep IDs and millisecond timeouts within
@@ -425,3 +425,55 @@ They cover actual provider authorization/body/text/FIM, two tool rounds, two par
 correction rounds, one-byte UTF-8 chunks, HTTP/key errors, malformed/bounded data,
 connection/headers/body failures and cancellation within one response chunk.
 Native TLS certificate-data license text is retained in the repository notices.
+
+
+Session now handles all LlmTranslate/Explain/Complete/Chat/FixError/TestProfile,
+LlmHttpChunk/End and LlmCancel requests. The sole Job lives in Session: Browser
+is the pure default target, and new_native selects Native with the bound real
+credential resolver (environment, vault, raw fallback). A profile mask never
+becomes an HTTP key. Feature routing/enabled/profile/capability checks use actual
+config; explicit profile tests can run while automatic AI is disabled.
+
+LlmStarted and subsequent LlmHttp carry actual transport DTOs for the host.
+Browser transports use them directly. Native product hosts must intercept these
+internal DTOs before frontend serialization, using the no-redirect client and
+shared drive_native_http raw adapter. They queue actual bytes/status to
+llm_http_bytes, with no second Job, reconstructed SSE or lossy packet decoding.
+The subsequent desktop/CLI client task must implement this interception/queue.
+
+LlmHttpChunk adds optional status (u16); old absent-status JSON roundtrips
+unchanged and uses the legacy success-stream convention. New transports supply
+the actual status. Non2xx bodies never become model text; HTTP status, bounded
+provider messages/key hints and sanitized failures remain actual Job decisions.
+Conflicting chunk/end status fails. Active decode failures terminate immediately;
+late chunks/end/cancel cannot resurrect a terminal job. Up to16 active IDs and256
+terminal tombstones bound storage; fresh clients must not reuse remembered IDs.
+Loading a valid new notebook cancels pending work before replacing records.
+
+Chat/Explain deltas stream actual text. Translate/Fix emit only checked
+LlmSuggestion and LlmDone; Completion emits at most one actual filtered
+LlmDelta plus LlmDone. Failed work emits LlmError. LlmProfileTest additionally
+carries the actual response, total latency_ms and first_byte_ms from the injected
+clock; absent clock/bytes remain null. No probe reply or timing is fabricated.
+
+The actual evaluate and solve tools use strict objects, genuine Wolfram parsing,
+current readonly definitions, independent cancellation and a5-second injected
+clock deadline. Missing/invalid clock fails rather than pretending a guarantee.
+Direct/nested mutation forms are refused; indirect user-function writes are
+blocked by the real readonly evaluator. Parent notebook/history/definitions,
+solver records and normal Interrupt remain untouched. Solve returns genuine
+InputForm solutions, actual recorded step title keys/messages and an explicit
+supported flag; unsupported input stays unevaluated with real messages.
+propose_cell parses the effective requested syntax using live function semantics,
+renders the raw tree and emits a card without execution. Six actual tool rounds
+are replayed; the seventh fails before invoking CAS.
+
+llm_cancellation_handle can be cloned independently of the Session owner's
+borrow/queue, cancelling both the tool flag and native token. Configured keys
+reflected in tool arguments are rejected before execution; public arguments and
+tool results/replay are sanitized (including nested JSON escaping), while genuine
+HTTP authorization stays in the internal transport only. Real default/native
+fixtures include action execution, retries, CAS/tool limitations, deadlines,
+cancellation, context/lexical completion filtering, byte/status handling and
+synthetic native credential precedence. User-facing clients/UI/CLI/packaging and
+full actual CLI corpus acceptance remain M13 work.

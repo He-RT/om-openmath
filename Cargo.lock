@@ -2777,7 +2777,9 @@ dependencies = [
 name = "om-llm"
 version = "0.1.0"
 dependencies = [
+ "om-format",
  "om-num",
+ "om-parse",
  "serde",
  "serde_json",
  "thiserror 2.0.21",

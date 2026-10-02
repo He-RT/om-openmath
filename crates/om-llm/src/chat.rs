@@ -72,6 +72,38 @@ pub struct ToolSpec {
 /// Checked sans-IO construction/decoding errors never include input payloads or keys.
 #[derive(Clone, PartialEq, Eq, thiserror::Error)]
 pub enum LlmError {
+    /// Feature/input variants do not match or required host state is missing.
+    #[error("invalid Job feature/input pairing")]
+    Input,
+    /// An active-phase method was called out of sequence.
+    #[error("invalid Job state: {0}")]
+    State(&'static str),
+    /// No actual complete response/finish was received.
+    #[error("incomplete model response")]
+    Incomplete,
+    /// Tool metadata/results are invalid or exceed the active-tool bound.
+    #[error("invalid or excessive tool calls/results")]
+    Tools,
+    /// The seventh requested tool round exceeds the specified six-round limit.
+    #[error("tool round limit exceeded")]
+    ToolRounds,
+    /// Actual host verification failed after bounded retries.
+    #[error("suggestion validation failed: {0}")]
+    Validation(String),
+    /// Actual non-success HTTP result, already sanitized by the Job profile.
+    #[error("HTTP {status}: {message}")]
+    Http {
+        /// Actual provider status.
+        status: u16,
+        /// Sanitized actual provider message.
+        message: String,
+    },
+    /// Actual transport failure, already sanitized by the Job profile.
+    #[error("transport failed: {0}")]
+    Transport(String),
+    /// Explicit cancellation is terminal.
+    #[error("LLM request cancelled")]
+    Cancelled,
     /// Chat construction received a non-chat provider.
     #[error("profile is not a chat provider")]
     Provider,

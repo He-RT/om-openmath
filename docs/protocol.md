@@ -328,3 +328,31 @@ and [Mistral FIM](https://docs.mistral.ai/api/endpoint/fim) primary documentatio
 DeepSeek's prescribed compatibility fields are implemented from PLAN; direct
 retrieval of its FIM pages timed out during this task, and no live-provider
 validation is claimed.
+
+
+The actual pure Job state machine now consumes these requests/decoders. Feature
+and JobInput pairing selects real chat/text/structured/FIM flows; invalid inputs
+return Failed without a dummy request. Native on_raw_bytes and browser on_bytes
+share checked UTF-8 framing. Actual text, indexed calls and finish markers remain
+pending until successful on_http_end; no tools or Done are issued merely because
+finish deltas arrived. One-MiB response/text/results and 64-tool bounds apply.
+
+RunTools returns complete actual IDs/names/object arguments in index order for
+the later readonly kernel handler. Actual host result IDs must match exactly
+once; assistant/tool history replay is provider-correct, including IDs reused in
+a later completed round. Six invocation rounds plus a final text HTTP request
+are allowed; a seventh invocation fails. The core never invokes CAS or network.
+
+Structured results require a supplied SuggestionValidator; no model modern/latex
+is trusted and no default validator fabricates a Suggestion. Failed actual host
+validation can retry twice with real sanitized diagnostics. Production prompt/
+parser/formatter hookup is the next host integration stage. FIM completion uses
+actual raw parsing; filtering remains later. TestProfile probes use eight tokens
+and actual provider formats.
+
+Done/Failed/cancel are terminal and cached. Late chunks cannot resurrect work.
+An actual still-open HTTP round can supply real failure status after stream error,
+while ended failures remain unchanged. Provider/transport/retry error messages
+exclude known keys/custom-header credentials and 401/403 includes a key hint.
+Raw transport authorization remains real. Source insertion, native transport
+and kernel LLM request/event orchestration remain M12.4–M12.6/M13.

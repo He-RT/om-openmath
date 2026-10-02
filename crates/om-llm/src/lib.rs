@@ -2,6 +2,8 @@
 #![forbid(unsafe_code)]
 
 mod chat;
+mod job;
+pub use job::{Feature, Job, JobInput, JobResult, JobStep, SuggestionValidator};
 mod fim;
 pub use fim::{build_fim_request, parse_fim_response, try_build_fim_request};
 mod stream;

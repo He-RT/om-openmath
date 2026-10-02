@@ -44,6 +44,13 @@ pub enum Request {
     },
     /// Execute all cells.
     RunAll,
+    /// Inspect one output expression without changing notebook state or history.
+    InspectExpression {
+        /// One Wolfram source expression.
+        source: String,
+        /// Evaluate the actual N[source, 20] projection.
+        numeric: bool,
+    },
     /// Parse and render without evaluation.
     Preview {
         /// Source to preview.
@@ -190,6 +197,11 @@ pub enum Request {
 #[ts(export_to = concat!(env!("CARGO_MANIFEST_DIR"), "/../../app/src/kernel/generated/"))]
 #[serde(tag = "type", rename_all = "snake_case")]
 pub enum Response {
+    /// Readonly output projection.
+    Expression {
+        /// Genuine evaluator output in three formats.
+        value: ExpressionView,
+    },
     /// Successful operation without a payload.
     Ok,
     /// Operation failure.

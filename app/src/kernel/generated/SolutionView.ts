@@ -15,6 +15,10 @@ bindings: Array<BindingView>,
  */
 condition_latex: string | null,
 /**
+ * Optional set-membership presentation, preserving the legacy condition field.
+ */
+condition_display_latex?: string,
+/**
  * Actual verification evidence.
  */
 verified: Verification, };

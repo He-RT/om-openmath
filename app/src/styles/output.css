@@ -1,0 +1,238 @@
+.expr-view {
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  padding-top: 0;
+}
+.expr-view > .formula { order: 2; }
+.expr-view > .output-error { order: 3; }
+.output-toolbar {
+  display: flex;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: 2px;
+  margin-bottom: 8px;
+  font-size: 10px;
+  opacity: 0;
+  transition: opacity 0.15s;
+}
+.expr-view > .output-toolbar {
+  order: 1;
+  position: relative;
+  margin-top: 0;
+}
+.expr-view:hover .output-toolbar,
+.expr-view:focus-within .output-toolbar {
+  opacity: 1;
+}
+.copy-action {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px;
+}
+.copy-action [role="status"] {
+  color: var(--accent);
+}
+.copy-action [role="alert"] {
+  color: var(--error);
+}
+.solution-heading {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 12px;
+  font-size: 12px;
+  margin: 2px 0 16px;
+}
+.solution-heading strong {
+  font-weight: 550;
+}
+.solution-heading > span {
+  color: var(--muted);
+  font-size: 11px;
+}
+.solution-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.solution-chip {
+  position: relative;
+  min-width: 120px;
+  max-width: 100%;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  padding: 14px 16px 8px;
+  background: var(--surface);
+}
+.solution-binding {
+  overflow-x: auto;
+  max-width: 100%;
+  margin-bottom: 5px;
+}
+.solution-binding button {
+  display: block;
+  color: var(--accent);
+  font-size: 10px;
+  padding: 3px 0;
+}
+.root-label {
+  display: block;
+  font-size: 12px;
+  margin-bottom: 8px;
+}
+.root-label code {
+  font-size: 10px;
+  overflow-wrap: anywhere;
+}
+.solution-condition {
+  font-size: 12px;
+  color: var(--muted);
+  overflow-x: auto;
+  margin: 8px 0;
+}
+.verification {
+  display: block;
+  font-size: 9px;
+  color: var(--accent);
+  text-align: right;
+  margin: 10px 0 3px;
+}
+.verification.unverified {
+  color: var(--warning);
+}
+.multiplicity {
+  color: var(--muted);
+  font-size: 10px;
+}
+.substitute {
+  font-size: 10px;
+  color: var(--muted);
+  opacity: 0;
+  padding: 2px 0;
+}
+.solution-chip:hover .substitute,
+.solution-chip:focus-within .substitute {
+  opacity: 1;
+}
+.solution-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px;
+  margin: 12px 0 6px;
+  color: var(--muted);
+  font-size: 11px;
+}
+.solution-source {
+  font-size: 10px;
+  color: var(--muted);
+}
+.solution-source summary {
+  cursor: pointer;
+  width: fit-content;
+}
+.solution-source .source-result {
+  font-size: 12px;
+  padding: 12px 0 4px;
+}
+.number-line {
+  margin: 12px 0;
+  max-width: 600px;
+  color: var(--muted);
+}
+.number-line svg {
+  width: 100%;
+  display: block;
+  min-height: 80px;
+}
+.number-axis,
+.number-tick line {
+  stroke: var(--line);
+  stroke-width: 1.2;
+}
+.number-tick text,
+.axis-variable {
+  fill: var(--muted);
+  font-size: 11px;
+}
+.interval-segment {
+  stroke: var(--accent);
+  stroke-width: 5;
+}
+.endpoint-closed {
+  fill: var(--accent);
+  stroke: var(--accent);
+  stroke-width: 2;
+}
+.endpoint-open {
+  fill: var(--background);
+  stroke: var(--accent);
+  stroke-width: 2;
+}
+.infinite-arrow {
+  fill: none;
+  stroke: var(--accent);
+  stroke-width: 2.5;
+}
+.interval-labels {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 12px;
+  font-size: 12px;
+}
+.number-line > .muted {
+  font-size: 11px;
+}
+.output-item {
+  overflow-x: visible;
+}
+.output-item > .expr-view > .formula {
+  display: block;
+  overflow-x: auto;
+}
+@media (hover: none) {
+  .output-toolbar,
+  .substitute {
+    opacity: 1;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .output-toolbar {
+    transition: none;
+  }
+}
+
+.sampled-preview {
+  margin: 16px 0;
+  max-width: 600px;
+}
+.sampled-preview > svg {
+  display: block;
+  width: 100%;
+  background: var(--surface);
+  border-radius: 6px;
+}
+.sampled-curve path {
+  fill: none;
+  stroke-width: 1.8;
+  stroke-linejoin: round;
+}
+.solution-point {
+  fill: var(--accent);
+  stroke: var(--surface);
+  stroke-width: 1.5;
+}
+.plot-shade {
+  fill: var(--accent-soft);
+}
+.sampled-preview figcaption {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 8px;
+  font-size: 10px;
+  color: var(--muted);
+}

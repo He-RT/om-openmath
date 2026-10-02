@@ -6,6 +6,7 @@ mod evaluation;
 mod graph;
 mod llm;
 pub use llm::LlmCancellation;
+mod inspection;
 #[cfg(feature = "native")]
 mod native;
 mod plotting;
@@ -74,6 +75,9 @@ impl Session {
                 return (self.move_cell(cell_id, to_index), vec![]);
             }
             Request::RunAll => return self.run_all(),
+            Request::InspectExpression { source, numeric } => {
+                return (self.inspect_expression(source, numeric), vec![]);
+            }
             Request::GetNotebookState => return (self.notebook_state(), vec![]),
             Request::GetVariables => return (self.variables(), vec![]),
             Request::RestoreDefinitions => return self.restore_definitions(),

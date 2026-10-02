@@ -38,7 +38,15 @@ cell_id: string,
 /**
  * New zero-based position.
  */
-to_index: number, } | { "type": "run_all" } | { "type": "preview",
+to_index: number, } | { "type": "run_all" } | { "type": "inspect_expression",
+/**
+ * One Wolfram source expression.
+ */
+source: string,
+/**
+ * Evaluate the actual N[source, 20] projection.
+ */
+numeric: boolean, } | { "type": "preview",
 /**
  * Source to preview.
  */

@@ -567,3 +567,22 @@ result(~1907ms). No key was written to config/notebook/source/logs and no existi
 user notebook context was transmitted. These live results are separate evidence
 from offline fixture gates. Official sources: https://api-docs.deepseek.com/ and
 https://api-docs.deepseek.com/api/create-chat-completion/.
+
+Output inspection uses `inspect_expression {source, numeric}` and returns
+`expression {value: {input_form, modern_form, latex}}`. It accepts one bounded
+Wolfram expression and evaluates an isolated readonly fork; numeric=true calls
+actual N[source,20]. Notebook cells, output history and parent cancellation are
+unchanged. Direct/nested assignments and clearing are rejected; indirect writes
+remain prohibited by readonly definitions. Host clock deadlines are capped at
+five seconds, with an independent 1,048,576-step budget.
+
+BindingView adds optional var_latex/root_index/radicals from actual formatting,
+Root AST and supported ToRadicals conversion. Numeric exact-value hints now
+come from twenty-digit N; plotting coordinates keep their previous precision.
+SolutionView adds optional condition_display_latex for k ∈ ℤ style display while
+retaining legacy condition_latex. Generated constants have collision-free
+display aliases; copy source always retains the original C[n] objects and rules.
+Repeated rows are grouped only for chip display; copy-all retains multiplicity.
+No solutions, all values, finite roots and regions retain their genuine set kind
+and actual Exact/ByConstruction/Numeric/Unverified evidence. Basic inline plots
+use actual SamplePlot data; viewport/slider interactions remain M13.5.

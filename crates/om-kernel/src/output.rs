@@ -4,6 +4,7 @@ use crate::{notebook::StatementRecord, protocol::*};
 use om_core::{BUILTIN as B, Expr, ExprKind, Interrupt};
 use om_eval::Evaluator;
 use om_solve::{Bound, Domain, Solution, SolutionSet};
+use std::collections::BTreeSet;
 pub(crate) use steps::render as render_steps;
 
 pub(crate) fn pack(
@@ -43,9 +44,16 @@ pub(crate) fn pack(
     })
 }
 
-fn numeric(value: &Expr, eval: &mut Evaluator, ctx: &Interrupt) -> Option<Expr> {
+pub(crate) fn expression_view(value: &Expr) -> ExpressionView {
+    ExpressionView {
+        input_form: om_format::input_form(value),
+        modern_form: om_format::modern_form(value),
+        latex: om_format::latex(value),
+    }
+}
+fn numeric(value: &Expr, eval: &mut Evaluator, ctx: &Interrupt, digits: i64) -> Option<Expr> {
     let result = eval
-        .evaluate(&Expr::call(B::N, [value.clone(), Expr::int(10)]), ctx)
+        .evaluate(&Expr::call(B::N, [value.clone(), Expr::int(digits)]), ctx)
         .ok()?;
     result.as_number().map(|_| result.clone())
 }
@@ -62,17 +70,97 @@ fn exact(value: &Expr) -> bool {
     }
     true
 }
-fn binding(var: &Expr, value: &Expr, eval: &mut Evaluator, ctx: &Interrupt) -> BindingView {
+fn binding(
+    var: &Expr,
+    value: &Expr,
+    display: &Expr,
+    eval: &mut Evaluator,
+    ctx: &Interrupt,
+) -> BindingView {
+    let root_index = if value.is_head(B::ROOT) {
+        value
+            .args()
+            .get(1)
+            .and_then(|i| i.as_number())
+            .and_then(om_num::Number::to_f64)
+            .filter(|i| *i >= 1.0 && *i <= u32::MAX as f64 && i.fract() == 0.0)
+            .map(|i| i as u32)
+    } else {
+        None
+    };
+    let radicals = root_index.and_then(|_| {
+        let converted = eval
+            .evaluate(
+                &Expr::call(om_core::Symbol::intern("ToRadicals"), [value.clone()]),
+                ctx,
+            )
+            .ok()?;
+        if converted == *value
+            || converted.is_head(om_core::Symbol::intern("ToRadicals"))
+            || contains_root(&converted)
+        {
+            None
+        } else {
+            Some(expression_view(&converted))
+        }
+    });
     BindingView {
         var: om_format::input_form(var),
-        latex: om_format::latex(value),
+        latex: om_format::latex(display),
         input_form: om_format::input_form(value),
         modern_form: om_format::modern_form(value),
         numeric: exact(value)
-            .then(|| numeric(value, eval, ctx))
+            .then(|| numeric(value, eval, ctx, 20))
             .flatten()
             .map(|n| om_format::input_form(&n)),
+        var_latex: Some(om_format::latex(var)),
+        root_index,
+        radicals,
     }
+}
+fn contains_root(value: &Expr) -> bool {
+    let mut work = vec![value];
+    while let Some(e) = work.pop() {
+        if e.is_head(B::ROOT) {
+            return true;
+        }
+        if let ExprKind::Normal(n) = e.kind() {
+            work.push(&n.head);
+            work.extend(n.args.iter());
+        }
+    }
+    false
+}
+fn display_aliases(rows: &[Solution], vars: &[Expr]) -> Vec<(Expr, Expr)> {
+    let mut used = BTreeSet::new();
+    for e in vars
+        .iter()
+        .chain(rows.iter().flat_map(|r| r.rules.iter().map(|(_, v)| v)))
+        .chain(rows.iter().filter_map(|r| r.condition.as_ref()))
+    {
+        used.extend(e.free_symbols().into_iter().map(|s| s.name().to_string()));
+    }
+    let mut aliases: Vec<(Expr, Expr)> = vec![];
+    for (constant, _) in rows.iter().flat_map(|r| r.constants.iter()) {
+        if aliases.iter().any(|(c, _)| c == constant) {
+            continue;
+        }
+        let mut index = 0;
+        loop {
+            let name = match index {
+                0 => "k".into(),
+                1 => "m".into(),
+                2 => "n".into(),
+                i => format!("k{}", i - 1),
+            };
+            index += 1;
+            if used.insert(name.clone()) {
+                aliases.push((constant.clone(), Expr::sym(om_core::Symbol::intern(&name))));
+                break;
+            }
+        }
+    }
+    aliases
 }
 fn condition(s: &Solution) -> Option<Expr> {
     let mut cond: Vec<_> = s.condition.iter().cloned().collect();
@@ -96,6 +184,32 @@ fn condition(s: &Solution) -> Option<Expr> {
         _ => Some(Expr::call(B::AND, cond)),
     }
 }
+fn condition_latex(e: &Expr) -> String {
+    if e.is_head(B::ELEMENT) && e.args().len() == 2 {
+        let domain = match e.args()[1].as_symbol() {
+            Some(B::INTEGERS) => Some("Z"),
+            Some(B::REALS) => Some("R"),
+            Some(B::COMPLEXES) => Some("C"),
+            Some(B::RATIONALS) => Some("Q"),
+            _ => None,
+        };
+        if let Some(domain) = domain {
+            return format!(
+                "{} \\in \\mathbb{{{domain}}}",
+                om_format::latex(&e.args()[0])
+            );
+        }
+    }
+    if e.is_head(B::AND) {
+        return e
+            .args()
+            .iter()
+            .map(condition_latex)
+            .collect::<Vec<_>>()
+            .join(" \\land ");
+    }
+    om_format::latex(e)
+}
 fn endpoint(
     bound: &Bound,
     eval: &mut Evaluator,
@@ -105,7 +219,7 @@ fn endpoint(
         Bound::NegInf | Bound::PosInf => (None, None, false),
         Bound::Open(e) | Bound::Closed(e) => (
             Some(om_format::latex(e)),
-            numeric(e, eval, ctx).and_then(|n| n.as_number().and_then(om_num::Number::to_f64)),
+            numeric(e, eval, ctx, 10).and_then(|n| n.as_number().and_then(om_num::Number::to_f64)),
             matches!(bound, Bound::Closed(_)),
         ),
     }
@@ -126,6 +240,7 @@ fn view(
     match set {
         SolutionSet::All => view.kind = SolutionKind::All,
         SolutionSet::Finite(rows) => {
+            let aliases = display_aliases(rows, vars);
             if rows.is_empty() {
                 view.kind = SolutionKind::None;
             }
@@ -134,9 +249,14 @@ fn view(
                     bindings: row
                         .rules
                         .iter()
-                        .map(|(v, a)| binding(v, a, eval, ctx))
+                        .map(|(v, a)| binding(v, a, &a.replace_all(&aliases), eval, ctx))
                         .collect(),
-                    condition_latex: condition(row).as_ref().map(om_format::latex),
+                    condition_latex: condition(row)
+                        .as_ref()
+                        .map(|c| om_format::latex(&c.replace_all(&aliases))),
+                    condition_display_latex: condition(row)
+                        .as_ref()
+                        .map(|c| condition_latex(&c.replace_all(&aliases))),
                     verified: row.verification.into(),
                 };
                 for _ in 0..row.multiplicity {

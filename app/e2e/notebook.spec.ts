@@ -4,7 +4,7 @@ test("real notebook UI edits/runs Unicode, applies parser fixes and source-only 
 }) => {
   await page.goto("/");
   await page.getByRole("button", { name: /Quadratic equation/ }).click();
-  await expect(page.locator(".source-result")).toContainText("-3");
+  await expect(page.locator(".solution-list")).toContainText("-3");
   const editor = page.getByRole("textbox", {
     name: "Math input 1",
     exact: true,
@@ -13,7 +13,7 @@ test("real notebook UI edits/runs Unicode, applies parser fixes and source-only 
   await page.getByRole("button", { name: "Quick fix", exact: true }).click();
   await expect(editor).toContainText("solve(α^2==4, α)");
   await editor.press("ControlOrMeta+Enter");
-  await expect(page.locator(".source-result")).toContainText("α");
+  await expect(page.locator(".solution-list")).toContainText("α");
   await page
     .getByRole("textbox", { name: "Notebook title" })
     .fill("Unicode equations");
@@ -86,7 +86,7 @@ for (const width of [375, 720, 1280])
     await page.setViewportSize({ width, height: 820 });
     await page.goto("/");
     await page.getByRole("button", { name: /Quadratic equation/ }).click();
-    await expect(page.locator(".source-result")).toBeVisible();
+    await expect(page.locator(".solution-list")).toBeVisible();
     await expect(
       page.getByRole("button", { name: "Run 1", exact: true }),
     ).toBeEnabled();

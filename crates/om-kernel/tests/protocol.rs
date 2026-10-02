@@ -232,6 +232,16 @@ fn actual_http_status_and_probe_metrics_are_additive_wire_fields() {
 }
 
 #[test]
+fn actual_inspection_fields_keep_old_binding_fixtures_compatible() {
+    roundtrip::<Request>(json!({"type":"inspect_expression","source":"2^(1/2)","numeric":true}));
+    let value = json!({"input_form":"2^(1/2)","modern_form":"sqrt(2)","latex":"\\sqrt{2}"});
+    roundtrip::<Response>(json!({"type":"expression","value":value.clone()}));
+    roundtrip::<BindingView>(
+        json!({"var":"x","input_form":"Root[#^2-2&,1]","modern_form":"Root(#^2-2,1)","latex":"Root_1","numeric":"-1.4142135623730950488","var_latex":"x","root_index":1,"radicals":value}),
+    );
+}
+
+#[test]
 fn actual_recovery_metadata_has_source_only_files_and_separate_variants() {
     roundtrip::<Request>(json!({"type":"get_notebook_state"}));
     roundtrip::<Request>(json!({"type":"restore_definitions"}));

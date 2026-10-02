@@ -219,6 +219,10 @@ pub struct SolutionView {
     pub bindings: Vec<BindingView>,
     /// Condition attached to this solution.
     pub condition_latex: Option<String>,
+    /// Optional set-membership presentation, preserving the legacy condition field.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[ts(optional)]
+    pub condition_display_latex: Option<String>,
     /// Actual verification evidence.
     pub verified: Verification,
 }
@@ -235,8 +239,32 @@ pub struct BindingView {
     pub input_form: String,
     /// Modern source value.
     pub modern_form: String,
-    /// Ten-digit numeric form for exact values.
+    /// Twenty-digit numeric form for exact values.
     pub numeric: Option<String>,
+    /// Variable display spelling from the actual formatter.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[ts(optional)]
+    pub var_latex: Option<String>,
+    /// Actual top-level Root index when present.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[ts(optional)]
+    pub root_index: Option<u32>,
+    /// Genuine radical conversion when the evaluator returns one.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[ts(optional)]
+    pub radicals: Option<ExpressionView>,
+}
+
+/// An expression rendered by the CAS for display and source reuse.
+#[derive(Clone, Debug, Serialize, Deserialize, TS)]
+#[ts(export_to = concat!(env!("CARGO_MANIFEST_DIR"), "/../../app/src/kernel/generated/"))]
+pub struct ExpressionView {
+    /// Wolfram source form.
+    pub input_form: String,
+    /// Modern source form.
+    pub modern_form: String,
+    /// LaTeX display form.
+    pub latex: String,
 }
 
 /// A real interval with optional finite numeric endpoints.

@@ -31,6 +31,6 @@ export function Katex({
       dangerouslySetInnerHTML={{ __html: markup }}
     />
   ) : (
-    <code className="formula-fallback">{latex}</code>
+    <code className="formula-fallback" aria-label={label}>{latex}</code>
   );
 }

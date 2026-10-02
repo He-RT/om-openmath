@@ -2,7 +2,7 @@
 use super::{LlmError, Profile, Target};
 use crate::ProviderKind;
 use std::collections::BTreeMap;
-pub(super) fn build(p: &Profile, target: Target) -> Result<Vec<(String, String)>, LlmError> {
+pub(crate) fn build(p: &Profile, target: Target) -> Result<Vec<(String, String)>, LlmError> {
     let mut headers: BTreeMap<String, (String, String)> = BTreeMap::new();
     let mut put = |name: &str, value: String| {
         headers.insert(name.to_ascii_lowercase(), (name.into(), value));

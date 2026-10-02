@@ -2,6 +2,7 @@
 mod anthropic;
 mod headers;
 use crate::{ChatMessage, HttpRequest, ProviderKind, Role};
+pub(crate) use headers::build as build_headers;
 use serde::Serialize;
 use serde_json::{Value, json};
 use std::collections::{BTreeMap, BTreeSet};
@@ -69,7 +70,7 @@ pub struct ToolSpec {
     pub parameters: Value,
 }
 /// Checked sans-IO construction/decoding errors never include input payloads or keys.
-#[derive(Clone, Debug, PartialEq, Eq, thiserror::Error)]
+#[derive(Clone, PartialEq, Eq, thiserror::Error)]
 pub enum LlmError {
     /// Chat construction received a non-chat provider.
     #[error("profile is not a chat provider")]
@@ -98,6 +99,9 @@ pub enum LlmError {
         /// Configured bound.
         limit: usize,
     },
+    /// Actual remote message, accessible explicitly but excluded from error formatting.
+    #[error("provider reported an error")]
+    Remote(String),
     /// A failed decoder cannot resume without a new instance.
     #[error("stream decoder is terminal")]
     Terminal,
@@ -143,10 +147,7 @@ fn validate_base(base: &str) -> Result<(), LlmError> {
     }
     Ok(())
 }
-fn validate(p: &Profile, msgs: &[ChatMessage], tools: &[ToolSpec]) -> Result<(), LlmError> {
-    if !matches!(p.kind, ProviderKind::OpenaiChat | ProviderKind::Anthropic) {
-        return Err(LlmError::Provider);
-    }
+pub(crate) fn validate_profile(p: &Profile) -> Result<(), LlmError> {
     if p.name.trim().is_empty() {
         return Err(LlmError::Profile("name"));
     }
@@ -165,6 +166,32 @@ fn validate(p: &Profile, msgs: &[ChatMessage], tools: &[ToolSpec]) -> Result<(),
         return Err(LlmError::Profile("temperature"));
     }
     validate_base(&p.base_url)?;
+    Ok(())
+}
+impl std::fmt::Debug for LlmError {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        if matches!(self, Self::Remote(_)) {
+            f.write_str("Remote(<provider error>)")
+        } else {
+            std::fmt::Display::fmt(self, f)
+        }
+    }
+}
+impl LlmError {
+    /// Untrusted provider message for the later profile-aware error sanitizer.
+    pub fn remote_message(&self) -> Option<&str> {
+        if let Self::Remote(message) = self {
+            Some(message)
+        } else {
+            None
+        }
+    }
+}
+fn validate(p: &Profile, msgs: &[ChatMessage], tools: &[ToolSpec]) -> Result<(), LlmError> {
+    if !matches!(p.kind, ProviderKind::OpenaiChat | ProviderKind::Anthropic) {
+        return Err(LlmError::Provider);
+    }
+    validate_profile(p)?;
     if msgs.is_empty() || msgs.iter().all(|m| m.role == Role::System) {
         return Err(LlmError::Message("missing conversation"));
     }

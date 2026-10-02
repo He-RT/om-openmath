@@ -303,3 +303,28 @@ Protocol reference checks used the primary [OpenAI chat reference](https://devel
 and [WHATWG SSE framing standard](https://html.spec.whatwg.org/multipage/server-sent-events.html#event-stream-interpretation).
 The project's prescribed compatibility max_tokens/json_object shape is retained;
 model-specific migration or live-provider validation is not claimed.
+
+
+FIM construction and raw response parsing are implemented in om-llm.
+OpenaiFim uses /completions, OllamaFim /api/generate and MistralFim
+/v1/fim/completions with the prescribed provider-specific prompt/suffix/token
+fields, temperature0 and newline stops. The actual HttpRequest is nonstreaming.
+Chat-kind completion profiles use real nonstreaming insertion-only chat messages
+with prefix⟨CURSOR⟩suffix and target-correct Anthropic headers/stop_sequences.
+Runtime calls use try_build_fim_request; the fixed-signature convenience defaults
+Native and requires validated inputs. No endpoint/model or credential is invented.
+
+parse_fim_response keeps actual raw strings unchanged, including whitespace,
+newlines and empty text. It selects genuine choice0 or native response/text
+blocks, rejects malformed/missing/wrong-type/tool/nonassistant/incomplete states
+and limits the JSON body to one MiB. Known Anthropic reasoning blocks remain
+private; only actual text blocks are joined. Remote errors carry untrusted
+message access for later profile-aware sanitization, while Display/Debug stays
+generic and cannot dump a reflected key. First-line/local-completion/lexer/CAS
+filtering and source insertion remain the later M12.4/M12.6/M13 stages.
+
+Provider format checks use [Ollama generate](https://docs.ollama.com/api/generate)
+and [Mistral FIM](https://docs.mistral.ai/api/endpoint/fim) primary documentation.
+DeepSeek's prescribed compatibility fields are implemented from PLAN; direct
+retrieval of its FIM pages timed out during this task, and no live-provider
+validation is claimed.

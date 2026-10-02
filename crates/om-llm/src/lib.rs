@@ -2,6 +2,8 @@
 #![forbid(unsafe_code)]
 
 mod chat;
+mod fim;
+pub use fim::{build_fim_request, parse_fim_response, try_build_fim_request};
 mod stream;
 pub use stream::{
     NdjsonDecoder, SseDecoder, SseMessage, StreamEvent, decode_anthropic_event, decode_openai_chunk,

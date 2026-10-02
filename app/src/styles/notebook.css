@@ -445,3 +445,15 @@
     box-shadow: 0 0 0 3px #5284cb15;
   }
 }
+
+.cm-ghost {
+  opacity: 0.45;
+  font-style: italic;
+  pointer-events: none;
+  user-select: none;
+}
+.ghost-error {
+  font-size: 10px;
+  color: var(--muted);
+  padding: 3px 2px;
+}

@@ -620,3 +620,25 @@ restores initial viewport behavior while retaining selected parameter values.
 SVG coordinates/ticks are presentation only, with keyboard/pointer/touch control,
 nonpassive cursor-centered wheel zoom, measured responsive width and320px height.
 No protocol field, model/math evaluation path, dependency or secret storage changed.
+
+Ghost completion uses the existing LlmComplete/LlmDelta/LlmDone/LlmError and
+LlmCancel contract; no protocol field is added. After350ms of user editing idle,
+the source/cursor/profile/dialect snapshot must still match and the focused
+nonbusy editor must have an empty selection at line end with at least three
+trimmed characters. A pending/open deterministic completion blocks new model
+requests. Named Greek Tab shortcuts also retain priority.
+
+Only finalized, kernel-filtered insertion text becomes a CodeMirror decoration.
+Tab explicitly inserts all remaining text; Mod-Right inserts the next group;
+matching typed prefixes retain the exact residual, and Escape/cursor changes,
+source/profile changes, blur/run/restart/disposal cancel obsolete jobs and clear
+old text. Microtask painting checks the snapshot again. A cancellation preceding
+the start acknowledgement is repeated after a genuine late-start response.
+Suggestions never evaluate or persist before explicit acceptance.
+
+Privacy consent is ephemeral per client/destination/data scope. Completion with
+preceding notebook context discloses up to three previous math sources; this
+scope cannot reuse explanation-only or current-code-only consent. Keyless local
+compatible endpoints/Ollama remain configurable, with actual validation and
+credential resolution handled by the shared kernel. Ordinary tests use mocks
+and synthetic intercepted HTTP only; no real provider/key is accessed.

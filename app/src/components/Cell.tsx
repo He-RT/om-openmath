@@ -148,6 +148,8 @@ export function Cell({
             client={controller.kernel}
             t={t}
             language={language}
+            llm={controller.store.getState().config?.llm ?? null}
+            busy={busy}
             focus={active}
             focusKey={focusKey}
             onChange={(source) => controller.edit(cell.id, { source })}

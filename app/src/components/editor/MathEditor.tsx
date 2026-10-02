@@ -19,6 +19,7 @@ import {
   closeBracketsKeymap,
   completionKeymap,
   snippetCompletion,
+  closeCompletion,
   type CompletionSource,
 } from "@codemirror/autocomplete";
 import {
@@ -34,6 +35,10 @@ import type { Messages, Locale } from "../../i18n";
 import { toByte, fromByte, replaceBytes } from "./positions";
 import { highlighting, previewTokens, tokenMarks } from "./highlight";
 import { Katex } from "../output/Katex";
+import { ghostExtension, type GhostCandidate } from "./ghostText";
+import { completionProfile } from "./ghostProfile";
+import { PrivacyPrompt, hasConsent } from "../assistant/PrivacyPrompt";
+import type { LlmConfig } from "../../kernel/generated/LlmConfig";
 interface Props {
   id: string;
   index: number;
@@ -50,6 +55,8 @@ interface Props {
   onRun: (mode: "stay" | "next" | "insert") => void;
   onAction: (source: string) => void;
   onSelect: (action: string, source: string, dialect: Dialect) => void;
+  llm?: LlmConfig | null;
+  busy?: boolean;
 }
 const names: Record<string, string> = {
   alpha: "α",
@@ -88,9 +95,36 @@ export function MathEditor(props: Props) {
   const previewSource = useRef("");
   const [selection, setSelection] = useState("");
   const attributes = useRef(new Compartment());
+  const cancelGhost = useRef<((view: EditorView) => void) | null>(null);
+  const [ghostError, setGhostError] = useState<string | null>(null);
+  const [privacy, setPrivacy] = useState<{
+    candidate: GhostCandidate;
+    scope: string;
+    resolve: (allowed: boolean) => void;
+  } | null>(null);
+  const privacyRef = useRef(privacy);
+  privacyRef.current = privacy;
+  const authorize = useRef<(candidate: GhostCandidate) => Promise<boolean>>(
+    () => Promise.resolve(false),
+  );
+  authorize.current = (candidate) => {
+    setGhostError(null);
+    const scope = latest.current.llm?.send_context
+      ? "completion:context"
+      : "completion:input";
+    if (hasConsent(props.client, candidate.profile, scope))
+      return Promise.resolve(true);
+    privacyRef.current?.resolve(false);
+    return new Promise((resolve) => setPrivacy({ candidate, scope, resolve }));
+  };
   useEffect(() => {
     if (!root.current) return;
     const completion: CompletionSource = async (context) => {
+      if (
+        !context.explicit &&
+        !context.matchBefore(/[\p{L}_$][\p{L}\p{N}_$]*$/u)
+      )
+        return null;
       const source = context.state.doc.toString();
       const dialect = latest.current.dialect;
       const settings = latest.current.settingsKey;
@@ -131,21 +165,27 @@ export function MathEditor(props: Props) {
     const bindings: KeyBinding[] = [
       {
         key: "Mod-Enter",
-        run: () => {
+        run: (view) => {
+          cancelGhost.current?.(view);
+          closeCompletion(view);
           latest.current.onRun("stay");
           return true;
         },
       },
       {
         key: "Shift-Enter",
-        run: () => {
+        run: (view) => {
+          cancelGhost.current?.(view);
+          closeCompletion(view);
           latest.current.onRun("next");
           return true;
         },
       },
       {
         key: "Alt-Enter",
-        run: () => {
+        run: (view) => {
+          cancelGhost.current?.(view);
+          closeCompletion(view);
           latest.current.onRun("insert");
           return true;
         },
@@ -199,11 +239,36 @@ export function MathEditor(props: Props) {
         },
       },
     ];
+    const ghost = ghostExtension({
+      kernel: props.client,
+      read: (view) => {
+        const current = latest.current,
+          profile = completionProfile(current.llm, props.client);
+        const prefix = view.state.doc.sliceString(
+          0,
+          view.state.selection.main.head,
+        );
+        const shortcut = /\\([a-z]+)$/.exec(prefix)?.[1];
+        if (shortcut && names[shortcut]) return null;
+        return profile && current.llm
+          ? {
+              profile,
+              dialect: current.dialect,
+              scope: current.llm,
+              busy: current.busy ?? false,
+            }
+          : null;
+      },
+      authorize: (candidate) => authorize.current(candidate),
+      failed: (message) => setGhostError(message),
+    });
+    cancelGhost.current = ghost.cancel;
     const view = new EditorView({
       parent: root.current,
       state: EditorState.create({
         doc: props.source,
         extensions: [
+          ghost.extension,
           history(),
           drawSelection(),
           EditorView.lineWrapping,
@@ -285,9 +350,18 @@ export function MathEditor(props: Props) {
     return () => {
       generation.current++;
       editor.current = null;
+      cancelGhost.current = null;
+      privacyRef.current?.resolve(false);
       view.destroy();
     };
   }, [props.client, props.id]);
+  useEffect(() => {
+    const view = editor.current;
+    if (view) cancelGhost.current?.(view);
+    privacyRef.current?.resolve(false);
+    setPrivacy(null);
+    setGhostError(null);
+  }, [props.llm, props.dialect, props.settingsKey, props.busy]);
   useEffect(() => {
     const view = editor.current;
     if (view && view.state.doc.toString() !== props.source)
@@ -403,6 +477,33 @@ export function MathEditor(props: Props) {
         </div>
       )}
       <div ref={root} className="math-editor" />
+      {ghostError && (
+        <span className="ghost-error" title={ghostError}>
+          {props.t.completionError}
+        </span>
+      )}
+      {privacy && (
+        <PrivacyPrompt
+          kernel={props.client}
+          profile={privacy.candidate.profile}
+          scope={privacy.scope}
+          disclosure={
+            privacy.scope === "completion:context"
+              ? props.t.completionContextPrivacy
+              : props.t.completionPrivacy
+          }
+          t={props.t}
+          onClose={() => {
+            privacy.resolve(false);
+            setPrivacy(null);
+          }}
+          onSend={() => {
+            setPrivacy(null);
+            editor.current?.focus();
+            privacy.resolve(true);
+          }}
+        />
+      )}
       <div className="input-preview" aria-label={props.t.preview}>
         {currentPreview?.latex ? (
           <Katex latex={currentPreview.latex} />

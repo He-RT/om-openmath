@@ -11,6 +11,12 @@ export function locale(
     : language;
 }
 const en = {
+  completionError: "AI completion unavailable",
+  completionPrivacy:
+    "The current code around the cursor will be sent to this provider. Suggestions enter the source only when you accept them.",
+  completionContextPrivacy:
+    "The current code and up to three preceding math cell sources will be sent to this provider. Suggestions enter the source only when you accept them.",
+
   zoomIn: "Zoom in",
   zoomOut: "Zoom out",
   resetView: "Reset view",
@@ -163,6 +169,12 @@ const en = {
   messages: "Messages",
 };
 const zh: typeof en = {
+  completionError: "AI 补全暂不可用",
+  completionPrivacy:
+    "将把光标附近的当前代码发送给此提供商。只有接受建议后才会写入源码。",
+  completionContextPrivacy:
+    "将把当前代码和最多三个前文数学单元格的源码发送给此提供商。只有接受建议后才会写入源码。",
+
   zoomIn: "放大",
   zoomOut: "缩小",
   resetView: "复位视窗",

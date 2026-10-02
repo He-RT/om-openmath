@@ -7,8 +7,12 @@ const consent = new WeakMap<KernelClient, Set<string>>();
 export function destination(profile: ProfileConfig) {
   return `${profile.name}:${profile.base_url}:${profile.model}`;
 }
-export function hasConsent(kernel: KernelClient, profile: ProfileConfig) {
-  return consent.get(kernel)?.has(destination(profile)) ?? false;
+export function hasConsent(
+  kernel: KernelClient,
+  profile: ProfileConfig,
+  scope = "explanation",
+) {
+  return consent.get(kernel)?.has(`${destination(profile)}:${scope}`) ?? false;
 }
 /** Ephemeral consent is scoped to this client and the disclosed destination. */
 export function PrivacyPrompt({
@@ -17,12 +21,16 @@ export function PrivacyPrompt({
   t,
   onSend,
   onClose,
+  scope = "explanation",
+  disclosure,
 }: {
   kernel: KernelClient;
   profile: ProfileConfig;
   t: Messages;
   onSend: () => void;
   onClose: () => void;
+  scope?: string;
+  disclosure?: string;
 }) {
   const [remember, setRemember] = useState(false);
   const root = useRef<HTMLElement>(null);
@@ -71,7 +79,7 @@ export function PrivacyPrompt({
         ref={root}
       >
         <h2 id="privacy-title">{t.aiPrivacy}</h2>
-        <p>{t.explainPrivacy}</p>
+        <p>{disclosure ?? t.explainPrivacy}</p>
         <code className="privacy-destination">{profile.base_url}</code>
         <p>{profile.model}</p>
         <label>
@@ -92,7 +100,7 @@ export function PrivacyPrompt({
                   values = new Set();
                   consent.set(kernel, values);
                 }
-                values.add(destination(profile));
+                values.add(`${destination(profile)}:${scope}`);
               }
               onSend();
             }}

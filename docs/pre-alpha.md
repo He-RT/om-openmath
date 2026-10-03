@@ -43,7 +43,7 @@ M0–M13 已实现共享 CAS/内核、终端、原生及生产 WASM 笔记本、
 
 ## Windows 与 GitHub 发行门禁
 
-版本改为 `0.1.0-pre-alpha.1`，同源 Windows EXE/MSI、macOS app/DMG/CLI、Web 包由[发布工作流](../.github/workflows/release.yml)生成。Windows 验收分别安装两种包，Playwright 通过仅 CI 开启的 WebView2 CDP 连接真实 Tauri 窗口，检查中文、精确根、步骤及响应式，再卸载。全部 job 和同一 SHA 的 CI 成功后才公开预发行版；不能用本地 macOS 测试冒充 Windows 证据。实际运行与截图见该工作流的 Actions 记录及 `windows-install-evidence` artifact。
+版本改为 `0.1.0-pre-alpha.1`，同源 Windows EXE/MSI、macOS app/DMG/CLI、Web 包由[发布工作流](../.github/workflows/release.yml)生成。Windows 验收分别安装两种包，Playwright 通过仅 CI 环境/临时 HKLM 策略开启的 WebView2 CDP 连接真实 Tauri 窗口，检查中文、精确根、步骤及响应式，再卸载。全部 job 和同一 SHA 的 CI 成功后才公开预发行版；不能用本地 macOS 测试冒充 Windows 证据。实际运行与截图见该工作流的 Actions 记录及 `windows-install-evidence` artifact。
 
 ## 复现
 

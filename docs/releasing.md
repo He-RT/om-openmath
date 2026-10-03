@@ -28,7 +28,7 @@ gh workflow run release.yml --ref dev -f tag=v0.1.0-pre-alpha.1
 - Windows x64：原生 EXE/MSI、Clippy、工作区测试；分别安装、启动真实中文窗口，验证精确根、步骤和响应式 3→6，再卸载。
 - 发布：确认同一 SHA 的 CI 成功，拒绝缺失、额外、空文件或链接资产，生成 SHA256 清单。
 
-Windows 仅在 CI 设置 `WEBVIEW2_ADDITIONAL_BROWSER_ARGUMENTS=--remote-debugging-port=9222`，Playwright 连接安装后的实际 WebView2；应用默认不开放调试端口。独立配置使用 `OPENMATH_CONFIG_PATH`。截图及结果在 Actions 的 `windows-install-evidence` artifact 中。
+Windows 仅在 CI 设置 `WEBVIEW2_ADDITIONAL_BROWSER_ARGUMENTS=--remote-debugging-port=9222`，并为管理员 runner 临时设置 HKLM WebView2 调试策略（结束后清除），Playwright 连接安装后的实际 WebView2；应用默认不开放调试端口。独立配置使用 `OPENMATH_CONFIG_PATH`。截图及结果在 Actions 的 `windows-install-evidence` artifact 中。
 
 ## 发布资产
 
@@ -37,3 +37,5 @@ Windows 仅在 CI 设置 `WEBVIEW2_ADDITIONAL_BROWSER_ARGUMENTS=--remote-debuggi
 收齐、校验后创建完整 draft，再改为 pre-release；构建或安装测试失败不发布。说明来自 `docs/release-0.1.0-pre-alpha.1.md`；流程不使用真实模型密钥。
 
 当前包未代码签名，macOS 未公证。说明保留架构、WebView2 联网要求和求解边界，后续签名使用 CI secret 管理证书。
+
+WebView2 150+ 对管理员进程忽略环境变量/HKCU 参数；GitHub Windows runner 以管理员运行，所以 CI 临时设置仅针对 om-desktop.exe 的 HKLM AdditionalBrowserArguments，并在 always 清理。依据[微软 WebView2 权限说明](https://learn.microsoft.com/en-us/microsoft-edge/webview2/concepts/security#for-an-elevated-host-app-use-appropriate-override-flags)。分发程序不包含这项策略。

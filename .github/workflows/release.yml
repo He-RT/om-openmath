@@ -134,6 +134,10 @@ jobs:
           $env:OPENMATH_CONFIG_PATH = "$env:RUNNER_TEMP\openmath-acceptance.toml"
           "[general]`nlanguage = `"zh-CN`"" | Set-Content $env:OPENMATH_CONFIG_PATH -Encoding utf8NoBOM
           $env:WEBVIEW2_ADDITIONAL_BROWSER_ARGUMENTS = '--remote-debugging-port=9222'
+          # Hosted runners are elevated; WebView2 150+ ignores environment overrides.
+          $policyKey = 'HKLM:\Software\Policies\Microsoft\Edge\WebView2\AdditionalBrowserArguments'
+          New-Item $policyKey -Force | Out-Null
+          New-ItemProperty $policyKey -Name 'om-desktop.exe' -Value '--remote-debugging-port=9222' -PropertyType String -Force | Out-Null
           $version = $env:TAG.Substring(1)
           $nsis = Get-Item "target/release/bundle/nsis/OpenMath_${version}_x64-setup.exe"
           $msi = Get-Item "target/release/bundle/msi/OpenMath_${version}_x64_zh-CN.msi"
@@ -189,6 +193,9 @@ jobs:
           Copy-Item target/release/om.exe, LICENSE-MIT, LICENSE-APACHE, THIRD_PARTY_NOTICES.md target/cli-package/
           Copy-Item app/dist/licenses target/cli-package/licenses -Recurse
           Compress-Archive -Path target/cli-package/* -DestinationPath "release-assets/om-cli_${version}_windows_x64.zip"
+      - name: 清除 CI 调试策略
+        if: always()
+        run: Remove-ItemProperty 'HKLM:\Software\Policies\Microsoft\Edge\WebView2\AdditionalBrowserArguments' -Name 'om-desktop.exe' -ErrorAction SilentlyContinue
       - uses: actions/upload-artifact@v4
         if: always()
         with:

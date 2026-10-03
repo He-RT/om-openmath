@@ -128,10 +128,6 @@ jobs:
       - run: cargo install wasm-bindgen-cli --version 0.2.129 --locked
       - run: npm ci --prefix app
       - run: npm run tauri --prefix app -- build
-      - run: cargo clippy --workspace --all-targets --locked -- -D warnings
-      - run: cargo test --workspace --locked
-      - run: python -m unittest discover -s tests -v
-      - run: cargo build -p om-cli --release --locked
       - name: 安装 EXE 和 MSI 并验证真实中文窗口
         run: |
           $ErrorActionPreference = 'Stop'
@@ -151,7 +147,9 @@ jobs:
             if ($install.ExitCode -notin @(0, 3010)) { throw "Installer $kind failed: $($install.ExitCode)" }
             $exe = Join-Path $installDir 'om-desktop.exe'
             if (!(Test-Path $exe)) { throw "Missing installed app: $exe" }
-            $appProcess = Start-Process $exe -PassThru
+            $stdout = "$env:RUNNER_TEMP\openmath-startup-$kind.stdout.log"
+            $stderr = "$env:RUNNER_TEMP\openmath-startup-$kind.stderr.log"
+            $appProcess = Start-Process $exe -PassThru -RedirectStandardOutput $stdout -RedirectStandardError $stderr
             try {
               $env:OPENMATH_INSTALL_KIND = $kind
               Push-Location app
@@ -160,6 +158,13 @@ jobs:
                 if ($LASTEXITCODE -ne 0) { throw "Native $kind verification failed" }
               } finally { Pop-Location }
             } finally {
+              $diagnostics = "app/test-results/windows-$kind"
+              New-Item $diagnostics -ItemType Directory -Force | Out-Null
+              $appProcess.Refresh()
+              $exitCode = if ($appProcess.HasExited) { $appProcess.ExitCode } else { $null }
+              @{ pid = $appProcess.Id; exited = $appProcess.HasExited; exitCode = $exitCode } | ConvertTo-Json | Set-Content "$diagnostics/process.json"
+              Get-CimInstance Win32_Process | Where-Object { $_.Name -in @('om-desktop.exe', 'msedgewebview2.exe') } | Select-Object Name, ProcessId, CommandLine | ConvertTo-Json -Depth 3 | Set-Content "$diagnostics/webview-processes.json"
+              Get-Content $stderr -ErrorAction SilentlyContinue | Select-Object -Last 30 | Write-Host
               Stop-Process -Id $appProcess.Id -Force -ErrorAction SilentlyContinue
               Get-Process msedgewebview2 -ErrorAction SilentlyContinue | Stop-Process -Force
             }
@@ -170,6 +175,10 @@ jobs:
             }
             if ($uninstall.ExitCode -notin @(0, 3010)) { throw "Uninstaller $kind failed" }
           }
+      - run: cargo clippy --workspace --all-targets --locked -- -D warnings
+      - run: cargo test --workspace --locked
+      - run: python -m unittest discover -s tests -v
+      - run: cargo build -p om-cli --release --locked
       - name: 打包 Windows 产物
         run: |
           $version = $env:TAG.Substring(1)
@@ -187,6 +196,7 @@ jobs:
           path: |
             app/test-results/windows-*/
             ${{ runner.temp }}/openmath-msi.log
+            ${{ runner.temp }}/openmath-startup-*.log
           if-no-files-found: warn
       - uses: actions/upload-artifact@v4
         with:

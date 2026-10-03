@@ -6,16 +6,21 @@ import { setTimeout as delay } from 'node:timers/promises';
 const output = `test-results/windows-${process.env.OPENMATH_INSTALL_KIND ?? 'install'}`;
 await mkdir(output, { recursive: true });
 let browser;
+let connectionError;
 const deadline = Date.now() + 90_000;
 while (Date.now() < deadline) {
   try {
     browser = await chromium.connectOverCDP('http://127.0.0.1:9222', { timeout: 5000 });
     break;
-  } catch {
+  } catch (error) {
+    connectionError = error.message;
     await delay(1000);
   }
 }
-if (!browser) throw new Error('Installed OpenMath WebView2 did not start');
+if (!browser) {
+  await writeFile(`${output}/connection-failure.json`, JSON.stringify({ connectionError }, null, 2));
+  throw new Error(`Installed OpenMath WebView2 connection failed: ${connectionError}`);
+}
 try {
   const context = browser.contexts()[0];
   if (!context) throw new Error('Missing native browser context');

@@ -294,8 +294,8 @@ Provider deltas preserve actual text, tool indices/IDs/names/argument fragments,
 finish reasons and errors. Only OpenAI choice0 is selected; reasoning and unknown
 metadata are ignored. Anthropic initial empty tool input does not add {} ahead of
 streamed JSON fragments. Specific finish reasons followed by terminal done
-markers remain separate events; the later Job consumer must handle these
-idempotently and wait for HTTP completion before running tools or reporting Done.
+markers remain separate events; the Job consumer handles these
+idempotently and waits for HTTP completion before running tools or reporting Done.
 
 Protocol reference checks used the primary [OpenAI chat reference](https://developers.openai.com/api/reference/resources/chat/subresources/completions/methods/create),
 [Claude streaming documentation](https://platform.claude.com/docs/en/build-with-claude/streaming)
@@ -320,13 +320,13 @@ and limits the JSON body to one MiB. Known Anthropic reasoning blocks remain
 private; only actual text blocks are joined. Remote errors carry untrusted
 message access for later profile-aware sanitization, while Display/Debug stays
 generic and cannot dump a reflected key. First-line/local-completion/lexer/CAS
-filtering and source insertion remain the later M12.4/M12.6/M13 stages.
+filtering is implemented by the kernel; source insertion is an explicit client action.
 
 Provider format checks use [Ollama generate](https://docs.ollama.com/api/generate)
 and [Mistral FIM](https://docs.mistral.ai/api/endpoint/fim) primary documentation.
 DeepSeek's prescribed compatibility fields are implemented from PLAN; direct
-retrieval of its FIM pages timed out during this task, and no live-provider
-validation is claimed.
+retrieval of its FIM pages initially timed out; a subsequent user-authorized
+shared-kernel smoke test verified the current DeepSeek configuration (P103).
 
 
 The actual pure Job state machine now consumes these requests/decoders. Feature
@@ -337,7 +337,7 @@ pending until successful on_http_end; no tools or Done are issued merely because
 finish deltas arrived. One-MiB response/text/results and 64-tool bounds apply.
 
 RunTools returns complete actual IDs/names/object arguments in index order for
-the later readonly kernel handler. Actual host result IDs must match exactly
+the readonly kernel handler. Actual host result IDs must match exactly
 once; assistant/tool history replay is provider-correct, including IDs reused in
 a later completed round. Six invocation rounds plus a final text HTTP request
 are allowed; a seventh invocation fails. The core never invokes CAS or network.

@@ -17,6 +17,7 @@ om-eval.workspace = true
 om-parse.workspace = true
 om-format.workspace = true
 om-solve.workspace = true
+om-simplify.workspace = true
 om-llm.workspace = true
 serde.workspace = true
 serde_json.workspace = true

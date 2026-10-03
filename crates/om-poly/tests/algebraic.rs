@@ -9,6 +9,65 @@ use std::cmp::Ordering;
 fn z(c: &[i64]) -> UPoly<Integer> {
     UPoly::new(c.iter().map(|x| Integer::from(*x)).collect())
 }
+#[test]
+fn additive_and_multiplicative_identities_retain_existing_exact_certificates() {
+    let value = algebraic_root(&z(&[1, 0, 1]), 2, &Interrupt::default())
+        .unwrap()
+        .unwrap();
+    let zero = Algebraic::Rational(Rational::ZERO);
+    let one = Algebraic::Rational(Rational::ONE);
+    for (other, multiply) in [(&zero, false), (&one, true)] {
+        for reverse in [false, true] {
+            let ctx = Interrupt {
+                steps_left: std::cell::Cell::new(1),
+                ..Interrupt::default()
+            };
+            let (a, b) = if reverse {
+                (other, &value)
+            } else {
+                (&value, other)
+            };
+            let result = if multiply {
+                a.mul(b, &ctx)
+            } else {
+                a.add(b, &ctx)
+            }
+            .unwrap()
+            .unwrap();
+            assert_eq!(
+                result.equals(&value, &Interrupt::default()).unwrap(),
+                Some(true)
+            );
+        }
+    }
+}
+#[test]
+fn repeated_root_batches_retain_exact_ranks_and_honor_current_interrupts() {
+    let p = z(&[1, -1, 0, 0, 0, 1]);
+    let original = algebraic_roots(&p, &Interrupt::default()).unwrap().unwrap();
+    let ctx = Interrupt {
+        steps_left: std::cell::Cell::new(1),
+        ..Interrupt::default()
+    };
+    let reused = algebraic_roots(&p, &ctx).unwrap().unwrap();
+    assert_eq!(original.len(), reused.len());
+    for (a, b) in original.iter().zip(reused.iter()) {
+        assert_eq!(a.equals(b, &Interrupt::default()).unwrap(), Some(true));
+    }
+    let cancelled = Interrupt::default();
+    cancelled
+        .flag
+        .store(true, std::sync::atomic::Ordering::Relaxed);
+    assert!(matches!(
+        algebraic_roots(&p, &cancelled),
+        Err(Abort::Interrupted)
+    ));
+    let ctx = Interrupt {
+        steps_left: std::cell::Cell::new(1),
+        ..Interrupt::default()
+    };
+    assert!(algebraic_roots(&z(&[2, -1, 0, 0, 0, 1]), &ctx).is_err());
+}
 fn real(f: &UPoly<Integer>, lo: i64, hi: i64, ctx: &Interrupt) -> Algebraic {
     real_alg(f, (Rational::from(lo), Rational::from(hi)), ctx)
         .unwrap()

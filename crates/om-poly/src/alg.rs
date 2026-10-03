@@ -1,5 +1,6 @@
 //! Certified real/complex algebraic numbers, independent of expression representation.
 mod bounds;
+mod cache;
 mod comparison;
 mod operations;
 mod ordering;
@@ -201,6 +202,9 @@ pub fn algebraic_roots(
     ctx: &Interrupt,
 ) -> Result<Option<Vec<Algebraic>>, Abort> {
     ctx.tick()?;
+    if let Some(roots) = cache::get(f) {
+        return Ok(Some(roots));
+    }
     let Some(factors) = factors(f, ctx)? else {
         return Ok(None);
     };
@@ -215,6 +219,7 @@ pub fn algebraic_roots(
     let Some(all) = ordering::sort(all, ctx)? else {
         return Ok(None);
     };
+    cache::remember(f, &all);
     Ok(Some(all))
 }
 pub(super) fn factors(f: &Poly, ctx: &Interrupt) -> Result<Option<Vec<Poly>>, Abort> {

@@ -353,7 +353,7 @@ fn power(
         }
         // Positive integer powers are analytic at zero. A logarithmic range probe
         // would be undefined on a valid base enclosure spanning zero.
-        if !n.is_zero() && !contains_zero && !exp_range(&ln(base).mul(exponent).re) {
+        if !n.is_zero() && !contains_zero && !exp_range(&base.log_magnitude().mul(&exponent.re)) {
             return Ok(None);
         }
         let mut base = if n < &Integer::ZERO {

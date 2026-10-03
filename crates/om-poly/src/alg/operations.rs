@@ -99,6 +99,14 @@ fn binary(
     if matches!(op, Op::Mul) && (a.is_zero() || b.is_zero()) {
         return Ok(Some(Algebraic::Rational(Rational::ZERO)));
     }
+    for (identity, value) in [(a, b), (b, a)] {
+        if let Algebraic::Rational(q) = identity
+            && ((matches!(op, Op::Add) && q == &Rational::ZERO)
+                || (matches!(op, Op::Mul) && q == &Rational::ONE))
+        {
+            return Ok(Some(value.clone()));
+        }
+    }
     let (p, q) = (a.minimal_polynomial(ctx)?, b.minimal_polynomial(ctx)?);
     let (Some(n), Some(m)) = (p.degree(), q.degree()) else {
         return Ok(None);

@@ -3135,6 +3135,7 @@ dependencies = [
  "om-llm",
  "om-num",
  "om-parse",
+ "om-simplify",
  "om-solve",
  "reqwest",
  "serde",

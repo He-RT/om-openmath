@@ -8,7 +8,7 @@ use om_num::{
 };
 use om_poly::{Algebraic, UPoly, isolate, real_alg};
 use std::cell::RefCell;
-use std::cmp::Ordering;
+use std::{cmp::Ordering, rc::Rc};
 mod general;
 thread_local! {
     static CERTIFICATES: RefCell<Vec<(Expr,Algebraic)>> = const {RefCell::new(Vec::new())};
@@ -41,7 +41,24 @@ pub(crate) fn algebraic(e: &Expr, ctx: &Interrupt) -> Result<Option<Algebraic>, 
     if let Some(value) = certified(e) {
         Ok(Some(value))
     } else {
-        om_simplify::root_reduce::to_algebraic(e, ctx)
+        // Primitive-element recovery is a small polynomial in radicals. Expanding
+        // that private projection avoids resultants for terms that cancel exactly.
+        let expanded = om_simplify::algebra::expand_with(e, ctx)?;
+        let projection = expanded.as_ref().unwrap_or(e);
+        let value = if let Some(value) = certified(projection) {
+            Some(value)
+        } else {
+            let value = om_simplify::root_reduce::to_algebraic(projection, ctx)?;
+            if let Some(value) = &value {
+                remember(projection, value);
+            }
+            value
+        };
+        if let Some(value) = &value {
+            remember(e, value);
+            om_simplify::numeval::remember_real(e, value);
+        }
+        Ok(value)
     }
 }
 pub(crate) struct Key {
@@ -50,14 +67,67 @@ pub(crate) struct Key {
     pub im: Algebraic,
     general: Option<general::ComplexKey>,
 }
+type CachedComplexKey = (UPoly<Integer>, usize, Rc<Key>);
+thread_local! {
+    static COMPLEX_KEYS: RefCell<Vec<CachedComplexKey>> = const { RefCell::new(Vec::new()) };
+}
+fn coordinate_key(value: Algebraic, ctx: &Interrupt) -> Result<Rc<Key>, SolveError> {
+    use om_num::BitTest;
+    ctx.tick()?;
+    let identity = if let Algebraic::Complex(c) = &value
+        && c.minpoly.coeffs.iter().all(|n| n.bit_len() <= 4096)
+    {
+        Some((c.minpoly.clone(), c.index))
+    } else {
+        None
+    };
+    if let Some((p, index)) = &identity
+        && let Some(key) = COMPLEX_KEYS.with(|keys| {
+            keys.borrow()
+                .iter()
+                .find(|(q, i, _)| p == q && index == i)
+                .map(|(_, _, key)| key.clone())
+        })
+    {
+        return Ok(key);
+    }
+    let key = Rc::new(general::key(value, ctx)?);
+    if let Some((p, index)) = identity {
+        COMPLEX_KEYS.with(|keys| {
+            let mut keys = keys.borrow_mut();
+            if keys.len() == 32 {
+                keys.remove(0);
+            }
+            keys.push((p, index, key.clone()));
+        });
+    }
+    Ok(key)
+}
 pub(crate) struct Coordinate {
     value: Expr,
-    key: RefCell<Option<Key>>,
+    key: RefCell<Option<Rc<Key>>>,
+    enclosure: RefCell<Option<Option<om_num::CBall>>>,
 }
 pub(crate) fn coordinate(value: &Expr) -> Coordinate {
     Coordinate {
         value: value.clone(),
         key: RefCell::new(None),
+        enclosure: RefCell::new(None),
+    }
+}
+impl Coordinate {
+    fn enclosure(&self, ctx: &Interrupt) -> Result<Option<om_num::CBall>, Abort> {
+        ctx.tick()?;
+        if let Some(value) = &*self.enclosure.borrow() {
+            return Ok(value.clone());
+        }
+        let value = if let Some(certificate) = certified(&self.value) {
+            certificate.enclosure(128, ctx)?
+        } else {
+            om_simplify::numeval::enclose(&self.value, 128, ctx)?
+        };
+        *self.enclosure.borrow_mut() = Some(value.clone());
+        Ok(value)
     }
 }
 /// Compare numeric coordinates using directed projections, then exact algebraic ties.
@@ -76,10 +146,7 @@ pub(crate) fn compare_coordinates(
     if !a.free_symbols().is_empty() || !b.free_symbols().is_empty() {
         return Ok(canonical_cmp(a, b));
     }
-    if let (Some(a), Some(b)) = (
-        om_simplify::numeval::enclose(a, 128, ctx)?,
-        om_simplify::numeval::enclose(b, 128, ctx)?,
-    ) {
+    if let (Some(a), Some(b)) = (a_coordinate.enclosure(ctx)?, b_coordinate.enclosure(ctx)?) {
         let classify = |b: &om_num::Ball| {
             if b.mid == om_num::BigFloat::ZERO && b.rad == om_num::BigFloat::ZERO {
                 Some(false)
@@ -115,7 +182,7 @@ pub(crate) fn compare_coordinates(
             let value = algebraic(&c.value, ctx)?.ok_or_else(|| {
                 SolveError::Unsupported("coordinate ordering certification unavailable".into())
             })?;
-            *c.key.borrow_mut() = Some(general::key(value, ctx)?);
+            *c.key.borrow_mut() = Some(coordinate_key(value, ctx)?);
         }
     }
     let a_key = a_coordinate.key.borrow();
@@ -234,6 +301,7 @@ fn compare(a: &Candidate, b: &Candidate, ctx: &Interrupt) -> Result<Ordering, So
     }
     Ok(canonical_cmp(&a.value, &b.value))
 }
+
 pub(super) fn polynomial(
     p: &UPoly<Integer>,
     x: &Expr,
@@ -250,4 +318,58 @@ pub(super) fn polynomial(
         }
     }
     Ok(om_core::add(terms))
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    #[test]
+    fn identical_complex_root_certificates_compare_both_components_without_reprojection() {
+        let root = om_poly::algebraic_root(
+            &UPoly::new(vec![Integer::ONE, Integer::ZERO, Integer::ONE]),
+            2,
+            &Interrupt::default(),
+        )
+        .unwrap()
+        .unwrap();
+        let a = general::key(root.clone(), &Interrupt::default()).unwrap();
+        let b = general::key(root, &Interrupt::default()).unwrap();
+        for imaginary in [false, true] {
+            let ctx = Interrupt {
+                steps_left: std::cell::Cell::new(2),
+                ..Interrupt::default()
+            };
+            assert_eq!(
+                general::compare(&a, &b, imaginary, &ctx).unwrap(),
+                Ordering::Equal
+            );
+        }
+    }
+    #[test]
+    fn polynomial_recovery_coordinates_use_a_bounded_exact_expansion_for_ties() {
+        let value = om_core::canonicalize(
+            &om_parse::parse_expr(
+                "((-I/2*Sqrt[3]-5/2)^3/126)-((-I/2*Sqrt[3]-5/2)^2/21)-8*(-I/2*Sqrt[3]-5/2)/21+7/18",
+                om_parse::Dialect::Wolfram,
+            )
+            .unwrap(),
+        );
+        let ctx = Interrupt {
+            steps_left: std::cell::Cell::new(4096),
+            ..Interrupt::default()
+        };
+        assert_eq!(
+            compare_coordinates(&coordinate(&value), &coordinate(&Expr::int(1)), &ctx).unwrap(),
+            Ordering::Equal
+        );
+        let numeric = om_simplify::numeval::approximate(
+            &value,
+            om_num::Precision::Bits(100),
+            &Interrupt::default(),
+        )
+        .unwrap()
+        .unwrap();
+        assert_eq!(numeric.to_complex_f64(), (1.0, 0.0));
+        assert!(!matches!(numeric, om_num::Number::Complex(_)));
+    }
 }

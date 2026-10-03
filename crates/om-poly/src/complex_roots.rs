@@ -1,5 +1,6 @@
 //! Aberth-Ehrlich proposals followed by independent ball certificates, PLAN §8.2f.
 mod arithmetic;
+mod cache;
 mod iteration;
 use crate::UPoly;
 use arithmetic::{coefficients, point, upper_norm};
@@ -84,6 +85,20 @@ pub fn complex_roots(
     ctx: &Interrupt,
 ) -> Result<Option<Vec<RootDisk>>, Abort> {
     ctx.tick()?;
+    if let Some(disks) = cache::get(f, bits) {
+        return Ok(Some(disks));
+    }
+    let result = compute_roots(f, bits, ctx)?;
+    if let Some(disks) = &result {
+        cache::remember(f, bits, disks);
+    }
+    Ok(result)
+}
+fn compute_roots(
+    f: &UPoly<Integer>,
+    bits: u32,
+    ctx: &Interrupt,
+) -> Result<Option<Vec<RootDisk>>, Abort> {
     if bits == 0 || bits > MAX_WORK_BITS - 32 || f.is_zero() {
         return Ok(None);
     }

@@ -23,3 +23,13 @@ ai_hints = true
 After first-use confirmation, a separate worker waits for 350 ms of idle input and requests the configured completion profile. Key handling reads only a nonblocking cache. Changed input cancels obsolete requests; default/omitted CLI preferences send no AI hint requests.
 
 The protocol, privacy controls and provider options are specified in [PLAN.md §11](plan/PLAN.md#11-llm-层规格om-llm) and [protocol.md](protocol.md).
+
+## Notebook settings and transport
+
+Models, URLs, capability flags and provider parameters are editable; preset names never determine runtime routing. General settings include language/theme/dialect, constant mode, reactive execution, steps, automatic plots and evaluation timeout. Test connection uses the unsaved draft without writing configuration, notebook or vault data. A profile may explicitly disable the API-key requirement for a keyless service. Steps, Ask, chat and completion use the same profile-readiness rules.
+
+The browser can store nonsecret settings separately from credentials; selecting Remember credentials explicitly stores the opted-in provider values in browser storage. Native configuration files use atomic writes, and new keys go to the vault. The configured environment variable has priority. Key presence is resolved by the native host; merely naming an environment variable does not establish that a key exists.
+
+Native HTTP errors and browser CORS failures are surfaced rather than treated as successful completions. Cancellation ignores stale replies. Browser calculation interruption terminates the WASM worker, restores source and symbol definitions, and leaves other output stale; native cancellation directly signals the running computation. LLM completion accepts only a checked insertion, and translation/fix cards use the actual CAS parser. Model explanations remain model text; mathematical verification comes from the solver's retained evidence.
+
+DeepSeek defaults use the editable `deepseek-flash` model and explicit thinking controls. Provider setup follows the [official DeepSeek first-call documentation](https://api-docs.deepseek.com/). A user-authorized live smoke test previously exercised probe, translation, completion and chat through the shared kernel; all automated and packaged acceptance tests use synthetic providers. No live key is included in examples, fixtures or notebook files.

@@ -213,10 +213,9 @@ pub(super) fn compare(
     ctx: &Interrupt,
 ) -> Result<Ordering, SolveError> {
     ctx.tick()?;
-    if !imaginary
-        && let (Some(a), Some(b)) = (&a.general, &b.general)
+    if let (Some(a), Some(b)) = (&a.general, &b.general)
         && (a.value.equals(&b.value, ctx)? == Some(true)
-            || a.value.equals(&b.conjugate, ctx)? == Some(true))
+            || (!imaginary && a.value.equals(&b.conjugate, ctx)? == Some(true)))
     {
         return Ok(Ordering::Equal);
     }

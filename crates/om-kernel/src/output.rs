@@ -52,8 +52,16 @@ pub(crate) fn expression_view(value: &Expr) -> ExpressionView {
     }
 }
 fn numeric(value: &Expr, eval: &mut Evaluator, ctx: &Interrupt, digits: i64) -> Option<Expr> {
+    let projection = if value.free_symbols().is_empty() {
+        om_simplify::algebra::expand_with(value, ctx)
+            .ok()
+            .flatten()
+            .unwrap_or_else(|| value.clone())
+    } else {
+        value.clone()
+    };
     let result = eval
-        .evaluate(&Expr::call(B::N, [value.clone(), Expr::int(digits)]), ctx)
+        .evaluate(&Expr::call(B::N, [projection, Expr::int(digits)]), ctx)
         .ok()?;
     result.as_number().map(|_| result.clone())
 }
@@ -284,4 +292,29 @@ fn view(
         SolutionSet::Unevaluated => return None,
     }
     Some(view)
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    #[test]
+    fn numeric_projection_of_recovered_real_coordinate_is_bounded_and_real() {
+        let value = om_core::canonicalize(
+            &om_parse::parse_expr(
+                "((-I/2*Sqrt[3]-5/2)^3/126)-((-I/2*Sqrt[3]-5/2)^2/21)-8*(-I/2*Sqrt[3]-5/2)/21+7/18",
+                om_parse::Dialect::Wolfram,
+            )
+            .unwrap(),
+        );
+        let ctx = Interrupt {
+            steps_left: std::cell::Cell::new(4096),
+            ..Interrupt::default()
+        };
+        let mut eval = Evaluator::new().fork_readonly();
+        let value = numeric(&value, &mut eval, &ctx, 20).unwrap();
+        let number = value.as_number().unwrap();
+        assert_eq!(number.to_complex_f64(), (1.0, 0.0));
+        assert!(!matches!(number, om_num::Number::Complex(_)));
+        assert!(eval.history.is_empty());
+    }
 }

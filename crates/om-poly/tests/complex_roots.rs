@@ -8,6 +8,48 @@ use proptest::prelude::*;
 fn z(c: &[i64]) -> UPoly<Integer> {
     UPoly::new(c.iter().map(|c| (*c).into()).collect())
 }
+#[test]
+fn repeated_root_disks_reuse_certificates_but_always_honor_current_cancellation() {
+    let p = z(&[1, -1, 0, 0, 0, 1]);
+    let disks = complex_roots(&p, 128, &Interrupt::default())
+        .unwrap()
+        .unwrap();
+    let budget = Interrupt {
+        steps_left: std::cell::Cell::new(1),
+        ..Interrupt::default()
+    };
+    assert_eq!(complex_roots(&p, 128, &budget).unwrap().unwrap(), disks);
+    let cancelled = Interrupt::default();
+    cancelled
+        .flag
+        .store(true, std::sync::atomic::Ordering::Relaxed);
+    assert!(matches!(
+        complex_roots(&p, 128, &cancelled),
+        Err(Abort::Interrupted)
+    ));
+    struct Expired;
+    impl om_num::ctx::Clock for Expired {
+        fn now_ms(&self) -> f64 {
+            2.0
+        }
+    }
+    let expired = Interrupt {
+        clock: Some(std::sync::Arc::new(Expired)),
+        deadline_ms: Some(1.0),
+        ..Interrupt::default()
+    };
+    assert!(matches!(
+        complex_roots(&p, 128, &expired),
+        Err(Abort::Timeout)
+    ));
+    let other = z(&[2, -1, 0, 0, 0, 1]);
+    let budget = Interrupt {
+        steps_left: std::cell::Cell::new(1),
+        ..Interrupt::default()
+    };
+    assert!(complex_roots(&other, 128, &budget).is_err());
+    certify(&p, &disks, 128, &Interrupt::default());
+}
 fn dyadic(x: &BigFloat) -> Rational {
     let rep = x.repr();
     let q = Rational::from(rep.significand().clone());

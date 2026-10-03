@@ -4,6 +4,29 @@ use proptest::prelude::*;
 fn q(n: i64, d: u64) -> Rational {
     Rational::from_parts(n.into(), d.into())
 }
+#[test]
+fn complex_log_magnitude_matches_modulus_reference_and_preserves_origin_rejection() {
+    let point = CBall::exact(&q(3, 1), &q(4, 1), 128);
+    let reference = BigFloat::from(5).with_precision(256).value().ln();
+    contains(
+        &point.log_magnitude(),
+        &Rational::try_from(reference).unwrap(),
+    );
+    let mut cut = CBall::exact(&q(-3, 1), &Rational::ZERO, 128);
+    cut.im.rad = q(1, 4).to_float(128).value();
+    for value in [point, cut] {
+        let magnitude = value.log_magnitude();
+        let full = value.ln();
+        assert_eq!(bounds(&magnitude), bounds(&full.re));
+    }
+    assert!(
+        CBall::exact(&Rational::ZERO, &Rational::ZERO, 128)
+            .log_magnitude()
+            .rad
+            .repr()
+            .is_infinite()
+    );
+}
 fn bounds(b: &Ball) -> (Rational, Rational) {
     let m = Rational::try_from(b.mid.clone()).unwrap();
     let r = Rational::try_from(b.rad.clone()).unwrap();

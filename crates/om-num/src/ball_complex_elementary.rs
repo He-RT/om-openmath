@@ -17,11 +17,23 @@ impl CBall {
         if unbounded(self) || (self.re.contains_zero() && self.im.contains_zero()) {
             return whole(prec);
         }
-        let norm = self.re.square().add(&self.im.square());
         Self {
-            re: norm.ln().div(&integer(2, prec)),
+            re: self.log_magnitude(),
             im: argument(self, prec),
         }
+    }
+    /// Enclose ln(|z|), without computing an argument or choosing a logarithm branch.
+    /// Unbounded rectangles and rectangles containing the origin return the whole line.
+    pub fn log_magnitude(&self) -> Ball {
+        let prec = self.re.prec.min(self.im.prec);
+        if unbounded(self) || (self.re.contains_zero() && self.im.contains_zero()) {
+            return Ball::whole(prec);
+        }
+        self.re
+            .square()
+            .add(&self.im.square())
+            .ln()
+            .div(&integer(2, prec))
     }
     /// Enclose principal square roots, with nonnegative real part.
     pub fn sqrt(&self) -> CBall {

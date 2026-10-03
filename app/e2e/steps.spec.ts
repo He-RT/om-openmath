@@ -1,3 +1,4 @@
+import { fixtureProfile } from "./profileFixture";
 import { test, expect } from "@playwright/test";
 for (const width of [375, 1280])
   test(`recorded steps are real and local controls work at ${width}px`, async ({
@@ -72,21 +73,11 @@ test("browser streams explanations for the selected real output and sends only i
       body: `data: ${JSON.stringify({ choices: [{ index: 0, delta: { content: reply }, finish_reason: "stop" }] })}\n\ndata: [DONE]\n\n`,
     });
   });
-  await page.route("**/src/kernel/index.ts", async (route) => {
-    await route.fulfill({
-      contentType: "application/javascript",
-      body: `import {WasmClient} from '/src/kernel/wasmClient.ts';
-export async function createKernelClient(onCreated) {
-  const client=new WasmClient();onCreated?.(client);await client.ready;
-  const r=await client.request({type:'get_config'});if(r.type!=='config')throw new Error('config');
-  r.config.llm.profiles[0].base_url='https://steps-provider.invalid/v1';r.config.llm.profiles[0].api_key='synthetic-step-key';r.config.llm.send_context=false;
-  await client.request({type:'set_config',config:r.config});
-  await client.request({type:'load_notebook',file:{version:1,title:'Recorded steps',cells:[{id:'multi',source:'solve(x^2==4,x)\\nsolve(y^2==9,y)',kind:'Math',dialect:'Modern'}]}});
-  return client;
-}`,
-    });
-  });
+  await fixtureProfile(page, "https://steps-provider.invalid/v1", "synthetic-step-key");
   await page.goto("/");
+  await page.getByRole("textbox", {name: "Notebook title"}).fill("Recorded steps");
+  await page.getByRole("button", {name: "＋ Math", exact: true}).click();
+  await page.getByRole("textbox", {name: "Math input 1", exact: true}).fill("solve(x^2==4,x)\nsolve(y^2==9,y)");
   await page.getByRole("button", { name: "Run 1", exact: true }).click();
   await expect(page.locator(".solution-result")).toHaveCount(2);
   await page

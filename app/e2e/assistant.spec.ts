@@ -1,12 +1,7 @@
+import { fixtureProfile } from "./profileFixture";
 import { test, expect, type Page } from "@playwright/test";
 async function configure(page: Page) {
-  await page.route("**/src/kernel/index.ts", async (route) => {
-    await route.fulfill({
-      contentType: "application/javascript",
-      body: `import {WasmClient} from '/src/kernel/wasmClient.ts';
-export async function createKernelClient(onCreated){const client=new WasmClient();onCreated?.(client);await client.ready;const r=await client.request({type:'get_config'});r.config.llm.complete='';r.config.llm.profiles[0].base_url='https://ai-provider.invalid/v1';r.config.llm.profiles[0].api_key='synthetic-ui-key';r.config.llm.send_context=false;await client.request({type:'set_config',config:r.config});return client;}`,
-    });
-  });
+  await fixtureProfile(page, "https://ai-provider.invalid/v1", "synthetic-ui-key");
 }
 function stream(content: string) {
   return `data: ${JSON.stringify({ choices: [{ index: 0, delta: { content }, finish_reason: "stop" }] })}\n\ndata: [DONE]\n\n`;

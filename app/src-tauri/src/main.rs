@@ -1,6 +1,7 @@
 //! OpenMath desktop application entry point.
 #![forbid(unsafe_code)]
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
+mod menu;
 
 fn main() {
     tauri::Builder::default()
@@ -8,11 +9,26 @@ fn main() {
         .plugin(tauri_plugin_fs::init())
         .setup(|app| {
             use tauri::Manager;
-            let host =
-                om_desktop::KernelHost::new(om_kernel::native::ConfigStore::system_default()?)
-                    .map_err(std::io::Error::other)?;
+            let store = if let Some(path) = std::env::var_os("OPENMATH_CONFIG_PATH") {
+                om_kernel::native::ConfigStore::new(
+                    path,
+                    std::sync::Arc::new(om_kernel::native::NativeCredentials),
+                    om_kernel::native::KeyStorage::Vault,
+                )
+            } else {
+                om_kernel::native::ConfigStore::system_default()?
+            };
+            let zh = store.load()?.general.language == om_kernel::config::Language::ZhCn;
+            let host = om_desktop::KernelHost::new(store).map_err(std::io::Error::other)?;
             app.manage(host);
+            app.set_menu(menu::build(app.handle(), zh)?)?;
             Ok(())
+        })
+        .on_menu_event(|app, event| {
+            use tauri::Emitter;
+            if event.id().as_ref().starts_with("om-") {
+                let _ = app.emit("openmath:menu", event.id().as_ref());
+            }
         })
         .invoke_handler(tauri::generate_handler![
             kernel_request,

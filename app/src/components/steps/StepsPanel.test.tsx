@@ -79,6 +79,13 @@ function mount(
     ),
   };
 }
+test("explicit keyless profiles enable explanation without treating an environment name as credentials", () => {
+  const draft = structuredClone(config);
+  draft.llm.profiles[0]!.api_key = null;
+  draft.llm.profiles[0]!.requires_api_key = false;
+  mount(undefined, draft);
+  expect((screen.getByRole("button", { name: "Explain all" }) as HTMLButtonElement).disabled).toBe(false);
+});
 test("actual step IDs, localized titles and expressions are shown; minor details collapse and expand", () => {
   mount(undefined, null);
   expect(screen.getByText("Factor the polynomial.")).toBeTruthy();

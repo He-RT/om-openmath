@@ -9,6 +9,7 @@ interface Props {
   onSave: () => void;
   onOpen: () => void;
   onNew: () => void;
+  onExport: (format: "markdown" | "latex") => void;
   onCommands: () => void;
   onSettings: (ai?: boolean) => void;
 }
@@ -19,6 +20,7 @@ export function TopBar({
   onSave,
   onOpen,
   onNew,
+  onExport,
   onCommands,
   onSettings,
 }: Props) {
@@ -123,6 +125,8 @@ export function TopBar({
             <button onClick={onNew}>{t.newNotebook}</button>
             <button onClick={onOpen}>{t.open}</button>
             <button onClick={onSave}>{t.save}</button>
+            <button onClick={() => onExport("markdown")}>{t.exportMarkdown}</button>
+            <button onClick={() => onExport("latex")}>{t.exportLatex}</button>
             <button
               onClick={() => void controller.runAll()}
               disabled={state.busy}

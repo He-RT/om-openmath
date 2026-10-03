@@ -11,6 +11,9 @@ export function locale(
     : language;
 }
 const en = {
+  exportMarkdown: "Export Markdown",
+  exportLatex: "Export LaTeX",
+  exported: "Export downloaded",
   requireKey: "API key required",
   generalSettings: "General",
   modelSettings: "AI models",
@@ -255,6 +258,9 @@ const en = {
   messages: "Messages",
 };
 const zh: typeof en = {
+  exportMarkdown: "导出 Markdown",
+  exportLatex: "导出 LaTeX",
+  exported: "导出文件已下载",
   requireKey: "需要 API 密钥",
   generalSettings: "常规",
   modelSettings: "AI 模型",

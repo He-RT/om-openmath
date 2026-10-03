@@ -6,6 +6,7 @@ import type { StepView } from "../../kernel/generated/StepView";
 import type { Locale, Messages } from "../../i18n";
 import { PrivacyPrompt, hasConsent } from "../assistant/PrivacyPrompt";
 import { useExplanation } from "./useExplanation";
+import { featureProfile } from "../assistant/profile";
 import { StepNode, ExplanationView } from "./StepNode";
 export function flattenSteps(steps: StepsView) {
   const result: StepView[] = [];
@@ -78,19 +79,8 @@ function RecordedSteps({
     outIndex,
     t.explanationError,
   );
-  const profiles =
-    config?.llm.profiles.filter((p) => p.name === config.llm.explain) ?? [];
-  const profile = profiles.length === 1 ? profiles[0] : undefined;
-  const configured = !!(
-    config?.llm.enabled &&
-    profile &&
-    (profile.kind === "openai_chat" || profile.kind === "anthropic") &&
-    profile.base_url &&
-    profile.model &&
-    (profile.api_key !== null ||
-      Object.keys(profile.extra_headers).length > 0 ||
-      (kernel.kind === "tauri" && profile.api_key_env))
-  );
+  const profile = featureProfile(config?.llm, "explain");
+  const configured = !!profile;
   const disabled = !current || !configured || list.length === 0;
   const hint = !current
     ? t.staleExplanation

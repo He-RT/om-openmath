@@ -18,7 +18,9 @@
     "predev": "npm run build:wasm",
     "prebuild": "npm run build:wasm",
     "test:e2e": "playwright test",
-    "pretest": "npm run build:wasm"
+    "pretest": "npm run build:wasm",
+    "postbuild": "node scripts/package-notices.mjs",
+    "preview": "vite preview --host 127.0.0.1 --port 5173 --strictPort"
   },
   "dependencies": {
     "@codemirror/autocomplete": "6.20.3",

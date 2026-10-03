@@ -1,6 +1,6 @@
 # Third-party notices
 
-No third-party algorithm source has been copied into the current scaffold. Rust and npm dependencies retain their upstream licenses.
+No third-party algorithm source has been copied into the OpenMath. Rust and npm dependencies retain their upstream licenses.
 
 ## Tauri transitive MPL-2.0 dependencies
 
@@ -32,3 +32,5 @@ Upstream: https://github.com/rustls/webpki-roots
 reqwest's specified `rustls` feature also selects its native AWS-LC cryptographic
 provider. These native transport dependencies do not enter the default pure CAS
 or WebAssembly runtime graph; their upstream permissive licenses remain enforced.
+
+Distributed Web and desktop builds retain upstream license/notice texts in `licenses/rust/` and `licenses/npm/`. `licenses/INDEX.txt` records locked names, versions, license declarations and source URLs; it may also include build/test-only and other-platform dependencies from the lockfiles. The originals are copied without modification.

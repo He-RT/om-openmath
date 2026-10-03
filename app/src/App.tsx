@@ -14,6 +14,8 @@ import { Notebook } from "./components/Notebook";
 import { Inspector } from "./components/Inspector";
 import { Preferences } from "./components/Preferences";
 import { CommandPalette } from "./components/CommandPalette";
+import { exportNotebook, type ExportFormat } from "./state/export";
+import { useDesktopMenu } from "./state/desktopMenu";
 export default function App({ kernel }: { kernel?: KernelClient }) {
   const provided = useKernel();
   const client = kernel ?? provided.client;
@@ -86,6 +88,26 @@ function Workspace({ controller }: { controller: NotebookController }) {
     void controller
       .load({ version: 1, title: "", cells: [] })
       .catch((error) => controller.store.setState({ error: String(error) }));
+  const exportFile = (format: ExportFormat) => {
+    void controller.flush().then(async () => {
+      const current = controller.store.getState();
+      if (await exportNotebook(current.title, current.cells, format, controller.kernel.kind))
+        controller.store.setState({ notice: controller.kernel.kind === "wasm" ? t.exported : t.fileSaved });
+    }).catch(() => controller.store.setState({ error: t.fileError }));
+  };
+  const changeTheme = (next: string) => {
+    setTheme(next);
+    try { localStorage.setItem("openmath-theme", next); } catch { /* Keep theme in memory. */ }
+  };
+  useDesktopMenu(controller.kernel.kind, {
+    "om-new": newNotebook, "om-open": open, "om-save": save, "om-save-as": save,
+    "om-export-md": () => exportFile("markdown"), "om-export-tex": () => exportFile("latex"),
+    "om-settings": () => setPreferences("general"), "om-commands": () => setCommands(true),
+    "om-docs": () => controller.store.setState({ panel: "docs" }),
+    "om-assistant": () => controller.store.setState({ panel: "assistant" }),
+    "om-panel": () => controller.store.setState({ panel: controller.store.getState().panel ? null : "docs" }),
+    "om-theme-light": () => changeTheme("light"), "om-theme-dark": () => changeTheme("dark"), "om-theme-system": () => changeTheme("system"),
+  }, () => controller.store.setState({ error: t.fileError }));
   useEffect(() => {
     const handler = (event: KeyboardEvent) => {
       if (!event.metaKey && !event.ctrlKey) return;
@@ -148,6 +170,7 @@ function Workspace({ controller }: { controller: NotebookController }) {
         onSave={save}
         onOpen={open}
         onNew={newNotebook}
+        onExport={exportFile}
         onCommands={() => setCommands(true)}
         onSettings={(ai) => setPreferences(ai ? "models" : "general")}
       />
@@ -249,6 +272,8 @@ function Workspace({ controller }: { controller: NotebookController }) {
           { label: t.save, shortcut: "⌘S", run: save },
           { label: t.open, run: open },
           { label: t.newNotebook, run: newNotebook },
+          { label: t.exportMarkdown, run: () => exportFile("markdown") },
+          { label: t.exportLatex, run: () => exportFile("latex") },
           { label: t.settings, run: () => setPreferences("general") },
           {
             label: t.variables,
@@ -266,14 +291,7 @@ function Workspace({ controller }: { controller: NotebookController }) {
           controller={controller}
           t={t}
           theme={theme}
-          onTheme={(theme) => {
-            setTheme(theme);
-            try {
-              localStorage.setItem("openmath-theme", theme);
-            } catch {
-              /* Theme remains in memory. */
-            }
-          }}
+          onTheme={changeTheme}
           initialTab={preferences}
           onClose={() => setPreferences(null)}
         />

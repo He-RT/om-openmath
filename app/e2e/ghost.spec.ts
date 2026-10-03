@@ -1,3 +1,4 @@
+import { fixtureProfile } from "./profileFixture";
 import { test, expect } from "@playwright/test";
 test("actual CodeMirror ghost text requires consent, keeps prefixes and accepts partial/full text without evaluation", async ({
   page,
@@ -20,16 +21,7 @@ test("actual CodeMirror ghost text requires consent, keeps prefixes and accepts 
       }),
     });
   });
-  await page.route("**/src/kernel/index.ts", async (route) => {
-    await route.fulfill({
-      contentType: "application/javascript",
-      body: `import {WasmClient} from '/src/kernel/wasmClient.ts';
-export async function createKernelClient(onCreated) {const client=new WasmClient();onCreated?.(client);await client.ready;
-const r=await client.request({type:'get_config'});if(r.type!=='config')throw new Error('config');
-r.config.llm.complete='deepseek';r.config.llm.profiles[0].base_url='https://ghost-provider.invalid/v1';r.config.llm.profiles[0].api_key='synthetic-ghost-key';r.config.llm.send_context=false;
-await client.request({type:'set_config',config:r.config});return client;}`,
-    });
-  });
+  await fixtureProfile(page, "https://ghost-provider.invalid/v1", "synthetic-ghost-key", true);
   await page.goto("/");
   await page.getByRole("button", { name: "＋ Math", exact: true }).click();
   const editor = page.getByRole("textbox", {
@@ -108,13 +100,7 @@ test("a pending real provider completion is cancelled on source/cursor change an
       })
       .catch(() => {});
   });
-  await page.route("**/src/kernel/index.ts", async (route) => {
-    await route.fulfill({
-      contentType: "application/javascript",
-      body: `import {WasmClient} from '/src/kernel/wasmClient.ts';
-export async function createKernelClient(onCreated) {const client=new WasmClient();onCreated?.(client);await client.ready;const r=await client.request({type:'get_config'});r.config.llm.complete='deepseek';r.config.llm.profiles[0].base_url='https://ghost-provider.invalid/v1';r.config.llm.profiles[0].api_key='synthetic-ghost-key';r.config.llm.send_context=false;await client.request({type:'set_config',config:r.config});return client;}`,
-    });
-  });
+  await fixtureProfile(page, "https://ghost-provider.invalid/v1", "synthetic-ghost-key", true);
   await page.goto("/");
   await page.getByRole("button", { name: "＋ Math", exact: true }).click();
   const editor = page.getByRole("textbox", {

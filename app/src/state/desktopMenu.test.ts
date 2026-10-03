@@ -1,0 +1,23 @@
+import { act, renderHook } from "@testing-library/react";
+import { expect, test, vi } from "vitest";
+import { useDesktopMenu } from "./desktopMenu";
+const { listen } = vi.hoisted(() => ({ listen: vi.fn() }));
+vi.mock("@tauri-apps/api/event", () => ({ listen }));
+test("menu callbacks use latest state and unsubscribe even when registration finishes after disposal", async () => {
+  let handler: ((event: { payload: string }) => void) | undefined;
+  let finish: ((stop: () => void) => void) | undefined;
+  listen.mockImplementation((_, callback) => { handler = callback; return new Promise((resolve) => { finish = resolve; }); });
+  const first = vi.fn(), latest = vi.fn(), error = vi.fn(), stop = vi.fn();
+  const hook = renderHook(({ callback }) => useDesktopMenu("tauri", { "om-save": callback }, error), { initialProps: { callback: first } });
+  await act(async () => {});
+  hook.rerender({ callback: latest });
+  handler?.({ payload: "om-save" });
+  expect(latest).toHaveBeenCalledOnce();
+  expect(first).not.toHaveBeenCalled();
+  hook.unmount();
+  handler?.({ payload: "om-save" });
+  await act(async () => { finish?.(stop); });
+  expect(stop).toHaveBeenCalledOnce();
+  expect(latest).toHaveBeenCalledOnce();
+  expect(error).not.toHaveBeenCalled();
+});

@@ -75,3 +75,22 @@ export async function openNativeNotebook(): Promise<NotebookFile | null> {
     ? decodeNotebook(await readTextFile(path))
     : null;
 }
+
+export async function saveTextArtifact(text: string, title: string, extension: "md" | "tex", kind: "wasm" | "tauri"): Promise<boolean> {
+  const name = `${title.replace(/[/\\:*?"<>|]/g, "-")}.${extension}`;
+  if (kind === "tauri") {
+    const { save } = await import("@tauri-apps/plugin-dialog");
+    const { writeTextFile } = await import("@tauri-apps/plugin-fs");
+    const path = await save({ defaultPath: name, filters: [{ name: extension === "tex" ? "LaTeX" : "Markdown", extensions: [extension] }] });
+    if (!path) return false;
+    await writeTextFile(path, text);
+    return true;
+  }
+  const url = URL.createObjectURL(new Blob([text], { type: "text/plain;charset=utf-8" }));
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = name;
+  link.click();
+  setTimeout(() => URL.revokeObjectURL(url), 0);
+  return true;
+}

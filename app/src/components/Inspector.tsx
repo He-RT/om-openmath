@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import type { NotebookController, UiState } from "../state/notebookStore";
 import { locale, type Messages } from "../i18n";
 import { StepsPanel } from "./steps/StepsPanel";
+import { AssistantPanel } from "./assistant/AssistantPanel";
 import type { HoverInfo } from "../kernel/generated/HoverInfo";
 import { toByte } from "./editor/positions";
 export function Inspector({
@@ -65,7 +66,7 @@ export function Inspector({
     ) ?? results.at(-1);
   return (
     <aside
-      className={`inspector ${state.panel === "steps" ? "inspector-steps" : ""}`}
+      className={`inspector ${state.panel === "steps" ? "inspector-steps" : state.panel === "assistant" ? "inspector-assistant" : ""}`}
     >
       <div className="inspector-header">
         <nav>
@@ -201,11 +202,7 @@ export function Inspector({
             )}
           </>
         ) : (
-          <>
-            <h2>{t.assistant}</h2>
-            <p className="muted">{t.assistantHint}</p>
-            <button onClick={() => controller.add("Ask")}>＋ {t.ask}</button>
-          </>
+          <AssistantPanel state={state} controller={controller} t={t} />
         )}
       </div>
     </aside>

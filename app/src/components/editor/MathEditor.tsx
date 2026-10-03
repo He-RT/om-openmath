@@ -243,7 +243,7 @@ export function MathEditor(props: Props) {
       kernel: props.client,
       read: (view) => {
         const current = latest.current,
-          profile = completionProfile(current.llm, props.client);
+          profile = completionProfile(current.llm);
         const prefix = view.state.doc.sliceString(
           0,
           view.state.selection.main.head,

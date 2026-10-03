@@ -642,3 +642,23 @@ scope cannot reuse explanation-only or current-code-only consent. Keyless local
 compatible endpoints/Ollama remain configurable, with actual validation and
 credential resolution handled by the shared kernel. Ordinary tests use mocks
 and synthetic intercepted HTTP only; no real provider/key is accessed.
+
+Ask cells now use genuine LlmTranslate suggestions with explicit insert/run/edit
+actions, and errored math cells use LlmFixError with a before/after source diff
+and a revision-guarded apply action. Applying source alone never evaluates it.
+Assistant turns expand explicit @cellN references into actual source/dialect/
+status and current InputForm results; stale outputs are omitted. The ongoing
+conversation stores only current-controller memory and is cleared on notebook
+load, never serialized into .omnb. Prior turns retain actual final model text,
+checked proposed source and labeled readonly tool summaries; no fabricated
+provider tool-call IDs or tool-role histories are inserted into replay.
+
+An internal observed KernelClient counts starts and actual done/error/cancel
+across translate/chat/fix/explain/complete/profile-test features. It delegates the
+existing transport without recording HTTP, headers or request bodies. Cancellation
+does not become a false provider error. Native readiness follows the GetConfig
+credential-presence mask (environment/vault/fallback resolution), rather than a
+merely declared environment variable. First-use consent remains data-scope
+specific for questions/symbol names, conversations/references and error diagnostics.
+Popup focus management has one listener lifetime with a current close callback;
+focus restoration cannot cause repeated source-cell selection/render loops.

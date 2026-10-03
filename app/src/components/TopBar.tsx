@@ -1,5 +1,7 @@
 import type { UiState, NotebookController } from "../state/notebookStore";
 import type { Messages } from "../i18n";
+import { useStore } from "zustand";
+import { featureProfile } from "./assistant/profile";
 interface Props {
   state: UiState;
   controller: NotebookController;
@@ -20,6 +22,18 @@ export function TopBar({
   onCommands,
   onSettings,
 }: Props) {
+  const ai = useStore(controller.ai.store);
+  const configured = (
+    ["translate", "explain", "chat", "complete", "fix"] as const
+  ).some((feature) => featureProfile(state.config?.llm, feature));
+  const aiState =
+    ai.active > 0
+      ? "working"
+      : ai.error
+        ? "error"
+        : configured
+          ? "ready"
+          : "unconfigured";
   return (
     <header className="topbar">
       <div className="brand">
@@ -86,6 +100,18 @@ export function TopBar({
         </button>
         <button aria-label={t.settings} title={t.settings} onClick={onSettings}>
           ☷
+        </button>
+        <button
+          className={`ai-indicator ai-${aiState}`}
+          aria-label={t.aiSettings}
+          title={
+            ai.error ??
+            (ai.active ? t.aiWorking : configured ? t.ready : t.configureAI)
+          }
+          onClick={onSettings}
+        >
+          <span className="ai-status-dot" />
+          AI
         </button>
         <details className="file-menu">
           <summary aria-label={t.open}>⋯</summary>

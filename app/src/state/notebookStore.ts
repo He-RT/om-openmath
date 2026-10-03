@@ -7,6 +7,8 @@ import type { CellOutput } from "../kernel/generated/CellOutput";
 import type { NotebookState } from "../kernel/generated/NotebookState";
 import type { NotebookFile } from "../kernel/generated/NotebookFile";
 import { locale } from "../i18n";
+import { observeKernel } from "../kernel/observedClient";
+import type { ChatTurnView } from "./assistant";
 export interface UiCell extends CellInput {
   revision: number;
   status: CellStatus;
@@ -16,6 +18,8 @@ export interface UiCell extends CellInput {
   uses: string[];
 }
 export interface UiState {
+  assistantTurns: ChatTurnView[];
+  documentGeneration: number;
   title: string;
   cells: UiCell[];
   active: string | null;
@@ -27,9 +31,11 @@ export interface UiState {
   notice: string | null;
   dirty: boolean;
   panel: "variables" | "docs" | "steps" | "assistant" | null;
-  stepSelection: {cellId:string;outIndex:number} | null;
+  stepSelection: { cellId: string; outIndex: number } | null;
 }
 const initial: UiState = {
+  assistantTurns: [],
+  documentGeneration: 0,
   title: "",
   cells: [],
   active: null,
@@ -51,6 +57,8 @@ const uiCell = (cell: CellInput): UiCell => ({
   uses: [],
 });
 export class NotebookController {
+  readonly kernel: KernelClient;
+  readonly ai: ReturnType<typeof observeKernel>;
   readonly store = createStore<UiState>(() => ({ ...initial }));
   private writes = Promise.resolve();
   private off: () => void;
@@ -64,8 +72,10 @@ export class NotebookController {
     { output: CellOutput; revision: number }
   >();
   private removed: { cell: UiCell; index: number } | undefined;
-  constructor(readonly kernel: KernelClient) {
-    this.off = kernel.onEvent((event) => this.event(event));
+  constructor(kernel: KernelClient) {
+    this.ai = observeKernel(kernel);
+    this.kernel = this.ai.client;
+    this.off = this.kernel.onEvent((event) => this.event(event));
   }
   async initialize() {
     try {
@@ -135,6 +145,7 @@ export class NotebookController {
     return id;
   }
   select(id: string, focus = false) {
+    if (!focus && this.store.getState().active === id) return;
     this.store.setState((state) => ({
       active: id,
       focus: state.focus + (focus ? 1 : 0),
@@ -513,6 +524,8 @@ export class NotebookController {
     if (response.type === "error") throw new Error(response.message);
     this.store.setState({
       cells: file.cells.map(uiCell),
+      assistantTurns: [],
+      documentGeneration: this.store.getState().documentGeneration + 1,
       title: file.title,
       active: file.cells[0]?.id ?? null,
       dirty: false,
@@ -532,5 +545,6 @@ export class NotebookController {
   dispose() {
     this.closed = true;
     this.off();
+    this.ai.detach();
   }
 }

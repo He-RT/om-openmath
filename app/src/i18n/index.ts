@@ -11,6 +11,31 @@ export function locale(
     : language;
 }
 const en = {
+  aiSuggestion: "AI suggestion",
+  notExecuted: "Parsed source; not run",
+  insertCode: "Insert as code",
+  casTool: "Read-only CAS result",
+  aiWorking: "AI is working…",
+  aiCancelled: "AI request cancelled",
+  aiRequestError: "AI request failed",
+  askAI: "Ask AI",
+  translatePrivacy:
+    "Your question and the names of symbols currently defined in this notebook will be sent to this provider. Suggested source waits for your action.",
+  fixAI: "Fix with AI",
+  fixPrivacy:
+    "The current error source, parser diagnostics and computation messages will be sent to this provider. Applying a repair changes source only.",
+  before: "Before",
+  after: "After",
+  chatPrivacy:
+    "The conversation and any explicitly referenced cell source/current InputForm results will be sent to this provider. Tools read the CAS without changing your notebook.",
+  referenceError: "Unknown cell reference. Use @cell1, @cell2, …",
+  newConversation: "New conversation",
+  you: "You",
+  chatInput: "Message to assistant",
+  chatPlaceholder: "Ask a question, or reference @cell1…",
+  send: "Send",
+  aiSettings: "AI settings",
+
   completionError: "AI completion unavailable",
   completionPrivacy:
     "The current code around the cursor will be sent to this provider. Suggestions enter the source only when you accept them.",
@@ -169,6 +194,31 @@ const en = {
   messages: "Messages",
 };
 const zh: typeof en = {
+  aiSuggestion: "AI 建议",
+  notExecuted: "源码已解析；尚未运行",
+  insertCode: "插入为代码",
+  casTool: "只读 CAS 结果",
+  aiWorking: "AI 正在处理…",
+  aiCancelled: "AI 请求已取消",
+  aiRequestError: "AI 请求失败",
+  askAI: "问 AI",
+  translatePrivacy:
+    "将把您的问题和此笔记本当前已定义的符号名称发送给此提供商。建议源码会等待您的操作。",
+  fixAI: "让 AI 修复",
+  fixPrivacy:
+    "将把当前错误源码、解析诊断和计算消息发送给此提供商。应用修复只会修改源码。",
+  before: "修改前",
+  after: "修改后",
+  chatPrivacy:
+    "将把对话及您明确引用的单元格源码和当前 InputForm 结果发送给此提供商。工具只读 CAS，不会修改笔记本。",
+  referenceError: "找不到引用的单元格。请使用 @cell1、@cell2 等。",
+  newConversation: "新建对话",
+  you: "您",
+  chatInput: "发送给助手的消息",
+  chatPlaceholder: "提出问题，或引用 @cell1…",
+  send: "发送",
+  aiSettings: "AI 设置",
+
   completionError: "AI 补全暂不可用",
   completionPrivacy:
     "将把光标附近的当前代码发送给此提供商。只有接受建议后才会写入源码。",

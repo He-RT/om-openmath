@@ -34,6 +34,8 @@ export function PrivacyPrompt({
 }) {
   const [remember, setRemember] = useState(false);
   const root = useRef<HTMLElement>(null);
+  const close = useRef(onClose);
+  close.current = onClose;
   useEffect(() => {
     const previous = document.activeElement;
     const element = root.current;
@@ -41,7 +43,7 @@ export function PrivacyPrompt({
     const key = (e: KeyboardEvent) => {
       if (e.key === "Escape") {
         e.preventDefault();
-        onClose();
+        close.current();
       }
       if (e.key === "Tab" && element) {
         const controls = [
@@ -63,7 +65,7 @@ export function PrivacyPrompt({
       element?.removeEventListener("keydown", key);
       if (previous instanceof HTMLElement) previous.focus();
     };
-  }, [onClose]);
+  }, []);
   return createPortal(
     <div
       className="modal-backdrop"

@@ -1,0 +1,212 @@
+.ask-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 11px;
+  margin: 8px 0;
+}
+.ask-actions button,
+.repair-control > button {
+  color: var(--accent);
+}
+.suggestion-card {
+  padding: 16px 0;
+  border-top: 1px solid var(--line);
+  margin: 12px 0;
+  min-width: 0;
+}
+.suggestion-label {
+  font-size: 10px;
+  color: var(--muted);
+}
+.suggestion-card > .formula {
+  display: block;
+  overflow-x: auto;
+  font-size: 16px;
+  margin: 14px 0 8px;
+}
+.suggestion-card pre {
+  font-size: 12px;
+  color: var(--ink);
+}
+.suggestion-card p {
+  font-size: 12px;
+  color: var(--muted);
+  overflow-wrap: anywhere;
+}
+.suggestion-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  font-size: 11px;
+  color: var(--accent);
+}
+.ai-working {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 9px;
+  color: var(--muted);
+  font-size: 11px;
+  margin: 12px 0;
+}
+.ai-skeleton {
+  display: block;
+  width: 60px;
+  height: 4px;
+  background: var(--accent-soft);
+  border-radius: 2px;
+  animation: ai-pulse 1.2s ease-in-out infinite;
+}
+@keyframes ai-pulse {
+  50% {
+    opacity: 0.4;
+  }
+}
+.tool-call-card {
+  border-top: 1px solid var(--line);
+  margin: 12px 0;
+  padding: 10px 0;
+  font-size: 11px;
+}
+.tool-call-card summary {
+  cursor: pointer;
+  color: var(--accent);
+}
+.tool-call-card pre {
+  font-size: 10px;
+  max-height: 220px;
+  overflow: auto;
+}
+.repair-control {
+  font-size: 11px;
+  margin-top: 8px;
+}
+.repair-diff {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 16px;
+  margin: 12px 0;
+}
+.repair-diff > div {
+  min-width: 0;
+  border-left: 2px solid var(--line);
+  padding-left: 12px;
+}
+.repair-diff > div:last-child {
+  border-left-color: var(--accent);
+}
+.repair-diff span {
+  font-size: 10px;
+  color: var(--muted);
+}
+.repair-diff pre {
+  font-size: 12px;
+}
+.repair-suggestion p {
+  color: var(--muted);
+  font-size: 12px;
+}
+.assistant-header {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 10px;
+}
+.assistant-header button {
+  font-size: 10px;
+  color: var(--muted);
+}
+.chat-turn {
+  margin: 20px 0 28px;
+  font-size: 12px;
+}
+.chat-user {
+  border-left: 2px solid var(--line);
+  padding-left: 12px;
+  margin-bottom: 18px;
+}
+.chat-user p {
+  color: var(--ink);
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+.chat-user > span,
+.chat-assistant > span {
+  font-size: 9px;
+  color: var(--muted);
+}
+.chat-composer {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  margin-top: 20px;
+}
+.chat-composer textarea {
+  width: 100%;
+  min-height: 90px;
+  resize: vertical;
+  font-size: 13px;
+  padding: 10px;
+}
+.chat-composer button {
+  align-self: flex-end;
+  font-size: 11px;
+  color: var(--accent);
+}
+.ai-indicator {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 10px;
+  padding: 4px;
+}
+.ai-status-dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--muted);
+}
+.ai-ready .ai-status-dot {
+  background: var(--accent);
+}
+.ai-error .ai-status-dot {
+  background: var(--error);
+}
+.ai-working .ai-status-dot {
+  background: var(--accent);
+  animation: ai-pulse 1s ease-in-out infinite;
+}
+@media (max-width: 900px) {
+  .inspector.inspector-assistant {
+    height: min(58dvh, 540px);
+  }
+  .with-panel:has(.inspector-assistant) .notebook {
+    padding-bottom: min(60dvh, 560px);
+  }
+  .inspector-assistant .inspector-header {
+    position: sticky;
+    top: 0;
+    background: var(--surface);
+    z-index: 2;
+  }
+}
+@media (max-width: 480px) {
+  .repair-diff {
+    grid-template-columns: 1fr;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .ai-skeleton,
+  .ai-working .ai-status-dot {
+    animation: none;
+  }
+}
+
+.inspector-assistant .inspector-header {
+  position: sticky;
+  top: 0;
+  background: var(--surface);
+  z-index: 2;
+}

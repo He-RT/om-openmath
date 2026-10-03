@@ -1,9 +1,5 @@
 import type { LlmConfig } from "../../kernel/generated/LlmConfig";
-import type { KernelClient } from "../../kernel/client";
-export function completionProfile(
-  config: LlmConfig | null | undefined,
-  kernel: KernelClient,
-) {
+export function completionProfile(config: LlmConfig | null | undefined) {
   if (!config?.enabled || !config.complete) return null;
   const profiles = config.profiles.filter((p) => p.name === config.complete);
   if (profiles.length !== 1) return null;
@@ -20,8 +16,7 @@ export function completionProfile(
   return profile.kind === "ollama_fim" ||
     local ||
     profile.api_key !== null ||
-    Object.keys(profile.extra_headers).length > 0 ||
-    (kernel.kind === "tauri" && profile.api_key_env)
+    Object.keys(profile.extra_headers).length > 0
     ? profile
     : null;
 }

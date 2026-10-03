@@ -5,6 +5,8 @@ import type { Dialect } from "../kernel/generated/Dialect";
 import { MathEditor } from "./editor/MathEditor";
 import { Markdown } from "./TextCell";
 import { OutputView } from "./output/OutputView";
+import { AskCell } from "./AskCell";
+import { RepairControl } from "./assistant/RepairControl";
 interface Props {
   cell: UiCell;
   index: number;
@@ -166,12 +168,21 @@ export function Cell({
               } else selectedAction(action, source, dialect);
             }}
           />
+        ) : cell.kind === "Ask" ? (
+          <AskCell
+            key={cell.id}
+            cell={cell}
+            index={index}
+            controller={controller}
+            t={t}
+            busy={busy}
+          />
         ) : (
           <>
             <textarea
               className="prose-editor"
-              aria-label={`${cell.kind === "Text" ? t.textInput : t.question} ${index + 1}`}
-              placeholder={cell.kind === "Ask" ? t.question : t.text}
+              aria-label={`${t.textInput} ${index + 1}`}
+              placeholder={t.text}
               value={cell.source}
               onFocus={() => controller.select(cell.id)}
               onChange={(e) =>
@@ -180,9 +191,6 @@ export function Cell({
             />
             {cell.kind === "Text" && cell.source && (
               <Markdown source={cell.source} />
-            )}
-            {cell.kind === "Ask" && (
-              <p className="muted ask-hint">{t.askHint}</p>
             )}
           </>
         )}
@@ -208,6 +216,15 @@ export function Cell({
                 stepSelection: { cellId: cell.id, outIndex },
               });
             }}
+          />
+        )}
+        {cell.kind === "Math" && cell.status === "Error" && (
+          <RepairControl
+            key={`${cell.id}:${cell.revision}`}
+            cell={cell}
+            controller={controller}
+            t={t}
+            busy={busy}
           />
         )}
         {selection && (

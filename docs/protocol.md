@@ -3,8 +3,7 @@
 `om_kernel::protocol` defines the shared request, response and event schema.
 `om_kernel::Session` implements Evaluate, GetConfig, SetConfig, LoadNotebook,
 SaveNotebook and Interrupt in M11.2. Reactive notebook execution, specialized output views, plotting/editor helpers
-and shared LLM jobs are implemented. Actual CLI, WASM worker and desktop host
-clients remain the M13 integration tasks, using this same contract.
+and shared LLM jobs are implemented. CLI, WASM worker and desktop host clients use this same contract.
 
 Requests and responses use `Envelope<T> { id, body }`. Their numeric IDs match;
 events use ID zero. Browser clients must keep IDs and millisecond timeouts within
@@ -685,3 +684,11 @@ local draft until Save; incompatible routes are disabled on capability changes.
 Named/endpoint identity changes clear opaque or incompatible credential intents.
 Browser startup restores configuration data only, never notebook source, chat
 transcripts or first-use consent. Connection testing sends only a short ping.
+
+## Terminal preferences
+
+`KernelConfig.cli` is optional on the wire and defaults to
+`CliConfig { ai_hints: false }`. Serialization omits the entire section when
+AI hints are disabled, preserving legacy JSON/TOML defaults.
+`[cli] ai_hints = true` enables only the terminal background FIM hint cache;
+other hosts preserve this preference without starting terminal hints.

@@ -1,5 +1,25 @@
 # LLM integration
 
-The sans-IO provider design is specified in [PLAN.md §11](plan/PLAN.md#11-llm-层规格om-llm). LLM integration is not available yet.
+All three clients use the same kernel jobs and CAS source validator. Profiles are editable data and support OpenAI-compatible chat/FIM, Anthropic, DeepSeek FIM and Ollama FIM. Browser transport uses fetch; desktop and CLI use native HTTP. Models propose source; the CAS parses suggestions and executes only after an explicit action.
 
-API keys must not enter notebooks, logs or version control. Generated mathematics must be parsed by the CAS; suggestions require user confirmation before insertion or evaluation.
+API keys never belong in notebooks or logs. Native credentials resolve in the order configured environment variable, system vault, legacy plaintext fallback. The browser keeps credentials in memory unless the user explicitly chooses to remember them. Tests use synthetic credentials and loopback/intercepted HTTP.
+
+The terminal shares the desktop configuration location. Inspect it with `om config path` or `om config show`; show masks keys, headers and nested string parameters. `om config edit` opens VISUAL/EDITOR as literal arguments. Restart the terminal after editing. `--config PATH` selects an isolated file; `--no-config` disables durable configuration and history.
+
+```sh
+om llm test deepseek
+om --json llm test deepseek
+```
+
+A probe prints the actual provider reply and measured total/first-byte time; failures return a nonzero status. In the REPL, `? QUESTION` or `:ask QUESTION` displays parsed suggestions and waits for `y` to evaluate, `n` to cancel, or `e` to edit. Edit inserts source into the terminal buffer without evaluating it. `:explain` streams an explanation of the last retained computation. Requests disclose their destination and context and ask for confirmation.
+
+History hints are enabled by default. Background AI hints require explicit opt-in:
+
+```toml
+[cli]
+ai_hints = true
+```
+
+After first-use confirmation, a separate worker waits for 350 ms of idle input and requests the configured completion profile. Key handling reads only a nonblocking cache. Changed input cancels obsolete requests; default/omitted CLI preferences send no AI hint requests.
+
+The protocol, privacy controls and provider options are specified in [PLAN.md §11](plan/PLAN.md#11-llm-层规格om-llm) and [protocol.md](protocol.md).

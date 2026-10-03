@@ -473,6 +473,7 @@ fn export_bindings() {
         "NotebookFile",
         "CellInput",
         "KernelConfig",
+        "CliConfig",
         "ProfileConfig",
         "HttpRequest",
         "ChatMessage",
@@ -499,4 +500,25 @@ fn export_bindings() {
     let steps = std::fs::read_to_string(root.join("StepView.ts")).unwrap();
     assert!(!steps.contains("Expr"));
     assert!(!steps.contains("StepKind"));
+}
+
+#[test]
+fn cli_settings_default_to_disabled_and_roundtrip_only_when_enabled() {
+    let mut config = KernelConfig::default();
+    assert!(serde_json::to_value(&config).unwrap().get("cli").is_none());
+    config.cli.ai_hints = true;
+    let wire = serde_json::to_value(&config).unwrap();
+    assert_eq!(wire["cli"], json!({"ai_hints":true}));
+    assert!(
+        serde_json::from_value::<KernelConfig>(wire)
+            .unwrap()
+            .cli
+            .ai_hints
+    );
+    assert!(
+        toml::from_str::<KernelConfig>("[cli]\nai_hints = true")
+            .unwrap()
+            .cli
+            .ai_hints
+    );
 }

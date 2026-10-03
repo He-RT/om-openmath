@@ -46,10 +46,27 @@ pub enum Constants {
 #[ts(export_to = concat!(env!("CARGO_MANIFEST_DIR"), "/../../app/src/kernel/generated/"))]
 #[serde(default)]
 pub struct KernelConfig {
+    /// Terminal-only preferences, absent from legacy/default configuration.
+    #[serde(default, skip_serializing_if = "CliConfig::is_default")]
+    #[ts(optional, as = "Option<CliConfig>")]
+    pub cli: CliConfig,
     /// Evaluation and presentation settings.
     pub general: GeneralConfig,
     /// Profile routing and provider settings.
     pub llm: LlmConfig,
+}
+/// Nonblocking terminal AI history hints are explicitly opt-in.
+#[derive(Clone, Debug, Default, Serialize, Deserialize, TS)]
+#[ts(export_to=concat!(env!("CARGO_MANIFEST_DIR"),"/../../app/src/kernel/generated/"))]
+#[serde(default)]
+pub struct CliConfig {
+    /// Allow a background FIM cache instead of history hints after first-use confirmation.
+    pub ai_hints: bool,
+}
+impl CliConfig {
+    fn is_default(&self) -> bool {
+        !self.ai_hints
+    }
 }
 
 /// General settings from PLAN section 10.8.

@@ -11,7 +11,26 @@ name = "om"
 path = "src/main.rs"
 
 [dependencies]
-om-kernel.workspace = true
+om-kernel = {workspace=true,features=["native"]}
+om-core.workspace = true
+om-num.workspace = true
+om-parse.workspace = true
+om-format.workspace = true
+om-llm = {workspace=true,features=["http"]}
+serde_json.workspace = true
+toml.workspace = true
+directories.workspace = true
+reedline.workspace = true
+nu-ansi-term.workspace = true
+ariadne.workspace = true
+ctrlc.workspace = true
+tokio.workspace = true
+reqwest.workspace = true
 
 [lints]
 workspace = true
+
+[dev-dependencies]
+om-solve.workspace = true
+om-simplify.workspace = true
+serde.workspace = true

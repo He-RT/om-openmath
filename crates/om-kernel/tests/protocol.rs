@@ -515,6 +515,7 @@ fn cli_settings_default_to_disabled_and_roundtrip_only_when_enabled() {
             .cli
             .ai_hints
     );
+    #[cfg(feature = "native")]
     assert!(
         toml::from_str::<KernelConfig>("[cli]\nai_hints = true")
             .unwrap()

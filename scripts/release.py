@@ -39,6 +39,24 @@ def asset_names(version: str) -> set[str]:
     }
 
 
+def verify_payload_bytes(original: bytes, installed: bytes, kind: str) -> dict:
+    """只允许 Tauri 2.10 的唯一安装类型标记被打包器修改，其余逐字节相同。"""
+    marker = b"__TAURI_BUNDLE_TYPE_VAR_UNK"
+    stamps = {"nsis": b"NSS", "msi": b"MSI"}
+    if kind not in stamps or original.count(marker) != 1:
+        raise ValueError("安装类型或 Tauri 原始标记无效/不唯一")
+    expected = original.replace(marker, marker[:-3] + stamps[kind], 1)
+    if installed != expected:
+        raise ValueError("安装程序出现 Tauri 类型标记以外的字节差异")
+    return {
+        "kind": kind,
+        "bytes": len(installed),
+        "original_sha256": hashlib.sha256(original).hexdigest(),
+        "installed_sha256": hashlib.sha256(installed).hexdigest(),
+        "allowed_change": f"__TAURI_BUNDLE_TYPE_VAR_UNK -> {stamps[kind].decode()}",
+    }
+
+
 def finalize(root: Path, tag: str, revision: str) -> None:
     """拒绝缺失、额外、空文件或链接；生成大小与 SHA256 清单。"""
     version = verify_version(ROOT, tag)
@@ -62,11 +80,21 @@ def finalize(root: Path, tag: str, revision: str) -> None:
 
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("command", choices=["verify", "finalize"])
-    parser.add_argument("--tag", required=True)
+    parser.add_argument("command", choices=["verify", "finalize", "verify-payload"])
+    parser.add_argument("--tag")
     parser.add_argument("--root", type=Path, default=Path("release-assets"))
     parser.add_argument("--sha")
+    parser.add_argument("--original", type=Path)
+    parser.add_argument("--installed", type=Path)
+    parser.add_argument("--kind", choices=["nsis", "msi"])
     args = parser.parse_args()
+    if args.command == "verify-payload":
+        if not (args.original and args.installed and args.kind):
+            parser.error("verify-payload 需要 --original/--installed/--kind")
+        print(json.dumps(verify_payload_bytes(args.original.read_bytes(), args.installed.read_bytes(), args.kind), ensure_ascii=False, indent=2))
+        return
+    if not args.tag:
+        parser.error("需要 --tag")
     if args.command == "verify":
         print(verify_version(ROOT, args.tag))
     else:

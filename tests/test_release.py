@@ -67,6 +67,19 @@ class ReleaseTests(unittest.TestCase):
             with self.assertRaises(ValueError):
                 self.release.finalize(root, "v0.1.0-pre-alpha.1", "a" * 40)
 
+    def test_installed_payload_allows_only_the_exact_tauri_bundle_stamp(self):
+        marker = b"__TAURI_BUNDLE_TYPE_VAR_UNK"
+        original = b"code-before\0" + marker + b"\0code-after"
+        for kind, stamp in (("nsis", b"NSS"), ("msi", b"MSI")):
+            installed = original.replace(marker, marker[:-3] + stamp)
+            self.release.verify_payload_bytes(original, installed, kind)
+            with self.assertRaises(ValueError):
+                self.release.verify_payload_bytes(original, installed[:-1] + b"X", kind)
+            with self.assertRaises(ValueError):
+                self.release.verify_payload_bytes(original, original, kind)
+        with self.assertRaises(ValueError):
+            self.release.verify_payload_bytes(original + marker, original + marker, "nsis")
+
 
 if __name__ == "__main__":
     unittest.main()

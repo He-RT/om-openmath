@@ -157,7 +157,6 @@ jobs:
           $version = $env:TAG.Substring(1)
           $nsis = Get-Item "target/release/bundle/nsis/OpenMath_${version}_x64-setup.exe"
           $msi = Get-Item "target/release/bundle/msi/OpenMath_${version}_x64_zh-CN.msi"
-          $payloadMismatch = $false
           foreach ($kind in @('nsis', 'msi')) {
             $installDir = "$env:RUNNER_TEMP\OpenMath-$kind"
             if ($kind -eq 'nsis') {
@@ -174,11 +173,9 @@ jobs:
             if (!(Test-Path $exe)) { throw "Missing installed app: $exe" }
             $diagnostics = "app/test-results/windows-$kind"
             New-Item $diagnostics -ItemType Directory -Force | Out-Null
-            $expected = Get-FileHash "target/$kind-payload.exe"
-            $actual = Get-FileHash $exe
-            @{ expected = $expected.Hash; actual = $actual.Hash; installedPath = $exe } | ConvertTo-Json | Set-Content "$diagnostics/payload.json"
             Copy-Item $exe "$diagnostics/installed.exe"
-            if ($actual.Hash -ne $expected.Hash) { $payloadMismatch = $true }
+            python scripts/release.py verify-payload --original "target/$kind-payload.exe" --installed $exe --kind $kind > "$diagnostics/payload.json"
+            if ($LASTEXITCODE -ne 0) { throw "Installed $kind payload verification failed" }
             $stdout = "$env:RUNNER_TEMP\openmath-startup-$kind.stdout.log"
             $stderr = "$env:RUNNER_TEMP\openmath-startup-$kind.stderr.log"
             $appProcess = Start-Process $exe -PassThru -RedirectStandardOutput $stdout -RedirectStandardError $stderr
@@ -207,7 +204,6 @@ jobs:
             }
             if ($uninstall.ExitCode -notin @(0, 3010)) { throw "Uninstaller $kind failed" }
           }
-          if ($payloadMismatch) { throw 'Installed executable differs from its installer build snapshot; inspect payload evidence before publishing' }
       - run: cargo clippy --workspace --all-targets --locked -- -D warnings
       - run: cargo test --workspace --locked
       - run: python -m unittest discover -s tests -v

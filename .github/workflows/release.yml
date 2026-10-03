@@ -87,7 +87,7 @@ jobs:
       - run: python -m unittest discover -s tests -v
       - name: 校验协议绑定
         run: |
-          cargo test -p om-kernel export_bindings --locked
+          cargo test -p om-kernel --test protocol export_bindings --locked
           git diff --exit-code app/src/kernel/generated
           test -z "$(git ls-files --others --exclude-standard app/src/kernel/generated)"
       - run: cargo build -p om-cli --release --locked
@@ -149,8 +149,13 @@ jobs:
               $install = Start-Process msiexec.exe -ArgumentList @('/i', $msi.FullName, '/qn', '/norestart', "INSTALLDIR=$installDir", '/l*v', "$env:RUNNER_TEMP\openmath-msi.log") -PassThru -Wait
             }
             if ($install.ExitCode -notin @(0, 3010)) { throw "Installer $kind failed: $($install.ExitCode)" }
+            if ($kind -eq 'msi') {
+              # WiX intentionally reuses a previous NSIS/MSI location from AppSearch.
+              $installDir = (Get-ItemProperty 'HKCU:\Software\openmath\OpenMath' -Name InstallDir -ErrorAction Stop).InstallDir
+            }
             $exe = Join-Path $installDir 'om-desktop.exe'
             if (!(Test-Path $exe)) { throw "Missing installed app: $exe" }
+            if ((Get-FileHash $exe).Hash -ne (Get-FileHash 'target/release/om-desktop.exe').Hash) { throw "Installed $kind executable differs from the built payload" }
             $stdout = "$env:RUNNER_TEMP\openmath-startup-$kind.stdout.log"
             $stderr = "$env:RUNNER_TEMP\openmath-startup-$kind.stderr.log"
             $appProcess = Start-Process $exe -PassThru -RedirectStandardOutput $stdout -RedirectStandardError $stderr

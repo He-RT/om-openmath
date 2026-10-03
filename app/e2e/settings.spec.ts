@@ -57,7 +57,7 @@ test("real draft connection test does not save; settings persist metadata and on
   await page
     .getByRole("button", { name: "Save AI settings", exact: true })
     .click();
-  await expect(page.getByRole("status")).toContainText("AI settings saved");
+  await expect(page.getByRole("status").filter({ hasText: /^AI settings saved$/ })).toHaveText("AI settings saved");
   const stored = await page.evaluate(() =>
     localStorage.getItem("openmath-settings-v1"),
   );
@@ -81,7 +81,7 @@ test("real draft connection test does not save; settings persist metadata and on
   await page
     .getByRole("button", { name: "Save AI settings", exact: true })
     .click();
-  await expect(page.getByRole("status")).toContainText("AI settings saved");
+  await expect(page.getByRole("status").filter({ hasText: /^AI settings saved$/ })).toHaveText("AI settings saved");
   expect(
     await page.evaluate(() => localStorage.getItem("openmath-settings-v1")),
   ).toContain("synthetic-settings-key");
@@ -100,7 +100,7 @@ test("real draft connection test does not save; settings persist metadata and on
   await page
     .getByRole("button", { name: "Save AI settings", exact: true })
     .click();
-  await expect(page.getByRole("status")).toContainText("AI settings saved");
+  await expect(page.getByRole("status").filter({ hasText: /^AI settings saved$/ })).toHaveText("AI settings saved");
   expect(
     await page.evaluate(() => localStorage.getItem("openmath-settings-v1")),
   ).not.toContain("synthetic-settings-key");
@@ -150,7 +150,7 @@ for (const width of [375, 1280])
     await page
       .getByRole("button", { name: "Save AI settings", exact: true })
       .click();
-    await expect(page.getByRole("status")).toContainText("AI settings saved");
+    await expect(page.getByRole("status").filter({ hasText: /^AI settings saved$/ })).toHaveText("AI settings saved");
     await page.getByRole("tab", { name: "AI models", exact: true }).click();
     await page.screenshot({
       path: `test-results/settings-${width}-light.png`,
@@ -202,7 +202,7 @@ test("explicit keyless remote profile can be saved and used without disabling it
   await page
     .getByRole("button", { name: "Save AI settings", exact: true })
     .click();
-  await expect(page.getByRole("status")).toContainText("AI settings saved");
+  await expect(page.getByRole("status").filter({ hasText: /^AI settings saved$/ })).toHaveText("AI settings saved");
   await page
     .getByRole("dialog")
     .getByRole("button", { name: "Close", exact: true })

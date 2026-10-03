@@ -3,13 +3,14 @@
 The first pre-alpha implements the planned M0–M13 path: shared CAS/kernel,
 terminal REPL, native notebook, production WASM notebook, configurable AI,
 source notebook files, exports and local distribution packages.
-This record describes the final local checks. [CI](https://github.com/He-RT/om-openmath/actions/workflows/ci.yml) enforces the repository gates on dev.
+This record describes the final local checks. [CI](https://github.com/He-RT/om-openmath/actions/workflows/ci.yml) enforces the repository gates and both development/production UI suites on dev.
 
 ## Verified gates
 
 | Requirement | Evidence |
 |---|---|
 | Rust quality and correctness | fmt/Clippy clean;878 workspace tests pass;3 workspace policy tests pass |
+| Editor/constructor latency | warm previews up to1000 characters finish below5ms (observed max0.564ms); release1000-term addition stays below10ms |
 | Pure target | kernel builds for wasm32-unknown-unknown;14 pure protocol tests pass |
 | Dependency policy | locked cargo-deny succeeds; no new third-party runtime dependency |
 | Protocol |56 generated TypeScript files have no drift |
@@ -64,7 +65,7 @@ through its native picker and recomputes these actual results.
 An isolated native configuration and synthetic loopback server exercise a real
 probe (pong and first-byte/total timings), streaming explanation, parsed Ask
 proposal and explicit execution returning±2. Ghost text appears after consent;
-Tab inserts its exact source without running it. The same UI behaviors, model
+Tab inserts its exact source without running it. Actual terminal PTY acceptance also confirms colored Wolfram input, In/Out prompts, multiline bracket continuation and exact2/3 and±2 results. The same UI behaviors, model
 draft/save/privacy controls, plots, cancellation/recovery and light/dark/Chinese
 layouts are covered against real production WASM assets. Test fixture setup uses
 normal saved-browser configuration rather than development-module replacement.

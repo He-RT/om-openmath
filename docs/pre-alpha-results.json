@@ -435,5 +435,7 @@
   "frontend_unit_passed": 59,
   "development_browser_passed": 29,
   "production_ui_passed": 27,
-  "production_performance_passed": 1
+  "production_performance_passed": 1,
+  "warm_preview_maximum_ms": 0.563833,
+  "interactive_cli_pty_verified": true
 }

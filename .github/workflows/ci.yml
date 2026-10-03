@@ -68,6 +68,8 @@ jobs:
       - run: npm run build
       - run: npx playwright install --with-deps chromium
       - run: npm run test:e2e
+      - name: Test production static notebook
+        run: OPENMATH_E2E_PREVIEW=1 npm run test:e2e
 
   dependencies:
     runs-on: ubuntu-latest

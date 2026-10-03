@@ -8,6 +8,7 @@ import './styles/output.css';
 import './styles/steps.css';
 import './styles/plot.css';
 import './styles/assistant.css';
+import './styles/settings.css';
 import './styles/responsive.css';
 import { KernelProvider } from './kernel/provider';
 

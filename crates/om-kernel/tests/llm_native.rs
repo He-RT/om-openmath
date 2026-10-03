@@ -208,6 +208,7 @@ async fn native_http_cancellation_and_status_error_remain_session_results() {
         .handle(Request::LlmTestProfile {
             request_id: "cancel".into(),
             profile: "deepseek".into(),
+            config: None,
         })
         .0
     else {

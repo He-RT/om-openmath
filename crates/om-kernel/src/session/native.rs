@@ -7,6 +7,19 @@ use crate::{
 use om_num::ctx::Clock;
 use std::sync::Arc;
 impl Session {
+    /// Resolve ephemeral draft credentials as submitted, with no persistence.
+    pub fn resolved_draft_key(
+        &self,
+        profile: &crate::config::ProfileConfig,
+    ) -> Result<Option<SecretKey>, ConfigError> {
+        if let Some(store) = &self.config_store {
+            return store.resolve_submitted_key(&self.config, profile);
+        }
+        if profile.api_key.as_deref() == Some("***") {
+            return self.resolved_profile_key(&profile.name);
+        }
+        Ok(profile.api_key.clone().map(SecretKey))
+    }
     /// Update the actual vault for a configured profile, preserving environment/file precedence.
     pub fn set_profile_secret(&self, name: &str, key: Option<&str>) -> Result<(), ConfigError> {
         if !self.config.llm.profiles.iter().any(|p| p.name == name) {

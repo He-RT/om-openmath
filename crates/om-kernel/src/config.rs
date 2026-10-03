@@ -104,6 +104,13 @@ pub struct LlmConfig {
 #[ts(export_to = concat!(env!("CARGO_MANIFEST_DIR"), "/../../app/src/kernel/generated/"))]
 #[serde(default)]
 pub struct ProfileConfig {
+    /// UI authentication intent; false permits explicitly configured keyless remote services.
+    #[serde(
+        default = "requires_key_default",
+        skip_serializing_if = "requires_key_is_default"
+    )]
+    #[ts(optional, type = "boolean")]
+    pub requires_api_key: bool,
     /// Unique routing name.
     pub name: String,
     /// Provider protocol.
@@ -151,9 +158,16 @@ impl Default for GeneralConfig {
         }
     }
 }
+fn requires_key_default() -> bool {
+    true
+}
+fn requires_key_is_default(value: &bool) -> bool {
+    *value
+}
 impl Default for ProfileConfig {
     fn default() -> Self {
         Self {
+            requires_api_key: true,
             name: String::new(),
             kind: ProviderKind::OpenaiChat,
             base_url: String::new(),

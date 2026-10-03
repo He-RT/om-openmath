@@ -252,6 +252,19 @@ fn explanation_output_selection_is_optional_without_changing_legacy_shape() {
 }
 
 #[test]
+fn draft_probe_and_explicit_keyless_profiles_extend_legacy_wire_shapes() {
+    let mut draft = config()["llm"]["profiles"][0].clone();
+    draft["requires_api_key"] = json!(false);
+    roundtrip::<om_kernel::config::ProfileConfig>(draft.clone());
+    roundtrip::<Request>(
+        json!({"type":"llm_test_profile","request_id":"draft","profile":"deepseek","config":draft}),
+    );
+    roundtrip::<Request>(
+        json!({"type":"llm_test_profile","request_id":"saved","profile":"deepseek"}),
+    );
+}
+
+#[test]
 fn actual_recovery_metadata_has_source_only_files_and_separate_variants() {
     roundtrip::<Request>(json!({"type":"get_notebook_state"}));
     roundtrip::<Request>(json!({"type":"restore_definitions"}));

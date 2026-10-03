@@ -6,6 +6,10 @@ import type { ProviderKind } from "./ProviderKind";
  */
 export type ProfileConfig = {
 /**
+ * UI authentication intent; false permits explicitly configured keyless remote services.
+ */
+requires_api_key?: boolean,
+/**
  * Unique routing name.
  */
 name: string,

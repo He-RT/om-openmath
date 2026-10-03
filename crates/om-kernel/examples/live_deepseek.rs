@@ -35,7 +35,7 @@ async fn main() {
         Err(_) => return,
     };
     for (id,request) in [
-        ("probe",Request::LlmTestProfile{request_id:"probe".into(),profile:"deepseek".into()}),
+        ("probe",Request::LlmTestProfile {request_id:"probe".into(),profile:"deepseek".into(), config: None}),
         ("translate",Request::LlmTranslate{request_id:"translate".into(),text:"Solve x squared equals 4 over the real numbers.".into(),cell_id:None}),
         ("complete",Request::LlmComplete{request_id:"complete".into(),prefix:"solve(x^2 == 4, ".into(),suffix:")".into(),dialect:Dialect::Modern}),
         ("chat",Request::LlmChat{request_id:"chat".into(),messages:vec![ChatMessage{role:Role::User,content:"Use the solve tool to solve x^2 == 4 over the reals and cite the returned CAS result.".into(),tool_calls:vec![],tool_call_id:None}]}),

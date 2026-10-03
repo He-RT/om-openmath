@@ -13,7 +13,8 @@ export function completionProfile(config: LlmConfig | null | undefined) {
   } catch {
     return null;
   }
-  return profile.kind === "ollama_fim" ||
+  return profile.requires_api_key === false ||
+    profile.kind === "ollama_fim" ||
     local ||
     profile.api_key !== null ||
     Object.keys(profile.extra_headers).length > 0

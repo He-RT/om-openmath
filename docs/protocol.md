@@ -662,3 +662,26 @@ merely declared environment variable. First-use consent remains data-scope
 specific for questions/symbol names, conversations/references and error diagnostics.
 Popup focus management has one listener lifetime with a current close callback;
 focus restoration cannot cause repeated source-cell selection/render loops.
+
+Settings can probe an unsaved profile with optional LlmTestProfile.config. The
+legacy omitted field retains named-profile behavior. A draft probe does not call
+SetConfig, write TOML/keychain, or change notebook definitions/history; native
+credential resolution models submitted env/key/mask/null intent without writes.
+The draft timeout is used by both native and browser transport. Probe UI shows
+actual response/first-byte/total timings and explicit failures/cancellation.
+
+ProfileConfig adds optional requires_api_key (default true, omitted when true)
+for UI authentication intent. Explicitly keyless remote compatible services can
+be configured without a fake empty key/header. It does not introduce model-name
+logic or bypass actual provider/endpoint/schema validation. Legacy JSON and
+TOML remain compatible. Metadata/public control parameters persist in browser
+settings; raw keys, headers and opaque advanced values require per-provider
+opt-in with a plaintext-storage disclosure. Opaque masks never become stored
+keys. Native SetConfig remains the real atomic configuration/vault write path.
+
+General settings now include dialect/constants/reactive/dependent execution/
+default steps/auto plot/timeout. Model CRUD and feature mapping operate on a
+local draft until Save; incompatible routes are disabled on capability changes.
+Named/endpoint identity changes clear opaque or incompatible credential intents.
+Browser startup restores configuration data only, never notebook source, chat
+transcripts or first-use consent. Connection testing sends only a short ping.

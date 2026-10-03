@@ -268,7 +268,8 @@ fn effective_profiles_capabilities_legacy_status_and_genuine_fix_explain_request
     assert!(matches!(
         s.handle(Request::LlmTestProfile {
             request_id: "probe".into(),
-            profile: "deepseek".into()
+            profile: "deepseek".into(),
+            config: None
         })
         .0,
         Response::LlmStarted { .. }

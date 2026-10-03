@@ -40,7 +40,9 @@ function Workspace({ controller }: { controller: NotebookController }) {
   const language = locale(state.config?.general.language);
   const t = messages(language);
   const [commands, setCommands] = useState(false);
-  const [preferences, setPreferences] = useState(false);
+  const [preferences, setPreferences] = useState<"general" | "models" | null>(
+    null,
+  );
   const fileInput = useRef<HTMLInputElement>(null);
   const [theme, setTheme] = useState(() => {
     try {
@@ -147,7 +149,7 @@ function Workspace({ controller }: { controller: NotebookController }) {
         onOpen={open}
         onNew={newNotebook}
         onCommands={() => setCommands(true)}
-        onSettings={() => setPreferences(true)}
+        onSettings={(ai) => setPreferences(ai ? "models" : "general")}
       />
       <div className="workspace-layout">
         <Notebook
@@ -156,7 +158,12 @@ function Workspace({ controller }: { controller: NotebookController }) {
           t={t}
           language={language}
         />
-        <Inspector state={state} controller={controller} t={t} onSettings={()=>setPreferences(true)}/>
+        <Inspector
+          state={state}
+          controller={controller}
+          t={t}
+          onSettings={() => setPreferences("models")}
+        />
       </div>
       {!state.panel && (
         <button
@@ -242,7 +249,7 @@ function Workspace({ controller }: { controller: NotebookController }) {
           { label: t.save, shortcut: "⌘S", run: save },
           { label: t.open, run: open },
           { label: t.newNotebook, run: newNotebook },
-          { label: t.settings, run: () => setPreferences(true) },
+          { label: t.settings, run: () => setPreferences("general") },
           {
             label: t.variables,
             run: () => controller.store.setState({ panel: "variables" }),
@@ -267,7 +274,8 @@ function Workspace({ controller }: { controller: NotebookController }) {
               /* Theme remains in memory. */
             }
           }}
-          onClose={() => setPreferences(false)}
+          initialTab={preferences}
+          onClose={() => setPreferences(null)}
         />
       )}
     </div>

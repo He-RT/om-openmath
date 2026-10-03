@@ -196,6 +196,36 @@ impl ConfigStore {
     pub fn resolve_key(&self, profile: &ProfileConfig) -> Result<Option<SecretKey>, ConfigError> {
         credentials::resolve(profile, self.credentials.as_ref())
     }
+    /// Resolve submitted probe intent without changing the vault or fallback provenance.
+    pub fn resolve_submitted_key(
+        &self,
+        current: &KernelConfig,
+        profile: &ProfileConfig,
+    ) -> Result<Option<SecretKey>, ConfigError> {
+        if profile.api_key.as_deref() == Some("***") {
+            let mut matches = current
+                .llm
+                .profiles
+                .iter()
+                .filter(|p| p.name == profile.name);
+            let old = matches.next().ok_or(ConfigError::MissingProfile)?;
+            if matches.next().is_some() {
+                return Err(ConfigError::MissingProfile);
+            }
+            let mut resolved = profile.clone();
+            resolved.api_key = old.api_key.clone();
+            return credentials::resolve(&resolved, self.credentials.as_ref());
+        }
+        if self.policy == KeyStorage::Plaintext && profile.api_key.is_some() {
+            return self.resolve_key(profile);
+        }
+        if let Some(name) = &profile.api_key_env
+            && let Some(value) = self.credentials.environment(name)?
+        {
+            return Ok(Some(SecretKey(value)));
+        }
+        Ok(profile.api_key.clone().map(SecretKey))
+    }
     /// Represent actual credential presence for wire masking without persisting resolved keys.
     pub fn presentation(&self, config: &KernelConfig) -> Result<KernelConfig, ConfigError> {
         let mut result = config.clone();

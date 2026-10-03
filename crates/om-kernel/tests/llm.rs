@@ -328,6 +328,7 @@ fn real_probe_byte_timing_cancellation_and_route_errors() {
         Request::LlmTestProfile {
             request_id: "probe".into(),
             profile: "deepseek".into(),
+            config: None,
         },
     );
     let body: Value = serde_json::from_str(&http.body).unwrap();

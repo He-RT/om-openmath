@@ -6,6 +6,7 @@ import type { KernelConfig } from "./KernelConfig";
 import type { Language } from "./Language";
 import type { NotebookFile } from "./NotebookFile";
 import type { PlotRequest } from "./PlotRequest";
+import type { ProfileConfig } from "./ProfileConfig";
 
 /**
  * A client operation; runtime dispatch is implemented by Session.
@@ -170,7 +171,11 @@ request_id: string,
 /**
  * Configured profile name.
  */
-profile: string, } | { "type": "llm_cancel",
+profile: string,
+/**
+ * Ephemeral draft probe; omitted uses the actual saved named profile.
+ */
+config?: ProfileConfig, } | { "type": "llm_cancel",
 /**
  * Job identifier.
  */

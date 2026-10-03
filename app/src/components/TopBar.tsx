@@ -10,7 +10,7 @@ interface Props {
   onOpen: () => void;
   onNew: () => void;
   onCommands: () => void;
-  onSettings: () => void;
+  onSettings: (ai?: boolean) => void;
 }
 export function TopBar({
   state,
@@ -98,7 +98,11 @@ export function TopBar({
         >
           ⌘K
         </button>
-        <button aria-label={t.settings} title={t.settings} onClick={onSettings}>
+        <button
+          aria-label={t.settings}
+          title={t.settings}
+          onClick={() => onSettings()}
+        >
           ☷
         </button>
         <button
@@ -108,7 +112,7 @@ export function TopBar({
             ai.error ??
             (ai.active ? t.aiWorking : configured ? t.ready : t.configureAI)
           }
-          onClick={onSettings}
+          onClick={() => onSettings(true)}
         >
           <span className="ai-status-dot" />
           AI

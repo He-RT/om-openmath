@@ -30,25 +30,60 @@ impl Session {
                 "No profile configured for this AI feature",
             ));
         }
-        let mut matches = self.config.llm.profiles.iter().filter(|p| &p.name == name);
-        let p = matches
-            .next()
-            .ok_or_else(|| self.localized("找不到模型配置", "Configured profile was not found"))?;
-        if matches.next().is_some() {
-            return Err("Ambiguous profile name".into());
-        }
+        let draft = match request {
+            Request::LlmTestProfile {
+                config: Some(config),
+                ..
+            } => Some(config),
+            _ => None,
+        };
+        let p = if let Some(config) = draft {
+            if &config.name != name {
+                return Err("Draft profile name does not match".into());
+            }
+            config
+        } else {
+            let mut matches = self.config.llm.profiles.iter().filter(|p| &p.name == name);
+            let p = matches.next().ok_or_else(|| {
+                self.localized("找不到模型配置", "Configured profile was not found")
+            })?;
+            if matches.next().is_some() {
+                return Err("Ambiguous profile name".into());
+            }
+            p
+        };
         if feature == Feature::Chat && !p.supports_tools {
             return Err(self.localized(
                 "助手模型需要支持工具调用",
                 "Assistant profile must support tool calls",
             ));
         }
-        let api_key = p.api_key.clone();
+        let api_key = if draft.is_some() && p.api_key.as_deref() == Some("***") {
+            let mut matches = self
+                .config
+                .llm
+                .profiles
+                .iter()
+                .filter(|old| old.name == p.name);
+            let old = matches
+                .next()
+                .ok_or("A masked draft requires an existing profile")?;
+            if matches.next().is_some() {
+                return Err("Ambiguous profile name".into());
+            }
+            old.api_key.clone()
+        } else {
+            p.api_key.clone()
+        };
         #[cfg(feature = "native")]
         let api_key = if self.llm.target == Target::Native {
-            self.resolved_profile_key(name)
-                .map_err(|e| e.to_string())?
-                .map(|k| k.into_string())
+            (if draft.is_some() {
+                self.resolved_draft_key(p)
+            } else {
+                self.resolved_profile_key(name)
+            })
+            .map_err(|e| e.to_string())?
+            .map(|k| k.into_string())
         } else {
             api_key
         };

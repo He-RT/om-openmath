@@ -168,6 +168,10 @@ pub enum Request {
         request_id: RequestId,
         /// Configured profile name.
         profile: String,
+        /// Ephemeral draft probe; omitted uses the actual saved named profile.
+        #[serde(default, skip_serializing_if = "Option::is_none")]
+        #[ts(optional)]
+        config: Option<crate::config::ProfileConfig>,
     },
     /// Cancel an active job.
     LlmCancel {

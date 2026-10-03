@@ -8,6 +8,7 @@ import type { NotebookState } from "../kernel/generated/NotebookState";
 import type { NotebookFile } from "../kernel/generated/NotebookFile";
 import { locale } from "../i18n";
 import { observeKernel } from "../kernel/observedClient";
+import { mergeConfig } from "../kernel/mirror";
 import type { ChatTurnView } from "./assistant";
 export interface UiCell extends CellInput {
   revision: number;
@@ -252,6 +253,26 @@ export class NotebookController {
       this.store.getState().cells.find((c) => c.id === id)?.revision ===
       revision
     );
+  }
+  async configureLlm(llm: KernelConfig["llm"]): Promise<KernelConfig> {
+    const old = this.store.getState().config;
+    if (!old) throw new Error("Kernel configuration unavailable");
+    const submitted = { ...old, llm };
+    await this.flush();
+    const result = await this.kernel.request({
+      type: "set_config",
+      config: submitted,
+    });
+    if (result.type === "error") throw new Error(result.message);
+    const effective = await this.kernel.request({ type: "get_config" });
+    if (effective.type !== "config")
+      throw new Error("Kernel configuration unavailable");
+    const config =
+      this.kernel.kind === "wasm"
+        ? mergeConfig(effective.config, mergeConfig(submitted, old))
+        : effective.config;
+    this.store.setState({ config });
+    return config;
   }
   async run(id: string, mode: "stay" | "next" | "insert" = "stay") {
     const cell = this.store.getState().cells.find((c) => c.id === id);

@@ -127,7 +127,23 @@ jobs:
       - run: rustup show active-toolchain
       - run: cargo install wasm-bindgen-cli --version 0.2.129 --locked
       - run: npm ci --prefix app
-      - run: npm run tauri --prefix app -- build
+      - name: 分别构建安装包并保留各自程序输入
+        run: |
+          npm run tauri --prefix app -- build --bundles nsis
+          if ($LASTEXITCODE -ne 0) { throw 'NSIS build failed' }
+          Copy-Item target/release/om-desktop.exe target/nsis-payload.exe
+          npm run tauri --prefix app -- build --bundles msi
+          if ($LASTEXITCODE -ne 0) { throw 'MSI build failed' }
+          Copy-Item target/release/om-desktop.exe target/msi-payload.exe
+      - uses: actions/upload-artifact@v4
+        with:
+          name: windows-installer-inputs
+          path: |
+            target/nsis-payload.exe
+            target/msi-payload.exe
+            target/release/bundle/nsis/*-setup.exe
+            target/release/bundle/msi/*.msi
+          if-no-files-found: error
       - name: 安装 EXE 和 MSI 并验证真实中文窗口
         run: |
           $ErrorActionPreference = 'Stop'
@@ -141,6 +157,7 @@ jobs:
           $version = $env:TAG.Substring(1)
           $nsis = Get-Item "target/release/bundle/nsis/OpenMath_${version}_x64-setup.exe"
           $msi = Get-Item "target/release/bundle/msi/OpenMath_${version}_x64_zh-CN.msi"
+          $payloadMismatch = $false
           foreach ($kind in @('nsis', 'msi')) {
             $installDir = "$env:RUNNER_TEMP\OpenMath-$kind"
             if ($kind -eq 'nsis') {
@@ -155,7 +172,13 @@ jobs:
             }
             $exe = Join-Path $installDir 'om-desktop.exe'
             if (!(Test-Path $exe)) { throw "Missing installed app: $exe" }
-            if ((Get-FileHash $exe).Hash -ne (Get-FileHash 'target/release/om-desktop.exe').Hash) { throw "Installed $kind executable differs from the built payload" }
+            $diagnostics = "app/test-results/windows-$kind"
+            New-Item $diagnostics -ItemType Directory -Force | Out-Null
+            $expected = Get-FileHash "target/$kind-payload.exe"
+            $actual = Get-FileHash $exe
+            @{ expected = $expected.Hash; actual = $actual.Hash; installedPath = $exe } | ConvertTo-Json | Set-Content "$diagnostics/payload.json"
+            Copy-Item $exe "$diagnostics/installed.exe"
+            if ($actual.Hash -ne $expected.Hash) { $payloadMismatch = $true }
             $stdout = "$env:RUNNER_TEMP\openmath-startup-$kind.stdout.log"
             $stderr = "$env:RUNNER_TEMP\openmath-startup-$kind.stderr.log"
             $appProcess = Start-Process $exe -PassThru -RedirectStandardOutput $stdout -RedirectStandardError $stderr
@@ -184,6 +207,7 @@ jobs:
             }
             if ($uninstall.ExitCode -notin @(0, 3010)) { throw "Uninstaller $kind failed" }
           }
+          if ($payloadMismatch) { throw 'Installed executable differs from its installer build snapshot; inspect payload evidence before publishing' }
       - run: cargo clippy --workspace --all-targets --locked -- -D warnings
       - run: cargo test --workspace --locked
       - run: python -m unittest discover -s tests -v

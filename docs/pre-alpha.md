@@ -1,86 +1,51 @@
-# OpenMath 0.1.0 pre-alpha acceptance
+# 首个 pre-alpha 验收记录
 
-The first pre-alpha implements the planned M0–M13 path: shared CAS/kernel,
-terminal REPL, native notebook, production WASM notebook, configurable AI,
-source notebook files, exports and local distribution packages.
-This record describes the final local checks. [CI](https://github.com/He-RT/om-openmath/actions/workflows/ci.yml) enforces the repository gates and both development/production UI suites on dev.
+[English](pre-alpha.en.md) · [发行说明](release-0.1.0-pre-alpha.1.md)
 
-## Verified gates
+M0–M13 已实现共享 CAS/内核、终端、原生及生产 WASM 笔记本、可配置 AI、源码文件和导出。本地首轮验收对应 `a40d325`；最终 CI 选择器修复 `84d9daf` 的 [CI 37126375546](https://github.com/He-RT/om-openmath/actions/runs/37126375546) 全部通过。下表记录此前已完成证据，发行构建在同一版本提交上重新执行门禁。
 
-| Requirement | Evidence |
+## 已完成的本地门禁
+
+| 项目 | 证据 |
 |---|---|
-| Rust quality and correctness | fmt/Clippy clean;878 workspace tests pass;3 workspace policy tests pass |
-| Editor/constructor latency | warm previews up to1000 characters finish below5ms (observed max0.564ms); release1000-term addition stays below10ms |
-| Pure target | kernel builds for wasm32-unknown-unknown;14 pure protocol tests pass |
-| Dependency policy | locked cargo-deny succeeds; no new third-party runtime dependency |
-| Protocol |56 generated TypeScript files have no drift |
-| Frontend | Node26 lint/typecheck/build and59 unit tests pass |
-| Development browser |29 tests pass; explicit production performance test is skipped here |
-| Actual static dist |27 UI tests plus the53-row performance test pass |
-| Native authority/performance |53 cold om processes match original exact/700-bit numerical authority; each kernel calculation is below200ms |
-| WASM authority/performance |53 cold production workers match the same authority through independent native validation; each calculation is below1s |
-| Distribution | macOS arm64 .app/DMG built; final DMG checksum validates; Web zip includes deployable dist |
-| Credentials | no credential-shaped literals in tracked files; tests use loopback/intercepted providers |
+| Rust | fmt/Clippy 通过；878 工作区测试、3 仓库策略测试通过 |
+| 编辑/构造延迟 | 1000 字以内 warm preview <5 ms（最大 0.564 ms）；1000 项加法 <10 ms |
+| 纯 WASM | kernel 编译到 wasm32；14 纯协议测试通过 |
+| 依赖 | locked cargo-deny 通过；无新第三方运行依赖 |
+| 协议 | 56 个生成 TypeScript 文件无漂移 |
+| 前端 | Node 26 lint/typecheck/build，59 单元测试通过 |
+| 开发浏览器 | 29 项通过；生产性能项在开发套件跳过 |
+| 真实静态 dist | 27 界面测试及 53 行性能语料通过 |
+| 原生语料/性能 | 53 个冷启动 om 进程匹配原始精确/700-bit 权威检查，单项 <200 ms |
+| WASM 语料/性能 | 53 个冷启动生产 Worker 经独立原生验证，单项 <1 s |
+| 原生包 | Apple Silicon app/DMG 构建，DMG 校验通过 |
+| 凭据 | tracked 凭据形状扫描 0；测试仅使用合成服务 |
 
-Two tests are ignored in the normal Rust suite: the opt-in performance test
-inherited from earlier milestones and the production WASM authority runner
-which requires a generated artifact. The native release gate is compiled only
-for release and run explicitly. The actual release acceptance executes both
-new authority/performance runners successfully.
+正常 Rust 套件有两项显式 opt-in 忽略：早期性能项和需构建产物的生产 WASM 权威 runner。原生 release gate 只在 release 编译，实际验收显式执行新增的两个权威/性能 runner。
 
-## Measured performance and corrections
+## 性能与数学证据
 
-The final53-row release run reports a maximum native kernel time of
-119.914ms, below the200ms gate. The maximum production WASM time is
-145ms, below the1s gate. These are local measurements on the development
-M-series Mac, not a hardware-independent latency guarantee. Each native case
-starts a fresh process and each WASM case a fresh worker; automatic plotting is
-disabled for the comparison, with default verification/steps retained.
-Per-row data and the unchanged corpus digest are in [pre-alpha-results.json](pre-alpha-results.json).
+原生 53 行最终最大 119.914 ms，生产 WASM 最大 145 ms。这是开发机 M 系列 Mac 的本地测量，不是跨硬件延迟保证。每个案例冷启动进程/Worker，关闭自动图像，保留默认验证/步骤。逐行数据和未变的语料 digest 见 [pre-alpha-results.json](pre-alpha-results.json)。
 
-The initial quintic/cyclic-3 measurements were1256/5581ms. Profiling identified
-repeated root isolation, algebraic coordinate conversion/projection and an unused
-complex argument in integer-power overflow checks. Bounded caches retain only
-successful immutable proofs, with fresh interruption/deadline checks. Private
-exact expansion reduces recovered coordinate expressions without altering stored
-forms or steps. Exact zero/one and identical-complex-value identities avoid
-reconstruction. CBall.log_magnitude preserves the real logarithm enclosure and
-origin/range rejection while avoiding an unused argument computation.
+初次 quintic/cyclic-3 分别为 1256/5581 ms。profile 定位重复根隔离、代数坐标/投影及复数整数幂溢出检查中的无用辐角。修复使用有界成功证书缓存、每次新取消/期限检查、私有精确展开以及精确零/一/相同复值捷径；CBall.log_magnitude 保留真实包围及原点/范围拒绝。另有回归验证精确恢复的 1 不再显示伪微小虚部。
 
-A separate numeric projection regression proves that a recovered coordinate
-which is exactly1 is presented as real1 rather than a tiny spurious imaginary
-component. Original53 mathematical expectations and all source restrictions
-remain unchanged. Inline review checked degree/precision/cancellation bounds,
-constructor proofs, root ranks, principal branches, source poles, steps,
-readonly state and new runtime unwrap/unsafe usage.
+53 条数学期望、原始限制和分支未改。内联审查覆盖次数、精度、中断、构造证据、根顺序、极点、步骤、只读状态及 unwrap/unsafe。
 
-## Packaged native and production UI acceptance
+## 真实原生与生产 UI
 
-The actual OpenMath.app window was inspected through CUA. It shows exact−3/1
-solution cards for x²+2x=3, both highlighted intersections, live formula preview
-and recorded factorization/zero-product steps. A definition changed from a=2 to
-a=5 updates a+1 from3 to6. The final app also opens the saved source notebook
-through its native picker and recomputes these actual results.
+此前实际 OpenMath.app 窗口经 CUA 验证：x²+2x=3 的精确 −3/1、两交点、实时预览和真实因式分解/零乘积步骤；a=2→5 时 a+1 从 3→6。最终 app 用原生文件选择器打开保存的源码笔记本并重新计算。
 
-An isolated native configuration and synthetic loopback server exercise a real
-probe (pong and first-byte/total timings), streaming explanation, parsed Ask
-proposal and explicit execution returning±2. Ghost text appears after consent;
-Tab inserts its exact source without running it. Actual terminal PTY acceptance also confirms colored Wolfram input, In/Out prompts, multiline bracket continuation and exact2/3 and±2 results. The same UI behaviors, model
-draft/save/privacy controls, plots, cancellation/recovery and light/dark/Chinese
-layouts are covered against real production WASM assets. Test fixture setup uses
-normal saved-browser configuration rather than development-module replacement.
+独立配置和合成 loopback 服务验证真实 probe（pong、首字节/总耗时）、讲解流、解析后的 Ask 及显式运行 ±2、确认后的 ghost/Tab 只插入源码。真实终端 PTY 验证着色、In/Out、多行和精确结果。生产 WASM UI 验证同样模型设置、隐私、图像、中断/恢复、中英文及浅深主题。
 
-Native menus actually save source-only .omnb, export current results to Markdown,
-and write a standalone LaTeX document. The exported LaTeX source compiles with the
-built-in desktop compiler after its initial format-cache download. Unit tests
-verify TeX escaping, safe Markdown fences and omission of stale output. Notebook
-files exclude configuration, credentials, output caches and conversations.
+原生菜单保存源码 `.omnb`、导出当前结果 Markdown/LaTeX；独立 TeX 经内置编译器成功编译。单元测试验证转义、动态 Markdown fence 和过期结果排除。文件不含配置、凭据、对话或输出缓存。
 
-Previous user-authorized DeepSeek smoke testing verified the shared-kernel
-probe/translation/completion/chat route (P103). Automated and packaged acceptance
-uses synthetic providers; no live key is stored in this repository.
+此前授权 DeepSeek 测试通过共享 kernel 的 probe/翻译/FIM/chat；自动化和打包验收只使用合成提供商，未保存真实密钥。
 
-## Reproduce
+## Windows 与 GitHub 发行门禁
+
+版本改为 `0.1.0-pre-alpha.1`，同源 Windows EXE/MSI、macOS app/DMG/CLI、Web 包由[发布工作流](../.github/workflows/release.yml)生成。Windows 验收分别安装两种包，Playwright 通过仅 CI 开启的 WebView2 CDP 连接真实 Tauri 窗口，检查中文、精确根、步骤及响应式，再卸载。全部 job 和同一 SHA 的 CI 成功后才公开预发行版；不能用本地 macOS 测试冒充 Windows 证据。实际运行与截图见该工作流的 Actions 记录及 `windows-install-evidence` artifact。
+
+## 复现
 
 ```sh
 cargo fmt --all -- --check
@@ -99,16 +64,6 @@ cd ..
 cargo test -p om-cli --release --test corpus production_wasm_results_match --locked -- --ignored
 ```
 
-The production performance test writes target/pre-alpha/wasm-corpus.json for
-independent original-authority validation. Frontend commands require the pinned
-Node26 and matching wasm-bindgen0.2.129. Performance uses Python3.11+ to read the
-authoritative TOML fixture. Optimized Rust test builds keep debug/overflow checks.
+生产性能项写 `target/pre-alpha/wasm-corpus.json`，供独立原始权威验证。需要 Node 26、wasm-bindgen 0.2.129、Python 3.11+；优化测试仍保留 debug/溢出检查。
 
-Local packages are target/release/bundle/macos/OpenMath.app,
-target/release/bundle/dmg/OpenMath_0.1.0_aarch64.dmg,
-target/release/bundle/web/OpenMath-web-0.1.0.zip and target/release/om.
-Each Web/native distribution retains license notices for829 locked packages and
-the certificate-data license. The current macOS packages are unsigned;
-Windows/Linux installers are not verified. Browser providers require CORS, and
-Unicode source in a LaTeX export may require a suitable Unicode font setup.
-The bounded solving subset and unsupported cases are documented in [solve.md](solve.md).
+当前 macOS/Windows 包未签名，macOS 未公证；Linux 安装包不在本次发行范围。各分发包保留锁定依赖的许可证和证书数据许可。Web 模型需 CORS，Unicode TeX 可能需要相应字体/引擎。边界见[求解指南](solve.md)，下载与校验见[安装指南](install.md)。

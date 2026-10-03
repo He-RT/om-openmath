@@ -1,157 +1,76 @@
-# Kernel JSON protocol
+# 内核 JSON 协议
 
-`om_kernel::protocol` defines the shared request, response and event schema.
-`om_kernel::Session` implements Evaluate, GetConfig, SetConfig, LoadNotebook,
-SaveNotebook and Interrupt in M11.2. Reactive notebook execution, specialized output views, plotting/editor helpers
-and shared LLM jobs are implemented. CLI, WASM worker and desktop host clients use this same contract.
+[English / 历史详细参考](protocol.en.md) · [文档导航](README.md)
 
-Requests and responses use `Envelope<T> { id, body }`. Their numeric IDs match;
-events use ID zero. Browser clients must keep IDs and millisecond timeouts within
-`Number.MAX_SAFE_INTEGER`. LLM jobs have separate string `request_id` values.
+CLI、WASM Worker、Tauri 原生宿主共享 `om_kernel::Session` 及 `om_kernel::protocol`。当前实现覆盖求值、响应式笔记本、编辑辅助、绘图、配置持久化和完整 LLM 任务。协议的准确字段以 [Rust 定义](../crates/om-kernel/src/protocol.rs)及[生成的 TypeScript](../app/src/kernel/generated/)为准；以下按当前实现整理，不按历史里程碑推断功能状态。
+
+## 消息与表示
+
+请求、响应使用 `Envelope<T> {id,body}`；响应 ID 与请求一致，事件 ID 为零。浏览器相关数字 ID 和毫秒超时不得超过 `Number.MAX_SAFE_INTEGER`。LLM 另用字符串 `request_id`，客户端不要复用已结束的 ID。
 
 ```json
 {"id":42,"body":{"type":"evaluate","cell_id":"a","source":"solve(x^2=2,x)","dialect":"Modern"}}
 ```
 
-Operation tags use snake_case. Parser dialects are `Modern`, `Wolfram`, `Auto`;
-cell kinds/statuses, token classes and message levels retain their capitalized
-Rust spellings. Configuration dialects use `modern`, `wolfram`, `auto` as in the
-TOML configuration example. Solution kinds are `finite`, `all`, `none`, `region`.
-Verification retains the solver representation: `"Exact"`, `"ByConstruction"`,
-`{"Numeric":{"digits":200}}` or `"Unverified"`.
+操作标签是 snake_case；解析方言为 `Modern` / `Wolfram` / `Auto`，配置方言为 `modern` / `wolfram` / `auto`。单元格类型/状态、token 类别和消息等级保留 Rust 大小写。解集 kind 为 `finite`、`all`、`none`、`region`；验证为 `"Exact"`、`"ByConstruction"`、`{"Numeric":{"digits":200}}` 或 `"Unverified"`。
 
-`Response::Preview` is flattened into the tagged object:
+可选值通常序列化为 null；为保持旧 JSON 兼容，部分新增可选字段在不存在时省略。元组/坐标/范围为数组，参数映射键为字符串。多数输入字段必需，Option 可省略，配置节按文档默认；未声明的工具/JSON 能力为 false。
+
+Preview 扁平化为标签对象：
 
 ```json
 {"type":"preview","latex":"x^2","diagnostics":[],"tokens":[],"dialect":"Modern","actions":[]}
 ```
 
-Optional fields serialize as null. Tuples (token/span pairs, coordinates and
-ranges) serialize as arrays; parameter maps have string keys. Most DTO fields
-are required on input. Option fields may be omitted, and configuration sections
-and profile options accept documented defaults. Configuration defaults follow
-PLAN §10.8; an omitted capability is false, so a custom provider must explicitly
-advertise tool and JSON support.
+## 请求职责
 
-`StepsView.root` contains `StepView` values with stable IDs, rule IDs, levels,
-title keys, LaTeX parameter maps, before/after LaTeX arrays and children. No
-expression tree or computational `StepKind` crosses the wire. Owned diagnostic
-adapters preserve the parser JSON without leaking incoming codes to static memory.
+| 请求组 | 契约 |
+|---|---|
+| Evaluate / RunAll / Interrupt | 真实求值、批量运行和中断；Text/Ask 不走数学 Evaluate |
+| UpsertCell / DeleteCell / MoveCell | 源码同步、删除及最终零基索引移动 |
+| LoadNotebook / SaveNotebook / RenameNotebook | 源码文件载入、保存和不重置定义的标题修改 |
+| GetNotebookState / RestoreDefinitions | 源码、静态依赖、状态、实际定义顺序和循环；恢复只运行定义单元格 |
+| GetConfig / SetConfig / SetSystemLanguage | 配置读写及临时宿主语言；Auto 不被改为固定语言 |
+| GetVariables / Complete / Hover / Preview | 实际定义、无求值编辑服务 |
+| InspectExpression / SamplePlot | 有界只读表达式检查和内核采样 |
+| LlmTranslate / Explain / Complete / Chat / FixError / TestProfile | 共享模型任务和草稿连接测试 |
+| LlmHttpChunk / End / Cancel | 浏览器传输反馈、终止及取消 |
 
-Notebook files contain only `version` (currently 1), `title` and ordered `cells`.
-Each cell contains `id`, `kind`, `source`, `dialect`. Configuration, API keys,
-runtime definitions and cached outputs are excluded from the file schema.
+具体 snake_case 标签、必需字段和返回联合类型参见生成类型，不能从展示名称自行构造协议。
 
-A present `ProfileConfig.api_key` serializes and formats for Debug as `"***"`.
-Before installing a submitted configuration, call `merge_redacted_keys` with
-the current configuration: masks retain the existing key by profile name, while
-null/missing keys clear it. A mask for a new profile resolves to no key. Real
-credentials in a browser `HttpRequest` belong to the explicit transport request;
-configuration masking does not alter HTTP headers. Native persistence and key
-resolution use the explicit store binding described below.
+## 源码文件与求值
 
-Session parses each Math cell with its configured constants and actual function
-definitions, then passes raw statements to the existing Evaluator. Parse errors
-prevent any statement in that cell from executing. An evaluation failure stops
-later statements and retains earlier effects; suppressed statements still enter
-history and retain messages. The cell's exec_count is its last successful
-statement index. `Cell::input(index)` and `Cell::steps(index)` expose the actual
-raw statement and solver derivation through Rust, including suppressed outputs.
-Actual solver results are packed as Solutions with genuine verification,
-conditions, bindings and optional renderable derivations. Other values retain
-accurate Expr/Error items; explicit plotting is sampled by the shared compiler; supported solver results also carry actual automatic visualization requests.
+NotebookFile 只含 `version`（当前为 1）、`title`、有序 `cells`；每个单元格仅 `id`、`kind`、`source`、`dialect`。配置、密钥、对话、定义和输出缓存不写入文件。
 
-LoadNotebook validates version 1 and unique nonempty IDs before replacing state.
-It resets definitions/history and cached outputs, while preserving configuration.
-Restored Math/Ask cells are Stale and Text cells are Done. Text/Ask Evaluate
-requests are rejected; natural-language requests will use LLM handlers.
-LLM handlers remain the subsequent M12 milestone and
-return an explicit err.not_implemented error at this stage.
+LoadNotebook 原子校验版本和非空唯一 ID，再重置定义/历史/缓存，保留配置绑定并取消模型任务。Math/Ask 恢复为 Stale，Text 为 Done。RenameNotebook 不重置定义。
 
-Hosts supply an optional `Arc<dyn Clock>` for deadlines and timing. Without it,
-timing_ms is zero and the wall-clock deadline is disabled; step budgets and the
-shared cancellation flag still work. Each cell shares one Interrupt across all
-statements. Hosts can set interrupt_handle during synchronous execution. An initiating
-Math evaluation, SamplePlot, RunAll or automatic Delete cascade resets the previous flag
-once; automatic cells share it. Config/save/load/source-only edits do not.
-SetConfig validates profile-name uniqueness and resolves masks before installing
-settings. Kernel error strings retain stable err.* keys with Chinese/English text.
+每个数学单元格先完整解析，解析错误不执行任何语句。求值失败停止后续语句，保留此前真实副作用；隐藏输出仍进入历史并保留诊断。`exec_count` 是最后成功语句索引；`Cell::input/steps(index)` 暴露实际输入与推导。
 
-Generate bindings with `cargo test -p om-kernel export_bindings --locked`. All
-reachable types are committed under `app/src/kernel/generated/`. The derive
-export paths are fixed from each crate's manifest directory, because ts-rs 12's
-default base is `bindings/`. Do not edit generated files. CI regenerates them and
-checks both tracked differences and unexpected files; frontend typecheck and
-tests validate imports, discriminant narrowing and representative JSON shapes.
-The single export test also removes trailing line whitespace from ts-rs output;
-per-type automatic exporters are disabled to keep regeneration consistent.
+输出来自实际求解元数据，保留变量顺序、条件、重数、证据和步骤。普通列表/缓存值/无关包装/不支持结果保持 Expr，不冒充解卡片。SolveValues、NSolveValues、FindRoot、Reduce、Roots 同时保留实际结果形式与原始绑定/区域。关闭步骤不消除验证证据。
 
+## 响应式依赖与恢复
 
-Reactive Math cells analyze raw source without evaluation. Current `defines`
-contains potential assignment targets; `uses` includes free user function heads,
-excluding builtins, cell definitions and lexical pattern/function/iterator names.
-Live definition ownership is tracked separately from edited source and follows
-actual global evaluator writes, including partial effects before failure.
+源码分析不求值；defines/uses 包含潜在赋值目标和自由函数头，并排除内置及词法绑定。实际定义归属独立跟踪，失败前的真实写入也保留。
 
-With reactive enabled, a definition owned by another cell produces
-`err.multiple_definitions` before execution or clearing. Valid execution clears
-only this cell's live definitions. Changes propagate transitively through uses,
-with each topological layer in document order. True cycle members receive
-`err.cycle`; blocked downstream cells remain Stale. A stale or failed prerequisite
-also blocks automatic execution, including prerequisites outside the triggering
-closure. Cycle reporting retains actual previous history and statement records.
+响应式开启时，重复定义所有权在执行前报 `err.multiple_definitions`。成功启动清除本单元格拥有的定义，按拓扑层和文档顺序传递依赖。循环成员报 `err.cycle`，被阻塞的下游保持 Stale；未就绪的闭包外前置节点也阻止自动运行。自动尝试发 Queued、Running、最终状态、CellOutput；`Evaluated.reran` 只列实际尝试的单元格。
 
-Automatic dependent attempts emit Queued, Running, final CellStatus, then
-CellOutput. `Evaluated.reran` lists only attempted automatic executions in their
-actual order. Disabling auto_run_dependents marks the dependency closure Stale
-and retains old output; disabling reactive permits normal sequential redefinition
-without automatic propagation or pre-clearing.
+关闭 auto_run_dependents 仅标依赖过期；关闭 reactive 允许顺序重定义。UpsertCell 不执行数学，重复相同源码保留状态；改为 Text/Ask 释放实际定义及 CAS 输出。DeleteCell 删除自己的实际定义再传播；MoveCell 只改顺序。RunAll 按真实 planner 路径处理，Text/Ask 不执行。
 
-UpsertCell synchronizes source without CAS execution, preserves an existing
-position, and appends new IDs. It analyzes Math source and marks the edited cell
-and affected dependents Stale. Changing Math to Text/Ask releases its live
-symbols and removes its CAS output; Text is Done and Ask is Stale. Repeating an
-identical upsert leaves current execution state intact. DeleteCell removes only
-that cell's source and actually owned definitions, then propagates stale status
-or automatic recalculation. MoveCell accepts a final zero-based index smaller
-than the number of cells and changes only document order. Empty IDs, missing
-cells and invalid positions fail atomically. RunAll executes Math cells once in
-document order through the same real evaluator path and emits status/output
-events; Text/Ask sources are not executed and cyclic/blocked cells are reported.
+UI 通过源码/运行代次检查隔离旧输出。运行前同步编辑，中断后合并还在前端队列中的最新源码，保存期间有新编辑仍标未保存。原生中断保持现有 evaluator；浏览器替换 Worker、恢复源码/内存配置并只重建定义，其他结果过期。
 
+## 中断与资源
 
-Solver cards use actual evaluator callback metadata, including the resolved raw
-source, requested/inferred variable order, full SolutionSet and returned value.
-Provenance follows actual tail calls and forwarded Set/final compound results;
-ordinary lists, cached values, unrelated wrappers, discarded earlier calls and
-unsupported results retain Expr. Disabling steps removes derivation JSON while
-keeping real solution evidence. SolveValues/NSolveValues and flat FindRoot rules
-retain their actual source forms alongside the original solution bindings;
-Reduce/Roots can display actual boolean regions and interval endpoints.
+宿主注入 `Arc<dyn Clock>` 用于期限和计时；没有时钟时 timing_ms 为零，墙钟期限关闭，步数和取消仍有效。单元格所有语句共享 Interrupt；一次发起 Evaluate/SamplePlot/RunAll/自动 Delete 级联只重置一次取消标志，配置/保存/源码编辑不重置。
 
-Finite multiplicities become repeated solution rows. Conditional/free-variable
-solutions and generated parameter domains remain intact. Exact binding values
-receive a real read-only N[value,10] numeric string when supported; approximate
-values or failed supplemental numerics leave numeric null. The string keeps
-existing InputForm precision notation. Formatting never records new history or
-mutates live definitions, and infinite interval ends serialize as null.
+原生宿主可独立设置 interrupt_handle。只读模型工具要求真实时钟、独立取消和最多 5 秒期限，无时钟则拒绝。表达式检查最多 5 秒与 1,048,576 步；源文本/模型帧等有确定的 1 MiB 边界。
 
-StepsView preserves real IDs, rule IDs, levels and children. title_key is
-step.<rule_id>, expression params and before/after snapshots use LaTeX, and
-structured operation/reason/domain/count/message params remain deterministic
-strings. No computational expression tree or StepKind is serialized. plot is
-optional and follows the actual supported source/solution shape and auto_plot setting.
+## 输出、步骤与绘图
 
+StepsView.root 存 StepView：稳定 ID、规则 ID、级别、`step.<rule_id>` 标题键、LaTeX 参数及 before/after、子节点。内部 Expr/StepKind 不跨协议。BindingView 的可选 var_latex/root_index/radicals 来自实际格式化和认证转换；精确值数值提示来自只读 N，格式化不改变历史。拷贝保留原始 C[n]，展示别名不改变语义。
 
-SamplePlot validates finite ordered ranges, distinct user axes, real parameter
-values and the request's source expressions before producing finite PlotData.
-Function plots start at 400 points and refine curvature/domain boundaries up to
-six levels; implicit plots use 160×160 squares and deterministic contour stitching.
-Pole or jump sign changes do not become implicit zeros. Default function y
-viewport uses finite 2%–98% quantiles plus padding; explicit y_range is honored.
-Non-real/undefined samples are omitted, infinite geometry is never serialized.
+LlmExplain 的可选 out_index 指定实际语句记录，省略时用最新记录。未知索引/步骤、过期/失败单元格拒绝。选中步骤仅发送它及后代；相同 S1 在不同输出树中不重新编号。
 
-Plot and ContourPlot are protected HoldAll builtins. Examples:
+SamplePlot 校验有限有序范围、不同用户轴、实参数和源码。函数从 400 点开始，边界/曲率最多细化 6 层；隐式用 160×160 网格及确定拼接。极点/跳跃不当作零，非实/未定义样本省略，无限几何不序列化。默认 y 使用 2%–98% 有限分位和边距，显式范围优先。
 
 ```text
 Plot[Sin[x],{x,0,2*Pi}]
@@ -161,534 +80,55 @@ plot(sin(x),[x,0,2pi])
 implicitplot(x^2+y^2=1,[x,-2,2],[y,-2,2])
 ```
 
-Their visible held results become OutputItem::Plot through the same sampler.
-Bodies bind axes locally while bounds read outer values; readonly source
-preparation resolves genuine functions/parameters without cancelling raw poles.
-PlotRange accepts a y pair or an x/y pair of ranges for Plot; other explicit
-options report err.plot. Plot axis/option dependencies follow those scopes.
-Suppression retains held history without sampling. A visible rendering failure
-retains the real completed statement record, reports Error and stops subsequent
-statements/dependents. Standalone sampling records no history. Actual injected
-flag/deadline/budget applies to preparation, every stack instruction, refinement
-and stitching; the next initiating request can recover.
+Plot/ContourPlot 是受保护 HoldAll，轴局部绑定、边界读取外值。明确绘图和自动求解绘图都走内核 sampler；渲染失败保留真实语句记录并报告 Error。单独采样无历史。自动图像基于原始等式/域/完整解，unsupported/自由轴/无限族不构造假几何。
 
+PlotRequest 可选 solve 携带 InputForm 原式及域，PlotData 可选 highlights 携带最新点/区域；缺失字段保持旧 JSON。存在 highlights 时使用响应，即使空数组也清除旧点。参数以有限 binary64 的精确有理值代入，并按原始极点/域重新 NSolve/Reduce；不修改原卡片证据/步骤。普通没有 solve 的请求保留显式旧高亮。
 
-Automatic solver plots use the actual resolved source, selected domain and
-existing complete solution set. One-axis equalities display lhs/rhs curves and
-real (root,lhs(root)) points, with at least six units of x width. Two-axis systems
-display both implicit residuals and complete real assignments. Rational region
-results supply actual interval shading; unbounded shade uses +/-1e308. Unsupported
-shapes, free axes/infinite families and nonreal initial one-axis solution sets
-leave plot absent. auto_plot=false disables this optional output.
+前端只渲染采样数据，单图一次在途、最新队尾、150 ms 视窗去抖和 33 ms 滑块节流。代次防止旧回复安装；过期/重启/unmount 隔离旧几何，失败真实显示可重试。
 
-PlotRequest has an optional solve object with InputForm source and selected
-domain (Complexes/Reals/Integers/Rationals). PlotData has optional highlights
-with current points/shade. Both extensions are omitted when absent, preserving
-legacy JSON shapes. These fields carry the equation provenance and updated
-geometry through serialized native/WASM requests without a Session cache.
-Clients must use data.highlights when present, including empty arrays that clear
-previous points or shade, rather than retaining old request highlights.
+## 编辑辅助
 
-Every source parameter is an explicit params binding, with default one (two
-when one violates an original nonzero restriction) and slider range [-5,5].
-Finite binary64 parameter points are substituted exactly as binary rationals.
-SamplePlot verifies source/curve/axis correspondence and complete bindings,
-then runs genuine NSolve for assignments or Reduce for regions under the original
-domain and raw pole/condition restrictions. It returns actual finite real current
-highlights. Nonreal updated roots clear real points; a parameter setting violating
-all original source branches reports err.plot. Valid union branches are retained.
-Requests without solve preserve explicitly supplied legacy highlights. All this
-work shares the existing interruption scope, records no extra history and never
-changes live definitions or original card verification/steps.
+Complete/Hover/Preview 不执行源码、不写历史/定义、不重置中断。游标和替换范围是 UTF-8 字节，非边界位置报 `err.cursor`。客户端负责 UTF-16/字节映射；方言/常量遵循配置和 `%wl` / `%modern` 标记。
 
+Complete 替换整个标识符，按前缀、驼峰/下划线首字母、子序列排名；真实内置、符号、关键字、snippet 和内层调用选项稳定排序，最多 50 个。注释/字符串/数字/结束调用不泄漏选项。Hover 给实际本地化文档或不求值的已保存定义，最多 200 Unicode 字符。Preview 真实诊断/修复/token，Error 时无 LaTeX/actions；多个语句按游标选中，生成 Solve action 保留原极点和注释。
 
-Complete, Hover and Preview are actual non-evaluating editor services. Cursor
-positions and replacement ranges are UTF-8 bytes; invalid boundaries return
-err.cursor atomically. Effective dialect/constants follow configuration, including
-%wl/%modern source markers. They never reset interruption or write history,
-definitions, source cells or stored solver provenance.
+## 配置与凭据
 
-Complete replaces the whole identifier while matching its prefix before the
-cursor. It ranks executable registered names, live symbols, language keywords,
-snippets and supported innermost-call options: prefix, then camel/underscore
-initials, then subsequence; Solving/Algebra docs lead ties, stable order caps at 50.
-Modern labels use lowercase/aliases; logical And/Or/Not and algebraic Root require
-capitalized callable insertions, distinct from keywords and root(expr,degree).
-Comments, strings, numbers, markers, lists/Part/groupings and completed calls do
-not leak keyword options. Extended implemented names share actual parser mapping.
+`Session::new` 保持纯；`Session::new_native` 显式绑定 ConfigStore。默认路径由 `ProjectDirs::from("org","openmath","OpenMath")` 给出；不存在使用默认，部分 TOML 补默认，无效文件不覆盖。
 
-Hover returns real localized builtin documentation or the stored unevaluated
-ownvalue/downvalue rules (at most 200 Unicode chars) with the actual live owner
-cell. Edited source may be Stale while the previously executed definition remains
-inspectable; transfer/Clear/Unset/delete/load follow real evaluator ownership.
-Bare defined symbols take precedence over lookalike builtin aliases; actual call
-positions use their real builtin mapping. No delayed or computed value is run.
+api_key 序列化/Debug 为 `***`。SetConfig 调用 merge_redacted_keys 按配置名称保留旧 key；null/缺失清除，新名称上的掩码无 key，空字符串是明确值。原生新 key 默认入 service=openmath/user=profile 的系统库；显式 Plaintext 回退保留权限，不把失败写库静默降为明文。
 
-Preview returns real parser diagnostics/fixes/highlights/dialect. Any Error
-suppresses LaTeX/actions; empty source displays none. Multiple valid statements
-select the cursor's containing/preceding statement (first when before all math),
-or the last when cursor is absent. Display canonicalizes raw syntax only. A bare
-Equal offers action.solve for up to three lexical free axes, excluding function
-heads/binders, wrapping original source in dialect-correct Solve syntax so original
-poles/comments survive. Generated actions execute through the same Session.
-The explicit native warm-release <=1000-char acceptance measures real calls
-against <5ms; representative final maximum was about .662ms.
+解析顺序环境变量→凭据库→回退字段；真实 SecretKey 只供传输。配置只显示存在掩码，不复制解析值；移除配置释放管理的密钥，外部环境变量不删除。实际文件使用邻接独占临时文件、flush/sync、原子替换及私有 Unix 权限；失败回滚库，回滚失败明确报错。错误不带密钥或源码片段。
 
+requires_api_key 默认 true，默认省略；false 表达无密钥服务意图但不绕过验证。extra_body 默认空，不能覆盖协议拥有的字段；有界 JSON 不 Debug 打印值。浏览器非敏感设置独立保存，密钥/请求头/不透明值仅逐配置明确选择后持久化。`KernelConfig.cli` 可省略，默认 ai_hints=false，默认省略整个节。
 
-The native feature provides ConfigStore and Session::new_native for real
-config.toml persistence. The default path comes from
-ProjectDirs::from("org","openmath","OpenMath"). Missing files return documented
-defaults; partial TOML preserves defaults, invalid files remain unchanged.
-Session::new remains pure even when the native feature is enabled, so portable
-clients/tests have no implicit user-directory or credential access. Real native
-hosts explicitly bind the store at initialization.
+## LLM 任务与传输
 
-Bound SetConfig validates and commits before installing new state. Wire masks
-preserve key fields by profile name, null/missing clears managed fallback/vault
-values, empty strings are explicit values, and removed profiles release their
-managed entries. Newly entered native keys default to keyring
-service="openmath", user=profile name; explicit Plaintext storage supports the
-prescribed file fallback with private Unix permissions. Unchanged legacy keys
-are not silently migrated. Trusted TOML encoding writes actual fallback data,
-never the wire's *** mask; corrupt stored masks are rejected.
+om-llm 是 sans-IO：构造经过校验的 HTTP、SSE/NDJSON 解码、任务状态；核心不访问网络或执行 CAS。SSE 支持拆分 UTF-8、BOM、CR/LF/CRLF、多行 data，帧/行 1 MiB；不完整 SSE 结束丢弃，编码错误拒绝。NDJSON 完整末记录可在 EOF 返回。只消费 OpenAI choice 0，私有 reasoning/未知元数据忽略，工具片段保留实际 ID/索引/名称；等真实 HTTP 成功结束才执行工具或完成。
 
-Runtime credential resolution is environment variable, then vault, then fallback
-field. Resolved values are accessed only through SecretKey for a real transport
-request. Config presentation exposes only the literal *** presence marker; it
-never copies resolved env/vault values back into persistent inputs. Missing or
-unavailable vaults permit existing fallback use; locked/encoding failures remain
-explicit, and a requested new vault write does not silently become plaintext.
-External environment variables are not deleted by clearing stored fields.
+单个 Session 持有唯一 Job，最多 16 活跃 ID、256 终态 tombstone。Translate/Fix 只发已解析 Suggestion 和 Done，Complete 最多一个过滤后 Delta，Chat/Explain 流真实文本，失败 Error。探测额外给真实 reply/latency_ms/first_byte_ms，没有时钟或字节为 null。
 
-Actual adjacent temporary files use create_new, private Unix mode, flush/sync
-and atomic replacement. All attempted vault updates are restored on reported
-write/replace failure; an unsuccessful rollback is reported explicitly. Error
-messages carry safe syntax offsets/IO kinds without credential/source excerpts.
-Notebook loading preserves the bound config store; notebook files still contain
-only source cells. Native tests use isolated paths and synthetic providers and
-never query or change live user credentials.
+SuggestionParser 严格读取 wolfram/explanation 字符串，要求一条非空未隐藏的 Wolfram 表达式，真实 parser 生成现代/Wolfram/LaTeX，无求值。失败最多两次真实诊断修正。补全保留插入空格、截首逻辑行、按真实 lexer 过滤并避免重复本地补全；上下文至多前三个数学源码，不含 Text/Ask、配置或输出。
 
+只读 evaluate/solve 用真实 CAS、严格参数、独立预算；直接/间接修改定义均拒绝。propose_cell 只解析并发卡片。最多六轮真实工具结果回放，第七轮在执行前失败。配置密钥反射到工具参数时拒绝；公开工具/回放清除凭据，真实 Authorization 仅存在内部 HTTP。
 
-om-llm now builds actual sans-IO OpenAI-compatible/Anthropic chat requests from
-runtime Profile, actual message/tool replay and configured capabilities. Runtime
-paths use try_build_chat_request: malformed profile/header/schema/conversation
-returns a typed secret-safe error. The fixed-signature build_chat_request is a
-validated-input convenience that panics on invalid construction. Tool-call/result
-associations are checked per active round while actual provider IDs are retained.
-Custom headers merge deterministically/case-insensitively; browser Anthropic
-direct-access is target-specific. Configured models/endpoints remain editable.
+LlmStarted 和后续 LlmHttp 触发传输。浏览器 fetch 禁止重定向，按真实状态/有界 UTF-8 body/期限/abort 反馈。可选 chunk status 保持旧 JSON，非 2xx 不变模型文本，冲突状态失败；解码错误立即结束，迟到数据不能复活。
 
-HttpRequest transport JSON retains actual authorization for explicit transport;
-Debug shows no endpoint/body/header values. Runtime Profile keys and configuration
-extra-header values are likewise excluded from Debug. Construction performs no
-network IO, does not retrieve a live key and never invokes CAS or a Job yet.
+原生宿主截获所有内部 HTTP DTO，不向前端发送 URL/header/body。公开 Started 的 http=null；实际字节进入唯一 Session Job，不重构 SSE。native_client 保持 TLS/代理、禁止重定向。KernelHost 独立 owner 线程、64 队列、2 异步 IO worker、16 有界 blocking byte worker；取消/期限覆盖排队与确认，销毁取消并 join。
 
-SseDecoder checked byte/text feeds preserve arbitrary split UTF-8, BOM, CR/LF/CRLF
-and multiline data under a one-MiB frame/line budget. Finish discards incomplete
-SSE events and rejects incomplete encoding; NDJSON validates and returns a final
-complete JSON record at EOF. Failure is terminal and checked callers receive no
-partial events from that failing call. Legacy feed is a validated-stream
-convenience; runtime routes must use feed_bytes/try_feed and handle LlmError.
+TauriClient 使用 kernel_request、kernel_subscribe、kernel_interrupt，secret_set/delete 只写绑定凭据库。WASM Kernel 接收 JSON Envelope，返回 response/events，注入 Date clock；错误 JSON/零或不安全 JS ID 不执行。Worker 加载实际 bindgen binary，恢复不运行所有计算。
 
-Provider deltas preserve actual text, tool indices/IDs/names/argument fragments,
-finish reasons and errors. Only OpenAI choice0 is selected; reasoning and unknown
-metadata are ignored. Anthropic initial empty tool input does not add {} ahead of
-streamed JSON fragments. Specific finish reasons followed by terminal done
-markers remain separate events; the Job consumer handles these
-idempotently and waits for HTTP completion before running tools or reporting Done.
+## UI 与兼容验证
 
-Protocol reference checks used the primary [OpenAI chat reference](https://developers.openai.com/api/reference/resources/chat/subresources/completions/methods/create),
-[Claude streaming documentation](https://platform.claude.com/docs/en/build-with-claude/streaming)
-and [WHATWG SSE framing standard](https://html.spec.whatwg.org/multipage/server-sent-events.html#event-stream-interpretation).
-The project's prescribed compatibility max_tokens/json_object shape is retained;
-model-specific migration or live-provider validation is not claimed.
+Ask/修复卡片、解释、ghost 和对话使用同一任务。建议不自动执行；对话仅 controller 内存，显式 @cellN 展开当前源码/结果，过期结果省略。每个 client/目标/上下文范围分别确认；取消在迟到 start 后再次发 cancel，避免遗留传输。
 
+LlmTestProfile 可选 config 测试未保存草稿；省略保留按名称探测。测试不 SetConfig、不写 TOML/库/定义/历史，只发送 ping。设置草稿保存前不改变运行配置。
 
-FIM construction and raw response parsing are implemented in om-llm.
-OpenaiFim uses /completions, OllamaFim /api/generate and MistralFim
-/v1/fim/completions with the prescribed provider-specific prompt/suffix/token
-fields, temperature0 and newline stops. The actual HttpRequest is nonstreaming.
-Chat-kind completion profiles use real nonstreaming insertion-only chat messages
-with prefix⟨CURSOR⟩suffix and target-correct Anthropic headers/stop_sequences.
-Runtime calls use try_build_fim_request; the fixed-signature convenience defaults
-Native and requires validated inputs. No endpoint/model or credential is invented.
+生成绑定：
 
-parse_fim_response keeps actual raw strings unchanged, including whitespace,
-newlines and empty text. It selects genuine choice0 or native response/text
-blocks, rejects malformed/missing/wrong-type/tool/nonassistant/incomplete states
-and limits the JSON body to one MiB. Known Anthropic reasoning blocks remain
-private; only actual text blocks are joined. Remote errors carry untrusted
-message access for later profile-aware sanitization, while Display/Debug stays
-generic and cannot dump a reflected key. First-line/local-completion/lexer/CAS
-filtering is implemented by the kernel; source insertion is an explicit client action.
+```sh
+cargo test -p om-kernel export_bindings --locked
+git diff --exit-code app/src/kernel/generated
+```
 
-Provider format checks use [Ollama generate](https://docs.ollama.com/api/generate)
-and [Mistral FIM](https://docs.mistral.ai/api/endpoint/fim) primary documentation.
-DeepSeek's prescribed compatibility fields are implemented from PLAN; direct
-retrieval of its FIM pages initially timed out; a subsequent user-authorized
-shared-kernel smoke test verified the current DeepSeek configuration (P103).
-
-
-The actual pure Job state machine now consumes these requests/decoders. Feature
-and JobInput pairing selects real chat/text/structured/FIM flows; invalid inputs
-return Failed without a dummy request. Native on_raw_bytes and browser on_bytes
-share checked UTF-8 framing. Actual text, indexed calls and finish markers remain
-pending until successful on_http_end; no tools or Done are issued merely because
-finish deltas arrived. One-MiB response/text/results and 64-tool bounds apply.
-
-RunTools returns complete actual IDs/names/object arguments in index order for
-the readonly kernel handler. Actual host result IDs must match exactly
-once; assistant/tool history replay is provider-correct, including IDs reused in
-a later completed round. Six invocation rounds plus a final text HTTP request
-are allowed; a seventh invocation fails. The core never invokes CAS or network.
-
-Structured results require a supplied SuggestionValidator; no model modern/latex
-is trusted and no default validator fabricates a Suggestion. Failed actual host
-validation can retry twice with real sanitized diagnostics. Production prompt/parser/formatter hookup and completion filtering are now
-available through the pure host helpers described below. FIM decoding preserves
-actual raw response bytes before filtering. TestProfile probes use eight tokens
-and actual provider formats.
-
-Done/Failed/cancel are terminal and cached. Late chunks cannot resurrect work.
-An actual still-open HTTP round can supply real failure status after stream error,
-while ended failures remain unchanged. Provider/transport/retry error messages
-exclude known keys/custom-header credentials and 401/403 includes a key hint.
-Raw transport authorization remains real. Source insertion, native transport
-and kernel LLM request/event orchestration remain M12.5/M12.6/M13.
-
-
-`om_llm::prompts` embeds translate/explain/fix/chat instructions with `include_str!`.
-The eight translation examples match PLAN. Template substitution scans only the
-original template, while task/source/diagnostic data remains in separate user
-messages. Actual readonly evaluate/solve/propose_cell schemas accompany chat;
-the core still performs no tool execution.
-
-`Session::prepare_llm_input` reads actual registered functions, live symbol names,
-source, parser diagnostics, CAS messages and retained statement records. Explain
-requires a current successful cell with actual recorded steps. It sends genuine
-InputForm input/result and the same StepsView used for output rendering; selecting
-a step sends only that recorded step and its descendants with stable IDs. Missing,
-stale or failed derivations return an error, never a fabricated explanation.
-
-The production SuggestionParser extracts the first opening through last closing
-JSON brace (rejecting reversed/missing bounds), requires unique string wolfram and
-explanation fields, and ignores all extra model fields. It requires one nonempty
-unsuppressed Wolfram expression using the real parser. Wolfram/modern/LaTeX are
-rendered from its raw tree, preserving x/x and other original poles. It performs
-no evaluation, source insertion, notebook/history or cancellation changes. Job
-uses the actual diagnostics for at most two correction retries.
-
-Completion context includes only the preceding three Math sources, using the last
-matching current source to identify its notebook position, or the last three
-Math cells if no match exists. send_context=false sends only the current prefix
-and suffix. Wolfram comment delimiters are escaped; Modern logical lines are
-individually commented, including Unicode line separators and dialect markers.
-No settings, credentials, rendered output or Text/Ask cell data enters context.
-Inputs/context/responses have a deterministic one-MiB bound.
-
-`filter_llm_completion` preserves insertion spacing, strips boundary line breaks,
-truncates the first logical newline, and uses real parser lexical diagnostics to
-reject illegal characters/escapes/named characters while allowing incomplete
-syntax. It checks prefix+insertion+suffix and suppresses the first actual local
-completion or its untyped suffix. Protocol job dispatch, native/browser transport
-and user-controlled proposal/ghost UI remain subsequent tasks.
-
-
-With `om-llm/http`, `drive_native(&mut Job, &reqwest::Client, on_event)` drives
-actual fresh HTTP rounds using the same checked requests and arbitrary-byte Job
-adapter. It automatically follows genuine parse-correction HTTP rounds and stops
-at Done/Failed or RunTools for the host to execute; calling it again in terminal
-or waiting-tool state does not issue duplicate HTTP. The host resumes after
-supplying actual tool_results. Partly pre-fed rounds are rejected instead of
-being replayed. This module performs no CAS tool execution or secret lookup.
-
-`drive_native_cancellable` accepts a CancellationToken. Each profile timeout
-covers both headers and the complete body of that round. Cancellation drops the
-in-flight request and is checked between events in a single received byte chunk,
-so a callback cancellation cannot forward later deltas or finish successfully.
-Only successful HTTP responses forward model stream events. All bodies, including
-non2xx errors, stay within the shared one-MiB limit. Real provider status/messages
-pass through Job's sanitizer/key hint; transport failures are classified without
-formatting reqwest errors or including URLs, bodies or credentials.
-
-Native product hosts must use `native_client()` (or explicitly disable redirects
-on their supplied client). reqwest0.13.5 exposes redirect policy only at client
-construction; this API cannot inspect arbitrary external clients. The factory
-keeps normal TLS verification and environment proxy settings, and refuses
-redirects that might forward provider/custom credentials. The browser transport
-and actual kernel native-job lifecycle remain M12.6/M13 integration work.
-
-Thirteen native tests use only loopback wiremock or a controlled chunked socket,
-synthetic credentials, real response fixtures and genuine parser delegation.
-They cover actual provider authorization/body/text/FIM, two tool rounds, two parse
-correction rounds, one-byte UTF-8 chunks, HTTP/key errors, malformed/bounded data,
-connection/headers/body failures and cancellation within one response chunk.
-Native TLS certificate-data license text is retained in the repository notices.
-
-
-Session now handles all LlmTranslate/Explain/Complete/Chat/FixError/TestProfile,
-LlmHttpChunk/End and LlmCancel requests. The sole Job lives in Session: Browser
-is the pure default target, and new_native selects Native with the bound real
-credential resolver (environment, vault, raw fallback). A profile mask never
-becomes an HTTP key. Feature routing/enabled/profile/capability checks use actual
-config; explicit profile tests can run while automatic AI is disabled.
-
-LlmStarted and subsequent LlmHttp carry actual transport DTOs for the host.
-Browser transports use them directly. Native product hosts must intercept these
-internal DTOs before frontend serialization, using the no-redirect client and
-shared drive_native_http raw adapter. They queue actual bytes/status to
-llm_http_bytes, with no second Job, reconstructed SSE or lossy packet decoding.
-The subsequent desktop/CLI client task must implement this interception/queue.
-
-LlmHttpChunk adds optional status (u16); old absent-status JSON roundtrips
-unchanged and uses the legacy success-stream convention. New transports supply
-the actual status. Non2xx bodies never become model text; HTTP status, bounded
-provider messages/key hints and sanitized failures remain actual Job decisions.
-Conflicting chunk/end status fails. Active decode failures terminate immediately;
-late chunks/end/cancel cannot resurrect a terminal job. Up to16 active IDs and256
-terminal tombstones bound storage; fresh clients must not reuse remembered IDs.
-Loading a valid new notebook cancels pending work before replacing records.
-
-Chat/Explain deltas stream actual text. Translate/Fix emit only checked
-LlmSuggestion and LlmDone; Completion emits at most one actual filtered
-LlmDelta plus LlmDone. Failed work emits LlmError. LlmProfileTest additionally
-carries the actual response, total latency_ms and first_byte_ms from the injected
-clock; absent clock/bytes remain null. No probe reply or timing is fabricated.
-
-The actual evaluate and solve tools use strict objects, genuine Wolfram parsing,
-current readonly definitions, independent cancellation and a5-second injected
-clock deadline. Missing/invalid clock fails rather than pretending a guarantee.
-Direct/nested mutation forms are refused; indirect user-function writes are
-blocked by the real readonly evaluator. Parent notebook/history/definitions,
-solver records and normal Interrupt remain untouched. Solve returns genuine
-InputForm solutions, actual recorded step title keys/messages and an explicit
-supported flag; unsupported input stays unevaluated with real messages.
-propose_cell parses the effective requested syntax using live function semantics,
-renders the raw tree and emits a card without execution. Six actual tool rounds
-are replayed; the seventh fails before invoking CAS.
-
-llm_cancellation_handle can be cloned independently of the Session owner's
-borrow/queue, cancelling both the tool flag and native token. Configured keys
-reflected in tool arguments are rejected before execution; public arguments and
-tool results/replay are sanitized (including nested JSON escaping), while genuine
-HTTP authorization stays in the internal transport only. Real default/native
-fixtures include action execution, retries, CAS/tool limitations, deadlines,
-cancellation, context/lexical completion filtering, byte/status handling and
-synthetic native credential precedence. User-facing clients/UI/CLI/packaging and
-full actual CLI corpus acceptance remain M13 work.
-
-
-The native desktop KernelHost now owns a genuine Session::new_native on a dedicated
-thread with bounded64-entry messages, matching envelope replies and Channel event
-IDs zero. TauriClient subscribes and invokes the actual kernel_request,
-kernel_subscribe and kernel_interrupt commands; named secret_set/delete delegate
-to the bound profile vault, never echoing raw credentials. Startup storage errors
-fail explicitly. Native HTTP DTOs are intercepted before every public reply/event;
-the host sends only LlmStarted{http:null} and public tool/text/suggestion/timing or
-terminal events. Acknowledged raw byte messages feed the sole Session Job.
-The two async IO workers and16 blocking byte workers are bounded; enqueue/ack waits
-poll cancellation and the whole request deadline. Host disposal cancels jobs,
-interrupts CAS and joins the owner. Real isolated native tests prove math, synthetic
-secret operations, actual loopback HTTP, cancellation, interruption/recovery and
-busy-owner deadline behavior. The debug desktop executable was built/launched;
-visible packaged-window inspection is retained for final desktop acceptance.
-
-The actual om-wasm Kernel class exposes a constructor accepting optional config
-JSON and request(JSON Envelope). It injects a browser Date clock and returns
-{response: Envelope<Response>, events: Envelope<Event>[]} using genuine Session
-dispatch. Bad JSON/zero/unsafe-JS correlation IDs do not execute. A Worker loads
-the built bindgen binary; WasmClient pairs replies by ID, distributes events,
-disposes waiters on failure and runs one byte-safe browser LlmDriver. Initial
-LlmStarted and subsequent LlmHttp events trigger real fetch rounds with actual
-status, redirect:error, bounded streaming UTF8, per-profile deadlines and abort.
-HTTP continuations come from events, correcting the older PLAN pseudo-code that
-expected a nonexistent LlmStarted response after HTTP end.
-
-GetNotebookState returns source-only NotebookFile, per-cell static defines/uses
-and status, actual topological definition_order and cycles. RestoreDefinitions
-resets the evaluator/records, executes only definition cells through the existing
-planner, reports cycles/failure and marks other math cells Stale. KernelRestarted
-is the recovery notice. Worker interrupt saves the latest synchronized source and
-in-memory config, terminates/replaces the real Worker, rejects pending requests,
-loads source and restores definitions; it never runs every computation to recover.
-Secrets stay in runtime config and never enter notebook files/recovery metadata.
-
-npm run build:wasm uses exactly wasm-bindgen-cli0.2.129 and the locked release
-wasm32 target. dev/test/build generate the ignored JS/WASM package automatically;
-no unexplained precompiled artifact is committed. Browser Playwright tests use
-this real Worker/binary for Solve, diagnostics, running-computation termination,
-definition restore and local mocked provider fetch through the real Job validator.
-MockKernel/transport units cover correlation and lifecycle only. Notebook/editor
-UI, output/plot/steps/AI/settings, full CLI authority, packages and final docs/E2E
-remain subsequent M13 tasks.
-
-
-The notebook/editor UI now uses real CodeMirror Preview tokens/diagnostics/fixes,
-Complete/Hover and byte-to-UTF16 mappings (Greek/surrogate boundaries preserved).
-Title edits use RenameNotebook without reloading definitions; ephemeral host
-SetSystemLanguage makes persisted Auto follow the UI locale. GetVariables lists
-actual live stored definitions rather than treating static source declarations as
-live values. Optional CellState.exec_count supplies genuine suppressed execution
-indices while old absent-field JSON remains unchanged.
-
-Each UI cell has a source/run generation. Edits synchronize before execution;
-outputs/cascade responses are accepted only with matching current-source metadata
-after queued edits. Worker interruption reconciles the latest frontend source,
-including mutations still waiting in the serialized queue, and restores only
-actual definition cells; native interruption preserves the existing evaluator.
-Old request cleanup cannot mutate a newer run. Snapshot saves leave unsaved
-changes flagged if the user edits during a file save. Browser source-only download
-and native explicitly picked dialog/fs files contain only title/version/cells.
-
-Safe conventional Markdown uses a token AST rendered by React, literal raw HTML,
-restricted links, no unsolicited remote images and trust:false KaTeX math/code
-boundaries. Theme preference alone persists in browser storage. General controls,
-keyboard palette, text/math/question cell sources, real docs/variables, restart
-notices and responsive375/720/1280 layouts are present; richer solution/region
-objects, full steps/plots/ghost/AI/profile panels are still upcoming tasks.
-
-Following the user's authorized current DeepSeek test, extra_body adds optional
-explicit provider JSON fields to ProfileConfig/runtime Profile. Empty maps preserve
-all old wire/request fixtures. Protocol-owned routing/model/messages/tools/prompt/
-stream/sampling/limit fields cannot be overridden; parameters are bounded and their
-values are not Debug printed. The verified current editable preset uses
-deepseek-flash with thinking disabled for chat/tool/probe requests, preserving
-this project's specified no-private-reasoning replay contract. Dedicated FIM uses
-the current model on the existing beta endpoint. Thinking-mode tool reasoning
-replay is not claimed by this implementation.
-
-The opt-in native example live_deepseek accepts an ephemeral stdin key; ordinary
-CI/tests do not invoke it. With the user-provided test credential, actual shared
-Session/native driver calls returned200 for probe(pong,~644ms), translation(real
-parsed Solve[x^2==4,x,Reals],~675ms), FIM(filtered insertion x,~515ms), and a two-round
-chat that actually invoked the readonly solve tool and cited its x=-2/x=2 CAS
-result(~1907ms). No key was written to config/notebook/source/logs and no existing
-user notebook context was transmitted. These live results are separate evidence
-from offline fixture gates. Official sources: https://api-docs.deepseek.com/ and
-https://api-docs.deepseek.com/api/create-chat-completion/.
-
-Output inspection uses `inspect_expression {source, numeric}` and returns
-`expression {value: {input_form, modern_form, latex}}`. It accepts one bounded
-Wolfram expression and evaluates an isolated readonly fork; numeric=true calls
-actual N[source,20]. Notebook cells, output history and parent cancellation are
-unchanged. Direct/nested assignments and clearing are rejected; indirect writes
-remain prohibited by readonly definitions. Host clock deadlines are capped at
-five seconds, with an independent 1,048,576-step budget.
-
-BindingView adds optional var_latex/root_index/radicals from actual formatting,
-Root AST and supported ToRadicals conversion. Numeric exact-value hints now
-come from twenty-digit N; plotting coordinates keep their previous precision.
-SolutionView adds optional condition_display_latex for k ∈ ℤ style display while
-retaining legacy condition_latex. Generated constants have collision-free
-display aliases; copy source always retains the original C[n] objects and rules.
-Repeated rows are grouped only for chip display; copy-all retains multiplicity.
-No solutions, all values, finite roots and regions retain their genuine set kind
-and actual Exact/ByConstruction/Numeric/Unverified evidence. Basic inline plots
-use actual SamplePlot data; viewport/slider interactions remain M13.5.
-
-LlmExplain accepts optional `out_index` for the selected statement's actual
-recorded input/result/steps. Omitted fields retain the latest recorded-result
-behavior and older JSON shapes. An unknown output index or step ID fails, and
-stale/error cells remain ineligible. This resolves repeated S1 IDs across
-multiple output trees without renumbering any computational record.
-
-The steps panel displays the selected genuine tree, with Minor details folded,
-localized templates and actual math/text params. Explain requests register an
-independent event scope before starting transport. Cancel, source/result/profile
-changes, panel unmount and Worker restart isolate old events. A cancelled request
-whose start reply arrives later is cancelled again, preventing orphan transport.
-First-use consent discloses the selected input/result/steps and actual provider
-base URL; explicit remember is ephemeral per client/destination, never notebook
-or credential storage. Explain sends no additional notebook context.
-Known [S1.2] citations become local expand/scroll/highlight controls only in
-Markdown text, preserving literal code/math/links and unknown references.
-
-PlotView now renders genuine explicit PlotData or invokes SamplePlot for a
-solver-proposed PlotRequest. Viewport and parameter interaction keep the same
-transported exprs/solve/source/domain metadata and source-only notebook contract.
-The SVG renderer does not evaluate expressions or derive mathematical points;
-all changed curves, intersections and shade come from actual kernel responses.
-Empty current highlights clear old geometry, preserving the legacy request
-fallback only when PlotData.highlights is genuinely absent.
-
-Per-plot sampling has one in-flight request, a newest queued tail, viewport
-debounce150ms and slider throttle33ms. Revision checks isolate superseded replies;
-unmount, stale output and Worker restart cannot install old geometry. Pending
-geometry is visibly dimmed, errors retain explicit failure/retry state. Reset
-restores initial viewport behavior while retaining selected parameter values.
-SVG coordinates/ticks are presentation only, with keyboard/pointer/touch control,
-nonpassive cursor-centered wheel zoom, measured responsive width and320px height.
-No protocol field, model/math evaluation path, dependency or secret storage changed.
-
-Ghost completion uses the existing LlmComplete/LlmDelta/LlmDone/LlmError and
-LlmCancel contract; no protocol field is added. After350ms of user editing idle,
-the source/cursor/profile/dialect snapshot must still match and the focused
-nonbusy editor must have an empty selection at line end with at least three
-trimmed characters. A pending/open deterministic completion blocks new model
-requests. Named Greek Tab shortcuts also retain priority.
-
-Only finalized, kernel-filtered insertion text becomes a CodeMirror decoration.
-Tab explicitly inserts all remaining text; Mod-Right inserts the next group;
-matching typed prefixes retain the exact residual, and Escape/cursor changes,
-source/profile changes, blur/run/restart/disposal cancel obsolete jobs and clear
-old text. Microtask painting checks the snapshot again. A cancellation preceding
-the start acknowledgement is repeated after a genuine late-start response.
-Suggestions never evaluate or persist before explicit acceptance.
-
-Privacy consent is ephemeral per client/destination/data scope. Completion with
-preceding notebook context discloses up to three previous math sources; this
-scope cannot reuse explanation-only or current-code-only consent. Keyless local
-compatible endpoints/Ollama remain configurable, with actual validation and
-credential resolution handled by the shared kernel. Ordinary tests use mocks
-and synthetic intercepted HTTP only; no real provider/key is accessed.
-
-Ask cells now use genuine LlmTranslate suggestions with explicit insert/run/edit
-actions, and errored math cells use LlmFixError with a before/after source diff
-and a revision-guarded apply action. Applying source alone never evaluates it.
-Assistant turns expand explicit @cellN references into actual source/dialect/
-status and current InputForm results; stale outputs are omitted. The ongoing
-conversation stores only current-controller memory and is cleared on notebook
-load, never serialized into .omnb. Prior turns retain actual final model text,
-checked proposed source and labeled readonly tool summaries; no fabricated
-provider tool-call IDs or tool-role histories are inserted into replay.
-
-An internal observed KernelClient counts starts and actual done/error/cancel
-across translate/chat/fix/explain/complete/profile-test features. It delegates the
-existing transport without recording HTTP, headers or request bodies. Cancellation
-does not become a false provider error. Native readiness follows the GetConfig
-credential-presence mask (environment/vault/fallback resolution), rather than a
-merely declared environment variable. First-use consent remains data-scope
-specific for questions/symbol names, conversations/references and error diagnostics.
-Popup focus management has one listener lifetime with a current close callback;
-focus restoration cannot cause repeated source-cell selection/render loops.
-
-Settings can probe an unsaved profile with optional LlmTestProfile.config. The
-legacy omitted field retains named-profile behavior. A draft probe does not call
-SetConfig, write TOML/keychain, or change notebook definitions/history; native
-credential resolution models submitted env/key/mask/null intent without writes.
-The draft timeout is used by both native and browser transport. Probe UI shows
-actual response/first-byte/total timings and explicit failures/cancellation.
-
-ProfileConfig adds optional requires_api_key (default true, omitted when true)
-for UI authentication intent. Explicitly keyless remote compatible services can
-be configured without a fake empty key/header. It does not introduce model-name
-logic or bypass actual provider/endpoint/schema validation. Legacy JSON and
-TOML remain compatible. Metadata/public control parameters persist in browser
-settings; raw keys, headers and opaque advanced values require per-provider
-opt-in with a plaintext-storage disclosure. Opaque masks never become stored
-keys. Native SetConfig remains the real atomic configuration/vault write path.
-
-General settings now include dialect/constants/reactive/dependent execution/
-default steps/auto plot/timeout. Model CRUD and feature mapping operate on a
-local draft until Save; incompatible routes are disabled on capability changes.
-Named/endpoint identity changes clear opaque or incompatible credential intents.
-Browser startup restores configuration data only, never notebook source, chat
-transcripts or first-use consent. Connection testing sends only a short ping.
-
-## Terminal preferences
-
-`KernelConfig.cli` is optional on the wire and defaults to
-`CliConfig { ai_hints: false }`. Serialization omits the entire section when
-AI hints are disabled, preserving legacy JSON/TOML defaults.
-`[cli] ai_hints = true` enables only the terminal background FIM hint cache;
-other hosts preserve this preference without starting terminal hints.
+所有可达 DTO 提交到 generated，禁止手改。CI 同时检查差异与新增未追踪文件；前端检查类型收窄和代表 JSON。协议 fixture 保留旧 shape，扩展字段独立测试。真实 Windows 安装窗口、生产 WASM、原生宿主测试补充真实执行证据，不能以 MockKernel 替代。

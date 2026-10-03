@@ -1,0 +1,41 @@
+# Input language
+
+OpenMath parses modern and Wolfram syntax into the same expression tree. Modern calls use parentheses and lists use square brackets; Wolfram calls use square brackets and lists use braces. Modern `let x = value` assigns a value, while `x = value` expresses equality. Wolfram uses `x = value` for assignment and `x == value` for equality. Full syntax is specified in [PLAN §7](plan/PLAN.md#7-输入语言规格).
+
+The evaluator exposes the following algebra functions. These examples are executable in the indicated dialect.
+
+| Operation | Modern | Wolfram | Result |
+|---|---|---|---|
+| Expansion | `Expand((x+1)^3)` | `Expand[(x+1)^3]` | `x^3+3x^2+3x+1` |
+| Factoring | `Factor(x^2-y^2)` | `Factor[x^2-y^2]` | `(x-y)(x+y)` |
+| Cancellation | `Cancel((x^2-1)/(x-1))` | `Cancel[(x^2-1)/(x-1)]` | `x+1` |
+| Coefficients | `CoefficientList(a*x^2+b*x+c,x)` | `CoefficientList[a x^2+b x+c,x]` | `[c,b,a]` / `{c,b,a}` |
+| Differentiation | `D(sin(x^2),x)` | `D[Sin[x^2],x]` | `2x Cos[x^2]` |
+| Partial fractions | `Apart(1/(x*(x+1)),x)` | `Apart[1/(x(x+1)),x]` | `1/x-1/(x+1)` |
+
+`Together`, `Simplify`, `FullSimplify`, `Collect`, `Coefficient`, `Exponent`, `PolynomialQ`, `PolynomialGCD`, `PolynomialLCM`, `PolynomialQuotient`, `PolynomialRemainder`, `Resultant`, `Discriminant`, `Variables`, `RootReduce` and `ToRadicals` are also registered, with bilingual help and checked argument counts. Expand/Factor/Together/Cancel/RootReduce/ToRadicals thread over lists. CoefficientList accepts a variable list and returns a rectangular coefficient tensor in ascending powers. Collect optionally applies a third-argument function to each coefficient.
+
+Polynomial queries accept symbolic coefficients independent of the requested axes, including denominators independent of those axes. Requested polynomial degrees are bounded to 4096; coefficient tensors have at most one million entries and sixteen axes. Exact GCD/LCM use Q polynomials and retain numeric content. Quotient/remainder and resultants support rational parameter coefficients. Apart accepts only a Q rational function in one variable, supplied explicitly or inferred when there is exactly one free symbol. Unsupported inputs stay symbolic with an algebra diagnostic; cancellation and execution budgets propagate.
+
+D supports repeated orders (`D[x^4,{x,2}]`), mixed variables (`D[x^2 y^3,x,y]`), list outputs and elementary chain rules. Unknown function derivatives remain formal `Derivative[...]` expressions. It accepts at most 64 differentiation specifications and 4096 total orders. Simplify supports explicit positive-symbol assumptions, such as `Simplify[Sqrt[x^2],x>0]`, and preserves principal branches without those assumptions. FullSimplify also considers certified Root/radical conversions and keeps the expression with lower weighted complexity; a Root can remain cheaper than a radical. Use ToRadicals to request the radical form explicitly.
+
+RootReduce produces the certified minimal polynomial and correct one-based root index for supported exact algebraic values. ToRadicals traverses expression heads and arguments, uses enabled cubic/quartic formulas and existing special polynomial reductions, and maps the selected branch through the solver’s certified minimal-polynomial root numbering. Unsupported parametric or nonradical Root objects remain intact. Solve-class functions are also exposed through the evaluator as described below.
+
+
+The solving functions are Solve, NSolve, FindRoot, Reduce, Eliminate, SolveValues, NSolveValues, Roots, Root and ConditionalExpression. Modern `solve(x^2 = 2,x)` and Wolfram `Solve[x^2==2,x]` return the same two exact assignments. Omitting variables infers free symbols in name order; when equations are fewer than symbols, Solve warns and solves the first axes. An explicit empty variable list remains empty. The optional domain is Complexes (default), Reals, Integers or Rationals.
+
+Solve/Reduce/Roots and both Values families accept Cubics, Quartics, VerifySolutions, MaxExtraConditions, GeneratedParameters (a symbol head) and InverseFunctions rules. NSolve/NSolveValues additionally accept WorkingPrecision in decimal digits (5..2466), or MachinePrecision. Unsupported options/values retain the original call with a diagnostic. `SolveValues[x^2==2,x]` returns a flat value list; `SolveValues[x^2==2,{x}]` returns one-coordinate rows. Requested axis order, multiplicity, free axes and conditional families are retained. Roots converts the complete result into equality alternatives with all conditions and generated parameter memberships.
+
+FindRoot accepts `{x,start}`, `{{x,start},{y,start}}` or separate starting specifications, and one real `{x,a,b}` bracket. Options are WorkingPrecision, MaxIterations and Method (Automatic/Newton/Brent, as a symbol or string). Automatic uses Brent for a bracket and Newton otherwise; explicit Method must match the start form. Starting symbols are localized against session values, and successful output is a flat rule list, for example `{x->1.4142135623730951}`. The local search verifies the rounded result against raw residuals and poles. Failure retains the source call and messages.
+
+Solver arguments retain direct arithmetic syntax while resolving own values, delayed definitions and pure-function applications. Thus `Solve[x/x==1,x]` retains the hole at zero, and `f[t_]:=t/t; Solve[f[x]==1,x]` does too. Immediate assignments (`eq=x/x==1`) and explicitly evaluated transformations (`Cancel`, `Expand`, replacement functions) use their evaluated meaning: syntax already erased before solving cannot be recovered. Held downvalue matching uses the raw resolved argument tree, so literal/type patterns depending on unevaluated arithmetic should be evaluated explicitly when that meaning is intended. Nested Root parameter values are resolved before solving. Explicit Divide/Subtract/Minus heads become raw arithmetic operators before pole capture; dependent numeric functions such as Floor retain their source trees. Closed numeric coefficients evaluate only after checked normalization confirms that their original domains are defined.
+
+Root accepts a one-parameter polynomial pure function and a valid positive index. Closed Q roots use public algebraic certification (degree at most 64), with rational roots reducing to exact numbers; symbolic parametric roots keep their generic degree/index identity. Nonpolynomial or invalid roots retain their call and diagnostic. ConditionalExpression evaluates its condition first, removes True, yields Undefined for False, and otherwise retains the condition with its evaluated value. Solver derivations and diagnostics pass directly to the evaluator; disabling record_steps prevents creation. Eliminate returns its polynomial elimination relation and has no derivation output in its existing API.
+
+## Notebook and terminal behavior
+
+Math cells are executable source. Text cells render Markdown, and Ask cells propose source for explicit insertion or execution. Shift-Enter or Ctrl/Cmd-Enter runs the active Math cell; Ctrl/Cmd-K opens commands, Ctrl/Cmd-S saves and Ctrl/Cmd-period interrupts. Local completion and Greek shortcuts take priority over AI ghost text. Tab accepts a visible ghost without running the cell.
+
+Notebook definitions are reactive: after running `let a=2` and `a+1` in separate cells, changing and running the definition as `let a=5` updates the dependent result to6. The terminal runs sequentially, so repeated assignments update session state in order. A `.omnb` file retains each cell's declared dialect; saved notebooks contain only version/title/source cells. Exported Markdown/LaTeX includes current output, omitting stale results. Unicode source in a TeX export may require a Unicode-aware TeX setup.
+
+In the terminal, `--dialect modern|wolfram|auto` selects source interpretation. `--json` prints actual CellOutput records. `-e` exits0 on success,1 on evaluation errors and2 on parse/usage errors. Use `--no-config` for isolated calculations, or `--config PATH` to select a native configuration. The desktop accepts `OPENMATH_CONFIG_PATH` for an explicit configuration location.

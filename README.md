@@ -1,6 +1,10 @@
 # OpenMath
 
-OpenMath 0.1.0 is a pre-alpha computer algebra system centered on equation solving. A shared Rust kernel powers the terminal, a reactive browser notebook and a Tauri desktop app. It supports modern notation and a Wolfram Language subset, exact solution cards, recorded derivations, interactive plots and configurable AI assistance.
+[English](README.en.md) · [下载安装包](https://github.com/He-RT/om-openmath/releases) · [使用文档](docs/README.md)
+
+OpenMath 是以方程求解为核心的开源计算机代数系统。终端、响应式浏览器笔记本和桌面应用共享 Rust 内核，支持现代数学写法与 Wolfram 语言子集、精确解卡片、推导步骤、交互绘图和可配置 AI。
+
+当前版本 **0.1.0-pre-alpha.1**，供试用和反馈。支持有资源边界的求解子集；无法支持的问题保留原表达式并给出诊断。兼容范围见[求解指南](docs/solve.md)。
 
 ```sh
 om -e 'solve(x^2 - 5x + 6 = 0, x)'
@@ -9,45 +13,64 @@ om -e 'Solve[x^2-5x+6==0,x]'
 om --json -e 'solve(x^2=2,x)'
 ```
 
-AI proposes source; the CAS parses it and handles mathematical solving and verification. Suggestions wait for an explicit insert/run action. Credentials and conversations stay out of notebook files.
+AI 提议源码，由 CAS 解析、求解和验证。建议需要明确插入或运行；密钥和对话不进入笔记本文件。
 
-## Run from source
+## 下载与安装
 
-Use the pinned Rust 1.94.0 toolchain and Node 26.0.0 (`app/.nvmrc`).
+在 [GitHub Releases](https://github.com/He-RT/om-openmath/releases) 选择对应文件：
+
+| 平台 | 文件 | 使用方式 |
+|---|---|---|
+| Windows 10/11 x64 | `OpenMath_0.1.0-pre-alpha.1_x64-setup.exe` | 推荐；中文向导，安装到当前用户目录 |
+| Windows 10/11 x64 | `OpenMath_0.1.0-pre-alpha.1_x64_zh-CN.msi` | MSI 安装包，适合系统管理员部署 |
+| macOS Apple Silicon | `OpenMath_0.1.0-pre-alpha.1_aarch64.dmg` | 打开后将 OpenMath 拖入“应用程序” |
+| macOS Apple Silicon | `OpenMath_0.1.0-pre-alpha.1_macos_arm64.app.zip` | 解压得到 `.app` |
+| Windows / macOS | `om-cli_…_windows_x64.zip` / `om-cli_…_macos_arm64.zip` | 解压后运行 `om.exe` / `om`，可加入 PATH |
+| 浏览器 | `OpenMath-web_0.1.0-pre-alpha.1.zip` | 解压到 HTTP(S) 站点根目录 |
+
+Windows 包携带 WebView2 引导程序；系统没有 WebView2 时，首次安装需要联网下载运行时。桌面包尚未代码签名，系统可能提示未知发布者；macOS 可在确认来源后通过“隐私与安全性”允许打开。当前不提供 Intel Mac、Windows ARM64 或 Linux 安装包。详细步骤、卸载及校验见[安装指南](docs/install.md)。
+
+每个发行版提供 `release-manifest.json`，记录同一提交构建的文件大小和 SHA256。Web/桌面/CLI 包保留第三方许可文本。
+
+## 开始使用
+
+启动桌面版，点击“二次方程”示例，或添加数学单元格输入 `solve(x^2=2,x)`。Shift-Enter 或 Ctrl/Cmd-Enter 运行，结果卡片可查看精确值、数值近似、步骤和图像。分别运行 `let a=2` 与 `a+1`，再将定义改为 `let a=5`，依赖结果更新为 6。
+
+原生菜单支持新建、打开、保存 `.omnb`，以及 Markdown/LaTeX 导出。笔记本只保存源码；导出包含当前计算结果，排除过期输出。界面提供中文和英文，默认跟随系统，可在偏好设置中切换。
+
+AI 在设置中接入自己的模型服务，支持编辑模型、地址、能力和功能映射。Web 版需要服务允许 CORS，桌面和终端使用原生 HTTP。细节见[模型接入指南](docs/llm.md)。
+
+## 从源码运行与构建
+
+安装 Git、仓库锁定的 Rust 1.94.0 和 Node 26.0.0。桌面构建还需要各平台系统工具，见[开发指南](docs/development.md)。
 
 ```sh
+git clone https://github.com/He-RT/om-openmath.git
+cd om-openmath
 cargo install --path crates/om-cli --locked
 cargo install wasm-bindgen-cli --version 0.2.129 --locked
 npm ci --prefix app
-npm run dev --prefix app             # browser notebook
-npm run tauri --prefix app -- dev    # desktop notebook
+npm run dev --prefix app             # 浏览器笔记本
+npm run tauri --prefix app -- dev    # 桌面笔记本
 ```
 
-`om` opens the REPL. Use `om run FILE.om` or `om run FILE.omnb` for sequential scripts; `:help`, `:steps`, `:latex`, `:ask`, `:explain`, `:dialect` and `:clear` are available. `om config path|show|edit` manages native settings, and `om llm test PROFILE` probes an actual provider.
-
-## Build
-
 ```sh
-npm run build --prefix app
-npm run preview --prefix app
+npm run build --prefix app           # 静态网站：app/dist
+npm run tauri --prefix app -- build # 当前平台桌面包；Windows 自动生成 EXE/MSI
+# macOS 仅生成 app 与 DMG：
 npm run tauri --prefix app -- build --bundles app,dmg
 cargo build -p om-cli --release --locked
 ```
 
-The verified macOS arm64 build produces `target/release/bundle/macos/OpenMath.app` and `target/release/bundle/dmg/OpenMath_0.1.0_aarch64.dmg`. These local pre-alpha packages are unsigned. `app/dist` is a deployable static site; serve it over HTTP(S) at the site root. Web providers must allow browser CORS; native HTTP has no browser CORS restriction. Windows/Linux installers are not verified for this release.
+`om` 进入 REPL；`om run FILE.om` 或 `om run FILE.omnb` 顺序执行源码。使用 `:help`、`:steps`、`:latex`、`:ask`、`:explain`、`:dialect`、`:clear`，或 `om config path|show|edit` 管理原生配置。
 
-Native menus support notebook files, Markdown/LaTeX export, themes, panels and help. Exports include current mathematical results and omit stale output. General preferences and AI model/routing settings are available in both notebooks. Browser credentials are remembered only by explicit opt-in; native keys use environment variables or the system vault.
+## 文档与贡献
 
-## Documentation and verification
+- [安装及常见问题](docs/install.md)、[输入语言与交互](docs/language.md)
+- [求解语义与边界](docs/solve.md)、[模型接入与隐私](docs/llm.md)
+- [开发与验证](docs/development.md)、[内核协议](docs/protocol.md)、[发布流程](docs/releasing.md)
+- [发行说明](docs/release-0.1.0-pre-alpha.1.md)、[验收记录](docs/pre-alpha.md)、[实施进度](docs/plan/PROGRESS.md)
 
-- [Input language and examples](docs/language.md)
-- [Solving semantics and limits](docs/solve.md)
-- [AI providers, privacy and CLI usage](docs/llm.md)
-- [Pre-alpha acceptance record](docs/pre-alpha.md)
-- [Implementation progress](docs/plan/PROGRESS.md), [protocol](docs/protocol.md)
+欢迎提交带有输入、方言、平台、期望和实际结果的 [Issue](https://github.com/He-RT/om-openmath/issues)。请不要附带 API 密钥。
 
-Run formatting, workspace Clippy/tests, workspace policy, WASM build and cargo-deny checks. Frontend verification uses `npm run lint`, `npm test`, `npm run build` and `npm run test:e2e` in `app`. Set `OPENMATH_E2E_PREVIEW=1` after building to exercise production assets. Two direct development-module worker tests remain in the development suite; all UI acceptance tests run against production. No tests contact a real provider.
-
-OpenMath implements a bounded solving subset, not all Mathematica semantics. Unsupported problems retain their source and diagnostics. See the solving guide for principal branches, original poles, exact/numeric verification and resource limits. This project is independent of Wolfram Mathematica and the OpenMath interchange standard.
-
-Dual-licensed under [MIT](LICENSE-MIT) or [Apache-2.0](LICENSE-APACHE). Builds retain dependency notices and a locked-package index in `licenses/`. [中文说明](README.zh-CN.md)
+以 [MIT](LICENSE-MIT) 或 [Apache-2.0](LICENSE-APACHE) 双许可证发布。[第三方声明](THIRD_PARTY_NOTICES.md)保留原许可证文本。本项目独立于 Wolfram Mathematica，也不是 OpenMath 交换标准的实现。

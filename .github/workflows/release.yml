@@ -1,0 +1,229 @@
+name: 发布安装包
+
+on:
+  push:
+    tags: ['v*']
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 发行标签（所有版本必须一致）
+        required: true
+        default: v0.1.0-pre-alpha.1
+
+permissions:
+  contents: read
+
+concurrency:
+  group: release-${{ github.event.inputs.tag || github.ref_name }}
+  cancel-in-progress: false
+
+env:
+  TAG: ${{ github.event.inputs.tag || github.ref_name }}
+  CARGO_TERM_COLOR: always
+  CARGO_PROFILE_TEST_OPT_LEVEL: 2
+
+jobs:
+  web:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - run: python scripts/release.py verify --tag "$TAG"
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: app/.nvmrc
+          cache: npm
+          cache-dependency-path: app/package-lock.json
+      - run: rustup show active-toolchain
+      - run: cargo install wasm-bindgen-cli --version 0.2.129 --locked
+      - run: npm ci --prefix app
+      - run: npm run lint --prefix app
+      - run: npm test --prefix app
+      - run: npm run build --prefix app
+      - run: npx playwright install --with-deps chromium
+        working-directory: app
+      - run: npm run test:e2e
+        working-directory: app
+      - run: npm run test:e2e
+        working-directory: app
+        env:
+          OPENMATH_E2E_PREVIEW: '1'
+      - name: 打包静态网站
+        run: |
+          mkdir release-assets
+          version="${TAG#v}"
+          cd app/dist
+          zip -qr "../../release-assets/OpenMath-web_${version}.zip" .
+      - uses: actions/upload-artifact@v4
+        with:
+          name: release-web
+          path: release-assets/*
+          if-no-files-found: error
+
+  macos:
+    runs-on: macos-15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - run: python scripts/release.py verify --tag "$TAG"
+      - name: 确认 Apple Silicon 原生构建
+        run: test "$(uname -m)" = arm64
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: app/.nvmrc
+          cache: npm
+          cache-dependency-path: app/package-lock.json
+      - run: rustup show active-toolchain
+      - run: cargo install wasm-bindgen-cli --version 0.2.129 --locked
+      - run: npm ci --prefix app
+      - run: npm run tauri --prefix app -- build --bundles app,dmg
+      - run: cargo fmt --all -- --check
+      - run: cargo clippy --workspace --all-targets --locked -- -D warnings
+      - run: cargo test --workspace --locked
+      - run: python -m unittest discover -s tests -v
+      - name: 校验协议绑定
+        run: |
+          cargo test -p om-kernel export_bindings --locked
+          git diff --exit-code app/src/kernel/generated
+          test -z "$(git ls-files --others --exclude-standard app/src/kernel/generated)"
+      - run: cargo build -p om-cli --release --locked
+      - run: cargo test -p om-cli --release --test corpus all_authority_rows_pass_native_release --locked -- --ignored
+      - name: 打包与校验 macOS 产物
+        run: |
+          mkdir release-assets
+          version="${TAG#v}"
+          dmg="target/release/bundle/dmg/OpenMath_${version}_aarch64.dmg"
+          hdiutil verify "$dmg"
+          cp "$dmg" release-assets/
+          ditto -c -k --sequesterRsrc --keepParent target/release/bundle/macos/OpenMath.app "release-assets/OpenMath_${version}_macos_arm64.app.zip"
+          mkdir -p target/cli-package/licenses
+          cp target/release/om LICENSE-MIT LICENSE-APACHE THIRD_PARTY_NOTICES.md target/cli-package/
+          cp -R app/dist/licenses/. target/cli-package/licenses/
+          cd target/cli-package
+          zip -qr "../../release-assets/om-cli_${version}_macos_arm64.zip" .
+      - uses: actions/upload-artifact@v4
+        with:
+          name: release-macos
+          path: release-assets/*
+          if-no-files-found: error
+
+  windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - run: python scripts/release.py verify --tag $env:TAG
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: app/.nvmrc
+          cache: npm
+          cache-dependency-path: app/package-lock.json
+      - run: rustup show active-toolchain
+      - run: cargo install wasm-bindgen-cli --version 0.2.129 --locked
+      - run: npm ci --prefix app
+      - run: npm run tauri --prefix app -- build
+      - run: cargo clippy --workspace --all-targets --locked -- -D warnings
+      - run: cargo test --workspace --locked
+      - run: python -m unittest discover -s tests -v
+      - run: cargo build -p om-cli --release --locked
+      - name: 安装 EXE 和 MSI 并验证真实中文窗口
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $env:OPENMATH_CONFIG_PATH = "$env:RUNNER_TEMP\openmath-acceptance.toml"
+          "[general]`nlanguage = `"zh-CN`"" | Set-Content $env:OPENMATH_CONFIG_PATH -Encoding utf8NoBOM
+          $env:WEBVIEW2_ADDITIONAL_BROWSER_ARGUMENTS = '--remote-debugging-port=9222'
+          $version = $env:TAG.Substring(1)
+          $nsis = Get-Item "target/release/bundle/nsis/OpenMath_${version}_x64-setup.exe"
+          $msi = Get-Item "target/release/bundle/msi/OpenMath_${version}_x64_zh-CN.msi"
+          foreach ($kind in @('nsis', 'msi')) {
+            $installDir = "$env:RUNNER_TEMP\OpenMath-$kind"
+            if ($kind -eq 'nsis') {
+              $install = Start-Process $nsis.FullName -ArgumentList @('/S', "/D=$installDir") -PassThru -Wait
+            } else {
+              $install = Start-Process msiexec.exe -ArgumentList @('/i', $msi.FullName, '/qn', '/norestart', "INSTALLDIR=$installDir", '/l*v', "$env:RUNNER_TEMP\openmath-msi.log") -PassThru -Wait
+            }
+            if ($install.ExitCode -notin @(0, 3010)) { throw "Installer $kind failed: $($install.ExitCode)" }
+            $exe = Join-Path $installDir 'om-desktop.exe'
+            if (!(Test-Path $exe)) { throw "Missing installed app: $exe" }
+            $appProcess = Start-Process $exe -PassThru
+            try {
+              $env:OPENMATH_INSTALL_KIND = $kind
+              Push-Location app
+              try {
+                node scripts/verify-windows-install.mjs
+                if ($LASTEXITCODE -ne 0) { throw "Native $kind verification failed" }
+              } finally { Pop-Location }
+            } finally {
+              Stop-Process -Id $appProcess.Id -Force -ErrorAction SilentlyContinue
+              Get-Process msedgewebview2 -ErrorAction SilentlyContinue | Stop-Process -Force
+            }
+            if ($kind -eq 'nsis') {
+              $uninstall = Start-Process "$installDir\uninstall.exe" -ArgumentList '/S' -PassThru -Wait
+            } else {
+              $uninstall = Start-Process msiexec.exe -ArgumentList @('/x', $msi.FullName, '/qn', '/norestart') -PassThru -Wait
+            }
+            if ($uninstall.ExitCode -notin @(0, 3010)) { throw "Uninstaller $kind failed" }
+          }
+      - name: 打包 Windows 产物
+        run: |
+          $version = $env:TAG.Substring(1)
+          New-Item release-assets -ItemType Directory
+          Copy-Item "target/release/bundle/nsis/OpenMath_${version}_x64-setup.exe" release-assets/
+          Copy-Item "target/release/bundle/msi/OpenMath_${version}_x64_zh-CN.msi" release-assets/
+          New-Item target/cli-package -ItemType Directory
+          Copy-Item target/release/om.exe, LICENSE-MIT, LICENSE-APACHE, THIRD_PARTY_NOTICES.md target/cli-package/
+          Copy-Item app/dist/licenses target/cli-package/licenses -Recurse
+          Compress-Archive -Path target/cli-package/* -DestinationPath "release-assets/om-cli_${version}_windows_x64.zip"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: windows-install-evidence
+          path: |
+            app/test-results/windows-*/
+            ${{ runner.temp }}/openmath-msi.log
+          if-no-files-found: warn
+      - uses: actions/upload-artifact@v4
+        with:
+          name: release-windows
+          path: release-assets/*
+          if-no-files-found: error
+
+  release:
+    needs: [web, macos, windows]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      actions: read
+    env:
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - name: 要求同一提交的 CI 已全部通过
+        run: |
+          gh api "repos/$GITHUB_REPOSITORY/actions/workflows/ci.yml/runs?head_sha=$GITHUB_SHA&status=completed" > ci-runs.json
+          python -c 'import json; r=json.load(open("ci-runs.json"))["workflow_runs"]; assert r and r[0]["conclusion"] == "success", "同一提交的 CI 尚未通过"'
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: release-*
+          path: release-assets
+          merge-multiple: true
+      - run: python scripts/release.py finalize --tag "$TAG" --root release-assets --sha "$GITHUB_SHA"
+      - name: 校验已存在标签的提交一致性
+        run: |
+          git fetch origin --tags
+          if git rev-parse --verify --quiet "${TAG}^{commit}" > /dev/null; then
+            test "$(git rev-parse "${TAG}^{commit}")" = "$GITHUB_SHA"
+          fi
+      - name: 创建完整草稿后发布预发行版
+        run: |
+          gh release create "$TAG" release-assets/* --draft --prerelease --target "$GITHUB_SHA" --title "OpenMath ${TAG#v}" --notes-file "docs/release-${TAG#v}.md"
+          gh release edit "$TAG" --draft=false --prerelease

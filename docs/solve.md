@@ -1,52 +1,54 @@
-# Equation solving
+# 求解语义与支持范围
 
-The terminal, desktop and browser use the same Solve/NSolve/FindRoot/Reduce/Eliminate implementation. Modern `solve(x^2=2,x)` and Wolfram `Solve[x^2==2,x]` return the same two exact assignments. The default domain is Complexes; Reals, Integers and Rationals can be requested explicitly.
+[English](solve.en.md) · [文档导航](README.md)
 
-| Problem | Wolfram example | Behavior |
+现代 `solve(x^2=2,x)` 与 Wolfram `Solve[x^2==2,x]` 返回同样的两个精确根。默认定义域 Complexes，可显式指定 Reals、Integers、Rationals。
+
+| 问题 | Wolfram 示例 | 行为 |
 |---|---|---|
-| Polynomial roots | `Solve[x^2-5x+6==0,x]` | Exact roots 2 and3 |
-| Original pole | `Solve[x/x==1,x]` | Identity with zero excluded |
-| Real roots | `Solve[x^2+1==0,x,Reals]` | No real solutions |
-| Linear system | `Solve[{x+y==10,x-y==2},{x,y}]` | Exact ordered assignments |
-| Real inequality | `Reduce[x^2<4,x,Reals]` | Open interval −2<x<2 |
-| Numerical roots | `NSolve[x^5-x+1==0,x]` | Verified numerical approximations |
-| Local search | `FindRoot[x^2==2,{x,1}]` | A verified nearby root |
-| Elimination | `Eliminate[{x+y==3,y+z==2},y]` | Polynomial relation on retained axes |
+| 多项式根 | `Solve[x^2-5x+6==0,x]` | 精确根 2、3 |
+| 原始极点 | `Solve[x/x==1,x]` | 恒等式，排除零 |
+| 实数根 | `Solve[x^2+1==0,x,Reals]` | 没有实数解 |
+| 线性方程组 | `Solve[{x+y==10,x-y==2},{x,y}]` | 按指定轴顺序给出精确值 |
+| 实数不等式 | `Reduce[x^2<4,x,Reals]` | 开区间 −2<x<2 |
+| 数值根 | `NSolve[x^5-x+1==0,x]` | 经验证的数值近似 |
+| 局部搜索 | `FindRoot[x^2==2,{x,1}]` | 经验证的邻近根 |
+| 消元 | `Eliminate[{x+y==3,y+z==2},y]` | 保留轴上的多项式关系 |
 
-## Source restrictions and domains
+## 定义域、原始限制和分支
 
-Solving retains direct unevaluated arithmetic before simplification. `x/x==1` excludes zero, and delayed definitions/pure functions preserve such holes when expanded by the solver. Immediate assignments and explicit `Cancel`/`Expand` transformations carry their already evaluated meaning; restrictions erased before Solve cannot be recovered.
+直接算术源码在化简前保留，因此 x/x 排除零；延迟定义和纯函数展开也保留孔洞。立即赋值和显式 Cancel/Expand 使用已求值含义；进入 Solve 前丢失的限制无法恢复。
 
-Square roots, logarithms and rational powers use principal branches. Squaring or clearing denominators produces candidates that must be checked against the original equations, branches and poles. A numerical midpoint near zero never proves an exact identity or integer membership.
+平方根、对数和有理幂使用主值分支。平方、清除分母得到的候选要对原方程、分支和极点检查。接近零的数值中点不能证明精确恒等式或整数成员关系。
 
-Requested axes retain their order. Omitted axes are inferred by name; if there are fewer equality constraints than variables, Solve emits `Solve::svars` and solves the first axes while treating the rest as parameters. Explicit empty axes remain empty. Free axes, generated integer periods, parameter assumptions and source conditions are preserved. Generated names avoid collisions with source constants.
+变量顺序保留；省略变量按名称推断，等式少于变量时发出 `Solve::svars` 并解前几个轴，其余视为参数。空轴列表保持为空。自由轴、生成的整数周期、参数假设和源码限制保留，生成名称避免碰撞。
 
-Real roots use exact isolation or directed branch certificates. Integer/rational filtering uses exact algebraic certification, never proximity to an integer. Affine integer systems use an exact unimodular lattice certificate and return a particular solution plus a complete integer nullspace family. Symbolic coefficient lattice solving remains unsupported.
+实根使用精确隔离或有向分支证书；整数/有理域过滤使用精确代数认证。仿射整数系统以精确幺模格证书给出特解和完整整数零空间族；符号系数格求解不支持。
 
-`MaxExtraConditions` controls generic assumptions; original source restrictions remain mandatory. The result distinguishes finite solutions, all values, no solutions and real regions. In Wolfram-shaped output roots repeat according to multiplicity. Logical branches are combined only when every nonempty branch is complete; an unconditional identity absorbs the union.
+MaxExtraConditions 控制一般参数假设，原始限制始终必需。结果区分有限解、所有值、无解、实数区域，Wolfram 输出按重数重复根。逻辑并集仅在所有非空分支完整时合并；无条件恒等式吸收并集。
 
-## Evidence and steps
+## 验证证据与步骤
 
-Solution cards report actual `Exact`, `ByConstruction`, numerical verification or unresolved evidence. `ByConstruction` records an exact polynomial/linear construction; it is distinct from direct substitution proving zero. Numeric checks use directed balls and preserve their claimed precision. The solver does not turn unsupported input into an empty answer.
+解卡片显示实际 `Exact`、`ByConstruction`、数值验证或未验证证据。ByConstruction 代表精确多项式/线性构造，与直接代入证明零不同。数值检查使用有向球并保留声称的精度。不支持的输入不会变成空解。
 
-Derivations record real normalization, exclusions, denominator clearing, factorization, zero-product splitting, substitutions, elimination, branch/domain filtering and verification. The UI and CLI render the same32 rule identifiers in English and Chinese. Disabling recording suppresses step creation during computation. Eliminate's existing expression-only API has no synthetic derivation output.
+步骤记录实际发生的规范化、排除、清分母、分解、零乘积分支、代入、消元、分支/域过滤和验证。界面与终端用同样 32 个规则标识渲染中英文。关闭记录从计算阶段抑制步骤；Eliminate 不合成不存在的步骤。
 
-## Supported algorithms
+## 算法
 
-Exact polynomial solving combines factorization, low-degree formulas or certified Root objects. Root indices put real roots first, then nonreal conjugate pairs in the documented real/imaginary order. Dense polynomial queries have degree at most4096; closed algebraic certification has degree at most64. RootReduce performs exact algebraic arithmetic; ToRadicals returns a supported principal radical representation or retains the exact Root.
+精确多项式求解组合因式分解、低次公式或认证 Root。根编号先实根，再按规定实部/虚部顺序排列非实共轭根。稠密查询次数上限 4096，闭合代数认证上限 64。RootReduce 精确计算代数数；ToRadicals 返回支持的主值根式，否则保留 Root。
 
-Polynomial systems use certified Gröbner/FGLM, triangular or primitive-element recovery when complete. Mixed systems substitute verified univariate branches and preserve their original restrictions. Closed coordinate ordering uses directed enclosures and exact algebraic projection ties. Bounded caches reuse immutable proofs with fresh cancellation/deadline checks; displayed source and verification semantics remain unchanged.
+多项式系统在完整时使用认证 Gröbner/FGLM、三角化或本原元恢复；混合系统代入已验证的单变量分支并保留限制。闭合坐标排序使用有向包围和精确代数投影。有界缓存复用不可变证明，每次重新检查取消/期限。
 
-Reduce-lite supports one-variable real rational inequalities. Exact numerator/denominator roots define a sign chart; rational gap samples and minimal-polynomial remainders decide open/closed endpoints. Canceled denominator holes remain excluded, and accepted intervals merge only when justified. Nonrational, symbolic/inexact-coefficient, multivariate or discrete-domain inequalities remain unevaluated with diagnostics. Logical normalization is bounded to64 branches.
+Reduce-lite 支持单变量实数有理不等式。精确分子/分母根生成符号表，有理间隙样本及最小多项式余式决定端点。约分孔洞仍排除，区间只有获得证明才合并。非有理、符号/非精确系数、多变量和离散域不等式保留调用并诊断。逻辑规范化最多 64 分支。
 
-NSolve starts from complete supported solutions and rounds certified algebraic coordinates to the requested precision. FindRoot uses damped Newton with an analytic or numerical Jacobian, or safeguarded Brent for a real bracket. Local convergence requires both residual and correction/bracket evidence; successful values are checked again against raw residuals and poles. Exact precision is invalid for numerical requests. WorkingPrecision accepts MachinePrecision or5..2466 decimal digits; FindRoot also accepts MaxIterations and compatible Automatic/Newton/Brent methods.
+NSolve 从支持的完整解出发，按精度舍入认证代数坐标。FindRoot 使用带阻尼的 Newton（解析或数值 Jacobian），实区间用受保护 Brent。局部收敛需要残差及修正量/区间证据，再按原残差和极点验证。数值请求不能要求 ExactPrecision。WorkingPrecision 接受 MachinePrecision 或 5..2466 十进制位；FindRoot 另支持 MaxIterations 和兼容方法。
 
-Eliminate computes a polynomial elimination ideal with eliminated axes first. Restrictions involving retained axes remain explicit. Unsupported restrictions involving eliminated axes are rejected rather than silently erased. General constructible/existential projection is outside this version's scope.
+Eliminate 计算消元变量在前的多项式消元理想。保留轴上的限制继续显式表示；涉及消去轴但不支持的限制会被拒绝。一般可构造集/存在量投影不在本版范围。
 
-## Limits and reproducibility
+## 限制与复现
 
-This is a bounded P0/P1 subset. Arbitrary transcendental systems, full multivariate inequality solving and general parameter case splitting are not implemented. Factorization may report incomplete work when recombination bounds are exhausted; it never invents irreducibility. Numerical ProductLog enclosure currently covers the principal nonnegative real axis. Unsupported branches retain source and messages such as `Solve::nsmet` or `Reduce::nsmet`.
+这是有界 P0/P1 子集，尚不支持任意超越方程组、完整多变量不等式和一般参数分类。因式分解在重组预算耗尽时可报告未完成，不声称不可约。ProductLog 数值包围目前限主值非负实轴。不支持的分支保留源码和 `Solve::nsmet` / `Reduce::nsmet` 等消息。
 
-Injected step/time/cancellation limits apply throughout. CLI/desktop interruption signals the computation directly; the browser restarts its worker and restores source/definitions while marking other output stale. Use a suitable explicit timeout for expensive debug builds. Algorithm-specific term, precision and degree bounds are described in [PLAN §8](plan/PLAN.md#8-算法规格规范形式多项式solve-管线零判定).
+步数、时间与取消预算贯穿计算。CLI/桌面直接发中断信号；浏览器重启 Worker、恢复源码/定义并将其他结果标为过期。昂贵 debug 运算可设适当超时。次数/精度边界见[计划 §8](plan/PLAN.md#8-算法规格规范形式多项式solve-管线零判定)。
 
-All53 authority rows in `tests/corpus/solve.toml` are checked through public APIs, Evaluator and actual CLI processes. Exact forms preserve order and multiplicity; numerical rows use independent700-bit raw residual/coordinate checks, exceeding200 decimal digits, with residual thresholds below1e−100. Original mathematical expectations are unchanged. Release timings and native/production UI acceptance are recorded in [pre-alpha.md](pre-alpha.md).
+`tests/corpus/solve.toml` 的 53 条原始语料经公共 API、Evaluator 和真实 CLI 验证。精确形式保留顺序与重数，数值行使用独立 700-bit 原残差/坐标检查（超过 200 十进制位，阈值低于 1e−100）。期望未改动，性能及界面证据见[验收记录](pre-alpha.md)。

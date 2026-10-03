@@ -14,13 +14,11 @@ pub fn build(app: &AppHandle, zh: bool) -> tauri::Result<Menu<tauri::Wry>> {
         }))
         .separator()
         .text("om-settings", text("Settings…", "设置…"))
-        .separator()
-        .hide()
-        .hide_others()
-        .show_all()
-        .separator()
-        .quit()
-        .build()?;
+        .separator();
+    // These application actions are macOS-specific; Show All fails on Windows.
+    #[cfg(target_os = "macos")]
+    let application = application.hide().hide_others().show_all().separator();
+    let application = application.quit().build()?;
     let file = SubmenuBuilder::new(app, text("File", "文件"))
         .text("om-new", text("New Notebook", "新建笔记本"))
         .text("om-open", text("Open…", "打开…"))

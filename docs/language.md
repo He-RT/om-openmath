@@ -1,41 +1,57 @@
-# Input language
+# 输入语言与交互
 
-OpenMath parses modern and Wolfram syntax into the same expression tree. Modern calls use parentheses and lists use square brackets; Wolfram calls use square brackets and lists use braces. Modern `let x = value` assigns a value, while `x = value` expresses equality. Wolfram uses `x = value` for assignment and `x == value` for equality. Full syntax is specified in [PLAN §7](plan/PLAN.md#7-输入语言规格).
+[English](language.en.md) · [文档导航](README.md)
 
-The evaluator exposes the following algebra functions. These examples are executable in the indicated dialect.
+现代语法与 Wolfram 语法解析到同一棵表达式树。现代函数用圆括号、列表用方括号，`let x=value` 赋值，`x=value` 表示等式；Wolfram 函数用方括号、列表用花括号，`x=value` 赋值，`x==value` 表示等式。完整规格见[计划 §7](plan/PLAN.md#7-输入语言规格现代方言--wolfram-方言)。
 
-| Operation | Modern | Wolfram | Result |
+## 常用表达式
+
+| 操作 | 现代语法 | Wolfram | 结果 |
 |---|---|---|---|
-| Expansion | `Expand((x+1)^3)` | `Expand[(x+1)^3]` | `x^3+3x^2+3x+1` |
-| Factoring | `Factor(x^2-y^2)` | `Factor[x^2-y^2]` | `(x-y)(x+y)` |
-| Cancellation | `Cancel((x^2-1)/(x-1))` | `Cancel[(x^2-1)/(x-1)]` | `x+1` |
-| Coefficients | `CoefficientList(a*x^2+b*x+c,x)` | `CoefficientList[a x^2+b x+c,x]` | `[c,b,a]` / `{c,b,a}` |
-| Differentiation | `D(sin(x^2),x)` | `D[Sin[x^2],x]` | `2x Cos[x^2]` |
-| Partial fractions | `Apart(1/(x*(x+1)),x)` | `Apart[1/(x(x+1)),x]` | `1/x-1/(x+1)` |
+| 展开 | `Expand((x+1)^3)` | `Expand[(x+1)^3]` | `x^3+3x^2+3x+1` |
+| 因式分解 | `Factor(x^2-y^2)` | `Factor[x^2-y^2]` | `(x-y)(x+y)` |
+| 约分 | `Cancel((x^2-1)/(x-1))` | `Cancel[(x^2-1)/(x-1)]` | `x+1` |
+| 系数 | `CoefficientList(a*x^2+b*x+c,x)` | `CoefficientList[a x^2+b x+c,x]` | `[c,b,a]` / `{c,b,a}` |
+| 求导 | `D(sin(x^2),x)` | `D[Sin[x^2],x]` | `2x Cos[x^2]` |
+| 部分分式 | `Apart(1/(x*(x+1)),x)` | `Apart[1/(x(x+1)),x]` | `1/x-1/(x+1)` |
+| 求解 | `solve(x^2=2,x)` | `Solve[x^2==2,x]` | 两个精确根 |
 
-`Together`, `Simplify`, `FullSimplify`, `Collect`, `Coefficient`, `Exponent`, `PolynomialQ`, `PolynomialGCD`, `PolynomialLCM`, `PolynomialQuotient`, `PolynomialRemainder`, `Resultant`, `Discriminant`, `Variables`, `RootReduce` and `ToRadicals` are also registered, with bilingual help and checked argument counts. Expand/Factor/Together/Cancel/RootReduce/ToRadicals thread over lists. CoefficientList accepts a variable list and returns a rectangular coefficient tensor in ascending powers. Collect optionally applies a third-argument function to each coefficient.
+还支持 `Together`、`Simplify`、`FullSimplify`、`Collect`、`Coefficient`、`Exponent`、`PolynomialQ`、`PolynomialGCD`、`PolynomialLCM`、`PolynomialQuotient`、`PolynomialRemainder`、`Resultant`、`Discriminant`、`Variables`、`RootReduce` 和 `ToRadicals`。内置帮助提供中英文参数说明。
 
-Polynomial queries accept symbolic coefficients independent of the requested axes, including denominators independent of those axes. Requested polynomial degrees are bounded to 4096; coefficient tensors have at most one million entries and sixteen axes. Exact GCD/LCM use Q polynomials and retain numeric content. Quotient/remainder and resultants support rational parameter coefficients. Apart accepts only a Q rational function in one variable, supplied explicitly or inferred when there is exactly one free symbol. Unsupported inputs stay symbolic with an algebra diagnostic; cancellation and execution budgets propagate.
+Expand/Factor/Together/Cancel/RootReduce/ToRadicals 可逐项作用于列表。CoefficientList 接受变量列表，以升幂返回矩形系数张量；Collect 的可选第三参数处理每个系数。
 
-D supports repeated orders (`D[x^4,{x,2}]`), mixed variables (`D[x^2 y^3,x,y]`), list outputs and elementary chain rules. Unknown function derivatives remain formal `Derivative[...]` expressions. It accepts at most 64 differentiation specifications and 4096 total orders. Simplify supports explicit positive-symbol assumptions, such as `Simplify[Sqrt[x^2],x>0]`, and preserves principal branches without those assumptions. FullSimplify also considers certified Root/radical conversions and keeps the expression with lower weighted complexity; a Root can remain cheaper than a radical. Use ToRadicals to request the radical form explicitly.
+多项式查询允许与指定变量无关的符号系数和分母。次数上限 4096，系数张量最多 100 万项、16 个轴。精确 GCD/LCM 使用有理数多项式并保留数值内容；商、余式和结式支持有理参数系数。Apart 仅支持单变量有理数系数有理函数；只有一个自由符号时可推断变量。不支持的输入保持符号形式并给出诊断。
 
-RootReduce produces the certified minimal polynomial and correct one-based root index for supported exact algebraic values. ToRadicals traverses expression heads and arguments, uses enabled cubic/quartic formulas and existing special polynomial reductions, and maps the selected branch through the solver’s certified minimal-polynomial root numbering. Unsupported parametric or nonradical Root objects remain intact. Solve-class functions are also exposed through the evaluator as described below.
+D 支持重复阶数 `D[x^4,{x,2}]`、混合变量 `D[x^2 y^3,x,y]`、列表和初等函数链式法则。未知函数保留形式导数 `Derivative[...]`，最多 64 个规格、4096 阶。`Simplify[Sqrt[x^2],x>0]` 使用正值假设；没有假设时保留主值分支。FullSimplify 比较已认证的 Root/根式形式并选择复杂度较低的表达式；显式要求根式用 ToRadicals。
 
+RootReduce 为支持的精确代数值生成认证最小多项式及从 1 开始的根编号。ToRadicals 遍历表达式头和参数，使用已启用的三/四次公式及特殊降阶，按认证根编号选择分支；不支持的参数根保留 Root。
 
-The solving functions are Solve, NSolve, FindRoot, Reduce, Eliminate, SolveValues, NSolveValues, Roots, Root and ConditionalExpression. Modern `solve(x^2 = 2,x)` and Wolfram `Solve[x^2==2,x]` return the same two exact assignments. Omitting variables infers free symbols in name order; when equations are fewer than symbols, Solve warns and solves the first axes. An explicit empty variable list remains empty. The optional domain is Complexes (default), Reals, Integers or Rationals.
+## 求解函数和选项
 
-Solve/Reduce/Roots and both Values families accept Cubics, Quartics, VerifySolutions, MaxExtraConditions, GeneratedParameters (a symbol head) and InverseFunctions rules. NSolve/NSolveValues additionally accept WorkingPrecision in decimal digits (5..2466), or MachinePrecision. Unsupported options/values retain the original call with a diagnostic. `SolveValues[x^2==2,x]` returns a flat value list; `SolveValues[x^2==2,{x}]` returns one-coordinate rows. Requested axis order, multiplicity, free axes and conditional families are retained. Roots converts the complete result into equality alternatives with all conditions and generated parameter memberships.
+支持 Solve、NSolve、FindRoot、Reduce、Eliminate、SolveValues、NSolveValues、Roots、Root、ConditionalExpression。默认定义域 Complexes，可显式选 Reals、Integers、Rationals。省略变量按名称推断；方程少于变量时警告并选择前几个轴。显式空变量列表仍为空。
 
-FindRoot accepts `{x,start}`, `{{x,start},{y,start}}` or separate starting specifications, and one real `{x,a,b}` bracket. Options are WorkingPrecision, MaxIterations and Method (Automatic/Newton/Brent, as a symbol or string). Automatic uses Brent for a bracket and Newton otherwise; explicit Method must match the start form. Starting symbols are localized against session values, and successful output is a flat rule list, for example `{x->1.4142135623730951}`. The local search verifies the rounded result against raw residuals and poles. Failure retains the source call and messages.
+Solve/Reduce/Roots 和两个 Values 家族接受 Cubics、Quartics、VerifySolutions、MaxExtraConditions、GeneratedParameters（符号头）、InverseFunctions。NSolve/NSolveValues 另接受 WorkingPrecision（5..2466 十进制位或 MachinePrecision）。无效选项保留原调用并诊断。`SolveValues[x^2==2,x]` 返回平坦值列表，`SolveValues[x^2==2,{x}]` 返回单坐标行；保留轴顺序、重数、自由轴和条件。Roots 将完整解转换为带全部条件和生成参数域的等式析取。
 
-Solver arguments retain direct arithmetic syntax while resolving own values, delayed definitions and pure-function applications. Thus `Solve[x/x==1,x]` retains the hole at zero, and `f[t_]:=t/t; Solve[f[x]==1,x]` does too. Immediate assignments (`eq=x/x==1`) and explicitly evaluated transformations (`Cancel`, `Expand`, replacement functions) use their evaluated meaning: syntax already erased before solving cannot be recovered. Held downvalue matching uses the raw resolved argument tree, so literal/type patterns depending on unevaluated arithmetic should be evaluated explicitly when that meaning is intended. Nested Root parameter values are resolved before solving. Explicit Divide/Subtract/Minus heads become raw arithmetic operators before pole capture; dependent numeric functions such as Floor retain their source trees. Closed numeric coefficients evaluate only after checked normalization confirms that their original domains are defined.
+FindRoot 接受 `{x,start}`、`{{x,start},{y,start}}`、分别提供的起点规格，或一个实数区间 `{x,a,b}`。选项是 WorkingPrecision、MaxIterations、Method（Automatic/Newton/Brent，符号或字符串）。Automatic 对区间用 Brent，否则用 Newton；显式方法须匹配起点形式。起点变量对会话值局部化，成功返回平坦规则列表，如 `{x->1.4142135623730951}`，舍入后的结果对原始残差和极点再验证。失败保留调用和消息。
 
-Root accepts a one-parameter polynomial pure function and a valid positive index. Closed Q roots use public algebraic certification (degree at most 64), with rational roots reducing to exact numbers; symbolic parametric roots keep their generic degree/index identity. Nonpolynomial or invalid roots retain their call and diagnostic. ConditionalExpression evaluates its condition first, removes True, yields Undefined for False, and otherwise retains the condition with its evaluated value. Solver derivations and diagnostics pass directly to the evaluator; disabling record_steps prevents creation. Eliminate returns its polynomial elimination relation and has no derivation output in its existing API.
+求解时保留直接算术源码、解析变量值/延迟定义/纯函数，因此 `Solve[x/x==1,x]` 排除零，`f[t_]:=t/t; Solve[f[x]==1,x]` 也保留孔洞。立即赋值 `eq=x/x==1` 或显式 Cancel/Expand/替换使用已求值含义，已丢失的限制无法恢复。依赖原始算术的字面/类型模式需显式求值后使用。嵌套 Root 参数先解析；Divide/Subtract/Minus 转为原始算术，Floor 等依赖变量的数值函数保留源码树。闭合数值系数仅在确认原定义域后求值。
 
-## Notebook and terminal behavior
+Root 接受单参数多项式纯函数和有效正索引。有理数系数闭合根使用不超过 64 次的认证，有理根化为精确数；符号参数根保持一般次数/索引。非多项式或索引无效保留调用和诊断。ConditionalExpression 先求条件：True 去除包装，False 返回 Undefined，其他保留。关闭 record_steps 不创建步骤；Eliminate 的现有 API 只返回消元关系。
 
-Math cells are executable source. Text cells render Markdown, and Ask cells propose source for explicit insertion or execution. Shift-Enter or Ctrl/Cmd-Enter runs the active Math cell; Ctrl/Cmd-K opens commands, Ctrl/Cmd-S saves and Ctrl/Cmd-period interrupts. Local completion and Greek shortcuts take priority over AI ghost text. Tab accepts a visible ghost without running the cell.
+## 笔记本与终端
 
-Notebook definitions are reactive: after running `let a=2` and `a+1` in separate cells, changing and running the definition as `let a=5` updates the dependent result to6. The terminal runs sequentially, so repeated assignments update session state in order. A `.omnb` file retains each cell's declared dialect; saved notebooks contain only version/title/source cells. Exported Markdown/LaTeX includes current output, omitting stale results. Unicode source in a TeX export may require a Unicode-aware TeX setup.
+数学单元格执行源码，文本单元格渲染 Markdown，“问 AI”单元格提供待确认的建议。
 
-In the terminal, `--dialect modern|wolfram|auto` selects source interpretation. `--json` prints actual CellOutput records. `-e` exits0 on success,1 on evaluation errors and2 on parse/usage errors. Use `--no-config` for isolated calculations, or `--config PATH` to select a native configuration. The desktop accepts `OPENMATH_CONFIG_PATH` for an explicit configuration location.
+| 快捷键 | 操作 |
+|---|---|
+| Shift-Enter / Ctrl/Cmd-Enter | 运行当前数学单元格 |
+| Ctrl/Cmd-K | 命令面板 |
+| Ctrl/Cmd-S | 保存 |
+| Ctrl/Cmd-句点 | 中断 |
+| Tab | 接受可见补全，插入源码但不运行 |
+
+本地补全和希腊字母快捷输入优先于 AI。分别运行 `let a=2` 和 `a+1`，修改并运行 `let a=5` 后依赖结果变为 6。终端按顺序执行并更新状态。
+
+`.omnb` 仅保存版本、标题和单元格源码/类型/方言。Markdown/LaTeX 导出包含当前结果，排除过期输出；Unicode 源码可能需要支持 Unicode 的 TeX 环境。
+
+终端 `--dialect modern|wolfram|auto` 选择方言，`--json` 输出真实 CellOutput。`-e` 成功退出 0，求值错误 1，解析/用法错误 2。`--no-config` 隔离运行，`--config PATH` 指定配置；桌面支持 `OPENMATH_CONFIG_PATH`。

@@ -1,35 +1,66 @@
-# LLM integration
+# AI 配置与隐私
 
-All three clients use the same kernel jobs and CAS source validator. Profiles are editable data and support OpenAI-compatible chat/FIM, Anthropic, DeepSeek FIM and Ollama FIM. Browser transport uses fetch; desktop and CLI use native HTTP. Models propose source; the CAS parses suggestions and executes only after an explicit action.
+[English](llm.en.md) · [文档导航](README.md)
 
-API keys never belong in notebooks or logs. Native credentials resolve in the order configured environment variable, system vault, legacy plaintext fallback. The browser keeps credentials in memory unless the user explicitly chooses to remember them. Tests use synthetic credentials and loopback/intercepted HTTP.
+三个客户端共享内核任务和 CAS 源码验证器。配置支持 OpenAI 兼容 Chat/FIM、Anthropic、DeepSeek FIM 和 Ollama FIM。浏览器用 fetch，桌面/终端用原生 HTTP。模型提议源码，CAS 解析；插入或运行由用户决定。
 
-The terminal shares the desktop configuration location. Inspect it with `om config path` or `om config show`; show masks keys, headers and nested string parameters. `om config edit` opens VISUAL/EDITOR as literal arguments. Restart the terminal after editing. `--config PATH` selects an isolated file; `--no-config` disables durable configuration and history.
+## 桌面设置
+
+打开“AI 设置”，选择预设或新增配置，填写名称、提供商类型、Base URL、模型和密钥。按实际服务设置工具调用/JSON 能力、温度、最大 token、超时、额外请求头与参数。在“功能映射”选择翻译、讲解、补全等使用的配置，然后保存。
+
+“测试连接”用未保存的草稿发送短 ping，显示真实回复、首字节及总耗时；不保存设置或发送笔记本。显式取消“需要 API 密钥”可配置无需认证的服务，不能因此绕过地址/能力验证。
+
+### DeepSeek 示例
+
+选择 DeepSeek 预设，对话地址 `https://api.deepseek.com`，当前可编辑模型预设 `deepseek-flash`。填写自己的密钥；该预设通过 `thinking: {"type":"disabled"}` 使用非思考模式，保持本项目不回放私有推理的契约。模型和端点是可编辑数据，实际账户可用性以[官方文档](https://api-docs.deepseek.com/)为准。专用 FIM 使用相应 beta 端点，能力需单独确认。
+
+此前用户授权的真实测试已通过共享 Session/native driver 验证 probe、翻译、补全和只读 solve 工具对话；实际结果与离线测试证据分开记录。仓库及发行包不包含测试密钥。
+
+## 凭据保存
+
+原生凭据按“配置的环境变量 → 系统凭据库 → 旧版明文回退字段”解析。新输入的密钥默认写系统凭据库；配置展示掩码，不把解析出的环境密钥复制回配置。清除存储字段不会删除外部环境变量。
+
+浏览器默认只在内存保留密钥。非敏感设置可独立保存；明确勾选“在此浏览器中记住密钥与高级值”后，相应密钥、请求头和高级参数会以明文写浏览器存储。只在可信环境选择此项。密钥、配置和对话不会写入 `.omnb`。
+
+## 网络与能力
+
+浏览器服务需允许当前站点 CORS；被拒绝时使用桌面/终端版。Ollama 浏览器访问需要服务允许站点来源（设置中提供提示），Anthropic 直连自动添加相应浏览器请求头。原生 HTTP 保持正常 TLS，禁止重定向转发凭据。网络/HTTP/CORS 错误真实报告，不伪装成成功。
+
+额外参数不能覆盖协议所有的模型、路由、消息、工具、prompt、stream、采样和输出限制字段；输入及响应有资源边界。预设名称不会决定运行时路由。更改能力后不兼容功能会禁用。
+
+## 各功能发送的内容
+
+| 功能 | 上下文及行为 |
+|---|---|
+| 问 AI / 翻译 | 问题和当前已定义符号名；返回经过真实解析的建议，等待插入/运行 |
+| 讲解 | 选中计算的真实输入、结果、记录步骤；没有步骤或过期则拒绝 |
+| 补全 | 光标前后代码；启用上下文时最多前三个数学源码单元格；Tab 接受不运行 |
+| 对话 | 对话和显式 `@cellN` 引用的源码/当前结果；过期结果不发送 |
+| 修复 | 错误源码、解析及计算诊断；应用修复只改源码 |
+| 测试连接 | 草稿目标上的短 ping，不含笔记本 |
+
+首次使用披露目标和上下文并请求用户确认。会话内记住的许可按目标和数据范围区分，不写笔记本。只读 evaluate/solve 工具不改变定义或历史，最多 6 轮工具调用。模型讲解是模型文本，数学验证来自求解器证据。
+
+取消、改源码/配置、切换输出或重启内核隔离旧回复。浏览器计算中断替换真实 Worker 并恢复源码/定义，其他结果过期；原生计算直接中断。
+
+## 终端
+
+与桌面共享配置位置。`om config path` 查看位置，`om config show` 掩码显示密钥、请求头及嵌套参数，`om config edit` 用 VISUAL/EDITOR 打开。编辑后重启终端。`--config PATH` 指定独立文件，`--no-config` 关闭持久配置和历史。
 
 ```sh
 om llm test deepseek
 om --json llm test deepseek
 ```
 
-A probe prints the actual provider reply and measured total/first-byte time; failures return a nonzero status. In the REPL, `? QUESTION` or `:ask QUESTION` displays parsed suggestions and waits for `y` to evaluate, `n` to cancel, or `e` to edit. Edit inserts source into the terminal buffer without evaluating it. `:explain` streams an explanation of the last retained computation. Requests disclose their destination and context and ask for confirmation.
+探测显示真实回复和耗时，失败退出非零。REPL 的 `? 问题` / `:ask 问题` 展示已解析建议，`y` 求值、`n` 取消、`e` 放入编辑缓冲但不运行；`:explain` 流式讲解上一计算。请求前披露目标和上下文并确认。
 
-History hints are enabled by default. Background AI hints require explicit opt-in:
+历史提示默认开启，后台 AI 提示需明确启用：
 
 ```toml
 [cli]
 ai_hints = true
 ```
 
-After first-use confirmation, a separate worker waits for 350 ms of idle input and requests the configured completion profile. Key handling reads only a nonblocking cache. Changed input cancels obsolete requests; default/omitted CLI preferences send no AI hint requests.
+首次确认后独立 worker 在输入空闲 350 ms 时请求补全，按键只读非阻塞缓存，修改输入取消旧请求。省略配置或默认设置不发送后台 AI 提示。
 
-The protocol, privacy controls and provider options are specified in [PLAN.md §11](plan/PLAN.md#11-llm-层规格om-llm) and [protocol.md](protocol.md).
-
-## Notebook settings and transport
-
-Models, URLs, capability flags and provider parameters are editable; preset names never determine runtime routing. General settings include language/theme/dialect, constant mode, reactive execution, steps, automatic plots and evaluation timeout. Test connection uses the unsaved draft without writing configuration, notebook or vault data. A profile may explicitly disable the API-key requirement for a keyless service. Steps, Ask, chat and completion use the same profile-readiness rules.
-
-The browser can store nonsecret settings separately from credentials; selecting Remember credentials explicitly stores the opted-in provider values in browser storage. Native configuration files use atomic writes, and new keys go to the vault. The configured environment variable has priority. Key presence is resolved by the native host; merely naming an environment variable does not establish that a key exists.
-
-Native HTTP errors and browser CORS failures are surfaced rather than treated as successful completions. Cancellation ignores stale replies. Browser calculation interruption terminates the WASM worker, restores source and symbol definitions, and leaves other output stale; native cancellation directly signals the running computation. LLM completion accepts only a checked insertion, and translation/fix cards use the actual CAS parser. Model explanations remain model text; mathematical verification comes from the solver's retained evidence.
-
-DeepSeek defaults use the editable `deepseek-flash` model and explicit thinking controls. Provider setup follows the [official DeepSeek first-call documentation](https://api-docs.deepseek.com/). A user-authorized live smoke test previously exercised probe, translation, completion and chat through the shared kernel; all automated and packaged acceptance tests use synthetic providers. No live key is included in examples, fixtures or notebook files.
+完整协议见[内核协议](protocol.md)，规格见[计划 §11](plan/PLAN.md)。测试只使用合成凭据及隔离/拦截 HTTP。

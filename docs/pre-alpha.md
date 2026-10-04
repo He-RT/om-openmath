@@ -67,3 +67,11 @@ cargo test -p om-cli --release --test corpus production_wasm_results_match --loc
 生产性能项写 `target/pre-alpha/wasm-corpus.json`，供独立原始权威验证。需要 Node 26、wasm-bindgen 0.2.129、Python 3.11+；优化测试仍保留 debug/溢出检查。
 
 当前 macOS/Windows 包未签名，macOS 未公证；Linux 安装包不在本次发行范围。各分发包保留锁定依赖的许可证和证书数据许可。Web 模型需 CORS，Unicode TeX 可能需要相应字体/引擎。边界见[求解指南](solve.md)，下载与校验见[安装指南](install.md)。
+
+## 已公开发行的实际结果
+
+[0.1.0-pre-alpha.1 预发行版](https://github.com/He-RT/om-openmath/releases/tag/v0.1.0-pre-alpha.1)从 `d674a19330a4ccc94870dac430c65d6a097b7618` 构建，[同提交 CI](https://github.com/He-RT/om-openmath/actions/runs/37148217669)及[发行工作流](https://github.com/He-RT/om-openmath/actions/runs/37148217993)全部通过。Windows 两种安装包各自安装、真实中文窗口的四组验收和卸载成功。严格程序对比只允许锁定 Tauri 的唯一三字节安装类型标记变化，其余字节完全一致。截图、结果 JSON、散列报告与启动日志保存在 `windows-install-evidence`。
+
+七个分发文件和 manifest 已从公开 Release 重新下载；文件大小、SHA256、ZIP CRC 与标签提交均核对通过。桌面包未签名的限制仍适用。
+
+![Windows MSI 安装后的实际计算界面](images/windows-notebook.png)

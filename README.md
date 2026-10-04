@@ -15,6 +15,10 @@ om --json -e 'solve(x^2=2,x)'
 
 AI 提议源码，由 CAS 解析、求解和验证。建议需要明确插入或运行；密钥和对话不进入笔记本文件。
 
+![Windows 桌面版实际求解界面](docs/images/windows-notebook.png)
+
+Windows MSI 安装后的实际界面：精确解 −3/1 与真实推导步骤。
+
 ## 下载与安装
 
 在 [GitHub Releases](https://github.com/He-RT/om-openmath/releases) 选择对应文件：

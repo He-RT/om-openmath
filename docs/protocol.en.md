@@ -1,5 +1,7 @@
 # Kernel JSON protocol
 
+This file retains historical milestone notes. The current protocol guide is [protocol.md](protocol.md); exact schemas are the Rust definitions and generated TypeScript. Statements about subsequent milestones below describe their original implementation stage.
+
 `om_kernel::protocol` defines the shared request, response and event schema.
 `om_kernel::Session` implements Evaluate, GetConfig, SetConfig, LoadNotebook,
 SaveNotebook and Interrupt in M11.2. Reactive notebook execution, specialized output views, plotting/editor helpers

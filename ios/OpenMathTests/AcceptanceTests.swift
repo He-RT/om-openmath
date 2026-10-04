@@ -213,3 +213,33 @@ import XCTest
     XCTAssertLessThan(size.height, 34, "Inline math should not force separate lines")
   }
 }
+
+@MainActor final class RestoreTests: XCTestCase {
+  func testOpenedDocumentRestoresWithoutAnEditAndDoesNotExecuteCells() async throws {
+    let defaults = UserDefaults.standard
+    let oldPath = defaults.object(forKey: "OpenMathLastDocument")
+    let oldBookmark = defaults.object(forKey: "OpenMathLastBookmark")
+    defer {
+      defaults.set(oldPath, forKey: "OpenMathLastDocument")
+      defaults.set(oldBookmark, forKey: "OpenMathLastBookmark")
+    }
+    let url = FileManager.default.temporaryDirectory.appendingPathComponent(
+      UUID().uuidString + ".omnb")
+    let file = NotebookFile(title: "恢复测试🙂", cells: [CellInput(source: "2+3")])
+    try JSONEncoder().encode(file).write(to: url)
+    defer { try? FileManager.default.removeItem(at: url) }
+    let first = NotebookController()
+    await first.start(restoreLastDocument: false)
+    await first.load(url)
+    XCTAssertNil(first.error)
+    first.kernel?.close()
+    let second = NotebookController()
+    await second.start()
+    XCTAssertNil(second.error)
+    XCTAssertEqual(second.title, file.title)
+    XCTAssertEqual(second.cells.first?.input.source, "2+3")
+    XCTAssertEqual(second.cells.first?.status, .Stale)
+    XCTAssertTrue(second.cells.first?.output.isNull == true)
+    second.kernel?.close()
+  }
+}

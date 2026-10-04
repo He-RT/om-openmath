@@ -20,10 +20,10 @@ jobs:
           git diff --exit-code ios/OpenMath.xcodeproj
       - name: 验证 iPhone 原生单元与界面流程
         run: |
-          xcodebuild -project ios/OpenMath.xcodeproj -scheme OpenMath -configuration Release -destination 'platform=iOS Simulator,name=iPhone 18 Pro,OS=27.0' -derivedDataPath target/ios-derived -resultBundlePath target/ios-phone.xcresult -parallel-testing-enabled NO -collect-test-diagnostics never -disableAutomaticPackageResolution test
+          bash ios/Scripts/test-simulator.sh phone
       - name: 验证 iPad 原生流程
         run: |
-          xcodebuild -project ios/OpenMath.xcodeproj -scheme OpenMath -configuration Release -destination 'platform=iOS Simulator,name=iPad Pro 11-inch (M5),OS=27.0' -derivedDataPath target/ios-derived -resultBundlePath target/ios-pad.xcresult -parallel-testing-enabled NO -collect-test-diagnostics never -disableAutomaticPackageResolution test
+          bash ios/Scripts/test-simulator.sh pad
       - name: 真机 ARM64 编译和 XCFramework 链接
         run: xcodebuild -project ios/OpenMath.xcodeproj -scheme OpenMath -configuration Release -destination 'generic/platform=iOS' -derivedDataPath target/ios-device -disableAutomaticPackageResolution CODE_SIGNING_ALLOWED=NO build
       - name: 打包公开移动产物

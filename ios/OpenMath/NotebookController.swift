@@ -73,11 +73,15 @@ import SwiftUI
           "type": .string("set_system_language"), "language": .string(isEnglish ? "en" : "zh-CN"),
         ]))
       loading = false
-      if restoreLastDocument, !ProcessInfo.processInfo.arguments.contains("-OpenMathUITesting"),
-        let path = UserDefaults.standard.string(forKey: "OpenMathLastDocument"),
-        FileManager.default.fileExists(atPath: path)
-      {
-        await load(URL(fileURLWithPath: path))
+      if restoreLastDocument, !ProcessInfo.processInfo.arguments.contains("-OpenMathUITesting") {
+        if let bookmark = UserDefaults.standard.data(forKey: "OpenMathLastBookmark") {
+          var stale = false
+          let url = try URL(
+            resolvingBookmarkData: bookmark, options: .withoutUI, bookmarkDataIsStale: &stale)
+          await load(url)
+        } else if let path = UserDefaults.standard.string(forKey: "OpenMathLastDocument") {
+          await load(URL(fileURLWithPath: path))
+        }
       }
     } catch {
       self.error = error.localizedDescription
@@ -344,7 +348,7 @@ import SwiftUI
       }
       guard generation == epoch else { return }
       fileURL = document?.fileURL
-      UserDefaults.standard.set(fileURL?.path, forKey: "OpenMathLastDocument")
+      if let fileURL { remember(fileURL) }
       dirty = snapshot != notebook || revisions != cells.map(\.revision)
       notice = text("笔记本已保存", "Notebook saved")
     } catch {
@@ -395,6 +399,7 @@ import SwiftUI
       if let old = document { _ = await old.closeFile() }
       document = doc
       fileURL = url
+      remember(url)
       composingCells = []
       editorSnapshots = [:]
       focusCell = nil
@@ -430,6 +435,7 @@ import SwiftUI
       if let securityURL { securityURL.stopAccessingSecurityScopedResource() }
       securityURL = nil
       UserDefaults.standard.removeObject(forKey: "OpenMathLastDocument")
+      UserDefaults.standard.removeObject(forKey: "OpenMathLastBookmark")
       epoch += 1
       if let document { _ = await document.closeFile() }
       document = nil
@@ -455,6 +461,16 @@ import SwiftUI
       try value.write(to: url, atomically: true, encoding: .utf8)
       shareURL = url
     } catch { self.error = error.localizedDescription }
+  }
+  private func remember(_ url: URL) {
+    UserDefaults.standard.set(url.path, forKey: "OpenMathLastDocument")
+    if let bookmark = try? url.bookmarkData(
+      options: .minimalBookmark, includingResourceValuesForKeys: nil, relativeTo: nil)
+    {
+      UserDefaults.standard.set(bookmark, forKey: "OpenMathLastBookmark")
+    } else {
+      UserDefaults.standard.removeObject(forKey: "OpenMathLastBookmark")
+    }
   }
   func background() async {
     interrupt()

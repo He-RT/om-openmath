@@ -34,7 +34,9 @@ final class NotebookUITests: XCTestCase {
       app.buttons["inspector.close"].tap()
     }
     app.buttons["file.menu"].tap()
-    app.descendants(matching: .any)["settings.open"].firstMatch.tap()
+    let settings = app.descendants(matching: .any)["settings.open"].firstMatch
+    XCTAssertTrue(settings.waitForExistence(timeout: 5))
+    settings.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.5)).tap()
     XCTAssertTrue(app.buttons["保存"].waitForExistence(timeout: 5))
     screenshot("settings", app)
   }

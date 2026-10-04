@@ -54,3 +54,19 @@ PowerShell 使用 `$env:OPENMATH_E2E_PREVIEW = '1'`，再运行相同 npm 命令
 ## 原生移动端
 
 使用 Xcode 27.0 / SDK 27、Swift 6，以及 Rust 1.94.0 的两种 iOS ARM64 target。先运行 `bash ios/Scripts/build-kernel.sh`，再生成/打开 `ios/OpenMath.xcodeproj`。Swift 包和传递依赖精确锁定；[移动端指南](ios.md)描述 ABI、生命周期、Keychain 与测试。
+
+## 新增常用函数
+
+普通数学函数在共享 Rust 内核实现一次，桌面、Web、CLI 和原生移动端复用。按所属类别更新 `crates/om-eval/src/*_registry.rs` 的求值入口、参数约束和中英文 `DocEntry`；解析名称和显示语法分别检查 `om-core` / `om-parse` / `om-format`。本地补全与 Hover 读取同一函数文档，不另写 Swift 函数分发表。
+
+为新函数加入独立数学期望，以及参数错误、定义域、精确/数值结果和中断的必要用例。保留现有 53 条权威语料的期望。涉及绘图时同时接入 `om-eval` 的数值编译器；涉及新的公式命令时检查 SwiftMath 的真实排版，未知命令仍显示可复制源码。
+
+协议和输出类型不变时，无需改动 C ABI 或重做移动端导航；重建 XCFramework 后运行现有 Swift/界面门禁即可：
+
+```sh
+bash ios/Scripts/build-kernel.sh
+bash ios/Scripts/test-simulator.sh phone
+bash ios/Scripts/test-simulator.sh pad
+```
+
+每轮使用独立模拟器并保留独立 `.xcresult`，结束后移除本轮临时模拟器。文档恢复测试使用独立 UserDefaults，HTTP fixture 使用独立端点，避免前一用例的自动保存或取消请求影响下一用例。仓库文本显式使用 UTF-8；Xcode 环境检查完整读取版本输出。上述基础设施不应因添加数学函数而反复出现同一错误。新协议字段、结果类型或算法行为仍需相应契约测试及各平台适配。

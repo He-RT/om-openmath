@@ -87,7 +87,7 @@ jobs:
       - run: cargo fmt --all -- --check
       - run: cargo clippy --workspace --all-targets --locked -- -D warnings
       - run: cargo test --workspace --locked
-      - run: python -m unittest discover -s tests -v
+      - run: python -X warn_default_encoding -W error::EncodingWarning -m unittest discover -s tests -v
       - name: 校验协议绑定
         run: |
           cargo test -p om-kernel --test protocol export_bindings --locked
@@ -209,7 +209,7 @@ jobs:
           }
       - run: cargo clippy --workspace --all-targets --locked -- -D warnings
       - run: cargo test --workspace --locked
-      - run: python -m unittest discover -s tests -v
+      - run: python -X warn_default_encoding -W error::EncodingWarning -m unittest discover -s tests -v
       - run: cargo build -p om-cli --release --locked
       - name: 打包 Windows 产物
         run: |

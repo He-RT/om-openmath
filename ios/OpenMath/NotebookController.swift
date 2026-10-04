@@ -54,6 +54,8 @@ import SwiftUI
   private var aiOrder: [String] = []
   private var aiTimeouts: [String: Double] = [:]
   private var aiScopes: [String: (epoch: Int, cell: String?, revision: Int?)] = [:]
+  private let defaults: UserDefaults
+  init(defaults: UserDefaults = .standard) { self.defaults = defaults }
   var isEnglish: Bool {
     language == "en" || (language == "auto" && !Locale.current.identifier.hasPrefix("zh"))
   }
@@ -67,19 +69,19 @@ import SwiftUI
       let reply = try await client.request(.object(["type": .string("get_config")]))
       config = reply.response.body["config"]
       language = config["general"]["language"].string
-      scheme = UserDefaults.standard.string(forKey: "OpenMathTheme") ?? "system"
+      scheme = defaults.string(forKey: "OpenMathTheme") ?? "system"
       _ = try await client.request(
         .object([
           "type": .string("set_system_language"), "language": .string(isEnglish ? "en" : "zh-CN"),
         ]))
       loading = false
       if restoreLastDocument, !ProcessInfo.processInfo.arguments.contains("-OpenMathUITesting") {
-        if let bookmark = UserDefaults.standard.data(forKey: "OpenMathLastBookmark") {
+        if let bookmark = defaults.data(forKey: "OpenMathLastBookmark") {
           var stale = false
           let url = try URL(
             resolvingBookmarkData: bookmark, options: .withoutUI, bookmarkDataIsStale: &stale)
           await load(url)
-        } else if let path = UserDefaults.standard.string(forKey: "OpenMathLastDocument") {
+        } else if let path = defaults.string(forKey: "OpenMathLastDocument") {
           await load(URL(fileURLWithPath: path))
         }
       }
@@ -434,8 +436,8 @@ import SwiftUI
       transport = LLMTransport(client: client) { [weak self] packet in self?.consume(packet) }
       if let securityURL { securityURL.stopAccessingSecurityScopedResource() }
       securityURL = nil
-      UserDefaults.standard.removeObject(forKey: "OpenMathLastDocument")
-      UserDefaults.standard.removeObject(forKey: "OpenMathLastBookmark")
+      defaults.removeObject(forKey: "OpenMathLastDocument")
+      defaults.removeObject(forKey: "OpenMathLastBookmark")
       epoch += 1
       if let document { _ = await document.closeFile() }
       document = nil
@@ -463,13 +465,13 @@ import SwiftUI
     } catch { self.error = error.localizedDescription }
   }
   private func remember(_ url: URL) {
-    UserDefaults.standard.set(url.path, forKey: "OpenMathLastDocument")
+    defaults.set(url.path, forKey: "OpenMathLastDocument")
     if let bookmark = try? url.bookmarkData(
       options: .minimalBookmark, includingResourceValuesForKeys: nil, relativeTo: nil)
     {
-      UserDefaults.standard.set(bookmark, forKey: "OpenMathLastBookmark")
+      defaults.set(bookmark, forKey: "OpenMathLastBookmark")
     } else {
-      UserDefaults.standard.removeObject(forKey: "OpenMathLastBookmark")
+      defaults.removeObject(forKey: "OpenMathLastBookmark")
     }
   }
   func background() async {

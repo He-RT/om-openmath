@@ -19,7 +19,7 @@ class ReleaseTests(unittest.TestCase):
     def test_checked_in_versions_and_windows_installer_intent_agree(self):
         version = self.release.verify_version(ROOT, "v0.1.0-pre-alpha.2")
         self.assertEqual(version, "0.1.0-pre-alpha.2")
-        config = json.loads((ROOT / "app/src-tauri/tauri.windows.conf.json").read_text())
+        config = json.loads((ROOT / "app/src-tauri/tauri.windows.conf.json").read_text(encoding="utf-8"))
         self.assertEqual(set(config["bundle"]["targets"]), {"nsis", "msi"})
         windows = config["bundle"]["windows"]
         self.assertEqual(windows["wix"]["language"], "zh-CN")
@@ -53,7 +53,7 @@ class ReleaseTests(unittest.TestCase):
             for name in names:
                 (root / name).write_bytes(b"release-fixture")
             self.release.finalize(root, "v0.1.0-pre-alpha.2", "a" * 40)
-            manifest = json.loads((root / "release-manifest.json").read_text())
+            manifest = json.loads((root / "release-manifest.json").read_text(encoding="utf-8"))
             self.assertEqual({a["name"] for a in manifest["assets"]}, set(names))
             self.assertTrue(all(a["bytes"] == 15 for a in manifest["assets"]))
             expected_hash = hashlib.sha256(b"release-fixture").hexdigest()
@@ -65,7 +65,7 @@ class ReleaseTests(unittest.TestCase):
             with self.assertRaises(ValueError):
                 self.release.finalize(root, "v0.1.0-pre-alpha.2", "a" * 40)
             (root / names[0]).write_bytes(b"release-fixture")
-            (root / "config.toml").write_text("should not ship")
+            (root / "config.toml").write_text("should not ship", encoding="utf-8")
             with self.assertRaises(ValueError):
                 self.release.finalize(root, "v0.1.0-pre-alpha.2", "a" * 40)
 

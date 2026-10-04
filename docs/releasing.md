@@ -1,6 +1,6 @@
 # 发布流程
 
-当前版本 `0.1.0-pre-alpha.2`，标签 `v0.1.0-pre-alpha.2`。[工作流](../.github/workflows/release.yml)从同一提交构建 Windows、macOS 与 Web；所有验证通过后发布预发行版。
+当前版本 `0.1.0-pre-alpha.2`，标签 `v0.1.0-pre-alpha.2`。[工作流](../.github/workflows/release.yml)从同一提交构建 Windows、macOS、Web 与原生 iOS 产物；所有验证通过后发布预发行版。
 
 ## 版本与触发
 

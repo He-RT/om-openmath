@@ -42,14 +42,34 @@ private final class FixtureProtocol: URLProtocol, @unchecked Sendable {
       return calls.count
     }
   }
-  static let registry = Registry()
+  final class Fixtures: @unchecked Sendable {
+    private let lock = NSLock()
+    private var entries: [String: Registry] = [:]
+    func install(_ registry: Registry) -> String {
+      let host = UUID().uuidString.lowercased() + ".fixture.invalid"
+      lock.lock()
+      defer { lock.unlock() }
+      entries[host] = registry
+      return host
+    }
+    func registry(for request: URLRequest) -> Registry? {
+      lock.lock()
+      defer { lock.unlock() }
+      return entries[request.url?.host ?? ""]
+    }
+  }
+  static let fixtures = Fixtures()
   private var work: DispatchWorkItem?
   override class func canInit(with request: URLRequest) -> Bool {
-    request.url?.host == "fixture.invalid"
+    request.url?.host?.hasSuffix(".fixture.invalid") == true
   }
   override class func canonicalRequest(for request: URLRequest) -> URLRequest { request }
   override func startLoading() {
-    let (status, body, delay) = Self.registry.take(request)
+    guard let registry = Self.fixtures.registry(for: request) else {
+      client?.urlProtocol(self, didFailWithError: URLError(.badURL))
+      return
+    }
+    let (status, body, delay) = registry.take(request)
     let item = DispatchWorkItem { [self] in
       let response = HTTPURLResponse(
         url: request.url!, statusCode: status, httpVersion: "HTTP/1.1",
@@ -73,14 +93,18 @@ private final class FixtureProtocol: URLProtocol, @unchecked Sendable {
   {
     let stream =
       "data: {\"choices\":[{\"delta\":{\"content\":\"中文🙂\"},\"finish_reason\":null}]}\n\ndata: {\"choices\":[{\"delta\":{},\"finish_reason\":\"stop\"}]}\n\ndata: [DONE]\n\n"
-    FixtureProtocol.registry.configure(status: status, body: Data(stream.utf8), delay: delay)
+    // A cancelled URLSession may enter URLProtocol after the next test starts.
+    // Give each request its own immutable endpoint and counters.
+    let fixture = FixtureProtocol.Registry()
+    fixture.configure(status: status, body: Data(stream.utf8), delay: delay)
+    let host = FixtureProtocol.fixtures.install(fixture)
     let client = try KernelClient()
     defer { client.close() }
     let before = try await client.request(.object(["type": .string("get_config")])).response.body[
       "config"]
     var profile = before["llm"]["profiles"][0]
     profile["kind"] = .string("openai_chat")
-    profile["base_url"] = .string("https://fixture.invalid/v1")
+    profile["base_url"] = .string("https://\(host)/v1")
     profile["api_key"] = .string("synthetic-transport-key")
     profile["model"] = .string("fixture")
     profile["timeout_ms"] = .number(timeout)
@@ -104,7 +128,7 @@ private final class FixtureProtocol: URLProtocol, @unchecked Sendable {
     let after = try await client.request(.object(["type": .string("get_config")])).response.body[
       "config"]
     XCTAssertEqual(before, after, "draft probe must not persist")
-    XCTAssertEqual(FixtureProtocol.registry.count(), 1, "redirects must not replay credentials")
+    XCTAssertEqual(fixture.count(), 1, "redirects must not replay credentials")
     return events
   }
   func testStreamingUTF8AndDraftProbe() async throws {
@@ -153,12 +177,14 @@ private final class FixtureProtocol: URLProtocol, @unchecked Sendable {
         ])
       ])
     ])
-    FixtureProtocol.registry.configureSequence([try frame(first), try frame(last)])
+    let fixture = FixtureProtocol.Registry()
+    fixture.configureSequence([try frame(first), try frame(last)])
+    let host = FixtureProtocol.fixtures.install(fixture)
     let controller = NotebookController()
     await controller.start(restoreLastDocument: false)
     var config = controller.config
     var profiles = config["llm"]["profiles"].array
-    profiles[0]["base_url"] = .string("https://fixture.invalid/v1")
+    profiles[0]["base_url"] = .string("https://\(host)/v1")
     profiles[0]["kind"] = .string("openai_chat")
     profiles[0]["api_key"] = .string("synthetic-tool-key")
     profiles[0]["supports_tools"] = .bool(true)
@@ -189,7 +215,7 @@ private final class FixtureProtocol: URLProtocol, @unchecked Sendable {
       ]))
     let job = try XCTUnwrap(started)
     await fulfillment(of: [done], timeout: 10)
-    XCTAssertEqual(FixtureProtocol.registry.count(), 2)
+    XCTAssertEqual(fixture.count(), 2)
     XCTAssertTrue(controller.cells.isEmpty)
     XCTAssertNotNil(controller.suggestions[job])
     let variables = try await client.request(.object(["type": .string("get_variables")]))
@@ -209,14 +235,16 @@ private final class FixtureProtocol: URLProtocol, @unchecked Sendable {
     defer { client.close() }
     let configuration = URLSessionConfiguration.ephemeral
     configuration.protocolClasses = [FixtureProtocol.self]
-    FixtureProtocol.registry.configure(body: Data("data: [DONE]\n\n".utf8), delay: 1)
+    let fixture = FixtureProtocol.Registry()
+    fixture.configure(body: Data("data: [DONE]\n\n".utf8), delay: 1)
+    let host = FixtureProtocol.fixtures.install(fixture)
     var events: [JSONValue] = []
     let transport = LLMTransport(client: client, configuration: configuration) {
       events += $0.events.map(\.body)
     }
     var profile = try await client.request(.object(["type": .string("get_config")])).response.body[
       "config"]["llm"]["profiles"][0]
-    profile["base_url"] = .string("https://fixture.invalid/v1")
+    profile["base_url"] = .string("https://\(host)/v1")
     profile["api_key"] = .string("synthetic-cancel-key")
     let start = try await client.request(
       .object([

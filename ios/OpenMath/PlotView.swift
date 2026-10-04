@@ -14,6 +14,7 @@ struct PlotView: View {
   @State private var position: CGPoint?
   @State private var dragOrigin: JSONValue?
   @State private var zoomOrigin: JSONValue?
+  @State private var showSamples = false
   private var colors: [Color] { [.openMathAccent, .blue, .orange, .purple, .red, .cyan] }
   var body: some View {
     VStack(alignment: .leading, spacing: 8) {
@@ -119,11 +120,7 @@ struct PlotView: View {
         .onTapGesture(count: 2) { reset() }
         .accessibilityElement(children: .ignore)
         .accessibilityLabel(controller.text("函数图像", "Function plot"))
-        .accessibilityValue(
-          data["highlights"]["points"].array.map {
-            "(\(format($0[0].double)), \(format($0[1].double)))"
-          }.joined(separator: ", ")
-        )
+        .accessibilityValue(accessibleSummary)
         .accessibilityAction(named: controller.text("放大", "Zoom in")) { zoom(0.8, origin: working) }
         .accessibilityAction(named: controller.text("缩小", "Zoom out")) {
           zoom(1.25, origin: working)
@@ -139,12 +136,12 @@ struct PlotView: View {
           zoom(0.8, origin: working)
         } label: {
           Image(systemName: "plus.magnifyingglass")
-        }
+        }.accessibilityLabel(controller.text("放大", "Zoom in"))
         Button {
           zoom(1.25, origin: working)
         } label: {
           Image(systemName: "minus.magnifyingglass")
-        }
+        }.accessibilityLabel(controller.text("缩小", "Zoom out"))
         Button(controller.text("复位", "Reset")) { reset() }
         Spacer()
         if sampling { ProgressView() }
@@ -163,7 +160,9 @@ struct PlotView: View {
                 var changed = working
                 changed["params"][name] = .number(value)
                 schedule(changed, delay: 33)
-              }), in: lower...max(lower + 0.001, upper), step: max(0.001, (upper - lower) / 200))
+              }), in: lower...max(lower + 0.001, upper), step: max(0.001, (upper - lower) / 200)
+          )
+          .accessibilityLabel(controller.text("参数 ", "Parameter ") + name)
           Text(format(working["params"][name].double)).font(.caption).monospacedDigit()
         }
       }
@@ -171,6 +170,16 @@ struct PlotView: View {
         HStack {
           Text(failure).font(.caption).foregroundStyle(.red)
           Button(controller.text("重试", "Retry")) { schedule(working, delay: 0) }
+        }
+      }
+      DisclosureGroup(
+        controller.text("采样数据", "Sampled data"), isExpanded: $showSamples
+      ) {
+        if showSamples {
+          ScrollView(.horizontal) {
+            Text(sampledCoordinates).font(.system(.caption, design: .monospaced))
+              .textSelection(.enabled)
+          }
         }
       }
     }
@@ -213,6 +222,32 @@ struct PlotView: View {
       revision += 1
       pending?.cancel()
     }
+  }
+  private var accessibleSummary: String {
+    var parts: [String] = []
+    for axis in ["x", "y"] {
+      let range = data[axis + "_range"].array
+      if range.count == 2 {
+        parts.append("\(axis): \(format(range[0].double)) … \(format(range[1].double))")
+      }
+    }
+    for point in data["highlights"]["points"].array {
+      parts.append("(\(format(point[0].double)), \(format(point[1].double)))")
+    }
+    return parts.joined(separator: "; ")
+  }
+  private var sampledCoordinates: String {
+    data["curves"].array.enumerated().map { index, curve in
+      let name =
+        request["exprs"].array.indices.contains(index)
+        ? request["exprs"][index].string : String(index + 1)
+      let segments = curve["segments"].array.map { segment in
+        segment.array.map { point in
+          "\(point[0].double)\t\(point[1].double)"
+        }.joined(separator: "\n")
+      }.joined(separator: "\n\n")
+      return "\(name)\nx\ty\n\(segments)"
+    }.joined(separator: "\n\n")
   }
   private func pan(_ x: Double, _ y: Double) {
     var value = working

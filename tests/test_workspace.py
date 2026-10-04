@@ -15,6 +15,7 @@ class WorkspaceTests(unittest.TestCase):
             cwd=ROOT,
             capture_output=True,
             text=True,
+            encoding="utf-8",
             check=False,
         )
         self.assertEqual(result.returncode, 0, result.stderr)
@@ -32,7 +33,7 @@ class WorkspaceTests(unittest.TestCase):
     def test_kernel_packages_form_expression_independent_polynomial_graph(self):
         result = subprocess.run(
             ["cargo", "metadata", "--format-version", "1", "--no-deps"],
-            cwd=ROOT, capture_output=True, text=True, check=True,
+            cwd=ROOT, capture_output=True, text=True, encoding="utf-8", check=True,
         )
         packages = {p["name"]: p for p in json.loads(result.stdout)["packages"]}
         expected = {
@@ -71,7 +72,7 @@ class WorkspaceTests(unittest.TestCase):
     def test_desktop_is_a_workspace_binary_with_native_kernel(self):
         result = subprocess.run(
             ["cargo", "metadata", "--format-version", "1", "--no-deps"],
-            cwd=ROOT, capture_output=True, text=True, check=True,
+            cwd=ROOT, capture_output=True, text=True, encoding="utf-8", check=True,
         )
         packages = {p["name"]: p for p in json.loads(result.stdout)["packages"]}
         self.assertIn("om-desktop", packages)

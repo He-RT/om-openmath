@@ -10,14 +10,13 @@
 bash ios/Scripts/verify-environment.sh
 bash ios/Scripts/build-kernel.sh
 python3 ios/Scripts/generate-project.py
-xcodebuild -project ios/OpenMath.xcodeproj -scheme OpenMath \
-  -configuration Release \
-  -destination 'platform=iOS Simulator,name=iPhone 18 Pro,OS=27.0' \
-  -derivedDataPath target/ios-derived \
-  -parallel-testing-enabled NO -collect-test-diagnostics never test
+bash ios/Scripts/test-simulator.sh phone
+bash ios/Scripts/test-simulator.sh pad
 ```
 
 工程和包锁文件随源码提交。`build-kernel.sh` 产生 `ios/Frameworks/OpenMathKernel.xcframework`，包含真机 ARM64 与模拟器 ARM64，两者均为 Release Rust 静态库。编译产物不进入 Git。缺少指定 Xcode/SDK 时直接失败。
+
+验收脚本只接受 `phone` / `pad`，每轮创建独立模拟器，保存带时间和进程号的 `.xcresult`，结束后清理本轮模拟器。重复开发验证不会覆盖旧证据，也不会因已有结果目录而失败。计算性能阈值保持每项 1 秒，不自动重试失败或跳过用例。
 
 发行模拟器 ZIP 解压为 `OpenMath.app`，只能在 ARM64 iOS 27 模拟器中运行：
 

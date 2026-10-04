@@ -45,7 +45,7 @@ jobs:
           git diff --exit-code app/src/kernel/generated
           test -z "$(git ls-files --others --exclude-standard app/src/kernel/generated)"
       - name: Check workspace contracts
-        run: python3 -m unittest discover -s tests -v
+        run: python3 -X warn_default_encoding -W error::EncodingWarning -m unittest discover -s tests -v
       - name: Build WASM core
         run: cargo build -p om-kernel --no-default-features --locked --target wasm32-unknown-unknown
 

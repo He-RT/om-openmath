@@ -14,13 +14,13 @@ def verify_version(root: Path, tag: str) -> str:
     """标签必须与 Rust、npm、锁文件和桌面配置一致。"""
     if tag != f"v{VERSION}":
         raise ValueError(f"发行标签必须是 v{VERSION}")
-    versions = [tomllib.loads((root / "Cargo.toml").read_text())["workspace"]["package"]["version"]]
+    versions = [tomllib.loads((root / "Cargo.toml").read_text(encoding="utf-8"))["workspace"]["package"]["version"]]
     for name in ("app/package.json", "app/package-lock.json", "app/src-tauri/tauri.conf.json"):
-        data = json.loads((root / name).read_text())
+        data = json.loads((root / name).read_text(encoding="utf-8"))
         versions.append(data["version"])
         if "packages" in data:
             versions.append(data["packages"][""]["version"])
-    lock = tomllib.loads((root / "Cargo.lock").read_text())
+    lock = tomllib.loads((root / "Cargo.lock").read_text(encoding="utf-8"))
     versions.extend(p["version"] for p in lock["package"] if p["name"].startswith("om-"))
     if any(version != VERSION for version in versions):
         raise ValueError("版本不一致，请同步 Cargo/npm/Tauri 及锁文件")

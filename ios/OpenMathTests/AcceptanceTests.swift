@@ -216,24 +216,22 @@ import XCTest
 
 @MainActor final class RestoreTests: XCTestCase {
   func testOpenedDocumentRestoresWithoutAnEditAndDoesNotExecuteCells() async throws {
-    let defaults = UserDefaults.standard
-    let oldPath = defaults.object(forKey: "OpenMathLastDocument")
-    let oldBookmark = defaults.object(forKey: "OpenMathLastBookmark")
-    defer {
-      defaults.set(oldPath, forKey: "OpenMathLastDocument")
-      defaults.set(oldBookmark, forKey: "OpenMathLastBookmark")
-    }
+    // Other tests deliberately trigger autosave; they must not overwrite this
+    // document's bookmark while the restore request is suspended.
+    let suite = "OpenMathRestoreTests." + UUID().uuidString
+    let defaults = try XCTUnwrap(UserDefaults(suiteName: suite))
+    defer { defaults.removePersistentDomain(forName: suite) }
     let url = FileManager.default.temporaryDirectory.appendingPathComponent(
       UUID().uuidString + ".omnb")
     let file = NotebookFile(title: "恢复测试🙂", cells: [CellInput(source: "2+3")])
     try JSONEncoder().encode(file).write(to: url)
     defer { try? FileManager.default.removeItem(at: url) }
-    let first = NotebookController()
+    let first = NotebookController(defaults: defaults)
     await first.start(restoreLastDocument: false)
     await first.load(url)
     XCTAssertNil(first.error)
     first.kernel?.close()
-    let second = NotebookController()
+    let second = NotebookController(defaults: defaults)
     await second.start()
     XCTAssertNil(second.error)
     XCTAssertEqual(second.title, file.title)

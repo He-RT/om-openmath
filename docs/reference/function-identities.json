@@ -843,47 +843,65 @@
     {
       "id": "fn_000120",
       "initial_name": "min",
-      "runtime_names": []
+      "runtime_names": [
+        "Min"
+      ]
     },
     {
       "id": "fn_000121",
       "initial_name": "max",
-      "runtime_names": []
+      "runtime_names": [
+        "Max"
+      ]
     },
     {
       "id": "fn_000122",
       "initial_name": "minmax",
-      "runtime_names": []
+      "runtime_names": [
+        "MinMax"
+      ]
     },
     {
       "id": "fn_000123",
       "initial_name": "integer_part",
-      "runtime_names": []
+      "runtime_names": [
+        "IntegerPart"
+      ]
     },
     {
       "id": "fn_000124",
       "initial_name": "fractional_part",
-      "runtime_names": []
+      "runtime_names": [
+        "FractionalPart"
+      ]
     },
     {
       "id": "fn_000125",
       "initial_name": "precision",
-      "runtime_names": []
+      "runtime_names": [
+        "Precision"
+      ]
     },
     {
       "id": "fn_000126",
       "initial_name": "accuracy",
-      "runtime_names": []
+      "runtime_names": [
+        "Accuracy"
+      ]
     },
     {
       "id": "fn_000127",
       "initial_name": "chop",
-      "runtime_names": []
+      "runtime_names": [
+        "Chop"
+      ]
     },
     {
       "id": "fn_000128",
       "initial_name": "rationalize",
-      "runtime_names": []
+      "runtime_names": [
+        "Rationalize"
+      ]
     },
     {
       "id": "fn_000129",
@@ -938,17 +956,23 @@
     {
       "id": "fn_000139",
       "initial_name": "clip",
-      "runtime_names": []
+      "runtime_names": [
+        "Clip"
+      ]
     },
     {
       "id": "fn_000140",
       "initial_name": "rescale",
-      "runtime_names": []
+      "runtime_names": [
+        "Rescale"
+      ]
     },
     {
       "id": "fn_000141",
       "initial_name": "decimal",
-      "runtime_names": []
+      "runtime_names": [
+        "Decimal"
+      ]
     },
     {
       "id": "fn_000142",
@@ -1015,17 +1039,23 @@
     {
       "id": "fn_000154",
       "initial_name": "cross",
-      "runtime_names": []
+      "runtime_names": [
+        "Cross"
+      ]
     },
     {
       "id": "fn_000155",
       "initial_name": "norm",
-      "runtime_names": []
+      "runtime_names": [
+        "Norm"
+      ]
     },
     {
       "id": "fn_000156",
       "initial_name": "normalize",
-      "runtime_names": []
+      "runtime_names": [
+        "Normalize"
+      ]
     },
     {
       "id": "fn_000157",
@@ -1040,52 +1070,72 @@
     {
       "id": "fn_000159",
       "initial_name": "identity",
-      "runtime_names": []
+      "runtime_names": [
+        "IdentityMatrix"
+      ]
     },
     {
       "id": "fn_000160",
       "initial_name": "diag",
-      "runtime_names": []
+      "runtime_names": [
+        "DiagonalMatrix"
+      ]
     },
     {
       "id": "fn_000161",
       "initial_name": "transpose",
-      "runtime_names": []
+      "runtime_names": [
+        "Transpose"
+      ]
     },
     {
       "id": "fn_000162",
       "initial_name": "adjoint",
-      "runtime_names": []
+      "runtime_names": [
+        "ConjugateTranspose"
+      ]
     },
     {
       "id": "fn_000163",
       "initial_name": "trace",
-      "runtime_names": []
+      "runtime_names": [
+        "Tr"
+      ]
     },
     {
       "id": "fn_000164",
       "initial_name": "det",
-      "runtime_names": []
+      "runtime_names": [
+        "Det"
+      ]
     },
     {
       "id": "fn_000165",
       "initial_name": "inverse",
-      "runtime_names": []
+      "runtime_names": [
+        "Inverse"
+      ]
     },
     {
       "id": "fn_000166",
       "initial_name": "rank",
-      "runtime_names": []
+      "runtime_names": [
+        "MatrixRank"
+      ]
     },
     {
       "id": "fn_000167",
       "initial_name": "null_space",
-      "runtime_names": []
+      "runtime_names": [
+        "NullSpace"
+      ]
     },
     {
       "id": "fn_000168",
       "initial_name": "linear_solve",
-      "runtime_names": []
+      "runtime_names": [
+        "LinearSolve"
+      ]
     },
     {
       "id": "fn_000169",
@@ -1150,47 +1200,65 @@
     {
       "id": "fn_000181",
       "initial_name": "mean",
-      "runtime_names": []
+      "runtime_names": [
+        "Mean"
+      ]
     },
     {
       "id": "fn_000182",
       "initial_name": "median",
-      "runtime_names": []
+      "runtime_names": [
+        "Median"
+      ]
     },
     {
       "id": "fn_000183",
       "initial_name": "variance",
-      "runtime_names": []
+      "runtime_names": [
+        "Variance"
+      ]
     },
     {
       "id": "fn_000184",
       "initial_name": "std",
-      "runtime_names": []
+      "runtime_names": [
+        "StandardDeviation"
+      ]
     },
     {
       "id": "fn_000185",
       "initial_name": "percentile",
-      "runtime_names": []
+      "runtime_names": [
+        "Percentile"
+      ]
     },
     {
       "id": "fn_000186",
       "initial_name": "covariance",
-      "runtime_names": []
+      "runtime_names": [
+        "Covariance"
+      ]
     },
     {
       "id": "fn_000187",
       "initial_name": "correlation",
-      "runtime_names": []
+      "runtime_names": [
+        "Correlation"
+      ]
     },
     {
       "id": "fn_000188",
       "initial_name": "counts",
-      "runtime_names": []
+      "runtime_names": [
+        "Counts"
+      ]
     },
     {
       "id": "fn_000189",
       "initial_name": "quantile",
-      "runtime_names": []
+      "runtime_names": [
+        "Quantile"
+      ]
     },
     {
       "id": "fn_000190",
@@ -1235,62 +1303,86 @@
     {
       "id": "fn_000198",
       "initial_name": "filter",
-      "runtime_names": []
+      "runtime_names": [
+        "Filter"
+      ]
     },
     {
       "id": "fn_000199",
       "initial_name": "sort",
-      "runtime_names": []
+      "runtime_names": [
+        "Sort"
+      ]
     },
     {
       "id": "fn_000200",
       "initial_name": "sort_by",
-      "runtime_names": []
+      "runtime_names": [
+        "SortBy"
+      ]
     },
     {
       "id": "fn_000201",
       "initial_name": "unique",
-      "runtime_names": []
+      "runtime_names": [
+        "Unique"
+      ]
     },
     {
       "id": "fn_000202",
       "initial_name": "take",
-      "runtime_names": []
+      "runtime_names": [
+        "Take"
+      ]
     },
     {
       "id": "fn_000203",
       "initial_name": "drop",
-      "runtime_names": []
+      "runtime_names": [
+        "Drop"
+      ]
     },
     {
       "id": "fn_000204",
       "initial_name": "slice",
-      "runtime_names": []
+      "runtime_names": [
+        "Slice"
+      ]
     },
     {
       "id": "fn_000205",
       "initial_name": "flatten",
-      "runtime_names": []
+      "runtime_names": [
+        "Flatten"
+      ]
     },
     {
       "id": "fn_000206",
       "initial_name": "reshape",
-      "runtime_names": []
+      "runtime_names": [
+        "Reshape"
+      ]
     },
     {
       "id": "fn_000207",
       "initial_name": "zip",
-      "runtime_names": []
+      "runtime_names": [
+        "Zip"
+      ]
     },
     {
       "id": "fn_000208",
       "initial_name": "fold",
-      "runtime_names": []
+      "runtime_names": [
+        "Fold"
+      ]
     },
     {
       "id": "fn_000209",
       "initial_name": "group_by",
-      "runtime_names": []
+      "runtime_names": [
+        "GroupBy"
+      ]
     },
     {
       "id": "fn_000210",

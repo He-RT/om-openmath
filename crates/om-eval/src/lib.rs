@@ -16,6 +16,7 @@ pub mod numeric;
 mod plot_registry;
 mod scalar;
 mod scalar_registry;
+mod science;
 mod solver;
 mod solver_registry;
 mod structure;

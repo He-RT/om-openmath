@@ -8,32 +8,32 @@
 
 | 规范名称 | 当前实现 | 目标接口状态 | 数学含义 |
 |---|---|---|---|
-| [`adjoint`](#adjoint) | 下一版规划 | 规划接口，当前不可用 | 共轭转置 |
+| [`adjoint`](#adjoint) | 已实现 | 当前可用 | 共轭转置 |
 | [`angle`](#angle) | 下一版规划 | 规划接口，当前不可用 | 向量夹角 |
 | [`band`](#band) | 后续规划 | 规划接口，当前不可用 | 向量、矩阵与张量中的 Band 能力，进入后续全景目录。 |
 | [`cholesky`](#cholesky) | 下一版规划 | 规划接口，当前不可用 | 正定矩阵 Cholesky |
-| [`cross`](#cross) | 下一版规划 | 规划接口，当前不可用 | 三维叉积 |
-| [`det`](#det) | 下一版规划 | 规划接口，当前不可用 | 行列式 |
-| [`diag`](#diag) | 下一版规划 | 规划接口，当前不可用 | 对角矩阵或提取对角 |
+| [`cross`](#cross) | 已实现 | 当前可用 | 三维叉积 |
+| [`det`](#det) | 部分支持 | 当前可用 | 行列式 |
+| [`diag`](#diag) | 已实现 | 当前可用 | 对角矩阵或提取对角 |
 | [`dot`](#dot) | 已实现 | 当前可用 | 向量/矩阵收缩 |
 | [`eigensystem`](#eigensystem) | 下一版规划 | 规划接口，当前不可用 | 特征值与特征向量 |
 | [`eigenvalues`](#eigenvalues) | 下一版规划 | 规划接口，当前不可用 | 特征值 |
-| [`identity`](#identity) | 下一版规划 | 规划接口，当前不可用 | 单位矩阵 |
-| [`inverse`](#inverse) | 下一版规划 | 规划接口，当前不可用 | 矩阵逆 |
+| [`identity`](#identity) | 已实现 | 当前可用 | 单位矩阵 |
+| [`inverse`](#inverse) | 部分支持 | 当前可用 | 矩阵逆 |
 | [`least_squares`](#least_squares) | 下一版规划 | 规划接口，当前不可用 | 最小二乘解 |
-| [`linear_solve`](#linear_solve) | 下一版规划 | 规划接口，当前不可用 | 线性系统解 |
+| [`linear_solve`](#linear_solve) | 部分支持 | 当前可用 | 线性系统解 |
 | [`lu`](#lu) | 下一版规划 | 规划接口，当前不可用 | 带置换的 LU |
 | [`matrix_exp`](#matrix_exp) | 后续规划 | 规划接口，当前不可用 | 向量、矩阵与张量中的 MatrixExp 能力，进入后续全景目录。 |
 | [`matrix_log`](#matrix_log) | 后续规划 | 规划接口，当前不可用 | 向量、矩阵与张量中的 MatrixLog 能力，进入后续全景目录。 |
 | [`matrix_power`](#matrix_power) | 后续规划 | 规划接口，当前不可用 | 向量、矩阵与张量中的 MatrixPower 能力，进入后续全景目录。 |
-| [`norm`](#norm) | 下一版规划 | 规划接口，当前不可用 | 向量范数 |
-| [`normalize`](#normalize) | 下一版规划 | 规划接口，当前不可用 | 按范数归一化 |
-| [`null_space`](#null_space) | 下一版规划 | 规划接口，当前不可用 | 零空间基 |
+| [`norm`](#norm) | 已实现 | 当前可用 | 向量范数 |
+| [`normalize`](#normalize) | 已实现 | 当前可用 | 按范数归一化 |
+| [`null_space`](#null_space) | 部分支持 | 当前可用 | 零空间基 |
 | [`orthogonalize`](#orthogonalize) | 后续规划 | 规划接口，当前不可用 | 向量、矩阵与张量中的 Orthogonalize 能力，进入后续全景目录。 |
 | [`projection`](#projection) | 下一版规划 | 规划接口，当前不可用 | 向量投影 |
 | [`pseudo_inverse`](#pseudo_inverse) | 后续规划 | 规划接口，当前不可用 | 向量、矩阵与张量中的 PseudoInverse 能力，进入后续全景目录。 |
 | [`qr`](#qr) | 下一版规划 | 规划接口，当前不可用 | QR 分解 |
-| [`rank`](#rank) | 下一版规划 | 规划接口，当前不可用 | 矩阵秩 |
+| [`rank`](#rank) | 部分支持 | 当前可用 | 矩阵秩 |
 | [`sparse_array`](#sparse_array) | 后续规划 | 规划接口，当前不可用 | 向量、矩阵与张量中的 SparseArray 能力，进入后续全景目录。 |
 | [`svd`](#svd) | 下一版规划 | 规划接口，当前不可用 | 奇异值分解 |
 | [`tensor_contract`](#tensor_contract) | 后续规划 | 规划接口，当前不可用 | 向量、矩阵与张量中的 TensorContract 能力，进入后续全景目录。 |
@@ -41,28 +41,40 @@
 | [`tensor_product`](#tensor_product) | 后续规划 | 规划接口，当前不可用 | 向量、矩阵与张量中的 TensorProduct 能力，进入后续全景目录。 |
 | [`tensor_rank`](#tensor_rank) | 后续规划 | 规划接口，当前不可用 | 向量、矩阵与张量中的 TensorRank 能力，进入后续全景目录。 |
 | [`tensor_transpose`](#tensor_transpose) | 后续规划 | 规划接口，当前不可用 | 向量、矩阵与张量中的 TensorTranspose 能力，进入后续全景目录。 |
-| [`trace`](#trace) | 下一版规划 | 规划接口，当前不可用 | 矩阵迹 |
-| [`transpose`](#transpose) | 下一版规划 | 规划接口，当前不可用 | 转置 |
+| [`trace`](#trace) | 已实现 | 当前可用 | 矩阵迹 |
+| [`transpose`](#transpose) | 已实现 | 当前可用 | 转置 |
 | [`unit_vector`](#unit_vector) | 后续规划 | 规划接口，当前不可用 | 向量、矩阵与张量中的 UnitVector 能力，进入后续全景目录。 |
 | [`vector_angle`](#vector_angle) | 后续规划 | 规划接口，当前不可用 | 向量、矩阵与张量中的 VectorAngle 能力，进入后续全景目录。 |
 
 ## adjoint
 
-**当前实现：下一版规划；目标接口：规划接口，当前不可用。** 目标版本：`0.1.0-pre-alpha.3`。
+**当前实现：已实现；目标接口：当前可用。** 目标版本：`0.1.0-pre-alpha.3`。
 
 - 稳定身份：`fn_000162`；条目类型：`function`。
-- 副作用分类（设计预留）：`pure`；参数验证阶段：`documentation_only`，不构成工具授权。
+- 副作用分类（设计预留）：`pure`；参数验证阶段：`runtime_verified`，不构成工具授权。
 
 共轭转置
 
-- 当前支持：当前无此规范接口的实现。
+- 当前支持：矩形矩阵≤64×64，转置并真实共轭；未知符号共轭保留原式。
 - 目标范围：维度检查；精确有理数或机器实数的小型稠密矩阵，继承预算；零向量/奇异矩阵明确诊断。 复数运算使用正确的共轭语义；机器夹角仅将舍入越界夹到[-1,1]。
 - 返回：scalar_vector_matrix_or_decomposition
 - 精度：精确有理基础路径与明确的机器分解；分解不承诺任意精度。
-- 当前计算平台：无；目标计算平台：cli, desktop, web, ios。
+- 当前计算平台：cli, desktop, web, ios；目标计算平台：cli, desktop, web, ios。
 - 目标图形/交互展示平台：不适用或后续未定。
 - 兼容名称：无既有兼容入口。
 - 管道位置：第 1 个位置参数（从 1 起）。
+
+当前现代签名：
+
+```text
+adjoint(...)
+```
+
+当前 Wolfram 签名：
+
+```text
+ConjugateTranspose[...]
+```
 
 目标现代签名（按目标接口状态判断是否已可执行）：
 
@@ -74,6 +86,12 @@ adjoint(matrix)
 |---|---|---|---|---|
 | `matrix` | positional | 必填 | 矩阵/向量或签名的主要输入 | r3 |
 
+当前已登记示例（Wolfram）：
+
+```wolfram
+ConjugateTranspose[{{1,I},{0,2}}]
+```
+
 规划示例（尚未执行；需要目标版本，后续条目不承诺 .3）：
 
 ```text
@@ -82,9 +100,9 @@ adjoint([[1,i],[0,1]])
 
 验收：独立数学期望、有效/无效参数、边界、预算、中断及声明的平台/精度测试；范围外不伪造成功。
 
-当前源码：暂无当前实现证据。
+当前源码：[crates/om-eval/src/science/registry.rs](../../crates/om-eval/src/science/registry.rs)。
 
-当前测试引用：暂无当前实现证据。
+当前测试引用：[crates/om-eval/tests/science_basics.rs](../../crates/om-eval/tests/science_basics.rs)。
 
 ## angle
 
@@ -203,21 +221,33 @@ cholesky([[2.0,1.0],[1.0,3.0]])
 
 ## cross
 
-**当前实现：下一版规划；目标接口：规划接口，当前不可用。** 目标版本：`0.1.0-pre-alpha.3`。
+**当前实现：已实现；目标接口：当前可用。** 目标版本：`0.1.0-pre-alpha.3`。
 
 - 稳定身份：`fn_000154`；条目类型：`function`。
-- 副作用分类（设计预留）：`pure`；参数验证阶段：`documentation_only`，不构成工具授权。
+- 副作用分类（设计预留）：`pure`；参数验证阶段：`runtime_verified`，不构成工具授权。
 
 三维叉积
 
-- 当前支持：当前无此规范接口的实现。
+- 当前支持：三维向量的双线性交叉乘积；检查长度，保留数值或符号表达式。
 - 目标范围：维度检查；精确有理数或机器实数的小型稠密矩阵，继承预算；零向量/奇异矩阵明确诊断。
 - 返回：scalar_vector_matrix_or_decomposition
 - 精度：精确有理基础路径与明确的机器分解；分解不承诺任意精度。
-- 当前计算平台：无；目标计算平台：cli, desktop, web, ios。
+- 当前计算平台：cli, desktop, web, ios；目标计算平台：cli, desktop, web, ios。
 - 目标图形/交互展示平台：不适用或后续未定。
 - 兼容名称：无既有兼容入口。
 - 管道位置：第 1 个位置参数（从 1 起）。
+
+当前现代签名：
+
+```text
+cross(...)
+```
+
+当前 Wolfram 签名：
+
+```text
+Cross[...]
+```
 
 目标现代签名（按目标接口状态判断是否已可执行）：
 
@@ -230,6 +260,12 @@ cross(a, b)
 | `a` | positional | 必填 | 签名对应的a参数 | r3 |
 | `b` | positional | 必填 | 签名对应的b参数 | r3 |
 
+当前已登记示例（Wolfram）：
+
+```wolfram
+Cross[{1,0,0},{0,1,0}]
+```
+
 规划示例（尚未执行；需要目标版本，后续条目不承诺 .3）：
 
 ```text
@@ -238,27 +274,39 @@ cross([1,0,0],[0,1,0])
 
 验收：独立数学期望、有效/无效参数、边界、预算、中断及声明的平台/精度测试；范围外不伪造成功。
 
-当前源码：暂无当前实现证据。
+当前源码：[crates/om-eval/src/science/registry.rs](../../crates/om-eval/src/science/registry.rs)。
 
-当前测试引用：暂无当前实现证据。
+当前测试引用：[crates/om-eval/tests/science_basics.rs](../../crates/om-eval/tests/science_basics.rs)。
 
 ## det
 
-**当前实现：下一版规划；目标接口：规划接口，当前不可用。** 目标版本：`0.1.0-pre-alpha.3`。
+**当前实现：部分支持；目标接口：当前可用。** 目标版本：`0.1.0-pre-alpha.3`。
 
 - 稳定身份：`fn_000164`；条目类型：`function`。
-- 副作用分类（设计预留）：`pure`；参数验证阶段：`documentation_only`，不构成工具授权。
+- 副作用分类（设计预留）：`pure`；参数验证阶段：`runtime_verified`，不构成工具授权。
 
 行列式
 
-- 当前支持：当前无此规范接口的实现。
+- 当前支持：当前精确有理数矩阵≤64×64，复用Bareiss证书；奇异/欠定/不相容及维度明确诊断。机器矩阵路径仍在实施，不静默将机器系数当成精确保证。
 - 目标范围：维度检查；精确有理数或机器实数的小型稠密矩阵，继承预算；零向量/奇异矩阵明确诊断。
 - 返回：scalar_vector_matrix_or_decomposition
 - 精度：精确有理基础路径与明确的机器分解；分解不承诺任意精度。
-- 当前计算平台：无；目标计算平台：cli, desktop, web, ios。
+- 当前计算平台：cli, desktop, web, ios；目标计算平台：cli, desktop, web, ios。
 - 目标图形/交互展示平台：不适用或后续未定。
 - 兼容名称：无既有兼容入口。
 - 管道位置：第 1 个位置参数（从 1 起）。
+
+当前现代签名：
+
+```text
+det(...)
+```
+
+当前 Wolfram 签名：
+
+```text
+Det[...]
+```
 
 目标现代签名（按目标接口状态判断是否已可执行）：
 
@@ -270,6 +318,12 @@ det(matrix)
 |---|---|---|---|---|
 | `matrix` | positional | 必填 | 矩阵/向量或签名的主要输入 | r3 |
 
+当前已登记示例（Wolfram）：
+
+```wolfram
+Det[{{1,2},{3,4}}]
+```
+
 规划示例（尚未执行；需要目标版本，后续条目不承诺 .3）：
 
 ```text
@@ -278,27 +332,39 @@ det([[2,1],[1,3]])
 
 验收：独立数学期望、有效/无效参数、边界、预算、中断及声明的平台/精度测试；范围外不伪造成功。
 
-当前源码：暂无当前实现证据。
+当前源码：[crates/om-eval/src/science/registry.rs](../../crates/om-eval/src/science/registry.rs)。
 
-当前测试引用：暂无当前实现证据。
+当前测试引用：[crates/om-eval/tests/science_basics.rs](../../crates/om-eval/tests/science_basics.rs)。
 
 ## diag
 
-**当前实现：下一版规划；目标接口：规划接口，当前不可用。** 目标版本：`0.1.0-pre-alpha.3`。
+**当前实现：已实现；目标接口：当前可用。** 目标版本：`0.1.0-pre-alpha.3`。
 
 - 稳定身份：`fn_000160`；条目类型：`function`。
-- 副作用分类（设计预留）：`pure`；参数验证阶段：`documentation_only`，不构成工具授权。
+- 副作用分类（设计预留）：`pure`；参数验证阶段：`runtime_verified`，不构成工具授权。
 
 对角矩阵或提取对角
 
-- 当前支持：当前无此规范接口的实现。
+- 当前支持：最多64项的对角矩阵；保留表达式元素。
 - 目标范围：维度检查；精确有理数或机器实数的小型稠密矩阵，继承预算；零向量/奇异矩阵明确诊断。
 - 返回：scalar_vector_matrix_or_decomposition
 - 精度：精确有理基础路径与明确的机器分解；分解不承诺任意精度。
-- 当前计算平台：无；目标计算平台：cli, desktop, web, ios。
+- 当前计算平台：cli, desktop, web, ios；目标计算平台：cli, desktop, web, ios。
 - 目标图形/交互展示平台：不适用或后续未定。
 - 兼容名称：无既有兼容入口。
 - 管道位置：第 1 个位置参数（从 1 起）。
+
+当前现代签名：
+
+```text
+diag(...)
+```
+
+当前 Wolfram 签名：
+
+```text
+DiagonalMatrix[...]
+```
 
 目标现代签名（按目标接口状态判断是否已可执行）：
 
@@ -310,6 +376,12 @@ diag(values)
 |---|---|---|---|---|
 | `values` | positional | 必填 | 签名对应的values参数 | r3 |
 
+当前已登记示例（Wolfram）：
+
+```wolfram
+DiagonalMatrix[{2,3}]
+```
+
 规划示例（尚未执行；需要目标版本，后续条目不承诺 .3）：
 
 ```text
@@ -318,9 +390,9 @@ diag([1,2,3])
 
 验收：独立数学期望、有效/无效参数、边界、预算、中断及声明的平台/精度测试；范围外不伪造成功。
 
-当前源码：暂无当前实现证据。
+当前源码：[crates/om-eval/src/science/registry.rs](../../crates/om-eval/src/science/registry.rs)。
 
-当前测试引用：暂无当前实现证据。
+当前测试引用：[crates/om-eval/tests/science_basics.rs](../../crates/om-eval/tests/science_basics.rs)。
 
 ## dot
 
@@ -464,21 +536,33 @@ eigenvalues([[2.0,1.0],[1.0,2.0]])
 
 ## identity
 
-**当前实现：下一版规划；目标接口：规划接口，当前不可用。** 目标版本：`0.1.0-pre-alpha.3`。
+**当前实现：已实现；目标接口：当前可用。** 目标版本：`0.1.0-pre-alpha.3`。
 
 - 稳定身份：`fn_000159`；条目类型：`function`。
-- 副作用分类（设计预留）：`pure`；参数验证阶段：`documentation_only`，不构成工具授权。
+- 副作用分类（设计预留）：`pure`；参数验证阶段：`runtime_verified`，不构成工具授权。
 
 单位矩阵
 
-- 当前支持：当前无此规范接口的实现。
+- 当前支持：构造0..64维单位矩阵。
 - 目标范围：维度检查；精确有理数或机器实数的小型稠密矩阵，继承预算；零向量/奇异矩阵明确诊断。
 - 返回：scalar_vector_matrix_or_decomposition
 - 精度：精确有理基础路径与明确的机器分解；分解不承诺任意精度。
-- 当前计算平台：无；目标计算平台：cli, desktop, web, ios。
+- 当前计算平台：cli, desktop, web, ios；目标计算平台：cli, desktop, web, ios。
 - 目标图形/交互展示平台：不适用或后续未定。
 - 兼容名称：无既有兼容入口。
 - 管道位置：第 1 个位置参数（从 1 起）。
+
+当前现代签名：
+
+```text
+identity(...)
+```
+
+当前 Wolfram 签名：
+
+```text
+IdentityMatrix[...]
+```
 
 目标现代签名（按目标接口状态判断是否已可执行）：
 
@@ -490,6 +574,12 @@ identity(size)
 |---|---|---|---|---|
 | `size` | positional | 必填 | 签名对应的size参数 | r3 |
 
+当前已登记示例（Wolfram）：
+
+```wolfram
+IdentityMatrix[2]
+```
+
 规划示例（尚未执行；需要目标版本，后续条目不承诺 .3）：
 
 ```text
@@ -498,27 +588,39 @@ identity(3)
 
 验收：独立数学期望、有效/无效参数、边界、预算、中断及声明的平台/精度测试；范围外不伪造成功。
 
-当前源码：暂无当前实现证据。
+当前源码：[crates/om-eval/src/science/registry.rs](../../crates/om-eval/src/science/registry.rs)。
 
-当前测试引用：暂无当前实现证据。
+当前测试引用：[crates/om-eval/tests/science_basics.rs](../../crates/om-eval/tests/science_basics.rs)。
 
 ## inverse
 
-**当前实现：下一版规划；目标接口：规划接口，当前不可用。** 目标版本：`0.1.0-pre-alpha.3`。
+**当前实现：部分支持；目标接口：当前可用。** 目标版本：`0.1.0-pre-alpha.3`。
 
 - 稳定身份：`fn_000165`；条目类型：`function`。
-- 副作用分类（设计预留）：`pure`；参数验证阶段：`documentation_only`，不构成工具授权。
+- 副作用分类（设计预留）：`pure`；参数验证阶段：`runtime_verified`，不构成工具授权。
 
 矩阵逆
 
-- 当前支持：当前无此规范接口的实现。
+- 当前支持：当前精确有理数矩阵≤64×64，复用Bareiss证书；奇异/欠定/不相容及维度明确诊断。机器矩阵路径仍在实施，不静默将机器系数当成精确保证。
 - 目标范围：维度检查；精确有理数或机器实数的小型稠密矩阵，继承预算；零向量/奇异矩阵明确诊断。
 - 返回：scalar_vector_matrix_or_decomposition
 - 精度：精确有理基础路径与明确的机器分解；分解不承诺任意精度。
-- 当前计算平台：无；目标计算平台：cli, desktop, web, ios。
+- 当前计算平台：cli, desktop, web, ios；目标计算平台：cli, desktop, web, ios。
 - 目标图形/交互展示平台：不适用或后续未定。
 - 兼容名称：无既有兼容入口。
 - 管道位置：第 1 个位置参数（从 1 起）。
+
+当前现代签名：
+
+```text
+inverse(...)
+```
+
+当前 Wolfram 签名：
+
+```text
+Inverse[...]
+```
 
 目标现代签名（按目标接口状态判断是否已可执行）：
 
@@ -530,6 +632,12 @@ inverse(matrix)
 |---|---|---|---|---|
 | `matrix` | positional | 必填 | 矩阵/向量或签名的主要输入 | r3 |
 
+当前已登记示例（Wolfram）：
+
+```wolfram
+Inverse[{{1,2},{3,4}}]
+```
+
 规划示例（尚未执行；需要目标版本，后续条目不承诺 .3）：
 
 ```text
@@ -538,9 +646,9 @@ inverse([[2,1],[1,3]])
 
 验收：独立数学期望、有效/无效参数、边界、预算、中断及声明的平台/精度测试；范围外不伪造成功。
 
-当前源码：暂无当前实现证据。
+当前源码：[crates/om-eval/src/science/registry.rs](../../crates/om-eval/src/science/registry.rs)。
 
-当前测试引用：暂无当前实现证据。
+当前测试引用：[crates/om-eval/tests/science_basics.rs](../../crates/om-eval/tests/science_basics.rs)。
 
 ## least_squares
 
@@ -585,21 +693,33 @@ least_squares([[1.0,0.0],[1.0,1.0],[1.0,2.0]],[1.0,2.0,3.0])
 
 ## linear_solve
 
-**当前实现：下一版规划；目标接口：规划接口，当前不可用。** 目标版本：`0.1.0-pre-alpha.3`。
+**当前实现：部分支持；目标接口：当前可用。** 目标版本：`0.1.0-pre-alpha.3`。
 
 - 稳定身份：`fn_000168`；条目类型：`function`。
-- 副作用分类（设计预留）：`pure`；参数验证阶段：`documentation_only`，不构成工具授权。
+- 副作用分类（设计预留）：`pure`；参数验证阶段：`runtime_verified`，不构成工具授权。
 
 线性系统解
 
-- 当前支持：当前无此规范接口的实现。
+- 当前支持：当前精确有理数矩阵≤64×64，复用Bareiss证书；奇异/欠定/不相容及维度明确诊断。机器矩阵路径仍在实施，不静默将机器系数当成精确保证。
 - 目标范围：精确有理矩阵复用Bareiss；机器实数部分选主元；欠定结果保留自由轴，不强行给唯一解。
 - 返回：scalar_vector_matrix_or_decomposition
 - 精度：精确有理基础路径与明确的机器分解；分解不承诺任意精度。
-- 当前计算平台：无；目标计算平台：cli, desktop, web, ios。
+- 当前计算平台：cli, desktop, web, ios；目标计算平台：cli, desktop, web, ios。
 - 目标图形/交互展示平台：不适用或后续未定。
 - 兼容名称：无既有兼容入口。
 - 管道位置：第 1 个位置参数（从 1 起）。
+
+当前现代签名：
+
+```text
+linear_solve(...)
+```
+
+当前 Wolfram 签名：
+
+```text
+LinearSolve[...]
+```
 
 目标现代签名（按目标接口状态判断是否已可执行）：
 
@@ -613,6 +733,12 @@ linear_solve(matrix, rhs, mode: "exact")
 | `rhs` | positional | 必填 | 只读右端函数或右端项 | r3 |
 | `mode` | option | exact | exact/numeric | r3 |
 
+当前已登记示例（Wolfram）：
+
+```wolfram
+LinearSolve[{{2,1},{1,3}},{1,2}]
+```
+
 规划示例（尚未执行；需要目标版本，后续条目不承诺 .3）：
 
 ```text
@@ -621,9 +747,9 @@ linear_solve([[2,1],[1,3]],[1,2])
 
 验收：独立数学期望、有效/无效参数、边界、预算、中断及声明的平台/精度测试；范围外不伪造成功。
 
-当前源码：暂无当前实现证据。
+当前源码：[crates/om-eval/src/science/registry.rs](../../crates/om-eval/src/science/registry.rs)。
 
-当前测试引用：暂无当前实现证据。
+当前测试引用：[crates/om-eval/tests/science_basics.rs](../../crates/om-eval/tests/science_basics.rs)。
 
 ## lu
 
@@ -769,21 +895,33 @@ matrix_power(...)  # 后续接口尚未锁定
 
 ## norm
 
-**当前实现：下一版规划；目标接口：规划接口，当前不可用。** 目标版本：`0.1.0-pre-alpha.3`。
+**当前实现：已实现；目标接口：当前可用。** 目标版本：`0.1.0-pre-alpha.3`。
 
 - 稳定身份：`fn_000155`；条目类型：`function`。
-- 副作用分类（设计预留）：`pure`；参数验证阶段：`documentation_only`，不构成工具授权。
+- 副作用分类（设计预留）：`pure`；参数验证阶段：`runtime_verified`，不构成工具授权。
 
 向量范数
 
-- 当前支持：当前无此规范接口的实现。
+- 当前支持：非空数值向量≤64维，使用共轭内积的Euclidean范数，保留精确根式。
 - 目标范围：维度检查；精确有理数或机器实数的小型稠密矩阵，继承预算；零向量/奇异矩阵明确诊断。 复数运算使用正确的共轭语义；机器夹角仅将舍入越界夹到[-1,1]。
 - 返回：scalar_vector_matrix_or_decomposition
 - 精度：精确有理基础路径与明确的机器分解；分解不承诺任意精度。
-- 当前计算平台：无；目标计算平台：cli, desktop, web, ios。
+- 当前计算平台：cli, desktop, web, ios；目标计算平台：cli, desktop, web, ios。
 - 目标图形/交互展示平台：不适用或后续未定。
 - 兼容名称：无既有兼容入口。
 - 管道位置：第 1 个位置参数（从 1 起）。
+
+当前现代签名：
+
+```text
+norm(...)
+```
+
+当前 Wolfram 签名：
+
+```text
+Norm[...]
+```
 
 目标现代签名（按目标接口状态判断是否已可执行）：
 
@@ -796,6 +934,12 @@ norm(vector, p: 2)
 | `vector` | positional | 必填 | 向量 | r3 |
 | `p` | option | 2 | 正数或无穷 | r3 |
 
+当前已登记示例（Wolfram）：
+
+```wolfram
+Norm[{3,4}]
+```
+
 规划示例（尚未执行；需要目标版本，后续条目不承诺 .3）：
 
 ```text
@@ -804,27 +948,39 @@ norm([3,4])
 
 验收：独立数学期望、有效/无效参数、边界、预算、中断及声明的平台/精度测试；范围外不伪造成功。
 
-当前源码：暂无当前实现证据。
+当前源码：[crates/om-eval/src/science/registry.rs](../../crates/om-eval/src/science/registry.rs)。
 
-当前测试引用：暂无当前实现证据。
+当前测试引用：[crates/om-eval/tests/science_basics.rs](../../crates/om-eval/tests/science_basics.rs)。
 
 ## normalize
 
-**当前实现：下一版规划；目标接口：规划接口，当前不可用。** 目标版本：`0.1.0-pre-alpha.3`。
+**当前实现：已实现；目标接口：当前可用。** 目标版本：`0.1.0-pre-alpha.3`。
 
 - 稳定身份：`fn_000156`；条目类型：`function`。
-- 副作用分类（设计预留）：`pure`；参数验证阶段：`documentation_only`，不构成工具授权。
+- 副作用分类（设计预留）：`pure`；参数验证阶段：`runtime_verified`，不构成工具授权。
 
 按范数归一化
 
-- 当前支持：当前无此规范接口的实现。
+- 当前支持：非空数值向量≤64维，使用真实范数；拒绝零向量。
 - 目标范围：维度检查；精确有理数或机器实数的小型稠密矩阵，继承预算；零向量/奇异矩阵明确诊断。
 - 返回：scalar_vector_matrix_or_decomposition
 - 精度：精确有理基础路径与明确的机器分解；分解不承诺任意精度。
-- 当前计算平台：无；目标计算平台：cli, desktop, web, ios。
+- 当前计算平台：cli, desktop, web, ios；目标计算平台：cli, desktop, web, ios。
 - 目标图形/交互展示平台：不适用或后续未定。
 - 兼容名称：无既有兼容入口。
 - 管道位置：第 1 个位置参数（从 1 起）。
+
+当前现代签名：
+
+```text
+normalize(...)
+```
+
+当前 Wolfram 签名：
+
+```text
+Normalize[...]
+```
 
 目标现代签名（按目标接口状态判断是否已可执行）：
 
@@ -836,6 +992,12 @@ normalize(vector)
 |---|---|---|---|---|
 | `vector` | positional | 必填 | 向量 | r3 |
 
+当前已登记示例（Wolfram）：
+
+```wolfram
+Normalize[{3,4}]
+```
+
 规划示例（尚未执行；需要目标版本，后续条目不承诺 .3）：
 
 ```text
@@ -844,27 +1006,39 @@ normalize([3,4])
 
 验收：独立数学期望、有效/无效参数、边界、预算、中断及声明的平台/精度测试；范围外不伪造成功。
 
-当前源码：暂无当前实现证据。
+当前源码：[crates/om-eval/src/science/registry.rs](../../crates/om-eval/src/science/registry.rs)。
 
-当前测试引用：暂无当前实现证据。
+当前测试引用：[crates/om-eval/tests/science_basics.rs](../../crates/om-eval/tests/science_basics.rs)。
 
 ## null_space
 
-**当前实现：下一版规划；目标接口：规划接口，当前不可用。** 目标版本：`0.1.0-pre-alpha.3`。
+**当前实现：部分支持；目标接口：当前可用。** 目标版本：`0.1.0-pre-alpha.3`。
 
 - 稳定身份：`fn_000167`；条目类型：`function`。
-- 副作用分类（设计预留）：`pure`；参数验证阶段：`documentation_only`，不构成工具授权。
+- 副作用分类（设计预留）：`pure`；参数验证阶段：`runtime_verified`，不构成工具授权。
 
 零空间基
 
-- 当前支持：当前无此规范接口的实现。
+- 当前支持：当前精确有理数矩阵≤64×64，复用Bareiss证书；奇异/欠定/不相容及维度明确诊断。机器矩阵路径仍在实施，不静默将机器系数当成精确保证。
 - 目标范围：维度检查；精确有理数或机器实数的小型稠密矩阵，继承预算；零向量/奇异矩阵明确诊断。
 - 返回：scalar_vector_matrix_or_decomposition
 - 精度：精确有理基础路径与明确的机器分解；分解不承诺任意精度。
-- 当前计算平台：无；目标计算平台：cli, desktop, web, ios。
+- 当前计算平台：cli, desktop, web, ios；目标计算平台：cli, desktop, web, ios。
 - 目标图形/交互展示平台：不适用或后续未定。
 - 兼容名称：无既有兼容入口。
 - 管道位置：第 1 个位置参数（从 1 起）。
+
+当前现代签名：
+
+```text
+null_space(...)
+```
+
+当前 Wolfram 签名：
+
+```text
+NullSpace[...]
+```
 
 目标现代签名（按目标接口状态判断是否已可执行）：
 
@@ -876,6 +1050,12 @@ null_space(matrix)
 |---|---|---|---|---|
 | `matrix` | positional | 必填 | 矩阵/向量或签名的主要输入 | r3 |
 
+当前已登记示例（Wolfram）：
+
+```wolfram
+NullSpace[{{1,2},{2,4}}]
+```
+
 规划示例（尚未执行；需要目标版本，后续条目不承诺 .3）：
 
 ```text
@@ -884,9 +1064,9 @@ null_space([[1,2],[2,4]])
 
 验收：独立数学期望、有效/无效参数、边界、预算、中断及声明的平台/精度测试；范围外不伪造成功。
 
-当前源码：暂无当前实现证据。
+当前源码：[crates/om-eval/src/science/registry.rs](../../crates/om-eval/src/science/registry.rs)。
 
-当前测试引用：暂无当前实现证据。
+当前测试引用：[crates/om-eval/tests/science_basics.rs](../../crates/om-eval/tests/science_basics.rs)。
 
 ## orthogonalize
 
@@ -1039,21 +1219,33 @@ qr([[1.0,2.0],[3.0,4.0],[5.0,6.0]])
 
 ## rank
 
-**当前实现：下一版规划；目标接口：规划接口，当前不可用。** 目标版本：`0.1.0-pre-alpha.3`。
+**当前实现：部分支持；目标接口：当前可用。** 目标版本：`0.1.0-pre-alpha.3`。
 
 - 稳定身份：`fn_000166`；条目类型：`function`。
-- 副作用分类（设计预留）：`pure`；参数验证阶段：`documentation_only`，不构成工具授权。
+- 副作用分类（设计预留）：`pure`；参数验证阶段：`runtime_verified`，不构成工具授权。
 
 矩阵秩
 
-- 当前支持：当前无此规范接口的实现。
+- 当前支持：当前精确有理数矩阵≤64×64，复用Bareiss证书；奇异/欠定/不相容及维度明确诊断。机器矩阵路径仍在实施，不静默将机器系数当成精确保证。
 - 目标范围：维度检查；精确有理数或机器实数的小型稠密矩阵，继承预算；零向量/奇异矩阵明确诊断。
 - 返回：scalar_vector_matrix_or_decomposition
 - 精度：精确有理基础路径与明确的机器分解；分解不承诺任意精度。
-- 当前计算平台：无；目标计算平台：cli, desktop, web, ios。
+- 当前计算平台：cli, desktop, web, ios；目标计算平台：cli, desktop, web, ios。
 - 目标图形/交互展示平台：不适用或后续未定。
 - 兼容名称：无既有兼容入口。
 - 管道位置：第 1 个位置参数（从 1 起）。
+
+当前现代签名：
+
+```text
+rank(...)
+```
+
+当前 Wolfram 签名：
+
+```text
+MatrixRank[...]
+```
 
 目标现代签名（按目标接口状态判断是否已可执行）：
 
@@ -1065,6 +1257,12 @@ rank(matrix)
 |---|---|---|---|---|
 | `matrix` | positional | 必填 | 矩阵/向量或签名的主要输入 | r3 |
 
+当前已登记示例（Wolfram）：
+
+```wolfram
+MatrixRank[{{1,2},{2,4}}]
+```
+
 规划示例（尚未执行；需要目标版本，后续条目不承诺 .3）：
 
 ```text
@@ -1073,9 +1271,9 @@ rank([[1,2],[2,4]])
 
 验收：独立数学期望、有效/无效参数、边界、预算、中断及声明的平台/精度测试；范围外不伪造成功。
 
-当前源码：暂无当前实现证据。
+当前源码：[crates/om-eval/src/science/registry.rs](../../crates/om-eval/src/science/registry.rs)。
 
-当前测试引用：暂无当前实现证据。
+当前测试引用：[crates/om-eval/tests/science_basics.rs](../../crates/om-eval/tests/science_basics.rs)。
 
 ## sparse_array
 
@@ -1323,21 +1521,33 @@ tensor_transpose(...)  # 后续接口尚未锁定
 
 ## trace
 
-**当前实现：下一版规划；目标接口：规划接口，当前不可用。** 目标版本：`0.1.0-pre-alpha.3`。
+**当前实现：已实现；目标接口：当前可用。** 目标版本：`0.1.0-pre-alpha.3`。
 
 - 稳定身份：`fn_000163`；条目类型：`function`。
-- 副作用分类（设计预留）：`pure`；参数验证阶段：`documentation_only`，不构成工具授权。
+- 副作用分类（设计预留）：`pure`；参数验证阶段：`runtime_verified`，不构成工具授权。
 
 矩阵迹
 
-- 当前支持：当前无此规范接口的实现。
+- 当前支持：方阵≤64×64，真实对角元素求和。
 - 目标范围：维度检查；精确有理数或机器实数的小型稠密矩阵，继承预算；零向量/奇异矩阵明确诊断。
 - 返回：scalar_vector_matrix_or_decomposition
 - 精度：精确有理基础路径与明确的机器分解；分解不承诺任意精度。
-- 当前计算平台：无；目标计算平台：cli, desktop, web, ios。
+- 当前计算平台：cli, desktop, web, ios；目标计算平台：cli, desktop, web, ios。
 - 目标图形/交互展示平台：不适用或后续未定。
 - 兼容名称：无既有兼容入口。
 - 管道位置：第 1 个位置参数（从 1 起）。
+
+当前现代签名：
+
+```text
+trace(...)
+```
+
+当前 Wolfram 签名：
+
+```text
+Tr[...]
+```
 
 目标现代签名（按目标接口状态判断是否已可执行）：
 
@@ -1349,6 +1559,12 @@ trace(matrix)
 |---|---|---|---|---|
 | `matrix` | positional | 必填 | 矩阵/向量或签名的主要输入 | r3 |
 
+当前已登记示例（Wolfram）：
+
+```wolfram
+Tr[{{1,2},{3,4}}]
+```
+
 规划示例（尚未执行；需要目标版本，后续条目不承诺 .3）：
 
 ```text
@@ -1357,27 +1573,39 @@ trace([[1,2],[3,4]])
 
 验收：独立数学期望、有效/无效参数、边界、预算、中断及声明的平台/精度测试；范围外不伪造成功。
 
-当前源码：暂无当前实现证据。
+当前源码：[crates/om-eval/src/science/registry.rs](../../crates/om-eval/src/science/registry.rs)。
 
-当前测试引用：暂无当前实现证据。
+当前测试引用：[crates/om-eval/tests/science_basics.rs](../../crates/om-eval/tests/science_basics.rs)。
 
 ## transpose
 
-**当前实现：下一版规划；目标接口：规划接口，当前不可用。** 目标版本：`0.1.0-pre-alpha.3`。
+**当前实现：已实现；目标接口：当前可用。** 目标版本：`0.1.0-pre-alpha.3`。
 
 - 稳定身份：`fn_000161`；条目类型：`function`。
-- 副作用分类（设计预留）：`pure`；参数验证阶段：`documentation_only`，不构成工具授权。
+- 副作用分类（设计预留）：`pure`；参数验证阶段：`runtime_verified`，不构成工具授权。
 
 转置
 
-- 当前支持：当前无此规范接口的实现。
+- 当前支持：矩形矩阵≤64×64，原元素不改变；不把一般张量当作已适配。
 - 目标范围：维度检查；精确有理数或机器实数的小型稠密矩阵，继承预算；零向量/奇异矩阵明确诊断。
 - 返回：scalar_vector_matrix_or_decomposition
 - 精度：精确有理基础路径与明确的机器分解；分解不承诺任意精度。
-- 当前计算平台：无；目标计算平台：cli, desktop, web, ios。
+- 当前计算平台：cli, desktop, web, ios；目标计算平台：cli, desktop, web, ios。
 - 目标图形/交互展示平台：不适用或后续未定。
 - 兼容名称：无既有兼容入口。
 - 管道位置：第 1 个位置参数（从 1 起）。
+
+当前现代签名：
+
+```text
+transpose(...)
+```
+
+当前 Wolfram 签名：
+
+```text
+Transpose[...]
+```
 
 目标现代签名（按目标接口状态判断是否已可执行）：
 
@@ -1389,6 +1617,12 @@ transpose(matrix)
 |---|---|---|---|---|
 | `matrix` | positional | 必填 | 矩阵/向量或签名的主要输入 | r3 |
 
+当前已登记示例（Wolfram）：
+
+```wolfram
+Transpose[{{1,2},{3,4}}]
+```
+
 规划示例（尚未执行；需要目标版本，后续条目不承诺 .3）：
 
 ```text
@@ -1397,9 +1631,9 @@ transpose([[1,2],[3,4]])
 
 验收：独立数学期望、有效/无效参数、边界、预算、中断及声明的平台/精度测试；范围外不伪造成功。
 
-当前源码：暂无当前实现证据。
+当前源码：[crates/om-eval/src/science/registry.rs](../../crates/om-eval/src/science/registry.rs)。
 
-当前测试引用：暂无当前实现证据。
+当前测试引用：[crates/om-eval/tests/science_basics.rs](../../crates/om-eval/tests/science_basics.rs)。
 
 ## unit_vector
 

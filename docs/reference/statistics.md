@@ -14,9 +14,9 @@
 | [`cdf`](#cdf) | 下一版规划 | 规划接口，当前不可用 | 累积分布函数 |
 | [`chi_square_distribution`](#chi_square_distribution) | 后续规划 | 规划接口，当前不可用 | 统计、概率与随机中的 ChiSquareDistribution 能力，进入后续全景目录。 |
 | [`commonest`](#commonest) | 后续规划 | 规划接口，当前不可用 | 统计、概率与随机中的 Commonest 能力，进入后续全景目录。 |
-| [`correlation`](#correlation) | 下一版规划 | 规划接口，当前不可用 | Pearson 相关 |
-| [`counts`](#counts) | 下一版规划 | 规划接口，当前不可用 | 频数统计 |
-| [`covariance`](#covariance) | 下一版规划 | 规划接口，当前不可用 | 协方差 |
+| [`correlation`](#correlation) | 已实现 | 当前可用 | Pearson 相关 |
+| [`counts`](#counts) | 已实现 | 当前可用 | 频数统计 |
+| [`covariance`](#covariance) | 已实现 | 当前可用 | 协方差 |
 | [`distribution_fit_test`](#distribution_fit_test) | 后续规划 | 规划接口，当前不可用 | 统计、概率与随机中的 DistributionFitTest 能力，进入后续全景目录。 |
 | [`estimated_distribution`](#estimated_distribution) | 后续规划 | 规划接口，当前不可用 | 统计、概率与随机中的 EstimatedDistribution 能力，进入后续全景目录。 |
 | [`expectation`](#expectation) | 后续规划 | 规划接口，当前不可用 | 统计、概率与随机中的 Expectation 能力，进入后续全景目录。 |
@@ -27,15 +27,15 @@
 | [`interquartile_range`](#interquartile_range) | 后续规划 | 规划接口，当前不可用 | 统计、概率与随机中的 InterquartileRange 能力，进入后续全景目录。 |
 | [`kolmogorov_smirnov_test`](#kolmogorov_smirnov_test) | 后续规划 | 规划接口，当前不可用 | 统计、概率与随机中的 KolmogorovSmirnovTest 能力，进入后续全景目录。 |
 | [`kurtosis`](#kurtosis) | 后续规划 | 规划接口，当前不可用 | 统计、概率与随机中的 Kurtosis 能力，进入后续全景目录。 |
-| [`mean`](#mean) | 下一版规划 | 规划接口，当前不可用 | 均值 |
-| [`median`](#median) | 下一版规划 | 规划接口，当前不可用 | 中位数 |
+| [`mean`](#mean) | 已实现 | 当前可用 | 均值 |
+| [`median`](#median) | 已实现 | 当前可用 | 中位数 |
 | [`multinormal_distribution`](#multinormal_distribution) | 后续规划 | 规划接口，当前不可用 | 统计、概率与随机中的 MultinormalDistribution 能力，进入后续全景目录。 |
 | [`normal_distribution`](#normal_distribution) | 下一版规划 | 规划接口，当前不可用 | 正态分布 |
 | [`pdf`](#pdf) | 下一版规划 | 规划接口，当前不可用 | 概率密度 |
-| [`percentile`](#percentile) | 下一版规划 | 规划接口，当前不可用 | 百分位 |
+| [`percentile`](#percentile) | 已实现 | 当前可用 | 百分位 |
 | [`poisson_distribution`](#poisson_distribution) | 后续规划 | 规划接口，当前不可用 | 统计、概率与随机中的 PoissonDistribution 能力，进入后续全景目录。 |
 | [`probability`](#probability) | 后续规划 | 规划接口，当前不可用 | 统计、概率与随机中的 Probability 能力，进入后续全景目录。 |
-| [`quantile`](#quantile) | 下一版规划 | 规划接口，当前不可用 | 样本或分布的分位值 |
+| [`quantile`](#quantile) | 部分支持 | 当前可用 | 样本或分布的分位值 |
 | [`quartiles`](#quartiles) | 后续规划 | 规划接口，当前不可用 | 统计、概率与随机中的 Quartiles 能力，进入后续全景目录。 |
 | [`random_choice`](#random_choice) | 下一版规划 | 规划接口，当前不可用 | 有放回随机选择 |
 | [`random_complex`](#random_complex) | 后续规划 | 规划接口，当前不可用 | 统计、概率与随机中的 RandomComplex 能力，进入后续全景目录。 |
@@ -49,13 +49,13 @@
 | [`shapiro_wilk_test`](#shapiro_wilk_test) | 后续规划 | 规划接口，当前不可用 | 统计、概率与随机中的 ShapiroWilkTest 能力，进入后续全景目录。 |
 | [`skewness`](#skewness) | 后续规划 | 规划接口，当前不可用 | 统计、概率与随机中的 Skewness 能力，进入后续全景目录。 |
 | [`spearman_rho`](#spearman_rho) | 后续规划 | 规划接口，当前不可用 | 统计、概率与随机中的 SpearmanRho 能力，进入后续全景目录。 |
-| [`std`](#std) | 下一版规划 | 规划接口，当前不可用 | 标准差 |
+| [`std`](#std) | 已实现 | 当前可用 | 标准差 |
 | [`student_t_distribution`](#student_t_distribution) | 后续规划 | 规划接口，当前不可用 | 统计、概率与随机中的 StudentTDistribution 能力，进入后续全景目录。 |
 | [`survival_function`](#survival_function) | 后续规划 | 规划接口，当前不可用 | 统计、概率与随机中的 SurvivalFunction 能力，进入后续全景目录。 |
 | [`t_test`](#t_test) | 后续规划 | 规划接口，当前不可用 | 统计、概率与随机中的 TTest 能力，进入后续全景目录。 |
 | [`tally`](#tally) | 后续规划 | 规划接口，当前不可用 | 统计、概率与随机中的 Tally 能力，进入后续全景目录。 |
 | [`uniform_distribution`](#uniform_distribution) | 下一版规划 | 规划接口，当前不可用 | 均匀分布 |
-| [`variance`](#variance) | 下一版规划 | 规划接口，当前不可用 | 方差 |
+| [`variance`](#variance) | 已实现 | 当前可用 | 方差 |
 | [`z_test`](#z_test) | 后续规划 | 规划接口，当前不可用 | 统计、概率与随机中的 ZTest 能力，进入后续全景目录。 |
 
 ## beta_distribution
@@ -271,21 +271,33 @@ commonest(...)  # 后续接口尚未锁定
 
 ## correlation
 
-**当前实现：下一版规划；目标接口：规划接口，当前不可用。** 目标版本：`0.1.0-pre-alpha.3`。
+**当前实现：已实现；目标接口：当前可用。** 目标版本：`0.1.0-pre-alpha.3`。
 
 - 稳定身份：`fn_000187`；条目类型：`function`。
-- 副作用分类（设计预留）：`pure`；参数验证阶段：`documentation_only`，不构成工具授权。
+- 副作用分类（设计预留）：`pure`；参数验证阶段：`runtime_verified`，不构成工具授权。
 
 Pearson 相关
 
-- 当前支持：当前无此规范接口的实现。
+- 当前支持：当前支持最多100000项的有限实数或列表；精确有理数保持精确，复数/符号样本不静默近似。当前算法与资源边界见已登记测试。
 - 目标范围：拒绝空样本、非法数值、样本不足及零方差相关；分位数采用type7线性插值。
 - 返回：number_or_record
 - 精度：基础聚合可保留精确有理值；标准差/相关等机器路径明确标记。
-- 当前计算平台：无；目标计算平台：cli, desktop, web, ios。
+- 当前计算平台：cli, desktop, web, ios；目标计算平台：cli, desktop, web, ios。
 - 目标图形/交互展示平台：不适用或后续未定。
 - 兼容名称：无既有兼容入口。
 - 管道位置：第 1 个位置参数（从 1 起）。
+
+当前现代签名：
+
+```text
+correlation(...)
+```
+
+当前 Wolfram 签名：
+
+```text
+Correlation[...]
+```
 
 目标现代签名（按目标接口状态判断是否已可执行）：
 
@@ -298,6 +310,12 @@ correlation(a,b)
 | `a` | positional | 必填 | 签名对应的a参数 | r3 |
 | `b` | positional | 必填 | 签名对应的b参数 | r3 |
 
+当前已登记示例（Wolfram）：
+
+```wolfram
+Correlation[{1,2,3},{2,4,6}]
+```
+
 规划示例（尚未执行；需要目标版本，后续条目不承诺 .3）：
 
 ```text
@@ -306,27 +324,39 @@ correlation([1,2,3],[2,4,6])
 
 验收：独立数学期望、有效/无效参数、边界、预算、中断及声明的平台/精度测试；范围外不伪造成功。
 
-当前源码：暂无当前实现证据。
+当前源码：[crates/om-eval/src/science/registry.rs](../../crates/om-eval/src/science/registry.rs)。
 
-当前测试引用：暂无当前实现证据。
+当前测试引用：[crates/om-eval/tests/science_basics.rs](../../crates/om-eval/tests/science_basics.rs)。
 
 ## counts
 
-**当前实现：下一版规划；目标接口：规划接口，当前不可用。** 目标版本：`0.1.0-pre-alpha.3`。
+**当前实现：已实现；目标接口：当前可用。** 目标版本：`0.1.0-pre-alpha.3`。
 
 - 稳定身份：`fn_000188`；条目类型：`function`。
-- 副作用分类（设计预留）：`pure`；参数验证阶段：`documentation_only`，不构成工具授权。
+- 副作用分类（设计预留）：`pure`；参数验证阶段：`runtime_verified`，不构成工具授权。
 
 频数统计
 
-- 当前支持：当前无此规范接口的实现。
+- 当前支持：列表路径已实现；键/谓词为真实函数，每项仅执行一次；分组按首次出现顺序，结构相等决定归组，精确1与机器1.0区分。reshape维数≤8、总节点≤100000；长度/类型/形状错误及中断明确诊断。记录/表格列操作后续适配。
 - 目标范围：拒绝空样本、非法数值、样本不足及零方差相关；分位数采用type7线性插值。
 - 返回：number_or_record
 - 精度：基础聚合可保留精确有理值；标准差/相关等机器路径明确标记。
-- 当前计算平台：无；目标计算平台：cli, desktop, web, ios。
+- 当前计算平台：cli, desktop, web, ios；目标计算平台：cli, desktop, web, ios。
 - 目标图形/交互展示平台：不适用或后续未定。
 - 兼容名称：无既有兼容入口。
 - 管道位置：第 1 个位置参数（从 1 起）。
+
+当前现代签名：
+
+```text
+counts(...)
+```
+
+当前 Wolfram 签名：
+
+```text
+Counts[...]
+```
 
 目标现代签名（按目标接口状态判断是否已可执行）：
 
@@ -338,6 +368,12 @@ counts(data)
 |---|---|---|---|---|
 | `data` | positional | 必填 | 有限样本 | r3 |
 
+当前已登记示例（Wolfram）：
+
+```wolfram
+Counts[{1,2,1}]
+```
+
 规划示例（尚未执行；需要目标版本，后续条目不承诺 .3）：
 
 ```text
@@ -346,27 +382,39 @@ counts(["a","b","a"])
 
 验收：独立数学期望、有效/无效参数、边界、预算、中断及声明的平台/精度测试；范围外不伪造成功。
 
-当前源码：暂无当前实现证据。
+当前源码：[crates/om-eval/src/science/registry.rs](../../crates/om-eval/src/science/registry.rs)。
 
-当前测试引用：暂无当前实现证据。
+当前测试引用：[crates/om-eval/tests/science_basics.rs](../../crates/om-eval/tests/science_basics.rs)。
 
 ## covariance
 
-**当前实现：下一版规划；目标接口：规划接口，当前不可用。** 目标版本：`0.1.0-pre-alpha.3`。
+**当前实现：已实现；目标接口：当前可用。** 目标版本：`0.1.0-pre-alpha.3`。
 
 - 稳定身份：`fn_000186`；条目类型：`function`。
-- 副作用分类（设计预留）：`pure`；参数验证阶段：`documentation_only`，不构成工具授权。
+- 副作用分类（设计预留）：`pure`；参数验证阶段：`runtime_verified`，不构成工具授权。
 
 协方差
 
-- 当前支持：当前无此规范接口的实现。
+- 当前支持：当前支持最多100000项的有限实数或列表；精确有理数保持精确，复数/符号样本不静默近似。当前算法与资源边界见已登记测试。
 - 目标范围：拒绝空样本、非法数值、样本不足及零方差相关；分位数采用type7线性插值。
 - 返回：number_or_record
 - 精度：基础聚合可保留精确有理值；标准差/相关等机器路径明确标记。
-- 当前计算平台：无；目标计算平台：cli, desktop, web, ios。
+- 当前计算平台：cli, desktop, web, ios；目标计算平台：cli, desktop, web, ios。
 - 目标图形/交互展示平台：不适用或后续未定。
 - 兼容名称：无既有兼容入口。
 - 管道位置：第 1 个位置参数（从 1 起）。
+
+当前现代签名：
+
+```text
+covariance(...)
+```
+
+当前 Wolfram 签名：
+
+```text
+Covariance[...]
+```
 
 目标现代签名（按目标接口状态判断是否已可执行）：
 
@@ -380,6 +428,12 @@ covariance(a,b, sample: true)
 | `b` | positional | 必填 | 签名对应的b参数 | r3 |
 | `sample` | option | true | 样本n−1或总体n | r3 |
 
+当前已登记示例（Wolfram）：
+
+```wolfram
+Covariance[{1,2,3},{2,4,6}]
+```
+
 规划示例（尚未执行；需要目标版本，后续条目不承诺 .3）：
 
 ```text
@@ -388,9 +442,9 @@ covariance([1,2,3],[2,4,6])
 
 验收：独立数学期望、有效/无效参数、边界、预算、中断及声明的平台/精度测试；范围外不伪造成功。
 
-当前源码：暂无当前实现证据。
+当前源码：[crates/om-eval/src/science/registry.rs](../../crates/om-eval/src/science/registry.rs)。
 
-当前测试引用：暂无当前实现证据。
+当前测试引用：[crates/om-eval/tests/science_basics.rs](../../crates/om-eval/tests/science_basics.rs)。
 
 ## distribution_fit_test
 
@@ -734,21 +788,33 @@ kurtosis(...)  # 后续接口尚未锁定
 
 ## mean
 
-**当前实现：下一版规划；目标接口：规划接口，当前不可用。** 目标版本：`0.1.0-pre-alpha.3`。
+**当前实现：已实现；目标接口：当前可用。** 目标版本：`0.1.0-pre-alpha.3`。
 
 - 稳定身份：`fn_000181`；条目类型：`function`。
-- 副作用分类（设计预留）：`pure`；参数验证阶段：`documentation_only`，不构成工具授权。
+- 副作用分类（设计预留）：`pure`；参数验证阶段：`runtime_verified`，不构成工具授权。
 
 均值
 
-- 当前支持：当前无此规范接口的实现。
+- 当前支持：当前支持最多100000项的有限实数或列表；精确有理数保持精确，复数/符号样本不静默近似。当前算法与资源边界见已登记测试。
 - 目标范围：拒绝空样本、非法数值、样本不足及零方差相关；分位数采用type7线性插值。
 - 返回：number_or_record
 - 精度：基础聚合可保留精确有理值；标准差/相关等机器路径明确标记。
-- 当前计算平台：无；目标计算平台：cli, desktop, web, ios。
+- 当前计算平台：cli, desktop, web, ios；目标计算平台：cli, desktop, web, ios。
 - 目标图形/交互展示平台：不适用或后续未定。
 - 兼容名称：无既有兼容入口。
 - 管道位置：第 1 个位置参数（从 1 起）。
+
+当前现代签名：
+
+```text
+mean(...)
+```
+
+当前 Wolfram 签名：
+
+```text
+Mean[...]
+```
 
 目标现代签名（按目标接口状态判断是否已可执行）：
 
@@ -760,6 +826,12 @@ mean(data)
 |---|---|---|---|---|
 | `data` | positional | 必填 | 有限样本 | r3 |
 
+当前已登记示例（Wolfram）：
+
+```wolfram
+Mean[{1,2,3}]
+```
+
 规划示例（尚未执行；需要目标版本，后续条目不承诺 .3）：
 
 ```text
@@ -768,27 +840,39 @@ mean([1,2,3])
 
 验收：独立数学期望、有效/无效参数、边界、预算、中断及声明的平台/精度测试；范围外不伪造成功。
 
-当前源码：暂无当前实现证据。
+当前源码：[crates/om-eval/src/science/registry.rs](../../crates/om-eval/src/science/registry.rs)。
 
-当前测试引用：暂无当前实现证据。
+当前测试引用：[crates/om-eval/tests/science_basics.rs](../../crates/om-eval/tests/science_basics.rs)。
 
 ## median
 
-**当前实现：下一版规划；目标接口：规划接口，当前不可用。** 目标版本：`0.1.0-pre-alpha.3`。
+**当前实现：已实现；目标接口：当前可用。** 目标版本：`0.1.0-pre-alpha.3`。
 
 - 稳定身份：`fn_000182`；条目类型：`function`。
-- 副作用分类（设计预留）：`pure`；参数验证阶段：`documentation_only`，不构成工具授权。
+- 副作用分类（设计预留）：`pure`；参数验证阶段：`runtime_verified`，不构成工具授权。
 
 中位数
 
-- 当前支持：当前无此规范接口的实现。
+- 当前支持：当前支持最多100000项的有限实数或列表；精确有理数保持精确，复数/符号样本不静默近似。当前算法与资源边界见已登记测试。
 - 目标范围：拒绝空样本、非法数值、样本不足及零方差相关；分位数采用type7线性插值。
 - 返回：number_or_record
 - 精度：基础聚合可保留精确有理值；标准差/相关等机器路径明确标记。
-- 当前计算平台：无；目标计算平台：cli, desktop, web, ios。
+- 当前计算平台：cli, desktop, web, ios；目标计算平台：cli, desktop, web, ios。
 - 目标图形/交互展示平台：不适用或后续未定。
 - 兼容名称：无既有兼容入口。
 - 管道位置：第 1 个位置参数（从 1 起）。
+
+当前现代签名：
+
+```text
+median(...)
+```
+
+当前 Wolfram 签名：
+
+```text
+Median[...]
+```
 
 目标现代签名（按目标接口状态判断是否已可执行）：
 
@@ -800,6 +884,12 @@ median(data)
 |---|---|---|---|---|
 | `data` | positional | 必填 | 有限样本 | r3 |
 
+当前已登记示例（Wolfram）：
+
+```wolfram
+Median[{1,2,3,4}]
+```
+
 规划示例（尚未执行；需要目标版本，后续条目不承诺 .3）：
 
 ```text
@@ -808,9 +898,9 @@ median([1,2,3,4])
 
 验收：独立数学期望、有效/无效参数、边界、预算、中断及声明的平台/精度测试；范围外不伪造成功。
 
-当前源码：暂无当前实现证据。
+当前源码：[crates/om-eval/src/science/registry.rs](../../crates/om-eval/src/science/registry.rs)。
 
-当前测试引用：暂无当前实现证据。
+当前测试引用：[crates/om-eval/tests/science_basics.rs](../../crates/om-eval/tests/science_basics.rs)。
 
 ## multinormal_distribution
 
@@ -930,21 +1020,33 @@ pdf(normal_distribution(),0)
 
 ## percentile
 
-**当前实现：下一版规划；目标接口：规划接口，当前不可用。** 目标版本：`0.1.0-pre-alpha.3`。
+**当前实现：已实现；目标接口：当前可用。** 目标版本：`0.1.0-pre-alpha.3`。
 
 - 稳定身份：`fn_000185`；条目类型：`function`。
-- 副作用分类（设计预留）：`pure`；参数验证阶段：`documentation_only`，不构成工具授权。
+- 副作用分类（设计预留）：`pure`；参数验证阶段：`runtime_verified`，不构成工具授权。
 
 百分位
 
-- 当前支持：当前无此规范接口的实现。
+- 当前支持：当前支持最多100000项的有限实数或列表；精确有理数保持精确，复数/符号样本不静默近似。当前算法与资源边界见已登记测试。
 - 目标范围：拒绝空样本、非法数值、样本不足及零方差相关；分位数采用type7线性插值。
 - 返回：number_or_record
 - 精度：基础聚合可保留精确有理值；标准差/相关等机器路径明确标记。
-- 当前计算平台：无；目标计算平台：cli, desktop, web, ios。
+- 当前计算平台：cli, desktop, web, ios；目标计算平台：cli, desktop, web, ios。
 - 目标图形/交互展示平台：不适用或后续未定。
 - 兼容名称：无既有兼容入口。
 - 管道位置：第 1 个位置参数（从 1 起）。
+
+当前现代签名：
+
+```text
+percentile(...)
+```
+
+当前 Wolfram 签名：
+
+```text
+Percentile[...]
+```
 
 目标现代签名（按目标接口状态判断是否已可执行）：
 
@@ -957,6 +1059,12 @@ percentile(data, percent)
 | `data` | positional | 必填 | 有限样本 | r3 |
 | `percent` | positional | 必填 | 0..100 | r3 |
 
+当前已登记示例（Wolfram）：
+
+```wolfram
+Percentile[{0,10,20},25]
+```
+
 规划示例（尚未执行；需要目标版本，后续条目不承诺 .3）：
 
 ```text
@@ -965,9 +1073,9 @@ percentile([1,2,3,4],25)
 
 验收：独立数学期望、有效/无效参数、边界、预算、中断及声明的平台/精度测试；范围外不伪造成功。
 
-当前源码：暂无当前实现证据。
+当前源码：[crates/om-eval/src/science/registry.rs](../../crates/om-eval/src/science/registry.rs)。
 
-当前测试引用：暂无当前实现证据。
+当前测试引用：[crates/om-eval/tests/science_basics.rs](../../crates/om-eval/tests/science_basics.rs)。
 
 ## poisson_distribution
 
@@ -1039,21 +1147,33 @@ probability(...)  # 后续接口尚未锁定
 
 ## quantile
 
-**当前实现：下一版规划；目标接口：规划接口，当前不可用。** 目标版本：`0.1.0-pre-alpha.3`。
+**当前实现：部分支持；目标接口：当前可用。** 目标版本：`0.1.0-pre-alpha.3`。
 
 - 稳定身份：`fn_000189`；条目类型：`function`。
-- 副作用分类（设计预留）：`pure`；参数验证阶段：`documentation_only`，不构成工具授权。
+- 副作用分类（设计预留）：`pure`；参数验证阶段：`runtime_verified`，不构成工具授权。
 
 样本或分布的分位值
 
-- 当前支持：当前无此规范接口的实现。
+- 当前支持：当前只接受实数样本列表，type7线性插值，概率0..1，空数据拒绝；分布对象路径待后续接入。
 - 目标范围：样本采用type7；分布首版正态/均匀，p∈[0,1]，端点处理明确。
 - 返回：expression
 - 精度：机器精度路径优先；不声称任意精度。
-- 当前计算平台：无；目标计算平台：cli, desktop, web, ios。
+- 当前计算平台：cli, desktop, web, ios；目标计算平台：cli, desktop, web, ios。
 - 目标图形/交互展示平台：不适用或后续未定。
 - 兼容名称：`Quantile`、`InverseCDF`。
 - 管道位置：第 1 个位置参数（从 1 起）。
+
+当前现代签名：
+
+```text
+quantile(...)
+```
+
+当前 Wolfram 签名：
+
+```text
+Quantile[...]
+```
 
 目标现代签名（按目标接口状态判断是否已可执行）：
 
@@ -1066,6 +1186,12 @@ quantile(data_or_distribution, probability)
 | `data_or_distribution` | positional | 必填 | 签名对应的data_or_distribution参数 | r3 |
 | `probability` | positional | 必填 | 0..1 | r3 |
 
+当前已登记示例（Wolfram）：
+
+```wolfram
+Quantile[{0,10,20},1/4]
+```
+
 规划示例（尚未执行；需要目标版本，后续条目不承诺 .3）：
 
 ```text
@@ -1074,9 +1200,9 @@ quantile([1,2,3,4],0.25)
 
 验收：独立数学期望、有效/无效参数、边界、预算、中断及声明的平台/精度测试；范围外不伪造成功。
 
-当前源码：暂无当前实现证据。
+当前源码：[crates/om-eval/src/science/registry.rs](../../crates/om-eval/src/science/registry.rs)。
 
-当前测试引用：暂无当前实现证据。
+当前测试引用：[crates/om-eval/tests/science_basics.rs](../../crates/om-eval/tests/science_basics.rs)。
 
 ## quartiles
 
@@ -1553,21 +1679,33 @@ spearman_rho(...)  # 后续接口尚未锁定
 
 ## std
 
-**当前实现：下一版规划；目标接口：规划接口，当前不可用。** 目标版本：`0.1.0-pre-alpha.3`。
+**当前实现：已实现；目标接口：当前可用。** 目标版本：`0.1.0-pre-alpha.3`。
 
 - 稳定身份：`fn_000184`；条目类型：`function`。
-- 副作用分类（设计预留）：`pure`；参数验证阶段：`documentation_only`，不构成工具授权。
+- 副作用分类（设计预留）：`pure`；参数验证阶段：`runtime_verified`，不构成工具授权。
 
 标准差
 
-- 当前支持：当前无此规范接口的实现。
+- 当前支持：当前支持最多100000项的有限实数或列表；精确有理数保持精确，复数/符号样本不静默近似。当前算法与资源边界见已登记测试。
 - 目标范围：拒绝空样本、非法数值、样本不足及零方差相关；分位数采用type7线性插值。
 - 返回：number_or_record
 - 精度：基础聚合可保留精确有理值；标准差/相关等机器路径明确标记。
-- 当前计算平台：无；目标计算平台：cli, desktop, web, ios。
+- 当前计算平台：cli, desktop, web, ios；目标计算平台：cli, desktop, web, ios。
 - 目标图形/交互展示平台：不适用或后续未定。
 - 兼容名称：无既有兼容入口。
 - 管道位置：第 1 个位置参数（从 1 起）。
+
+当前现代签名：
+
+```text
+std(...)
+```
+
+当前 Wolfram 签名：
+
+```text
+StandardDeviation[...]
+```
 
 目标现代签名（按目标接口状态判断是否已可执行）：
 
@@ -1580,6 +1718,12 @@ std(data, sample: true)
 | `data` | positional | 必填 | 有限样本 | r3 |
 | `sample` | option | true | 样本n−1或总体n | r3 |
 
+当前已登记示例（Wolfram）：
+
+```wolfram
+StandardDeviation[{1,2,3}]
+```
+
 规划示例（尚未执行；需要目标版本，后续条目不承诺 .3）：
 
 ```text
@@ -1588,9 +1732,9 @@ std([1,2,3],sample: false)
 
 验收：独立数学期望、有效/无效参数、边界、预算、中断及声明的平台/精度测试；范围外不伪造成功。
 
-当前源码：暂无当前实现证据。
+当前源码：[crates/om-eval/src/science/registry.rs](../../crates/om-eval/src/science/registry.rs)。
 
-当前测试引用：暂无当前实现证据。
+当前测试引用：[crates/om-eval/tests/science_basics.rs](../../crates/om-eval/tests/science_basics.rs)。
 
 ## student_t_distribution
 
@@ -1770,21 +1914,33 @@ uniform_distribution(bounds: [0,1])
 
 ## variance
 
-**当前实现：下一版规划；目标接口：规划接口，当前不可用。** 目标版本：`0.1.0-pre-alpha.3`。
+**当前实现：已实现；目标接口：当前可用。** 目标版本：`0.1.0-pre-alpha.3`。
 
 - 稳定身份：`fn_000183`；条目类型：`function`。
-- 副作用分类（设计预留）：`pure`；参数验证阶段：`documentation_only`，不构成工具授权。
+- 副作用分类（设计预留）：`pure`；参数验证阶段：`runtime_verified`，不构成工具授权。
 
 方差
 
-- 当前支持：当前无此规范接口的实现。
+- 当前支持：当前支持最多100000项的有限实数或列表；精确有理数保持精确，复数/符号样本不静默近似。当前算法与资源边界见已登记测试。
 - 目标范围：拒绝空样本、非法数值、样本不足及零方差相关；分位数采用type7线性插值。
 - 返回：number_or_record
 - 精度：基础聚合可保留精确有理值；标准差/相关等机器路径明确标记。
-- 当前计算平台：无；目标计算平台：cli, desktop, web, ios。
+- 当前计算平台：cli, desktop, web, ios；目标计算平台：cli, desktop, web, ios。
 - 目标图形/交互展示平台：不适用或后续未定。
 - 兼容名称：无既有兼容入口。
 - 管道位置：第 1 个位置参数（从 1 起）。
+
+当前现代签名：
+
+```text
+variance(...)
+```
+
+当前 Wolfram 签名：
+
+```text
+Variance[...]
+```
 
 目标现代签名（按目标接口状态判断是否已可执行）：
 
@@ -1797,6 +1953,12 @@ variance(data, sample: true)
 | `data` | positional | 必填 | 有限样本 | r3 |
 | `sample` | option | true | 样本n−1或总体n | r3 |
 
+当前已登记示例（Wolfram）：
+
+```wolfram
+Variance[{1,2,3}]
+```
+
 规划示例（尚未执行；需要目标版本，后续条目不承诺 .3）：
 
 ```text
@@ -1805,9 +1967,9 @@ variance([1,2,3],sample: true)
 
 验收：独立数学期望、有效/无效参数、边界、预算、中断及声明的平台/精度测试；范围外不伪造成功。
 
-当前源码：暂无当前实现证据。
+当前源码：[crates/om-eval/src/science/registry.rs](../../crates/om-eval/src/science/registry.rs)。
 
-当前测试引用：暂无当前实现证据。
+当前测试引用：[crates/om-eval/tests/science_basics.rs](../../crates/om-eval/tests/science_basics.rs)。
 
 ## z_test
 

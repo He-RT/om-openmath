@@ -1,6 +1,6 @@
 # 实际注册审计基线：ba3cd2b；稳定身份与名称分离；目录/副作用为设计数据。
 schema_version = 1
-metadata_version = 3
+metadata_version = 4
 validation_stage = "runtime_verified"
 current_version = "0.1.0-pre-alpha.2"
 target_version = "0.1.0-pre-alpha.3"
@@ -3907,288 +3907,288 @@ effect_class = "pure"
 id = "fn_000120"
 name = "min"
 category = "basics"
-status = "planned"
-interface_status = "planned"
-runtime_names = []
+status = "implemented"
+interface_status = "current"
+runtime_names = ["Min"]
 compatibility_names = []
-current_modern_signatures = []
-current_wolfram_signatures = []
+current_modern_signatures = ["min(...)"]
+current_wolfram_signatures = ["Min[...]"]
 signatures = ["min(...values)"]
 parameters = [{ name = "values", kind = "variadic", default = "必填", description = "签名对应的values参数", availability = "r3" }]
 return_type = "expression"
 semantics = "最小值"
-current_support = "当前无此规范接口的实现。"
+current_support = "当前支持最多100000项的有限实数或列表；精确有理数保持精确，复数/符号样本不静默近似。当前算法与资源边界见已登记测试。"
 target_support = "精确可识别值及所声明实数机器路径；新调用注册尚未交付。"
 precision_modes = ["planned_machine"]
 precision_notes = "精确值或明确的机器路径；precision/accuracy 查询输入已有信息。"
-current_platforms = []
+current_platforms = ["cli", "desktop", "web", "ios"]
 target_platforms = ["cli", "desktop", "web", "ios"]
 render_platforms = []
-current_examples = []
+current_examples = ["Min[3,1,2]"]
 planned_examples = ["min([3,1,2])"]
-sources = []
-tests = []
+sources = ["crates/om-eval/src/science/registry.rs"]
+tests = ["crates/om-eval/tests/science_basics.rs"]
 acceptance = "独立数学期望、有效/无效参数、边界、预算、中断及声明的平台/精度测试；范围外不伪造成功。"
 pipe_arg = 1
 target_version = "0.1.0-pre-alpha.3"
 kind = "function"
-validation_stage = "documentation_only"
+validation_stage = "runtime_verified"
 effect_class = "pure"
 
 [[functions]]
 id = "fn_000121"
 name = "max"
 category = "basics"
-status = "planned"
-interface_status = "planned"
-runtime_names = []
+status = "implemented"
+interface_status = "current"
+runtime_names = ["Max"]
 compatibility_names = []
-current_modern_signatures = []
-current_wolfram_signatures = []
+current_modern_signatures = ["max(...)"]
+current_wolfram_signatures = ["Max[...]"]
 signatures = ["max(...values)"]
 parameters = [{ name = "values", kind = "variadic", default = "必填", description = "签名对应的values参数", availability = "r3" }]
 return_type = "expression"
 semantics = "最大值"
-current_support = "当前无此规范接口的实现。"
+current_support = "当前支持最多100000项的有限实数或列表；精确有理数保持精确，复数/符号样本不静默近似。当前算法与资源边界见已登记测试。"
 target_support = "精确可识别值及所声明实数机器路径；新调用注册尚未交付。"
 precision_modes = ["planned_machine"]
 precision_notes = "精确值或明确的机器路径；precision/accuracy 查询输入已有信息。"
-current_platforms = []
+current_platforms = ["cli", "desktop", "web", "ios"]
 target_platforms = ["cli", "desktop", "web", "ios"]
 render_platforms = []
-current_examples = []
+current_examples = ["Max[3,1,2]"]
 planned_examples = ["max([3,1,2])"]
-sources = []
-tests = []
+sources = ["crates/om-eval/src/science/registry.rs"]
+tests = ["crates/om-eval/tests/science_basics.rs"]
 acceptance = "独立数学期望、有效/无效参数、边界、预算、中断及声明的平台/精度测试；范围外不伪造成功。"
 pipe_arg = 1
 target_version = "0.1.0-pre-alpha.3"
 kind = "function"
-validation_stage = "documentation_only"
+validation_stage = "runtime_verified"
 effect_class = "pure"
 
 [[functions]]
 id = "fn_000122"
 name = "minmax"
 category = "basics"
-status = "planned"
-interface_status = "planned"
-runtime_names = []
+status = "implemented"
+interface_status = "current"
+runtime_names = ["MinMax"]
 compatibility_names = []
-current_modern_signatures = []
-current_wolfram_signatures = []
+current_modern_signatures = ["minmax(...)"]
+current_wolfram_signatures = ["MinMax[...]"]
 signatures = ["minmax(data)"]
 parameters = [{ name = "data", kind = "positional", default = "必填", description = "有序输入数据", availability = "r3" }]
 return_type = "expression"
 semantics = "同时给最小与最大值"
-current_support = "当前无此规范接口的实现。"
+current_support = "当前支持最多100000项的有限实数或列表；精确有理数保持精确，复数/符号样本不静默近似。当前算法与资源边界见已登记测试。"
 target_support = "精确可识别值及所声明实数机器路径；新调用注册尚未交付。"
 precision_modes = ["planned_machine"]
 precision_notes = "精确值或明确的机器路径；precision/accuracy 查询输入已有信息。"
-current_platforms = []
+current_platforms = ["cli", "desktop", "web", "ios"]
 target_platforms = ["cli", "desktop", "web", "ios"]
 render_platforms = []
-current_examples = []
+current_examples = ["MinMax[{3,1,2}]"]
 planned_examples = ["minmax([3,1,2])"]
-sources = []
-tests = []
+sources = ["crates/om-eval/src/science/registry.rs"]
+tests = ["crates/om-eval/tests/science_basics.rs"]
 acceptance = "独立数学期望、有效/无效参数、边界、预算、中断及声明的平台/精度测试；范围外不伪造成功。"
 pipe_arg = 1
 target_version = "0.1.0-pre-alpha.3"
 kind = "function"
-validation_stage = "documentation_only"
+validation_stage = "runtime_verified"
 effect_class = "pure"
 
 [[functions]]
 id = "fn_000123"
 name = "integer_part"
 category = "basics"
-status = "planned"
-interface_status = "planned"
-runtime_names = []
+status = "implemented"
+interface_status = "current"
+runtime_names = ["IntegerPart"]
 compatibility_names = []
-current_modern_signatures = []
-current_wolfram_signatures = []
+current_modern_signatures = ["integer_part(...)"]
+current_wolfram_signatures = ["IntegerPart[...]"]
 signatures = ["integer_part(x)"]
 parameters = [{ name = "x", kind = "positional", default = "必填", description = "签名对应的x参数", availability = "r3" }]
 return_type = "expression"
 semantics = "向零截断的整数部分"
-current_support = "当前无此规范接口的实现。"
+current_support = "当前支持最多100000项的有限实数或列表；精确有理数保持精确，复数/符号样本不静默近似。当前算法与资源边界见已登记测试。"
 target_support = "精确可识别值及所声明实数机器路径；新调用注册尚未交付。"
 precision_modes = ["planned_machine"]
 precision_notes = "精确值或明确的机器路径；precision/accuracy 查询输入已有信息。"
-current_platforms = []
+current_platforms = ["cli", "desktop", "web", "ios"]
 target_platforms = ["cli", "desktop", "web", "ios"]
 render_platforms = []
-current_examples = []
+current_examples = ["IntegerPart[-7/3]"]
 planned_examples = ["integer_part(-3/2)"]
-sources = []
-tests = []
+sources = ["crates/om-eval/src/science/registry.rs"]
+tests = ["crates/om-eval/tests/science_basics.rs"]
 acceptance = "独立数学期望、有效/无效参数、边界、预算、中断及声明的平台/精度测试；范围外不伪造成功。"
 pipe_arg = 1
 target_version = "0.1.0-pre-alpha.3"
 kind = "function"
-validation_stage = "documentation_only"
+validation_stage = "runtime_verified"
 effect_class = "pure"
 
 [[functions]]
 id = "fn_000124"
 name = "fractional_part"
 category = "basics"
-status = "planned"
-interface_status = "planned"
-runtime_names = []
+status = "implemented"
+interface_status = "current"
+runtime_names = ["FractionalPart"]
 compatibility_names = []
-current_modern_signatures = []
-current_wolfram_signatures = []
+current_modern_signatures = ["fractional_part(...)"]
+current_wolfram_signatures = ["FractionalPart[...]"]
 signatures = ["fractional_part(x)"]
 parameters = [{ name = "x", kind = "positional", default = "必填", description = "签名对应的x参数", availability = "r3" }]
 return_type = "expression"
 semantics = "与整数部分相补的有符号小数部分"
-current_support = "当前无此规范接口的实现。"
+current_support = "当前支持最多100000项的有限实数或列表；精确有理数保持精确，复数/符号样本不静默近似。当前算法与资源边界见已登记测试。"
 target_support = "精确可识别值及所声明实数机器路径；新调用注册尚未交付。"
 precision_modes = ["planned_machine"]
 precision_notes = "精确值或明确的机器路径；precision/accuracy 查询输入已有信息。"
-current_platforms = []
+current_platforms = ["cli", "desktop", "web", "ios"]
 target_platforms = ["cli", "desktop", "web", "ios"]
 render_platforms = []
-current_examples = []
+current_examples = ["FractionalPart[-7/3]"]
 planned_examples = ["fractional_part(-3/2)"]
-sources = []
-tests = []
+sources = ["crates/om-eval/src/science/registry.rs"]
+tests = ["crates/om-eval/tests/science_basics.rs"]
 acceptance = "独立数学期望、有效/无效参数、边界、预算、中断及声明的平台/精度测试；范围外不伪造成功。"
 pipe_arg = 1
 target_version = "0.1.0-pre-alpha.3"
 kind = "function"
-validation_stage = "documentation_only"
+validation_stage = "runtime_verified"
 effect_class = "pure"
 
 [[functions]]
 id = "fn_000125"
 name = "precision"
 category = "basics"
-status = "planned"
-interface_status = "planned"
-runtime_names = []
+status = "implemented"
+interface_status = "current"
+runtime_names = ["Precision"]
 compatibility_names = []
-current_modern_signatures = []
-current_wolfram_signatures = []
+current_modern_signatures = ["precision(...)"]
+current_wolfram_signatures = ["Precision[...]"]
 signatures = ["precision(value)"]
 parameters = [{ name = "value", kind = "positional", default = "必填", description = "签名对应的value参数", availability = "r3" }]
 return_type = "expression"
 semantics = "查询有效精度，不是格式小数位"
-current_support = "当前无此规范接口的实现。"
+current_support = "查询精确Infinity或机器/已有大浮点的名义十进制位数；不为机器输入填造高精度。"
 target_support = "精确可识别值及所声明实数机器路径；新调用注册尚未交付。"
 precision_modes = ["planned_machine"]
 precision_notes = "精确值或明确的机器路径；precision/accuracy 查询输入已有信息。"
-current_platforms = []
+current_platforms = ["cli", "desktop", "web", "ios"]
 target_platforms = ["cli", "desktop", "web", "ios"]
 render_platforms = []
-current_examples = []
+current_examples = ["Precision[1]"]
 planned_examples = ["precision(decimal(\"0.1\", precision: 50))"]
-sources = []
-tests = []
+sources = ["crates/om-eval/src/science/registry.rs"]
+tests = ["crates/om-eval/tests/science_basics.rs"]
 acceptance = "独立数学期望、有效/无效参数、边界、预算、中断及声明的平台/精度测试；范围外不伪造成功。"
 pipe_arg = 1
 target_version = "0.1.0-pre-alpha.3"
 kind = "function"
-validation_stage = "documentation_only"
+validation_stage = "runtime_verified"
 effect_class = "pure"
 
 [[functions]]
 id = "fn_000126"
 name = "accuracy"
 category = "basics"
-status = "planned"
-interface_status = "planned"
-runtime_names = []
+status = "implemented"
+interface_status = "current"
+runtime_names = ["Accuracy"]
 compatibility_names = []
-current_modern_signatures = []
-current_wolfram_signatures = []
+current_modern_signatures = ["accuracy(...)"]
+current_wolfram_signatures = ["Accuracy[...]"]
 signatures = ["accuracy(value)"]
 parameters = [{ name = "value", kind = "positional", default = "必填", description = "签名对应的value参数", availability = "r3" }]
 return_type = "expression"
 semantics = "查询数值准确度信息"
-current_support = "当前无此规范接口的实现。"
+current_support = "精确数Infinity；非零机器范围内近似实数按precision-log10(abs(value))给出名义绝对位数。近似零或机器范围外的绝对尺度不推断；不是误差认证。"
 target_support = "精确可识别值及所声明实数机器路径；新调用注册尚未交付。"
 precision_modes = ["planned_machine"]
 precision_notes = "精确值或明确的机器路径；precision/accuracy 查询输入已有信息。"
-current_platforms = []
+current_platforms = ["cli", "desktop", "web", "ios"]
 target_platforms = ["cli", "desktop", "web", "ios"]
 render_platforms = []
-current_examples = []
+current_examples = ["Accuracy[1]"]
 planned_examples = ["accuracy(decimal(\"0.1\", precision: 50))"]
-sources = []
-tests = []
+sources = ["crates/om-eval/src/science/registry.rs"]
+tests = ["crates/om-eval/tests/science_basics.rs"]
 acceptance = "独立数学期望、有效/无效参数、边界、预算、中断及声明的平台/精度测试；范围外不伪造成功。"
 pipe_arg = 1
 target_version = "0.1.0-pre-alpha.3"
 kind = "function"
-validation_stage = "documentation_only"
+validation_stage = "runtime_verified"
 effect_class = "pure"
 
 [[functions]]
 id = "fn_000127"
 name = "chop"
 category = "basics"
-status = "planned"
-interface_status = "planned"
-runtime_names = []
+status = "implemented"
+interface_status = "current"
+runtime_names = ["Chop"]
 compatibility_names = []
-current_modern_signatures = []
-current_wolfram_signatures = []
+current_modern_signatures = ["chop(...)"]
+current_wolfram_signatures = ["Chop[...]"]
 signatures = ["chop(expr, tolerance: 1e-10)"]
 parameters = [{ name = "expr", kind = "positional", default = "必填", description = "签名对应的expr参数", availability = "r3" }, { name = "tolerance", kind = "option", default = "1e-10", description = "签名对应的tolerance参数", availability = "r3" }]
 return_type = "expression"
 semantics = "把小分量置零，不构成零证明"
-current_support = "当前无此规范接口的实现。"
+current_support = "当前支持最多100000项的有限实数或列表；精确有理数保持精确，复数/符号样本不静默近似。当前算法与资源边界见已登记测试。"
 target_support = "精确可识别值及所声明实数机器路径；新调用注册尚未交付。"
 precision_modes = ["planned_machine"]
 precision_notes = "精确值或明确的机器路径；precision/accuracy 查询输入已有信息。"
-current_platforms = []
+current_platforms = ["cli", "desktop", "web", "ios"]
 target_platforms = ["cli", "desktop", "web", "ios"]
 render_platforms = []
-current_examples = []
+current_examples = ["Chop[{0.000000000001,1}]"]
 planned_examples = ["chop(1 + 1e-12*i)"]
-sources = []
-tests = []
+sources = ["crates/om-eval/src/science/registry.rs"]
+tests = ["crates/om-eval/tests/science_basics.rs"]
 acceptance = "独立数学期望、有效/无效参数、边界、预算、中断及声明的平台/精度测试；范围外不伪造成功。"
 pipe_arg = 1
 target_version = "0.1.0-pre-alpha.3"
 kind = "function"
-validation_stage = "documentation_only"
+validation_stage = "runtime_verified"
 effect_class = "pure"
 
 [[functions]]
 id = "fn_000128"
 name = "rationalize"
 category = "basics"
-status = "planned"
-interface_status = "planned"
-runtime_names = []
+status = "implemented"
+interface_status = "current"
+runtime_names = ["Rationalize"]
 compatibility_names = []
-current_modern_signatures = []
-current_wolfram_signatures = []
+current_modern_signatures = ["rationalize(...)"]
+current_wolfram_signatures = ["Rationalize[...]"]
 signatures = ["rationalize(value, tolerance: 0)"]
 parameters = [{ name = "value", kind = "positional", default = "必填", description = "签名对应的value参数", availability = "r3" }, { name = "tolerance", kind = "option", default = "0", description = "签名对应的tolerance参数", availability = "r3" }]
 return_type = "expression"
 semantics = "在明确容差下转为有理数"
-current_support = "当前无此规范接口的实现。"
+current_support = "当前支持最多100000项的有限实数或列表；精确有理数保持精确，复数/符号样本不静默近似。当前算法与资源边界见已登记测试。"
 target_support = "精确可识别值及所声明实数机器路径；新调用注册尚未交付。"
 precision_modes = ["planned_machine"]
 precision_notes = "精确值或明确的机器路径；precision/accuracy 查询输入已有信息。"
-current_platforms = []
+current_platforms = ["cli", "desktop", "web", "ios"]
 target_platforms = ["cli", "desktop", "web", "ios"]
 render_platforms = []
-current_examples = []
+current_examples = ["Rationalize[0.333333,Tolerance->0.001]"]
 planned_examples = ["rationalize(0.5, tolerance: 0)"]
-sources = []
-tests = []
+sources = ["crates/om-eval/src/science/registry.rs"]
+tests = ["crates/om-eval/tests/science_basics.rs"]
 acceptance = "独立数学期望、有效/无效参数、边界、预算、中断及声明的平台/精度测试；范围外不伪造成功。"
 pipe_arg = 1
 target_version = "0.1.0-pre-alpha.3"
 kind = "function"
-validation_stage = "documentation_only"
+validation_stage = "runtime_verified"
 effect_class = "pure"
 
 [[functions]]
@@ -4515,96 +4515,96 @@ effect_class = "pure"
 id = "fn_000139"
 name = "clip"
 category = "basics"
-status = "planned"
-interface_status = "planned"
-runtime_names = []
+status = "implemented"
+interface_status = "current"
+runtime_names = ["Clip"]
 compatibility_names = []
-current_modern_signatures = []
-current_wolfram_signatures = []
+current_modern_signatures = ["clip(...)"]
+current_wolfram_signatures = ["Clip[...]"]
 signatures = ["clip(value, bounds: [lo, hi])"]
 parameters = [{ name = "value", kind = "positional", default = "必填", description = "数或列表", availability = "r3" }, { name = "bounds", kind = "option", default = "必填", description = "两端点", availability = "r3" }]
 return_type = "expression"
 semantics = "在有序范围内夹取数值"
-current_support = "当前无此规范接口的实现。"
+current_support = "当前支持最多100000项的有限实数或列表；精确有理数保持精确，复数/符号样本不静默近似。当前算法与资源边界见已登记测试。"
 target_support = "标量和逐项列表；反向 bounds 报错。"
 precision_modes = ["planned_machine"]
 precision_notes = "机器精度路径优先；不声称任意精度。"
-current_platforms = []
+current_platforms = ["cli", "desktop", "web", "ios"]
 target_platforms = ["cli", "desktop", "web", "ios"]
 render_platforms = []
-current_examples = []
+current_examples = ["Clip[2]"]
 planned_examples = ["clip(5,bounds: [0,1])"]
-sources = []
-tests = []
+sources = ["crates/om-eval/src/science/registry.rs"]
+tests = ["crates/om-eval/tests/science_basics.rs"]
 acceptance = "独立数学期望、有效/无效参数、边界、预算、中断及声明的平台/精度测试；范围外不伪造成功。"
 pipe_arg = 1
 target_version = "0.1.0-pre-alpha.3"
 kind = "function"
-validation_stage = "documentation_only"
+validation_stage = "runtime_verified"
 effect_class = "pure"
 
 [[functions]]
 id = "fn_000140"
 name = "rescale"
 category = "basics"
-status = "planned"
-interface_status = "planned"
-runtime_names = []
+status = "implemented"
+interface_status = "current"
+runtime_names = ["Rescale"]
 compatibility_names = []
-current_modern_signatures = []
-current_wolfram_signatures = []
+current_modern_signatures = ["rescale(...)"]
+current_wolfram_signatures = ["Rescale[...]"]
 signatures = ["rescale(value, from: [a,b], to: [0,1])"]
 parameters = [{ name = "value", kind = "positional", default = "必填", description = "数或列表", availability = "r3" }, { name = "from", kind = "option", default = "必填", description = "原区间", availability = "r3" }, { name = "to", kind = "option", default = "[0,1]", description = "目标区间", availability = "r3" }]
 return_type = "expression"
 semantics = "线性映射区间"
-current_support = "当前无此规范接口的实现。"
+current_support = "列表按真实min/max推断原区间；标量可显式from/to。保留精确有理计算，拒绝零宽或无效端点，不默默截断。"
 target_support = "输入区间宽度非零；不暗中截断。"
 precision_modes = ["planned_machine"]
 precision_notes = "机器精度路径优先；不声称任意精度。"
-current_platforms = []
+current_platforms = ["cli", "desktop", "web", "ios"]
 target_platforms = ["cli", "desktop", "web", "ios"]
 render_platforms = []
-current_examples = []
+current_examples = ["Rescale[{1,2,3}]"]
 planned_examples = ["rescale(5,from: [0,10],to: [0,1])"]
-sources = []
-tests = []
+sources = ["crates/om-eval/src/science/registry.rs"]
+tests = ["crates/om-eval/tests/science_basics.rs"]
 acceptance = "独立数学期望、有效/无效参数、边界、预算、中断及声明的平台/精度测试；范围外不伪造成功。"
 pipe_arg = 1
 target_version = "0.1.0-pre-alpha.3"
 kind = "function"
-validation_stage = "documentation_only"
+validation_stage = "runtime_verified"
 effect_class = "pure"
 
 [[functions]]
 id = "fn_000141"
 name = "decimal"
 category = "basics"
-status = "planned"
-interface_status = "planned"
-runtime_names = []
+status = "implemented"
+interface_status = "current"
+runtime_names = ["Decimal"]
 compatibility_names = []
-current_modern_signatures = []
-current_wolfram_signatures = []
+current_modern_signatures = ["decimal(...)"]
+current_wolfram_signatures = ["Decimal[...]"]
 signatures = ["decimal(text, precision: 50)"]
 parameters = [{ name = "text", kind = "positional", default = "必填", description = "十进制字符串", availability = "r3" }, { name = "precision", kind = "option", default = "必填", description = "十进制有效位", availability = "r3" }]
 return_type = "expression"
 semantics = "从十进制字符串直接构造大浮点"
-current_support = "当前无此规范接口的实现。"
+current_support = "从纯十进制文字构造：先生成精确有理数，再直接舍入到至少请求位数的二进制大浮点；precision=1..4931，长度和指数绝对值≤20000。不会把机器0.1补齐为假高精度。"
 target_support = "严格十进制字符串到 Big 值；不经过 f64；精度1..4932位及数值层上限。"
 precision_modes = ["planned_machine"]
 precision_notes = "真正从十进制输入按指定精度构造；不替机器数补假精度。"
-current_platforms = []
+current_platforms = ["cli", "desktop", "web", "ios"]
 target_platforms = ["cli", "desktop", "web", "ios"]
 render_platforms = []
-current_examples = []
+current_examples = ["Decimal[\"0.1\",WorkingPrecision->50]"]
 planned_examples = ["decimal(\"0.1\", precision: 50)"]
-sources = []
-tests = []
+sources = ["crates/om-eval/src/science/registry.rs"]
+tests = ["crates/om-eval/tests/science_basics.rs"]
 acceptance = "独立数学期望、有效/无效参数、边界、预算、中断及声明的平台/精度测试；范围外不伪造成功。"
 pipe_arg = 1
 target_version = "0.1.0-pre-alpha.3"
 kind = "function"
-validation_stage = "documentation_only"
+validation_stage = "runtime_verified"
 effect_class = "pure"
 
 [[functions]]
@@ -4995,96 +4995,96 @@ effect_class = "pure"
 id = "fn_000154"
 name = "cross"
 category = "linear"
-status = "planned"
-interface_status = "planned"
-runtime_names = []
+status = "implemented"
+interface_status = "current"
+runtime_names = ["Cross"]
 compatibility_names = []
-current_modern_signatures = []
-current_wolfram_signatures = []
+current_modern_signatures = ["cross(...)"]
+current_wolfram_signatures = ["Cross[...]"]
 signatures = ["cross(a, b)"]
 parameters = [{ name = "a", kind = "positional", default = "必填", description = "签名对应的a参数", availability = "r3" }, { name = "b", kind = "positional", default = "必填", description = "签名对应的b参数", availability = "r3" }]
 return_type = "scalar_vector_matrix_or_decomposition"
 semantics = "三维叉积"
-current_support = "当前无此规范接口的实现。"
+current_support = "三维向量的双线性交叉乘积；检查长度，保留数值或符号表达式。"
 target_support = "维度检查；精确有理数或机器实数的小型稠密矩阵，继承预算；零向量/奇异矩阵明确诊断。"
 precision_modes = ["planned_machine"]
 precision_notes = "精确有理基础路径与明确的机器分解；分解不承诺任意精度。"
-current_platforms = []
+current_platforms = ["cli", "desktop", "web", "ios"]
 target_platforms = ["cli", "desktop", "web", "ios"]
 render_platforms = []
-current_examples = []
+current_examples = ["Cross[{1,0,0},{0,1,0}]"]
 planned_examples = ["cross([1,0,0],[0,1,0])"]
-sources = []
-tests = []
+sources = ["crates/om-eval/src/science/registry.rs"]
+tests = ["crates/om-eval/tests/science_basics.rs"]
 acceptance = "独立数学期望、有效/无效参数、边界、预算、中断及声明的平台/精度测试；范围外不伪造成功。"
 pipe_arg = 1
 target_version = "0.1.0-pre-alpha.3"
 kind = "function"
-validation_stage = "documentation_only"
+validation_stage = "runtime_verified"
 effect_class = "pure"
 
 [[functions]]
 id = "fn_000155"
 name = "norm"
 category = "linear"
-status = "planned"
-interface_status = "planned"
-runtime_names = []
+status = "implemented"
+interface_status = "current"
+runtime_names = ["Norm"]
 compatibility_names = []
-current_modern_signatures = []
-current_wolfram_signatures = []
+current_modern_signatures = ["norm(...)"]
+current_wolfram_signatures = ["Norm[...]"]
 signatures = ["norm(vector, p: 2)"]
 parameters = [{ name = "vector", kind = "positional", default = "必填", description = "向量", availability = "r3" }, { name = "p", kind = "option", default = "2", description = "正数或无穷", availability = "r3" }]
 return_type = "scalar_vector_matrix_or_decomposition"
 semantics = "向量范数"
-current_support = "当前无此规范接口的实现。"
+current_support = "非空数值向量≤64维，使用共轭内积的Euclidean范数，保留精确根式。"
 target_support = "维度检查；精确有理数或机器实数的小型稠密矩阵，继承预算；零向量/奇异矩阵明确诊断。 复数运算使用正确的共轭语义；机器夹角仅将舍入越界夹到[-1,1]。"
 precision_modes = ["planned_machine"]
 precision_notes = "精确有理基础路径与明确的机器分解；分解不承诺任意精度。"
-current_platforms = []
+current_platforms = ["cli", "desktop", "web", "ios"]
 target_platforms = ["cli", "desktop", "web", "ios"]
 render_platforms = []
-current_examples = []
+current_examples = ["Norm[{3,4}]"]
 planned_examples = ["norm([3,4])"]
-sources = []
-tests = []
+sources = ["crates/om-eval/src/science/registry.rs"]
+tests = ["crates/om-eval/tests/science_basics.rs"]
 acceptance = "独立数学期望、有效/无效参数、边界、预算、中断及声明的平台/精度测试；范围外不伪造成功。"
 pipe_arg = 1
 target_version = "0.1.0-pre-alpha.3"
 kind = "function"
-validation_stage = "documentation_only"
+validation_stage = "runtime_verified"
 effect_class = "pure"
 
 [[functions]]
 id = "fn_000156"
 name = "normalize"
 category = "linear"
-status = "planned"
-interface_status = "planned"
-runtime_names = []
+status = "implemented"
+interface_status = "current"
+runtime_names = ["Normalize"]
 compatibility_names = []
-current_modern_signatures = []
-current_wolfram_signatures = []
+current_modern_signatures = ["normalize(...)"]
+current_wolfram_signatures = ["Normalize[...]"]
 signatures = ["normalize(vector)"]
 parameters = [{ name = "vector", kind = "positional", default = "必填", description = "向量", availability = "r3" }]
 return_type = "scalar_vector_matrix_or_decomposition"
 semantics = "按范数归一化"
-current_support = "当前无此规范接口的实现。"
+current_support = "非空数值向量≤64维，使用真实范数；拒绝零向量。"
 target_support = "维度检查；精确有理数或机器实数的小型稠密矩阵，继承预算；零向量/奇异矩阵明确诊断。"
 precision_modes = ["planned_machine"]
 precision_notes = "精确有理基础路径与明确的机器分解；分解不承诺任意精度。"
-current_platforms = []
+current_platforms = ["cli", "desktop", "web", "ios"]
 target_platforms = ["cli", "desktop", "web", "ios"]
 render_platforms = []
-current_examples = []
+current_examples = ["Normalize[{3,4}]"]
 planned_examples = ["normalize([3,4])"]
-sources = []
-tests = []
+sources = ["crates/om-eval/src/science/registry.rs"]
+tests = ["crates/om-eval/tests/science_basics.rs"]
 acceptance = "独立数学期望、有效/无效参数、边界、预算、中断及声明的平台/精度测试；范围外不伪造成功。"
 pipe_arg = 1
 target_version = "0.1.0-pre-alpha.3"
 kind = "function"
-validation_stage = "documentation_only"
+validation_stage = "runtime_verified"
 effect_class = "pure"
 
 [[functions]]
@@ -5155,320 +5155,320 @@ effect_class = "pure"
 id = "fn_000159"
 name = "identity"
 category = "linear"
-status = "planned"
-interface_status = "planned"
-runtime_names = []
+status = "implemented"
+interface_status = "current"
+runtime_names = ["IdentityMatrix"]
 compatibility_names = []
-current_modern_signatures = []
-current_wolfram_signatures = []
+current_modern_signatures = ["identity(...)"]
+current_wolfram_signatures = ["IdentityMatrix[...]"]
 signatures = ["identity(size)"]
 parameters = [{ name = "size", kind = "positional", default = "必填", description = "签名对应的size参数", availability = "r3" }]
 return_type = "scalar_vector_matrix_or_decomposition"
 semantics = "单位矩阵"
-current_support = "当前无此规范接口的实现。"
+current_support = "构造0..64维单位矩阵。"
 target_support = "维度检查；精确有理数或机器实数的小型稠密矩阵，继承预算；零向量/奇异矩阵明确诊断。"
 precision_modes = ["planned_machine"]
 precision_notes = "精确有理基础路径与明确的机器分解；分解不承诺任意精度。"
-current_platforms = []
+current_platforms = ["cli", "desktop", "web", "ios"]
 target_platforms = ["cli", "desktop", "web", "ios"]
 render_platforms = []
-current_examples = []
+current_examples = ["IdentityMatrix[2]"]
 planned_examples = ["identity(3)"]
-sources = []
-tests = []
+sources = ["crates/om-eval/src/science/registry.rs"]
+tests = ["crates/om-eval/tests/science_basics.rs"]
 acceptance = "独立数学期望、有效/无效参数、边界、预算、中断及声明的平台/精度测试；范围外不伪造成功。"
 pipe_arg = 1
 target_version = "0.1.0-pre-alpha.3"
 kind = "function"
-validation_stage = "documentation_only"
+validation_stage = "runtime_verified"
 effect_class = "pure"
 
 [[functions]]
 id = "fn_000160"
 name = "diag"
 category = "linear"
-status = "planned"
-interface_status = "planned"
-runtime_names = []
+status = "implemented"
+interface_status = "current"
+runtime_names = ["DiagonalMatrix"]
 compatibility_names = []
-current_modern_signatures = []
-current_wolfram_signatures = []
+current_modern_signatures = ["diag(...)"]
+current_wolfram_signatures = ["DiagonalMatrix[...]"]
 signatures = ["diag(values)"]
 parameters = [{ name = "values", kind = "positional", default = "必填", description = "签名对应的values参数", availability = "r3" }]
 return_type = "scalar_vector_matrix_or_decomposition"
 semantics = "对角矩阵或提取对角"
-current_support = "当前无此规范接口的实现。"
+current_support = "最多64项的对角矩阵；保留表达式元素。"
 target_support = "维度检查；精确有理数或机器实数的小型稠密矩阵，继承预算；零向量/奇异矩阵明确诊断。"
 precision_modes = ["planned_machine"]
 precision_notes = "精确有理基础路径与明确的机器分解；分解不承诺任意精度。"
-current_platforms = []
+current_platforms = ["cli", "desktop", "web", "ios"]
 target_platforms = ["cli", "desktop", "web", "ios"]
 render_platforms = []
-current_examples = []
+current_examples = ["DiagonalMatrix[{2,3}]"]
 planned_examples = ["diag([1,2,3])"]
-sources = []
-tests = []
+sources = ["crates/om-eval/src/science/registry.rs"]
+tests = ["crates/om-eval/tests/science_basics.rs"]
 acceptance = "独立数学期望、有效/无效参数、边界、预算、中断及声明的平台/精度测试；范围外不伪造成功。"
 pipe_arg = 1
 target_version = "0.1.0-pre-alpha.3"
 kind = "function"
-validation_stage = "documentation_only"
+validation_stage = "runtime_verified"
 effect_class = "pure"
 
 [[functions]]
 id = "fn_000161"
 name = "transpose"
 category = "linear"
-status = "planned"
-interface_status = "planned"
-runtime_names = []
+status = "implemented"
+interface_status = "current"
+runtime_names = ["Transpose"]
 compatibility_names = []
-current_modern_signatures = []
-current_wolfram_signatures = []
+current_modern_signatures = ["transpose(...)"]
+current_wolfram_signatures = ["Transpose[...]"]
 signatures = ["transpose(matrix)"]
 parameters = [{ name = "matrix", kind = "positional", default = "必填", description = "矩阵/向量或签名的主要输入", availability = "r3" }]
 return_type = "scalar_vector_matrix_or_decomposition"
 semantics = "转置"
-current_support = "当前无此规范接口的实现。"
+current_support = "矩形矩阵≤64×64，原元素不改变；不把一般张量当作已适配。"
 target_support = "维度检查；精确有理数或机器实数的小型稠密矩阵，继承预算；零向量/奇异矩阵明确诊断。"
 precision_modes = ["planned_machine"]
 precision_notes = "精确有理基础路径与明确的机器分解；分解不承诺任意精度。"
-current_platforms = []
+current_platforms = ["cli", "desktop", "web", "ios"]
 target_platforms = ["cli", "desktop", "web", "ios"]
 render_platforms = []
-current_examples = []
+current_examples = ["Transpose[{{1,2},{3,4}}]"]
 planned_examples = ["transpose([[1,2],[3,4]])"]
-sources = []
-tests = []
+sources = ["crates/om-eval/src/science/registry.rs"]
+tests = ["crates/om-eval/tests/science_basics.rs"]
 acceptance = "独立数学期望、有效/无效参数、边界、预算、中断及声明的平台/精度测试；范围外不伪造成功。"
 pipe_arg = 1
 target_version = "0.1.0-pre-alpha.3"
 kind = "function"
-validation_stage = "documentation_only"
+validation_stage = "runtime_verified"
 effect_class = "pure"
 
 [[functions]]
 id = "fn_000162"
 name = "adjoint"
 category = "linear"
-status = "planned"
-interface_status = "planned"
-runtime_names = []
+status = "implemented"
+interface_status = "current"
+runtime_names = ["ConjugateTranspose"]
 compatibility_names = []
-current_modern_signatures = []
-current_wolfram_signatures = []
+current_modern_signatures = ["adjoint(...)"]
+current_wolfram_signatures = ["ConjugateTranspose[...]"]
 signatures = ["adjoint(matrix)"]
 parameters = [{ name = "matrix", kind = "positional", default = "必填", description = "矩阵/向量或签名的主要输入", availability = "r3" }]
 return_type = "scalar_vector_matrix_or_decomposition"
 semantics = "共轭转置"
-current_support = "当前无此规范接口的实现。"
+current_support = "矩形矩阵≤64×64，转置并真实共轭；未知符号共轭保留原式。"
 target_support = "维度检查；精确有理数或机器实数的小型稠密矩阵，继承预算；零向量/奇异矩阵明确诊断。 复数运算使用正确的共轭语义；机器夹角仅将舍入越界夹到[-1,1]。"
 precision_modes = ["planned_machine"]
 precision_notes = "精确有理基础路径与明确的机器分解；分解不承诺任意精度。"
-current_platforms = []
+current_platforms = ["cli", "desktop", "web", "ios"]
 target_platforms = ["cli", "desktop", "web", "ios"]
 render_platforms = []
-current_examples = []
+current_examples = ["ConjugateTranspose[{{1,I},{0,2}}]"]
 planned_examples = ["adjoint([[1,i],[0,1]])"]
-sources = []
-tests = []
+sources = ["crates/om-eval/src/science/registry.rs"]
+tests = ["crates/om-eval/tests/science_basics.rs"]
 acceptance = "独立数学期望、有效/无效参数、边界、预算、中断及声明的平台/精度测试；范围外不伪造成功。"
 pipe_arg = 1
 target_version = "0.1.0-pre-alpha.3"
 kind = "function"
-validation_stage = "documentation_only"
+validation_stage = "runtime_verified"
 effect_class = "pure"
 
 [[functions]]
 id = "fn_000163"
 name = "trace"
 category = "linear"
-status = "planned"
-interface_status = "planned"
-runtime_names = []
+status = "implemented"
+interface_status = "current"
+runtime_names = ["Tr"]
 compatibility_names = []
-current_modern_signatures = []
-current_wolfram_signatures = []
+current_modern_signatures = ["trace(...)"]
+current_wolfram_signatures = ["Tr[...]"]
 signatures = ["trace(matrix)"]
 parameters = [{ name = "matrix", kind = "positional", default = "必填", description = "矩阵/向量或签名的主要输入", availability = "r3" }]
 return_type = "scalar_vector_matrix_or_decomposition"
 semantics = "矩阵迹"
-current_support = "当前无此规范接口的实现。"
+current_support = "方阵≤64×64，真实对角元素求和。"
 target_support = "维度检查；精确有理数或机器实数的小型稠密矩阵，继承预算；零向量/奇异矩阵明确诊断。"
 precision_modes = ["planned_machine"]
 precision_notes = "精确有理基础路径与明确的机器分解；分解不承诺任意精度。"
-current_platforms = []
+current_platforms = ["cli", "desktop", "web", "ios"]
 target_platforms = ["cli", "desktop", "web", "ios"]
 render_platforms = []
-current_examples = []
+current_examples = ["Tr[{{1,2},{3,4}}]"]
 planned_examples = ["trace([[1,2],[3,4]])"]
-sources = []
-tests = []
+sources = ["crates/om-eval/src/science/registry.rs"]
+tests = ["crates/om-eval/tests/science_basics.rs"]
 acceptance = "独立数学期望、有效/无效参数、边界、预算、中断及声明的平台/精度测试；范围外不伪造成功。"
 pipe_arg = 1
 target_version = "0.1.0-pre-alpha.3"
 kind = "function"
-validation_stage = "documentation_only"
+validation_stage = "runtime_verified"
 effect_class = "pure"
 
 [[functions]]
 id = "fn_000164"
 name = "det"
 category = "linear"
-status = "planned"
-interface_status = "planned"
-runtime_names = []
+status = "partial"
+interface_status = "current"
+runtime_names = ["Det"]
 compatibility_names = []
-current_modern_signatures = []
-current_wolfram_signatures = []
+current_modern_signatures = ["det(...)"]
+current_wolfram_signatures = ["Det[...]"]
 signatures = ["det(matrix)"]
 parameters = [{ name = "matrix", kind = "positional", default = "必填", description = "矩阵/向量或签名的主要输入", availability = "r3" }]
 return_type = "scalar_vector_matrix_or_decomposition"
 semantics = "行列式"
-current_support = "当前无此规范接口的实现。"
+current_support = "当前精确有理数矩阵≤64×64，复用Bareiss证书；奇异/欠定/不相容及维度明确诊断。机器矩阵路径仍在实施，不静默将机器系数当成精确保证。"
 target_support = "维度检查；精确有理数或机器实数的小型稠密矩阵，继承预算；零向量/奇异矩阵明确诊断。"
-precision_modes = ["planned_machine"]
+precision_modes = ["exact"]
 precision_notes = "精确有理基础路径与明确的机器分解；分解不承诺任意精度。"
-current_platforms = []
+current_platforms = ["cli", "desktop", "web", "ios"]
 target_platforms = ["cli", "desktop", "web", "ios"]
 render_platforms = []
-current_examples = []
+current_examples = ["Det[{{1,2},{3,4}}]"]
 planned_examples = ["det([[2,1],[1,3]])"]
-sources = []
-tests = []
+sources = ["crates/om-eval/src/science/registry.rs"]
+tests = ["crates/om-eval/tests/science_basics.rs"]
 acceptance = "独立数学期望、有效/无效参数、边界、预算、中断及声明的平台/精度测试；范围外不伪造成功。"
 pipe_arg = 1
 target_version = "0.1.0-pre-alpha.3"
 kind = "function"
-validation_stage = "documentation_only"
+validation_stage = "runtime_verified"
 effect_class = "pure"
 
 [[functions]]
 id = "fn_000165"
 name = "inverse"
 category = "linear"
-status = "planned"
-interface_status = "planned"
-runtime_names = []
+status = "partial"
+interface_status = "current"
+runtime_names = ["Inverse"]
 compatibility_names = []
-current_modern_signatures = []
-current_wolfram_signatures = []
+current_modern_signatures = ["inverse(...)"]
+current_wolfram_signatures = ["Inverse[...]"]
 signatures = ["inverse(matrix)"]
 parameters = [{ name = "matrix", kind = "positional", default = "必填", description = "矩阵/向量或签名的主要输入", availability = "r3" }]
 return_type = "scalar_vector_matrix_or_decomposition"
 semantics = "矩阵逆"
-current_support = "当前无此规范接口的实现。"
+current_support = "当前精确有理数矩阵≤64×64，复用Bareiss证书；奇异/欠定/不相容及维度明确诊断。机器矩阵路径仍在实施，不静默将机器系数当成精确保证。"
 target_support = "维度检查；精确有理数或机器实数的小型稠密矩阵，继承预算；零向量/奇异矩阵明确诊断。"
-precision_modes = ["planned_machine"]
+precision_modes = ["exact"]
 precision_notes = "精确有理基础路径与明确的机器分解；分解不承诺任意精度。"
-current_platforms = []
+current_platforms = ["cli", "desktop", "web", "ios"]
 target_platforms = ["cli", "desktop", "web", "ios"]
 render_platforms = []
-current_examples = []
+current_examples = ["Inverse[{{1,2},{3,4}}]"]
 planned_examples = ["inverse([[2,1],[1,3]])"]
-sources = []
-tests = []
+sources = ["crates/om-eval/src/science/registry.rs"]
+tests = ["crates/om-eval/tests/science_basics.rs"]
 acceptance = "独立数学期望、有效/无效参数、边界、预算、中断及声明的平台/精度测试；范围外不伪造成功。"
 pipe_arg = 1
 target_version = "0.1.0-pre-alpha.3"
 kind = "function"
-validation_stage = "documentation_only"
+validation_stage = "runtime_verified"
 effect_class = "pure"
 
 [[functions]]
 id = "fn_000166"
 name = "rank"
 category = "linear"
-status = "planned"
-interface_status = "planned"
-runtime_names = []
+status = "partial"
+interface_status = "current"
+runtime_names = ["MatrixRank"]
 compatibility_names = []
-current_modern_signatures = []
-current_wolfram_signatures = []
+current_modern_signatures = ["rank(...)"]
+current_wolfram_signatures = ["MatrixRank[...]"]
 signatures = ["rank(matrix)"]
 parameters = [{ name = "matrix", kind = "positional", default = "必填", description = "矩阵/向量或签名的主要输入", availability = "r3" }]
 return_type = "scalar_vector_matrix_or_decomposition"
 semantics = "矩阵秩"
-current_support = "当前无此规范接口的实现。"
+current_support = "当前精确有理数矩阵≤64×64，复用Bareiss证书；奇异/欠定/不相容及维度明确诊断。机器矩阵路径仍在实施，不静默将机器系数当成精确保证。"
 target_support = "维度检查；精确有理数或机器实数的小型稠密矩阵，继承预算；零向量/奇异矩阵明确诊断。"
-precision_modes = ["planned_machine"]
+precision_modes = ["exact"]
 precision_notes = "精确有理基础路径与明确的机器分解；分解不承诺任意精度。"
-current_platforms = []
+current_platforms = ["cli", "desktop", "web", "ios"]
 target_platforms = ["cli", "desktop", "web", "ios"]
 render_platforms = []
-current_examples = []
+current_examples = ["MatrixRank[{{1,2},{2,4}}]"]
 planned_examples = ["rank([[1,2],[2,4]])"]
-sources = []
-tests = []
+sources = ["crates/om-eval/src/science/registry.rs"]
+tests = ["crates/om-eval/tests/science_basics.rs"]
 acceptance = "独立数学期望、有效/无效参数、边界、预算、中断及声明的平台/精度测试；范围外不伪造成功。"
 pipe_arg = 1
 target_version = "0.1.0-pre-alpha.3"
 kind = "function"
-validation_stage = "documentation_only"
+validation_stage = "runtime_verified"
 effect_class = "pure"
 
 [[functions]]
 id = "fn_000167"
 name = "null_space"
 category = "linear"
-status = "planned"
-interface_status = "planned"
-runtime_names = []
+status = "partial"
+interface_status = "current"
+runtime_names = ["NullSpace"]
 compatibility_names = []
-current_modern_signatures = []
-current_wolfram_signatures = []
+current_modern_signatures = ["null_space(...)"]
+current_wolfram_signatures = ["NullSpace[...]"]
 signatures = ["null_space(matrix)"]
 parameters = [{ name = "matrix", kind = "positional", default = "必填", description = "矩阵/向量或签名的主要输入", availability = "r3" }]
 return_type = "scalar_vector_matrix_or_decomposition"
 semantics = "零空间基"
-current_support = "当前无此规范接口的实现。"
+current_support = "当前精确有理数矩阵≤64×64，复用Bareiss证书；奇异/欠定/不相容及维度明确诊断。机器矩阵路径仍在实施，不静默将机器系数当成精确保证。"
 target_support = "维度检查；精确有理数或机器实数的小型稠密矩阵，继承预算；零向量/奇异矩阵明确诊断。"
-precision_modes = ["planned_machine"]
+precision_modes = ["exact"]
 precision_notes = "精确有理基础路径与明确的机器分解；分解不承诺任意精度。"
-current_platforms = []
+current_platforms = ["cli", "desktop", "web", "ios"]
 target_platforms = ["cli", "desktop", "web", "ios"]
 render_platforms = []
-current_examples = []
+current_examples = ["NullSpace[{{1,2},{2,4}}]"]
 planned_examples = ["null_space([[1,2],[2,4]])"]
-sources = []
-tests = []
+sources = ["crates/om-eval/src/science/registry.rs"]
+tests = ["crates/om-eval/tests/science_basics.rs"]
 acceptance = "独立数学期望、有效/无效参数、边界、预算、中断及声明的平台/精度测试；范围外不伪造成功。"
 pipe_arg = 1
 target_version = "0.1.0-pre-alpha.3"
 kind = "function"
-validation_stage = "documentation_only"
+validation_stage = "runtime_verified"
 effect_class = "pure"
 
 [[functions]]
 id = "fn_000168"
 name = "linear_solve"
 category = "linear"
-status = "planned"
-interface_status = "planned"
-runtime_names = []
+status = "partial"
+interface_status = "current"
+runtime_names = ["LinearSolve"]
 compatibility_names = []
-current_modern_signatures = []
-current_wolfram_signatures = []
+current_modern_signatures = ["linear_solve(...)"]
+current_wolfram_signatures = ["LinearSolve[...]"]
 signatures = ["linear_solve(matrix, rhs, mode: \"exact\")"]
 parameters = [{ name = "matrix", kind = "positional", default = "必填", description = "矩阵/向量或签名的主要输入", availability = "r3" }, { name = "rhs", kind = "positional", default = "必填", description = "只读右端函数或右端项", availability = "r3" }, { name = "mode", kind = "option", default = "exact", description = "exact/numeric", availability = "r3" }]
 return_type = "scalar_vector_matrix_or_decomposition"
 semantics = "线性系统解"
-current_support = "当前无此规范接口的实现。"
+current_support = "当前精确有理数矩阵≤64×64，复用Bareiss证书；奇异/欠定/不相容及维度明确诊断。机器矩阵路径仍在实施，不静默将机器系数当成精确保证。"
 target_support = "精确有理矩阵复用Bareiss；机器实数部分选主元；欠定结果保留自由轴，不强行给唯一解。"
-precision_modes = ["planned_machine"]
+precision_modes = ["exact"]
 precision_notes = "精确有理基础路径与明确的机器分解；分解不承诺任意精度。"
-current_platforms = []
+current_platforms = ["cli", "desktop", "web", "ios"]
 target_platforms = ["cli", "desktop", "web", "ios"]
 render_platforms = []
-current_examples = []
+current_examples = ["LinearSolve[{{2,1},{1,3}},{1,2}]"]
 planned_examples = ["linear_solve([[2,1],[1,3]],[1,2])"]
-sources = []
-tests = []
+sources = ["crates/om-eval/src/science/registry.rs"]
+tests = ["crates/om-eval/tests/science_basics.rs"]
 acceptance = "独立数学期望、有效/无效参数、边界、预算、中断及声明的平台/精度测试；范围外不伪造成功。"
 pipe_arg = 1
 target_version = "0.1.0-pre-alpha.3"
 kind = "function"
-validation_stage = "documentation_only"
+validation_stage = "runtime_verified"
 effect_class = "pure"
 
 [[functions]]
@@ -5859,288 +5859,288 @@ effect_class = "pure"
 id = "fn_000181"
 name = "mean"
 category = "statistics"
-status = "planned"
-interface_status = "planned"
-runtime_names = []
+status = "implemented"
+interface_status = "current"
+runtime_names = ["Mean"]
 compatibility_names = []
-current_modern_signatures = []
-current_wolfram_signatures = []
+current_modern_signatures = ["mean(...)"]
+current_wolfram_signatures = ["Mean[...]"]
 signatures = ["mean(data)"]
 parameters = [{ name = "data", kind = "positional", default = "必填", description = "有限样本", availability = "r3" }]
 return_type = "number_or_record"
 semantics = "均值"
-current_support = "当前无此规范接口的实现。"
+current_support = "当前支持最多100000项的有限实数或列表；精确有理数保持精确，复数/符号样本不静默近似。当前算法与资源边界见已登记测试。"
 target_support = "拒绝空样本、非法数值、样本不足及零方差相关；分位数采用type7线性插值。"
 precision_modes = ["planned_machine"]
 precision_notes = "基础聚合可保留精确有理值；标准差/相关等机器路径明确标记。"
-current_platforms = []
+current_platforms = ["cli", "desktop", "web", "ios"]
 target_platforms = ["cli", "desktop", "web", "ios"]
 render_platforms = []
-current_examples = []
+current_examples = ["Mean[{1,2,3}]"]
 planned_examples = ["mean([1,2,3])"]
-sources = []
-tests = []
+sources = ["crates/om-eval/src/science/registry.rs"]
+tests = ["crates/om-eval/tests/science_basics.rs"]
 acceptance = "独立数学期望、有效/无效参数、边界、预算、中断及声明的平台/精度测试；范围外不伪造成功。"
 pipe_arg = 1
 target_version = "0.1.0-pre-alpha.3"
 kind = "function"
-validation_stage = "documentation_only"
+validation_stage = "runtime_verified"
 effect_class = "pure"
 
 [[functions]]
 id = "fn_000182"
 name = "median"
 category = "statistics"
-status = "planned"
-interface_status = "planned"
-runtime_names = []
+status = "implemented"
+interface_status = "current"
+runtime_names = ["Median"]
 compatibility_names = []
-current_modern_signatures = []
-current_wolfram_signatures = []
+current_modern_signatures = ["median(...)"]
+current_wolfram_signatures = ["Median[...]"]
 signatures = ["median(data)"]
 parameters = [{ name = "data", kind = "positional", default = "必填", description = "有限样本", availability = "r3" }]
 return_type = "number_or_record"
 semantics = "中位数"
-current_support = "当前无此规范接口的实现。"
+current_support = "当前支持最多100000项的有限实数或列表；精确有理数保持精确，复数/符号样本不静默近似。当前算法与资源边界见已登记测试。"
 target_support = "拒绝空样本、非法数值、样本不足及零方差相关；分位数采用type7线性插值。"
 precision_modes = ["planned_machine"]
 precision_notes = "基础聚合可保留精确有理值；标准差/相关等机器路径明确标记。"
-current_platforms = []
+current_platforms = ["cli", "desktop", "web", "ios"]
 target_platforms = ["cli", "desktop", "web", "ios"]
 render_platforms = []
-current_examples = []
+current_examples = ["Median[{1,2,3,4}]"]
 planned_examples = ["median([1,2,3,4])"]
-sources = []
-tests = []
+sources = ["crates/om-eval/src/science/registry.rs"]
+tests = ["crates/om-eval/tests/science_basics.rs"]
 acceptance = "独立数学期望、有效/无效参数、边界、预算、中断及声明的平台/精度测试；范围外不伪造成功。"
 pipe_arg = 1
 target_version = "0.1.0-pre-alpha.3"
 kind = "function"
-validation_stage = "documentation_only"
+validation_stage = "runtime_verified"
 effect_class = "pure"
 
 [[functions]]
 id = "fn_000183"
 name = "variance"
 category = "statistics"
-status = "planned"
-interface_status = "planned"
-runtime_names = []
+status = "implemented"
+interface_status = "current"
+runtime_names = ["Variance"]
 compatibility_names = []
-current_modern_signatures = []
-current_wolfram_signatures = []
+current_modern_signatures = ["variance(...)"]
+current_wolfram_signatures = ["Variance[...]"]
 signatures = ["variance(data, sample: true)"]
 parameters = [{ name = "data", kind = "positional", default = "必填", description = "有限样本", availability = "r3" }, { name = "sample", kind = "option", default = "true", description = "样本n−1或总体n", availability = "r3" }]
 return_type = "number_or_record"
 semantics = "方差"
-current_support = "当前无此规范接口的实现。"
+current_support = "当前支持最多100000项的有限实数或列表；精确有理数保持精确，复数/符号样本不静默近似。当前算法与资源边界见已登记测试。"
 target_support = "拒绝空样本、非法数值、样本不足及零方差相关；分位数采用type7线性插值。"
 precision_modes = ["planned_machine"]
 precision_notes = "基础聚合可保留精确有理值；标准差/相关等机器路径明确标记。"
-current_platforms = []
+current_platforms = ["cli", "desktop", "web", "ios"]
 target_platforms = ["cli", "desktop", "web", "ios"]
 render_platforms = []
-current_examples = []
+current_examples = ["Variance[{1,2,3}]"]
 planned_examples = ["variance([1,2,3],sample: true)"]
-sources = []
-tests = []
+sources = ["crates/om-eval/src/science/registry.rs"]
+tests = ["crates/om-eval/tests/science_basics.rs"]
 acceptance = "独立数学期望、有效/无效参数、边界、预算、中断及声明的平台/精度测试；范围外不伪造成功。"
 pipe_arg = 1
 target_version = "0.1.0-pre-alpha.3"
 kind = "function"
-validation_stage = "documentation_only"
+validation_stage = "runtime_verified"
 effect_class = "pure"
 
 [[functions]]
 id = "fn_000184"
 name = "std"
 category = "statistics"
-status = "planned"
-interface_status = "planned"
-runtime_names = []
+status = "implemented"
+interface_status = "current"
+runtime_names = ["StandardDeviation"]
 compatibility_names = []
-current_modern_signatures = []
-current_wolfram_signatures = []
+current_modern_signatures = ["std(...)"]
+current_wolfram_signatures = ["StandardDeviation[...]"]
 signatures = ["std(data, sample: true)"]
 parameters = [{ name = "data", kind = "positional", default = "必填", description = "有限样本", availability = "r3" }, { name = "sample", kind = "option", default = "true", description = "样本n−1或总体n", availability = "r3" }]
 return_type = "number_or_record"
 semantics = "标准差"
-current_support = "当前无此规范接口的实现。"
+current_support = "当前支持最多100000项的有限实数或列表；精确有理数保持精确，复数/符号样本不静默近似。当前算法与资源边界见已登记测试。"
 target_support = "拒绝空样本、非法数值、样本不足及零方差相关；分位数采用type7线性插值。"
 precision_modes = ["planned_machine"]
 precision_notes = "基础聚合可保留精确有理值；标准差/相关等机器路径明确标记。"
-current_platforms = []
+current_platforms = ["cli", "desktop", "web", "ios"]
 target_platforms = ["cli", "desktop", "web", "ios"]
 render_platforms = []
-current_examples = []
+current_examples = ["StandardDeviation[{1,2,3}]"]
 planned_examples = ["std([1,2,3],sample: false)"]
-sources = []
-tests = []
+sources = ["crates/om-eval/src/science/registry.rs"]
+tests = ["crates/om-eval/tests/science_basics.rs"]
 acceptance = "独立数学期望、有效/无效参数、边界、预算、中断及声明的平台/精度测试；范围外不伪造成功。"
 pipe_arg = 1
 target_version = "0.1.0-pre-alpha.3"
 kind = "function"
-validation_stage = "documentation_only"
+validation_stage = "runtime_verified"
 effect_class = "pure"
 
 [[functions]]
 id = "fn_000185"
 name = "percentile"
 category = "statistics"
-status = "planned"
-interface_status = "planned"
-runtime_names = []
+status = "implemented"
+interface_status = "current"
+runtime_names = ["Percentile"]
 compatibility_names = []
-current_modern_signatures = []
-current_wolfram_signatures = []
+current_modern_signatures = ["percentile(...)"]
+current_wolfram_signatures = ["Percentile[...]"]
 signatures = ["percentile(data, percent)"]
 parameters = [{ name = "data", kind = "positional", default = "必填", description = "有限样本", availability = "r3" }, { name = "percent", kind = "positional", default = "必填", description = "0..100", availability = "r3" }]
 return_type = "number_or_record"
 semantics = "百分位"
-current_support = "当前无此规范接口的实现。"
+current_support = "当前支持最多100000项的有限实数或列表；精确有理数保持精确，复数/符号样本不静默近似。当前算法与资源边界见已登记测试。"
 target_support = "拒绝空样本、非法数值、样本不足及零方差相关；分位数采用type7线性插值。"
 precision_modes = ["planned_machine"]
 precision_notes = "基础聚合可保留精确有理值；标准差/相关等机器路径明确标记。"
-current_platforms = []
+current_platforms = ["cli", "desktop", "web", "ios"]
 target_platforms = ["cli", "desktop", "web", "ios"]
 render_platforms = []
-current_examples = []
+current_examples = ["Percentile[{0,10,20},25]"]
 planned_examples = ["percentile([1,2,3,4],25)"]
-sources = []
-tests = []
+sources = ["crates/om-eval/src/science/registry.rs"]
+tests = ["crates/om-eval/tests/science_basics.rs"]
 acceptance = "独立数学期望、有效/无效参数、边界、预算、中断及声明的平台/精度测试；范围外不伪造成功。"
 pipe_arg = 1
 target_version = "0.1.0-pre-alpha.3"
 kind = "function"
-validation_stage = "documentation_only"
+validation_stage = "runtime_verified"
 effect_class = "pure"
 
 [[functions]]
 id = "fn_000186"
 name = "covariance"
 category = "statistics"
-status = "planned"
-interface_status = "planned"
-runtime_names = []
+status = "implemented"
+interface_status = "current"
+runtime_names = ["Covariance"]
 compatibility_names = []
-current_modern_signatures = []
-current_wolfram_signatures = []
+current_modern_signatures = ["covariance(...)"]
+current_wolfram_signatures = ["Covariance[...]"]
 signatures = ["covariance(a,b, sample: true)"]
 parameters = [{ name = "a", kind = "positional", default = "必填", description = "签名对应的a参数", availability = "r3" }, { name = "b", kind = "positional", default = "必填", description = "签名对应的b参数", availability = "r3" }, { name = "sample", kind = "option", default = "true", description = "样本n−1或总体n", availability = "r3" }]
 return_type = "number_or_record"
 semantics = "协方差"
-current_support = "当前无此规范接口的实现。"
+current_support = "当前支持最多100000项的有限实数或列表；精确有理数保持精确，复数/符号样本不静默近似。当前算法与资源边界见已登记测试。"
 target_support = "拒绝空样本、非法数值、样本不足及零方差相关；分位数采用type7线性插值。"
 precision_modes = ["planned_machine"]
 precision_notes = "基础聚合可保留精确有理值；标准差/相关等机器路径明确标记。"
-current_platforms = []
+current_platforms = ["cli", "desktop", "web", "ios"]
 target_platforms = ["cli", "desktop", "web", "ios"]
 render_platforms = []
-current_examples = []
+current_examples = ["Covariance[{1,2,3},{2,4,6}]"]
 planned_examples = ["covariance([1,2,3],[2,4,6])"]
-sources = []
-tests = []
+sources = ["crates/om-eval/src/science/registry.rs"]
+tests = ["crates/om-eval/tests/science_basics.rs"]
 acceptance = "独立数学期望、有效/无效参数、边界、预算、中断及声明的平台/精度测试；范围外不伪造成功。"
 pipe_arg = 1
 target_version = "0.1.0-pre-alpha.3"
 kind = "function"
-validation_stage = "documentation_only"
+validation_stage = "runtime_verified"
 effect_class = "pure"
 
 [[functions]]
 id = "fn_000187"
 name = "correlation"
 category = "statistics"
-status = "planned"
-interface_status = "planned"
-runtime_names = []
+status = "implemented"
+interface_status = "current"
+runtime_names = ["Correlation"]
 compatibility_names = []
-current_modern_signatures = []
-current_wolfram_signatures = []
+current_modern_signatures = ["correlation(...)"]
+current_wolfram_signatures = ["Correlation[...]"]
 signatures = ["correlation(a,b)"]
 parameters = [{ name = "a", kind = "positional", default = "必填", description = "签名对应的a参数", availability = "r3" }, { name = "b", kind = "positional", default = "必填", description = "签名对应的b参数", availability = "r3" }]
 return_type = "number_or_record"
 semantics = "Pearson 相关"
-current_support = "当前无此规范接口的实现。"
+current_support = "当前支持最多100000项的有限实数或列表；精确有理数保持精确，复数/符号样本不静默近似。当前算法与资源边界见已登记测试。"
 target_support = "拒绝空样本、非法数值、样本不足及零方差相关；分位数采用type7线性插值。"
 precision_modes = ["planned_machine"]
 precision_notes = "基础聚合可保留精确有理值；标准差/相关等机器路径明确标记。"
-current_platforms = []
+current_platforms = ["cli", "desktop", "web", "ios"]
 target_platforms = ["cli", "desktop", "web", "ios"]
 render_platforms = []
-current_examples = []
+current_examples = ["Correlation[{1,2,3},{2,4,6}]"]
 planned_examples = ["correlation([1,2,3],[2,4,6])"]
-sources = []
-tests = []
+sources = ["crates/om-eval/src/science/registry.rs"]
+tests = ["crates/om-eval/tests/science_basics.rs"]
 acceptance = "独立数学期望、有效/无效参数、边界、预算、中断及声明的平台/精度测试；范围外不伪造成功。"
 pipe_arg = 1
 target_version = "0.1.0-pre-alpha.3"
 kind = "function"
-validation_stage = "documentation_only"
+validation_stage = "runtime_verified"
 effect_class = "pure"
 
 [[functions]]
 id = "fn_000188"
 name = "counts"
 category = "statistics"
-status = "planned"
-interface_status = "planned"
-runtime_names = []
+status = "implemented"
+interface_status = "current"
+runtime_names = ["Counts"]
 compatibility_names = []
-current_modern_signatures = []
-current_wolfram_signatures = []
+current_modern_signatures = ["counts(...)"]
+current_wolfram_signatures = ["Counts[...]"]
 signatures = ["counts(data)"]
 parameters = [{ name = "data", kind = "positional", default = "必填", description = "有限样本", availability = "r3" }]
 return_type = "number_or_record"
 semantics = "频数统计"
-current_support = "当前无此规范接口的实现。"
+current_support = "列表路径已实现；键/谓词为真实函数，每项仅执行一次；分组按首次出现顺序，结构相等决定归组，精确1与机器1.0区分。reshape维数≤8、总节点≤100000；长度/类型/形状错误及中断明确诊断。记录/表格列操作后续适配。"
 target_support = "拒绝空样本、非法数值、样本不足及零方差相关；分位数采用type7线性插值。"
 precision_modes = ["planned_machine"]
 precision_notes = "基础聚合可保留精确有理值；标准差/相关等机器路径明确标记。"
-current_platforms = []
+current_platforms = ["cli", "desktop", "web", "ios"]
 target_platforms = ["cli", "desktop", "web", "ios"]
 render_platforms = []
-current_examples = []
+current_examples = ["Counts[{1,2,1}]"]
 planned_examples = ["counts([\"a\",\"b\",\"a\"])"]
-sources = []
-tests = []
+sources = ["crates/om-eval/src/science/registry.rs"]
+tests = ["crates/om-eval/tests/science_basics.rs"]
 acceptance = "独立数学期望、有效/无效参数、边界、预算、中断及声明的平台/精度测试；范围外不伪造成功。"
 pipe_arg = 1
 target_version = "0.1.0-pre-alpha.3"
 kind = "function"
-validation_stage = "documentation_only"
+validation_stage = "runtime_verified"
 effect_class = "pure"
 
 [[functions]]
 id = "fn_000189"
 name = "quantile"
 category = "statistics"
-status = "planned"
-interface_status = "planned"
-runtime_names = []
+status = "partial"
+interface_status = "current"
+runtime_names = ["Quantile"]
 compatibility_names = ["Quantile", "InverseCDF"]
-current_modern_signatures = []
-current_wolfram_signatures = []
+current_modern_signatures = ["quantile(...)"]
+current_wolfram_signatures = ["Quantile[...]"]
 signatures = ["quantile(data_or_distribution, probability)"]
 parameters = [{ name = "data_or_distribution", kind = "positional", default = "必填", description = "签名对应的data_or_distribution参数", availability = "r3" }, { name = "probability", kind = "positional", default = "必填", description = "0..1", availability = "r3" }]
 return_type = "expression"
 semantics = "样本或分布的分位值"
-current_support = "当前无此规范接口的实现。"
+current_support = "当前只接受实数样本列表，type7线性插值，概率0..1，空数据拒绝；分布对象路径待后续接入。"
 target_support = "样本采用type7；分布首版正态/均匀，p∈[0,1]，端点处理明确。"
 precision_modes = ["planned_machine"]
 precision_notes = "机器精度路径优先；不声称任意精度。"
-current_platforms = []
+current_platforms = ["cli", "desktop", "web", "ios"]
 target_platforms = ["cli", "desktop", "web", "ios"]
 render_platforms = []
-current_examples = []
+current_examples = ["Quantile[{0,10,20},1/4]"]
 planned_examples = ["quantile([1,2,3,4],0.25)"]
-sources = []
-tests = []
+sources = ["crates/om-eval/src/science/registry.rs"]
+tests = ["crates/om-eval/tests/science_basics.rs"]
 acceptance = "独立数学期望、有效/无效参数、边界、预算、中断及声明的平台/精度测试；范围外不伪造成功。"
 pipe_arg = 1
 target_version = "0.1.0-pre-alpha.3"
 kind = "function"
-validation_stage = "documentation_only"
+validation_stage = "runtime_verified"
 effect_class = "pure"
 
 [[functions]]
@@ -6403,384 +6403,384 @@ effect_class = "write_session"
 id = "fn_000198"
 name = "filter"
 category = "data"
-status = "planned"
-interface_status = "planned"
-runtime_names = []
+status = "implemented"
+interface_status = "current"
+runtime_names = ["Filter"]
 compatibility_names = []
-current_modern_signatures = []
-current_wolfram_signatures = []
+current_modern_signatures = ["filter(...)"]
+current_wolfram_signatures = ["Filter[...]"]
 signatures = ["filter(data, predicate)"]
 parameters = [{ name = "data", kind = "positional", default = "必填", description = "有序数据", availability = "r3" }, { name = "predicate", kind = "positional", default = "必填", description = "签名对应的predicate参数", availability = "r3" }]
 return_type = "expression"
 semantics = "筛选"
-current_support = "当前无此规范接口的实现。"
+current_support = "列表路径已实现；键/谓词为真实函数，每项仅执行一次；分组按首次出现顺序，结构相等决定归组，精确1与机器1.0区分。reshape维数≤8、总节点≤100000；长度/类型/形状错误及中断明确诊断。记录/表格列操作后续适配。"
 target_support = "列表/记录与基础表格；索引1起始、形状与长度严格检查，zip不默默截断不等长输入。"
 precision_modes = ["planned_machine"]
 precision_notes = "保留输入精度。"
-current_platforms = []
+current_platforms = ["cli", "desktop", "web", "ios"]
 target_platforms = ["cli", "desktop", "web", "ios"]
 render_platforms = []
-current_examples = []
+current_examples = ["Filter[{1,2,3},Function[x,x>1]]"]
 planned_examples = ["[1,2,3] |> filter(fn(x) => x>1)"]
-sources = []
-tests = []
+sources = ["crates/om-eval/src/science/registry.rs"]
+tests = ["crates/om-eval/tests/science_basics.rs"]
 acceptance = "独立数学期望、有效/无效参数、边界、预算、中断及声明的平台/精度测试；范围外不伪造成功。"
 pipe_arg = 1
 target_version = "0.1.0-pre-alpha.3"
 kind = "function"
-validation_stage = "documentation_only"
+validation_stage = "runtime_verified"
 effect_class = "pure"
 
 [[functions]]
 id = "fn_000199"
 name = "sort"
 category = "data"
-status = "planned"
-interface_status = "planned"
-runtime_names = []
+status = "implemented"
+interface_status = "current"
+runtime_names = ["Sort"]
 compatibility_names = []
-current_modern_signatures = []
-current_wolfram_signatures = []
+current_modern_signatures = ["sort(...)"]
+current_wolfram_signatures = ["Sort[...]"]
 signatures = ["sort(data)"]
 parameters = [{ name = "data", kind = "positional", default = "必填", description = "有序数据", availability = "r3" }]
 return_type = "expression"
 semantics = "确定性排序"
-current_support = "当前无此规范接口的实现。"
+current_support = "列表路径已实现；键/谓词为真实函数，每项仅执行一次；分组按首次出现顺序，结构相等决定归组，精确1与机器1.0区分。reshape维数≤8、总节点≤100000；长度/类型/形状错误及中断明确诊断。记录/表格列操作后续适配。"
 target_support = "列表/记录与基础表格；索引1起始、形状与长度严格检查，zip不默默截断不等长输入。"
 precision_modes = ["planned_machine"]
 precision_notes = "保留输入精度。"
-current_platforms = []
+current_platforms = ["cli", "desktop", "web", "ios"]
 target_platforms = ["cli", "desktop", "web", "ios"]
 render_platforms = []
-current_examples = []
+current_examples = ["Sort[{3,1,2}]"]
 planned_examples = ["sort([3,1,2])"]
-sources = []
-tests = []
+sources = ["crates/om-eval/src/science/registry.rs"]
+tests = ["crates/om-eval/tests/science_basics.rs"]
 acceptance = "独立数学期望、有效/无效参数、边界、预算、中断及声明的平台/精度测试；范围外不伪造成功。"
 pipe_arg = 1
 target_version = "0.1.0-pre-alpha.3"
 kind = "function"
-validation_stage = "documentation_only"
+validation_stage = "runtime_verified"
 effect_class = "pure"
 
 [[functions]]
 id = "fn_000200"
 name = "sort_by"
 category = "data"
-status = "planned"
-interface_status = "planned"
-runtime_names = []
+status = "implemented"
+interface_status = "current"
+runtime_names = ["SortBy"]
 compatibility_names = []
-current_modern_signatures = []
-current_wolfram_signatures = []
+current_modern_signatures = ["sort_by(...)"]
+current_wolfram_signatures = ["SortBy[...]"]
 signatures = ["sort_by(data, key_fn)"]
 parameters = [{ name = "data", kind = "positional", default = "必填", description = "有序数据", availability = "r3" }, { name = "key_fn", kind = "positional", default = "必填", description = "签名对应的key_fn参数", availability = "r3" }]
 return_type = "expression"
 semantics = "按键排序"
-current_support = "当前无此规范接口的实现。"
+current_support = "列表路径已实现；键/谓词为真实函数，每项仅执行一次；分组按首次出现顺序，结构相等决定归组，精确1与机器1.0区分。reshape维数≤8、总节点≤100000；长度/类型/形状错误及中断明确诊断。记录/表格列操作后续适配。"
 target_support = "列表/记录与基础表格；索引1起始、形状与长度严格检查，zip不默默截断不等长输入。"
 precision_modes = ["planned_machine"]
 precision_notes = "保留输入精度。"
-current_platforms = []
+current_platforms = ["cli", "desktop", "web", "ios"]
 target_platforms = ["cli", "desktop", "web", "ios"]
 render_platforms = []
-current_examples = []
+current_examples = ["SortBy[{-2,1,3},Abs]"]
 planned_examples = ["sort_by([1,-3,2],fn(x) => abs(x))"]
-sources = []
-tests = []
+sources = ["crates/om-eval/src/science/registry.rs"]
+tests = ["crates/om-eval/tests/science_basics.rs"]
 acceptance = "独立数学期望、有效/无效参数、边界、预算、中断及声明的平台/精度测试；范围外不伪造成功。"
 pipe_arg = 1
 target_version = "0.1.0-pre-alpha.3"
 kind = "function"
-validation_stage = "documentation_only"
+validation_stage = "runtime_verified"
 effect_class = "pure"
 
 [[functions]]
 id = "fn_000201"
 name = "unique"
 category = "data"
-status = "planned"
-interface_status = "planned"
-runtime_names = []
+status = "implemented"
+interface_status = "current"
+runtime_names = ["Unique"]
 compatibility_names = []
-current_modern_signatures = []
-current_wolfram_signatures = []
+current_modern_signatures = ["unique(...)"]
+current_wolfram_signatures = ["Unique[...]"]
 signatures = ["unique(data)"]
 parameters = [{ name = "data", kind = "positional", default = "必填", description = "有序数据", availability = "r3" }]
 return_type = "expression"
 semantics = "保留首次出现顺序去重"
-current_support = "当前无此规范接口的实现。"
+current_support = "列表路径已实现；键/谓词为真实函数，每项仅执行一次；分组按首次出现顺序，结构相等决定归组，精确1与机器1.0区分。reshape维数≤8、总节点≤100000；长度/类型/形状错误及中断明确诊断。记录/表格列操作后续适配。"
 target_support = "列表/记录与基础表格；索引1起始、形状与长度严格检查，zip不默默截断不等长输入。"
 precision_modes = ["planned_machine"]
 precision_notes = "保留输入精度。"
-current_platforms = []
+current_platforms = ["cli", "desktop", "web", "ios"]
 target_platforms = ["cli", "desktop", "web", "ios"]
 render_platforms = []
-current_examples = []
+current_examples = ["Unique[{1,2,1}]"]
 planned_examples = ["unique([1,2,1])"]
-sources = []
-tests = []
+sources = ["crates/om-eval/src/science/registry.rs"]
+tests = ["crates/om-eval/tests/science_basics.rs"]
 acceptance = "独立数学期望、有效/无效参数、边界、预算、中断及声明的平台/精度测试；范围外不伪造成功。"
 pipe_arg = 1
 target_version = "0.1.0-pre-alpha.3"
 kind = "function"
-validation_stage = "documentation_only"
+validation_stage = "runtime_verified"
 effect_class = "pure"
 
 [[functions]]
 id = "fn_000202"
 name = "take"
 category = "data"
-status = "planned"
-interface_status = "planned"
-runtime_names = []
+status = "implemented"
+interface_status = "current"
+runtime_names = ["Take"]
 compatibility_names = []
-current_modern_signatures = []
-current_wolfram_signatures = []
+current_modern_signatures = ["take(...)"]
+current_wolfram_signatures = ["Take[...]"]
 signatures = ["take(data,count)"]
 parameters = [{ name = "data", kind = "positional", default = "必填", description = "有序数据", availability = "r3" }, { name = "count", kind = "positional", default = "必填", description = "整数", availability = "r3" }]
 return_type = "expression"
 semantics = "取前/后片段"
-current_support = "当前无此规范接口的实现。"
+current_support = "列表路径已实现；键/谓词为真实函数，每项仅执行一次；分组按首次出现顺序，结构相等决定归组，精确1与机器1.0区分。reshape维数≤8、总节点≤100000；长度/类型/形状错误及中断明确诊断。记录/表格列操作后续适配。"
 target_support = "列表/记录与基础表格；索引1起始、形状与长度严格检查，zip不默默截断不等长输入。"
 precision_modes = ["planned_machine"]
 precision_notes = "保留输入精度。"
-current_platforms = []
+current_platforms = ["cli", "desktop", "web", "ios"]
 target_platforms = ["cli", "desktop", "web", "ios"]
 render_platforms = []
-current_examples = []
+current_examples = ["Take[{1,2,3},2]"]
 planned_examples = ["take([1,2,3],2)"]
-sources = []
-tests = []
+sources = ["crates/om-eval/src/science/registry.rs"]
+tests = ["crates/om-eval/tests/science_basics.rs"]
 acceptance = "独立数学期望、有效/无效参数、边界、预算、中断及声明的平台/精度测试；范围外不伪造成功。"
 pipe_arg = 1
 target_version = "0.1.0-pre-alpha.3"
 kind = "function"
-validation_stage = "documentation_only"
+validation_stage = "runtime_verified"
 effect_class = "pure"
 
 [[functions]]
 id = "fn_000203"
 name = "drop"
 category = "data"
-status = "planned"
-interface_status = "planned"
-runtime_names = []
+status = "implemented"
+interface_status = "current"
+runtime_names = ["Drop"]
 compatibility_names = []
-current_modern_signatures = []
-current_wolfram_signatures = []
+current_modern_signatures = ["drop(...)"]
+current_wolfram_signatures = ["Drop[...]"]
 signatures = ["drop(data,count)"]
 parameters = [{ name = "data", kind = "positional", default = "必填", description = "有序数据", availability = "r3" }, { name = "count", kind = "positional", default = "必填", description = "整数", availability = "r3" }]
 return_type = "expression"
 semantics = "移除前/后片段"
-current_support = "当前无此规范接口的实现。"
+current_support = "列表路径已实现；键/谓词为真实函数，每项仅执行一次；分组按首次出现顺序，结构相等决定归组，精确1与机器1.0区分。reshape维数≤8、总节点≤100000；长度/类型/形状错误及中断明确诊断。记录/表格列操作后续适配。"
 target_support = "列表/记录与基础表格；索引1起始、形状与长度严格检查，zip不默默截断不等长输入。"
 precision_modes = ["planned_machine"]
 precision_notes = "保留输入精度。"
-current_platforms = []
+current_platforms = ["cli", "desktop", "web", "ios"]
 target_platforms = ["cli", "desktop", "web", "ios"]
 render_platforms = []
-current_examples = []
+current_examples = ["Drop[{1,2,3},1]"]
 planned_examples = ["drop([1,2,3],1)"]
-sources = []
-tests = []
+sources = ["crates/om-eval/src/science/registry.rs"]
+tests = ["crates/om-eval/tests/science_basics.rs"]
 acceptance = "独立数学期望、有效/无效参数、边界、预算、中断及声明的平台/精度测试；范围外不伪造成功。"
 pipe_arg = 1
 target_version = "0.1.0-pre-alpha.3"
 kind = "function"
-validation_stage = "documentation_only"
+validation_stage = "runtime_verified"
 effect_class = "pure"
 
 [[functions]]
 id = "fn_000204"
 name = "slice"
 category = "data"
-status = "planned"
-interface_status = "planned"
-runtime_names = []
+status = "implemented"
+interface_status = "current"
+runtime_names = ["Slice"]
 compatibility_names = []
-current_modern_signatures = []
-current_wolfram_signatures = []
+current_modern_signatures = ["slice(...)"]
+current_wolfram_signatures = ["Slice[...]"]
 signatures = ["slice(data, start..end)"]
 parameters = [{ name = "data", kind = "positional", default = "必填", description = "有序数据", availability = "r3" }]
 return_type = "expression"
 semantics = "1起始闭区间切片"
-current_support = "当前无此规范接口的实现。"
+current_support = "列表路径已实现；键/谓词为真实函数，每项仅执行一次；分组按首次出现顺序，结构相等决定归组，精确1与机器1.0区分。reshape维数≤8、总节点≤100000；长度/类型/形状错误及中断明确诊断。记录/表格列操作后续适配。"
 target_support = "列表/记录与基础表格；索引1起始、形状与长度严格检查，zip不默默截断不等长输入。"
 precision_modes = ["planned_machine"]
 precision_notes = "保留输入精度。"
-current_platforms = []
+current_platforms = ["cli", "desktop", "web", "ios"]
 target_platforms = ["cli", "desktop", "web", "ios"]
 render_platforms = []
-current_examples = []
+current_examples = ["Slice[{1,2,3},Span[1,2]]"]
 planned_examples = ["[1,2,3,4][2..3]"]
-sources = []
-tests = []
+sources = ["crates/om-eval/src/science/registry.rs"]
+tests = ["crates/om-eval/tests/science_basics.rs"]
 acceptance = "独立数学期望、有效/无效参数、边界、预算、中断及声明的平台/精度测试；范围外不伪造成功。"
 pipe_arg = 1
 target_version = "0.1.0-pre-alpha.3"
 kind = "function"
-validation_stage = "documentation_only"
+validation_stage = "runtime_verified"
 effect_class = "pure"
 
 [[functions]]
 id = "fn_000205"
 name = "flatten"
 category = "data"
-status = "planned"
-interface_status = "planned"
-runtime_names = []
+status = "implemented"
+interface_status = "current"
+runtime_names = ["Flatten"]
 compatibility_names = []
-current_modern_signatures = []
-current_wolfram_signatures = []
+current_modern_signatures = ["flatten(...)"]
+current_wolfram_signatures = ["Flatten[...]"]
 signatures = ["flatten(data, depth: all)"]
 parameters = [{ name = "data", kind = "positional", default = "必填", description = "有序数据", availability = "r3" }, { name = "depth", kind = "option", default = "all", description = "展开层数", availability = "r3" }]
 return_type = "expression"
 semantics = "展开嵌套"
-current_support = "当前无此规范接口的实现。"
+current_support = "列表路径已实现；键/谓词为真实函数，每项仅执行一次；分组按首次出现顺序，结构相等决定归组，精确1与机器1.0区分。reshape维数≤8、总节点≤100000；长度/类型/形状错误及中断明确诊断。记录/表格列操作后续适配。"
 target_support = "列表/记录与基础表格；索引1起始、形状与长度严格检查，zip不默默截断不等长输入。"
 precision_modes = ["planned_machine"]
 precision_notes = "保留输入精度。"
-current_platforms = []
+current_platforms = ["cli", "desktop", "web", "ios"]
 target_platforms = ["cli", "desktop", "web", "ios"]
 render_platforms = []
-current_examples = []
+current_examples = ["Flatten[{{1,2},{3}}]"]
 planned_examples = ["flatten([[1,2],[3]])"]
-sources = []
-tests = []
+sources = ["crates/om-eval/src/science/registry.rs"]
+tests = ["crates/om-eval/tests/science_basics.rs"]
 acceptance = "独立数学期望、有效/无效参数、边界、预算、中断及声明的平台/精度测试；范围外不伪造成功。"
 pipe_arg = 1
 target_version = "0.1.0-pre-alpha.3"
 kind = "function"
-validation_stage = "documentation_only"
+validation_stage = "runtime_verified"
 effect_class = "pure"
 
 [[functions]]
 id = "fn_000206"
 name = "reshape"
 category = "data"
-status = "planned"
-interface_status = "planned"
-runtime_names = []
+status = "implemented"
+interface_status = "current"
+runtime_names = ["Reshape"]
 compatibility_names = []
-current_modern_signatures = []
-current_wolfram_signatures = []
+current_modern_signatures = ["reshape(...)"]
+current_wolfram_signatures = ["Reshape[...]"]
 signatures = ["reshape(data, dimensions)"]
 parameters = [{ name = "data", kind = "positional", default = "必填", description = "有序数据", availability = "r3" }, { name = "dimensions", kind = "positional", default = "必填", description = "非负整数维度列表", availability = "r3" }]
 return_type = "expression"
 semantics = "重塑矩形数组"
-current_support = "当前无此规范接口的实现。"
+current_support = "列表路径已实现；键/谓词为真实函数，每项仅执行一次；分组按首次出现顺序，结构相等决定归组，精确1与机器1.0区分。reshape维数≤8、总节点≤100000；长度/类型/形状错误及中断明确诊断。记录/表格列操作后续适配。"
 target_support = "列表/记录与基础表格；索引1起始、形状与长度严格检查，zip不默默截断不等长输入。"
 precision_modes = ["planned_machine"]
 precision_notes = "保留输入精度。"
-current_platforms = []
+current_platforms = ["cli", "desktop", "web", "ios"]
 target_platforms = ["cli", "desktop", "web", "ios"]
 render_platforms = []
-current_examples = []
+current_examples = ["Reshape[{1,2,3,4},{2,2}]"]
 planned_examples = ["reshape([1,2,3,4],[2,2])"]
-sources = []
-tests = []
+sources = ["crates/om-eval/src/science/registry.rs"]
+tests = ["crates/om-eval/tests/science_basics.rs"]
 acceptance = "独立数学期望、有效/无效参数、边界、预算、中断及声明的平台/精度测试；范围外不伪造成功。"
 pipe_arg = 1
 target_version = "0.1.0-pre-alpha.3"
 kind = "function"
-validation_stage = "documentation_only"
+validation_stage = "runtime_verified"
 effect_class = "pure"
 
 [[functions]]
 id = "fn_000207"
 name = "zip"
 category = "data"
-status = "planned"
-interface_status = "planned"
-runtime_names = []
+status = "implemented"
+interface_status = "current"
+runtime_names = ["Zip"]
 compatibility_names = []
-current_modern_signatures = []
-current_wolfram_signatures = []
+current_modern_signatures = ["zip(...)"]
+current_wolfram_signatures = ["Zip[...]"]
 signatures = ["zip(...lists)"]
 parameters = [{ name = "lists", kind = "variadic", default = "必填", description = "签名对应的lists参数", availability = "r3" }]
 return_type = "expression"
 semantics = "逐项配对"
-current_support = "当前无此规范接口的实现。"
+current_support = "列表路径已实现；键/谓词为真实函数，每项仅执行一次；分组按首次出现顺序，结构相等决定归组，精确1与机器1.0区分。reshape维数≤8、总节点≤100000；长度/类型/形状错误及中断明确诊断。记录/表格列操作后续适配。"
 target_support = "列表/记录与基础表格；索引1起始、形状与长度严格检查，zip不默默截断不等长输入。"
 precision_modes = ["planned_machine"]
 precision_notes = "保留输入精度。"
-current_platforms = []
+current_platforms = ["cli", "desktop", "web", "ios"]
 target_platforms = ["cli", "desktop", "web", "ios"]
 render_platforms = []
-current_examples = []
+current_examples = ["Zip[{1,2},{3,4}]"]
 planned_examples = ["zip([1,2],[3,4])"]
-sources = []
-tests = []
+sources = ["crates/om-eval/src/science/registry.rs"]
+tests = ["crates/om-eval/tests/science_basics.rs"]
 acceptance = "独立数学期望、有效/无效参数、边界、预算、中断及声明的平台/精度测试；范围外不伪造成功。"
 pipe_arg = 1
 target_version = "0.1.0-pre-alpha.3"
 kind = "function"
-validation_stage = "documentation_only"
+validation_stage = "runtime_verified"
 effect_class = "pure"
 
 [[functions]]
 id = "fn_000208"
 name = "fold"
 category = "data"
-status = "planned"
-interface_status = "planned"
-runtime_names = []
+status = "implemented"
+interface_status = "current"
+runtime_names = ["Fold"]
 compatibility_names = []
-current_modern_signatures = []
-current_wolfram_signatures = []
+current_modern_signatures = ["fold(...)"]
+current_wolfram_signatures = ["Fold[...]"]
 signatures = ["fold(fn, initial, data)"]
 parameters = [{ name = "fn", kind = "positional", default = "必填", description = "归约函数", availability = "r3" }, { name = "initial", kind = "positional", default = "必填", description = "初始值", availability = "r3" }, { name = "data", kind = "positional", default = "必填", description = "列表", availability = "r3" }]
 return_type = "expression"
 semantics = "累积归约"
-current_support = "当前无此规范接口的实现。"
+current_support = "列表路径已实现；键/谓词为真实函数，每项仅执行一次；分组按首次出现顺序，结构相等决定归组，精确1与机器1.0区分。reshape维数≤8、总节点≤100000；长度/类型/形状错误及中断明确诊断。记录/表格列操作后续适配。"
 target_support = "列表/记录与基础表格；索引1起始、形状与长度严格检查，zip不默默截断不等长输入。"
 precision_modes = ["planned_machine"]
 precision_notes = "保留输入精度。"
-current_platforms = []
+current_platforms = ["cli", "desktop", "web", "ios"]
 target_platforms = ["cli", "desktop", "web", "ios"]
 render_platforms = []
-current_examples = []
+current_examples = ["Fold[Plus,0,{1,2,3}]"]
 planned_examples = ["[1,2,3] |> fold(fn(a,b) => a+b,0)"]
-sources = []
-tests = []
+sources = ["crates/om-eval/src/science/registry.rs"]
+tests = ["crates/om-eval/tests/science_basics.rs"]
 acceptance = "独立数学期望、有效/无效参数、边界、预算、中断及声明的平台/精度测试；范围外不伪造成功。"
 pipe_arg = 3
 target_version = "0.1.0-pre-alpha.3"
 kind = "function"
-validation_stage = "documentation_only"
+validation_stage = "runtime_verified"
 effect_class = "pure"
 
 [[functions]]
 id = "fn_000209"
 name = "group_by"
 category = "data"
-status = "planned"
-interface_status = "planned"
-runtime_names = []
+status = "implemented"
+interface_status = "current"
+runtime_names = ["GroupBy"]
 compatibility_names = []
-current_modern_signatures = []
-current_wolfram_signatures = []
+current_modern_signatures = ["group_by(...)"]
+current_wolfram_signatures = ["GroupBy[...]"]
 signatures = ["group_by(data, key_fn)"]
 parameters = [{ name = "data", kind = "positional", default = "必填", description = "有序数据", availability = "r3" }, { name = "key_fn", kind = "positional", default = "必填", description = "签名对应的key_fn参数", availability = "r3" }]
 return_type = "expression"
 semantics = "按键分组"
-current_support = "当前无此规范接口的实现。"
+current_support = "列表路径已实现；键/谓词为真实函数，每项仅执行一次；分组按首次出现顺序，结构相等决定归组，精确1与机器1.0区分。reshape维数≤8、总节点≤100000；长度/类型/形状错误及中断明确诊断。记录/表格列操作后续适配。"
 target_support = "列表/记录与基础表格；索引1起始、形状与长度严格检查，zip不默默截断不等长输入。"
 precision_modes = ["planned_machine"]
 precision_notes = "保留输入精度。"
-current_platforms = []
+current_platforms = ["cli", "desktop", "web", "ios"]
 target_platforms = ["cli", "desktop", "web", "ios"]
 render_platforms = []
-current_examples = []
+current_examples = ["GroupBy[{1,2,3},Function[x,Mod[x,2]]]"]
 planned_examples = ["group_by([1,2,3,4],fn(x) => mod(x,2))"]
-sources = []
-tests = []
+sources = ["crates/om-eval/src/science/registry.rs"]
+tests = ["crates/om-eval/tests/science_basics.rs"]
 acceptance = "独立数学期望、有效/无效参数、边界、预算、中断及声明的平台/精度测试；范围外不伪造成功。"
 pipe_arg = 1
 target_version = "0.1.0-pre-alpha.3"
 kind = "function"
-validation_stage = "documentation_only"
+validation_stage = "runtime_verified"
 effect_class = "pure"
 
 [[functions]]
@@ -28024,3 +28024,460 @@ max = 2
 attributes = ["protected"]
 parameters = [{ name = "a", value_type = "expression", required = true, variadic = false, held = false }, { name = "b", value_type = "expression", required = true, variadic = false, held = false }]
 options = []
+
+[[runtime]]
+name = "Min"
+modern_name = "min"
+aliases = []
+min = 0
+attributes = ["protected"]
+parameters = [{ name = "values", value_type = "expression", required = false, variadic = true, held = false, default_context = "按位置接收列表或重复数据参数" }]
+options = []
+
+[[runtime]]
+name = "Max"
+modern_name = "max"
+aliases = []
+min = 0
+attributes = ["protected"]
+parameters = [{ name = "values", value_type = "expression", required = false, variadic = true, held = false, default_context = "按位置接收列表或重复数据参数" }]
+options = []
+
+[[runtime]]
+name = "MinMax"
+modern_name = "minmax"
+aliases = []
+min = 1
+max = 1
+attributes = ["protected"]
+parameters = [{ name = "data", value_type = "expression", required = true, variadic = false, held = false }]
+options = []
+
+[[runtime]]
+name = "IntegerPart"
+modern_name = "integer_part"
+aliases = ["integerpart"]
+min = 1
+max = 1
+attributes = ["listable", "protected"]
+parameters = [{ name = "x", value_type = "expression", required = true, variadic = false, held = false }]
+options = []
+
+[[runtime]]
+name = "FractionalPart"
+modern_name = "fractional_part"
+aliases = ["fractionalpart"]
+min = 1
+max = 1
+attributes = ["listable", "protected"]
+parameters = [{ name = "x", value_type = "expression", required = true, variadic = false, held = false }]
+options = []
+
+[[runtime]]
+name = "Precision"
+modern_name = "precision"
+aliases = []
+min = 1
+max = 1
+attributes = ["listable", "protected"]
+parameters = [{ name = "value", value_type = "expression", required = true, variadic = false, held = false }]
+options = []
+
+[[runtime]]
+name = "Accuracy"
+modern_name = "accuracy"
+aliases = []
+min = 1
+max = 1
+attributes = ["listable", "protected"]
+parameters = [{ name = "value", value_type = "expression", required = true, variadic = false, held = false }]
+options = []
+
+[[runtime]]
+name = "Chop"
+modern_name = "chop"
+aliases = []
+min = 1
+max = 2
+attributes = ["protected"]
+parameters = [{ name = "expr", value_type = "expression", required = true, variadic = false, held = false }]
+options = [{ name = "tolerance", runtime_name = "Tolerance", value_type = "real", required = false, default_source = "1e-10", variadic = false, held = false, min = 0 }]
+
+[[runtime]]
+name = "Rationalize"
+modern_name = "rationalize"
+aliases = []
+min = 1
+max = 2
+attributes = ["listable", "protected"]
+parameters = [{ name = "value", value_type = "expression", required = true, variadic = false, held = false }]
+options = [{ name = "tolerance", runtime_name = "Tolerance", value_type = "real", required = false, default_source = "0", variadic = false, held = false, min = 0 }]
+
+[[runtime]]
+name = "Clip"
+modern_name = "clip"
+aliases = []
+min = 1
+max = 2
+attributes = ["listable", "protected"]
+parameters = [{ name = "value", value_type = "expression", required = true, variadic = false, held = false }]
+options = [{ name = "bounds", runtime_name = "Bounds", value_type = "expression", required = false, default_source = "{-1,1}", variadic = false, held = false }]
+
+[[runtime]]
+name = "Mean"
+modern_name = "mean"
+aliases = []
+min = 1
+max = 1
+attributes = ["protected"]
+parameters = [{ name = "data", value_type = "expression", required = true, variadic = false, held = false }]
+options = []
+
+[[runtime]]
+name = "Median"
+modern_name = "median"
+aliases = []
+min = 1
+max = 1
+attributes = ["protected"]
+parameters = [{ name = "data", value_type = "expression", required = true, variadic = false, held = false }]
+options = []
+
+[[runtime]]
+name = "Variance"
+modern_name = "variance"
+aliases = []
+min = 1
+max = 2
+attributes = ["protected"]
+parameters = [{ name = "data", value_type = "expression", required = true, variadic = false, held = false }]
+options = [{ name = "sample", runtime_name = "Sample", value_type = "boolean", required = false, default_source = "True", variadic = false, held = false }]
+
+[[runtime]]
+name = "StandardDeviation"
+modern_name = "std"
+aliases = ["standarddeviation"]
+min = 1
+max = 2
+attributes = ["protected"]
+parameters = [{ name = "data", value_type = "expression", required = true, variadic = false, held = false }]
+options = [{ name = "sample", runtime_name = "Sample", value_type = "boolean", required = false, default_source = "True", variadic = false, held = false }]
+
+[[runtime]]
+name = "Covariance"
+modern_name = "covariance"
+aliases = []
+min = 2
+max = 3
+attributes = ["protected"]
+parameters = [{ name = "a", value_type = "expression", required = true, variadic = false, held = false }, { name = "b", value_type = "expression", required = true, variadic = false, held = false }]
+options = [{ name = "sample", runtime_name = "Sample", value_type = "boolean", required = false, default_source = "True", variadic = false, held = false }]
+
+[[runtime]]
+name = "Correlation"
+modern_name = "correlation"
+aliases = []
+min = 2
+max = 2
+attributes = ["protected"]
+parameters = [{ name = "a", value_type = "expression", required = true, variadic = false, held = false }, { name = "b", value_type = "expression", required = true, variadic = false, held = false }]
+options = []
+
+[[runtime]]
+name = "Quantile"
+modern_name = "quantile"
+aliases = []
+min = 2
+max = 2
+attributes = ["protected"]
+parameters = [{ name = "data_or_distribution", value_type = "expression", required = true, variadic = false, held = false }, { name = "probability", value_type = "expression", required = true, variadic = false, held = false }]
+options = []
+
+[[runtime]]
+name = "Percentile"
+modern_name = "percentile"
+aliases = []
+min = 2
+max = 2
+attributes = ["protected"]
+parameters = [{ name = "data", value_type = "expression", required = true, variadic = false, held = false }, { name = "percent", value_type = "expression", required = true, variadic = false, held = false }]
+options = []
+
+[[runtime]]
+name = "Filter"
+modern_name = "filter"
+aliases = []
+min = 2
+max = 2
+attributes = ["protected"]
+parameters = [{ name = "data", value_type = "expression", required = true, variadic = false, held = false }, { name = "predicate", value_type = "expression", required = true, variadic = false, held = false }]
+options = []
+
+[[runtime]]
+name = "Sort"
+modern_name = "sort"
+aliases = []
+min = 1
+max = 1
+attributes = ["protected"]
+parameters = [{ name = "data", value_type = "expression", required = true, variadic = false, held = false }]
+options = []
+
+[[runtime]]
+name = "SortBy"
+modern_name = "sort_by"
+aliases = ["sortby"]
+min = 2
+max = 2
+attributes = ["protected"]
+parameters = [{ name = "data", value_type = "expression", required = true, variadic = false, held = false }, { name = "key_fn", value_type = "expression", required = true, variadic = false, held = false }]
+options = []
+
+[[runtime]]
+name = "Unique"
+modern_name = "unique"
+aliases = []
+min = 1
+max = 1
+attributes = ["protected"]
+parameters = [{ name = "data", value_type = "expression", required = true, variadic = false, held = false }]
+options = []
+
+[[runtime]]
+name = "Take"
+modern_name = "take"
+aliases = []
+min = 2
+max = 2
+attributes = ["protected"]
+parameters = [{ name = "data", value_type = "expression", required = true, variadic = false, held = false }, { name = "count", value_type = "expression", required = true, variadic = false, held = false }]
+options = []
+
+[[runtime]]
+name = "Drop"
+modern_name = "drop"
+aliases = []
+min = 2
+max = 2
+attributes = ["protected"]
+parameters = [{ name = "data", value_type = "expression", required = true, variadic = false, held = false }, { name = "count", value_type = "expression", required = true, variadic = false, held = false }]
+options = []
+
+[[runtime]]
+name = "Slice"
+modern_name = "slice"
+aliases = []
+min = 2
+max = 2
+attributes = ["protected"]
+parameters = [{ name = "data", value_type = "expression", required = true, variadic = false, held = false }]
+options = []
+
+[[runtime]]
+name = "Flatten"
+modern_name = "flatten"
+aliases = []
+min = 1
+max = 2
+attributes = ["protected"]
+parameters = [{ name = "data", value_type = "expression", required = true, variadic = false, held = false }]
+options = [{ name = "depth", runtime_name = "Depth", value_type = "integer", required = false, default_source = "All", variadic = false, held = false, enum_values = ["All"], min = 0 }]
+
+[[runtime]]
+name = "Reshape"
+modern_name = "reshape"
+aliases = []
+min = 2
+max = 2
+attributes = ["protected"]
+parameters = [{ name = "data", value_type = "expression", required = true, variadic = false, held = false }, { name = "dimensions", value_type = "expression", required = true, variadic = false, held = false }]
+options = []
+
+[[runtime]]
+name = "Zip"
+modern_name = "zip"
+aliases = []
+min = 1
+attributes = ["protected"]
+parameters = [{ name = "lists", value_type = "expression", required = true, variadic = true, held = false, default_context = "按位置接收列表或重复数据参数" }]
+options = []
+
+[[runtime]]
+name = "Fold"
+modern_name = "fold"
+aliases = []
+min = 3
+max = 3
+attributes = ["protected"]
+parameters = [{ name = "fn", value_type = "expression", required = true, variadic = false, held = false }, { name = "initial", value_type = "expression", required = true, variadic = false, held = false }, { name = "data", value_type = "expression", required = true, variadic = false, held = false }]
+options = []
+
+[[runtime]]
+name = "GroupBy"
+modern_name = "group_by"
+aliases = ["groupby"]
+min = 2
+max = 2
+attributes = ["protected"]
+parameters = [{ name = "data", value_type = "expression", required = true, variadic = false, held = false }, { name = "key_fn", value_type = "expression", required = true, variadic = false, held = false }]
+options = []
+
+[[runtime]]
+name = "Counts"
+modern_name = "counts"
+aliases = []
+min = 1
+max = 1
+attributes = ["protected"]
+parameters = [{ name = "data", value_type = "expression", required = true, variadic = false, held = false }]
+options = []
+
+[[runtime]]
+name = "IdentityMatrix"
+modern_name = "identity"
+aliases = ["identitymatrix"]
+min = 1
+max = 1
+attributes = ["protected"]
+parameters = [{ name = "size", value_type = "expression", required = true, variadic = false, held = false }]
+options = []
+
+[[runtime]]
+name = "DiagonalMatrix"
+modern_name = "diag"
+aliases = ["diagonalmatrix"]
+min = 1
+max = 1
+attributes = ["protected"]
+parameters = [{ name = "values", value_type = "expression", required = true, variadic = false, held = false }]
+options = []
+
+[[runtime]]
+name = "Transpose"
+modern_name = "transpose"
+aliases = []
+min = 1
+max = 1
+attributes = ["protected"]
+parameters = [{ name = "matrix", value_type = "expression", required = true, variadic = false, held = false }]
+options = []
+
+[[runtime]]
+name = "ConjugateTranspose"
+modern_name = "adjoint"
+aliases = ["conjugatetranspose"]
+min = 1
+max = 1
+attributes = ["protected"]
+parameters = [{ name = "matrix", value_type = "expression", required = true, variadic = false, held = false }]
+options = []
+
+[[runtime]]
+name = "Tr"
+modern_name = "trace"
+aliases = ["tr"]
+min = 1
+max = 1
+attributes = ["protected"]
+parameters = [{ name = "matrix", value_type = "expression", required = true, variadic = false, held = false }]
+options = []
+
+[[runtime]]
+name = "Det"
+modern_name = "det"
+aliases = []
+min = 1
+max = 1
+attributes = ["protected"]
+parameters = [{ name = "matrix", value_type = "expression", required = true, variadic = false, held = false }]
+options = []
+
+[[runtime]]
+name = "Inverse"
+modern_name = "inverse"
+aliases = []
+min = 1
+max = 1
+attributes = ["protected"]
+parameters = [{ name = "matrix", value_type = "expression", required = true, variadic = false, held = false }]
+options = []
+
+[[runtime]]
+name = "MatrixRank"
+modern_name = "rank"
+aliases = ["matrixrank"]
+min = 1
+max = 1
+attributes = ["protected"]
+parameters = [{ name = "matrix", value_type = "expression", required = true, variadic = false, held = false }]
+options = []
+
+[[runtime]]
+name = "NullSpace"
+modern_name = "null_space"
+aliases = ["nullspace"]
+min = 1
+max = 1
+attributes = ["protected"]
+parameters = [{ name = "matrix", value_type = "expression", required = true, variadic = false, held = false }]
+options = []
+
+[[runtime]]
+name = "LinearSolve"
+modern_name = "linear_solve"
+aliases = ["linearsolve"]
+min = 2
+max = 2
+attributes = ["protected"]
+parameters = [{ name = "matrix", value_type = "expression", required = true, variadic = false, held = false }, { name = "rhs", value_type = "expression", required = true, variadic = false, held = false }]
+options = []
+
+[[runtime]]
+name = "Cross"
+modern_name = "cross"
+aliases = []
+min = 2
+max = 2
+attributes = ["protected"]
+parameters = [{ name = "a", value_type = "expression", required = true, variadic = false, held = false }, { name = "b", value_type = "expression", required = true, variadic = false, held = false }]
+options = []
+
+[[runtime]]
+name = "Norm"
+modern_name = "norm"
+aliases = []
+min = 1
+max = 1
+attributes = ["protected"]
+parameters = [{ name = "vector", value_type = "expression", required = true, variadic = false, held = false }]
+options = []
+
+[[runtime]]
+name = "Normalize"
+modern_name = "normalize"
+aliases = []
+min = 1
+max = 1
+attributes = ["protected"]
+parameters = [{ name = "vector", value_type = "expression", required = true, variadic = false, held = false }]
+options = []
+
+[[runtime]]
+name = "Decimal"
+modern_name = "decimal"
+aliases = []
+min = 1
+max = 2
+attributes = ["protected"]
+parameters = [{ name = "text", value_type = "expression", required = true, variadic = false, held = false }]
+options = [{ name = "precision", runtime_name = "WorkingPrecision", value_type = "integer", required = false, variadic = false, held = false, default_source = "50", min = 1, max = 4931 }]
+
+[[runtime]]
+name = "Rescale"
+modern_name = "rescale"
+aliases = []
+min = 1
+max = 3
+attributes = ["protected"]
+parameters = [{ name = "value", value_type = "expression", required = true, variadic = false, held = false }]
+options = [{ name = "from", runtime_name = "From", value_type = "expression", required = false, variadic = false, held = false, default_context = "从真实数据最小/最大值推断；零宽区间拒绝" }, { name = "to", runtime_name = "To", value_type = "expression", required = false, variadic = false, held = false, default_source = "{0,1}" }]

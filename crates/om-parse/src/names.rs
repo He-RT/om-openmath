@@ -69,6 +69,7 @@ pub(crate) fn is_function(symbol: Symbol) -> bool {
     let name = symbol.name();
     (builtins::names().contains(&name)
         || super::names_editor::EXTRA.contains(&name)
+        || om_core::catalog::by_runtime(name).is_some()
         || name == "Derivative")
         && !matches!(
             name,

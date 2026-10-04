@@ -18,18 +18,18 @@
 | [`catenate`](#catenate) | 后续规划 | 规划接口，当前不可用 | 列表、记录与表格中的 Catenate 能力，进入后续全景目录。 |
 | [`complement`](#complement) | 后续规划 | 规划接口，当前不可用 | 列表、记录与表格中的 Complement 能力，进入后续全景目录。 |
 | [`delete`](#delete) | 后续规划 | 规划接口，当前不可用 | 列表、记录与表格中的 Delete 能力，进入后续全景目录。 |
-| [`drop`](#drop) | 下一版规划 | 规划接口，当前不可用 | 移除前/后片段 |
-| [`filter`](#filter) | 下一版规划 | 规划接口，当前不可用 | 筛选 |
+| [`drop`](#drop) | 已实现 | 当前可用 | 移除前/后片段 |
+| [`filter`](#filter) | 已实现 | 当前可用 | 筛选 |
 | [`first`](#first) | 已实现 | 现有入口可用，统一接口待实施 | 返回首个参数。 |
 | [`fixed_point`](#fixed_point) | 后续规划 | 规划接口，当前不可用 | 列表、记录与表格中的 FixedPoint 能力，进入后续全景目录。 |
 | [`fixed_point_list`](#fixed_point_list) | 后续规划 | 规划接口，当前不可用 | 列表、记录与表格中的 FixedPointList 能力，进入后续全景目录。 |
-| [`flatten`](#flatten) | 下一版规划 | 规划接口，当前不可用 | 展开嵌套 |
+| [`flatten`](#flatten) | 已实现 | 当前可用 | 展开嵌套 |
 | [`flatten_at`](#flatten_at) | 后续规划 | 规划接口，当前不可用 | 列表、记录与表格中的 FlattenAt 能力，进入后续全景目录。 |
-| [`fold`](#fold) | 下一版规划 | 规划接口，当前不可用 | 累积归约 |
+| [`fold`](#fold) | 已实现 | 当前可用 | 累积归约 |
 | [`fold_list`](#fold_list) | 后续规划 | 规划接口，当前不可用 | 列表、记录与表格中的 FoldList 能力，进入后续全景目录。 |
 | [`gather`](#gather) | 后续规划 | 规划接口，当前不可用 | 列表、记录与表格中的 Gather 能力，进入后续全景目录。 |
 | [`gather_by`](#gather_by) | 后续规划 | 规划接口，当前不可用 | 列表、记录与表格中的 GatherBy 能力，进入后续全景目录。 |
-| [`group_by`](#group_by) | 下一版规划 | 规划接口，当前不可用 | 按键分组 |
+| [`group_by`](#group_by) | 已实现 | 当前可用 | 按键分组 |
 | [`insert`](#insert) | 后续规划 | 规划接口，当前不可用 | 列表、记录与表格中的 Insert 能力，进入后续全景目录。 |
 | [`intersection`](#intersection) | 后续规划 | 规划接口，当前不可用 | 列表、记录与表格中的 Intersection 能力，进入后续全景目录。 |
 | [`key_drop`](#key_drop) | 后续规划 | 规划接口，当前不可用 | 列表、记录与表格中的 KeyDrop 能力，进入后续全景目录。 |
@@ -63,24 +63,24 @@
 | [`range`](#range) | 已实现 | 现有入口可用，统一接口待实施 | 构造有限数值等差序列。 |
 | [`record`](#record) | 已实现 | 当前可用 | 有序键值记录 |
 | [`replace_part`](#replace_part) | 后续规划 | 规划接口，当前不可用 | 列表、记录与表格中的 ReplacePart 能力，进入后续全景目录。 |
-| [`reshape`](#reshape) | 下一版规划 | 规划接口，当前不可用 | 重塑矩形数组 |
+| [`reshape`](#reshape) | 已实现 | 当前可用 | 重塑矩形数组 |
 | [`rest`](#rest) | 已实现 | 现有入口可用，统一接口待实施 | 移除首个参数并保留头。 |
 | [`scan`](#scan) | 后续规划 | 规划接口，当前不可用 | 列表、记录与表格中的 Scan 能力，进入后续全景目录。 |
-| [`slice`](#slice) | 下一版规划 | 规划接口，当前不可用 | 1起始闭区间切片 |
-| [`sort`](#sort) | 下一版规划 | 规划接口，当前不可用 | 确定性排序 |
-| [`sort_by`](#sort_by) | 下一版规划 | 规划接口，当前不可用 | 按键排序 |
+| [`slice`](#slice) | 已实现 | 当前可用 | 1起始闭区间切片 |
+| [`sort`](#sort) | 已实现 | 当前可用 | 确定性排序 |
+| [`sort_by`](#sort_by) | 已实现 | 当前可用 | 按键排序 |
 | [`split`](#split) | 后续规划 | 规划接口，当前不可用 | 列表、记录与表格中的 Split 能力，进入后续全景目录。 |
 | [`split_by`](#split_by) | 后续规划 | 规划接口，当前不可用 | 列表、记录与表格中的 SplitBy 能力，进入后续全景目录。 |
 | [`sum`](#sum) | 部分支持 | 当前可用 | 在有限迭代区间累加。 |
 | [`table`](#table) | 部分支持 | 当前可用 | 在有限迭代区间构造结果列表。 |
-| [`take`](#take) | 下一版规划 | 规划接口，当前不可用 | 取前/后片段 |
+| [`take`](#take) | 已实现 | 当前可用 | 取前/后片段 |
 | [`thread`](#thread) | 后续规划 | 规划接口，当前不可用 | 列表、记录与表格中的 Thread 能力，进入后续全景目录。 |
 | [`to_csv`](#to_csv) | 下一版规划 | 规划接口，当前不可用 | 编码CSV数据 |
 | [`to_json`](#to_json) | 下一版规划 | 规划接口，当前不可用 | 编码JSON数据 |
 | [`union`](#union) | 后续规划 | 规划接口，当前不可用 | 列表、记录与表格中的 Union 能力，进入后续全景目录。 |
-| [`unique`](#unique) | 下一版规划 | 规划接口，当前不可用 | 保留首次出现顺序去重 |
+| [`unique`](#unique) | 已实现 | 当前可用 | 保留首次出现顺序去重 |
 | [`values`](#values) | 后续规划 | 规划接口，当前不可用 | 列表、记录与表格中的 Values 能力，进入后续全景目录。 |
-| [`zip`](#zip) | 下一版规划 | 规划接口，当前不可用 | 逐项配对 |
+| [`zip`](#zip) | 已实现 | 当前可用 | 逐项配对 |
 
 ## append
 
@@ -484,21 +484,33 @@ delete(...)  # 后续接口尚未锁定
 
 ## drop
 
-**当前实现：下一版规划；目标接口：规划接口，当前不可用。** 目标版本：`0.1.0-pre-alpha.3`。
+**当前实现：已实现；目标接口：当前可用。** 目标版本：`0.1.0-pre-alpha.3`。
 
 - 稳定身份：`fn_000203`；条目类型：`function`。
-- 副作用分类（设计预留）：`pure`；参数验证阶段：`documentation_only`，不构成工具授权。
+- 副作用分类（设计预留）：`pure`；参数验证阶段：`runtime_verified`，不构成工具授权。
 
 移除前/后片段
 
-- 当前支持：当前无此规范接口的实现。
+- 当前支持：列表路径已实现；键/谓词为真实函数，每项仅执行一次；分组按首次出现顺序，结构相等决定归组，精确1与机器1.0区分。reshape维数≤8、总节点≤100000；长度/类型/形状错误及中断明确诊断。记录/表格列操作后续适配。
 - 目标范围：列表/记录与基础表格；索引1起始、形状与长度严格检查，zip不默默截断不等长输入。
 - 返回：expression
 - 精度：保留输入精度。
-- 当前计算平台：无；目标计算平台：cli, desktop, web, ios。
+- 当前计算平台：cli, desktop, web, ios；目标计算平台：cli, desktop, web, ios。
 - 目标图形/交互展示平台：不适用或后续未定。
 - 兼容名称：无既有兼容入口。
 - 管道位置：第 1 个位置参数（从 1 起）。
+
+当前现代签名：
+
+```text
+drop(...)
+```
+
+当前 Wolfram 签名：
+
+```text
+Drop[...]
+```
 
 目标现代签名（按目标接口状态判断是否已可执行）：
 
@@ -511,6 +523,12 @@ drop(data,count)
 | `data` | positional | 必填 | 有序数据 | r3 |
 | `count` | positional | 必填 | 整数 | r3 |
 
+当前已登记示例（Wolfram）：
+
+```wolfram
+Drop[{1,2,3},1]
+```
+
 规划示例（尚未执行；需要目标版本，后续条目不承诺 .3）：
 
 ```text
@@ -519,27 +537,39 @@ drop([1,2,3],1)
 
 验收：独立数学期望、有效/无效参数、边界、预算、中断及声明的平台/精度测试；范围外不伪造成功。
 
-当前源码：暂无当前实现证据。
+当前源码：[crates/om-eval/src/science/registry.rs](../../crates/om-eval/src/science/registry.rs)。
 
-当前测试引用：暂无当前实现证据。
+当前测试引用：[crates/om-eval/tests/science_basics.rs](../../crates/om-eval/tests/science_basics.rs)。
 
 ## filter
 
-**当前实现：下一版规划；目标接口：规划接口，当前不可用。** 目标版本：`0.1.0-pre-alpha.3`。
+**当前实现：已实现；目标接口：当前可用。** 目标版本：`0.1.0-pre-alpha.3`。
 
 - 稳定身份：`fn_000198`；条目类型：`function`。
-- 副作用分类（设计预留）：`pure`；参数验证阶段：`documentation_only`，不构成工具授权。
+- 副作用分类（设计预留）：`pure`；参数验证阶段：`runtime_verified`，不构成工具授权。
 
 筛选
 
-- 当前支持：当前无此规范接口的实现。
+- 当前支持：列表路径已实现；键/谓词为真实函数，每项仅执行一次；分组按首次出现顺序，结构相等决定归组，精确1与机器1.0区分。reshape维数≤8、总节点≤100000；长度/类型/形状错误及中断明确诊断。记录/表格列操作后续适配。
 - 目标范围：列表/记录与基础表格；索引1起始、形状与长度严格检查，zip不默默截断不等长输入。
 - 返回：expression
 - 精度：保留输入精度。
-- 当前计算平台：无；目标计算平台：cli, desktop, web, ios。
+- 当前计算平台：cli, desktop, web, ios；目标计算平台：cli, desktop, web, ios。
 - 目标图形/交互展示平台：不适用或后续未定。
 - 兼容名称：无既有兼容入口。
 - 管道位置：第 1 个位置参数（从 1 起）。
+
+当前现代签名：
+
+```text
+filter(...)
+```
+
+当前 Wolfram 签名：
+
+```text
+Filter[...]
+```
 
 目标现代签名（按目标接口状态判断是否已可执行）：
 
@@ -552,6 +582,12 @@ filter(data, predicate)
 | `data` | positional | 必填 | 有序数据 | r3 |
 | `predicate` | positional | 必填 | 签名对应的predicate参数 | r3 |
 
+当前已登记示例（Wolfram）：
+
+```wolfram
+Filter[{1,2,3},Function[x,x>1]]
+```
+
 规划示例（尚未执行；需要目标版本，后续条目不承诺 .3）：
 
 ```text
@@ -560,9 +596,9 @@ filter(data, predicate)
 
 验收：独立数学期望、有效/无效参数、边界、预算、中断及声明的平台/精度测试；范围外不伪造成功。
 
-当前源码：暂无当前实现证据。
+当前源码：[crates/om-eval/src/science/registry.rs](../../crates/om-eval/src/science/registry.rs)。
 
-当前测试引用：暂无当前实现证据。
+当前测试引用：[crates/om-eval/tests/science_basics.rs](../../crates/om-eval/tests/science_basics.rs)。
 
 ## first
 
@@ -687,21 +723,33 @@ fixed_point_list(...)  # 后续接口尚未锁定
 
 ## flatten
 
-**当前实现：下一版规划；目标接口：规划接口，当前不可用。** 目标版本：`0.1.0-pre-alpha.3`。
+**当前实现：已实现；目标接口：当前可用。** 目标版本：`0.1.0-pre-alpha.3`。
 
 - 稳定身份：`fn_000205`；条目类型：`function`。
-- 副作用分类（设计预留）：`pure`；参数验证阶段：`documentation_only`，不构成工具授权。
+- 副作用分类（设计预留）：`pure`；参数验证阶段：`runtime_verified`，不构成工具授权。
 
 展开嵌套
 
-- 当前支持：当前无此规范接口的实现。
+- 当前支持：列表路径已实现；键/谓词为真实函数，每项仅执行一次；分组按首次出现顺序，结构相等决定归组，精确1与机器1.0区分。reshape维数≤8、总节点≤100000；长度/类型/形状错误及中断明确诊断。记录/表格列操作后续适配。
 - 目标范围：列表/记录与基础表格；索引1起始、形状与长度严格检查，zip不默默截断不等长输入。
 - 返回：expression
 - 精度：保留输入精度。
-- 当前计算平台：无；目标计算平台：cli, desktop, web, ios。
+- 当前计算平台：cli, desktop, web, ios；目标计算平台：cli, desktop, web, ios。
 - 目标图形/交互展示平台：不适用或后续未定。
 - 兼容名称：无既有兼容入口。
 - 管道位置：第 1 个位置参数（从 1 起）。
+
+当前现代签名：
+
+```text
+flatten(...)
+```
+
+当前 Wolfram 签名：
+
+```text
+Flatten[...]
+```
 
 目标现代签名（按目标接口状态判断是否已可执行）：
 
@@ -714,6 +762,12 @@ flatten(data, depth: all)
 | `data` | positional | 必填 | 有序数据 | r3 |
 | `depth` | option | all | 展开层数 | r3 |
 
+当前已登记示例（Wolfram）：
+
+```wolfram
+Flatten[{{1,2},{3}}]
+```
+
 规划示例（尚未执行；需要目标版本，后续条目不承诺 .3）：
 
 ```text
@@ -722,9 +776,9 @@ flatten([[1,2],[3]])
 
 验收：独立数学期望、有效/无效参数、边界、预算、中断及声明的平台/精度测试；范围外不伪造成功。
 
-当前源码：暂无当前实现证据。
+当前源码：[crates/om-eval/src/science/registry.rs](../../crates/om-eval/src/science/registry.rs)。
 
-当前测试引用：暂无当前实现证据。
+当前测试引用：[crates/om-eval/tests/science_basics.rs](../../crates/om-eval/tests/science_basics.rs)。
 
 ## flatten_at
 
@@ -762,21 +816,33 @@ flatten_at(...)  # 后续接口尚未锁定
 
 ## fold
 
-**当前实现：下一版规划；目标接口：规划接口，当前不可用。** 目标版本：`0.1.0-pre-alpha.3`。
+**当前实现：已实现；目标接口：当前可用。** 目标版本：`0.1.0-pre-alpha.3`。
 
 - 稳定身份：`fn_000208`；条目类型：`function`。
-- 副作用分类（设计预留）：`pure`；参数验证阶段：`documentation_only`，不构成工具授权。
+- 副作用分类（设计预留）：`pure`；参数验证阶段：`runtime_verified`，不构成工具授权。
 
 累积归约
 
-- 当前支持：当前无此规范接口的实现。
+- 当前支持：列表路径已实现；键/谓词为真实函数，每项仅执行一次；分组按首次出现顺序，结构相等决定归组，精确1与机器1.0区分。reshape维数≤8、总节点≤100000；长度/类型/形状错误及中断明确诊断。记录/表格列操作后续适配。
 - 目标范围：列表/记录与基础表格；索引1起始、形状与长度严格检查，zip不默默截断不等长输入。
 - 返回：expression
 - 精度：保留输入精度。
-- 当前计算平台：无；目标计算平台：cli, desktop, web, ios。
+- 当前计算平台：cli, desktop, web, ios；目标计算平台：cli, desktop, web, ios。
 - 目标图形/交互展示平台：不适用或后续未定。
 - 兼容名称：无既有兼容入口。
 - 管道位置：第 3 个位置参数（从 1 起）。
+
+当前现代签名：
+
+```text
+fold(...)
+```
+
+当前 Wolfram 签名：
+
+```text
+Fold[...]
+```
 
 目标现代签名（按目标接口状态判断是否已可执行）：
 
@@ -790,6 +856,12 @@ fold(fn, initial, data)
 | `initial` | positional | 必填 | 初始值 | r3 |
 | `data` | positional | 必填 | 列表 | r3 |
 
+当前已登记示例（Wolfram）：
+
+```wolfram
+Fold[Plus,0,{1,2,3}]
+```
+
 规划示例（尚未执行；需要目标版本，后续条目不承诺 .3）：
 
 ```text
@@ -798,9 +870,9 @@ fold(fn, initial, data)
 
 验收：独立数学期望、有效/无效参数、边界、预算、中断及声明的平台/精度测试；范围外不伪造成功。
 
-当前源码：暂无当前实现证据。
+当前源码：[crates/om-eval/src/science/registry.rs](../../crates/om-eval/src/science/registry.rs)。
 
-当前测试引用：暂无当前实现证据。
+当前测试引用：[crates/om-eval/tests/science_basics.rs](../../crates/om-eval/tests/science_basics.rs)。
 
 ## fold_list
 
@@ -906,21 +978,33 @@ gather_by(...)  # 后续接口尚未锁定
 
 ## group_by
 
-**当前实现：下一版规划；目标接口：规划接口，当前不可用。** 目标版本：`0.1.0-pre-alpha.3`。
+**当前实现：已实现；目标接口：当前可用。** 目标版本：`0.1.0-pre-alpha.3`。
 
 - 稳定身份：`fn_000209`；条目类型：`function`。
-- 副作用分类（设计预留）：`pure`；参数验证阶段：`documentation_only`，不构成工具授权。
+- 副作用分类（设计预留）：`pure`；参数验证阶段：`runtime_verified`，不构成工具授权。
 
 按键分组
 
-- 当前支持：当前无此规范接口的实现。
+- 当前支持：列表路径已实现；键/谓词为真实函数，每项仅执行一次；分组按首次出现顺序，结构相等决定归组，精确1与机器1.0区分。reshape维数≤8、总节点≤100000；长度/类型/形状错误及中断明确诊断。记录/表格列操作后续适配。
 - 目标范围：列表/记录与基础表格；索引1起始、形状与长度严格检查，zip不默默截断不等长输入。
 - 返回：expression
 - 精度：保留输入精度。
-- 当前计算平台：无；目标计算平台：cli, desktop, web, ios。
+- 当前计算平台：cli, desktop, web, ios；目标计算平台：cli, desktop, web, ios。
 - 目标图形/交互展示平台：不适用或后续未定。
 - 兼容名称：无既有兼容入口。
 - 管道位置：第 1 个位置参数（从 1 起）。
+
+当前现代签名：
+
+```text
+group_by(...)
+```
+
+当前 Wolfram 签名：
+
+```text
+GroupBy[...]
+```
 
 目标现代签名（按目标接口状态判断是否已可执行）：
 
@@ -933,6 +1017,12 @@ group_by(data, key_fn)
 | `data` | positional | 必填 | 有序数据 | r3 |
 | `key_fn` | positional | 必填 | 签名对应的key_fn参数 | r3 |
 
+当前已登记示例（Wolfram）：
+
+```wolfram
+GroupBy[{1,2,3},Function[x,Mod[x,2]]]
+```
+
 规划示例（尚未执行；需要目标版本，后续条目不承诺 .3）：
 
 ```text
@@ -941,9 +1031,9 @@ group_by([1,2,3,4],fn(x) => mod(x,2))
 
 验收：独立数学期望、有效/无效参数、边界、预算、中断及声明的平台/精度测试；范围外不伪造成功。
 
-当前源码：暂无当前实现证据。
+当前源码：[crates/om-eval/src/science/registry.rs](../../crates/om-eval/src/science/registry.rs)。
 
-当前测试引用：暂无当前实现证据。
+当前测试引用：[crates/om-eval/tests/science_basics.rs](../../crates/om-eval/tests/science_basics.rs)。
 
 ## insert
 
@@ -2230,21 +2320,33 @@ replace_part(...)  # 后续接口尚未锁定
 
 ## reshape
 
-**当前实现：下一版规划；目标接口：规划接口，当前不可用。** 目标版本：`0.1.0-pre-alpha.3`。
+**当前实现：已实现；目标接口：当前可用。** 目标版本：`0.1.0-pre-alpha.3`。
 
 - 稳定身份：`fn_000206`；条目类型：`function`。
-- 副作用分类（设计预留）：`pure`；参数验证阶段：`documentation_only`，不构成工具授权。
+- 副作用分类（设计预留）：`pure`；参数验证阶段：`runtime_verified`，不构成工具授权。
 
 重塑矩形数组
 
-- 当前支持：当前无此规范接口的实现。
+- 当前支持：列表路径已实现；键/谓词为真实函数，每项仅执行一次；分组按首次出现顺序，结构相等决定归组，精确1与机器1.0区分。reshape维数≤8、总节点≤100000；长度/类型/形状错误及中断明确诊断。记录/表格列操作后续适配。
 - 目标范围：列表/记录与基础表格；索引1起始、形状与长度严格检查，zip不默默截断不等长输入。
 - 返回：expression
 - 精度：保留输入精度。
-- 当前计算平台：无；目标计算平台：cli, desktop, web, ios。
+- 当前计算平台：cli, desktop, web, ios；目标计算平台：cli, desktop, web, ios。
 - 目标图形/交互展示平台：不适用或后续未定。
 - 兼容名称：无既有兼容入口。
 - 管道位置：第 1 个位置参数（从 1 起）。
+
+当前现代签名：
+
+```text
+reshape(...)
+```
+
+当前 Wolfram 签名：
+
+```text
+Reshape[...]
+```
 
 目标现代签名（按目标接口状态判断是否已可执行）：
 
@@ -2257,6 +2359,12 @@ reshape(data, dimensions)
 | `data` | positional | 必填 | 有序数据 | r3 |
 | `dimensions` | positional | 必填 | 非负整数维度列表 | r3 |
 
+当前已登记示例（Wolfram）：
+
+```wolfram
+Reshape[{1,2,3,4},{2,2}]
+```
+
 规划示例（尚未执行；需要目标版本，后续条目不承诺 .3）：
 
 ```text
@@ -2265,9 +2373,9 @@ reshape([1,2,3,4],[2,2])
 
 验收：独立数学期望、有效/无效参数、边界、预算、中断及声明的平台/精度测试；范围外不伪造成功。
 
-当前源码：暂无当前实现证据。
+当前源码：[crates/om-eval/src/science/registry.rs](../../crates/om-eval/src/science/registry.rs)。
 
-当前测试引用：暂无当前实现证据。
+当前测试引用：[crates/om-eval/tests/science_basics.rs](../../crates/om-eval/tests/science_basics.rs)。
 
 ## rest
 
@@ -2358,21 +2466,33 @@ scan(...)  # 后续接口尚未锁定
 
 ## slice
 
-**当前实现：下一版规划；目标接口：规划接口，当前不可用。** 目标版本：`0.1.0-pre-alpha.3`。
+**当前实现：已实现；目标接口：当前可用。** 目标版本：`0.1.0-pre-alpha.3`。
 
 - 稳定身份：`fn_000204`；条目类型：`function`。
-- 副作用分类（设计预留）：`pure`；参数验证阶段：`documentation_only`，不构成工具授权。
+- 副作用分类（设计预留）：`pure`；参数验证阶段：`runtime_verified`，不构成工具授权。
 
 1起始闭区间切片
 
-- 当前支持：当前无此规范接口的实现。
+- 当前支持：列表路径已实现；键/谓词为真实函数，每项仅执行一次；分组按首次出现顺序，结构相等决定归组，精确1与机器1.0区分。reshape维数≤8、总节点≤100000；长度/类型/形状错误及中断明确诊断。记录/表格列操作后续适配。
 - 目标范围：列表/记录与基础表格；索引1起始、形状与长度严格检查，zip不默默截断不等长输入。
 - 返回：expression
 - 精度：保留输入精度。
-- 当前计算平台：无；目标计算平台：cli, desktop, web, ios。
+- 当前计算平台：cli, desktop, web, ios；目标计算平台：cli, desktop, web, ios。
 - 目标图形/交互展示平台：不适用或后续未定。
 - 兼容名称：无既有兼容入口。
 - 管道位置：第 1 个位置参数（从 1 起）。
+
+当前现代签名：
+
+```text
+slice(...)
+```
+
+当前 Wolfram 签名：
+
+```text
+Slice[...]
+```
 
 目标现代签名（按目标接口状态判断是否已可执行）：
 
@@ -2384,6 +2504,12 @@ slice(data, start..end)
 |---|---|---|---|---|
 | `data` | positional | 必填 | 有序数据 | r3 |
 
+当前已登记示例（Wolfram）：
+
+```wolfram
+Slice[{1,2,3},Span[1,2]]
+```
+
 规划示例（尚未执行；需要目标版本，后续条目不承诺 .3）：
 
 ```text
@@ -2392,27 +2518,39 @@ slice(data, start..end)
 
 验收：独立数学期望、有效/无效参数、边界、预算、中断及声明的平台/精度测试；范围外不伪造成功。
 
-当前源码：暂无当前实现证据。
+当前源码：[crates/om-eval/src/science/registry.rs](../../crates/om-eval/src/science/registry.rs)。
 
-当前测试引用：暂无当前实现证据。
+当前测试引用：[crates/om-eval/tests/science_basics.rs](../../crates/om-eval/tests/science_basics.rs)。
 
 ## sort
 
-**当前实现：下一版规划；目标接口：规划接口，当前不可用。** 目标版本：`0.1.0-pre-alpha.3`。
+**当前实现：已实现；目标接口：当前可用。** 目标版本：`0.1.0-pre-alpha.3`。
 
 - 稳定身份：`fn_000199`；条目类型：`function`。
-- 副作用分类（设计预留）：`pure`；参数验证阶段：`documentation_only`，不构成工具授权。
+- 副作用分类（设计预留）：`pure`；参数验证阶段：`runtime_verified`，不构成工具授权。
 
 确定性排序
 
-- 当前支持：当前无此规范接口的实现。
+- 当前支持：列表路径已实现；键/谓词为真实函数，每项仅执行一次；分组按首次出现顺序，结构相等决定归组，精确1与机器1.0区分。reshape维数≤8、总节点≤100000；长度/类型/形状错误及中断明确诊断。记录/表格列操作后续适配。
 - 目标范围：列表/记录与基础表格；索引1起始、形状与长度严格检查，zip不默默截断不等长输入。
 - 返回：expression
 - 精度：保留输入精度。
-- 当前计算平台：无；目标计算平台：cli, desktop, web, ios。
+- 当前计算平台：cli, desktop, web, ios；目标计算平台：cli, desktop, web, ios。
 - 目标图形/交互展示平台：不适用或后续未定。
 - 兼容名称：无既有兼容入口。
 - 管道位置：第 1 个位置参数（从 1 起）。
+
+当前现代签名：
+
+```text
+sort(...)
+```
+
+当前 Wolfram 签名：
+
+```text
+Sort[...]
+```
 
 目标现代签名（按目标接口状态判断是否已可执行）：
 
@@ -2424,6 +2562,12 @@ sort(data)
 |---|---|---|---|---|
 | `data` | positional | 必填 | 有序数据 | r3 |
 
+当前已登记示例（Wolfram）：
+
+```wolfram
+Sort[{3,1,2}]
+```
+
 规划示例（尚未执行；需要目标版本，后续条目不承诺 .3）：
 
 ```text
@@ -2432,27 +2576,39 @@ sort([3,1,2])
 
 验收：独立数学期望、有效/无效参数、边界、预算、中断及声明的平台/精度测试；范围外不伪造成功。
 
-当前源码：暂无当前实现证据。
+当前源码：[crates/om-eval/src/science/registry.rs](../../crates/om-eval/src/science/registry.rs)。
 
-当前测试引用：暂无当前实现证据。
+当前测试引用：[crates/om-eval/tests/science_basics.rs](../../crates/om-eval/tests/science_basics.rs)。
 
 ## sort_by
 
-**当前实现：下一版规划；目标接口：规划接口，当前不可用。** 目标版本：`0.1.0-pre-alpha.3`。
+**当前实现：已实现；目标接口：当前可用。** 目标版本：`0.1.0-pre-alpha.3`。
 
 - 稳定身份：`fn_000200`；条目类型：`function`。
-- 副作用分类（设计预留）：`pure`；参数验证阶段：`documentation_only`，不构成工具授权。
+- 副作用分类（设计预留）：`pure`；参数验证阶段：`runtime_verified`，不构成工具授权。
 
 按键排序
 
-- 当前支持：当前无此规范接口的实现。
+- 当前支持：列表路径已实现；键/谓词为真实函数，每项仅执行一次；分组按首次出现顺序，结构相等决定归组，精确1与机器1.0区分。reshape维数≤8、总节点≤100000；长度/类型/形状错误及中断明确诊断。记录/表格列操作后续适配。
 - 目标范围：列表/记录与基础表格；索引1起始、形状与长度严格检查，zip不默默截断不等长输入。
 - 返回：expression
 - 精度：保留输入精度。
-- 当前计算平台：无；目标计算平台：cli, desktop, web, ios。
+- 当前计算平台：cli, desktop, web, ios；目标计算平台：cli, desktop, web, ios。
 - 目标图形/交互展示平台：不适用或后续未定。
 - 兼容名称：无既有兼容入口。
 - 管道位置：第 1 个位置参数（从 1 起）。
+
+当前现代签名：
+
+```text
+sort_by(...)
+```
+
+当前 Wolfram 签名：
+
+```text
+SortBy[...]
+```
 
 目标现代签名（按目标接口状态判断是否已可执行）：
 
@@ -2465,6 +2621,12 @@ sort_by(data, key_fn)
 | `data` | positional | 必填 | 有序数据 | r3 |
 | `key_fn` | positional | 必填 | 签名对应的key_fn参数 | r3 |
 
+当前已登记示例（Wolfram）：
+
+```wolfram
+SortBy[{-2,1,3},Abs]
+```
+
 规划示例（尚未执行；需要目标版本，后续条目不承诺 .3）：
 
 ```text
@@ -2473,9 +2635,9 @@ sort_by([1,-3,2],fn(x) => abs(x))
 
 验收：独立数学期望、有效/无效参数、边界、预算、中断及声明的平台/精度测试；范围外不伪造成功。
 
-当前源码：暂无当前实现证据。
+当前源码：[crates/om-eval/src/science/registry.rs](../../crates/om-eval/src/science/registry.rs)。
 
-当前测试引用：暂无当前实现证据。
+当前测试引用：[crates/om-eval/tests/science_basics.rs](../../crates/om-eval/tests/science_basics.rs)。
 
 ## split
 
@@ -2655,21 +2817,33 @@ Table[a, {3}]
 
 ## take
 
-**当前实现：下一版规划；目标接口：规划接口，当前不可用。** 目标版本：`0.1.0-pre-alpha.3`。
+**当前实现：已实现；目标接口：当前可用。** 目标版本：`0.1.0-pre-alpha.3`。
 
 - 稳定身份：`fn_000202`；条目类型：`function`。
-- 副作用分类（设计预留）：`pure`；参数验证阶段：`documentation_only`，不构成工具授权。
+- 副作用分类（设计预留）：`pure`；参数验证阶段：`runtime_verified`，不构成工具授权。
 
 取前/后片段
 
-- 当前支持：当前无此规范接口的实现。
+- 当前支持：列表路径已实现；键/谓词为真实函数，每项仅执行一次；分组按首次出现顺序，结构相等决定归组，精确1与机器1.0区分。reshape维数≤8、总节点≤100000；长度/类型/形状错误及中断明确诊断。记录/表格列操作后续适配。
 - 目标范围：列表/记录与基础表格；索引1起始、形状与长度严格检查，zip不默默截断不等长输入。
 - 返回：expression
 - 精度：保留输入精度。
-- 当前计算平台：无；目标计算平台：cli, desktop, web, ios。
+- 当前计算平台：cli, desktop, web, ios；目标计算平台：cli, desktop, web, ios。
 - 目标图形/交互展示平台：不适用或后续未定。
 - 兼容名称：无既有兼容入口。
 - 管道位置：第 1 个位置参数（从 1 起）。
+
+当前现代签名：
+
+```text
+take(...)
+```
+
+当前 Wolfram 签名：
+
+```text
+Take[...]
+```
 
 目标现代签名（按目标接口状态判断是否已可执行）：
 
@@ -2682,6 +2856,12 @@ take(data,count)
 | `data` | positional | 必填 | 有序数据 | r3 |
 | `count` | positional | 必填 | 整数 | r3 |
 
+当前已登记示例（Wolfram）：
+
+```wolfram
+Take[{1,2,3},2]
+```
+
 规划示例（尚未执行；需要目标版本，后续条目不承诺 .3）：
 
 ```text
@@ -2690,9 +2870,9 @@ take([1,2,3],2)
 
 验收：独立数学期望、有效/无效参数、边界、预算、中断及声明的平台/精度测试；范围外不伪造成功。
 
-当前源码：暂无当前实现证据。
+当前源码：[crates/om-eval/src/science/registry.rs](../../crates/om-eval/src/science/registry.rs)。
 
-当前测试引用：暂无当前实现证据。
+当前测试引用：[crates/om-eval/tests/science_basics.rs](../../crates/om-eval/tests/science_basics.rs)。
 
 ## thread
 
@@ -2844,21 +3024,33 @@ union(...)  # 后续接口尚未锁定
 
 ## unique
 
-**当前实现：下一版规划；目标接口：规划接口，当前不可用。** 目标版本：`0.1.0-pre-alpha.3`。
+**当前实现：已实现；目标接口：当前可用。** 目标版本：`0.1.0-pre-alpha.3`。
 
 - 稳定身份：`fn_000201`；条目类型：`function`。
-- 副作用分类（设计预留）：`pure`；参数验证阶段：`documentation_only`，不构成工具授权。
+- 副作用分类（设计预留）：`pure`；参数验证阶段：`runtime_verified`，不构成工具授权。
 
 保留首次出现顺序去重
 
-- 当前支持：当前无此规范接口的实现。
+- 当前支持：列表路径已实现；键/谓词为真实函数，每项仅执行一次；分组按首次出现顺序，结构相等决定归组，精确1与机器1.0区分。reshape维数≤8、总节点≤100000；长度/类型/形状错误及中断明确诊断。记录/表格列操作后续适配。
 - 目标范围：列表/记录与基础表格；索引1起始、形状与长度严格检查，zip不默默截断不等长输入。
 - 返回：expression
 - 精度：保留输入精度。
-- 当前计算平台：无；目标计算平台：cli, desktop, web, ios。
+- 当前计算平台：cli, desktop, web, ios；目标计算平台：cli, desktop, web, ios。
 - 目标图形/交互展示平台：不适用或后续未定。
 - 兼容名称：无既有兼容入口。
 - 管道位置：第 1 个位置参数（从 1 起）。
+
+当前现代签名：
+
+```text
+unique(...)
+```
+
+当前 Wolfram 签名：
+
+```text
+Unique[...]
+```
 
 目标现代签名（按目标接口状态判断是否已可执行）：
 
@@ -2870,6 +3062,12 @@ unique(data)
 |---|---|---|---|---|
 | `data` | positional | 必填 | 有序数据 | r3 |
 
+当前已登记示例（Wolfram）：
+
+```wolfram
+Unique[{1,2,1}]
+```
+
 规划示例（尚未执行；需要目标版本，后续条目不承诺 .3）：
 
 ```text
@@ -2878,9 +3076,9 @@ unique([1,2,1])
 
 验收：独立数学期望、有效/无效参数、边界、预算、中断及声明的平台/精度测试；范围外不伪造成功。
 
-当前源码：暂无当前实现证据。
+当前源码：[crates/om-eval/src/science/registry.rs](../../crates/om-eval/src/science/registry.rs)。
 
-当前测试引用：暂无当前实现证据。
+当前测试引用：[crates/om-eval/tests/science_basics.rs](../../crates/om-eval/tests/science_basics.rs)。
 
 ## values
 
@@ -2918,21 +3116,33 @@ values(...)  # 后续接口尚未锁定
 
 ## zip
 
-**当前实现：下一版规划；目标接口：规划接口，当前不可用。** 目标版本：`0.1.0-pre-alpha.3`。
+**当前实现：已实现；目标接口：当前可用。** 目标版本：`0.1.0-pre-alpha.3`。
 
 - 稳定身份：`fn_000207`；条目类型：`function`。
-- 副作用分类（设计预留）：`pure`；参数验证阶段：`documentation_only`，不构成工具授权。
+- 副作用分类（设计预留）：`pure`；参数验证阶段：`runtime_verified`，不构成工具授权。
 
 逐项配对
 
-- 当前支持：当前无此规范接口的实现。
+- 当前支持：列表路径已实现；键/谓词为真实函数，每项仅执行一次；分组按首次出现顺序，结构相等决定归组，精确1与机器1.0区分。reshape维数≤8、总节点≤100000；长度/类型/形状错误及中断明确诊断。记录/表格列操作后续适配。
 - 目标范围：列表/记录与基础表格；索引1起始、形状与长度严格检查，zip不默默截断不等长输入。
 - 返回：expression
 - 精度：保留输入精度。
-- 当前计算平台：无；目标计算平台：cli, desktop, web, ios。
+- 当前计算平台：cli, desktop, web, ios；目标计算平台：cli, desktop, web, ios。
 - 目标图形/交互展示平台：不适用或后续未定。
 - 兼容名称：无既有兼容入口。
 - 管道位置：第 1 个位置参数（从 1 起）。
+
+当前现代签名：
+
+```text
+zip(...)
+```
+
+当前 Wolfram 签名：
+
+```text
+Zip[...]
+```
 
 目标现代签名（按目标接口状态判断是否已可执行）：
 
@@ -2944,6 +3154,12 @@ zip(...lists)
 |---|---|---|---|---|
 | `lists` | variadic | 必填 | 签名对应的lists参数 | r3 |
 
+当前已登记示例（Wolfram）：
+
+```wolfram
+Zip[{1,2},{3,4}]
+```
+
 规划示例（尚未执行；需要目标版本，后续条目不承诺 .3）：
 
 ```text
@@ -2952,6 +3168,6 @@ zip([1,2],[3,4])
 
 验收：独立数学期望、有效/无效参数、边界、预算、中断及声明的平台/精度测试；范围外不伪造成功。
 
-当前源码：暂无当前实现证据。
+当前源码：[crates/om-eval/src/science/registry.rs](../../crates/om-eval/src/science/registry.rs)。
 
-当前测试引用：暂无当前实现证据。
+当前测试引用：[crates/om-eval/tests/science_basics.rs](../../crates/om-eval/tests/science_basics.rs)。

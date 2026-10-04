@@ -4,7 +4,7 @@
 
 [全景目录](README.md) · [下一版账本](../plan/NEXT_RELEASE.md)
 
-描述版本 3；下列均有真实回调。现代组合语法及已有回调的 mode/output 已接通，后续数学能力仍须按 R3.3–R3.6 交付。参数类型约束用于字面输入；符号与表达式在真实回调求值后检查。默认表达式仅描述省略行为，不自动插入参数；上下文默认值不伪装成字面值。副作用标签只描述入口，不能授权嵌套函数或替代只读隔离。
+描述版本 4；下列均有真实回调。现代组合语法及已有回调的 mode/output 已接通，后续数学能力仍须按 R3.3–R3.6 交付。参数类型约束用于字面输入；符号与表达式在真实回调求值后检查。默认表达式仅描述省略行为，不自动插入参数；上下文默认值不伪装成字面值。副作用标签只描述入口，不能授权嵌套函数或替代只读隔离。
 
 ## abs
 
@@ -1678,4 +1678,580 @@
 | `b` | 位置 | expression | 是 | 必填 |  |
 
 数学边界与精度：[所属条目](linear.md#dot)。
+
+## min
+
+稳定身份 `fn_000120`；回调 `Min`；归属 `min`。兼容拼写：无其他现代拼写。
+
+保持属性：protected；管道输入位置：1；入口副作用：`pure`。
+
+| 参数 | 角色 | 类型 | 必填 | 默认值或上下文 | 枚举 / 范围 |
+|---|---|---|---|---|---|
+| `values` | 位置（重复） | expression | 否 | 按位置接收列表或重复数据参数 |  |
+
+数学边界与精度：[所属条目](basics.md#min)。
+
+## max
+
+稳定身份 `fn_000121`；回调 `Max`；归属 `max`。兼容拼写：无其他现代拼写。
+
+保持属性：protected；管道输入位置：1；入口副作用：`pure`。
+
+| 参数 | 角色 | 类型 | 必填 | 默认值或上下文 | 枚举 / 范围 |
+|---|---|---|---|---|---|
+| `values` | 位置（重复） | expression | 否 | 按位置接收列表或重复数据参数 |  |
+
+数学边界与精度：[所属条目](basics.md#max)。
+
+## minmax
+
+稳定身份 `fn_000122`；回调 `MinMax`；归属 `minmax`。兼容拼写：无其他现代拼写。
+
+保持属性：protected；管道输入位置：1；入口副作用：`pure`。
+
+| 参数 | 角色 | 类型 | 必填 | 默认值或上下文 | 枚举 / 范围 |
+|---|---|---|---|---|---|
+| `data` | 位置 | expression | 是 | 必填 |  |
+
+数学边界与精度：[所属条目](basics.md#minmax)。
+
+## integer_part
+
+稳定身份 `fn_000123`；回调 `IntegerPart`；归属 `integer_part`。兼容拼写：`integerpart`。
+
+保持属性：listable, protected；管道输入位置：1；入口副作用：`pure`。
+
+| 参数 | 角色 | 类型 | 必填 | 默认值或上下文 | 枚举 / 范围 |
+|---|---|---|---|---|---|
+| `x` | 位置 | expression | 是 | 必填 |  |
+
+数学边界与精度：[所属条目](basics.md#integer_part)。
+
+## fractional_part
+
+稳定身份 `fn_000124`；回调 `FractionalPart`；归属 `fractional_part`。兼容拼写：`fractionalpart`。
+
+保持属性：listable, protected；管道输入位置：1；入口副作用：`pure`。
+
+| 参数 | 角色 | 类型 | 必填 | 默认值或上下文 | 枚举 / 范围 |
+|---|---|---|---|---|---|
+| `x` | 位置 | expression | 是 | 必填 |  |
+
+数学边界与精度：[所属条目](basics.md#fractional_part)。
+
+## precision
+
+稳定身份 `fn_000125`；回调 `Precision`；归属 `precision`。兼容拼写：无其他现代拼写。
+
+保持属性：listable, protected；管道输入位置：1；入口副作用：`pure`。
+
+| 参数 | 角色 | 类型 | 必填 | 默认值或上下文 | 枚举 / 范围 |
+|---|---|---|---|---|---|
+| `value` | 位置 | expression | 是 | 必填 |  |
+
+数学边界与精度：[所属条目](basics.md#precision)。
+
+## accuracy
+
+稳定身份 `fn_000126`；回调 `Accuracy`；归属 `accuracy`。兼容拼写：无其他现代拼写。
+
+保持属性：listable, protected；管道输入位置：1；入口副作用：`pure`。
+
+| 参数 | 角色 | 类型 | 必填 | 默认值或上下文 | 枚举 / 范围 |
+|---|---|---|---|---|---|
+| `value` | 位置 | expression | 是 | 必填 |  |
+
+数学边界与精度：[所属条目](basics.md#accuracy)。
+
+## chop
+
+稳定身份 `fn_000127`；回调 `Chop`；归属 `chop`。兼容拼写：无其他现代拼写。
+
+保持属性：protected；管道输入位置：1；入口副作用：`pure`。
+
+| 参数 | 角色 | 类型 | 必填 | 默认值或上下文 | 枚举 / 范围 |
+|---|---|---|---|---|---|
+| `expr` | 位置 | expression | 是 | 必填 |  |
+| `tolerance` | 命名 | real | 否 | 1e-10 | ; ≥0 |
+
+数学边界与精度：[所属条目](basics.md#chop)。
+
+## rationalize
+
+稳定身份 `fn_000128`；回调 `Rationalize`；归属 `rationalize`。兼容拼写：无其他现代拼写。
+
+保持属性：listable, protected；管道输入位置：1；入口副作用：`pure`。
+
+| 参数 | 角色 | 类型 | 必填 | 默认值或上下文 | 枚举 / 范围 |
+|---|---|---|---|---|---|
+| `value` | 位置 | expression | 是 | 必填 |  |
+| `tolerance` | 命名 | real | 否 | 0 | ; ≥0 |
+
+数学边界与精度：[所属条目](basics.md#rationalize)。
+
+## clip
+
+稳定身份 `fn_000139`；回调 `Clip`；归属 `clip`。兼容拼写：无其他现代拼写。
+
+保持属性：listable, protected；管道输入位置：1；入口副作用：`pure`。
+
+| 参数 | 角色 | 类型 | 必填 | 默认值或上下文 | 枚举 / 范围 |
+|---|---|---|---|---|---|
+| `value` | 位置 | expression | 是 | 必填 |  |
+| `bounds` | 命名 | expression | 否 | {-1,1} |  |
+
+数学边界与精度：[所属条目](basics.md#clip)。
+
+## mean
+
+稳定身份 `fn_000181`；回调 `Mean`；归属 `mean`。兼容拼写：无其他现代拼写。
+
+保持属性：protected；管道输入位置：1；入口副作用：`pure`。
+
+| 参数 | 角色 | 类型 | 必填 | 默认值或上下文 | 枚举 / 范围 |
+|---|---|---|---|---|---|
+| `data` | 位置 | expression | 是 | 必填 |  |
+
+数学边界与精度：[所属条目](statistics.md#mean)。
+
+## median
+
+稳定身份 `fn_000182`；回调 `Median`；归属 `median`。兼容拼写：无其他现代拼写。
+
+保持属性：protected；管道输入位置：1；入口副作用：`pure`。
+
+| 参数 | 角色 | 类型 | 必填 | 默认值或上下文 | 枚举 / 范围 |
+|---|---|---|---|---|---|
+| `data` | 位置 | expression | 是 | 必填 |  |
+
+数学边界与精度：[所属条目](statistics.md#median)。
+
+## variance
+
+稳定身份 `fn_000183`；回调 `Variance`；归属 `variance`。兼容拼写：无其他现代拼写。
+
+保持属性：protected；管道输入位置：1；入口副作用：`pure`。
+
+| 参数 | 角色 | 类型 | 必填 | 默认值或上下文 | 枚举 / 范围 |
+|---|---|---|---|---|---|
+| `data` | 位置 | expression | 是 | 必填 |  |
+| `sample` | 命名 | boolean | 否 | True |  |
+
+数学边界与精度：[所属条目](statistics.md#variance)。
+
+## std
+
+稳定身份 `fn_000184`；回调 `StandardDeviation`；归属 `std`。兼容拼写：`standarddeviation`。
+
+保持属性：protected；管道输入位置：1；入口副作用：`pure`。
+
+| 参数 | 角色 | 类型 | 必填 | 默认值或上下文 | 枚举 / 范围 |
+|---|---|---|---|---|---|
+| `data` | 位置 | expression | 是 | 必填 |  |
+| `sample` | 命名 | boolean | 否 | True |  |
+
+数学边界与精度：[所属条目](statistics.md#std)。
+
+## covariance
+
+稳定身份 `fn_000186`；回调 `Covariance`；归属 `covariance`。兼容拼写：无其他现代拼写。
+
+保持属性：protected；管道输入位置：1；入口副作用：`pure`。
+
+| 参数 | 角色 | 类型 | 必填 | 默认值或上下文 | 枚举 / 范围 |
+|---|---|---|---|---|---|
+| `a` | 位置 | expression | 是 | 必填 |  |
+| `b` | 位置 | expression | 是 | 必填 |  |
+| `sample` | 命名 | boolean | 否 | True |  |
+
+数学边界与精度：[所属条目](statistics.md#covariance)。
+
+## correlation
+
+稳定身份 `fn_000187`；回调 `Correlation`；归属 `correlation`。兼容拼写：无其他现代拼写。
+
+保持属性：protected；管道输入位置：1；入口副作用：`pure`。
+
+| 参数 | 角色 | 类型 | 必填 | 默认值或上下文 | 枚举 / 范围 |
+|---|---|---|---|---|---|
+| `a` | 位置 | expression | 是 | 必填 |  |
+| `b` | 位置 | expression | 是 | 必填 |  |
+
+数学边界与精度：[所属条目](statistics.md#correlation)。
+
+## quantile
+
+稳定身份 `fn_000189`；回调 `Quantile`；归属 `quantile`。兼容拼写：无其他现代拼写。
+
+保持属性：protected；管道输入位置：1；入口副作用：`pure`。
+
+| 参数 | 角色 | 类型 | 必填 | 默认值或上下文 | 枚举 / 范围 |
+|---|---|---|---|---|---|
+| `data_or_distribution` | 位置 | expression | 是 | 必填 |  |
+| `probability` | 位置 | expression | 是 | 必填 |  |
+
+数学边界与精度：[所属条目](statistics.md#quantile)。
+
+## percentile
+
+稳定身份 `fn_000185`；回调 `Percentile`；归属 `percentile`。兼容拼写：无其他现代拼写。
+
+保持属性：protected；管道输入位置：1；入口副作用：`pure`。
+
+| 参数 | 角色 | 类型 | 必填 | 默认值或上下文 | 枚举 / 范围 |
+|---|---|---|---|---|---|
+| `data` | 位置 | expression | 是 | 必填 |  |
+| `percent` | 位置 | expression | 是 | 必填 |  |
+
+数学边界与精度：[所属条目](statistics.md#percentile)。
+
+## filter
+
+稳定身份 `fn_000198`；回调 `Filter`；归属 `filter`。兼容拼写：无其他现代拼写。
+
+保持属性：protected；管道输入位置：1；入口副作用：`pure`。
+
+| 参数 | 角色 | 类型 | 必填 | 默认值或上下文 | 枚举 / 范围 |
+|---|---|---|---|---|---|
+| `data` | 位置 | expression | 是 | 必填 |  |
+| `predicate` | 位置 | expression | 是 | 必填 |  |
+
+数学边界与精度：[所属条目](data.md#filter)。
+
+## sort
+
+稳定身份 `fn_000199`；回调 `Sort`；归属 `sort`。兼容拼写：无其他现代拼写。
+
+保持属性：protected；管道输入位置：1；入口副作用：`pure`。
+
+| 参数 | 角色 | 类型 | 必填 | 默认值或上下文 | 枚举 / 范围 |
+|---|---|---|---|---|---|
+| `data` | 位置 | expression | 是 | 必填 |  |
+
+数学边界与精度：[所属条目](data.md#sort)。
+
+## sort_by
+
+稳定身份 `fn_000200`；回调 `SortBy`；归属 `sort_by`。兼容拼写：`sortby`。
+
+保持属性：protected；管道输入位置：1；入口副作用：`pure`。
+
+| 参数 | 角色 | 类型 | 必填 | 默认值或上下文 | 枚举 / 范围 |
+|---|---|---|---|---|---|
+| `data` | 位置 | expression | 是 | 必填 |  |
+| `key_fn` | 位置 | expression | 是 | 必填 |  |
+
+数学边界与精度：[所属条目](data.md#sort_by)。
+
+## unique
+
+稳定身份 `fn_000201`；回调 `Unique`；归属 `unique`。兼容拼写：无其他现代拼写。
+
+保持属性：protected；管道输入位置：1；入口副作用：`pure`。
+
+| 参数 | 角色 | 类型 | 必填 | 默认值或上下文 | 枚举 / 范围 |
+|---|---|---|---|---|---|
+| `data` | 位置 | expression | 是 | 必填 |  |
+
+数学边界与精度：[所属条目](data.md#unique)。
+
+## take
+
+稳定身份 `fn_000202`；回调 `Take`；归属 `take`。兼容拼写：无其他现代拼写。
+
+保持属性：protected；管道输入位置：1；入口副作用：`pure`。
+
+| 参数 | 角色 | 类型 | 必填 | 默认值或上下文 | 枚举 / 范围 |
+|---|---|---|---|---|---|
+| `data` | 位置 | expression | 是 | 必填 |  |
+| `count` | 位置 | expression | 是 | 必填 |  |
+
+数学边界与精度：[所属条目](data.md#take)。
+
+## drop
+
+稳定身份 `fn_000203`；回调 `Drop`；归属 `drop`。兼容拼写：无其他现代拼写。
+
+保持属性：protected；管道输入位置：1；入口副作用：`pure`。
+
+| 参数 | 角色 | 类型 | 必填 | 默认值或上下文 | 枚举 / 范围 |
+|---|---|---|---|---|---|
+| `data` | 位置 | expression | 是 | 必填 |  |
+| `count` | 位置 | expression | 是 | 必填 |  |
+
+数学边界与精度：[所属条目](data.md#drop)。
+
+## slice
+
+稳定身份 `fn_000204`；回调 `Slice`；归属 `slice`。兼容拼写：无其他现代拼写。
+
+保持属性：protected；管道输入位置：1；入口副作用：`pure`。
+
+| 参数 | 角色 | 类型 | 必填 | 默认值或上下文 | 枚举 / 范围 |
+|---|---|---|---|---|---|
+| `data` | 位置 | expression | 是 | 必填 |  |
+
+数学边界与精度：[所属条目](data.md#slice)。
+
+## flatten
+
+稳定身份 `fn_000205`；回调 `Flatten`；归属 `flatten`。兼容拼写：无其他现代拼写。
+
+保持属性：protected；管道输入位置：1；入口副作用：`pure`。
+
+| 参数 | 角色 | 类型 | 必填 | 默认值或上下文 | 枚举 / 范围 |
+|---|---|---|---|---|---|
+| `data` | 位置 | expression | 是 | 必填 |  |
+| `depth` | 命名 | integer | 否 | All | All; ≥0 |
+
+数学边界与精度：[所属条目](data.md#flatten)。
+
+## reshape
+
+稳定身份 `fn_000206`；回调 `Reshape`；归属 `reshape`。兼容拼写：无其他现代拼写。
+
+保持属性：protected；管道输入位置：1；入口副作用：`pure`。
+
+| 参数 | 角色 | 类型 | 必填 | 默认值或上下文 | 枚举 / 范围 |
+|---|---|---|---|---|---|
+| `data` | 位置 | expression | 是 | 必填 |  |
+| `dimensions` | 位置 | expression | 是 | 必填 |  |
+
+数学边界与精度：[所属条目](data.md#reshape)。
+
+## zip
+
+稳定身份 `fn_000207`；回调 `Zip`；归属 `zip`。兼容拼写：无其他现代拼写。
+
+保持属性：protected；管道输入位置：1；入口副作用：`pure`。
+
+| 参数 | 角色 | 类型 | 必填 | 默认值或上下文 | 枚举 / 范围 |
+|---|---|---|---|---|---|
+| `lists` | 位置（重复） | expression | 是 | 按位置接收列表或重复数据参数 |  |
+
+数学边界与精度：[所属条目](data.md#zip)。
+
+## fold
+
+稳定身份 `fn_000208`；回调 `Fold`；归属 `fold`。兼容拼写：无其他现代拼写。
+
+保持属性：protected；管道输入位置：3；入口副作用：`pure`。
+
+| 参数 | 角色 | 类型 | 必填 | 默认值或上下文 | 枚举 / 范围 |
+|---|---|---|---|---|---|
+| `fn` | 位置 | expression | 是 | 必填 |  |
+| `initial` | 位置 | expression | 是 | 必填 |  |
+| `data` | 位置 | expression | 是 | 必填 |  |
+
+数学边界与精度：[所属条目](data.md#fold)。
+
+## group_by
+
+稳定身份 `fn_000209`；回调 `GroupBy`；归属 `group_by`。兼容拼写：`groupby`。
+
+保持属性：protected；管道输入位置：1；入口副作用：`pure`。
+
+| 参数 | 角色 | 类型 | 必填 | 默认值或上下文 | 枚举 / 范围 |
+|---|---|---|---|---|---|
+| `data` | 位置 | expression | 是 | 必填 |  |
+| `key_fn` | 位置 | expression | 是 | 必填 |  |
+
+数学边界与精度：[所属条目](data.md#group_by)。
+
+## counts
+
+稳定身份 `fn_000188`；回调 `Counts`；归属 `counts`。兼容拼写：无其他现代拼写。
+
+保持属性：protected；管道输入位置：1；入口副作用：`pure`。
+
+| 参数 | 角色 | 类型 | 必填 | 默认值或上下文 | 枚举 / 范围 |
+|---|---|---|---|---|---|
+| `data` | 位置 | expression | 是 | 必填 |  |
+
+数学边界与精度：[所属条目](statistics.md#counts)。
+
+## identity
+
+稳定身份 `fn_000159`；回调 `IdentityMatrix`；归属 `identity`。兼容拼写：`identitymatrix`。
+
+保持属性：protected；管道输入位置：1；入口副作用：`pure`。
+
+| 参数 | 角色 | 类型 | 必填 | 默认值或上下文 | 枚举 / 范围 |
+|---|---|---|---|---|---|
+| `size` | 位置 | expression | 是 | 必填 |  |
+
+数学边界与精度：[所属条目](linear.md#identity)。
+
+## diag
+
+稳定身份 `fn_000160`；回调 `DiagonalMatrix`；归属 `diag`。兼容拼写：`diagonalmatrix`。
+
+保持属性：protected；管道输入位置：1；入口副作用：`pure`。
+
+| 参数 | 角色 | 类型 | 必填 | 默认值或上下文 | 枚举 / 范围 |
+|---|---|---|---|---|---|
+| `values` | 位置 | expression | 是 | 必填 |  |
+
+数学边界与精度：[所属条目](linear.md#diag)。
+
+## transpose
+
+稳定身份 `fn_000161`；回调 `Transpose`；归属 `transpose`。兼容拼写：无其他现代拼写。
+
+保持属性：protected；管道输入位置：1；入口副作用：`pure`。
+
+| 参数 | 角色 | 类型 | 必填 | 默认值或上下文 | 枚举 / 范围 |
+|---|---|---|---|---|---|
+| `matrix` | 位置 | expression | 是 | 必填 |  |
+
+数学边界与精度：[所属条目](linear.md#transpose)。
+
+## adjoint
+
+稳定身份 `fn_000162`；回调 `ConjugateTranspose`；归属 `adjoint`。兼容拼写：`conjugatetranspose`。
+
+保持属性：protected；管道输入位置：1；入口副作用：`pure`。
+
+| 参数 | 角色 | 类型 | 必填 | 默认值或上下文 | 枚举 / 范围 |
+|---|---|---|---|---|---|
+| `matrix` | 位置 | expression | 是 | 必填 |  |
+
+数学边界与精度：[所属条目](linear.md#adjoint)。
+
+## trace
+
+稳定身份 `fn_000163`；回调 `Tr`；归属 `trace`。兼容拼写：`tr`。
+
+保持属性：protected；管道输入位置：1；入口副作用：`pure`。
+
+| 参数 | 角色 | 类型 | 必填 | 默认值或上下文 | 枚举 / 范围 |
+|---|---|---|---|---|---|
+| `matrix` | 位置 | expression | 是 | 必填 |  |
+
+数学边界与精度：[所属条目](linear.md#trace)。
+
+## det
+
+稳定身份 `fn_000164`；回调 `Det`；归属 `det`。兼容拼写：无其他现代拼写。
+
+保持属性：protected；管道输入位置：1；入口副作用：`pure`。
+
+| 参数 | 角色 | 类型 | 必填 | 默认值或上下文 | 枚举 / 范围 |
+|---|---|---|---|---|---|
+| `matrix` | 位置 | expression | 是 | 必填 |  |
+
+数学边界与精度：[所属条目](linear.md#det)。
+
+## inverse
+
+稳定身份 `fn_000165`；回调 `Inverse`；归属 `inverse`。兼容拼写：无其他现代拼写。
+
+保持属性：protected；管道输入位置：1；入口副作用：`pure`。
+
+| 参数 | 角色 | 类型 | 必填 | 默认值或上下文 | 枚举 / 范围 |
+|---|---|---|---|---|---|
+| `matrix` | 位置 | expression | 是 | 必填 |  |
+
+数学边界与精度：[所属条目](linear.md#inverse)。
+
+## rank
+
+稳定身份 `fn_000166`；回调 `MatrixRank`；归属 `rank`。兼容拼写：`matrixrank`。
+
+保持属性：protected；管道输入位置：1；入口副作用：`pure`。
+
+| 参数 | 角色 | 类型 | 必填 | 默认值或上下文 | 枚举 / 范围 |
+|---|---|---|---|---|---|
+| `matrix` | 位置 | expression | 是 | 必填 |  |
+
+数学边界与精度：[所属条目](linear.md#rank)。
+
+## null_space
+
+稳定身份 `fn_000167`；回调 `NullSpace`；归属 `null_space`。兼容拼写：`nullspace`。
+
+保持属性：protected；管道输入位置：1；入口副作用：`pure`。
+
+| 参数 | 角色 | 类型 | 必填 | 默认值或上下文 | 枚举 / 范围 |
+|---|---|---|---|---|---|
+| `matrix` | 位置 | expression | 是 | 必填 |  |
+
+数学边界与精度：[所属条目](linear.md#null_space)。
+
+## linear_solve
+
+稳定身份 `fn_000168`；回调 `LinearSolve`；归属 `linear_solve`。兼容拼写：`linearsolve`。
+
+保持属性：protected；管道输入位置：1；入口副作用：`pure`。
+
+| 参数 | 角色 | 类型 | 必填 | 默认值或上下文 | 枚举 / 范围 |
+|---|---|---|---|---|---|
+| `matrix` | 位置 | expression | 是 | 必填 |  |
+| `rhs` | 位置 | expression | 是 | 必填 |  |
+
+数学边界与精度：[所属条目](linear.md#linear_solve)。
+
+## cross
+
+稳定身份 `fn_000154`；回调 `Cross`；归属 `cross`。兼容拼写：无其他现代拼写。
+
+保持属性：protected；管道输入位置：1；入口副作用：`pure`。
+
+| 参数 | 角色 | 类型 | 必填 | 默认值或上下文 | 枚举 / 范围 |
+|---|---|---|---|---|---|
+| `a` | 位置 | expression | 是 | 必填 |  |
+| `b` | 位置 | expression | 是 | 必填 |  |
+
+数学边界与精度：[所属条目](linear.md#cross)。
+
+## norm
+
+稳定身份 `fn_000155`；回调 `Norm`；归属 `norm`。兼容拼写：无其他现代拼写。
+
+保持属性：protected；管道输入位置：1；入口副作用：`pure`。
+
+| 参数 | 角色 | 类型 | 必填 | 默认值或上下文 | 枚举 / 范围 |
+|---|---|---|---|---|---|
+| `vector` | 位置 | expression | 是 | 必填 |  |
+
+数学边界与精度：[所属条目](linear.md#norm)。
+
+## normalize
+
+稳定身份 `fn_000156`；回调 `Normalize`；归属 `normalize`。兼容拼写：无其他现代拼写。
+
+保持属性：protected；管道输入位置：1；入口副作用：`pure`。
+
+| 参数 | 角色 | 类型 | 必填 | 默认值或上下文 | 枚举 / 范围 |
+|---|---|---|---|---|---|
+| `vector` | 位置 | expression | 是 | 必填 |  |
+
+数学边界与精度：[所属条目](linear.md#normalize)。
+
+## decimal
+
+稳定身份 `fn_000141`；回调 `Decimal`；归属 `decimal`。兼容拼写：无其他现代拼写。
+
+保持属性：protected；管道输入位置：1；入口副作用：`pure`。
+
+| 参数 | 角色 | 类型 | 必填 | 默认值或上下文 | 枚举 / 范围 |
+|---|---|---|---|---|---|
+| `text` | 位置 | expression | 是 | 必填 |  |
+| `precision` | 命名 | integer | 否 | 50 | ; ≥1; ≤4931 |
+
+数学边界与精度：[所属条目](basics.md#decimal)。
+
+## rescale
+
+稳定身份 `fn_000140`；回调 `Rescale`；归属 `rescale`。兼容拼写：无其他现代拼写。
+
+保持属性：protected；管道输入位置：1；入口副作用：`pure`。
+
+| 参数 | 角色 | 类型 | 必填 | 默认值或上下文 | 枚举 / 范围 |
+|---|---|---|---|---|---|
+| `value` | 位置 | expression | 是 | 必填 |  |
+| `from` | 命名 | expression | 否 | 从真实数据最小/最大值推断；零宽区间拒绝 |  |
+| `to` | 命名 | expression | 否 | {0,1} |  |
+
+数学边界与精度：[所属条目](basics.md#rescale)。
 

@@ -49,6 +49,52 @@
     ]
   },
   {
+    "id": "fn_000126",
+    "canonical_name": "accuracy",
+    "name": "Accuracy",
+    "modern_name": "accuracy",
+    "aliases": [],
+    "arity": {
+      "min": 1,
+      "max": 1
+    },
+    "parameters": [
+      {
+        "name": "value",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": false
+      }
+    ],
+    "options": [],
+    "compatibility_syntax": [],
+    "attributes": [
+      "listable",
+      "protected"
+    ],
+    "pipe_arg": 1,
+    "effect_class": "pure",
+    "support": "精确数Infinity；非零机器范围内近似实数按precision-log10(abs(value))给出名义绝对位数。近似零或机器范围外的绝对尺度不推断；不是误差认证。",
+    "return_type": "expression",
+    "precision_modes": [
+      "planned_machine"
+    ],
+    "precision_notes": "精确值或明确的机器路径；precision/accuracy 查询输入已有信息。",
+    "platforms": [
+      "cli",
+      "desktop",
+      "web",
+      "ios"
+    ]
+  },
+  {
     "id": "fn_000002",
     "canonical_name": "and",
     "name": "And",
@@ -985,6 +1031,65 @@
     ]
   },
   {
+    "id": "fn_000127",
+    "canonical_name": "chop",
+    "name": "Chop",
+    "modern_name": "chop",
+    "aliases": [],
+    "arity": {
+      "min": 1,
+      "max": 2
+    },
+    "parameters": [
+      {
+        "name": "expr",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": false
+      }
+    ],
+    "options": [
+      {
+        "name": "tolerance",
+        "runtime_name": "Tolerance",
+        "value_type": "real",
+        "required": false,
+        "default_source": "1e-10",
+        "default_context": null,
+        "enum_values": [],
+        "min": 0,
+        "max": null,
+        "variadic": false,
+        "held": false
+      }
+    ],
+    "compatibility_syntax": [],
+    "attributes": [
+      "protected"
+    ],
+    "pipe_arg": 1,
+    "effect_class": "pure",
+    "support": "当前支持最多100000项的有限实数或列表；精确有理数保持精确，复数/符号样本不静默近似。当前算法与资源边界见已登记测试。",
+    "return_type": "expression",
+    "precision_modes": [
+      "planned_machine"
+    ],
+    "precision_notes": "精确值或明确的机器路径；precision/accuracy 查询输入已有信息。",
+    "platforms": [
+      "cli",
+      "desktop",
+      "web",
+      "ios"
+    ]
+  },
+  {
     "id": "fn_000019",
     "canonical_name": "clear",
     "name": "Clear",
@@ -1023,6 +1128,66 @@
       "preserve_input"
     ],
     "precision_notes": "结构操作保留输入数值类型；迭代、求值和替换继承现有数学/预算限制。",
+    "platforms": [
+      "cli",
+      "desktop",
+      "web",
+      "ios"
+    ]
+  },
+  {
+    "id": "fn_000139",
+    "canonical_name": "clip",
+    "name": "Clip",
+    "modern_name": "clip",
+    "aliases": [],
+    "arity": {
+      "min": 1,
+      "max": 2
+    },
+    "parameters": [
+      {
+        "name": "value",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": false
+      }
+    ],
+    "options": [
+      {
+        "name": "bounds",
+        "runtime_name": "Bounds",
+        "value_type": "expression",
+        "required": false,
+        "default_source": "{-1,1}",
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": false
+      }
+    ],
+    "compatibility_syntax": [],
+    "attributes": [
+      "listable",
+      "protected"
+    ],
+    "pipe_arg": 1,
+    "effect_class": "pure",
+    "support": "当前支持最多100000项的有限实数或列表；精确有理数保持精确，复数/符号样本不静默近似。当前算法与资源边界见已登记测试。",
+    "return_type": "expression",
+    "precision_modes": [
+      "planned_machine"
+    ],
+    "precision_notes": "机器精度路径优先；不声称任意精度。",
     "platforms": [
       "cli",
       "desktop",
@@ -1429,6 +1594,53 @@
     ]
   },
   {
+    "id": "fn_000162",
+    "canonical_name": "adjoint",
+    "name": "ConjugateTranspose",
+    "modern_name": "adjoint",
+    "aliases": [
+      "conjugatetranspose"
+    ],
+    "arity": {
+      "min": 1,
+      "max": 1
+    },
+    "parameters": [
+      {
+        "name": "matrix",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": false
+      }
+    ],
+    "options": [],
+    "compatibility_syntax": [],
+    "attributes": [
+      "protected"
+    ],
+    "pipe_arg": 1,
+    "effect_class": "pure",
+    "support": "矩形矩阵≤64×64，转置并真实共轭；未知符号共轭保留原式。",
+    "return_type": "scalar_vector_matrix_or_decomposition",
+    "precision_modes": [
+      "planned_machine"
+    ],
+    "precision_notes": "精确有理基础路径与明确的机器分解；分解不承诺任意精度。",
+    "platforms": [
+      "cli",
+      "desktop",
+      "web",
+      "ios"
+    ]
+  },
+  {
     "id": "fn_000119",
     "canonical_name": "plot",
     "name": "ContourPlot",
@@ -1510,6 +1722,64 @@
       "machine_sampling"
     ],
     "precision_notes": "现有绘图经过只读 f64 编译与真实内核采样；符号输入可精确保存，像素/采样不是认证解。",
+    "platforms": [
+      "cli",
+      "desktop",
+      "web",
+      "ios"
+    ]
+  },
+  {
+    "id": "fn_000187",
+    "canonical_name": "correlation",
+    "name": "Correlation",
+    "modern_name": "correlation",
+    "aliases": [],
+    "arity": {
+      "min": 2,
+      "max": 2
+    },
+    "parameters": [
+      {
+        "name": "a",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": false
+      },
+      {
+        "name": "b",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": false
+      }
+    ],
+    "options": [],
+    "compatibility_syntax": [],
+    "attributes": [
+      "protected"
+    ],
+    "pipe_arg": 1,
+    "effect_class": "pure",
+    "support": "当前支持最多100000项的有限实数或列表；精确有理数保持精确，复数/符号样本不静默近似。当前算法与资源边界见已登记测试。",
+    "return_type": "number_or_record",
+    "precision_modes": [
+      "planned_machine"
+    ],
+    "precision_notes": "基础聚合可保留精确有理值；标准差/相关等机器路径明确标记。",
     "platforms": [
       "cli",
       "desktop",
@@ -1714,6 +1984,181 @@
     ]
   },
   {
+    "id": "fn_000188",
+    "canonical_name": "counts",
+    "name": "Counts",
+    "modern_name": "counts",
+    "aliases": [],
+    "arity": {
+      "min": 1,
+      "max": 1
+    },
+    "parameters": [
+      {
+        "name": "data",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": false
+      }
+    ],
+    "options": [],
+    "compatibility_syntax": [],
+    "attributes": [
+      "protected"
+    ],
+    "pipe_arg": 1,
+    "effect_class": "pure",
+    "support": "列表路径已实现；键/谓词为真实函数，每项仅执行一次；分组按首次出现顺序，结构相等决定归组，精确1与机器1.0区分。reshape维数≤8、总节点≤100000；长度/类型/形状错误及中断明确诊断。记录/表格列操作后续适配。",
+    "return_type": "number_or_record",
+    "precision_modes": [
+      "planned_machine"
+    ],
+    "precision_notes": "基础聚合可保留精确有理值；标准差/相关等机器路径明确标记。",
+    "platforms": [
+      "cli",
+      "desktop",
+      "web",
+      "ios"
+    ]
+  },
+  {
+    "id": "fn_000186",
+    "canonical_name": "covariance",
+    "name": "Covariance",
+    "modern_name": "covariance",
+    "aliases": [],
+    "arity": {
+      "min": 2,
+      "max": 3
+    },
+    "parameters": [
+      {
+        "name": "a",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": false
+      },
+      {
+        "name": "b",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": false
+      }
+    ],
+    "options": [
+      {
+        "name": "sample",
+        "runtime_name": "Sample",
+        "value_type": "boolean",
+        "required": false,
+        "default_source": "True",
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": false
+      }
+    ],
+    "compatibility_syntax": [],
+    "attributes": [
+      "protected"
+    ],
+    "pipe_arg": 1,
+    "effect_class": "pure",
+    "support": "当前支持最多100000项的有限实数或列表；精确有理数保持精确，复数/符号样本不静默近似。当前算法与资源边界见已登记测试。",
+    "return_type": "number_or_record",
+    "precision_modes": [
+      "planned_machine"
+    ],
+    "precision_notes": "基础聚合可保留精确有理值；标准差/相关等机器路径明确标记。",
+    "platforms": [
+      "cli",
+      "desktop",
+      "web",
+      "ios"
+    ]
+  },
+  {
+    "id": "fn_000154",
+    "canonical_name": "cross",
+    "name": "Cross",
+    "modern_name": "cross",
+    "aliases": [],
+    "arity": {
+      "min": 2,
+      "max": 2
+    },
+    "parameters": [
+      {
+        "name": "a",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": false
+      },
+      {
+        "name": "b",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": false
+      }
+    ],
+    "options": [],
+    "compatibility_syntax": [],
+    "attributes": [
+      "protected"
+    ],
+    "pipe_arg": 1,
+    "effect_class": "pure",
+    "support": "三维向量的双线性交叉乘积；检查长度，保留数值或符号表达式。",
+    "return_type": "scalar_vector_matrix_or_decomposition",
+    "precision_modes": [
+      "planned_machine"
+    ],
+    "precision_notes": "精确有理基础路径与明确的机器分解；分解不承诺任意精度。",
+    "platforms": [
+      "cli",
+      "desktop",
+      "web",
+      "ios"
+    ]
+  },
+  {
     "id": "fn_000030",
     "canonical_name": "csc",
     "name": "Csc",
@@ -1901,6 +2346,65 @@
     ]
   },
   {
+    "id": "fn_000141",
+    "canonical_name": "decimal",
+    "name": "Decimal",
+    "modern_name": "decimal",
+    "aliases": [],
+    "arity": {
+      "min": 1,
+      "max": 2
+    },
+    "parameters": [
+      {
+        "name": "text",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": false
+      }
+    ],
+    "options": [
+      {
+        "name": "precision",
+        "runtime_name": "WorkingPrecision",
+        "value_type": "integer",
+        "required": false,
+        "default_source": "50",
+        "default_context": null,
+        "enum_values": [],
+        "min": 1,
+        "max": 4931,
+        "variadic": false,
+        "held": false
+      }
+    ],
+    "compatibility_syntax": [],
+    "attributes": [
+      "protected"
+    ],
+    "pipe_arg": 1,
+    "effect_class": "pure",
+    "support": "从纯十进制文字构造：先生成精确有理数，再直接舍入到至少请求位数的二进制大浮点；precision=1..4931，长度和指数绝对值≤20000。不会把机器0.1补齐为假高精度。",
+    "return_type": "expression",
+    "precision_modes": [
+      "planned_machine"
+    ],
+    "precision_notes": "真正从十进制输入按指定精度构造；不替机器数补假精度。",
+    "platforms": [
+      "cli",
+      "desktop",
+      "web",
+      "ios"
+    ]
+  },
+  {
     "id": "fn_000033",
     "canonical_name": "denominator",
     "name": "Denominator",
@@ -1941,6 +2445,98 @@
       "arbitrary_supported"
     ],
     "precision_notes": "精确计算与已支持的数值近似子集；不把符号保留或格式位数当作新算法/任意精度支持。",
+    "platforms": [
+      "cli",
+      "desktop",
+      "web",
+      "ios"
+    ]
+  },
+  {
+    "id": "fn_000164",
+    "canonical_name": "det",
+    "name": "Det",
+    "modern_name": "det",
+    "aliases": [],
+    "arity": {
+      "min": 1,
+      "max": 1
+    },
+    "parameters": [
+      {
+        "name": "matrix",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": false
+      }
+    ],
+    "options": [],
+    "compatibility_syntax": [],
+    "attributes": [
+      "protected"
+    ],
+    "pipe_arg": 1,
+    "effect_class": "pure",
+    "support": "当前精确有理数矩阵≤64×64，复用Bareiss证书；奇异/欠定/不相容及维度明确诊断。机器矩阵路径仍在实施，不静默将机器系数当成精确保证。",
+    "return_type": "scalar_vector_matrix_or_decomposition",
+    "precision_modes": [
+      "exact"
+    ],
+    "precision_notes": "精确有理基础路径与明确的机器分解；分解不承诺任意精度。",
+    "platforms": [
+      "cli",
+      "desktop",
+      "web",
+      "ios"
+    ]
+  },
+  {
+    "id": "fn_000160",
+    "canonical_name": "diag",
+    "name": "DiagonalMatrix",
+    "modern_name": "diag",
+    "aliases": [
+      "diagonalmatrix"
+    ],
+    "arity": {
+      "min": 1,
+      "max": 1
+    },
+    "parameters": [
+      {
+        "name": "values",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": false
+      }
+    ],
+    "options": [],
+    "compatibility_syntax": [],
+    "attributes": [
+      "protected"
+    ],
+    "pipe_arg": 1,
+    "effect_class": "pure",
+    "support": "最多64项的对角矩阵；保留表达式元素。",
+    "return_type": "scalar_vector_matrix_or_decomposition",
+    "precision_modes": [
+      "planned_machine"
+    ],
+    "precision_notes": "精确有理基础路径与明确的机器分解；分解不承诺任意精度。",
     "platforms": [
       "cli",
       "desktop",
@@ -2121,6 +2717,64 @@
       "planned_machine"
     ],
     "precision_notes": "精确有理基础路径与明确的机器分解；分解不承诺任意精度。",
+    "platforms": [
+      "cli",
+      "desktop",
+      "web",
+      "ios"
+    ]
+  },
+  {
+    "id": "fn_000203",
+    "canonical_name": "drop",
+    "name": "Drop",
+    "modern_name": "drop",
+    "aliases": [],
+    "arity": {
+      "min": 2,
+      "max": 2
+    },
+    "parameters": [
+      {
+        "name": "data",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": false
+      },
+      {
+        "name": "count",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": false
+      }
+    ],
+    "options": [],
+    "compatibility_syntax": [],
+    "attributes": [
+      "protected"
+    ],
+    "pipe_arg": 1,
+    "effect_class": "pure",
+    "support": "列表路径已实现；键/谓词为真实函数，每项仅执行一次；分组按首次出现顺序，结构相等决定归组，精确1与机器1.0区分。reshape维数≤8、总节点≤100000；长度/类型/形状错误及中断明确诊断。记录/表格列操作后续适配。",
+    "return_type": "expression",
+    "precision_modes": [
+      "planned_machine"
+    ],
+    "precision_notes": "保留输入精度。",
     "platforms": [
       "cli",
       "desktop",
@@ -2601,6 +3255,64 @@
     ]
   },
   {
+    "id": "fn_000198",
+    "canonical_name": "filter",
+    "name": "Filter",
+    "modern_name": "filter",
+    "aliases": [],
+    "arity": {
+      "min": 2,
+      "max": 2
+    },
+    "parameters": [
+      {
+        "name": "data",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": false
+      },
+      {
+        "name": "predicate",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": false
+      }
+    ],
+    "options": [],
+    "compatibility_syntax": [],
+    "attributes": [
+      "protected"
+    ],
+    "pipe_arg": 1,
+    "effect_class": "pure",
+    "support": "列表路径已实现；键/谓词为真实函数，每项仅执行一次；分组按首次出现顺序，结构相等决定归组，精确1与机器1.0区分。reshape维数≤8、总节点≤100000；长度/类型/形状错误及中断明确诊断。记录/表格列操作后续适配。",
+    "return_type": "expression",
+    "precision_modes": [
+      "planned_machine"
+    ],
+    "precision_notes": "保留输入精度。",
+    "platforms": [
+      "cli",
+      "desktop",
+      "web",
+      "ios"
+    ]
+  },
+  {
     "id": "fn_000045",
     "canonical_name": "find_root",
     "name": "FindRoot",
@@ -2795,6 +3507,67 @@
     ]
   },
   {
+    "id": "fn_000205",
+    "canonical_name": "flatten",
+    "name": "Flatten",
+    "modern_name": "flatten",
+    "aliases": [],
+    "arity": {
+      "min": 1,
+      "max": 2
+    },
+    "parameters": [
+      {
+        "name": "data",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": false
+      }
+    ],
+    "options": [
+      {
+        "name": "depth",
+        "runtime_name": "Depth",
+        "value_type": "integer",
+        "required": false,
+        "default_source": "All",
+        "default_context": null,
+        "enum_values": [
+          "All"
+        ],
+        "min": 0,
+        "max": null,
+        "variadic": false,
+        "held": false
+      }
+    ],
+    "compatibility_syntax": [],
+    "attributes": [
+      "protected"
+    ],
+    "pipe_arg": 1,
+    "effect_class": "pure",
+    "support": "列表路径已实现；键/谓词为真实函数，每项仅执行一次；分组按首次出现顺序，结构相等决定归组，精确1与机器1.0区分。reshape维数≤8、总节点≤100000；长度/类型/形状错误及中断明确诊断。记录/表格列操作后续适配。",
+    "return_type": "expression",
+    "precision_modes": [
+      "planned_machine"
+    ],
+    "precision_notes": "保留输入精度。",
+    "platforms": [
+      "cli",
+      "desktop",
+      "web",
+      "ios"
+    ]
+  },
+  {
     "id": "fn_000047",
     "canonical_name": "floor",
     "name": "Floor",
@@ -2863,6 +3636,125 @@
       "arbitrary_supported"
     ],
     "precision_notes": "精确计算与已支持的数值近似子集；不把符号保留或格式位数当作新算法/任意精度支持。",
+    "platforms": [
+      "cli",
+      "desktop",
+      "web",
+      "ios"
+    ]
+  },
+  {
+    "id": "fn_000208",
+    "canonical_name": "fold",
+    "name": "Fold",
+    "modern_name": "fold",
+    "aliases": [],
+    "arity": {
+      "min": 3,
+      "max": 3
+    },
+    "parameters": [
+      {
+        "name": "fn",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": false
+      },
+      {
+        "name": "initial",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": false
+      },
+      {
+        "name": "data",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": false
+      }
+    ],
+    "options": [],
+    "compatibility_syntax": [],
+    "attributes": [
+      "protected"
+    ],
+    "pipe_arg": 3,
+    "effect_class": "pure",
+    "support": "列表路径已实现；键/谓词为真实函数，每项仅执行一次；分组按首次出现顺序，结构相等决定归组，精确1与机器1.0区分。reshape维数≤8、总节点≤100000；长度/类型/形状错误及中断明确诊断。记录/表格列操作后续适配。",
+    "return_type": "expression",
+    "precision_modes": [
+      "planned_machine"
+    ],
+    "precision_notes": "保留输入精度。",
+    "platforms": [
+      "cli",
+      "desktop",
+      "web",
+      "ios"
+    ]
+  },
+  {
+    "id": "fn_000124",
+    "canonical_name": "fractional_part",
+    "name": "FractionalPart",
+    "modern_name": "fractional_part",
+    "aliases": [
+      "fractionalpart"
+    ],
+    "arity": {
+      "min": 1,
+      "max": 1
+    },
+    "parameters": [
+      {
+        "name": "x",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": false
+      }
+    ],
+    "options": [],
+    "compatibility_syntax": [],
+    "attributes": [
+      "listable",
+      "protected"
+    ],
+    "pipe_arg": 1,
+    "effect_class": "pure",
+    "support": "当前支持最多100000项的有限实数或列表；精确有理数保持精确，复数/符号样本不静默近似。当前算法与资源边界见已登记测试。",
+    "return_type": "expression",
+    "precision_modes": [
+      "planned_machine"
+    ],
+    "precision_notes": "精确值或明确的机器路径；precision/accuracy 查询输入已有信息。",
     "platforms": [
       "cli",
       "desktop",
@@ -3177,6 +4069,66 @@
     ]
   },
   {
+    "id": "fn_000209",
+    "canonical_name": "group_by",
+    "name": "GroupBy",
+    "modern_name": "group_by",
+    "aliases": [
+      "groupby"
+    ],
+    "arity": {
+      "min": 2,
+      "max": 2
+    },
+    "parameters": [
+      {
+        "name": "data",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": false
+      },
+      {
+        "name": "key_fn",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": false
+      }
+    ],
+    "options": [],
+    "compatibility_syntax": [],
+    "attributes": [
+      "protected"
+    ],
+    "pipe_arg": 1,
+    "effect_class": "pure",
+    "support": "列表路径已实现；键/谓词为真实函数，每项仅执行一次；分组按首次出现顺序，结构相等决定归组，精确1与机器1.0区分。reshape维数≤8、总节点≤100000；长度/类型/形状错误及中断明确诊断。记录/表格列操作后续适配。",
+    "return_type": "expression",
+    "precision_modes": [
+      "planned_machine"
+    ],
+    "precision_notes": "保留输入精度。",
+    "platforms": [
+      "cli",
+      "desktop",
+      "web",
+      "ios"
+    ]
+  },
+  {
     "id": "fn_000052",
     "canonical_name": "hold",
     "name": "Hold",
@@ -3263,6 +4215,53 @@
       "preserve_input"
     ],
     "precision_notes": "结构操作保留输入数值类型；迭代、求值和替换继承现有数学/预算限制。",
+    "platforms": [
+      "cli",
+      "desktop",
+      "web",
+      "ios"
+    ]
+  },
+  {
+    "id": "fn_000159",
+    "canonical_name": "identity",
+    "name": "IdentityMatrix",
+    "modern_name": "identity",
+    "aliases": [
+      "identitymatrix"
+    ],
+    "arity": {
+      "min": 1,
+      "max": 1
+    },
+    "parameters": [
+      {
+        "name": "size",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": false
+      }
+    ],
+    "options": [],
+    "compatibility_syntax": [],
+    "attributes": [
+      "protected"
+    ],
+    "pipe_arg": 1,
+    "effect_class": "pure",
+    "support": "构造0..64维单位矩阵。",
+    "return_type": "scalar_vector_matrix_or_decomposition",
+    "precision_modes": [
+      "planned_machine"
+    ],
+    "precision_notes": "精确有理基础路径与明确的机器分解；分解不承诺任意精度。",
     "platforms": [
       "cli",
       "desktop",
@@ -3385,6 +4384,99 @@
       "arbitrary_supported"
     ],
     "precision_notes": "精确计算与已支持的数值近似子集；不把符号保留或格式位数当作新算法/任意精度支持。",
+    "platforms": [
+      "cli",
+      "desktop",
+      "web",
+      "ios"
+    ]
+  },
+  {
+    "id": "fn_000123",
+    "canonical_name": "integer_part",
+    "name": "IntegerPart",
+    "modern_name": "integer_part",
+    "aliases": [
+      "integerpart"
+    ],
+    "arity": {
+      "min": 1,
+      "max": 1
+    },
+    "parameters": [
+      {
+        "name": "x",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": false
+      }
+    ],
+    "options": [],
+    "compatibility_syntax": [],
+    "attributes": [
+      "listable",
+      "protected"
+    ],
+    "pipe_arg": 1,
+    "effect_class": "pure",
+    "support": "当前支持最多100000项的有限实数或列表；精确有理数保持精确，复数/符号样本不静默近似。当前算法与资源边界见已登记测试。",
+    "return_type": "expression",
+    "precision_modes": [
+      "planned_machine"
+    ],
+    "precision_notes": "精确值或明确的机器路径；precision/accuracy 查询输入已有信息。",
+    "platforms": [
+      "cli",
+      "desktop",
+      "web",
+      "ios"
+    ]
+  },
+  {
+    "id": "fn_000165",
+    "canonical_name": "inverse",
+    "name": "Inverse",
+    "modern_name": "inverse",
+    "aliases": [],
+    "arity": {
+      "min": 1,
+      "max": 1
+    },
+    "parameters": [
+      {
+        "name": "matrix",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": false
+      }
+    ],
+    "options": [],
+    "compatibility_syntax": [],
+    "attributes": [
+      "protected"
+    ],
+    "pipe_arg": 1,
+    "effect_class": "pure",
+    "support": "当前精确有理数矩阵≤64×64，复用Bareiss证书；奇异/欠定/不相容及维度明确诊断。机器矩阵路径仍在实施，不静默将机器系数当成精确保证。",
+    "return_type": "scalar_vector_matrix_or_decomposition",
+    "precision_modes": [
+      "exact"
+    ],
+    "precision_notes": "精确有理基础路径与明确的机器分解；分解不承诺任意精度。",
     "platforms": [
       "cli",
       "desktop",
@@ -3656,6 +4748,66 @@
     ]
   },
   {
+    "id": "fn_000168",
+    "canonical_name": "linear_solve",
+    "name": "LinearSolve",
+    "modern_name": "linear_solve",
+    "aliases": [
+      "linearsolve"
+    ],
+    "arity": {
+      "min": 2,
+      "max": 2
+    },
+    "parameters": [
+      {
+        "name": "matrix",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": false
+      },
+      {
+        "name": "rhs",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": false
+      }
+    ],
+    "options": [],
+    "compatibility_syntax": [],
+    "attributes": [
+      "protected"
+    ],
+    "pipe_arg": 1,
+    "effect_class": "pure",
+    "support": "当前精确有理数矩阵≤64×64，复用Bareiss证书；奇异/欠定/不相容及维度明确诊断。机器矩阵路径仍在实施，不静默将机器系数当成精确保证。",
+    "return_type": "scalar_vector_matrix_or_decomposition",
+    "precision_modes": [
+      "exact"
+    ],
+    "precision_notes": "精确有理基础路径与明确的机器分解；分解不承诺任意精度。",
+    "platforms": [
+      "cli",
+      "desktop",
+      "web",
+      "ios"
+    ]
+  },
+  {
     "id": "fn_000061",
     "canonical_name": "list",
     "name": "List",
@@ -3815,6 +4967,278 @@
       "preserve_input"
     ],
     "precision_notes": "结构操作保留输入数值类型；迭代、求值和替换继承现有数学/预算限制。",
+    "platforms": [
+      "cli",
+      "desktop",
+      "web",
+      "ios"
+    ]
+  },
+  {
+    "id": "fn_000166",
+    "canonical_name": "rank",
+    "name": "MatrixRank",
+    "modern_name": "rank",
+    "aliases": [
+      "matrixrank"
+    ],
+    "arity": {
+      "min": 1,
+      "max": 1
+    },
+    "parameters": [
+      {
+        "name": "matrix",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": false
+      }
+    ],
+    "options": [],
+    "compatibility_syntax": [],
+    "attributes": [
+      "protected"
+    ],
+    "pipe_arg": 1,
+    "effect_class": "pure",
+    "support": "当前精确有理数矩阵≤64×64，复用Bareiss证书；奇异/欠定/不相容及维度明确诊断。机器矩阵路径仍在实施，不静默将机器系数当成精确保证。",
+    "return_type": "scalar_vector_matrix_or_decomposition",
+    "precision_modes": [
+      "exact"
+    ],
+    "precision_notes": "精确有理基础路径与明确的机器分解；分解不承诺任意精度。",
+    "platforms": [
+      "cli",
+      "desktop",
+      "web",
+      "ios"
+    ]
+  },
+  {
+    "id": "fn_000121",
+    "canonical_name": "max",
+    "name": "Max",
+    "modern_name": "max",
+    "aliases": [],
+    "arity": {
+      "min": 0,
+      "max": null
+    },
+    "parameters": [
+      {
+        "name": "values",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": false,
+        "default_source": null,
+        "default_context": "按位置接收列表或重复数据参数",
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": true,
+        "held": false
+      }
+    ],
+    "options": [],
+    "compatibility_syntax": [],
+    "attributes": [
+      "protected"
+    ],
+    "pipe_arg": 1,
+    "effect_class": "pure",
+    "support": "当前支持最多100000项的有限实数或列表；精确有理数保持精确，复数/符号样本不静默近似。当前算法与资源边界见已登记测试。",
+    "return_type": "expression",
+    "precision_modes": [
+      "planned_machine"
+    ],
+    "precision_notes": "精确值或明确的机器路径；precision/accuracy 查询输入已有信息。",
+    "platforms": [
+      "cli",
+      "desktop",
+      "web",
+      "ios"
+    ]
+  },
+  {
+    "id": "fn_000181",
+    "canonical_name": "mean",
+    "name": "Mean",
+    "modern_name": "mean",
+    "aliases": [],
+    "arity": {
+      "min": 1,
+      "max": 1
+    },
+    "parameters": [
+      {
+        "name": "data",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": false
+      }
+    ],
+    "options": [],
+    "compatibility_syntax": [],
+    "attributes": [
+      "protected"
+    ],
+    "pipe_arg": 1,
+    "effect_class": "pure",
+    "support": "当前支持最多100000项的有限实数或列表；精确有理数保持精确，复数/符号样本不静默近似。当前算法与资源边界见已登记测试。",
+    "return_type": "number_or_record",
+    "precision_modes": [
+      "planned_machine"
+    ],
+    "precision_notes": "基础聚合可保留精确有理值；标准差/相关等机器路径明确标记。",
+    "platforms": [
+      "cli",
+      "desktop",
+      "web",
+      "ios"
+    ]
+  },
+  {
+    "id": "fn_000182",
+    "canonical_name": "median",
+    "name": "Median",
+    "modern_name": "median",
+    "aliases": [],
+    "arity": {
+      "min": 1,
+      "max": 1
+    },
+    "parameters": [
+      {
+        "name": "data",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": false
+      }
+    ],
+    "options": [],
+    "compatibility_syntax": [],
+    "attributes": [
+      "protected"
+    ],
+    "pipe_arg": 1,
+    "effect_class": "pure",
+    "support": "当前支持最多100000项的有限实数或列表；精确有理数保持精确，复数/符号样本不静默近似。当前算法与资源边界见已登记测试。",
+    "return_type": "number_or_record",
+    "precision_modes": [
+      "planned_machine"
+    ],
+    "precision_notes": "基础聚合可保留精确有理值；标准差/相关等机器路径明确标记。",
+    "platforms": [
+      "cli",
+      "desktop",
+      "web",
+      "ios"
+    ]
+  },
+  {
+    "id": "fn_000120",
+    "canonical_name": "min",
+    "name": "Min",
+    "modern_name": "min",
+    "aliases": [],
+    "arity": {
+      "min": 0,
+      "max": null
+    },
+    "parameters": [
+      {
+        "name": "values",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": false,
+        "default_source": null,
+        "default_context": "按位置接收列表或重复数据参数",
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": true,
+        "held": false
+      }
+    ],
+    "options": [],
+    "compatibility_syntax": [],
+    "attributes": [
+      "protected"
+    ],
+    "pipe_arg": 1,
+    "effect_class": "pure",
+    "support": "当前支持最多100000项的有限实数或列表；精确有理数保持精确，复数/符号样本不静默近似。当前算法与资源边界见已登记测试。",
+    "return_type": "expression",
+    "precision_modes": [
+      "planned_machine"
+    ],
+    "precision_notes": "精确值或明确的机器路径；precision/accuracy 查询输入已有信息。",
+    "platforms": [
+      "cli",
+      "desktop",
+      "web",
+      "ios"
+    ]
+  },
+  {
+    "id": "fn_000122",
+    "canonical_name": "minmax",
+    "name": "MinMax",
+    "modern_name": "minmax",
+    "aliases": [],
+    "arity": {
+      "min": 1,
+      "max": 1
+    },
+    "parameters": [
+      {
+        "name": "data",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": false
+      }
+    ],
+    "options": [],
+    "compatibility_syntax": [],
+    "attributes": [
+      "protected"
+    ],
+    "pipe_arg": 1,
+    "effect_class": "pure",
+    "support": "当前支持最多100000项的有限实数或列表；精确有理数保持精确，复数/符号样本不静默近似。当前算法与资源边界见已登记测试。",
+    "return_type": "expression",
+    "precision_modes": [
+      "planned_machine"
+    ],
+    "precision_notes": "精确值或明确的机器路径；precision/accuracy 查询输入已有信息。",
     "platforms": [
       "cli",
       "desktop",
@@ -4447,6 +5871,96 @@
     ]
   },
   {
+    "id": "fn_000155",
+    "canonical_name": "norm",
+    "name": "Norm",
+    "modern_name": "norm",
+    "aliases": [],
+    "arity": {
+      "min": 1,
+      "max": 1
+    },
+    "parameters": [
+      {
+        "name": "vector",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": false
+      }
+    ],
+    "options": [],
+    "compatibility_syntax": [],
+    "attributes": [
+      "protected"
+    ],
+    "pipe_arg": 1,
+    "effect_class": "pure",
+    "support": "非空数值向量≤64维，使用共轭内积的Euclidean范数，保留精确根式。",
+    "return_type": "scalar_vector_matrix_or_decomposition",
+    "precision_modes": [
+      "planned_machine"
+    ],
+    "precision_notes": "精确有理基础路径与明确的机器分解；分解不承诺任意精度。",
+    "platforms": [
+      "cli",
+      "desktop",
+      "web",
+      "ios"
+    ]
+  },
+  {
+    "id": "fn_000156",
+    "canonical_name": "normalize",
+    "name": "Normalize",
+    "modern_name": "normalize",
+    "aliases": [],
+    "arity": {
+      "min": 1,
+      "max": 1
+    },
+    "parameters": [
+      {
+        "name": "vector",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": false
+      }
+    ],
+    "options": [],
+    "compatibility_syntax": [],
+    "attributes": [
+      "protected"
+    ],
+    "pipe_arg": 1,
+    "effect_class": "pure",
+    "support": "非空数值向量≤64维，使用真实范数；拒绝零向量。",
+    "return_type": "scalar_vector_matrix_or_decomposition",
+    "precision_modes": [
+      "planned_machine"
+    ],
+    "precision_notes": "精确有理基础路径与明确的机器分解；分解不承诺任意精度。",
+    "platforms": [
+      "cli",
+      "desktop",
+      "web",
+      "ios"
+    ]
+  },
+  {
     "id": "fn_000067",
     "canonical_name": "not",
     "name": "Not",
@@ -4486,6 +6000,53 @@
       "arbitrary_supported"
     ],
     "precision_notes": "精确计算与已支持的数值近似子集；不把符号保留或格式位数当作新算法/任意精度支持。",
+    "platforms": [
+      "cli",
+      "desktop",
+      "web",
+      "ios"
+    ]
+  },
+  {
+    "id": "fn_000167",
+    "canonical_name": "null_space",
+    "name": "NullSpace",
+    "modern_name": "null_space",
+    "aliases": [
+      "nullspace"
+    ],
+    "arity": {
+      "min": 1,
+      "max": 1
+    },
+    "parameters": [
+      {
+        "name": "matrix",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": false
+      }
+    ],
+    "options": [],
+    "compatibility_syntax": [],
+    "attributes": [
+      "protected"
+    ],
+    "pipe_arg": 1,
+    "effect_class": "pure",
+    "support": "当前精确有理数矩阵≤64×64，复用Bareiss证书；奇异/欠定/不相容及维度明确诊断。机器矩阵路径仍在实施，不静默将机器系数当成精确保证。",
+    "return_type": "scalar_vector_matrix_or_decomposition",
+    "precision_modes": [
+      "exact"
+    ],
+    "precision_notes": "精确有理基础路径与明确的机器分解；分解不承诺任意精度。",
     "platforms": [
       "cli",
       "desktop",
@@ -4687,6 +6248,64 @@
       "preserve_input"
     ],
     "precision_notes": "结构操作保留输入数值类型；迭代、求值和替换继承现有数学/预算限制。",
+    "platforms": [
+      "cli",
+      "desktop",
+      "web",
+      "ios"
+    ]
+  },
+  {
+    "id": "fn_000185",
+    "canonical_name": "percentile",
+    "name": "Percentile",
+    "modern_name": "percentile",
+    "aliases": [],
+    "arity": {
+      "min": 2,
+      "max": 2
+    },
+    "parameters": [
+      {
+        "name": "data",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": false
+      },
+      {
+        "name": "percent",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": false
+      }
+    ],
+    "options": [],
+    "compatibility_syntax": [],
+    "attributes": [
+      "protected"
+    ],
+    "pipe_arg": 1,
+    "effect_class": "pure",
+    "support": "当前支持最多100000项的有限实数或列表；精确有理数保持精确，复数/符号样本不静默近似。当前算法与资源边界见已登记测试。",
+    "return_type": "number_or_record",
+    "precision_modes": [
+      "planned_machine"
+    ],
+    "precision_notes": "基础聚合可保留精确有理值；标准差/相关等机器路径明确标记。",
     "platforms": [
       "cli",
       "desktop",
@@ -5210,6 +6829,52 @@
     ]
   },
   {
+    "id": "fn_000125",
+    "canonical_name": "precision",
+    "name": "Precision",
+    "modern_name": "precision",
+    "aliases": [],
+    "arity": {
+      "min": 1,
+      "max": 1
+    },
+    "parameters": [
+      {
+        "name": "value",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": false
+      }
+    ],
+    "options": [],
+    "compatibility_syntax": [],
+    "attributes": [
+      "listable",
+      "protected"
+    ],
+    "pipe_arg": 1,
+    "effect_class": "pure",
+    "support": "查询精确Infinity或机器/已有大浮点的名义十进制位数；不为机器输入填造高精度。",
+    "return_type": "expression",
+    "precision_modes": [
+      "planned_machine"
+    ],
+    "precision_notes": "精确值或明确的机器路径；precision/accuracy 查询输入已有信息。",
+    "platforms": [
+      "cli",
+      "desktop",
+      "web",
+      "ios"
+    ]
+  },
+  {
     "id": "fn_000079",
     "canonical_name": "is_prime",
     "name": "PrimeQ",
@@ -5371,6 +7036,64 @@
     ]
   },
   {
+    "id": "fn_000189",
+    "canonical_name": "quantile",
+    "name": "Quantile",
+    "modern_name": "quantile",
+    "aliases": [],
+    "arity": {
+      "min": 2,
+      "max": 2
+    },
+    "parameters": [
+      {
+        "name": "data_or_distribution",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": false
+      },
+      {
+        "name": "probability",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": false
+      }
+    ],
+    "options": [],
+    "compatibility_syntax": [],
+    "attributes": [
+      "protected"
+    ],
+    "pipe_arg": 1,
+    "effect_class": "pure",
+    "support": "当前只接受实数样本列表，type7线性插值，概率0..1，空数据拒绝；分布对象路径待后续接入。",
+    "return_type": "expression",
+    "precision_modes": [
+      "planned_machine"
+    ],
+    "precision_notes": "机器精度路径优先；不声称任意精度。",
+    "platforms": [
+      "cli",
+      "desktop",
+      "web",
+      "ios"
+    ]
+  },
+  {
     "id": "fn_000082",
     "canonical_name": "quotient",
     "name": "Quotient",
@@ -5523,6 +7246,66 @@
       "preserve_input"
     ],
     "precision_notes": "结构操作保留输入数值类型；迭代、求值和替换继承现有数学/预算限制。",
+    "platforms": [
+      "cli",
+      "desktop",
+      "web",
+      "ios"
+    ]
+  },
+  {
+    "id": "fn_000128",
+    "canonical_name": "rationalize",
+    "name": "Rationalize",
+    "modern_name": "rationalize",
+    "aliases": [],
+    "arity": {
+      "min": 1,
+      "max": 2
+    },
+    "parameters": [
+      {
+        "name": "value",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": false
+      }
+    ],
+    "options": [
+      {
+        "name": "tolerance",
+        "runtime_name": "Tolerance",
+        "value_type": "real",
+        "required": false,
+        "default_source": "0",
+        "default_context": null,
+        "enum_values": [],
+        "min": 0,
+        "max": null,
+        "variadic": false,
+        "held": false
+      }
+    ],
+    "compatibility_syntax": [],
+    "attributes": [
+      "listable",
+      "protected"
+    ],
+    "pipe_arg": 1,
+    "effect_class": "pure",
+    "support": "当前支持最多100000项的有限实数或列表；精确有理数保持精确，复数/符号样本不静默近似。当前算法与资源边界见已登记测试。",
+    "return_type": "expression",
+    "precision_modes": [
+      "planned_machine"
+    ],
+    "precision_notes": "精确值或明确的机器路径；precision/accuracy 查询输入已有信息。",
     "platforms": [
       "cli",
       "desktop",
@@ -5931,6 +7714,136 @@
       "preserve_input"
     ],
     "precision_notes": "结构操作保留输入数值类型；迭代、求值和替换继承现有数学/预算限制。",
+    "platforms": [
+      "cli",
+      "desktop",
+      "web",
+      "ios"
+    ]
+  },
+  {
+    "id": "fn_000140",
+    "canonical_name": "rescale",
+    "name": "Rescale",
+    "modern_name": "rescale",
+    "aliases": [],
+    "arity": {
+      "min": 1,
+      "max": 3
+    },
+    "parameters": [
+      {
+        "name": "value",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": false
+      }
+    ],
+    "options": [
+      {
+        "name": "from",
+        "runtime_name": "From",
+        "value_type": "expression",
+        "required": false,
+        "default_source": null,
+        "default_context": "从真实数据最小/最大值推断；零宽区间拒绝",
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": false
+      },
+      {
+        "name": "to",
+        "runtime_name": "To",
+        "value_type": "expression",
+        "required": false,
+        "default_source": "{0,1}",
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": false
+      }
+    ],
+    "compatibility_syntax": [],
+    "attributes": [
+      "protected"
+    ],
+    "pipe_arg": 1,
+    "effect_class": "pure",
+    "support": "列表按真实min/max推断原区间；标量可显式from/to。保留精确有理计算，拒绝零宽或无效端点，不默默截断。",
+    "return_type": "expression",
+    "precision_modes": [
+      "planned_machine"
+    ],
+    "precision_notes": "机器精度路径优先；不声称任意精度。",
+    "platforms": [
+      "cli",
+      "desktop",
+      "web",
+      "ios"
+    ]
+  },
+  {
+    "id": "fn_000206",
+    "canonical_name": "reshape",
+    "name": "Reshape",
+    "modern_name": "reshape",
+    "aliases": [],
+    "arity": {
+      "min": 2,
+      "max": 2
+    },
+    "parameters": [
+      {
+        "name": "data",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": false
+      },
+      {
+        "name": "dimensions",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": false
+      }
+    ],
+    "options": [],
+    "compatibility_syntax": [],
+    "attributes": [
+      "protected"
+    ],
+    "pipe_arg": 1,
+    "effect_class": "pure",
+    "support": "列表路径已实现；键/谓词为真实函数，每项仅执行一次；分组按首次出现顺序，结构相等决定归组，精确1与机器1.0区分。reshape维数≤8、总节点≤100000；长度/类型/形状错误及中断明确诊断。记录/表格列操作后续适配。",
+    "return_type": "expression",
+    "precision_modes": [
+      "planned_machine"
+    ],
+    "precision_notes": "保留输入精度。",
     "platforms": [
       "cli",
       "desktop",
@@ -7078,6 +8991,51 @@
     ]
   },
   {
+    "id": "fn_000204",
+    "canonical_name": "slice",
+    "name": "Slice",
+    "modern_name": "slice",
+    "aliases": [],
+    "arity": {
+      "min": 2,
+      "max": 2
+    },
+    "parameters": [
+      {
+        "name": "data",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": false
+      }
+    ],
+    "options": [],
+    "compatibility_syntax": [],
+    "attributes": [
+      "protected"
+    ],
+    "pipe_arg": 1,
+    "effect_class": "pure",
+    "support": "列表路径已实现；键/谓词为真实函数，每项仅执行一次；分组按首次出现顺序，结构相等决定归组，精确1与机器1.0区分。reshape维数≤8、总节点≤100000；长度/类型/形状错误及中断明确诊断。记录/表格列操作后续适配。",
+    "return_type": "expression",
+    "precision_modes": [
+      "planned_machine"
+    ],
+    "precision_notes": "保留输入精度。",
+    "platforms": [
+      "cli",
+      "desktop",
+      "web",
+      "ios"
+    ]
+  },
+  {
     "id": "fn_000104",
     "canonical_name": "slot",
     "name": "Slot",
@@ -7546,6 +9504,111 @@
     ]
   },
   {
+    "id": "fn_000199",
+    "canonical_name": "sort",
+    "name": "Sort",
+    "modern_name": "sort",
+    "aliases": [],
+    "arity": {
+      "min": 1,
+      "max": 1
+    },
+    "parameters": [
+      {
+        "name": "data",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": false
+      }
+    ],
+    "options": [],
+    "compatibility_syntax": [],
+    "attributes": [
+      "protected"
+    ],
+    "pipe_arg": 1,
+    "effect_class": "pure",
+    "support": "列表路径已实现；键/谓词为真实函数，每项仅执行一次；分组按首次出现顺序，结构相等决定归组，精确1与机器1.0区分。reshape维数≤8、总节点≤100000；长度/类型/形状错误及中断明确诊断。记录/表格列操作后续适配。",
+    "return_type": "expression",
+    "precision_modes": [
+      "planned_machine"
+    ],
+    "precision_notes": "保留输入精度。",
+    "platforms": [
+      "cli",
+      "desktop",
+      "web",
+      "ios"
+    ]
+  },
+  {
+    "id": "fn_000200",
+    "canonical_name": "sort_by",
+    "name": "SortBy",
+    "modern_name": "sort_by",
+    "aliases": [
+      "sortby"
+    ],
+    "arity": {
+      "min": 2,
+      "max": 2
+    },
+    "parameters": [
+      {
+        "name": "data",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": false
+      },
+      {
+        "name": "key_fn",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": false
+      }
+    ],
+    "options": [],
+    "compatibility_syntax": [],
+    "attributes": [
+      "protected"
+    ],
+    "pipe_arg": 1,
+    "effect_class": "pure",
+    "support": "列表路径已实现；键/谓词为真实函数，每项仅执行一次；分组按首次出现顺序，结构相等决定归组，精确1与机器1.0区分。reshape维数≤8、总节点≤100000；长度/类型/形状错误及中断明确诊断。记录/表格列操作后续适配。",
+    "return_type": "expression",
+    "precision_modes": [
+      "planned_machine"
+    ],
+    "precision_notes": "保留输入精度。",
+    "platforms": [
+      "cli",
+      "desktop",
+      "web",
+      "ios"
+    ]
+  },
+  {
     "id": "fn_000105",
     "canonical_name": "sqrt",
     "name": "Sqrt",
@@ -7587,6 +9650,67 @@
       "arbitrary_supported"
     ],
     "precision_notes": "精确计算与已支持的数值近似子集；不把符号保留或格式位数当作新算法/任意精度支持。",
+    "platforms": [
+      "cli",
+      "desktop",
+      "web",
+      "ios"
+    ]
+  },
+  {
+    "id": "fn_000184",
+    "canonical_name": "std",
+    "name": "StandardDeviation",
+    "modern_name": "std",
+    "aliases": [
+      "standarddeviation"
+    ],
+    "arity": {
+      "min": 1,
+      "max": 2
+    },
+    "parameters": [
+      {
+        "name": "data",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": false
+      }
+    ],
+    "options": [
+      {
+        "name": "sample",
+        "runtime_name": "Sample",
+        "value_type": "boolean",
+        "required": false,
+        "default_source": "True",
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": false
+      }
+    ],
+    "compatibility_syntax": [],
+    "attributes": [
+      "protected"
+    ],
+    "pipe_arg": 1,
+    "effect_class": "pure",
+    "support": "当前支持最多100000项的有限实数或列表；精确有理数保持精确，复数/符号样本不静默近似。当前算法与资源边界见已登记测试。",
+    "return_type": "number_or_record",
+    "precision_modes": [
+      "planned_machine"
+    ],
+    "precision_notes": "基础聚合可保留精确有理值；标准差/相关等机器路径明确标记。",
     "platforms": [
       "cli",
       "desktop",
@@ -7767,6 +9891,64 @@
       "preserve_input"
     ],
     "precision_notes": "结构操作保留输入数值类型；迭代、求值和替换继承现有数学/预算限制。",
+    "platforms": [
+      "cli",
+      "desktop",
+      "web",
+      "ios"
+    ]
+  },
+  {
+    "id": "fn_000202",
+    "canonical_name": "take",
+    "name": "Take",
+    "modern_name": "take",
+    "aliases": [],
+    "arity": {
+      "min": 2,
+      "max": 2
+    },
+    "parameters": [
+      {
+        "name": "data",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": false
+      },
+      {
+        "name": "count",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": false
+      }
+    ],
+    "options": [],
+    "compatibility_syntax": [],
+    "attributes": [
+      "protected"
+    ],
+    "pipe_arg": 1,
+    "effect_class": "pure",
+    "support": "列表路径已实现；键/谓词为真实函数，每项仅执行一次；分组按首次出现顺序，结构相等决定归组，精确1与机器1.0区分。reshape维数≤8、总节点≤100000；长度/类型/形状错误及中断明确诊断。记录/表格列操作后续适配。",
+    "return_type": "expression",
+    "precision_modes": [
+      "planned_machine"
+    ],
+    "precision_notes": "保留输入精度。",
     "platforms": [
       "cli",
       "desktop",
@@ -8025,6 +10207,98 @@
     ]
   },
   {
+    "id": "fn_000163",
+    "canonical_name": "trace",
+    "name": "Tr",
+    "modern_name": "trace",
+    "aliases": [
+      "tr"
+    ],
+    "arity": {
+      "min": 1,
+      "max": 1
+    },
+    "parameters": [
+      {
+        "name": "matrix",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": false
+      }
+    ],
+    "options": [],
+    "compatibility_syntax": [],
+    "attributes": [
+      "protected"
+    ],
+    "pipe_arg": 1,
+    "effect_class": "pure",
+    "support": "方阵≤64×64，真实对角元素求和。",
+    "return_type": "scalar_vector_matrix_or_decomposition",
+    "precision_modes": [
+      "planned_machine"
+    ],
+    "precision_notes": "精确有理基础路径与明确的机器分解；分解不承诺任意精度。",
+    "platforms": [
+      "cli",
+      "desktop",
+      "web",
+      "ios"
+    ]
+  },
+  {
+    "id": "fn_000161",
+    "canonical_name": "transpose",
+    "name": "Transpose",
+    "modern_name": "transpose",
+    "aliases": [],
+    "arity": {
+      "min": 1,
+      "max": 1
+    },
+    "parameters": [
+      {
+        "name": "matrix",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": false
+      }
+    ],
+    "options": [],
+    "compatibility_syntax": [],
+    "attributes": [
+      "protected"
+    ],
+    "pipe_arg": 1,
+    "effect_class": "pure",
+    "support": "矩形矩阵≤64×64，原元素不改变；不把一般张量当作已适配。",
+    "return_type": "scalar_vector_matrix_or_decomposition",
+    "precision_modes": [
+      "planned_machine"
+    ],
+    "precision_notes": "精确有理基础路径与明确的机器分解；分解不承诺任意精度。",
+    "platforms": [
+      "cli",
+      "desktop",
+      "web",
+      "ios"
+    ]
+  },
+  {
     "id": "fn_000114",
     "canonical_name": "unequal",
     "name": "Unequal",
@@ -8064,6 +10338,51 @@
       "arbitrary_supported"
     ],
     "precision_notes": "精确计算与已支持的数值近似子集；不把符号保留或格式位数当作新算法/任意精度支持。",
+    "platforms": [
+      "cli",
+      "desktop",
+      "web",
+      "ios"
+    ]
+  },
+  {
+    "id": "fn_000201",
+    "canonical_name": "unique",
+    "name": "Unique",
+    "modern_name": "unique",
+    "aliases": [],
+    "arity": {
+      "min": 1,
+      "max": 1
+    },
+    "parameters": [
+      {
+        "name": "data",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": false
+      }
+    ],
+    "options": [],
+    "compatibility_syntax": [],
+    "attributes": [
+      "protected"
+    ],
+    "pipe_arg": 1,
+    "effect_class": "pure",
+    "support": "列表路径已实现；键/谓词为真实函数，每项仅执行一次；分组按首次出现顺序，结构相等决定归组，精确1与机器1.0区分。reshape维数≤8、总节点≤100000；长度/类型/形状错误及中断明确诊断。记录/表格列操作后续适配。",
+    "return_type": "expression",
+    "precision_modes": [
+      "planned_machine"
+    ],
+    "precision_notes": "保留输入精度。",
     "platforms": [
       "cli",
       "desktop",
@@ -8157,6 +10476,110 @@
       "arbitrary_supported"
     ],
     "precision_notes": "精确计算与已支持的数值近似子集；不把符号保留或格式位数当作新算法/任意精度支持。",
+    "platforms": [
+      "cli",
+      "desktop",
+      "web",
+      "ios"
+    ]
+  },
+  {
+    "id": "fn_000183",
+    "canonical_name": "variance",
+    "name": "Variance",
+    "modern_name": "variance",
+    "aliases": [],
+    "arity": {
+      "min": 1,
+      "max": 2
+    },
+    "parameters": [
+      {
+        "name": "data",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": false
+      }
+    ],
+    "options": [
+      {
+        "name": "sample",
+        "runtime_name": "Sample",
+        "value_type": "boolean",
+        "required": false,
+        "default_source": "True",
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": false
+      }
+    ],
+    "compatibility_syntax": [],
+    "attributes": [
+      "protected"
+    ],
+    "pipe_arg": 1,
+    "effect_class": "pure",
+    "support": "当前支持最多100000项的有限实数或列表；精确有理数保持精确，复数/符号样本不静默近似。当前算法与资源边界见已登记测试。",
+    "return_type": "number_or_record",
+    "precision_modes": [
+      "planned_machine"
+    ],
+    "precision_notes": "基础聚合可保留精确有理值；标准差/相关等机器路径明确标记。",
+    "platforms": [
+      "cli",
+      "desktop",
+      "web",
+      "ios"
+    ]
+  },
+  {
+    "id": "fn_000207",
+    "canonical_name": "zip",
+    "name": "Zip",
+    "modern_name": "zip",
+    "aliases": [],
+    "arity": {
+      "min": 1,
+      "max": null
+    },
+    "parameters": [
+      {
+        "name": "lists",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": "按位置接收列表或重复数据参数",
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": true,
+        "held": false
+      }
+    ],
+    "options": [],
+    "compatibility_syntax": [],
+    "attributes": [
+      "protected"
+    ],
+    "pipe_arg": 1,
+    "effect_class": "pure",
+    "support": "列表路径已实现；键/谓词为真实函数，每项仅执行一次；分组按首次出现顺序，结构相等决定归组，精确1与机器1.0区分。reshape维数≤8、总节点≤100000；长度/类型/形状错误及中断明确诊断。记录/表格列操作后续适配。",
+    "return_type": "expression",
+    "precision_modes": [
+      "planned_machine"
+    ],
+    "precision_notes": "保留输入精度。",
     "platforms": [
       "cli",
       "desktop",

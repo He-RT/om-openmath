@@ -9,7 +9,7 @@
 | 规范名称 | 当前实现 | 目标接口状态 | 数学含义 |
 |---|---|---|---|
 | [`abs`](#abs) | 已实现 | 当前可用 | 取数值模或简化符号绝对值。 |
-| [`accuracy`](#accuracy) | 下一版规划 | 规划接口，当前不可用 | 查询数值准确度信息 |
+| [`accuracy`](#accuracy) | 已实现 | 当前可用 | 查询数值准确度信息 |
 | [`acos`](#acos) | 已实现 | 当前可用 | 精确反余弦主值。 |
 | [`acosh`](#acosh) | 已实现 | 当前可用 | 计算主值反双曲余弦。 |
 | [`acot`](#acot) | 已实现 | 现有入口可用，统一接口待实施 | 计算主值反余切。 |
@@ -40,8 +40,8 @@
 | [`chebyshev_u`](#chebyshev_u) | 后续规划 | 规划接口，当前不可用 | 基础数值与初等函数中的 ChebyshevU 能力，进入后续全景目录。 |
 | [`chinese_remainder`](#chinese_remainder) | 后续规划 | 规划接口，当前不可用 | 基础数值与初等函数中的 ChineseRemainder 能力，进入后续全景目录。 |
 | [`choose`](#choose) | 已实现 | 当前可用 | 计算整数二项式系数。 |
-| [`chop`](#chop) | 下一版规划 | 规划接口，当前不可用 | 把小分量置零，不构成零证明 |
-| [`clip`](#clip) | 下一版规划 | 规划接口，当前不可用 | 在有序范围内夹取数值 |
+| [`chop`](#chop) | 已实现 | 当前可用 | 把小分量置零，不构成零证明 |
+| [`clip`](#clip) | 已实现 | 当前可用 | 在有序范围内夹取数值 |
 | [`conj`](#conj) | 已实现 | 当前可用 | 取复共轭。 |
 | [`continued_fraction`](#continued_fraction) | 后续规划 | 规划接口，当前不可用 | 基础数值与初等函数中的 ContinuedFraction 能力，进入后续全景目录。 |
 | [`cos`](#cos) | 已实现 | 当前可用 | 精确角度余弦。 |
@@ -50,7 +50,7 @@
 | [`coth`](#coth) | 已实现 | 现有入口可用，统一接口待实施 | 计算双曲余切。 |
 | [`csc`](#csc) | 已实现 | 现有入口可用，统一接口待实施 | 计算余割。 |
 | [`csch`](#csch) | 已实现 | 现有入口可用，统一接口待实施 | 计算双曲余割。 |
-| [`decimal`](#decimal) | 下一版规划 | 规划接口，当前不可用 | 从十进制字符串直接构造大浮点 |
+| [`decimal`](#decimal) | 已实现 | 当前可用 | 从十进制字符串直接构造大浮点 |
 | [`denominator`](#denominator) | 已实现 | 现有入口可用，统一接口待实施 | 提取数或乘积的分母。 |
 | [`digit_count`](#digit_count) | 后续规划 | 规划接口，当前不可用 | 基础数值与初等函数中的 DigitCount 能力，进入后续全景目录。 |
 | [`dirac_delta`](#dirac_delta) | 后续规划 | 规划接口，当前不可用 | 基础数值与初等函数中的 DiracDelta 能力，进入后续全景目录。 |
@@ -70,7 +70,7 @@
 | [`factor_integer`](#factor_integer) | 部分支持 | 现有入口可用，统一接口待实施 | 返回整数的素因子和重数。 |
 | [`factorial`](#factorial) | 已实现 | 现有入口可用，统一接口待实施 | 计算非负整数阶乘。 |
 | [`floor`](#floor) | 已实现 | 现有入口可用，统一接口待实施 | 向下取整或取指定单位的下界。 |
-| [`fractional_part`](#fractional_part) | 下一版规划 | 规划接口，当前不可用 | 与整数部分相补的有符号小数部分 |
+| [`fractional_part`](#fractional_part) | 已实现 | 当前可用 | 与整数部分相补的有符号小数部分 |
 | [`from_continued_fraction`](#from_continued_fraction) | 后续规划 | 规划接口，当前不可用 | 基础数值与初等函数中的 FromContinuedFraction 能力，进入后续全景目录。 |
 | [`from_digits`](#from_digits) | 后续规划 | 规划接口，当前不可用 | 基础数值与初等函数中的 FromDigits 能力，进入后续全景目录。 |
 | [`gamma`](#gamma) | 下一版规划 | 规划接口，当前不可用 | Gamma 函数 |
@@ -83,7 +83,7 @@
 | [`im`](#im) | 已实现 | 当前可用 | 取虚部。 |
 | [`inequality`](#inequality) | 已实现 | 现有入口可用，统一接口待实施 | 连接混合比较链。 |
 | [`integer_digits`](#integer_digits) | 后续规划 | 规划接口，当前不可用 | 基础数值与初等函数中的 IntegerDigits 能力，进入后续全景目录。 |
-| [`integer_part`](#integer_part) | 下一版规划 | 规划接口，当前不可用 | 向零截断的整数部分 |
+| [`integer_part`](#integer_part) | 已实现 | 当前可用 | 向零截断的整数部分 |
 | [`integer_partitions`](#integer_partitions) | 后续规划 | 规划接口，当前不可用 | 基础数值与初等函数中的 IntegerPartitions 能力，进入后续全景目录。 |
 | [`is_prime`](#is_prime) | 部分支持 | 现有入口可用，统一接口待实施 | 检测显式整数是否为素数。 |
 | [`jacobi_cn`](#jacobi_cn) | 后续规划 | 规划接口，当前不可用 | 基础数值与初等函数中的 JacobiCN 能力，进入后续全景目录。 |
@@ -98,9 +98,9 @@
 | [`less_equal`](#less_equal) | 已实现 | 现有入口可用，统一接口待实施 | 判断非递减关系。 |
 | [`log`](#log) | 已实现 | 现有入口可用，统一接口待实施 | 主值自然对数或指定底数的对数。 |
 | [`log_gamma`](#log_gamma) | 下一版规划 | 规划接口，当前不可用 | 正实参数 LogGamma |
-| [`max`](#max) | 下一版规划 | 规划接口，当前不可用 | 最大值 |
-| [`min`](#min) | 下一版规划 | 规划接口，当前不可用 | 最小值 |
-| [`minmax`](#minmax) | 下一版规划 | 规划接口，当前不可用 | 同时给最小与最大值 |
+| [`max`](#max) | 已实现 | 当前可用 | 最大值 |
+| [`min`](#min) | 已实现 | 当前可用 | 最小值 |
+| [`minmax`](#minmax) | 已实现 | 当前可用 | 同时给最小与最大值 |
 | [`mod`](#mod) | 已实现 | 现有入口可用，统一接口待实施 | 按除数方向取模，支持偏移。 |
 | [`moebius_mu`](#moebius_mu) | 后续规划 | 规划接口，当前不可用 | 基础数值与初等函数中的 MoebiusMu 能力，进入后续全景目录。 |
 | [`multiply`](#multiply) | 已实现 | 现有入口可用，统一接口待实施 | 相乘并合并幂。 |
@@ -115,14 +115,14 @@
 | [`poly_gamma`](#poly_gamma) | 后续规划 | 规划接口，当前不可用 | 基础数值与初等函数中的 PolyGamma 能力，进入后续全景目录。 |
 | [`power`](#power) | 已实现 | 现有入口可用，统一接口待实施 | 计算主值幂。 |
 | [`power_mod`](#power_mod) | 后续规划 | 规划接口，当前不可用 | 基础数值与初等函数中的 PowerMod 能力，进入后续全景目录。 |
-| [`precision`](#precision) | 下一版规划 | 规划接口，当前不可用 | 查询有效精度，不是格式小数位 |
+| [`precision`](#precision) | 已实现 | 当前可用 | 查询有效精度，不是格式小数位 |
 | [`prime`](#prime) | 后续规划 | 规划接口，当前不可用 | 基础数值与初等函数中的 Prime 能力，进入后续全景目录。 |
 | [`prime_pi`](#prime_pi) | 后续规划 | 规划接口，当前不可用 | 基础数值与初等函数中的 PrimePi 能力，进入后续全景目录。 |
 | [`quotient`](#quotient) | 已实现 | 现有入口可用，统一接口待实施 | 返回相除的整数商，支持偏移。 |
 | [`ramp`](#ramp) | 后续规划 | 规划接口，当前不可用 | 基础数值与初等函数中的 Ramp 能力，进入后续全景目录。 |
-| [`rationalize`](#rationalize) | 下一版规划 | 规划接口，当前不可用 | 在明确容差下转为有理数 |
+| [`rationalize`](#rationalize) | 已实现 | 当前可用 | 在明确容差下转为有理数 |
 | [`re`](#re) | 已实现 | 当前可用 | 取实部。 |
-| [`rescale`](#rescale) | 下一版规划 | 规划接口，当前不可用 | 线性映射区间 |
+| [`rescale`](#rescale) | 已实现 | 当前可用 | 线性映射区间 |
 | [`round`](#round) | 已实现 | 现有入口可用，统一接口待实施 | 取最近整数或单位，中点取偶数。 |
 | [`same`](#same) | 已实现 | 现有入口可用，统一接口待实施 | 判断结构和数值类别相同。 |
 | [`sec`](#sec) | 已实现 | 现有入口可用，统一接口待实施 | 计算正割。 |
@@ -197,21 +197,33 @@ Abs[3 + 4I]
 
 ## accuracy
 
-**当前实现：下一版规划；目标接口：规划接口，当前不可用。** 目标版本：`0.1.0-pre-alpha.3`。
+**当前实现：已实现；目标接口：当前可用。** 目标版本：`0.1.0-pre-alpha.3`。
 
 - 稳定身份：`fn_000126`；条目类型：`function`。
-- 副作用分类（设计预留）：`pure`；参数验证阶段：`documentation_only`，不构成工具授权。
+- 副作用分类（设计预留）：`pure`；参数验证阶段：`runtime_verified`，不构成工具授权。
 
 查询数值准确度信息
 
-- 当前支持：当前无此规范接口的实现。
+- 当前支持：精确数Infinity；非零机器范围内近似实数按precision-log10(abs(value))给出名义绝对位数。近似零或机器范围外的绝对尺度不推断；不是误差认证。
 - 目标范围：精确可识别值及所声明实数机器路径；新调用注册尚未交付。
 - 返回：expression
 - 精度：精确值或明确的机器路径；precision/accuracy 查询输入已有信息。
-- 当前计算平台：无；目标计算平台：cli, desktop, web, ios。
+- 当前计算平台：cli, desktop, web, ios；目标计算平台：cli, desktop, web, ios。
 - 目标图形/交互展示平台：不适用或后续未定。
 - 兼容名称：无既有兼容入口。
 - 管道位置：第 1 个位置参数（从 1 起）。
+
+当前现代签名：
+
+```text
+accuracy(...)
+```
+
+当前 Wolfram 签名：
+
+```text
+Accuracy[...]
+```
 
 目标现代签名（按目标接口状态判断是否已可执行）：
 
@@ -223,6 +235,12 @@ accuracy(value)
 |---|---|---|---|---|
 | `value` | positional | 必填 | 签名对应的value参数 | r3 |
 
+当前已登记示例（Wolfram）：
+
+```wolfram
+Accuracy[1]
+```
+
 规划示例（尚未执行；需要目标版本，后续条目不承诺 .3）：
 
 ```text
@@ -231,9 +249,9 @@ accuracy(decimal("0.1", precision: 50))
 
 验收：独立数学期望、有效/无效参数、边界、预算、中断及声明的平台/精度测试；范围外不伪造成功。
 
-当前源码：暂无当前实现证据。
+当前源码：[crates/om-eval/src/science/registry.rs](../../crates/om-eval/src/science/registry.rs)。
 
-当前测试引用：暂无当前实现证据。
+当前测试引用：[crates/om-eval/tests/science_basics.rs](../../crates/om-eval/tests/science_basics.rs)。
 
 ## acos
 
@@ -1557,21 +1575,33 @@ Binomial[-3, 2]
 
 ## chop
 
-**当前实现：下一版规划；目标接口：规划接口，当前不可用。** 目标版本：`0.1.0-pre-alpha.3`。
+**当前实现：已实现；目标接口：当前可用。** 目标版本：`0.1.0-pre-alpha.3`。
 
 - 稳定身份：`fn_000127`；条目类型：`function`。
-- 副作用分类（设计预留）：`pure`；参数验证阶段：`documentation_only`，不构成工具授权。
+- 副作用分类（设计预留）：`pure`；参数验证阶段：`runtime_verified`，不构成工具授权。
 
 把小分量置零，不构成零证明
 
-- 当前支持：当前无此规范接口的实现。
+- 当前支持：当前支持最多100000项的有限实数或列表；精确有理数保持精确，复数/符号样本不静默近似。当前算法与资源边界见已登记测试。
 - 目标范围：精确可识别值及所声明实数机器路径；新调用注册尚未交付。
 - 返回：expression
 - 精度：精确值或明确的机器路径；precision/accuracy 查询输入已有信息。
-- 当前计算平台：无；目标计算平台：cli, desktop, web, ios。
+- 当前计算平台：cli, desktop, web, ios；目标计算平台：cli, desktop, web, ios。
 - 目标图形/交互展示平台：不适用或后续未定。
 - 兼容名称：无既有兼容入口。
 - 管道位置：第 1 个位置参数（从 1 起）。
+
+当前现代签名：
+
+```text
+chop(...)
+```
+
+当前 Wolfram 签名：
+
+```text
+Chop[...]
+```
 
 目标现代签名（按目标接口状态判断是否已可执行）：
 
@@ -1584,6 +1614,12 @@ chop(expr, tolerance: 1e-10)
 | `expr` | positional | 必填 | 签名对应的expr参数 | r3 |
 | `tolerance` | option | 1e-10 | 签名对应的tolerance参数 | r3 |
 
+当前已登记示例（Wolfram）：
+
+```wolfram
+Chop[{0.000000000001,1}]
+```
+
 规划示例（尚未执行；需要目标版本，后续条目不承诺 .3）：
 
 ```text
@@ -1592,27 +1628,39 @@ chop(1 + 1e-12*i)
 
 验收：独立数学期望、有效/无效参数、边界、预算、中断及声明的平台/精度测试；范围外不伪造成功。
 
-当前源码：暂无当前实现证据。
+当前源码：[crates/om-eval/src/science/registry.rs](../../crates/om-eval/src/science/registry.rs)。
 
-当前测试引用：暂无当前实现证据。
+当前测试引用：[crates/om-eval/tests/science_basics.rs](../../crates/om-eval/tests/science_basics.rs)。
 
 ## clip
 
-**当前实现：下一版规划；目标接口：规划接口，当前不可用。** 目标版本：`0.1.0-pre-alpha.3`。
+**当前实现：已实现；目标接口：当前可用。** 目标版本：`0.1.0-pre-alpha.3`。
 
 - 稳定身份：`fn_000139`；条目类型：`function`。
-- 副作用分类（设计预留）：`pure`；参数验证阶段：`documentation_only`，不构成工具授权。
+- 副作用分类（设计预留）：`pure`；参数验证阶段：`runtime_verified`，不构成工具授权。
 
 在有序范围内夹取数值
 
-- 当前支持：当前无此规范接口的实现。
+- 当前支持：当前支持最多100000项的有限实数或列表；精确有理数保持精确，复数/符号样本不静默近似。当前算法与资源边界见已登记测试。
 - 目标范围：标量和逐项列表；反向 bounds 报错。
 - 返回：expression
 - 精度：机器精度路径优先；不声称任意精度。
-- 当前计算平台：无；目标计算平台：cli, desktop, web, ios。
+- 当前计算平台：cli, desktop, web, ios；目标计算平台：cli, desktop, web, ios。
 - 目标图形/交互展示平台：不适用或后续未定。
 - 兼容名称：无既有兼容入口。
 - 管道位置：第 1 个位置参数（从 1 起）。
+
+当前现代签名：
+
+```text
+clip(...)
+```
+
+当前 Wolfram 签名：
+
+```text
+Clip[...]
+```
 
 目标现代签名（按目标接口状态判断是否已可执行）：
 
@@ -1625,6 +1673,12 @@ clip(value, bounds: [lo, hi])
 | `value` | positional | 必填 | 数或列表 | r3 |
 | `bounds` | option | 必填 | 两端点 | r3 |
 
+当前已登记示例（Wolfram）：
+
+```wolfram
+Clip[2]
+```
+
 规划示例（尚未执行；需要目标版本，后续条目不承诺 .3）：
 
 ```text
@@ -1633,9 +1687,9 @@ clip(5,bounds: [0,1])
 
 验收：独立数学期望、有效/无效参数、边界、预算、中断及声明的平台/精度测试；范围外不伪造成功。
 
-当前源码：暂无当前实现证据。
+当前源码：[crates/om-eval/src/science/registry.rs](../../crates/om-eval/src/science/registry.rs)。
 
-当前测试引用：暂无当前实现证据。
+当前测试引用：[crates/om-eval/tests/science_basics.rs](../../crates/om-eval/tests/science_basics.rs)。
 
 ## conj
 
@@ -2044,21 +2098,33 @@ Csch[0.5]
 
 ## decimal
 
-**当前实现：下一版规划；目标接口：规划接口，当前不可用。** 目标版本：`0.1.0-pre-alpha.3`。
+**当前实现：已实现；目标接口：当前可用。** 目标版本：`0.1.0-pre-alpha.3`。
 
 - 稳定身份：`fn_000141`；条目类型：`function`。
-- 副作用分类（设计预留）：`pure`；参数验证阶段：`documentation_only`，不构成工具授权。
+- 副作用分类（设计预留）：`pure`；参数验证阶段：`runtime_verified`，不构成工具授权。
 
 从十进制字符串直接构造大浮点
 
-- 当前支持：当前无此规范接口的实现。
+- 当前支持：从纯十进制文字构造：先生成精确有理数，再直接舍入到至少请求位数的二进制大浮点；precision=1..4931，长度和指数绝对值≤20000。不会把机器0.1补齐为假高精度。
 - 目标范围：严格十进制字符串到 Big 值；不经过 f64；精度1..4932位及数值层上限。
 - 返回：expression
 - 精度：真正从十进制输入按指定精度构造；不替机器数补假精度。
-- 当前计算平台：无；目标计算平台：cli, desktop, web, ios。
+- 当前计算平台：cli, desktop, web, ios；目标计算平台：cli, desktop, web, ios。
 - 目标图形/交互展示平台：不适用或后续未定。
 - 兼容名称：无既有兼容入口。
 - 管道位置：第 1 个位置参数（从 1 起）。
+
+当前现代签名：
+
+```text
+decimal(...)
+```
+
+当前 Wolfram 签名：
+
+```text
+Decimal[...]
+```
 
 目标现代签名（按目标接口状态判断是否已可执行）：
 
@@ -2071,6 +2137,12 @@ decimal(text, precision: 50)
 | `text` | positional | 必填 | 十进制字符串 | r3 |
 | `precision` | option | 必填 | 十进制有效位 | r3 |
 
+当前已登记示例（Wolfram）：
+
+```wolfram
+Decimal["0.1",WorkingPrecision->50]
+```
+
 规划示例（尚未执行；需要目标版本，后续条目不承诺 .3）：
 
 ```text
@@ -2079,9 +2151,9 @@ decimal("0.1", precision: 50)
 
 验收：独立数学期望、有效/无效参数、边界、预算、中断及声明的平台/精度测试；范围外不伪造成功。
 
-当前源码：暂无当前实现证据。
+当前源码：[crates/om-eval/src/science/registry.rs](../../crates/om-eval/src/science/registry.rs)。
 
-当前测试引用：暂无当前实现证据。
+当前测试引用：[crates/om-eval/tests/science_basics.rs](../../crates/om-eval/tests/science_basics.rs)。
 
 ## denominator
 
@@ -2878,21 +2950,33 @@ Floor[2.9]
 
 ## fractional_part
 
-**当前实现：下一版规划；目标接口：规划接口，当前不可用。** 目标版本：`0.1.0-pre-alpha.3`。
+**当前实现：已实现；目标接口：当前可用。** 目标版本：`0.1.0-pre-alpha.3`。
 
 - 稳定身份：`fn_000124`；条目类型：`function`。
-- 副作用分类（设计预留）：`pure`；参数验证阶段：`documentation_only`，不构成工具授权。
+- 副作用分类（设计预留）：`pure`；参数验证阶段：`runtime_verified`，不构成工具授权。
 
 与整数部分相补的有符号小数部分
 
-- 当前支持：当前无此规范接口的实现。
+- 当前支持：当前支持最多100000项的有限实数或列表；精确有理数保持精确，复数/符号样本不静默近似。当前算法与资源边界见已登记测试。
 - 目标范围：精确可识别值及所声明实数机器路径；新调用注册尚未交付。
 - 返回：expression
 - 精度：精确值或明确的机器路径；precision/accuracy 查询输入已有信息。
-- 当前计算平台：无；目标计算平台：cli, desktop, web, ios。
+- 当前计算平台：cli, desktop, web, ios；目标计算平台：cli, desktop, web, ios。
 - 目标图形/交互展示平台：不适用或后续未定。
 - 兼容名称：无既有兼容入口。
 - 管道位置：第 1 个位置参数（从 1 起）。
+
+当前现代签名：
+
+```text
+fractional_part(...)
+```
+
+当前 Wolfram 签名：
+
+```text
+FractionalPart[...]
+```
 
 目标现代签名（按目标接口状态判断是否已可执行）：
 
@@ -2904,6 +2988,12 @@ fractional_part(x)
 |---|---|---|---|---|
 | `x` | positional | 必填 | 签名对应的x参数 | r3 |
 
+当前已登记示例（Wolfram）：
+
+```wolfram
+FractionalPart[-7/3]
+```
+
 规划示例（尚未执行；需要目标版本，后续条目不承诺 .3）：
 
 ```text
@@ -2912,9 +3002,9 @@ fractional_part(-3/2)
 
 验收：独立数学期望、有效/无效参数、边界、预算、中断及声明的平台/精度测试；范围外不伪造成功。
 
-当前源码：暂无当前实现证据。
+当前源码：[crates/om-eval/src/science/registry.rs](../../crates/om-eval/src/science/registry.rs)。
 
-当前测试引用：暂无当前实现证据。
+当前测试引用：[crates/om-eval/tests/science_basics.rs](../../crates/om-eval/tests/science_basics.rs)。
 
 ## from_continued_fraction
 
@@ -3429,21 +3519,33 @@ integer_digits(...)  # 后续接口尚未锁定
 
 ## integer_part
 
-**当前实现：下一版规划；目标接口：规划接口，当前不可用。** 目标版本：`0.1.0-pre-alpha.3`。
+**当前实现：已实现；目标接口：当前可用。** 目标版本：`0.1.0-pre-alpha.3`。
 
 - 稳定身份：`fn_000123`；条目类型：`function`。
-- 副作用分类（设计预留）：`pure`；参数验证阶段：`documentation_only`，不构成工具授权。
+- 副作用分类（设计预留）：`pure`；参数验证阶段：`runtime_verified`，不构成工具授权。
 
 向零截断的整数部分
 
-- 当前支持：当前无此规范接口的实现。
+- 当前支持：当前支持最多100000项的有限实数或列表；精确有理数保持精确，复数/符号样本不静默近似。当前算法与资源边界见已登记测试。
 - 目标范围：精确可识别值及所声明实数机器路径；新调用注册尚未交付。
 - 返回：expression
 - 精度：精确值或明确的机器路径；precision/accuracy 查询输入已有信息。
-- 当前计算平台：无；目标计算平台：cli, desktop, web, ios。
+- 当前计算平台：cli, desktop, web, ios；目标计算平台：cli, desktop, web, ios。
 - 目标图形/交互展示平台：不适用或后续未定。
 - 兼容名称：无既有兼容入口。
 - 管道位置：第 1 个位置参数（从 1 起）。
+
+当前现代签名：
+
+```text
+integer_part(...)
+```
+
+当前 Wolfram 签名：
+
+```text
+IntegerPart[...]
+```
 
 目标现代签名（按目标接口状态判断是否已可执行）：
 
@@ -3455,6 +3557,12 @@ integer_part(x)
 |---|---|---|---|---|
 | `x` | positional | 必填 | 签名对应的x参数 | r3 |
 
+当前已登记示例（Wolfram）：
+
+```wolfram
+IntegerPart[-7/3]
+```
+
 规划示例（尚未执行；需要目标版本，后续条目不承诺 .3）：
 
 ```text
@@ -3463,9 +3571,9 @@ integer_part(-3/2)
 
 验收：独立数学期望、有效/无效参数、边界、预算、中断及声明的平台/精度测试；范围外不伪造成功。
 
-当前源码：暂无当前实现证据。
+当前源码：[crates/om-eval/src/science/registry.rs](../../crates/om-eval/src/science/registry.rs)。
 
-当前测试引用：暂无当前实现证据。
+当前测试引用：[crates/om-eval/tests/science_basics.rs](../../crates/om-eval/tests/science_basics.rs)。
 
 ## integer_partitions
 
@@ -4068,21 +4176,33 @@ log_gamma(5.0)
 
 ## max
 
-**当前实现：下一版规划；目标接口：规划接口，当前不可用。** 目标版本：`0.1.0-pre-alpha.3`。
+**当前实现：已实现；目标接口：当前可用。** 目标版本：`0.1.0-pre-alpha.3`。
 
 - 稳定身份：`fn_000121`；条目类型：`function`。
-- 副作用分类（设计预留）：`pure`；参数验证阶段：`documentation_only`，不构成工具授权。
+- 副作用分类（设计预留）：`pure`；参数验证阶段：`runtime_verified`，不构成工具授权。
 
 最大值
 
-- 当前支持：当前无此规范接口的实现。
+- 当前支持：当前支持最多100000项的有限实数或列表；精确有理数保持精确，复数/符号样本不静默近似。当前算法与资源边界见已登记测试。
 - 目标范围：精确可识别值及所声明实数机器路径；新调用注册尚未交付。
 - 返回：expression
 - 精度：精确值或明确的机器路径；precision/accuracy 查询输入已有信息。
-- 当前计算平台：无；目标计算平台：cli, desktop, web, ios。
+- 当前计算平台：cli, desktop, web, ios；目标计算平台：cli, desktop, web, ios。
 - 目标图形/交互展示平台：不适用或后续未定。
 - 兼容名称：无既有兼容入口。
 - 管道位置：第 1 个位置参数（从 1 起）。
+
+当前现代签名：
+
+```text
+max(...)
+```
+
+当前 Wolfram 签名：
+
+```text
+Max[...]
+```
 
 目标现代签名（按目标接口状态判断是否已可执行）：
 
@@ -4094,6 +4214,12 @@ max(...values)
 |---|---|---|---|---|
 | `values` | variadic | 必填 | 签名对应的values参数 | r3 |
 
+当前已登记示例（Wolfram）：
+
+```wolfram
+Max[3,1,2]
+```
+
 规划示例（尚未执行；需要目标版本，后续条目不承诺 .3）：
 
 ```text
@@ -4102,27 +4228,39 @@ max([3,1,2])
 
 验收：独立数学期望、有效/无效参数、边界、预算、中断及声明的平台/精度测试；范围外不伪造成功。
 
-当前源码：暂无当前实现证据。
+当前源码：[crates/om-eval/src/science/registry.rs](../../crates/om-eval/src/science/registry.rs)。
 
-当前测试引用：暂无当前实现证据。
+当前测试引用：[crates/om-eval/tests/science_basics.rs](../../crates/om-eval/tests/science_basics.rs)。
 
 ## min
 
-**当前实现：下一版规划；目标接口：规划接口，当前不可用。** 目标版本：`0.1.0-pre-alpha.3`。
+**当前实现：已实现；目标接口：当前可用。** 目标版本：`0.1.0-pre-alpha.3`。
 
 - 稳定身份：`fn_000120`；条目类型：`function`。
-- 副作用分类（设计预留）：`pure`；参数验证阶段：`documentation_only`，不构成工具授权。
+- 副作用分类（设计预留）：`pure`；参数验证阶段：`runtime_verified`，不构成工具授权。
 
 最小值
 
-- 当前支持：当前无此规范接口的实现。
+- 当前支持：当前支持最多100000项的有限实数或列表；精确有理数保持精确，复数/符号样本不静默近似。当前算法与资源边界见已登记测试。
 - 目标范围：精确可识别值及所声明实数机器路径；新调用注册尚未交付。
 - 返回：expression
 - 精度：精确值或明确的机器路径；precision/accuracy 查询输入已有信息。
-- 当前计算平台：无；目标计算平台：cli, desktop, web, ios。
+- 当前计算平台：cli, desktop, web, ios；目标计算平台：cli, desktop, web, ios。
 - 目标图形/交互展示平台：不适用或后续未定。
 - 兼容名称：无既有兼容入口。
 - 管道位置：第 1 个位置参数（从 1 起）。
+
+当前现代签名：
+
+```text
+min(...)
+```
+
+当前 Wolfram 签名：
+
+```text
+Min[...]
+```
 
 目标现代签名（按目标接口状态判断是否已可执行）：
 
@@ -4134,6 +4272,12 @@ min(...values)
 |---|---|---|---|---|
 | `values` | variadic | 必填 | 签名对应的values参数 | r3 |
 
+当前已登记示例（Wolfram）：
+
+```wolfram
+Min[3,1,2]
+```
+
 规划示例（尚未执行；需要目标版本，后续条目不承诺 .3）：
 
 ```text
@@ -4142,27 +4286,39 @@ min([3,1,2])
 
 验收：独立数学期望、有效/无效参数、边界、预算、中断及声明的平台/精度测试；范围外不伪造成功。
 
-当前源码：暂无当前实现证据。
+当前源码：[crates/om-eval/src/science/registry.rs](../../crates/om-eval/src/science/registry.rs)。
 
-当前测试引用：暂无当前实现证据。
+当前测试引用：[crates/om-eval/tests/science_basics.rs](../../crates/om-eval/tests/science_basics.rs)。
 
 ## minmax
 
-**当前实现：下一版规划；目标接口：规划接口，当前不可用。** 目标版本：`0.1.0-pre-alpha.3`。
+**当前实现：已实现；目标接口：当前可用。** 目标版本：`0.1.0-pre-alpha.3`。
 
 - 稳定身份：`fn_000122`；条目类型：`function`。
-- 副作用分类（设计预留）：`pure`；参数验证阶段：`documentation_only`，不构成工具授权。
+- 副作用分类（设计预留）：`pure`；参数验证阶段：`runtime_verified`，不构成工具授权。
 
 同时给最小与最大值
 
-- 当前支持：当前无此规范接口的实现。
+- 当前支持：当前支持最多100000项的有限实数或列表；精确有理数保持精确，复数/符号样本不静默近似。当前算法与资源边界见已登记测试。
 - 目标范围：精确可识别值及所声明实数机器路径；新调用注册尚未交付。
 - 返回：expression
 - 精度：精确值或明确的机器路径；precision/accuracy 查询输入已有信息。
-- 当前计算平台：无；目标计算平台：cli, desktop, web, ios。
+- 当前计算平台：cli, desktop, web, ios；目标计算平台：cli, desktop, web, ios。
 - 目标图形/交互展示平台：不适用或后续未定。
 - 兼容名称：无既有兼容入口。
 - 管道位置：第 1 个位置参数（从 1 起）。
+
+当前现代签名：
+
+```text
+minmax(...)
+```
+
+当前 Wolfram 签名：
+
+```text
+MinMax[...]
+```
 
 目标现代签名（按目标接口状态判断是否已可执行）：
 
@@ -4174,6 +4330,12 @@ minmax(data)
 |---|---|---|---|---|
 | `data` | positional | 必填 | 有序输入数据 | r3 |
 
+当前已登记示例（Wolfram）：
+
+```wolfram
+MinMax[{3,1,2}]
+```
+
 规划示例（尚未执行；需要目标版本，后续条目不承诺 .3）：
 
 ```text
@@ -4182,9 +4344,9 @@ minmax([3,1,2])
 
 验收：独立数学期望、有效/无效参数、边界、预算、中断及声明的平台/精度测试；范围外不伪造成功。
 
-当前源码：暂无当前实现证据。
+当前源码：[crates/om-eval/src/science/registry.rs](../../crates/om-eval/src/science/registry.rs)。
 
-当前测试引用：暂无当前实现证据。
+当前测试引用：[crates/om-eval/tests/science_basics.rs](../../crates/om-eval/tests/science_basics.rs)。
 
 ## mod
 
@@ -4828,21 +4990,33 @@ power_mod(...)  # 后续接口尚未锁定
 
 ## precision
 
-**当前实现：下一版规划；目标接口：规划接口，当前不可用。** 目标版本：`0.1.0-pre-alpha.3`。
+**当前实现：已实现；目标接口：当前可用。** 目标版本：`0.1.0-pre-alpha.3`。
 
 - 稳定身份：`fn_000125`；条目类型：`function`。
-- 副作用分类（设计预留）：`pure`；参数验证阶段：`documentation_only`，不构成工具授权。
+- 副作用分类（设计预留）：`pure`；参数验证阶段：`runtime_verified`，不构成工具授权。
 
 查询有效精度，不是格式小数位
 
-- 当前支持：当前无此规范接口的实现。
+- 当前支持：查询精确Infinity或机器/已有大浮点的名义十进制位数；不为机器输入填造高精度。
 - 目标范围：精确可识别值及所声明实数机器路径；新调用注册尚未交付。
 - 返回：expression
 - 精度：精确值或明确的机器路径；precision/accuracy 查询输入已有信息。
-- 当前计算平台：无；目标计算平台：cli, desktop, web, ios。
+- 当前计算平台：cli, desktop, web, ios；目标计算平台：cli, desktop, web, ios。
 - 目标图形/交互展示平台：不适用或后续未定。
 - 兼容名称：无既有兼容入口。
 - 管道位置：第 1 个位置参数（从 1 起）。
+
+当前现代签名：
+
+```text
+precision(...)
+```
+
+当前 Wolfram 签名：
+
+```text
+Precision[...]
+```
 
 目标现代签名（按目标接口状态判断是否已可执行）：
 
@@ -4854,6 +5028,12 @@ precision(value)
 |---|---|---|---|---|
 | `value` | positional | 必填 | 签名对应的value参数 | r3 |
 
+当前已登记示例（Wolfram）：
+
+```wolfram
+Precision[1]
+```
+
 规划示例（尚未执行；需要目标版本，后续条目不承诺 .3）：
 
 ```text
@@ -4862,9 +5042,9 @@ precision(decimal("0.1", precision: 50))
 
 验收：独立数学期望、有效/无效参数、边界、预算、中断及声明的平台/精度测试；范围外不伪造成功。
 
-当前源码：暂无当前实现证据。
+当前源码：[crates/om-eval/src/science/registry.rs](../../crates/om-eval/src/science/registry.rs)。
 
-当前测试引用：暂无当前实现证据。
+当前测试引用：[crates/om-eval/tests/science_basics.rs](../../crates/om-eval/tests/science_basics.rs)。
 
 ## prime
 
@@ -5025,21 +5205,33 @@ ramp(...)  # 后续接口尚未锁定
 
 ## rationalize
 
-**当前实现：下一版规划；目标接口：规划接口，当前不可用。** 目标版本：`0.1.0-pre-alpha.3`。
+**当前实现：已实现；目标接口：当前可用。** 目标版本：`0.1.0-pre-alpha.3`。
 
 - 稳定身份：`fn_000128`；条目类型：`function`。
-- 副作用分类（设计预留）：`pure`；参数验证阶段：`documentation_only`，不构成工具授权。
+- 副作用分类（设计预留）：`pure`；参数验证阶段：`runtime_verified`，不构成工具授权。
 
 在明确容差下转为有理数
 
-- 当前支持：当前无此规范接口的实现。
+- 当前支持：当前支持最多100000项的有限实数或列表；精确有理数保持精确，复数/符号样本不静默近似。当前算法与资源边界见已登记测试。
 - 目标范围：精确可识别值及所声明实数机器路径；新调用注册尚未交付。
 - 返回：expression
 - 精度：精确值或明确的机器路径；precision/accuracy 查询输入已有信息。
-- 当前计算平台：无；目标计算平台：cli, desktop, web, ios。
+- 当前计算平台：cli, desktop, web, ios；目标计算平台：cli, desktop, web, ios。
 - 目标图形/交互展示平台：不适用或后续未定。
 - 兼容名称：无既有兼容入口。
 - 管道位置：第 1 个位置参数（从 1 起）。
+
+当前现代签名：
+
+```text
+rationalize(...)
+```
+
+当前 Wolfram 签名：
+
+```text
+Rationalize[...]
+```
 
 目标现代签名（按目标接口状态判断是否已可执行）：
 
@@ -5052,6 +5244,12 @@ rationalize(value, tolerance: 0)
 | `value` | positional | 必填 | 签名对应的value参数 | r3 |
 | `tolerance` | option | 0 | 签名对应的tolerance参数 | r3 |
 
+当前已登记示例（Wolfram）：
+
+```wolfram
+Rationalize[0.333333,Tolerance->0.001]
+```
+
 规划示例（尚未执行；需要目标版本，后续条目不承诺 .3）：
 
 ```text
@@ -5060,9 +5258,9 @@ rationalize(0.5, tolerance: 0)
 
 验收：独立数学期望、有效/无效参数、边界、预算、中断及声明的平台/精度测试；范围外不伪造成功。
 
-当前源码：暂无当前实现证据。
+当前源码：[crates/om-eval/src/science/registry.rs](../../crates/om-eval/src/science/registry.rs)。
 
-当前测试引用：暂无当前实现证据。
+当前测试引用：[crates/om-eval/tests/science_basics.rs](../../crates/om-eval/tests/science_basics.rs)。
 
 ## re
 
@@ -5119,21 +5317,33 @@ Re[2]
 
 ## rescale
 
-**当前实现：下一版规划；目标接口：规划接口，当前不可用。** 目标版本：`0.1.0-pre-alpha.3`。
+**当前实现：已实现；目标接口：当前可用。** 目标版本：`0.1.0-pre-alpha.3`。
 
 - 稳定身份：`fn_000140`；条目类型：`function`。
-- 副作用分类（设计预留）：`pure`；参数验证阶段：`documentation_only`，不构成工具授权。
+- 副作用分类（设计预留）：`pure`；参数验证阶段：`runtime_verified`，不构成工具授权。
 
 线性映射区间
 
-- 当前支持：当前无此规范接口的实现。
+- 当前支持：列表按真实min/max推断原区间；标量可显式from/to。保留精确有理计算，拒绝零宽或无效端点，不默默截断。
 - 目标范围：输入区间宽度非零；不暗中截断。
 - 返回：expression
 - 精度：机器精度路径优先；不声称任意精度。
-- 当前计算平台：无；目标计算平台：cli, desktop, web, ios。
+- 当前计算平台：cli, desktop, web, ios；目标计算平台：cli, desktop, web, ios。
 - 目标图形/交互展示平台：不适用或后续未定。
 - 兼容名称：无既有兼容入口。
 - 管道位置：第 1 个位置参数（从 1 起）。
+
+当前现代签名：
+
+```text
+rescale(...)
+```
+
+当前 Wolfram 签名：
+
+```text
+Rescale[...]
+```
 
 目标现代签名（按目标接口状态判断是否已可执行）：
 
@@ -5147,6 +5357,12 @@ rescale(value, from: [a,b], to: [0,1])
 | `from` | option | 必填 | 原区间 | r3 |
 | `to` | option | [0,1] | 目标区间 | r3 |
 
+当前已登记示例（Wolfram）：
+
+```wolfram
+Rescale[{1,2,3}]
+```
+
 规划示例（尚未执行；需要目标版本，后续条目不承诺 .3）：
 
 ```text
@@ -5155,9 +5371,9 @@ rescale(5,from: [0,10],to: [0,1])
 
 验收：独立数学期望、有效/无效参数、边界、预算、中断及声明的平台/精度测试；范围外不伪造成功。
 
-当前源码：暂无当前实现证据。
+当前源码：[crates/om-eval/src/science/registry.rs](../../crates/om-eval/src/science/registry.rs)。
 
-当前测试引用：暂无当前实现证据。
+当前测试引用：[crates/om-eval/tests/science_basics.rs](../../crates/om-eval/tests/science_basics.rs)。
 
 ## round
 

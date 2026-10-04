@@ -130,3 +130,7 @@ R3.0最终验证：`python3 scripts/function_docs.py --check` 19页面一致；P
 R3.0提交 `1b32531` 的CI `37233065501` 已全部通过（Rust、frontend、dependencies、iOS27）。R3.1描述版本为2，运行时仍.2；下一项R3.2组合语法与统一模式。
 
 R3.1提交 `10244da` 的CI `37235798105` 已全部通过。R3.2最终工作区911项/2ignored、前端59项、Python15项、fmt/Clippy已通过；源码/TS确定导出、纯WASM及资料生成门禁均通过，cargo-deny沿用相同依赖并复核。下一项R3.3基础数值、矩阵、统计、数据与单位；Dot已提前真实交付，其余条目仍为规划。
+
+R3.2提交 `588952c` 的CI `37239127048` 已全部通过（含iOS27）。
+
+- [x] **R3.3a 数值/统计/数据与精确矩阵首批** — 新增46真实回调，当前共172注册名/167身份；新增min/max/minmax、整数/小数部分、名义precision/accuracy、chop/rationalize/clip/rescale/decimal；均值/中位数/样本或总体方差/std/协方差/相关/type7样本分位数/百分位与counts；filter/sort/sort_by/unique/take/drop/slice/flatten/reshape/zip/fold/group_by；identity/diag/transpose/adjoint/trace、精确det/inverse/rank/null_space/linear_solve及cross/norm/normalize。独立统计定义、正反计数与形状失败、排序键只执行一次、逆矩阵重构/精确残差/奇异欠定拒绝、十进制原文直接大浮点及误差界通过。矩阵消元复用Bareiss，仅精确有理数；机器矩阵、数值分解和分布分位数仍标partial/待实施，不伪装支持。输入/索引/节点/维数上限及ctx中断保留。描述版本4，运行时/发行仍.2。工作区918项/2ignored、前端59、Python15、fmt/Clippy已通过，纯WASM、TS确定导出无漂移、同源目录、lint/typecheck全部通过。R3.3整体仍未完成，后续为特殊函数/概率随机/数据解析/单位/机器矩阵及分解。

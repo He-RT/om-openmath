@@ -77,7 +77,7 @@ impl Session {
         if !self.llm.jobs.is_empty() {
             return Err("Cannot change transport with active jobs".into());
         }
-        #[cfg(not(feature = "native"))]
+        #[cfg(not(any(feature = "native", feature = "external-host")))]
         if target == Target::Native {
             return Err("Native transport feature is unavailable".into());
         }

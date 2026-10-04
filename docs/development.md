@@ -50,3 +50,7 @@ PowerShell 使用 `$env:OPENMATH_E2E_PREVIEW = '1'`，再运行相同 npm 命令
 | `app/src`、`app/src-tauri` | 共享前端及原生宿主 |
 
 接口新增或与计划不同的选择记入 `docs/plan/DEVIATIONS.md`，任务及验证记入 `PROGRESS.md`。保留数学期望，库代码禁止 `unsafe`，保持 WASM 依赖方向与资源上限。TypeScript 协议以 Rust 生成，不手工修改。发行见[发布流程](releasing.md)。
+
+## 原生移动端
+
+使用 Xcode 27.0 / SDK 27、Swift 6，以及 Rust 1.94.0 的两种 iOS ARM64 target。先运行 `bash ios/Scripts/build-kernel.sh`，再生成/打开 `ios/OpenMath.xcodeproj`。Swift 包和传递依赖精确锁定；[移动端指南](ios.md)描述 ABI、生命周期、Keychain 与测试。

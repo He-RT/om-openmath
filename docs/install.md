@@ -1,15 +1,15 @@
 # 安装指南
 
-从[官方发行页](https://github.com/He-RT/om-openmath/releases)下载 `0.1.0-pre-alpha.1`。这是供试用的早期版本；支持范围见[求解指南](solve.md)。
+从[官方发行页](https://github.com/He-RT/om-openmath/releases)下载 `0.1.0-pre-alpha.2`。这是供试用的早期版本；支持范围见[求解指南](solve.md)。
 
 ## Windows 10/11 x64
 
-推荐下载 `OpenMath_0.1.0-pre-alpha.1_x64-setup.exe`，按中文向导安装。EXE 默认安装到当前用户目录，开始菜单提供入口。在“设置 → 应用”中找到 OpenMath 可卸载。
+推荐下载 `OpenMath_0.1.0-pre-alpha.2_x64-setup.exe`，按中文向导安装。EXE 默认安装到当前用户目录，开始菜单提供入口。在“设置 → 应用”中找到 OpenMath 可卸载。
 
-也可下载 `OpenMath_0.1.0-pre-alpha.1_x64_zh-CN.msi`，双击安装，或在管理员终端执行：
+也可下载 `OpenMath_0.1.0-pre-alpha.2_x64_zh-CN.msi`，双击安装，或在管理员终端执行：
 
 ```powershell
-msiexec /i "OpenMath_0.1.0-pre-alpha.1_x64_zh-CN.msi" /qn /norestart
+msiexec /i "OpenMath_0.1.0-pre-alpha.2_x64_zh-CN.msi" /qn /norestart
 ```
 
 两种包包含 WebView2 引导程序；已有运行时直接使用，没有则需要联网下载。它们不是完整离线运行时包。包尚未签名，Windows 可能显示“未知发布者”；确认来源及校验值后继续。此次不提供 Windows ARM64/32 位包。
@@ -32,7 +32,7 @@ om config path
 
 ## Web 版
 
-解压 `OpenMath-web_0.1.0-pre-alpha.1.zip` 到站点根目录，通过 HTTP(S) 提供静态资源。不要双击 `index.html` 使用 `file://`。本地试用在解压目录执行 `python3 -m http.server 8080`，随后打开 `http://localhost:8080`。
+解压 `OpenMath-web_0.1.0-pre-alpha.2.zip` 到站点根目录，通过 HTTP(S) 提供静态资源。不要双击 `index.html` 使用 `file://`。本地试用在解压目录执行 `python3 -m http.server 8080`，随后打开 `http://localhost:8080`。
 
 数学运算在本地 WASM Worker 中进行；AI 直接访问您配置的服务。服务拒绝 CORS 时使用桌面或终端版。
 
@@ -41,11 +41,11 @@ om config path
 发行页的 `release-manifest.json` 列出名称、字节数和 SHA256。计算下载文件的散列，与对应条目比较：
 
 ```powershell
-Get-FileHash .\OpenMath_0.1.0-pre-alpha.1_x64-setup.exe -Algorithm SHA256
+Get-FileHash .\OpenMath_0.1.0-pre-alpha.2_x64-setup.exe -Algorithm SHA256
 ```
 
 ```sh
-shasum -a 256 OpenMath_0.1.0-pre-alpha.1_aarch64.dmg
+shasum -a 256 OpenMath_0.1.0-pre-alpha.2_aarch64.dmg
 ```
 
 ## 常见问题
@@ -60,3 +60,7 @@ shasum -a 256 OpenMath_0.1.0-pre-alpha.1_aarch64.dmg
 | 导出 LaTeX 中文无法编译 | 选择支持 Unicode 的 TeX 引擎及字体 |
 
 报告故障时提供步骤、平台和公式；不要公开密钥。
+
+## iPhone / iPad
+
+最低 iOS/iPadOS 27。提供 ARM64 模拟器应用和源码 Xcode 工程；真机通过本机自动签名安装，详见[原生移动端指南](ios.md)。公开 ZIP 不含个人签名材料。

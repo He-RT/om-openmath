@@ -4,7 +4,7 @@
     "targets": ["nsis", "msi"],
     "windows": {
       "webviewInstallMode": { "type": "embedBootstrapper" },
-      "wix": { "language": "zh-CN", "version": "0.1.0.1" },
+      "wix": { "language": "zh-CN", "version": "0.1.0.2" },
       "nsis": { "languages": ["SimpChinese"], "installMode": "currentUser" }
     }
   }

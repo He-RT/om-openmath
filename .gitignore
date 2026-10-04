@@ -11,3 +11,9 @@ app/src-tauri/gen/
 .playwright-mcp/
 __pycache__/
 *.pyc
+ios/Frameworks/
+ios/.build/
+ios/Local.xcconfig
+ios/**/xcuserdata/
+ios/TestResults/
+ios/OpenMath/Resources/RustNotices/

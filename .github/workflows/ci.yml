@@ -13,6 +13,9 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  ios:
+    uses: ./.github/workflows/ios.yml
+
   rust:
     runs-on: macos-latest
     steps:

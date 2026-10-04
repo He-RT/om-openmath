@@ -3045,7 +3045,7 @@ dependencies = [
 
 [[package]]
 name = "om-cli"
-version = "0.1.0-pre-alpha.1"
+version = "0.1.0-pre-alpha.2"
 dependencies = [
  "ariadne",
  "ctrlc",
@@ -3069,7 +3069,7 @@ dependencies = [
 
 [[package]]
 name = "om-core"
-version = "0.1.0-pre-alpha.1"
+version = "0.1.0-pre-alpha.2"
 dependencies = [
  "om-num",
  "proptest",
@@ -3082,7 +3082,7 @@ dependencies = [
 
 [[package]]
 name = "om-desktop"
-version = "0.1.0-pre-alpha.1"
+version = "0.1.0-pre-alpha.2"
 dependencies = [
  "om-kernel",
  "om-llm",
@@ -3099,7 +3099,7 @@ dependencies = [
 
 [[package]]
 name = "om-eval"
-version = "0.1.0-pre-alpha.1"
+version = "0.1.0-pre-alpha.2"
 dependencies = [
  "om-core",
  "om-format",
@@ -3115,7 +3115,7 @@ dependencies = [
 
 [[package]]
 name = "om-format"
-version = "0.1.0-pre-alpha.1"
+version = "0.1.0-pre-alpha.2"
 dependencies = [
  "om-core",
  "om-num",
@@ -3124,8 +3124,24 @@ dependencies = [
 ]
 
 [[package]]
+name = "om-ios-ffi"
+version = "0.1.0-pre-alpha.2"
+dependencies = [
+ "om-core",
+ "om-kernel",
+ "om-llm",
+ "om-num",
+ "om-parse",
+ "om-simplify",
+ "om-solve",
+ "serde",
+ "serde_json",
+ "toml 1.1.6+spec-1.1.0",
+]
+
+[[package]]
 name = "om-kernel"
-version = "0.1.0-pre-alpha.1"
+version = "0.1.0-pre-alpha.2"
 dependencies = [
  "directories",
  "keyring",
@@ -3150,7 +3166,7 @@ dependencies = [
 
 [[package]]
 name = "om-llm"
-version = "0.1.0-pre-alpha.1"
+version = "0.1.0-pre-alpha.2"
 dependencies = [
  "om-format",
  "om-num",
@@ -3167,7 +3183,7 @@ dependencies = [
 
 [[package]]
 name = "om-num"
-version = "0.1.0-pre-alpha.1"
+version = "0.1.0-pre-alpha.2"
 dependencies = [
  "dashu",
  "proptest",
@@ -3178,7 +3194,7 @@ dependencies = [
 
 [[package]]
 name = "om-parse"
-version = "0.1.0-pre-alpha.1"
+version = "0.1.0-pre-alpha.2"
 dependencies = [
  "om-core",
  "om-num",
@@ -3187,7 +3203,7 @@ dependencies = [
 
 [[package]]
 name = "om-poly"
-version = "0.1.0-pre-alpha.1"
+version = "0.1.0-pre-alpha.2"
 dependencies = [
  "dashu",
  "om-num",
@@ -3198,7 +3214,7 @@ dependencies = [
 
 [[package]]
 name = "om-simplify"
-version = "0.1.0-pre-alpha.1"
+version = "0.1.0-pre-alpha.2"
 dependencies = [
  "om-core",
  "om-num",
@@ -3210,7 +3226,7 @@ dependencies = [
 
 [[package]]
 name = "om-solve"
-version = "0.1.0-pre-alpha.1"
+version = "0.1.0-pre-alpha.2"
 dependencies = [
  "insta",
  "om-core",
@@ -3227,7 +3243,7 @@ dependencies = [
 
 [[package]]
 name = "om-wasm"
-version = "0.1.0-pre-alpha.1"
+version = "0.1.0-pre-alpha.2"
 dependencies = [
  "console_error_panic_hook",
  "js-sys",

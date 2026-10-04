@@ -34,3 +34,15 @@ provider. These native transport dependencies do not enter the default pure CAS
 or WebAssembly runtime graph; their upstream permissive licenses remain enforced.
 
 Distributed Web and desktop builds retain upstream license/notice texts in `licenses/rust/` and `licenses/npm/`. `licenses/INDEX.txt` records locked names, versions, license declarations and source URLs; it may also include build/test-only and other-platform dependencies from the lockfiles. The originals are copied without modification.
+
+## iOS 原生组件与字体资源
+
+SwiftPM 版本及传递依赖固定于 `ios/OpenMath.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/Package.resolved`：
+
+- SwiftMath **1.7.3**，MIT；未修改其代码。[上游](https://github.com/mgriebling/SwiftMath)。
+- swift-markdown **0.9.0**，Apache-2.0；未修改其代码。[上游](https://github.com/swiftlang/swift-markdown)。
+- swift-cmark **0.9.0**，保留 COPYING 中的 BSD 风格条款及相关贡献者声明；未修改其代码。[上游](https://github.com/swiftlang/swift-cmark)。
+
+SwiftMath 随附 `mathFonts.bundle` 作为未经修改的字体资源分发。默认排版使用 Latin Modern Math；完整包的字体资源仍由 SwiftPM 保留。上游 bundle 随附的 MIT、GUST Font License（含对 LPPL 的引用）与 SIL Open Font License 必须保留，不能将其字体许可视为 OpenMath Rust 代码的统一许可。副本保存在 `ios/OpenMath/Resources/SwiftMath-*.txt`，同其他组件许可一起编入应用并随模拟器应用分发。禁止移除版权及字体保留名称条款。
+
+原生 UI 参考库仅用于阅读可移植行为契约；没有复制 Telegram 类体系或源码，没有引入 Telegram 构建依赖。OpenMath 的 C ABI 桥接为本仓库原创实现。

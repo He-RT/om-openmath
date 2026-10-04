@@ -4,7 +4,7 @@
 
 OpenMath 是以方程求解为核心的开源计算机代数系统。终端、响应式浏览器笔记本和桌面应用共享 Rust 内核，支持现代数学写法与 Wolfram 语言子集、精确解卡片、推导步骤、交互绘图和可配置 AI。
 
-当前版本 **0.1.0-pre-alpha.1**，供试用和反馈。支持有资源边界的求解子集；无法支持的问题保留原表达式并给出诊断。兼容范围见[求解指南](docs/solve.md)。
+正在验收 **0.1.0-pre-alpha.2**；已公开的 `.1` 保留。支持有资源边界的求解子集；无法支持的问题保留原表达式并给出诊断。兼容范围见[求解指南](docs/solve.md)。
 
 ```sh
 om -e 'solve(x^2 - 5x + 6 = 0, x)'
@@ -25,12 +25,13 @@ Windows MSI 安装后的实际界面：精确解 −3/1 与真实推导步骤。
 
 | 平台 | 文件 | 使用方式 |
 |---|---|---|
-| Windows 10/11 x64 | `OpenMath_0.1.0-pre-alpha.1_x64-setup.exe` | 推荐；中文向导，安装到当前用户目录 |
-| Windows 10/11 x64 | `OpenMath_0.1.0-pre-alpha.1_x64_zh-CN.msi` | MSI 安装包，适合系统管理员部署 |
-| macOS Apple Silicon | `OpenMath_0.1.0-pre-alpha.1_aarch64.dmg` | 打开后将 OpenMath 拖入“应用程序” |
-| macOS Apple Silicon | `OpenMath_0.1.0-pre-alpha.1_macos_arm64.app.zip` | 解压得到 `.app` |
+| Windows 10/11 x64 | `OpenMath_0.1.0-pre-alpha.2_x64-setup.exe` | 推荐；中文向导，安装到当前用户目录 |
+| Windows 10/11 x64 | `OpenMath_0.1.0-pre-alpha.2_x64_zh-CN.msi` | MSI 安装包，适合系统管理员部署 |
+| macOS Apple Silicon | `OpenMath_0.1.0-pre-alpha.2_aarch64.dmg` | 打开后将 OpenMath 拖入“应用程序” |
+| macOS Apple Silicon | `OpenMath_0.1.0-pre-alpha.2_macos_arm64.app.zip` | 解压得到 `.app` |
 | Windows / macOS | `om-cli_…_windows_x64.zip` / `om-cli_…_macos_arm64.zip` | 解压后运行 `om.exe` / `om`，可加入 PATH |
-| 浏览器 | `OpenMath-web_0.1.0-pre-alpha.1.zip` | 解压到 HTTP(S) 站点根目录 |
+| iOS/iPadOS 27 | 原生 Xcode 工程、ARM64 模拟器应用及 XCFramework | 真机通过本机自动签名安装，见[移动端指南](docs/ios.md) |
+| 浏览器 | `OpenMath-web_0.1.0-pre-alpha.2.zip` | 解压到 HTTP(S) 站点根目录 |
 
 Windows 包携带 WebView2 引导程序；系统没有 WebView2 时，首次安装需要联网下载运行时。桌面包尚未代码签名，系统可能提示未知发布者；macOS 可在确认来源后通过“隐私与安全性”允许打开。当前不提供 Intel Mac、Windows ARM64 或 Linux 安装包。详细步骤、卸载及校验见[安装指南](docs/install.md)。
 
@@ -73,7 +74,8 @@ cargo build -p om-cli --release --locked
 - [安装及常见问题](docs/install.md)、[输入语言与交互](docs/language.md)
 - [求解语义与边界](docs/solve.md)、[模型接入与隐私](docs/llm.md)
 - [开发与验证](docs/development.md)、[内核协议](docs/protocol.md)、[发布流程](docs/releasing.md)
-- [发行说明](docs/release-0.1.0-pre-alpha.1.md)、[验收记录](docs/pre-alpha.md)、[实施进度](docs/plan/PROGRESS.md)
+- [原生 iOS/iPadOS 使用与构建](docs/ios.md)、[移动端验收记录](docs/ios-acceptance.md)
+- [发行说明](docs/release-0.1.0-pre-alpha.2.md)、[验收记录](docs/pre-alpha.md)、[实施进度](docs/plan/PROGRESS.md)
 
 欢迎提交带有输入、方言、平台、期望和实际结果的 [Issue](https://github.com/He-RT/om-openmath/issues)。请不要附带 API 密钥。
 

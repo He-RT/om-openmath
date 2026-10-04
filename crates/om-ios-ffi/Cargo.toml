@@ -1,0 +1,31 @@
+[package]
+name = "om-ios-ffi"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+description = "Audited C ABI for the portable OpenMath iOS host"
+
+[lib]
+crate-type = ["staticlib", "rlib"]
+
+[dependencies]
+om-kernel = { workspace = true, features = ["external-host"] }
+om-num.workspace = true
+om-llm.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+
+[lints.rust]
+unsafe_op_in_unsafe_fn = "deny"
+missing_docs = "warn"
+
+[lints.clippy]
+dbg_macro = "deny"
+
+[dev-dependencies]
+om-core.workspace = true
+om-parse.workspace = true
+om-solve.workspace = true
+om-simplify.workspace = true
+toml.workspace = true

@@ -1,0 +1,4 @@
+module OpenMathKernel {
+    header "OpenMathKernel.h"
+    export *
+}

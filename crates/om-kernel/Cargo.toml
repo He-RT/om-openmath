@@ -8,6 +8,7 @@ description = "Shared sessions and notebook kernel protocol"
 
 [features]
 default = []
+external-host = []
 native = ["om-llm/http","dep:toml","dep:directories","dep:keyring","dep:tokio-util"]
 
 [dependencies]

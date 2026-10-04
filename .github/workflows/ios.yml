@@ -1,0 +1,45 @@
+name: iOS 原生门禁
+on:
+  workflow_call:
+permissions:
+  contents: read
+jobs:
+  native:
+    runs-on: xcode-27
+    steps:
+      - uses: actions/checkout@v4
+      - name: 显式选择 Xcode 27.0 和 SDK 27
+        run: |
+          sudo xcode-select -s /Applications/Xcode_27.0.app/Contents/Developer
+          bash ios/Scripts/verify-environment.sh
+      - run: rustup show active-toolchain
+      - run: bash ios/Scripts/build-kernel.sh
+      - name: 校验可复现工程与资源
+        run: |
+          python3 ios/Scripts/generate-project.py
+          git diff --exit-code ios/OpenMath.xcodeproj
+      - name: 验证 iPhone 原生单元与界面流程
+        run: |
+          xcodebuild -project ios/OpenMath.xcodeproj -scheme OpenMath -configuration Release -destination 'platform=iOS Simulator,name=iPhone 18 Pro,OS=27.0' -derivedDataPath target/ios-derived -resultBundlePath target/ios-phone.xcresult -parallel-testing-enabled NO -collect-test-diagnostics never -disableAutomaticPackageResolution test
+      - name: 验证 iPad 原生流程
+        run: |
+          xcodebuild -project ios/OpenMath.xcodeproj -scheme OpenMath -configuration Release -destination 'platform=iOS Simulator,name=iPad Pro 11-inch (M5),OS=27.0' -derivedDataPath target/ios-derived -resultBundlePath target/ios-pad.xcresult -parallel-testing-enabled NO -collect-test-diagnostics never -disableAutomaticPackageResolution test
+      - name: 真机 ARM64 编译和 XCFramework 链接
+        run: xcodebuild -project ios/OpenMath.xcodeproj -scheme OpenMath -configuration Release -destination 'generic/platform=iOS' -derivedDataPath target/ios-device -disableAutomaticPackageResolution CODE_SIGNING_ALLOWED=NO build
+      - name: 打包公开移动产物
+        run: |
+          version=$(python3 -c 'import tomllib; print(tomllib.load(open("Cargo.toml","rb"))["workspace"]["package"]["version"])')
+          mkdir -p release-assets
+          ditto -c -k --keepParent target/ios-derived/Build/Products/Release-iphonesimulator/OpenMath.app "release-assets/OpenMath_${version}_ios_simulator_arm64.app.zip"
+          ditto -c -k --keepParent ios/Frameworks/OpenMathKernel.xcframework "release-assets/OpenMathKernel_${version}.xcframework.zip"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: ios-acceptance-evidence
+          path: target/ios-*.xcresult
+          if-no-files-found: warn
+      - uses: actions/upload-artifact@v4
+        with:
+          name: release-ios
+          path: release-assets/*
+          if-no-files-found: error

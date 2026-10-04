@@ -2,7 +2,7 @@
 
 [简体中文](README.md) · [Downloads](https://github.com/He-RT/om-openmath/releases) · [Installation](docs/install.md)
 
-OpenMath 0.1.0-pre-alpha.1 is a pre-alpha computer algebra system centered on equation solving. A shared Rust kernel powers the terminal, a reactive browser notebook and a Tauri desktop app. It supports modern notation and a Wolfram Language subset, exact solution cards, recorded derivations, interactive plots and configurable AI assistance.
+OpenMath 0.1.0-pre-alpha.2 is a pre-alpha computer algebra system centered on equation solving. A shared Rust kernel powers the terminal, a reactive browser notebook and a Tauri desktop app. It supports modern notation and a Wolfram Language subset, exact solution cards, recorded derivations, interactive plots and configurable AI assistance.
 
 ```sh
 om -e 'solve(x^2 - 5x + 6 = 0, x)'
@@ -36,7 +36,7 @@ npm run tauri --prefix app -- build --bundles app,dmg
 cargo build -p om-cli --release --locked
 ```
 
-The verified macOS arm64 build produces `target/release/bundle/macos/OpenMath.app` and `target/release/bundle/dmg/OpenMath_0.1.0-pre-alpha.1_aarch64.dmg`. These local pre-alpha packages are unsigned. `app/dist` is a deployable static site; serve it over HTTP(S) at the site root. Web providers must allow browser CORS; native HTTP has no browser CORS restriction. Windows x64 EXE/MSI installers are tested in the release workflow; Linux installers are outside this release.
+The verified macOS arm64 build produces `target/release/bundle/macos/OpenMath.app` and `target/release/bundle/dmg/OpenMath_0.1.0-pre-alpha.2_aarch64.dmg`. These local pre-alpha packages are unsigned. `app/dist` is a deployable static site; serve it over HTTP(S) at the site root. Web providers must allow browser CORS; native HTTP has no browser CORS restriction. Windows x64 EXE/MSI installers are tested in the release workflow; Linux installers are outside this release.
 
 Native menus support notebook files, Markdown/LaTeX export, themes, panels and help. Exports include current mathematical results and omit stale output. General preferences and AI model/routing settings are available in both notebooks. Browser credentials are remembered only by explicit opt-in; native keys use environment variables or the system vault.
 
@@ -56,4 +56,6 @@ Dual-licensed under [MIT](LICENSE-MIT) or [Apache-2.0](LICENSE-APACHE). Builds r
 
 ## Windows downloads
 
-Use the Chinese NSIS `OpenMath_0.1.0-pre-alpha.1_x64-setup.exe` or MSI `OpenMath_0.1.0-pre-alpha.1_x64_zh-CN.msi` on Windows 10/11 x64. Installers embed the WebView2 bootstrapper; missing runtimes require an internet connection. Desktop packages are unsigned and macOS packages are not notarized. Release assets include macOS arm64 DMG/app ZIP, both CLI ZIPs, a Web ZIP and SHA256 manifest.
+Use the Chinese NSIS `OpenMath_0.1.0-pre-alpha.2_x64-setup.exe` or MSI `OpenMath_0.1.0-pre-alpha.2_x64_zh-CN.msi` on Windows 10/11 x64. Installers embed the WebView2 bootstrapper; missing runtimes require an internet connection. Desktop packages are unsigned and macOS packages are not notarized. Release assets include macOS arm64 DMG/app ZIP, both CLI ZIPs, a Web ZIP and SHA256 manifest.
+
+The native iOS/iPadOS 27 client, ARM64 XCFramework and simulator application are documented in [the mobile guide](docs/ios.md). Physical devices use local Xcode automatic signing; no TestFlight/App Store release is included. The `.2` release remains under acceptance; `.1` stays available.

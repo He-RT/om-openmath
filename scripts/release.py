@@ -7,7 +7,7 @@ import tomllib
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-VERSION = "0.1.0-pre-alpha.1"
+VERSION = "0.1.0-pre-alpha.2"
 
 
 def verify_version(root: Path, tag: str) -> str:
@@ -36,6 +36,8 @@ def asset_names(version: str) -> set[str]:
         f"om-cli_{version}_windows_x64.zip",
         f"om-cli_{version}_macos_arm64.zip",
         f"OpenMath-web_{version}.zip",
+        f"OpenMath_{version}_ios_simulator_arm64.app.zip",
+        f"OpenMathKernel_{version}.xcframework.zip",
     }
 
 

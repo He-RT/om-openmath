@@ -1,0 +1,2 @@
+// 个人签名设置仅放在未跟踪的 ios/Local.xcconfig。
+#include? "../Local.xcconfig"

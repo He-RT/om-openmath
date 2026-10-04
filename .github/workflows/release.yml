@@ -8,7 +8,7 @@ on:
       tag:
         description: 发行标签（所有版本必须一致）
         required: true
-        default: v0.1.0-pre-alpha.1
+        default: v0.1.0-pre-alpha.2
 
 permissions:
   contents: read
@@ -23,6 +23,9 @@ env:
   CARGO_PROFILE_TEST_OPT_LEVEL: 2
 
 jobs:
+  ios:
+    uses: ./.github/workflows/ios.yml
+
   web:
     runs-on: ubuntu-latest
     steps:
@@ -237,7 +240,7 @@ jobs:
           if-no-files-found: error
 
   release:
-    needs: [web, macos, windows]
+    needs: [web, macos, windows, ios]
     runs-on: ubuntu-latest
     permissions:
       contents: write

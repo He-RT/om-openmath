@@ -8,10 +8,19 @@ struct MathView: View {
   var fontSize: CGFloat = 21
   var inline = false
   var body: some View {
-    ScrollView(.horizontal) {
-      NativeMathLabel(latex: latex, source: source, fontSize: fontSize, inline: inline)
-        .fixedSize()
-    }.scrollIndicators(.hidden)
+    if inline {
+      ViewThatFits(in: .horizontal) {
+        NativeMathLabel(latex: latex, source: source, fontSize: fontSize, inline: true).fixedSize()
+        ScrollView(.horizontal) {
+          NativeMathLabel(latex: latex, source: source, fontSize: fontSize, inline: true)
+            .fixedSize()
+        }.scrollIndicators(.hidden)
+      }
+    } else {
+      ScrollView(.horizontal) {
+        NativeMathLabel(latex: latex, source: source, fontSize: fontSize, inline: false).fixedSize()
+      }.scrollIndicators(.hidden)
+    }
   }
 }
 struct NativeMathLabel: UIViewRepresentable {
@@ -27,7 +36,8 @@ struct NativeMathLabel: UIViewRepresentable {
     view.fallback.adjustsFontForContentSizeCategory = true
     view.math.latex = MathTypesetting.prepare(latex)
     view.math.font = MTFontManager().latinModernFont(
-      withSize: UIFontMetrics(forTextStyle: .body).scaledValue(for: fontSize))
+      withSize: UIFontMetrics(forTextStyle: .body).scaledValue(
+        for: fontSize, compatibleWith: view.traitCollection))
     view.math.labelMode = inline ? .text : .display
     view.math.textColor = .label
     view.math.textAlignment = .left

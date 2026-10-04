@@ -1,4 +1,5 @@
 import SwiftMath
+import SwiftUI
 import UIKit
 import XCTest
 
@@ -194,5 +195,21 @@ import XCTest
     for literal in ["$literal$", "$code$", "$inCode$"] {
       XCTAssertTrue(tokens.source.contains(literal))
     }
+  }
+}
+
+@MainActor final class MarkdownLayoutTests: XCTestCase {
+  func testInlineMathUsesOneTextLineWhenItFits() {
+    let host = UIHostingController(
+      rootView: NativeMarkdown(source: "A $x$ B").environment(\.dynamicTypeSize, .medium))
+    let parent = UIViewController()
+    parent.addChild(host)
+    parent.view.addSubview(host.view)
+    parent.setOverrideTraitCollection(
+      UITraitCollection(preferredContentSizeCategory: .medium), forChild: host)
+    host.view.frame = CGRect(x: 0, y: 0, width: 300, height: 200)
+    host.view.layoutIfNeeded()
+    let size = host.sizeThatFits(in: CGSize(width: 300, height: 1000))
+    XCTAssertLessThan(size.height, 34, "Inline math should not force separate lines")
   }
 }

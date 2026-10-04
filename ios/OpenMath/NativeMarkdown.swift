@@ -306,6 +306,7 @@ struct FlowLayout: Layout {
     var y: CGFloat = 0
     var height: CGFloat = 0
     var points: [CGPoint] = []
+    var occupiedWidth: CGFloat = 0
     for view in subviews {
       let size = view.sizeThatFits(ProposedViewSize(width: width, height: nil))
       if x > 0 && x + size.width > width {
@@ -315,8 +316,9 @@ struct FlowLayout: Layout {
       }
       points.append(CGPoint(x: x, y: y))
       x += min(width, size.width) + spacing
+      occupiedWidth = max(occupiedWidth, x - spacing)
       height = max(height, size.height)
     }
-    return (CGSize(width: width, height: y + height), points)
+    return (CGSize(width: occupiedWidth, height: y + height), points)
   }
 }

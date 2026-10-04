@@ -57,3 +57,29 @@ Root 接受单参数多项式纯函数和有效正索引。有理数系数闭合
 `.omnb` 仅保存版本、标题和单元格源码/类型/方言。Markdown/LaTeX 导出包含当前结果，排除过期输出；Unicode 源码可能需要支持 Unicode 的 TeX 环境。
 
 终端 `--dialect modern|wolfram|auto` 选择方言，`--json` 输出真实 CellOutput。`-e` 成功退出 0，求值错误 1，解析/用法错误 2。`--no-config` 隔离运行，`--config PATH` 指定配置；桌面支持 `OPENMATH_CONFIG_PATH`。
+
+## .3 开发版的组合语法（R3.2）
+
+公开 `.2` 不支持本节新增语法。当前 dev 实现可使用：
+
+```text
+[1, 2, 3] |> map(fn(x) => x^2)  # [1,4,9]
+(fn(x) => fn(y) => x+y)(2)(3)   # 5，内层参数不会捕获外层值
+solve(x^2=4, x, output: "values")
+solve(x^2=4, x, mode: "numeric", precision: 20)
+simplify(sin(x)^2+cos(x)^2, level: "deep")
+diff(x^4, x, order: 2)
+find_root(x^2=2, x, bracket: 1..2)
+let config = {color: "green", count: 2}
+config.count
+let v = [1,2,3,4]
+v[2..3]
+v[4..2]
+[[1,2],[3,4]] @ [5,6]
+plot(sin(x), x: -pi..pi)
+plot(x^2+y^2=1, x: -2..2, y: -2..2, view: "contour")
+```
+
+管道根据元数据选择主参数；map的数据在第二位置，不重复执行左侧。fn按后续箭头识别，原fn(x)调用仍保留；内层参数可遮蔽外层，插入值不会被同名参数捕获。范围为有方向闭区间，切片端点必须存在且不能为0；旧单项索引0取头仍保留。记录的键按文字保存，重复键拒绝，空{}仍为列表，空记录用record()。矩阵乘积双线性；两个向量的内积共轭第一向量，尺寸上限64。Wolfram @原义不变。
+
+模式只选择已有真实算法；精确求解不能接受数值精度选项，局部find_root不承诺完整解集。初值与括区间互斥。line/零轮廓contour已支持，surface/density、积分、ODE及explore按后续批次交付，当前不会被当作成功计算。笔记本继续仅保存原源码，使用本节源码时需要.3；不自动改写旧笔记本。

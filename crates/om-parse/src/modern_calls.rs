@@ -10,12 +10,16 @@ use om_core::{BUILTIN as B, Expr, Symbol};
 
 impl Parser<'_> {
     pub(super) fn function_call(&mut self, left: Node) -> Parsed {
+        self.function_call_input(left, None)
+    }
+    pub(crate) fn function_call_input(&mut self, left: Node, mut input: Option<Node>) -> Parsed {
         let name = self.src[left.span.start as usize..left.span.end as usize].to_owned();
-        let symbol = left.expr.as_symbol().ok_or(())?;
+        let mut symbol = left.expr.as_symbol().ok_or(())?;
         let open = self.expect(K::LParen)?;
         self.groups += 1;
         let result = (|| {
             let mut args = vec![];
+            let mut keywords = vec![];
             let mut domain = None;
             let mut keys = std::collections::BTreeSet::new();
             if self.current().is_some() && self.kind() != Some(K::RParen) {
@@ -29,24 +33,11 @@ impl Parser<'_> {
                         let key = self.bump().ok_or(())?;
                         self.bump();
                         let value = self.expression(0, false)?;
-                        let option =
-                            self.named_option(symbol, text(self.src, key), &value.expr, key.span)?;
+                        let option = names::option(text(self.src, key));
                         if !keys.insert(option) {
                             return self.fail("E024", "命名参数重复");
                         }
-                        if text(self.src, key).eq_ignore_ascii_case("domain") {
-                            if domain.is_some() {
-                                return self.fail("E012", "domain 参数重复");
-                            }
-                            domain = Some(value);
-                        } else {
-                            let span = Span {
-                                start: key.span.start,
-                                end: value.span.end,
-                            };
-                            let key = Node::atom(Expr::sym(option), key.span);
-                            args.push(self.call(B::RULE, vec![key, value], span)?);
-                        }
+                        keywords.push(crate::modern_adapters::Keyword { key, value });
                     } else {
                         args.push(self.expression(0, false)?);
                     }
@@ -61,6 +52,23 @@ impl Parser<'_> {
                 start: left.span.start,
                 end,
             };
+            if let Some(value) = input.take() {
+                let position =
+                    om_core::catalog::by_runtime(symbol.name()).map_or(0, |f| f.pipe_arg);
+                if position == 0 || position as usize > args.len() + 1 {
+                    return self.fail("E026", "管道目标没有可用的主要输入位置");
+                }
+                args.insert(position as usize - 1, value);
+            }
+            symbol = self.adapt_call(symbol, &mut args, &mut keywords, span)?;
+            for keyword in keywords {
+                if text(self.src, keyword.key).eq_ignore_ascii_case("domain") {
+                    self.named_option(symbol, "domain", &keyword.value.expr, keyword.key.span)?;
+                    domain = Some(keyword.value);
+                } else {
+                    args.push(self.keyword_rule(symbol, keyword)?);
+                }
+            }
             if let Some(domain) = domain {
                 self.domain_options(symbol, &mut args, domain)?;
             }

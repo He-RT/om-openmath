@@ -946,7 +946,21 @@
         "held": false
       }
     ],
-    "options": [],
+    "options": [
+      {
+        "name": "step",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": false,
+        "default_source": "1",
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": false
+      }
+    ],
     "compatibility_syntax": [],
     "attributes": [
       "listable",
@@ -1067,7 +1081,21 @@
         "held": false
       }
     ],
-    "options": [],
+    "options": [
+      {
+        "name": "order",
+        "runtime_name": null,
+        "value_type": "integer",
+        "required": false,
+        "default_source": "1",
+        "default_context": null,
+        "enum_values": [],
+        "min": 0,
+        "max": null,
+        "variadic": false,
+        "held": false
+      }
+    ],
     "compatibility_syntax": [],
     "attributes": [
       "protected"
@@ -1202,7 +1230,21 @@
         "held": false
       }
     ],
-    "options": [],
+    "options": [
+      {
+        "name": "coefficient_fn",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": false,
+        "default_source": null,
+        "default_context": "省略时不转换系数",
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": false
+      }
+    ],
     "compatibility_syntax": [],
     "attributes": [
       "protected"
@@ -1822,7 +1864,21 @@
         "held": false
       }
     ],
-    "options": [],
+    "options": [
+      {
+        "name": "order",
+        "runtime_name": null,
+        "value_type": "integer",
+        "required": false,
+        "default_source": "1",
+        "default_context": null,
+        "enum_values": [],
+        "min": 0,
+        "max": null,
+        "variadic": false,
+        "held": false
+      }
+    ],
     "compatibility_syntax": [],
     "attributes": [
       "protected"
@@ -2007,6 +2063,64 @@
       "arbitrary_supported"
     ],
     "precision_notes": "精确计算与已支持的数值近似子集；不把符号保留或格式位数当作新算法/任意精度支持。",
+    "platforms": [
+      "cli",
+      "desktop",
+      "web",
+      "ios"
+    ]
+  },
+  {
+    "id": "fn_000153",
+    "canonical_name": "dot",
+    "name": "Dot",
+    "modern_name": "dot",
+    "aliases": [],
+    "arity": {
+      "min": 2,
+      "max": 2
+    },
+    "parameters": [
+      {
+        "name": "a",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": false
+      },
+      {
+        "name": "b",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": false
+      }
+    ],
+    "options": [],
+    "compatibility_syntax": [],
+    "attributes": [
+      "protected"
+    ],
+    "pipe_arg": 1,
+    "effect_class": "pure",
+    "support": "非空向量和最多64×64矩阵；矩阵乘积双线性，两个向量的内积共轭第一向量；检查维度并保留精确或机器运算。",
+    "return_type": "scalar_vector_matrix",
+    "precision_modes": [
+      "planned_machine"
+    ],
+    "precision_notes": "精确有理基础路径与明确的机器分解；分解不承诺任意精度。",
     "platforms": [
       "cli",
       "desktop",
@@ -2528,6 +2642,32 @@
     ],
     "options": [
       {
+        "name": "initial",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": false,
+        "default_source": null,
+        "default_context": "与bracket互斥；配合裸变量",
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": true
+      },
+      {
+        "name": "bracket",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": false,
+        "default_source": null,
+        "default_context": "与initial互斥；配合裸变量和两端点区间",
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": true
+      },
+      {
         "name": "steps",
         "runtime_name": "RecordSteps",
         "value_type": "boolean",
@@ -2548,7 +2688,8 @@
         "default_source": "MachinePrecision",
         "default_context": null,
         "enum_values": [
-          "MachinePrecision"
+          "MachinePrecision",
+          "machine"
         ],
         "min": 5,
         "max": 2466,
@@ -2691,7 +2832,21 @@
         "held": false
       }
     ],
-    "options": [],
+    "options": [
+      {
+        "name": "step",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": false,
+        "default_source": "1",
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": false
+      }
+    ],
     "compatibility_syntax": [],
     "attributes": [
       "listable",
@@ -3831,7 +3986,23 @@
         "held": false
       }
     ],
-    "options": [],
+    "options": [
+      {
+        "name": "precision",
+        "runtime_name": null,
+        "value_type": "integer",
+        "required": false,
+        "default_source": "MachinePrecision",
+        "default_context": null,
+        "enum_values": [
+          "machine"
+        ],
+        "min": 1,
+        "max": 4932,
+        "variadic": false,
+        "held": false
+      }
+    ],
     "compatibility_syntax": [],
     "attributes": [
       "protected"
@@ -4029,7 +4200,8 @@
         "default_source": "MachinePrecision",
         "default_context": null,
         "enum_values": [
-          "MachinePrecision"
+          "MachinePrecision",
+          "machine"
         ],
         "min": 5,
         "max": 2466,
@@ -4240,7 +4412,8 @@
         "default_source": "MachinePrecision",
         "default_context": null,
         "enum_values": [
-          "MachinePrecision"
+          "MachinePrecision",
+          "machine"
         ],
         "min": 5,
         "max": 2466,
@@ -4560,6 +4733,22 @@
       }
     ],
     "options": [
+      {
+        "name": "view",
+        "runtime_name": null,
+        "value_type": "enum",
+        "required": false,
+        "default_source": "\"line\"",
+        "default_context": null,
+        "enum_values": [
+          "line",
+          "contour"
+        ],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": true
+      },
       {
         "name": "plot_range",
         "runtime_name": "PlotRange",
@@ -5307,7 +5496,21 @@
         "held": false
       }
     ],
-    "options": [],
+    "options": [
+      {
+        "name": "step",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": false,
+        "default_source": "1",
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": false
+      }
+    ],
     "compatibility_syntax": [],
     "attributes": [
       "protected"
@@ -5369,6 +5572,51 @@
       "arbitrary_supported"
     ],
     "precision_notes": "精确计算与已支持的数值近似子集；不把符号保留或格式位数当作新算法/任意精度支持。",
+    "platforms": [
+      "cli",
+      "desktop",
+      "web",
+      "ios"
+    ]
+  },
+  {
+    "id": "fn_000210",
+    "canonical_name": "record",
+    "name": "Record",
+    "modern_name": "record",
+    "aliases": [],
+    "arity": {
+      "min": 0,
+      "max": null
+    },
+    "parameters": [
+      {
+        "name": "entries",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": false,
+        "default_source": null,
+        "default_context": "允许空记录",
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": true,
+        "held": false
+      }
+    ],
+    "options": [],
+    "compatibility_syntax": [],
+    "attributes": [
+      "protected"
+    ],
+    "pipe_arg": 0,
+    "effect_class": "pure",
+    "support": "有序文字键记录；重复或非文字键诊断；空记录record()，.字段与at(record,\"key\")查找真实值。",
+    "return_type": "ordered_record",
+    "precision_modes": [
+      "planned_machine"
+    ],
+    "precision_notes": "数值转换类型明确，不把JSON小数自动声称为任意精度。",
     "platforms": [
       "cli",
       "desktop",
@@ -6151,7 +6399,21 @@
         "held": false
       }
     ],
-    "options": [],
+    "options": [
+      {
+        "name": "step",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": false,
+        "default_source": "1",
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": false
+      }
+    ],
     "compatibility_syntax": [],
     "attributes": [
       "listable",
@@ -6667,6 +6929,22 @@
     ],
     "options": [
       {
+        "name": "level",
+        "runtime_name": null,
+        "value_type": "enum",
+        "required": false,
+        "default_source": "\"basic\"",
+        "default_context": null,
+        "enum_values": [
+          "basic",
+          "deep"
+        ],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": true
+      },
+      {
         "name": "assumptions",
         "runtime_name": "Assumptions",
         "value_type": "expression",
@@ -6897,6 +7175,38 @@
       }
     ],
     "options": [
+      {
+        "name": "mode",
+        "runtime_name": null,
+        "value_type": "enum",
+        "required": false,
+        "default_source": "\"exact\"",
+        "default_context": null,
+        "enum_values": [
+          "exact",
+          "numeric"
+        ],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": true
+      },
+      {
+        "name": "output",
+        "runtime_name": null,
+        "value_type": "enum",
+        "required": false,
+        "default_source": "\"rules\"",
+        "default_context": null,
+        "enum_values": [
+          "rules",
+          "values"
+        ],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": true
+      },
       {
         "name": "steps",
         "runtime_name": "RecordSteps",

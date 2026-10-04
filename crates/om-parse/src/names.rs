@@ -4,13 +4,21 @@ use crate::ConstantMode;
 use om_core::{Symbol, builtins};
 
 pub(crate) fn modern(name: &str, mode: ConstantMode) -> Option<Symbol> {
+    if mode == ConstantMode::Strict && matches!(name, "e" | "i") {
+        return None;
+    }
     if name == "Derivative" {
         return Some(Symbol::intern(name));
     }
     if let Some(entry) = om_core::catalog::by_alias(name) {
         return Some(Symbol::intern(&entry.name));
     }
-    legacy_modern(name, mode)
+    legacy_modern(name, mode).or_else(|| {
+        builtins::names()
+            .iter()
+            .find(|n| n.eq_ignore_ascii_case(name) && (name.len() > 1 || **n == name))
+            .map(|n| Symbol::intern(n))
+    })
 }
 
 // Declaration lookup deliberately preserves the pre-.3 reserved name set.
@@ -44,7 +52,7 @@ pub(crate) fn legacy_modern(name: &str, mode: ConstantMode) -> Option<Symbol> {
         "len" => "Length",
         "lambertw" => "ProductLog",
         _ => {
-            return builtins::names()
+            return builtins::legacy_names()
                 .iter()
                 .chain(super::names_editor::EXTRA.iter())
                 .find(|n| {

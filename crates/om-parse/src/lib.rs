@@ -7,6 +7,8 @@ pub mod lexer;
 mod diagnostics;
 mod literals;
 mod modern;
+mod modern_adapters;
+mod modern_composition;
 mod modern_options;
 mod names;
 mod names_editor;

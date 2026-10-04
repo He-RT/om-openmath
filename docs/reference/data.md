@@ -61,7 +61,7 @@
 | [`product`](#product) | 部分支持 | 当前可用 | 在有限迭代区间累乘。 |
 | [`query`](#query) | 后续规划 | 规划接口，当前不可用 | 列表、记录与表格中的 Query 能力，进入后续全景目录。 |
 | [`range`](#range) | 已实现 | 现有入口可用，统一接口待实施 | 构造有限数值等差序列。 |
-| [`record`](#record) | 下一版规划 | 规划接口，当前不可用 | 有序键值记录 |
+| [`record`](#record) | 已实现 | 当前可用 | 有序键值记录 |
 | [`replace_part`](#replace_part) | 后续规划 | 规划接口，当前不可用 | 列表、记录与表格中的 ReplacePart 能力，进入后续全景目录。 |
 | [`reshape`](#reshape) | 下一版规划 | 规划接口，当前不可用 | 重塑矩形数组 |
 | [`rest`](#rest) | 已实现 | 现有入口可用，统一接口待实施 | 移除首个参数并保留头。 |
@@ -2138,21 +2138,33 @@ Range[3, 1, -1]
 
 ## record
 
-**当前实现：下一版规划；目标接口：规划接口，当前不可用。** 目标版本：`0.1.0-pre-alpha.3`。
+**当前实现：已实现；目标接口：当前可用。** 目标版本：`0.1.0-pre-alpha.3`。
 
 - 稳定身份：`fn_000210`；条目类型：`function`。
-- 副作用分类（设计预留）：`pure`；参数验证阶段：`documentation_only`，不构成工具授权。
+- 副作用分类（设计预留）：`pure`；参数验证阶段：`runtime_verified`，不构成工具授权。
 
 有序键值记录
 
-- 当前支持：当前无此规范接口的实现。
+- 当前支持：有序文字键记录；重复或非文字键诊断；空记录record()，.字段与at(record,"key")查找真实值。
 - 目标范围：纯数据，无文件系统/网络/求值；CSV完整处理引号、嵌入换行与UTF-8，JSON重复键/无效数字明确处理；空记录使用record()而不是改变旧{}列表含义。
-- 返回：record_table_or_string
+- 返回：ordered_record
 - 精度：数值转换类型明确，不把JSON小数自动声称为任意精度。
-- 当前计算平台：无；目标计算平台：cli, desktop, web, ios。
+- 当前计算平台：cli, desktop, web, ios；目标计算平台：cli, desktop, web, ios。
 - 目标图形/交互展示平台：不适用或后续未定。
 - 兼容名称：无既有兼容入口。
 - 管道位置：不接受自动管道输入。
+
+当前现代签名：
+
+```text
+record(...)
+```
+
+当前 Wolfram 签名：
+
+```text
+Record[...entries]
+```
 
 目标现代签名（按目标接口状态判断是否已可执行）：
 
@@ -2164,6 +2176,12 @@ record(); {key: value}
 |---|---|---|---|---|
 | `entries` | variadic | 允许空 | 字面键值对 | r3 |
 
+当前已登记示例（Wolfram）：
+
+```wolfram
+Record["a"->2]
+```
+
 规划示例（尚未执行；需要目标版本，后续条目不承诺 .3）：
 
 ```text
@@ -2172,9 +2190,9 @@ record(); {key: value}
 
 验收：独立数学期望、有效/无效参数、边界、预算、中断及声明的平台/精度测试；范围外不伪造成功。
 
-当前源码：暂无当前实现证据。
+当前源码：[crates/om-eval/src/composition.rs](../../crates/om-eval/src/composition.rs)。
 
-当前测试引用：暂无当前实现证据。
+当前测试引用：[crates/om-eval/tests/composition.rs](../../crates/om-eval/tests/composition.rs)。
 
 ## replace_part
 

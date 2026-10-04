@@ -1,6 +1,6 @@
 # 实际注册审计基线：ba3cd2b；稳定身份与名称分离；目录/副作用为设计数据。
 schema_version = 1
-metadata_version = 2
+metadata_version = 3
 validation_stage = "runtime_verified"
 current_version = "0.1.0-pre-alpha.2"
 target_version = "0.1.0-pre-alpha.3"
@@ -4963,32 +4963,32 @@ effect_class = "pure"
 id = "fn_000153"
 name = "dot"
 category = "linear"
-status = "planned"
-interface_status = "planned"
-runtime_names = []
+status = "implemented"
+interface_status = "current"
+runtime_names = ["Dot"]
 compatibility_names = []
-current_modern_signatures = []
-current_wolfram_signatures = []
+current_modern_signatures = ["dot(...)"]
+current_wolfram_signatures = ["Dot[a,b]"]
 signatures = ["dot(a, b)"]
 parameters = [{ name = "a", kind = "positional", default = "必填", description = "签名对应的a参数", availability = "r3" }, { name = "b", kind = "positional", default = "必填", description = "签名对应的b参数", availability = "r3" }]
-return_type = "scalar_vector_matrix_or_decomposition"
+return_type = "scalar_vector_matrix"
 semantics = "向量/矩阵收缩"
-current_support = "当前无此规范接口的实现。"
+current_support = "非空向量和最多64×64矩阵；矩阵乘积双线性，两个向量的内积共轭第一向量；检查维度并保留精确或机器运算。"
 target_support = "维度检查；精确有理数或机器实数的小型稠密矩阵，继承预算；零向量/奇异矩阵明确诊断。"
 precision_modes = ["planned_machine"]
 precision_notes = "精确有理基础路径与明确的机器分解；分解不承诺任意精度。"
-current_platforms = []
+current_platforms = ["cli", "desktop", "web", "ios"]
 target_platforms = ["cli", "desktop", "web", "ios"]
 render_platforms = []
-current_examples = []
+current_examples = ["Dot[{{1,2},{3,4}},{5,6}]", "Dot[{1,2},{3,4}]"]
 planned_examples = ["[1,2] @ [3,4]"]
-sources = []
-tests = []
+sources = ["crates/om-eval/src/composition.rs"]
+tests = ["crates/om-eval/tests/composition.rs"]
 acceptance = "独立数学期望、有效/无效参数、边界、预算、中断及声明的平台/精度测试；范围外不伪造成功。"
 pipe_arg = 1
 target_version = "0.1.0-pre-alpha.3"
 kind = "function"
-validation_stage = "documentation_only"
+validation_stage = "runtime_verified"
 effect_class = "pure"
 
 [[functions]]
@@ -6787,32 +6787,32 @@ effect_class = "pure"
 id = "fn_000210"
 name = "record"
 category = "data"
-status = "planned"
-interface_status = "planned"
-runtime_names = []
+status = "implemented"
+interface_status = "current"
+runtime_names = ["Record"]
 compatibility_names = []
-current_modern_signatures = []
-current_wolfram_signatures = []
+current_modern_signatures = ["record(...)"]
+current_wolfram_signatures = ["Record[...entries]"]
 signatures = ["record(); {key: value}"]
 parameters = [{ name = "entries", kind = "variadic", default = "允许空", description = "字面键值对", availability = "r3" }]
-return_type = "record_table_or_string"
+return_type = "ordered_record"
 semantics = "有序键值记录"
-current_support = "当前无此规范接口的实现。"
+current_support = "有序文字键记录；重复或非文字键诊断；空记录record()，.字段与at(record,\"key\")查找真实值。"
 target_support = "纯数据，无文件系统/网络/求值；CSV完整处理引号、嵌入换行与UTF-8，JSON重复键/无效数字明确处理；空记录使用record()而不是改变旧{}列表含义。"
 precision_modes = ["planned_machine"]
 precision_notes = "数值转换类型明确，不把JSON小数自动声称为任意精度。"
-current_platforms = []
+current_platforms = ["cli", "desktop", "web", "ios"]
 target_platforms = ["cli", "desktop", "web", "ios"]
 render_platforms = []
-current_examples = []
+current_examples = ["Record[\"a\"->2]"]
 planned_examples = ["{color: \"green\",opacity: 0.8}"]
-sources = []
-tests = []
+sources = ["crates/om-eval/src/composition.rs"]
+tests = ["crates/om-eval/tests/composition.rs"]
 acceptance = "独立数学期望、有效/无效参数、边界、预算、中断及声明的平台/精度测试；范围外不伪造成功。"
 pipe_arg = 0
 target_version = "0.1.0-pre-alpha.3"
 kind = "function"
-validation_stage = "documentation_only"
+validation_stage = "runtime_verified"
 effect_class = "pure"
 
 [[functions]]
@@ -26971,7 +26971,7 @@ min = 1
 max = 2
 attributes = ["listable", "protected", "numeric_function"]
 parameters = [{ name = "x", value_type = "expression", required = true, variadic = false, held = false }, { name = "step", value_type = "expression", required = false, variadic = false, held = false, default_source = "1" }]
-options = []
+options = [{ name = "step", value_type = "expression", required = false, variadic = false, held = false, default_source = "1" }]
 
 [[runtime]]
 name = "Clear"
@@ -26990,7 +26990,7 @@ min = 2
 max = 3
 attributes = ["protected"]
 parameters = [{ name = "expr", value_type = "expression", required = true, variadic = false, held = false }, { name = "variable", value_type = "expression", required = true, variadic = false, held = false }, { name = "order", value_type = "expression", required = false, variadic = false, held = false, default_source = "1" }]
-options = []
+options = [{ name = "order", value_type = "integer", required = false, variadic = false, held = false, default_source = "1", min = 0 }]
 
 [[runtime]]
 name = "CoefficientList"
@@ -27010,7 +27010,7 @@ min = 2
 max = 3
 attributes = ["protected"]
 parameters = [{ name = "expr", value_type = "expression", required = true, variadic = false, held = false }, { name = "variables", value_type = "expression", required = true, variadic = false, held = false }, { name = "coefficient_fn", value_type = "expression", required = false, variadic = false, held = false, default_source = "Identity" }]
-options = []
+options = [{ name = "coefficient_fn", value_type = "expression", required = false, variadic = false, held = false, default_context = "省略时不转换系数" }]
 
 [[runtime]]
 name = "CompoundExpression"
@@ -27117,7 +27117,7 @@ aliases = ["derivative"]
 min = 2
 attributes = ["protected"]
 parameters = [{ name = "expr", value_type = "expression", required = true, variadic = false, held = false }, { name = "variable", value_type = "expression", required = true, variadic = false, held = false }, { name = "variables", value_type = "expression", required = false, variadic = true, held = false, default_context = "由真实回调按输入推断或省略；不填造字面默认值" }]
-options = []
+options = [{ name = "order", value_type = "integer", required = false, variadic = false, held = false, default_source = "1", min = 0 }]
 
 [[runtime]]
 name = "Denominator"
@@ -27245,7 +27245,7 @@ aliases = ["findroot"]
 min = 2
 attributes = ["hold_all", "protected"]
 parameters = [{ name = "equations", value_type = "expression", required = true, variadic = false, held = true }, { name = "starts", value_type = "expression", required = true, variadic = false, held = true }]
-options = [{ name = "steps", runtime_name = "RecordSteps", value_type = "boolean", required = false, variadic = false, held = true, default_context = "继承当前 EvalSettings.record_steps" }, { name = "precision", runtime_name = "WorkingPrecision", value_type = "integer", required = false, variadic = false, held = true, default_source = "MachinePrecision", enum_values = ["MachinePrecision"], min = 5, max = 2466 }, { name = "method", runtime_name = "Method", value_type = "enum", required = false, variadic = false, held = true, default_source = "Automatic", enum_values = ["Automatic", "Newton", "Brent"] }, { name = "max_iterations", runtime_name = "MaxIterations", value_type = "integer", required = false, variadic = false, held = true, default_source = "100", min = 1 }]
+options = [{ name = "initial", value_type = "expression", required = false, variadic = false, held = true, default_context = "与bracket互斥；配合裸变量" }, { name = "bracket", value_type = "expression", required = false, variadic = false, held = true, default_context = "与initial互斥；配合裸变量和两端点区间" }, { name = "steps", runtime_name = "RecordSteps", value_type = "boolean", required = false, variadic = false, held = true, default_context = "继承当前 EvalSettings.record_steps" }, { name = "precision", runtime_name = "WorkingPrecision", value_type = "integer", required = false, variadic = false, held = true, default_source = "MachinePrecision", enum_values = ["MachinePrecision", "machine"], min = 5, max = 2466 }, { name = "method", runtime_name = "Method", value_type = "enum", required = false, variadic = false, held = true, default_source = "Automatic", enum_values = ["Automatic", "Newton", "Brent"] }, { name = "max_iterations", runtime_name = "MaxIterations", value_type = "integer", required = false, variadic = false, held = true, default_source = "100", min = 1 }]
 
 [[runtime]]
 name = "First"
@@ -27265,7 +27265,7 @@ min = 1
 max = 2
 attributes = ["listable", "protected", "numeric_function"]
 parameters = [{ name = "x", value_type = "expression", required = true, variadic = false, held = false }, { name = "step", value_type = "expression", required = false, variadic = false, held = false, default_source = "1" }]
-options = []
+options = [{ name = "step", value_type = "expression", required = false, variadic = false, held = false, default_source = "1" }]
 
 [[runtime]]
 name = "FullSimplify"
@@ -27456,7 +27456,7 @@ min = 1
 max = 2
 attributes = ["protected"]
 parameters = [{ name = "expr", value_type = "expression", required = true, variadic = false, held = false }, { name = "precision", value_type = "expression", required = false, variadic = false, held = false, default_source = "MachinePrecision" }]
-options = []
+options = [{ name = "precision", value_type = "integer", required = false, variadic = false, held = false, default_source = "MachinePrecision", enum_values = ["machine"], min = 1, max = 4932 }]
 
 [[runtime]]
 name = "NSolve"
@@ -27465,7 +27465,7 @@ aliases = []
 min = 1
 attributes = ["hold_all", "protected"]
 parameters = [{ name = "equations", value_type = "expression", required = true, variadic = false, held = true }, { name = "variables", value_type = "expression", required = false, variadic = false, held = true, default_context = "由真实回调按输入推断或省略；不填造字面默认值" }, { name = "domain", value_type = "expression", required = false, variadic = false, held = true, default_context = "由真实回调按输入推断或省略；不填造字面默认值" }]
-options = [{ name = "steps", runtime_name = "RecordSteps", value_type = "boolean", required = false, variadic = false, held = true, default_context = "继承当前 EvalSettings.record_steps" }, { name = "domain", value_type = "enum", required = false, variadic = false, held = true, default_source = "Complexes", enum_values = ["Complexes", "Reals", "Integers", "Rationals", "positives"] }, { name = "cubics", runtime_name = "Cubics", value_type = "boolean", required = false, variadic = false, held = true, default_source = "False" }, { name = "quartics", runtime_name = "Quartics", value_type = "boolean", required = false, variadic = false, held = true, default_source = "False" }, { name = "verify_solutions", runtime_name = "VerifySolutions", value_type = "enum", required = false, variadic = false, held = true, default_source = "Automatic", enum_values = ["True", "False", "Automatic"] }, { name = "max_extra_conditions", runtime_name = "MaxExtraConditions", value_type = "integer", required = false, variadic = false, held = true, default_source = "0", enum_values = ["All"], min = 0 }, { name = "generated_parameters", runtime_name = "GeneratedParameters", value_type = "symbol", required = false, variadic = false, held = true, default_source = "C" }, { name = "inverse_functions", runtime_name = "InverseFunctions", value_type = "boolean", required = false, variadic = false, held = true, default_source = "True" }, { name = "precision", runtime_name = "WorkingPrecision", value_type = "integer", required = false, variadic = false, held = true, default_source = "MachinePrecision", enum_values = ["MachinePrecision"], min = 5, max = 2466 }]
+options = [{ name = "steps", runtime_name = "RecordSteps", value_type = "boolean", required = false, variadic = false, held = true, default_context = "继承当前 EvalSettings.record_steps" }, { name = "domain", value_type = "enum", required = false, variadic = false, held = true, default_source = "Complexes", enum_values = ["Complexes", "Reals", "Integers", "Rationals", "positives"] }, { name = "cubics", runtime_name = "Cubics", value_type = "boolean", required = false, variadic = false, held = true, default_source = "False" }, { name = "quartics", runtime_name = "Quartics", value_type = "boolean", required = false, variadic = false, held = true, default_source = "False" }, { name = "verify_solutions", runtime_name = "VerifySolutions", value_type = "enum", required = false, variadic = false, held = true, default_source = "Automatic", enum_values = ["True", "False", "Automatic"] }, { name = "max_extra_conditions", runtime_name = "MaxExtraConditions", value_type = "integer", required = false, variadic = false, held = true, default_source = "0", enum_values = ["All"], min = 0 }, { name = "generated_parameters", runtime_name = "GeneratedParameters", value_type = "symbol", required = false, variadic = false, held = true, default_source = "C" }, { name = "inverse_functions", runtime_name = "InverseFunctions", value_type = "boolean", required = false, variadic = false, held = true, default_source = "True" }, { name = "precision", runtime_name = "WorkingPrecision", value_type = "integer", required = false, variadic = false, held = true, default_source = "MachinePrecision", enum_values = ["MachinePrecision", "machine"], min = 5, max = 2466 }]
 
 compatibility_syntax = ["method", "max_iterations"]
 [[runtime]]
@@ -27475,7 +27475,7 @@ aliases = ["nsolvevalues"]
 min = 1
 attributes = ["hold_all", "protected"]
 parameters = [{ name = "equations", value_type = "expression", required = true, variadic = false, held = true }, { name = "variables", value_type = "expression", required = false, variadic = false, held = true, default_context = "由真实回调按输入推断或省略；不填造字面默认值" }, { name = "domain", value_type = "expression", required = false, variadic = false, held = true, default_context = "由真实回调按输入推断或省略；不填造字面默认值" }]
-options = [{ name = "steps", runtime_name = "RecordSteps", value_type = "boolean", required = false, variadic = false, held = true, default_context = "继承当前 EvalSettings.record_steps" }, { name = "domain", value_type = "enum", required = false, variadic = false, held = true, default_source = "Complexes", enum_values = ["Complexes", "Reals", "Integers", "Rationals", "positives"] }, { name = "cubics", runtime_name = "Cubics", value_type = "boolean", required = false, variadic = false, held = true, default_source = "False" }, { name = "quartics", runtime_name = "Quartics", value_type = "boolean", required = false, variadic = false, held = true, default_source = "False" }, { name = "verify_solutions", runtime_name = "VerifySolutions", value_type = "enum", required = false, variadic = false, held = true, default_source = "Automatic", enum_values = ["True", "False", "Automatic"] }, { name = "max_extra_conditions", runtime_name = "MaxExtraConditions", value_type = "integer", required = false, variadic = false, held = true, default_source = "0", enum_values = ["All"], min = 0 }, { name = "generated_parameters", runtime_name = "GeneratedParameters", value_type = "symbol", required = false, variadic = false, held = true, default_source = "C" }, { name = "inverse_functions", runtime_name = "InverseFunctions", value_type = "boolean", required = false, variadic = false, held = true, default_source = "True" }, { name = "precision", runtime_name = "WorkingPrecision", value_type = "integer", required = false, variadic = false, held = true, default_source = "MachinePrecision", enum_values = ["MachinePrecision"], min = 5, max = 2466 }]
+options = [{ name = "steps", runtime_name = "RecordSteps", value_type = "boolean", required = false, variadic = false, held = true, default_context = "继承当前 EvalSettings.record_steps" }, { name = "domain", value_type = "enum", required = false, variadic = false, held = true, default_source = "Complexes", enum_values = ["Complexes", "Reals", "Integers", "Rationals", "positives"] }, { name = "cubics", runtime_name = "Cubics", value_type = "boolean", required = false, variadic = false, held = true, default_source = "False" }, { name = "quartics", runtime_name = "Quartics", value_type = "boolean", required = false, variadic = false, held = true, default_source = "False" }, { name = "verify_solutions", runtime_name = "VerifySolutions", value_type = "enum", required = false, variadic = false, held = true, default_source = "Automatic", enum_values = ["True", "False", "Automatic"] }, { name = "max_extra_conditions", runtime_name = "MaxExtraConditions", value_type = "integer", required = false, variadic = false, held = true, default_source = "0", enum_values = ["All"], min = 0 }, { name = "generated_parameters", runtime_name = "GeneratedParameters", value_type = "symbol", required = false, variadic = false, held = true, default_source = "C" }, { name = "inverse_functions", runtime_name = "InverseFunctions", value_type = "boolean", required = false, variadic = false, held = true, default_source = "True" }, { name = "precision", runtime_name = "WorkingPrecision", value_type = "integer", required = false, variadic = false, held = true, default_source = "MachinePrecision", enum_values = ["MachinePrecision", "machine"], min = 5, max = 2466 }]
 
 compatibility_syntax = ["method", "max_iterations"]
 [[runtime]]
@@ -27533,7 +27533,7 @@ aliases = []
 min = 2
 attributes = ["hold_all", "protected"]
 parameters = [{ name = "expr", value_type = "expression", required = true, variadic = false, held = true }, { name = "axis", value_type = "expression", required = true, variadic = false, held = true }]
-options = [{ name = "plot_range", runtime_name = "PlotRange", value_type = "expression", required = false, variadic = false, held = true, default_source = "Automatic" }]
+options = [{ name = "view", value_type = "enum", required = false, variadic = false, held = true, default_source = "\"line\"", enum_values = ["line", "contour"] }, { name = "plot_range", runtime_name = "PlotRange", value_type = "expression", required = false, variadic = false, held = true, default_source = "Automatic" }]
 
 [[runtime]]
 name = "Plus"
@@ -27649,7 +27649,7 @@ min = 1
 max = 3
 attributes = ["protected"]
 parameters = [{ name = "start_or_end", value_type = "expression", required = true, variadic = false, held = false }, { name = "end", value_type = "expression", required = false, variadic = false, held = false, default_context = "由真实回调按输入推断或省略；不填造字面默认值" }, { name = "step", value_type = "expression", required = false, variadic = false, held = false, default_source = "1" }]
-options = []
+options = [{ name = "step", value_type = "expression", required = false, variadic = false, held = false, default_source = "1" }]
 
 [[runtime]]
 name = "Re"
@@ -27749,7 +27749,7 @@ min = 1
 max = 2
 attributes = ["listable", "protected", "numeric_function"]
 parameters = [{ name = "x", value_type = "expression", required = true, variadic = false, held = false }, { name = "step", value_type = "expression", required = false, variadic = false, held = false, default_source = "1" }]
-options = []
+options = [{ name = "step", value_type = "expression", required = false, variadic = false, held = false, default_source = "1" }]
 
 [[runtime]]
 name = "Rule"
@@ -27838,7 +27838,7 @@ min = 1
 max = 2
 attributes = ["protected"]
 parameters = [{ name = "expr", value_type = "expression", required = true, variadic = false, held = false }, { name = "arg2", value_type = "expression", required = false, variadic = false, held = false, default_context = "由真实回调按输入推断或省略；不填造字面默认值" }]
-options = [{ name = "assumptions", runtime_name = "Assumptions", value_type = "expression", required = false, variadic = false, held = false, default_source = "True" }]
+options = [{ name = "level", value_type = "enum", required = false, variadic = false, held = true, default_source = "\"basic\"", enum_values = ["basic", "deep"] }, { name = "assumptions", runtime_name = "Assumptions", value_type = "expression", required = false, variadic = false, held = false, default_source = "True" }]
 
 [[runtime]]
 name = "Sin"
@@ -27877,7 +27877,7 @@ aliases = []
 min = 1
 attributes = ["hold_all", "protected"]
 parameters = [{ name = "equations", value_type = "expression", required = true, variadic = false, held = true }, { name = "variables", value_type = "expression", required = false, variadic = false, held = true, default_context = "由真实回调按输入推断或省略；不填造字面默认值" }, { name = "domain", value_type = "expression", required = false, variadic = false, held = true, default_context = "由真实回调按输入推断或省略；不填造字面默认值" }]
-options = [{ name = "steps", runtime_name = "RecordSteps", value_type = "boolean", required = false, variadic = false, held = true, default_context = "继承当前 EvalSettings.record_steps" }, { name = "domain", value_type = "enum", required = false, variadic = false, held = true, default_source = "Complexes", enum_values = ["Complexes", "Reals", "Integers", "Rationals", "positives"] }, { name = "cubics", runtime_name = "Cubics", value_type = "boolean", required = false, variadic = false, held = true, default_source = "False" }, { name = "quartics", runtime_name = "Quartics", value_type = "boolean", required = false, variadic = false, held = true, default_source = "False" }, { name = "verify_solutions", runtime_name = "VerifySolutions", value_type = "enum", required = false, variadic = false, held = true, default_source = "Automatic", enum_values = ["True", "False", "Automatic"] }, { name = "max_extra_conditions", runtime_name = "MaxExtraConditions", value_type = "integer", required = false, variadic = false, held = true, default_source = "0", enum_values = ["All"], min = 0 }, { name = "generated_parameters", runtime_name = "GeneratedParameters", value_type = "symbol", required = false, variadic = false, held = true, default_source = "C" }, { name = "inverse_functions", runtime_name = "InverseFunctions", value_type = "boolean", required = false, variadic = false, held = true, default_source = "True" }]
+options = [{ name = "mode", value_type = "enum", required = false, variadic = false, held = true, default_source = "\"exact\"", enum_values = ["exact", "numeric"] }, { name = "output", value_type = "enum", required = false, variadic = false, held = true, default_source = "\"rules\"", enum_values = ["rules", "values"] }, { name = "steps", runtime_name = "RecordSteps", value_type = "boolean", required = false, variadic = false, held = true, default_context = "继承当前 EvalSettings.record_steps" }, { name = "domain", value_type = "enum", required = false, variadic = false, held = true, default_source = "Complexes", enum_values = ["Complexes", "Reals", "Integers", "Rationals", "positives"] }, { name = "cubics", runtime_name = "Cubics", value_type = "boolean", required = false, variadic = false, held = true, default_source = "False" }, { name = "quartics", runtime_name = "Quartics", value_type = "boolean", required = false, variadic = false, held = true, default_source = "False" }, { name = "verify_solutions", runtime_name = "VerifySolutions", value_type = "enum", required = false, variadic = false, held = true, default_source = "Automatic", enum_values = ["True", "False", "Automatic"] }, { name = "max_extra_conditions", runtime_name = "MaxExtraConditions", value_type = "integer", required = false, variadic = false, held = true, default_source = "0", enum_values = ["All"], min = 0 }, { name = "generated_parameters", runtime_name = "GeneratedParameters", value_type = "symbol", required = false, variadic = false, held = true, default_source = "C" }, { name = "inverse_functions", runtime_name = "InverseFunctions", value_type = "boolean", required = false, variadic = false, held = true, default_source = "True" }]
 
 compatibility_syntax = ["method", "max_iterations"]
 [[runtime]]
@@ -28004,4 +28004,23 @@ min = 1
 max = 1
 attributes = ["protected"]
 parameters = [{ name = "expr", value_type = "expression", required = true, variadic = false, held = false }]
+options = []
+
+[[runtime]]
+name = "Record"
+modern_name = "record"
+aliases = []
+min = 0
+attributes = ["protected"]
+parameters = [{ name = "entries", value_type = "expression", required = false, variadic = true, held = false, default_context = "允许空记录" }]
+options = []
+
+[[runtime]]
+name = "Dot"
+modern_name = "dot"
+aliases = []
+min = 2
+max = 2
+attributes = ["protected"]
+parameters = [{ name = "a", value_type = "expression", required = true, variadic = false, held = false }, { name = "b", value_type = "expression", required = true, variadic = false, held = false }]
 options = []

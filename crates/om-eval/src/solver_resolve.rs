@@ -125,7 +125,7 @@ pub(super) fn resolve(
                 let e = Expr::normal(head.clone(), args.clone());
                 let mut replacement = None;
                 if head.is_head(B::FUNCTION) {
-                    replacement = crate::structure::apply_function(ev, &head, &args);
+                    replacement = crate::pure::apply(ev, &head, &args, ctx)?;
                 } else if head.as_symbol() == Some(B::CONDITIONAL_EXPRESSION) && args.len() == 2 {
                     match args[1].as_symbol() {
                         Some(B::TRUE) => replacement = Some(args[0].clone()),

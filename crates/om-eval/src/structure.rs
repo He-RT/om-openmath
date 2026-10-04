@@ -13,7 +13,7 @@ pub(crate) fn dispatch(
     ctx.tick()?;
     Ok(match head.name() {
         "List" | "Function" | "Slot" | "Rule" | "Element" => None,
-        "Part" => part(ev, args),
+        "Part" => part(ev, args, ctx)?,
         "Length" => Some(Expr::integer(Integer::from(args[0].args().len()))),
         "First" => args[0].args().first().cloned(),
         "Last" => args[0].args().last().cloned(),
@@ -95,11 +95,18 @@ pub(crate) fn dispatch(
         _ => None,
     })
 }
-fn part(ev: &mut Evaluator, args: &[Expr]) -> Option<Expr> {
+fn part(ev: &mut Evaluator, args: &[Expr], ctx: &Interrupt) -> Result<Option<Expr>, EvalError> {
     let mut value = args[0].clone();
     for index in &args[1..] {
         let Some(Number::Integer(n)) = index.as_number() else {
-            return None;
+            if matches!(index.kind(), ExprKind::String(_)) || index.is_head(B::SPAN) {
+                let Some(next) = crate::composition::part(ev, &value, index, ctx)? else {
+                    return Ok(None);
+                };
+                value = next;
+                continue;
+            }
+            return Ok(None);
         };
         if n.is_zero() {
             value = value.head();
@@ -119,11 +126,11 @@ fn part(ev: &mut Evaluator, args: &[Expr]) -> Option<Expr> {
                 "The requested part does not exist.".into(),
                 MsgLevel::Warning,
             );
-            return None;
+            return Ok(None);
         };
         value = next.clone();
     }
-    Some(value)
+    Ok(Some(value))
 }
 pub(crate) fn range_values(
     start: &Expr,
@@ -167,85 +174,7 @@ pub(crate) fn range_values(
     }
     Ok(Some(values))
 }
-pub(crate) fn apply_function(ev: &mut Evaluator, function: &Expr, args: &[Expr]) -> Option<Expr> {
-    let (body, bindings) = match function.args() {
-        [body] => (body, crate::pattern::Bindings::new()),
-        [parameters, body] => {
-            let parameters = if parameters.is_head(B::LIST) {
-                parameters.args().to_vec()
-            } else {
-                vec![parameters.clone()]
-            };
-            if parameters.len() != args.len() {
-                return None;
-            }
-            let mut bindings = crate::pattern::Bindings::new();
-            for (parameter, arg) in parameters.into_iter().zip(args) {
-                bindings.insert(parameter.as_symbol()?, arg.clone());
-            }
-            (body, bindings)
-        }
-        _ => return None,
-    };
-    enum Walk<'a> {
-        Enter(&'a Expr),
-        Build(&'a om_core::Normal),
-    }
-    let mut work = vec![Walk::Enter(body)];
-    let mut values = Vec::new();
-    while let Some(task) = work.pop() {
-        match task {
-            Walk::Enter(e) => {
-                if e.is_head(B::FUNCTION) {
-                    values.push(e.clone());
-                    continue;
-                }
-                if let Some(value) = e.as_symbol().and_then(|s| bindings.get(&s)) {
-                    values.push(value.clone());
-                    continue;
-                }
-                if e.is_head(B::SLOT) && e.args().len() == 1 {
-                    let index = if let Some(Number::Integer(n)) = e.args()[0].as_number() {
-                        usize::try_from(n).ok()?
-                    } else {
-                        return None;
-                    };
-                    if index == 0 {
-                        values.push(function.clone());
-                    } else if let Some(arg) = args.get(index - 1) {
-                        values.push(arg.clone());
-                    } else {
-                        ev.message(
-                            "Function",
-                            "slotn",
-                            "The requested pure-function slot has no argument.".into(),
-                            MsgLevel::Warning,
-                        );
-                        return None;
-                    }
-                } else if let ExprKind::Normal(n) = e.kind() {
-                    work.push(Walk::Build(n));
-                    work.extend(n.args.iter().rev().map(Walk::Enter));
-                    work.push(Walk::Enter(&n.head));
-                } else {
-                    values.push(e.clone());
-                }
-            }
-            Walk::Build(n) => {
-                let start = values
-                    .len()
-                    .checked_sub(n.args.len())
-                    .expect("invariant: function arguments produced values");
-                let args = values.split_off(start);
-                let head = values
-                    .pop()
-                    .expect("invariant: function head produced a value");
-                values.push(Expr::normal(head, args));
-            }
-        }
-    }
-    values.pop()
-}
+
 fn replace(
     ev: &mut Evaluator,
     expr: &Expr,

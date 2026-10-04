@@ -46,6 +46,59 @@ impl Printer {
                         100,
                     );
                 }
+                if self.modern && head == Some(B::SPAN) && args.len() == 2 {
+                    return (
+                        format!(
+                            "{}..{}",
+                            self.wrapped(&args[0], 66),
+                            self.wrapped(&args[1], 66)
+                        ),
+                        65,
+                    );
+                }
+                if self.modern
+                    && head == Some(B::RECORD)
+                    && args.iter().all(|e| {
+                        e.is_head(B::RULE)
+                            && e.args().len() == 2
+                            && matches!(e.args()[0].kind(), ExprKind::String(_))
+                    })
+                {
+                    if args.is_empty() {
+                        return ("record()".into(), 120);
+                    }
+                    return (
+                        format!(
+                            "{{{}}}",
+                            args.iter()
+                                .map(|e| format!(
+                                    "{}: {}",
+                                    self.emit(&e.args()[0]).0,
+                                    self.emit(&e.args()[1]).0
+                                ))
+                                .collect::<Vec<_>>()
+                                .join(", ")
+                        ),
+                        130,
+                    );
+                }
+                if self.modern && head == Some(B::FUNCTION) && args.len() == 2 {
+                    let parameters = if args[0].is_head(B::LIST) {
+                        args[0].args().to_vec()
+                    } else {
+                        vec![args[0].clone()]
+                    };
+                    if parameters.iter().all(|e| e.as_symbol().is_some()) {
+                        return (
+                            format!(
+                                "fn({}) => {}",
+                                self.args(&parameters),
+                                self.emit(&args[1]).0
+                            ),
+                            1,
+                        );
+                    }
+                }
                 if head == Some(B::LIST) {
                     let contents = self.args(args);
                     return (
@@ -136,9 +189,15 @@ impl Printer {
     fn call(&self, head: &Expr, args: &[Expr]) -> (String, u8) {
         let name = if self.modern {
             head.as_symbol().map_or_else(
-                || match head.kind() {
-                    ExprKind::Normal(n) => self.call(&n.head, &n.args).0,
-                    _ => self.emit(head).0,
+                || {
+                    if head.is_head(B::FUNCTION) && head.args().len() == 2 {
+                        self.wrapped(head, 120)
+                    } else {
+                        match head.kind() {
+                            ExprKind::Normal(n) => self.call(&n.head, &n.args).0,
+                            _ => self.emit(head).0,
+                        }
+                    }
                 },
                 |s| modern_name(s).into(),
             )
@@ -366,6 +425,11 @@ fn implicit_target(e: &Expr) -> bool {
         || (e.is_head(B::POWER) && e.args().len() == 2 && e.args()[0].as_symbol().is_some())
 }
 pub(crate) fn modern_name(s: Symbol) -> &'static str {
+    if !matches!(s, B::ROOT | B::AND | B::OR | B::NOT)
+        && let Some(entry) = om_core::catalog::by_runtime(s.name())
+    {
+        return entry.modern_name.as_str();
+    }
     match s {
         B::SIN => "sin",
         B::COS => "cos",

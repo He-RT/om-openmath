@@ -5,6 +5,11 @@ pub fn names() -> &'static [&'static str] {
     NAMES
 }
 
+/// Pre-.3 reserved lookup for declarations; new aliases cannot rewrite old user definitions.
+pub fn legacy_names() -> &'static [&'static str] {
+    &NAMES[..BuiltinId::LENGTH as usize + 1]
+}
+
 macro_rules! define_builtins {
     ($($ident:ident=$name:literal),* $(,)?) => {
         // The private ordinal enum mirrors the contract's public constant identifiers.
@@ -50,4 +55,5 @@ define_builtins! {
     MAX_EXTRA_CONDITIONS = "MaxExtraConditions", GENERATED_PARAMETERS = "GeneratedParameters",
     WORKING_PRECISION = "WorkingPrecision", MAX_ITERATIONS = "MaxIterations", ACCURACY_GOAL = "AccuracyGoal",
     PRECISION_GOAL = "PrecisionGoal", TABLE = "Table", RANGE = "Range", MAP = "Map", APPLY = "Apply", LENGTH = "Length",
+    RECORD = "Record", DOT = "Dot",
 }

@@ -386,7 +386,7 @@ impl Evaluator {
             self.messages.push(message);
         }
         if pure_head.is_head(B::FUNCTION) {
-            if let Some(new) = crate::structure::apply_function(self, &pure_head, &args) {
+            if let Some(new) = crate::pure::apply(self, &pure_head, &args, ctx)? {
                 frames.push(Frame::Rewrite {
                     old: rebuilt,
                     new,

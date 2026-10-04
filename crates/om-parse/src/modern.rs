@@ -25,6 +25,50 @@ impl Parser<'_> {
         let mut left = self.prefix(stop_bar)?;
         while let Some(token) = self.current() {
             let kind = token.kind;
+            if kind == K::Pipe {
+                if 5 < min {
+                    break;
+                }
+                self.bump();
+                left = self.pipeline(left)?;
+                continue;
+            }
+            if kind == K::Dot {
+                if 120 < min {
+                    break;
+                }
+                self.bump();
+                let field = self.expect(K::Identifier)?;
+                let span = Span {
+                    start: left.span.start,
+                    end: field.span.end,
+                };
+                left = self.call(
+                    B::PART,
+                    vec![
+                        left,
+                        Node::atom(Expr::string(text(self.src, field)), field.span),
+                    ],
+                    span,
+                )?;
+                continue;
+            }
+            if kind == K::Interval {
+                if 65 < min {
+                    break;
+                }
+                if left.expr.is_head(B::SPAN) {
+                    return self.fail("E026", "区间只能有两个端点");
+                }
+                self.bump();
+                let right = self.expression(66, stop_bar)?;
+                let span = Span {
+                    start: left.span.start,
+                    end: right.span.end,
+                };
+                left = self.call(B::SPAN, vec![left, right], span)?;
+                continue;
+            }
             if kind == K::Bar && stop_bar {
                 break;
             }
@@ -45,7 +89,10 @@ impl Parser<'_> {
                 left = self.function_call(left)?;
                 continue;
             }
-            if kind == K::LBracket && left.direct_name && left.span.end == token.span.start {
+            if kind == K::LBracket
+                && (left.direct_name || left.expr.is_head(B::PART) || left.expr.is_head(B::RECORD))
+                && left.span.end == token.span.start
+            {
                 if 120 < min {
                     break;
                 }
@@ -195,6 +242,9 @@ impl Parser<'_> {
             }
             K::Identifier => {
                 let name = text(self.src, token);
+                if name == "fn" && self.lambda_ahead() {
+                    return self.lambda(token.span);
+                }
                 let raw_symbol = Symbol::intern(name);
                 let bound = self.bindings.contains(&raw_symbol)
                     || self.env.known_functions.contains(&raw_symbol);
@@ -298,7 +348,7 @@ impl Parser<'_> {
                     } else {
                         inner.span = span;
                         inner.direct_name = false;
-                        inner.call_syntax = false;
+                        inner.call_syntax = inner.expr.is_head(B::FUNCTION);
                         Ok(inner)
                     }
                 })();
@@ -306,6 +356,9 @@ impl Parser<'_> {
                 result
             }
             K::LBracket | K::LBrace => {
+                if token.kind == K::LBrace && self.record_ahead() {
+                    return self.record_literal(token.span);
+                }
                 self.pos -= 1;
                 let close = if token.kind == K::LBracket {
                     K::RBracket
@@ -446,6 +499,7 @@ fn starts_atom(kind: K) -> bool {
 }
 fn infix(kind: K) -> Option<(u8, u8, Symbol)> {
     Some(match kind {
+        K::PrefixApply => (80, 81, B::DOT),
         K::Rule => (20, 20, B::RULE),
         K::Or => (30, 31, B::OR),
         K::And => (40, 41, B::AND),

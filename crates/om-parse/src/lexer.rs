@@ -76,6 +76,14 @@ pub enum TokenKind {
     Condition,
     /// Prefix function application @.
     PrefixApply,
+    /// Modern left-associative function pipeline.
+    Pipe,
+    /// Modern anonymous function arrow.
+    LambdaArrow,
+    /// Modern closed directed interval.
+    Interval,
+    /// Modern literal record field access.
+    Dot,
     /// Postfix function application //.
     PostfixApply,
     /// Head application @@.
@@ -306,6 +314,19 @@ impl Scanner<'_> {
                 "not" if self.dialect != Dialect::Wolfram => K::Not,
                 _ => K::Identifier,
             };
+        }
+        if self.dialect != Dialect::Wolfram {
+            for (spelling, kind) in [
+                ("|>", K::Pipe),
+                ("=>", K::LambdaArrow),
+                ("..", K::Interval),
+                (".", K::Dot),
+            ] {
+                if self.rest().starts_with(spelling) {
+                    self.pos += spelling.len();
+                    return kind;
+                }
+            }
         }
         for &(spelling, kind) in OPERATORS {
             if self.rest().starts_with(spelling) {

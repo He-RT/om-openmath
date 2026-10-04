@@ -1008,7 +1008,9 @@
     {
       "id": "fn_000153",
       "initial_name": "dot",
-      "runtime_names": []
+      "runtime_names": [
+        "Dot"
+      ]
     },
     {
       "id": "fn_000154",
@@ -1293,7 +1295,9 @@
     {
       "id": "fn_000210",
       "initial_name": "record",
-      "runtime_names": []
+      "runtime_names": [
+        "Record"
+      ]
     },
     {
       "id": "fn_000211",

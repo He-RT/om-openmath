@@ -91,10 +91,8 @@ mod tests {
         }
         assert_eq!(Symbol::intern("List"), Symbol::builtin(0));
         assert_eq!(Symbol::intern("Plus"), Symbol::builtin(1));
-        assert_eq!(
-            Symbol::intern("Length"),
-            Symbol::builtin((NAMES.len() - 1) as u32)
-        );
+        // The pre-.3 boundary stays fixed when later builtins are appended.
+        assert_eq!(Symbol::intern("Length"), Symbol::builtin(139));
     }
     #[test]
     fn symbol_serde_uses_names_instead_of_process_local_ids() {

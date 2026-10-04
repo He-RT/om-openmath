@@ -35,7 +35,9 @@ impl Scanner<'_> {
                             .all(|c| c.is_digit(r))
                     });
             } else {
-                if self.peek() == Some('.') {
+                if self.peek() == Some('.')
+                    && !(self.dialect != Dialect::Wolfram && self.rest().starts_with(".."))
+                {
                     self.bump();
                     let (_, correct) = self.digits(10, separators);
                     valid &= correct;
@@ -44,7 +46,9 @@ impl Scanner<'_> {
                     self.bump();
                     let (_, correct) = self.digits(10, false);
                     valid &= correct;
-                    if self.peek() == Some('.') {
+                    if self.peek() == Some('.')
+                        && !(self.dialect != Dialect::Wolfram && self.rest().starts_with(".."))
+                    {
                         self.bump();
                         let (_, correct) = self.digits(10, false);
                         valid &= correct;

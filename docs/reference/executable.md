@@ -4,7 +4,7 @@
 
 [全景目录](README.md) · [下一版账本](../plan/NEXT_RELEASE.md)
 
-描述版本 2；下列均有真实回调。统一 mode/output、组合语法和后续数学能力仍须按 R3.2–R3.6 交付。参数类型约束用于字面输入；符号与表达式在真实回调求值后检查。默认表达式仅描述省略行为，不自动插入参数；上下文默认值不伪装成字面值。副作用标签只描述入口，不能授权嵌套函数或替代只读隔离。
+描述版本 3；下列均有真实回调。现代组合语法及已有回调的 mode/output 已接通，后续数学能力仍须按 R3.3–R3.6 交付。参数类型约束用于字面输入；符号与表达式在真实回调求值后检查。默认表达式仅描述省略行为，不自动插入参数；上下文默认值不伪装成字面值。副作用标签只描述入口，不能授权嵌套函数或替代只读隔离。
 
 ## abs
 
@@ -225,6 +225,7 @@
 |---|---|---|---|---|---|
 | `x` | 位置 | expression | 是 | 必填 |  |
 | `step` | 位置 | expression | 否 | 1 |  |
+| `step` | 命名 | expression | 否 | 1 |  |
 
 数学边界与精度：[所属条目](basics.md#ceil)。
 
@@ -251,6 +252,7 @@
 | `expr` | 位置 | expression | 是 | 必填 |  |
 | `variable` | 位置 | expression | 是 | 必填 |  |
 | `order` | 位置 | expression | 否 | 1 |  |
+| `order` | 命名 | integer | 否 | 1 | ; ≥0 |
 
 数学边界与精度：[所属条目](algebra.md#coefficient)。
 
@@ -278,6 +280,7 @@
 | `expr` | 位置 | expression | 是 | 必填 |  |
 | `variables` | 位置 | expression | 是 | 必填 |  |
 | `coefficient_fn` | 位置 | expression | 否 | Identity |  |
+| `coefficient_fn` | 命名 | expression | 否 | 省略时不转换系数 |  |
 
 数学边界与精度：[所属条目](algebra.md#collect)。
 
@@ -416,6 +419,7 @@
 | `expr` | 位置 | expression | 是 | 必填 |  |
 | `variable` | 位置 | expression | 是 | 必填 |  |
 | `variables` | 位置（重复） | expression | 否 | 由真实回调按输入推断或省略；不填造字面默认值 |  |
+| `order` | 命名 | integer | 否 | 1 | ; ≥0 |
 
 数学边界与精度：[所属条目](calculus.md#diff)。
 
@@ -578,8 +582,10 @@
 |---|---|---|---|---|---|
 | `equations` | 位置 | expression | 是 | 必填 |  |
 | `starts` | 位置 | expression | 是 | 必填 |  |
+| `initial` | 命名 | expression | 否 | 与bracket互斥；配合裸变量 |  |
+| `bracket` | 命名 | expression | 否 | 与initial互斥；配合裸变量和两端点区间 |  |
 | `steps` | 命名 | boolean | 否 | 继承当前 EvalSettings.record_steps |  |
-| `precision` | 命名 | integer | 否 | MachinePrecision | MachinePrecision; ≥5; ≤2466 |
+| `precision` | 命名 | integer | 否 | MachinePrecision | MachinePrecision, machine; ≥5; ≤2466 |
 | `method` | 命名 | enum | 否 | Automatic | Automatic, Newton, Brent |
 | `max_iterations` | 命名 | integer | 否 | 100 | ; ≥1 |
 
@@ -607,6 +613,7 @@
 |---|---|---|---|---|---|
 | `x` | 位置 | expression | 是 | 必填 |  |
 | `step` | 位置 | expression | 否 | 1 |  |
+| `step` | 命名 | expression | 否 | 1 |  |
 
 数学边界与精度：[所属条目](basics.md#floor)。
 
@@ -861,6 +868,7 @@
 |---|---|---|---|---|---|
 | `expr` | 位置 | expression | 是 | 必填 |  |
 | `precision` | 位置 | expression | 否 | MachinePrecision |  |
+| `precision` | 命名 | integer | 否 | MachinePrecision | machine; ≥1; ≤4932 |
 
 数学边界与精度：[所属条目](basics.md#numeric)。
 
@@ -883,7 +891,7 @@
 | `max_extra_conditions` | 命名 | integer | 否 | 0 | All; ≥0 |
 | `generated_parameters` | 命名 | symbol | 否 | C |  |
 | `inverse_functions` | 命名 | boolean | 否 | True |  |
-| `precision` | 命名 | integer | 否 | MachinePrecision | MachinePrecision; ≥5; ≤2466 |
+| `precision` | 命名 | integer | 否 | MachinePrecision | MachinePrecision, machine; ≥5; ≤2466 |
 
 历史仅接受语法的选项：`method`, `max_iterations`；不作为当前可用选项推荐，回调继续给出不支持诊断。
 
@@ -908,7 +916,7 @@
 | `max_extra_conditions` | 命名 | integer | 否 | 0 | All; ≥0 |
 | `generated_parameters` | 命名 | symbol | 否 | C |  |
 | `inverse_functions` | 命名 | boolean | 否 | True |  |
-| `precision` | 命名 | integer | 否 | MachinePrecision | MachinePrecision; ≥5; ≤2466 |
+| `precision` | 命名 | integer | 否 | MachinePrecision | MachinePrecision, machine; ≥5; ≤2466 |
 
 历史仅接受语法的选项：`method`, `max_iterations`；不作为当前可用选项推荐，回调继续给出不支持诊断。
 
@@ -985,6 +993,7 @@
 |---|---|---|---|---|---|
 | `expr` | 位置 | expression | 是 | 必填 |  |
 | `axis` | 位置 | expression | 是 | 必填 |  |
+| `view` | 命名 | enum | 否 | "line" | line, contour |
 | `plot_range` | 命名 | expression | 否 | Automatic |  |
 
 数学边界与精度：[所属条目](plots.md#plot)。
@@ -1141,6 +1150,7 @@
 | `start_or_end` | 位置 | expression | 是 | 必填 |  |
 | `end` | 位置 | expression | 否 | 由真实回调按输入推断或省略；不填造字面默认值 |  |
 | `step` | 位置 | expression | 否 | 1 |  |
+| `step` | 命名 | expression | 否 | 1 |  |
 
 数学边界与精度：[所属条目](data.md#range)。
 
@@ -1291,6 +1301,7 @@
 |---|---|---|---|---|---|
 | `x` | 位置 | expression | 是 | 必填 |  |
 | `step` | 位置 | expression | 否 | 1 |  |
+| `step` | 命名 | expression | 否 | 1 |  |
 
 数学边界与精度：[所属条目](basics.md#round)。
 
@@ -1405,6 +1416,7 @@
 |---|---|---|---|---|---|
 | `expr` | 位置 | expression | 是 | 必填 |  |
 | `arg2` | 位置 | expression | 否 | 由真实回调按输入推断或省略；不填造字面默认值 |  |
+| `level` | 命名 | enum | 否 | "basic" | basic, deep |
 | `assumptions` | 命名 | expression | 否 | True |  |
 
 数学边界与精度：[所属条目](algebra.md#simplify)。
@@ -1456,6 +1468,8 @@
 | `equations` | 位置 | expression | 是 | 必填 |  |
 | `variables` | 位置 | expression | 否 | 由真实回调按输入推断或省略；不填造字面默认值 |  |
 | `domain` | 位置 | expression | 否 | 由真实回调按输入推断或省略；不填造字面默认值 |  |
+| `mode` | 命名 | enum | 否 | "exact" | exact, numeric |
+| `output` | 命名 | enum | 否 | "rules" | rules, values |
 | `steps` | 命名 | boolean | 否 | 继承当前 EvalSettings.record_steps |  |
 | `domain` | 命名 | enum | 否 | Complexes | Complexes, Reals, Integers, Rationals, positives |
 | `cubics` | 命名 | boolean | 否 | False |  |
@@ -1639,4 +1653,29 @@
 | `expr` | 位置 | expression | 是 | 必填 |  |
 
 数学边界与精度：[所属条目](algebra.md#variables)。
+
+## record
+
+稳定身份 `fn_000210`；回调 `Record`；归属 `record`。兼容拼写：无其他现代拼写。
+
+保持属性：protected；管道输入位置：0；入口副作用：`pure`。
+
+| 参数 | 角色 | 类型 | 必填 | 默认值或上下文 | 枚举 / 范围 |
+|---|---|---|---|---|---|
+| `entries` | 位置（重复） | expression | 否 | 允许空记录 |  |
+
+数学边界与精度：[所属条目](data.md#record)。
+
+## dot
+
+稳定身份 `fn_000153`；回调 `Dot`；归属 `dot`。兼容拼写：无其他现代拼写。
+
+保持属性：protected；管道输入位置：1；入口副作用：`pure`。
+
+| 参数 | 角色 | 类型 | 必填 | 默认值或上下文 | 枚举 / 范围 |
+|---|---|---|---|---|---|
+| `a` | 位置 | expression | 是 | 必填 |  |
+| `b` | 位置 | expression | 是 | 必填 |  |
+
+数学边界与精度：[所属条目](linear.md#dot)。
 

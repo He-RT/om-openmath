@@ -57,6 +57,8 @@ PowerShell 使用 `$env:OPENMATH_E2E_PREVIEW = '1'`，再运行相同 npm 命令
 
 ## 新增常用函数
 
+下一版按[研发账本](plan/NEXT_RELEASE.md)推进；[现代设计](design/modern-language.md)与[功能目录](reference/README.md)锁定接口。本轮目录尚未接入运行时，R3.1再统一别名/参数/补全/帮助/能力查询，不以计划条目扩展当前可执行集合。
+
 普通数学函数在共享 Rust 内核实现一次，桌面、Web、CLI 和原生移动端复用。按所属类别更新 `crates/om-eval/src/*_registry.rs` 的求值入口、参数约束和中英文 `DocEntry`；解析名称和显示语法分别检查 `om-core` / `om-parse` / `om-format`。本地补全与 Hover 读取同一函数文档，不另写 Swift 函数分发表。
 
 为新函数加入独立数学期望，以及参数错误、定义域、精确/数值结果和中断的必要用例。保留现有 53 条权威语料的期望。涉及绘图时同时接入 `om-eval` 的数值编译器；涉及新的公式命令时检查 SwiftMath 的真实排版，未知命令仍显示可复制源码。
@@ -70,3 +72,16 @@ bash ios/Scripts/build-kernel.sh
 ```
 
 每轮使用独立模拟器并保留独立 `.xcresult`，结束后移除本轮临时模拟器。文档恢复测试使用独立 UserDefaults，HTTP fixture 使用独立端点，避免前一用例的自动保存或取消请求影响下一用例。仓库文本显式使用 UTF-8；Xcode 环境检查完整读取版本输出。上述基础设施不应因添加数学函数而反复出现同一错误。新协议字段、结果类型或算法行为仍需相应契约测试及各平台适配。
+
+### 目录维护
+
+编辑 `docs/reference/functions.toml`，规范名/别名可以演进，稳定 `id` 及已有回调归属不能随之变化；新增身份显式追加到身份账本。参数 `default` 当前是说明文本，不是Agent工具schema的默认值。副作用分类是预留描述，不能替代只读执行、权限和传递性检查。
+
+```sh
+python3 scripts/function_docs.py
+python3 scripts/function_docs.py --check
+python3 -X warn_default_encoding -W error::EncodingWarning -m unittest discover -s tests -v
+CARGO_PROFILE_TEST_OPT_LEVEL=2 cargo test -p om-eval --test function_catalog --locked
+```
+
+Rust审计穷尽真实DocEntry注册名并检查当前示例；Python检查目录/证据/稳定身份/生成一致性和未实现条目不冒充支持。副作用和Agent事务的运行时仍在后续阶段；不引入Pi/Rig类型到业务协议，不把Agent会话/日志/提示词/权限或凭据塞进.omnb。

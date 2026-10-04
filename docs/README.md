@@ -6,6 +6,9 @@
 |---|---|
 | 下载、安装、卸载或校验 | [安装指南](install.md) |
 | 写公式、使用笔记本或终端 | [输入语言](language.md) |
+| 查询全部功能族、当前支持和未来接口 | [全景功能目录](reference/README.md) |
+| 理解现代语法与统一接口设计 | [现代语言设计](design/modern-language.md) |
+| 查看下一版科研功能与Agent预留 | [下一版计划](plan/NEXT_RELEASE.md) |
 | 了解求解支持范围和验证含义 | [求解指南](solve.md) |
 | 接入 DeepSeek 或其他模型 | [AI 配置](llm.md) |
 | 编译、测试和贡献代码 | [开发指南](development.md) |

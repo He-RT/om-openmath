@@ -4,6 +4,8 @@
 
 现代语法与 Wolfram 语法解析到同一棵表达式树。现代函数用圆括号、列表用方括号，`let x=value` 赋值，`x=value` 表示等式；Wolfram 函数用方括号、列表用花括号，`x=value` 赋值，`x==value` 表示等式。完整规格见[计划 §7](plan/PLAN.md#7-输入语言规格现代方言--wolfram-方言)。
 
+本页描述当前 `.2`。新管道、`fn`、区间、记录、矩阵 `@` 及统一 `mode/output` 尚未实现，设计见[现代语言](design/modern-language.md)。[全景目录](reference/README.md)分别列当前可用签名与目标接口，不能把规范名称或已被解析的名字当作已实现函数。
+
 ## 常用表达式
 
 | 操作 | 现代语法 | Wolfram | 结果 |

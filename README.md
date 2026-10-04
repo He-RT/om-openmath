@@ -74,6 +74,7 @@ cargo build -p om-cli --release --locked
 - [安装及常见问题](docs/install.md)、[输入语言与交互](docs/language.md)
 - [求解语义与边界](docs/solve.md)、[模型接入与隐私](docs/llm.md)
 - [开发与验证](docs/development.md)、[内核协议](docs/protocol.md)、[发布流程](docs/releasing.md)
+- [全景功能目录](docs/reference/README.md)、[现代语言设计](docs/design/modern-language.md)、[下一版计划](docs/plan/NEXT_RELEASE.md)（规划接口尚未实现）
 - [原生 iOS/iPadOS 使用与构建](docs/ios.md)、[移动端验收记录](docs/ios-acceptance.md)
 - [发行说明](docs/release-0.1.0-pre-alpha.2.md)、[验收记录](docs/pre-alpha.md)、[实施进度](docs/plan/PROGRESS.md)
 

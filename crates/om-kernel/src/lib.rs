@@ -4,6 +4,8 @@
 /// Pure LLM proposal verification and completion post-processing at the CAS host layer.
 pub mod assistant;
 
+/// Executable function descriptions and host capabilities.
+pub mod capabilities;
 /// Shared configuration and key masking.
 pub mod config;
 /// Explicit host-native configuration IO and credential resolution.

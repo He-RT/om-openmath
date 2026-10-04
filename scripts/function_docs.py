@@ -7,6 +7,7 @@ from pathlib import Path
 import re
 import sys
 import tomllib
+from runtime_catalog import render_runtime
 
 ROOT = Path(__file__).resolve().parents[1]
 CATALOG = ROOT / "docs/reference/functions.toml"
@@ -54,7 +55,7 @@ def validate(catalog: dict) -> None:
             raise ValueError(f"{ident} 的状态无效")
         if entry["kind"] not in {"function", "operator", "constant"}:
             raise ValueError(f"{ident} 的符号类型无效")
-        if entry["effect_class"] not in EFFECTS or entry["validation_stage"] != "documentation_only":
+        if entry["effect_class"] not in EFFECTS or entry["validation_stage"] not in {"documentation_only", "runtime_verified"}:
             raise ValueError(f"{ident} 的预留副作用或参数验证阶段无效")
         if entry["status"] == "planned" and not entry["planned_examples"]:
             raise ValueError(f"{ident} 缺少下一版示例")
@@ -93,6 +94,7 @@ def validate(catalog: dict) -> None:
                 symbol = ref.split("#", 1)[1]
                 if not re.search(r"\bfn\s+" + re.escape(symbol) + r"\s*\(", path.read_text(encoding="utf-8")):
                     raise ValueError(f"测试名不存在：{ref}")
+    render_runtime(catalog)
     for feature in catalog.get("features", []):
         if feature["status"] not in STATUSES:
             raise ValueError(f"功能族状态无效：{feature['id']}")
@@ -134,7 +136,7 @@ def render(catalog: dict) -> dict[Path, str]:
     counts = Counter(e["status"] for e in entries)
     index = [generated, "# 全景功能目录\n\n", f"当前发行：`{catalog['current_version']}`；下一版目标：`{catalog['target_version']}`。\n\n",
              "此目录是设计与真实实现的对照。规范名称不等于当前已接受的调用名；每项分别列当前签名和目标签名。规划条目不会自动进入运行时或可执行补全。别名不作为新增数学能力计数。\n\n",
-             "稳定 ID 使用独立的 `fn_000001` 等身份，不随名称/别名变化；[身份账本](function-identities.json)记录初始归属。副作用标签是设计预留，不是运行时授权；`unclassified` 不授予执行能力。当前参数默认值是文字说明，尚非可验证的 Agent 工具 schema，能力查询/Notebook事务仍未实现。\n\n",
+             "稳定 ID 使用独立的 `fn_000001` 等身份，不随名称/别名变化；[身份账本](function-identities.json)记录初始归属。副作用标签是设计预留，不是运行时授权；`unclassified` 不授予执行能力。runtime 区域提供当前回调的类型、保持角色、字面/上下文默认值；解析、补全、Hover 与 GetFunctionCatalog/GetCapabilities 共用生成元数据。目录的目标参数仍是设计文字，Notebook事务与Agent授权尚未实现。[当前可执行接口](executable.md)按实际回调列明。\n\n",
              "| 状态 | 条目数 | 含义 |\n|---|---:|---|\n"]
     descriptions = {"implemented": "在所列支持范围内已有实现", "partial": "已有真实入口，但数学范围或目标接口未完整交付", "planned": "锁定下一版，当前不可用", "deferred": "进入全景目录，下一版不承诺实现"}
     for status, label in STATUSES.items():
@@ -184,6 +186,22 @@ def render(catalog: dict) -> dict[Path, str]:
     for symbol in catalog.get("symbols", []):
         index.append(f"| {code(symbol['name'])} | {cell(', '.join(symbol['aliases']))} | {cell(symbol['meaning'])} |\n")
     index.append("\n## 维护与验证\n\n```sh\npython3 scripts/function_docs.py --check\nCARGO_PROFILE_TEST_OPT_LEVEL=2 cargo test -p om-eval --test function_catalog --locked\n```\n\n目录校验检查状态、稳定身份、副作用预留、必填字段、证据和生成文件一致性；Rust 契约比较真实注册表与当前示例。测试引用表示已有覆盖入口，不代替本轮执行日志，也不意味着规划接口已实现。后续类型/必填/枚举/范围及实际默认值接入时另升级描述版本，不能将文字说明直接传给模型。\n")
+    runtime = [generated, "# 当前可执行接口与参数 schema\n\n", "[全景目录](README.md) · [下一版账本](../plan/NEXT_RELEASE.md)\n\n", "描述版本 2；下列均有真实回调。统一 mode/output、组合语法和后续数学能力仍须按 R3.2–R3.6 交付。参数类型约束用于字面输入；符号与表达式在真实回调求值后检查。默认表达式仅描述省略行为，不自动插入参数；上下文默认值不伪装成字面值。副作用标签只描述入口，不能授权嵌套函数或替代只读隔离。\n\n"]
+    owners = {n: f for f in entries for n in f["runtime_names"]}
+    for r in catalog.get("runtime", []):
+        f = owners[r["name"]]
+        runtime.extend([f"## {r['modern_name']}\n\n", f"稳定身份 `{f['id']}`；回调 `{r['name']}`；归属 `{f['name']}`。兼容拼写：" + (", ".join(code(n) for n in r['aliases']) or "无其他现代拼写") + "。\n\n", f"保持属性：{', '.join(r['attributes'])}；管道输入位置：{f['pipe_arg']}；入口副作用：`{f['effect_class']}`。\n\n", "| 参数 | 角色 | 类型 | 必填 | 默认值或上下文 | 枚举 / 范围 |\n|---|---|---|---|---|---|\n"])
+        for role, params in [("位置", r['parameters']), ("命名", r['options'])]:
+            for p in params:
+                default = p.get('default_source') or p.get('default_context') or '必填'
+                bounds = ', '.join(p.get('enum_values', []))
+                if 'min' in p: bounds += f"; ≥{p['min']}"
+                if 'max' in p: bounds += f"; ≤{p['max']}"
+                runtime.append(f"| {code(p['name'])} | {role}{'（重复）' if p['variadic'] else ''} | {p['value_type']} | {'是' if p['required'] else '否'} | {cell(default)} | {cell(bounds)} |\n")
+        if r.get('compatibility_syntax'):
+            runtime.append("\n历史仅接受语法的选项：" + ", ".join(code(n) for n in r['compatibility_syntax']) + "；不作为当前可用选项推荐，回调继续给出不支持诊断。\n")
+        runtime.append("\n数学边界与精度：[所属条目]("+f['category']+".md#"+f['name']+")。\n\n")
+    outputs[ROOT / "docs/reference/executable.md"] = "".join(runtime)
     outputs[ROOT / "docs/reference/README.md"] = "".join(index)
     return outputs
 
@@ -197,6 +215,7 @@ def main() -> int:
     import json
     validate_identities(catalog, json.loads(IDENTITIES.read_text(encoding="utf-8")))
     outputs = render(catalog)
+    outputs.update(render_runtime(catalog))
     stale = [path for path, text in outputs.items() if not path.is_file() or path.read_text(encoding="utf-8") != text]
     if args.check and stale:
         print("参考文档过期：" + ", ".join(str(p.relative_to(ROOT)) for p in stale), file=sys.stderr)

@@ -98,3 +98,66 @@ fn notebook_cells_preserve_their_declared_dialect() {
     let value: serde_json::Value = serde_json::from_slice(&output.stdout).unwrap();
     assert_eq!(value["items"][0]["input_form"], "1");
 }
+
+#[test]
+fn executable_help_and_capabilities_are_query_only_and_never_include_plans() {
+    use std::{io::Write, process::Stdio};
+    let mut child = Command::new(env!("CARGO_BIN_EXE_om"))
+        .args(["--no-config", "--language", "zh-CN", "--json"])
+        .stdin(Stdio::piped())
+        .stdout(Stdio::piped())
+        .stderr(Stdio::piped())
+        .spawn()
+        .unwrap();
+    child
+        .stdin
+        .take()
+        .unwrap()
+        .write_all(b":functions\n:options find_root\n:help fn_000001\n:capabilities\n1+1\n:quit\n")
+        .unwrap();
+    let out = child.wait_with_output().unwrap();
+    assert!(out.status.success());
+    assert!(
+        out.stderr.is_empty(),
+        "{}",
+        String::from_utf8_lossy(&out.stderr)
+    );
+    let rows: Vec<serde_json::Value> = String::from_utf8(out.stdout)
+        .unwrap()
+        .lines()
+        .map(|line| serde_json::from_str(line).unwrap())
+        .collect();
+    assert_eq!(rows.len(), 5);
+    assert!(
+        rows[0]["functions"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .any(|f| f["modern_name"] == "polynomial_gcd")
+    );
+    assert!(
+        !rows[0]["functions"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .any(|f| f["modern_name"] == "ode")
+    );
+    assert!(
+        rows[1]
+            .as_array()
+            .unwrap()
+            .iter()
+            .any(|p| p["name"] == "max_iterations" && p["default_source"] == "100")
+    );
+    assert_eq!(rows[2]["descriptor"]["name"], "Abs");
+    assert!(
+        !rows[2]["documentation"]["summary"]
+            .as_str()
+            .unwrap()
+            .is_empty()
+    );
+    assert_eq!(rows[3]["capabilities"]["scene_3d"], false);
+    assert!(rows[3]["capabilities"]["task_permissions"].is_null());
+    assert_eq!(rows[4]["items"][0]["input_form"], "2");
+    assert_eq!(rows[4]["items"][0]["out_index"], 1);
+}

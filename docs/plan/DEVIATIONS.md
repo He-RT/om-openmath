@@ -1,5 +1,7 @@
 # 实施裁决
 
+- **P117 — R3.1 可执行描述与兼容裁决（2026-10-05）：** functions.toml 新增 runtime 区域，记录真实回调的参数个数、保持属性、当前别名、位置角色与实际命名选项。生成 JSON 由 om-core 纯 serde 层读取，解析/补全/Hover/AI 与 GetFunctionCatalog/GetCapabilities 使用同源描述；复用已审计 serde_json/ts-rs（后者仅 catalog-ts 功能），无新外部包。核心保持禁止 unsafe、无 IO/HTTP，能力查询只读且不重置取消。版本为描述2/应用.2；查询将内核身份、展示平台与 task_permissions=null 分开，三维仍false。目录不注册回调，也不把规划或六个 Agent 工具放入执行集合。未知命名选项诊断带拼写修复，符号值留给真实回调求值检查；保留旧求解解析向量中 method/max_iterations 的仅语法兼容与原有不支持诊断，不作为已支持参数推荐。steps 对接真实 SolveOptions.record_steps；省略继承 EvalSettings，未改变原始语料/数学期望。已有用户函数绑定优先于新增别名。
+
 - **P116 — .3现代接口/科研范围及R3.0文档（2026-10-05）：** 用户选择渐进兼容、统一入口+显式模式、科研计算优先、常用符号+稳健数值、三维先桌面/Web。新规范/批次以NEXT_RELEASE及modern-language为准，保留旧数学语料/.omnb v1/.1/.2；本轮只落实文档审计，不加占位回调、不升级运行时版本。全景目录分真实注册与规划，元数据尚未驱动解析/补全。文档稳定ID与名称分离，身份账本锁定已有回调归属，参数默认值目前是文字说明。用户追加Notebook Agent预留：可验证参数、副作用/能力版本、原子文档版本/幂等/撤销/取消、框架无关类型与会话/笔记本分离；全部未实现，不安装Pi/Rig、不开放写入工具。新增测试仅验证文档与真实注册/证据/身份/未实现标记，不修改CAS算法或原数学期望。
 
 - **P115 — iOS 真实运行边界修复：** 同一C ABI模块调用Apple SDK公开pthread QoS ABI，将专有内核线程与Swift串行队列统一为user-initiated，消除跨QoS等待；不改变CAS算法/期望/预算。Swift取消票据在线程队列开始前拒绝过期请求、运行期间仅中断本会话；LLM已运行请求保留实际终止事件，超时即便transport Task取消仍用独立任务反馈HttpEnd。IME期间保存宿主草稿但不送入内核/运行/接受补全；提交后同步真实文本。空可选提供商参数规范成空对象，兼容已有Keychain null记录。用户于后续要求释放手机并先测试iPad；使用Xcode27 Device Hub进行实际屏幕/键盘/截图验收，保留手机XCUITest驱动code74与旧iPad模拟器XCTWaiter失败，不伪称这些失败通过。

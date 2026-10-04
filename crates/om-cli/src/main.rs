@@ -2,6 +2,7 @@
 #![forbid(unsafe_code)]
 
 mod args;
+mod catalog;
 mod commands;
 mod editor;
 mod hints;

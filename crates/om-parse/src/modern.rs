@@ -196,7 +196,8 @@ impl Parser<'_> {
             K::Identifier => {
                 let name = text(self.src, token);
                 let raw_symbol = Symbol::intern(name);
-                let bound = self.bindings.contains(&raw_symbol);
+                let bound = self.bindings.contains(&raw_symbol)
+                    || self.env.known_functions.contains(&raw_symbol);
                 let function = if bound {
                     None
                 } else {

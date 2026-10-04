@@ -5,6 +5,8 @@ import json
 from pathlib import Path
 import tomllib
 import unittest
+import sys
+sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "scripts"))
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -56,6 +58,22 @@ class FunctionDocsTests(unittest.TestCase):
         plan = (ROOT / "docs/plan/NEXT_RELEASE.md").read_text(encoding="utf-8")
         for text in ["尚未实现", "document_revision", "operation_id", "不静默覆盖", "不写入笔记本", "不安装 Pi/Rig"]:
             self.assertIn(text, plan)
+
+    def test_runtime_schema_rejects_missing_callback_or_fictitious_defaults(self):
+        catalog = copy.deepcopy(self.catalog)
+        catalog["runtime"].pop()
+        with self.assertRaises(ValueError):
+            self.docs.validate(catalog)
+        catalog = copy.deepcopy(self.catalog)
+        runtime = next(r for r in catalog["runtime"] if r["name"] == "FindRoot")
+        runtime["options"][0]["default_source"] = "省略"
+        with self.assertRaises(ValueError):
+            self.docs.validate(catalog)
+        catalog = copy.deepcopy(self.catalog)
+        catalog["runtime"][0]["aliases"].append("ode")
+        catalog["runtime"][1]["aliases"].append("ode")
+        with self.assertRaises(ValueError):
+            self.docs.validate(catalog)
 
     def test_invalid_evidence_or_effect_class_is_rejected(self):
         catalog = copy.deepcopy(self.catalog)

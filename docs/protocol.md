@@ -132,3 +132,9 @@ git diff --exit-code app/src/kernel/generated
 ```
 
 所有可达 DTO 提交到 generated，禁止手改。CI 同时检查差异与新增未追踪文件；前端检查类型收窄和代表 JSON。协议 fixture 保留旧 shape，扩展字段独立测试。真实 Windows 安装窗口、生产 WASM、原生宿主测试补充真实执行证据，不能以 MockKernel 替代。
+
+## 当前函数描述与能力查询（R3.1）
+
+`{"type":"get_function_catalog"}` 返回 `function_catalog` 与 `catalog`：schema_version=1、metadata_version=2 及真实回调描述。稳定 `id` 由函数语义所属身份提供；`name` 为回调，`modern_name` 为当前可调用现代拼写，统一家族的其他模式尚须 R3.2 接入。参数类型、默认源码/上下文、枚举、范围、保持属性与管道位置来自同一生成目录；规划条目不进入此响应。`compatibility_syntax` 明确列旧解析器仅接受语法但回调未支持的选项，不能当作成功能力。
+
+`{"type":"get_capabilities","platform":"ios"}` 返回 `capabilities`，区分编译内核版本/函数身份和 cli/desktop/web/ios 当前展示能力。当前 `scene_3d=false`、`task_permissions=null`；查询不会为 Agent 授权，不包含配置、凭据、笔记本源码、会话或操作日志。查询不求值，不修改定义、历史、文档或取消信号。iOS 仍使用现有 JSON 协议与 C ABI，无 ABI 版本变更。

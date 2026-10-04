@@ -60,3 +60,43 @@ fn catalog_current_examples_are_registered_examples_and_parse() {
         }
     }
 }
+
+#[test]
+fn export_registry_audit() {
+    use om_eval::{Arity, Attributes as A};
+    let Ok(path) = std::env::var("OPENMATH_RUNTIME_AUDIT_PATH") else {
+        return;
+    };
+    let mut text = String::new();
+    for spec in Evaluator::all_specs() {
+        let (min, max) = match spec.arity {
+            Arity::Exactly(n) => (n, Some(n)),
+            Arity::Range(a, b) => (a, Some(b)),
+            Arity::AtLeast(n) => (n, None),
+            Arity::Any => (0, None),
+        };
+        text.push_str(&format!(
+            "[[runtime]]\nname = {:?}\nmin = {min}\n",
+            spec.symbol.name()
+        ));
+        if let Some(max) = max {
+            text.push_str(&format!("max = {max}\n"));
+        }
+        let attributes: Vec<_> = [
+            ("hold_all", A::HOLD_ALL),
+            ("hold_first", A::HOLD_FIRST),
+            ("hold_rest", A::HOLD_REST),
+            ("listable", A::LISTABLE),
+            ("protected", A::PROTECTED),
+            ("numeric_function", A::NUMERIC_FUNCTION),
+            ("flat", A::FLAT),
+            ("orderless", A::ORDERLESS),
+            ("one_identity", A::ONE_IDENTITY),
+        ]
+        .into_iter()
+        .filter_map(|(name, attr)| spec.attrs.contains(attr).then_some(name))
+        .collect();
+        text.push_str(&format!("attributes = {attributes:?}\n"));
+    }
+    std::fs::write(path, text).unwrap();
+}

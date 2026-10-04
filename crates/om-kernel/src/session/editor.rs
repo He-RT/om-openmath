@@ -125,7 +125,11 @@ impl Session {
             let bare = om_parse::identifier_symbol(name, dialect, self.constants(), false)?;
             let stored = self.eval.defs.own_value(bare).is_some()
                 || !self.eval.defs.down_values(bare).is_empty();
-            let symbol = if !word.call && stored {
+            let symbol = if stored
+                && (!word.call
+                    || !self.eval.defs.down_values(bare).is_empty()
+                    || self.eval.defs.known_functions().contains(&bare))
+            {
                 bare
             } else {
                 om_parse::identifier_symbol(name, dialect, self.constants(), true)?

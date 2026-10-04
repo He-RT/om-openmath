@@ -114,12 +114,16 @@ impl Host {
         let (name, rest) = input.split_once(' ').unwrap_or((input, ""));
         match name {
             ":quit" | ":q" => return Ok(Action::Quit),
+            ":help" if !rest.trim().is_empty() => self.catalog_command(name, rest.trim())?,
+            ":functions" | ":options" | ":capabilities" => {
+                self.catalog_command(name, rest.trim())?
+            }
             ":help" => println!(
                 "{}",
                 render::text(
                     self.zh(),
-                    ":help :steps :latex :dialect modern|wolfram|auto :clear :ask 问题 :explain :config :quit",
-                    ":help :steps :latex :dialect modern|wolfram|auto :clear :ask QUESTION :explain :config :quit"
+                    ":help [函数] :functions :options 函数 :capabilities :steps :latex :dialect modern|wolfram|auto :clear :ask 问题 :explain :config :quit",
+                    ":help [FUNCTION] :functions :options FUNCTION :capabilities :steps :latex :dialect modern|wolfram|auto :clear :ask QUESTION :explain :config :quit"
                 )
             ),
             ":dialect" => {

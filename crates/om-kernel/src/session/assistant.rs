@@ -24,7 +24,13 @@ impl Session {
         let result = match request {
             Request::LlmTranslate { text, .. } => {
                 let functions = om_eval::Evaluator::all_docs()
-                    .map(|doc| doc.name)
+                    .map(|doc| {
+                        format!(
+                            "{} ({})",
+                            om_parse::modern_name(om_core::Symbol::intern(doc.name)),
+                            doc.name
+                        )
+                    })
                     .collect::<Vec<_>>()
                     .join(", ");
                 let mut defined = self

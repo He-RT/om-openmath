@@ -5,6 +5,8 @@
 pub mod builtins;
 /// Canonical ordering and expression constructors.
 pub mod canon;
+/// Audited executable metadata shared by parsing and hosts.
+pub mod catalog;
 /// Portable computation limits and evaluation messages.
 pub mod ctx;
 /// Immutable expression trees and structural operations.

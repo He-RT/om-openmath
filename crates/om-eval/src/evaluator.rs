@@ -99,6 +99,10 @@ impl Evaluator {
     pub fn all_docs() -> impl Iterator<Item = &'static DocEntry> {
         crate::builtins::table().docs()
     }
+    /// Actual immutable callback specifications, for capability and contract auditing.
+    pub fn all_specs() -> impl Iterator<Item = &'static crate::BuiltinSpec> {
+        crate::builtins::table().specs()
+    }
     /// Snapshot the session for tools that may evaluate but cannot change definitions.
     pub fn fork_readonly(&self) -> Evaluator {
         Self {

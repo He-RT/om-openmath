@@ -1,7 +1,7 @@
 # 实际注册审计基线：ba3cd2b；稳定身份与名称分离；目录/副作用为设计数据。
 schema_version = 1
-metadata_version = 1
-validation_stage = "documentation_only"
+metadata_version = 2
+validation_stage = "runtime_verified"
 current_version = "0.1.0-pre-alpha.2"
 target_version = "0.1.0-pre-alpha.3"
 
@@ -26791,3 +26791,1217 @@ meaning = "个别接口的全量选择，不是所有函数都支持。"
 name = "none"
 aliases = ["None"]
 meaning = "个别接口的无/关闭选项，不是统一空值类型。"
+
+# R3.1：以下为实际回调的可验证调用描述；仅由函数所属身份提供数学边界。
+
+[[runtime]]
+name = "Abs"
+modern_name = "abs"
+aliases = []
+min = 1
+max = 1
+attributes = ["listable", "protected", "numeric_function"]
+parameters = [{ name = "expr", value_type = "expression", required = true, variadic = false, held = false }]
+options = []
+
+[[runtime]]
+name = "And"
+modern_name = "And"
+aliases = []
+min = 0
+attributes = ["hold_all", "protected"]
+parameters = [{ name = "values", value_type = "expression", required = false, variadic = true, held = true, default_context = "由真实回调按输入推断或省略；不填造字面默认值" }]
+options = []
+
+[[runtime]]
+name = "Apart"
+modern_name = "apart"
+aliases = []
+min = 1
+max = 2
+attributes = ["protected"]
+parameters = [{ name = "expr", value_type = "expression", required = true, variadic = false, held = false }, { name = "variable", value_type = "expression", required = false, variadic = false, held = false, default_context = "由真实回调按输入推断或省略；不填造字面默认值" }]
+options = []
+
+[[runtime]]
+name = "Append"
+modern_name = "append"
+aliases = []
+min = 2
+max = 2
+attributes = ["protected"]
+parameters = [{ name = "data", value_type = "expression", required = true, variadic = false, held = false }, { name = "value", value_type = "expression", required = true, variadic = false, held = false }]
+options = []
+
+[[runtime]]
+name = "Apply"
+modern_name = "apply"
+aliases = []
+min = 2
+max = 2
+attributes = ["protected"]
+parameters = [{ name = "fn", value_type = "expression", required = true, variadic = false, held = false }, { name = "data", value_type = "expression", required = true, variadic = false, held = false }]
+options = []
+
+[[runtime]]
+name = "ArcCos"
+modern_name = "acos"
+aliases = ["arccos"]
+min = 1
+max = 1
+attributes = ["listable", "protected", "numeric_function"]
+parameters = [{ name = "expr", value_type = "expression", required = true, variadic = false, held = false }]
+options = []
+
+[[runtime]]
+name = "ArcCosh"
+modern_name = "acosh"
+aliases = ["arccosh"]
+min = 1
+max = 1
+attributes = ["listable", "protected", "numeric_function"]
+parameters = [{ name = "expr", value_type = "expression", required = true, variadic = false, held = false }]
+options = []
+
+[[runtime]]
+name = "ArcCot"
+modern_name = "acot"
+aliases = ["arccot"]
+min = 1
+max = 1
+attributes = ["listable", "protected", "numeric_function"]
+parameters = [{ name = "expr", value_type = "expression", required = true, variadic = false, held = false }]
+options = []
+
+[[runtime]]
+name = "ArcCsc"
+modern_name = "acsc"
+aliases = ["arccsc"]
+min = 1
+max = 1
+attributes = ["listable", "protected", "numeric_function"]
+parameters = [{ name = "expr", value_type = "expression", required = true, variadic = false, held = false }]
+options = []
+
+[[runtime]]
+name = "ArcSec"
+modern_name = "asec"
+aliases = ["arcsec"]
+min = 1
+max = 1
+attributes = ["listable", "protected", "numeric_function"]
+parameters = [{ name = "expr", value_type = "expression", required = true, variadic = false, held = false }]
+options = []
+
+[[runtime]]
+name = "ArcSin"
+modern_name = "asin"
+aliases = ["arcsin"]
+min = 1
+max = 1
+attributes = ["listable", "protected", "numeric_function"]
+parameters = [{ name = "expr", value_type = "expression", required = true, variadic = false, held = false }]
+options = []
+
+[[runtime]]
+name = "ArcSinh"
+modern_name = "asinh"
+aliases = ["arcsinh"]
+min = 1
+max = 1
+attributes = ["listable", "protected", "numeric_function"]
+parameters = [{ name = "expr", value_type = "expression", required = true, variadic = false, held = false }]
+options = []
+
+[[runtime]]
+name = "ArcTan"
+modern_name = "atan"
+aliases = ["arctan"]
+min = 1
+max = 2
+attributes = ["listable", "protected", "numeric_function"]
+parameters = [{ name = "x", value_type = "expression", required = true, variadic = false, held = false }, { name = "y", value_type = "expression", required = false, variadic = false, held = false, default_context = "由真实回调按输入推断或省略；不填造字面默认值" }]
+options = []
+
+[[runtime]]
+name = "ArcTanh"
+modern_name = "atanh"
+aliases = ["arctanh"]
+min = 1
+max = 1
+attributes = ["listable", "protected", "numeric_function"]
+parameters = [{ name = "expr", value_type = "expression", required = true, variadic = false, held = false }]
+options = []
+
+[[runtime]]
+name = "Arg"
+modern_name = "arg"
+aliases = []
+min = 1
+max = 1
+attributes = ["listable", "protected", "numeric_function"]
+parameters = [{ name = "expr", value_type = "expression", required = true, variadic = false, held = false }]
+options = []
+
+[[runtime]]
+name = "Binomial"
+modern_name = "choose"
+aliases = ["binom", "binomial"]
+min = 2
+max = 2
+attributes = ["listable", "protected", "numeric_function"]
+parameters = [{ name = "n", value_type = "expression", required = true, variadic = false, held = false }, { name = "k", value_type = "expression", required = true, variadic = false, held = false }]
+options = []
+
+[[runtime]]
+name = "Cancel"
+modern_name = "cancel"
+aliases = []
+min = 1
+max = 1
+attributes = ["listable", "protected"]
+parameters = [{ name = "expr", value_type = "expression", required = true, variadic = false, held = false }]
+options = []
+
+[[runtime]]
+name = "Ceiling"
+modern_name = "ceil"
+aliases = ["ceiling"]
+min = 1
+max = 2
+attributes = ["listable", "protected", "numeric_function"]
+parameters = [{ name = "x", value_type = "expression", required = true, variadic = false, held = false }, { name = "step", value_type = "expression", required = false, variadic = false, held = false, default_source = "1" }]
+options = []
+
+[[runtime]]
+name = "Clear"
+modern_name = "clear"
+aliases = []
+min = 1
+attributes = ["hold_all", "protected"]
+parameters = [{ name = "symbols", value_type = "expression", required = true, variadic = true, held = true }]
+options = []
+
+[[runtime]]
+name = "Coefficient"
+modern_name = "coefficient"
+aliases = []
+min = 2
+max = 3
+attributes = ["protected"]
+parameters = [{ name = "expr", value_type = "expression", required = true, variadic = false, held = false }, { name = "variable", value_type = "expression", required = true, variadic = false, held = false }, { name = "order", value_type = "expression", required = false, variadic = false, held = false, default_source = "1" }]
+options = []
+
+[[runtime]]
+name = "CoefficientList"
+modern_name = "coefficient_list"
+aliases = ["coefficientlist"]
+min = 2
+max = 2
+attributes = ["protected"]
+parameters = [{ name = "expr", value_type = "expression", required = true, variadic = false, held = false }, { name = "variables", value_type = "expression", required = true, variadic = false, held = false }]
+options = []
+
+[[runtime]]
+name = "Collect"
+modern_name = "collect"
+aliases = []
+min = 2
+max = 3
+attributes = ["protected"]
+parameters = [{ name = "expr", value_type = "expression", required = true, variadic = false, held = false }, { name = "variables", value_type = "expression", required = true, variadic = false, held = false }, { name = "coefficient_fn", value_type = "expression", required = false, variadic = false, held = false, default_source = "Identity" }]
+options = []
+
+[[runtime]]
+name = "CompoundExpression"
+modern_name = "sequence"
+aliases = ["compoundexpression"]
+min = 1
+attributes = ["hold_all", "protected"]
+parameters = [{ name = "expressions", value_type = "expression", required = true, variadic = true, held = true }]
+options = []
+
+[[runtime]]
+name = "ConditionalExpression"
+modern_name = "conditional"
+aliases = ["conditionalexpression"]
+min = 2
+max = 2
+attributes = ["hold_all", "protected"]
+parameters = [{ name = "expr", value_type = "expression", required = true, variadic = false, held = true }, { name = "condition", value_type = "expression", required = true, variadic = false, held = true }]
+options = []
+
+[[runtime]]
+name = "Conjugate"
+modern_name = "conj"
+aliases = ["conjugate"]
+min = 1
+max = 1
+attributes = ["listable", "protected", "numeric_function"]
+parameters = [{ name = "expr", value_type = "expression", required = true, variadic = false, held = false }]
+options = []
+
+[[runtime]]
+name = "ContourPlot"
+modern_name = "implicit_plot"
+aliases = ["contourplot", "implicitplot"]
+min = 3
+attributes = ["hold_all", "protected"]
+parameters = [{ name = "equation", value_type = "expression", required = true, variadic = false, held = true }, { name = "x_axis", value_type = "expression", required = true, variadic = false, held = true }, { name = "y_axis", value_type = "expression", required = true, variadic = false, held = true }]
+options = [{ name = "plot_range", runtime_name = "PlotRange", value_type = "expression", required = false, variadic = false, held = true, default_source = "Automatic" }]
+
+[[runtime]]
+name = "Cos"
+modern_name = "cos"
+aliases = []
+min = 1
+max = 1
+attributes = ["listable", "protected", "numeric_function"]
+parameters = [{ name = "expr", value_type = "expression", required = true, variadic = false, held = false }]
+options = []
+
+[[runtime]]
+name = "Cosh"
+modern_name = "cosh"
+aliases = []
+min = 1
+max = 1
+attributes = ["listable", "protected", "numeric_function"]
+parameters = [{ name = "expr", value_type = "expression", required = true, variadic = false, held = false }]
+options = []
+
+[[runtime]]
+name = "Cot"
+modern_name = "cot"
+aliases = []
+min = 1
+max = 1
+attributes = ["listable", "protected", "numeric_function"]
+parameters = [{ name = "expr", value_type = "expression", required = true, variadic = false, held = false }]
+options = []
+
+[[runtime]]
+name = "Coth"
+modern_name = "coth"
+aliases = []
+min = 1
+max = 1
+attributes = ["listable", "protected", "numeric_function"]
+parameters = [{ name = "expr", value_type = "expression", required = true, variadic = false, held = false }]
+options = []
+
+[[runtime]]
+name = "Csc"
+modern_name = "csc"
+aliases = []
+min = 1
+max = 1
+attributes = ["listable", "protected", "numeric_function"]
+parameters = [{ name = "expr", value_type = "expression", required = true, variadic = false, held = false }]
+options = []
+
+[[runtime]]
+name = "Csch"
+modern_name = "csch"
+aliases = []
+min = 1
+max = 1
+attributes = ["listable", "protected", "numeric_function"]
+parameters = [{ name = "expr", value_type = "expression", required = true, variadic = false, held = false }]
+options = []
+
+[[runtime]]
+name = "D"
+modern_name = "diff"
+aliases = ["derivative"]
+min = 2
+attributes = ["protected"]
+parameters = [{ name = "expr", value_type = "expression", required = true, variadic = false, held = false }, { name = "variable", value_type = "expression", required = true, variadic = false, held = false }, { name = "variables", value_type = "expression", required = false, variadic = true, held = false, default_context = "由真实回调按输入推断或省略；不填造字面默认值" }]
+options = []
+
+[[runtime]]
+name = "Denominator"
+modern_name = "denominator"
+aliases = []
+min = 1
+max = 1
+attributes = ["listable", "protected"]
+parameters = [{ name = "expr", value_type = "expression", required = true, variadic = false, held = false }]
+options = []
+
+[[runtime]]
+name = "Discriminant"
+modern_name = "discriminant"
+aliases = []
+min = 2
+max = 2
+attributes = ["protected"]
+parameters = [{ name = "f", value_type = "expression", required = true, variadic = false, held = false }, { name = "variable", value_type = "expression", required = true, variadic = false, held = false }]
+options = []
+
+[[runtime]]
+name = "Divide"
+modern_name = "divide"
+aliases = []
+min = 2
+max = 2
+attributes = ["listable", "protected", "numeric_function"]
+parameters = [{ name = "a", value_type = "expression", required = true, variadic = false, held = false }, { name = "b", value_type = "expression", required = true, variadic = false, held = false }]
+options = []
+
+[[runtime]]
+name = "Element"
+modern_name = "in_domain"
+aliases = ["element"]
+min = 2
+max = 2
+attributes = ["protected"]
+parameters = [{ name = "expr", value_type = "expression", required = true, variadic = false, held = false }, { name = "domain", value_type = "expression", required = true, variadic = false, held = false }]
+options = []
+
+[[runtime]]
+name = "Eliminate"
+modern_name = "eliminate"
+aliases = []
+min = 2
+max = 2
+attributes = ["hold_all", "protected"]
+parameters = [{ name = "equations", value_type = "expression", required = true, variadic = false, held = true }, { name = "variables", value_type = "expression", required = true, variadic = false, held = true }]
+options = []
+
+[[runtime]]
+name = "Equal"
+modern_name = "equal"
+aliases = []
+min = 0
+attributes = ["protected"]
+parameters = [{ name = "values", value_type = "expression", required = false, variadic = true, held = false, default_context = "由真实回调按输入推断或省略；不填造字面默认值" }]
+options = []
+
+[[runtime]]
+name = "Exp"
+modern_name = "exp"
+aliases = []
+min = 1
+max = 1
+attributes = ["listable", "protected", "numeric_function"]
+parameters = [{ name = "expr", value_type = "expression", required = true, variadic = false, held = false }]
+options = []
+
+[[runtime]]
+name = "Expand"
+modern_name = "expand"
+aliases = []
+min = 1
+max = 1
+attributes = ["listable", "protected"]
+parameters = [{ name = "expr", value_type = "expression", required = true, variadic = false, held = false }]
+options = []
+
+[[runtime]]
+name = "Exponent"
+modern_name = "exponent"
+aliases = []
+min = 2
+max = 2
+attributes = ["protected"]
+parameters = [{ name = "expr", value_type = "expression", required = true, variadic = false, held = false }, { name = "variable", value_type = "expression", required = true, variadic = false, held = false }]
+options = []
+
+[[runtime]]
+name = "Factor"
+modern_name = "factor"
+aliases = []
+min = 1
+max = 1
+attributes = ["listable", "protected"]
+parameters = [{ name = "expr", value_type = "expression", required = true, variadic = false, held = false }]
+options = []
+
+[[runtime]]
+name = "FactorInteger"
+modern_name = "factor_integer"
+aliases = ["factorinteger"]
+min = 1
+max = 1
+attributes = ["listable", "protected"]
+parameters = [{ name = "expr", value_type = "expression", required = true, variadic = false, held = false }]
+options = []
+
+[[runtime]]
+name = "Factorial"
+modern_name = "factorial"
+aliases = []
+min = 1
+max = 1
+attributes = ["listable", "protected", "numeric_function"]
+parameters = [{ name = "expr", value_type = "expression", required = true, variadic = false, held = false }]
+options = []
+
+[[runtime]]
+name = "FindRoot"
+modern_name = "find_root"
+aliases = ["findroot"]
+min = 2
+attributes = ["hold_all", "protected"]
+parameters = [{ name = "equations", value_type = "expression", required = true, variadic = false, held = true }, { name = "starts", value_type = "expression", required = true, variadic = false, held = true }]
+options = [{ name = "steps", runtime_name = "RecordSteps", value_type = "boolean", required = false, variadic = false, held = true, default_context = "继承当前 EvalSettings.record_steps" }, { name = "precision", runtime_name = "WorkingPrecision", value_type = "integer", required = false, variadic = false, held = true, default_source = "MachinePrecision", enum_values = ["MachinePrecision"], min = 5, max = 2466 }, { name = "method", runtime_name = "Method", value_type = "enum", required = false, variadic = false, held = true, default_source = "Automatic", enum_values = ["Automatic", "Newton", "Brent"] }, { name = "max_iterations", runtime_name = "MaxIterations", value_type = "integer", required = false, variadic = false, held = true, default_source = "100", min = 1 }]
+
+[[runtime]]
+name = "First"
+modern_name = "first"
+aliases = []
+min = 1
+max = 1
+attributes = ["protected"]
+parameters = [{ name = "expr", value_type = "expression", required = true, variadic = false, held = false }]
+options = []
+
+[[runtime]]
+name = "Floor"
+modern_name = "floor"
+aliases = []
+min = 1
+max = 2
+attributes = ["listable", "protected", "numeric_function"]
+parameters = [{ name = "x", value_type = "expression", required = true, variadic = false, held = false }, { name = "step", value_type = "expression", required = false, variadic = false, held = false, default_source = "1" }]
+options = []
+
+[[runtime]]
+name = "FullSimplify"
+modern_name = "full_simplify"
+aliases = ["fullsimplify"]
+min = 1
+max = 2
+attributes = ["protected"]
+parameters = [{ name = "expr", value_type = "expression", required = true, variadic = false, held = false }, { name = "arg2", value_type = "expression", required = false, variadic = false, held = false, default_context = "由真实回调按输入推断或省略；不填造字面默认值" }]
+options = [{ name = "assumptions", runtime_name = "Assumptions", value_type = "expression", required = false, variadic = false, held = false, default_source = "True" }]
+
+[[runtime]]
+name = "Function"
+modern_name = "function"
+aliases = []
+min = 1
+max = 2
+attributes = ["hold_all", "protected"]
+parameters = [{ name = "parameters_or_body", value_type = "expression", required = true, variadic = false, held = true }, { name = "body", value_type = "expression", required = false, variadic = false, held = true, default_context = "由真实回调按输入推断或省略；不填造字面默认值" }]
+options = []
+
+[[runtime]]
+name = "GCD"
+modern_name = "gcd"
+aliases = []
+min = 0
+attributes = ["listable", "protected", "numeric_function"]
+parameters = [{ name = "integers", value_type = "expression", required = false, variadic = true, held = false, default_context = "由真实回调按输入推断或省略；不填造字面默认值" }]
+options = []
+
+[[runtime]]
+name = "Greater"
+modern_name = "greater"
+aliases = []
+min = 0
+attributes = ["protected"]
+parameters = [{ name = "a", value_type = "expression", required = false, variadic = false, held = false, default_context = "由真实回调按输入推断或省略；不填造字面默认值" }, { name = "b", value_type = "expression", required = false, variadic = true, held = false, default_context = "由真实回调按输入推断或省略；不填造字面默认值" }]
+options = []
+
+[[runtime]]
+name = "GreaterEqual"
+modern_name = "greater_equal"
+aliases = ["greaterequal"]
+min = 0
+attributes = ["protected"]
+parameters = [{ name = "a", value_type = "expression", required = false, variadic = false, held = false, default_context = "由真实回调按输入推断或省略；不填造字面默认值" }, { name = "b", value_type = "expression", required = false, variadic = true, held = false, default_context = "由真实回调按输入推断或省略；不填造字面默认值" }]
+options = []
+
+[[runtime]]
+name = "Hold"
+modern_name = "hold"
+aliases = []
+min = 0
+attributes = ["hold_all", "protected"]
+parameters = [{ name = "expr", value_type = "expression", required = false, variadic = true, held = true, default_context = "由真实回调按输入推断或省略；不填造字面默认值" }]
+options = []
+
+[[runtime]]
+name = "HoldForm"
+modern_name = "hold_form"
+aliases = ["holdform"]
+min = 1
+max = 1
+attributes = ["hold_all", "protected"]
+parameters = [{ name = "expr", value_type = "expression", required = true, variadic = false, held = true }]
+options = []
+
+[[runtime]]
+name = "Im"
+modern_name = "im"
+aliases = []
+min = 1
+max = 1
+attributes = ["listable", "protected", "numeric_function"]
+parameters = [{ name = "expr", value_type = "expression", required = true, variadic = false, held = false }]
+options = []
+
+[[runtime]]
+name = "Inequality"
+modern_name = "inequality"
+aliases = []
+min = 3
+attributes = ["protected"]
+parameters = [{ name = "values", value_type = "expression", required = true, variadic = false, held = false }, { name = "arg2", value_type = "expression", required = true, variadic = false, held = false }, { name = "arg3", value_type = "expression", required = true, variadic = true, held = false }]
+options = []
+
+[[runtime]]
+name = "LCM"
+modern_name = "lcm"
+aliases = []
+min = 0
+attributes = ["listable", "protected", "numeric_function"]
+parameters = [{ name = "integers", value_type = "expression", required = false, variadic = true, held = false, default_context = "由真实回调按输入推断或省略；不填造字面默认值" }]
+options = []
+
+[[runtime]]
+name = "Last"
+modern_name = "last"
+aliases = []
+min = 1
+max = 1
+attributes = ["protected"]
+parameters = [{ name = "expr", value_type = "expression", required = true, variadic = false, held = false }]
+options = []
+
+[[runtime]]
+name = "Length"
+modern_name = "len"
+aliases = ["length"]
+min = 1
+max = 1
+attributes = ["protected"]
+parameters = [{ name = "expr", value_type = "expression", required = true, variadic = false, held = false }]
+options = []
+
+[[runtime]]
+name = "Less"
+modern_name = "less"
+aliases = []
+min = 0
+attributes = ["protected"]
+parameters = [{ name = "a", value_type = "expression", required = false, variadic = false, held = false, default_context = "由真实回调按输入推断或省略；不填造字面默认值" }, { name = "b", value_type = "expression", required = false, variadic = true, held = false, default_context = "由真实回调按输入推断或省略；不填造字面默认值" }]
+options = []
+
+[[runtime]]
+name = "LessEqual"
+modern_name = "less_equal"
+aliases = ["lessequal"]
+min = 0
+attributes = ["protected"]
+parameters = [{ name = "a", value_type = "expression", required = false, variadic = false, held = false, default_context = "由真实回调按输入推断或省略；不填造字面默认值" }, { name = "b", value_type = "expression", required = false, variadic = true, held = false, default_context = "由真实回调按输入推断或省略；不填造字面默认值" }]
+options = []
+
+[[runtime]]
+name = "List"
+modern_name = "list"
+aliases = []
+min = 0
+attributes = ["protected"]
+parameters = [{ name = "items", value_type = "expression", required = false, variadic = true, held = false, default_context = "由真实回调按输入推断或省略；不填造字面默认值" }]
+options = []
+
+[[runtime]]
+name = "Log"
+modern_name = "log"
+aliases = ["ln"]
+min = 1
+max = 2
+attributes = ["listable", "protected", "numeric_function"]
+parameters = [{ name = "base_or_value", value_type = "expression", required = true, variadic = false, held = false }, { name = "value", value_type = "expression", required = false, variadic = false, held = false, default_context = "由真实回调按输入推断或省略；不填造字面默认值" }]
+options = []
+
+[[runtime]]
+name = "Map"
+modern_name = "map"
+aliases = []
+min = 2
+max = 2
+attributes = ["protected"]
+parameters = [{ name = "fn", value_type = "expression", required = true, variadic = false, held = false }, { name = "data", value_type = "expression", required = true, variadic = false, held = false }]
+options = []
+
+[[runtime]]
+name = "Minus"
+modern_name = "negate"
+aliases = ["minus"]
+min = 1
+max = 1
+attributes = ["listable", "protected", "numeric_function"]
+parameters = [{ name = "expr", value_type = "expression", required = true, variadic = false, held = false }]
+options = []
+
+[[runtime]]
+name = "Mod"
+modern_name = "mod"
+aliases = []
+min = 2
+max = 3
+attributes = ["listable", "protected", "numeric_function"]
+parameters = [{ name = "n", value_type = "expression", required = true, variadic = false, held = false }, { name = "divisor", value_type = "expression", required = true, variadic = false, held = false }, { name = "offset", value_type = "expression", required = false, variadic = false, held = false, default_source = "0" }]
+options = []
+
+[[runtime]]
+name = "N"
+modern_name = "numeric"
+aliases = []
+min = 1
+max = 2
+attributes = ["protected"]
+parameters = [{ name = "expr", value_type = "expression", required = true, variadic = false, held = false }, { name = "precision", value_type = "expression", required = false, variadic = false, held = false, default_source = "MachinePrecision" }]
+options = []
+
+[[runtime]]
+name = "NSolve"
+modern_name = "nsolve"
+aliases = []
+min = 1
+attributes = ["hold_all", "protected"]
+parameters = [{ name = "equations", value_type = "expression", required = true, variadic = false, held = true }, { name = "variables", value_type = "expression", required = false, variadic = false, held = true, default_context = "由真实回调按输入推断或省略；不填造字面默认值" }, { name = "domain", value_type = "expression", required = false, variadic = false, held = true, default_context = "由真实回调按输入推断或省略；不填造字面默认值" }]
+options = [{ name = "steps", runtime_name = "RecordSteps", value_type = "boolean", required = false, variadic = false, held = true, default_context = "继承当前 EvalSettings.record_steps" }, { name = "domain", value_type = "enum", required = false, variadic = false, held = true, default_source = "Complexes", enum_values = ["Complexes", "Reals", "Integers", "Rationals", "positives"] }, { name = "cubics", runtime_name = "Cubics", value_type = "boolean", required = false, variadic = false, held = true, default_source = "False" }, { name = "quartics", runtime_name = "Quartics", value_type = "boolean", required = false, variadic = false, held = true, default_source = "False" }, { name = "verify_solutions", runtime_name = "VerifySolutions", value_type = "enum", required = false, variadic = false, held = true, default_source = "Automatic", enum_values = ["True", "False", "Automatic"] }, { name = "max_extra_conditions", runtime_name = "MaxExtraConditions", value_type = "integer", required = false, variadic = false, held = true, default_source = "0", enum_values = ["All"], min = 0 }, { name = "generated_parameters", runtime_name = "GeneratedParameters", value_type = "symbol", required = false, variadic = false, held = true, default_source = "C" }, { name = "inverse_functions", runtime_name = "InverseFunctions", value_type = "boolean", required = false, variadic = false, held = true, default_source = "True" }, { name = "precision", runtime_name = "WorkingPrecision", value_type = "integer", required = false, variadic = false, held = true, default_source = "MachinePrecision", enum_values = ["MachinePrecision"], min = 5, max = 2466 }]
+
+compatibility_syntax = ["method", "max_iterations"]
+[[runtime]]
+name = "NSolveValues"
+modern_name = "nsolve_values"
+aliases = ["nsolvevalues"]
+min = 1
+attributes = ["hold_all", "protected"]
+parameters = [{ name = "equations", value_type = "expression", required = true, variadic = false, held = true }, { name = "variables", value_type = "expression", required = false, variadic = false, held = true, default_context = "由真实回调按输入推断或省略；不填造字面默认值" }, { name = "domain", value_type = "expression", required = false, variadic = false, held = true, default_context = "由真实回调按输入推断或省略；不填造字面默认值" }]
+options = [{ name = "steps", runtime_name = "RecordSteps", value_type = "boolean", required = false, variadic = false, held = true, default_context = "继承当前 EvalSettings.record_steps" }, { name = "domain", value_type = "enum", required = false, variadic = false, held = true, default_source = "Complexes", enum_values = ["Complexes", "Reals", "Integers", "Rationals", "positives"] }, { name = "cubics", runtime_name = "Cubics", value_type = "boolean", required = false, variadic = false, held = true, default_source = "False" }, { name = "quartics", runtime_name = "Quartics", value_type = "boolean", required = false, variadic = false, held = true, default_source = "False" }, { name = "verify_solutions", runtime_name = "VerifySolutions", value_type = "enum", required = false, variadic = false, held = true, default_source = "Automatic", enum_values = ["True", "False", "Automatic"] }, { name = "max_extra_conditions", runtime_name = "MaxExtraConditions", value_type = "integer", required = false, variadic = false, held = true, default_source = "0", enum_values = ["All"], min = 0 }, { name = "generated_parameters", runtime_name = "GeneratedParameters", value_type = "symbol", required = false, variadic = false, held = true, default_source = "C" }, { name = "inverse_functions", runtime_name = "InverseFunctions", value_type = "boolean", required = false, variadic = false, held = true, default_source = "True" }, { name = "precision", runtime_name = "WorkingPrecision", value_type = "integer", required = false, variadic = false, held = true, default_source = "MachinePrecision", enum_values = ["MachinePrecision"], min = 5, max = 2466 }]
+
+compatibility_syntax = ["method", "max_iterations"]
+[[runtime]]
+name = "Not"
+modern_name = "not"
+aliases = []
+min = 1
+max = 1
+attributes = ["protected"]
+parameters = [{ name = "expr", value_type = "expression", required = true, variadic = false, held = false }]
+options = []
+
+[[runtime]]
+name = "Numerator"
+modern_name = "numerator"
+aliases = []
+min = 1
+max = 1
+attributes = ["listable", "protected"]
+parameters = [{ name = "expr", value_type = "expression", required = true, variadic = false, held = false }]
+options = []
+
+[[runtime]]
+name = "Or"
+modern_name = "Or"
+aliases = []
+min = 0
+attributes = ["hold_all", "protected"]
+parameters = [{ name = "values", value_type = "expression", required = false, variadic = true, held = true, default_context = "由真实回调按输入推断或省略；不填造字面默认值" }]
+options = []
+
+[[runtime]]
+name = "Out"
+modern_name = "out"
+aliases = []
+min = 0
+max = 1
+attributes = ["protected"]
+parameters = [{ name = "index", value_type = "expression", required = false, variadic = false, held = false, default_source = "-1" }]
+options = []
+
+[[runtime]]
+name = "Part"
+modern_name = "at"
+aliases = ["part"]
+min = 2
+attributes = ["protected"]
+parameters = [{ name = "expr", value_type = "expression", required = true, variadic = false, held = false }, { name = "indices", value_type = "expression", required = true, variadic = true, held = false }]
+options = []
+
+[[runtime]]
+name = "Plot"
+modern_name = "plot"
+aliases = []
+min = 2
+attributes = ["hold_all", "protected"]
+parameters = [{ name = "expr", value_type = "expression", required = true, variadic = false, held = true }, { name = "axis", value_type = "expression", required = true, variadic = false, held = true }]
+options = [{ name = "plot_range", runtime_name = "PlotRange", value_type = "expression", required = false, variadic = false, held = true, default_source = "Automatic" }]
+
+[[runtime]]
+name = "Plus"
+modern_name = "add"
+aliases = ["plus"]
+min = 0
+attributes = ["listable", "protected", "numeric_function", "flat", "orderless", "one_identity"]
+parameters = [{ name = "values", value_type = "expression", required = false, variadic = true, held = false, default_context = "由真实回调按输入推断或省略；不填造字面默认值" }]
+options = []
+
+[[runtime]]
+name = "PolynomialGCD"
+modern_name = "polynomial_gcd"
+aliases = ["polynomialgcd"]
+min = 1
+attributes = ["protected"]
+parameters = [{ name = "polynomials", value_type = "expression", required = true, variadic = true, held = false }]
+options = []
+
+[[runtime]]
+name = "PolynomialLCM"
+modern_name = "polynomial_lcm"
+aliases = ["polynomiallcm"]
+min = 1
+attributes = ["protected"]
+parameters = [{ name = "polynomials", value_type = "expression", required = true, variadic = true, held = false }]
+options = []
+
+[[runtime]]
+name = "PolynomialQ"
+modern_name = "is_polynomial"
+aliases = ["polynomialq"]
+min = 2
+max = 2
+attributes = ["protected"]
+parameters = [{ name = "expr", value_type = "expression", required = true, variadic = false, held = false }, { name = "variables", value_type = "expression", required = true, variadic = false, held = false }]
+options = []
+
+[[runtime]]
+name = "PolynomialQuotient"
+modern_name = "polynomial_quotient"
+aliases = ["polynomialquotient"]
+min = 3
+max = 3
+attributes = ["protected"]
+parameters = [{ name = "f", value_type = "expression", required = true, variadic = false, held = false }, { name = "g", value_type = "expression", required = true, variadic = false, held = false }, { name = "variable", value_type = "expression", required = true, variadic = false, held = false }]
+options = []
+
+[[runtime]]
+name = "PolynomialRemainder"
+modern_name = "polynomial_remainder"
+aliases = ["polynomialremainder"]
+min = 3
+max = 3
+attributes = ["protected"]
+parameters = [{ name = "f", value_type = "expression", required = true, variadic = false, held = false }, { name = "g", value_type = "expression", required = true, variadic = false, held = false }, { name = "variable", value_type = "expression", required = true, variadic = false, held = false }]
+options = []
+
+[[runtime]]
+name = "Power"
+modern_name = "power"
+aliases = []
+min = 2
+max = 2
+attributes = ["listable", "protected", "numeric_function"]
+parameters = [{ name = "base", value_type = "expression", required = true, variadic = false, held = false }, { name = "exponent", value_type = "expression", required = true, variadic = false, held = false }]
+options = []
+
+[[runtime]]
+name = "PrimeQ"
+modern_name = "is_prime"
+aliases = ["primeq"]
+min = 1
+max = 1
+attributes = ["listable", "protected"]
+parameters = [{ name = "expr", value_type = "expression", required = true, variadic = false, held = false }]
+options = []
+
+[[runtime]]
+name = "Product"
+modern_name = "product"
+aliases = []
+min = 2
+attributes = ["hold_all", "protected"]
+parameters = [{ name = "expr", value_type = "expression", required = true, variadic = false, held = true }, { name = "iterators", value_type = "expression", required = true, variadic = true, held = true }]
+options = []
+
+[[runtime]]
+name = "ProductLog"
+modern_name = "lambert_w"
+aliases = ["lambertw", "productlog"]
+min = 1
+max = 1
+attributes = ["listable", "protected", "numeric_function"]
+parameters = [{ name = "expr", value_type = "expression", required = true, variadic = false, held = false }]
+options = []
+
+[[runtime]]
+name = "Quotient"
+modern_name = "quotient"
+aliases = []
+min = 2
+max = 3
+attributes = ["listable", "protected", "numeric_function"]
+parameters = [{ name = "x", value_type = "expression", required = true, variadic = false, held = false }, { name = "divisor", value_type = "expression", required = true, variadic = false, held = false }, { name = "arg3", value_type = "expression", required = false, variadic = false, held = false, default_context = "由真实回调按输入推断或省略；不填造字面默认值" }]
+options = []
+
+[[runtime]]
+name = "Range"
+modern_name = "range"
+aliases = []
+min = 1
+max = 3
+attributes = ["protected"]
+parameters = [{ name = "start_or_end", value_type = "expression", required = true, variadic = false, held = false }, { name = "end", value_type = "expression", required = false, variadic = false, held = false, default_context = "由真实回调按输入推断或省略；不填造字面默认值" }, { name = "step", value_type = "expression", required = false, variadic = false, held = false, default_source = "1" }]
+options = []
+
+[[runtime]]
+name = "Re"
+modern_name = "re"
+aliases = []
+min = 1
+max = 1
+attributes = ["listable", "protected", "numeric_function"]
+parameters = [{ name = "expr", value_type = "expression", required = true, variadic = false, held = false }]
+options = []
+
+[[runtime]]
+name = "Reduce"
+modern_name = "reduce"
+aliases = []
+min = 1
+attributes = ["hold_all", "protected"]
+parameters = [{ name = "equations", value_type = "expression", required = true, variadic = false, held = true }, { name = "variables", value_type = "expression", required = false, variadic = false, held = true, default_context = "由真实回调按输入推断或省略；不填造字面默认值" }, { name = "domain", value_type = "expression", required = false, variadic = false, held = true, default_context = "由真实回调按输入推断或省略；不填造字面默认值" }]
+options = [{ name = "steps", runtime_name = "RecordSteps", value_type = "boolean", required = false, variadic = false, held = true, default_context = "继承当前 EvalSettings.record_steps" }, { name = "domain", value_type = "enum", required = false, variadic = false, held = true, default_source = "Complexes", enum_values = ["Complexes", "Reals", "Integers", "Rationals", "positives"] }, { name = "cubics", runtime_name = "Cubics", value_type = "boolean", required = false, variadic = false, held = true, default_source = "False" }, { name = "quartics", runtime_name = "Quartics", value_type = "boolean", required = false, variadic = false, held = true, default_source = "False" }, { name = "verify_solutions", runtime_name = "VerifySolutions", value_type = "enum", required = false, variadic = false, held = true, default_source = "Automatic", enum_values = ["True", "False", "Automatic"] }, { name = "max_extra_conditions", runtime_name = "MaxExtraConditions", value_type = "integer", required = false, variadic = false, held = true, default_source = "0", enum_values = ["All"], min = 0 }, { name = "generated_parameters", runtime_name = "GeneratedParameters", value_type = "symbol", required = false, variadic = false, held = true, default_source = "C" }, { name = "inverse_functions", runtime_name = "InverseFunctions", value_type = "boolean", required = false, variadic = false, held = true, default_source = "True" }]
+
+compatibility_syntax = ["method", "max_iterations"]
+[[runtime]]
+name = "ReplaceAll"
+modern_name = "substitute"
+aliases = ["replaceall"]
+min = 2
+max = 2
+attributes = ["protected"]
+parameters = [{ name = "expr", value_type = "expression", required = true, variadic = false, held = false }, { name = "rules", value_type = "expression", required = true, variadic = false, held = false }]
+options = []
+
+[[runtime]]
+name = "ReplaceRepeated"
+modern_name = "rewrite"
+aliases = ["replacerepeated"]
+min = 2
+max = 2
+attributes = ["protected"]
+parameters = [{ name = "expr", value_type = "expression", required = true, variadic = false, held = false }, { name = "rules", value_type = "expression", required = true, variadic = false, held = false }]
+options = []
+
+[[runtime]]
+name = "Rest"
+modern_name = "rest"
+aliases = []
+min = 1
+max = 1
+attributes = ["protected"]
+parameters = [{ name = "expr", value_type = "expression", required = true, variadic = false, held = false }]
+options = []
+
+[[runtime]]
+name = "Resultant"
+modern_name = "resultant"
+aliases = []
+min = 3
+max = 3
+attributes = ["protected"]
+parameters = [{ name = "f", value_type = "expression", required = true, variadic = false, held = false }, { name = "g", value_type = "expression", required = true, variadic = false, held = false }, { name = "variable", value_type = "expression", required = true, variadic = false, held = false }]
+options = []
+
+[[runtime]]
+name = "Root"
+modern_name = "algebraic_root"
+aliases = []
+min = 2
+max = 2
+attributes = ["hold_all", "protected"]
+parameters = [{ name = "fn", value_type = "expression", required = true, variadic = false, held = true }, { name = "index", value_type = "expression", required = true, variadic = false, held = true }]
+options = []
+
+[[runtime]]
+name = "RootReduce"
+modern_name = "root_reduce"
+aliases = ["rootreduce"]
+min = 1
+max = 1
+attributes = ["listable", "protected"]
+parameters = [{ name = "expr", value_type = "expression", required = true, variadic = false, held = false }]
+options = []
+
+[[runtime]]
+name = "Roots"
+modern_name = "roots"
+aliases = []
+min = 1
+attributes = ["hold_all", "protected"]
+parameters = [{ name = "equations", value_type = "expression", required = true, variadic = false, held = true }, { name = "variables", value_type = "expression", required = false, variadic = false, held = true, default_context = "由真实回调按输入推断或省略；不填造字面默认值" }, { name = "domain", value_type = "expression", required = false, variadic = false, held = true, default_context = "由真实回调按输入推断或省略；不填造字面默认值" }]
+options = [{ name = "steps", runtime_name = "RecordSteps", value_type = "boolean", required = false, variadic = false, held = true, default_context = "继承当前 EvalSettings.record_steps" }, { name = "domain", value_type = "enum", required = false, variadic = false, held = true, default_source = "Complexes", enum_values = ["Complexes", "Reals", "Integers", "Rationals", "positives"] }, { name = "cubics", runtime_name = "Cubics", value_type = "boolean", required = false, variadic = false, held = true, default_source = "False" }, { name = "quartics", runtime_name = "Quartics", value_type = "boolean", required = false, variadic = false, held = true, default_source = "False" }, { name = "verify_solutions", runtime_name = "VerifySolutions", value_type = "enum", required = false, variadic = false, held = true, default_source = "Automatic", enum_values = ["True", "False", "Automatic"] }, { name = "max_extra_conditions", runtime_name = "MaxExtraConditions", value_type = "integer", required = false, variadic = false, held = true, default_source = "0", enum_values = ["All"], min = 0 }, { name = "generated_parameters", runtime_name = "GeneratedParameters", value_type = "symbol", required = false, variadic = false, held = true, default_source = "C" }, { name = "inverse_functions", runtime_name = "InverseFunctions", value_type = "boolean", required = false, variadic = false, held = true, default_source = "True" }]
+
+compatibility_syntax = ["method", "max_iterations"]
+[[runtime]]
+name = "Round"
+modern_name = "round"
+aliases = []
+min = 1
+max = 2
+attributes = ["listable", "protected", "numeric_function"]
+parameters = [{ name = "x", value_type = "expression", required = true, variadic = false, held = false }, { name = "step", value_type = "expression", required = false, variadic = false, held = false, default_source = "1" }]
+options = []
+
+[[runtime]]
+name = "Rule"
+modern_name = "rule"
+aliases = []
+min = 2
+max = 2
+attributes = ["protected"]
+parameters = [{ name = "lhs", value_type = "expression", required = true, variadic = false, held = false }, { name = "rhs", value_type = "expression", required = true, variadic = false, held = false }]
+options = []
+
+[[runtime]]
+name = "RuleDelayed"
+modern_name = "delayed_rule"
+aliases = ["ruledelayed"]
+min = 2
+max = 2
+attributes = ["hold_rest", "protected"]
+parameters = [{ name = "lhs", value_type = "expression", required = true, variadic = false, held = false }, { name = "rhs", value_type = "expression", required = true, variadic = false, held = true }]
+options = []
+
+[[runtime]]
+name = "SameQ"
+modern_name = "same"
+aliases = ["sameq"]
+min = 0
+attributes = ["protected"]
+parameters = [{ name = "a", value_type = "expression", required = false, variadic = false, held = false, default_context = "由真实回调按输入推断或省略；不填造字面默认值" }, { name = "b", value_type = "expression", required = false, variadic = true, held = false, default_context = "由真实回调按输入推断或省略；不填造字面默认值" }]
+options = []
+
+[[runtime]]
+name = "Sec"
+modern_name = "sec"
+aliases = []
+min = 1
+max = 1
+attributes = ["listable", "protected", "numeric_function"]
+parameters = [{ name = "expr", value_type = "expression", required = true, variadic = false, held = false }]
+options = []
+
+[[runtime]]
+name = "Sech"
+modern_name = "sech"
+aliases = []
+min = 1
+max = 1
+attributes = ["listable", "protected", "numeric_function"]
+parameters = [{ name = "expr", value_type = "expression", required = true, variadic = false, held = false }]
+options = []
+
+[[runtime]]
+name = "Set"
+modern_name = "assign"
+aliases = ["set"]
+min = 2
+max = 2
+attributes = ["hold_first", "protected"]
+parameters = [{ name = "name", value_type = "expression", required = true, variadic = false, held = true }, { name = "value", value_type = "expression", required = true, variadic = false, held = false }]
+options = []
+
+[[runtime]]
+name = "SetDelayed"
+modern_name = "define"
+aliases = ["setdelayed"]
+min = 2
+max = 2
+attributes = ["hold_all", "protected"]
+parameters = [{ name = "target", value_type = "expression", required = true, variadic = false, held = true }, { name = "body", value_type = "expression", required = true, variadic = false, held = true }]
+options = []
+
+[[runtime]]
+name = "Sign"
+modern_name = "sign"
+aliases = ["sgn"]
+min = 1
+max = 1
+attributes = ["listable", "protected", "numeric_function"]
+parameters = [{ name = "expr", value_type = "expression", required = true, variadic = false, held = false }]
+options = []
+
+[[runtime]]
+name = "Simplify"
+modern_name = "simplify"
+aliases = []
+min = 1
+max = 2
+attributes = ["protected"]
+parameters = [{ name = "expr", value_type = "expression", required = true, variadic = false, held = false }, { name = "arg2", value_type = "expression", required = false, variadic = false, held = false, default_context = "由真实回调按输入推断或省略；不填造字面默认值" }]
+options = [{ name = "assumptions", runtime_name = "Assumptions", value_type = "expression", required = false, variadic = false, held = false, default_source = "True" }]
+
+[[runtime]]
+name = "Sin"
+modern_name = "sin"
+aliases = []
+min = 1
+max = 1
+attributes = ["listable", "protected", "numeric_function"]
+parameters = [{ name = "expr", value_type = "expression", required = true, variadic = false, held = false }]
+options = []
+
+[[runtime]]
+name = "Sinh"
+modern_name = "sinh"
+aliases = []
+min = 1
+max = 1
+attributes = ["listable", "protected", "numeric_function"]
+parameters = [{ name = "expr", value_type = "expression", required = true, variadic = false, held = false }]
+options = []
+
+[[runtime]]
+name = "Slot"
+modern_name = "slot"
+aliases = []
+min = 1
+max = 1
+attributes = ["hold_all", "protected"]
+parameters = [{ name = "index", value_type = "expression", required = true, variadic = false, held = true, default_source = "1" }]
+options = []
+
+[[runtime]]
+name = "Solve"
+modern_name = "solve"
+aliases = []
+min = 1
+attributes = ["hold_all", "protected"]
+parameters = [{ name = "equations", value_type = "expression", required = true, variadic = false, held = true }, { name = "variables", value_type = "expression", required = false, variadic = false, held = true, default_context = "由真实回调按输入推断或省略；不填造字面默认值" }, { name = "domain", value_type = "expression", required = false, variadic = false, held = true, default_context = "由真实回调按输入推断或省略；不填造字面默认值" }]
+options = [{ name = "steps", runtime_name = "RecordSteps", value_type = "boolean", required = false, variadic = false, held = true, default_context = "继承当前 EvalSettings.record_steps" }, { name = "domain", value_type = "enum", required = false, variadic = false, held = true, default_source = "Complexes", enum_values = ["Complexes", "Reals", "Integers", "Rationals", "positives"] }, { name = "cubics", runtime_name = "Cubics", value_type = "boolean", required = false, variadic = false, held = true, default_source = "False" }, { name = "quartics", runtime_name = "Quartics", value_type = "boolean", required = false, variadic = false, held = true, default_source = "False" }, { name = "verify_solutions", runtime_name = "VerifySolutions", value_type = "enum", required = false, variadic = false, held = true, default_source = "Automatic", enum_values = ["True", "False", "Automatic"] }, { name = "max_extra_conditions", runtime_name = "MaxExtraConditions", value_type = "integer", required = false, variadic = false, held = true, default_source = "0", enum_values = ["All"], min = 0 }, { name = "generated_parameters", runtime_name = "GeneratedParameters", value_type = "symbol", required = false, variadic = false, held = true, default_source = "C" }, { name = "inverse_functions", runtime_name = "InverseFunctions", value_type = "boolean", required = false, variadic = false, held = true, default_source = "True" }]
+
+compatibility_syntax = ["method", "max_iterations"]
+[[runtime]]
+name = "SolveValues"
+modern_name = "solve_values"
+aliases = ["solvevalues"]
+min = 1
+attributes = ["hold_all", "protected"]
+parameters = [{ name = "equations", value_type = "expression", required = true, variadic = false, held = true }, { name = "variables", value_type = "expression", required = false, variadic = false, held = true, default_context = "由真实回调按输入推断或省略；不填造字面默认值" }, { name = "domain", value_type = "expression", required = false, variadic = false, held = true, default_context = "由真实回调按输入推断或省略；不填造字面默认值" }]
+options = [{ name = "steps", runtime_name = "RecordSteps", value_type = "boolean", required = false, variadic = false, held = true, default_context = "继承当前 EvalSettings.record_steps" }, { name = "domain", value_type = "enum", required = false, variadic = false, held = true, default_source = "Complexes", enum_values = ["Complexes", "Reals", "Integers", "Rationals", "positives"] }, { name = "cubics", runtime_name = "Cubics", value_type = "boolean", required = false, variadic = false, held = true, default_source = "False" }, { name = "quartics", runtime_name = "Quartics", value_type = "boolean", required = false, variadic = false, held = true, default_source = "False" }, { name = "verify_solutions", runtime_name = "VerifySolutions", value_type = "enum", required = false, variadic = false, held = true, default_source = "Automatic", enum_values = ["True", "False", "Automatic"] }, { name = "max_extra_conditions", runtime_name = "MaxExtraConditions", value_type = "integer", required = false, variadic = false, held = true, default_source = "0", enum_values = ["All"], min = 0 }, { name = "generated_parameters", runtime_name = "GeneratedParameters", value_type = "symbol", required = false, variadic = false, held = true, default_source = "C" }, { name = "inverse_functions", runtime_name = "InverseFunctions", value_type = "boolean", required = false, variadic = false, held = true, default_source = "True" }]
+
+compatibility_syntax = ["method", "max_iterations"]
+[[runtime]]
+name = "Sqrt"
+modern_name = "sqrt"
+aliases = []
+min = 1
+max = 1
+attributes = ["listable", "protected", "numeric_function"]
+parameters = [{ name = "expr", value_type = "expression", required = true, variadic = false, held = false }]
+options = []
+
+[[runtime]]
+name = "Subtract"
+modern_name = "subtract"
+aliases = []
+min = 2
+max = 2
+attributes = ["listable", "protected", "numeric_function"]
+parameters = [{ name = "a", value_type = "expression", required = true, variadic = false, held = false }, { name = "b", value_type = "expression", required = true, variadic = false, held = false }]
+options = []
+
+[[runtime]]
+name = "Sum"
+modern_name = "sum"
+aliases = []
+min = 2
+attributes = ["hold_all", "protected"]
+parameters = [{ name = "expr", value_type = "expression", required = true, variadic = false, held = true }, { name = "iterators", value_type = "expression", required = true, variadic = true, held = true }]
+options = []
+
+[[runtime]]
+name = "Table"
+modern_name = "table"
+aliases = []
+min = 2
+attributes = ["hold_all", "protected"]
+parameters = [{ name = "expr", value_type = "expression", required = true, variadic = false, held = true }, { name = "iterators", value_type = "expression", required = true, variadic = true, held = true }]
+options = []
+
+[[runtime]]
+name = "Tan"
+modern_name = "tan"
+aliases = []
+min = 1
+max = 1
+attributes = ["listable", "protected", "numeric_function"]
+parameters = [{ name = "expr", value_type = "expression", required = true, variadic = false, held = false }]
+options = []
+
+[[runtime]]
+name = "Tanh"
+modern_name = "tanh"
+aliases = []
+min = 1
+max = 1
+attributes = ["listable", "protected", "numeric_function"]
+parameters = [{ name = "expr", value_type = "expression", required = true, variadic = false, held = false }]
+options = []
+
+[[runtime]]
+name = "Times"
+modern_name = "multiply"
+aliases = ["times"]
+min = 0
+attributes = ["listable", "protected", "numeric_function", "flat", "orderless", "one_identity"]
+parameters = [{ name = "values", value_type = "expression", required = false, variadic = true, held = false, default_context = "由真实回调按输入推断或省略；不填造字面默认值" }]
+options = []
+
+[[runtime]]
+name = "ToRadicals"
+modern_name = "to_radicals"
+aliases = ["toradicals"]
+min = 1
+max = 1
+attributes = ["listable", "protected"]
+parameters = [{ name = "expr", value_type = "expression", required = true, variadic = false, held = false }]
+options = []
+
+[[runtime]]
+name = "Together"
+modern_name = "together"
+aliases = []
+min = 1
+max = 1
+attributes = ["listable", "protected"]
+parameters = [{ name = "expr", value_type = "expression", required = true, variadic = false, held = false }]
+options = []
+
+[[runtime]]
+name = "Unequal"
+modern_name = "unequal"
+aliases = []
+min = 0
+attributes = ["protected"]
+parameters = [{ name = "values", value_type = "expression", required = false, variadic = true, held = false, default_context = "由真实回调按输入推断或省略；不填造字面默认值" }]
+options = []
+
+[[runtime]]
+name = "Unset"
+modern_name = "unset"
+aliases = []
+min = 1
+max = 1
+attributes = ["hold_all", "protected"]
+parameters = [{ name = "target", value_type = "expression", required = true, variadic = false, held = true }]
+options = []
+
+[[runtime]]
+name = "Variables"
+modern_name = "variables"
+aliases = []
+min = 1
+max = 1
+attributes = ["protected"]
+parameters = [{ name = "expr", value_type = "expression", required = true, variadic = false, held = false }]
+options = []

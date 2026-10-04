@@ -7,6 +7,7 @@ pub mod lexer;
 mod diagnostics;
 mod literals;
 mod modern;
+mod modern_options;
 mod names;
 mod names_editor;
 pub use names_editor::{identifier_symbol, modern_name};

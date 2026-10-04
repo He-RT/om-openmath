@@ -17,6 +17,7 @@ impl Parser<'_> {
         let result = (|| {
             let mut args = vec![];
             let mut domain = None;
+            let mut keys = std::collections::BTreeSet::new();
             if self.current().is_some() && self.kind() != Some(K::RParen) {
                 loop {
                     if self.kind() == Some(K::Identifier)
@@ -28,6 +29,11 @@ impl Parser<'_> {
                         let key = self.bump().ok_or(())?;
                         self.bump();
                         let value = self.expression(0, false)?;
+                        let option =
+                            self.named_option(symbol, text(self.src, key), &value.expr, key.span)?;
+                        if !keys.insert(option) {
+                            return self.fail("E024", "命名参数重复");
+                        }
                         if text(self.src, key).eq_ignore_ascii_case("domain") {
                             if domain.is_some() {
                                 return self.fail("E012", "domain 参数重复");
@@ -38,8 +44,7 @@ impl Parser<'_> {
                                 start: key.span.start,
                                 end: value.span.end,
                             };
-                            let key =
-                                Node::atom(Expr::sym(names::option(text(self.src, key))), key.span);
+                            let key = Node::atom(Expr::sym(option), key.span);
                             args.push(self.call(B::RULE, vec![key, value], span)?);
                         }
                     } else {
@@ -122,8 +127,12 @@ impl Parser<'_> {
         args: &mut Vec<Node>,
         domain: Node,
     ) -> Result<(), ()> {
-        if !matches!(function, B::SOLVE | B::REDUCE) || args.len() < 2 {
-            return self.fail("E012", "domain 需要 Solve/Reduce 的显式变量参数");
+        if !matches!(
+            function.name(),
+            "Solve" | "NSolve" | "SolveValues" | "NSolveValues" | "Reduce" | "Roots"
+        ) || args.len() < 2
+        {
+            return self.fail("E012", "domain 需要求解函数的显式变量参数");
         }
         let Some(value) = domain.expr.as_symbol() else {
             return self.fail("E012", "未知定义域");
@@ -175,8 +184,10 @@ impl Parser<'_> {
         let token = self.expect(K::Identifier)?;
         let name = text(self.src, token);
         let function = self.kind() == Some(K::LParen);
-        let symbol = if function {
-            names::modern(name, self.env.constants).unwrap_or_else(|| Symbol::intern(name))
+        let symbol = if self.env.known_functions.contains(&Symbol::intern(name)) {
+            Symbol::intern(name)
+        } else if function {
+            names::legacy_modern(name, self.env.constants).unwrap_or_else(|| Symbol::intern(name))
         } else {
             names::atom(name, self.env.constants)
         };

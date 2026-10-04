@@ -2,6 +2,7 @@
 import type { CellInput } from "./CellInput";
 import type { ChatMessage } from "./ChatMessage";
 import type { Dialect } from "./Dialect";
+import type { HostPlatform } from "./HostPlatform";
 import type { KernelConfig } from "./KernelConfig";
 import type { Language } from "./Language";
 import type { NotebookFile } from "./NotebookFile";
@@ -11,7 +12,11 @@ import type { ProfileConfig } from "./ProfileConfig";
 /**
  * A client operation; runtime dispatch is implemented by Session.
  */
-export type Request = { "type": "evaluate",
+export type Request = { "type": "get_function_catalog" } | { "type": "get_capabilities",
+/**
+ * Host presentation target.
+ */
+platform: HostPlatform, } | { "type": "evaluate",
 /**
  * Target cell.
  */

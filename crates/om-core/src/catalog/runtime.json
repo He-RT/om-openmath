@@ -1,0 +1,7857 @@
+[
+  {
+    "id": "fn_000001",
+    "canonical_name": "abs",
+    "name": "Abs",
+    "modern_name": "abs",
+    "aliases": [],
+    "arity": {
+      "min": 1,
+      "max": 1
+    },
+    "parameters": [
+      {
+        "name": "expr",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": false
+      }
+    ],
+    "options": [],
+    "compatibility_syntax": [],
+    "attributes": [
+      "listable",
+      "protected",
+      "numeric_function"
+    ],
+    "pipe_arg": 1,
+    "effect_class": "pure",
+    "support": "按真实注册签名与参数个数工作；未支持的表达式保持符号形式并给出已有诊断。",
+    "return_type": "expression",
+    "precision_modes": [
+      "exact",
+      "machine",
+      "arbitrary_supported"
+    ],
+    "precision_notes": "精确计算与已支持的数值近似子集；不把符号保留或格式位数当作新算法/任意精度支持。",
+    "platforms": [
+      "cli",
+      "desktop",
+      "web",
+      "ios"
+    ]
+  },
+  {
+    "id": "fn_000002",
+    "canonical_name": "and",
+    "name": "And",
+    "modern_name": "And",
+    "aliases": [],
+    "arity": {
+      "min": 0,
+      "max": null
+    },
+    "parameters": [
+      {
+        "name": "values",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": false,
+        "default_source": null,
+        "default_context": "由真实回调按输入推断或省略；不填造字面默认值",
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": true,
+        "held": true
+      }
+    ],
+    "options": [],
+    "compatibility_syntax": [],
+    "attributes": [
+      "hold_all",
+      "protected"
+    ],
+    "pipe_arg": 1,
+    "effect_class": "pure",
+    "support": "按真实注册签名与参数个数工作；未支持的表达式保持符号形式并给出已有诊断。",
+    "return_type": "boolean_or_expression",
+    "precision_modes": [
+      "exact",
+      "machine",
+      "arbitrary_supported"
+    ],
+    "precision_notes": "精确计算与已支持的数值近似子集；不把符号保留或格式位数当作新算法/任意精度支持。",
+    "platforms": [
+      "cli",
+      "desktop",
+      "web",
+      "ios"
+    ]
+  },
+  {
+    "id": "fn_000003",
+    "canonical_name": "apart",
+    "name": "Apart",
+    "modern_name": "apart",
+    "aliases": [],
+    "arity": {
+      "min": 1,
+      "max": 2
+    },
+    "parameters": [
+      {
+        "name": "expr",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": false
+      },
+      {
+        "name": "variable",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": false,
+        "default_source": null,
+        "default_context": "由真实回调按输入推断或省略；不填造字面默认值",
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": false
+      }
+    ],
+    "options": [],
+    "compatibility_syntax": [],
+    "attributes": [
+      "protected"
+    ],
+    "pipe_arg": 1,
+    "effect_class": "pure",
+    "support": "现有代数与有理多项式子集；次数≤4096、系数张量≤100万项/16轴；Apart 限单变量有理系数；不可处理部分保留原式。",
+    "return_type": "expression",
+    "precision_modes": [
+      "exact",
+      "machine",
+      "arbitrary_supported"
+    ],
+    "precision_notes": "精确计算与已支持的数值近似子集；不把符号保留或格式位数当作新算法/任意精度支持。",
+    "platforms": [
+      "cli",
+      "desktop",
+      "web",
+      "ios"
+    ]
+  },
+  {
+    "id": "fn_000004",
+    "canonical_name": "append",
+    "name": "Append",
+    "modern_name": "append",
+    "aliases": [],
+    "arity": {
+      "min": 2,
+      "max": 2
+    },
+    "parameters": [
+      {
+        "name": "data",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": false
+      },
+      {
+        "name": "value",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": false
+      }
+    ],
+    "options": [],
+    "compatibility_syntax": [],
+    "attributes": [
+      "protected"
+    ],
+    "pipe_arg": 1,
+    "effect_class": "pure",
+    "support": "按真实注册签名与参数个数工作；未支持的表达式保持符号形式并给出已有诊断。",
+    "return_type": "expression",
+    "precision_modes": [
+      "preserve_input"
+    ],
+    "precision_notes": "结构操作保留输入数值类型；迭代、求值和替换继承现有数学/预算限制。",
+    "platforms": [
+      "cli",
+      "desktop",
+      "web",
+      "ios"
+    ]
+  },
+  {
+    "id": "fn_000005",
+    "canonical_name": "apply",
+    "name": "Apply",
+    "modern_name": "apply",
+    "aliases": [],
+    "arity": {
+      "min": 2,
+      "max": 2
+    },
+    "parameters": [
+      {
+        "name": "fn",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": false
+      },
+      {
+        "name": "data",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": false
+      }
+    ],
+    "options": [],
+    "compatibility_syntax": [],
+    "attributes": [
+      "protected"
+    ],
+    "pipe_arg": 2,
+    "effect_class": "pure",
+    "support": "按真实注册签名与参数个数工作；未支持的表达式保持符号形式并给出已有诊断。",
+    "return_type": "expression",
+    "precision_modes": [
+      "preserve_input"
+    ],
+    "precision_notes": "结构操作保留输入数值类型；迭代、求值和替换继承现有数学/预算限制。",
+    "platforms": [
+      "cli",
+      "desktop",
+      "web",
+      "ios"
+    ]
+  },
+  {
+    "id": "fn_000006",
+    "canonical_name": "acos",
+    "name": "ArcCos",
+    "modern_name": "acos",
+    "aliases": [
+      "arccos"
+    ],
+    "arity": {
+      "min": 1,
+      "max": 1
+    },
+    "parameters": [
+      {
+        "name": "expr",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": false
+      }
+    ],
+    "options": [],
+    "compatibility_syntax": [],
+    "attributes": [
+      "listable",
+      "protected",
+      "numeric_function"
+    ],
+    "pipe_arg": 1,
+    "effect_class": "pure",
+    "support": "按真实注册签名与参数个数工作；未支持的表达式保持符号形式并给出已有诊断。",
+    "return_type": "expression",
+    "precision_modes": [
+      "exact",
+      "machine",
+      "arbitrary_supported"
+    ],
+    "precision_notes": "精确计算与已支持的数值近似子集；不把符号保留或格式位数当作新算法/任意精度支持。",
+    "platforms": [
+      "cli",
+      "desktop",
+      "web",
+      "ios"
+    ]
+  },
+  {
+    "id": "fn_000007",
+    "canonical_name": "acosh",
+    "name": "ArcCosh",
+    "modern_name": "acosh",
+    "aliases": [
+      "arccosh"
+    ],
+    "arity": {
+      "min": 1,
+      "max": 1
+    },
+    "parameters": [
+      {
+        "name": "expr",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": false
+      }
+    ],
+    "options": [],
+    "compatibility_syntax": [],
+    "attributes": [
+      "listable",
+      "protected",
+      "numeric_function"
+    ],
+    "pipe_arg": 1,
+    "effect_class": "pure",
+    "support": "按真实注册签名与参数个数工作；未支持的表达式保持符号形式并给出已有诊断。",
+    "return_type": "expression",
+    "precision_modes": [
+      "exact",
+      "machine",
+      "arbitrary_supported"
+    ],
+    "precision_notes": "精确计算与已支持的数值近似子集；不把符号保留或格式位数当作新算法/任意精度支持。",
+    "platforms": [
+      "cli",
+      "desktop",
+      "web",
+      "ios"
+    ]
+  },
+  {
+    "id": "fn_000008",
+    "canonical_name": "acot",
+    "name": "ArcCot",
+    "modern_name": "acot",
+    "aliases": [
+      "arccot"
+    ],
+    "arity": {
+      "min": 1,
+      "max": 1
+    },
+    "parameters": [
+      {
+        "name": "expr",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": false
+      }
+    ],
+    "options": [],
+    "compatibility_syntax": [],
+    "attributes": [
+      "listable",
+      "protected",
+      "numeric_function"
+    ],
+    "pipe_arg": 1,
+    "effect_class": "pure",
+    "support": "按真实注册签名与参数个数工作；未支持的表达式保持符号形式并给出已有诊断。",
+    "return_type": "expression",
+    "precision_modes": [
+      "exact",
+      "machine",
+      "arbitrary_supported"
+    ],
+    "precision_notes": "精确计算与已支持的数值近似子集；不把符号保留或格式位数当作新算法/任意精度支持。",
+    "platforms": [
+      "cli",
+      "desktop",
+      "web",
+      "ios"
+    ]
+  },
+  {
+    "id": "fn_000009",
+    "canonical_name": "acsc",
+    "name": "ArcCsc",
+    "modern_name": "acsc",
+    "aliases": [
+      "arccsc"
+    ],
+    "arity": {
+      "min": 1,
+      "max": 1
+    },
+    "parameters": [
+      {
+        "name": "expr",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": false
+      }
+    ],
+    "options": [],
+    "compatibility_syntax": [],
+    "attributes": [
+      "listable",
+      "protected",
+      "numeric_function"
+    ],
+    "pipe_arg": 1,
+    "effect_class": "pure",
+    "support": "按真实注册签名与参数个数工作；未支持的表达式保持符号形式并给出已有诊断。",
+    "return_type": "expression",
+    "precision_modes": [
+      "exact",
+      "machine",
+      "arbitrary_supported"
+    ],
+    "precision_notes": "精确计算与已支持的数值近似子集；不把符号保留或格式位数当作新算法/任意精度支持。",
+    "platforms": [
+      "cli",
+      "desktop",
+      "web",
+      "ios"
+    ]
+  },
+  {
+    "id": "fn_000010",
+    "canonical_name": "asec",
+    "name": "ArcSec",
+    "modern_name": "asec",
+    "aliases": [
+      "arcsec"
+    ],
+    "arity": {
+      "min": 1,
+      "max": 1
+    },
+    "parameters": [
+      {
+        "name": "expr",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": false
+      }
+    ],
+    "options": [],
+    "compatibility_syntax": [],
+    "attributes": [
+      "listable",
+      "protected",
+      "numeric_function"
+    ],
+    "pipe_arg": 1,
+    "effect_class": "pure",
+    "support": "按真实注册签名与参数个数工作；未支持的表达式保持符号形式并给出已有诊断。",
+    "return_type": "expression",
+    "precision_modes": [
+      "exact",
+      "machine",
+      "arbitrary_supported"
+    ],
+    "precision_notes": "精确计算与已支持的数值近似子集；不把符号保留或格式位数当作新算法/任意精度支持。",
+    "platforms": [
+      "cli",
+      "desktop",
+      "web",
+      "ios"
+    ]
+  },
+  {
+    "id": "fn_000011",
+    "canonical_name": "asin",
+    "name": "ArcSin",
+    "modern_name": "asin",
+    "aliases": [
+      "arcsin"
+    ],
+    "arity": {
+      "min": 1,
+      "max": 1
+    },
+    "parameters": [
+      {
+        "name": "expr",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": false
+      }
+    ],
+    "options": [],
+    "compatibility_syntax": [],
+    "attributes": [
+      "listable",
+      "protected",
+      "numeric_function"
+    ],
+    "pipe_arg": 1,
+    "effect_class": "pure",
+    "support": "按真实注册签名与参数个数工作；未支持的表达式保持符号形式并给出已有诊断。",
+    "return_type": "expression",
+    "precision_modes": [
+      "exact",
+      "machine",
+      "arbitrary_supported"
+    ],
+    "precision_notes": "精确计算与已支持的数值近似子集；不把符号保留或格式位数当作新算法/任意精度支持。",
+    "platforms": [
+      "cli",
+      "desktop",
+      "web",
+      "ios"
+    ]
+  },
+  {
+    "id": "fn_000012",
+    "canonical_name": "asinh",
+    "name": "ArcSinh",
+    "modern_name": "asinh",
+    "aliases": [
+      "arcsinh"
+    ],
+    "arity": {
+      "min": 1,
+      "max": 1
+    },
+    "parameters": [
+      {
+        "name": "expr",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": false
+      }
+    ],
+    "options": [],
+    "compatibility_syntax": [],
+    "attributes": [
+      "listable",
+      "protected",
+      "numeric_function"
+    ],
+    "pipe_arg": 1,
+    "effect_class": "pure",
+    "support": "按真实注册签名与参数个数工作；未支持的表达式保持符号形式并给出已有诊断。",
+    "return_type": "expression",
+    "precision_modes": [
+      "exact",
+      "machine",
+      "arbitrary_supported"
+    ],
+    "precision_notes": "精确计算与已支持的数值近似子集；不把符号保留或格式位数当作新算法/任意精度支持。",
+    "platforms": [
+      "cli",
+      "desktop",
+      "web",
+      "ios"
+    ]
+  },
+  {
+    "id": "fn_000013",
+    "canonical_name": "atan",
+    "name": "ArcTan",
+    "modern_name": "atan",
+    "aliases": [
+      "arctan"
+    ],
+    "arity": {
+      "min": 1,
+      "max": 2
+    },
+    "parameters": [
+      {
+        "name": "x",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": false
+      },
+      {
+        "name": "y",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": false,
+        "default_source": null,
+        "default_context": "由真实回调按输入推断或省略；不填造字面默认值",
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": false
+      }
+    ],
+    "options": [],
+    "compatibility_syntax": [],
+    "attributes": [
+      "listable",
+      "protected",
+      "numeric_function"
+    ],
+    "pipe_arg": 1,
+    "effect_class": "pure",
+    "support": "按真实注册签名与参数个数工作；未支持的表达式保持符号形式并给出已有诊断。",
+    "return_type": "expression",
+    "precision_modes": [
+      "exact",
+      "machine",
+      "arbitrary_supported"
+    ],
+    "precision_notes": "精确计算与已支持的数值近似子集；不把符号保留或格式位数当作新算法/任意精度支持。",
+    "platforms": [
+      "cli",
+      "desktop",
+      "web",
+      "ios"
+    ]
+  },
+  {
+    "id": "fn_000014",
+    "canonical_name": "atanh",
+    "name": "ArcTanh",
+    "modern_name": "atanh",
+    "aliases": [
+      "arctanh"
+    ],
+    "arity": {
+      "min": 1,
+      "max": 1
+    },
+    "parameters": [
+      {
+        "name": "expr",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": false
+      }
+    ],
+    "options": [],
+    "compatibility_syntax": [],
+    "attributes": [
+      "listable",
+      "protected",
+      "numeric_function"
+    ],
+    "pipe_arg": 1,
+    "effect_class": "pure",
+    "support": "按真实注册签名与参数个数工作；未支持的表达式保持符号形式并给出已有诊断。",
+    "return_type": "expression",
+    "precision_modes": [
+      "exact",
+      "machine",
+      "arbitrary_supported"
+    ],
+    "precision_notes": "精确计算与已支持的数值近似子集；不把符号保留或格式位数当作新算法/任意精度支持。",
+    "platforms": [
+      "cli",
+      "desktop",
+      "web",
+      "ios"
+    ]
+  },
+  {
+    "id": "fn_000015",
+    "canonical_name": "arg",
+    "name": "Arg",
+    "modern_name": "arg",
+    "aliases": [],
+    "arity": {
+      "min": 1,
+      "max": 1
+    },
+    "parameters": [
+      {
+        "name": "expr",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": false
+      }
+    ],
+    "options": [],
+    "compatibility_syntax": [],
+    "attributes": [
+      "listable",
+      "protected",
+      "numeric_function"
+    ],
+    "pipe_arg": 1,
+    "effect_class": "pure",
+    "support": "按真实注册签名与参数个数工作；未支持的表达式保持符号形式并给出已有诊断。",
+    "return_type": "expression",
+    "precision_modes": [
+      "exact",
+      "machine",
+      "arbitrary_supported"
+    ],
+    "precision_notes": "精确计算与已支持的数值近似子集；不把符号保留或格式位数当作新算法/任意精度支持。",
+    "platforms": [
+      "cli",
+      "desktop",
+      "web",
+      "ios"
+    ]
+  },
+  {
+    "id": "fn_000016",
+    "canonical_name": "choose",
+    "name": "Binomial",
+    "modern_name": "choose",
+    "aliases": [
+      "binom",
+      "binomial"
+    ],
+    "arity": {
+      "min": 2,
+      "max": 2
+    },
+    "parameters": [
+      {
+        "name": "n",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": false
+      },
+      {
+        "name": "k",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": false
+      }
+    ],
+    "options": [],
+    "compatibility_syntax": [],
+    "attributes": [
+      "listable",
+      "protected",
+      "numeric_function"
+    ],
+    "pipe_arg": 1,
+    "effect_class": "pure",
+    "support": "按真实注册签名与参数个数工作；未支持的表达式保持符号形式并给出已有诊断。",
+    "return_type": "integer",
+    "precision_modes": [
+      "exact",
+      "machine",
+      "arbitrary_supported"
+    ],
+    "precision_notes": "精确计算与已支持的数值近似子集；不把符号保留或格式位数当作新算法/任意精度支持。",
+    "platforms": [
+      "cli",
+      "desktop",
+      "web",
+      "ios"
+    ]
+  },
+  {
+    "id": "fn_000017",
+    "canonical_name": "cancel",
+    "name": "Cancel",
+    "modern_name": "cancel",
+    "aliases": [],
+    "arity": {
+      "min": 1,
+      "max": 1
+    },
+    "parameters": [
+      {
+        "name": "expr",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": false
+      }
+    ],
+    "options": [],
+    "compatibility_syntax": [],
+    "attributes": [
+      "listable",
+      "protected"
+    ],
+    "pipe_arg": 1,
+    "effect_class": "pure",
+    "support": "现有代数与有理多项式子集；次数≤4096、系数张量≤100万项/16轴；Apart 限单变量有理系数；不可处理部分保留原式。",
+    "return_type": "expression",
+    "precision_modes": [
+      "exact",
+      "machine",
+      "arbitrary_supported"
+    ],
+    "precision_notes": "精确计算与已支持的数值近似子集；不把符号保留或格式位数当作新算法/任意精度支持。",
+    "platforms": [
+      "cli",
+      "desktop",
+      "web",
+      "ios"
+    ]
+  },
+  {
+    "id": "fn_000018",
+    "canonical_name": "ceil",
+    "name": "Ceiling",
+    "modern_name": "ceil",
+    "aliases": [
+      "ceiling"
+    ],
+    "arity": {
+      "min": 1,
+      "max": 2
+    },
+    "parameters": [
+      {
+        "name": "x",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": false
+      },
+      {
+        "name": "step",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": false,
+        "default_source": "1",
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": false
+      }
+    ],
+    "options": [],
+    "compatibility_syntax": [],
+    "attributes": [
+      "listable",
+      "protected",
+      "numeric_function"
+    ],
+    "pipe_arg": 1,
+    "effect_class": "pure",
+    "support": "按真实注册签名与参数个数工作；未支持的表达式保持符号形式并给出已有诊断。",
+    "return_type": "number",
+    "precision_modes": [
+      "exact",
+      "machine",
+      "arbitrary_supported"
+    ],
+    "precision_notes": "精确计算与已支持的数值近似子集；不把符号保留或格式位数当作新算法/任意精度支持。",
+    "platforms": [
+      "cli",
+      "desktop",
+      "web",
+      "ios"
+    ]
+  },
+  {
+    "id": "fn_000019",
+    "canonical_name": "clear",
+    "name": "Clear",
+    "modern_name": "clear",
+    "aliases": [],
+    "arity": {
+      "min": 1,
+      "max": null
+    },
+    "parameters": [
+      {
+        "name": "symbols",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": true,
+        "held": true
+      }
+    ],
+    "options": [],
+    "compatibility_syntax": [],
+    "attributes": [
+      "hold_all",
+      "protected"
+    ],
+    "pipe_arg": 0,
+    "effect_class": "write_session",
+    "support": "按真实注册签名与参数个数工作；未支持的表达式保持符号形式并给出已有诊断。",
+    "return_type": "null",
+    "precision_modes": [
+      "preserve_input"
+    ],
+    "precision_notes": "结构操作保留输入数值类型；迭代、求值和替换继承现有数学/预算限制。",
+    "platforms": [
+      "cli",
+      "desktop",
+      "web",
+      "ios"
+    ]
+  },
+  {
+    "id": "fn_000020",
+    "canonical_name": "coefficient",
+    "name": "Coefficient",
+    "modern_name": "coefficient",
+    "aliases": [],
+    "arity": {
+      "min": 2,
+      "max": 3
+    },
+    "parameters": [
+      {
+        "name": "expr",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": false
+      },
+      {
+        "name": "variable",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": false
+      },
+      {
+        "name": "order",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": false,
+        "default_source": "1",
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": false
+      }
+    ],
+    "options": [],
+    "compatibility_syntax": [],
+    "attributes": [
+      "protected"
+    ],
+    "pipe_arg": 1,
+    "effect_class": "pure",
+    "support": "现有代数与有理多项式子集；次数≤4096、系数张量≤100万项/16轴；Apart 限单变量有理系数；不可处理部分保留原式。",
+    "return_type": "expression",
+    "precision_modes": [
+      "exact",
+      "machine",
+      "arbitrary_supported"
+    ],
+    "precision_notes": "精确计算与已支持的数值近似子集；不把符号保留或格式位数当作新算法/任意精度支持。",
+    "platforms": [
+      "cli",
+      "desktop",
+      "web",
+      "ios"
+    ]
+  },
+  {
+    "id": "fn_000021",
+    "canonical_name": "coefficient_list",
+    "name": "CoefficientList",
+    "modern_name": "coefficient_list",
+    "aliases": [
+      "coefficientlist"
+    ],
+    "arity": {
+      "min": 2,
+      "max": 2
+    },
+    "parameters": [
+      {
+        "name": "expr",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": false
+      },
+      {
+        "name": "variables",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": false
+      }
+    ],
+    "options": [],
+    "compatibility_syntax": [],
+    "attributes": [
+      "protected"
+    ],
+    "pipe_arg": 1,
+    "effect_class": "pure",
+    "support": "现有代数与有理多项式子集；次数≤4096、系数张量≤100万项/16轴；Apart 限单变量有理系数；不可处理部分保留原式。",
+    "return_type": "list",
+    "precision_modes": [
+      "exact",
+      "machine",
+      "arbitrary_supported"
+    ],
+    "precision_notes": "精确计算与已支持的数值近似子集；不把符号保留或格式位数当作新算法/任意精度支持。",
+    "platforms": [
+      "cli",
+      "desktop",
+      "web",
+      "ios"
+    ]
+  },
+  {
+    "id": "fn_000022",
+    "canonical_name": "collect",
+    "name": "Collect",
+    "modern_name": "collect",
+    "aliases": [],
+    "arity": {
+      "min": 2,
+      "max": 3
+    },
+    "parameters": [
+      {
+        "name": "expr",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": false
+      },
+      {
+        "name": "variables",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": false
+      },
+      {
+        "name": "coefficient_fn",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": false,
+        "default_source": "Identity",
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": false
+      }
+    ],
+    "options": [],
+    "compatibility_syntax": [],
+    "attributes": [
+      "protected"
+    ],
+    "pipe_arg": 1,
+    "effect_class": "pure",
+    "support": "现有代数与有理多项式子集；次数≤4096、系数张量≤100万项/16轴；Apart 限单变量有理系数；不可处理部分保留原式。",
+    "return_type": "expression",
+    "precision_modes": [
+      "exact",
+      "machine",
+      "arbitrary_supported"
+    ],
+    "precision_notes": "精确计算与已支持的数值近似子集；不把符号保留或格式位数当作新算法/任意精度支持。",
+    "platforms": [
+      "cli",
+      "desktop",
+      "web",
+      "ios"
+    ]
+  },
+  {
+    "id": "fn_000023",
+    "canonical_name": "sequence",
+    "name": "CompoundExpression",
+    "modern_name": "sequence",
+    "aliases": [
+      "compoundexpression"
+    ],
+    "arity": {
+      "min": 1,
+      "max": null
+    },
+    "parameters": [
+      {
+        "name": "expressions",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": true,
+        "held": true
+      }
+    ],
+    "options": [],
+    "compatibility_syntax": [],
+    "attributes": [
+      "hold_all",
+      "protected"
+    ],
+    "pipe_arg": 1,
+    "effect_class": "pure",
+    "support": "按真实注册签名与参数个数工作；未支持的表达式保持符号形式并给出已有诊断。",
+    "return_type": "expression",
+    "precision_modes": [
+      "preserve_input"
+    ],
+    "precision_notes": "结构操作保留输入数值类型；迭代、求值和替换继承现有数学/预算限制。",
+    "platforms": [
+      "cli",
+      "desktop",
+      "web",
+      "ios"
+    ]
+  },
+  {
+    "id": "fn_000024",
+    "canonical_name": "conditional",
+    "name": "ConditionalExpression",
+    "modern_name": "conditional",
+    "aliases": [
+      "conditionalexpression"
+    ],
+    "arity": {
+      "min": 2,
+      "max": 2
+    },
+    "parameters": [
+      {
+        "name": "expr",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": true
+      },
+      {
+        "name": "condition",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": true
+      }
+    ],
+    "options": [],
+    "compatibility_syntax": [],
+    "attributes": [
+      "hold_all",
+      "protected"
+    ],
+    "pipe_arg": 1,
+    "effect_class": "pure",
+    "support": "按真实注册签名与参数个数工作；未支持的表达式保持符号形式并给出已有诊断。",
+    "return_type": "expression",
+    "precision_modes": [
+      "exact",
+      "machine",
+      "arbitrary_supported"
+    ],
+    "precision_notes": "精确计算与已支持的数值近似子集；不把符号保留或格式位数当作新算法/任意精度支持。",
+    "platforms": [
+      "cli",
+      "desktop",
+      "web",
+      "ios"
+    ]
+  },
+  {
+    "id": "fn_000025",
+    "canonical_name": "conj",
+    "name": "Conjugate",
+    "modern_name": "conj",
+    "aliases": [
+      "conjugate"
+    ],
+    "arity": {
+      "min": 1,
+      "max": 1
+    },
+    "parameters": [
+      {
+        "name": "expr",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": false
+      }
+    ],
+    "options": [],
+    "compatibility_syntax": [],
+    "attributes": [
+      "listable",
+      "protected",
+      "numeric_function"
+    ],
+    "pipe_arg": 1,
+    "effect_class": "pure",
+    "support": "按真实注册签名与参数个数工作；未支持的表达式保持符号形式并给出已有诊断。",
+    "return_type": "expression",
+    "precision_modes": [
+      "exact",
+      "machine",
+      "arbitrary_supported"
+    ],
+    "precision_notes": "精确计算与已支持的数值近似子集；不把符号保留或格式位数当作新算法/任意精度支持。",
+    "platforms": [
+      "cli",
+      "desktop",
+      "web",
+      "ios"
+    ]
+  },
+  {
+    "id": "fn_000119",
+    "canonical_name": "plot",
+    "name": "ContourPlot",
+    "modern_name": "implicit_plot",
+    "aliases": [
+      "contourplot",
+      "implicitplot"
+    ],
+    "arity": {
+      "min": 3,
+      "max": null
+    },
+    "parameters": [
+      {
+        "name": "equation",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": true
+      },
+      {
+        "name": "x_axis",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": true
+      },
+      {
+        "name": "y_axis",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": true
+      }
+    ],
+    "options": [
+      {
+        "name": "plot_range",
+        "runtime_name": "PlotRange",
+        "value_type": "expression",
+        "required": false,
+        "default_source": "Automatic",
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": true
+      }
+    ],
+    "compatibility_syntax": [],
+    "attributes": [
+      "hold_all",
+      "protected"
+    ],
+    "pipe_arg": 1,
+    "effect_class": "pure",
+    "support": "当前 Plot 的二维实函数、ContourPlot 的二维零等值轮廓，保留极点、孔洞与条件解高亮。",
+    "return_type": "plot_or_scene_request",
+    "precision_modes": [
+      "machine_sampling"
+    ],
+    "precision_notes": "现有绘图经过只读 f64 编译与真实内核采样；符号输入可精确保存，像素/采样不是认证解。",
+    "platforms": [
+      "cli",
+      "desktop",
+      "web",
+      "ios"
+    ]
+  },
+  {
+    "id": "fn_000026",
+    "canonical_name": "cos",
+    "name": "Cos",
+    "modern_name": "cos",
+    "aliases": [],
+    "arity": {
+      "min": 1,
+      "max": 1
+    },
+    "parameters": [
+      {
+        "name": "expr",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": false
+      }
+    ],
+    "options": [],
+    "compatibility_syntax": [],
+    "attributes": [
+      "listable",
+      "protected",
+      "numeric_function"
+    ],
+    "pipe_arg": 1,
+    "effect_class": "pure",
+    "support": "按真实注册签名与参数个数工作；未支持的表达式保持符号形式并给出已有诊断。",
+    "return_type": "expression",
+    "precision_modes": [
+      "exact",
+      "machine",
+      "arbitrary_supported"
+    ],
+    "precision_notes": "精确计算与已支持的数值近似子集；不把符号保留或格式位数当作新算法/任意精度支持。",
+    "platforms": [
+      "cli",
+      "desktop",
+      "web",
+      "ios"
+    ]
+  },
+  {
+    "id": "fn_000027",
+    "canonical_name": "cosh",
+    "name": "Cosh",
+    "modern_name": "cosh",
+    "aliases": [],
+    "arity": {
+      "min": 1,
+      "max": 1
+    },
+    "parameters": [
+      {
+        "name": "expr",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": false
+      }
+    ],
+    "options": [],
+    "compatibility_syntax": [],
+    "attributes": [
+      "listable",
+      "protected",
+      "numeric_function"
+    ],
+    "pipe_arg": 1,
+    "effect_class": "pure",
+    "support": "按真实注册签名与参数个数工作；未支持的表达式保持符号形式并给出已有诊断。",
+    "return_type": "expression",
+    "precision_modes": [
+      "exact",
+      "machine",
+      "arbitrary_supported"
+    ],
+    "precision_notes": "精确计算与已支持的数值近似子集；不把符号保留或格式位数当作新算法/任意精度支持。",
+    "platforms": [
+      "cli",
+      "desktop",
+      "web",
+      "ios"
+    ]
+  },
+  {
+    "id": "fn_000028",
+    "canonical_name": "cot",
+    "name": "Cot",
+    "modern_name": "cot",
+    "aliases": [],
+    "arity": {
+      "min": 1,
+      "max": 1
+    },
+    "parameters": [
+      {
+        "name": "expr",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": false
+      }
+    ],
+    "options": [],
+    "compatibility_syntax": [],
+    "attributes": [
+      "listable",
+      "protected",
+      "numeric_function"
+    ],
+    "pipe_arg": 1,
+    "effect_class": "pure",
+    "support": "按真实注册签名与参数个数工作；未支持的表达式保持符号形式并给出已有诊断。",
+    "return_type": "expression",
+    "precision_modes": [
+      "exact",
+      "machine",
+      "arbitrary_supported"
+    ],
+    "precision_notes": "精确计算与已支持的数值近似子集；不把符号保留或格式位数当作新算法/任意精度支持。",
+    "platforms": [
+      "cli",
+      "desktop",
+      "web",
+      "ios"
+    ]
+  },
+  {
+    "id": "fn_000029",
+    "canonical_name": "coth",
+    "name": "Coth",
+    "modern_name": "coth",
+    "aliases": [],
+    "arity": {
+      "min": 1,
+      "max": 1
+    },
+    "parameters": [
+      {
+        "name": "expr",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": false
+      }
+    ],
+    "options": [],
+    "compatibility_syntax": [],
+    "attributes": [
+      "listable",
+      "protected",
+      "numeric_function"
+    ],
+    "pipe_arg": 1,
+    "effect_class": "pure",
+    "support": "按真实注册签名与参数个数工作；未支持的表达式保持符号形式并给出已有诊断。",
+    "return_type": "expression",
+    "precision_modes": [
+      "exact",
+      "machine",
+      "arbitrary_supported"
+    ],
+    "precision_notes": "精确计算与已支持的数值近似子集；不把符号保留或格式位数当作新算法/任意精度支持。",
+    "platforms": [
+      "cli",
+      "desktop",
+      "web",
+      "ios"
+    ]
+  },
+  {
+    "id": "fn_000030",
+    "canonical_name": "csc",
+    "name": "Csc",
+    "modern_name": "csc",
+    "aliases": [],
+    "arity": {
+      "min": 1,
+      "max": 1
+    },
+    "parameters": [
+      {
+        "name": "expr",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": false
+      }
+    ],
+    "options": [],
+    "compatibility_syntax": [],
+    "attributes": [
+      "listable",
+      "protected",
+      "numeric_function"
+    ],
+    "pipe_arg": 1,
+    "effect_class": "pure",
+    "support": "按真实注册签名与参数个数工作；未支持的表达式保持符号形式并给出已有诊断。",
+    "return_type": "expression",
+    "precision_modes": [
+      "exact",
+      "machine",
+      "arbitrary_supported"
+    ],
+    "precision_notes": "精确计算与已支持的数值近似子集；不把符号保留或格式位数当作新算法/任意精度支持。",
+    "platforms": [
+      "cli",
+      "desktop",
+      "web",
+      "ios"
+    ]
+  },
+  {
+    "id": "fn_000031",
+    "canonical_name": "csch",
+    "name": "Csch",
+    "modern_name": "csch",
+    "aliases": [],
+    "arity": {
+      "min": 1,
+      "max": 1
+    },
+    "parameters": [
+      {
+        "name": "expr",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": false
+      }
+    ],
+    "options": [],
+    "compatibility_syntax": [],
+    "attributes": [
+      "listable",
+      "protected",
+      "numeric_function"
+    ],
+    "pipe_arg": 1,
+    "effect_class": "pure",
+    "support": "按真实注册签名与参数个数工作；未支持的表达式保持符号形式并给出已有诊断。",
+    "return_type": "expression",
+    "precision_modes": [
+      "exact",
+      "machine",
+      "arbitrary_supported"
+    ],
+    "precision_notes": "精确计算与已支持的数值近似子集；不把符号保留或格式位数当作新算法/任意精度支持。",
+    "platforms": [
+      "cli",
+      "desktop",
+      "web",
+      "ios"
+    ]
+  },
+  {
+    "id": "fn_000032",
+    "canonical_name": "diff",
+    "name": "D",
+    "modern_name": "diff",
+    "aliases": [
+      "derivative"
+    ],
+    "arity": {
+      "min": 2,
+      "max": null
+    },
+    "parameters": [
+      {
+        "name": "expr",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": false
+      },
+      {
+        "name": "variable",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": false
+      },
+      {
+        "name": "variables",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": false,
+        "default_source": null,
+        "default_context": "由真实回调按输入推断或省略；不填造字面默认值",
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": true,
+        "held": false
+      }
+    ],
+    "options": [],
+    "compatibility_syntax": [],
+    "attributes": [
+      "protected"
+    ],
+    "pipe_arg": 1,
+    "effect_class": "pure",
+    "support": "重复/混合偏导、列表、初等链式法则、形式 Derivative；最多64规格和4096阶。",
+    "return_type": "expression",
+    "precision_modes": [
+      "exact",
+      "machine",
+      "arbitrary_supported"
+    ],
+    "precision_notes": "精确计算与已支持的数值近似子集；不把符号保留或格式位数当作新算法/任意精度支持。",
+    "platforms": [
+      "cli",
+      "desktop",
+      "web",
+      "ios"
+    ]
+  },
+  {
+    "id": "fn_000033",
+    "canonical_name": "denominator",
+    "name": "Denominator",
+    "modern_name": "denominator",
+    "aliases": [],
+    "arity": {
+      "min": 1,
+      "max": 1
+    },
+    "parameters": [
+      {
+        "name": "expr",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": false
+      }
+    ],
+    "options": [],
+    "compatibility_syntax": [],
+    "attributes": [
+      "listable",
+      "protected"
+    ],
+    "pipe_arg": 1,
+    "effect_class": "pure",
+    "support": "按真实注册签名与参数个数工作；未支持的表达式保持符号形式并给出已有诊断。",
+    "return_type": "expression",
+    "precision_modes": [
+      "exact",
+      "machine",
+      "arbitrary_supported"
+    ],
+    "precision_notes": "精确计算与已支持的数值近似子集；不把符号保留或格式位数当作新算法/任意精度支持。",
+    "platforms": [
+      "cli",
+      "desktop",
+      "web",
+      "ios"
+    ]
+  },
+  {
+    "id": "fn_000034",
+    "canonical_name": "discriminant",
+    "name": "Discriminant",
+    "modern_name": "discriminant",
+    "aliases": [],
+    "arity": {
+      "min": 2,
+      "max": 2
+    },
+    "parameters": [
+      {
+        "name": "f",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": false
+      },
+      {
+        "name": "variable",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": false
+      }
+    ],
+    "options": [],
+    "compatibility_syntax": [],
+    "attributes": [
+      "protected"
+    ],
+    "pipe_arg": 1,
+    "effect_class": "pure",
+    "support": "现有代数与有理多项式子集；次数≤4096、系数张量≤100万项/16轴；Apart 限单变量有理系数；不可处理部分保留原式。",
+    "return_type": "expression",
+    "precision_modes": [
+      "exact",
+      "machine",
+      "arbitrary_supported"
+    ],
+    "precision_notes": "精确计算与已支持的数值近似子集；不把符号保留或格式位数当作新算法/任意精度支持。",
+    "platforms": [
+      "cli",
+      "desktop",
+      "web",
+      "ios"
+    ]
+  },
+  {
+    "id": "fn_000035",
+    "canonical_name": "divide",
+    "name": "Divide",
+    "modern_name": "divide",
+    "aliases": [],
+    "arity": {
+      "min": 2,
+      "max": 2
+    },
+    "parameters": [
+      {
+        "name": "a",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": false
+      },
+      {
+        "name": "b",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": false
+      }
+    ],
+    "options": [],
+    "compatibility_syntax": [],
+    "attributes": [
+      "listable",
+      "protected",
+      "numeric_function"
+    ],
+    "pipe_arg": 1,
+    "effect_class": "pure",
+    "support": "按真实注册签名与参数个数工作；未支持的表达式保持符号形式并给出已有诊断。",
+    "return_type": "expression",
+    "precision_modes": [
+      "exact",
+      "machine",
+      "arbitrary_supported"
+    ],
+    "precision_notes": "精确计算与已支持的数值近似子集；不把符号保留或格式位数当作新算法/任意精度支持。",
+    "platforms": [
+      "cli",
+      "desktop",
+      "web",
+      "ios"
+    ]
+  },
+  {
+    "id": "fn_000036",
+    "canonical_name": "in_domain",
+    "name": "Element",
+    "modern_name": "in_domain",
+    "aliases": [
+      "element"
+    ],
+    "arity": {
+      "min": 2,
+      "max": 2
+    },
+    "parameters": [
+      {
+        "name": "expr",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": false
+      },
+      {
+        "name": "domain",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": false
+      }
+    ],
+    "options": [],
+    "compatibility_syntax": [],
+    "attributes": [
+      "protected"
+    ],
+    "pipe_arg": 1,
+    "effect_class": "pure",
+    "support": "按真实注册签名与参数个数工作；未支持的表达式保持符号形式并给出已有诊断。",
+    "return_type": "boolean_or_condition",
+    "precision_modes": [
+      "preserve_input"
+    ],
+    "precision_notes": "结构操作保留输入数值类型；迭代、求值和替换继承现有数学/预算限制。",
+    "platforms": [
+      "cli",
+      "desktop",
+      "web",
+      "ios"
+    ]
+  },
+  {
+    "id": "fn_000037",
+    "canonical_name": "eliminate",
+    "name": "Eliminate",
+    "modern_name": "eliminate",
+    "aliases": [],
+    "arity": {
+      "min": 2,
+      "max": 2
+    },
+    "parameters": [
+      {
+        "name": "equations",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": true
+      },
+      {
+        "name": "variables",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": true
+      }
+    ],
+    "options": [],
+    "compatibility_syntax": [],
+    "attributes": [
+      "hold_all",
+      "protected"
+    ],
+    "pipe_arg": 1,
+    "effect_class": "pure",
+    "support": "按真实注册签名与参数个数工作；未支持的表达式保持符号形式并给出已有诊断。",
+    "return_type": "boolean_or_condition",
+    "precision_modes": [
+      "exact",
+      "machine",
+      "arbitrary_supported"
+    ],
+    "precision_notes": "精确计算与已支持的数值近似子集；不把符号保留或格式位数当作新算法/任意精度支持。",
+    "platforms": [
+      "cli",
+      "desktop",
+      "web",
+      "ios"
+    ]
+  },
+  {
+    "id": "fn_000038",
+    "canonical_name": "equal",
+    "name": "Equal",
+    "modern_name": "equal",
+    "aliases": [],
+    "arity": {
+      "min": 0,
+      "max": null
+    },
+    "parameters": [
+      {
+        "name": "values",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": false,
+        "default_source": null,
+        "default_context": "由真实回调按输入推断或省略；不填造字面默认值",
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": true,
+        "held": false
+      }
+    ],
+    "options": [],
+    "compatibility_syntax": [],
+    "attributes": [
+      "protected"
+    ],
+    "pipe_arg": 1,
+    "effect_class": "pure",
+    "support": "按真实注册签名与参数个数工作；未支持的表达式保持符号形式并给出已有诊断。",
+    "return_type": "boolean_or_expression",
+    "precision_modes": [
+      "exact",
+      "machine",
+      "arbitrary_supported"
+    ],
+    "precision_notes": "精确计算与已支持的数值近似子集；不把符号保留或格式位数当作新算法/任意精度支持。",
+    "platforms": [
+      "cli",
+      "desktop",
+      "web",
+      "ios"
+    ]
+  },
+  {
+    "id": "fn_000039",
+    "canonical_name": "exp",
+    "name": "Exp",
+    "modern_name": "exp",
+    "aliases": [],
+    "arity": {
+      "min": 1,
+      "max": 1
+    },
+    "parameters": [
+      {
+        "name": "expr",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": false
+      }
+    ],
+    "options": [],
+    "compatibility_syntax": [],
+    "attributes": [
+      "listable",
+      "protected",
+      "numeric_function"
+    ],
+    "pipe_arg": 1,
+    "effect_class": "pure",
+    "support": "按真实注册签名与参数个数工作；未支持的表达式保持符号形式并给出已有诊断。",
+    "return_type": "expression",
+    "precision_modes": [
+      "exact",
+      "machine",
+      "arbitrary_supported"
+    ],
+    "precision_notes": "精确计算与已支持的数值近似子集；不把符号保留或格式位数当作新算法/任意精度支持。",
+    "platforms": [
+      "cli",
+      "desktop",
+      "web",
+      "ios"
+    ]
+  },
+  {
+    "id": "fn_000040",
+    "canonical_name": "expand",
+    "name": "Expand",
+    "modern_name": "expand",
+    "aliases": [],
+    "arity": {
+      "min": 1,
+      "max": 1
+    },
+    "parameters": [
+      {
+        "name": "expr",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": false
+      }
+    ],
+    "options": [],
+    "compatibility_syntax": [],
+    "attributes": [
+      "listable",
+      "protected"
+    ],
+    "pipe_arg": 1,
+    "effect_class": "pure",
+    "support": "现有代数与有理多项式子集；次数≤4096、系数张量≤100万项/16轴；Apart 限单变量有理系数；不可处理部分保留原式。",
+    "return_type": "expression",
+    "precision_modes": [
+      "exact",
+      "machine",
+      "arbitrary_supported"
+    ],
+    "precision_notes": "精确计算与已支持的数值近似子集；不把符号保留或格式位数当作新算法/任意精度支持。",
+    "platforms": [
+      "cli",
+      "desktop",
+      "web",
+      "ios"
+    ]
+  },
+  {
+    "id": "fn_000041",
+    "canonical_name": "exponent",
+    "name": "Exponent",
+    "modern_name": "exponent",
+    "aliases": [],
+    "arity": {
+      "min": 2,
+      "max": 2
+    },
+    "parameters": [
+      {
+        "name": "expr",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": false
+      },
+      {
+        "name": "variable",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": false
+      }
+    ],
+    "options": [],
+    "compatibility_syntax": [],
+    "attributes": [
+      "protected"
+    ],
+    "pipe_arg": 1,
+    "effect_class": "pure",
+    "support": "现有代数与有理多项式子集；次数≤4096、系数张量≤100万项/16轴；Apart 限单变量有理系数；不可处理部分保留原式。",
+    "return_type": "integer_or_expression",
+    "precision_modes": [
+      "exact",
+      "machine",
+      "arbitrary_supported"
+    ],
+    "precision_notes": "精确计算与已支持的数值近似子集；不把符号保留或格式位数当作新算法/任意精度支持。",
+    "platforms": [
+      "cli",
+      "desktop",
+      "web",
+      "ios"
+    ]
+  },
+  {
+    "id": "fn_000042",
+    "canonical_name": "factor",
+    "name": "Factor",
+    "modern_name": "factor",
+    "aliases": [],
+    "arity": {
+      "min": 1,
+      "max": 1
+    },
+    "parameters": [
+      {
+        "name": "expr",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": false
+      }
+    ],
+    "options": [],
+    "compatibility_syntax": [],
+    "attributes": [
+      "listable",
+      "protected"
+    ],
+    "pipe_arg": 1,
+    "effect_class": "pure",
+    "support": "现有代数与有理多项式子集；次数≤4096、系数张量≤100万项/16轴；Apart 限单变量有理系数；不可处理部分保留原式。",
+    "return_type": "expression",
+    "precision_modes": [
+      "exact",
+      "machine",
+      "arbitrary_supported"
+    ],
+    "precision_notes": "精确计算与已支持的数值近似子集；不把符号保留或格式位数当作新算法/任意精度支持。",
+    "platforms": [
+      "cli",
+      "desktop",
+      "web",
+      "ios"
+    ]
+  },
+  {
+    "id": "fn_000043",
+    "canonical_name": "factor_integer",
+    "name": "FactorInteger",
+    "modern_name": "factor_integer",
+    "aliases": [
+      "factorinteger"
+    ],
+    "arity": {
+      "min": 1,
+      "max": 1
+    },
+    "parameters": [
+      {
+        "name": "expr",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": false
+      }
+    ],
+    "options": [],
+    "compatibility_syntax": [],
+    "attributes": [
+      "listable",
+      "protected"
+    ],
+    "pipe_arg": 1,
+    "effect_class": "pure",
+    "support": "闭合整数分解，当前数值与预算边界按 scalar.rs/factor_integer；不宣称任意大整数即时完整分解。",
+    "return_type": "expression",
+    "precision_modes": [
+      "exact",
+      "machine",
+      "arbitrary_supported"
+    ],
+    "precision_notes": "精确计算与已支持的数值近似子集；不把符号保留或格式位数当作新算法/任意精度支持。",
+    "platforms": [
+      "cli",
+      "desktop",
+      "web",
+      "ios"
+    ]
+  },
+  {
+    "id": "fn_000044",
+    "canonical_name": "factorial",
+    "name": "Factorial",
+    "modern_name": "factorial",
+    "aliases": [],
+    "arity": {
+      "min": 1,
+      "max": 1
+    },
+    "parameters": [
+      {
+        "name": "expr",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": false
+      }
+    ],
+    "options": [],
+    "compatibility_syntax": [],
+    "attributes": [
+      "listable",
+      "protected",
+      "numeric_function"
+    ],
+    "pipe_arg": 1,
+    "effect_class": "pure",
+    "support": "按真实注册签名与参数个数工作；未支持的表达式保持符号形式并给出已有诊断。",
+    "return_type": "expression",
+    "precision_modes": [
+      "exact",
+      "machine",
+      "arbitrary_supported"
+    ],
+    "precision_notes": "精确计算与已支持的数值近似子集；不把符号保留或格式位数当作新算法/任意精度支持。",
+    "platforms": [
+      "cli",
+      "desktop",
+      "web",
+      "ios"
+    ]
+  },
+  {
+    "id": "fn_000045",
+    "canonical_name": "find_root",
+    "name": "FindRoot",
+    "modern_name": "find_root",
+    "aliases": [
+      "findroot"
+    ],
+    "arity": {
+      "min": 2,
+      "max": null
+    },
+    "parameters": [
+      {
+        "name": "equations",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": true
+      },
+      {
+        "name": "starts",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": true
+      }
+    ],
+    "options": [
+      {
+        "name": "steps",
+        "runtime_name": "RecordSteps",
+        "value_type": "boolean",
+        "required": false,
+        "default_source": null,
+        "default_context": "继承当前 EvalSettings.record_steps",
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": true
+      },
+      {
+        "name": "precision",
+        "runtime_name": "WorkingPrecision",
+        "value_type": "integer",
+        "required": false,
+        "default_source": "MachinePrecision",
+        "default_context": null,
+        "enum_values": [
+          "MachinePrecision"
+        ],
+        "min": 5,
+        "max": 2466,
+        "variadic": false,
+        "held": true
+      },
+      {
+        "name": "method",
+        "runtime_name": "Method",
+        "value_type": "enum",
+        "required": false,
+        "default_source": "Automatic",
+        "default_context": null,
+        "enum_values": [
+          "Automatic",
+          "Newton",
+          "Brent"
+        ],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": true
+      },
+      {
+        "name": "max_iterations",
+        "runtime_name": "MaxIterations",
+        "value_type": "integer",
+        "required": false,
+        "default_source": "100",
+        "default_context": null,
+        "enum_values": [],
+        "min": 1,
+        "max": null,
+        "variadic": false,
+        "held": true
+      }
+    ],
+    "compatibility_syntax": [],
+    "attributes": [
+      "hold_all",
+      "protected"
+    ],
+    "pipe_arg": 1,
+    "effect_class": "pure",
+    "support": "旧 {x,start} / {x,a,b} / 多变量起点形式，Newton/Brent匹配，5..2466十进制位；验证原残差及极点；不承诺完整根集。",
+    "return_type": "rules_or_values",
+    "precision_modes": [
+      "exact",
+      "machine",
+      "arbitrary_supported"
+    ],
+    "precision_notes": "精确计算与已支持的数值近似子集；不把符号保留或格式位数当作新算法/任意精度支持。",
+    "platforms": [
+      "cli",
+      "desktop",
+      "web",
+      "ios"
+    ]
+  },
+  {
+    "id": "fn_000046",
+    "canonical_name": "first",
+    "name": "First",
+    "modern_name": "first",
+    "aliases": [],
+    "arity": {
+      "min": 1,
+      "max": 1
+    },
+    "parameters": [
+      {
+        "name": "expr",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": false
+      }
+    ],
+    "options": [],
+    "compatibility_syntax": [],
+    "attributes": [
+      "protected"
+    ],
+    "pipe_arg": 1,
+    "effect_class": "pure",
+    "support": "按真实注册签名与参数个数工作；未支持的表达式保持符号形式并给出已有诊断。",
+    "return_type": "expression",
+    "precision_modes": [
+      "preserve_input"
+    ],
+    "precision_notes": "结构操作保留输入数值类型；迭代、求值和替换继承现有数学/预算限制。",
+    "platforms": [
+      "cli",
+      "desktop",
+      "web",
+      "ios"
+    ]
+  },
+  {
+    "id": "fn_000047",
+    "canonical_name": "floor",
+    "name": "Floor",
+    "modern_name": "floor",
+    "aliases": [],
+    "arity": {
+      "min": 1,
+      "max": 2
+    },
+    "parameters": [
+      {
+        "name": "x",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": false
+      },
+      {
+        "name": "step",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": false,
+        "default_source": "1",
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": false
+      }
+    ],
+    "options": [],
+    "compatibility_syntax": [],
+    "attributes": [
+      "listable",
+      "protected",
+      "numeric_function"
+    ],
+    "pipe_arg": 1,
+    "effect_class": "pure",
+    "support": "按真实注册签名与参数个数工作；未支持的表达式保持符号形式并给出已有诊断。",
+    "return_type": "number",
+    "precision_modes": [
+      "exact",
+      "machine",
+      "arbitrary_supported"
+    ],
+    "precision_notes": "精确计算与已支持的数值近似子集；不把符号保留或格式位数当作新算法/任意精度支持。",
+    "platforms": [
+      "cli",
+      "desktop",
+      "web",
+      "ios"
+    ]
+  },
+  {
+    "id": "fn_000118",
+    "canonical_name": "simplify",
+    "name": "FullSimplify",
+    "modern_name": "full_simplify",
+    "aliases": [
+      "fullsimplify"
+    ],
+    "arity": {
+      "min": 1,
+      "max": 2
+    },
+    "parameters": [
+      {
+        "name": "expr",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": false
+      },
+      {
+        "name": "arg2",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": false,
+        "default_source": null,
+        "default_context": "由真实回调按输入推断或省略；不填造字面默认值",
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": false
+      }
+    ],
+    "options": [
+      {
+        "name": "assumptions",
+        "runtime_name": "Assumptions",
+        "value_type": "expression",
+        "required": false,
+        "default_source": "True",
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": false
+      }
+    ],
+    "compatibility_syntax": [],
+    "attributes": [
+      "protected"
+    ],
+    "pipe_arg": 1,
+    "effect_class": "pure",
+    "support": "当前 Simplify/FullSimplify 为分立入口，支持已认证代数/三角变换与正值假设，保持主值分支。",
+    "return_type": "expression",
+    "precision_modes": [
+      "exact",
+      "machine",
+      "arbitrary_supported"
+    ],
+    "precision_notes": "精确计算与已支持的数值近似子集；不把符号保留或格式位数当作新算法/任意精度支持。",
+    "platforms": [
+      "cli",
+      "desktop",
+      "web",
+      "ios"
+    ]
+  },
+  {
+    "id": "fn_000048",
+    "canonical_name": "function",
+    "name": "Function",
+    "modern_name": "function",
+    "aliases": [],
+    "arity": {
+      "min": 1,
+      "max": 2
+    },
+    "parameters": [
+      {
+        "name": "parameters_or_body",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": true
+      },
+      {
+        "name": "body",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": false,
+        "default_source": null,
+        "default_context": "由真实回调按输入推断或省略；不填造字面默认值",
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": true
+      }
+    ],
+    "options": [],
+    "compatibility_syntax": [],
+    "attributes": [
+      "hold_all",
+      "protected"
+    ],
+    "pipe_arg": 0,
+    "effect_class": "pure",
+    "support": "按真实注册签名与参数个数工作；未支持的表达式保持符号形式并给出已有诊断。",
+    "return_type": "callable",
+    "precision_modes": [
+      "preserve_input"
+    ],
+    "precision_notes": "结构操作保留输入数值类型；迭代、求值和替换继承现有数学/预算限制。",
+    "platforms": [
+      "cli",
+      "desktop",
+      "web",
+      "ios"
+    ]
+  },
+  {
+    "id": "fn_000049",
+    "canonical_name": "gcd",
+    "name": "GCD",
+    "modern_name": "gcd",
+    "aliases": [],
+    "arity": {
+      "min": 0,
+      "max": null
+    },
+    "parameters": [
+      {
+        "name": "integers",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": false,
+        "default_source": null,
+        "default_context": "由真实回调按输入推断或省略；不填造字面默认值",
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": true,
+        "held": false
+      }
+    ],
+    "options": [],
+    "compatibility_syntax": [],
+    "attributes": [
+      "listable",
+      "protected",
+      "numeric_function"
+    ],
+    "pipe_arg": 1,
+    "effect_class": "pure",
+    "support": "按真实注册签名与参数个数工作；未支持的表达式保持符号形式并给出已有诊断。",
+    "return_type": "integer",
+    "precision_modes": [
+      "exact",
+      "machine",
+      "arbitrary_supported"
+    ],
+    "precision_notes": "精确计算与已支持的数值近似子集；不把符号保留或格式位数当作新算法/任意精度支持。",
+    "platforms": [
+      "cli",
+      "desktop",
+      "web",
+      "ios"
+    ]
+  },
+  {
+    "id": "fn_000050",
+    "canonical_name": "greater",
+    "name": "Greater",
+    "modern_name": "greater",
+    "aliases": [],
+    "arity": {
+      "min": 0,
+      "max": null
+    },
+    "parameters": [
+      {
+        "name": "a",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": false,
+        "default_source": null,
+        "default_context": "由真实回调按输入推断或省略；不填造字面默认值",
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": false
+      },
+      {
+        "name": "b",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": false,
+        "default_source": null,
+        "default_context": "由真实回调按输入推断或省略；不填造字面默认值",
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": true,
+        "held": false
+      }
+    ],
+    "options": [],
+    "compatibility_syntax": [],
+    "attributes": [
+      "protected"
+    ],
+    "pipe_arg": 1,
+    "effect_class": "pure",
+    "support": "按真实注册签名与参数个数工作；未支持的表达式保持符号形式并给出已有诊断。",
+    "return_type": "boolean_or_expression",
+    "precision_modes": [
+      "exact",
+      "machine",
+      "arbitrary_supported"
+    ],
+    "precision_notes": "精确计算与已支持的数值近似子集；不把符号保留或格式位数当作新算法/任意精度支持。",
+    "platforms": [
+      "cli",
+      "desktop",
+      "web",
+      "ios"
+    ]
+  },
+  {
+    "id": "fn_000051",
+    "canonical_name": "greater_equal",
+    "name": "GreaterEqual",
+    "modern_name": "greater_equal",
+    "aliases": [
+      "greaterequal"
+    ],
+    "arity": {
+      "min": 0,
+      "max": null
+    },
+    "parameters": [
+      {
+        "name": "a",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": false,
+        "default_source": null,
+        "default_context": "由真实回调按输入推断或省略；不填造字面默认值",
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": false
+      },
+      {
+        "name": "b",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": false,
+        "default_source": null,
+        "default_context": "由真实回调按输入推断或省略；不填造字面默认值",
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": true,
+        "held": false
+      }
+    ],
+    "options": [],
+    "compatibility_syntax": [],
+    "attributes": [
+      "protected"
+    ],
+    "pipe_arg": 1,
+    "effect_class": "pure",
+    "support": "按真实注册签名与参数个数工作；未支持的表达式保持符号形式并给出已有诊断。",
+    "return_type": "boolean_or_expression",
+    "precision_modes": [
+      "exact",
+      "machine",
+      "arbitrary_supported"
+    ],
+    "precision_notes": "精确计算与已支持的数值近似子集；不把符号保留或格式位数当作新算法/任意精度支持。",
+    "platforms": [
+      "cli",
+      "desktop",
+      "web",
+      "ios"
+    ]
+  },
+  {
+    "id": "fn_000052",
+    "canonical_name": "hold",
+    "name": "Hold",
+    "modern_name": "hold",
+    "aliases": [],
+    "arity": {
+      "min": 0,
+      "max": null
+    },
+    "parameters": [
+      {
+        "name": "expr",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": false,
+        "default_source": null,
+        "default_context": "由真实回调按输入推断或省略；不填造字面默认值",
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": true,
+        "held": true
+      }
+    ],
+    "options": [],
+    "compatibility_syntax": [],
+    "attributes": [
+      "hold_all",
+      "protected"
+    ],
+    "pipe_arg": 1,
+    "effect_class": "pure",
+    "support": "按真实注册签名与参数个数工作；未支持的表达式保持符号形式并给出已有诊断。",
+    "return_type": "expression",
+    "precision_modes": [
+      "preserve_input"
+    ],
+    "precision_notes": "结构操作保留输入数值类型；迭代、求值和替换继承现有数学/预算限制。",
+    "platforms": [
+      "cli",
+      "desktop",
+      "web",
+      "ios"
+    ]
+  },
+  {
+    "id": "fn_000053",
+    "canonical_name": "hold_form",
+    "name": "HoldForm",
+    "modern_name": "hold_form",
+    "aliases": [
+      "holdform"
+    ],
+    "arity": {
+      "min": 1,
+      "max": 1
+    },
+    "parameters": [
+      {
+        "name": "expr",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": true
+      }
+    ],
+    "options": [],
+    "compatibility_syntax": [],
+    "attributes": [
+      "hold_all",
+      "protected"
+    ],
+    "pipe_arg": 1,
+    "effect_class": "pure",
+    "support": "按真实注册签名与参数个数工作；未支持的表达式保持符号形式并给出已有诊断。",
+    "return_type": "expression",
+    "precision_modes": [
+      "preserve_input"
+    ],
+    "precision_notes": "结构操作保留输入数值类型；迭代、求值和替换继承现有数学/预算限制。",
+    "platforms": [
+      "cli",
+      "desktop",
+      "web",
+      "ios"
+    ]
+  },
+  {
+    "id": "fn_000054",
+    "canonical_name": "im",
+    "name": "Im",
+    "modern_name": "im",
+    "aliases": [],
+    "arity": {
+      "min": 1,
+      "max": 1
+    },
+    "parameters": [
+      {
+        "name": "expr",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": false
+      }
+    ],
+    "options": [],
+    "compatibility_syntax": [],
+    "attributes": [
+      "listable",
+      "protected",
+      "numeric_function"
+    ],
+    "pipe_arg": 1,
+    "effect_class": "pure",
+    "support": "按真实注册签名与参数个数工作；未支持的表达式保持符号形式并给出已有诊断。",
+    "return_type": "expression",
+    "precision_modes": [
+      "exact",
+      "machine",
+      "arbitrary_supported"
+    ],
+    "precision_notes": "精确计算与已支持的数值近似子集；不把符号保留或格式位数当作新算法/任意精度支持。",
+    "platforms": [
+      "cli",
+      "desktop",
+      "web",
+      "ios"
+    ]
+  },
+  {
+    "id": "fn_000055",
+    "canonical_name": "inequality",
+    "name": "Inequality",
+    "modern_name": "inequality",
+    "aliases": [],
+    "arity": {
+      "min": 3,
+      "max": null
+    },
+    "parameters": [
+      {
+        "name": "values",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": false
+      },
+      {
+        "name": "arg2",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": false
+      },
+      {
+        "name": "arg3",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": true,
+        "held": false
+      }
+    ],
+    "options": [],
+    "compatibility_syntax": [],
+    "attributes": [
+      "protected"
+    ],
+    "pipe_arg": 1,
+    "effect_class": "pure",
+    "support": "按真实注册签名与参数个数工作；未支持的表达式保持符号形式并给出已有诊断。",
+    "return_type": "boolean_or_expression",
+    "precision_modes": [
+      "exact",
+      "machine",
+      "arbitrary_supported"
+    ],
+    "precision_notes": "精确计算与已支持的数值近似子集；不把符号保留或格式位数当作新算法/任意精度支持。",
+    "platforms": [
+      "cli",
+      "desktop",
+      "web",
+      "ios"
+    ]
+  },
+  {
+    "id": "fn_000056",
+    "canonical_name": "lcm",
+    "name": "LCM",
+    "modern_name": "lcm",
+    "aliases": [],
+    "arity": {
+      "min": 0,
+      "max": null
+    },
+    "parameters": [
+      {
+        "name": "integers",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": false,
+        "default_source": null,
+        "default_context": "由真实回调按输入推断或省略；不填造字面默认值",
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": true,
+        "held": false
+      }
+    ],
+    "options": [],
+    "compatibility_syntax": [],
+    "attributes": [
+      "listable",
+      "protected",
+      "numeric_function"
+    ],
+    "pipe_arg": 1,
+    "effect_class": "pure",
+    "support": "按真实注册签名与参数个数工作；未支持的表达式保持符号形式并给出已有诊断。",
+    "return_type": "integer",
+    "precision_modes": [
+      "exact",
+      "machine",
+      "arbitrary_supported"
+    ],
+    "precision_notes": "精确计算与已支持的数值近似子集；不把符号保留或格式位数当作新算法/任意精度支持。",
+    "platforms": [
+      "cli",
+      "desktop",
+      "web",
+      "ios"
+    ]
+  },
+  {
+    "id": "fn_000057",
+    "canonical_name": "last",
+    "name": "Last",
+    "modern_name": "last",
+    "aliases": [],
+    "arity": {
+      "min": 1,
+      "max": 1
+    },
+    "parameters": [
+      {
+        "name": "expr",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": false
+      }
+    ],
+    "options": [],
+    "compatibility_syntax": [],
+    "attributes": [
+      "protected"
+    ],
+    "pipe_arg": 1,
+    "effect_class": "pure",
+    "support": "按真实注册签名与参数个数工作；未支持的表达式保持符号形式并给出已有诊断。",
+    "return_type": "expression",
+    "precision_modes": [
+      "preserve_input"
+    ],
+    "precision_notes": "结构操作保留输入数值类型；迭代、求值和替换继承现有数学/预算限制。",
+    "platforms": [
+      "cli",
+      "desktop",
+      "web",
+      "ios"
+    ]
+  },
+  {
+    "id": "fn_000058",
+    "canonical_name": "len",
+    "name": "Length",
+    "modern_name": "len",
+    "aliases": [
+      "length"
+    ],
+    "arity": {
+      "min": 1,
+      "max": 1
+    },
+    "parameters": [
+      {
+        "name": "expr",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": false
+      }
+    ],
+    "options": [],
+    "compatibility_syntax": [],
+    "attributes": [
+      "protected"
+    ],
+    "pipe_arg": 1,
+    "effect_class": "pure",
+    "support": "按真实注册签名与参数个数工作；未支持的表达式保持符号形式并给出已有诊断。",
+    "return_type": "expression",
+    "precision_modes": [
+      "preserve_input"
+    ],
+    "precision_notes": "结构操作保留输入数值类型；迭代、求值和替换继承现有数学/预算限制。",
+    "platforms": [
+      "cli",
+      "desktop",
+      "web",
+      "ios"
+    ]
+  },
+  {
+    "id": "fn_000059",
+    "canonical_name": "less",
+    "name": "Less",
+    "modern_name": "less",
+    "aliases": [],
+    "arity": {
+      "min": 0,
+      "max": null
+    },
+    "parameters": [
+      {
+        "name": "a",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": false,
+        "default_source": null,
+        "default_context": "由真实回调按输入推断或省略；不填造字面默认值",
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": false
+      },
+      {
+        "name": "b",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": false,
+        "default_source": null,
+        "default_context": "由真实回调按输入推断或省略；不填造字面默认值",
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": true,
+        "held": false
+      }
+    ],
+    "options": [],
+    "compatibility_syntax": [],
+    "attributes": [
+      "protected"
+    ],
+    "pipe_arg": 1,
+    "effect_class": "pure",
+    "support": "按真实注册签名与参数个数工作；未支持的表达式保持符号形式并给出已有诊断。",
+    "return_type": "boolean_or_expression",
+    "precision_modes": [
+      "exact",
+      "machine",
+      "arbitrary_supported"
+    ],
+    "precision_notes": "精确计算与已支持的数值近似子集；不把符号保留或格式位数当作新算法/任意精度支持。",
+    "platforms": [
+      "cli",
+      "desktop",
+      "web",
+      "ios"
+    ]
+  },
+  {
+    "id": "fn_000060",
+    "canonical_name": "less_equal",
+    "name": "LessEqual",
+    "modern_name": "less_equal",
+    "aliases": [
+      "lessequal"
+    ],
+    "arity": {
+      "min": 0,
+      "max": null
+    },
+    "parameters": [
+      {
+        "name": "a",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": false,
+        "default_source": null,
+        "default_context": "由真实回调按输入推断或省略；不填造字面默认值",
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": false
+      },
+      {
+        "name": "b",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": false,
+        "default_source": null,
+        "default_context": "由真实回调按输入推断或省略；不填造字面默认值",
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": true,
+        "held": false
+      }
+    ],
+    "options": [],
+    "compatibility_syntax": [],
+    "attributes": [
+      "protected"
+    ],
+    "pipe_arg": 1,
+    "effect_class": "pure",
+    "support": "按真实注册签名与参数个数工作；未支持的表达式保持符号形式并给出已有诊断。",
+    "return_type": "boolean_or_expression",
+    "precision_modes": [
+      "exact",
+      "machine",
+      "arbitrary_supported"
+    ],
+    "precision_notes": "精确计算与已支持的数值近似子集；不把符号保留或格式位数当作新算法/任意精度支持。",
+    "platforms": [
+      "cli",
+      "desktop",
+      "web",
+      "ios"
+    ]
+  },
+  {
+    "id": "fn_000061",
+    "canonical_name": "list",
+    "name": "List",
+    "modern_name": "list",
+    "aliases": [],
+    "arity": {
+      "min": 0,
+      "max": null
+    },
+    "parameters": [
+      {
+        "name": "items",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": false,
+        "default_source": null,
+        "default_context": "由真实回调按输入推断或省略；不填造字面默认值",
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": true,
+        "held": false
+      }
+    ],
+    "options": [],
+    "compatibility_syntax": [],
+    "attributes": [
+      "protected"
+    ],
+    "pipe_arg": 1,
+    "effect_class": "pure",
+    "support": "按真实注册签名与参数个数工作；未支持的表达式保持符号形式并给出已有诊断。",
+    "return_type": "list",
+    "precision_modes": [
+      "preserve_input"
+    ],
+    "precision_notes": "结构操作保留输入数值类型；迭代、求值和替换继承现有数学/预算限制。",
+    "platforms": [
+      "cli",
+      "desktop",
+      "web",
+      "ios"
+    ]
+  },
+  {
+    "id": "fn_000062",
+    "canonical_name": "log",
+    "name": "Log",
+    "modern_name": "log",
+    "aliases": [
+      "ln"
+    ],
+    "arity": {
+      "min": 1,
+      "max": 2
+    },
+    "parameters": [
+      {
+        "name": "base_or_value",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": false
+      },
+      {
+        "name": "value",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": false,
+        "default_source": null,
+        "default_context": "由真实回调按输入推断或省略；不填造字面默认值",
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": false
+      }
+    ],
+    "options": [],
+    "compatibility_syntax": [],
+    "attributes": [
+      "listable",
+      "protected",
+      "numeric_function"
+    ],
+    "pipe_arg": 1,
+    "effect_class": "pure",
+    "support": "按真实注册签名与参数个数工作；未支持的表达式保持符号形式并给出已有诊断。",
+    "return_type": "expression",
+    "precision_modes": [
+      "exact",
+      "machine",
+      "arbitrary_supported"
+    ],
+    "precision_notes": "精确计算与已支持的数值近似子集；不把符号保留或格式位数当作新算法/任意精度支持。",
+    "platforms": [
+      "cli",
+      "desktop",
+      "web",
+      "ios"
+    ]
+  },
+  {
+    "id": "fn_000063",
+    "canonical_name": "map",
+    "name": "Map",
+    "modern_name": "map",
+    "aliases": [],
+    "arity": {
+      "min": 2,
+      "max": 2
+    },
+    "parameters": [
+      {
+        "name": "fn",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": false
+      },
+      {
+        "name": "data",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": false
+      }
+    ],
+    "options": [],
+    "compatibility_syntax": [],
+    "attributes": [
+      "protected"
+    ],
+    "pipe_arg": 2,
+    "effect_class": "pure",
+    "support": "按真实注册签名与参数个数工作；未支持的表达式保持符号形式并给出已有诊断。",
+    "return_type": "expression",
+    "precision_modes": [
+      "preserve_input"
+    ],
+    "precision_notes": "结构操作保留输入数值类型；迭代、求值和替换继承现有数学/预算限制。",
+    "platforms": [
+      "cli",
+      "desktop",
+      "web",
+      "ios"
+    ]
+  },
+  {
+    "id": "fn_000064",
+    "canonical_name": "negate",
+    "name": "Minus",
+    "modern_name": "negate",
+    "aliases": [
+      "minus"
+    ],
+    "arity": {
+      "min": 1,
+      "max": 1
+    },
+    "parameters": [
+      {
+        "name": "expr",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": false
+      }
+    ],
+    "options": [],
+    "compatibility_syntax": [],
+    "attributes": [
+      "listable",
+      "protected",
+      "numeric_function"
+    ],
+    "pipe_arg": 1,
+    "effect_class": "pure",
+    "support": "按真实注册签名与参数个数工作；未支持的表达式保持符号形式并给出已有诊断。",
+    "return_type": "expression",
+    "precision_modes": [
+      "exact",
+      "machine",
+      "arbitrary_supported"
+    ],
+    "precision_notes": "精确计算与已支持的数值近似子集；不把符号保留或格式位数当作新算法/任意精度支持。",
+    "platforms": [
+      "cli",
+      "desktop",
+      "web",
+      "ios"
+    ]
+  },
+  {
+    "id": "fn_000065",
+    "canonical_name": "mod",
+    "name": "Mod",
+    "modern_name": "mod",
+    "aliases": [],
+    "arity": {
+      "min": 2,
+      "max": 3
+    },
+    "parameters": [
+      {
+        "name": "n",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": false
+      },
+      {
+        "name": "divisor",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": false
+      },
+      {
+        "name": "offset",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": false,
+        "default_source": "0",
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": false
+      }
+    ],
+    "options": [],
+    "compatibility_syntax": [],
+    "attributes": [
+      "listable",
+      "protected",
+      "numeric_function"
+    ],
+    "pipe_arg": 1,
+    "effect_class": "pure",
+    "support": "按真实注册签名与参数个数工作；未支持的表达式保持符号形式并给出已有诊断。",
+    "return_type": "number",
+    "precision_modes": [
+      "exact",
+      "machine",
+      "arbitrary_supported"
+    ],
+    "precision_notes": "精确计算与已支持的数值近似子集；不把符号保留或格式位数当作新算法/任意精度支持。",
+    "platforms": [
+      "cli",
+      "desktop",
+      "web",
+      "ios"
+    ]
+  },
+  {
+    "id": "fn_000066",
+    "canonical_name": "numeric",
+    "name": "N",
+    "modern_name": "numeric",
+    "aliases": [],
+    "arity": {
+      "min": 1,
+      "max": 2
+    },
+    "parameters": [
+      {
+        "name": "expr",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": false
+      },
+      {
+        "name": "precision",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": false,
+        "default_source": "MachinePrecision",
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": false
+      }
+    ],
+    "options": [],
+    "compatibility_syntax": [],
+    "attributes": [
+      "protected"
+    ],
+    "pipe_arg": 1,
+    "effect_class": "pure",
+    "support": "机器精度或现有可近似子树，正整数精度最多4932十进制位；不支持的子树不伪造成数值。",
+    "return_type": "expression",
+    "precision_modes": [
+      "exact",
+      "machine",
+      "arbitrary_supported"
+    ],
+    "precision_notes": "精确计算与已支持的数值近似子集；不把符号保留或格式位数当作新算法/任意精度支持。",
+    "platforms": [
+      "cli",
+      "desktop",
+      "web",
+      "ios"
+    ]
+  },
+  {
+    "id": "fn_000117",
+    "canonical_name": "solve",
+    "name": "NSolve",
+    "modern_name": "nsolve",
+    "aliases": [],
+    "arity": {
+      "min": 1,
+      "max": null
+    },
+    "parameters": [
+      {
+        "name": "equations",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": true
+      },
+      {
+        "name": "variables",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": false,
+        "default_source": null,
+        "default_context": "由真实回调按输入推断或省略；不填造字面默认值",
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": true
+      },
+      {
+        "name": "domain",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": false,
+        "default_source": null,
+        "default_context": "由真实回调按输入推断或省略；不填造字面默认值",
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": true
+      }
+    ],
+    "options": [
+      {
+        "name": "steps",
+        "runtime_name": "RecordSteps",
+        "value_type": "boolean",
+        "required": false,
+        "default_source": null,
+        "default_context": "继承当前 EvalSettings.record_steps",
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": true
+      },
+      {
+        "name": "domain",
+        "runtime_name": null,
+        "value_type": "enum",
+        "required": false,
+        "default_source": "Complexes",
+        "default_context": null,
+        "enum_values": [
+          "Complexes",
+          "Reals",
+          "Integers",
+          "Rationals",
+          "positives"
+        ],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": true
+      },
+      {
+        "name": "cubics",
+        "runtime_name": "Cubics",
+        "value_type": "boolean",
+        "required": false,
+        "default_source": "False",
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": true
+      },
+      {
+        "name": "quartics",
+        "runtime_name": "Quartics",
+        "value_type": "boolean",
+        "required": false,
+        "default_source": "False",
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": true
+      },
+      {
+        "name": "verify_solutions",
+        "runtime_name": "VerifySolutions",
+        "value_type": "enum",
+        "required": false,
+        "default_source": "Automatic",
+        "default_context": null,
+        "enum_values": [
+          "True",
+          "False",
+          "Automatic"
+        ],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": true
+      },
+      {
+        "name": "max_extra_conditions",
+        "runtime_name": "MaxExtraConditions",
+        "value_type": "integer",
+        "required": false,
+        "default_source": "0",
+        "default_context": null,
+        "enum_values": [
+          "All"
+        ],
+        "min": 0,
+        "max": null,
+        "variadic": false,
+        "held": true
+      },
+      {
+        "name": "generated_parameters",
+        "runtime_name": "GeneratedParameters",
+        "value_type": "symbol",
+        "required": false,
+        "default_source": "C",
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": true
+      },
+      {
+        "name": "inverse_functions",
+        "runtime_name": "InverseFunctions",
+        "value_type": "boolean",
+        "required": false,
+        "default_source": "True",
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": true
+      },
+      {
+        "name": "precision",
+        "runtime_name": "WorkingPrecision",
+        "value_type": "integer",
+        "required": false,
+        "default_source": "MachinePrecision",
+        "default_context": null,
+        "enum_values": [
+          "MachinePrecision"
+        ],
+        "min": 5,
+        "max": 2466,
+        "variadic": false,
+        "held": true
+      }
+    ],
+    "compatibility_syntax": [
+      "method",
+      "max_iterations"
+    ],
+    "attributes": [
+      "hold_all",
+      "protected"
+    ],
+    "pipe_arg": 1,
+    "effect_class": "pure",
+    "support": "复用已有完整有限代数解、特殊超越族及整数/参数条件子集；当前四个入口分立。新 mode/output 尚未接入。",
+    "return_type": "rules_or_values",
+    "precision_modes": [
+      "exact",
+      "machine",
+      "arbitrary_supported"
+    ],
+    "precision_notes": "精确计算与已支持的数值近似子集；不把符号保留或格式位数当作新算法/任意精度支持。",
+    "platforms": [
+      "cli",
+      "desktop",
+      "web",
+      "ios"
+    ]
+  },
+  {
+    "id": "fn_000117",
+    "canonical_name": "solve",
+    "name": "NSolveValues",
+    "modern_name": "nsolve_values",
+    "aliases": [
+      "nsolvevalues"
+    ],
+    "arity": {
+      "min": 1,
+      "max": null
+    },
+    "parameters": [
+      {
+        "name": "equations",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": true
+      },
+      {
+        "name": "variables",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": false,
+        "default_source": null,
+        "default_context": "由真实回调按输入推断或省略；不填造字面默认值",
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": true
+      },
+      {
+        "name": "domain",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": false,
+        "default_source": null,
+        "default_context": "由真实回调按输入推断或省略；不填造字面默认值",
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": true
+      }
+    ],
+    "options": [
+      {
+        "name": "steps",
+        "runtime_name": "RecordSteps",
+        "value_type": "boolean",
+        "required": false,
+        "default_source": null,
+        "default_context": "继承当前 EvalSettings.record_steps",
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": true
+      },
+      {
+        "name": "domain",
+        "runtime_name": null,
+        "value_type": "enum",
+        "required": false,
+        "default_source": "Complexes",
+        "default_context": null,
+        "enum_values": [
+          "Complexes",
+          "Reals",
+          "Integers",
+          "Rationals",
+          "positives"
+        ],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": true
+      },
+      {
+        "name": "cubics",
+        "runtime_name": "Cubics",
+        "value_type": "boolean",
+        "required": false,
+        "default_source": "False",
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": true
+      },
+      {
+        "name": "quartics",
+        "runtime_name": "Quartics",
+        "value_type": "boolean",
+        "required": false,
+        "default_source": "False",
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": true
+      },
+      {
+        "name": "verify_solutions",
+        "runtime_name": "VerifySolutions",
+        "value_type": "enum",
+        "required": false,
+        "default_source": "Automatic",
+        "default_context": null,
+        "enum_values": [
+          "True",
+          "False",
+          "Automatic"
+        ],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": true
+      },
+      {
+        "name": "max_extra_conditions",
+        "runtime_name": "MaxExtraConditions",
+        "value_type": "integer",
+        "required": false,
+        "default_source": "0",
+        "default_context": null,
+        "enum_values": [
+          "All"
+        ],
+        "min": 0,
+        "max": null,
+        "variadic": false,
+        "held": true
+      },
+      {
+        "name": "generated_parameters",
+        "runtime_name": "GeneratedParameters",
+        "value_type": "symbol",
+        "required": false,
+        "default_source": "C",
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": true
+      },
+      {
+        "name": "inverse_functions",
+        "runtime_name": "InverseFunctions",
+        "value_type": "boolean",
+        "required": false,
+        "default_source": "True",
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": true
+      },
+      {
+        "name": "precision",
+        "runtime_name": "WorkingPrecision",
+        "value_type": "integer",
+        "required": false,
+        "default_source": "MachinePrecision",
+        "default_context": null,
+        "enum_values": [
+          "MachinePrecision"
+        ],
+        "min": 5,
+        "max": 2466,
+        "variadic": false,
+        "held": true
+      }
+    ],
+    "compatibility_syntax": [
+      "method",
+      "max_iterations"
+    ],
+    "attributes": [
+      "hold_all",
+      "protected"
+    ],
+    "pipe_arg": 1,
+    "effect_class": "pure",
+    "support": "复用已有完整有限代数解、特殊超越族及整数/参数条件子集；当前四个入口分立。新 mode/output 尚未接入。",
+    "return_type": "rules_or_values",
+    "precision_modes": [
+      "exact",
+      "machine",
+      "arbitrary_supported"
+    ],
+    "precision_notes": "精确计算与已支持的数值近似子集；不把符号保留或格式位数当作新算法/任意精度支持。",
+    "platforms": [
+      "cli",
+      "desktop",
+      "web",
+      "ios"
+    ]
+  },
+  {
+    "id": "fn_000067",
+    "canonical_name": "not",
+    "name": "Not",
+    "modern_name": "not",
+    "aliases": [],
+    "arity": {
+      "min": 1,
+      "max": 1
+    },
+    "parameters": [
+      {
+        "name": "expr",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": false
+      }
+    ],
+    "options": [],
+    "compatibility_syntax": [],
+    "attributes": [
+      "protected"
+    ],
+    "pipe_arg": 1,
+    "effect_class": "pure",
+    "support": "按真实注册签名与参数个数工作；未支持的表达式保持符号形式并给出已有诊断。",
+    "return_type": "boolean_or_expression",
+    "precision_modes": [
+      "exact",
+      "machine",
+      "arbitrary_supported"
+    ],
+    "precision_notes": "精确计算与已支持的数值近似子集；不把符号保留或格式位数当作新算法/任意精度支持。",
+    "platforms": [
+      "cli",
+      "desktop",
+      "web",
+      "ios"
+    ]
+  },
+  {
+    "id": "fn_000068",
+    "canonical_name": "numerator",
+    "name": "Numerator",
+    "modern_name": "numerator",
+    "aliases": [],
+    "arity": {
+      "min": 1,
+      "max": 1
+    },
+    "parameters": [
+      {
+        "name": "expr",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": false
+      }
+    ],
+    "options": [],
+    "compatibility_syntax": [],
+    "attributes": [
+      "listable",
+      "protected"
+    ],
+    "pipe_arg": 1,
+    "effect_class": "pure",
+    "support": "按真实注册签名与参数个数工作；未支持的表达式保持符号形式并给出已有诊断。",
+    "return_type": "expression",
+    "precision_modes": [
+      "exact",
+      "machine",
+      "arbitrary_supported"
+    ],
+    "precision_notes": "精确计算与已支持的数值近似子集；不把符号保留或格式位数当作新算法/任意精度支持。",
+    "platforms": [
+      "cli",
+      "desktop",
+      "web",
+      "ios"
+    ]
+  },
+  {
+    "id": "fn_000069",
+    "canonical_name": "or",
+    "name": "Or",
+    "modern_name": "Or",
+    "aliases": [],
+    "arity": {
+      "min": 0,
+      "max": null
+    },
+    "parameters": [
+      {
+        "name": "values",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": false,
+        "default_source": null,
+        "default_context": "由真实回调按输入推断或省略；不填造字面默认值",
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": true,
+        "held": true
+      }
+    ],
+    "options": [],
+    "compatibility_syntax": [],
+    "attributes": [
+      "hold_all",
+      "protected"
+    ],
+    "pipe_arg": 1,
+    "effect_class": "pure",
+    "support": "按真实注册签名与参数个数工作；未支持的表达式保持符号形式并给出已有诊断。",
+    "return_type": "boolean_or_expression",
+    "precision_modes": [
+      "exact",
+      "machine",
+      "arbitrary_supported"
+    ],
+    "precision_notes": "精确计算与已支持的数值近似子集；不把符号保留或格式位数当作新算法/任意精度支持。",
+    "platforms": [
+      "cli",
+      "desktop",
+      "web",
+      "ios"
+    ]
+  },
+  {
+    "id": "fn_000070",
+    "canonical_name": "out",
+    "name": "Out",
+    "modern_name": "out",
+    "aliases": [],
+    "arity": {
+      "min": 0,
+      "max": 1
+    },
+    "parameters": [
+      {
+        "name": "index",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": false,
+        "default_source": "-1",
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": false
+      }
+    ],
+    "options": [],
+    "compatibility_syntax": [],
+    "attributes": [
+      "protected"
+    ],
+    "pipe_arg": 0,
+    "effect_class": "read_session",
+    "support": "按真实注册签名与参数个数工作；未支持的表达式保持符号形式并给出已有诊断。",
+    "return_type": "expression",
+    "precision_modes": [
+      "preserve_input"
+    ],
+    "precision_notes": "结构操作保留输入数值类型；迭代、求值和替换继承现有数学/预算限制。",
+    "platforms": [
+      "cli",
+      "desktop",
+      "web",
+      "ios"
+    ]
+  },
+  {
+    "id": "fn_000071",
+    "canonical_name": "at",
+    "name": "Part",
+    "modern_name": "at",
+    "aliases": [
+      "part"
+    ],
+    "arity": {
+      "min": 2,
+      "max": null
+    },
+    "parameters": [
+      {
+        "name": "expr",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": false
+      },
+      {
+        "name": "indices",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": true,
+        "held": false
+      }
+    ],
+    "options": [],
+    "compatibility_syntax": [],
+    "attributes": [
+      "protected"
+    ],
+    "pipe_arg": 1,
+    "effect_class": "pure",
+    "support": "按真实注册签名与参数个数工作；未支持的表达式保持符号形式并给出已有诊断。",
+    "return_type": "expression",
+    "precision_modes": [
+      "preserve_input"
+    ],
+    "precision_notes": "结构操作保留输入数值类型；迭代、求值和替换继承现有数学/预算限制。",
+    "platforms": [
+      "cli",
+      "desktop",
+      "web",
+      "ios"
+    ]
+  },
+  {
+    "id": "fn_000119",
+    "canonical_name": "plot",
+    "name": "Plot",
+    "modern_name": "plot",
+    "aliases": [],
+    "arity": {
+      "min": 2,
+      "max": null
+    },
+    "parameters": [
+      {
+        "name": "expr",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": true
+      },
+      {
+        "name": "axis",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": true
+      }
+    ],
+    "options": [
+      {
+        "name": "plot_range",
+        "runtime_name": "PlotRange",
+        "value_type": "expression",
+        "required": false,
+        "default_source": "Automatic",
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": true
+      }
+    ],
+    "compatibility_syntax": [],
+    "attributes": [
+      "hold_all",
+      "protected"
+    ],
+    "pipe_arg": 1,
+    "effect_class": "pure",
+    "support": "当前 Plot 的二维实函数、ContourPlot 的二维零等值轮廓，保留极点、孔洞与条件解高亮。",
+    "return_type": "plot_or_scene_request",
+    "precision_modes": [
+      "machine_sampling"
+    ],
+    "precision_notes": "现有绘图经过只读 f64 编译与真实内核采样；符号输入可精确保存，像素/采样不是认证解。",
+    "platforms": [
+      "cli",
+      "desktop",
+      "web",
+      "ios"
+    ]
+  },
+  {
+    "id": "fn_000072",
+    "canonical_name": "add",
+    "name": "Plus",
+    "modern_name": "add",
+    "aliases": [
+      "plus"
+    ],
+    "arity": {
+      "min": 0,
+      "max": null
+    },
+    "parameters": [
+      {
+        "name": "values",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": false,
+        "default_source": null,
+        "default_context": "由真实回调按输入推断或省略；不填造字面默认值",
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": true,
+        "held": false
+      }
+    ],
+    "options": [],
+    "compatibility_syntax": [],
+    "attributes": [
+      "listable",
+      "protected",
+      "numeric_function",
+      "flat",
+      "orderless",
+      "one_identity"
+    ],
+    "pipe_arg": 1,
+    "effect_class": "pure",
+    "support": "按真实注册签名与参数个数工作；未支持的表达式保持符号形式并给出已有诊断。",
+    "return_type": "expression",
+    "precision_modes": [
+      "exact",
+      "machine",
+      "arbitrary_supported"
+    ],
+    "precision_notes": "精确计算与已支持的数值近似子集；不把符号保留或格式位数当作新算法/任意精度支持。",
+    "platforms": [
+      "cli",
+      "desktop",
+      "web",
+      "ios"
+    ]
+  },
+  {
+    "id": "fn_000073",
+    "canonical_name": "polynomial_gcd",
+    "name": "PolynomialGCD",
+    "modern_name": "polynomial_gcd",
+    "aliases": [
+      "polynomialgcd"
+    ],
+    "arity": {
+      "min": 1,
+      "max": null
+    },
+    "parameters": [
+      {
+        "name": "polynomials",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": true,
+        "held": false
+      }
+    ],
+    "options": [],
+    "compatibility_syntax": [],
+    "attributes": [
+      "protected"
+    ],
+    "pipe_arg": 1,
+    "effect_class": "pure",
+    "support": "现有代数与有理多项式子集；次数≤4096、系数张量≤100万项/16轴；Apart 限单变量有理系数；不可处理部分保留原式。",
+    "return_type": "expression",
+    "precision_modes": [
+      "exact",
+      "machine",
+      "arbitrary_supported"
+    ],
+    "precision_notes": "精确计算与已支持的数值近似子集；不把符号保留或格式位数当作新算法/任意精度支持。",
+    "platforms": [
+      "cli",
+      "desktop",
+      "web",
+      "ios"
+    ]
+  },
+  {
+    "id": "fn_000074",
+    "canonical_name": "polynomial_lcm",
+    "name": "PolynomialLCM",
+    "modern_name": "polynomial_lcm",
+    "aliases": [
+      "polynomiallcm"
+    ],
+    "arity": {
+      "min": 1,
+      "max": null
+    },
+    "parameters": [
+      {
+        "name": "polynomials",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": true,
+        "held": false
+      }
+    ],
+    "options": [],
+    "compatibility_syntax": [],
+    "attributes": [
+      "protected"
+    ],
+    "pipe_arg": 1,
+    "effect_class": "pure",
+    "support": "现有代数与有理多项式子集；次数≤4096、系数张量≤100万项/16轴；Apart 限单变量有理系数；不可处理部分保留原式。",
+    "return_type": "expression",
+    "precision_modes": [
+      "exact",
+      "machine",
+      "arbitrary_supported"
+    ],
+    "precision_notes": "精确计算与已支持的数值近似子集；不把符号保留或格式位数当作新算法/任意精度支持。",
+    "platforms": [
+      "cli",
+      "desktop",
+      "web",
+      "ios"
+    ]
+  },
+  {
+    "id": "fn_000075",
+    "canonical_name": "is_polynomial",
+    "name": "PolynomialQ",
+    "modern_name": "is_polynomial",
+    "aliases": [
+      "polynomialq"
+    ],
+    "arity": {
+      "min": 2,
+      "max": 2
+    },
+    "parameters": [
+      {
+        "name": "expr",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": false
+      },
+      {
+        "name": "variables",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": false
+      }
+    ],
+    "options": [],
+    "compatibility_syntax": [],
+    "attributes": [
+      "protected"
+    ],
+    "pipe_arg": 1,
+    "effect_class": "pure",
+    "support": "现有代数与有理多项式子集；次数≤4096、系数张量≤100万项/16轴；Apart 限单变量有理系数；不可处理部分保留原式。",
+    "return_type": "boolean",
+    "precision_modes": [
+      "exact",
+      "machine",
+      "arbitrary_supported"
+    ],
+    "precision_notes": "精确计算与已支持的数值近似子集；不把符号保留或格式位数当作新算法/任意精度支持。",
+    "platforms": [
+      "cli",
+      "desktop",
+      "web",
+      "ios"
+    ]
+  },
+  {
+    "id": "fn_000076",
+    "canonical_name": "polynomial_quotient",
+    "name": "PolynomialQuotient",
+    "modern_name": "polynomial_quotient",
+    "aliases": [
+      "polynomialquotient"
+    ],
+    "arity": {
+      "min": 3,
+      "max": 3
+    },
+    "parameters": [
+      {
+        "name": "f",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": false
+      },
+      {
+        "name": "g",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": false
+      },
+      {
+        "name": "variable",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": false
+      }
+    ],
+    "options": [],
+    "compatibility_syntax": [],
+    "attributes": [
+      "protected"
+    ],
+    "pipe_arg": 1,
+    "effect_class": "pure",
+    "support": "现有代数与有理多项式子集；次数≤4096、系数张量≤100万项/16轴；Apart 限单变量有理系数；不可处理部分保留原式。",
+    "return_type": "expression",
+    "precision_modes": [
+      "exact",
+      "machine",
+      "arbitrary_supported"
+    ],
+    "precision_notes": "精确计算与已支持的数值近似子集；不把符号保留或格式位数当作新算法/任意精度支持。",
+    "platforms": [
+      "cli",
+      "desktop",
+      "web",
+      "ios"
+    ]
+  },
+  {
+    "id": "fn_000077",
+    "canonical_name": "polynomial_remainder",
+    "name": "PolynomialRemainder",
+    "modern_name": "polynomial_remainder",
+    "aliases": [
+      "polynomialremainder"
+    ],
+    "arity": {
+      "min": 3,
+      "max": 3
+    },
+    "parameters": [
+      {
+        "name": "f",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": false
+      },
+      {
+        "name": "g",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": false
+      },
+      {
+        "name": "variable",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": false
+      }
+    ],
+    "options": [],
+    "compatibility_syntax": [],
+    "attributes": [
+      "protected"
+    ],
+    "pipe_arg": 1,
+    "effect_class": "pure",
+    "support": "现有代数与有理多项式子集；次数≤4096、系数张量≤100万项/16轴；Apart 限单变量有理系数；不可处理部分保留原式。",
+    "return_type": "expression",
+    "precision_modes": [
+      "exact",
+      "machine",
+      "arbitrary_supported"
+    ],
+    "precision_notes": "精确计算与已支持的数值近似子集；不把符号保留或格式位数当作新算法/任意精度支持。",
+    "platforms": [
+      "cli",
+      "desktop",
+      "web",
+      "ios"
+    ]
+  },
+  {
+    "id": "fn_000078",
+    "canonical_name": "power",
+    "name": "Power",
+    "modern_name": "power",
+    "aliases": [],
+    "arity": {
+      "min": 2,
+      "max": 2
+    },
+    "parameters": [
+      {
+        "name": "base",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": false
+      },
+      {
+        "name": "exponent",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": false
+      }
+    ],
+    "options": [],
+    "compatibility_syntax": [],
+    "attributes": [
+      "listable",
+      "protected",
+      "numeric_function"
+    ],
+    "pipe_arg": 1,
+    "effect_class": "pure",
+    "support": "按真实注册签名与参数个数工作；未支持的表达式保持符号形式并给出已有诊断。",
+    "return_type": "expression",
+    "precision_modes": [
+      "exact",
+      "machine",
+      "arbitrary_supported"
+    ],
+    "precision_notes": "精确计算与已支持的数值近似子集；不把符号保留或格式位数当作新算法/任意精度支持。",
+    "platforms": [
+      "cli",
+      "desktop",
+      "web",
+      "ios"
+    ]
+  },
+  {
+    "id": "fn_000079",
+    "canonical_name": "is_prime",
+    "name": "PrimeQ",
+    "modern_name": "is_prime",
+    "aliases": [
+      "primeq"
+    ],
+    "arity": {
+      "min": 1,
+      "max": 1
+    },
+    "parameters": [
+      {
+        "name": "expr",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": false
+      }
+    ],
+    "options": [],
+    "compatibility_syntax": [],
+    "attributes": [
+      "listable",
+      "protected"
+    ],
+    "pipe_arg": 1,
+    "effect_class": "pure",
+    "support": "使用 om-num::is_probable_prime；不是对任意大整数都给出可输出证书的确定性素性证明。",
+    "return_type": "boolean_or_expression",
+    "precision_modes": [
+      "exact",
+      "machine",
+      "arbitrary_supported"
+    ],
+    "precision_notes": "精确计算与已支持的数值近似子集；不把符号保留或格式位数当作新算法/任意精度支持。",
+    "platforms": [
+      "cli",
+      "desktop",
+      "web",
+      "ios"
+    ]
+  },
+  {
+    "id": "fn_000080",
+    "canonical_name": "product",
+    "name": "Product",
+    "modern_name": "product",
+    "aliases": [],
+    "arity": {
+      "min": 2,
+      "max": null
+    },
+    "parameters": [
+      {
+        "name": "expr",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": true
+      },
+      {
+        "name": "iterators",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": true,
+        "held": true
+      }
+    ],
+    "options": [],
+    "compatibility_syntax": [],
+    "attributes": [
+      "hold_all",
+      "protected"
+    ],
+    "pipe_arg": 1,
+    "effect_class": "pure",
+    "support": "有限数值迭代/等差列表，最多100万项，受预算与中断保护；Sum/Product 不提供无限级数的一般符号算法。",
+    "return_type": "expression",
+    "precision_modes": [
+      "preserve_input"
+    ],
+    "precision_notes": "结构操作保留输入数值类型；迭代、求值和替换继承现有数学/预算限制。",
+    "platforms": [
+      "cli",
+      "desktop",
+      "web",
+      "ios"
+    ]
+  },
+  {
+    "id": "fn_000081",
+    "canonical_name": "lambert_w",
+    "name": "ProductLog",
+    "modern_name": "lambert_w",
+    "aliases": [
+      "lambertw",
+      "productlog"
+    ],
+    "arity": {
+      "min": 1,
+      "max": 1
+    },
+    "parameters": [
+      {
+        "name": "expr",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": false
+      }
+    ],
+    "options": [],
+    "compatibility_syntax": [],
+    "attributes": [
+      "listable",
+      "protected",
+      "numeric_function"
+    ],
+    "pipe_arg": 1,
+    "effect_class": "pure",
+    "support": "按真实注册签名与参数个数工作；未支持的表达式保持符号形式并给出已有诊断。",
+    "return_type": "expression",
+    "precision_modes": [
+      "exact",
+      "machine",
+      "arbitrary_supported"
+    ],
+    "precision_notes": "精确计算与已支持的数值近似子集；不把符号保留或格式位数当作新算法/任意精度支持。",
+    "platforms": [
+      "cli",
+      "desktop",
+      "web",
+      "ios"
+    ]
+  },
+  {
+    "id": "fn_000082",
+    "canonical_name": "quotient",
+    "name": "Quotient",
+    "modern_name": "quotient",
+    "aliases": [],
+    "arity": {
+      "min": 2,
+      "max": 3
+    },
+    "parameters": [
+      {
+        "name": "x",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": false
+      },
+      {
+        "name": "divisor",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": false
+      },
+      {
+        "name": "arg3",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": false,
+        "default_source": null,
+        "default_context": "由真实回调按输入推断或省略；不填造字面默认值",
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": false
+      }
+    ],
+    "options": [],
+    "compatibility_syntax": [],
+    "attributes": [
+      "listable",
+      "protected",
+      "numeric_function"
+    ],
+    "pipe_arg": 1,
+    "effect_class": "pure",
+    "support": "按真实注册签名与参数个数工作；未支持的表达式保持符号形式并给出已有诊断。",
+    "return_type": "integer",
+    "precision_modes": [
+      "exact",
+      "machine",
+      "arbitrary_supported"
+    ],
+    "precision_notes": "精确计算与已支持的数值近似子集；不把符号保留或格式位数当作新算法/任意精度支持。",
+    "platforms": [
+      "cli",
+      "desktop",
+      "web",
+      "ios"
+    ]
+  },
+  {
+    "id": "fn_000083",
+    "canonical_name": "range",
+    "name": "Range",
+    "modern_name": "range",
+    "aliases": [],
+    "arity": {
+      "min": 1,
+      "max": 3
+    },
+    "parameters": [
+      {
+        "name": "start_or_end",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": false
+      },
+      {
+        "name": "end",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": false,
+        "default_source": null,
+        "default_context": "由真实回调按输入推断或省略；不填造字面默认值",
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": false
+      },
+      {
+        "name": "step",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": false,
+        "default_source": "1",
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": false
+      }
+    ],
+    "options": [],
+    "compatibility_syntax": [],
+    "attributes": [
+      "protected"
+    ],
+    "pipe_arg": 1,
+    "effect_class": "pure",
+    "support": "有限数值迭代/等差列表，最多100万项，受预算与中断保护；Sum/Product 不提供无限级数的一般符号算法。",
+    "return_type": "list",
+    "precision_modes": [
+      "preserve_input"
+    ],
+    "precision_notes": "结构操作保留输入数值类型；迭代、求值和替换继承现有数学/预算限制。",
+    "platforms": [
+      "cli",
+      "desktop",
+      "web",
+      "ios"
+    ]
+  },
+  {
+    "id": "fn_000084",
+    "canonical_name": "re",
+    "name": "Re",
+    "modern_name": "re",
+    "aliases": [],
+    "arity": {
+      "min": 1,
+      "max": 1
+    },
+    "parameters": [
+      {
+        "name": "expr",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": false
+      }
+    ],
+    "options": [],
+    "compatibility_syntax": [],
+    "attributes": [
+      "listable",
+      "protected",
+      "numeric_function"
+    ],
+    "pipe_arg": 1,
+    "effect_class": "pure",
+    "support": "按真实注册签名与参数个数工作；未支持的表达式保持符号形式并给出已有诊断。",
+    "return_type": "expression",
+    "precision_modes": [
+      "exact",
+      "machine",
+      "arbitrary_supported"
+    ],
+    "precision_notes": "精确计算与已支持的数值近似子集；不把符号保留或格式位数当作新算法/任意精度支持。",
+    "platforms": [
+      "cli",
+      "desktop",
+      "web",
+      "ios"
+    ]
+  },
+  {
+    "id": "fn_000085",
+    "canonical_name": "reduce",
+    "name": "Reduce",
+    "modern_name": "reduce",
+    "aliases": [],
+    "arity": {
+      "min": 1,
+      "max": null
+    },
+    "parameters": [
+      {
+        "name": "equations",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": true
+      },
+      {
+        "name": "variables",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": false,
+        "default_source": null,
+        "default_context": "由真实回调按输入推断或省略；不填造字面默认值",
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": true
+      },
+      {
+        "name": "domain",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": false,
+        "default_source": null,
+        "default_context": "由真实回调按输入推断或省略；不填造字面默认值",
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": true
+      }
+    ],
+    "options": [
+      {
+        "name": "steps",
+        "runtime_name": "RecordSteps",
+        "value_type": "boolean",
+        "required": false,
+        "default_source": null,
+        "default_context": "继承当前 EvalSettings.record_steps",
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": true
+      },
+      {
+        "name": "domain",
+        "runtime_name": null,
+        "value_type": "enum",
+        "required": false,
+        "default_source": "Complexes",
+        "default_context": null,
+        "enum_values": [
+          "Complexes",
+          "Reals",
+          "Integers",
+          "Rationals",
+          "positives"
+        ],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": true
+      },
+      {
+        "name": "cubics",
+        "runtime_name": "Cubics",
+        "value_type": "boolean",
+        "required": false,
+        "default_source": "False",
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": true
+      },
+      {
+        "name": "quartics",
+        "runtime_name": "Quartics",
+        "value_type": "boolean",
+        "required": false,
+        "default_source": "False",
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": true
+      },
+      {
+        "name": "verify_solutions",
+        "runtime_name": "VerifySolutions",
+        "value_type": "enum",
+        "required": false,
+        "default_source": "Automatic",
+        "default_context": null,
+        "enum_values": [
+          "True",
+          "False",
+          "Automatic"
+        ],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": true
+      },
+      {
+        "name": "max_extra_conditions",
+        "runtime_name": "MaxExtraConditions",
+        "value_type": "integer",
+        "required": false,
+        "default_source": "0",
+        "default_context": null,
+        "enum_values": [
+          "All"
+        ],
+        "min": 0,
+        "max": null,
+        "variadic": false,
+        "held": true
+      },
+      {
+        "name": "generated_parameters",
+        "runtime_name": "GeneratedParameters",
+        "value_type": "symbol",
+        "required": false,
+        "default_source": "C",
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": true
+      },
+      {
+        "name": "inverse_functions",
+        "runtime_name": "InverseFunctions",
+        "value_type": "boolean",
+        "required": false,
+        "default_source": "True",
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": true
+      }
+    ],
+    "compatibility_syntax": [
+      "method",
+      "max_iterations"
+    ],
+    "attributes": [
+      "hold_all",
+      "protected"
+    ],
+    "pipe_arg": 1,
+    "effect_class": "pure",
+    "support": "已有求解范围及一元有理不等式，保留条件；不支持一般多元 CAD。",
+    "return_type": "boolean_or_condition",
+    "precision_modes": [
+      "exact",
+      "machine",
+      "arbitrary_supported"
+    ],
+    "precision_notes": "精确计算与已支持的数值近似子集；不把符号保留或格式位数当作新算法/任意精度支持。",
+    "platforms": [
+      "cli",
+      "desktop",
+      "web",
+      "ios"
+    ]
+  },
+  {
+    "id": "fn_000086",
+    "canonical_name": "substitute",
+    "name": "ReplaceAll",
+    "modern_name": "substitute",
+    "aliases": [
+      "replaceall"
+    ],
+    "arity": {
+      "min": 2,
+      "max": 2
+    },
+    "parameters": [
+      {
+        "name": "expr",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": false
+      },
+      {
+        "name": "rules",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": false
+      }
+    ],
+    "options": [],
+    "compatibility_syntax": [],
+    "attributes": [
+      "protected"
+    ],
+    "pipe_arg": 1,
+    "effect_class": "pure",
+    "support": "按真实注册签名与参数个数工作；未支持的表达式保持符号形式并给出已有诊断。",
+    "return_type": "expression",
+    "precision_modes": [
+      "preserve_input"
+    ],
+    "precision_notes": "结构操作保留输入数值类型；迭代、求值和替换继承现有数学/预算限制。",
+    "platforms": [
+      "cli",
+      "desktop",
+      "web",
+      "ios"
+    ]
+  },
+  {
+    "id": "fn_000087",
+    "canonical_name": "rewrite",
+    "name": "ReplaceRepeated",
+    "modern_name": "rewrite",
+    "aliases": [
+      "replacerepeated"
+    ],
+    "arity": {
+      "min": 2,
+      "max": 2
+    },
+    "parameters": [
+      {
+        "name": "expr",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": false
+      },
+      {
+        "name": "rules",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": false
+      }
+    ],
+    "options": [],
+    "compatibility_syntax": [],
+    "attributes": [
+      "protected"
+    ],
+    "pipe_arg": 1,
+    "effect_class": "pure",
+    "support": "按真实注册签名与参数个数工作；未支持的表达式保持符号形式并给出已有诊断。",
+    "return_type": "expression",
+    "precision_modes": [
+      "preserve_input"
+    ],
+    "precision_notes": "结构操作保留输入数值类型；迭代、求值和替换继承现有数学/预算限制。",
+    "platforms": [
+      "cli",
+      "desktop",
+      "web",
+      "ios"
+    ]
+  },
+  {
+    "id": "fn_000088",
+    "canonical_name": "rest",
+    "name": "Rest",
+    "modern_name": "rest",
+    "aliases": [],
+    "arity": {
+      "min": 1,
+      "max": 1
+    },
+    "parameters": [
+      {
+        "name": "expr",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": false
+      }
+    ],
+    "options": [],
+    "compatibility_syntax": [],
+    "attributes": [
+      "protected"
+    ],
+    "pipe_arg": 1,
+    "effect_class": "pure",
+    "support": "按真实注册签名与参数个数工作；未支持的表达式保持符号形式并给出已有诊断。",
+    "return_type": "expression",
+    "precision_modes": [
+      "preserve_input"
+    ],
+    "precision_notes": "结构操作保留输入数值类型；迭代、求值和替换继承现有数学/预算限制。",
+    "platforms": [
+      "cli",
+      "desktop",
+      "web",
+      "ios"
+    ]
+  },
+  {
+    "id": "fn_000089",
+    "canonical_name": "resultant",
+    "name": "Resultant",
+    "modern_name": "resultant",
+    "aliases": [],
+    "arity": {
+      "min": 3,
+      "max": 3
+    },
+    "parameters": [
+      {
+        "name": "f",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": false
+      },
+      {
+        "name": "g",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": false
+      },
+      {
+        "name": "variable",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": false
+      }
+    ],
+    "options": [],
+    "compatibility_syntax": [],
+    "attributes": [
+      "protected"
+    ],
+    "pipe_arg": 1,
+    "effect_class": "pure",
+    "support": "现有代数与有理多项式子集；次数≤4096、系数张量≤100万项/16轴；Apart 限单变量有理系数；不可处理部分保留原式。",
+    "return_type": "expression",
+    "precision_modes": [
+      "exact",
+      "machine",
+      "arbitrary_supported"
+    ],
+    "precision_notes": "精确计算与已支持的数值近似子集；不把符号保留或格式位数当作新算法/任意精度支持。",
+    "platforms": [
+      "cli",
+      "desktop",
+      "web",
+      "ios"
+    ]
+  },
+  {
+    "id": "fn_000090",
+    "canonical_name": "algebraic_root",
+    "name": "Root",
+    "modern_name": "algebraic_root",
+    "aliases": [],
+    "arity": {
+      "min": 2,
+      "max": 2
+    },
+    "parameters": [
+      {
+        "name": "fn",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": true
+      },
+      {
+        "name": "index",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": true
+      }
+    ],
+    "options": [],
+    "compatibility_syntax": [],
+    "attributes": [
+      "hold_all",
+      "protected"
+    ],
+    "pipe_arg": 1,
+    "effect_class": "pure",
+    "support": "有理闭合多项式根认证≤64次、从1起编号；符号参数根保留；不是普通 nth_root。",
+    "return_type": "expression",
+    "precision_modes": [
+      "exact",
+      "machine",
+      "arbitrary_supported"
+    ],
+    "precision_notes": "精确计算与已支持的数值近似子集；不把符号保留或格式位数当作新算法/任意精度支持。",
+    "platforms": [
+      "cli",
+      "desktop",
+      "web",
+      "ios"
+    ]
+  },
+  {
+    "id": "fn_000091",
+    "canonical_name": "root_reduce",
+    "name": "RootReduce",
+    "modern_name": "root_reduce",
+    "aliases": [
+      "rootreduce"
+    ],
+    "arity": {
+      "min": 1,
+      "max": 1
+    },
+    "parameters": [
+      {
+        "name": "expr",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": false
+      }
+    ],
+    "options": [],
+    "compatibility_syntax": [],
+    "attributes": [
+      "listable",
+      "protected"
+    ],
+    "pipe_arg": 1,
+    "effect_class": "pure",
+    "support": "现有代数与有理多项式子集；次数≤4096、系数张量≤100万项/16轴；Apart 限单变量有理系数；不可处理部分保留原式。",
+    "return_type": "expression",
+    "precision_modes": [
+      "exact",
+      "machine",
+      "arbitrary_supported"
+    ],
+    "precision_notes": "精确计算与已支持的数值近似子集；不把符号保留或格式位数当作新算法/任意精度支持。",
+    "platforms": [
+      "cli",
+      "desktop",
+      "web",
+      "ios"
+    ]
+  },
+  {
+    "id": "fn_000092",
+    "canonical_name": "roots",
+    "name": "Roots",
+    "modern_name": "roots",
+    "aliases": [],
+    "arity": {
+      "min": 1,
+      "max": null
+    },
+    "parameters": [
+      {
+        "name": "equations",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": true
+      },
+      {
+        "name": "variables",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": false,
+        "default_source": null,
+        "default_context": "由真实回调按输入推断或省略；不填造字面默认值",
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": true
+      },
+      {
+        "name": "domain",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": false,
+        "default_source": null,
+        "default_context": "由真实回调按输入推断或省略；不填造字面默认值",
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": true
+      }
+    ],
+    "options": [
+      {
+        "name": "steps",
+        "runtime_name": "RecordSteps",
+        "value_type": "boolean",
+        "required": false,
+        "default_source": null,
+        "default_context": "继承当前 EvalSettings.record_steps",
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": true
+      },
+      {
+        "name": "domain",
+        "runtime_name": null,
+        "value_type": "enum",
+        "required": false,
+        "default_source": "Complexes",
+        "default_context": null,
+        "enum_values": [
+          "Complexes",
+          "Reals",
+          "Integers",
+          "Rationals",
+          "positives"
+        ],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": true
+      },
+      {
+        "name": "cubics",
+        "runtime_name": "Cubics",
+        "value_type": "boolean",
+        "required": false,
+        "default_source": "False",
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": true
+      },
+      {
+        "name": "quartics",
+        "runtime_name": "Quartics",
+        "value_type": "boolean",
+        "required": false,
+        "default_source": "False",
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": true
+      },
+      {
+        "name": "verify_solutions",
+        "runtime_name": "VerifySolutions",
+        "value_type": "enum",
+        "required": false,
+        "default_source": "Automatic",
+        "default_context": null,
+        "enum_values": [
+          "True",
+          "False",
+          "Automatic"
+        ],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": true
+      },
+      {
+        "name": "max_extra_conditions",
+        "runtime_name": "MaxExtraConditions",
+        "value_type": "integer",
+        "required": false,
+        "default_source": "0",
+        "default_context": null,
+        "enum_values": [
+          "All"
+        ],
+        "min": 0,
+        "max": null,
+        "variadic": false,
+        "held": true
+      },
+      {
+        "name": "generated_parameters",
+        "runtime_name": "GeneratedParameters",
+        "value_type": "symbol",
+        "required": false,
+        "default_source": "C",
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": true
+      },
+      {
+        "name": "inverse_functions",
+        "runtime_name": "InverseFunctions",
+        "value_type": "boolean",
+        "required": false,
+        "default_source": "True",
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": true
+      }
+    ],
+    "compatibility_syntax": [
+      "method",
+      "max_iterations"
+    ],
+    "attributes": [
+      "hold_all",
+      "protected"
+    ],
+    "pipe_arg": 1,
+    "effect_class": "pure",
+    "support": "按真实注册签名与参数个数工作；未支持的表达式保持符号形式并给出已有诊断。",
+    "return_type": "boolean_or_condition",
+    "precision_modes": [
+      "exact",
+      "machine",
+      "arbitrary_supported"
+    ],
+    "precision_notes": "精确计算与已支持的数值近似子集；不把符号保留或格式位数当作新算法/任意精度支持。",
+    "platforms": [
+      "cli",
+      "desktop",
+      "web",
+      "ios"
+    ]
+  },
+  {
+    "id": "fn_000093",
+    "canonical_name": "round",
+    "name": "Round",
+    "modern_name": "round",
+    "aliases": [],
+    "arity": {
+      "min": 1,
+      "max": 2
+    },
+    "parameters": [
+      {
+        "name": "x",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": false
+      },
+      {
+        "name": "step",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": false,
+        "default_source": "1",
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": false
+      }
+    ],
+    "options": [],
+    "compatibility_syntax": [],
+    "attributes": [
+      "listable",
+      "protected",
+      "numeric_function"
+    ],
+    "pipe_arg": 1,
+    "effect_class": "pure",
+    "support": "按真实注册签名与参数个数工作；未支持的表达式保持符号形式并给出已有诊断。",
+    "return_type": "number",
+    "precision_modes": [
+      "exact",
+      "machine",
+      "arbitrary_supported"
+    ],
+    "precision_notes": "精确计算与已支持的数值近似子集；不把符号保留或格式位数当作新算法/任意精度支持。",
+    "platforms": [
+      "cli",
+      "desktop",
+      "web",
+      "ios"
+    ]
+  },
+  {
+    "id": "fn_000094",
+    "canonical_name": "rule",
+    "name": "Rule",
+    "modern_name": "rule",
+    "aliases": [],
+    "arity": {
+      "min": 2,
+      "max": 2
+    },
+    "parameters": [
+      {
+        "name": "lhs",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": false
+      },
+      {
+        "name": "rhs",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": false
+      }
+    ],
+    "options": [],
+    "compatibility_syntax": [],
+    "attributes": [
+      "protected"
+    ],
+    "pipe_arg": 1,
+    "effect_class": "pure",
+    "support": "按真实注册签名与参数个数工作；未支持的表达式保持符号形式并给出已有诊断。",
+    "return_type": "rule",
+    "precision_modes": [
+      "preserve_input"
+    ],
+    "precision_notes": "结构操作保留输入数值类型；迭代、求值和替换继承现有数学/预算限制。",
+    "platforms": [
+      "cli",
+      "desktop",
+      "web",
+      "ios"
+    ]
+  },
+  {
+    "id": "fn_000095",
+    "canonical_name": "delayed_rule",
+    "name": "RuleDelayed",
+    "modern_name": "delayed_rule",
+    "aliases": [
+      "ruledelayed"
+    ],
+    "arity": {
+      "min": 2,
+      "max": 2
+    },
+    "parameters": [
+      {
+        "name": "lhs",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": false
+      },
+      {
+        "name": "rhs",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": true
+      }
+    ],
+    "options": [],
+    "compatibility_syntax": [],
+    "attributes": [
+      "hold_rest",
+      "protected"
+    ],
+    "pipe_arg": 1,
+    "effect_class": "pure",
+    "support": "按真实注册签名与参数个数工作；未支持的表达式保持符号形式并给出已有诊断。",
+    "return_type": "rule",
+    "precision_modes": [
+      "preserve_input"
+    ],
+    "precision_notes": "结构操作保留输入数值类型；迭代、求值和替换继承现有数学/预算限制。",
+    "platforms": [
+      "cli",
+      "desktop",
+      "web",
+      "ios"
+    ]
+  },
+  {
+    "id": "fn_000096",
+    "canonical_name": "same",
+    "name": "SameQ",
+    "modern_name": "same",
+    "aliases": [
+      "sameq"
+    ],
+    "arity": {
+      "min": 0,
+      "max": null
+    },
+    "parameters": [
+      {
+        "name": "a",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": false,
+        "default_source": null,
+        "default_context": "由真实回调按输入推断或省略；不填造字面默认值",
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": false
+      },
+      {
+        "name": "b",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": false,
+        "default_source": null,
+        "default_context": "由真实回调按输入推断或省略；不填造字面默认值",
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": true,
+        "held": false
+      }
+    ],
+    "options": [],
+    "compatibility_syntax": [],
+    "attributes": [
+      "protected"
+    ],
+    "pipe_arg": 1,
+    "effect_class": "pure",
+    "support": "按真实注册签名与参数个数工作；未支持的表达式保持符号形式并给出已有诊断。",
+    "return_type": "boolean_or_expression",
+    "precision_modes": [
+      "exact",
+      "machine",
+      "arbitrary_supported"
+    ],
+    "precision_notes": "精确计算与已支持的数值近似子集；不把符号保留或格式位数当作新算法/任意精度支持。",
+    "platforms": [
+      "cli",
+      "desktop",
+      "web",
+      "ios"
+    ]
+  },
+  {
+    "id": "fn_000097",
+    "canonical_name": "sec",
+    "name": "Sec",
+    "modern_name": "sec",
+    "aliases": [],
+    "arity": {
+      "min": 1,
+      "max": 1
+    },
+    "parameters": [
+      {
+        "name": "expr",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": false
+      }
+    ],
+    "options": [],
+    "compatibility_syntax": [],
+    "attributes": [
+      "listable",
+      "protected",
+      "numeric_function"
+    ],
+    "pipe_arg": 1,
+    "effect_class": "pure",
+    "support": "按真实注册签名与参数个数工作；未支持的表达式保持符号形式并给出已有诊断。",
+    "return_type": "expression",
+    "precision_modes": [
+      "exact",
+      "machine",
+      "arbitrary_supported"
+    ],
+    "precision_notes": "精确计算与已支持的数值近似子集；不把符号保留或格式位数当作新算法/任意精度支持。",
+    "platforms": [
+      "cli",
+      "desktop",
+      "web",
+      "ios"
+    ]
+  },
+  {
+    "id": "fn_000098",
+    "canonical_name": "sech",
+    "name": "Sech",
+    "modern_name": "sech",
+    "aliases": [],
+    "arity": {
+      "min": 1,
+      "max": 1
+    },
+    "parameters": [
+      {
+        "name": "expr",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": false
+      }
+    ],
+    "options": [],
+    "compatibility_syntax": [],
+    "attributes": [
+      "listable",
+      "protected",
+      "numeric_function"
+    ],
+    "pipe_arg": 1,
+    "effect_class": "pure",
+    "support": "按真实注册签名与参数个数工作；未支持的表达式保持符号形式并给出已有诊断。",
+    "return_type": "expression",
+    "precision_modes": [
+      "exact",
+      "machine",
+      "arbitrary_supported"
+    ],
+    "precision_notes": "精确计算与已支持的数值近似子集；不把符号保留或格式位数当作新算法/任意精度支持。",
+    "platforms": [
+      "cli",
+      "desktop",
+      "web",
+      "ios"
+    ]
+  },
+  {
+    "id": "fn_000099",
+    "canonical_name": "assign",
+    "name": "Set",
+    "modern_name": "assign",
+    "aliases": [
+      "set"
+    ],
+    "arity": {
+      "min": 2,
+      "max": 2
+    },
+    "parameters": [
+      {
+        "name": "name",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": true
+      },
+      {
+        "name": "value",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": false
+      }
+    ],
+    "options": [],
+    "compatibility_syntax": [],
+    "attributes": [
+      "hold_first",
+      "protected"
+    ],
+    "pipe_arg": 0,
+    "effect_class": "write_session",
+    "support": "按真实注册签名与参数个数工作；未支持的表达式保持符号形式并给出已有诊断。",
+    "return_type": "expression",
+    "precision_modes": [
+      "preserve_input"
+    ],
+    "precision_notes": "结构操作保留输入数值类型；迭代、求值和替换继承现有数学/预算限制。",
+    "platforms": [
+      "cli",
+      "desktop",
+      "web",
+      "ios"
+    ]
+  },
+  {
+    "id": "fn_000100",
+    "canonical_name": "define",
+    "name": "SetDelayed",
+    "modern_name": "define",
+    "aliases": [
+      "setdelayed"
+    ],
+    "arity": {
+      "min": 2,
+      "max": 2
+    },
+    "parameters": [
+      {
+        "name": "target",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": true
+      },
+      {
+        "name": "body",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": true
+      }
+    ],
+    "options": [],
+    "compatibility_syntax": [],
+    "attributes": [
+      "hold_all",
+      "protected"
+    ],
+    "pipe_arg": 0,
+    "effect_class": "write_session",
+    "support": "按真实注册签名与参数个数工作；未支持的表达式保持符号形式并给出已有诊断。",
+    "return_type": "expression",
+    "precision_modes": [
+      "preserve_input"
+    ],
+    "precision_notes": "结构操作保留输入数值类型；迭代、求值和替换继承现有数学/预算限制。",
+    "platforms": [
+      "cli",
+      "desktop",
+      "web",
+      "ios"
+    ]
+  },
+  {
+    "id": "fn_000101",
+    "canonical_name": "sign",
+    "name": "Sign",
+    "modern_name": "sign",
+    "aliases": [
+      "sgn"
+    ],
+    "arity": {
+      "min": 1,
+      "max": 1
+    },
+    "parameters": [
+      {
+        "name": "expr",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": false
+      }
+    ],
+    "options": [],
+    "compatibility_syntax": [],
+    "attributes": [
+      "listable",
+      "protected",
+      "numeric_function"
+    ],
+    "pipe_arg": 1,
+    "effect_class": "pure",
+    "support": "按真实注册签名与参数个数工作；未支持的表达式保持符号形式并给出已有诊断。",
+    "return_type": "expression",
+    "precision_modes": [
+      "exact",
+      "machine",
+      "arbitrary_supported"
+    ],
+    "precision_notes": "精确计算与已支持的数值近似子集；不把符号保留或格式位数当作新算法/任意精度支持。",
+    "platforms": [
+      "cli",
+      "desktop",
+      "web",
+      "ios"
+    ]
+  },
+  {
+    "id": "fn_000118",
+    "canonical_name": "simplify",
+    "name": "Simplify",
+    "modern_name": "simplify",
+    "aliases": [],
+    "arity": {
+      "min": 1,
+      "max": 2
+    },
+    "parameters": [
+      {
+        "name": "expr",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": false
+      },
+      {
+        "name": "arg2",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": false,
+        "default_source": null,
+        "default_context": "由真实回调按输入推断或省略；不填造字面默认值",
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": false
+      }
+    ],
+    "options": [
+      {
+        "name": "assumptions",
+        "runtime_name": "Assumptions",
+        "value_type": "expression",
+        "required": false,
+        "default_source": "True",
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": false
+      }
+    ],
+    "compatibility_syntax": [],
+    "attributes": [
+      "protected"
+    ],
+    "pipe_arg": 1,
+    "effect_class": "pure",
+    "support": "当前 Simplify/FullSimplify 为分立入口，支持已认证代数/三角变换与正值假设，保持主值分支。",
+    "return_type": "expression",
+    "precision_modes": [
+      "exact",
+      "machine",
+      "arbitrary_supported"
+    ],
+    "precision_notes": "精确计算与已支持的数值近似子集；不把符号保留或格式位数当作新算法/任意精度支持。",
+    "platforms": [
+      "cli",
+      "desktop",
+      "web",
+      "ios"
+    ]
+  },
+  {
+    "id": "fn_000102",
+    "canonical_name": "sin",
+    "name": "Sin",
+    "modern_name": "sin",
+    "aliases": [],
+    "arity": {
+      "min": 1,
+      "max": 1
+    },
+    "parameters": [
+      {
+        "name": "expr",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": false
+      }
+    ],
+    "options": [],
+    "compatibility_syntax": [],
+    "attributes": [
+      "listable",
+      "protected",
+      "numeric_function"
+    ],
+    "pipe_arg": 1,
+    "effect_class": "pure",
+    "support": "按真实注册签名与参数个数工作；未支持的表达式保持符号形式并给出已有诊断。",
+    "return_type": "expression",
+    "precision_modes": [
+      "exact",
+      "machine",
+      "arbitrary_supported"
+    ],
+    "precision_notes": "精确计算与已支持的数值近似子集；不把符号保留或格式位数当作新算法/任意精度支持。",
+    "platforms": [
+      "cli",
+      "desktop",
+      "web",
+      "ios"
+    ]
+  },
+  {
+    "id": "fn_000103",
+    "canonical_name": "sinh",
+    "name": "Sinh",
+    "modern_name": "sinh",
+    "aliases": [],
+    "arity": {
+      "min": 1,
+      "max": 1
+    },
+    "parameters": [
+      {
+        "name": "expr",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": false
+      }
+    ],
+    "options": [],
+    "compatibility_syntax": [],
+    "attributes": [
+      "listable",
+      "protected",
+      "numeric_function"
+    ],
+    "pipe_arg": 1,
+    "effect_class": "pure",
+    "support": "按真实注册签名与参数个数工作；未支持的表达式保持符号形式并给出已有诊断。",
+    "return_type": "expression",
+    "precision_modes": [
+      "exact",
+      "machine",
+      "arbitrary_supported"
+    ],
+    "precision_notes": "精确计算与已支持的数值近似子集；不把符号保留或格式位数当作新算法/任意精度支持。",
+    "platforms": [
+      "cli",
+      "desktop",
+      "web",
+      "ios"
+    ]
+  },
+  {
+    "id": "fn_000104",
+    "canonical_name": "slot",
+    "name": "Slot",
+    "modern_name": "slot",
+    "aliases": [],
+    "arity": {
+      "min": 1,
+      "max": 1
+    },
+    "parameters": [
+      {
+        "name": "index",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": "1",
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": true
+      }
+    ],
+    "options": [],
+    "compatibility_syntax": [],
+    "attributes": [
+      "hold_all",
+      "protected"
+    ],
+    "pipe_arg": 0,
+    "effect_class": "pure",
+    "support": "按真实注册签名与参数个数工作；未支持的表达式保持符号形式并给出已有诊断。",
+    "return_type": "expression",
+    "precision_modes": [
+      "preserve_input"
+    ],
+    "precision_notes": "结构操作保留输入数值类型；迭代、求值和替换继承现有数学/预算限制。",
+    "platforms": [
+      "cli",
+      "desktop",
+      "web",
+      "ios"
+    ]
+  },
+  {
+    "id": "fn_000117",
+    "canonical_name": "solve",
+    "name": "Solve",
+    "modern_name": "solve",
+    "aliases": [],
+    "arity": {
+      "min": 1,
+      "max": null
+    },
+    "parameters": [
+      {
+        "name": "equations",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": true
+      },
+      {
+        "name": "variables",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": false,
+        "default_source": null,
+        "default_context": "由真实回调按输入推断或省略；不填造字面默认值",
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": true
+      },
+      {
+        "name": "domain",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": false,
+        "default_source": null,
+        "default_context": "由真实回调按输入推断或省略；不填造字面默认值",
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": true
+      }
+    ],
+    "options": [
+      {
+        "name": "steps",
+        "runtime_name": "RecordSteps",
+        "value_type": "boolean",
+        "required": false,
+        "default_source": null,
+        "default_context": "继承当前 EvalSettings.record_steps",
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": true
+      },
+      {
+        "name": "domain",
+        "runtime_name": null,
+        "value_type": "enum",
+        "required": false,
+        "default_source": "Complexes",
+        "default_context": null,
+        "enum_values": [
+          "Complexes",
+          "Reals",
+          "Integers",
+          "Rationals",
+          "positives"
+        ],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": true
+      },
+      {
+        "name": "cubics",
+        "runtime_name": "Cubics",
+        "value_type": "boolean",
+        "required": false,
+        "default_source": "False",
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": true
+      },
+      {
+        "name": "quartics",
+        "runtime_name": "Quartics",
+        "value_type": "boolean",
+        "required": false,
+        "default_source": "False",
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": true
+      },
+      {
+        "name": "verify_solutions",
+        "runtime_name": "VerifySolutions",
+        "value_type": "enum",
+        "required": false,
+        "default_source": "Automatic",
+        "default_context": null,
+        "enum_values": [
+          "True",
+          "False",
+          "Automatic"
+        ],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": true
+      },
+      {
+        "name": "max_extra_conditions",
+        "runtime_name": "MaxExtraConditions",
+        "value_type": "integer",
+        "required": false,
+        "default_source": "0",
+        "default_context": null,
+        "enum_values": [
+          "All"
+        ],
+        "min": 0,
+        "max": null,
+        "variadic": false,
+        "held": true
+      },
+      {
+        "name": "generated_parameters",
+        "runtime_name": "GeneratedParameters",
+        "value_type": "symbol",
+        "required": false,
+        "default_source": "C",
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": true
+      },
+      {
+        "name": "inverse_functions",
+        "runtime_name": "InverseFunctions",
+        "value_type": "boolean",
+        "required": false,
+        "default_source": "True",
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": true
+      }
+    ],
+    "compatibility_syntax": [
+      "method",
+      "max_iterations"
+    ],
+    "attributes": [
+      "hold_all",
+      "protected"
+    ],
+    "pipe_arg": 1,
+    "effect_class": "pure",
+    "support": "复用已有完整有限代数解、特殊超越族及整数/参数条件子集；当前四个入口分立。新 mode/output 尚未接入。",
+    "return_type": "rules_or_values",
+    "precision_modes": [
+      "exact",
+      "machine",
+      "arbitrary_supported"
+    ],
+    "precision_notes": "精确计算与已支持的数值近似子集；不把符号保留或格式位数当作新算法/任意精度支持。",
+    "platforms": [
+      "cli",
+      "desktop",
+      "web",
+      "ios"
+    ]
+  },
+  {
+    "id": "fn_000117",
+    "canonical_name": "solve",
+    "name": "SolveValues",
+    "modern_name": "solve_values",
+    "aliases": [
+      "solvevalues"
+    ],
+    "arity": {
+      "min": 1,
+      "max": null
+    },
+    "parameters": [
+      {
+        "name": "equations",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": true
+      },
+      {
+        "name": "variables",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": false,
+        "default_source": null,
+        "default_context": "由真实回调按输入推断或省略；不填造字面默认值",
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": true
+      },
+      {
+        "name": "domain",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": false,
+        "default_source": null,
+        "default_context": "由真实回调按输入推断或省略；不填造字面默认值",
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": true
+      }
+    ],
+    "options": [
+      {
+        "name": "steps",
+        "runtime_name": "RecordSteps",
+        "value_type": "boolean",
+        "required": false,
+        "default_source": null,
+        "default_context": "继承当前 EvalSettings.record_steps",
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": true
+      },
+      {
+        "name": "domain",
+        "runtime_name": null,
+        "value_type": "enum",
+        "required": false,
+        "default_source": "Complexes",
+        "default_context": null,
+        "enum_values": [
+          "Complexes",
+          "Reals",
+          "Integers",
+          "Rationals",
+          "positives"
+        ],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": true
+      },
+      {
+        "name": "cubics",
+        "runtime_name": "Cubics",
+        "value_type": "boolean",
+        "required": false,
+        "default_source": "False",
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": true
+      },
+      {
+        "name": "quartics",
+        "runtime_name": "Quartics",
+        "value_type": "boolean",
+        "required": false,
+        "default_source": "False",
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": true
+      },
+      {
+        "name": "verify_solutions",
+        "runtime_name": "VerifySolutions",
+        "value_type": "enum",
+        "required": false,
+        "default_source": "Automatic",
+        "default_context": null,
+        "enum_values": [
+          "True",
+          "False",
+          "Automatic"
+        ],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": true
+      },
+      {
+        "name": "max_extra_conditions",
+        "runtime_name": "MaxExtraConditions",
+        "value_type": "integer",
+        "required": false,
+        "default_source": "0",
+        "default_context": null,
+        "enum_values": [
+          "All"
+        ],
+        "min": 0,
+        "max": null,
+        "variadic": false,
+        "held": true
+      },
+      {
+        "name": "generated_parameters",
+        "runtime_name": "GeneratedParameters",
+        "value_type": "symbol",
+        "required": false,
+        "default_source": "C",
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": true
+      },
+      {
+        "name": "inverse_functions",
+        "runtime_name": "InverseFunctions",
+        "value_type": "boolean",
+        "required": false,
+        "default_source": "True",
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": true
+      }
+    ],
+    "compatibility_syntax": [
+      "method",
+      "max_iterations"
+    ],
+    "attributes": [
+      "hold_all",
+      "protected"
+    ],
+    "pipe_arg": 1,
+    "effect_class": "pure",
+    "support": "复用已有完整有限代数解、特殊超越族及整数/参数条件子集；当前四个入口分立。新 mode/output 尚未接入。",
+    "return_type": "rules_or_values",
+    "precision_modes": [
+      "exact",
+      "machine",
+      "arbitrary_supported"
+    ],
+    "precision_notes": "精确计算与已支持的数值近似子集；不把符号保留或格式位数当作新算法/任意精度支持。",
+    "platforms": [
+      "cli",
+      "desktop",
+      "web",
+      "ios"
+    ]
+  },
+  {
+    "id": "fn_000105",
+    "canonical_name": "sqrt",
+    "name": "Sqrt",
+    "modern_name": "sqrt",
+    "aliases": [],
+    "arity": {
+      "min": 1,
+      "max": 1
+    },
+    "parameters": [
+      {
+        "name": "expr",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": false
+      }
+    ],
+    "options": [],
+    "compatibility_syntax": [],
+    "attributes": [
+      "listable",
+      "protected",
+      "numeric_function"
+    ],
+    "pipe_arg": 1,
+    "effect_class": "pure",
+    "support": "按真实注册签名与参数个数工作；未支持的表达式保持符号形式并给出已有诊断。",
+    "return_type": "expression",
+    "precision_modes": [
+      "exact",
+      "machine",
+      "arbitrary_supported"
+    ],
+    "precision_notes": "精确计算与已支持的数值近似子集；不把符号保留或格式位数当作新算法/任意精度支持。",
+    "platforms": [
+      "cli",
+      "desktop",
+      "web",
+      "ios"
+    ]
+  },
+  {
+    "id": "fn_000106",
+    "canonical_name": "subtract",
+    "name": "Subtract",
+    "modern_name": "subtract",
+    "aliases": [],
+    "arity": {
+      "min": 2,
+      "max": 2
+    },
+    "parameters": [
+      {
+        "name": "a",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": false
+      },
+      {
+        "name": "b",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": false
+      }
+    ],
+    "options": [],
+    "compatibility_syntax": [],
+    "attributes": [
+      "listable",
+      "protected",
+      "numeric_function"
+    ],
+    "pipe_arg": 1,
+    "effect_class": "pure",
+    "support": "按真实注册签名与参数个数工作；未支持的表达式保持符号形式并给出已有诊断。",
+    "return_type": "expression",
+    "precision_modes": [
+      "exact",
+      "machine",
+      "arbitrary_supported"
+    ],
+    "precision_notes": "精确计算与已支持的数值近似子集；不把符号保留或格式位数当作新算法/任意精度支持。",
+    "platforms": [
+      "cli",
+      "desktop",
+      "web",
+      "ios"
+    ]
+  },
+  {
+    "id": "fn_000107",
+    "canonical_name": "sum",
+    "name": "Sum",
+    "modern_name": "sum",
+    "aliases": [],
+    "arity": {
+      "min": 2,
+      "max": null
+    },
+    "parameters": [
+      {
+        "name": "expr",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": true
+      },
+      {
+        "name": "iterators",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": true,
+        "held": true
+      }
+    ],
+    "options": [],
+    "compatibility_syntax": [],
+    "attributes": [
+      "hold_all",
+      "protected"
+    ],
+    "pipe_arg": 1,
+    "effect_class": "pure",
+    "support": "有限数值迭代/等差列表，最多100万项，受预算与中断保护；Sum/Product 不提供无限级数的一般符号算法。",
+    "return_type": "expression",
+    "precision_modes": [
+      "preserve_input"
+    ],
+    "precision_notes": "结构操作保留输入数值类型；迭代、求值和替换继承现有数学/预算限制。",
+    "platforms": [
+      "cli",
+      "desktop",
+      "web",
+      "ios"
+    ]
+  },
+  {
+    "id": "fn_000108",
+    "canonical_name": "table",
+    "name": "Table",
+    "modern_name": "table",
+    "aliases": [],
+    "arity": {
+      "min": 2,
+      "max": null
+    },
+    "parameters": [
+      {
+        "name": "expr",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": true
+      },
+      {
+        "name": "iterators",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": true,
+        "held": true
+      }
+    ],
+    "options": [],
+    "compatibility_syntax": [],
+    "attributes": [
+      "hold_all",
+      "protected"
+    ],
+    "pipe_arg": 1,
+    "effect_class": "pure",
+    "support": "有限数值迭代/等差列表，最多100万项，受预算与中断保护；Sum/Product 不提供无限级数的一般符号算法。",
+    "return_type": "list",
+    "precision_modes": [
+      "preserve_input"
+    ],
+    "precision_notes": "结构操作保留输入数值类型；迭代、求值和替换继承现有数学/预算限制。",
+    "platforms": [
+      "cli",
+      "desktop",
+      "web",
+      "ios"
+    ]
+  },
+  {
+    "id": "fn_000109",
+    "canonical_name": "tan",
+    "name": "Tan",
+    "modern_name": "tan",
+    "aliases": [],
+    "arity": {
+      "min": 1,
+      "max": 1
+    },
+    "parameters": [
+      {
+        "name": "expr",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": false
+      }
+    ],
+    "options": [],
+    "compatibility_syntax": [],
+    "attributes": [
+      "listable",
+      "protected",
+      "numeric_function"
+    ],
+    "pipe_arg": 1,
+    "effect_class": "pure",
+    "support": "按真实注册签名与参数个数工作；未支持的表达式保持符号形式并给出已有诊断。",
+    "return_type": "expression",
+    "precision_modes": [
+      "exact",
+      "machine",
+      "arbitrary_supported"
+    ],
+    "precision_notes": "精确计算与已支持的数值近似子集；不把符号保留或格式位数当作新算法/任意精度支持。",
+    "platforms": [
+      "cli",
+      "desktop",
+      "web",
+      "ios"
+    ]
+  },
+  {
+    "id": "fn_000110",
+    "canonical_name": "tanh",
+    "name": "Tanh",
+    "modern_name": "tanh",
+    "aliases": [],
+    "arity": {
+      "min": 1,
+      "max": 1
+    },
+    "parameters": [
+      {
+        "name": "expr",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": false
+      }
+    ],
+    "options": [],
+    "compatibility_syntax": [],
+    "attributes": [
+      "listable",
+      "protected",
+      "numeric_function"
+    ],
+    "pipe_arg": 1,
+    "effect_class": "pure",
+    "support": "按真实注册签名与参数个数工作；未支持的表达式保持符号形式并给出已有诊断。",
+    "return_type": "expression",
+    "precision_modes": [
+      "exact",
+      "machine",
+      "arbitrary_supported"
+    ],
+    "precision_notes": "精确计算与已支持的数值近似子集；不把符号保留或格式位数当作新算法/任意精度支持。",
+    "platforms": [
+      "cli",
+      "desktop",
+      "web",
+      "ios"
+    ]
+  },
+  {
+    "id": "fn_000111",
+    "canonical_name": "multiply",
+    "name": "Times",
+    "modern_name": "multiply",
+    "aliases": [
+      "times"
+    ],
+    "arity": {
+      "min": 0,
+      "max": null
+    },
+    "parameters": [
+      {
+        "name": "values",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": false,
+        "default_source": null,
+        "default_context": "由真实回调按输入推断或省略；不填造字面默认值",
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": true,
+        "held": false
+      }
+    ],
+    "options": [],
+    "compatibility_syntax": [],
+    "attributes": [
+      "listable",
+      "protected",
+      "numeric_function",
+      "flat",
+      "orderless",
+      "one_identity"
+    ],
+    "pipe_arg": 1,
+    "effect_class": "pure",
+    "support": "按真实注册签名与参数个数工作；未支持的表达式保持符号形式并给出已有诊断。",
+    "return_type": "expression",
+    "precision_modes": [
+      "exact",
+      "machine",
+      "arbitrary_supported"
+    ],
+    "precision_notes": "精确计算与已支持的数值近似子集；不把符号保留或格式位数当作新算法/任意精度支持。",
+    "platforms": [
+      "cli",
+      "desktop",
+      "web",
+      "ios"
+    ]
+  },
+  {
+    "id": "fn_000112",
+    "canonical_name": "to_radicals",
+    "name": "ToRadicals",
+    "modern_name": "to_radicals",
+    "aliases": [
+      "toradicals"
+    ],
+    "arity": {
+      "min": 1,
+      "max": 1
+    },
+    "parameters": [
+      {
+        "name": "expr",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": false
+      }
+    ],
+    "options": [],
+    "compatibility_syntax": [],
+    "attributes": [
+      "listable",
+      "protected"
+    ],
+    "pipe_arg": 1,
+    "effect_class": "pure",
+    "support": "现有代数与有理多项式子集；次数≤4096、系数张量≤100万项/16轴；Apart 限单变量有理系数；不可处理部分保留原式。",
+    "return_type": "expression",
+    "precision_modes": [
+      "exact",
+      "machine",
+      "arbitrary_supported"
+    ],
+    "precision_notes": "精确计算与已支持的数值近似子集；不把符号保留或格式位数当作新算法/任意精度支持。",
+    "platforms": [
+      "cli",
+      "desktop",
+      "web",
+      "ios"
+    ]
+  },
+  {
+    "id": "fn_000113",
+    "canonical_name": "together",
+    "name": "Together",
+    "modern_name": "together",
+    "aliases": [],
+    "arity": {
+      "min": 1,
+      "max": 1
+    },
+    "parameters": [
+      {
+        "name": "expr",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": false
+      }
+    ],
+    "options": [],
+    "compatibility_syntax": [],
+    "attributes": [
+      "listable",
+      "protected"
+    ],
+    "pipe_arg": 1,
+    "effect_class": "pure",
+    "support": "现有代数与有理多项式子集；次数≤4096、系数张量≤100万项/16轴；Apart 限单变量有理系数；不可处理部分保留原式。",
+    "return_type": "expression",
+    "precision_modes": [
+      "exact",
+      "machine",
+      "arbitrary_supported"
+    ],
+    "precision_notes": "精确计算与已支持的数值近似子集；不把符号保留或格式位数当作新算法/任意精度支持。",
+    "platforms": [
+      "cli",
+      "desktop",
+      "web",
+      "ios"
+    ]
+  },
+  {
+    "id": "fn_000114",
+    "canonical_name": "unequal",
+    "name": "Unequal",
+    "modern_name": "unequal",
+    "aliases": [],
+    "arity": {
+      "min": 0,
+      "max": null
+    },
+    "parameters": [
+      {
+        "name": "values",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": false,
+        "default_source": null,
+        "default_context": "由真实回调按输入推断或省略；不填造字面默认值",
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": true,
+        "held": false
+      }
+    ],
+    "options": [],
+    "compatibility_syntax": [],
+    "attributes": [
+      "protected"
+    ],
+    "pipe_arg": 1,
+    "effect_class": "pure",
+    "support": "按真实注册签名与参数个数工作；未支持的表达式保持符号形式并给出已有诊断。",
+    "return_type": "boolean_or_expression",
+    "precision_modes": [
+      "exact",
+      "machine",
+      "arbitrary_supported"
+    ],
+    "precision_notes": "精确计算与已支持的数值近似子集；不把符号保留或格式位数当作新算法/任意精度支持。",
+    "platforms": [
+      "cli",
+      "desktop",
+      "web",
+      "ios"
+    ]
+  },
+  {
+    "id": "fn_000115",
+    "canonical_name": "unset",
+    "name": "Unset",
+    "modern_name": "unset",
+    "aliases": [],
+    "arity": {
+      "min": 1,
+      "max": 1
+    },
+    "parameters": [
+      {
+        "name": "target",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": true
+      }
+    ],
+    "options": [],
+    "compatibility_syntax": [],
+    "attributes": [
+      "hold_all",
+      "protected"
+    ],
+    "pipe_arg": 0,
+    "effect_class": "write_session",
+    "support": "按真实注册签名与参数个数工作；未支持的表达式保持符号形式并给出已有诊断。",
+    "return_type": "null",
+    "precision_modes": [
+      "preserve_input"
+    ],
+    "precision_notes": "结构操作保留输入数值类型；迭代、求值和替换继承现有数学/预算限制。",
+    "platforms": [
+      "cli",
+      "desktop",
+      "web",
+      "ios"
+    ]
+  },
+  {
+    "id": "fn_000116",
+    "canonical_name": "variables",
+    "name": "Variables",
+    "modern_name": "variables",
+    "aliases": [],
+    "arity": {
+      "min": 1,
+      "max": 1
+    },
+    "parameters": [
+      {
+        "name": "expr",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": false
+      }
+    ],
+    "options": [],
+    "compatibility_syntax": [],
+    "attributes": [
+      "protected"
+    ],
+    "pipe_arg": 1,
+    "effect_class": "pure",
+    "support": "现有代数与有理多项式子集；次数≤4096、系数张量≤100万项/16轴；Apart 限单变量有理系数；不可处理部分保留原式。",
+    "return_type": "expression",
+    "precision_modes": [
+      "exact",
+      "machine",
+      "arbitrary_supported"
+    ],
+    "precision_notes": "精确计算与已支持的数值近似子集；不把符号保留或格式位数当作新算法/任意精度支持。",
+    "platforms": [
+      "cli",
+      "desktop",
+      "web",
+      "ios"
+    ]
+  }
+]

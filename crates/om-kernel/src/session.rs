@@ -64,6 +64,22 @@ impl Session {
     /// Handle one client request and return its reply plus any asynchronous events.
     pub fn handle(&mut self, req: Request) -> (Response, Vec<Event>) {
         match req {
+            Request::GetFunctionCatalog => {
+                return (
+                    Response::FunctionCatalog {
+                        catalog: crate::capabilities::function_catalog(),
+                    },
+                    vec![],
+                );
+            }
+            Request::GetCapabilities { platform } => {
+                return (
+                    Response::Capabilities {
+                        capabilities: crate::capabilities::capabilities(platform),
+                    },
+                    vec![],
+                );
+            }
             Request::Evaluate {
                 cell_id,
                 source,

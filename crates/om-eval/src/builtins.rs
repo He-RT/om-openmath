@@ -16,6 +16,9 @@ impl BuiltinTable {
     pub(crate) fn docs(&self) -> impl Iterator<Item = &DocEntry> {
         self.specs.values().map(|s| &s.doc)
     }
+    pub(crate) fn specs(&self) -> impl Iterator<Item = &BuiltinSpec> {
+        self.specs.values()
+    }
 }
 type Entry = (
     Symbol,

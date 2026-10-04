@@ -6,15 +6,19 @@ rust-version.workspace = true
 license.workspace = true
 description = "Symbolic expressions and canonical constructors"
 
+[features]
+catalog-ts = ["dep:ts-rs"]
+
 [dependencies]
 om-num.workspace = true
 smallvec.workspace = true
 rustc-hash.workspace = true
 serde.workspace = true
+serde_json.workspace = true
+ts-rs = { workspace = true, optional = true }
 thiserror.workspace = true
 
 [dev-dependencies]
-serde_json.workspace = true
 proptest.workspace = true
 
 [lints]

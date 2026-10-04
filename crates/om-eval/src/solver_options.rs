@@ -84,6 +84,7 @@ pub(super) fn parse(
             .name();
         let v = ev.evaluate(&arg.args()[1], ctx)?;
         match key {
+            "RecordSteps" => out.solve.record_steps = boolean(&v)?,
             "WorkingPrecision" if numeric => {
                 if v.as_symbol()
                     .is_some_and(|s| s.name() == "MachinePrecision")

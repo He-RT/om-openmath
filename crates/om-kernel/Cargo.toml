@@ -12,7 +12,7 @@ external-host = []
 native = ["om-llm/http","dep:toml","dep:directories","dep:keyring","dep:tokio-util"]
 
 [dependencies]
-om-core.workspace = true
+om-core = { workspace = true, features = ["catalog-ts"] }
 om-num.workspace = true
 om-eval.workspace = true
 om-parse.workspace = true

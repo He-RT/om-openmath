@@ -7,6 +7,15 @@ pub(crate) fn modern(name: &str, mode: ConstantMode) -> Option<Symbol> {
     if name == "Derivative" {
         return Some(Symbol::intern(name));
     }
+    if let Some(entry) = om_core::catalog::by_alias(name) {
+        return Some(Symbol::intern(&entry.name));
+    }
+    legacy_modern(name, mode)
+}
+
+// Declaration lookup deliberately preserves the pre-.3 reserved name set.
+// New aliases must not turn an existing notebook's user definition into a protected builtin.
+pub(crate) fn legacy_modern(name: &str, mode: ConstantMode) -> Option<Symbol> {
     let lower = name.to_ascii_lowercase();
     if mode == ConstantMode::Strict && matches!(name, "e" | "i") {
         return None;

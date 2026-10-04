@@ -1,4 +1,5 @@
 //! Shared JSON request, response and event contract for all clients.
+pub use crate::capabilities::{CapabilityInfo, FunctionCatalog, HostPlatform};
 pub use crate::config::KernelConfig;
 pub use crate::views::*;
 pub use crate::wire::*;
@@ -16,6 +17,13 @@ pub type RequestId = String;
 #[ts(export_to = concat!(env!("CARGO_MANIFEST_DIR"), "/../../app/src/kernel/generated/"))]
 #[serde(tag = "type", rename_all = "snake_case")]
 pub enum Request {
+    /// Query actual executable descriptions without running source.
+    GetFunctionCatalog,
+    /// Query kernel and documented host rendering support; grants no task permissions.
+    GetCapabilities {
+        /// Host presentation target.
+        platform: HostPlatform,
+    },
     /// Execute a source cell.
     Evaluate {
         /// Target cell.
@@ -205,6 +213,16 @@ pub enum Request {
 #[ts(export_to = concat!(env!("CARGO_MANIFEST_DIR"), "/../../app/src/kernel/generated/"))]
 #[serde(tag = "type", rename_all = "snake_case")]
 pub enum Response {
+    /// Actual callable function descriptions.
+    FunctionCatalog {
+        /// Versioned executable catalog.
+        catalog: FunctionCatalog,
+    },
+    /// Current kernel and presentation capabilities.
+    Capabilities {
+        /// Versioned capability information.
+        capabilities: CapabilityInfo,
+    },
     /// Readonly output projection.
     Expression {
         /// Genuine evaluator output in three formats.

@@ -7,6 +7,28 @@ use std::collections::BTreeSet;
 pub(crate) fn signature(doc: &DocEntry, dialect: Dialect) -> String {
     if dialect == Dialect::Wolfram {
         doc.wolfram.into()
+    } else if let Some(entry) = om_core::catalog::by_runtime(doc.name) {
+        let name = om_parse::modern_name(Symbol::intern(doc.name));
+        let roles = entry
+            .parameters
+            .iter()
+            .map(|p| {
+                if p.variadic {
+                    format!("...{}", p.name)
+                } else if p.required {
+                    p.name.clone()
+                } else {
+                    format!("{}?", p.name)
+                }
+            })
+            .chain(
+                entry
+                    .options
+                    .iter()
+                    .map(|p| format!("{}: {}", p.name, p.default_source.as_deref().unwrap_or("…"))),
+            )
+            .collect::<Vec<_>>();
+        format!("{name}({})", roles.join(", "))
     } else if let Some(tail) = doc.modern.strip_prefix(doc.name) {
         format!("{}{tail}", om_parse::modern_name(Symbol::intern(doc.name)))
     } else {
@@ -45,44 +67,22 @@ fn score(label: &str, original: &str, prefix: &str) -> Option<u8> {
     }
 }
 fn options(symbol: Symbol, dialect: Dialect) -> Vec<(String, String)> {
-    let name = symbol.name();
-    let mut options = vec![];
-    if matches!(
-        name,
-        "Solve" | "NSolve" | "SolveValues" | "NSolveValues" | "Reduce" | "Roots"
-    ) {
-        if dialect == Dialect::Modern {
-            options.push(("domain", ""));
-        }
-        options.extend([
-            ("cubics", "Cubics"),
-            ("quartics", "Quartics"),
-            ("verify_solutions", "VerifySolutions"),
-            ("max_extra_conditions", "MaxExtraConditions"),
-            ("generated_parameters", "GeneratedParameters"),
-            ("inverse_functions", "InverseFunctions"),
-        ]);
-    }
-    if matches!(name, "NSolve" | "NSolveValues" | "FindRoot") {
-        options.push(("precision", "WorkingPrecision"));
-    }
-    if name == "FindRoot" {
-        options.extend([("method", "Method"), ("max_iterations", "MaxIterations")]);
-    }
-    if name == "Plot" {
-        options.push(("plot_range", "PlotRange"));
-    }
-    options
+    om_core::catalog::by_runtime(symbol.name())
         .into_iter()
-        .map(|(modern, wolfram)| {
+        .flat_map(|entry| &entry.options)
+        .filter_map(|option| {
             if dialect == Dialect::Modern {
-                (modern.into(), format!("{modern}: "))
+                Some((option.name.clone(), format!("{}: ", option.name)))
             } else {
-                (wolfram.into(), format!("{wolfram} -> "))
+                option
+                    .runtime_name
+                    .as_ref()
+                    .map(|key| (key.clone(), format!("{key} -> ")))
             }
         })
         .collect()
 }
+
 pub(crate) fn items(
     prefix: &str,
     dialect: Dialect,
@@ -101,6 +101,13 @@ pub(crate) fn items(
         } else {
             doc.name.into()
         };
+        if dialect == Dialect::Modern
+            && defined
+                .iter()
+                .any(|s| s.name() == label && s.name() != doc.name)
+        {
+            continue;
+        }
         let insert_text = label.clone();
         let label =
             if dialect == Dialect::Modern && matches!(doc.name, "And" | "Or" | "Not" | "Root") {
@@ -108,6 +115,7 @@ pub(crate) fn items(
             } else {
                 label
             };
+        let primary = label.clone();
         add(
             CompletionItem {
                 insert_text,
@@ -122,6 +130,28 @@ pub(crate) fn items(
                 _ => 3,
             },
         );
+        if dialect == Dialect::Modern
+            && let Some(entry) = om_core::catalog::by_runtime(doc.name)
+        {
+            for alias in entry
+                .aliases
+                .iter()
+                .chain(std::iter::once(&entry.modern_name))
+            {
+                if alias != &primary && !defined.iter().any(|s| s.name() == alias) {
+                    add(
+                        CompletionItem {
+                            label: alias.clone(),
+                            insert_text: alias.clone(),
+                            detail: Some(signature(doc, dialect)),
+                            kind: CompletionKind::Function,
+                        },
+                        doc.name,
+                        4,
+                    );
+                }
+            }
+        }
     }
     for symbol in defined {
         add(

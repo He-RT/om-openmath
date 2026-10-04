@@ -20,6 +20,11 @@ pub fn identifier_symbol(
 }
 /// Preferred executable Modern callable spelling; user symbols retain their original names.
 pub fn modern_name(symbol: Symbol) -> String {
+    if !matches!(symbol.name(), "Root" | "And" | "Or" | "Not")
+        && let Some(entry) = om_core::catalog::by_runtime(symbol.name())
+    {
+        return entry.modern_name.clone();
+    }
     let alias = match symbol.name() {
         "Root" => "Root",
         "And" => "And",

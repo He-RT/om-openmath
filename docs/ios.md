@@ -1,6 +1,6 @@
 # iOS / iPadOS 原生客户端
 
-目标发行版本为 `0.1.0-pre-alpha.2`。最低 iOS/iPadOS 27，支持 iPhone 和 iPad、横竖屏、单窗口及硬件键盘。使用 SwiftUI/UIKit/TextKit 2、SwiftMath 和原生 Canvas；所有计算复用 Rust 内核。
+已随 [0.1.0-pre-alpha.2](https://github.com/He-RT/om-openmath/releases/tag/v0.1.0-pre-alpha.2) 交付。最低 iOS/iPadOS 27，支持 iPhone 和 iPad、横竖屏、单窗口及硬件键盘。使用 SwiftUI/UIKit/TextKit 2、SwiftMath 和原生 Canvas；所有计算复用 Rust 内核。
 
 ## 构建与模拟器安装
 

@@ -2,9 +2,9 @@
 
 [English](README.en.md) · [下载安装包](https://github.com/He-RT/om-openmath/releases) · [使用文档](docs/README.md)
 
-OpenMath 是以方程求解为核心的开源计算机代数系统。终端、响应式浏览器笔记本和桌面应用共享 Rust 内核，支持现代数学写法与 Wolfram 语言子集、精确解卡片、推导步骤、交互绘图和可配置 AI。
+OpenMath 是以方程求解为核心的开源计算机代数系统。终端、响应式浏览器笔记本、桌面应用和原生 iOS/iPadOS 客户端共享 Rust 内核，支持现代数学写法与 Wolfram 语言子集、精确解卡片、推导步骤、交互绘图和可配置 AI。
 
-正在验收 **0.1.0-pre-alpha.2**；已公开的 `.1` 保留。支持有资源边界的求解子集；无法支持的问题保留原表达式并给出诊断。兼容范围见[求解指南](docs/solve.md)。
+已发布 [**0.1.0-pre-alpha.2**](https://github.com/He-RT/om-openmath/releases/tag/v0.1.0-pre-alpha.2)，保留已公开的 `.1`。支持有资源边界的求解子集；无法支持的问题保留原表达式并给出诊断。兼容范围见[求解指南](docs/solve.md)。
 
 ```sh
 om -e 'solve(x^2 - 5x + 6 = 0, x)'
@@ -35,7 +35,7 @@ Windows MSI 安装后的实际界面：精确解 −3/1 与真实推导步骤。
 
 Windows 包携带 WebView2 引导程序；系统没有 WebView2 时，首次安装需要联网下载运行时。桌面包尚未代码签名，系统可能提示未知发布者；macOS 可在确认来源后通过“隐私与安全性”允许打开。当前不提供 Intel Mac、Windows ARM64 或 Linux 安装包。详细步骤、卸载及校验见[安装指南](docs/install.md)。
 
-每个发行版提供 `release-manifest.json`，记录同一提交构建的文件大小和 SHA256。Web/桌面/CLI 包保留第三方许可文本。
+每个发行版提供 `release-manifest.json`，记录同一提交构建的文件大小和 SHA256。全部分发包保留相关第三方许可文本。
 
 ## 开始使用
 

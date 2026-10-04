@@ -2,7 +2,7 @@
 
 [简体中文](README.md) · [Downloads](https://github.com/He-RT/om-openmath/releases) · [Installation](docs/install.md)
 
-OpenMath 0.1.0-pre-alpha.2 is a pre-alpha computer algebra system centered on equation solving. A shared Rust kernel powers the terminal, a reactive browser notebook and a Tauri desktop app. It supports modern notation and a Wolfram Language subset, exact solution cards, recorded derivations, interactive plots and configurable AI assistance.
+OpenMath [0.1.0-pre-alpha.2](https://github.com/He-RT/om-openmath/releases/tag/v0.1.0-pre-alpha.2) is a pre-alpha computer algebra system centered on equation solving. A shared Rust kernel powers the terminal, a reactive browser notebook, a Tauri desktop app and a native iOS/iPadOS client. It supports modern notation and a Wolfram Language subset, exact solution cards, recorded derivations, interactive plots and configurable AI assistance.
 
 ```sh
 om -e 'solve(x^2 - 5x + 6 = 0, x)'

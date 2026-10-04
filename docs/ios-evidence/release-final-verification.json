@@ -1,0 +1,13 @@
+{
+  "version": "0.1.0-pre-alpha.2",
+  "tag": "v0.1.0-pre-alpha.2",
+  "revision": "c930fcdf13ce1bc2b698c5cafb3d78fb5a415ce2",
+  "release_url": "https://github.com/He-RT/om-openmath/releases/tag/v0.1.0-pre-alpha.2",
+  "assets_verified": 9,
+  "manifest_verified": true,
+  "github_digests_verified": true,
+  "zip_crc_verified": true,
+  "mobile_arm64_slices": 2,
+  "ci_url": "https://github.com/He-RT/om-openmath/actions/runs/37218720007",
+  "release_workflow_url": "https://github.com/He-RT/om-openmath/actions/runs/37218757011"
+}

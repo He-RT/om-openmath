@@ -71,3 +71,13 @@ iPad 真机在 Device Hub 最大字号（11）下完成真实求解，源码、�
 本地高负载时 iPhone 模拟器 #12 / #13 的 2215 / 1429 ms 超过 1 秒，保留失败；该轮还暴露上述恢复测试竞争。之后 iPad 模拟器数学/恢复测试通过，HTTP fixture 共享计数失败及界面驱动启动终止保留记录。新修复的最终设备/CI 结果另行记录，原始数学期望、性能阈值与失败断言未放宽。
 
 最终 iPad Pro 11-inch 第四代 / iPadOS27.0 Release 真机：**20 项 Swift 单元测试通过，无失败/跳过**，包括独立恢复存储、各 HTTP fixture 的取消/超时/UTF-8/错误/工具续轮断言。53 条计算最大 **164.373167 ms（#12）**，未知语料排版命令为空；完整输出与计时见 `ios-evidence/ipad-device-final-corpus.json`。最终 XCUITest 交由 CI 执行，真机此前两项界面流程证据继续保留。
+
+## 最终云端门禁与发行
+
+发行源码提交为 `c930fcdf13ce1bc2b698c5cafb3d78fb5a415ce2`。[同提交 CI](https://github.com/He-RT/om-openmath/actions/runs/37218720007) 全部通过：Rust 工作区 883 项测试及协议检查中的 1 项绑定导出测试、59 项前端单元、开发 29 / 生产 27 项浏览器流程、9 项 Python 契约、格式/Clippy/依赖与纯 WASM 检查。
+
+回读实际 `.xcresult`，iPhone18Pro / iOS27 模拟器和 iPadPro11(M5) / iPadOS27 模拟器各 **20 项 Swift 单元＋2 项 XCUITest** 全通过，无失败/跳过。两轮原始 53 语料最大分别为 **536.732708 ms（#35）** 和 **304.069334 ms（#12）**；全部公式可排版，计时包含实际 Swift 请求往返。完整结果在 `ios-evidence/phone-ci-final-corpus.json` 和 `pad-ci-final-corpus.json`。保留历史失败，最终同源 CI 已满足 1 秒门禁。
+
+[发行流程](https://github.com/He-RT/om-openmath/actions/runs/37218757011) 全通过，包含 Windows 两种安装包实际安装/中文窗口、macOS 权威数学/性能、Web 与原生移动附件。已公开 [v0.1.0-pre-alpha.2](https://github.com/He-RT/om-openmath/releases/tag/v0.1.0-pre-alpha.2)，九类分发文件加清单；此前 `.1` 保留。源码工程随标签交付，个人签名配置不上传。此后记录更新只修改文档，分发源码与清单提交不变。
+
+公开附件完整下载后逐字节检查九类文件的大小、清单 SHA256 与 GitHub digest，清单自身的 GitHub digest 也一致；全部 ZIP 的 CRC 通过，标签准确指向发行源码 SHA。再次确认两个 ARM64 切片、模拟器应用版本/平台/许可和签名材料隔离；DMG 的 `hdiutil verify` 通过，公开 macOS CLI 显示 `.2` 并真实求解出 −3 / 1。回读记录与原始清单分别为 `ios-evidence/release-final-verification.json`、`release-manifest-pre-alpha.2.json`。最新版已重新安装并启动于 iPad，未重开本机模拟器。

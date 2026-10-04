@@ -1,0 +1,52 @@
+{
+  "version": "0.1.0-pre-alpha.2",
+  "tag": "v0.1.0-pre-alpha.2",
+  "revision": "c930fcdf13ce1bc2b698c5cafb3d78fb5a415ce2",
+  "assets": [
+    {
+      "name": "OpenMath-web_0.1.0-pre-alpha.2.zip",
+      "bytes": 5338259,
+      "sha256": "7acfa5b44e2b4f9cf9a6d63004ce441afac390116c6db905b906129c9e1a9b95"
+    },
+    {
+      "name": "OpenMathKernel_0.1.0-pre-alpha.2.xcframework.zip",
+      "bytes": 40212556,
+      "sha256": "61912780c015cce6a155ae96614d7440e827b00f262ee8b09e6586df6cf84877"
+    },
+    {
+      "name": "OpenMath_0.1.0-pre-alpha.2_aarch64.dmg",
+      "bytes": 11021662,
+      "sha256": "1f3e7e5a2d80acae2fc03795638e265d65600dac5f47f5afed1e5696ac1e7b48"
+    },
+    {
+      "name": "OpenMath_0.1.0-pre-alpha.2_ios_simulator_arm64.app.zip",
+      "bytes": 14464081,
+      "sha256": "b60c759ff91362c7adbd137b3af11aa51ee8b8702042ab83a3c1cf9183cd956b"
+    },
+    {
+      "name": "OpenMath_0.1.0-pre-alpha.2_macos_arm64.app.zip",
+      "bytes": 13106118,
+      "sha256": "de8bf46428c9ab887cb414cf12b9ae65754eeba301960c70f0e9821195be9d91"
+    },
+    {
+      "name": "OpenMath_0.1.0-pre-alpha.2_x64-setup.exe",
+      "bytes": 10565163,
+      "sha256": "876b5f73b0710ac0e1fbc448727c425cbeb7f2c9e3eee63f917489c9cc08e41a"
+    },
+    {
+      "name": "OpenMath_0.1.0-pre-alpha.2_x64_zh-CN.msi",
+      "bytes": 14221291,
+      "sha256": "6858ae504e08c5bcbcf4b104167ab34a9b8a887da3d242496471f7fe5aa168bc"
+    },
+    {
+      "name": "om-cli_0.1.0-pre-alpha.2_macos_arm64.zip",
+      "bytes": 7737521,
+      "sha256": "def4097262ae0ecc5e36b63e7426f2f3b28bb2eda287a292fe6b47a13f9a88c6"
+    },
+    {
+      "name": "om-cli_0.1.0-pre-alpha.2_windows_x64.zip",
+      "bytes": 8192871,
+      "sha256": "9514ecbe3a5efa2df31793fe48bd4a41566833abfde7d76da567dc4ef69d9f08"
+    }
+  ]
+}

@@ -104,9 +104,11 @@ Task hashes are added in the next commit; immediate hashes live in the execution
 - [x] R2.2 Swift客户端、原生笔记本/编辑器、UIDocument文件、响应式/中断/恢复。
 - [x] R2.3 原生公式/Markdown/解卡片/步骤/绘图，触屏与硬件键盘、语义无障碍与静态路径；剩余人工组合验收按用户决定暂缓，详见 ios-acceptance.md。
 - [x] R2.4 URLSession/Keychain、完整AI流程、草稿设置与探测、前后台生命周期。
-- [ ] R2.5 单元/XCUITest/模拟器/真机/性能与原平台回归验收。
-- [ ] R2.6 同源pre-alpha.2、移动分发附件/许可/SHA256、中文文档与GitHub公开预发行版。
+- [x] R2.5 单元/XCUITest/模拟器/真机/性能与原平台回归验收；用户暂缓的人工场景明确记录为未验证。
+- [x] R2.6 同源pre-alpha.2、移动分发附件/许可/SHA256、中文文档与GitHub公开预发行版。
 
 R2 本地验证（2026-10-04）：独立 om-ios-ffi、安全外部宿主与真机/模拟器 ARM64 XCFramework；883 Rust 测试、工作区 Clippy/fmt、cargo-deny、纯 WASM、9 Python 契约检查；59 前端单元、dev29/prod27 浏览器流程通过。Swift 最新18项单元与2项XCUITest在iPhone模拟器、新建iPad27模拟器、配对iPad27真机通过；iPhone27.0.1真机16项单元通过，XCUITest驱动code74保留为平台失败，后续通过Device Hub验证真实−3/1与步骤并保存截图。用户要求手机暂时留作他用，已释放控制，后续先验收iPad。新建iPad模拟器解决原实例XCTWaiter启动崩溃，保留失败记录。完整原始53语料分别记录原生iPhone最大97.345ms、iPad166.371ms；所有数学期望及700-bit原始权威检查未改。必要修复：空extra_body的旧Keychain记录回读、全部运行入口的IME合成保护、已取消HTTP的终止回馈、请求队列取消/关闭、图形/数值投影旧回复隔离、ghost游标与部分接受、696pt布局中的编辑选区/检查面板状态保留。当前仍需最终原生展示/无障碍/文件手工验收、同提交GitHub门禁及公开pre-alpha.2，未标记发布完成。
 
 R2 收尾（2026-10-05）：修复 Xcode 版本检查提前关闭管道、Windows UTF-8 读取，以及恢复/HTTP fixture 的跨测试竞争。Python 9 项在隐式编码警告为错误时通过；iPad27真机最终20项Swift单元通过，53语料最大164.373167ms、所有语料公式可排版，证据在 ios-evidence/ipad-device-final-corpus.json。补充真实绘图数据入口与控件语义、最大字号及减少动态效果截图。用户明确暂缓旁白/浮动键盘/真机窄窗口等剩余人工杂项，并要求不再运行本机模拟器；已关闭全部本轮模拟器，后续只在 GitHub 执行其门禁。保持原断言、语料和性能阈值；等待同源最终 CI 和发行。
+
+R2 交付（2026-10-05）：源码 `c930fcd` 的 CI37218720007 / 发行37218757011 全部通过，v0.1.0-pre-alpha.2 已公开，保留 .1，不合并 main。云端手机/平板各20单元+2界面流程、原53语料最大536.733/304.069ms、两架构链接通过；最终iPad真机20单元、最大164.373ms。九类附件与清单随同一源码提交发布。此后的状态/截图/使用指南更新为文档提交，发行源码标签保持不变。

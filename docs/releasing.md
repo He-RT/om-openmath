@@ -26,13 +26,14 @@ gh workflow run release.yml --ref dev -f tag=v0.1.0-pre-alpha.2
 - Web：实际 WASM、lint、单元测试、开发与生产 UI，静态包包含许可。
 - macOS arm64：原生 app/DMG、fmt、Clippy、工作区测试、协议漂移、CLI 原始语料及性能、DMG 校验。
 - Windows x64：原生 EXE/MSI、Clippy、工作区测试；分别安装、启动真实中文窗口，验证精确根、步骤和响应式 3→6，再卸载。
+- iOS：iPhone/iPad 各 20 项单元和 2 项界面流程、原 53 条计算/公式与每项 1 秒阈值；真机/模拟器 ARM64 构建、XCFramework 链接与许可资源。
 - 发布：确认同一 SHA 的 CI 成功，拒绝缺失、额外、空文件或链接资产，生成 SHA256 清单。
 
 Windows 仅在 CI 设置 `WEBVIEW2_ADDITIONAL_BROWSER_ARGUMENTS=--remote-debugging-port=9222`，并为管理员 runner 临时设置 HKLM WebView2 调试策略（结束后清除），Playwright 连接安装后的实际 WebView2；应用默认不开放调试端口。独立配置使用 `OPENMATH_CONFIG_PATH`。截图及结果在 Actions 的 `windows-install-evidence` artifact 中。
 
 ## 发布资产
 
-七个安装/应用/CLI/Web 文件加 `release-manifest.json`，名称见 README。清单记录版本、标签、完整提交 SHA、字节数及 SHA256。
+九个安装/应用/CLI/Web/移动内核文件加 `release-manifest.json`，名称见 README。清单记录版本、标签、完整提交 SHA、字节数及 SHA256。
 
 收齐、校验后创建完整 draft，再改为 pre-release；构建或安装测试失败不发布。说明来自 `docs/release-0.1.0-pre-alpha.2.md`；流程不使用真实模型密钥。
 

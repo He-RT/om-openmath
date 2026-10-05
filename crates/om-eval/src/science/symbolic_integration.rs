@@ -40,7 +40,12 @@ fn pi_multiple(e: &Expr) -> Option<Rational> {
     }
     None
 }
-fn substitute(e: &Expr, x: &Expr, value: &Expr, ctx: &Interrupt) -> Result<Expr, EvalError> {
+pub(super) fn substitute(
+    e: &Expr,
+    x: &Expr,
+    value: &Expr,
+    ctx: &Interrupt,
+) -> Result<Expr, EvalError> {
     enum Task<'a> {
         Enter(&'a Expr),
         Build(&'a Expr),
@@ -270,7 +275,11 @@ pub(super) fn apply(ev: &Evaluator, args: &Args<'_>, ctx: &Interrupt) -> Result<
         }
         precision_scan.extend(e.args());
     }
-    if raw.is_head(B::LIST) || raw.is_head(B::RECORD) || raw.is_head(B::DATA_TABLE) {
+    if raw.is_head(B::LIST)
+        || raw.is_head(B::RECORD)
+        || raw.is_head(B::DATA_TABLE)
+        || raw.is_head(B::SERIES_DATA)
+    {
         return Err(error("符号积分当前仅接受标量表达式"));
     }
     let mut rules = Rules {

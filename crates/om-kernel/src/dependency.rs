@@ -54,6 +54,56 @@ fn walk(e: &Expr, scope: &Symbols, defines: &mut Symbols, uses: &mut Symbols) {
     };
     let head = n.head.as_symbol();
     let args = &n.args;
+    if head.is_some_and(|s| {
+        matches!(
+            s.name(),
+            "Limit"
+                | "Series"
+                | "Integrate"
+                | "NIntegrate"
+                | "Grad"
+                | "Jacobian"
+                | "Hessian"
+                | "Divergence"
+                | "Curl"
+                | "Laplacian"
+        )
+    }) && args.len() >= 2
+    {
+        let mut locals = scope.clone();
+        let axis = &args[1];
+        let mut ignored_defines = Symbols::new();
+        let vector = head.is_some_and(|s| {
+            matches!(
+                s.name(),
+                "Grad" | "Jacobian" | "Hessian" | "Divergence" | "Curl" | "Laplacian"
+            )
+        });
+        if let Some(s) = axis.as_symbol() {
+            locals.insert(s);
+        } else if axis.is_head(B::LIST) && vector {
+            locals.extend(axis.args().iter().filter_map(Expr::as_symbol));
+        } else if (axis.is_head(B::LIST) || axis.is_head(B::RULE))
+            && !axis.args().is_empty()
+            && let Some(s) = axis.args()[0].as_symbol()
+        {
+            locals.insert(s);
+            for arg in &axis.args()[1..] {
+                walk(arg, scope, &mut ignored_defines, uses);
+            }
+        } else {
+            walk(axis, scope, &mut ignored_defines, uses);
+        }
+        for option in &args[2..] {
+            if option.is_head(B::RULE) && option.args().len() == 2 {
+                walk(&option.args()[1], scope, &mut ignored_defines, uses);
+            } else {
+                walk(option, scope, &mut ignored_defines, uses);
+            }
+        }
+        walk(&args[0], &locals, &mut ignored_defines, uses);
+        return;
+    }
     if matches!(
         head,
         Some(B::SET | B::SET_DELAYED | B::RULE | B::RULE_DELAYED)

@@ -25,7 +25,11 @@ fn vars(e: &Expr) -> Result<Vec<Symbol>, EvalError> {
         .collect()
 }
 fn scalar(e: &Expr) -> Result<(), EvalError> {
-    if e.is_head(B::LIST) || e.is_head(B::RECORD) || e.is_head(B::DATA_TABLE) {
+    if e.is_head(B::LIST)
+        || e.is_head(B::RECORD)
+        || e.is_head(B::DATA_TABLE)
+        || e.is_head(B::SERIES_DATA)
+    {
         Err(error("此微分入口需要标量表达式"))
     } else {
         Ok(())

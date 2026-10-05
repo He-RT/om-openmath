@@ -4,7 +4,7 @@
 
 [全景目录](README.md) · [下一版账本](../plan/NEXT_RELEASE.md)
 
-描述版本 15；下列均有真实回调。现代组合语法及已有回调的 mode/output 已接通，后续数学能力仍须按 R3.3–R3.6 交付。参数类型约束用于字面输入；符号与表达式在真实回调求值后检查。默认表达式仅描述省略行为，不自动插入参数；上下文默认值不伪装成字面值。副作用标签只描述入口，不能授权嵌套函数或替代只读隔离。
+描述版本 16；下列均有真实回调。现代组合语法及已有回调的 mode/output 已接通，后续数学能力仍须按 R3.3–R3.6 交付。参数类型约束用于字面输入；符号与表达式在真实回调求值后检查。默认表达式仅描述省略行为，不自动插入参数；上下文默认值不伪装成字面值。副作用标签只描述入口，不能授权嵌套函数或替代只读隔离。
 
 ## abs
 
@@ -2865,4 +2865,59 @@
 | `breakpoints` | 命名 | expression | 否 | {} |  |
 
 数学边界与精度：[所属条目](calculus.md#integrate)。
+
+## limit
+
+稳定身份 `fn_000149`；回调 `Limit`；归属 `limit`。兼容拼写：无其他现代拼写。
+
+保持属性：protected, hold_all；管道输入位置：1；入口副作用：`pure`。
+
+| 参数 | 角色 | 类型 | 必填 | 默认值或上下文 | 枚举 / 范围 |
+|---|---|---|---|---|---|
+| `expr` | 位置 | expression | 是 | 必填 |  |
+| `axis` | 位置 | expression | 是 | 必填 |  |
+| `at` | 命名 | expression | 否 | 裸坐标时必填；也可位置轴使用x->point |  |
+| `direction` | 命名 | enum | 否 | "both" | both, left, right |
+
+数学边界与精度：[所属条目](calculus.md#limit)。
+
+## series
+
+稳定身份 `fn_000150`；回调 `Series`；归属 `series`。兼容拼写：无其他现代拼写。
+
+保持属性：protected, hold_all；管道输入位置：1；入口副作用：`pure`。
+
+| 参数 | 角色 | 类型 | 必填 | 默认值或上下文 | 枚举 / 范围 |
+|---|---|---|---|---|---|
+| `expr` | 位置 | expression | 是 | 必填 |  |
+| `axis` | 位置 | expression | 是 | 必填 |  |
+| `at` | 命名 | expression | 否 | 0 |  |
+| `order` | 命名 | integer | 否 | 6 | ; ≥0; ≤64 |
+
+数学边界与精度：[所属条目](calculus.md#series)。
+
+## series_coefficient
+
+稳定身份 `fn_000151`；回调 `SeriesCoefficient`；归属 `series_coefficient`。兼容拼写：无其他现代拼写。
+
+保持属性：protected, hold_all；管道输入位置：1；入口副作用：`pure`。
+
+| 参数 | 角色 | 类型 | 必填 | 默认值或上下文 | 枚举 / 范围 |
+|---|---|---|---|---|---|
+| `series` | 位置 | expression | 是 | 必填 |  |
+| `order` | 位置 | integer | 是 | 必填 | ; ≥0 |
+
+数学边界与精度：[所属条目](calculus.md#series_coefficient)。
+
+## normal
+
+稳定身份 `fn_000152`；回调 `Normal`；归属 `normal`。兼容拼写：无其他现代拼写。
+
+保持属性：protected, hold_all；管道输入位置：1；入口副作用：`pure`。
+
+| 参数 | 角色 | 类型 | 必填 | 默认值或上下文 | 枚举 / 范围 |
+|---|---|---|---|---|---|
+| `value` | 位置 | expression | 是 | 必填 |  |
+
+数学边界与精度：[所属条目](data.md#normal)。
 

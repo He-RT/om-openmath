@@ -1,6 +1,7 @@
 //! Pure scientific/data callbacks share validated arguments and portable budgets.
 mod basics;
 mod calculus_registry;
+mod calculus_source;
 mod csv_data;
 mod data;
 mod data_number;
@@ -10,6 +11,8 @@ mod integral_rules;
 mod integration_registry;
 mod io_registry;
 mod json_data;
+mod limit_rational;
+mod limits;
 mod matrix;
 mod matrix_numeric;
 mod numeric_integration;
@@ -21,10 +24,12 @@ mod reflection_registry;
 mod registry;
 mod root_registry;
 mod roots;
+mod series_registry;
 mod special;
 mod statistics;
 mod symbolic_integration;
 mod table_data;
+mod taylor;
 mod unit_parse;
 mod unit_registry;
 mod units;
@@ -37,7 +42,16 @@ pub(crate) use special::is_machine_special;
 pub(crate) fn calculus_terminal(s: om_core::Symbol) -> bool {
     matches!(
         s.name(),
-        "Grad" | "Jacobian" | "Hessian" | "Divergence" | "Curl" | "Laplacian" | "Integrate"
+        "Grad"
+            | "Jacobian"
+            | "Hessian"
+            | "Divergence"
+            | "Curl"
+            | "Laplacian"
+            | "Integrate"
+            | "Series"
+            | "Normal"
+            | "Limit"
     )
 }
 use std::collections::BTreeMap;
@@ -50,7 +64,21 @@ impl<'a> Args<'a> {
         let schema = om_core::catalog::by_runtime(name).ok_or_else(|| error("缺少实际函数描述"))?;
         let mut values = vec![];
         let mut options = BTreeMap::new();
-        for arg in args {
+        for (i, arg) in args.iter().enumerate() {
+            if name == "Limit"
+                && i == 1
+                && arg.is_head(B::RULE)
+                && arg.args().len() == 2
+                && arg.args()[0].as_symbol().is_some_and(|s| {
+                    !schema
+                        .options
+                        .iter()
+                        .any(|p| p.runtime_name.as_deref() == Some(s.name()))
+                })
+            {
+                values.push(arg);
+                continue;
+            }
             if arg.is_head(B::RULE) && arg.args().len() == 2 {
                 let key = arg.args()[0]
                     .as_symbol()
@@ -146,6 +174,12 @@ pub(super) fn dispatch(
     let result = (|| {
         ctx.tick()?;
         let args = Args::parse(name, args)?;
+        if let Some(result) = limits::dispatch(ev, name, &args, ctx)? {
+            return Ok(result);
+        }
+        if let Some(result) = taylor::dispatch(ev, name, &args, ctx)? {
+            return Ok(result);
+        }
         if let Some(result) = vector_calculus::dispatch(ev, name, &args, ctx)? {
             return Ok(result);
         }

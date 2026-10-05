@@ -43,3 +43,7 @@ CI37307173022 iPhone原17总1325ms，kernel291ms/FFI291ms/decode2ms/resume1032ms
 最新R3.4c精确规则积分已验证：默认exact，256次以内poly/常用仿射初等反三角反双曲实cbrt/链式/≤16次有限分部/Q一次二次因子及≤32重复递推/Gaussian→Erf。候选真正求导及精确残差，近似系数拒绝伪证，必要系数/实轴/主值条件保留；定积分证明局部条件/真实极点/原函数分支连续并消去哑变量条件，Q可去孔洞允许，未知参数可积/复路径拒绝；Gaussian整条/半无限支持。219回调/213身份、描述15/.2；986Rust/2ignored、前端59/Python16、Clippy/fmt/纯WASM/TS/deny最终完整通过，原53不动。下一任务limit/series/series_coefficient/normal，再ODE/插值/优化/拟合，随后原R3.5–R3.6和完整发行，不提前发.3/不标goal complete。
 
 最新iOS线上失败CI37352256560：Rust/前端/依赖成功，phone原17/18整次1276/1328ms，kernel319/161ms、MainActor恢复954/1152ms，原1s断言保留，证据target/ci-evidence/r34b。仍需专门解决主线程恢复延迟，不能把数学通过当作平台全通过。磁盘free约22GiB，incremental关闭，及时清仅本仓库已停止使用的缓存，保留运行release/源码/发行与验收产物。不启动本地模拟器，不用子代理，继续dev。
+
+最新R3.4d：Limit/Series/SeriesCoefficient/Normal四真回调，SeriesData只追加数据头且HoldAll。Q有理阶/解析真实导数/有限单侧双侧无穷/实函数夹逼/正底幂和倒数坐标、普通Taylor0..64/真实系数/首未知阶/normal、结构/形式导数/截断/readonly/取消已验收；223回调/217身份、描述16/.2。995Rust/2ignored、59前端/16Python、Clippy/fmt/纯WASM/TS/deny通过，原53不动。微积分静态依赖也正确屏蔽局部坐标并保留参数/边界，不声明被拒绝的readonly写入为定义。下一任务ODE Dormand–Prince/插值/简单终止事件、优化BFGS/Brent/凸二次保证与拟合QR/LM，然后原R3.5–R3.6全部展示/三维/导出/发行；goal不标complete，不提前发.3。
+
+CI37363594946 c970dae：Rust+iOS全部成功，前端/依赖cancelled且日志404无法确定原因，整体failure不当作全通过。实际phone53最大572ms/pad523ms，原1s门槛/数学期望不改；附件target/ci-evidence/r34c。新同SHA继续检验完整CI。当前free20GiB、incremental=false；及时仅清仓库已不用缓存，保留运行release/源码/证据。本机不启动模拟器，单代理直接执行dev。

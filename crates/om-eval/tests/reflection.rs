@@ -49,9 +49,29 @@ fn planned_and_deferred_docs_are_browsable_but_not_executable() {
         &mut ev,
         "functions(category:\"calculus\",stage:\"planned\")",
     );
-    assert!(!planned.args().is_empty());
+    let expected = om_core::catalog::documentation()["functions"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .filter(|e| e["category"] == "calculus" && e["status"] == "planned")
+        .map(|e| Expr::string(e["name"].as_str().unwrap()))
+        .collect::<Vec<_>>();
+    let actual = planned
+        .args()
+        .iter()
+        .map(|e| field(e, "name").clone())
+        .collect::<Vec<_>>();
+    assert_eq!(actual, expected);
     assert!(
         planned
+            .args()
+            .iter()
+            .all(|r| field(r, "executable") == &Expr::sym(B::FALSE))
+    );
+    let deferred = eval(&mut ev, "functions(category:\"agent\",stage:\"deferred\")");
+    assert_eq!(deferred.args().len(), 6);
+    assert!(
+        deferred
             .args()
             .iter()
             .all(|r| field(r, "executable") == &Expr::sym(B::FALSE))

@@ -53,7 +53,7 @@
 | [`missing`](#missing) | 后续规划 | 规划接口，当前不可用 | 列表、记录与表格中的 Missing 能力，进入后续全景目录。 |
 | [`nest`](#nest) | 后续规划 | 规划接口，当前不可用 | 列表、记录与表格中的 Nest 能力，进入后续全景目录。 |
 | [`nest_list`](#nest_list) | 后续规划 | 规划接口，当前不可用 | 列表、记录与表格中的 NestList 能力，进入后续全景目录。 |
-| [`normal`](#normal) | 下一版规划 | 规划接口，当前不可用 | 取结构对象的普通表达式表示 |
+| [`normal`](#normal) | 已实现 | 当前可用 | 取结构对象的普通表达式表示 |
 | [`ordering`](#ordering) | 后续规划 | 规划接口，当前不可用 | 列表、记录与表格中的 Ordering 能力，进入后续全景目录。 |
 | [`parse_csv`](#parse_csv) | 已实现 | 当前可用 | 解析CSV数据 |
 | [`parse_json`](#parse_json) | 已实现 | 当前可用 | 解析JSON数据 |
@@ -1896,21 +1896,33 @@ nest_list(...)  # 后续接口尚未锁定
 
 ## normal
 
-**当前实现：下一版规划；目标接口：规划接口，当前不可用。** 目标版本：`0.1.0-pre-alpha.3`。
+**当前实现：已实现；目标接口：当前可用。** 目标版本：`0.1.0-pre-alpha.3`。
 
 - 稳定身份：`fn_000152`；条目类型：`function`。
-- 副作用分类（设计预留）：`pure`；参数验证阶段：`documentation_only`，不构成工具授权。
+- 副作用分类（设计预留）：`pure`；参数验证阶段：`runtime_verified`，不构成工具授权。
 
 取结构对象的普通表达式表示
 
-- 当前支持：当前无此规范接口的实现。
+- 当前支持：普通Taylor 0..64阶，真实求导获得系数，SeriesData携带0起始/截断后首个未知阶/步长1；展开点为精确有限实数，坐标局部化，raw孔洞/极点/分支点/不可证明解析/未求值导数拒绝。SeriesCoefficient仅已知范围，越界不伪造0；Normal显式去截断返回已知多项式，其余输入原行为保持。
 - 目标范围：级数去掉O项，记录/表格转成明确数据结构；不能丢弃求解条件。
 - 返回：expression
-- 精度：保留数据精度。
-- 当前计算平台：无；目标计算平台：cli, desktop, web, ios。
+- 精度：首版精确系数与精确实点；不把机器/大浮点输入舍入成符号证书。Taylor不是Laurent/渐近误差界，未计算或截断外不声称零。
+- 当前计算平台：cli, desktop, web, ios；目标计算平台：cli, desktop, web, ios。
 - 目标图形/交互展示平台：不适用或后续未定。
 - 兼容名称：`Normal`。
 - 管道位置：第 1 个位置参数（从 1 起）。
+
+当前现代签名：
+
+```text
+normal(value)
+```
+
+当前 Wolfram 签名：
+
+```text
+Normal[value]
+```
 
 目标现代签名（按目标接口状态判断是否已可执行）：
 
@@ -1920,19 +1932,19 @@ normal(value)
 
 | 参数 | 类型 | 默认值 | 含义 | 可用阶段 |
 |---|---|---|---|---|
-| `value` | positional | 必填 | 结构对象 | r3 |
+| `value` | positional | 必填 | 结构对象 | current |
 
-规划示例（尚未执行；需要目标版本，后续条目不承诺 .3）：
+当前已登记示例（Wolfram）：
 
-```text
-series(exp(x),x,order: 3) |> normal()
+```wolfram
+Normal[Series[Exp[x],{x,0,4}]]
 ```
 
 验收：独立数学期望、有效/无效参数、边界、预算、中断及声明的平台/精度测试；范围外不伪造成功。
 
-当前源码：暂无当前实现证据。
+当前源码：[crates/om-eval/src/science/series_registry.rs](../../crates/om-eval/src/science/series_registry.rs)、[crates/om-eval/src/science/taylor.rs](../../crates/om-eval/src/science/taylor.rs)、[crates/om-eval/src/science/calculus_source.rs](../../crates/om-eval/src/science/calculus_source.rs)。
 
-当前测试引用：暂无当前实现证据。
+当前测试引用：[crates/om-eval/tests/series.rs](../../crates/om-eval/tests/series.rs)。
 
 ## ordering
 

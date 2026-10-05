@@ -1,6 +1,6 @@
 # 实际注册审计基线：ba3cd2b；稳定身份与名称分离；目录/副作用为设计数据。
 schema_version = 1
-metadata_version = 15
+metadata_version = 16
 validation_stage = "runtime_verified"
 current_version = "0.1.0-pre-alpha.2"
 target_version = "0.1.0-pre-alpha.3"
@@ -4835,128 +4835,128 @@ effect_class = "pure"
 id = "fn_000149"
 name = "limit"
 category = "calculus"
-status = "planned"
-interface_status = "planned"
-runtime_names = []
+status = "implemented"
+interface_status = "current"
+runtime_names = ["Limit"]
 compatibility_names = ["Limit"]
-current_modern_signatures = []
-current_wolfram_signatures = []
+current_modern_signatures = ["limit(expr,x,at:point,direction:\"both\")"]
+current_wolfram_signatures = ["Limit[expr,x->point]"]
 signatures = ["limit(expr, x, at: point, direction: \"both\")"]
-parameters = [{ name = "expr", kind = "positional", default = "必填", description = "表达式", availability = "r3" }, { name = "x", kind = "positional", default = "必填", description = "变量", availability = "r3" }, { name = "at", kind = "option", default = "必填", description = "有限点或无穷", availability = "r3" }, { name = "direction", kind = "option", default = "both", description = "both/left/right", availability = "r3" }]
+parameters = [{ name = "expr", kind = "positional", default = "必填", description = "表达式", availability = "current" }, { name = "x", kind = "positional", default = "必填", description = "变量", availability = "current" }, { name = "at", kind = "option", default = "必填", description = "有限点或无穷", availability = "current" }, { name = "direction", kind = "option", default = "both", description = "both/left/right", availability = "current" }]
 return_type = "expression"
 semantics = "计算有限点或无穷处极限"
-current_support = "当前无此规范接口的实现。"
+current_support = "精确实单侧/双侧/±inf；有理式≤256次按原消失阶与首项系数，解析0/0通过真实导数消失阶（≤64）与局部解析检查，支持明确初等组合、有界实函数夹逼、正底幂/无限倒数坐标的定理转换。左右不同/振荡/未证明参数或超限保留原式，绝不靠附近采样猜极限。"
 target_support = "有理式与明确可识别的初等形式；左右极限不同则双侧不存在；不能仅靠附近采样宣称符号极限。"
-precision_modes = ["planned_machine"]
-precision_notes = "支持范围内符号精确；不使用机器采样替代证明。"
-current_platforms = []
+precision_modes = ["exact_symbolic"]
+precision_notes = "首版精确系数与精确实点；不把机器/大浮点输入舍入成符号证书。Taylor不是Laurent/渐近误差界，未计算或截断外不声称零。"
+current_platforms = ["cli", "desktop", "web", "ios"]
 target_platforms = ["cli", "desktop", "web", "ios"]
 render_platforms = []
-current_examples = []
-planned_examples = ["limit(sin(x)/x, x, at: 0)"]
-sources = []
-tests = []
+current_examples = ["Limit[Sin[x]/x,x->0]"]
+planned_examples = []
+sources = ["crates/om-eval/src/science/series_registry.rs", "crates/om-eval/src/science/limits.rs", "crates/om-eval/src/science/calculus_source.rs"]
+tests = ["crates/om-eval/tests/limits.rs"]
 acceptance = "独立数学期望、有效/无效参数、边界、预算、中断及声明的平台/精度测试；范围外不伪造成功。"
 pipe_arg = 1
 target_version = "0.1.0-pre-alpha.3"
 kind = "function"
-validation_stage = "documentation_only"
+validation_stage = "runtime_verified"
 effect_class = "pure"
 
 [[functions]]
 id = "fn_000150"
 name = "series"
 category = "calculus"
-status = "planned"
-interface_status = "planned"
-runtime_names = []
+status = "implemented"
+interface_status = "current"
+runtime_names = ["Series"]
 compatibility_names = ["Series"]
-current_modern_signatures = []
-current_wolfram_signatures = []
+current_modern_signatures = ["series(expr,x,at:0,order:6)"]
+current_wolfram_signatures = ["Series[expr,{x,point,order}]"]
 signatures = ["series(expr, x, at: 0, order: 6)"]
-parameters = [{ name = "expr", kind = "positional", default = "必填", description = "表达式", availability = "r3" }, { name = "x", kind = "positional", default = "必填", description = "变量", availability = "r3" }, { name = "at", kind = "option", default = "0", description = "展开点", availability = "r3" }, { name = "order", kind = "option", default = "6", description = "非负整数0..64", availability = "r3" }]
+parameters = [{ name = "expr", kind = "positional", default = "必填", description = "表达式", availability = "current" }, { name = "x", kind = "positional", default = "必填", description = "变量", availability = "current" }, { name = "at", kind = "option", default = "0", description = "展开点", availability = "current" }, { name = "order", kind = "option", default = "6", description = "非负整数0..64", availability = "current" }]
 return_type = "expression"
 semantics = "局部 Taylor 级数"
-current_support = "当前无此规范接口的实现。"
+current_support = "普通Taylor 0..64阶，真实求导获得系数，SeriesData携带0起始/截断后首个未知阶/步长1；展开点为精确有限实数，坐标局部化，raw孔洞/极点/分支点/不可证明解析/未求值导数拒绝。SeriesCoefficient仅已知范围，越界不伪造0；Normal显式去截断返回已知多项式，其余输入原行为保持。"
 target_support = "在可证解析的有限点，阶数0..64；系数来自真实求导；明确截断阶；极点/分支点不伪装Taylor。"
-precision_modes = ["planned_machine"]
-precision_notes = "符号系数；不通过 f64 采样拟合精确级数。"
-current_platforms = []
+precision_modes = ["exact_symbolic"]
+precision_notes = "首版精确系数与精确实点；不把机器/大浮点输入舍入成符号证书。Taylor不是Laurent/渐近误差界，未计算或截断外不声称零。"
+current_platforms = ["cli", "desktop", "web", "ios"]
 target_platforms = ["cli", "desktop", "web", "ios"]
 render_platforms = []
-current_examples = []
-planned_examples = ["series(exp(x), x, at: 0, order: 6)"]
-sources = []
-tests = []
+current_examples = ["Series[Sin[x],{x,0,7}]"]
+planned_examples = []
+sources = ["crates/om-eval/src/science/series_registry.rs", "crates/om-eval/src/science/taylor.rs", "crates/om-eval/src/science/calculus_source.rs"]
+tests = ["crates/om-eval/tests/series.rs"]
 acceptance = "独立数学期望、有效/无效参数、边界、预算、中断及声明的平台/精度测试；范围外不伪造成功。"
 pipe_arg = 1
 target_version = "0.1.0-pre-alpha.3"
 kind = "function"
-validation_stage = "documentation_only"
+validation_stage = "runtime_verified"
 effect_class = "pure"
 
 [[functions]]
 id = "fn_000151"
 name = "series_coefficient"
 category = "calculus"
-status = "planned"
-interface_status = "planned"
-runtime_names = []
+status = "implemented"
+interface_status = "current"
+runtime_names = ["SeriesCoefficient"]
 compatibility_names = ["SeriesCoefficient"]
-current_modern_signatures = []
-current_wolfram_signatures = []
+current_modern_signatures = ["series_coefficient(series,order)"]
+current_wolfram_signatures = ["SeriesCoefficient[series,order]"]
 signatures = ["series_coefficient(series, order)"]
-parameters = [{ name = "series", kind = "positional", default = "必填", description = "Series 对象", availability = "r3" }, { name = "order", kind = "positional", default = "必填", description = "整数阶", availability = "r3" }]
+parameters = [{ name = "series", kind = "positional", default = "必填", description = "Series 对象", availability = "current" }, { name = "order", kind = "positional", default = "必填", description = "整数阶", availability = "current" }]
 return_type = "expression"
 semantics = "取已构造级数的指定系数"
-current_support = "当前无此规范接口的实现。"
+current_support = "普通Taylor 0..64阶，真实求导获得系数，SeriesData携带0起始/截断后首个未知阶/步长1；展开点为精确有限实数，坐标局部化，raw孔洞/极点/分支点/不可证明解析/未求值导数拒绝。SeriesCoefficient仅已知范围，越界不伪造0；Normal显式去截断返回已知多项式，其余输入原行为保持。"
 target_support = "首版常规整数阶Taylor；超出截断阶报错，不假定缺失高阶项为零。"
-precision_modes = ["planned_machine"]
-precision_notes = "保留系数精度。"
-current_platforms = []
+precision_modes = ["exact_symbolic"]
+precision_notes = "首版精确系数与精确实点；不把机器/大浮点输入舍入成符号证书。Taylor不是Laurent/渐近误差界，未计算或截断外不声称零。"
+current_platforms = ["cli", "desktop", "web", "ios"]
 target_platforms = ["cli", "desktop", "web", "ios"]
 render_platforms = []
-current_examples = []
-planned_examples = ["series_coefficient(series(exp(x),x,order: 6),3)"]
-sources = []
-tests = []
+current_examples = ["SeriesCoefficient[Series[Exp[x],{x,0,4}],3]"]
+planned_examples = []
+sources = ["crates/om-eval/src/science/series_registry.rs", "crates/om-eval/src/science/taylor.rs", "crates/om-eval/src/science/calculus_source.rs"]
+tests = ["crates/om-eval/tests/series.rs"]
 acceptance = "独立数学期望、有效/无效参数、边界、预算、中断及声明的平台/精度测试；范围外不伪造成功。"
 pipe_arg = 1
 target_version = "0.1.0-pre-alpha.3"
 kind = "function"
-validation_stage = "documentation_only"
+validation_stage = "runtime_verified"
 effect_class = "pure"
 
 [[functions]]
 id = "fn_000152"
 name = "normal"
 category = "data"
-status = "planned"
-interface_status = "planned"
-runtime_names = []
+status = "implemented"
+interface_status = "current"
+runtime_names = ["Normal"]
 compatibility_names = ["Normal"]
-current_modern_signatures = []
-current_wolfram_signatures = []
+current_modern_signatures = ["normal(value)"]
+current_wolfram_signatures = ["Normal[value]"]
 signatures = ["normal(value)"]
-parameters = [{ name = "value", kind = "positional", default = "必填", description = "结构对象", availability = "r3" }]
+parameters = [{ name = "value", kind = "positional", default = "必填", description = "结构对象", availability = "current" }]
 return_type = "expression"
 semantics = "取结构对象的普通表达式表示"
-current_support = "当前无此规范接口的实现。"
+current_support = "普通Taylor 0..64阶，真实求导获得系数，SeriesData携带0起始/截断后首个未知阶/步长1；展开点为精确有限实数，坐标局部化，raw孔洞/极点/分支点/不可证明解析/未求值导数拒绝。SeriesCoefficient仅已知范围，越界不伪造0；Normal显式去截断返回已知多项式，其余输入原行为保持。"
 target_support = "级数去掉O项，记录/表格转成明确数据结构；不能丢弃求解条件。"
-precision_modes = ["planned_machine"]
-precision_notes = "保留数据精度。"
-current_platforms = []
+precision_modes = ["exact_symbolic"]
+precision_notes = "首版精确系数与精确实点；不把机器/大浮点输入舍入成符号证书。Taylor不是Laurent/渐近误差界，未计算或截断外不声称零。"
+current_platforms = ["cli", "desktop", "web", "ios"]
 target_platforms = ["cli", "desktop", "web", "ios"]
 render_platforms = []
-current_examples = []
-planned_examples = ["series(exp(x),x,order: 3) |> normal()"]
-sources = []
-tests = []
+current_examples = ["Normal[Series[Exp[x],{x,0,4}]]"]
+planned_examples = []
+sources = ["crates/om-eval/src/science/series_registry.rs", "crates/om-eval/src/science/taylor.rs", "crates/om-eval/src/science/calculus_source.rs"]
+tests = ["crates/om-eval/tests/series.rs"]
 acceptance = "独立数学期望、有效/无效参数、边界、预算、中断及声明的平台/精度测试；范围外不伪造成功。"
 pipe_arg = 1
 target_version = "0.1.0-pre-alpha.3"
 kind = "function"
-validation_stage = "documentation_only"
+validation_stage = "runtime_verified"
 effect_class = "pure"
 
 [[functions]]
@@ -28951,3 +28951,43 @@ max = 9
 attributes = ["protected", "hold_all"]
 parameters = [{ name = "expr", value_type = "expression", required = true, variadic = false, held = true }, { name = "axis", value_type = "expression", required = true, variadic = false, held = true }]
 options = [{ name = "mode", value_type = "enum", required = false, variadic = false, held = true, runtime_name = "Mode", default_source = "\"numeric\"", enum_values = ["numeric"] }, { name = "precision", value_type = "enum", required = false, variadic = false, held = true, runtime_name = "WorkingPrecision", default_source = "MachinePrecision", enum_values = ["machine", "MachinePrecision"] }, { name = "method", value_type = "enum", required = false, variadic = false, held = true, runtime_name = "Method", default_source = "\"gauss_kronrod\"", enum_values = ["gauss_kronrod", "gauss_kronrod_15_7"] }, { name = "abs_tol", value_type = "real", required = false, variadic = false, held = true, runtime_name = "AbsTolerance", default_source = "1e-10", min = 0 }, { name = "rel_tol", value_type = "real", required = false, variadic = false, held = true, runtime_name = "RelTolerance", default_source = "1e-8", min = 0 }, { name = "max_intervals", value_type = "integer", required = false, variadic = false, held = true, runtime_name = "MaxIntervals", default_source = "10000", min = 1, max = 100000 }, { name = "breakpoints", value_type = "expression", required = false, variadic = false, held = true, runtime_name = "Breakpoints", default_source = "{}" }]
+
+[[runtime]]
+name = "Limit"
+modern_name = "limit"
+aliases = []
+min = 2
+max = 4
+attributes = ["protected", "hold_all"]
+parameters = [{ name = "expr", value_type = "expression", required = true, variadic = false, held = true }, { name = "axis", value_type = "expression", required = true, variadic = false, held = true }]
+options = [{ name = "at", value_type = "expression", required = false, variadic = false, held = true, runtime_name = "At", default_context = "裸坐标时必填；也可位置轴使用x->point" }, { name = "direction", value_type = "enum", required = false, variadic = false, held = true, runtime_name = "Direction", default_source = "\"both\"", enum_values = ["both", "left", "right"] }]
+
+[[runtime]]
+name = "Series"
+modern_name = "series"
+aliases = []
+min = 2
+max = 4
+attributes = ["protected", "hold_all"]
+parameters = [{ name = "expr", value_type = "expression", required = true, variadic = false, held = true }, { name = "axis", value_type = "expression", required = true, variadic = false, held = true }]
+options = [{ name = "at", value_type = "expression", required = false, variadic = false, held = true, runtime_name = "At", default_source = "0" }, { name = "order", value_type = "integer", required = false, variadic = false, held = true, runtime_name = "Order", default_source = "6", min = 0, max = 64 }]
+
+[[runtime]]
+name = "SeriesCoefficient"
+modern_name = "series_coefficient"
+aliases = []
+min = 2
+max = 2
+attributes = ["protected", "hold_all"]
+parameters = [{ name = "series", value_type = "expression", required = true, variadic = false, held = true }, { name = "order", value_type = "integer", required = true, variadic = false, held = true, min = 0 }]
+options = []
+
+[[runtime]]
+name = "Normal"
+modern_name = "normal"
+aliases = []
+min = 1
+max = 1
+attributes = ["protected", "hold_all"]
+parameters = [{ name = "value", value_type = "expression", required = true, variadic = false, held = true }]
+options = []

@@ -30,7 +30,7 @@
 | [`jacobian`](#jacobian) | 已实现 | 当前可用 | Jacobian 矩阵 |
 | [`laplace_transform`](#laplace_transform) | 后续规划 | 规划接口，当前不可用 | 微积分与变换中的 LaplaceTransform 能力，进入后续全景目录。 |
 | [`laplacian`](#laplacian) | 已实现 | 当前可用 | 笛卡尔拉普拉斯 |
-| [`limit`](#limit) | 下一版规划 | 规划接口，当前不可用 | 计算有限点或无穷处极限 |
+| [`limit`](#limit) | 已实现 | 当前可用 | 计算有限点或无穷处极限 |
 | [`n_product`](#n_product) | 后续规划 | 规划接口，当前不可用 | 微积分与变换中的 NProduct 能力，进入后续全景目录。 |
 | [`n_sum`](#n_sum) | 后续规划 | 规划接口，当前不可用 | 微积分与变换中的 NSum 能力，进入后续全景目录。 |
 | [`pade_approximant`](#pade_approximant) | 后续规划 | 规划接口，当前不可用 | 微积分与变换中的 PadeApproximant 能力，进入后续全景目录。 |
@@ -38,8 +38,8 @@
 | [`r_solve_value`](#r_solve_value) | 后续规划 | 规划接口，当前不可用 | 微积分与变换中的 RSolveValue 能力，进入后续全景目录。 |
 | [`recurrence_table`](#recurrence_table) | 后续规划 | 规划接口，当前不可用 | 微积分与变换中的 RecurrenceTable 能力，进入后续全景目录。 |
 | [`residue`](#residue) | 后续规划 | 规划接口，当前不可用 | 微积分与变换中的 Residue 能力，进入后续全景目录。 |
-| [`series`](#series) | 下一版规划 | 规划接口，当前不可用 | 局部 Taylor 级数 |
-| [`series_coefficient`](#series_coefficient) | 下一版规划 | 规划接口，当前不可用 | 取已构造级数的指定系数 |
+| [`series`](#series) | 已实现 | 当前可用 | 局部 Taylor 级数 |
+| [`series_coefficient`](#series_coefficient) | 已实现 | 当前可用 | 取已构造级数的指定系数 |
 | [`z_transform`](#z_transform) | 后续规划 | 规划接口，当前不可用 | 微积分与变换中的 ZTransform 能力，进入后续全景目录。 |
 
 ## asymptotic
@@ -948,21 +948,33 @@ Laplacian[x^2+y^2+z^2,{x,y,z}]
 
 ## limit
 
-**当前实现：下一版规划；目标接口：规划接口，当前不可用。** 目标版本：`0.1.0-pre-alpha.3`。
+**当前实现：已实现；目标接口：当前可用。** 目标版本：`0.1.0-pre-alpha.3`。
 
 - 稳定身份：`fn_000149`；条目类型：`function`。
-- 副作用分类（设计预留）：`pure`；参数验证阶段：`documentation_only`，不构成工具授权。
+- 副作用分类（设计预留）：`pure`；参数验证阶段：`runtime_verified`，不构成工具授权。
 
 计算有限点或无穷处极限
 
-- 当前支持：当前无此规范接口的实现。
+- 当前支持：精确实单侧/双侧/±inf；有理式≤256次按原消失阶与首项系数，解析0/0通过真实导数消失阶（≤64）与局部解析检查，支持明确初等组合、有界实函数夹逼、正底幂/无限倒数坐标的定理转换。左右不同/振荡/未证明参数或超限保留原式，绝不靠附近采样猜极限。
 - 目标范围：有理式与明确可识别的初等形式；左右极限不同则双侧不存在；不能仅靠附近采样宣称符号极限。
 - 返回：expression
-- 精度：支持范围内符号精确；不使用机器采样替代证明。
-- 当前计算平台：无；目标计算平台：cli, desktop, web, ios。
+- 精度：首版精确系数与精确实点；不把机器/大浮点输入舍入成符号证书。Taylor不是Laurent/渐近误差界，未计算或截断外不声称零。
+- 当前计算平台：cli, desktop, web, ios；目标计算平台：cli, desktop, web, ios。
 - 目标图形/交互展示平台：不适用或后续未定。
 - 兼容名称：`Limit`。
 - 管道位置：第 1 个位置参数（从 1 起）。
+
+当前现代签名：
+
+```text
+limit(expr,x,at:point,direction:"both")
+```
+
+当前 Wolfram 签名：
+
+```text
+Limit[expr,x->point]
+```
 
 目标现代签名（按目标接口状态判断是否已可执行）：
 
@@ -972,22 +984,22 @@ limit(expr, x, at: point, direction: "both")
 
 | 参数 | 类型 | 默认值 | 含义 | 可用阶段 |
 |---|---|---|---|---|
-| `expr` | positional | 必填 | 表达式 | r3 |
-| `x` | positional | 必填 | 变量 | r3 |
-| `at` | option | 必填 | 有限点或无穷 | r3 |
-| `direction` | option | both | both/left/right | r3 |
+| `expr` | positional | 必填 | 表达式 | current |
+| `x` | positional | 必填 | 变量 | current |
+| `at` | option | 必填 | 有限点或无穷 | current |
+| `direction` | option | both | both/left/right | current |
 
-规划示例（尚未执行；需要目标版本，后续条目不承诺 .3）：
+当前已登记示例（Wolfram）：
 
-```text
-limit(sin(x)/x, x, at: 0)
+```wolfram
+Limit[Sin[x]/x,x->0]
 ```
 
 验收：独立数学期望、有效/无效参数、边界、预算、中断及声明的平台/精度测试；范围外不伪造成功。
 
-当前源码：暂无当前实现证据。
+当前源码：[crates/om-eval/src/science/series_registry.rs](../../crates/om-eval/src/science/series_registry.rs)、[crates/om-eval/src/science/limits.rs](../../crates/om-eval/src/science/limits.rs)、[crates/om-eval/src/science/calculus_source.rs](../../crates/om-eval/src/science/calculus_source.rs)。
 
-当前测试引用：暂无当前实现证据。
+当前测试引用：[crates/om-eval/tests/limits.rs](../../crates/om-eval/tests/limits.rs)。
 
 ## n_product
 
@@ -1229,21 +1241,33 @@ residue(...)  # 后续接口尚未锁定
 
 ## series
 
-**当前实现：下一版规划；目标接口：规划接口，当前不可用。** 目标版本：`0.1.0-pre-alpha.3`。
+**当前实现：已实现；目标接口：当前可用。** 目标版本：`0.1.0-pre-alpha.3`。
 
 - 稳定身份：`fn_000150`；条目类型：`function`。
-- 副作用分类（设计预留）：`pure`；参数验证阶段：`documentation_only`，不构成工具授权。
+- 副作用分类（设计预留）：`pure`；参数验证阶段：`runtime_verified`，不构成工具授权。
 
 局部 Taylor 级数
 
-- 当前支持：当前无此规范接口的实现。
+- 当前支持：普通Taylor 0..64阶，真实求导获得系数，SeriesData携带0起始/截断后首个未知阶/步长1；展开点为精确有限实数，坐标局部化，raw孔洞/极点/分支点/不可证明解析/未求值导数拒绝。SeriesCoefficient仅已知范围，越界不伪造0；Normal显式去截断返回已知多项式，其余输入原行为保持。
 - 目标范围：在可证解析的有限点，阶数0..64；系数来自真实求导；明确截断阶；极点/分支点不伪装Taylor。
 - 返回：expression
-- 精度：符号系数；不通过 f64 采样拟合精确级数。
-- 当前计算平台：无；目标计算平台：cli, desktop, web, ios。
+- 精度：首版精确系数与精确实点；不把机器/大浮点输入舍入成符号证书。Taylor不是Laurent/渐近误差界，未计算或截断外不声称零。
+- 当前计算平台：cli, desktop, web, ios；目标计算平台：cli, desktop, web, ios。
 - 目标图形/交互展示平台：不适用或后续未定。
 - 兼容名称：`Series`。
 - 管道位置：第 1 个位置参数（从 1 起）。
+
+当前现代签名：
+
+```text
+series(expr,x,at:0,order:6)
+```
+
+当前 Wolfram 签名：
+
+```text
+Series[expr,{x,point,order}]
+```
 
 目标现代签名（按目标接口状态判断是否已可执行）：
 
@@ -1253,40 +1277,52 @@ series(expr, x, at: 0, order: 6)
 
 | 参数 | 类型 | 默认值 | 含义 | 可用阶段 |
 |---|---|---|---|---|
-| `expr` | positional | 必填 | 表达式 | r3 |
-| `x` | positional | 必填 | 变量 | r3 |
-| `at` | option | 0 | 展开点 | r3 |
-| `order` | option | 6 | 非负整数0..64 | r3 |
+| `expr` | positional | 必填 | 表达式 | current |
+| `x` | positional | 必填 | 变量 | current |
+| `at` | option | 0 | 展开点 | current |
+| `order` | option | 6 | 非负整数0..64 | current |
 
-规划示例（尚未执行；需要目标版本，后续条目不承诺 .3）：
+当前已登记示例（Wolfram）：
 
-```text
-series(exp(x), x, at: 0, order: 6)
+```wolfram
+Series[Sin[x],{x,0,7}]
 ```
 
 验收：独立数学期望、有效/无效参数、边界、预算、中断及声明的平台/精度测试；范围外不伪造成功。
 
-当前源码：暂无当前实现证据。
+当前源码：[crates/om-eval/src/science/series_registry.rs](../../crates/om-eval/src/science/series_registry.rs)、[crates/om-eval/src/science/taylor.rs](../../crates/om-eval/src/science/taylor.rs)、[crates/om-eval/src/science/calculus_source.rs](../../crates/om-eval/src/science/calculus_source.rs)。
 
-当前测试引用：暂无当前实现证据。
+当前测试引用：[crates/om-eval/tests/series.rs](../../crates/om-eval/tests/series.rs)。
 
 ## series_coefficient
 
-**当前实现：下一版规划；目标接口：规划接口，当前不可用。** 目标版本：`0.1.0-pre-alpha.3`。
+**当前实现：已实现；目标接口：当前可用。** 目标版本：`0.1.0-pre-alpha.3`。
 
 - 稳定身份：`fn_000151`；条目类型：`function`。
-- 副作用分类（设计预留）：`pure`；参数验证阶段：`documentation_only`，不构成工具授权。
+- 副作用分类（设计预留）：`pure`；参数验证阶段：`runtime_verified`，不构成工具授权。
 
 取已构造级数的指定系数
 
-- 当前支持：当前无此规范接口的实现。
+- 当前支持：普通Taylor 0..64阶，真实求导获得系数，SeriesData携带0起始/截断后首个未知阶/步长1；展开点为精确有限实数，坐标局部化，raw孔洞/极点/分支点/不可证明解析/未求值导数拒绝。SeriesCoefficient仅已知范围，越界不伪造0；Normal显式去截断返回已知多项式，其余输入原行为保持。
 - 目标范围：首版常规整数阶Taylor；超出截断阶报错，不假定缺失高阶项为零。
 - 返回：expression
-- 精度：保留系数精度。
-- 当前计算平台：无；目标计算平台：cli, desktop, web, ios。
+- 精度：首版精确系数与精确实点；不把机器/大浮点输入舍入成符号证书。Taylor不是Laurent/渐近误差界，未计算或截断外不声称零。
+- 当前计算平台：cli, desktop, web, ios；目标计算平台：cli, desktop, web, ios。
 - 目标图形/交互展示平台：不适用或后续未定。
 - 兼容名称：`SeriesCoefficient`。
 - 管道位置：第 1 个位置参数（从 1 起）。
+
+当前现代签名：
+
+```text
+series_coefficient(series,order)
+```
+
+当前 Wolfram 签名：
+
+```text
+SeriesCoefficient[series,order]
+```
 
 目标现代签名（按目标接口状态判断是否已可执行）：
 
@@ -1296,20 +1332,20 @@ series_coefficient(series, order)
 
 | 参数 | 类型 | 默认值 | 含义 | 可用阶段 |
 |---|---|---|---|---|
-| `series` | positional | 必填 | Series 对象 | r3 |
-| `order` | positional | 必填 | 整数阶 | r3 |
+| `series` | positional | 必填 | Series 对象 | current |
+| `order` | positional | 必填 | 整数阶 | current |
 
-规划示例（尚未执行；需要目标版本，后续条目不承诺 .3）：
+当前已登记示例（Wolfram）：
 
-```text
-series_coefficient(series(exp(x),x,order: 6),3)
+```wolfram
+SeriesCoefficient[Series[Exp[x],{x,0,4}],3]
 ```
 
 验收：独立数学期望、有效/无效参数、边界、预算、中断及声明的平台/精度测试；范围外不伪造成功。
 
-当前源码：暂无当前实现证据。
+当前源码：[crates/om-eval/src/science/series_registry.rs](../../crates/om-eval/src/science/series_registry.rs)、[crates/om-eval/src/science/taylor.rs](../../crates/om-eval/src/science/taylor.rs)、[crates/om-eval/src/science/calculus_source.rs](../../crates/om-eval/src/science/calculus_source.rs)。
 
-当前测试引用：暂无当前实现证据。
+当前测试引用：[crates/om-eval/tests/series.rs](../../crates/om-eval/tests/series.rs)。
 
 ## z_transform
 

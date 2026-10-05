@@ -8773,24 +8773,33 @@
       "name": "limit",
       "category": "calculus",
       "kind": "function",
-      "status": "planned",
-      "interface_status": "planned",
-      "runtime_names": [],
+      "status": "implemented",
+      "interface_status": "current",
+      "runtime_names": [
+        "Limit"
+      ],
       "compatibility_names": [
         "Limit"
       ],
-      "current_modern_signatures": [],
+      "current_modern_signatures": [
+        "limit(expr,x,at:point,direction:\"both\")"
+      ],
       "signatures": [
         "limit(expr, x, at: point, direction: \"both\")"
       ],
-      "current_support": "当前无此规范接口的实现。",
+      "current_support": "精确实单侧/双侧/±inf；有理式≤256次按原消失阶与首项系数，解析0/0通过真实导数消失阶（≤64）与局部解析检查，支持明确初等组合、有界实函数夹逼、正底幂/无限倒数坐标的定理转换。左右不同/振荡/未证明参数或超限保留原式，绝不靠附近采样猜极限。",
       "target_support": "有理式与明确可识别的初等形式；左右极限不同则双侧不存在；不能仅靠附近采样宣称符号极限。",
       "return_type": "expression",
       "precision_modes": [
-        "planned_machine"
+        "exact_symbolic"
       ],
-      "precision_notes": "支持范围内符号精确；不使用机器采样替代证明。",
-      "current_platforms": [],
+      "precision_notes": "首版精确系数与精确实点；不把机器/大浮点输入舍入成符号证书。Taylor不是Laurent/渐近误差界，未计算或截断外不声称零。",
+      "current_platforms": [
+        "cli",
+        "desktop",
+        "web",
+        "ios"
+      ],
       "target_platforms": [
         "cli",
         "desktop",
@@ -8803,58 +8812,67 @@
           "kind": "positional",
           "default": "必填",
           "description": "表达式",
-          "availability": "r3"
+          "availability": "current"
         },
         {
           "name": "x",
           "kind": "positional",
           "default": "必填",
           "description": "变量",
-          "availability": "r3"
+          "availability": "current"
         },
         {
           "name": "at",
           "kind": "option",
           "default": "必填",
           "description": "有限点或无穷",
-          "availability": "r3"
+          "availability": "current"
         },
         {
           "name": "direction",
           "kind": "option",
           "default": "both",
           "description": "both/left/right",
-          "availability": "r3"
+          "availability": "current"
         }
       ],
-      "current_examples": [],
-      "planned_examples": [
-        "limit(sin(x)/x, x, at: 0)"
-      ]
+      "current_examples": [
+        "Limit[Sin[x]/x,x->0]"
+      ],
+      "planned_examples": []
     },
     {
       "id": "fn_000150",
       "name": "series",
       "category": "calculus",
       "kind": "function",
-      "status": "planned",
-      "interface_status": "planned",
-      "runtime_names": [],
+      "status": "implemented",
+      "interface_status": "current",
+      "runtime_names": [
+        "Series"
+      ],
       "compatibility_names": [
         "Series"
       ],
-      "current_modern_signatures": [],
+      "current_modern_signatures": [
+        "series(expr,x,at:0,order:6)"
+      ],
       "signatures": [
         "series(expr, x, at: 0, order: 6)"
       ],
-      "current_support": "当前无此规范接口的实现。",
+      "current_support": "普通Taylor 0..64阶，真实求导获得系数，SeriesData携带0起始/截断后首个未知阶/步长1；展开点为精确有限实数，坐标局部化，raw孔洞/极点/分支点/不可证明解析/未求值导数拒绝。SeriesCoefficient仅已知范围，越界不伪造0；Normal显式去截断返回已知多项式，其余输入原行为保持。",
       "target_support": "在可证解析的有限点，阶数0..64；系数来自真实求导；明确截断阶；极点/分支点不伪装Taylor。",
       "return_type": "expression",
       "precision_modes": [
-        "planned_machine"
+        "exact_symbolic"
       ],
-      "precision_notes": "符号系数；不通过 f64 采样拟合精确级数。",
-      "current_platforms": [],
+      "precision_notes": "首版精确系数与精确实点；不把机器/大浮点输入舍入成符号证书。Taylor不是Laurent/渐近误差界，未计算或截断外不声称零。",
+      "current_platforms": [
+        "cli",
+        "desktop",
+        "web",
+        "ios"
+      ],
       "target_platforms": [
         "cli",
         "desktop",
@@ -8867,58 +8885,67 @@
           "kind": "positional",
           "default": "必填",
           "description": "表达式",
-          "availability": "r3"
+          "availability": "current"
         },
         {
           "name": "x",
           "kind": "positional",
           "default": "必填",
           "description": "变量",
-          "availability": "r3"
+          "availability": "current"
         },
         {
           "name": "at",
           "kind": "option",
           "default": "0",
           "description": "展开点",
-          "availability": "r3"
+          "availability": "current"
         },
         {
           "name": "order",
           "kind": "option",
           "default": "6",
           "description": "非负整数0..64",
-          "availability": "r3"
+          "availability": "current"
         }
       ],
-      "current_examples": [],
-      "planned_examples": [
-        "series(exp(x), x, at: 0, order: 6)"
-      ]
+      "current_examples": [
+        "Series[Sin[x],{x,0,7}]"
+      ],
+      "planned_examples": []
     },
     {
       "id": "fn_000151",
       "name": "series_coefficient",
       "category": "calculus",
       "kind": "function",
-      "status": "planned",
-      "interface_status": "planned",
-      "runtime_names": [],
+      "status": "implemented",
+      "interface_status": "current",
+      "runtime_names": [
+        "SeriesCoefficient"
+      ],
       "compatibility_names": [
         "SeriesCoefficient"
       ],
-      "current_modern_signatures": [],
+      "current_modern_signatures": [
+        "series_coefficient(series,order)"
+      ],
       "signatures": [
         "series_coefficient(series, order)"
       ],
-      "current_support": "当前无此规范接口的实现。",
+      "current_support": "普通Taylor 0..64阶，真实求导获得系数，SeriesData携带0起始/截断后首个未知阶/步长1；展开点为精确有限实数，坐标局部化，raw孔洞/极点/分支点/不可证明解析/未求值导数拒绝。SeriesCoefficient仅已知范围，越界不伪造0；Normal显式去截断返回已知多项式，其余输入原行为保持。",
       "target_support": "首版常规整数阶Taylor；超出截断阶报错，不假定缺失高阶项为零。",
       "return_type": "expression",
       "precision_modes": [
-        "planned_machine"
+        "exact_symbolic"
       ],
-      "precision_notes": "保留系数精度。",
-      "current_platforms": [],
+      "precision_notes": "首版精确系数与精确实点；不把机器/大浮点输入舍入成符号证书。Taylor不是Laurent/渐近误差界，未计算或截断外不声称零。",
+      "current_platforms": [
+        "cli",
+        "desktop",
+        "web",
+        "ios"
+      ],
       "target_platforms": [
         "cli",
         "desktop",
@@ -8931,44 +8958,53 @@
           "kind": "positional",
           "default": "必填",
           "description": "Series 对象",
-          "availability": "r3"
+          "availability": "current"
         },
         {
           "name": "order",
           "kind": "positional",
           "default": "必填",
           "description": "整数阶",
-          "availability": "r3"
+          "availability": "current"
         }
       ],
-      "current_examples": [],
-      "planned_examples": [
-        "series_coefficient(series(exp(x),x,order: 6),3)"
-      ]
+      "current_examples": [
+        "SeriesCoefficient[Series[Exp[x],{x,0,4}],3]"
+      ],
+      "planned_examples": []
     },
     {
       "id": "fn_000152",
       "name": "normal",
       "category": "data",
       "kind": "function",
-      "status": "planned",
-      "interface_status": "planned",
-      "runtime_names": [],
+      "status": "implemented",
+      "interface_status": "current",
+      "runtime_names": [
+        "Normal"
+      ],
       "compatibility_names": [
         "Normal"
       ],
-      "current_modern_signatures": [],
+      "current_modern_signatures": [
+        "normal(value)"
+      ],
       "signatures": [
         "normal(value)"
       ],
-      "current_support": "当前无此规范接口的实现。",
+      "current_support": "普通Taylor 0..64阶，真实求导获得系数，SeriesData携带0起始/截断后首个未知阶/步长1；展开点为精确有限实数，坐标局部化，raw孔洞/极点/分支点/不可证明解析/未求值导数拒绝。SeriesCoefficient仅已知范围，越界不伪造0；Normal显式去截断返回已知多项式，其余输入原行为保持。",
       "target_support": "级数去掉O项，记录/表格转成明确数据结构；不能丢弃求解条件。",
       "return_type": "expression",
       "precision_modes": [
-        "planned_machine"
+        "exact_symbolic"
       ],
-      "precision_notes": "保留数据精度。",
-      "current_platforms": [],
+      "precision_notes": "首版精确系数与精确实点；不把机器/大浮点输入舍入成符号证书。Taylor不是Laurent/渐近误差界，未计算或截断外不声称零。",
+      "current_platforms": [
+        "cli",
+        "desktop",
+        "web",
+        "ios"
+      ],
       "target_platforms": [
         "cli",
         "desktop",
@@ -8981,13 +9017,13 @@
           "kind": "positional",
           "default": "必填",
           "description": "结构对象",
-          "availability": "r3"
+          "availability": "current"
         }
       ],
-      "current_examples": [],
-      "planned_examples": [
-        "series(exp(x),x,order: 3) |> normal()"
-      ]
+      "current_examples": [
+        "Normal[Series[Exp[x],{x,0,4}]]"
+      ],
+      "planned_examples": []
     },
     {
       "id": "fn_000153",

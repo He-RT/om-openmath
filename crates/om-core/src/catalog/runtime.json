@@ -6053,6 +6053,96 @@
     ]
   },
   {
+    "id": "fn_000149",
+    "canonical_name": "limit",
+    "name": "Limit",
+    "modern_name": "limit",
+    "aliases": [],
+    "arity": {
+      "min": 2,
+      "max": 4
+    },
+    "parameters": [
+      {
+        "name": "expr",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": true
+      },
+      {
+        "name": "axis",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": true
+      }
+    ],
+    "options": [
+      {
+        "name": "at",
+        "runtime_name": "At",
+        "value_type": "expression",
+        "required": false,
+        "default_source": null,
+        "default_context": "裸坐标时必填；也可位置轴使用x->point",
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": true
+      },
+      {
+        "name": "direction",
+        "runtime_name": "Direction",
+        "value_type": "enum",
+        "required": false,
+        "default_source": "\"both\"",
+        "default_context": null,
+        "enum_values": [
+          "both",
+          "left",
+          "right"
+        ],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": true
+      }
+    ],
+    "compatibility_syntax": [],
+    "attributes": [
+      "protected",
+      "hold_all"
+    ],
+    "pipe_arg": 1,
+    "effect_class": "pure",
+    "support": "精确实单侧/双侧/±inf；有理式≤256次按原消失阶与首项系数，解析0/0通过真实导数消失阶（≤64）与局部解析检查，支持明确初等组合、有界实函数夹逼、正底幂/无限倒数坐标的定理转换。左右不同/振荡/未证明参数或超限保留原式，绝不靠附近采样猜极限。",
+    "return_type": "expression",
+    "precision_modes": [
+      "exact_symbolic"
+    ],
+    "precision_notes": "首版精确系数与精确实点；不把机器/大浮点输入舍入成符号证书。Taylor不是Laurent/渐近误差界，未计算或截断外不声称零。",
+    "platforms": [
+      "cli",
+      "desktop",
+      "web",
+      "ios"
+    ]
+  },
+  {
     "id": "fn_000168",
     "canonical_name": "linear_solve",
     "name": "LinearSolve",
@@ -7486,6 +7576,52 @@
       "planned_machine"
     ],
     "precision_notes": "精确有理基础路径与明确的机器分解；分解不承诺任意精度。",
+    "platforms": [
+      "cli",
+      "desktop",
+      "web",
+      "ios"
+    ]
+  },
+  {
+    "id": "fn_000152",
+    "canonical_name": "normal",
+    "name": "Normal",
+    "modern_name": "normal",
+    "aliases": [],
+    "arity": {
+      "min": 1,
+      "max": 1
+    },
+    "parameters": [
+      {
+        "name": "value",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": true
+      }
+    ],
+    "options": [],
+    "compatibility_syntax": [],
+    "attributes": [
+      "protected",
+      "hold_all"
+    ],
+    "pipe_arg": 1,
+    "effect_class": "pure",
+    "support": "普通Taylor 0..64阶，真实求导获得系数，SeriesData携带0起始/截断后首个未知阶/步长1；展开点为精确有限实数，坐标局部化，raw孔洞/极点/分支点/不可证明解析/未求值导数拒绝。SeriesCoefficient仅已知范围，越界不伪造0；Normal显式去截断返回已知多项式，其余输入原行为保持。",
+    "return_type": "expression",
+    "precision_modes": [
+      "exact_symbolic"
+    ],
+    "precision_notes": "首版精确系数与精确实点；不把机器/大浮点输入舍入成符号证书。Taylor不是Laurent/渐近误差界，未计算或截断外不声称零。",
     "platforms": [
       "cli",
       "desktop",
@@ -11117,6 +11253,151 @@
       "machine"
     ],
     "precision_notes": "仅明确的机器算法与已识别精确值；高精度/复数算法未实现，不静默降级。随机流为确定性伪随机，不是密码学随机。",
+    "platforms": [
+      "cli",
+      "desktop",
+      "web",
+      "ios"
+    ]
+  },
+  {
+    "id": "fn_000150",
+    "canonical_name": "series",
+    "name": "Series",
+    "modern_name": "series",
+    "aliases": [],
+    "arity": {
+      "min": 2,
+      "max": 4
+    },
+    "parameters": [
+      {
+        "name": "expr",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": true
+      },
+      {
+        "name": "axis",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": true
+      }
+    ],
+    "options": [
+      {
+        "name": "at",
+        "runtime_name": "At",
+        "value_type": "expression",
+        "required": false,
+        "default_source": "0",
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": true
+      },
+      {
+        "name": "order",
+        "runtime_name": "Order",
+        "value_type": "integer",
+        "required": false,
+        "default_source": "6",
+        "default_context": null,
+        "enum_values": [],
+        "min": 0,
+        "max": 64,
+        "variadic": false,
+        "held": true
+      }
+    ],
+    "compatibility_syntax": [],
+    "attributes": [
+      "protected",
+      "hold_all"
+    ],
+    "pipe_arg": 1,
+    "effect_class": "pure",
+    "support": "普通Taylor 0..64阶，真实求导获得系数，SeriesData携带0起始/截断后首个未知阶/步长1；展开点为精确有限实数，坐标局部化，raw孔洞/极点/分支点/不可证明解析/未求值导数拒绝。SeriesCoefficient仅已知范围，越界不伪造0；Normal显式去截断返回已知多项式，其余输入原行为保持。",
+    "return_type": "expression",
+    "precision_modes": [
+      "exact_symbolic"
+    ],
+    "precision_notes": "首版精确系数与精确实点；不把机器/大浮点输入舍入成符号证书。Taylor不是Laurent/渐近误差界，未计算或截断外不声称零。",
+    "platforms": [
+      "cli",
+      "desktop",
+      "web",
+      "ios"
+    ]
+  },
+  {
+    "id": "fn_000151",
+    "canonical_name": "series_coefficient",
+    "name": "SeriesCoefficient",
+    "modern_name": "series_coefficient",
+    "aliases": [],
+    "arity": {
+      "min": 2,
+      "max": 2
+    },
+    "parameters": [
+      {
+        "name": "series",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": true
+      },
+      {
+        "name": "order",
+        "runtime_name": null,
+        "value_type": "integer",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": 0,
+        "max": null,
+        "variadic": false,
+        "held": true
+      }
+    ],
+    "options": [],
+    "compatibility_syntax": [],
+    "attributes": [
+      "protected",
+      "hold_all"
+    ],
+    "pipe_arg": 1,
+    "effect_class": "pure",
+    "support": "普通Taylor 0..64阶，真实求导获得系数，SeriesData携带0起始/截断后首个未知阶/步长1；展开点为精确有限实数，坐标局部化，raw孔洞/极点/分支点/不可证明解析/未求值导数拒绝。SeriesCoefficient仅已知范围，越界不伪造0；Normal显式去截断返回已知多项式，其余输入原行为保持。",
+    "return_type": "expression",
+    "precision_modes": [
+      "exact_symbolic"
+    ],
+    "precision_notes": "首版精确系数与精确实点；不把机器/大浮点输入舍入成符号证书。Taylor不是Laurent/渐近误差界，未计算或截断外不声称零。",
     "platforms": [
       "cli",
       "desktop",

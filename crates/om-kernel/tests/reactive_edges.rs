@@ -351,6 +351,27 @@ fn dependency_analysis_excludes_registered_builtins_beyond_core_symbol_table() {
             .contains(&Symbol::intern("First"))
     );
 }
+#[test]
+fn calculus_coordinates_are_local_but_parameters_and_bounds_remain_real_dependencies() {
+    let mut s = Session::new(Default::default(), None);
+    for (src, uses) in [
+        ("Series[a*x,{x,b,3}]", vec!["a", "b"]),
+        ("Limit[a*x,x->b]", vec!["a", "b"]),
+        ("Integrate[a*x,{x,b,c}]", vec!["a", "b", "c"]),
+        ("Grad[a*x*y,{x,y}]", vec!["a"]),
+        ("Grad[x=2,{x}]", vec![]),
+    ] {
+        upsert(&mut s, "calculus", src);
+        let mut actual = cell(&s, "calculus")
+            .uses
+            .iter()
+            .map(|s| s.name())
+            .collect::<Vec<_>>();
+        actual.sort();
+        assert_eq!(actual, uses, "{src}");
+        assert!(cell(&s, "calculus").defines.is_empty());
+    }
+}
 
 #[test]
 fn edited_away_live_definitions_do_not_create_false_source_cycles() {

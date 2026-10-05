@@ -13,7 +13,7 @@
 | [`chemical_data`](#chemical_data) | 后续规划 | 规划接口，当前不可用 | 单位、时间与知识库中的 ChemicalData 能力，进入后续全景目录。 |
 | [`city_data`](#city_data) | 后续规划 | 规划接口，当前不可用 | 单位、时间与知识库中的 CityData 能力，进入后续全景目录。 |
 | [`compatible_unit_q`](#compatible_unit_q) | 后续规划 | 规划接口，当前不可用 | 单位、时间与知识库中的 CompatibleUnitQ 能力，进入后续全景目录。 |
-| [`convert_units`](#convert_units) | 下一版规划 | 规划接口，当前不可用 | 固定单位换算 |
+| [`convert_units`](#convert_units) | 已实现 | 当前可用 | 固定单位换算 |
 | [`country_data`](#country_data) | 后续规划 | 规划接口，当前不可用 | 单位、时间与知识库中的 CountryData 能力，进入后续全景目录。 |
 | [`date_difference`](#date_difference) | 后续规划 | 规划接口，当前不可用 | 单位、时间与知识库中的 DateDifference 能力，进入后续全景目录。 |
 | [`date_list`](#date_list) | 后续规划 | 规划接口，当前不可用 | 单位、时间与知识库中的 DateList 能力，进入后续全景目录。 |
@@ -34,12 +34,12 @@
 | [`geo_path`](#geo_path) | 后续规划 | 规划接口，当前不可用 | 单位、时间与知识库中的 GeoPath 能力，进入后续全景目录。 |
 | [`geo_position`](#geo_position) | 后续规划 | 规划接口，当前不可用 | 单位、时间与知识库中的 GeoPosition 能力，进入后续全景目录。 |
 | [`geo_region_value_plot`](#geo_region_value_plot) | 后续规划 | 规划接口，当前不可用 | 单位、时间与知识库中的 GeoRegionValuePlot 能力，进入后续全景目录。 |
-| [`magnitude`](#magnitude) | 下一版规划 | 规划接口，当前不可用 | 取大小值 |
+| [`magnitude`](#magnitude) | 已实现 | 当前可用 | 取大小值 |
 | [`mean_around`](#mean_around) | 后续规划 | 规划接口，当前不可用 | 单位、时间与知识库中的 MeanAround 能力，进入后续全景目录。 |
 | [`moving_average`](#moving_average) | 后续规划 | 规划接口，当前不可用 | 单位、时间与知识库中的 MovingAverage 能力，进入后续全景目录。 |
 | [`moving_median`](#moving_median) | 后续规划 | 规划接口，当前不可用 | 单位、时间与知识库中的 MovingMedian 能力，进入后续全景目录。 |
 | [`now`](#now) | 后续规划 | 规划接口，当前不可用 | 单位、时间与知识库中的 Now 能力，进入后续全景目录。 |
-| [`quantity`](#quantity) | 下一版规划 | 规划接口，当前不可用 | 带单位数值 |
+| [`quantity`](#quantity) | 已实现 | 当前可用 | 带单位数值 |
 | [`quantity_array`](#quantity_array) | 后续规划 | 规划接口，当前不可用 | 单位、时间与知识库中的 QuantityArray 能力，进入后续全景目录。 |
 | [`resource_data`](#resource_data) | 后续规划 | 规划接口，当前不可用 | 单位、时间与知识库中的 ResourceData 能力，进入后续全景目录。 |
 | [`temporal_data`](#temporal_data) | 后续规划 | 规划接口，当前不可用 | 单位、时间与知识库中的 TemporalData 能力，进入后续全景目录。 |
@@ -53,7 +53,7 @@
 | [`time_series_window`](#time_series_window) | 后续规划 | 规划接口，当前不可用 | 单位、时间与知识库中的 TimeSeriesWindow 能力，进入后续全景目录。 |
 | [`time_zone_convert`](#time_zone_convert) | 后续规划 | 规划接口，当前不可用 | 单位、时间与知识库中的 TimeZoneConvert 能力，进入后续全景目录。 |
 | [`today`](#today) | 后续规划 | 规划接口，当前不可用 | 单位、时间与知识库中的 Today 能力，进入后续全景目录。 |
-| [`unit`](#unit) | 下一版规划 | 规划接口，当前不可用 | 取单位 |
+| [`unit`](#unit) | 已实现 | 当前可用 | 取单位 |
 | [`unit_dimensions`](#unit_dimensions) | 后续规划 | 规划接口，当前不可用 | 单位、时间与知识库中的 UnitDimensions 能力，进入后续全景目录。 |
 | [`unit_simplify`](#unit_simplify) | 后续规划 | 规划接口，当前不可用 | 单位、时间与知识库中的 UnitSimplify 能力，进入后续全景目录。 |
 | [`vector_around`](#vector_around) | 后续规划 | 规划接口，当前不可用 | 单位、时间与知识库中的 VectorAround 能力，进入后续全景目录。 |
@@ -231,21 +231,33 @@ compatible_unit_q(...)  # 后续接口尚未锁定
 
 ## convert_units
 
-**当前实现：下一版规划；目标接口：规划接口，当前不可用。** 目标版本：`0.1.0-pre-alpha.3`。
+**当前实现：已实现；目标接口：当前可用。** 目标版本：`0.1.0-pre-alpha.3`。
 
 - 稳定身份：`fn_000216`；条目类型：`function`。
-- 副作用分类（设计预留）：`pure`；参数验证阶段：`documentation_only`，不构成工具授权。
+- 副作用分类（设计预留）：`pure`；参数验证阶段：`runtime_verified`，不构成工具授权。
 
 固定单位换算
 
-- 当前支持：当前无此规范接口的实现。
+- 当前支持：有限标量实数Quantity与精确SI七维单位因子；SI基本/派生单位、2022前缀、分钟/小时/日/升/吨/英制长度固定换算，复合乘除与整数乘方。加减量纲检查，裸非零数只可加无量纲量；值精度保持。单位DSL不执行代码，首版不支持复杂/符号量、仿射温标、货币/联网数据；单位长度256bytes/64词元/16层，幂±32/维度±128，真实预算。
 - 目标范围：SI七维量纲、长度/时间/质量等前缀与固定复合单位；加减单位须兼容；不含摄氏等仿射温标、货币/网络、单位复杂求解。
 - 返回：expression
-- 精度：换算因子使用精确有理数；保留数值本身精度。
-- 当前计算平台：无；目标计算平台：cli, desktop, web, ios。
+- 精度：换算因子始终为精确有理数，数值运算保留输入已有精度；不增加新的任意精度算法或物理语义认证。
+- 当前计算平台：cli, desktop, web, ios；目标计算平台：cli, desktop, web, ios。
 - 目标图形/交互展示平台：不适用或后续未定。
-- 兼容名称：无既有兼容入口。
+- 兼容名称：`UnitConvert`。
 - 管道位置：第 1 个位置参数（从 1 起）。
+
+当前现代签名：
+
+```text
+convert_units(quantity,target_unit)
+```
+
+当前 Wolfram 签名：
+
+```text
+UnitConvert[quantity,target_unit]
+```
 
 目标现代签名（按目标接口状态判断是否已可执行）：
 
@@ -255,20 +267,20 @@ convert_units(quantity, target_unit)
 
 | 参数 | 类型 | 默认值 | 含义 | 可用阶段 |
 |---|---|---|---|---|
-| `quantity` | positional | 必填 | 签名对应的quantity参数 | r3 |
-| `target_unit` | positional | 必填 | 签名对应的target_unit参数 | r3 |
+| `quantity` | positional | 必填 | 签名对应的quantity参数 | current |
+| `target_unit` | positional | 必填 | 签名对应的target_unit参数 | current |
 
-规划示例（尚未执行；需要目标版本，后续条目不承诺 .3）：
+当前已登记示例（Wolfram）：
 
-```text
-convert_units(quantity(1,unit: "km"),"m")
+```wolfram
+UnitConvert[Quantity[1,"km"],"m"]
 ```
 
 验收：独立数学期望、有效/无效参数、边界、预算、中断及声明的平台/精度测试；范围外不伪造成功。
 
-当前源码：暂无当前实现证据。
+当前源码：[crates/om-eval/src/science/unit_registry.rs](../../crates/om-eval/src/science/unit_registry.rs)、[crates/om-eval/src/science/units.rs](../../crates/om-eval/src/science/units.rs)、[crates/om-eval/src/science/unit_parse.rs](../../crates/om-eval/src/science/unit_parse.rs)。
 
-当前测试引用：暂无当前实现证据。
+当前测试引用：[crates/om-eval/tests/units.rs](../../crates/om-eval/tests/units.rs)。
 
 ## country_data
 
@@ -952,21 +964,33 @@ geo_region_value_plot(...)  # 后续接口尚未锁定
 
 ## magnitude
 
-**当前实现：下一版规划；目标接口：规划接口，当前不可用。** 目标版本：`0.1.0-pre-alpha.3`。
+**当前实现：已实现；目标接口：当前可用。** 目标版本：`0.1.0-pre-alpha.3`。
 
 - 稳定身份：`fn_000217`；条目类型：`function`。
-- 副作用分类（设计预留）：`pure`；参数验证阶段：`documentation_only`，不构成工具授权。
+- 副作用分类（设计预留）：`pure`；参数验证阶段：`runtime_verified`，不构成工具授权。
 
 取大小值
 
-- 当前支持：当前无此规范接口的实现。
+- 当前支持：有限标量实数Quantity与精确SI七维单位因子；SI基本/派生单位、2022前缀、分钟/小时/日/升/吨/英制长度固定换算，复合乘除与整数乘方。加减量纲检查，裸非零数只可加无量纲量；值精度保持。单位DSL不执行代码，首版不支持复杂/符号量、仿射温标、货币/联网数据；单位长度256bytes/64词元/16层，幂±32/维度±128，真实预算。
 - 目标范围：SI七维量纲、长度/时间/质量等前缀与固定复合单位；加减单位须兼容；不含摄氏等仿射温标、货币/网络、单位复杂求解。
 - 返回：expression
-- 精度：换算因子使用精确有理数；保留数值本身精度。
-- 当前计算平台：无；目标计算平台：cli, desktop, web, ios。
+- 精度：换算因子始终为精确有理数，数值运算保留输入已有精度；不增加新的任意精度算法或物理语义认证。
+- 当前计算平台：cli, desktop, web, ios；目标计算平台：cli, desktop, web, ios。
 - 目标图形/交互展示平台：不适用或后续未定。
-- 兼容名称：无既有兼容入口。
+- 兼容名称：`QuantityMagnitude`。
 - 管道位置：第 1 个位置参数（从 1 起）。
+
+当前现代签名：
+
+```text
+magnitude(quantity)
+```
+
+当前 Wolfram 签名：
+
+```text
+QuantityMagnitude[quantity]
+```
 
 目标现代签名（按目标接口状态判断是否已可执行）：
 
@@ -976,19 +1000,19 @@ magnitude(quantity)
 
 | 参数 | 类型 | 默认值 | 含义 | 可用阶段 |
 |---|---|---|---|---|
-| `quantity` | positional | 必填 | 签名对应的quantity参数 | r3 |
+| `quantity` | positional | 必填 | 签名对应的quantity参数 | current |
 
-规划示例（尚未执行；需要目标版本，后续条目不承诺 .3）：
+当前已登记示例（Wolfram）：
 
-```text
-magnitude(quantity(1,unit: "km"))
+```wolfram
+QuantityMagnitude[Quantity[1,"km"]]
 ```
 
 验收：独立数学期望、有效/无效参数、边界、预算、中断及声明的平台/精度测试；范围外不伪造成功。
 
-当前源码：暂无当前实现证据。
+当前源码：[crates/om-eval/src/science/unit_registry.rs](../../crates/om-eval/src/science/unit_registry.rs)、[crates/om-eval/src/science/units.rs](../../crates/om-eval/src/science/units.rs)、[crates/om-eval/src/science/unit_parse.rs](../../crates/om-eval/src/science/unit_parse.rs)。
 
-当前测试引用：暂无当前实现证据。
+当前测试引用：[crates/om-eval/tests/units.rs](../../crates/om-eval/tests/units.rs)。
 
 ## mean_around
 
@@ -1128,21 +1152,33 @@ now  # 后续符号，当前未实现
 
 ## quantity
 
-**当前实现：下一版规划；目标接口：规划接口，当前不可用。** 目标版本：`0.1.0-pre-alpha.3`。
+**当前实现：已实现；目标接口：当前可用。** 目标版本：`0.1.0-pre-alpha.3`。
 
 - 稳定身份：`fn_000215`；条目类型：`function`。
-- 副作用分类（设计预留）：`pure`；参数验证阶段：`documentation_only`，不构成工具授权。
+- 副作用分类（设计预留）：`pure`；参数验证阶段：`runtime_verified`，不构成工具授权。
 
 带单位数值
 
-- 当前支持：当前无此规范接口的实现。
+- 当前支持：有限标量实数Quantity与精确SI七维单位因子；SI基本/派生单位、2022前缀、分钟/小时/日/升/吨/英制长度固定换算，复合乘除与整数乘方。加减量纲检查，裸非零数只可加无量纲量；值精度保持。单位DSL不执行代码，首版不支持复杂/符号量、仿射温标、货币/联网数据；单位长度256bytes/64词元/16层，幂±32/维度±128，真实预算。
 - 目标范围：SI七维量纲、长度/时间/质量等前缀与固定复合单位；加减单位须兼容；不含摄氏等仿射温标、货币/网络、单位复杂求解。
 - 返回：expression
-- 精度：换算因子使用精确有理数；保留数值本身精度。
-- 当前计算平台：无；目标计算平台：cli, desktop, web, ios。
+- 精度：换算因子始终为精确有理数，数值运算保留输入已有精度；不增加新的任意精度算法或物理语义认证。
+- 当前计算平台：cli, desktop, web, ios；目标计算平台：cli, desktop, web, ios。
 - 目标图形/交互展示平台：不适用或后续未定。
-- 兼容名称：无既有兼容入口。
+- 兼容名称：`Quantity`。
 - 管道位置：第 1 个位置参数（从 1 起）。
+
+当前现代签名：
+
+```text
+quantity(value,unit:"m")
+```
+
+当前 Wolfram 签名：
+
+```text
+Quantity[value,unit]
+```
 
 目标现代签名（按目标接口状态判断是否已可执行）：
 
@@ -1152,20 +1188,20 @@ quantity(value, unit: "m")
 
 | 参数 | 类型 | 默认值 | 含义 | 可用阶段 |
 |---|---|---|---|---|
-| `value` | positional | 必填 | 数值或Quantity | r3 |
-| `unit` | option | 必填 | 单位文本 | r3 |
+| `value` | positional | 必填 | 数值或Quantity | current |
+| `unit` | option | 必填 | 单位文本 | current |
 
-规划示例（尚未执行；需要目标版本，后续条目不承诺 .3）：
+当前已登记示例（Wolfram）：
 
-```text
-quantity(384400,unit: "km")
+```wolfram
+Quantity[1,"km"]
 ```
 
 验收：独立数学期望、有效/无效参数、边界、预算、中断及声明的平台/精度测试；范围外不伪造成功。
 
-当前源码：暂无当前实现证据。
+当前源码：[crates/om-eval/src/science/unit_registry.rs](../../crates/om-eval/src/science/unit_registry.rs)、[crates/om-eval/src/science/units.rs](../../crates/om-eval/src/science/units.rs)、[crates/om-eval/src/science/unit_parse.rs](../../crates/om-eval/src/science/unit_parse.rs)。
 
-当前测试引用：暂无当前实现证据。
+当前测试引用：[crates/om-eval/tests/units.rs](../../crates/om-eval/tests/units.rs)。
 
 ## quantity_array
 
@@ -1611,21 +1647,33 @@ today  # 后续符号，当前未实现
 
 ## unit
 
-**当前实现：下一版规划；目标接口：规划接口，当前不可用。** 目标版本：`0.1.0-pre-alpha.3`。
+**当前实现：已实现；目标接口：当前可用。** 目标版本：`0.1.0-pre-alpha.3`。
 
 - 稳定身份：`fn_000218`；条目类型：`function`。
-- 副作用分类（设计预留）：`pure`；参数验证阶段：`documentation_only`，不构成工具授权。
+- 副作用分类（设计预留）：`pure`；参数验证阶段：`runtime_verified`，不构成工具授权。
 
 取单位
 
-- 当前支持：当前无此规范接口的实现。
+- 当前支持：有限标量实数Quantity与精确SI七维单位因子；SI基本/派生单位、2022前缀、分钟/小时/日/升/吨/英制长度固定换算，复合乘除与整数乘方。加减量纲检查，裸非零数只可加无量纲量；值精度保持。单位DSL不执行代码，首版不支持复杂/符号量、仿射温标、货币/联网数据；单位长度256bytes/64词元/16层，幂±32/维度±128，真实预算。
 - 目标范围：SI七维量纲、长度/时间/质量等前缀与固定复合单位；加减单位须兼容；不含摄氏等仿射温标、货币/网络、单位复杂求解。
 - 返回：expression
-- 精度：换算因子使用精确有理数；保留数值本身精度。
-- 当前计算平台：无；目标计算平台：cli, desktop, web, ios。
+- 精度：换算因子始终为精确有理数，数值运算保留输入已有精度；不增加新的任意精度算法或物理语义认证。
+- 当前计算平台：cli, desktop, web, ios；目标计算平台：cli, desktop, web, ios。
 - 目标图形/交互展示平台：不适用或后续未定。
-- 兼容名称：无既有兼容入口。
+- 兼容名称：`QuantityUnit`。
 - 管道位置：第 1 个位置参数（从 1 起）。
+
+当前现代签名：
+
+```text
+unit(quantity)
+```
+
+当前 Wolfram 签名：
+
+```text
+QuantityUnit[quantity]
+```
 
 目标现代签名（按目标接口状态判断是否已可执行）：
 
@@ -1635,19 +1683,19 @@ unit(quantity)
 
 | 参数 | 类型 | 默认值 | 含义 | 可用阶段 |
 |---|---|---|---|---|
-| `quantity` | positional | 必填 | 签名对应的quantity参数 | r3 |
+| `quantity` | positional | 必填 | 签名对应的quantity参数 | current |
 
-规划示例（尚未执行；需要目标版本，后续条目不承诺 .3）：
+当前已登记示例（Wolfram）：
 
-```text
-unit(quantity(1,unit: "km"))
+```wolfram
+QuantityUnit[Quantity[1,"km"]]
 ```
 
 验收：独立数学期望、有效/无效参数、边界、预算、中断及声明的平台/精度测试；范围外不伪造成功。
 
-当前源码：暂无当前实现证据。
+当前源码：[crates/om-eval/src/science/unit_registry.rs](../../crates/om-eval/src/science/unit_registry.rs)、[crates/om-eval/src/science/units.rs](../../crates/om-eval/src/science/units.rs)、[crates/om-eval/src/science/unit_parse.rs](../../crates/om-eval/src/science/unit_parse.rs)。
 
-当前测试引用：暂无当前实现证据。
+当前测试引用：[crates/om-eval/tests/units.rs](../../crates/om-eval/tests/units.rs)。
 
 ## unit_dimensions
 

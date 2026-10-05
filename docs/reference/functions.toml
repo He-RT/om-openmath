@@ -1,6 +1,6 @@
 # 实际注册审计基线：ba3cd2b；稳定身份与名称分离；目录/副作用为设计数据。
 schema_version = 1
-metadata_version = 9
+metadata_version = 10
 validation_stage = "runtime_verified"
 current_version = "0.1.0-pre-alpha.2"
 target_version = "0.1.0-pre-alpha.3"
@@ -6947,128 +6947,128 @@ effect_class = "pure"
 id = "fn_000215"
 name = "quantity"
 category = "units"
-status = "planned"
-interface_status = "planned"
-runtime_names = []
-compatibility_names = []
-current_modern_signatures = []
-current_wolfram_signatures = []
+status = "implemented"
+interface_status = "current"
+runtime_names = ["Quantity"]
+compatibility_names = ["Quantity"]
+current_modern_signatures = ["quantity(value,unit:\"m\")"]
+current_wolfram_signatures = ["Quantity[value,unit]"]
 signatures = ["quantity(value, unit: \"m\")"]
-parameters = [{ name = "value", kind = "positional", default = "必填", description = "数值或Quantity", availability = "r3" }, { name = "unit", kind = "option", default = "必填", description = "单位文本", availability = "r3" }]
+parameters = [{ name = "value", kind = "positional", default = "必填", description = "数值或Quantity", availability = "current" }, { name = "unit", kind = "option", default = "必填", description = "单位文本", availability = "current" }]
 return_type = "expression"
 semantics = "带单位数值"
-current_support = "当前无此规范接口的实现。"
+current_support = "有限标量实数Quantity与精确SI七维单位因子；SI基本/派生单位、2022前缀、分钟/小时/日/升/吨/英制长度固定换算，复合乘除与整数乘方。加减量纲检查，裸非零数只可加无量纲量；值精度保持。单位DSL不执行代码，首版不支持复杂/符号量、仿射温标、货币/联网数据；单位长度256bytes/64词元/16层，幂±32/维度±128，真实预算。"
 target_support = "SI七维量纲、长度/时间/质量等前缀与固定复合单位；加减单位须兼容；不含摄氏等仿射温标、货币/网络、单位复杂求解。"
-precision_modes = ["planned_machine"]
-precision_notes = "换算因子使用精确有理数；保留数值本身精度。"
-current_platforms = []
+precision_modes = ["exact", "machine", "arbitrary_supported"]
+precision_notes = "换算因子始终为精确有理数，数值运算保留输入已有精度；不增加新的任意精度算法或物理语义认证。"
+current_platforms = ["cli", "desktop", "web", "ios"]
 target_platforms = ["cli", "desktop", "web", "ios"]
 render_platforms = []
-current_examples = []
-planned_examples = ["quantity(384400,unit: \"km\")"]
-sources = []
-tests = []
+current_examples = ["Quantity[1,\"km\"]"]
+planned_examples = []
+sources = ["crates/om-eval/src/science/unit_registry.rs", "crates/om-eval/src/science/units.rs", "crates/om-eval/src/science/unit_parse.rs"]
+tests = ["crates/om-eval/tests/units.rs"]
 acceptance = "独立数学期望、有效/无效参数、边界、预算、中断及声明的平台/精度测试；范围外不伪造成功。"
 pipe_arg = 1
 target_version = "0.1.0-pre-alpha.3"
 kind = "function"
-validation_stage = "documentation_only"
+validation_stage = "runtime_verified"
 effect_class = "pure"
 
 [[functions]]
 id = "fn_000216"
 name = "convert_units"
 category = "units"
-status = "planned"
-interface_status = "planned"
-runtime_names = []
-compatibility_names = []
-current_modern_signatures = []
-current_wolfram_signatures = []
+status = "implemented"
+interface_status = "current"
+runtime_names = ["UnitConvert"]
+compatibility_names = ["UnitConvert"]
+current_modern_signatures = ["convert_units(quantity,target_unit)"]
+current_wolfram_signatures = ["UnitConvert[quantity,target_unit]"]
 signatures = ["convert_units(quantity, target_unit)"]
-parameters = [{ name = "quantity", kind = "positional", default = "必填", description = "签名对应的quantity参数", availability = "r3" }, { name = "target_unit", kind = "positional", default = "必填", description = "签名对应的target_unit参数", availability = "r3" }]
+parameters = [{ name = "quantity", kind = "positional", default = "必填", description = "签名对应的quantity参数", availability = "current" }, { name = "target_unit", kind = "positional", default = "必填", description = "签名对应的target_unit参数", availability = "current" }]
 return_type = "expression"
 semantics = "固定单位换算"
-current_support = "当前无此规范接口的实现。"
+current_support = "有限标量实数Quantity与精确SI七维单位因子；SI基本/派生单位、2022前缀、分钟/小时/日/升/吨/英制长度固定换算，复合乘除与整数乘方。加减量纲检查，裸非零数只可加无量纲量；值精度保持。单位DSL不执行代码，首版不支持复杂/符号量、仿射温标、货币/联网数据；单位长度256bytes/64词元/16层，幂±32/维度±128，真实预算。"
 target_support = "SI七维量纲、长度/时间/质量等前缀与固定复合单位；加减单位须兼容；不含摄氏等仿射温标、货币/网络、单位复杂求解。"
-precision_modes = ["planned_machine"]
-precision_notes = "换算因子使用精确有理数；保留数值本身精度。"
-current_platforms = []
+precision_modes = ["exact", "machine", "arbitrary_supported"]
+precision_notes = "换算因子始终为精确有理数，数值运算保留输入已有精度；不增加新的任意精度算法或物理语义认证。"
+current_platforms = ["cli", "desktop", "web", "ios"]
 target_platforms = ["cli", "desktop", "web", "ios"]
 render_platforms = []
-current_examples = []
-planned_examples = ["convert_units(quantity(1,unit: \"km\"),\"m\")"]
-sources = []
-tests = []
+current_examples = ["UnitConvert[Quantity[1,\"km\"],\"m\"]"]
+planned_examples = []
+sources = ["crates/om-eval/src/science/unit_registry.rs", "crates/om-eval/src/science/units.rs", "crates/om-eval/src/science/unit_parse.rs"]
+tests = ["crates/om-eval/tests/units.rs"]
 acceptance = "独立数学期望、有效/无效参数、边界、预算、中断及声明的平台/精度测试；范围外不伪造成功。"
 pipe_arg = 1
 target_version = "0.1.0-pre-alpha.3"
 kind = "function"
-validation_stage = "documentation_only"
+validation_stage = "runtime_verified"
 effect_class = "pure"
 
 [[functions]]
 id = "fn_000217"
 name = "magnitude"
 category = "units"
-status = "planned"
-interface_status = "planned"
-runtime_names = []
-compatibility_names = []
-current_modern_signatures = []
-current_wolfram_signatures = []
+status = "implemented"
+interface_status = "current"
+runtime_names = ["QuantityMagnitude"]
+compatibility_names = ["QuantityMagnitude"]
+current_modern_signatures = ["magnitude(quantity)"]
+current_wolfram_signatures = ["QuantityMagnitude[quantity]"]
 signatures = ["magnitude(quantity)"]
-parameters = [{ name = "quantity", kind = "positional", default = "必填", description = "签名对应的quantity参数", availability = "r3" }]
+parameters = [{ name = "quantity", kind = "positional", default = "必填", description = "签名对应的quantity参数", availability = "current" }]
 return_type = "expression"
 semantics = "取大小值"
-current_support = "当前无此规范接口的实现。"
+current_support = "有限标量实数Quantity与精确SI七维单位因子；SI基本/派生单位、2022前缀、分钟/小时/日/升/吨/英制长度固定换算，复合乘除与整数乘方。加减量纲检查，裸非零数只可加无量纲量；值精度保持。单位DSL不执行代码，首版不支持复杂/符号量、仿射温标、货币/联网数据；单位长度256bytes/64词元/16层，幂±32/维度±128，真实预算。"
 target_support = "SI七维量纲、长度/时间/质量等前缀与固定复合单位；加减单位须兼容；不含摄氏等仿射温标、货币/网络、单位复杂求解。"
-precision_modes = ["planned_machine"]
-precision_notes = "换算因子使用精确有理数；保留数值本身精度。"
-current_platforms = []
+precision_modes = ["exact", "machine", "arbitrary_supported"]
+precision_notes = "换算因子始终为精确有理数，数值运算保留输入已有精度；不增加新的任意精度算法或物理语义认证。"
+current_platforms = ["cli", "desktop", "web", "ios"]
 target_platforms = ["cli", "desktop", "web", "ios"]
 render_platforms = []
-current_examples = []
-planned_examples = ["magnitude(quantity(1,unit: \"km\"))"]
-sources = []
-tests = []
+current_examples = ["QuantityMagnitude[Quantity[1,\"km\"]]"]
+planned_examples = []
+sources = ["crates/om-eval/src/science/unit_registry.rs", "crates/om-eval/src/science/units.rs", "crates/om-eval/src/science/unit_parse.rs"]
+tests = ["crates/om-eval/tests/units.rs"]
 acceptance = "独立数学期望、有效/无效参数、边界、预算、中断及声明的平台/精度测试；范围外不伪造成功。"
 pipe_arg = 1
 target_version = "0.1.0-pre-alpha.3"
 kind = "function"
-validation_stage = "documentation_only"
+validation_stage = "runtime_verified"
 effect_class = "pure"
 
 [[functions]]
 id = "fn_000218"
 name = "unit"
 category = "units"
-status = "planned"
-interface_status = "planned"
-runtime_names = []
-compatibility_names = []
-current_modern_signatures = []
-current_wolfram_signatures = []
+status = "implemented"
+interface_status = "current"
+runtime_names = ["QuantityUnit"]
+compatibility_names = ["QuantityUnit"]
+current_modern_signatures = ["unit(quantity)"]
+current_wolfram_signatures = ["QuantityUnit[quantity]"]
 signatures = ["unit(quantity)"]
-parameters = [{ name = "quantity", kind = "positional", default = "必填", description = "签名对应的quantity参数", availability = "r3" }]
+parameters = [{ name = "quantity", kind = "positional", default = "必填", description = "签名对应的quantity参数", availability = "current" }]
 return_type = "expression"
 semantics = "取单位"
-current_support = "当前无此规范接口的实现。"
+current_support = "有限标量实数Quantity与精确SI七维单位因子；SI基本/派生单位、2022前缀、分钟/小时/日/升/吨/英制长度固定换算，复合乘除与整数乘方。加减量纲检查，裸非零数只可加无量纲量；值精度保持。单位DSL不执行代码，首版不支持复杂/符号量、仿射温标、货币/联网数据；单位长度256bytes/64词元/16层，幂±32/维度±128，真实预算。"
 target_support = "SI七维量纲、长度/时间/质量等前缀与固定复合单位；加减单位须兼容；不含摄氏等仿射温标、货币/网络、单位复杂求解。"
-precision_modes = ["planned_machine"]
-precision_notes = "换算因子使用精确有理数；保留数值本身精度。"
-current_platforms = []
+precision_modes = ["exact", "machine", "arbitrary_supported"]
+precision_notes = "换算因子始终为精确有理数，数值运算保留输入已有精度；不增加新的任意精度算法或物理语义认证。"
+current_platforms = ["cli", "desktop", "web", "ios"]
 target_platforms = ["cli", "desktop", "web", "ios"]
 render_platforms = []
-current_examples = []
-planned_examples = ["unit(quantity(1,unit: \"km\"))"]
-sources = []
-tests = []
+current_examples = ["QuantityUnit[Quantity[1,\"km\"]]"]
+planned_examples = []
+sources = ["crates/om-eval/src/science/unit_registry.rs", "crates/om-eval/src/science/units.rs", "crates/om-eval/src/science/unit_parse.rs"]
+tests = ["crates/om-eval/tests/units.rs"]
 acceptance = "独立数学期望、有效/无效参数、边界、预算、中断及声明的平台/精度测试；范围外不伪造成功。"
 pipe_arg = 1
 target_version = "0.1.0-pre-alpha.3"
 kind = "function"
-validation_stage = "documentation_only"
+validation_stage = "runtime_verified"
 effect_class = "pure"
 
 [[functions]]
@@ -28770,4 +28770,44 @@ min = 1
 max = 1
 attributes = ["protected"]
 parameters = [{ name = "table", value_type = "expression", required = true, variadic = false, held = false }]
+options = []
+
+[[runtime]]
+name = "Quantity"
+modern_name = "quantity"
+aliases = []
+min = 2
+max = 3
+attributes = ["protected"]
+parameters = [{ name = "value", value_type = "expression", required = true, variadic = false, held = false }, { name = "unit", value_type = "expression", required = false, variadic = false, held = false, default_context = "单位必填；此位置与命名unit二选一" }]
+options = [{ name = "unit", runtime_name = "Unit", value_type = "expression", required = false, default_context = "单位必填：与第二个位置参数二选一，不提供省略默认值", variadic = false, held = false }]
+
+[[runtime]]
+name = "UnitConvert"
+modern_name = "convert_units"
+aliases = []
+min = 2
+max = 2
+attributes = ["protected"]
+parameters = [{ name = "quantity", value_type = "expression", required = true, variadic = false, held = false }, { name = "target_unit", value_type = "expression", required = true, variadic = false, held = false }]
+options = []
+
+[[runtime]]
+name = "QuantityMagnitude"
+modern_name = "magnitude"
+aliases = []
+min = 1
+max = 1
+attributes = ["protected"]
+parameters = [{ name = "quantity", value_type = "expression", required = true, variadic = false, held = false }]
+options = []
+
+[[runtime]]
+name = "QuantityUnit"
+modern_name = "unit"
+aliases = []
+min = 1
+max = 1
+attributes = ["protected"]
+parameters = [{ name = "quantity", value_type = "expression", required = true, variadic = false, held = false }]
 options = []

@@ -1472,22 +1472,30 @@
     {
       "id": "fn_000215",
       "initial_name": "quantity",
-      "runtime_names": []
+      "runtime_names": [
+        "Quantity"
+      ]
     },
     {
       "id": "fn_000216",
       "initial_name": "convert_units",
-      "runtime_names": []
+      "runtime_names": [
+        "UnitConvert"
+      ]
     },
     {
       "id": "fn_000217",
       "initial_name": "magnitude",
-      "runtime_names": []
+      "runtime_names": [
+        "QuantityMagnitude"
+      ]
     },
     {
       "id": "fn_000218",
       "initial_name": "unit",
-      "runtime_names": []
+      "runtime_names": [
+        "QuantityUnit"
+      ]
     },
     {
       "id": "fn_000219",

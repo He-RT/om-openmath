@@ -25,3 +25,5 @@ R3.3e已验证：CSV/JSON四真回调、DataTable只追加数据头、空表头/
 性能接续P124：R3.3e提交5adb742已本地验证。离线CI附件原#18 Swift1306ms/kernel152ms，#17 Swift968ms/kernel262ms。Swift KernelClient响应原双遍完整JSON已改单遍顶层桥接错误+packet解码；本地5025bytes原18包1.323→0.613ms，不足解释1s额外延迟。验收附件新transport字段提供queued_ms/ffi_ms/decode_ms/resume_ms，wire/.omnb不含；原整次<1s门槛未改。离线错误/往返、SDK27 arm64类型检查和generic无签名iOS build-for-testing通过；没有本机模拟器。原Rust bridge53及Clippy/Python通过。接下来查新CI分段结果，若主线程恢复/排队慢则按实测修复；不能宣布移动门禁全通过。之后继续基础表格操作、SI单位/帮助和R3.4–R3.6原完整范围。
 
 最新R3.3f：基础DataTable行操作/列字段/记录排序/正确预算已验收，Slice补真正range参数并新增目录个数契约。955Rust/2ignored、前端59、Python16、Clippy/fmt/纯WASM/TS/deny通过，201回调/196身份/描述9/.2。P124的CI37296195523全通过：iPhone53最慢628ms、iPad417ms，原18为73/69ms，原1s门槛与数学期望未改；附件在target/ci-evidence/p124。接着实现SI单位与help/functions/options/capabilities，再R3.4–R3.6全原范围，不提前发行、不标goal complete。本机不运行模拟器，直接执行不使用子代理。
+
+最新R3.3g：SI标量单位四回调、精确因子/七维量纲、受预算纯单位DSL及单位算术已验证；205回调/200身份、描述10/.2，959Rust/2ignored、前端59/Python16/Clippy/fmt/纯WASM/TS/deny通过，原53不动。下一步帮助查询，再R3.4–R3.6全原范围。R3.3f的CI37299136370 iPhone原17总1096ms，实际内部queued/FFI/decode/resume仅约212ms、kernel209ms；约884ms在计时的request方法之外/编码之外，需核对Swift执行器边界。附件target/ci-evidence/r33f。保持1s原门槛，不能改用kernel时间冒充通过；本机不运行模拟器，单代理直接执行。

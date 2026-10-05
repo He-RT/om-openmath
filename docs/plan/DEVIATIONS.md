@@ -1,5 +1,7 @@
 # 实施裁决
 
+- **P126 — 标量SI单位与量纲算术（2026-10-05，已验证）：** 四个真实Quantity/UnitConvert/QuantityMagnitude/QuantityUnit回调，纯文本单位DSL与七维整数指数，比例始终精确有理；真实2022 SI前缀、基本/派生与固定分钟/小时/日/升/吨/英制长度因子。单位操作在求值参数后、核心Plus/Times/Power规范化前执行，防止单位零量或不相容量纲先被吞掉；兼容加减使用首个单位，乘除/整数幂使用SI基准单位，纯数零为加法中性元素，非零裸数只能与无量纲量相加。没有单位量的路径仍走原核心规范化。有限实数与已有精度保持，复杂/符号量、仿射温标、货币/联网和非整数单位乘方未支持；不伪承诺所有带单位求解或物理含义相同。256bytes/64词元/16层/幂±32/维度±128界限并真实中断，无依赖/unsafe。回调仅追加既有稳定ID；原53期望不动。
+
 - **P125 — 原生表格行语义与目录个数契约（2026-10-05）：** DataTable的filter/sort/sort_by/unique/take/drop/slice/rest/append保留列；Map对记录行真实求值并返回List，Fold真实归约，GroupBy values为子表格，Zip/Flatten/Reshape以记录行输入并维持原列表结果语义，Length计行、First/Last取记录。字段columns/rows为元数据，其他列名返回向量；数字1/2仍访问原构造字段以保留此前dev源码约定，行范围用slice。表格按表头归一记录字段顺序，Unique/Counts不因字段书写顺序差异误分；同字段记录支持标量稳定字典序（数/文本/布尔/Null），复杂键明确拒绝并可使用sort_by。比较器内部也能传播真实Interrupt，保持排序全序不以取消改变比较结果。发现Slice回调2参但runtime参数表漏range；恢复真实必填range并新增固定无选项位置参数个数校验。无新回调/依赖/unsafe；描述9，201回调/196身份，应用仍.2。原53/旧列表行为保留，专门跨端表格展示仍待R3.5。
 
 - **P124 — iOS响应单次解码与性能分段（2026-10-05）：** CI37280109336原始#18总请求1306.042ms失败，但实际附件kernel timing151.867ms；#17总968.438ms/kernel261.776ms。不能归因为数学计算或放宽1s门槛。KernelClient原先把整包先解码成JSONValue检查bridge_error、再完整解码KernelPacket；改为KernelPacket只检查顶层bridge_error后一次解码response/events，缓冲仍defer恰好释放。新增仅Swift本地transportTiming（排队/FFI/解码/恢复），不进入Codable wire/.omnb，仅验收附件记录。真实#18桥接包5025bytes离线Foundation基准双遍1.323ms→单遍0.613ms，证明减少重复解码，不能据此宣称解释了CI额外约1s或通过移动门禁；需同SHA CI分段证据。原53与整次请求<1000ms断言保持。离线RED→GREEN桥接错误与wire往返、SDK27真机arm64类型检查、无签名generic iOS build-for-testing及原Rust桥接53/Clippy/Python通过，本机不启动模拟器。

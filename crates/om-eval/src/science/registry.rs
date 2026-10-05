@@ -5,6 +5,7 @@ use std::collections::BTreeMap;
 pub(crate) fn register(specs: &mut BTreeMap<&'static str, BuiltinSpec>) {
     super::probability_registry::register(specs);
     super::io_registry::register(specs);
+    super::unit_registry::register(specs);
     macro_rules! entry {($function:ident,$name:literal,$arity:expr,$attrs:expr,$modern:literal,$wolfram:literal,$summary:literal,$example:literal)=>{
         fn $function(ev:&mut Evaluator,args:&[Expr],ctx:&Interrupt)->Result<Option<Expr>,EvalError>{super::dispatch(ev,$name,args,ctx)}
         specs.insert($name,BuiltinSpec{symbol:Symbol::intern($name),f:$function,attrs:$attrs|A::PROTECTED,arity:$arity,doc:DocEntry{name:$name,modern:$modern,wolfram:$wolfram,summary_zh:$summary,summary_en:"Scientific computation within the documented input and precision limits.",examples:&[$example],category:"Scientific"}});

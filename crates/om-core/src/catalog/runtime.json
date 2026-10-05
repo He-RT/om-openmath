@@ -8158,6 +8158,174 @@
     ]
   },
   {
+    "id": "fn_000215",
+    "canonical_name": "quantity",
+    "name": "Quantity",
+    "modern_name": "quantity",
+    "aliases": [],
+    "arity": {
+      "min": 2,
+      "max": 3
+    },
+    "parameters": [
+      {
+        "name": "value",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": false
+      },
+      {
+        "name": "unit",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": false,
+        "default_source": null,
+        "default_context": "单位必填；此位置与命名unit二选一",
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": false
+      }
+    ],
+    "options": [
+      {
+        "name": "unit",
+        "runtime_name": "Unit",
+        "value_type": "expression",
+        "required": false,
+        "default_source": null,
+        "default_context": "单位必填：与第二个位置参数二选一，不提供省略默认值",
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": false
+      }
+    ],
+    "compatibility_syntax": [],
+    "attributes": [
+      "protected"
+    ],
+    "pipe_arg": 1,
+    "effect_class": "pure",
+    "support": "有限标量实数Quantity与精确SI七维单位因子；SI基本/派生单位、2022前缀、分钟/小时/日/升/吨/英制长度固定换算，复合乘除与整数乘方。加减量纲检查，裸非零数只可加无量纲量；值精度保持。单位DSL不执行代码，首版不支持复杂/符号量、仿射温标、货币/联网数据；单位长度256bytes/64词元/16层，幂±32/维度±128，真实预算。",
+    "return_type": "expression",
+    "precision_modes": [
+      "exact",
+      "machine",
+      "arbitrary_supported"
+    ],
+    "precision_notes": "换算因子始终为精确有理数，数值运算保留输入已有精度；不增加新的任意精度算法或物理语义认证。",
+    "platforms": [
+      "cli",
+      "desktop",
+      "web",
+      "ios"
+    ]
+  },
+  {
+    "id": "fn_000217",
+    "canonical_name": "magnitude",
+    "name": "QuantityMagnitude",
+    "modern_name": "magnitude",
+    "aliases": [],
+    "arity": {
+      "min": 1,
+      "max": 1
+    },
+    "parameters": [
+      {
+        "name": "quantity",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": false
+      }
+    ],
+    "options": [],
+    "compatibility_syntax": [],
+    "attributes": [
+      "protected"
+    ],
+    "pipe_arg": 1,
+    "effect_class": "pure",
+    "support": "有限标量实数Quantity与精确SI七维单位因子；SI基本/派生单位、2022前缀、分钟/小时/日/升/吨/英制长度固定换算，复合乘除与整数乘方。加减量纲检查，裸非零数只可加无量纲量；值精度保持。单位DSL不执行代码，首版不支持复杂/符号量、仿射温标、货币/联网数据；单位长度256bytes/64词元/16层，幂±32/维度±128，真实预算。",
+    "return_type": "expression",
+    "precision_modes": [
+      "exact",
+      "machine",
+      "arbitrary_supported"
+    ],
+    "precision_notes": "换算因子始终为精确有理数，数值运算保留输入已有精度；不增加新的任意精度算法或物理语义认证。",
+    "platforms": [
+      "cli",
+      "desktop",
+      "web",
+      "ios"
+    ]
+  },
+  {
+    "id": "fn_000218",
+    "canonical_name": "unit",
+    "name": "QuantityUnit",
+    "modern_name": "unit",
+    "aliases": [],
+    "arity": {
+      "min": 1,
+      "max": 1
+    },
+    "parameters": [
+      {
+        "name": "quantity",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": false
+      }
+    ],
+    "options": [],
+    "compatibility_syntax": [],
+    "attributes": [
+      "protected"
+    ],
+    "pipe_arg": 1,
+    "effect_class": "pure",
+    "support": "有限标量实数Quantity与精确SI七维单位因子；SI基本/派生单位、2022前缀、分钟/小时/日/升/吨/英制长度固定换算，复合乘除与整数乘方。加减量纲检查，裸非零数只可加无量纲量；值精度保持。单位DSL不执行代码，首版不支持复杂/符号量、仿射温标、货币/联网数据；单位长度256bytes/64词元/16层，幂±32/维度±128，真实预算。",
+    "return_type": "expression",
+    "precision_modes": [
+      "exact",
+      "machine",
+      "arbitrary_supported"
+    ],
+    "precision_notes": "换算因子始终为精确有理数，数值运算保留输入已有精度；不增加新的任意精度算法或物理语义认证。",
+    "platforms": [
+      "cli",
+      "desktop",
+      "web",
+      "ios"
+    ]
+  },
+  {
     "id": "fn_000082",
     "canonical_name": "quotient",
     "name": "Quotient",
@@ -11927,6 +12095,66 @@
       "planned_machine"
     ],
     "precision_notes": "保留输入精度。",
+    "platforms": [
+      "cli",
+      "desktop",
+      "web",
+      "ios"
+    ]
+  },
+  {
+    "id": "fn_000216",
+    "canonical_name": "convert_units",
+    "name": "UnitConvert",
+    "modern_name": "convert_units",
+    "aliases": [],
+    "arity": {
+      "min": 2,
+      "max": 2
+    },
+    "parameters": [
+      {
+        "name": "quantity",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": false
+      },
+      {
+        "name": "target_unit",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": false
+      }
+    ],
+    "options": [],
+    "compatibility_syntax": [],
+    "attributes": [
+      "protected"
+    ],
+    "pipe_arg": 1,
+    "effect_class": "pure",
+    "support": "有限标量实数Quantity与精确SI七维单位因子；SI基本/派生单位、2022前缀、分钟/小时/日/升/吨/英制长度固定换算，复合乘除与整数乘方。加减量纲检查，裸非零数只可加无量纲量；值精度保持。单位DSL不执行代码，首版不支持复杂/符号量、仿射温标、货币/联网数据；单位长度256bytes/64词元/16层，幂±32/维度±128，真实预算。",
+    "return_type": "expression",
+    "precision_modes": [
+      "exact",
+      "machine",
+      "arbitrary_supported"
+    ],
+    "precision_notes": "换算因子始终为精确有理数，数值运算保留输入已有精度；不增加新的任意精度算法或物理语义认证。",
     "platforms": [
       "cli",
       "desktop",

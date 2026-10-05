@@ -375,6 +375,12 @@ impl Evaluator {
             }
             return Ok(());
         }
+        if let Some(symbol) = symbol
+            && let Some(value) = crate::science::quantity_arithmetic(self, symbol, &args, ctx)?
+        {
+            values.push(value);
+            return Ok(());
+        }
         let (rebuilt, messages) = with_canonical_messages(|| {
             if let Some(symbol) = symbol {
                 om_core::func(symbol, args.clone())

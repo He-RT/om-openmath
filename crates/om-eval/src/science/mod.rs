@@ -14,6 +14,9 @@ mod registry;
 mod special;
 mod statistics;
 mod table_data;
+mod unit_parse;
+mod unit_registry;
+mod units;
 use crate::{EvalError, Evaluator};
 use om_core::{BUILTIN as B, Expr, ExprKind, Interrupt, MsgLevel};
 use om_num::{Number, Rational};
@@ -137,6 +140,9 @@ pub(super) fn dispatch(
         if let Some(result) = table_data::dispatch(ev, name, &args, ctx)? {
             return Ok(result);
         }
+        if let Some(result) = units::dispatch(name, &args, ctx)? {
+            return Ok(result);
+        }
         if let Some(result) = statistics::dispatch(ev, name, &args, ctx)? {
             return Ok(result);
         }
@@ -158,6 +164,20 @@ pub(super) fn dispatch(
             Ok(None)
         }
         Err(e) => Err(e),
+    }
+}
+pub(crate) fn quantity_arithmetic(
+    ev: &mut Evaluator,
+    head: om_core::Symbol,
+    args: &[Expr],
+    ctx: &Interrupt,
+) -> Result<Option<Expr>, EvalError> {
+    match units::arithmetic(head, args, ctx) {
+        Err(EvalError::Other(reason)) => {
+            ev.message("Quantity", "units", reason, MsgLevel::Warning);
+            Ok(Some(Expr::call(head, args.iter().cloned())))
+        }
+        result => result,
     }
 }
 pub(crate) fn table_structure(

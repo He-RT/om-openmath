@@ -23,7 +23,7 @@
 | [`generating_function`](#generating_function) | 后续规划 | 规划接口，当前不可用 | 微积分与变换中的 GeneratingFunction 能力，进入后续全景目录。 |
 | [`grad`](#grad) | 已实现 | 当前可用 | 笛卡尔梯度 |
 | [`hessian`](#hessian) | 已实现 | 当前可用 | Hessian 矩阵 |
-| [`integrate`](#integrate) | 下一版规划 | 规划接口，当前不可用 | 符号或显式数值积分 |
+| [`integrate`](#integrate) | 部分支持 | 现有入口可用，统一接口待实施 | 符号或显式数值积分 |
 | [`inverse_fourier_transform`](#inverse_fourier_transform) | 后续规划 | 规划接口，当前不可用 | 微积分与变换中的 InverseFourierTransform 能力，进入后续全景目录。 |
 | [`inverse_laplace_transform`](#inverse_laplace_transform) | 后续规划 | 规划接口，当前不可用 | 微积分与变换中的 InverseLaplaceTransform 能力，进入后续全景目录。 |
 | [`inverse_z_transform`](#inverse_z_transform) | 后续规划 | 规划接口，当前不可用 | 微积分与变换中的 InverseZTransform 能力，进入后续全景目录。 |
@@ -650,21 +650,35 @@ Hessian[x^2*y,{x,y}]
 
 ## integrate
 
-**当前实现：下一版规划；目标接口：规划接口，当前不可用。** 目标版本：`0.1.0-pre-alpha.3`。
+**当前实现：部分支持；目标接口：现有入口可用，统一接口待实施。** 目标版本：`0.1.0-pre-alpha.3`。
 
 - 稳定身份：`fn_000148`；条目类型：`function`。
-- 副作用分类（设计预留）：`pure`；参数验证阶段：`documentation_only`，不构成工具授权。
+- 副作用分类（设计预留）：`pure`；参数验证阶段：`runtime_verified`，不构成工具授权。
 
 符号或显式数值积分
 
-- 当前支持：当前无此规范接口的实现。
+- 当前支持：一维真实自适应GK15/7机器积分，有限/反向/单侧与双侧无限区间、显式内部断点。源码readonly原极点保留、坐标局部化，实际误差/采样/区间记录；误差非证书。Mode exact默认尚未交付，不自动近似；precision只machine，奇点/非收敛/舍入/限额/预算真实失败并报告已有部分估计。
 - 目标范围：符号：多项式、线性初等、有限分部积分、一次/二次因子有理式、Gaussian→Erf，保留条件；数值：一维自适应Gauss–Kronrod15/7、有限/无限区间和显式断点，报告误差估计。
-- 返回：expression
-- 精度：符号结果精确；本版数值积分仅机器精度；误差为估计，不是认证区间。
-- 当前计算平台：无；目标计算平台：cli, desktop, web, ios。
+- 返回：exact_expression_or_numeric_diagnostics
+- 精度：仅明确机器算法；指定高精度拒绝，近似误差是估计不是严格包围；符号积分后续同入口接通。
+- 当前计算平台：cli, desktop, web, ios；目标计算平台：cli, desktop, web, ios。
 - 目标图形/交互展示平台：不适用或后续未定。
 - 兼容名称：`Integrate`、`NIntegrate`。
 - 管道位置：第 1 个位置参数（从 1 起）。
+
+当前现代签名：
+
+```text
+integrate(expr,axis,mode:"numeric")
+n_integrate(expr,axis)
+```
+
+当前 Wolfram 签名：
+
+```text
+Integrate[expr,axis,Mode->"numeric"]
+NIntegrate[expr,axis]
+```
 
 目标现代签名（按目标接口状态判断是否已可执行）：
 
@@ -677,6 +691,13 @@ integrate(expr, x); integrate(expr, x: a..b, mode: "exact")
 | `expr` | positional | 必填 | 保持原始结构的被积表达式 | r3 |
 | `x` | positional | 必填 | 签名对应的x参数 | r3 |
 
+当前已登记示例（Wolfram）：
+
+```wolfram
+Integrate[x^2,{x,0,1},Mode->"numeric"]
+NIntegrate[x^2,{x,0,1}]
+```
+
 规划示例（尚未执行；需要目标版本，后续条目不承诺 .3）：
 
 ```text
@@ -686,9 +707,9 @@ integrate(exp(-x^2), x: -inf..inf, mode: "numeric")
 
 验收：独立数学期望、有效/无效参数、边界、预算、中断及声明的平台/精度测试；范围外不伪造成功。
 
-当前源码：暂无当前实现证据。
+当前源码：[crates/om-analysis/src/integration.rs](../../crates/om-analysis/src/integration.rs)、[crates/om-eval/src/science/numeric_integration.rs](../../crates/om-eval/src/science/numeric_integration.rs)、[crates/om-eval/src/science/integration_registry.rs](../../crates/om-eval/src/science/integration_registry.rs)。
 
-当前测试引用：暂无当前实现证据。
+当前测试引用：[crates/om-analysis/tests/integration.rs](../../crates/om-analysis/tests/integration.rs)、[crates/om-eval/tests/numeric_integration.rs](../../crates/om-eval/tests/numeric_integration.rs)。
 
 ## inverse_fourier_transform
 

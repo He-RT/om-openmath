@@ -1,6 +1,6 @@
 # 实际注册审计基线：ba3cd2b；稳定身份与名称分离；目录/副作用为设计数据。
 schema_version = 1
-metadata_version = 13
+metadata_version = 14
 validation_stage = "runtime_verified"
 current_version = "0.1.0-pre-alpha.2"
 target_version = "0.1.0-pre-alpha.3"
@@ -4803,32 +4803,32 @@ effect_class = "pure"
 id = "fn_000148"
 name = "integrate"
 category = "calculus"
-status = "planned"
-interface_status = "planned"
-runtime_names = []
+status = "partial"
+interface_status = "partial"
+runtime_names = ["Integrate", "NIntegrate"]
 compatibility_names = ["Integrate", "NIntegrate"]
-current_modern_signatures = []
-current_wolfram_signatures = []
+current_modern_signatures = ["integrate(expr,axis,mode:\"numeric\")", "n_integrate(expr,axis)"]
+current_wolfram_signatures = ["Integrate[expr,axis,Mode->\"numeric\"]", "NIntegrate[expr,axis]"]
 signatures = ["integrate(expr, x); integrate(expr, x: a..b, mode: \"exact\")"]
 parameters = [{ name = "expr", kind = "positional", default = "必填", description = "保持原始结构的被积表达式", availability = "r3" }, { name = "x", kind = "positional", default = "必填", description = "签名对应的x参数", availability = "r3" }]
-return_type = "expression"
+return_type = "exact_expression_or_numeric_diagnostics"
 semantics = "符号或显式数值积分"
-current_support = "当前无此规范接口的实现。"
+current_support = "一维真实自适应GK15/7机器积分，有限/反向/单侧与双侧无限区间、显式内部断点。源码readonly原极点保留、坐标局部化，实际误差/采样/区间记录；误差非证书。Mode exact默认尚未交付，不自动近似；precision只machine，奇点/非收敛/舍入/限额/预算真实失败并报告已有部分估计。"
 target_support = "符号：多项式、线性初等、有限分部积分、一次/二次因子有理式、Gaussian→Erf，保留条件；数值：一维自适应Gauss–Kronrod15/7、有限/无限区间和显式断点，报告误差估计。"
-precision_modes = ["planned_machine"]
-precision_notes = "符号结果精确；本版数值积分仅机器精度；误差为估计，不是认证区间。"
-current_platforms = []
+precision_modes = ["machine"]
+precision_notes = "仅明确机器算法；指定高精度拒绝，近似误差是估计不是严格包围；符号积分后续同入口接通。"
+current_platforms = ["cli", "desktop", "web", "ios"]
 target_platforms = ["cli", "desktop", "web", "ios"]
 render_platforms = []
-current_examples = []
+current_examples = ["Integrate[x^2,{x,0,1},Mode->\"numeric\"]", "NIntegrate[x^2,{x,0,1}]"]
 planned_examples = ["integrate(x^2, x)", "integrate(exp(-x^2), x: -inf..inf, mode: \"numeric\")"]
-sources = []
-tests = []
+sources = ["crates/om-analysis/src/integration.rs", "crates/om-eval/src/science/numeric_integration.rs", "crates/om-eval/src/science/integration_registry.rs"]
+tests = ["crates/om-analysis/tests/integration.rs", "crates/om-eval/tests/numeric_integration.rs"]
 acceptance = "独立数学期望、有效/无效参数、边界、预算、中断及声明的平台/精度测试；范围外不伪造成功。"
 pipe_arg = 1
 target_version = "0.1.0-pre-alpha.3"
 kind = "function"
-validation_stage = "documentation_only"
+validation_stage = "runtime_verified"
 effect_class = "pure"
 
 [[functions]]
@@ -28931,3 +28931,23 @@ max = 2
 attributes = ["protected", "hold_all"]
 parameters = [{ name = "expr", value_type = "expression", required = true, variadic = false, held = true }, { name = "variables", value_type = "expression", required = true, variadic = false, held = true }]
 options = []
+
+[[runtime]]
+name = "Integrate"
+modern_name = "integrate"
+aliases = []
+min = 2
+max = 9
+attributes = ["protected", "hold_all"]
+parameters = [{ name = "expr", value_type = "expression", required = true, variadic = false, held = true }, { name = "axis", value_type = "expression", required = true, variadic = false, held = true }]
+options = [{ name = "mode", value_type = "enum", required = false, variadic = false, held = true, runtime_name = "Mode", default_source = "\"exact\"", enum_values = ["exact", "numeric"] }, { name = "precision", value_type = "enum", required = false, variadic = false, held = true, runtime_name = "WorkingPrecision", default_source = "MachinePrecision", enum_values = ["machine", "MachinePrecision"] }, { name = "method", value_type = "enum", required = false, variadic = false, held = true, runtime_name = "Method", default_source = "\"gauss_kronrod\"", enum_values = ["gauss_kronrod", "gauss_kronrod_15_7"] }, { name = "abs_tol", value_type = "real", required = false, variadic = false, held = true, runtime_name = "AbsTolerance", default_source = "1e-10", min = 0 }, { name = "rel_tol", value_type = "real", required = false, variadic = false, held = true, runtime_name = "RelTolerance", default_source = "1e-8", min = 0 }, { name = "max_intervals", value_type = "integer", required = false, variadic = false, held = true, runtime_name = "MaxIntervals", default_source = "10000", min = 1, max = 100000 }, { name = "breakpoints", value_type = "expression", required = false, variadic = false, held = true, runtime_name = "Breakpoints", default_source = "{}" }]
+
+[[runtime]]
+name = "NIntegrate"
+modern_name = "n_integrate"
+aliases = ["nintegrate"]
+min = 2
+max = 9
+attributes = ["protected", "hold_all"]
+parameters = [{ name = "expr", value_type = "expression", required = true, variadic = false, held = true }, { name = "axis", value_type = "expression", required = true, variadic = false, held = true }]
+options = [{ name = "mode", value_type = "enum", required = false, variadic = false, held = true, runtime_name = "Mode", default_source = "\"numeric\"", enum_values = ["numeric"] }, { name = "precision", value_type = "enum", required = false, variadic = false, held = true, runtime_name = "WorkingPrecision", default_source = "MachinePrecision", enum_values = ["machine", "MachinePrecision"] }, { name = "method", value_type = "enum", required = false, variadic = false, held = true, runtime_name = "Method", default_source = "\"gauss_kronrod\"", enum_values = ["gauss_kronrod", "gauss_kronrod_15_7"] }, { name = "abs_tol", value_type = "real", required = false, variadic = false, held = true, runtime_name = "AbsTolerance", default_source = "1e-10", min = 0 }, { name = "rel_tol", value_type = "real", required = false, variadic = false, held = true, runtime_name = "RelTolerance", default_source = "1e-8", min = 0 }, { name = "max_intervals", value_type = "integer", required = false, variadic = false, held = true, runtime_name = "MaxIntervals", default_source = "10000", min = 1, max = 100000 }, { name = "breakpoints", value_type = "expression", required = false, variadic = false, held = true, runtime_name = "Breakpoints", default_source = "{}" }]

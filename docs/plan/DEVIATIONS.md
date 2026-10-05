@@ -1,5 +1,7 @@
 # 实施裁决
 
+- **P132 — 真实GK15/7数值积分（2026-10-06，已验证）：** om-analysis新增Options/Integral/Failure/FailureKind与纯real callback integrate，GK15/7最大误差优先细分；有限/反向/无限区间、显式内部断点，双侧无限分别积分尾部，防止发散半部相消成伪主值。节点比例归一与平衡乘积处理极端尺度，resabs/resasc与舍入底限为估计不作证书，输入/非有限样本/回调/区间耗尽/停滞/真实Abort独立；失败保留已有部分估计/实际采样。原Interrupt贯穿扫描/规则/堆统计/回调，不含解析/IO/线程/unsafe/新包。Integrate/NIntegrate共享稳定ID148，统一入口只显式numeric；默认exact尚未交付并保留诊断，WorkingPrecision仅MachinePrecision。Raw源码在readonly局部坐标编译，不约消原极点或执行写入；跨端专门数值诊断UI留R3.5。公开API与返回记录是新增实际契约，原53不变；反射规划用例从已实际部分交付的integrate转为仍规划ode，不修改数学权威。
+
 - **P131 — 构建缓存空间约束（2026-10-06）：** 用户把及时清理无用构建缓存加入活动目标；清理仅本仓库。构建/测试已确认停止后删除target/debug/incremental约21GiB与两个未使用iOS Intermediates.noindex，保留源码、release运行程序/安装产物、当前deps和验收证据，可用空间5.1→23GiB（目录大小与实际释放量区分）。profile.dev/test incremental=false，后续避免每次core目录变化累积大量增量缓存；不改变优化/断言/溢出政策。资源策略由manifest metadata确认，数学批次原973Rust已验证，不为清理单独写镜像测试。本机不运行模拟器。
 
 - **P130 — 笛卡尔微分算子与真实局部求导（2026-10-06，已验证）：** Grad/Jacobian/Hessian/Divergence/Curl/Laplacian六真回调保持参数；坐标1..64互异用户符号，readonly局部化展开源码，拒绝间接写入并恢复全局绑定，复用原真实求导器。Grad/Hessian/Laplacian标量、Jacobian向量行/坐标列、Div维度匹配、Curl仅3D；未知函数保持形式导数。补Erf/Erfc及实主值反双曲/实立方根链式规则，保护原分支成立范围，不声称全坐标/单位/符号Gamma求导。curl(grad)和div(curl)独立恒等式、解析矩阵/形状/变量/预算验证；接口不依赖Agent框架/unsafe/新包。

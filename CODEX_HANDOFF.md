@@ -37,3 +37,5 @@ P127 Swift接续：acde078的失败分段总1096ms vs方法内212ms，不据此�
 最新R3.4a：六笛卡尔微分入口真实求导/局部坐标/readonly与恒等式/独立差分已完成；217回调/212身份、描述13/.2；973Rust/2ignored、59前端/16Python、Clippy/fmt/纯WASM/TS/deny通过，原53不动。接着一维GK15/7积分（含无限区间/断点/误差与失败）、符号积分、极限/级数、ODE、优化/拟合，再R3.5–R3.6。
 
 CI37307173022 iPhone原17总1325ms，kernel291ms/FFI291ms/decode2ms/resume1032ms，原18 resume772ms；真正主线程恢复阻塞已定位，保持整次1s门槛不能仅用kernel时间替代，后续查主线程启动/布局工作。证据target/ci-evidence/r33i。目标更新为尝试完善并发行+随时清理无用构建缓存；仅仓库缓存。刚清21GiB target/debug/incremental及两个iOS中间目录（构建已停止），free5.1→23GiB；dev/test incremental=false，保留release/安装包/当前deps/验收附件，不开启本机模拟器，单代理直接执行。
+
+最新R3.4b数值积分已验证：om-analysisGK15/7纯callback、有限/反向/无限/断点、真实错误估计/部分失败与预算，Integrate只显式numeric/NIntegrate实际接通，raw poles/readonly/local axis保留；默认exact未实现保持partial，后续符号分支不许自动近似。219回调/213身份、描述14/.2；980Rust/2ignored、59前端/16Python、全Clippy/fmt/纯WASM/TS/deny通过，原53不动。上一批25f5c75 CI37341713046已全通过。接着真实符号积分、极限/级数，再ODE/插值/优化/拟合，R3.5–R3.6仍完整待完成；goal不要标complete/不要发.3。最新free24GiB，dev/test incremental=false，及时仅清本仓库未用缓存（保留release/产物/当前运行与源码）。本机不启动模拟器，单代理直接执行。

@@ -5407,6 +5407,166 @@
     ]
   },
   {
+    "id": "fn_000148",
+    "canonical_name": "integrate",
+    "name": "Integrate",
+    "modern_name": "integrate",
+    "aliases": [],
+    "arity": {
+      "min": 2,
+      "max": 9
+    },
+    "parameters": [
+      {
+        "name": "expr",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": true
+      },
+      {
+        "name": "axis",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": true
+      }
+    ],
+    "options": [
+      {
+        "name": "mode",
+        "runtime_name": "Mode",
+        "value_type": "enum",
+        "required": false,
+        "default_source": "\"exact\"",
+        "default_context": null,
+        "enum_values": [
+          "exact",
+          "numeric"
+        ],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": true
+      },
+      {
+        "name": "precision",
+        "runtime_name": "WorkingPrecision",
+        "value_type": "enum",
+        "required": false,
+        "default_source": "MachinePrecision",
+        "default_context": null,
+        "enum_values": [
+          "machine",
+          "MachinePrecision"
+        ],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": true
+      },
+      {
+        "name": "method",
+        "runtime_name": "Method",
+        "value_type": "enum",
+        "required": false,
+        "default_source": "\"gauss_kronrod\"",
+        "default_context": null,
+        "enum_values": [
+          "gauss_kronrod",
+          "gauss_kronrod_15_7"
+        ],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": true
+      },
+      {
+        "name": "abs_tol",
+        "runtime_name": "AbsTolerance",
+        "value_type": "real",
+        "required": false,
+        "default_source": "1e-10",
+        "default_context": null,
+        "enum_values": [],
+        "min": 0,
+        "max": null,
+        "variadic": false,
+        "held": true
+      },
+      {
+        "name": "rel_tol",
+        "runtime_name": "RelTolerance",
+        "value_type": "real",
+        "required": false,
+        "default_source": "1e-8",
+        "default_context": null,
+        "enum_values": [],
+        "min": 0,
+        "max": null,
+        "variadic": false,
+        "held": true
+      },
+      {
+        "name": "max_intervals",
+        "runtime_name": "MaxIntervals",
+        "value_type": "integer",
+        "required": false,
+        "default_source": "10000",
+        "default_context": null,
+        "enum_values": [],
+        "min": 1,
+        "max": 100000,
+        "variadic": false,
+        "held": true
+      },
+      {
+        "name": "breakpoints",
+        "runtime_name": "Breakpoints",
+        "value_type": "expression",
+        "required": false,
+        "default_source": "{}",
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": true
+      }
+    ],
+    "compatibility_syntax": [],
+    "attributes": [
+      "protected",
+      "hold_all"
+    ],
+    "pipe_arg": 1,
+    "effect_class": "pure",
+    "support": "一维真实自适应GK15/7机器积分，有限/反向/单侧与双侧无限区间、显式内部断点。源码readonly原极点保留、坐标局部化，实际误差/采样/区间记录；误差非证书。Mode exact默认尚未交付，不自动近似；precision只machine，奇点/非收敛/舍入/限额/预算真实失败并报告已有部分估计。",
+    "return_type": "exact_expression_or_numeric_diagnostics",
+    "precision_modes": [
+      "machine"
+    ],
+    "precision_notes": "仅明确机器算法；指定高精度拒绝，近似误差是估计不是严格包围；符号积分后续同入口接通。",
+    "platforms": [
+      "cli",
+      "desktop",
+      "web",
+      "ios"
+    ]
+  },
+  {
     "id": "fn_000165",
     "canonical_name": "inverse",
     "name": "Inverse",
@@ -6696,6 +6856,167 @@
       "arbitrary_supported"
     ],
     "precision_notes": "精确计算与已支持的数值近似子集；不把符号保留或格式位数当作新算法/任意精度支持。",
+    "platforms": [
+      "cli",
+      "desktop",
+      "web",
+      "ios"
+    ]
+  },
+  {
+    "id": "fn_000148",
+    "canonical_name": "integrate",
+    "name": "NIntegrate",
+    "modern_name": "n_integrate",
+    "aliases": [
+      "nintegrate"
+    ],
+    "arity": {
+      "min": 2,
+      "max": 9
+    },
+    "parameters": [
+      {
+        "name": "expr",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": true
+      },
+      {
+        "name": "axis",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": true
+      }
+    ],
+    "options": [
+      {
+        "name": "mode",
+        "runtime_name": "Mode",
+        "value_type": "enum",
+        "required": false,
+        "default_source": "\"numeric\"",
+        "default_context": null,
+        "enum_values": [
+          "numeric"
+        ],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": true
+      },
+      {
+        "name": "precision",
+        "runtime_name": "WorkingPrecision",
+        "value_type": "enum",
+        "required": false,
+        "default_source": "MachinePrecision",
+        "default_context": null,
+        "enum_values": [
+          "machine",
+          "MachinePrecision"
+        ],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": true
+      },
+      {
+        "name": "method",
+        "runtime_name": "Method",
+        "value_type": "enum",
+        "required": false,
+        "default_source": "\"gauss_kronrod\"",
+        "default_context": null,
+        "enum_values": [
+          "gauss_kronrod",
+          "gauss_kronrod_15_7"
+        ],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": true
+      },
+      {
+        "name": "abs_tol",
+        "runtime_name": "AbsTolerance",
+        "value_type": "real",
+        "required": false,
+        "default_source": "1e-10",
+        "default_context": null,
+        "enum_values": [],
+        "min": 0,
+        "max": null,
+        "variadic": false,
+        "held": true
+      },
+      {
+        "name": "rel_tol",
+        "runtime_name": "RelTolerance",
+        "value_type": "real",
+        "required": false,
+        "default_source": "1e-8",
+        "default_context": null,
+        "enum_values": [],
+        "min": 0,
+        "max": null,
+        "variadic": false,
+        "held": true
+      },
+      {
+        "name": "max_intervals",
+        "runtime_name": "MaxIntervals",
+        "value_type": "integer",
+        "required": false,
+        "default_source": "10000",
+        "default_context": null,
+        "enum_values": [],
+        "min": 1,
+        "max": 100000,
+        "variadic": false,
+        "held": true
+      },
+      {
+        "name": "breakpoints",
+        "runtime_name": "Breakpoints",
+        "value_type": "expression",
+        "required": false,
+        "default_source": "{}",
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": true
+      }
+    ],
+    "compatibility_syntax": [],
+    "attributes": [
+      "protected",
+      "hold_all"
+    ],
+    "pipe_arg": 1,
+    "effect_class": "pure",
+    "support": "一维真实自适应GK15/7机器积分，有限/反向/单侧与双侧无限区间、显式内部断点。源码readonly原极点保留、坐标局部化，实际误差/采样/区间记录；误差非证书。Mode exact默认尚未交付，不自动近似；precision只machine，奇点/非收敛/舍入/限额/预算真实失败并报告已有部分估计。",
+    "return_type": "exact_expression_or_numeric_diagnostics",
+    "precision_modes": [
+      "machine"
+    ],
+    "precision_notes": "仅明确机器算法；指定高精度拒绝，近似误差是估计不是严格包围；符号积分后续同入口接通。",
     "platforms": [
       "cli",
       "desktop",

@@ -1039,7 +1039,10 @@
     {
       "id": "fn_000148",
       "initial_name": "integrate",
-      "runtime_names": []
+      "runtime_names": [
+        "Integrate",
+        "NIntegrate"
+      ]
     },
     {
       "id": "fn_000149",

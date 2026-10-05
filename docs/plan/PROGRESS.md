@@ -180,3 +180,7 @@ R3.3i提交 `40c75b2`。CI37307173022的iPhone原17总1325.078ms失败，实际q
 - [x] **R3.4a 笛卡尔微分六入口** — Grad/Jacobian/Hessian/Divergence/Curl/Laplacian复用真实D求导器，坐标局部化readonly展开，不间接写入/不替换全局；结果作为局部坐标计算的已完成值返回，避免重写阶段再代入旧ownvalue，求解证据不误转给微分结果。解析期望、矩阵/维度、curl(grad)/div(curl)、独立误差函数中心差分、实主值反双曲/实立方根链式与失败/预算通过。217回调/212身份、描述13/.2。973Rust/2ignored、前端59、Python16、Clippy/fmt/纯WASM/TS/deny通过，原53期望不改。R3.4积分/极限级数/ODE/插值/优化/拟合及R3.5–R3.6继续，不缩减完整.3范围。
 
 2026-10-06用户要求随时清理无用构建缓存；本轮确认所有构建已停止，清理约21GiB debug incremental与约182MiB iOS中间目录，实际磁盘可用5.1→23GiB。保留release/当前deps/验收附件/源码，dev/test incremental=false防止反复堆积；后续只清仓库内不使用缓存，重建前检查空闲。
+
+R3.4a提交 `25f5c75` 的CI37341713046全部通过（Rust/前端/依赖/iOS27）。
+
+- [x] **R3.4b 自适应机器数值积分** — om-analysis纯GK15/7、最大估计误差细分、有限/反向/无限和内部断点、原式只读编译、实际误差与样本/区间统计接通Integrate显式numeric/NIntegrate。双侧尾部独立，不把发散相消成主值成功；非有限/输入/限额/舍入/回调/真实Abort区分，已有部分估计只做未收敛诊断，certified=false。机器路径不接受虚假高精度，exact默认仍保留诊断，不冒充符号算法；同ID148当前partial。新轴语法与旧位置/Wolfram调用、原始孔洞/断点、全局坐标值/间接写入、独立解析/极端尺度/奇点/预算通过。219回调/213身份、描述14/.2；980Rust/2ignored、前端59、Python16、Clippy/fmt/纯WASM/TS/deny通过，原53不变。磁盘free24GiB，无新增incremental。下一任务符号积分及极限/级数，然后ODE/插值/优化/拟合和原R3.5–R3.6，完整.3仍未发行。

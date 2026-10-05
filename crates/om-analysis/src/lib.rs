@@ -1,5 +1,7 @@
 //! Pure numerical analysis: no parsing, expressions, clocks, filesystem or networking.
 #![forbid(unsafe_code)]
+/// Adaptive one-dimensional machine integration with explicit estimates and failure states.
+pub mod integration;
 /// Small dense real matrices and actual LU/Householder QR factorizations.
 pub mod matrix;
 /// Real machine special functions and probability tails; no arbitrary-precision claim.

@@ -4,10 +4,12 @@ mod calculus_registry;
 mod csv_data;
 mod data;
 mod data_number;
+mod integration_registry;
 mod io_registry;
 mod json_data;
 mod matrix;
 mod matrix_numeric;
+mod numeric_integration;
 mod ordering;
 mod probability;
 mod probability_registry;
@@ -141,6 +143,9 @@ pub(super) fn dispatch(
         ctx.tick()?;
         let args = Args::parse(name, args)?;
         if let Some(result) = vector_calculus::dispatch(ev, name, &args, ctx)? {
+            return Ok(result);
+        }
+        if let Some(result) = numeric_integration::dispatch(ev, name, &args, ctx)? {
             return Ok(result);
         }
         if let Some(result) = reflection::dispatch(ev, name, &args, ctx)? {

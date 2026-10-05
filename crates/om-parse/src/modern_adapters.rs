@@ -134,7 +134,9 @@ impl Parser<'_> {
                 args.push(value);
             }
         }
-        if matches!(symbol, B::PLOT | B::CONTOUR_PLOT) {
+        if matches!(symbol, B::PLOT | B::CONTOUR_PLOT)
+            || matches!(symbol.name(), "Integrate" | "NIntegrate")
+        {
             let mut remaining = vec![];
             for keyword in std::mem::take(keywords) {
                 let key = text(self.src, keyword.key);
@@ -152,7 +154,10 @@ impl Parser<'_> {
                     if names::atom(key, self.env.constants) != axis
                         || om_core::builtins::names().contains(&axis.name())
                     {
-                        return self.fail("E027", "绘图轴需要自由符号；常量别名可使用严格常量模式");
+                        return self.fail(
+                            "E027",
+                            "数学范围坐标需要自由符号；常量别名可使用严格常量模式",
+                        );
                     }
                     args.push(self.call(
                         B::LIST,

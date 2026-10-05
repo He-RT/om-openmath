@@ -8709,25 +8709,36 @@
       "name": "integrate",
       "category": "calculus",
       "kind": "function",
-      "status": "planned",
-      "interface_status": "planned",
-      "runtime_names": [],
+      "status": "partial",
+      "interface_status": "partial",
+      "runtime_names": [
+        "Integrate",
+        "NIntegrate"
+      ],
       "compatibility_names": [
         "Integrate",
         "NIntegrate"
       ],
-      "current_modern_signatures": [],
+      "current_modern_signatures": [
+        "integrate(expr,axis,mode:\"numeric\")",
+        "n_integrate(expr,axis)"
+      ],
       "signatures": [
         "integrate(expr, x); integrate(expr, x: a..b, mode: \"exact\")"
       ],
-      "current_support": "当前无此规范接口的实现。",
+      "current_support": "一维真实自适应GK15/7机器积分，有限/反向/单侧与双侧无限区间、显式内部断点。源码readonly原极点保留、坐标局部化，实际误差/采样/区间记录；误差非证书。Mode exact默认尚未交付，不自动近似；precision只machine，奇点/非收敛/舍入/限额/预算真实失败并报告已有部分估计。",
       "target_support": "符号：多项式、线性初等、有限分部积分、一次/二次因子有理式、Gaussian→Erf，保留条件；数值：一维自适应Gauss–Kronrod15/7、有限/无限区间和显式断点，报告误差估计。",
-      "return_type": "expression",
+      "return_type": "exact_expression_or_numeric_diagnostics",
       "precision_modes": [
-        "planned_machine"
+        "machine"
       ],
-      "precision_notes": "符号结果精确；本版数值积分仅机器精度；误差为估计，不是认证区间。",
-      "current_platforms": [],
+      "precision_notes": "仅明确机器算法；指定高精度拒绝，近似误差是估计不是严格包围；符号积分后续同入口接通。",
+      "current_platforms": [
+        "cli",
+        "desktop",
+        "web",
+        "ios"
+      ],
       "target_platforms": [
         "cli",
         "desktop",
@@ -8750,7 +8761,10 @@
           "availability": "r3"
         }
       ],
-      "current_examples": [],
+      "current_examples": [
+        "Integrate[x^2,{x,0,1},Mode->\"numeric\"]",
+        "NIntegrate[x^2,{x,0,1}]"
+      ],
       "planned_examples": [
         "integrate(x^2, x)",
         "integrate(exp(-x^2), x: -inf..inf, mode: \"numeric\")"

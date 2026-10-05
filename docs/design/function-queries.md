@@ -3,7 +3,8 @@
 本页记录 `.3` 开发分支的四个实际查询入口。描述与文档索引均从 `functions.toml` 生成，保持稳定身份，不从函数名推断数学能力。
 
 ```text
-help("integrate")                 # 可看规划；executable=false
+help("ode")                       # 可看规划；executable=false
+help("integrate")                 # 当前partial：显式numeric可执行
 help("map").runtime.pipe_arg      # 真实 2
 options("quantity")               # 单位必填二选一的实际规则
 functions()                       # 默认仅当前回调身份，不含规划

@@ -2,6 +2,8 @@
 #![forbid(unsafe_code)]
 /// Small dense real matrices and actual LU/Householder QR factorizations.
 pub mod matrix;
+/// Real machine special functions and probability tails; no arbitrary-precision claim.
+pub mod special;
 use om_num::ctx::Abort;
 /// Numerical failures remain distinct from successful approximate outputs.
 #[derive(Debug, thiserror::Error)]

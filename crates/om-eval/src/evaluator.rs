@@ -21,6 +21,7 @@ pub struct Evaluator {
     pub(crate) scopes: Vec<std::collections::BTreeMap<Symbol, Option<Expr>>>,
     pub(crate) last_solver_result: Option<crate::SolverResult>,
     pub(crate) evaluating: u32,
+    pub(crate) random: om_num::rng::SplitMix64,
 }
 impl Default for Evaluator {
     fn default() -> Self {
@@ -42,6 +43,7 @@ impl Evaluator {
             scopes: vec![],
             last_solver_result: None,
             evaluating: 0,
+            random: om_num::rng::SplitMix64::new(0),
         }
     }
     /// Evaluate without recording history. All Result paths restore logical depth.
@@ -117,6 +119,7 @@ impl Evaluator {
             scopes: self.scopes.clone(),
             last_solver_result: None,
             evaluating: 0,
+            random: self.random.clone(),
         }
     }
     pub(crate) fn attributes(&self, symbol: Symbol) -> A {

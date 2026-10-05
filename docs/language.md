@@ -83,3 +83,19 @@ plot(x^2+y^2=1, x: -2..2, y: -2..2, view: "contour")
 管道根据元数据选择主参数；map的数据在第二位置，不重复执行左侧。fn按后续箭头识别，原fn(x)调用仍保留；内层参数可遮蔽外层，插入值不会被同名参数捕获。范围为有方向闭区间，切片端点必须存在且不能为0；旧单项索引0取头仍保留。记录的键按文字保存，重复键拒绝，空{}仍为列表，空记录用record()。矩阵乘积双线性；两个向量的内积共轭第一向量，尺寸上限64。Wolfram @原义不变。
 
 模式只选择已有真实算法；精确求解不能接受数值精度选项，局部find_root不承诺完整解集。初值与括区间互斥。line/零轮廓contour已支持，surface/density、积分、ODE及explore按后续批次交付，当前不会被当作成功计算。笔记本继续仅保存原源码，使用本节源码时需要.3；不自动改写旧笔记本。
+
+## .3 开发版的概率与特殊函数（R3.3d）
+
+当前 dev 已接入 `acoth`、`asech`、`acsch`、`erf`、`erfc`、`gamma`、`log_gamma`、`beta`，以及正态/均匀分布的 `pdf`、`cdf`、`quantile`。特殊函数只有所列实数机器路径；Gamma 正整数及少量识别值保持精确，其余精确输入保留原式，使用 `numeric(erf(1))` 等显式请求近似。高精度与复杂分支尚未支持。
+
+```text
+gamma(5)                                        # 精确 24
+erfc(8.0)                                       # 直接计算微小尾部
+quantile(normal_distribution(), 0.025)
+quantile(uniform_distribution(bounds: [2,6]), 1/4) # 精确 3
+random_normal(count: 100, seed: 42)               # 可重复的局部流
+random_uniform()                                # 主会话流中的一个值
+seed_random(42)                                 # 重置主会话流
+```
+
+随机 count 省略时为标量，显式提供时为列表（0..100000 项）。显式 seed 不改变主会话流；失败或取消不推进主流，只读计算使用独立快照。数学范围、精度和边界详见[特殊函数与概率实现](design/special-probability.md)，这些接口尚未随公开 `.2` 发布。

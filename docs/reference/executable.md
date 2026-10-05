@@ -4,7 +4,7 @@
 
 [全景目录](README.md) · [下一版账本](../plan/NEXT_RELEASE.md)
 
-描述版本 6；下列均有真实回调。现代组合语法及已有回调的 mode/output 已接通，后续数学能力仍须按 R3.3–R3.6 交付。参数类型约束用于字面输入；符号与表达式在真实回调求值后检查。默认表达式仅描述省略行为，不自动插入参数；上下文默认值不伪装成字面值。副作用标签只描述入口，不能授权嵌套函数或替代只读隔离。
+描述版本 7；下列均有真实回调。现代组合语法及已有回调的 mode/output 已接通，后续数学能力仍须按 R3.3–R3.6 交付。参数类型约束用于字面输入；符号与表达式在真实回调求值后检查。默认表达式仅描述省略行为，不自动插入参数；上下文默认值不伪装成字面值。副作用标签只描述入口，不能授权嵌套函数或替代只读隔离。
 
 ## abs
 
@@ -2366,4 +2366,210 @@
 | `onto` | 位置 | expression | 是 | 必填 |  |
 
 数学边界与精度：[所属条目](linear.md#projection)。
+
+## erf
+
+稳定身份 `fn_000132`；回调 `Erf`；归属 `erf`。兼容拼写：无其他现代拼写。
+
+保持属性：protected, listable, numeric_function；管道输入位置：1；入口副作用：`pure`。
+
+| 参数 | 角色 | 类型 | 必填 | 默认值或上下文 | 枚举 / 范围 |
+|---|---|---|---|---|---|
+| `x` | 位置 | expression | 是 | 必填 |  |
+
+数学边界与精度：[所属条目](basics.md#erf)。
+
+## erfc
+
+稳定身份 `fn_000133`；回调 `Erfc`；归属 `erfc`。兼容拼写：无其他现代拼写。
+
+保持属性：protected, listable, numeric_function；管道输入位置：1；入口副作用：`pure`。
+
+| 参数 | 角色 | 类型 | 必填 | 默认值或上下文 | 枚举 / 范围 |
+|---|---|---|---|---|---|
+| `x` | 位置 | expression | 是 | 必填 |  |
+
+数学边界与精度：[所属条目](basics.md#erfc)。
+
+## gamma
+
+稳定身份 `fn_000134`；回调 `Gamma`；归属 `gamma`。兼容拼写：无其他现代拼写。
+
+保持属性：protected, listable, numeric_function；管道输入位置：1；入口副作用：`pure`。
+
+| 参数 | 角色 | 类型 | 必填 | 默认值或上下文 | 枚举 / 范围 |
+|---|---|---|---|---|---|
+| `x` | 位置 | expression | 是 | 必填 |  |
+
+数学边界与精度：[所属条目](basics.md#gamma)。
+
+## log_gamma
+
+稳定身份 `fn_000135`；回调 `LogGamma`；归属 `log_gamma`。兼容拼写：无其他现代拼写。
+
+保持属性：protected, listable, numeric_function；管道输入位置：1；入口副作用：`pure`。
+
+| 参数 | 角色 | 类型 | 必填 | 默认值或上下文 | 枚举 / 范围 |
+|---|---|---|---|---|---|
+| `x` | 位置 | expression | 是 | 必填 |  |
+
+数学边界与精度：[所属条目](basics.md#log_gamma)。
+
+## beta
+
+稳定身份 `fn_000136`；回调 `Beta`；归属 `beta`。兼容拼写：无其他现代拼写。
+
+保持属性：protected, listable, numeric_function；管道输入位置：1；入口副作用：`pure`。
+
+| 参数 | 角色 | 类型 | 必填 | 默认值或上下文 | 枚举 / 范围 |
+|---|---|---|---|---|---|
+| `a` | 位置 | expression | 是 | 必填 |  |
+| `b` | 位置 | expression | 是 | 必填 |  |
+
+数学边界与精度：[所属条目](basics.md#beta)。
+
+## acoth
+
+稳定身份 `fn_000129`；回调 `ArcCoth`；归属 `acoth`。兼容拼写：无其他现代拼写。
+
+保持属性：protected, listable, numeric_function；管道输入位置：1；入口副作用：`pure`。
+
+| 参数 | 角色 | 类型 | 必填 | 默认值或上下文 | 枚举 / 范围 |
+|---|---|---|---|---|---|
+| `x` | 位置 | expression | 是 | 必填 |  |
+
+数学边界与精度：[所属条目](basics.md#acoth)。
+
+## asech
+
+稳定身份 `fn_000130`；回调 `ArcSech`；归属 `asech`。兼容拼写：无其他现代拼写。
+
+保持属性：protected, listable, numeric_function；管道输入位置：1；入口副作用：`pure`。
+
+| 参数 | 角色 | 类型 | 必填 | 默认值或上下文 | 枚举 / 范围 |
+|---|---|---|---|---|---|
+| `x` | 位置 | expression | 是 | 必填 |  |
+
+数学边界与精度：[所属条目](basics.md#asech)。
+
+## acsch
+
+稳定身份 `fn_000131`；回调 `ArcCsch`；归属 `acsch`。兼容拼写：无其他现代拼写。
+
+保持属性：protected, listable, numeric_function；管道输入位置：1；入口副作用：`pure`。
+
+| 参数 | 角色 | 类型 | 必填 | 默认值或上下文 | 枚举 / 范围 |
+|---|---|---|---|---|---|
+| `x` | 位置 | expression | 是 | 必填 |  |
+
+数学边界与精度：[所属条目](basics.md#acsch)。
+
+## normal_distribution
+
+稳定身份 `fn_000190`；回调 `NormalDistribution`；归属 `normal_distribution`。兼容拼写：无其他现代拼写。
+
+保持属性：protected；管道输入位置：0；入口副作用：`pure`。
+
+| 参数 | 角色 | 类型 | 必填 | 默认值或上下文 | 枚举 / 范围 |
+|---|---|---|---|---|---|
+| `mean` | 位置 | expression | 否 | 0 |  |
+| `std` | 位置 | expression | 否 | 1 |  |
+| `mean` | 命名 | expression | 否 | 0 |  |
+| `std` | 命名 | expression | 否 | 1 |  |
+
+数学边界与精度：[所属条目](statistics.md#normal_distribution)。
+
+## uniform_distribution
+
+稳定身份 `fn_000191`；回调 `UniformDistribution`；归属 `uniform_distribution`。兼容拼写：无其他现代拼写。
+
+保持属性：protected；管道输入位置：0；入口副作用：`pure`。
+
+| 参数 | 角色 | 类型 | 必填 | 默认值或上下文 | 枚举 / 范围 |
+|---|---|---|---|---|---|
+| `bounds` | 位置 | expression | 否 | [0,1] |  |
+| `bounds` | 命名 | expression | 否 | [0,1] |  |
+
+数学边界与精度：[所属条目](statistics.md#uniform_distribution)。
+
+## pdf
+
+稳定身份 `fn_000192`；回调 `PDF`；归属 `pdf`。兼容拼写：无其他现代拼写。
+
+保持属性：protected；管道输入位置：1；入口副作用：`pure`。
+
+| 参数 | 角色 | 类型 | 必填 | 默认值或上下文 | 枚举 / 范围 |
+|---|---|---|---|---|---|
+| `distribution` | 位置 | expression | 是 | 必填 |  |
+| `value` | 位置 | expression | 是 | 必填 |  |
+
+数学边界与精度：[所属条目](statistics.md#pdf)。
+
+## cdf
+
+稳定身份 `fn_000193`；回调 `CDF`；归属 `cdf`。兼容拼写：无其他现代拼写。
+
+保持属性：protected；管道输入位置：1；入口副作用：`pure`。
+
+| 参数 | 角色 | 类型 | 必填 | 默认值或上下文 | 枚举 / 范围 |
+|---|---|---|---|---|---|
+| `distribution` | 位置 | expression | 是 | 必填 |  |
+| `value` | 位置 | expression | 是 | 必填 |  |
+
+数学边界与精度：[所属条目](statistics.md#cdf)。
+
+## random_uniform
+
+稳定身份 `fn_000194`；回调 `RandomUniform`；归属 `random_uniform`。兼容拼写：无其他现代拼写。
+
+保持属性：protected；管道输入位置：0；入口副作用：`write_session`。
+
+| 参数 | 角色 | 类型 | 必填 | 默认值或上下文 | 枚举 / 范围 |
+|---|---|---|---|---|---|
+| `count` | 命名 | integer | 否 | 1 | ; ≥0; ≤100000 |
+| `bounds` | 命名 | expression | 否 | [0,1] |  |
+| `seed` | 命名 | integer | 否 | 独立会话流；省略不重置种子 | ; ≥0 |
+
+数学边界与精度：[所属条目](statistics.md#random_uniform)。
+
+## random_normal
+
+稳定身份 `fn_000195`；回调 `RandomNormal`；归属 `random_normal`。兼容拼写：无其他现代拼写。
+
+保持属性：protected；管道输入位置：0；入口副作用：`write_session`。
+
+| 参数 | 角色 | 类型 | 必填 | 默认值或上下文 | 枚举 / 范围 |
+|---|---|---|---|---|---|
+| `count` | 命名 | integer | 否 | 1 | ; ≥0; ≤100000 |
+| `mean` | 命名 | expression | 否 | 0 |  |
+| `std` | 命名 | expression | 否 | 1 |  |
+| `seed` | 命名 | integer | 否 | 独立会话流；省略不重置种子 | ; ≥0 |
+
+数学边界与精度：[所属条目](statistics.md#random_normal)。
+
+## random_choice
+
+稳定身份 `fn_000196`；回调 `RandomChoice`；归属 `random_choice`。兼容拼写：无其他现代拼写。
+
+保持属性：protected；管道输入位置：1；入口副作用：`write_session`。
+
+| 参数 | 角色 | 类型 | 必填 | 默认值或上下文 | 枚举 / 范围 |
+|---|---|---|---|---|---|
+| `data` | 位置 | expression | 是 | 必填 |  |
+| `count` | 命名 | integer | 否 | 1 | ; ≥0; ≤100000 |
+| `seed` | 命名 | integer | 否 | 独立会话流；省略不重置种子 | ; ≥0 |
+
+数学边界与精度：[所属条目](statistics.md#random_choice)。
+
+## seed_random
+
+稳定身份 `fn_000197`；回调 `SeedRandom`；归属 `seed_random`。兼容拼写：无其他现代拼写。
+
+保持属性：protected；管道输入位置：0；入口副作用：`write_session`。
+
+| 参数 | 角色 | 类型 | 必填 | 默认值或上下文 | 枚举 / 范围 |
+|---|---|---|---|---|---|
+| `seed` | 位置 | integer | 是 | 必填 | ; ≥0 |
+
+数学边界与精度：[所属条目](statistics.md#seed_random)。
 

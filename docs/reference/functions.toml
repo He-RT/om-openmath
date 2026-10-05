@@ -1,6 +1,6 @@
 # 实际注册审计基线：ba3cd2b；稳定身份与名称分离；目录/副作用为设计数据。
 schema_version = 1
-metadata_version = 6
+metadata_version = 7
 validation_stage = "runtime_verified"
 current_version = "0.1.0-pre-alpha.2"
 target_version = "0.1.0-pre-alpha.3"
@@ -4195,256 +4195,256 @@ effect_class = "pure"
 id = "fn_000129"
 name = "acoth"
 category = "basics"
-status = "planned"
-interface_status = "planned"
-runtime_names = []
-compatibility_names = []
-current_modern_signatures = []
-current_wolfram_signatures = []
+status = "implemented"
+interface_status = "current"
+runtime_names = ["ArcCoth"]
+compatibility_names = ["ArcCoth"]
+current_modern_signatures = ["acoth(x)"]
+current_wolfram_signatures = ["ArcCoth[x]"]
 signatures = ["acoth(x)"]
-parameters = [{ name = "x", kind = "positional", default = "必填", description = "签名对应的x参数", availability = "r3" }]
+parameters = [{ name = "x", kind = "positional", default = "必填", description = "签名对应的x参数", availability = "current" }]
 return_type = "expression"
 semantics = "主值反双曲余切"
-current_support = "当前无此规范接口的实现。"
+current_support = "实数主值|x|>1；机器路径。精确非特殊值保留原式，N可请求机器近似。"
 target_support = "精确可识别值及所声明实数机器路径；新调用注册尚未交付。"
-precision_modes = ["planned_machine"]
-precision_notes = "精确值或明确的机器路径；precision/accuracy 查询输入已有信息。"
-current_platforms = []
+precision_modes = ["machine"]
+precision_notes = "仅明确的机器算法与已识别精确值；高精度/复数算法未实现，不静默降级。随机流为确定性伪随机，不是密码学随机。"
+current_platforms = ["cli", "desktop", "web", "ios"]
 target_platforms = ["cli", "desktop", "web", "ios"]
 render_platforms = []
-current_examples = []
-planned_examples = ["acoth(2)"]
-sources = []
-tests = []
+current_examples = ["ArcCoth[2.]"]
+planned_examples = []
+sources = ["crates/om-eval/src/science/probability_registry.rs", "crates/om-eval/src/science/special.rs"]
+tests = ["crates/om-analysis/tests/special.rs", "crates/om-eval/tests/probability.rs"]
 acceptance = "独立数学期望、有效/无效参数、边界、预算、中断及声明的平台/精度测试；范围外不伪造成功。"
 pipe_arg = 1
 target_version = "0.1.0-pre-alpha.3"
 kind = "function"
-validation_stage = "documentation_only"
+validation_stage = "runtime_verified"
 effect_class = "pure"
 
 [[functions]]
 id = "fn_000130"
 name = "asech"
 category = "basics"
-status = "planned"
-interface_status = "planned"
-runtime_names = []
-compatibility_names = []
-current_modern_signatures = []
-current_wolfram_signatures = []
+status = "implemented"
+interface_status = "current"
+runtime_names = ["ArcSech"]
+compatibility_names = ["ArcSech"]
+current_modern_signatures = ["asech(x)"]
+current_wolfram_signatures = ["ArcSech[x]"]
 signatures = ["asech(x)"]
-parameters = [{ name = "x", kind = "positional", default = "必填", description = "签名对应的x参数", availability = "r3" }]
+parameters = [{ name = "x", kind = "positional", default = "必填", description = "签名对应的x参数", availability = "current" }]
 return_type = "expression"
 semantics = "主值反双曲正割"
-current_support = "当前无此规范接口的实现。"
+current_support = "实数主值0<x≤1；1精确为0；机器路径。"
 target_support = "精确可识别值及所声明实数机器路径；新调用注册尚未交付。"
-precision_modes = ["planned_machine"]
-precision_notes = "精确值或明确的机器路径；precision/accuracy 查询输入已有信息。"
-current_platforms = []
+precision_modes = ["exact", "machine"]
+precision_notes = "仅明确的机器算法与已识别精确值；高精度/复数算法未实现，不静默降级。随机流为确定性伪随机，不是密码学随机。"
+current_platforms = ["cli", "desktop", "web", "ios"]
 target_platforms = ["cli", "desktop", "web", "ios"]
 render_platforms = []
-current_examples = []
-planned_examples = ["asech(1/2)"]
-sources = []
-tests = []
+current_examples = ["ArcSech[0.5]"]
+planned_examples = []
+sources = ["crates/om-eval/src/science/probability_registry.rs", "crates/om-eval/src/science/special.rs"]
+tests = ["crates/om-analysis/tests/special.rs", "crates/om-eval/tests/probability.rs"]
 acceptance = "独立数学期望、有效/无效参数、边界、预算、中断及声明的平台/精度测试；范围外不伪造成功。"
 pipe_arg = 1
 target_version = "0.1.0-pre-alpha.3"
 kind = "function"
-validation_stage = "documentation_only"
+validation_stage = "runtime_verified"
 effect_class = "pure"
 
 [[functions]]
 id = "fn_000131"
 name = "acsch"
 category = "basics"
-status = "planned"
-interface_status = "planned"
-runtime_names = []
-compatibility_names = []
-current_modern_signatures = []
-current_wolfram_signatures = []
+status = "implemented"
+interface_status = "current"
+runtime_names = ["ArcCsch"]
+compatibility_names = ["ArcCsch"]
+current_modern_signatures = ["acsch(x)"]
+current_wolfram_signatures = ["ArcCsch[x]"]
 signatures = ["acsch(x)"]
-parameters = [{ name = "x", kind = "positional", default = "必填", description = "签名对应的x参数", availability = "r3" }]
+parameters = [{ name = "x", kind = "positional", default = "必填", description = "签名对应的x参数", availability = "current" }]
 return_type = "expression"
 semantics = "主值反双曲余割"
-current_support = "当前无此规范接口的实现。"
+current_support = "非零有限实数主值；机器路径。"
 target_support = "精确可识别值及所声明实数机器路径；新调用注册尚未交付。"
-precision_modes = ["planned_machine"]
-precision_notes = "精确值或明确的机器路径；precision/accuracy 查询输入已有信息。"
-current_platforms = []
+precision_modes = ["machine"]
+precision_notes = "仅明确的机器算法与已识别精确值；高精度/复数算法未实现，不静默降级。随机流为确定性伪随机，不是密码学随机。"
+current_platforms = ["cli", "desktop", "web", "ios"]
 target_platforms = ["cli", "desktop", "web", "ios"]
 render_platforms = []
-current_examples = []
-planned_examples = ["acsch(2)"]
-sources = []
-tests = []
+current_examples = ["ArcCsch[2.]"]
+planned_examples = []
+sources = ["crates/om-eval/src/science/probability_registry.rs", "crates/om-eval/src/science/special.rs"]
+tests = ["crates/om-analysis/tests/special.rs", "crates/om-eval/tests/probability.rs"]
 acceptance = "独立数学期望、有效/无效参数、边界、预算、中断及声明的平台/精度测试；范围外不伪造成功。"
 pipe_arg = 1
 target_version = "0.1.0-pre-alpha.3"
 kind = "function"
-validation_stage = "documentation_only"
+validation_stage = "runtime_verified"
 effect_class = "pure"
 
 [[functions]]
 id = "fn_000132"
 name = "erf"
 category = "basics"
-status = "planned"
-interface_status = "planned"
-runtime_names = []
-compatibility_names = []
-current_modern_signatures = []
-current_wolfram_signatures = []
+status = "implemented"
+interface_status = "current"
+runtime_names = ["Erf"]
+compatibility_names = ["Erf"]
+current_modern_signatures = ["erf(x)"]
+current_wolfram_signatures = ["Erf[x]"]
 signatures = ["erf(x)"]
-parameters = [{ name = "x", kind = "positional", default = "必填", description = "签名对应的x参数", availability = "r3" }]
+parameters = [{ name = "x", kind = "positional", default = "必填", description = "签名对应的x参数", availability = "current" }]
 return_type = "expression"
 semantics = "误差函数"
-current_support = "当前无此规范接口的实现。"
+current_support = "实数机器路径和精确零值；小参数级数与直接互补尾部，拒绝高精度和复参数。"
 target_support = "实参数机器值、端点与对称性；符号 Gaussian 积分可保留此头；高精度数值未承诺。"
-precision_modes = ["planned_machine"]
-precision_notes = "精确值或明确的机器路径；precision/accuracy 查询输入已有信息。"
-current_platforms = []
+precision_modes = ["exact", "machine"]
+precision_notes = "仅明确的机器算法与已识别精确值；高精度/复数算法未实现，不静默降级。随机流为确定性伪随机，不是密码学随机。"
+current_platforms = ["cli", "desktop", "web", "ios"]
 target_platforms = ["cli", "desktop", "web", "ios"]
 render_platforms = []
-current_examples = []
-planned_examples = ["erf(1)"]
-sources = []
-tests = []
+current_examples = ["Erf[1.]"]
+planned_examples = []
+sources = ["crates/om-eval/src/science/probability_registry.rs", "crates/om-eval/src/science/special.rs"]
+tests = ["crates/om-analysis/tests/special.rs", "crates/om-eval/tests/probability.rs"]
 acceptance = "独立数学期望、有效/无效参数、边界、预算、中断及声明的平台/精度测试；范围外不伪造成功。"
 pipe_arg = 1
 target_version = "0.1.0-pre-alpha.3"
 kind = "function"
-validation_stage = "documentation_only"
+validation_stage = "runtime_verified"
 effect_class = "pure"
 
 [[functions]]
 id = "fn_000133"
 name = "erfc"
 category = "basics"
-status = "planned"
-interface_status = "planned"
-runtime_names = []
-compatibility_names = []
-current_modern_signatures = []
-current_wolfram_signatures = []
+status = "implemented"
+interface_status = "current"
+runtime_names = ["Erfc"]
+compatibility_names = ["Erfc"]
+current_modern_signatures = ["erfc(x)"]
+current_wolfram_signatures = ["Erfc[x]"]
 signatures = ["erfc(x)"]
-parameters = [{ name = "x", kind = "positional", default = "必填", description = "签名对应的x参数", availability = "r3" }]
+parameters = [{ name = "x", kind = "positional", default = "必填", description = "签名对应的x参数", availability = "current" }]
 return_type = "expression"
 semantics = "互补误差函数"
-current_support = "当前无此规范接口的实现。"
+current_support = "实数机器路径和精确零值；独立计算尾部避免1-erf抵消，机器下溢为0。"
 target_support = "实参数机器值、端点与对称性；符号 Gaussian 积分可保留此头；高精度数值未承诺。"
-precision_modes = ["planned_machine"]
-precision_notes = "精确值或明确的机器路径；precision/accuracy 查询输入已有信息。"
-current_platforms = []
+precision_modes = ["exact", "machine"]
+precision_notes = "仅明确的机器算法与已识别精确值；高精度/复数算法未实现，不静默降级。随机流为确定性伪随机，不是密码学随机。"
+current_platforms = ["cli", "desktop", "web", "ios"]
 target_platforms = ["cli", "desktop", "web", "ios"]
 render_platforms = []
-current_examples = []
-planned_examples = ["erfc(1)"]
-sources = []
-tests = []
+current_examples = ["Erfc[8.]"]
+planned_examples = []
+sources = ["crates/om-eval/src/science/probability_registry.rs", "crates/om-eval/src/science/special.rs"]
+tests = ["crates/om-analysis/tests/special.rs", "crates/om-eval/tests/probability.rs"]
 acceptance = "独立数学期望、有效/无效参数、边界、预算、中断及声明的平台/精度测试；范围外不伪造成功。"
 pipe_arg = 1
 target_version = "0.1.0-pre-alpha.3"
 kind = "function"
-validation_stage = "documentation_only"
+validation_stage = "runtime_verified"
 effect_class = "pure"
 
 [[functions]]
 id = "fn_000134"
 name = "gamma"
 category = "basics"
-status = "planned"
-interface_status = "planned"
-runtime_names = []
-compatibility_names = []
-current_modern_signatures = []
-current_wolfram_signatures = []
+status = "implemented"
+interface_status = "current"
+runtime_names = ["Gamma"]
+compatibility_names = ["Gamma"]
+current_modern_signatures = ["gamma(x)"]
+current_wolfram_signatures = ["Gamma[x]"]
 signatures = ["gamma(x)"]
-parameters = [{ name = "x", kind = "positional", default = "必填", description = "首版正实参数", availability = "r3" }]
+parameters = [{ name = "x", kind = "positional", default = "必填", description = "首版正实参数", availability = "current" }]
 return_type = "expression"
 semantics = "Gamma 函数"
-current_support = "当前无此规范接口的实现。"
+current_support = "有限正实机器路径；正整数≤1000001通过真实Factorial给精确结果。溢出拒绝。"
 target_support = "首版机器正实参数；Gamma 正整数支持精确阶乘关系；非正参数/复杂分支和任意精度进入后续。"
-precision_modes = ["planned_machine"]
-precision_notes = "精确值或明确的机器路径；precision/accuracy 查询输入已有信息。"
-current_platforms = []
+precision_modes = ["exact", "machine"]
+precision_notes = "仅明确的机器算法与已识别精确值；高精度/复数算法未实现，不静默降级。随机流为确定性伪随机，不是密码学随机。"
+current_platforms = ["cli", "desktop", "web", "ios"]
 target_platforms = ["cli", "desktop", "web", "ios"]
 render_platforms = []
-current_examples = []
-planned_examples = ["gamma(5)"]
-sources = []
-tests = []
+current_examples = ["Gamma[5]"]
+planned_examples = []
+sources = ["crates/om-eval/src/science/probability_registry.rs", "crates/om-eval/src/science/special.rs"]
+tests = ["crates/om-analysis/tests/special.rs", "crates/om-eval/tests/probability.rs"]
 acceptance = "独立数学期望、有效/无效参数、边界、预算、中断及声明的平台/精度测试；范围外不伪造成功。"
 pipe_arg = 1
 target_version = "0.1.0-pre-alpha.3"
 kind = "function"
-validation_stage = "documentation_only"
+validation_stage = "runtime_verified"
 effect_class = "pure"
 
 [[functions]]
 id = "fn_000135"
 name = "log_gamma"
 category = "basics"
-status = "planned"
-interface_status = "planned"
-runtime_names = []
-compatibility_names = []
-current_modern_signatures = []
-current_wolfram_signatures = []
+status = "implemented"
+interface_status = "current"
+runtime_names = ["LogGamma"]
+compatibility_names = ["LogGamma"]
+current_modern_signatures = ["log_gamma(x)"]
+current_wolfram_signatures = ["LogGamma[x]"]
 signatures = ["log_gamma(x)"]
-parameters = [{ name = "x", kind = "positional", default = "必填", description = "签名对应的x参数", availability = "r3" }]
+parameters = [{ name = "x", kind = "positional", default = "必填", description = "签名对应的x参数", availability = "current" }]
 return_type = "expression"
 semantics = "正实参数 LogGamma"
-current_support = "当前无此规范接口的实现。"
+current_support = "有限正实机器路径；递推与Stirling展开。复杂分支/高精度不支持。"
 target_support = "首版机器正实参数；Gamma 正整数支持精确阶乘关系；非正参数/复杂分支和任意精度进入后续。"
-precision_modes = ["planned_machine"]
-precision_notes = "精确值或明确的机器路径；precision/accuracy 查询输入已有信息。"
-current_platforms = []
+precision_modes = ["machine"]
+precision_notes = "仅明确的机器算法与已识别精确值；高精度/复数算法未实现，不静默降级。随机流为确定性伪随机，不是密码学随机。"
+current_platforms = ["cli", "desktop", "web", "ios"]
 target_platforms = ["cli", "desktop", "web", "ios"]
 render_platforms = []
-current_examples = []
-planned_examples = ["log_gamma(5.0)"]
-sources = []
-tests = []
+current_examples = ["LogGamma[1000.]"]
+planned_examples = []
+sources = ["crates/om-eval/src/science/probability_registry.rs", "crates/om-eval/src/science/special.rs"]
+tests = ["crates/om-analysis/tests/special.rs", "crates/om-eval/tests/probability.rs"]
 acceptance = "独立数学期望、有效/无效参数、边界、预算、中断及声明的平台/精度测试；范围外不伪造成功。"
 pipe_arg = 1
 target_version = "0.1.0-pre-alpha.3"
 kind = "function"
-validation_stage = "documentation_only"
+validation_stage = "runtime_verified"
 effect_class = "pure"
 
 [[functions]]
 id = "fn_000136"
 name = "beta"
 category = "basics"
-status = "planned"
-interface_status = "planned"
-runtime_names = []
-compatibility_names = []
-current_modern_signatures = []
-current_wolfram_signatures = []
+status = "implemented"
+interface_status = "current"
+runtime_names = ["Beta"]
+compatibility_names = ["Beta"]
+current_modern_signatures = ["beta(a, b)"]
+current_wolfram_signatures = ["Beta[a,b]"]
 signatures = ["beta(a, b)"]
-parameters = [{ name = "a", kind = "positional", default = "必填", description = "正实参数", availability = "r3" }, { name = "b", kind = "positional", default = "必填", description = "正实参数", availability = "r3" }]
+parameters = [{ name = "a", kind = "positional", default = "必填", description = "正实参数", availability = "current" }, { name = "b", kind = "positional", default = "必填", description = "正实参数", availability = "current" }]
 return_type = "expression"
 semantics = "Beta 函数"
-current_support = "当前无此规范接口的实现。"
+current_support = "有限正实机器路径；对数递推与稳定尺度，避免相近LogGamma相减。机器下溢为0。"
 target_support = "首版机器正实参数；Gamma 正整数支持精确阶乘关系；非正参数/复杂分支和任意精度进入后续。"
-precision_modes = ["planned_machine"]
-precision_notes = "精确值或明确的机器路径；precision/accuracy 查询输入已有信息。"
-current_platforms = []
+precision_modes = ["machine"]
+precision_notes = "仅明确的机器算法与已识别精确值；高精度/复数算法未实现，不静默降级。随机流为确定性伪随机，不是密码学随机。"
+current_platforms = ["cli", "desktop", "web", "ios"]
 target_platforms = ["cli", "desktop", "web", "ios"]
 render_platforms = []
-current_examples = []
-planned_examples = ["beta(2,3)"]
-sources = []
-tests = []
+current_examples = ["Beta[2.,3.]"]
+planned_examples = []
+sources = ["crates/om-eval/src/science/probability_registry.rs", "crates/om-eval/src/science/special.rs"]
+tests = ["crates/om-analysis/tests/special.rs", "crates/om-eval/tests/probability.rs"]
 acceptance = "独立数学期望、有效/无效参数、边界、预算、中断及声明的平台/精度测试；范围外不伪造成功。"
 pipe_arg = 1
 target_version = "0.1.0-pre-alpha.3"
 kind = "function"
-validation_stage = "documentation_only"
+validation_stage = "runtime_verified"
 effect_class = "pure"
 
 [[functions]]
@@ -6115,7 +6115,7 @@ effect_class = "pure"
 id = "fn_000189"
 name = "quantile"
 category = "statistics"
-status = "partial"
+status = "implemented"
 interface_status = "current"
 runtime_names = ["Quantile"]
 compatibility_names = ["Quantile", "InverseCDF"]
@@ -6125,7 +6125,7 @@ signatures = ["quantile(data_or_distribution, probability)"]
 parameters = [{ name = "data_or_distribution", kind = "positional", default = "必填", description = "签名对应的data_or_distribution参数", availability = "r3" }, { name = "probability", kind = "positional", default = "必填", description = "0..1", availability = "r3" }]
 return_type = "expression"
 semantics = "样本或分布的分位值"
-current_support = "当前只接受实数样本列表，type7线性插值，概率0..1，空数据拒绝；分布对象路径待后续接入。"
+current_support = "列表仍为精确type7分位数；均匀分布精确线性值；正态机器逆CDF含p=0/1数学无穷。非法概率拒绝。"
 target_support = "样本采用type7；分布首版正态/均匀，p∈[0,1]，端点处理明确。"
 precision_modes = ["planned_machine"]
 precision_notes = "机器精度路径优先；不声称任意精度。"
@@ -6135,7 +6135,7 @@ render_platforms = []
 current_examples = ["Quantile[{0,10,20},1/4]"]
 planned_examples = ["quantile([1,2,3,4],0.25)"]
 sources = ["crates/om-eval/src/science/registry.rs"]
-tests = ["crates/om-eval/tests/science_basics.rs"]
+tests = ["crates/om-eval/tests/science_basics.rs", "crates/om-eval/tests/probability.rs"]
 acceptance = "独立数学期望、有效/无效参数、边界、预算、中断及声明的平台/精度测试；范围外不伪造成功。"
 pipe_arg = 1
 target_version = "0.1.0-pre-alpha.3"
@@ -6147,256 +6147,256 @@ effect_class = "pure"
 id = "fn_000190"
 name = "normal_distribution"
 category = "statistics"
-status = "planned"
-interface_status = "planned"
-runtime_names = []
-compatibility_names = []
-current_modern_signatures = []
-current_wolfram_signatures = []
+status = "implemented"
+interface_status = "current"
+runtime_names = ["NormalDistribution"]
+compatibility_names = ["NormalDistribution"]
+current_modern_signatures = ["normal_distribution(mean: 0, std: 1)"]
+current_wolfram_signatures = ["NormalDistribution[mean,std]"]
 signatures = ["normal_distribution(mean: 0, std: 1)"]
-parameters = [{ name = "mean", kind = "option", default = "0", description = "均值", availability = "r3" }, { name = "std", kind = "option", default = "1", description = "正标准差", availability = "r3" }]
+parameters = [{ name = "mean", kind = "option", default = "0", description = "均值", availability = "current" }, { name = "std", kind = "option", default = "1", description = "正标准差", availability = "current" }]
 return_type = "distribution_or_number"
 semantics = "正态分布"
-current_support = "当前无此规范接口的实现。"
+current_support = "有限机器范围的实参数，std>0；省略mean=0/std=1，位置与命名写法不得重复；返回NormalDistribution对象。"
 target_support = "首版正态与均匀；密度/CDF机器计算与可识别符号形式，参数校验真实。"
-precision_modes = ["planned_machine"]
-precision_notes = "机器精度路径优先；不声称任意精度。"
-current_platforms = []
+precision_modes = ["machine"]
+precision_notes = "仅明确的机器算法与已识别精确值；高精度/复数算法未实现，不静默降级。随机流为确定性伪随机，不是密码学随机。"
+current_platforms = ["cli", "desktop", "web", "ios"]
 target_platforms = ["cli", "desktop", "web", "ios"]
 render_platforms = []
-current_examples = []
-planned_examples = ["normal_distribution(mean: 0,std: 1)"]
-sources = []
-tests = []
+current_examples = ["NormalDistribution[0,1]"]
+planned_examples = []
+sources = ["crates/om-eval/src/science/probability_registry.rs", "crates/om-eval/src/science/probability.rs"]
+tests = ["crates/om-analysis/tests/special.rs", "crates/om-eval/tests/probability.rs"]
 acceptance = "独立数学期望、有效/无效参数、边界、预算、中断及声明的平台/精度测试；范围外不伪造成功。"
 pipe_arg = 0
 target_version = "0.1.0-pre-alpha.3"
 kind = "function"
-validation_stage = "documentation_only"
+validation_stage = "runtime_verified"
 effect_class = "pure"
 
 [[functions]]
 id = "fn_000191"
 name = "uniform_distribution"
 category = "statistics"
-status = "planned"
-interface_status = "planned"
-runtime_names = []
-compatibility_names = []
-current_modern_signatures = []
-current_wolfram_signatures = []
+status = "implemented"
+interface_status = "current"
+runtime_names = ["UniformDistribution"]
+compatibility_names = ["UniformDistribution"]
+current_modern_signatures = ["uniform_distribution(bounds: [0,1])"]
+current_wolfram_signatures = ["UniformDistribution[bounds]"]
 signatures = ["uniform_distribution(bounds: [0,1])"]
-parameters = [{ name = "bounds", kind = "option", default = "[0,1]", description = "严格有序端点", availability = "r3" }]
+parameters = [{ name = "bounds", kind = "option", default = "[0,1]", description = "严格有序端点", availability = "current" }]
 return_type = "distribution_or_number"
 semantics = "均匀分布"
-current_support = "当前无此规范接口的实现。"
+current_support = "有限严格有序实端点；默认[0,1]，返回UniformDistribution对象。"
 target_support = "首版正态与均匀；密度/CDF机器计算与可识别符号形式，参数校验真实。"
-precision_modes = ["planned_machine"]
-precision_notes = "机器精度路径优先；不声称任意精度。"
-current_platforms = []
+precision_modes = ["exact", "machine"]
+precision_notes = "仅明确的机器算法与已识别精确值；高精度/复数算法未实现，不静默降级。随机流为确定性伪随机，不是密码学随机。"
+current_platforms = ["cli", "desktop", "web", "ios"]
 target_platforms = ["cli", "desktop", "web", "ios"]
 render_platforms = []
-current_examples = []
-planned_examples = ["uniform_distribution(bounds: [0,1])"]
-sources = []
-tests = []
+current_examples = ["UniformDistribution[{0,1}]"]
+planned_examples = []
+sources = ["crates/om-eval/src/science/probability_registry.rs", "crates/om-eval/src/science/probability.rs"]
+tests = ["crates/om-analysis/tests/special.rs", "crates/om-eval/tests/probability.rs"]
 acceptance = "独立数学期望、有效/无效参数、边界、预算、中断及声明的平台/精度测试；范围外不伪造成功。"
 pipe_arg = 0
 target_version = "0.1.0-pre-alpha.3"
 kind = "function"
-validation_stage = "documentation_only"
+validation_stage = "runtime_verified"
 effect_class = "pure"
 
 [[functions]]
 id = "fn_000192"
 name = "pdf"
 category = "statistics"
-status = "planned"
-interface_status = "planned"
-runtime_names = []
-compatibility_names = []
-current_modern_signatures = []
-current_wolfram_signatures = []
+status = "implemented"
+interface_status = "current"
+runtime_names = ["PDF"]
+compatibility_names = ["PDF"]
+current_modern_signatures = ["pdf(distribution, value)"]
+current_wolfram_signatures = ["PDF[distribution,value]"]
 signatures = ["pdf(distribution, value)"]
-parameters = [{ name = "distribution", kind = "positional", default = "必填", description = "分布对象", availability = "r3" }, { name = "value", kind = "positional", default = "必填", description = "自变量", availability = "r3" }]
+parameters = [{ name = "distribution", kind = "positional", default = "必填", description = "分布对象", availability = "current" }, { name = "value", kind = "positional", default = "必填", description = "自变量", availability = "current" }]
 return_type = "distribution_or_number"
 semantics = "概率密度"
-current_support = "当前无此规范接口的实现。"
+current_support = "正态机器密度/均匀精确或机器密度；均匀端点包含，域外为0。"
 target_support = "首版正态与均匀；密度/CDF机器计算与可识别符号形式，参数校验真实。"
-precision_modes = ["planned_machine"]
-precision_notes = "机器精度路径优先；不声称任意精度。"
-current_platforms = []
+precision_modes = ["exact", "machine"]
+precision_notes = "仅明确的机器算法与已识别精确值；高精度/复数算法未实现，不静默降级。随机流为确定性伪随机，不是密码学随机。"
+current_platforms = ["cli", "desktop", "web", "ios"]
 target_platforms = ["cli", "desktop", "web", "ios"]
 render_platforms = []
-current_examples = []
-planned_examples = ["pdf(normal_distribution(),0)"]
-sources = []
-tests = []
+current_examples = ["PDF[NormalDistribution[0,1],0]"]
+planned_examples = []
+sources = ["crates/om-eval/src/science/probability_registry.rs", "crates/om-eval/src/science/probability.rs"]
+tests = ["crates/om-analysis/tests/special.rs", "crates/om-eval/tests/probability.rs"]
 acceptance = "独立数学期望、有效/无效参数、边界、预算、中断及声明的平台/精度测试；范围外不伪造成功。"
 pipe_arg = 1
 target_version = "0.1.0-pre-alpha.3"
 kind = "function"
-validation_stage = "documentation_only"
+validation_stage = "runtime_verified"
 effect_class = "pure"
 
 [[functions]]
 id = "fn_000193"
 name = "cdf"
 category = "statistics"
-status = "planned"
-interface_status = "planned"
-runtime_names = []
-compatibility_names = []
-current_modern_signatures = []
-current_wolfram_signatures = []
+status = "implemented"
+interface_status = "current"
+runtime_names = ["CDF"]
+compatibility_names = ["CDF"]
+current_modern_signatures = ["cdf(distribution, value)"]
+current_wolfram_signatures = ["CDF[distribution,value]"]
 signatures = ["cdf(distribution, value)"]
-parameters = [{ name = "distribution", kind = "positional", default = "必填", description = "分布对象", availability = "r3" }, { name = "value", kind = "positional", default = "必填", description = "自变量", availability = "r3" }]
+parameters = [{ name = "distribution", kind = "positional", default = "必填", description = "分布对象", availability = "current" }, { name = "value", kind = "positional", default = "必填", description = "自变量", availability = "current" }]
 return_type = "distribution_or_number"
 semantics = "累积分布函数"
-current_support = "当前无此规范接口的实现。"
+current_support = "正态机器CDF（直接erfc尾部），均匀精确或机器CDF；参数和输入校验。"
 target_support = "首版正态与均匀；密度/CDF机器计算与可识别符号形式，参数校验真实。"
-precision_modes = ["planned_machine"]
-precision_notes = "机器精度路径优先；不声称任意精度。"
-current_platforms = []
+precision_modes = ["exact", "machine"]
+precision_notes = "仅明确的机器算法与已识别精确值；高精度/复数算法未实现，不静默降级。随机流为确定性伪随机，不是密码学随机。"
+current_platforms = ["cli", "desktop", "web", "ios"]
 target_platforms = ["cli", "desktop", "web", "ios"]
 render_platforms = []
-current_examples = []
-planned_examples = ["cdf(normal_distribution(),0)"]
-sources = []
-tests = []
+current_examples = ["CDF[NormalDistribution[0,1],0]"]
+planned_examples = []
+sources = ["crates/om-eval/src/science/probability_registry.rs", "crates/om-eval/src/science/probability.rs"]
+tests = ["crates/om-analysis/tests/special.rs", "crates/om-eval/tests/probability.rs"]
 acceptance = "独立数学期望、有效/无效参数、边界、预算、中断及声明的平台/精度测试；范围外不伪造成功。"
 pipe_arg = 1
 target_version = "0.1.0-pre-alpha.3"
 kind = "function"
-validation_stage = "documentation_only"
+validation_stage = "runtime_verified"
 effect_class = "pure"
 
 [[functions]]
 id = "fn_000194"
 name = "random_uniform"
 category = "statistics"
-status = "planned"
-interface_status = "planned"
-runtime_names = []
-compatibility_names = []
-current_modern_signatures = []
-current_wolfram_signatures = []
+status = "implemented"
+interface_status = "current"
+runtime_names = ["RandomUniform"]
+compatibility_names = ["RandomUniform"]
+current_modern_signatures = ["random_uniform(count: 1, bounds: [0,1], seed: none)"]
+current_wolfram_signatures = ["RandomUniform[Count->1]"]
 signatures = ["random_uniform(count: 1, bounds: [0,1], seed: none)"]
-parameters = [{ name = "count", kind = "option", default = "1", description = "样本数", availability = "r3" }, { name = "bounds", kind = "option", default = "[0,1]", description = "有序范围", availability = "r3" }, { name = "seed", kind = "option", default = "none", description = "整数种子", availability = "r3" }]
+parameters = [{ name = "count", kind = "option", default = "1", description = "样本数", availability = "current" }, { name = "bounds", kind = "option", default = "[0,1]", description = "有序范围", availability = "current" }, { name = "seed", kind = "option", default = "none", description = "整数种子", availability = "current" }]
 return_type = "number_or_list"
 semantics = "均匀随机采样"
-current_support = "当前无此规范接口的实现。"
+current_support = "SplitMix64会话默认seed=0；半开有序范围；count省略标量，显式count为0..100000列表；显式seed局部流，失败或取消不推进会话。"
 target_support = "SplitMix64，会话默认seed=0；显式seed使用局部随机流且不改变会话流；readonly fork不能推进主随机状态。"
-precision_modes = ["planned_machine"]
-precision_notes = "机器精度路径优先；不声称任意精度。"
-current_platforms = []
+precision_modes = ["machine"]
+precision_notes = "仅明确的机器算法与已识别精确值；高精度/复数算法未实现，不静默降级。随机流为确定性伪随机，不是密码学随机。"
+current_platforms = ["cli", "desktop", "web", "ios"]
 target_platforms = ["cli", "desktop", "web", "ios"]
 render_platforms = []
-current_examples = []
-planned_examples = ["random_uniform(count: 3,seed: 42)"]
-sources = []
-tests = []
+current_examples = ["RandomUniform[Count->3,Seed->42]"]
+planned_examples = []
+sources = ["crates/om-eval/src/science/probability_registry.rs", "crates/om-eval/src/science/probability.rs"]
+tests = ["crates/om-analysis/tests/special.rs", "crates/om-eval/tests/probability.rs"]
 acceptance = "独立数学期望、有效/无效参数、边界、预算、中断及声明的平台/精度测试；范围外不伪造成功。"
 pipe_arg = 0
 target_version = "0.1.0-pre-alpha.3"
 kind = "function"
-validation_stage = "documentation_only"
+validation_stage = "runtime_verified"
 effect_class = "write_session"
 
 [[functions]]
 id = "fn_000195"
 name = "random_normal"
 category = "statistics"
-status = "planned"
-interface_status = "planned"
-runtime_names = []
-compatibility_names = []
-current_modern_signatures = []
-current_wolfram_signatures = []
+status = "implemented"
+interface_status = "current"
+runtime_names = ["RandomNormal"]
+compatibility_names = ["RandomNormal"]
+current_modern_signatures = ["random_normal(count: 1, mean: 0, std: 1, seed: none)"]
+current_wolfram_signatures = ["RandomNormal[Count->1]"]
 signatures = ["random_normal(count: 1, mean: 0, std: 1, seed: none)"]
-parameters = [{ name = "count", kind = "option", default = "1", description = "样本数", availability = "r3" }, { name = "mean", kind = "option", default = "0", description = "签名对应的mean参数", availability = "r3" }, { name = "std", kind = "option", default = "1", description = "签名对应的std参数", availability = "r3" }, { name = "seed", kind = "option", default = "none", description = "整数种子", availability = "r3" }]
+parameters = [{ name = "count", kind = "option", default = "1", description = "样本数", availability = "current" }, { name = "mean", kind = "option", default = "0", description = "签名对应的mean参数", availability = "current" }, { name = "std", kind = "option", default = "1", description = "签名对应的std参数", availability = "current" }, { name = "seed", kind = "option", default = "none", description = "整数种子", availability = "current" }]
 return_type = "number_or_list"
 semantics = "正态随机采样"
-current_support = "当前无此规范接口的实现。"
+current_support = "SplitMix64+Box–Muller机器采样，std>0；count省略标量/显式count列表；显式seed隔离；失败或取消不推进会话。"
 target_support = "SplitMix64，会话默认seed=0；显式seed使用局部随机流且不改变会话流；readonly fork不能推进主随机状态。"
-precision_modes = ["planned_machine"]
-precision_notes = "机器精度路径优先；不声称任意精度。"
-current_platforms = []
+precision_modes = ["machine"]
+precision_notes = "仅明确的机器算法与已识别精确值；高精度/复数算法未实现，不静默降级。随机流为确定性伪随机，不是密码学随机。"
+current_platforms = ["cli", "desktop", "web", "ios"]
 target_platforms = ["cli", "desktop", "web", "ios"]
 render_platforms = []
-current_examples = []
-planned_examples = ["random_normal(count: 3,seed: 42)"]
-sources = []
-tests = []
+current_examples = ["RandomNormal[Count->3,Seed->42]"]
+planned_examples = []
+sources = ["crates/om-eval/src/science/probability_registry.rs", "crates/om-eval/src/science/probability.rs"]
+tests = ["crates/om-analysis/tests/special.rs", "crates/om-eval/tests/probability.rs"]
 acceptance = "独立数学期望、有效/无效参数、边界、预算、中断及声明的平台/精度测试；范围外不伪造成功。"
 pipe_arg = 0
 target_version = "0.1.0-pre-alpha.3"
 kind = "function"
-validation_stage = "documentation_only"
+validation_stage = "runtime_verified"
 effect_class = "write_session"
 
 [[functions]]
 id = "fn_000196"
 name = "random_choice"
 category = "statistics"
-status = "planned"
-interface_status = "planned"
-runtime_names = []
-compatibility_names = []
-current_modern_signatures = []
-current_wolfram_signatures = []
+status = "implemented"
+interface_status = "current"
+runtime_names = ["RandomChoice"]
+compatibility_names = ["RandomChoice"]
+current_modern_signatures = ["random_choice(data, count: 1, seed: none)"]
+current_wolfram_signatures = ["RandomChoice[data]"]
 signatures = ["random_choice(data, count: 1, seed: none)"]
-parameters = [{ name = "data", kind = "positional", default = "必填", description = "有序输入数据", availability = "r3" }, { name = "count", kind = "option", default = "1", description = "样本数", availability = "r3" }, { name = "seed", kind = "option", default = "none", description = "整数种子", availability = "r3" }]
+parameters = [{ name = "data", kind = "positional", default = "必填", description = "有序输入数据", availability = "current" }, { name = "count", kind = "option", default = "1", description = "样本数", availability = "current" }, { name = "seed", kind = "option", default = "none", description = "整数种子", availability = "current" }]
 return_type = "number_or_list"
 semantics = "有放回随机选择"
-current_support = "当前无此规范接口的实现。"
+current_support = "非空列表有放回、无偏索引采样；省略count标量、显式count列表；局部seed隔离，失败或取消不推进会话。"
 target_support = "SplitMix64，会话默认seed=0；显式seed使用局部随机流且不改变会话流；readonly fork不能推进主随机状态。"
-precision_modes = ["planned_machine"]
-precision_notes = "机器精度路径优先；不声称任意精度。"
-current_platforms = []
+precision_modes = ["machine"]
+precision_notes = "仅明确的机器算法与已识别精确值；高精度/复数算法未实现，不静默降级。随机流为确定性伪随机，不是密码学随机。"
+current_platforms = ["cli", "desktop", "web", "ios"]
 target_platforms = ["cli", "desktop", "web", "ios"]
 render_platforms = []
-current_examples = []
-planned_examples = ["random_choice([\"a\",\"b\"],count: 3,seed: 42)"]
-sources = []
-tests = []
+current_examples = ["RandomChoice[{1,2},Count->3,Seed->42]"]
+planned_examples = []
+sources = ["crates/om-eval/src/science/probability_registry.rs", "crates/om-eval/src/science/probability.rs"]
+tests = ["crates/om-analysis/tests/special.rs", "crates/om-eval/tests/probability.rs"]
 acceptance = "独立数学期望、有效/无效参数、边界、预算、中断及声明的平台/精度测试；范围外不伪造成功。"
 pipe_arg = 1
 target_version = "0.1.0-pre-alpha.3"
 kind = "function"
-validation_stage = "documentation_only"
+validation_stage = "runtime_verified"
 effect_class = "write_session"
 
 [[functions]]
 id = "fn_000197"
 name = "seed_random"
 category = "statistics"
-status = "planned"
-interface_status = "planned"
-runtime_names = []
-compatibility_names = []
-current_modern_signatures = []
-current_wolfram_signatures = []
+status = "implemented"
+interface_status = "current"
+runtime_names = ["SeedRandom"]
+compatibility_names = ["SeedRandom"]
+current_modern_signatures = ["seed_random(seed)"]
+current_wolfram_signatures = ["SeedRandom[seed]"]
 signatures = ["seed_random(seed)"]
-parameters = [{ name = "seed", kind = "positional", default = "必填", description = "整数种子", availability = "r3" }]
+parameters = [{ name = "seed", kind = "positional", default = "必填", description = "整数种子", availability = "current" }]
 return_type = "number_or_list"
 semantics = "设置会话随机种子"
-current_support = "当前无此规范接口的实现。"
+current_support = "0..2^64-1整数种子，重置本会话并返回Null；只读工具拒绝重置。"
 target_support = "SplitMix64，会话默认seed=0；显式seed使用局部随机流且不改变会话流；readonly fork不能推进主随机状态。"
-precision_modes = ["planned_machine"]
-precision_notes = "机器精度路径优先；不声称任意精度。"
-current_platforms = []
+precision_modes = ["machine"]
+precision_notes = "仅明确的机器算法与已识别精确值；高精度/复数算法未实现，不静默降级。随机流为确定性伪随机，不是密码学随机。"
+current_platforms = ["cli", "desktop", "web", "ios"]
 target_platforms = ["cli", "desktop", "web", "ios"]
 render_platforms = []
-current_examples = []
-planned_examples = ["seed_random(42)"]
-sources = []
-tests = []
+current_examples = ["SeedRandom[42]"]
+planned_examples = []
+sources = ["crates/om-eval/src/science/probability_registry.rs", "crates/om-eval/src/science/probability.rs"]
+tests = ["crates/om-analysis/tests/special.rs", "crates/om-eval/tests/probability.rs"]
 acceptance = "独立数学期望、有效/无效参数、边界、预算、中断及声明的平台/精度测试；范围外不伪造成功。"
 pipe_arg = 0
 target_version = "0.1.0-pre-alpha.3"
 kind = "function"
-validation_stage = "documentation_only"
+validation_stage = "runtime_verified"
 effect_class = "write_session"
 
 [[functions]]
@@ -28570,4 +28570,164 @@ min = 2
 max = 2
 attributes = ["protected"]
 parameters = [{ name = "a", value_type = "expression", required = true, variadic = false, held = false }, { name = "onto", value_type = "expression", required = true, variadic = false, held = false }]
+options = []
+
+[[runtime]]
+name = "Erf"
+modern_name = "erf"
+aliases = []
+min = 1
+max = 1
+attributes = ["protected", "listable", "numeric_function"]
+parameters = [{ name = "x", value_type = "expression", required = true, variadic = false, held = false }]
+options = []
+
+[[runtime]]
+name = "Erfc"
+modern_name = "erfc"
+aliases = []
+min = 1
+max = 1
+attributes = ["protected", "listable", "numeric_function"]
+parameters = [{ name = "x", value_type = "expression", required = true, variadic = false, held = false }]
+options = []
+
+[[runtime]]
+name = "Gamma"
+modern_name = "gamma"
+aliases = []
+min = 1
+max = 1
+attributes = ["protected", "listable", "numeric_function"]
+parameters = [{ name = "x", value_type = "expression", required = true, variadic = false, held = false }]
+options = []
+
+[[runtime]]
+name = "LogGamma"
+modern_name = "log_gamma"
+aliases = []
+min = 1
+max = 1
+attributes = ["protected", "listable", "numeric_function"]
+parameters = [{ name = "x", value_type = "expression", required = true, variadic = false, held = false }]
+options = []
+
+[[runtime]]
+name = "Beta"
+modern_name = "beta"
+aliases = []
+min = 2
+max = 2
+attributes = ["protected", "listable", "numeric_function"]
+parameters = [{ name = "a", value_type = "expression", required = true, variadic = false, held = false }, { name = "b", value_type = "expression", required = true, variadic = false, held = false }]
+options = []
+
+[[runtime]]
+name = "ArcCoth"
+modern_name = "acoth"
+aliases = []
+min = 1
+max = 1
+attributes = ["protected", "listable", "numeric_function"]
+parameters = [{ name = "x", value_type = "expression", required = true, variadic = false, held = false }]
+options = []
+
+[[runtime]]
+name = "ArcSech"
+modern_name = "asech"
+aliases = []
+min = 1
+max = 1
+attributes = ["protected", "listable", "numeric_function"]
+parameters = [{ name = "x", value_type = "expression", required = true, variadic = false, held = false }]
+options = []
+
+[[runtime]]
+name = "ArcCsch"
+modern_name = "acsch"
+aliases = []
+min = 1
+max = 1
+attributes = ["protected", "listable", "numeric_function"]
+parameters = [{ name = "x", value_type = "expression", required = true, variadic = false, held = false }]
+options = []
+
+[[runtime]]
+name = "NormalDistribution"
+modern_name = "normal_distribution"
+aliases = []
+min = 0
+max = 4
+attributes = ["protected"]
+parameters = [{ name = "mean", value_type = "expression", required = false, variadic = false, held = false, default_source = "0" }, { name = "std", value_type = "expression", required = false, variadic = false, held = false, default_source = "1" }]
+options = [{ name = "mean", value_type = "expression", required = false, variadic = false, held = false, default_source = "0", runtime_name = "Mean" }, { name = "std", value_type = "expression", required = false, variadic = false, held = false, default_source = "1", runtime_name = "StandardDeviation" }]
+
+[[runtime]]
+name = "UniformDistribution"
+modern_name = "uniform_distribution"
+aliases = []
+min = 0
+max = 2
+attributes = ["protected"]
+parameters = [{ name = "bounds", value_type = "expression", required = false, variadic = false, held = false, default_source = "[0,1]" }]
+options = [{ name = "bounds", value_type = "expression", required = false, variadic = false, held = false, default_source = "[0,1]", runtime_name = "Bounds" }]
+
+[[runtime]]
+name = "PDF"
+modern_name = "pdf"
+aliases = []
+min = 2
+max = 2
+attributes = ["protected"]
+parameters = [{ name = "distribution", value_type = "expression", required = true, variadic = false, held = false }, { name = "value", value_type = "expression", required = true, variadic = false, held = false }]
+options = []
+
+[[runtime]]
+name = "CDF"
+modern_name = "cdf"
+aliases = []
+min = 2
+max = 2
+attributes = ["protected"]
+parameters = [{ name = "distribution", value_type = "expression", required = true, variadic = false, held = false }, { name = "value", value_type = "expression", required = true, variadic = false, held = false }]
+options = []
+
+[[runtime]]
+name = "RandomUniform"
+modern_name = "random_uniform"
+aliases = []
+min = 0
+max = 3
+attributes = ["protected"]
+parameters = []
+options = [{ name = "count", value_type = "integer", required = false, variadic = false, held = false, default_source = "1", runtime_name = "Count", min = 0, max = 100000 }, { name = "bounds", value_type = "expression", required = false, variadic = false, held = false, default_source = "[0,1]", runtime_name = "Bounds" }, { name = "seed", value_type = "integer", required = false, variadic = false, held = false, runtime_name = "Seed", default_context = "独立会话流；省略不重置种子", min = 0 }]
+
+[[runtime]]
+name = "RandomNormal"
+modern_name = "random_normal"
+aliases = []
+min = 0
+max = 4
+attributes = ["protected"]
+parameters = []
+options = [{ name = "count", value_type = "integer", required = false, variadic = false, held = false, default_source = "1", runtime_name = "Count", min = 0, max = 100000 }, { name = "mean", value_type = "expression", required = false, variadic = false, held = false, default_source = "0", runtime_name = "Mean" }, { name = "std", value_type = "expression", required = false, variadic = false, held = false, default_source = "1", runtime_name = "StandardDeviation" }, { name = "seed", value_type = "integer", required = false, variadic = false, held = false, runtime_name = "Seed", default_context = "独立会话流；省略不重置种子", min = 0 }]
+
+[[runtime]]
+name = "RandomChoice"
+modern_name = "random_choice"
+aliases = []
+min = 1
+max = 3
+attributes = ["protected"]
+parameters = [{ name = "data", value_type = "expression", required = true, variadic = false, held = false }]
+options = [{ name = "count", value_type = "integer", required = false, variadic = false, held = false, default_source = "1", runtime_name = "Count", min = 0, max = 100000 }, { name = "seed", value_type = "integer", required = false, variadic = false, held = false, runtime_name = "Seed", default_context = "独立会话流；省略不重置种子", min = 0 }]
+
+[[runtime]]
+name = "SeedRandom"
+modern_name = "seed_random"
+aliases = []
+min = 1
+max = 1
+attributes = ["protected"]
+parameters = [{ name = "seed", value_type = "integer", required = true, variadic = false, held = false, min = 0 }]
 options = []

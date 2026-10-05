@@ -8,6 +8,19 @@ pub(super) enum Instruction {
     Pow,
     Unary(fn(f64) -> f64),
     Binary(fn(f64, f64) -> f64),
+    Special(fn(f64, &om_core::Interrupt) -> Result<f64, om_analysis::Error>),
+    SpecialBinary(fn(f64, f64, &om_core::Interrupt) -> Result<f64, om_analysis::Error>),
+}
+pub(super) fn special(name: &str) -> Option<Instruction> {
+    use om_analysis::special as s;
+    Some(match name {
+        "Erf" => Instruction::Special(s::erf),
+        "Erfc" => Instruction::Special(s::erfc),
+        "Gamma" => Instruction::Special(s::gamma),
+        "LogGamma" => Instruction::Special(s::log_gamma),
+        "Beta" => Instruction::SpecialBinary(s::beta),
+        _ => return None,
+    })
 }
 pub(super) fn unary(name: &str) -> Option<fn(f64) -> f64> {
     Some(match name {
@@ -33,8 +46,22 @@ pub(super) fn unary(name: &str) -> Option<fn(f64) -> f64> {
         "ArcCosh" => f64::acosh,
         "ArcTanh" => f64::atanh,
         "ArcCoth" => |x| (1.0 / x).atanh(),
-        "ArcSech" => |x| (1.0 / x).acosh(),
-        "ArcCsch" => |x| (1.0 / x).asinh(),
+        "ArcSech" => |x| {
+            if x > 0. && x <= 1. {
+                (1. - x * x).sqrt().ln_1p() - x.ln()
+            } else {
+                f64::NAN
+            }
+        },
+        "ArcCsch" => |x| {
+            if x.abs() >= 1. {
+                (1. / x).asinh()
+            } else if x == 0. {
+                f64::NAN
+            } else {
+                x.signum() * (x.hypot(1.).ln_1p() - x.abs().ln())
+            }
+        },
         "Exp" => f64::exp,
         "Log" => f64::ln,
         "Sqrt" => f64::sqrt,

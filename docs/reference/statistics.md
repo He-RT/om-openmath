@@ -11,7 +11,7 @@
 | [`beta_distribution`](#beta_distribution) | 后续规划 | 规划接口，当前不可用 | 统计、概率与随机中的 BetaDistribution 能力，进入后续全景目录。 |
 | [`binomial_distribution`](#binomial_distribution) | 后续规划 | 规划接口，当前不可用 | 统计、概率与随机中的 BinomialDistribution 能力，进入后续全景目录。 |
 | [`block_random`](#block_random) | 后续规划 | 规划接口，当前不可用 | 统计、概率与随机中的 BlockRandom 能力，进入后续全景目录。 |
-| [`cdf`](#cdf) | 下一版规划 | 规划接口，当前不可用 | 累积分布函数 |
+| [`cdf`](#cdf) | 已实现 | 当前可用 | 累积分布函数 |
 | [`chi_square_distribution`](#chi_square_distribution) | 后续规划 | 规划接口，当前不可用 | 统计、概率与随机中的 ChiSquareDistribution 能力，进入后续全景目录。 |
 | [`commonest`](#commonest) | 后续规划 | 规划接口，当前不可用 | 统计、概率与随机中的 Commonest 能力，进入后续全景目录。 |
 | [`correlation`](#correlation) | 已实现 | 当前可用 | Pearson 相关 |
@@ -30,22 +30,22 @@
 | [`mean`](#mean) | 已实现 | 当前可用 | 均值 |
 | [`median`](#median) | 已实现 | 当前可用 | 中位数 |
 | [`multinormal_distribution`](#multinormal_distribution) | 后续规划 | 规划接口，当前不可用 | 统计、概率与随机中的 MultinormalDistribution 能力，进入后续全景目录。 |
-| [`normal_distribution`](#normal_distribution) | 下一版规划 | 规划接口，当前不可用 | 正态分布 |
-| [`pdf`](#pdf) | 下一版规划 | 规划接口，当前不可用 | 概率密度 |
+| [`normal_distribution`](#normal_distribution) | 已实现 | 当前可用 | 正态分布 |
+| [`pdf`](#pdf) | 已实现 | 当前可用 | 概率密度 |
 | [`percentile`](#percentile) | 已实现 | 当前可用 | 百分位 |
 | [`poisson_distribution`](#poisson_distribution) | 后续规划 | 规划接口，当前不可用 | 统计、概率与随机中的 PoissonDistribution 能力，进入后续全景目录。 |
 | [`probability`](#probability) | 后续规划 | 规划接口，当前不可用 | 统计、概率与随机中的 Probability 能力，进入后续全景目录。 |
-| [`quantile`](#quantile) | 部分支持 | 当前可用 | 样本或分布的分位值 |
+| [`quantile`](#quantile) | 已实现 | 当前可用 | 样本或分布的分位值 |
 | [`quartiles`](#quartiles) | 后续规划 | 规划接口，当前不可用 | 统计、概率与随机中的 Quartiles 能力，进入后续全景目录。 |
-| [`random_choice`](#random_choice) | 下一版规划 | 规划接口，当前不可用 | 有放回随机选择 |
+| [`random_choice`](#random_choice) | 已实现 | 当前可用 | 有放回随机选择 |
 | [`random_complex`](#random_complex) | 后续规划 | 规划接口，当前不可用 | 统计、概率与随机中的 RandomComplex 能力，进入后续全景目录。 |
 | [`random_integer`](#random_integer) | 后续规划 | 规划接口，当前不可用 | 统计、概率与随机中的 RandomInteger 能力，进入后续全景目录。 |
-| [`random_normal`](#random_normal) | 下一版规划 | 规划接口，当前不可用 | 正态随机采样 |
+| [`random_normal`](#random_normal) | 已实现 | 当前可用 | 正态随机采样 |
 | [`random_real`](#random_real) | 后续规划 | 规划接口，当前不可用 | 统计、概率与随机中的 RandomReal 能力，进入后续全景目录。 |
 | [`random_sample`](#random_sample) | 后续规划 | 规划接口，当前不可用 | 统计、概率与随机中的 RandomSample 能力，进入后续全景目录。 |
-| [`random_uniform`](#random_uniform) | 下一版规划 | 规划接口，当前不可用 | 均匀随机采样 |
+| [`random_uniform`](#random_uniform) | 已实现 | 当前可用 | 均匀随机采样 |
 | [`random_variate`](#random_variate) | 后续规划 | 规划接口，当前不可用 | 统计、概率与随机中的 RandomVariate 能力，进入后续全景目录。 |
-| [`seed_random`](#seed_random) | 下一版规划 | 规划接口，当前不可用 | 设置会话随机种子 |
+| [`seed_random`](#seed_random) | 已实现 | 当前可用 | 设置会话随机种子 |
 | [`shapiro_wilk_test`](#shapiro_wilk_test) | 后续规划 | 规划接口，当前不可用 | 统计、概率与随机中的 ShapiroWilkTest 能力，进入后续全景目录。 |
 | [`skewness`](#skewness) | 后续规划 | 规划接口，当前不可用 | 统计、概率与随机中的 Skewness 能力，进入后续全景目录。 |
 | [`spearman_rho`](#spearman_rho) | 后续规划 | 规划接口，当前不可用 | 统计、概率与随机中的 SpearmanRho 能力，进入后续全景目录。 |
@@ -54,7 +54,7 @@
 | [`survival_function`](#survival_function) | 后续规划 | 规划接口，当前不可用 | 统计、概率与随机中的 SurvivalFunction 能力，进入后续全景目录。 |
 | [`t_test`](#t_test) | 后续规划 | 规划接口，当前不可用 | 统计、概率与随机中的 TTest 能力，进入后续全景目录。 |
 | [`tally`](#tally) | 后续规划 | 规划接口，当前不可用 | 统计、概率与随机中的 Tally 能力，进入后续全景目录。 |
-| [`uniform_distribution`](#uniform_distribution) | 下一版规划 | 规划接口，当前不可用 | 均匀分布 |
+| [`uniform_distribution`](#uniform_distribution) | 已实现 | 当前可用 | 均匀分布 |
 | [`variance`](#variance) | 已实现 | 当前可用 | 方差 |
 | [`z_test`](#z_test) | 后续规划 | 规划接口，当前不可用 | 统计、概率与随机中的 ZTest 能力，进入后续全景目录。 |
 
@@ -162,21 +162,33 @@ block_random(...)  # 后续接口尚未锁定
 
 ## cdf
 
-**当前实现：下一版规划；目标接口：规划接口，当前不可用。** 目标版本：`0.1.0-pre-alpha.3`。
+**当前实现：已实现；目标接口：当前可用。** 目标版本：`0.1.0-pre-alpha.3`。
 
 - 稳定身份：`fn_000193`；条目类型：`function`。
-- 副作用分类（设计预留）：`pure`；参数验证阶段：`documentation_only`，不构成工具授权。
+- 副作用分类（设计预留）：`pure`；参数验证阶段：`runtime_verified`，不构成工具授权。
 
 累积分布函数
 
-- 当前支持：当前无此规范接口的实现。
+- 当前支持：正态机器CDF（直接erfc尾部），均匀精确或机器CDF；参数和输入校验。
 - 目标范围：首版正态与均匀；密度/CDF机器计算与可识别符号形式，参数校验真实。
 - 返回：distribution_or_number
-- 精度：机器精度路径优先；不声称任意精度。
-- 当前计算平台：无；目标计算平台：cli, desktop, web, ios。
+- 精度：仅明确的机器算法与已识别精确值；高精度/复数算法未实现，不静默降级。随机流为确定性伪随机，不是密码学随机。
+- 当前计算平台：cli, desktop, web, ios；目标计算平台：cli, desktop, web, ios。
 - 目标图形/交互展示平台：不适用或后续未定。
-- 兼容名称：无既有兼容入口。
+- 兼容名称：`CDF`。
 - 管道位置：第 1 个位置参数（从 1 起）。
+
+当前现代签名：
+
+```text
+cdf(distribution, value)
+```
+
+当前 Wolfram 签名：
+
+```text
+CDF[distribution,value]
+```
 
 目标现代签名（按目标接口状态判断是否已可执行）：
 
@@ -186,20 +198,20 @@ cdf(distribution, value)
 
 | 参数 | 类型 | 默认值 | 含义 | 可用阶段 |
 |---|---|---|---|---|
-| `distribution` | positional | 必填 | 分布对象 | r3 |
-| `value` | positional | 必填 | 自变量 | r3 |
+| `distribution` | positional | 必填 | 分布对象 | current |
+| `value` | positional | 必填 | 自变量 | current |
 
-规划示例（尚未执行；需要目标版本，后续条目不承诺 .3）：
+当前已登记示例（Wolfram）：
 
-```text
-cdf(normal_distribution(),0)
+```wolfram
+CDF[NormalDistribution[0,1],0]
 ```
 
 验收：独立数学期望、有效/无效参数、边界、预算、中断及声明的平台/精度测试；范围外不伪造成功。
 
-当前源码：暂无当前实现证据。
+当前源码：[crates/om-eval/src/science/probability_registry.rs](../../crates/om-eval/src/science/probability_registry.rs)、[crates/om-eval/src/science/probability.rs](../../crates/om-eval/src/science/probability.rs)。
 
-当前测试引用：暂无当前实现证据。
+当前测试引用：[crates/om-analysis/tests/special.rs](../../crates/om-analysis/tests/special.rs)、[crates/om-eval/tests/probability.rs](../../crates/om-eval/tests/probability.rs)。
 
 ## chi_square_distribution
 
@@ -938,21 +950,33 @@ multinormal_distribution(...)  # 后续接口尚未锁定
 
 ## normal_distribution
 
-**当前实现：下一版规划；目标接口：规划接口，当前不可用。** 目标版本：`0.1.0-pre-alpha.3`。
+**当前实现：已实现；目标接口：当前可用。** 目标版本：`0.1.0-pre-alpha.3`。
 
 - 稳定身份：`fn_000190`；条目类型：`function`。
-- 副作用分类（设计预留）：`pure`；参数验证阶段：`documentation_only`，不构成工具授权。
+- 副作用分类（设计预留）：`pure`；参数验证阶段：`runtime_verified`，不构成工具授权。
 
 正态分布
 
-- 当前支持：当前无此规范接口的实现。
+- 当前支持：有限机器范围的实参数，std>0；省略mean=0/std=1，位置与命名写法不得重复；返回NormalDistribution对象。
 - 目标范围：首版正态与均匀；密度/CDF机器计算与可识别符号形式，参数校验真实。
 - 返回：distribution_or_number
-- 精度：机器精度路径优先；不声称任意精度。
-- 当前计算平台：无；目标计算平台：cli, desktop, web, ios。
+- 精度：仅明确的机器算法与已识别精确值；高精度/复数算法未实现，不静默降级。随机流为确定性伪随机，不是密码学随机。
+- 当前计算平台：cli, desktop, web, ios；目标计算平台：cli, desktop, web, ios。
 - 目标图形/交互展示平台：不适用或后续未定。
-- 兼容名称：无既有兼容入口。
+- 兼容名称：`NormalDistribution`。
 - 管道位置：不接受自动管道输入。
+
+当前现代签名：
+
+```text
+normal_distribution(mean: 0, std: 1)
+```
+
+当前 Wolfram 签名：
+
+```text
+NormalDistribution[mean,std]
+```
 
 目标现代签名（按目标接口状态判断是否已可执行）：
 
@@ -962,38 +986,50 @@ normal_distribution(mean: 0, std: 1)
 
 | 参数 | 类型 | 默认值 | 含义 | 可用阶段 |
 |---|---|---|---|---|
-| `mean` | option | 0 | 均值 | r3 |
-| `std` | option | 1 | 正标准差 | r3 |
+| `mean` | option | 0 | 均值 | current |
+| `std` | option | 1 | 正标准差 | current |
 
-规划示例（尚未执行；需要目标版本，后续条目不承诺 .3）：
+当前已登记示例（Wolfram）：
 
-```text
-normal_distribution(mean: 0,std: 1)
+```wolfram
+NormalDistribution[0,1]
 ```
 
 验收：独立数学期望、有效/无效参数、边界、预算、中断及声明的平台/精度测试；范围外不伪造成功。
 
-当前源码：暂无当前实现证据。
+当前源码：[crates/om-eval/src/science/probability_registry.rs](../../crates/om-eval/src/science/probability_registry.rs)、[crates/om-eval/src/science/probability.rs](../../crates/om-eval/src/science/probability.rs)。
 
-当前测试引用：暂无当前实现证据。
+当前测试引用：[crates/om-analysis/tests/special.rs](../../crates/om-analysis/tests/special.rs)、[crates/om-eval/tests/probability.rs](../../crates/om-eval/tests/probability.rs)。
 
 ## pdf
 
-**当前实现：下一版规划；目标接口：规划接口，当前不可用。** 目标版本：`0.1.0-pre-alpha.3`。
+**当前实现：已实现；目标接口：当前可用。** 目标版本：`0.1.0-pre-alpha.3`。
 
 - 稳定身份：`fn_000192`；条目类型：`function`。
-- 副作用分类（设计预留）：`pure`；参数验证阶段：`documentation_only`，不构成工具授权。
+- 副作用分类（设计预留）：`pure`；参数验证阶段：`runtime_verified`，不构成工具授权。
 
 概率密度
 
-- 当前支持：当前无此规范接口的实现。
+- 当前支持：正态机器密度/均匀精确或机器密度；均匀端点包含，域外为0。
 - 目标范围：首版正态与均匀；密度/CDF机器计算与可识别符号形式，参数校验真实。
 - 返回：distribution_or_number
-- 精度：机器精度路径优先；不声称任意精度。
-- 当前计算平台：无；目标计算平台：cli, desktop, web, ios。
+- 精度：仅明确的机器算法与已识别精确值；高精度/复数算法未实现，不静默降级。随机流为确定性伪随机，不是密码学随机。
+- 当前计算平台：cli, desktop, web, ios；目标计算平台：cli, desktop, web, ios。
 - 目标图形/交互展示平台：不适用或后续未定。
-- 兼容名称：无既有兼容入口。
+- 兼容名称：`PDF`。
 - 管道位置：第 1 个位置参数（从 1 起）。
+
+当前现代签名：
+
+```text
+pdf(distribution, value)
+```
+
+当前 Wolfram 签名：
+
+```text
+PDF[distribution,value]
+```
 
 目标现代签名（按目标接口状态判断是否已可执行）：
 
@@ -1003,20 +1039,20 @@ pdf(distribution, value)
 
 | 参数 | 类型 | 默认值 | 含义 | 可用阶段 |
 |---|---|---|---|---|
-| `distribution` | positional | 必填 | 分布对象 | r3 |
-| `value` | positional | 必填 | 自变量 | r3 |
+| `distribution` | positional | 必填 | 分布对象 | current |
+| `value` | positional | 必填 | 自变量 | current |
 
-规划示例（尚未执行；需要目标版本，后续条目不承诺 .3）：
+当前已登记示例（Wolfram）：
 
-```text
-pdf(normal_distribution(),0)
+```wolfram
+PDF[NormalDistribution[0,1],0]
 ```
 
 验收：独立数学期望、有效/无效参数、边界、预算、中断及声明的平台/精度测试；范围外不伪造成功。
 
-当前源码：暂无当前实现证据。
+当前源码：[crates/om-eval/src/science/probability_registry.rs](../../crates/om-eval/src/science/probability_registry.rs)、[crates/om-eval/src/science/probability.rs](../../crates/om-eval/src/science/probability.rs)。
 
-当前测试引用：暂无当前实现证据。
+当前测试引用：[crates/om-analysis/tests/special.rs](../../crates/om-analysis/tests/special.rs)、[crates/om-eval/tests/probability.rs](../../crates/om-eval/tests/probability.rs)。
 
 ## percentile
 
@@ -1147,14 +1183,14 @@ probability(...)  # 后续接口尚未锁定
 
 ## quantile
 
-**当前实现：部分支持；目标接口：当前可用。** 目标版本：`0.1.0-pre-alpha.3`。
+**当前实现：已实现；目标接口：当前可用。** 目标版本：`0.1.0-pre-alpha.3`。
 
 - 稳定身份：`fn_000189`；条目类型：`function`。
 - 副作用分类（设计预留）：`pure`；参数验证阶段：`runtime_verified`，不构成工具授权。
 
 样本或分布的分位值
 
-- 当前支持：当前只接受实数样本列表，type7线性插值，概率0..1，空数据拒绝；分布对象路径待后续接入。
+- 当前支持：列表仍为精确type7分位数；均匀分布精确线性值；正态机器逆CDF含p=0/1数学无穷。非法概率拒绝。
 - 目标范围：样本采用type7；分布首版正态/均匀，p∈[0,1]，端点处理明确。
 - 返回：expression
 - 精度：机器精度路径优先；不声称任意精度。
@@ -1202,7 +1238,7 @@ quantile([1,2,3,4],0.25)
 
 当前源码：[crates/om-eval/src/science/registry.rs](../../crates/om-eval/src/science/registry.rs)。
 
-当前测试引用：[crates/om-eval/tests/science_basics.rs](../../crates/om-eval/tests/science_basics.rs)。
+当前测试引用：[crates/om-eval/tests/science_basics.rs](../../crates/om-eval/tests/science_basics.rs)、[crates/om-eval/tests/probability.rs](../../crates/om-eval/tests/probability.rs)。
 
 ## quartiles
 
@@ -1240,21 +1276,33 @@ quartiles(...)  # 后续接口尚未锁定
 
 ## random_choice
 
-**当前实现：下一版规划；目标接口：规划接口，当前不可用。** 目标版本：`0.1.0-pre-alpha.3`。
+**当前实现：已实现；目标接口：当前可用。** 目标版本：`0.1.0-pre-alpha.3`。
 
 - 稳定身份：`fn_000196`；条目类型：`function`。
-- 副作用分类（设计预留）：`write_session`；参数验证阶段：`documentation_only`，不构成工具授权。
+- 副作用分类（设计预留）：`write_session`；参数验证阶段：`runtime_verified`，不构成工具授权。
 
 有放回随机选择
 
-- 当前支持：当前无此规范接口的实现。
+- 当前支持：非空列表有放回、无偏索引采样；省略count标量、显式count列表；局部seed隔离，失败或取消不推进会话。
 - 目标范围：SplitMix64，会话默认seed=0；显式seed使用局部随机流且不改变会话流；readonly fork不能推进主随机状态。
 - 返回：number_or_list
-- 精度：机器精度路径优先；不声称任意精度。
-- 当前计算平台：无；目标计算平台：cli, desktop, web, ios。
+- 精度：仅明确的机器算法与已识别精确值；高精度/复数算法未实现，不静默降级。随机流为确定性伪随机，不是密码学随机。
+- 当前计算平台：cli, desktop, web, ios；目标计算平台：cli, desktop, web, ios。
 - 目标图形/交互展示平台：不适用或后续未定。
-- 兼容名称：无既有兼容入口。
+- 兼容名称：`RandomChoice`。
 - 管道位置：第 1 个位置参数（从 1 起）。
+
+当前现代签名：
+
+```text
+random_choice(data, count: 1, seed: none)
+```
+
+当前 Wolfram 签名：
+
+```text
+RandomChoice[data]
+```
 
 目标现代签名（按目标接口状态判断是否已可执行）：
 
@@ -1264,21 +1312,21 @@ random_choice(data, count: 1, seed: none)
 
 | 参数 | 类型 | 默认值 | 含义 | 可用阶段 |
 |---|---|---|---|---|
-| `data` | positional | 必填 | 有序输入数据 | r3 |
-| `count` | option | 1 | 样本数 | r3 |
-| `seed` | option | none | 整数种子 | r3 |
+| `data` | positional | 必填 | 有序输入数据 | current |
+| `count` | option | 1 | 样本数 | current |
+| `seed` | option | none | 整数种子 | current |
 
-规划示例（尚未执行；需要目标版本，后续条目不承诺 .3）：
+当前已登记示例（Wolfram）：
 
-```text
-random_choice(["a","b"],count: 3,seed: 42)
+```wolfram
+RandomChoice[{1,2},Count->3,Seed->42]
 ```
 
 验收：独立数学期望、有效/无效参数、边界、预算、中断及声明的平台/精度测试；范围外不伪造成功。
 
-当前源码：暂无当前实现证据。
+当前源码：[crates/om-eval/src/science/probability_registry.rs](../../crates/om-eval/src/science/probability_registry.rs)、[crates/om-eval/src/science/probability.rs](../../crates/om-eval/src/science/probability.rs)。
 
-当前测试引用：暂无当前实现证据。
+当前测试引用：[crates/om-analysis/tests/special.rs](../../crates/om-analysis/tests/special.rs)、[crates/om-eval/tests/probability.rs](../../crates/om-eval/tests/probability.rs)。
 
 ## random_complex
 
@@ -1350,21 +1398,33 @@ random_integer(...)  # 后续接口尚未锁定
 
 ## random_normal
 
-**当前实现：下一版规划；目标接口：规划接口，当前不可用。** 目标版本：`0.1.0-pre-alpha.3`。
+**当前实现：已实现；目标接口：当前可用。** 目标版本：`0.1.0-pre-alpha.3`。
 
 - 稳定身份：`fn_000195`；条目类型：`function`。
-- 副作用分类（设计预留）：`write_session`；参数验证阶段：`documentation_only`，不构成工具授权。
+- 副作用分类（设计预留）：`write_session`；参数验证阶段：`runtime_verified`，不构成工具授权。
 
 正态随机采样
 
-- 当前支持：当前无此规范接口的实现。
+- 当前支持：SplitMix64+Box–Muller机器采样，std>0；count省略标量/显式count列表；显式seed隔离；失败或取消不推进会话。
 - 目标范围：SplitMix64，会话默认seed=0；显式seed使用局部随机流且不改变会话流；readonly fork不能推进主随机状态。
 - 返回：number_or_list
-- 精度：机器精度路径优先；不声称任意精度。
-- 当前计算平台：无；目标计算平台：cli, desktop, web, ios。
+- 精度：仅明确的机器算法与已识别精确值；高精度/复数算法未实现，不静默降级。随机流为确定性伪随机，不是密码学随机。
+- 当前计算平台：cli, desktop, web, ios；目标计算平台：cli, desktop, web, ios。
 - 目标图形/交互展示平台：不适用或后续未定。
-- 兼容名称：无既有兼容入口。
+- 兼容名称：`RandomNormal`。
 - 管道位置：不接受自动管道输入。
+
+当前现代签名：
+
+```text
+random_normal(count: 1, mean: 0, std: 1, seed: none)
+```
+
+当前 Wolfram 签名：
+
+```text
+RandomNormal[Count->1]
+```
 
 目标现代签名（按目标接口状态判断是否已可执行）：
 
@@ -1374,22 +1434,22 @@ random_normal(count: 1, mean: 0, std: 1, seed: none)
 
 | 参数 | 类型 | 默认值 | 含义 | 可用阶段 |
 |---|---|---|---|---|
-| `count` | option | 1 | 样本数 | r3 |
-| `mean` | option | 0 | 签名对应的mean参数 | r3 |
-| `std` | option | 1 | 签名对应的std参数 | r3 |
-| `seed` | option | none | 整数种子 | r3 |
+| `count` | option | 1 | 样本数 | current |
+| `mean` | option | 0 | 签名对应的mean参数 | current |
+| `std` | option | 1 | 签名对应的std参数 | current |
+| `seed` | option | none | 整数种子 | current |
 
-规划示例（尚未执行；需要目标版本，后续条目不承诺 .3）：
+当前已登记示例（Wolfram）：
 
-```text
-random_normal(count: 3,seed: 42)
+```wolfram
+RandomNormal[Count->3,Seed->42]
 ```
 
 验收：独立数学期望、有效/无效参数、边界、预算、中断及声明的平台/精度测试；范围外不伪造成功。
 
-当前源码：暂无当前实现证据。
+当前源码：[crates/om-eval/src/science/probability_registry.rs](../../crates/om-eval/src/science/probability_registry.rs)、[crates/om-eval/src/science/probability.rs](../../crates/om-eval/src/science/probability.rs)。
 
-当前测试引用：暂无当前实现证据。
+当前测试引用：[crates/om-analysis/tests/special.rs](../../crates/om-analysis/tests/special.rs)、[crates/om-eval/tests/probability.rs](../../crates/om-eval/tests/probability.rs)。
 
 ## random_real
 
@@ -1461,21 +1521,33 @@ random_sample(...)  # 后续接口尚未锁定
 
 ## random_uniform
 
-**当前实现：下一版规划；目标接口：规划接口，当前不可用。** 目标版本：`0.1.0-pre-alpha.3`。
+**当前实现：已实现；目标接口：当前可用。** 目标版本：`0.1.0-pre-alpha.3`。
 
 - 稳定身份：`fn_000194`；条目类型：`function`。
-- 副作用分类（设计预留）：`write_session`；参数验证阶段：`documentation_only`，不构成工具授权。
+- 副作用分类（设计预留）：`write_session`；参数验证阶段：`runtime_verified`，不构成工具授权。
 
 均匀随机采样
 
-- 当前支持：当前无此规范接口的实现。
+- 当前支持：SplitMix64会话默认seed=0；半开有序范围；count省略标量，显式count为0..100000列表；显式seed局部流，失败或取消不推进会话。
 - 目标范围：SplitMix64，会话默认seed=0；显式seed使用局部随机流且不改变会话流；readonly fork不能推进主随机状态。
 - 返回：number_or_list
-- 精度：机器精度路径优先；不声称任意精度。
-- 当前计算平台：无；目标计算平台：cli, desktop, web, ios。
+- 精度：仅明确的机器算法与已识别精确值；高精度/复数算法未实现，不静默降级。随机流为确定性伪随机，不是密码学随机。
+- 当前计算平台：cli, desktop, web, ios；目标计算平台：cli, desktop, web, ios。
 - 目标图形/交互展示平台：不适用或后续未定。
-- 兼容名称：无既有兼容入口。
+- 兼容名称：`RandomUniform`。
 - 管道位置：不接受自动管道输入。
+
+当前现代签名：
+
+```text
+random_uniform(count: 1, bounds: [0,1], seed: none)
+```
+
+当前 Wolfram 签名：
+
+```text
+RandomUniform[Count->1]
+```
 
 目标现代签名（按目标接口状态判断是否已可执行）：
 
@@ -1485,21 +1557,21 @@ random_uniform(count: 1, bounds: [0,1], seed: none)
 
 | 参数 | 类型 | 默认值 | 含义 | 可用阶段 |
 |---|---|---|---|---|
-| `count` | option | 1 | 样本数 | r3 |
-| `bounds` | option | [0,1] | 有序范围 | r3 |
-| `seed` | option | none | 整数种子 | r3 |
+| `count` | option | 1 | 样本数 | current |
+| `bounds` | option | [0,1] | 有序范围 | current |
+| `seed` | option | none | 整数种子 | current |
 
-规划示例（尚未执行；需要目标版本，后续条目不承诺 .3）：
+当前已登记示例（Wolfram）：
 
-```text
-random_uniform(count: 3,seed: 42)
+```wolfram
+RandomUniform[Count->3,Seed->42]
 ```
 
 验收：独立数学期望、有效/无效参数、边界、预算、中断及声明的平台/精度测试；范围外不伪造成功。
 
-当前源码：暂无当前实现证据。
+当前源码：[crates/om-eval/src/science/probability_registry.rs](../../crates/om-eval/src/science/probability_registry.rs)、[crates/om-eval/src/science/probability.rs](../../crates/om-eval/src/science/probability.rs)。
 
-当前测试引用：暂无当前实现证据。
+当前测试引用：[crates/om-analysis/tests/special.rs](../../crates/om-analysis/tests/special.rs)、[crates/om-eval/tests/probability.rs](../../crates/om-eval/tests/probability.rs)。
 
 ## random_variate
 
@@ -1537,21 +1609,33 @@ random_variate(...)  # 后续接口尚未锁定
 
 ## seed_random
 
-**当前实现：下一版规划；目标接口：规划接口，当前不可用。** 目标版本：`0.1.0-pre-alpha.3`。
+**当前实现：已实现；目标接口：当前可用。** 目标版本：`0.1.0-pre-alpha.3`。
 
 - 稳定身份：`fn_000197`；条目类型：`function`。
-- 副作用分类（设计预留）：`write_session`；参数验证阶段：`documentation_only`，不构成工具授权。
+- 副作用分类（设计预留）：`write_session`；参数验证阶段：`runtime_verified`，不构成工具授权。
 
 设置会话随机种子
 
-- 当前支持：当前无此规范接口的实现。
+- 当前支持：0..2^64-1整数种子，重置本会话并返回Null；只读工具拒绝重置。
 - 目标范围：SplitMix64，会话默认seed=0；显式seed使用局部随机流且不改变会话流；readonly fork不能推进主随机状态。
 - 返回：number_or_list
-- 精度：机器精度路径优先；不声称任意精度。
-- 当前计算平台：无；目标计算平台：cli, desktop, web, ios。
+- 精度：仅明确的机器算法与已识别精确值；高精度/复数算法未实现，不静默降级。随机流为确定性伪随机，不是密码学随机。
+- 当前计算平台：cli, desktop, web, ios；目标计算平台：cli, desktop, web, ios。
 - 目标图形/交互展示平台：不适用或后续未定。
-- 兼容名称：无既有兼容入口。
+- 兼容名称：`SeedRandom`。
 - 管道位置：不接受自动管道输入。
+
+当前现代签名：
+
+```text
+seed_random(seed)
+```
+
+当前 Wolfram 签名：
+
+```text
+SeedRandom[seed]
+```
 
 目标现代签名（按目标接口状态判断是否已可执行）：
 
@@ -1561,19 +1645,19 @@ seed_random(seed)
 
 | 参数 | 类型 | 默认值 | 含义 | 可用阶段 |
 |---|---|---|---|---|
-| `seed` | positional | 必填 | 整数种子 | r3 |
+| `seed` | positional | 必填 | 整数种子 | current |
 
-规划示例（尚未执行；需要目标版本，后续条目不承诺 .3）：
+当前已登记示例（Wolfram）：
 
-```text
-seed_random(42)
+```wolfram
+SeedRandom[42]
 ```
 
 验收：独立数学期望、有效/无效参数、边界、预算、中断及声明的平台/精度测试；范围外不伪造成功。
 
-当前源码：暂无当前实现证据。
+当前源码：[crates/om-eval/src/science/probability_registry.rs](../../crates/om-eval/src/science/probability_registry.rs)、[crates/om-eval/src/science/probability.rs](../../crates/om-eval/src/science/probability.rs)。
 
-当前测试引用：暂无当前实现证据。
+当前测试引用：[crates/om-analysis/tests/special.rs](../../crates/om-analysis/tests/special.rs)、[crates/om-eval/tests/probability.rs](../../crates/om-eval/tests/probability.rs)。
 
 ## shapiro_wilk_test
 
@@ -1874,21 +1958,33 @@ tally(...)  # 后续接口尚未锁定
 
 ## uniform_distribution
 
-**当前实现：下一版规划；目标接口：规划接口，当前不可用。** 目标版本：`0.1.0-pre-alpha.3`。
+**当前实现：已实现；目标接口：当前可用。** 目标版本：`0.1.0-pre-alpha.3`。
 
 - 稳定身份：`fn_000191`；条目类型：`function`。
-- 副作用分类（设计预留）：`pure`；参数验证阶段：`documentation_only`，不构成工具授权。
+- 副作用分类（设计预留）：`pure`；参数验证阶段：`runtime_verified`，不构成工具授权。
 
 均匀分布
 
-- 当前支持：当前无此规范接口的实现。
+- 当前支持：有限严格有序实端点；默认[0,1]，返回UniformDistribution对象。
 - 目标范围：首版正态与均匀；密度/CDF机器计算与可识别符号形式，参数校验真实。
 - 返回：distribution_or_number
-- 精度：机器精度路径优先；不声称任意精度。
-- 当前计算平台：无；目标计算平台：cli, desktop, web, ios。
+- 精度：仅明确的机器算法与已识别精确值；高精度/复数算法未实现，不静默降级。随机流为确定性伪随机，不是密码学随机。
+- 当前计算平台：cli, desktop, web, ios；目标计算平台：cli, desktop, web, ios。
 - 目标图形/交互展示平台：不适用或后续未定。
-- 兼容名称：无既有兼容入口。
+- 兼容名称：`UniformDistribution`。
 - 管道位置：不接受自动管道输入。
+
+当前现代签名：
+
+```text
+uniform_distribution(bounds: [0,1])
+```
+
+当前 Wolfram 签名：
+
+```text
+UniformDistribution[bounds]
+```
 
 目标现代签名（按目标接口状态判断是否已可执行）：
 
@@ -1898,19 +1994,19 @@ uniform_distribution(bounds: [0,1])
 
 | 参数 | 类型 | 默认值 | 含义 | 可用阶段 |
 |---|---|---|---|---|
-| `bounds` | option | [0,1] | 严格有序端点 | r3 |
+| `bounds` | option | [0,1] | 严格有序端点 | current |
 
-规划示例（尚未执行；需要目标版本，后续条目不承诺 .3）：
+当前已登记示例（Wolfram）：
 
-```text
-uniform_distribution(bounds: [0,1])
+```wolfram
+UniformDistribution[{0,1}]
 ```
 
 验收：独立数学期望、有效/无效参数、边界、预算、中断及声明的平台/精度测试；范围外不伪造成功。
 
-当前源码：暂无当前实现证据。
+当前源码：[crates/om-eval/src/science/probability_registry.rs](../../crates/om-eval/src/science/probability_registry.rs)、[crates/om-eval/src/science/probability.rs](../../crates/om-eval/src/science/probability.rs)。
 
-当前测试引用：暂无当前实现证据。
+当前测试引用：[crates/om-analysis/tests/special.rs](../../crates/om-analysis/tests/special.rs)、[crates/om-eval/tests/probability.rs](../../crates/om-eval/tests/probability.rs)。
 
 ## variance
 

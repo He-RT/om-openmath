@@ -13,16 +13,16 @@
 | [`acos`](#acos) | 已实现 | 当前可用 | 精确反余弦主值。 |
 | [`acosh`](#acosh) | 已实现 | 当前可用 | 计算主值反双曲余弦。 |
 | [`acot`](#acot) | 已实现 | 现有入口可用，统一接口待实施 | 计算主值反余切。 |
-| [`acoth`](#acoth) | 下一版规划 | 规划接口，当前不可用 | 主值反双曲余切 |
+| [`acoth`](#acoth) | 已实现 | 当前可用 | 主值反双曲余切 |
 | [`acsc`](#acsc) | 已实现 | 现有入口可用，统一接口待实施 | 计算主值反余割。 |
-| [`acsch`](#acsch) | 下一版规划 | 规划接口，当前不可用 | 主值反双曲余割 |
+| [`acsch`](#acsch) | 已实现 | 当前可用 | 主值反双曲余割 |
 | [`add`](#add) | 已实现 | 现有入口可用，统一接口待实施 | 相加并合并同类项。 |
 | [`airy_ai`](#airy_ai) | 后续规划 | 规划接口，当前不可用 | 基础数值与初等函数中的 AiryAi 能力，进入后续全景目录。 |
 | [`airy_bi`](#airy_bi) | 后续规划 | 规划接口，当前不可用 | 基础数值与初等函数中的 AiryBi 能力，进入后续全景目录。 |
 | [`and`](#and) | 已实现 | 现有入口可用，统一接口待实施 | 短路逻辑与。 |
 | [`arg`](#arg) | 已实现 | 当前可用 | 取主值幅角。 |
 | [`asec`](#asec) | 已实现 | 现有入口可用，统一接口待实施 | 计算主值反正割。 |
-| [`asech`](#asech) | 下一版规划 | 规划接口，当前不可用 | 主值反双曲正割 |
+| [`asech`](#asech) | 已实现 | 当前可用 | 主值反双曲正割 |
 | [`asin`](#asin) | 已实现 | 当前可用 | 精确反正弦主值。 |
 | [`asinh`](#asinh) | 已实现 | 当前可用 | 计算主值反双曲正弦。 |
 | [`atan`](#atan) | 已实现 | 当前可用 | 精确反正切主值或平面方向角。 |
@@ -32,7 +32,7 @@
 | [`bessel_j`](#bessel_j) | 后续规划 | 规划接口，当前不可用 | 基础数值与初等函数中的 BesselJ 能力，进入后续全景目录。 |
 | [`bessel_k`](#bessel_k) | 后续规划 | 规划接口，当前不可用 | 基础数值与初等函数中的 BesselK 能力，进入后续全景目录。 |
 | [`bessel_y`](#bessel_y) | 后续规划 | 规划接口，当前不可用 | 基础数值与初等函数中的 BesselY 能力，进入后续全景目录。 |
-| [`beta`](#beta) | 下一版规划 | 规划接口，当前不可用 | Beta 函数 |
+| [`beta`](#beta) | 已实现 | 当前可用 | Beta 函数 |
 | [`catalan`](#catalan) | 后续规划 | 规划接口，当前不可用 | 基础数值与初等函数中的 Catalan 能力，进入后续全景目录。 |
 | [`cbrt`](#cbrt) | 下一版规划 | 规划接口，当前不可用 | 实数立方根 |
 | [`ceil`](#ceil) | 已实现 | 现有入口可用，统一接口待实施 | 向上取整或取指定单位的上界。 |
@@ -61,8 +61,8 @@
 | [`elliptic_e`](#elliptic_e) | 后续规划 | 规划接口，当前不可用 | 基础数值与初等函数中的 EllipticE 能力，进入后续全景目录。 |
 | [`elliptic_k`](#elliptic_k) | 后续规划 | 规划接口，当前不可用 | 基础数值与初等函数中的 EllipticK 能力，进入后续全景目录。 |
 | [`equal`](#equal) | 已实现 | 现有入口可用，统一接口待实施 | 判断相等，保留未知符号关系。 |
-| [`erf`](#erf) | 下一版规划 | 规划接口，当前不可用 | 误差函数 |
-| [`erfc`](#erfc) | 下一版规划 | 规划接口，当前不可用 | 互补误差函数 |
+| [`erf`](#erf) | 已实现 | 当前可用 | 误差函数 |
+| [`erfc`](#erfc) | 已实现 | 当前可用 | 互补误差函数 |
 | [`euler_gamma`](#euler_gamma) | 后续规划 | 规划接口，当前不可用 | 基础数值与初等函数中的 EulerGamma 能力，进入后续全景目录。 |
 | [`euler_phi`](#euler_phi) | 后续规划 | 规划接口，当前不可用 | 基础数值与初等函数中的 EulerPhi 能力，进入后续全景目录。 |
 | [`exp`](#exp) | 已实现 | 当前可用 | 以 E 为底取幂。 |
@@ -73,7 +73,7 @@
 | [`fractional_part`](#fractional_part) | 已实现 | 当前可用 | 与整数部分相补的有符号小数部分 |
 | [`from_continued_fraction`](#from_continued_fraction) | 后续规划 | 规划接口，当前不可用 | 基础数值与初等函数中的 FromContinuedFraction 能力，进入后续全景目录。 |
 | [`from_digits`](#from_digits) | 后续规划 | 规划接口，当前不可用 | 基础数值与初等函数中的 FromDigits 能力，进入后续全景目录。 |
-| [`gamma`](#gamma) | 下一版规划 | 规划接口，当前不可用 | Gamma 函数 |
+| [`gamma`](#gamma) | 已实现 | 当前可用 | Gamma 函数 |
 | [`gcd`](#gcd) | 已实现 | 当前可用 | 计算非负整数或精确有理数最大公约数。 |
 | [`greater`](#greater) | 已实现 | 现有入口可用，统一接口待实施 | 判断严格递减关系。 |
 | [`greater_equal`](#greater_equal) | 已实现 | 现有入口可用，统一接口待实施 | 判断非递增关系。 |
@@ -97,7 +97,7 @@
 | [`less`](#less) | 已实现 | 现有入口可用，统一接口待实施 | 判断严格递增关系。 |
 | [`less_equal`](#less_equal) | 已实现 | 现有入口可用，统一接口待实施 | 判断非递减关系。 |
 | [`log`](#log) | 已实现 | 现有入口可用，统一接口待实施 | 主值自然对数或指定底数的对数。 |
-| [`log_gamma`](#log_gamma) | 下一版规划 | 规划接口，当前不可用 | 正实参数 LogGamma |
+| [`log_gamma`](#log_gamma) | 已实现 | 当前可用 | 正实参数 LogGamma |
 | [`max`](#max) | 已实现 | 当前可用 | 最大值 |
 | [`min`](#min) | 已实现 | 当前可用 | 最小值 |
 | [`minmax`](#minmax) | 已实现 | 当前可用 | 同时给最小与最大值 |
@@ -414,21 +414,33 @@ ArcCot[0.5]
 
 ## acoth
 
-**当前实现：下一版规划；目标接口：规划接口，当前不可用。** 目标版本：`0.1.0-pre-alpha.3`。
+**当前实现：已实现；目标接口：当前可用。** 目标版本：`0.1.0-pre-alpha.3`。
 
 - 稳定身份：`fn_000129`；条目类型：`function`。
-- 副作用分类（设计预留）：`pure`；参数验证阶段：`documentation_only`，不构成工具授权。
+- 副作用分类（设计预留）：`pure`；参数验证阶段：`runtime_verified`，不构成工具授权。
 
 主值反双曲余切
 
-- 当前支持：当前无此规范接口的实现。
+- 当前支持：实数主值|x|>1；机器路径。精确非特殊值保留原式，N可请求机器近似。
 - 目标范围：精确可识别值及所声明实数机器路径；新调用注册尚未交付。
 - 返回：expression
-- 精度：精确值或明确的机器路径；precision/accuracy 查询输入已有信息。
-- 当前计算平台：无；目标计算平台：cli, desktop, web, ios。
+- 精度：仅明确的机器算法与已识别精确值；高精度/复数算法未实现，不静默降级。随机流为确定性伪随机，不是密码学随机。
+- 当前计算平台：cli, desktop, web, ios；目标计算平台：cli, desktop, web, ios。
 - 目标图形/交互展示平台：不适用或后续未定。
-- 兼容名称：无既有兼容入口。
+- 兼容名称：`ArcCoth`。
 - 管道位置：第 1 个位置参数（从 1 起）。
+
+当前现代签名：
+
+```text
+acoth(x)
+```
+
+当前 Wolfram 签名：
+
+```text
+ArcCoth[x]
+```
 
 目标现代签名（按目标接口状态判断是否已可执行）：
 
@@ -438,19 +450,19 @@ acoth(x)
 
 | 参数 | 类型 | 默认值 | 含义 | 可用阶段 |
 |---|---|---|---|---|
-| `x` | positional | 必填 | 签名对应的x参数 | r3 |
+| `x` | positional | 必填 | 签名对应的x参数 | current |
 
-规划示例（尚未执行；需要目标版本，后续条目不承诺 .3）：
+当前已登记示例（Wolfram）：
 
-```text
-acoth(2)
+```wolfram
+ArcCoth[2.]
 ```
 
 验收：独立数学期望、有效/无效参数、边界、预算、中断及声明的平台/精度测试；范围外不伪造成功。
 
-当前源码：暂无当前实现证据。
+当前源码：[crates/om-eval/src/science/probability_registry.rs](../../crates/om-eval/src/science/probability_registry.rs)、[crates/om-eval/src/science/special.rs](../../crates/om-eval/src/science/special.rs)。
 
-当前测试引用：暂无当前实现证据。
+当前测试引用：[crates/om-analysis/tests/special.rs](../../crates/om-analysis/tests/special.rs)、[crates/om-eval/tests/probability.rs](../../crates/om-eval/tests/probability.rs)。
 
 ## acsc
 
@@ -507,21 +519,33 @@ ArcCsc[2.0]
 
 ## acsch
 
-**当前实现：下一版规划；目标接口：规划接口，当前不可用。** 目标版本：`0.1.0-pre-alpha.3`。
+**当前实现：已实现；目标接口：当前可用。** 目标版本：`0.1.0-pre-alpha.3`。
 
 - 稳定身份：`fn_000131`；条目类型：`function`。
-- 副作用分类（设计预留）：`pure`；参数验证阶段：`documentation_only`，不构成工具授权。
+- 副作用分类（设计预留）：`pure`；参数验证阶段：`runtime_verified`，不构成工具授权。
 
 主值反双曲余割
 
-- 当前支持：当前无此规范接口的实现。
+- 当前支持：非零有限实数主值；机器路径。
 - 目标范围：精确可识别值及所声明实数机器路径；新调用注册尚未交付。
 - 返回：expression
-- 精度：精确值或明确的机器路径；precision/accuracy 查询输入已有信息。
-- 当前计算平台：无；目标计算平台：cli, desktop, web, ios。
+- 精度：仅明确的机器算法与已识别精确值；高精度/复数算法未实现，不静默降级。随机流为确定性伪随机，不是密码学随机。
+- 当前计算平台：cli, desktop, web, ios；目标计算平台：cli, desktop, web, ios。
 - 目标图形/交互展示平台：不适用或后续未定。
-- 兼容名称：无既有兼容入口。
+- 兼容名称：`ArcCsch`。
 - 管道位置：第 1 个位置参数（从 1 起）。
+
+当前现代签名：
+
+```text
+acsch(x)
+```
+
+当前 Wolfram 签名：
+
+```text
+ArcCsch[x]
+```
 
 目标现代签名（按目标接口状态判断是否已可执行）：
 
@@ -531,19 +555,19 @@ acsch(x)
 
 | 参数 | 类型 | 默认值 | 含义 | 可用阶段 |
 |---|---|---|---|---|
-| `x` | positional | 必填 | 签名对应的x参数 | r3 |
+| `x` | positional | 必填 | 签名对应的x参数 | current |
 
-规划示例（尚未执行；需要目标版本，后续条目不承诺 .3）：
+当前已登记示例（Wolfram）：
 
-```text
-acsch(2)
+```wolfram
+ArcCsch[2.]
 ```
 
 验收：独立数学期望、有效/无效参数、边界、预算、中断及声明的平台/精度测试；范围外不伪造成功。
 
-当前源码：暂无当前实现证据。
+当前源码：[crates/om-eval/src/science/probability_registry.rs](../../crates/om-eval/src/science/probability_registry.rs)、[crates/om-eval/src/science/special.rs](../../crates/om-eval/src/science/special.rs)。
 
-当前测试引用：暂无当前实现证据。
+当前测试引用：[crates/om-analysis/tests/special.rs](../../crates/om-analysis/tests/special.rs)、[crates/om-eval/tests/probability.rs](../../crates/om-eval/tests/probability.rs)。
 
 ## add
 
@@ -827,21 +851,33 @@ ArcSec[2.0]
 
 ## asech
 
-**当前实现：下一版规划；目标接口：规划接口，当前不可用。** 目标版本：`0.1.0-pre-alpha.3`。
+**当前实现：已实现；目标接口：当前可用。** 目标版本：`0.1.0-pre-alpha.3`。
 
 - 稳定身份：`fn_000130`；条目类型：`function`。
-- 副作用分类（设计预留）：`pure`；参数验证阶段：`documentation_only`，不构成工具授权。
+- 副作用分类（设计预留）：`pure`；参数验证阶段：`runtime_verified`，不构成工具授权。
 
 主值反双曲正割
 
-- 当前支持：当前无此规范接口的实现。
+- 当前支持：实数主值0<x≤1；1精确为0；机器路径。
 - 目标范围：精确可识别值及所声明实数机器路径；新调用注册尚未交付。
 - 返回：expression
-- 精度：精确值或明确的机器路径；precision/accuracy 查询输入已有信息。
-- 当前计算平台：无；目标计算平台：cli, desktop, web, ios。
+- 精度：仅明确的机器算法与已识别精确值；高精度/复数算法未实现，不静默降级。随机流为确定性伪随机，不是密码学随机。
+- 当前计算平台：cli, desktop, web, ios；目标计算平台：cli, desktop, web, ios。
 - 目标图形/交互展示平台：不适用或后续未定。
-- 兼容名称：无既有兼容入口。
+- 兼容名称：`ArcSech`。
 - 管道位置：第 1 个位置参数（从 1 起）。
+
+当前现代签名：
+
+```text
+asech(x)
+```
+
+当前 Wolfram 签名：
+
+```text
+ArcSech[x]
+```
 
 目标现代签名（按目标接口状态判断是否已可执行）：
 
@@ -851,19 +887,19 @@ asech(x)
 
 | 参数 | 类型 | 默认值 | 含义 | 可用阶段 |
 |---|---|---|---|---|
-| `x` | positional | 必填 | 签名对应的x参数 | r3 |
+| `x` | positional | 必填 | 签名对应的x参数 | current |
 
-规划示例（尚未执行；需要目标版本，后续条目不承诺 .3）：
+当前已登记示例（Wolfram）：
 
-```text
-asech(1/2)
+```wolfram
+ArcSech[0.5]
 ```
 
 验收：独立数学期望、有效/无效参数、边界、预算、中断及声明的平台/精度测试；范围外不伪造成功。
 
-当前源码：暂无当前实现证据。
+当前源码：[crates/om-eval/src/science/probability_registry.rs](../../crates/om-eval/src/science/probability_registry.rs)、[crates/om-eval/src/science/special.rs](../../crates/om-eval/src/science/special.rs)。
 
-当前测试引用：暂无当前实现证据。
+当前测试引用：[crates/om-analysis/tests/special.rs](../../crates/om-analysis/tests/special.rs)、[crates/om-eval/tests/probability.rs](../../crates/om-eval/tests/probability.rs)。
 
 ## asin
 
@@ -1250,21 +1286,33 @@ bessel_y(...)  # 后续接口尚未锁定
 
 ## beta
 
-**当前实现：下一版规划；目标接口：规划接口，当前不可用。** 目标版本：`0.1.0-pre-alpha.3`。
+**当前实现：已实现；目标接口：当前可用。** 目标版本：`0.1.0-pre-alpha.3`。
 
 - 稳定身份：`fn_000136`；条目类型：`function`。
-- 副作用分类（设计预留）：`pure`；参数验证阶段：`documentation_only`，不构成工具授权。
+- 副作用分类（设计预留）：`pure`；参数验证阶段：`runtime_verified`，不构成工具授权。
 
 Beta 函数
 
-- 当前支持：当前无此规范接口的实现。
+- 当前支持：有限正实机器路径；对数递推与稳定尺度，避免相近LogGamma相减。机器下溢为0。
 - 目标范围：首版机器正实参数；Gamma 正整数支持精确阶乘关系；非正参数/复杂分支和任意精度进入后续。
 - 返回：expression
-- 精度：精确值或明确的机器路径；precision/accuracy 查询输入已有信息。
-- 当前计算平台：无；目标计算平台：cli, desktop, web, ios。
+- 精度：仅明确的机器算法与已识别精确值；高精度/复数算法未实现，不静默降级。随机流为确定性伪随机，不是密码学随机。
+- 当前计算平台：cli, desktop, web, ios；目标计算平台：cli, desktop, web, ios。
 - 目标图形/交互展示平台：不适用或后续未定。
-- 兼容名称：无既有兼容入口。
+- 兼容名称：`Beta`。
 - 管道位置：第 1 个位置参数（从 1 起）。
+
+当前现代签名：
+
+```text
+beta(a, b)
+```
+
+当前 Wolfram 签名：
+
+```text
+Beta[a,b]
+```
 
 目标现代签名（按目标接口状态判断是否已可执行）：
 
@@ -1274,20 +1322,20 @@ beta(a, b)
 
 | 参数 | 类型 | 默认值 | 含义 | 可用阶段 |
 |---|---|---|---|---|
-| `a` | positional | 必填 | 正实参数 | r3 |
-| `b` | positional | 必填 | 正实参数 | r3 |
+| `a` | positional | 必填 | 正实参数 | current |
+| `b` | positional | 必填 | 正实参数 | current |
 
-规划示例（尚未执行；需要目标版本，后续条目不承诺 .3）：
+当前已登记示例（Wolfram）：
 
-```text
-beta(2,3)
+```wolfram
+Beta[2.,3.]
 ```
 
 验收：独立数学期望、有效/无效参数、边界、预算、中断及声明的平台/精度测试；范围外不伪造成功。
 
-当前源码：暂无当前实现证据。
+当前源码：[crates/om-eval/src/science/probability_registry.rs](../../crates/om-eval/src/science/probability_registry.rs)、[crates/om-eval/src/science/special.rs](../../crates/om-eval/src/science/special.rs)。
 
-当前测试引用：暂无当前实现证据。
+当前测试引用：[crates/om-analysis/tests/special.rs](../../crates/om-analysis/tests/special.rs)、[crates/om-eval/tests/probability.rs](../../crates/om-eval/tests/probability.rs)。
 
 ## catalan
 
@@ -2555,21 +2603,33 @@ equal(...values)
 
 ## erf
 
-**当前实现：下一版规划；目标接口：规划接口，当前不可用。** 目标版本：`0.1.0-pre-alpha.3`。
+**当前实现：已实现；目标接口：当前可用。** 目标版本：`0.1.0-pre-alpha.3`。
 
 - 稳定身份：`fn_000132`；条目类型：`function`。
-- 副作用分类（设计预留）：`pure`；参数验证阶段：`documentation_only`，不构成工具授权。
+- 副作用分类（设计预留）：`pure`；参数验证阶段：`runtime_verified`，不构成工具授权。
 
 误差函数
 
-- 当前支持：当前无此规范接口的实现。
+- 当前支持：实数机器路径和精确零值；小参数级数与直接互补尾部，拒绝高精度和复参数。
 - 目标范围：实参数机器值、端点与对称性；符号 Gaussian 积分可保留此头；高精度数值未承诺。
 - 返回：expression
-- 精度：精确值或明确的机器路径；precision/accuracy 查询输入已有信息。
-- 当前计算平台：无；目标计算平台：cli, desktop, web, ios。
+- 精度：仅明确的机器算法与已识别精确值；高精度/复数算法未实现，不静默降级。随机流为确定性伪随机，不是密码学随机。
+- 当前计算平台：cli, desktop, web, ios；目标计算平台：cli, desktop, web, ios。
 - 目标图形/交互展示平台：不适用或后续未定。
-- 兼容名称：无既有兼容入口。
+- 兼容名称：`Erf`。
 - 管道位置：第 1 个位置参数（从 1 起）。
+
+当前现代签名：
+
+```text
+erf(x)
+```
+
+当前 Wolfram 签名：
+
+```text
+Erf[x]
+```
 
 目标现代签名（按目标接口状态判断是否已可执行）：
 
@@ -2579,37 +2639,49 @@ erf(x)
 
 | 参数 | 类型 | 默认值 | 含义 | 可用阶段 |
 |---|---|---|---|---|
-| `x` | positional | 必填 | 签名对应的x参数 | r3 |
+| `x` | positional | 必填 | 签名对应的x参数 | current |
 
-规划示例（尚未执行；需要目标版本，后续条目不承诺 .3）：
+当前已登记示例（Wolfram）：
 
-```text
-erf(1)
+```wolfram
+Erf[1.]
 ```
 
 验收：独立数学期望、有效/无效参数、边界、预算、中断及声明的平台/精度测试；范围外不伪造成功。
 
-当前源码：暂无当前实现证据。
+当前源码：[crates/om-eval/src/science/probability_registry.rs](../../crates/om-eval/src/science/probability_registry.rs)、[crates/om-eval/src/science/special.rs](../../crates/om-eval/src/science/special.rs)。
 
-当前测试引用：暂无当前实现证据。
+当前测试引用：[crates/om-analysis/tests/special.rs](../../crates/om-analysis/tests/special.rs)、[crates/om-eval/tests/probability.rs](../../crates/om-eval/tests/probability.rs)。
 
 ## erfc
 
-**当前实现：下一版规划；目标接口：规划接口，当前不可用。** 目标版本：`0.1.0-pre-alpha.3`。
+**当前实现：已实现；目标接口：当前可用。** 目标版本：`0.1.0-pre-alpha.3`。
 
 - 稳定身份：`fn_000133`；条目类型：`function`。
-- 副作用分类（设计预留）：`pure`；参数验证阶段：`documentation_only`，不构成工具授权。
+- 副作用分类（设计预留）：`pure`；参数验证阶段：`runtime_verified`，不构成工具授权。
 
 互补误差函数
 
-- 当前支持：当前无此规范接口的实现。
+- 当前支持：实数机器路径和精确零值；独立计算尾部避免1-erf抵消，机器下溢为0。
 - 目标范围：实参数机器值、端点与对称性；符号 Gaussian 积分可保留此头；高精度数值未承诺。
 - 返回：expression
-- 精度：精确值或明确的机器路径；precision/accuracy 查询输入已有信息。
-- 当前计算平台：无；目标计算平台：cli, desktop, web, ios。
+- 精度：仅明确的机器算法与已识别精确值；高精度/复数算法未实现，不静默降级。随机流为确定性伪随机，不是密码学随机。
+- 当前计算平台：cli, desktop, web, ios；目标计算平台：cli, desktop, web, ios。
 - 目标图形/交互展示平台：不适用或后续未定。
-- 兼容名称：无既有兼容入口。
+- 兼容名称：`Erfc`。
 - 管道位置：第 1 个位置参数（从 1 起）。
+
+当前现代签名：
+
+```text
+erfc(x)
+```
+
+当前 Wolfram 签名：
+
+```text
+Erfc[x]
+```
 
 目标现代签名（按目标接口状态判断是否已可执行）：
 
@@ -2619,19 +2691,19 @@ erfc(x)
 
 | 参数 | 类型 | 默认值 | 含义 | 可用阶段 |
 |---|---|---|---|---|
-| `x` | positional | 必填 | 签名对应的x参数 | r3 |
+| `x` | positional | 必填 | 签名对应的x参数 | current |
 
-规划示例（尚未执行；需要目标版本，后续条目不承诺 .3）：
+当前已登记示例（Wolfram）：
 
-```text
-erfc(1)
+```wolfram
+Erfc[8.]
 ```
 
 验收：独立数学期望、有效/无效参数、边界、预算、中断及声明的平台/精度测试；范围外不伪造成功。
 
-当前源码：暂无当前实现证据。
+当前源码：[crates/om-eval/src/science/probability_registry.rs](../../crates/om-eval/src/science/probability_registry.rs)、[crates/om-eval/src/science/special.rs](../../crates/om-eval/src/science/special.rs)。
 
-当前测试引用：暂无当前实现证据。
+当前测试引用：[crates/om-analysis/tests/special.rs](../../crates/om-analysis/tests/special.rs)、[crates/om-eval/tests/probability.rs](../../crates/om-eval/tests/probability.rs)。
 
 ## euler_gamma
 
@@ -3076,21 +3148,33 @@ from_digits(...)  # 后续接口尚未锁定
 
 ## gamma
 
-**当前实现：下一版规划；目标接口：规划接口，当前不可用。** 目标版本：`0.1.0-pre-alpha.3`。
+**当前实现：已实现；目标接口：当前可用。** 目标版本：`0.1.0-pre-alpha.3`。
 
 - 稳定身份：`fn_000134`；条目类型：`function`。
-- 副作用分类（设计预留）：`pure`；参数验证阶段：`documentation_only`，不构成工具授权。
+- 副作用分类（设计预留）：`pure`；参数验证阶段：`runtime_verified`，不构成工具授权。
 
 Gamma 函数
 
-- 当前支持：当前无此规范接口的实现。
+- 当前支持：有限正实机器路径；正整数≤1000001通过真实Factorial给精确结果。溢出拒绝。
 - 目标范围：首版机器正实参数；Gamma 正整数支持精确阶乘关系；非正参数/复杂分支和任意精度进入后续。
 - 返回：expression
-- 精度：精确值或明确的机器路径；precision/accuracy 查询输入已有信息。
-- 当前计算平台：无；目标计算平台：cli, desktop, web, ios。
+- 精度：仅明确的机器算法与已识别精确值；高精度/复数算法未实现，不静默降级。随机流为确定性伪随机，不是密码学随机。
+- 当前计算平台：cli, desktop, web, ios；目标计算平台：cli, desktop, web, ios。
 - 目标图形/交互展示平台：不适用或后续未定。
-- 兼容名称：无既有兼容入口。
+- 兼容名称：`Gamma`。
 - 管道位置：第 1 个位置参数（从 1 起）。
+
+当前现代签名：
+
+```text
+gamma(x)
+```
+
+当前 Wolfram 签名：
+
+```text
+Gamma[x]
+```
 
 目标现代签名（按目标接口状态判断是否已可执行）：
 
@@ -3100,19 +3184,19 @@ gamma(x)
 
 | 参数 | 类型 | 默认值 | 含义 | 可用阶段 |
 |---|---|---|---|---|
-| `x` | positional | 必填 | 首版正实参数 | r3 |
+| `x` | positional | 必填 | 首版正实参数 | current |
 
-规划示例（尚未执行；需要目标版本，后续条目不承诺 .3）：
+当前已登记示例（Wolfram）：
 
-```text
-gamma(5)
+```wolfram
+Gamma[5]
 ```
 
 验收：独立数学期望、有效/无效参数、边界、预算、中断及声明的平台/精度测试；范围外不伪造成功。
 
-当前源码：暂无当前实现证据。
+当前源码：[crates/om-eval/src/science/probability_registry.rs](../../crates/om-eval/src/science/probability_registry.rs)、[crates/om-eval/src/science/special.rs](../../crates/om-eval/src/science/special.rs)。
 
-当前测试引用：暂无当前实现证据。
+当前测试引用：[crates/om-analysis/tests/special.rs](../../crates/om-analysis/tests/special.rs)、[crates/om-eval/tests/probability.rs](../../crates/om-eval/tests/probability.rs)。
 
 ## gcd
 
@@ -4136,21 +4220,33 @@ Log[2, 8]
 
 ## log_gamma
 
-**当前实现：下一版规划；目标接口：规划接口，当前不可用。** 目标版本：`0.1.0-pre-alpha.3`。
+**当前实现：已实现；目标接口：当前可用。** 目标版本：`0.1.0-pre-alpha.3`。
 
 - 稳定身份：`fn_000135`；条目类型：`function`。
-- 副作用分类（设计预留）：`pure`；参数验证阶段：`documentation_only`，不构成工具授权。
+- 副作用分类（设计预留）：`pure`；参数验证阶段：`runtime_verified`，不构成工具授权。
 
 正实参数 LogGamma
 
-- 当前支持：当前无此规范接口的实现。
+- 当前支持：有限正实机器路径；递推与Stirling展开。复杂分支/高精度不支持。
 - 目标范围：首版机器正实参数；Gamma 正整数支持精确阶乘关系；非正参数/复杂分支和任意精度进入后续。
 - 返回：expression
-- 精度：精确值或明确的机器路径；precision/accuracy 查询输入已有信息。
-- 当前计算平台：无；目标计算平台：cli, desktop, web, ios。
+- 精度：仅明确的机器算法与已识别精确值；高精度/复数算法未实现，不静默降级。随机流为确定性伪随机，不是密码学随机。
+- 当前计算平台：cli, desktop, web, ios；目标计算平台：cli, desktop, web, ios。
 - 目标图形/交互展示平台：不适用或后续未定。
-- 兼容名称：无既有兼容入口。
+- 兼容名称：`LogGamma`。
 - 管道位置：第 1 个位置参数（从 1 起）。
+
+当前现代签名：
+
+```text
+log_gamma(x)
+```
+
+当前 Wolfram 签名：
+
+```text
+LogGamma[x]
+```
 
 目标现代签名（按目标接口状态判断是否已可执行）：
 
@@ -4160,19 +4256,19 @@ log_gamma(x)
 
 | 参数 | 类型 | 默认值 | 含义 | 可用阶段 |
 |---|---|---|---|---|
-| `x` | positional | 必填 | 签名对应的x参数 | r3 |
+| `x` | positional | 必填 | 签名对应的x参数 | current |
 
-规划示例（尚未执行；需要目标版本，后续条目不承诺 .3）：
+当前已登记示例（Wolfram）：
 
-```text
-log_gamma(5.0)
+```wolfram
+LogGamma[1000.]
 ```
 
 验收：独立数学期望、有效/无效参数、边界、预算、中断及声明的平台/精度测试；范围外不伪造成功。
 
-当前源码：暂无当前实现证据。
+当前源码：[crates/om-eval/src/science/probability_registry.rs](../../crates/om-eval/src/science/probability_registry.rs)、[crates/om-eval/src/science/special.rs](../../crates/om-eval/src/science/special.rs)。
 
-当前测试引用：暂无当前实现证据。
+当前测试引用：[crates/om-analysis/tests/special.rs](../../crates/om-analysis/tests/special.rs)、[crates/om-eval/tests/probability.rs](../../crates/om-eval/tests/probability.rs)。
 
 ## max
 

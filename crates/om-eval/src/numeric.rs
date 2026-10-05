@@ -62,6 +62,19 @@ fn n(ev: &mut Evaluator, args: &[Expr], ctx: &Interrupt) -> Result<Option<Expr>,
         ctx.tick()?;
         match frame {
             Frame::Visit(e) => {
+                if precision != Precision::Machine
+                    && e.head_symbol()
+                        .is_some_and(|h| crate::science::is_machine_special(h.name()))
+                {
+                    ev.message(
+                        "N",
+                        "precision",
+                        "此特殊函数尚未实现高精度算法，保留原式。".into(),
+                        MsgLevel::Warning,
+                    );
+                    values.push(e.clone());
+                    continue;
+                }
                 if let Some(n) = om_simplify::numeval::approximate(e, precision, ctx)? {
                     values.push(Expr::number(n));
                 } else if matches!(e.kind(), ExprKind::Normal(_))

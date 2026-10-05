@@ -906,42 +906,58 @@
     {
       "id": "fn_000129",
       "initial_name": "acoth",
-      "runtime_names": []
+      "runtime_names": [
+        "ArcCoth"
+      ]
     },
     {
       "id": "fn_000130",
       "initial_name": "asech",
-      "runtime_names": []
+      "runtime_names": [
+        "ArcSech"
+      ]
     },
     {
       "id": "fn_000131",
       "initial_name": "acsch",
-      "runtime_names": []
+      "runtime_names": [
+        "ArcCsch"
+      ]
     },
     {
       "id": "fn_000132",
       "initial_name": "erf",
-      "runtime_names": []
+      "runtime_names": [
+        "Erf"
+      ]
     },
     {
       "id": "fn_000133",
       "initial_name": "erfc",
-      "runtime_names": []
+      "runtime_names": [
+        "Erfc"
+      ]
     },
     {
       "id": "fn_000134",
       "initial_name": "gamma",
-      "runtime_names": []
+      "runtime_names": [
+        "Gamma"
+      ]
     },
     {
       "id": "fn_000135",
       "initial_name": "log_gamma",
-      "runtime_names": []
+      "runtime_names": [
+        "LogGamma"
+      ]
     },
     {
       "id": "fn_000136",
       "initial_name": "beta",
-      "runtime_names": []
+      "runtime_names": [
+        "Beta"
+      ]
     },
     {
       "id": "fn_000137",
@@ -1281,42 +1297,58 @@
     {
       "id": "fn_000190",
       "initial_name": "normal_distribution",
-      "runtime_names": []
+      "runtime_names": [
+        "NormalDistribution"
+      ]
     },
     {
       "id": "fn_000191",
       "initial_name": "uniform_distribution",
-      "runtime_names": []
+      "runtime_names": [
+        "UniformDistribution"
+      ]
     },
     {
       "id": "fn_000192",
       "initial_name": "pdf",
-      "runtime_names": []
+      "runtime_names": [
+        "PDF"
+      ]
     },
     {
       "id": "fn_000193",
       "initial_name": "cdf",
-      "runtime_names": []
+      "runtime_names": [
+        "CDF"
+      ]
     },
     {
       "id": "fn_000194",
       "initial_name": "random_uniform",
-      "runtime_names": []
+      "runtime_names": [
+        "RandomUniform"
+      ]
     },
     {
       "id": "fn_000195",
       "initial_name": "random_normal",
-      "runtime_names": []
+      "runtime_names": [
+        "RandomNormal"
+      ]
     },
     {
       "id": "fn_000196",
       "initial_name": "random_choice",
-      "runtime_names": []
+      "runtime_names": [
+        "RandomChoice"
+      ]
     },
     {
       "id": "fn_000197",
       "initial_name": "seed_random",
-      "runtime_names": []
+      "runtime_names": [
+        "SeedRandom"
+      ]
     },
     {
       "id": "fn_000198",

@@ -472,6 +472,53 @@
     ]
   },
   {
+    "id": "fn_000129",
+    "canonical_name": "acoth",
+    "name": "ArcCoth",
+    "modern_name": "acoth",
+    "aliases": [],
+    "arity": {
+      "min": 1,
+      "max": 1
+    },
+    "parameters": [
+      {
+        "name": "x",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": false
+      }
+    ],
+    "options": [],
+    "compatibility_syntax": [],
+    "attributes": [
+      "protected",
+      "listable",
+      "numeric_function"
+    ],
+    "pipe_arg": 1,
+    "effect_class": "pure",
+    "support": "实数主值|x|>1；机器路径。精确非特殊值保留原式，N可请求机器近似。",
+    "return_type": "expression",
+    "precision_modes": [
+      "machine"
+    ],
+    "precision_notes": "仅明确的机器算法与已识别精确值；高精度/复数算法未实现，不静默降级。随机流为确定性伪随机，不是密码学随机。",
+    "platforms": [
+      "cli",
+      "desktop",
+      "web",
+      "ios"
+    ]
+  },
+  {
     "id": "fn_000009",
     "canonical_name": "acsc",
     "name": "ArcCsc",
@@ -523,6 +570,53 @@
     ]
   },
   {
+    "id": "fn_000131",
+    "canonical_name": "acsch",
+    "name": "ArcCsch",
+    "modern_name": "acsch",
+    "aliases": [],
+    "arity": {
+      "min": 1,
+      "max": 1
+    },
+    "parameters": [
+      {
+        "name": "x",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": false
+      }
+    ],
+    "options": [],
+    "compatibility_syntax": [],
+    "attributes": [
+      "protected",
+      "listable",
+      "numeric_function"
+    ],
+    "pipe_arg": 1,
+    "effect_class": "pure",
+    "support": "非零有限实数主值；机器路径。",
+    "return_type": "expression",
+    "precision_modes": [
+      "machine"
+    ],
+    "precision_notes": "仅明确的机器算法与已识别精确值；高精度/复数算法未实现，不静默降级。随机流为确定性伪随机，不是密码学随机。",
+    "platforms": [
+      "cli",
+      "desktop",
+      "web",
+      "ios"
+    ]
+  },
+  {
     "id": "fn_000010",
     "canonical_name": "asec",
     "name": "ArcSec",
@@ -566,6 +660,54 @@
       "arbitrary_supported"
     ],
     "precision_notes": "精确计算与已支持的数值近似子集；不把符号保留或格式位数当作新算法/任意精度支持。",
+    "platforms": [
+      "cli",
+      "desktop",
+      "web",
+      "ios"
+    ]
+  },
+  {
+    "id": "fn_000130",
+    "canonical_name": "asech",
+    "name": "ArcSech",
+    "modern_name": "asech",
+    "aliases": [],
+    "arity": {
+      "min": 1,
+      "max": 1
+    },
+    "parameters": [
+      {
+        "name": "x",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": false
+      }
+    ],
+    "options": [],
+    "compatibility_syntax": [],
+    "attributes": [
+      "protected",
+      "listable",
+      "numeric_function"
+    ],
+    "pipe_arg": 1,
+    "effect_class": "pure",
+    "support": "实数主值0<x≤1；1精确为0；机器路径。",
+    "return_type": "expression",
+    "precision_modes": [
+      "exact",
+      "machine"
+    ],
+    "precision_notes": "仅明确的机器算法与已识别精确值；高精度/复数算法未实现，不静默降级。随机流为确定性伪随机，不是密码学随机。",
     "platforms": [
       "cli",
       "desktop",
@@ -840,6 +982,66 @@
     ]
   },
   {
+    "id": "fn_000136",
+    "canonical_name": "beta",
+    "name": "Beta",
+    "modern_name": "beta",
+    "aliases": [],
+    "arity": {
+      "min": 2,
+      "max": 2
+    },
+    "parameters": [
+      {
+        "name": "a",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": false
+      },
+      {
+        "name": "b",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": false
+      }
+    ],
+    "options": [],
+    "compatibility_syntax": [],
+    "attributes": [
+      "protected",
+      "listable",
+      "numeric_function"
+    ],
+    "pipe_arg": 1,
+    "effect_class": "pure",
+    "support": "有限正实机器路径；对数递推与稳定尺度，避免相近LogGamma相减。机器下溢为0。",
+    "return_type": "expression",
+    "precision_modes": [
+      "machine"
+    ],
+    "precision_notes": "仅明确的机器算法与已识别精确值；高精度/复数算法未实现，不静默降级。随机流为确定性伪随机，不是密码学随机。",
+    "platforms": [
+      "cli",
+      "desktop",
+      "web",
+      "ios"
+    ]
+  },
+  {
     "id": "fn_000016",
     "canonical_name": "choose",
     "name": "Binomial",
@@ -897,6 +1099,65 @@
       "arbitrary_supported"
     ],
     "precision_notes": "精确计算与已支持的数值近似子集；不把符号保留或格式位数当作新算法/任意精度支持。",
+    "platforms": [
+      "cli",
+      "desktop",
+      "web",
+      "ios"
+    ]
+  },
+  {
+    "id": "fn_000193",
+    "canonical_name": "cdf",
+    "name": "CDF",
+    "modern_name": "cdf",
+    "aliases": [],
+    "arity": {
+      "min": 2,
+      "max": 2
+    },
+    "parameters": [
+      {
+        "name": "distribution",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": false
+      },
+      {
+        "name": "value",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": false
+      }
+    ],
+    "options": [],
+    "compatibility_syntax": [],
+    "attributes": [
+      "protected"
+    ],
+    "pipe_arg": 1,
+    "effect_class": "pure",
+    "support": "正态机器CDF（直接erfc尾部），均匀精确或机器CDF；参数和输入校验。",
+    "return_type": "distribution_or_number",
+    "precision_modes": [
+      "exact",
+      "machine"
+    ],
+    "precision_notes": "仅明确的机器算法与已识别精确值；高精度/复数算法未实现，不静默降级。随机流为确定性伪随机，不是密码学随机。",
     "platforms": [
       "cli",
       "desktop",
@@ -3087,6 +3348,102 @@
     ]
   },
   {
+    "id": "fn_000132",
+    "canonical_name": "erf",
+    "name": "Erf",
+    "modern_name": "erf",
+    "aliases": [],
+    "arity": {
+      "min": 1,
+      "max": 1
+    },
+    "parameters": [
+      {
+        "name": "x",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": false
+      }
+    ],
+    "options": [],
+    "compatibility_syntax": [],
+    "attributes": [
+      "protected",
+      "listable",
+      "numeric_function"
+    ],
+    "pipe_arg": 1,
+    "effect_class": "pure",
+    "support": "实数机器路径和精确零值；小参数级数与直接互补尾部，拒绝高精度和复参数。",
+    "return_type": "expression",
+    "precision_modes": [
+      "exact",
+      "machine"
+    ],
+    "precision_notes": "仅明确的机器算法与已识别精确值；高精度/复数算法未实现，不静默降级。随机流为确定性伪随机，不是密码学随机。",
+    "platforms": [
+      "cli",
+      "desktop",
+      "web",
+      "ios"
+    ]
+  },
+  {
+    "id": "fn_000133",
+    "canonical_name": "erfc",
+    "name": "Erfc",
+    "modern_name": "erfc",
+    "aliases": [],
+    "arity": {
+      "min": 1,
+      "max": 1
+    },
+    "parameters": [
+      {
+        "name": "x",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": false
+      }
+    ],
+    "options": [],
+    "compatibility_syntax": [],
+    "attributes": [
+      "protected",
+      "listable",
+      "numeric_function"
+    ],
+    "pipe_arg": 1,
+    "effect_class": "pure",
+    "support": "实数机器路径和精确零值；独立计算尾部避免1-erf抵消，机器下溢为0。",
+    "return_type": "expression",
+    "precision_modes": [
+      "exact",
+      "machine"
+    ],
+    "precision_notes": "仅明确的机器算法与已识别精确值；高精度/复数算法未实现，不静默降级。随机流为确定性伪随机，不是密码学随机。",
+    "platforms": [
+      "cli",
+      "desktop",
+      "web",
+      "ios"
+    ]
+  },
+  {
     "id": "fn_000039",
     "canonical_name": "exp",
     "name": "Exp",
@@ -4075,6 +4432,54 @@
       "arbitrary_supported"
     ],
     "precision_notes": "精确计算与已支持的数值近似子集；不把符号保留或格式位数当作新算法/任意精度支持。",
+    "platforms": [
+      "cli",
+      "desktop",
+      "web",
+      "ios"
+    ]
+  },
+  {
+    "id": "fn_000134",
+    "canonical_name": "gamma",
+    "name": "Gamma",
+    "modern_name": "gamma",
+    "aliases": [],
+    "arity": {
+      "min": 1,
+      "max": 1
+    },
+    "parameters": [
+      {
+        "name": "x",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": false
+      }
+    ],
+    "options": [],
+    "compatibility_syntax": [],
+    "attributes": [
+      "protected",
+      "listable",
+      "numeric_function"
+    ],
+    "pipe_arg": 1,
+    "effect_class": "pure",
+    "support": "有限正实机器路径；正整数≤1000001通过真实Factorial给精确结果。溢出拒绝。",
+    "return_type": "expression",
+    "precision_modes": [
+      "exact",
+      "machine"
+    ],
+    "precision_notes": "仅明确的机器算法与已识别精确值；高精度/复数算法未实现，不静默降级。随机流为确定性伪随机，不是密码学随机。",
     "platforms": [
       "cli",
       "desktop",
@@ -5130,6 +5535,53 @@
     ]
   },
   {
+    "id": "fn_000135",
+    "canonical_name": "log_gamma",
+    "name": "LogGamma",
+    "modern_name": "log_gamma",
+    "aliases": [],
+    "arity": {
+      "min": 1,
+      "max": 1
+    },
+    "parameters": [
+      {
+        "name": "x",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": false
+      }
+    ],
+    "options": [],
+    "compatibility_syntax": [],
+    "attributes": [
+      "protected",
+      "listable",
+      "numeric_function"
+    ],
+    "pipe_arg": 1,
+    "effect_class": "pure",
+    "support": "有限正实机器路径；递推与Stirling展开。复杂分支/高精度不支持。",
+    "return_type": "expression",
+    "precision_modes": [
+      "machine"
+    ],
+    "precision_notes": "仅明确的机器算法与已识别精确值；高精度/复数算法未实现，不静默降级。随机流为确定性伪随机，不是密码学随机。",
+    "platforms": [
+      "cli",
+      "desktop",
+      "web",
+      "ios"
+    ]
+  },
+  {
     "id": "fn_000169",
     "canonical_name": "lu",
     "name": "Lu",
@@ -6175,6 +6627,91 @@
     ]
   },
   {
+    "id": "fn_000190",
+    "canonical_name": "normal_distribution",
+    "name": "NormalDistribution",
+    "modern_name": "normal_distribution",
+    "aliases": [],
+    "arity": {
+      "min": 0,
+      "max": 4
+    },
+    "parameters": [
+      {
+        "name": "mean",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": false,
+        "default_source": "0",
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": false
+      },
+      {
+        "name": "std",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": false,
+        "default_source": "1",
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": false
+      }
+    ],
+    "options": [
+      {
+        "name": "mean",
+        "runtime_name": "Mean",
+        "value_type": "expression",
+        "required": false,
+        "default_source": "0",
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": false
+      },
+      {
+        "name": "std",
+        "runtime_name": "StandardDeviation",
+        "value_type": "expression",
+        "required": false,
+        "default_source": "1",
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": false
+      }
+    ],
+    "compatibility_syntax": [],
+    "attributes": [
+      "protected"
+    ],
+    "pipe_arg": 0,
+    "effect_class": "pure",
+    "support": "有限机器范围的实参数，std>0；省略mean=0/std=1，位置与命名写法不得重复；返回NormalDistribution对象。",
+    "return_type": "distribution_or_number",
+    "precision_modes": [
+      "machine"
+    ],
+    "precision_notes": "仅明确的机器算法与已识别精确值；高精度/复数算法未实现，不静默降级。随机流为确定性伪随机，不是密码学随机。",
+    "platforms": [
+      "cli",
+      "desktop",
+      "web",
+      "ios"
+    ]
+  },
+  {
     "id": "fn_000156",
     "canonical_name": "normalize",
     "name": "Normalize",
@@ -6448,6 +6985,65 @@
       "preserve_input"
     ],
     "precision_notes": "结构操作保留输入数值类型；迭代、求值和替换继承现有数学/预算限制。",
+    "platforms": [
+      "cli",
+      "desktop",
+      "web",
+      "ios"
+    ]
+  },
+  {
+    "id": "fn_000192",
+    "canonical_name": "pdf",
+    "name": "PDF",
+    "modern_name": "pdf",
+    "aliases": [],
+    "arity": {
+      "min": 2,
+      "max": 2
+    },
+    "parameters": [
+      {
+        "name": "distribution",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": false
+      },
+      {
+        "name": "value",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": false
+      }
+    ],
+    "options": [],
+    "compatibility_syntax": [],
+    "attributes": [
+      "protected"
+    ],
+    "pipe_arg": 1,
+    "effect_class": "pure",
+    "support": "正态机器密度/均匀精确或机器密度；均匀端点包含，域外为0。",
+    "return_type": "distribution_or_number",
+    "precision_modes": [
+      "exact",
+      "machine"
+    ],
+    "precision_notes": "仅明确的机器算法与已识别精确值；高精度/复数算法未实现，不静默降级。随机流为确定性伪随机，不是密码学随机。",
     "platforms": [
       "cli",
       "desktop",
@@ -7444,7 +8040,7 @@
     ],
     "pipe_arg": 1,
     "effect_class": "pure",
-    "support": "当前只接受实数样本列表，type7线性插值，概率0..1，空数据拒绝；分布对象路径待后续接入。",
+    "support": "列表仍为精确type7分位数；均匀分布精确线性值；正态机器逆CDF含p=0/1数学无穷。非法概率拒绝。",
     "return_type": "expression",
     "precision_modes": [
       "planned_machine"
@@ -7525,6 +8121,233 @@
       "arbitrary_supported"
     ],
     "precision_notes": "精确计算与已支持的数值近似子集；不把符号保留或格式位数当作新算法/任意精度支持。",
+    "platforms": [
+      "cli",
+      "desktop",
+      "web",
+      "ios"
+    ]
+  },
+  {
+    "id": "fn_000196",
+    "canonical_name": "random_choice",
+    "name": "RandomChoice",
+    "modern_name": "random_choice",
+    "aliases": [],
+    "arity": {
+      "min": 1,
+      "max": 3
+    },
+    "parameters": [
+      {
+        "name": "data",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": false
+      }
+    ],
+    "options": [
+      {
+        "name": "count",
+        "runtime_name": "Count",
+        "value_type": "integer",
+        "required": false,
+        "default_source": "1",
+        "default_context": null,
+        "enum_values": [],
+        "min": 0,
+        "max": 100000,
+        "variadic": false,
+        "held": false
+      },
+      {
+        "name": "seed",
+        "runtime_name": "Seed",
+        "value_type": "integer",
+        "required": false,
+        "default_source": null,
+        "default_context": "独立会话流；省略不重置种子",
+        "enum_values": [],
+        "min": 0,
+        "max": null,
+        "variadic": false,
+        "held": false
+      }
+    ],
+    "compatibility_syntax": [],
+    "attributes": [
+      "protected"
+    ],
+    "pipe_arg": 1,
+    "effect_class": "write_session",
+    "support": "非空列表有放回、无偏索引采样；省略count标量、显式count列表；局部seed隔离，失败或取消不推进会话。",
+    "return_type": "number_or_list",
+    "precision_modes": [
+      "machine"
+    ],
+    "precision_notes": "仅明确的机器算法与已识别精确值；高精度/复数算法未实现，不静默降级。随机流为确定性伪随机，不是密码学随机。",
+    "platforms": [
+      "cli",
+      "desktop",
+      "web",
+      "ios"
+    ]
+  },
+  {
+    "id": "fn_000195",
+    "canonical_name": "random_normal",
+    "name": "RandomNormal",
+    "modern_name": "random_normal",
+    "aliases": [],
+    "arity": {
+      "min": 0,
+      "max": 4
+    },
+    "parameters": [],
+    "options": [
+      {
+        "name": "count",
+        "runtime_name": "Count",
+        "value_type": "integer",
+        "required": false,
+        "default_source": "1",
+        "default_context": null,
+        "enum_values": [],
+        "min": 0,
+        "max": 100000,
+        "variadic": false,
+        "held": false
+      },
+      {
+        "name": "mean",
+        "runtime_name": "Mean",
+        "value_type": "expression",
+        "required": false,
+        "default_source": "0",
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": false
+      },
+      {
+        "name": "std",
+        "runtime_name": "StandardDeviation",
+        "value_type": "expression",
+        "required": false,
+        "default_source": "1",
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": false
+      },
+      {
+        "name": "seed",
+        "runtime_name": "Seed",
+        "value_type": "integer",
+        "required": false,
+        "default_source": null,
+        "default_context": "独立会话流；省略不重置种子",
+        "enum_values": [],
+        "min": 0,
+        "max": null,
+        "variadic": false,
+        "held": false
+      }
+    ],
+    "compatibility_syntax": [],
+    "attributes": [
+      "protected"
+    ],
+    "pipe_arg": 0,
+    "effect_class": "write_session",
+    "support": "SplitMix64+Box–Muller机器采样，std>0；count省略标量/显式count列表；显式seed隔离；失败或取消不推进会话。",
+    "return_type": "number_or_list",
+    "precision_modes": [
+      "machine"
+    ],
+    "precision_notes": "仅明确的机器算法与已识别精确值；高精度/复数算法未实现，不静默降级。随机流为确定性伪随机，不是密码学随机。",
+    "platforms": [
+      "cli",
+      "desktop",
+      "web",
+      "ios"
+    ]
+  },
+  {
+    "id": "fn_000194",
+    "canonical_name": "random_uniform",
+    "name": "RandomUniform",
+    "modern_name": "random_uniform",
+    "aliases": [],
+    "arity": {
+      "min": 0,
+      "max": 3
+    },
+    "parameters": [],
+    "options": [
+      {
+        "name": "count",
+        "runtime_name": "Count",
+        "value_type": "integer",
+        "required": false,
+        "default_source": "1",
+        "default_context": null,
+        "enum_values": [],
+        "min": 0,
+        "max": 100000,
+        "variadic": false,
+        "held": false
+      },
+      {
+        "name": "bounds",
+        "runtime_name": "Bounds",
+        "value_type": "expression",
+        "required": false,
+        "default_source": "[0,1]",
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": false
+      },
+      {
+        "name": "seed",
+        "runtime_name": "Seed",
+        "value_type": "integer",
+        "required": false,
+        "default_source": null,
+        "default_context": "独立会话流；省略不重置种子",
+        "enum_values": [],
+        "min": 0,
+        "max": null,
+        "variadic": false,
+        "held": false
+      }
+    ],
+    "compatibility_syntax": [],
+    "attributes": [
+      "protected"
+    ],
+    "pipe_arg": 0,
+    "effect_class": "write_session",
+    "support": "SplitMix64会话默认seed=0；半开有序范围；count省略标量，显式count为0..100000列表；显式seed局部流，失败或取消不推进会话。",
+    "return_type": "number_or_list",
+    "precision_modes": [
+      "machine"
+    ],
+    "precision_notes": "仅明确的机器算法与已识别精确值；高精度/复数算法未实现，不静默降级。随机流为确定性伪随机，不是密码学随机。",
     "platforms": [
       "cli",
       "desktop",
@@ -8986,6 +9809,51 @@
       "arbitrary_supported"
     ],
     "precision_notes": "精确计算与已支持的数值近似子集；不把符号保留或格式位数当作新算法/任意精度支持。",
+    "platforms": [
+      "cli",
+      "desktop",
+      "web",
+      "ios"
+    ]
+  },
+  {
+    "id": "fn_000197",
+    "canonical_name": "seed_random",
+    "name": "SeedRandom",
+    "modern_name": "seed_random",
+    "aliases": [],
+    "arity": {
+      "min": 1,
+      "max": 1
+    },
+    "parameters": [
+      {
+        "name": "seed",
+        "runtime_name": null,
+        "value_type": "integer",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": 0,
+        "max": null,
+        "variadic": false,
+        "held": false
+      }
+    ],
+    "options": [],
+    "compatibility_syntax": [],
+    "attributes": [
+      "protected"
+    ],
+    "pipe_arg": 0,
+    "effect_class": "write_session",
+    "support": "0..2^64-1整数种子，重置本会话并返回Null；只读工具拒绝重置。",
+    "return_type": "number_or_list",
+    "precision_modes": [
+      "machine"
+    ],
+    "precision_notes": "仅明确的机器算法与已识别精确值；高精度/复数算法未实现，不静默降级。随机流为确定性伪随机，不是密码学随机。",
     "platforms": [
       "cli",
       "desktop",
@@ -10747,6 +11615,66 @@
       "arbitrary_supported"
     ],
     "precision_notes": "精确计算与已支持的数值近似子集；不把符号保留或格式位数当作新算法/任意精度支持。",
+    "platforms": [
+      "cli",
+      "desktop",
+      "web",
+      "ios"
+    ]
+  },
+  {
+    "id": "fn_000191",
+    "canonical_name": "uniform_distribution",
+    "name": "UniformDistribution",
+    "modern_name": "uniform_distribution",
+    "aliases": [],
+    "arity": {
+      "min": 0,
+      "max": 2
+    },
+    "parameters": [
+      {
+        "name": "bounds",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": false,
+        "default_source": "[0,1]",
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": false
+      }
+    ],
+    "options": [
+      {
+        "name": "bounds",
+        "runtime_name": "Bounds",
+        "value_type": "expression",
+        "required": false,
+        "default_source": "[0,1]",
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": false
+      }
+    ],
+    "compatibility_syntax": [],
+    "attributes": [
+      "protected"
+    ],
+    "pipe_arg": 0,
+    "effect_class": "pure",
+    "support": "有限严格有序实端点；默认[0,1]，返回UniformDistribution对象。",
+    "return_type": "distribution_or_number",
+    "precision_modes": [
+      "exact",
+      "machine"
+    ],
+    "precision_notes": "仅明确的机器算法与已识别精确值；高精度/复数算法未实现，不静默降级。随机流为确定性伪随机，不是密码学随机。",
     "platforms": [
       "cli",
       "desktop",

@@ -217,6 +217,24 @@ fn all_docs_matches_implemented_milestones_and_elementary_functions_check_arity(
     ]);
     expected.sort();
     expected.extend(["VectorAngle", "Projection"]);
+    expected.extend([
+        "Erf",
+        "Erfc",
+        "Gamma",
+        "LogGamma",
+        "Beta",
+        "ArcCoth",
+        "ArcSech",
+        "ArcCsch",
+        "NormalDistribution",
+        "UniformDistribution",
+        "PDF",
+        "CDF",
+        "RandomUniform",
+        "RandomNormal",
+        "RandomChoice",
+        "SeedRandom",
+    ]);
     expected.sort();
     let actual: Vec<_> = Evaluator::all_docs().map(|d| d.name).collect();
     assert_eq!(actual, expected);

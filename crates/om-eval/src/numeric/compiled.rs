@@ -1,5 +1,5 @@
 //! Iterative lowering proves stack shape before any point is evaluated.
-use super::instruction::{Instruction as I, binary, unary};
+use super::instruction::{Instruction as I, binary, special, unary};
 use om_core::{BUILTIN as B, Expr, ExprKind, Interrupt, Symbol};
 use std::collections::BTreeSet;
 
@@ -51,6 +51,10 @@ impl CompiledFn {
         ctx: Option<&Interrupt>,
     ) -> Result<f64, om_core::Abort> {
         work.clear();
+        let default_ctx = ctx.is_none().then(Interrupt::default);
+        let special_ctx = ctx
+            .or(default_ctx.as_ref())
+            .expect("invariant: caller or local interrupt exists");
         if values.len() != self.variables || values.iter().any(|x| !x.is_finite()) {
             return Ok(f64::NAN);
         }
@@ -87,6 +91,20 @@ impl CompiledFn {
                     let b = work.pop().unwrap_or(f64::NAN);
                     let a = work.pop().unwrap_or(f64::NAN);
                     f(a, b)
+                }
+                I::Special(f) => match f(work.pop().unwrap_or(f64::NAN), special_ctx) {
+                    Ok(x) => x,
+                    Err(om_analysis::Error::Abort(e)) => return Err(e),
+                    Err(_) => f64::NAN,
+                },
+                I::SpecialBinary(f) => {
+                    let b = work.pop().unwrap_or(f64::NAN);
+                    let a = work.pop().unwrap_or(f64::NAN);
+                    match f(a, b, special_ctx) {
+                        Ok(x) => x,
+                        Err(om_analysis::Error::Abort(e)) => return Err(e),
+                        Err(_) => f64::NAN,
+                    }
                 }
             };
             if !value.is_finite() {
@@ -185,6 +203,13 @@ pub fn compile_f64_with_ctx(
                     B::PLUS => I::Add(count),
                     B::TIMES => I::Mul(count),
                     B::POWER if count == 2 => I::Pow,
+                    _ if special(h.name()).is_some_and(|i| {
+                        matches!((i, count), (I::Special(_), 1) | (I::SpecialBinary(_), 2))
+                    }) =>
+                    {
+                        special(h.name())
+                            .ok_or_else(|| CompileError::Unsupported(h.name().into()))?
+                    }
                     _ if count == 1 && unary(h.name()).is_some() => I::Unary(
                         unary(h.name())
                             .ok_or_else(|| CompileError::Unsupported(h.name().into()))?,

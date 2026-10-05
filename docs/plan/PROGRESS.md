@@ -142,3 +142,9 @@ R3.2提交 `588952c` 的CI `37239127048` 已全部通过（含iOS27）。
 R3.3b提交 `0f8915d` 的CI `37270845039` 已全部通过（含iOS27）。
 
 - [x] **R3.3c 完整线性解/机器秩零空间/向量补齐** — 精确/机器矩形、欠定与秩亏解保留特解/零空间/参数，唯一解列表保持；机器SVD最小范数路径、实际残差和1e-12数值秩/一致性（非证书），rank/null_space支持机器矩阵，LS接受欠定/秩亏。新增angle/projection，复数共轭、零向量/维度和实数舍入越界真实检查。独立仿射参数多组代入、最小范数正交和不相容失败通过；前轮临时欠定拒绝例修正为真正不相容，原53数学期望不动。当前181注册名/176身份、描述6、运行时仍.2。工作区937项/2ignored、Python15、Clippy通过；纯WASM、前端59/lint/typecheck、TS确定导出无漂移及cargo-deny全通过。R3.3特殊函数、概率随机、数据解析、单位与帮助求值仍未完成，完整发行门禁继续。
+
+R3.3c 提交为 `6879ab1`；本轮查询 CI `37276419872` 的 Rust/前端/依赖已通过，iOS 验收仍执行中。
+
+- [x] **R3.3d 特殊函数与概率随机** — 新增16实际回调：acoth/asech/acsch、Erf/Erfc/Gamma/LogGamma/Beta、正态/均匀分布、PDF/CDF、四个随机入口，既有Quantile新增分布路径。正整数Gamma精确，其他精确非特殊值保留原式；数值仅有限实数机器路径，高精度不降级。独立libm网格、极小erfc尾部、LogGamma在1和2附近的小值、正态尾部分位数、均匀精确定义及编译数值表达式通过。SplitMix64主会话默认0、显式seed隔离、只读快照、失败/取消原子不推进；显式count列表/省略标量，随机范围舍入合并拒绝。197注册名/192身份，描述7，应用仍.2。原53数学期望不变，原权威公共内核/求值器/CLI语料均通过；最终工作区 **946项通过、2项按原政策ignored**，前端59、Python15、fmt/全工作区Clippy、TS确定导出、纯WASM与cargo-deny通过；实际CLI正态0.025分位值为−1.9599639845400536，无诊断。R3.3整体仍未完成，下一项纯数据CSV/JSON、SI单位与help/functions/options/capabilities求值；R3.4–R3.6和完整发行门禁保持未完成。本机未启动模拟器。
+
+本批验证命令：`CARGO_PROFILE_TEST_OPT_LEVEL=2 CARGO_PROFILE_TEST_DEBUG_ASSERTIONS=true CARGO_PROFILE_TEST_OVERFLOW_CHECKS=true cargo test --workspace --locked`、`cargo clippy --workspace --all-targets --locked -- -D warnings`、`cargo fmt --all -- --check`、`cargo build -p om-kernel --no-default-features --locked --target wasm32-unknown-unknown`、`cargo test -p om-kernel export_bindings --locked`及生成目录无漂移、`cargo deny --locked check`、`python3 scripts/function_docs.py --check`、带EncodingWarning门禁的15项Python测试、前端`npm run lint`/`npm test`/`npx tsc --noEmit`。新算法无外部依赖，边界与NIST公式依据见special-probability.md/P122。最后只新增维护文档，功能源码已冻结并完成最终回归。

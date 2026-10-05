@@ -4,12 +4,16 @@ mod data;
 mod matrix;
 mod matrix_numeric;
 mod ordering;
+mod probability;
+mod probability_registry;
 mod registry;
+mod special;
 mod statistics;
 use crate::{EvalError, Evaluator};
 use om_core::{BUILTIN as B, Expr, ExprKind, Interrupt, MsgLevel};
 use om_num::{Number, Rational};
 pub(crate) use registry::register;
+pub(crate) use special::is_machine_special;
 use std::collections::BTreeMap;
 pub(super) struct Args<'a> {
     pub values: Vec<&'a Expr>,
@@ -116,8 +120,11 @@ pub(super) fn dispatch(
     let result = (|| {
         ctx.tick()?;
         let args = Args::parse(name, args)?;
-        if args.values.is_empty() && !matches!(name, "Min" | "Max") {
-            return Err(error("缺少位置参数"));
+        if let Some(result) = special::dispatch(ev, name, &args, ctx)? {
+            return Ok(result);
+        }
+        if let Some(result) = probability::dispatch(ev, name, &args, ctx)? {
+            return Ok(result);
         }
         if let Some(result) = statistics::dispatch(ev, name, &args, ctx)? {
             return Ok(result);
@@ -147,5 +154,20 @@ pub(super) fn string(e: &Expr) -> Result<&str, EvalError> {
         Ok(s)
     } else {
         Err(error("需要字符串"))
+    }
+}
+pub(super) fn machine(e: &Expr) -> Result<f64, EvalError> {
+    let n = number(e)?;
+    if matches!(n.precision(), om_num::Precision::Bits(_)) {
+        return Err(error("此算法只有机器精度路径，不能静默降低高精度输入"));
+    }
+    n.to_f64()
+        .filter(|x| x.is_finite())
+        .ok_or_else(|| error("需要机器范围内的有限实数"))
+}
+pub(super) fn analysis_failure(e: om_analysis::Error) -> EvalError {
+    match e {
+        om_analysis::Error::Abort(e) => e.into(),
+        e => error(&e.to_string()),
     }
 }

@@ -17,3 +17,5 @@
 最近验证的R3.3b：om-analysis基础层及机器LU/QR/Cholesky/实对称Jacobi/SVD/最小二乘已接入，描述版本5、179回调/174身份；机器det/inverse和显式numeric方阵linsolve可用。933Rust/2ignored、前端59、Python15、Clippy/纯WASM/deny/TS漂移均通过。下一步保持完整.3范围：机器rank/null_space，精确欠定返回真实自由轴与矩形机器求解/最小范数，再继续原计划剩余内容。SVD固定种子48低秩/矩形性质验收已通过，旋转不可表示的微小相关残列可按机器阈值视数值零，独立微小列保留；不可表示极端尺度仍明确失败。不标目标完成、不提前发.3。
 
 R3.3c当前：精确/机器矩形欠定全解、机器rank/null_space、LS最小范数与angle/projection已验证，唯一解仍列表，非唯一为参数化Record。NEXT_RELEASE「欠定保留自由轴」已恢复，前轮拒绝样例改真正不相容，未动53数学语料。当前181回调/176身份，描述6，应用.2；下一任务从特殊函数/随机概率/CSVJSON/SI单位/help等R3.3剩余开始，随后R3.4–R3.6。活动目标保持完整.3，不提前发行；本机不运行模拟器。
+
+R3.3d最新：特殊函数/实主值补齐与正态/均匀分布、PDF/CDF/分布Quantile、SplitMix64会话随机已验证，197回调/192身份、描述7、运行时仍.2。最终946Rust/2ignored、Python15、前端59/lint/typecheck、全Clippy/fmt、纯WASM、TS无漂移与deny均通过；原53数学期望未改。小尾部、LogGamma接近1和2的微小值、高精度拒绝、随机失败/取消不推进和只读隔离均实际测试。下一任务继续R3.3的CSV/JSON纯数据、SI单位及help/functions/options/capabilities求值，再R3.4–R3.6，不提前发行、不缩减完整范围。接口/算法裁决见P122和special-probability.md；本机不运行模拟器，不使用子代理，Agent/事务仍预留。

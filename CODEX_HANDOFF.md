@@ -33,3 +33,7 @@ P127 Swift接续：acde078的失败分段总1096ms vs方法内212ms，不据此�
 最新R3.3h：help/options/functions/capabilities四真查询完成，209回调/204身份、描述11/.2；964Rust/2ignored、前端59/Python16、Clippy/fmt/纯WASM/TS/deny通过。P127 CI37302584053全部通过，phone53最大339ms/pad315ms，原1s与数学期望未动。附件target/ci-evidence/p127。R3.3审计发现cbrt/nth_root仍规划（旧cbrt仅名字映射/编译数值路径，不等于当前求值回调）及diag未提取矩阵对角，先补真路径后进入R3.4–R3.6。normal为Series依赖留R3.4。保持完整.3/goal active，不提前发版，本机不启动模拟器，不使用子代理。
 
 最新R3.3i完成并关闭R3.3：CubeRoot/NthRoot两真回调、矩阵diag提取、held原极点保留及采样转换通过。211回调/206身份、描述12/.2；968Rust/2ignored、前端59/Python16、Clippy/fmt/纯WASM/TS/deny通过，原53未改；完整范围审计没有R3.3基本/线代/统计/单位/runtime规划漏项，normal留R3.4 series。接下来直接R3.4真实微积分/ODE/优化/拟合，然后R3.5–R3.6全计划。不要仅因R3.3完成标goal complete或发.3；继续dev、单代理、不运行本地模拟器。P127的CI37302584053全通过（phone53最大339ms/pad315ms），新查询CI37305191067当时仍运行，后续查同SHA。
+
+最新R3.4a：六笛卡尔微分入口真实求导/局部坐标/readonly与恒等式/独立差分已完成；217回调/212身份、描述13/.2；973Rust/2ignored、59前端/16Python、Clippy/fmt/纯WASM/TS/deny通过，原53不动。接着一维GK15/7积分（含无限区间/断点/误差与失败）、符号积分、极限/级数、ODE、优化/拟合，再R3.5–R3.6。
+
+CI37307173022 iPhone原17总1325ms，kernel291ms/FFI291ms/decode2ms/resume1032ms，原18 resume772ms；真正主线程恢复阻塞已定位，保持整次1s门槛不能仅用kernel时间替代，后续查主线程启动/布局工作。证据target/ci-evidence/r33i。目标更新为尝试完善并发行+随时清理无用构建缓存；仅仓库缓存。刚清21GiB target/debug/incremental及两个iOS中间目录（构建已停止），free5.1→23GiB；dev/test incremental=false，保留release/安装包/当前deps/验收附件，不开启本机模拟器，单代理直接执行。

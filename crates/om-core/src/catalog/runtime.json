@@ -2645,6 +2645,65 @@
     ]
   },
   {
+    "id": "fn_000146",
+    "canonical_name": "curl",
+    "name": "Curl",
+    "modern_name": "curl",
+    "aliases": [],
+    "arity": {
+      "min": 2,
+      "max": 2
+    },
+    "parameters": [
+      {
+        "name": "vector",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": true
+      },
+      {
+        "name": "variables",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": true
+      }
+    ],
+    "options": [],
+    "compatibility_syntax": [],
+    "attributes": [
+      "protected",
+      "hold_all"
+    ],
+    "pipe_arg": 1,
+    "effect_class": "pure",
+    "support": "真实求导器计算笛卡尔微分；1..64个互异用户坐标局部化，readonly展开源码，禁止间接写入。Grad/Hessian/Laplacian为标量表达式，Jacobian向量分量为行/坐标为列，Div维度匹配，Curl仅3D。未知求导保持真实形式导数，错误形状/变量/预算拒绝。",
+    "return_type": "expression",
+    "precision_modes": [
+      "exact_symbolic"
+    ],
+    "precision_notes": "符号导数复用真实求导，不把形式未求值导数或函数采样宣称为解析解；笛卡尔首版，不自动获得其他坐标或任意单位支持。",
+    "platforms": [
+      "cli",
+      "desktop",
+      "web",
+      "ios"
+    ]
+  },
+  {
     "id": "fn_000032",
     "canonical_name": "diff",
     "name": "D",
@@ -2986,6 +3045,65 @@
       "arbitrary_supported"
     ],
     "precision_notes": "精确计算与已支持的数值近似子集；不把符号保留或格式位数当作新算法/任意精度支持。",
+    "platforms": [
+      "cli",
+      "desktop",
+      "web",
+      "ios"
+    ]
+  },
+  {
+    "id": "fn_000145",
+    "canonical_name": "div",
+    "name": "Divergence",
+    "modern_name": "div",
+    "aliases": [],
+    "arity": {
+      "min": 2,
+      "max": 2
+    },
+    "parameters": [
+      {
+        "name": "vector",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": true
+      },
+      {
+        "name": "variables",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": true
+      }
+    ],
+    "options": [],
+    "compatibility_syntax": [],
+    "attributes": [
+      "protected",
+      "hold_all"
+    ],
+    "pipe_arg": 1,
+    "effect_class": "pure",
+    "support": "真实求导器计算笛卡尔微分；1..64个互异用户坐标局部化，readonly展开源码，禁止间接写入。Grad/Hessian/Laplacian为标量表达式，Jacobian向量分量为行/坐标为列，Div维度匹配，Curl仅3D。未知求导保持真实形式导数，错误形状/变量/预算拒绝。",
+    "return_type": "expression",
+    "precision_modes": [
+      "exact_symbolic"
+    ],
+    "precision_notes": "符号导数复用真实求导，不把形式未求值导数或函数采样宣称为解析解；笛卡尔首版，不自动获得其他坐标或任意单位支持。",
     "platforms": [
       "cli",
       "desktop",
@@ -4632,6 +4750,65 @@
     ]
   },
   {
+    "id": "fn_000142",
+    "canonical_name": "grad",
+    "name": "Grad",
+    "modern_name": "grad",
+    "aliases": [],
+    "arity": {
+      "min": 2,
+      "max": 2
+    },
+    "parameters": [
+      {
+        "name": "expr",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": true
+      },
+      {
+        "name": "variables",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": true
+      }
+    ],
+    "options": [],
+    "compatibility_syntax": [],
+    "attributes": [
+      "protected",
+      "hold_all"
+    ],
+    "pipe_arg": 1,
+    "effect_class": "pure",
+    "support": "真实求导器计算笛卡尔微分；1..64个互异用户坐标局部化，readonly展开源码，禁止间接写入。Grad/Hessian/Laplacian为标量表达式，Jacobian向量分量为行/坐标为列，Div维度匹配，Curl仅3D。未知求导保持真实形式导数，错误形状/变量/预算拒绝。",
+    "return_type": "expression",
+    "precision_modes": [
+      "exact_symbolic"
+    ],
+    "precision_notes": "符号导数复用真实求导，不把形式未求值导数或函数采样宣称为解析解；笛卡尔首版，不自动获得其他坐标或任意单位支持。",
+    "platforms": [
+      "cli",
+      "desktop",
+      "web",
+      "ios"
+    ]
+  },
+  {
     "id": "fn_000050",
     "canonical_name": "greater",
     "name": "Greater",
@@ -4852,6 +5029,65 @@
       "metadata"
     ],
     "precision_notes": "只查询已有审计描述，不执行名称表达式、不进行数学近似、不读取文件/网络或增加权限。",
+    "platforms": [
+      "cli",
+      "desktop",
+      "web",
+      "ios"
+    ]
+  },
+  {
+    "id": "fn_000144",
+    "canonical_name": "hessian",
+    "name": "Hessian",
+    "modern_name": "hessian",
+    "aliases": [],
+    "arity": {
+      "min": 2,
+      "max": 2
+    },
+    "parameters": [
+      {
+        "name": "expr",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": true
+      },
+      {
+        "name": "variables",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": true
+      }
+    ],
+    "options": [],
+    "compatibility_syntax": [],
+    "attributes": [
+      "protected",
+      "hold_all"
+    ],
+    "pipe_arg": 1,
+    "effect_class": "pure",
+    "support": "真实求导器计算笛卡尔微分；1..64个互异用户坐标局部化，readonly展开源码，禁止间接写入。Grad/Hessian/Laplacian为标量表达式，Jacobian向量分量为行/坐标为列，Div维度匹配，Curl仅3D。未知求导保持真实形式导数，错误形状/变量/预算拒绝。",
+    "return_type": "expression",
+    "precision_modes": [
+      "exact_symbolic"
+    ],
+    "precision_notes": "符号导数复用真实求导，不把形式未求值导数或函数采样宣称为解析解；笛卡尔首版，不自动获得其他坐标或任意单位支持。",
     "platforms": [
       "cli",
       "desktop",
@@ -5217,6 +5453,65 @@
     ]
   },
   {
+    "id": "fn_000143",
+    "canonical_name": "jacobian",
+    "name": "Jacobian",
+    "modern_name": "jacobian",
+    "aliases": [],
+    "arity": {
+      "min": 2,
+      "max": 2
+    },
+    "parameters": [
+      {
+        "name": "expressions",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": true
+      },
+      {
+        "name": "variables",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": true
+      }
+    ],
+    "options": [],
+    "compatibility_syntax": [],
+    "attributes": [
+      "protected",
+      "hold_all"
+    ],
+    "pipe_arg": 1,
+    "effect_class": "pure",
+    "support": "真实求导器计算笛卡尔微分；1..64个互异用户坐标局部化，readonly展开源码，禁止间接写入。Grad/Hessian/Laplacian为标量表达式，Jacobian向量分量为行/坐标为列，Div维度匹配，Curl仅3D。未知求导保持真实形式导数，错误形状/变量/预算拒绝。",
+    "return_type": "expression",
+    "precision_modes": [
+      "exact_symbolic"
+    ],
+    "precision_notes": "符号导数复用真实求导，不把形式未求值导数或函数采样宣称为解析解；笛卡尔首版，不自动获得其他坐标或任意单位支持。",
+    "platforms": [
+      "cli",
+      "desktop",
+      "web",
+      "ios"
+    ]
+  },
+  {
     "id": "fn_000056",
     "canonical_name": "lcm",
     "name": "LCM",
@@ -5258,6 +5553,65 @@
       "arbitrary_supported"
     ],
     "precision_notes": "精确计算与已支持的数值近似子集；不把符号保留或格式位数当作新算法/任意精度支持。",
+    "platforms": [
+      "cli",
+      "desktop",
+      "web",
+      "ios"
+    ]
+  },
+  {
+    "id": "fn_000147",
+    "canonical_name": "laplacian",
+    "name": "Laplacian",
+    "modern_name": "laplacian",
+    "aliases": [],
+    "arity": {
+      "min": 2,
+      "max": 2
+    },
+    "parameters": [
+      {
+        "name": "expr",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": true
+      },
+      {
+        "name": "variables",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": true
+      }
+    ],
+    "options": [],
+    "compatibility_syntax": [],
+    "attributes": [
+      "protected",
+      "hold_all"
+    ],
+    "pipe_arg": 1,
+    "effect_class": "pure",
+    "support": "真实求导器计算笛卡尔微分；1..64个互异用户坐标局部化，readonly展开源码，禁止间接写入。Grad/Hessian/Laplacian为标量表达式，Jacobian向量分量为行/坐标为列，Div维度匹配，Curl仅3D。未知求导保持真实形式导数，错误形状/变量/预算拒绝。",
+    "return_type": "expression",
+    "precision_modes": [
+      "exact_symbolic"
+    ],
+    "precision_notes": "符号导数复用真实求导，不把形式未求值导数或函数采样宣称为解析解；笛卡尔首版，不自动获得其他坐标或任意单位支持。",
     "platforms": [
       "cli",
       "desktop",

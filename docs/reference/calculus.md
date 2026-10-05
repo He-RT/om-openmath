@@ -11,25 +11,25 @@
 | [`asymptotic`](#asymptotic) | 后续规划 | 规划接口，当前不可用 | 微积分与变换中的 Asymptotic 能力，进入后续全景目录。 |
 | [`asymptotic_integrate`](#asymptotic_integrate) | 后续规划 | 规划接口，当前不可用 | 微积分与变换中的 AsymptoticIntegrate 能力，进入后续全景目录。 |
 | [`asymptotic_sum`](#asymptotic_sum) | 后续规划 | 规划接口，当前不可用 | 微积分与变换中的 AsymptoticSum 能力，进入后续全景目录。 |
-| [`curl`](#curl) | 下一版规划 | 规划接口，当前不可用 | 三维笛卡尔旋度 |
+| [`curl`](#curl) | 已实现 | 当前可用 | 三维笛卡尔旋度 |
 | [`d_solve`](#d_solve) | 后续规划 | 规划接口，当前不可用 | 微积分与变换中的 DSolve 能力，进入后续全景目录。 |
 | [`d_solve_value`](#d_solve_value) | 后续规划 | 规划接口，当前不可用 | 微积分与变换中的 DSolveValue 能力，进入后续全景目录。 |
 | [`diff`](#diff) | 已实现 | 现有入口可用，统一接口待实施 | 按链式法则求重复或混合偏导数。 |
 | [`difference_delta`](#difference_delta) | 后续规划 | 规划接口，当前不可用 | 微积分与变换中的 DifferenceDelta 能力，进入后续全景目录。 |
 | [`discrete_limit`](#discrete_limit) | 后续规划 | 规划接口，当前不可用 | 微积分与变换中的 DiscreteLimit 能力，进入后续全景目录。 |
-| [`div`](#div) | 下一版规划 | 规划接口，当前不可用 | 笛卡尔散度 |
+| [`div`](#div) | 已实现 | 当前可用 | 笛卡尔散度 |
 | [`dt`](#dt) | 后续规划 | 规划接口，当前不可用 | 微积分与变换中的 Dt 能力，进入后续全景目录。 |
 | [`fourier_transform`](#fourier_transform) | 后续规划 | 规划接口，当前不可用 | 微积分与变换中的 FourierTransform 能力，进入后续全景目录。 |
 | [`generating_function`](#generating_function) | 后续规划 | 规划接口，当前不可用 | 微积分与变换中的 GeneratingFunction 能力，进入后续全景目录。 |
-| [`grad`](#grad) | 下一版规划 | 规划接口，当前不可用 | 笛卡尔梯度 |
-| [`hessian`](#hessian) | 下一版规划 | 规划接口，当前不可用 | Hessian 矩阵 |
+| [`grad`](#grad) | 已实现 | 当前可用 | 笛卡尔梯度 |
+| [`hessian`](#hessian) | 已实现 | 当前可用 | Hessian 矩阵 |
 | [`integrate`](#integrate) | 下一版规划 | 规划接口，当前不可用 | 符号或显式数值积分 |
 | [`inverse_fourier_transform`](#inverse_fourier_transform) | 后续规划 | 规划接口，当前不可用 | 微积分与变换中的 InverseFourierTransform 能力，进入后续全景目录。 |
 | [`inverse_laplace_transform`](#inverse_laplace_transform) | 后续规划 | 规划接口，当前不可用 | 微积分与变换中的 InverseLaplaceTransform 能力，进入后续全景目录。 |
 | [`inverse_z_transform`](#inverse_z_transform) | 后续规划 | 规划接口，当前不可用 | 微积分与变换中的 InverseZTransform 能力，进入后续全景目录。 |
-| [`jacobian`](#jacobian) | 下一版规划 | 规划接口，当前不可用 | Jacobian 矩阵 |
+| [`jacobian`](#jacobian) | 已实现 | 当前可用 | Jacobian 矩阵 |
 | [`laplace_transform`](#laplace_transform) | 后续规划 | 规划接口，当前不可用 | 微积分与变换中的 LaplaceTransform 能力，进入后续全景目录。 |
-| [`laplacian`](#laplacian) | 下一版规划 | 规划接口，当前不可用 | 笛卡尔拉普拉斯 |
+| [`laplacian`](#laplacian) | 已实现 | 当前可用 | 笛卡尔拉普拉斯 |
 | [`limit`](#limit) | 下一版规划 | 规划接口，当前不可用 | 计算有限点或无穷处极限 |
 | [`n_product`](#n_product) | 后续规划 | 规划接口，当前不可用 | 微积分与变换中的 NProduct 能力，进入后续全景目录。 |
 | [`n_sum`](#n_sum) | 后续规划 | 规划接口，当前不可用 | 微积分与变换中的 NSum 能力，进入后续全景目录。 |
@@ -146,21 +146,33 @@ asymptotic_sum(...)  # 后续接口尚未锁定
 
 ## curl
 
-**当前实现：下一版规划；目标接口：规划接口，当前不可用。** 目标版本：`0.1.0-pre-alpha.3`。
+**当前实现：已实现；目标接口：当前可用。** 目标版本：`0.1.0-pre-alpha.3`。
 
 - 稳定身份：`fn_000146`；条目类型：`function`。
-- 副作用分类（设计预留）：`pure`；参数验证阶段：`documentation_only`，不构成工具授权。
+- 副作用分类（设计预留）：`pure`；参数验证阶段：`runtime_verified`，不构成工具授权。
 
 三维笛卡尔旋度
 
-- 当前支持：当前无此规范接口的实现。
+- 当前支持：真实求导器计算笛卡尔微分；1..64个互异用户坐标局部化，readonly展开源码，禁止间接写入。Grad/Hessian/Laplacian为标量表达式，Jacobian向量分量为行/坐标为列，Div维度匹配，Curl仅3D。未知求导保持真实形式导数，错误形状/变量/预算拒绝。
 - 目标范围：复用真实 D；变量必须唯一，向量维度匹配；不把形式 Derivative 变成已求出的闭式。
 - 返回：expression
-- 精度：符号运算；数值化继承现有已支持精度。
-- 当前计算平台：无；目标计算平台：cli, desktop, web, ios。
+- 精度：符号导数复用真实求导，不把形式未求值导数或函数采样宣称为解析解；笛卡尔首版，不自动获得其他坐标或任意单位支持。
+- 当前计算平台：cli, desktop, web, ios；目标计算平台：cli, desktop, web, ios。
 - 目标图形/交互展示平台：不适用或后续未定。
-- 兼容名称：无既有兼容入口。
+- 兼容名称：`Curl`。
 - 管道位置：第 1 个位置参数（从 1 起）。
+
+当前现代签名：
+
+```text
+curl(vector,variables)
+```
+
+当前 Wolfram 签名：
+
+```text
+Curl[vector,variables]
+```
 
 目标现代签名（按目标接口状态判断是否已可执行）：
 
@@ -170,19 +182,20 @@ curl(vector, [x,y,z])
 
 | 参数 | 类型 | 默认值 | 含义 | 可用阶段 |
 |---|---|---|---|---|
-| `vector` | positional | 必填 | 向量 | r3 |
+| `vector` | positional | 必填 | 待求导标量或向量源码 | current |
+| `variables` | positional | 必填 | 有序笛卡尔局部坐标 | current |
 
-规划示例（尚未执行；需要目标版本，后续条目不承诺 .3）：
+当前已登记示例（Wolfram）：
 
-```text
-curl([-y,x,0],[x,y,z])
+```wolfram
+Curl[{-y,x,0},{x,y,z}]
 ```
 
 验收：独立数学期望、有效/无效参数、边界、预算、中断及声明的平台/精度测试；范围外不伪造成功。
 
-当前源码：暂无当前实现证据。
+当前源码：[crates/om-eval/src/science/calculus_registry.rs](../../crates/om-eval/src/science/calculus_registry.rs)、[crates/om-eval/src/science/vector_calculus.rs](../../crates/om-eval/src/science/vector_calculus.rs)、[crates/om-eval/src/algebra_diff.rs](../../crates/om-eval/src/algebra_diff.rs)。
 
-当前测试引用：暂无当前实现证据。
+当前测试引用：[crates/om-eval/tests/vector_calculus.rs](../../crates/om-eval/tests/vector_calculus.rs)。
 
 ## d_solve
 
@@ -376,21 +389,33 @@ discrete_limit(...)  # 后续接口尚未锁定
 
 ## div
 
-**当前实现：下一版规划；目标接口：规划接口，当前不可用。** 目标版本：`0.1.0-pre-alpha.3`。
+**当前实现：已实现；目标接口：当前可用。** 目标版本：`0.1.0-pre-alpha.3`。
 
 - 稳定身份：`fn_000145`；条目类型：`function`。
-- 副作用分类（设计预留）：`pure`；参数验证阶段：`documentation_only`，不构成工具授权。
+- 副作用分类（设计预留）：`pure`；参数验证阶段：`runtime_verified`，不构成工具授权。
 
 笛卡尔散度
 
-- 当前支持：当前无此规范接口的实现。
+- 当前支持：真实求导器计算笛卡尔微分；1..64个互异用户坐标局部化，readonly展开源码，禁止间接写入。Grad/Hessian/Laplacian为标量表达式，Jacobian向量分量为行/坐标为列，Div维度匹配，Curl仅3D。未知求导保持真实形式导数，错误形状/变量/预算拒绝。
 - 目标范围：复用真实 D；变量必须唯一，向量维度匹配；不把形式 Derivative 变成已求出的闭式。
 - 返回：expression
-- 精度：符号运算；数值化继承现有已支持精度。
-- 当前计算平台：无；目标计算平台：cli, desktop, web, ios。
+- 精度：符号导数复用真实求导，不把形式未求值导数或函数采样宣称为解析解；笛卡尔首版，不自动获得其他坐标或任意单位支持。
+- 当前计算平台：cli, desktop, web, ios；目标计算平台：cli, desktop, web, ios。
 - 目标图形/交互展示平台：不适用或后续未定。
-- 兼容名称：无既有兼容入口。
+- 兼容名称：`Divergence`。
 - 管道位置：第 1 个位置参数（从 1 起）。
+
+当前现代签名：
+
+```text
+div(vector,variables)
+```
+
+当前 Wolfram 签名：
+
+```text
+Divergence[vector,variables]
+```
 
 目标现代签名（按目标接口状态判断是否已可执行）：
 
@@ -400,20 +425,20 @@ div(vector, variables)
 
 | 参数 | 类型 | 默认值 | 含义 | 可用阶段 |
 |---|---|---|---|---|
-| `vector` | positional | 必填 | 向量 | r3 |
-| `variables` | positional | 必填 | 有序变量列表 | r3 |
+| `vector` | positional | 必填 | 待求导标量或向量源码 | current |
+| `variables` | positional | 必填 | 有序笛卡尔局部坐标 | current |
 
-规划示例（尚未执行；需要目标版本，后续条目不承诺 .3）：
+当前已登记示例（Wolfram）：
 
-```text
-div([x^2,y^2,z^2],[x,y,z])
+```wolfram
+Divergence[{x,y,z},{x,y,z}]
 ```
 
 验收：独立数学期望、有效/无效参数、边界、预算、中断及声明的平台/精度测试；范围外不伪造成功。
 
-当前源码：暂无当前实现证据。
+当前源码：[crates/om-eval/src/science/calculus_registry.rs](../../crates/om-eval/src/science/calculus_registry.rs)、[crates/om-eval/src/science/vector_calculus.rs](../../crates/om-eval/src/science/vector_calculus.rs)、[crates/om-eval/src/algebra_diff.rs](../../crates/om-eval/src/algebra_diff.rs)。
 
-当前测试引用：暂无当前实现证据。
+当前测试引用：[crates/om-eval/tests/vector_calculus.rs](../../crates/om-eval/tests/vector_calculus.rs)。
 
 ## dt
 
@@ -519,21 +544,33 @@ generating_function(...)  # 后续接口尚未锁定
 
 ## grad
 
-**当前实现：下一版规划；目标接口：规划接口，当前不可用。** 目标版本：`0.1.0-pre-alpha.3`。
+**当前实现：已实现；目标接口：当前可用。** 目标版本：`0.1.0-pre-alpha.3`。
 
 - 稳定身份：`fn_000142`；条目类型：`function`。
-- 副作用分类（设计预留）：`pure`；参数验证阶段：`documentation_only`，不构成工具授权。
+- 副作用分类（设计预留）：`pure`；参数验证阶段：`runtime_verified`，不构成工具授权。
 
 笛卡尔梯度
 
-- 当前支持：当前无此规范接口的实现。
+- 当前支持：真实求导器计算笛卡尔微分；1..64个互异用户坐标局部化，readonly展开源码，禁止间接写入。Grad/Hessian/Laplacian为标量表达式，Jacobian向量分量为行/坐标为列，Div维度匹配，Curl仅3D。未知求导保持真实形式导数，错误形状/变量/预算拒绝。
 - 目标范围：复用真实 D；变量必须唯一，向量维度匹配；不把形式 Derivative 变成已求出的闭式。
 - 返回：expression
-- 精度：符号运算；数值化继承现有已支持精度。
-- 当前计算平台：无；目标计算平台：cli, desktop, web, ios。
+- 精度：符号导数复用真实求导，不把形式未求值导数或函数采样宣称为解析解；笛卡尔首版，不自动获得其他坐标或任意单位支持。
+- 当前计算平台：cli, desktop, web, ios；目标计算平台：cli, desktop, web, ios。
 - 目标图形/交互展示平台：不适用或后续未定。
-- 兼容名称：无既有兼容入口。
+- 兼容名称：`Grad`。
 - 管道位置：第 1 个位置参数（从 1 起）。
+
+当前现代签名：
+
+```text
+grad(expr,variables)
+```
+
+当前 Wolfram 签名：
+
+```text
+Grad[expr,variables]
+```
 
 目标现代签名（按目标接口状态判断是否已可执行）：
 
@@ -543,38 +580,50 @@ grad(expr, variables)
 
 | 参数 | 类型 | 默认值 | 含义 | 可用阶段 |
 |---|---|---|---|---|
-| `expr` | positional | 必填 | 签名对应的expr参数 | r3 |
-| `variables` | positional | 必填 | 有序变量列表 | r3 |
+| `expr` | positional | 必填 | 待求导标量或向量源码 | current |
+| `variables` | positional | 必填 | 有序笛卡尔局部坐标 | current |
 
-规划示例（尚未执行；需要目标版本，后续条目不承诺 .3）：
+当前已登记示例（Wolfram）：
 
-```text
-grad(x^2+y^2,[x,y])
+```wolfram
+Grad[x^2+y^2,{x,y}]
 ```
 
 验收：独立数学期望、有效/无效参数、边界、预算、中断及声明的平台/精度测试；范围外不伪造成功。
 
-当前源码：暂无当前实现证据。
+当前源码：[crates/om-eval/src/science/calculus_registry.rs](../../crates/om-eval/src/science/calculus_registry.rs)、[crates/om-eval/src/science/vector_calculus.rs](../../crates/om-eval/src/science/vector_calculus.rs)、[crates/om-eval/src/algebra_diff.rs](../../crates/om-eval/src/algebra_diff.rs)。
 
-当前测试引用：暂无当前实现证据。
+当前测试引用：[crates/om-eval/tests/vector_calculus.rs](../../crates/om-eval/tests/vector_calculus.rs)。
 
 ## hessian
 
-**当前实现：下一版规划；目标接口：规划接口，当前不可用。** 目标版本：`0.1.0-pre-alpha.3`。
+**当前实现：已实现；目标接口：当前可用。** 目标版本：`0.1.0-pre-alpha.3`。
 
 - 稳定身份：`fn_000144`；条目类型：`function`。
-- 副作用分类（设计预留）：`pure`；参数验证阶段：`documentation_only`，不构成工具授权。
+- 副作用分类（设计预留）：`pure`；参数验证阶段：`runtime_verified`，不构成工具授权。
 
 Hessian 矩阵
 
-- 当前支持：当前无此规范接口的实现。
+- 当前支持：真实求导器计算笛卡尔微分；1..64个互异用户坐标局部化，readonly展开源码，禁止间接写入。Grad/Hessian/Laplacian为标量表达式，Jacobian向量分量为行/坐标为列，Div维度匹配，Curl仅3D。未知求导保持真实形式导数，错误形状/变量/预算拒绝。
 - 目标范围：复用真实 D；变量必须唯一，向量维度匹配；不把形式 Derivative 变成已求出的闭式。
 - 返回：expression
-- 精度：符号运算；数值化继承现有已支持精度。
-- 当前计算平台：无；目标计算平台：cli, desktop, web, ios。
+- 精度：符号导数复用真实求导，不把形式未求值导数或函数采样宣称为解析解；笛卡尔首版，不自动获得其他坐标或任意单位支持。
+- 当前计算平台：cli, desktop, web, ios；目标计算平台：cli, desktop, web, ios。
 - 目标图形/交互展示平台：不适用或后续未定。
-- 兼容名称：无既有兼容入口。
+- 兼容名称：`Hessian`。
 - 管道位置：第 1 个位置参数（从 1 起）。
+
+当前现代签名：
+
+```text
+hessian(expr,variables)
+```
+
+当前 Wolfram 签名：
+
+```text
+Hessian[expr,variables]
+```
 
 目标现代签名（按目标接口状态判断是否已可执行）：
 
@@ -584,20 +633,20 @@ hessian(expr, variables)
 
 | 参数 | 类型 | 默认值 | 含义 | 可用阶段 |
 |---|---|---|---|---|
-| `expr` | positional | 必填 | 签名对应的expr参数 | r3 |
-| `variables` | positional | 必填 | 有序变量列表 | r3 |
+| `expr` | positional | 必填 | 待求导标量或向量源码 | current |
+| `variables` | positional | 必填 | 有序笛卡尔局部坐标 | current |
 
-规划示例（尚未执行；需要目标版本，后续条目不承诺 .3）：
+当前已登记示例（Wolfram）：
 
-```text
-hessian(x^2+x*y+y^2,[x,y])
+```wolfram
+Hessian[x^2*y,{x,y}]
 ```
 
 验收：独立数学期望、有效/无效参数、边界、预算、中断及声明的平台/精度测试；范围外不伪造成功。
 
-当前源码：暂无当前实现证据。
+当前源码：[crates/om-eval/src/science/calculus_registry.rs](../../crates/om-eval/src/science/calculus_registry.rs)、[crates/om-eval/src/science/vector_calculus.rs](../../crates/om-eval/src/science/vector_calculus.rs)、[crates/om-eval/src/algebra_diff.rs](../../crates/om-eval/src/algebra_diff.rs)。
 
-当前测试引用：暂无当前实现证据。
+当前测试引用：[crates/om-eval/tests/vector_calculus.rs](../../crates/om-eval/tests/vector_calculus.rs)。
 
 ## integrate
 
@@ -745,21 +794,33 @@ inverse_z_transform(...)  # 后续接口尚未锁定
 
 ## jacobian
 
-**当前实现：下一版规划；目标接口：规划接口，当前不可用。** 目标版本：`0.1.0-pre-alpha.3`。
+**当前实现：已实现；目标接口：当前可用。** 目标版本：`0.1.0-pre-alpha.3`。
 
 - 稳定身份：`fn_000143`；条目类型：`function`。
-- 副作用分类（设计预留）：`pure`；参数验证阶段：`documentation_only`，不构成工具授权。
+- 副作用分类（设计预留）：`pure`；参数验证阶段：`runtime_verified`，不构成工具授权。
 
 Jacobian 矩阵
 
-- 当前支持：当前无此规范接口的实现。
+- 当前支持：真实求导器计算笛卡尔微分；1..64个互异用户坐标局部化，readonly展开源码，禁止间接写入。Grad/Hessian/Laplacian为标量表达式，Jacobian向量分量为行/坐标为列，Div维度匹配，Curl仅3D。未知求导保持真实形式导数，错误形状/变量/预算拒绝。
 - 目标范围：复用真实 D；变量必须唯一，向量维度匹配；不把形式 Derivative 变成已求出的闭式。
 - 返回：expression
-- 精度：符号运算；数值化继承现有已支持精度。
-- 当前计算平台：无；目标计算平台：cli, desktop, web, ios。
+- 精度：符号导数复用真实求导，不把形式未求值导数或函数采样宣称为解析解；笛卡尔首版，不自动获得其他坐标或任意单位支持。
+- 当前计算平台：cli, desktop, web, ios；目标计算平台：cli, desktop, web, ios。
 - 目标图形/交互展示平台：不适用或后续未定。
-- 兼容名称：无既有兼容入口。
+- 兼容名称：`Jacobian`。
 - 管道位置：第 1 个位置参数（从 1 起）。
+
+当前现代签名：
+
+```text
+jacobian(expressions,variables)
+```
+
+当前 Wolfram 签名：
+
+```text
+Jacobian[expressions,variables]
+```
 
 目标现代签名（按目标接口状态判断是否已可执行）：
 
@@ -769,20 +830,20 @@ jacobian(expressions, variables)
 
 | 参数 | 类型 | 默认值 | 含义 | 可用阶段 |
 |---|---|---|---|---|
-| `expressions` | positional | 必填 | 签名对应的expressions参数 | r3 |
-| `variables` | positional | 必填 | 有序变量列表 | r3 |
+| `expressions` | positional | 必填 | 待求导标量或向量源码 | current |
+| `variables` | positional | 必填 | 有序笛卡尔局部坐标 | current |
 
-规划示例（尚未执行；需要目标版本，后续条目不承诺 .3）：
+当前已登记示例（Wolfram）：
 
-```text
-jacobian([x*y,x+y],[x,y])
+```wolfram
+Jacobian[{x*y,Sin[x]},{x,y}]
 ```
 
 验收：独立数学期望、有效/无效参数、边界、预算、中断及声明的平台/精度测试；范围外不伪造成功。
 
-当前源码：暂无当前实现证据。
+当前源码：[crates/om-eval/src/science/calculus_registry.rs](../../crates/om-eval/src/science/calculus_registry.rs)、[crates/om-eval/src/science/vector_calculus.rs](../../crates/om-eval/src/science/vector_calculus.rs)、[crates/om-eval/src/algebra_diff.rs](../../crates/om-eval/src/algebra_diff.rs)。
 
-当前测试引用：暂无当前实现证据。
+当前测试引用：[crates/om-eval/tests/vector_calculus.rs](../../crates/om-eval/tests/vector_calculus.rs)。
 
 ## laplace_transform
 
@@ -820,21 +881,33 @@ laplace_transform(...)  # 后续接口尚未锁定
 
 ## laplacian
 
-**当前实现：下一版规划；目标接口：规划接口，当前不可用。** 目标版本：`0.1.0-pre-alpha.3`。
+**当前实现：已实现；目标接口：当前可用。** 目标版本：`0.1.0-pre-alpha.3`。
 
 - 稳定身份：`fn_000147`；条目类型：`function`。
-- 副作用分类（设计预留）：`pure`；参数验证阶段：`documentation_only`，不构成工具授权。
+- 副作用分类（设计预留）：`pure`；参数验证阶段：`runtime_verified`，不构成工具授权。
 
 笛卡尔拉普拉斯
 
-- 当前支持：当前无此规范接口的实现。
+- 当前支持：真实求导器计算笛卡尔微分；1..64个互异用户坐标局部化，readonly展开源码，禁止间接写入。Grad/Hessian/Laplacian为标量表达式，Jacobian向量分量为行/坐标为列，Div维度匹配，Curl仅3D。未知求导保持真实形式导数，错误形状/变量/预算拒绝。
 - 目标范围：复用真实 D；变量必须唯一，向量维度匹配；不把形式 Derivative 变成已求出的闭式。
 - 返回：expression
-- 精度：符号运算；数值化继承现有已支持精度。
-- 当前计算平台：无；目标计算平台：cli, desktop, web, ios。
+- 精度：符号导数复用真实求导，不把形式未求值导数或函数采样宣称为解析解；笛卡尔首版，不自动获得其他坐标或任意单位支持。
+- 当前计算平台：cli, desktop, web, ios；目标计算平台：cli, desktop, web, ios。
 - 目标图形/交互展示平台：不适用或后续未定。
-- 兼容名称：无既有兼容入口。
+- 兼容名称：`Laplacian`。
 - 管道位置：第 1 个位置参数（从 1 起）。
+
+当前现代签名：
+
+```text
+laplacian(expr,variables)
+```
+
+当前 Wolfram 签名：
+
+```text
+Laplacian[expr,variables]
+```
 
 目标现代签名（按目标接口状态判断是否已可执行）：
 
@@ -844,20 +917,20 @@ laplacian(expr, variables)
 
 | 参数 | 类型 | 默认值 | 含义 | 可用阶段 |
 |---|---|---|---|---|
-| `expr` | positional | 必填 | 签名对应的expr参数 | r3 |
-| `variables` | positional | 必填 | 有序变量列表 | r3 |
+| `expr` | positional | 必填 | 待求导标量或向量源码 | current |
+| `variables` | positional | 必填 | 有序笛卡尔局部坐标 | current |
 
-规划示例（尚未执行；需要目标版本，后续条目不承诺 .3）：
+当前已登记示例（Wolfram）：
 
-```text
-laplacian(x^2+y^2,[x,y])
+```wolfram
+Laplacian[x^2+y^2+z^2,{x,y,z}]
 ```
 
 验收：独立数学期望、有效/无效参数、边界、预算、中断及声明的平台/精度测试；范围外不伪造成功。
 
-当前源码：暂无当前实现证据。
+当前源码：[crates/om-eval/src/science/calculus_registry.rs](../../crates/om-eval/src/science/calculus_registry.rs)、[crates/om-eval/src/science/vector_calculus.rs](../../crates/om-eval/src/science/vector_calculus.rs)、[crates/om-eval/src/algebra_diff.rs](../../crates/om-eval/src/algebra_diff.rs)。
 
-当前测试引用：暂无当前实现证据。
+当前测试引用：[crates/om-eval/tests/vector_calculus.rs](../../crates/om-eval/tests/vector_calculus.rs)。
 
 ## limit
 

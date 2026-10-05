@@ -997,32 +997,44 @@
     {
       "id": "fn_000142",
       "initial_name": "grad",
-      "runtime_names": []
+      "runtime_names": [
+        "Grad"
+      ]
     },
     {
       "id": "fn_000143",
       "initial_name": "jacobian",
-      "runtime_names": []
+      "runtime_names": [
+        "Jacobian"
+      ]
     },
     {
       "id": "fn_000144",
       "initial_name": "hessian",
-      "runtime_names": []
+      "runtime_names": [
+        "Hessian"
+      ]
     },
     {
       "id": "fn_000145",
       "initial_name": "div",
-      "runtime_names": []
+      "runtime_names": [
+        "Divergence"
+      ]
     },
     {
       "id": "fn_000146",
       "initial_name": "curl",
-      "runtime_names": []
+      "runtime_names": [
+        "Curl"
+      ]
     },
     {
       "id": "fn_000147",
       "initial_name": "laplacian",
-      "runtime_names": []
+      "runtime_names": [
+        "Laplacian"
+      ]
     },
     {
       "id": "fn_000148",

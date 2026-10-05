@@ -1,6 +1,6 @@
 # 实际注册审计基线：ba3cd2b；稳定身份与名称分离；目录/副作用为设计数据。
 schema_version = 1
-metadata_version = 12
+metadata_version = 13
 validation_stage = "runtime_verified"
 current_version = "0.1.0-pre-alpha.2"
 target_version = "0.1.0-pre-alpha.3"
@@ -4611,192 +4611,192 @@ effect_class = "pure"
 id = "fn_000142"
 name = "grad"
 category = "calculus"
-status = "planned"
-interface_status = "planned"
-runtime_names = []
-compatibility_names = []
-current_modern_signatures = []
-current_wolfram_signatures = []
+status = "implemented"
+interface_status = "current"
+runtime_names = ["Grad"]
+compatibility_names = ["Grad"]
+current_modern_signatures = ["grad(expr,variables)"]
+current_wolfram_signatures = ["Grad[expr,variables]"]
 signatures = ["grad(expr, variables)"]
-parameters = [{ name = "expr", kind = "positional", default = "必填", description = "签名对应的expr参数", availability = "r3" }, { name = "variables", kind = "positional", default = "必填", description = "有序变量列表", availability = "r3" }]
+parameters = [{ name = "expr", kind = "positional", default = "必填", description = "待求导标量或向量源码", availability = "current" }, { name = "variables", kind = "positional", default = "必填", description = "有序笛卡尔局部坐标", availability = "current" }]
 return_type = "expression"
 semantics = "笛卡尔梯度"
-current_support = "当前无此规范接口的实现。"
+current_support = "真实求导器计算笛卡尔微分；1..64个互异用户坐标局部化，readonly展开源码，禁止间接写入。Grad/Hessian/Laplacian为标量表达式，Jacobian向量分量为行/坐标为列，Div维度匹配，Curl仅3D。未知求导保持真实形式导数，错误形状/变量/预算拒绝。"
 target_support = "复用真实 D；变量必须唯一，向量维度匹配；不把形式 Derivative 变成已求出的闭式。"
-precision_modes = ["planned_machine"]
-precision_notes = "符号运算；数值化继承现有已支持精度。"
-current_platforms = []
+precision_modes = ["exact_symbolic"]
+precision_notes = "符号导数复用真实求导，不把形式未求值导数或函数采样宣称为解析解；笛卡尔首版，不自动获得其他坐标或任意单位支持。"
+current_platforms = ["cli", "desktop", "web", "ios"]
 target_platforms = ["cli", "desktop", "web", "ios"]
 render_platforms = []
-current_examples = []
-planned_examples = ["grad(x^2+y^2,[x,y])"]
-sources = []
-tests = []
+current_examples = ["Grad[x^2+y^2,{x,y}]"]
+planned_examples = []
+sources = ["crates/om-eval/src/science/calculus_registry.rs", "crates/om-eval/src/science/vector_calculus.rs", "crates/om-eval/src/algebra_diff.rs"]
+tests = ["crates/om-eval/tests/vector_calculus.rs"]
 acceptance = "独立数学期望、有效/无效参数、边界、预算、中断及声明的平台/精度测试；范围外不伪造成功。"
 pipe_arg = 1
 target_version = "0.1.0-pre-alpha.3"
 kind = "function"
-validation_stage = "documentation_only"
+validation_stage = "runtime_verified"
 effect_class = "pure"
 
 [[functions]]
 id = "fn_000143"
 name = "jacobian"
 category = "calculus"
-status = "planned"
-interface_status = "planned"
-runtime_names = []
-compatibility_names = []
-current_modern_signatures = []
-current_wolfram_signatures = []
+status = "implemented"
+interface_status = "current"
+runtime_names = ["Jacobian"]
+compatibility_names = ["Jacobian"]
+current_modern_signatures = ["jacobian(expressions,variables)"]
+current_wolfram_signatures = ["Jacobian[expressions,variables]"]
 signatures = ["jacobian(expressions, variables)"]
-parameters = [{ name = "expressions", kind = "positional", default = "必填", description = "签名对应的expressions参数", availability = "r3" }, { name = "variables", kind = "positional", default = "必填", description = "有序变量列表", availability = "r3" }]
+parameters = [{ name = "expressions", kind = "positional", default = "必填", description = "待求导标量或向量源码", availability = "current" }, { name = "variables", kind = "positional", default = "必填", description = "有序笛卡尔局部坐标", availability = "current" }]
 return_type = "expression"
 semantics = "Jacobian 矩阵"
-current_support = "当前无此规范接口的实现。"
+current_support = "真实求导器计算笛卡尔微分；1..64个互异用户坐标局部化，readonly展开源码，禁止间接写入。Grad/Hessian/Laplacian为标量表达式，Jacobian向量分量为行/坐标为列，Div维度匹配，Curl仅3D。未知求导保持真实形式导数，错误形状/变量/预算拒绝。"
 target_support = "复用真实 D；变量必须唯一，向量维度匹配；不把形式 Derivative 变成已求出的闭式。"
-precision_modes = ["planned_machine"]
-precision_notes = "符号运算；数值化继承现有已支持精度。"
-current_platforms = []
+precision_modes = ["exact_symbolic"]
+precision_notes = "符号导数复用真实求导，不把形式未求值导数或函数采样宣称为解析解；笛卡尔首版，不自动获得其他坐标或任意单位支持。"
+current_platforms = ["cli", "desktop", "web", "ios"]
 target_platforms = ["cli", "desktop", "web", "ios"]
 render_platforms = []
-current_examples = []
-planned_examples = ["jacobian([x*y,x+y],[x,y])"]
-sources = []
-tests = []
+current_examples = ["Jacobian[{x*y,Sin[x]},{x,y}]"]
+planned_examples = []
+sources = ["crates/om-eval/src/science/calculus_registry.rs", "crates/om-eval/src/science/vector_calculus.rs", "crates/om-eval/src/algebra_diff.rs"]
+tests = ["crates/om-eval/tests/vector_calculus.rs"]
 acceptance = "独立数学期望、有效/无效参数、边界、预算、中断及声明的平台/精度测试；范围外不伪造成功。"
 pipe_arg = 1
 target_version = "0.1.0-pre-alpha.3"
 kind = "function"
-validation_stage = "documentation_only"
+validation_stage = "runtime_verified"
 effect_class = "pure"
 
 [[functions]]
 id = "fn_000144"
 name = "hessian"
 category = "calculus"
-status = "planned"
-interface_status = "planned"
-runtime_names = []
-compatibility_names = []
-current_modern_signatures = []
-current_wolfram_signatures = []
+status = "implemented"
+interface_status = "current"
+runtime_names = ["Hessian"]
+compatibility_names = ["Hessian"]
+current_modern_signatures = ["hessian(expr,variables)"]
+current_wolfram_signatures = ["Hessian[expr,variables]"]
 signatures = ["hessian(expr, variables)"]
-parameters = [{ name = "expr", kind = "positional", default = "必填", description = "签名对应的expr参数", availability = "r3" }, { name = "variables", kind = "positional", default = "必填", description = "有序变量列表", availability = "r3" }]
+parameters = [{ name = "expr", kind = "positional", default = "必填", description = "待求导标量或向量源码", availability = "current" }, { name = "variables", kind = "positional", default = "必填", description = "有序笛卡尔局部坐标", availability = "current" }]
 return_type = "expression"
 semantics = "Hessian 矩阵"
-current_support = "当前无此规范接口的实现。"
+current_support = "真实求导器计算笛卡尔微分；1..64个互异用户坐标局部化，readonly展开源码，禁止间接写入。Grad/Hessian/Laplacian为标量表达式，Jacobian向量分量为行/坐标为列，Div维度匹配，Curl仅3D。未知求导保持真实形式导数，错误形状/变量/预算拒绝。"
 target_support = "复用真实 D；变量必须唯一，向量维度匹配；不把形式 Derivative 变成已求出的闭式。"
-precision_modes = ["planned_machine"]
-precision_notes = "符号运算；数值化继承现有已支持精度。"
-current_platforms = []
+precision_modes = ["exact_symbolic"]
+precision_notes = "符号导数复用真实求导，不把形式未求值导数或函数采样宣称为解析解；笛卡尔首版，不自动获得其他坐标或任意单位支持。"
+current_platforms = ["cli", "desktop", "web", "ios"]
 target_platforms = ["cli", "desktop", "web", "ios"]
 render_platforms = []
-current_examples = []
-planned_examples = ["hessian(x^2+x*y+y^2,[x,y])"]
-sources = []
-tests = []
+current_examples = ["Hessian[x^2*y,{x,y}]"]
+planned_examples = []
+sources = ["crates/om-eval/src/science/calculus_registry.rs", "crates/om-eval/src/science/vector_calculus.rs", "crates/om-eval/src/algebra_diff.rs"]
+tests = ["crates/om-eval/tests/vector_calculus.rs"]
 acceptance = "独立数学期望、有效/无效参数、边界、预算、中断及声明的平台/精度测试；范围外不伪造成功。"
 pipe_arg = 1
 target_version = "0.1.0-pre-alpha.3"
 kind = "function"
-validation_stage = "documentation_only"
+validation_stage = "runtime_verified"
 effect_class = "pure"
 
 [[functions]]
 id = "fn_000145"
 name = "div"
 category = "calculus"
-status = "planned"
-interface_status = "planned"
-runtime_names = []
-compatibility_names = []
-current_modern_signatures = []
-current_wolfram_signatures = []
+status = "implemented"
+interface_status = "current"
+runtime_names = ["Divergence"]
+compatibility_names = ["Divergence"]
+current_modern_signatures = ["div(vector,variables)"]
+current_wolfram_signatures = ["Divergence[vector,variables]"]
 signatures = ["div(vector, variables)"]
-parameters = [{ name = "vector", kind = "positional", default = "必填", description = "向量", availability = "r3" }, { name = "variables", kind = "positional", default = "必填", description = "有序变量列表", availability = "r3" }]
+parameters = [{ name = "vector", kind = "positional", default = "必填", description = "待求导标量或向量源码", availability = "current" }, { name = "variables", kind = "positional", default = "必填", description = "有序笛卡尔局部坐标", availability = "current" }]
 return_type = "expression"
 semantics = "笛卡尔散度"
-current_support = "当前无此规范接口的实现。"
+current_support = "真实求导器计算笛卡尔微分；1..64个互异用户坐标局部化，readonly展开源码，禁止间接写入。Grad/Hessian/Laplacian为标量表达式，Jacobian向量分量为行/坐标为列，Div维度匹配，Curl仅3D。未知求导保持真实形式导数，错误形状/变量/预算拒绝。"
 target_support = "复用真实 D；变量必须唯一，向量维度匹配；不把形式 Derivative 变成已求出的闭式。"
-precision_modes = ["planned_machine"]
-precision_notes = "符号运算；数值化继承现有已支持精度。"
-current_platforms = []
+precision_modes = ["exact_symbolic"]
+precision_notes = "符号导数复用真实求导，不把形式未求值导数或函数采样宣称为解析解；笛卡尔首版，不自动获得其他坐标或任意单位支持。"
+current_platforms = ["cli", "desktop", "web", "ios"]
 target_platforms = ["cli", "desktop", "web", "ios"]
 render_platforms = []
-current_examples = []
-planned_examples = ["div([x^2,y^2,z^2],[x,y,z])"]
-sources = []
-tests = []
+current_examples = ["Divergence[{x,y,z},{x,y,z}]"]
+planned_examples = []
+sources = ["crates/om-eval/src/science/calculus_registry.rs", "crates/om-eval/src/science/vector_calculus.rs", "crates/om-eval/src/algebra_diff.rs"]
+tests = ["crates/om-eval/tests/vector_calculus.rs"]
 acceptance = "独立数学期望、有效/无效参数、边界、预算、中断及声明的平台/精度测试；范围外不伪造成功。"
 pipe_arg = 1
 target_version = "0.1.0-pre-alpha.3"
 kind = "function"
-validation_stage = "documentation_only"
+validation_stage = "runtime_verified"
 effect_class = "pure"
 
 [[functions]]
 id = "fn_000146"
 name = "curl"
 category = "calculus"
-status = "planned"
-interface_status = "planned"
-runtime_names = []
-compatibility_names = []
-current_modern_signatures = []
-current_wolfram_signatures = []
+status = "implemented"
+interface_status = "current"
+runtime_names = ["Curl"]
+compatibility_names = ["Curl"]
+current_modern_signatures = ["curl(vector,variables)"]
+current_wolfram_signatures = ["Curl[vector,variables]"]
 signatures = ["curl(vector, [x,y,z])"]
-parameters = [{ name = "vector", kind = "positional", default = "必填", description = "向量", availability = "r3" }]
+parameters = [{ name = "vector", kind = "positional", default = "必填", description = "待求导标量或向量源码", availability = "current" }, { name = "variables", kind = "positional", default = "必填", description = "有序笛卡尔局部坐标", availability = "current" }]
 return_type = "expression"
 semantics = "三维笛卡尔旋度"
-current_support = "当前无此规范接口的实现。"
+current_support = "真实求导器计算笛卡尔微分；1..64个互异用户坐标局部化，readonly展开源码，禁止间接写入。Grad/Hessian/Laplacian为标量表达式，Jacobian向量分量为行/坐标为列，Div维度匹配，Curl仅3D。未知求导保持真实形式导数，错误形状/变量/预算拒绝。"
 target_support = "复用真实 D；变量必须唯一，向量维度匹配；不把形式 Derivative 变成已求出的闭式。"
-precision_modes = ["planned_machine"]
-precision_notes = "符号运算；数值化继承现有已支持精度。"
-current_platforms = []
+precision_modes = ["exact_symbolic"]
+precision_notes = "符号导数复用真实求导，不把形式未求值导数或函数采样宣称为解析解；笛卡尔首版，不自动获得其他坐标或任意单位支持。"
+current_platforms = ["cli", "desktop", "web", "ios"]
 target_platforms = ["cli", "desktop", "web", "ios"]
 render_platforms = []
-current_examples = []
-planned_examples = ["curl([-y,x,0],[x,y,z])"]
-sources = []
-tests = []
+current_examples = ["Curl[{-y,x,0},{x,y,z}]"]
+planned_examples = []
+sources = ["crates/om-eval/src/science/calculus_registry.rs", "crates/om-eval/src/science/vector_calculus.rs", "crates/om-eval/src/algebra_diff.rs"]
+tests = ["crates/om-eval/tests/vector_calculus.rs"]
 acceptance = "独立数学期望、有效/无效参数、边界、预算、中断及声明的平台/精度测试；范围外不伪造成功。"
 pipe_arg = 1
 target_version = "0.1.0-pre-alpha.3"
 kind = "function"
-validation_stage = "documentation_only"
+validation_stage = "runtime_verified"
 effect_class = "pure"
 
 [[functions]]
 id = "fn_000147"
 name = "laplacian"
 category = "calculus"
-status = "planned"
-interface_status = "planned"
-runtime_names = []
-compatibility_names = []
-current_modern_signatures = []
-current_wolfram_signatures = []
+status = "implemented"
+interface_status = "current"
+runtime_names = ["Laplacian"]
+compatibility_names = ["Laplacian"]
+current_modern_signatures = ["laplacian(expr,variables)"]
+current_wolfram_signatures = ["Laplacian[expr,variables]"]
 signatures = ["laplacian(expr, variables)"]
-parameters = [{ name = "expr", kind = "positional", default = "必填", description = "签名对应的expr参数", availability = "r3" }, { name = "variables", kind = "positional", default = "必填", description = "有序变量列表", availability = "r3" }]
+parameters = [{ name = "expr", kind = "positional", default = "必填", description = "待求导标量或向量源码", availability = "current" }, { name = "variables", kind = "positional", default = "必填", description = "有序笛卡尔局部坐标", availability = "current" }]
 return_type = "expression"
 semantics = "笛卡尔拉普拉斯"
-current_support = "当前无此规范接口的实现。"
+current_support = "真实求导器计算笛卡尔微分；1..64个互异用户坐标局部化，readonly展开源码，禁止间接写入。Grad/Hessian/Laplacian为标量表达式，Jacobian向量分量为行/坐标为列，Div维度匹配，Curl仅3D。未知求导保持真实形式导数，错误形状/变量/预算拒绝。"
 target_support = "复用真实 D；变量必须唯一，向量维度匹配；不把形式 Derivative 变成已求出的闭式。"
-precision_modes = ["planned_machine"]
-precision_notes = "符号运算；数值化继承现有已支持精度。"
-current_platforms = []
+precision_modes = ["exact_symbolic"]
+precision_notes = "符号导数复用真实求导，不把形式未求值导数或函数采样宣称为解析解；笛卡尔首版，不自动获得其他坐标或任意单位支持。"
+current_platforms = ["cli", "desktop", "web", "ios"]
 target_platforms = ["cli", "desktop", "web", "ios"]
 render_platforms = []
-current_examples = []
-planned_examples = ["laplacian(x^2+y^2,[x,y])"]
-sources = []
-tests = []
+current_examples = ["Laplacian[x^2+y^2+z^2,{x,y,z}]"]
+planned_examples = []
+sources = ["crates/om-eval/src/science/calculus_registry.rs", "crates/om-eval/src/science/vector_calculus.rs", "crates/om-eval/src/algebra_diff.rs"]
+tests = ["crates/om-eval/tests/vector_calculus.rs"]
 acceptance = "独立数学期望、有效/无效参数、边界、预算、中断及声明的平台/精度测试；范围外不伪造成功。"
 pipe_arg = 1
 target_version = "0.1.0-pre-alpha.3"
 kind = "function"
-validation_stage = "documentation_only"
+validation_stage = "runtime_verified"
 effect_class = "pure"
 
 [[functions]]
@@ -28871,3 +28871,63 @@ max = 3
 attributes = ["protected", "listable", "numeric_function"]
 parameters = [{ name = "value", value_type = "expression", required = true, variadic = false, held = false }, { name = "degree", value_type = "integer", required = true, variadic = false, held = false, min = 1, max = 4096 }]
 options = [{ name = "branch", value_type = "enum", required = false, variadic = false, held = false, runtime_name = "Branch", default_source = "\"principal\"", enum_values = ["principal"] }]
+
+[[runtime]]
+name = "Grad"
+modern_name = "grad"
+aliases = []
+min = 2
+max = 2
+attributes = ["protected", "hold_all"]
+parameters = [{ name = "expr", value_type = "expression", required = true, variadic = false, held = true }, { name = "variables", value_type = "expression", required = true, variadic = false, held = true }]
+options = []
+
+[[runtime]]
+name = "Jacobian"
+modern_name = "jacobian"
+aliases = []
+min = 2
+max = 2
+attributes = ["protected", "hold_all"]
+parameters = [{ name = "expressions", value_type = "expression", required = true, variadic = false, held = true }, { name = "variables", value_type = "expression", required = true, variadic = false, held = true }]
+options = []
+
+[[runtime]]
+name = "Hessian"
+modern_name = "hessian"
+aliases = []
+min = 2
+max = 2
+attributes = ["protected", "hold_all"]
+parameters = [{ name = "expr", value_type = "expression", required = true, variadic = false, held = true }, { name = "variables", value_type = "expression", required = true, variadic = false, held = true }]
+options = []
+
+[[runtime]]
+name = "Divergence"
+modern_name = "div"
+aliases = []
+min = 2
+max = 2
+attributes = ["protected", "hold_all"]
+parameters = [{ name = "vector", value_type = "expression", required = true, variadic = false, held = true }, { name = "variables", value_type = "expression", required = true, variadic = false, held = true }]
+options = []
+
+[[runtime]]
+name = "Curl"
+modern_name = "curl"
+aliases = []
+min = 2
+max = 2
+attributes = ["protected", "hold_all"]
+parameters = [{ name = "vector", value_type = "expression", required = true, variadic = false, held = true }, { name = "variables", value_type = "expression", required = true, variadic = false, held = true }]
+options = []
+
+[[runtime]]
+name = "Laplacian"
+modern_name = "laplacian"
+aliases = []
+min = 2
+max = 2
+attributes = ["protected", "hold_all"]
+parameters = [{ name = "expr", value_type = "expression", required = true, variadic = false, held = true }, { name = "variables", value_type = "expression", required = true, variadic = false, held = true }]
+options = []

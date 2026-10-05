@@ -5,6 +5,10 @@ mod apart;
 mod arithmetic;
 #[path = "algebra_diff.rs"]
 mod diff;
+pub(crate) fn differentiate(e: &Expr, x: &Expr, ctx: &Interrupt) -> Result<Expr, EvalError> {
+    diff::apply(&[e.clone(), x.clone()], ctx)?
+        .ok_or_else(|| EvalError::Other("无法按给定变量求导".into()))
+}
 #[path = "algebra_poly.rs"]
 mod poly;
 #[path = "algebra_root.rs"]

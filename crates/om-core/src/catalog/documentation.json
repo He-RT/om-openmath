@@ -8355,22 +8355,33 @@
       "name": "grad",
       "category": "calculus",
       "kind": "function",
-      "status": "planned",
-      "interface_status": "planned",
-      "runtime_names": [],
-      "compatibility_names": [],
-      "current_modern_signatures": [],
+      "status": "implemented",
+      "interface_status": "current",
+      "runtime_names": [
+        "Grad"
+      ],
+      "compatibility_names": [
+        "Grad"
+      ],
+      "current_modern_signatures": [
+        "grad(expr,variables)"
+      ],
       "signatures": [
         "grad(expr, variables)"
       ],
-      "current_support": "当前无此规范接口的实现。",
+      "current_support": "真实求导器计算笛卡尔微分；1..64个互异用户坐标局部化，readonly展开源码，禁止间接写入。Grad/Hessian/Laplacian为标量表达式，Jacobian向量分量为行/坐标为列，Div维度匹配，Curl仅3D。未知求导保持真实形式导数，错误形状/变量/预算拒绝。",
       "target_support": "复用真实 D；变量必须唯一，向量维度匹配；不把形式 Derivative 变成已求出的闭式。",
       "return_type": "expression",
       "precision_modes": [
-        "planned_machine"
+        "exact_symbolic"
       ],
-      "precision_notes": "符号运算；数值化继承现有已支持精度。",
-      "current_platforms": [],
+      "precision_notes": "符号导数复用真实求导，不把形式未求值导数或函数采样宣称为解析解；笛卡尔首版，不自动获得其他坐标或任意单位支持。",
+      "current_platforms": [
+        "cli",
+        "desktop",
+        "web",
+        "ios"
+      ],
       "target_platforms": [
         "cli",
         "desktop",
@@ -8382,43 +8393,54 @@
           "name": "expr",
           "kind": "positional",
           "default": "必填",
-          "description": "签名对应的expr参数",
-          "availability": "r3"
+          "description": "待求导标量或向量源码",
+          "availability": "current"
         },
         {
           "name": "variables",
           "kind": "positional",
           "default": "必填",
-          "description": "有序变量列表",
-          "availability": "r3"
+          "description": "有序笛卡尔局部坐标",
+          "availability": "current"
         }
       ],
-      "current_examples": [],
-      "planned_examples": [
-        "grad(x^2+y^2,[x,y])"
-      ]
+      "current_examples": [
+        "Grad[x^2+y^2,{x,y}]"
+      ],
+      "planned_examples": []
     },
     {
       "id": "fn_000143",
       "name": "jacobian",
       "category": "calculus",
       "kind": "function",
-      "status": "planned",
-      "interface_status": "planned",
-      "runtime_names": [],
-      "compatibility_names": [],
-      "current_modern_signatures": [],
+      "status": "implemented",
+      "interface_status": "current",
+      "runtime_names": [
+        "Jacobian"
+      ],
+      "compatibility_names": [
+        "Jacobian"
+      ],
+      "current_modern_signatures": [
+        "jacobian(expressions,variables)"
+      ],
       "signatures": [
         "jacobian(expressions, variables)"
       ],
-      "current_support": "当前无此规范接口的实现。",
+      "current_support": "真实求导器计算笛卡尔微分；1..64个互异用户坐标局部化，readonly展开源码，禁止间接写入。Grad/Hessian/Laplacian为标量表达式，Jacobian向量分量为行/坐标为列，Div维度匹配，Curl仅3D。未知求导保持真实形式导数，错误形状/变量/预算拒绝。",
       "target_support": "复用真实 D；变量必须唯一，向量维度匹配；不把形式 Derivative 变成已求出的闭式。",
       "return_type": "expression",
       "precision_modes": [
-        "planned_machine"
+        "exact_symbolic"
       ],
-      "precision_notes": "符号运算；数值化继承现有已支持精度。",
-      "current_platforms": [],
+      "precision_notes": "符号导数复用真实求导，不把形式未求值导数或函数采样宣称为解析解；笛卡尔首版，不自动获得其他坐标或任意单位支持。",
+      "current_platforms": [
+        "cli",
+        "desktop",
+        "web",
+        "ios"
+      ],
       "target_platforms": [
         "cli",
         "desktop",
@@ -8430,43 +8452,54 @@
           "name": "expressions",
           "kind": "positional",
           "default": "必填",
-          "description": "签名对应的expressions参数",
-          "availability": "r3"
+          "description": "待求导标量或向量源码",
+          "availability": "current"
         },
         {
           "name": "variables",
           "kind": "positional",
           "default": "必填",
-          "description": "有序变量列表",
-          "availability": "r3"
+          "description": "有序笛卡尔局部坐标",
+          "availability": "current"
         }
       ],
-      "current_examples": [],
-      "planned_examples": [
-        "jacobian([x*y,x+y],[x,y])"
-      ]
+      "current_examples": [
+        "Jacobian[{x*y,Sin[x]},{x,y}]"
+      ],
+      "planned_examples": []
     },
     {
       "id": "fn_000144",
       "name": "hessian",
       "category": "calculus",
       "kind": "function",
-      "status": "planned",
-      "interface_status": "planned",
-      "runtime_names": [],
-      "compatibility_names": [],
-      "current_modern_signatures": [],
+      "status": "implemented",
+      "interface_status": "current",
+      "runtime_names": [
+        "Hessian"
+      ],
+      "compatibility_names": [
+        "Hessian"
+      ],
+      "current_modern_signatures": [
+        "hessian(expr,variables)"
+      ],
       "signatures": [
         "hessian(expr, variables)"
       ],
-      "current_support": "当前无此规范接口的实现。",
+      "current_support": "真实求导器计算笛卡尔微分；1..64个互异用户坐标局部化，readonly展开源码，禁止间接写入。Grad/Hessian/Laplacian为标量表达式，Jacobian向量分量为行/坐标为列，Div维度匹配，Curl仅3D。未知求导保持真实形式导数，错误形状/变量/预算拒绝。",
       "target_support": "复用真实 D；变量必须唯一，向量维度匹配；不把形式 Derivative 变成已求出的闭式。",
       "return_type": "expression",
       "precision_modes": [
-        "planned_machine"
+        "exact_symbolic"
       ],
-      "precision_notes": "符号运算；数值化继承现有已支持精度。",
-      "current_platforms": [],
+      "precision_notes": "符号导数复用真实求导，不把形式未求值导数或函数采样宣称为解析解；笛卡尔首版，不自动获得其他坐标或任意单位支持。",
+      "current_platforms": [
+        "cli",
+        "desktop",
+        "web",
+        "ios"
+      ],
       "target_platforms": [
         "cli",
         "desktop",
@@ -8478,43 +8511,54 @@
           "name": "expr",
           "kind": "positional",
           "default": "必填",
-          "description": "签名对应的expr参数",
-          "availability": "r3"
+          "description": "待求导标量或向量源码",
+          "availability": "current"
         },
         {
           "name": "variables",
           "kind": "positional",
           "default": "必填",
-          "description": "有序变量列表",
-          "availability": "r3"
+          "description": "有序笛卡尔局部坐标",
+          "availability": "current"
         }
       ],
-      "current_examples": [],
-      "planned_examples": [
-        "hessian(x^2+x*y+y^2,[x,y])"
-      ]
+      "current_examples": [
+        "Hessian[x^2*y,{x,y}]"
+      ],
+      "planned_examples": []
     },
     {
       "id": "fn_000145",
       "name": "div",
       "category": "calculus",
       "kind": "function",
-      "status": "planned",
-      "interface_status": "planned",
-      "runtime_names": [],
-      "compatibility_names": [],
-      "current_modern_signatures": [],
+      "status": "implemented",
+      "interface_status": "current",
+      "runtime_names": [
+        "Divergence"
+      ],
+      "compatibility_names": [
+        "Divergence"
+      ],
+      "current_modern_signatures": [
+        "div(vector,variables)"
+      ],
       "signatures": [
         "div(vector, variables)"
       ],
-      "current_support": "当前无此规范接口的实现。",
+      "current_support": "真实求导器计算笛卡尔微分；1..64个互异用户坐标局部化，readonly展开源码，禁止间接写入。Grad/Hessian/Laplacian为标量表达式，Jacobian向量分量为行/坐标为列，Div维度匹配，Curl仅3D。未知求导保持真实形式导数，错误形状/变量/预算拒绝。",
       "target_support": "复用真实 D；变量必须唯一，向量维度匹配；不把形式 Derivative 变成已求出的闭式。",
       "return_type": "expression",
       "precision_modes": [
-        "planned_machine"
+        "exact_symbolic"
       ],
-      "precision_notes": "符号运算；数值化继承现有已支持精度。",
-      "current_platforms": [],
+      "precision_notes": "符号导数复用真实求导，不把形式未求值导数或函数采样宣称为解析解；笛卡尔首版，不自动获得其他坐标或任意单位支持。",
+      "current_platforms": [
+        "cli",
+        "desktop",
+        "web",
+        "ios"
+      ],
       "target_platforms": [
         "cli",
         "desktop",
@@ -8526,43 +8570,54 @@
           "name": "vector",
           "kind": "positional",
           "default": "必填",
-          "description": "向量",
-          "availability": "r3"
+          "description": "待求导标量或向量源码",
+          "availability": "current"
         },
         {
           "name": "variables",
           "kind": "positional",
           "default": "必填",
-          "description": "有序变量列表",
-          "availability": "r3"
+          "description": "有序笛卡尔局部坐标",
+          "availability": "current"
         }
       ],
-      "current_examples": [],
-      "planned_examples": [
-        "div([x^2,y^2,z^2],[x,y,z])"
-      ]
+      "current_examples": [
+        "Divergence[{x,y,z},{x,y,z}]"
+      ],
+      "planned_examples": []
     },
     {
       "id": "fn_000146",
       "name": "curl",
       "category": "calculus",
       "kind": "function",
-      "status": "planned",
-      "interface_status": "planned",
-      "runtime_names": [],
-      "compatibility_names": [],
-      "current_modern_signatures": [],
+      "status": "implemented",
+      "interface_status": "current",
+      "runtime_names": [
+        "Curl"
+      ],
+      "compatibility_names": [
+        "Curl"
+      ],
+      "current_modern_signatures": [
+        "curl(vector,variables)"
+      ],
       "signatures": [
         "curl(vector, [x,y,z])"
       ],
-      "current_support": "当前无此规范接口的实现。",
+      "current_support": "真实求导器计算笛卡尔微分；1..64个互异用户坐标局部化，readonly展开源码，禁止间接写入。Grad/Hessian/Laplacian为标量表达式，Jacobian向量分量为行/坐标为列，Div维度匹配，Curl仅3D。未知求导保持真实形式导数，错误形状/变量/预算拒绝。",
       "target_support": "复用真实 D；变量必须唯一，向量维度匹配；不把形式 Derivative 变成已求出的闭式。",
       "return_type": "expression",
       "precision_modes": [
-        "planned_machine"
+        "exact_symbolic"
       ],
-      "precision_notes": "符号运算；数值化继承现有已支持精度。",
-      "current_platforms": [],
+      "precision_notes": "符号导数复用真实求导，不把形式未求值导数或函数采样宣称为解析解；笛卡尔首版，不自动获得其他坐标或任意单位支持。",
+      "current_platforms": [
+        "cli",
+        "desktop",
+        "web",
+        "ios"
+      ],
       "target_platforms": [
         "cli",
         "desktop",
@@ -8574,36 +8629,54 @@
           "name": "vector",
           "kind": "positional",
           "default": "必填",
-          "description": "向量",
-          "availability": "r3"
+          "description": "待求导标量或向量源码",
+          "availability": "current"
+        },
+        {
+          "name": "variables",
+          "kind": "positional",
+          "default": "必填",
+          "description": "有序笛卡尔局部坐标",
+          "availability": "current"
         }
       ],
-      "current_examples": [],
-      "planned_examples": [
-        "curl([-y,x,0],[x,y,z])"
-      ]
+      "current_examples": [
+        "Curl[{-y,x,0},{x,y,z}]"
+      ],
+      "planned_examples": []
     },
     {
       "id": "fn_000147",
       "name": "laplacian",
       "category": "calculus",
       "kind": "function",
-      "status": "planned",
-      "interface_status": "planned",
-      "runtime_names": [],
-      "compatibility_names": [],
-      "current_modern_signatures": [],
+      "status": "implemented",
+      "interface_status": "current",
+      "runtime_names": [
+        "Laplacian"
+      ],
+      "compatibility_names": [
+        "Laplacian"
+      ],
+      "current_modern_signatures": [
+        "laplacian(expr,variables)"
+      ],
       "signatures": [
         "laplacian(expr, variables)"
       ],
-      "current_support": "当前无此规范接口的实现。",
+      "current_support": "真实求导器计算笛卡尔微分；1..64个互异用户坐标局部化，readonly展开源码，禁止间接写入。Grad/Hessian/Laplacian为标量表达式，Jacobian向量分量为行/坐标为列，Div维度匹配，Curl仅3D。未知求导保持真实形式导数，错误形状/变量/预算拒绝。",
       "target_support": "复用真实 D；变量必须唯一，向量维度匹配；不把形式 Derivative 变成已求出的闭式。",
       "return_type": "expression",
       "precision_modes": [
-        "planned_machine"
+        "exact_symbolic"
       ],
-      "precision_notes": "符号运算；数值化继承现有已支持精度。",
-      "current_platforms": [],
+      "precision_notes": "符号导数复用真实求导，不把形式未求值导数或函数采样宣称为解析解；笛卡尔首版，不自动获得其他坐标或任意单位支持。",
+      "current_platforms": [
+        "cli",
+        "desktop",
+        "web",
+        "ios"
+      ],
       "target_platforms": [
         "cli",
         "desktop",
@@ -8615,21 +8688,21 @@
           "name": "expr",
           "kind": "positional",
           "default": "必填",
-          "description": "签名对应的expr参数",
-          "availability": "r3"
+          "description": "待求导标量或向量源码",
+          "availability": "current"
         },
         {
           "name": "variables",
           "kind": "positional",
           "default": "必填",
-          "description": "有序变量列表",
-          "availability": "r3"
+          "description": "有序笛卡尔局部坐标",
+          "availability": "current"
         }
       ],
-      "current_examples": [],
-      "planned_examples": [
-        "laplacian(x^2+y^2,[x,y])"
-      ]
+      "current_examples": [
+        "Laplacian[x^2+y^2+z^2,{x,y,z}]"
+      ],
+      "planned_examples": []
     },
     {
       "id": "fn_000148",

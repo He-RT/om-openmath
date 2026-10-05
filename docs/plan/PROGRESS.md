@@ -174,3 +174,9 @@ P127提交 `3b4b6a4` CI37302584053全部通过。实际新附件iPhone27全53最
 R3.3h查询提交 `50a7275`。
 
 - [x] **R3.3i 根接口与矩阵对角补齐；R3.3关闭** — 两真实CubeRoot/NthRoot回调，实立方根与principal主值/认证Root明确区分，完美立方/有理式/机器/高精度/Listable和中断验证；diag二维矩形提取最短轴对角，原一维构造保持。NthRoot的held源码转换保留原极点，不把孔洞约消成解，原实际绘图采样转换通过；原Root/root数学语义与53期望未改。211回调/206身份、描述12/.2。最终968Rust/2ignored、前端59、Python16、全Clippy/fmt/纯WASM/TS/deny通过，实际CLI -2/[1,5]无诊断。基础/线代/统计/单位/runtime的.3规划项已审计无遗漏；normal属于Series依赖留R3.4。R3.4微积分/ODE/优化/拟合、R3.5二维/数据展示/explore/导出、R3.6桌面Web三维/最终发行仍未完成，完整.3目标不缩减、不提前发版。
+
+R3.3i提交 `40c75b2`。CI37307173022的iPhone原17总1325.078ms失败，实际queued0.093/FFI291.127/decode2.122/encoded0.109/resume1031.603ms，kernel290.899ms；原18总899.027ms/resume772.453ms。新actor分段证据确认等待恢复主线程是主要额外延迟；原1s门槛不改，后续定位MainActor被阻塞的工作，不能宣布全移动门禁已通过。附件target/ci-evidence/r33i。
+
+- [x] **R3.4a 笛卡尔微分六入口** — Grad/Jacobian/Hessian/Divergence/Curl/Laplacian复用真实D求导器，坐标局部化readonly展开，不间接写入/不替换全局；结果作为局部坐标计算的已完成值返回，避免重写阶段再代入旧ownvalue，求解证据不误转给微分结果。解析期望、矩阵/维度、curl(grad)/div(curl)、独立误差函数中心差分、实主值反双曲/实立方根链式与失败/预算通过。217回调/212身份、描述13/.2。973Rust/2ignored、前端59、Python16、Clippy/fmt/纯WASM/TS/deny通过，原53期望不改。R3.4积分/极限级数/ODE/插值/优化/拟合及R3.5–R3.6继续，不缩减完整.3范围。
+
+2026-10-06用户要求随时清理无用构建缓存；本轮确认所有构建已停止，清理约21GiB debug incremental与约182MiB iOS中间目录，实际磁盘可用5.1→23GiB。保留release/当前deps/验收附件/源码，dev/test incremental=false防止反复堆积；后续只清仓库内不使用缓存，重建前检查空闲。

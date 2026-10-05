@@ -1,5 +1,6 @@
 //! Pure scientific/data callbacks share validated arguments and portable budgets.
 mod basics;
+mod calculus_registry;
 mod csv_data;
 mod data;
 mod data_number;
@@ -21,11 +22,18 @@ mod table_data;
 mod unit_parse;
 mod unit_registry;
 mod units;
+mod vector_calculus;
 use crate::{EvalError, Evaluator};
 use om_core::{BUILTIN as B, Expr, ExprKind, Interrupt, MsgLevel};
 use om_num::{Number, Rational};
 pub(crate) use registry::register;
 pub(crate) use special::is_machine_special;
+pub(crate) fn calculus_terminal(s: om_core::Symbol) -> bool {
+    matches!(
+        s.name(),
+        "Grad" | "Jacobian" | "Hessian" | "Divergence" | "Curl" | "Laplacian"
+    )
+}
 use std::collections::BTreeMap;
 pub(super) struct Args<'a> {
     pub values: Vec<&'a Expr>,
@@ -132,6 +140,9 @@ pub(super) fn dispatch(
     let result = (|| {
         ctx.tick()?;
         let args = Args::parse(name, args)?;
+        if let Some(result) = vector_calculus::dispatch(ev, name, &args, ctx)? {
+            return Ok(result);
+        }
         if let Some(result) = reflection::dispatch(ev, name, &args, ctx)? {
             return Ok(result);
         }

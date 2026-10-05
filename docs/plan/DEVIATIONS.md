@@ -1,5 +1,9 @@
 # 实施裁决
 
+- **P131 — 构建缓存空间约束（2026-10-06）：** 用户把及时清理无用构建缓存加入活动目标；清理仅本仓库。构建/测试已确认停止后删除target/debug/incremental约21GiB与两个未使用iOS Intermediates.noindex，保留源码、release运行程序/安装产物、当前deps和验收证据，可用空间5.1→23GiB（目录大小与实际释放量区分）。profile.dev/test incremental=false，后续避免每次core目录变化累积大量增量缓存；不改变优化/断言/溢出政策。资源策略由manifest metadata确认，数学批次原973Rust已验证，不为清理单独写镜像测试。本机不运行模拟器。
+
+- **P130 — 笛卡尔微分算子与真实局部求导（2026-10-06，已验证）：** Grad/Jacobian/Hessian/Divergence/Curl/Laplacian六真回调保持参数；坐标1..64互异用户符号，readonly局部化展开源码，拒绝间接写入并恢复全局绑定，复用原真实求导器。Grad/Hessian/Laplacian标量、Jacobian向量行/坐标列、Div维度匹配、Curl仅3D；未知函数保持形式导数。补Erf/Erfc及实主值反双曲/实立方根链式规则，保护原分支成立范围，不声称全坐标/单位/符号Gamma求导。curl(grad)和div(curl)独立恒等式、解析矩阵/形状/变量/预算验证；接口不依赖Agent框架/unsafe/新包。
+
 - **P129 — 实立方根/主值根与diag矩阵路径（2026-10-05，已验证）：** 审计发现旧cbrt只有名字映射/编译数值路径，补真实CubeRoot回调，实负数取负根；精确完美立方/有理数、未完美根式、机器及原有高精度包围近似均按分支保持，符号保留。新增NthRoot为正整数1..4096 principal主值，与Root认证代数数及旧root语法不混用；其他分支拒绝。diag一维列表保持原构造，二维矩形提取最短轴对角并保留元素（≤64×64），不把矩阵当成向量构造嵌套假矩阵。不支持块矩阵/多层张量隐式构造。稳定ID137/138只追加回调，原53/Root/root行为不改，无依赖/unsafe。NthRoot在held resolver降为保留raw radicand的Power，先记录原极点；重复/非法Branch仍拒绝，绘图真实采样复用该路径。
 
 - **P128 — 审计帮助、规划浏览与真实内核能力（2026-10-05，已验证）：** 四个真实Help/Options/Functions/Capabilities回调，共用functions.toml生成的当前runtime与独立documentation索引；稳定ID不变。help/options保持名称不执行，查询名可为文字或符号（安全读取文字ownvalue），被用户绑定遮蔽的名字明确诊断；实际选项是runtime ParameterSchema，目标文档参数另标注为不可执行说明。functions默认只实际回调身份，planned/deferred仅文档浏览；capabilities仅内核版本/身份/计算平台，没有宿主/授权上下文时两者为Null，不安装Agent框架或开放Notebook工具。索引只读静态生成、无运行文件/网络依赖，真实Interrupt贯穿筛选/数据转换；新文档索引不加入可执行补全。

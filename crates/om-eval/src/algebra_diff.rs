@@ -99,6 +99,28 @@ fn chain(e: &Expr, d: &[Expr], x: &Expr) -> Expr {
                 ),
                 Some(B::ARCTANH) => div(one, add([Expr::int(1), neg(square)])),
                 Some(B::PRODUCT_LOG) => div(e.clone(), mul([z, add([Expr::int(1), e.clone()])])),
+                Some(h) if matches!(h.name(), "Erf" | "Erfc") => {
+                    let factor = div(
+                        mul([Expr::int(2), unary(B::EXP, neg(square))]),
+                        sqrt(Expr::sym(B::PI)),
+                    );
+                    if h.name() == "Erfc" {
+                        neg(factor)
+                    } else {
+                        factor
+                    }
+                }
+                Some(h) if h.name() == "ArcCoth" => div(one, add([Expr::int(1), neg(square)])),
+                Some(h) if h.name() == "ArcSech" => {
+                    neg(div(one, mul([z, sqrt(add([Expr::int(1), neg(square)]))])))
+                }
+                Some(h) if h.name() == "ArcCsch" => neg(div(
+                    one,
+                    mul([unary(B::ABS, z), sqrt(add([Expr::int(1), square]))]),
+                )),
+                Some(h) if h.name() == "CubeRoot" => {
+                    div(one, mul([Expr::int(3), pow(e.clone(), Expr::int(2))]))
+                }
                 _ => return formal(e, d, x),
             };
             mul([factor, d[0].clone()])

@@ -126,7 +126,10 @@ pub(super) fn parse(text: &str, header: bool, ctx: &Interrupt) -> Result<Expr, E
         [list(columns.clone()), list(records)],
     ))
 }
-fn entries<'a>(e: &'a Expr, ctx: &Interrupt) -> Result<BTreeMap<&'a str, &'a Expr>, EvalError> {
+pub(super) fn entries<'a>(
+    e: &'a Expr,
+    ctx: &Interrupt,
+) -> Result<BTreeMap<&'a str, &'a Expr>, EvalError> {
     if !e.is_head(B::RECORD) {
         return Err(error("表格数据行需要记录"));
     }

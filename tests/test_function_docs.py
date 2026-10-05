@@ -81,6 +81,13 @@ class FunctionDocsTests(unittest.TestCase):
         entry["tests"] = ["crates/om-eval/tests/scalars.rs#missing_catalog_test"]
         with self.assertRaises(ValueError):
             self.docs.validate(catalog)
+
+    def test_fixed_positional_arity_cannot_silently_omit_a_parameter(self):
+        catalog=copy.deepcopy(self.catalog)
+        entry=next(r for r in catalog['runtime'] if r['name']=='Slice')
+        entry['parameters'].pop()
+        with self.assertRaises(ValueError):
+            self.docs.validate(catalog)
         entry["tests"] = self.catalog["functions"][0]["tests"]
         entry["effect_class"] = "allow_everything"
         with self.assertRaises(ValueError):

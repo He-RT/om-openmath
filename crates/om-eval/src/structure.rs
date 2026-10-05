@@ -11,6 +11,14 @@ pub(crate) fn dispatch(
     ctx: &Interrupt,
 ) -> Result<Option<Expr>, EvalError> {
     ctx.tick()?;
+    if args.iter().any(|e| e.is_head(B::DATA_TABLE))
+        && matches!(
+            head.name(),
+            "Length" | "First" | "Last" | "Rest" | "Append" | "Map"
+        )
+    {
+        return crate::science::table_structure(ev, head.name(), args, ctx);
+    }
     Ok(match head.name() {
         "List" | "Function" | "Slot" | "Rule" | "Element" => None,
         "Part" => part(ev, args, ctx)?,

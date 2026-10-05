@@ -28,3 +28,21 @@ to_json({a: 1/10, b: true})
 DataTable 是只追加的受保护核心数据头，不是一个占位可执行函数，也不进入函数补全。`.omnb` 仍仅保存单元格源码，不增加缓存数据字段。当前通用表达式展示保留完整源式；R3.5 将提供专门表格结果、宿主文件保存与跨端操作。
 
 真实契约测试见 [data_io.rs](../../crates/om-eval/tests/data_io.rs)，覆盖 Unicode/代理对、重复键、完整引号、零行表头、极端十进制往返、原机器点值与中断。所有原 53 条数学期望保持不变。
+
+## 表格计算与访问
+
+`table.columns` 取列名，`table.rows` 取按表头整理的记录行，`table.列名` 返回该列的值列表。列名若为 `columns` 或 `rows`，通过 `table.rows` 中的记录访问对应列。此前开发版的数字下标 1/2 仍访问原始构造字段；行区间使用 `slice(table, 1..3)`。
+
+`length` 返回行数，`first`/`last` 返回记录。`filter`、`sort`、`sort_by`、`unique`、`take`、`drop`、`slice`、`rest` 和 `append` 保留表头，包括结果零行的情况；追加记录必须与列一致。`map` 返回映射结果的列表，`fold` 对记录行归约，`group_by` 的 values 为保留表头的子表格；`zip`/`flatten`/`reshape` 对记录行执行既有列表语义。
+
+表格同一行按表头归一字段顺序，重复行不会因字段书写顺序而被误分。普通同字段记录也可 `sort`，按首行字段顺序稳定比较，标量类型次序为数、文本、布尔、Null；数按实际有理点值比较，文本按字典序，false 在 true 前。复杂字段使用 `sort_by` 提供标量键。函数键每行执行一次，比较过程逐字段检查中断。
+
+```text
+let t = parse_csv("类别,值\nA,2\nB,1\nA,3\n")
+filter(t, fn(r) => r.类别 == "A")
+t.值 |> map(fn(x) => numeric(decimal(x))) |> mean()
+to_csv(sort_by(t, fn(r) => numeric(decimal(r.值))))
+group_by(t, fn(r) => r.类别)
+```
+
+表格语义、表头保留、字段归一、键仅执行一次及失败/取消验收见 [table_data.rs](../../crates/om-eval/tests/table_data.rs)。专门的 UI 表格仍待 R3.5。

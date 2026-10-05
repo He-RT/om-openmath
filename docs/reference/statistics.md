@@ -349,7 +349,7 @@ correlation([1,2,3],[2,4,6])
 
 频数统计
 
-- 当前支持：列表路径已实现；键/谓词为真实函数，每项仅执行一次；分组按首次出现顺序，结构相等决定归组，精确1与机器1.0区分。reshape维数≤8、总节点≤100000；长度/类型/形状错误及中断明确诊断。记录/表格列操作后续适配。
+- 当前支持：列表路径已实现；键/谓词为真实函数，每项仅执行一次；分组按首次出现顺序，结构相等决定归组，精确1与机器1.0区分。reshape维数≤8、总节点≤100000；长度/类型/形状错误及中断明确诊断。记录/表格列操作后续适配。 DataTable新增行语义，普通列表/表达式原行为保持；按列名读取列向量，columns/rows读取元数据。
 - 目标范围：拒绝空样本、非法数值、样本不足及零方差相关；分位数采用type7线性插值。
 - 返回：number_or_record
 - 精度：基础聚合可保留精确有理值；标准差/相关等机器路径明确标记。
@@ -394,9 +394,9 @@ counts(["a","b","a"])
 
 验收：独立数学期望、有效/无效参数、边界、预算、中断及声明的平台/精度测试；范围外不伪造成功。
 
-当前源码：[crates/om-eval/src/science/registry.rs](../../crates/om-eval/src/science/registry.rs)。
+当前源码：[crates/om-eval/src/science/registry.rs](../../crates/om-eval/src/science/registry.rs)、[crates/om-eval/src/science/table_data.rs](../../crates/om-eval/src/science/table_data.rs)。
 
-当前测试引用：[crates/om-eval/tests/science_basics.rs](../../crates/om-eval/tests/science_basics.rs)。
+当前测试引用：[crates/om-eval/tests/science_basics.rs](../../crates/om-eval/tests/science_basics.rs)、[crates/om-eval/tests/table_data.rs](../../crates/om-eval/tests/table_data.rs)。
 
 ## covariance
 

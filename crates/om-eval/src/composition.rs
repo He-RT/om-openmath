@@ -76,6 +76,9 @@ pub(crate) fn part(
     ctx: &Interrupt,
 ) -> Result<Option<Expr>, EvalError> {
     if let ExprKind::String(key) = index.kind() {
+        if value.is_head(B::DATA_TABLE) {
+            return crate::science::table_field(ev, value, key, ctx);
+        }
         if !value.is_head(B::RECORD) {
             return Ok(invalid(ev, "Part", "文字键索引需要记录。"));
         }

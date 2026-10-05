@@ -91,7 +91,7 @@
 
 在表达式末尾添加参数。
 
-- 当前支持：按真实注册签名与参数个数工作；未支持的表达式保持符号形式并给出已有诊断。
+- 当前支持：按真实注册签名与参数个数工作；未支持的表达式保持符号形式并给出已有诊断。 DataTable新增行语义，普通列表/表达式原行为保持；按列名读取列向量，columns/rows读取元数据。 行子集/排序/追加保留表头；记录缺字段或无效表格拒绝。
 - 目标范围：保留当前数学行为，补齐规范名称、结构化参数说明和统一元数据。
 - 返回：expression
 - 精度：结构操作保留输入数值类型；迭代、求值和替换继承现有数学/预算限制。
@@ -132,9 +132,9 @@ Append[f[a], b]
 
 验收：现有行为、参数拒绝、解析/格式往返、中断和独立数学期望保持不变；新签名另写正反例。
 
-当前源码：[crates/om-eval/src/structure_registry.rs](../../crates/om-eval/src/structure_registry.rs)。
+当前源码：[crates/om-eval/src/structure_registry.rs](../../crates/om-eval/src/structure_registry.rs)、[crates/om-eval/src/science/table_data.rs](../../crates/om-eval/src/science/table_data.rs)。
 
-当前测试引用：[crates/om-eval/tests/structure.rs](../../crates/om-eval/tests/structure.rs)。
+当前测试引用：[crates/om-eval/tests/structure.rs](../../crates/om-eval/tests/structure.rs)、[crates/om-eval/tests/table_data.rs](../../crates/om-eval/tests/table_data.rs)。
 
 ## apply
 
@@ -491,7 +491,7 @@ delete(...)  # 后续接口尚未锁定
 
 移除前/后片段
 
-- 当前支持：列表路径已实现；键/谓词为真实函数，每项仅执行一次；分组按首次出现顺序，结构相等决定归组，精确1与机器1.0区分。reshape维数≤8、总节点≤100000；长度/类型/形状错误及中断明确诊断。记录/表格列操作后续适配。
+- 当前支持：列表路径已实现；键/谓词为真实函数，每项仅执行一次；分组按首次出现顺序，结构相等决定归组，精确1与机器1.0区分。reshape维数≤8、总节点≤100000；长度/类型/形状错误及中断明确诊断。记录/表格列操作后续适配。 DataTable新增行语义，普通列表/表达式原行为保持；按列名读取列向量，columns/rows读取元数据。 行子集/排序/追加保留表头；记录缺字段或无效表格拒绝。
 - 目标范围：列表/记录与基础表格；索引1起始、形状与长度严格检查，zip不默默截断不等长输入。
 - 返回：expression
 - 精度：保留输入精度。
@@ -537,9 +537,9 @@ drop([1,2,3],1)
 
 验收：独立数学期望、有效/无效参数、边界、预算、中断及声明的平台/精度测试；范围外不伪造成功。
 
-当前源码：[crates/om-eval/src/science/registry.rs](../../crates/om-eval/src/science/registry.rs)。
+当前源码：[crates/om-eval/src/science/registry.rs](../../crates/om-eval/src/science/registry.rs)、[crates/om-eval/src/science/table_data.rs](../../crates/om-eval/src/science/table_data.rs)。
 
-当前测试引用：[crates/om-eval/tests/science_basics.rs](../../crates/om-eval/tests/science_basics.rs)。
+当前测试引用：[crates/om-eval/tests/science_basics.rs](../../crates/om-eval/tests/science_basics.rs)、[crates/om-eval/tests/table_data.rs](../../crates/om-eval/tests/table_data.rs)。
 
 ## filter
 
@@ -550,7 +550,7 @@ drop([1,2,3],1)
 
 筛选
 
-- 当前支持：列表路径已实现；键/谓词为真实函数，每项仅执行一次；分组按首次出现顺序，结构相等决定归组，精确1与机器1.0区分。reshape维数≤8、总节点≤100000；长度/类型/形状错误及中断明确诊断。记录/表格列操作后续适配。
+- 当前支持：列表路径已实现；键/谓词为真实函数，每项仅执行一次；分组按首次出现顺序，结构相等决定归组，精确1与机器1.0区分。reshape维数≤8、总节点≤100000；长度/类型/形状错误及中断明确诊断。记录/表格列操作后续适配。 DataTable新增行语义，普通列表/表达式原行为保持；按列名读取列向量，columns/rows读取元数据。 行子集/排序/追加保留表头；记录缺字段或无效表格拒绝。
 - 目标范围：列表/记录与基础表格；索引1起始、形状与长度严格检查，zip不默默截断不等长输入。
 - 返回：expression
 - 精度：保留输入精度。
@@ -596,9 +596,9 @@ Filter[{1,2,3},Function[x,x>1]]
 
 验收：独立数学期望、有效/无效参数、边界、预算、中断及声明的平台/精度测试；范围外不伪造成功。
 
-当前源码：[crates/om-eval/src/science/registry.rs](../../crates/om-eval/src/science/registry.rs)。
+当前源码：[crates/om-eval/src/science/registry.rs](../../crates/om-eval/src/science/registry.rs)、[crates/om-eval/src/science/table_data.rs](../../crates/om-eval/src/science/table_data.rs)。
 
-当前测试引用：[crates/om-eval/tests/science_basics.rs](../../crates/om-eval/tests/science_basics.rs)。
+当前测试引用：[crates/om-eval/tests/science_basics.rs](../../crates/om-eval/tests/science_basics.rs)、[crates/om-eval/tests/table_data.rs](../../crates/om-eval/tests/table_data.rs)。
 
 ## first
 
@@ -609,7 +609,7 @@ Filter[{1,2,3},Function[x,x>1]]
 
 返回首个参数。
 
-- 当前支持：按真实注册签名与参数个数工作；未支持的表达式保持符号形式并给出已有诊断。
+- 当前支持：按真实注册签名与参数个数工作；未支持的表达式保持符号形式并给出已有诊断。 DataTable新增行语义，普通列表/表达式原行为保持；按列名读取列向量，columns/rows读取元数据。 表格Length为行数，First/Last为首尾记录。
 - 目标范围：保留当前数学行为，补齐规范名称、结构化参数说明和统一元数据。
 - 返回：expression
 - 精度：结构操作保留输入数值类型；迭代、求值和替换继承现有数学/预算限制。
@@ -649,9 +649,9 @@ First[f[a, b]]
 
 验收：现有行为、参数拒绝、解析/格式往返、中断和独立数学期望保持不变；新签名另写正反例。
 
-当前源码：[crates/om-eval/src/structure_registry.rs](../../crates/om-eval/src/structure_registry.rs)。
+当前源码：[crates/om-eval/src/structure_registry.rs](../../crates/om-eval/src/structure_registry.rs)、[crates/om-eval/src/science/table_data.rs](../../crates/om-eval/src/science/table_data.rs)。
 
-当前测试引用：[crates/om-eval/tests/structure.rs](../../crates/om-eval/tests/structure.rs)。
+当前测试引用：[crates/om-eval/tests/structure.rs](../../crates/om-eval/tests/structure.rs)、[crates/om-eval/tests/table_data.rs](../../crates/om-eval/tests/table_data.rs)。
 
 ## fixed_point
 
@@ -730,7 +730,7 @@ fixed_point_list(...)  # 后续接口尚未锁定
 
 展开嵌套
 
-- 当前支持：列表路径已实现；键/谓词为真实函数，每项仅执行一次；分组按首次出现顺序，结构相等决定归组，精确1与机器1.0区分。reshape维数≤8、总节点≤100000；长度/类型/形状错误及中断明确诊断。记录/表格列操作后续适配。
+- 当前支持：列表路径已实现；键/谓词为真实函数，每项仅执行一次；分组按首次出现顺序，结构相等决定归组，精确1与机器1.0区分。reshape维数≤8、总节点≤100000；长度/类型/形状错误及中断明确诊断。记录/表格列操作后续适配。 DataTable新增行语义，普通列表/表达式原行为保持；按列名读取列向量，columns/rows读取元数据。 表格以记录行为输入，输出普通列表/表达式。
 - 目标范围：列表/记录与基础表格；索引1起始、形状与长度严格检查，zip不默默截断不等长输入。
 - 返回：expression
 - 精度：保留输入精度。
@@ -776,9 +776,9 @@ flatten([[1,2],[3]])
 
 验收：独立数学期望、有效/无效参数、边界、预算、中断及声明的平台/精度测试；范围外不伪造成功。
 
-当前源码：[crates/om-eval/src/science/registry.rs](../../crates/om-eval/src/science/registry.rs)。
+当前源码：[crates/om-eval/src/science/registry.rs](../../crates/om-eval/src/science/registry.rs)、[crates/om-eval/src/science/table_data.rs](../../crates/om-eval/src/science/table_data.rs)。
 
-当前测试引用：[crates/om-eval/tests/science_basics.rs](../../crates/om-eval/tests/science_basics.rs)。
+当前测试引用：[crates/om-eval/tests/science_basics.rs](../../crates/om-eval/tests/science_basics.rs)、[crates/om-eval/tests/table_data.rs](../../crates/om-eval/tests/table_data.rs)。
 
 ## flatten_at
 
@@ -823,7 +823,7 @@ flatten_at(...)  # 后续接口尚未锁定
 
 累积归约
 
-- 当前支持：列表路径已实现；键/谓词为真实函数，每项仅执行一次；分组按首次出现顺序，结构相等决定归组，精确1与机器1.0区分。reshape维数≤8、总节点≤100000；长度/类型/形状错误及中断明确诊断。记录/表格列操作后续适配。
+- 当前支持：列表路径已实现；键/谓词为真实函数，每项仅执行一次；分组按首次出现顺序，结构相等决定归组，精确1与机器1.0区分。reshape维数≤8、总节点≤100000；长度/类型/形状错误及中断明确诊断。记录/表格列操作后续适配。 DataTable新增行语义，普通列表/表达式原行为保持；按列名读取列向量，columns/rows读取元数据。 表格按记录行进行真实归约。
 - 目标范围：列表/记录与基础表格；索引1起始、形状与长度严格检查，zip不默默截断不等长输入。
 - 返回：expression
 - 精度：保留输入精度。
@@ -870,9 +870,9 @@ Fold[Plus,0,{1,2,3}]
 
 验收：独立数学期望、有效/无效参数、边界、预算、中断及声明的平台/精度测试；范围外不伪造成功。
 
-当前源码：[crates/om-eval/src/science/registry.rs](../../crates/om-eval/src/science/registry.rs)。
+当前源码：[crates/om-eval/src/science/registry.rs](../../crates/om-eval/src/science/registry.rs)、[crates/om-eval/src/science/table_data.rs](../../crates/om-eval/src/science/table_data.rs)。
 
-当前测试引用：[crates/om-eval/tests/science_basics.rs](../../crates/om-eval/tests/science_basics.rs)。
+当前测试引用：[crates/om-eval/tests/science_basics.rs](../../crates/om-eval/tests/science_basics.rs)、[crates/om-eval/tests/table_data.rs](../../crates/om-eval/tests/table_data.rs)。
 
 ## fold_list
 
@@ -985,7 +985,7 @@ gather_by(...)  # 后续接口尚未锁定
 
 按键分组
 
-- 当前支持：列表路径已实现；键/谓词为真实函数，每项仅执行一次；分组按首次出现顺序，结构相等决定归组，精确1与机器1.0区分。reshape维数≤8、总节点≤100000；长度/类型/形状错误及中断明确诊断。记录/表格列操作后续适配。
+- 当前支持：列表路径已实现；键/谓词为真实函数，每项仅执行一次；分组按首次出现顺序，结构相等决定归组，精确1与机器1.0区分。reshape维数≤8、总节点≤100000；长度/类型/形状错误及中断明确诊断。记录/表格列操作后续适配。 DataTable新增行语义，普通列表/表达式原行为保持；按列名读取列向量，columns/rows读取元数据。 表格分组的values保留子表格；列表分组原形状保持。
 - 目标范围：列表/记录与基础表格；索引1起始、形状与长度严格检查，zip不默默截断不等长输入。
 - 返回：expression
 - 精度：保留输入精度。
@@ -1031,9 +1031,9 @@ group_by([1,2,3,4],fn(x) => mod(x,2))
 
 验收：独立数学期望、有效/无效参数、边界、预算、中断及声明的平台/精度测试；范围外不伪造成功。
 
-当前源码：[crates/om-eval/src/science/registry.rs](../../crates/om-eval/src/science/registry.rs)。
+当前源码：[crates/om-eval/src/science/registry.rs](../../crates/om-eval/src/science/registry.rs)、[crates/om-eval/src/science/table_data.rs](../../crates/om-eval/src/science/table_data.rs)。
 
-当前测试引用：[crates/om-eval/tests/science_basics.rs](../../crates/om-eval/tests/science_basics.rs)。
+当前测试引用：[crates/om-eval/tests/science_basics.rs](../../crates/om-eval/tests/science_basics.rs)、[crates/om-eval/tests/table_data.rs](../../crates/om-eval/tests/table_data.rs)。
 
 ## insert
 
@@ -1384,7 +1384,7 @@ keys(...)  # 后续接口尚未锁定
 
 返回末个参数。
 
-- 当前支持：按真实注册签名与参数个数工作；未支持的表达式保持符号形式并给出已有诊断。
+- 当前支持：按真实注册签名与参数个数工作；未支持的表达式保持符号形式并给出已有诊断。 DataTable新增行语义，普通列表/表达式原行为保持；按列名读取列向量，columns/rows读取元数据。 表格Length为行数，First/Last为首尾记录。
 - 目标范围：保留当前数学行为，补齐规范名称、结构化参数说明和统一元数据。
 - 返回：expression
 - 精度：结构操作保留输入数值类型；迭代、求值和替换继承现有数学/预算限制。
@@ -1424,9 +1424,9 @@ Last[f[a, b]]
 
 验收：现有行为、参数拒绝、解析/格式往返、中断和独立数学期望保持不变；新签名另写正反例。
 
-当前源码：[crates/om-eval/src/structure_registry.rs](../../crates/om-eval/src/structure_registry.rs)。
+当前源码：[crates/om-eval/src/structure_registry.rs](../../crates/om-eval/src/structure_registry.rs)、[crates/om-eval/src/science/table_data.rs](../../crates/om-eval/src/science/table_data.rs)。
 
-当前测试引用：[crates/om-eval/tests/structure.rs](../../crates/om-eval/tests/structure.rs)。
+当前测试引用：[crates/om-eval/tests/structure.rs](../../crates/om-eval/tests/structure.rs)、[crates/om-eval/tests/table_data.rs](../../crates/om-eval/tests/table_data.rs)。
 
 ## len
 
@@ -1577,7 +1577,7 @@ lookup(...)  # 后续接口尚未锁定
 
 对直接参数逐个应用函数。
 
-- 当前支持：按真实注册签名与参数个数工作；未支持的表达式保持符号形式并给出已有诊断。
+- 当前支持：按真实注册签名与参数个数工作；未支持的表达式保持符号形式并给出已有诊断。 DataTable新增行语义，普通列表/表达式原行为保持；按列名读取列向量，columns/rows读取元数据。 表格以记录行为输入，输出普通列表/表达式。
 - 目标范围：保留当前数学行为，补齐规范名称、结构化参数说明和统一元数据。
 - 返回：expression
 - 精度：结构操作保留输入数值类型；迭代、求值和替换继承现有数学/预算限制。
@@ -1618,9 +1618,9 @@ Map[f, g[a, b]]
 
 验收：现有行为、参数拒绝、解析/格式往返、中断和独立数学期望保持不变；新签名另写正反例。
 
-当前源码：[crates/om-eval/src/structure_registry.rs](../../crates/om-eval/src/structure_registry.rs)。
+当前源码：[crates/om-eval/src/structure_registry.rs](../../crates/om-eval/src/structure_registry.rs)、[crates/om-eval/src/science/table_data.rs](../../crates/om-eval/src/science/table_data.rs)。
 
-当前测试引用：[crates/om-eval/tests/structure.rs](../../crates/om-eval/tests/structure.rs)。
+当前测试引用：[crates/om-eval/tests/structure.rs](../../crates/om-eval/tests/structure.rs)、[crates/om-eval/tests/table_data.rs](../../crates/om-eval/tests/table_data.rs)。
 
 ## map_all
 
@@ -2351,7 +2351,7 @@ replace_part(...)  # 后续接口尚未锁定
 
 重塑矩形数组
 
-- 当前支持：列表路径已实现；键/谓词为真实函数，每项仅执行一次；分组按首次出现顺序，结构相等决定归组，精确1与机器1.0区分。reshape维数≤8、总节点≤100000；长度/类型/形状错误及中断明确诊断。记录/表格列操作后续适配。
+- 当前支持：列表路径已实现；键/谓词为真实函数，每项仅执行一次；分组按首次出现顺序，结构相等决定归组，精确1与机器1.0区分。reshape维数≤8、总节点≤100000；长度/类型/形状错误及中断明确诊断。记录/表格列操作后续适配。 DataTable新增行语义，普通列表/表达式原行为保持；按列名读取列向量，columns/rows读取元数据。 表格以记录行为输入，输出普通列表/表达式。
 - 目标范围：列表/记录与基础表格；索引1起始、形状与长度严格检查，zip不默默截断不等长输入。
 - 返回：expression
 - 精度：保留输入精度。
@@ -2397,9 +2397,9 @@ reshape([1,2,3,4],[2,2])
 
 验收：独立数学期望、有效/无效参数、边界、预算、中断及声明的平台/精度测试；范围外不伪造成功。
 
-当前源码：[crates/om-eval/src/science/registry.rs](../../crates/om-eval/src/science/registry.rs)。
+当前源码：[crates/om-eval/src/science/registry.rs](../../crates/om-eval/src/science/registry.rs)、[crates/om-eval/src/science/table_data.rs](../../crates/om-eval/src/science/table_data.rs)。
 
-当前测试引用：[crates/om-eval/tests/science_basics.rs](../../crates/om-eval/tests/science_basics.rs)。
+当前测试引用：[crates/om-eval/tests/science_basics.rs](../../crates/om-eval/tests/science_basics.rs)、[crates/om-eval/tests/table_data.rs](../../crates/om-eval/tests/table_data.rs)。
 
 ## rest
 
@@ -2410,7 +2410,7 @@ reshape([1,2,3,4],[2,2])
 
 移除首个参数并保留头。
 
-- 当前支持：按真实注册签名与参数个数工作；未支持的表达式保持符号形式并给出已有诊断。
+- 当前支持：按真实注册签名与参数个数工作；未支持的表达式保持符号形式并给出已有诊断。 DataTable新增行语义，普通列表/表达式原行为保持；按列名读取列向量，columns/rows读取元数据。 行子集/排序/追加保留表头；记录缺字段或无效表格拒绝。
 - 目标范围：保留当前数学行为，补齐规范名称、结构化参数说明和统一元数据。
 - 返回：expression
 - 精度：结构操作保留输入数值类型；迭代、求值和替换继承现有数学/预算限制。
@@ -2450,9 +2450,9 @@ Rest[f[a, b]]
 
 验收：现有行为、参数拒绝、解析/格式往返、中断和独立数学期望保持不变；新签名另写正反例。
 
-当前源码：[crates/om-eval/src/structure_registry.rs](../../crates/om-eval/src/structure_registry.rs)。
+当前源码：[crates/om-eval/src/structure_registry.rs](../../crates/om-eval/src/structure_registry.rs)、[crates/om-eval/src/science/table_data.rs](../../crates/om-eval/src/science/table_data.rs)。
 
-当前测试引用：[crates/om-eval/tests/structure.rs](../../crates/om-eval/tests/structure.rs)。
+当前测试引用：[crates/om-eval/tests/structure.rs](../../crates/om-eval/tests/structure.rs)、[crates/om-eval/tests/table_data.rs](../../crates/om-eval/tests/table_data.rs)。
 
 ## scan
 
@@ -2497,7 +2497,7 @@ scan(...)  # 后续接口尚未锁定
 
 1起始闭区间切片
 
-- 当前支持：列表路径已实现；键/谓词为真实函数，每项仅执行一次；分组按首次出现顺序，结构相等决定归组，精确1与机器1.0区分。reshape维数≤8、总节点≤100000；长度/类型/形状错误及中断明确诊断。记录/表格列操作后续适配。
+- 当前支持：列表路径已实现；键/谓词为真实函数，每项仅执行一次；分组按首次出现顺序，结构相等决定归组，精确1与机器1.0区分。reshape维数≤8、总节点≤100000；长度/类型/形状错误及中断明确诊断。记录/表格列操作后续适配。 DataTable新增行语义，普通列表/表达式原行为保持；按列名读取列向量，columns/rows读取元数据。 行子集/排序/追加保留表头；记录缺字段或无效表格拒绝。
 - 目标范围：列表/记录与基础表格；索引1起始、形状与长度严格检查，zip不默默截断不等长输入。
 - 返回：expression
 - 精度：保留输入精度。
@@ -2542,9 +2542,9 @@ Slice[{1,2,3},Span[1,2]]
 
 验收：独立数学期望、有效/无效参数、边界、预算、中断及声明的平台/精度测试；范围外不伪造成功。
 
-当前源码：[crates/om-eval/src/science/registry.rs](../../crates/om-eval/src/science/registry.rs)。
+当前源码：[crates/om-eval/src/science/registry.rs](../../crates/om-eval/src/science/registry.rs)、[crates/om-eval/src/science/table_data.rs](../../crates/om-eval/src/science/table_data.rs)。
 
-当前测试引用：[crates/om-eval/tests/science_basics.rs](../../crates/om-eval/tests/science_basics.rs)。
+当前测试引用：[crates/om-eval/tests/science_basics.rs](../../crates/om-eval/tests/science_basics.rs)、[crates/om-eval/tests/table_data.rs](../../crates/om-eval/tests/table_data.rs)。
 
 ## sort
 
@@ -2555,7 +2555,7 @@ Slice[{1,2,3},Span[1,2]]
 
 确定性排序
 
-- 当前支持：列表路径已实现；键/谓词为真实函数，每项仅执行一次；分组按首次出现顺序，结构相等决定归组，精确1与机器1.0区分。reshape维数≤8、总节点≤100000；长度/类型/形状错误及中断明确诊断。记录/表格列操作后续适配。
+- 当前支持：列表路径已实现；键/谓词为真实函数，每项仅执行一次；分组按首次出现顺序，结构相等决定归组，精确1与机器1.0区分。reshape维数≤8、总节点≤100000；长度/类型/形状错误及中断明确诊断。记录/表格列操作后续适配。 DataTable新增行语义，普通列表/表达式原行为保持；按列名读取列向量，columns/rows读取元数据。 行子集/排序/追加保留表头；记录缺字段或无效表格拒绝。 同字段记录按首行字段顺序稳定排序；每个标量字段次序为数<文本<布尔<Null，复杂键需显式投影。
 - 目标范围：列表/记录与基础表格；索引1起始、形状与长度严格检查，zip不默默截断不等长输入。
 - 返回：expression
 - 精度：保留输入精度。
@@ -2600,9 +2600,9 @@ sort([3,1,2])
 
 验收：独立数学期望、有效/无效参数、边界、预算、中断及声明的平台/精度测试；范围外不伪造成功。
 
-当前源码：[crates/om-eval/src/science/registry.rs](../../crates/om-eval/src/science/registry.rs)。
+当前源码：[crates/om-eval/src/science/registry.rs](../../crates/om-eval/src/science/registry.rs)、[crates/om-eval/src/science/table_data.rs](../../crates/om-eval/src/science/table_data.rs)。
 
-当前测试引用：[crates/om-eval/tests/science_basics.rs](../../crates/om-eval/tests/science_basics.rs)。
+当前测试引用：[crates/om-eval/tests/science_basics.rs](../../crates/om-eval/tests/science_basics.rs)、[crates/om-eval/tests/table_data.rs](../../crates/om-eval/tests/table_data.rs)。
 
 ## sort_by
 
@@ -2613,7 +2613,7 @@ sort([3,1,2])
 
 按键排序
 
-- 当前支持：列表路径已实现；键/谓词为真实函数，每项仅执行一次；分组按首次出现顺序，结构相等决定归组，精确1与机器1.0区分。reshape维数≤8、总节点≤100000；长度/类型/形状错误及中断明确诊断。记录/表格列操作后续适配。
+- 当前支持：列表路径已实现；键/谓词为真实函数，每项仅执行一次；分组按首次出现顺序，结构相等决定归组，精确1与机器1.0区分。reshape维数≤8、总节点≤100000；长度/类型/形状错误及中断明确诊断。记录/表格列操作后续适配。 DataTable新增行语义，普通列表/表达式原行为保持；按列名读取列向量，columns/rows读取元数据。 行子集/排序/追加保留表头；记录缺字段或无效表格拒绝。
 - 目标范围：列表/记录与基础表格；索引1起始、形状与长度严格检查，zip不默默截断不等长输入。
 - 返回：expression
 - 精度：保留输入精度。
@@ -2659,9 +2659,9 @@ sort_by([1,-3,2],fn(x) => abs(x))
 
 验收：独立数学期望、有效/无效参数、边界、预算、中断及声明的平台/精度测试；范围外不伪造成功。
 
-当前源码：[crates/om-eval/src/science/registry.rs](../../crates/om-eval/src/science/registry.rs)。
+当前源码：[crates/om-eval/src/science/registry.rs](../../crates/om-eval/src/science/registry.rs)、[crates/om-eval/src/science/table_data.rs](../../crates/om-eval/src/science/table_data.rs)。
 
-当前测试引用：[crates/om-eval/tests/science_basics.rs](../../crates/om-eval/tests/science_basics.rs)。
+当前测试引用：[crates/om-eval/tests/science_basics.rs](../../crates/om-eval/tests/science_basics.rs)、[crates/om-eval/tests/table_data.rs](../../crates/om-eval/tests/table_data.rs)。
 
 ## split
 
@@ -2848,7 +2848,7 @@ Table[a, {3}]
 
 取前/后片段
 
-- 当前支持：列表路径已实现；键/谓词为真实函数，每项仅执行一次；分组按首次出现顺序，结构相等决定归组，精确1与机器1.0区分。reshape维数≤8、总节点≤100000；长度/类型/形状错误及中断明确诊断。记录/表格列操作后续适配。
+- 当前支持：列表路径已实现；键/谓词为真实函数，每项仅执行一次；分组按首次出现顺序，结构相等决定归组，精确1与机器1.0区分。reshape维数≤8、总节点≤100000；长度/类型/形状错误及中断明确诊断。记录/表格列操作后续适配。 DataTable新增行语义，普通列表/表达式原行为保持；按列名读取列向量，columns/rows读取元数据。 行子集/排序/追加保留表头；记录缺字段或无效表格拒绝。
 - 目标范围：列表/记录与基础表格；索引1起始、形状与长度严格检查，zip不默默截断不等长输入。
 - 返回：expression
 - 精度：保留输入精度。
@@ -2894,9 +2894,9 @@ take([1,2,3],2)
 
 验收：独立数学期望、有效/无效参数、边界、预算、中断及声明的平台/精度测试；范围外不伪造成功。
 
-当前源码：[crates/om-eval/src/science/registry.rs](../../crates/om-eval/src/science/registry.rs)。
+当前源码：[crates/om-eval/src/science/registry.rs](../../crates/om-eval/src/science/registry.rs)、[crates/om-eval/src/science/table_data.rs](../../crates/om-eval/src/science/table_data.rs)。
 
-当前测试引用：[crates/om-eval/tests/science_basics.rs](../../crates/om-eval/tests/science_basics.rs)。
+当前测试引用：[crates/om-eval/tests/science_basics.rs](../../crates/om-eval/tests/science_basics.rs)、[crates/om-eval/tests/table_data.rs](../../crates/om-eval/tests/table_data.rs)。
 
 ## thread
 
@@ -3079,7 +3079,7 @@ union(...)  # 后续接口尚未锁定
 
 保留首次出现顺序去重
 
-- 当前支持：列表路径已实现；键/谓词为真实函数，每项仅执行一次；分组按首次出现顺序，结构相等决定归组，精确1与机器1.0区分。reshape维数≤8、总节点≤100000；长度/类型/形状错误及中断明确诊断。记录/表格列操作后续适配。
+- 当前支持：列表路径已实现；键/谓词为真实函数，每项仅执行一次；分组按首次出现顺序，结构相等决定归组，精确1与机器1.0区分。reshape维数≤8、总节点≤100000；长度/类型/形状错误及中断明确诊断。记录/表格列操作后续适配。 DataTable新增行语义，普通列表/表达式原行为保持；按列名读取列向量，columns/rows读取元数据。 行子集/排序/追加保留表头；记录缺字段或无效表格拒绝。
 - 目标范围：列表/记录与基础表格；索引1起始、形状与长度严格检查，zip不默默截断不等长输入。
 - 返回：expression
 - 精度：保留输入精度。
@@ -3124,9 +3124,9 @@ unique([1,2,1])
 
 验收：独立数学期望、有效/无效参数、边界、预算、中断及声明的平台/精度测试；范围外不伪造成功。
 
-当前源码：[crates/om-eval/src/science/registry.rs](../../crates/om-eval/src/science/registry.rs)。
+当前源码：[crates/om-eval/src/science/registry.rs](../../crates/om-eval/src/science/registry.rs)、[crates/om-eval/src/science/table_data.rs](../../crates/om-eval/src/science/table_data.rs)。
 
-当前测试引用：[crates/om-eval/tests/science_basics.rs](../../crates/om-eval/tests/science_basics.rs)。
+当前测试引用：[crates/om-eval/tests/science_basics.rs](../../crates/om-eval/tests/science_basics.rs)、[crates/om-eval/tests/table_data.rs](../../crates/om-eval/tests/table_data.rs)。
 
 ## values
 
@@ -3171,7 +3171,7 @@ values(...)  # 后续接口尚未锁定
 
 逐项配对
 
-- 当前支持：列表路径已实现；键/谓词为真实函数，每项仅执行一次；分组按首次出现顺序，结构相等决定归组，精确1与机器1.0区分。reshape维数≤8、总节点≤100000；长度/类型/形状错误及中断明确诊断。记录/表格列操作后续适配。
+- 当前支持：列表路径已实现；键/谓词为真实函数，每项仅执行一次；分组按首次出现顺序，结构相等决定归组，精确1与机器1.0区分。reshape维数≤8、总节点≤100000；长度/类型/形状错误及中断明确诊断。记录/表格列操作后续适配。 DataTable新增行语义，普通列表/表达式原行为保持；按列名读取列向量，columns/rows读取元数据。 表格以记录行为输入，输出普通列表/表达式。
 - 目标范围：列表/记录与基础表格；索引1起始、形状与长度严格检查，zip不默默截断不等长输入。
 - 返回：expression
 - 精度：保留输入精度。
@@ -3216,6 +3216,6 @@ zip([1,2],[3,4])
 
 验收：独立数学期望、有效/无效参数、边界、预算、中断及声明的平台/精度测试；范围外不伪造成功。
 
-当前源码：[crates/om-eval/src/science/registry.rs](../../crates/om-eval/src/science/registry.rs)。
+当前源码：[crates/om-eval/src/science/registry.rs](../../crates/om-eval/src/science/registry.rs)、[crates/om-eval/src/science/table_data.rs](../../crates/om-eval/src/science/table_data.rs)。
 
-当前测试引用：[crates/om-eval/tests/science_basics.rs](../../crates/om-eval/tests/science_basics.rs)。
+当前测试引用：[crates/om-eval/tests/science_basics.rs](../../crates/om-eval/tests/science_basics.rs)、[crates/om-eval/tests/table_data.rs](../../crates/om-eval/tests/table_data.rs)。

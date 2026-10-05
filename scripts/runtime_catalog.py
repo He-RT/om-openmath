@@ -21,6 +21,9 @@ def render_runtime(catalog: dict) -> dict[Path, str]:
             raise ValueError(f'{name} 保持属性无效')
         if r['min'] < 0 or r.get('max', r['min']) < r['min']:
             raise ValueError(f'{name} 参数个数无效')
+        if not r['options'] and not r.get('compatibility_syntax') and not any(p['variadic'] for p in r['parameters']):
+            if sum(p['required'] for p in r['parameters']) != r['min'] or len(r['parameters']) != r.get('max'):
+                raise ValueError(f'{name} 的固定位置参数描述与实际调用个数不一致')
         for alias in [r['modern_name']] + r['aliases']:
             if len(alias) < 2 or alias.lower() in aliases:
                 raise ValueError(f'别名重复或保留单字母：{alias}')

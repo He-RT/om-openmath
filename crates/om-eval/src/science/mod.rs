@@ -13,6 +13,7 @@ mod probability_registry;
 mod registry;
 mod special;
 mod statistics;
+mod table_data;
 use crate::{EvalError, Evaluator};
 use om_core::{BUILTIN as B, Expr, ExprKind, Interrupt, MsgLevel};
 use om_num::{Number, Rational};
@@ -133,6 +134,9 @@ pub(super) fn dispatch(
         if let Some(result) = io_registry::dispatch(name, &args, ctx)? {
             return Ok(result);
         }
+        if let Some(result) = table_data::dispatch(ev, name, &args, ctx)? {
+            return Ok(result);
+        }
         if let Some(result) = statistics::dispatch(ev, name, &args, ctx)? {
             return Ok(result);
         }
@@ -151,6 +155,39 @@ pub(super) fn dispatch(
         Ok(value) => Ok(Some(value)),
         Err(EvalError::Other(reason)) => {
             ev.message(name, "domain", reason, MsgLevel::Warning);
+            Ok(None)
+        }
+        Err(e) => Err(e),
+    }
+}
+pub(crate) fn table_structure(
+    ev: &mut Evaluator,
+    name: &str,
+    args: &[Expr],
+    ctx: &Interrupt,
+) -> Result<Option<Expr>, EvalError> {
+    let adapted = Args {
+        values: args.iter().collect(),
+        options: BTreeMap::new(),
+    };
+    match table_data::dispatch(ev, name, &adapted, ctx) {
+        Err(EvalError::Other(reason)) => {
+            ev.message(name, "shape", reason, MsgLevel::Warning);
+            Ok(None)
+        }
+        result => result,
+    }
+}
+pub(crate) fn table_field(
+    ev: &mut Evaluator,
+    value: &Expr,
+    key: &str,
+    ctx: &Interrupt,
+) -> Result<Option<Expr>, EvalError> {
+    match table_data::field(value, key, ctx) {
+        Ok(value) => Ok(Some(value)),
+        Err(EvalError::Other(reason)) => {
+            ev.message("Part", "shape", reason, MsgLevel::Warning);
             Ok(None)
         }
         Err(e) => Err(e),

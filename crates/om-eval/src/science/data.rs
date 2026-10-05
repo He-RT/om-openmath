@@ -15,6 +15,9 @@ fn count(e: &Expr) -> Result<i64, EvalError> {
     }
 }
 fn sorted(values: &[Expr], keys: &[Expr], ctx: &Interrupt) -> Result<Expr, EvalError> {
+    if !keys.is_empty() && keys.iter().all(|e| e.is_head(B::RECORD)) {
+        return super::table_data::record_sort(values, keys, ctx);
+    }
     let numeric = keys.iter().all(|e| e.as_number().is_some());
     let strings = keys.iter().all(|e| matches!(e.kind(), ExprKind::String(_)));
     if !numeric && !strings {

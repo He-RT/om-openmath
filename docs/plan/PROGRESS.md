@@ -156,3 +156,7 @@ R3.3d提交 `ceea0b5`；CI `37280109336` 的Rust/前端/依赖已通过，iOS因
 验证：`CARGO_PROFILE_TEST_OPT_LEVEL=2 CARGO_PROFILE_TEST_DEBUG_ASSERTIONS=true CARGO_PROFILE_TEST_OVERFLOW_CHECKS=true cargo test --workspace --locked`、全Clippy/fmt、纯WASM kernel、TS export无漂移、cargo-deny、Python15及目录生成检查；`npm run lint`/`npm test`/`npx tsc --noEmit`。数据边界、表格表达式与具体例见data-formats.md/P123。
 
 R3.3e提交 `5adb742`。随后P124减少Swift响应双遍JSON解码，验收附件增加真实排队/FFI/解码/恢复耗时；原1s断言未改。离线真实#18包平均1.323ms→0.613ms，误差/编码roundtrip与SDK27 ARM64 typecheck通过，generic iOS build-for-testing成功（没有运行测试或模拟器）。Rust手机桥接53与定向Clippy、Python15通过。此变更只减少约0.7ms本地解码，不宣称修复CI额外约1s；等待同SHA CI，依分段附件继续判断。剩余科研范围继续，目标不标完成。
+
+P124提交 `eb17b60` 的CI37296195523已全部通过，含原1s门禁。离线新附件：iPhone27全53最慢627.856ms，iPad27最慢417.355ms；原18分别72.725/69.384ms，内核70.720/67.523ms，排队约0.015/0.023ms、解码1.706/1.638ms、恢复0.033/0.022ms。原17为201.129/144.775ms。保留前次1306ms实际失败，不用当前成功声称前次约1s全部由双遍解码造成。
+
+- [x] **R3.3f 基础表格计算与固定参数契约** — 筛选/排序/去重/片段/追加保留表头，Map/Fold等对记录行真实计算，GroupBy保留子表格，字段rows/columns/列名查询实际行与列；数字1/2构造字段保持。字段按表头归一，同字段记录标量稳定字典序与比较中断，键仅求值一次；无效表格/字段/谓词拒绝。修复Slice真实第二必填range遗漏，生成器新增固定无选项位置参数数量契约，杜绝目录漏参。没有新占位/回调/依赖；201回调/196身份、描述9，运行时仍.2。最终955Rust/2ignored、前端59、Python16、fmt/全Clippy/纯WASM/TS导出/deny全通过，原53数学期望未变。下一任务SI单位与帮助查询，R3.4–R3.6/完整.3发行仍未完成。

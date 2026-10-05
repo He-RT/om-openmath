@@ -1,5 +1,7 @@
 # 实施裁决
 
+- **P125 — 原生表格行语义与目录个数契约（2026-10-05）：** DataTable的filter/sort/sort_by/unique/take/drop/slice/rest/append保留列；Map对记录行真实求值并返回List，Fold真实归约，GroupBy values为子表格，Zip/Flatten/Reshape以记录行输入并维持原列表结果语义，Length计行、First/Last取记录。字段columns/rows为元数据，其他列名返回向量；数字1/2仍访问原构造字段以保留此前dev源码约定，行范围用slice。表格按表头归一记录字段顺序，Unique/Counts不因字段书写顺序差异误分；同字段记录支持标量稳定字典序（数/文本/布尔/Null），复杂键明确拒绝并可使用sort_by。比较器内部也能传播真实Interrupt，保持排序全序不以取消改变比较结果。发现Slice回调2参但runtime参数表漏range；恢复真实必填range并新增固定无选项位置参数个数校验。无新回调/依赖/unsafe；描述9，201回调/196身份，应用仍.2。原53/旧列表行为保留，专门跨端表格展示仍待R3.5。
+
 - **P124 — iOS响应单次解码与性能分段（2026-10-05）：** CI37280109336原始#18总请求1306.042ms失败，但实际附件kernel timing151.867ms；#17总968.438ms/kernel261.776ms。不能归因为数学计算或放宽1s门槛。KernelClient原先把整包先解码成JSONValue检查bridge_error、再完整解码KernelPacket；改为KernelPacket只检查顶层bridge_error后一次解码response/events，缓冲仍defer恰好释放。新增仅Swift本地transportTiming（排队/FFI/解码/恢复），不进入Codable wire/.omnb，仅验收附件记录。真实#18桥接包5025bytes离线Foundation基准双遍1.323ms→单遍0.613ms，证明减少重复解码，不能据此宣称解释了CI额外约1s或通过移动门禁；需同SHA CI分段证据。原53与整次请求<1000ms断言保持。离线RED→GREEN桥接错误与wire往返、SDK27真机arm64类型检查、无签名generic iOS build-for-testing及原Rust桥接53/Clippy/Python通过，本机不启动模拟器。
 
 - **P123 — CSV/JSON纯数据与表格形状（2026-10-05，已验证）：** JSON仅RFC8259纯数据，整数与有限十进制直接精确有理（不制造高精度浮点），解码后重复键拒绝；字符串不执行源码。CSV字段保持字符串，默认header=true返回受保护DataTable[columns,records]，保留零数据行表头；header=false为矩形行列表。ToCSV支持表格/记录行/矩形标量行，ToJSON支持纯数据及表格columns/rows投影；非有限或非终止十进制有理数拒绝，原精度标签不属于数据格式。8MiB输入/输出、100000字段/数据节点、64层与20000十进制位/指数限制，真实中断贯穿。DataTable仅追加核心数据头，不伪注册函数；专门跨端表格展示留R3.5。复用白名单serde_json仅处理字符串转义，不新增外部包/unsafe；保留原53期望。

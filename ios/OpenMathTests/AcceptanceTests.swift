@@ -56,7 +56,11 @@ import XCTest
       }
       XCTAssertLessThan(ms, 1000, "Mobile non-slow row \(row["id"].string)")
       walk(output)
-      timings.append(.object(["id": row["id"], "ms": .number(ms), "output": output]))
+      timings.append(
+        .object([
+          "id": row["id"], "ms": .number(ms), "output": output,
+          "transport": packet.transportTiming?.json ?? .null,
+        ]))
       client.close()
     }
     let report = JSONValue.object([

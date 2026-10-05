@@ -79,6 +79,34 @@ struct Envelope: Codable, Sendable {
 struct KernelPacket: Codable, Sendable {
   var response: Envelope
   var events: [Envelope]
+  var transportTiming: KernelTransportTiming?
+  private enum CodingKeys: String, CodingKey { case response, events }
+  private enum BridgeKeys: String, CodingKey { case bridge_error }
+  init(from decoder: Decoder) throws {
+    let header = try decoder.container(keyedBy: BridgeKeys.self)
+    if let error = try header.decodeIfPresent(String.self, forKey: .bridge_error) {
+      throw KernelError.message(error)
+    }
+    let c = try decoder.container(keyedBy: CodingKeys.self)
+    response = try c.decode(Envelope.self, forKey: .response)
+    events = try c.decode([Envelope].self, forKey: .events)
+    transportTiming = nil
+  }
+}
+struct KernelTransportTiming: Sendable {
+  var queuedMS: Double
+  var ffiMS: Double
+  var decodeMS: Double
+  var resumeMS: Double = 0
+  var json: JSONValue {
+    .object([
+      "queued_ms": .number(queuedMS), "ffi_ms": .number(ffiMS), "decode_ms": .number(decodeMS),
+      "resume_ms": .number(resumeMS),
+    ])
+  }
+  static func milliseconds(_ duration: Duration) -> Double {
+    Double(duration.components.seconds) * 1000 + Double(duration.components.attoseconds) / 1e15
+  }
 }
 enum CellKind: String, Codable, Sendable, CaseIterable { case Math, Text, Ask }
 enum Dialect: String, Codable, Sendable, CaseIterable { case Modern, Wolfram, Auto }

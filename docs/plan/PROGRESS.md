@@ -154,3 +154,5 @@ R3.3d提交 `ceea0b5`；CI `37280109336` 的Rust/前端/依赖已通过，iOS因
 - [x] **R3.3e CSV/JSON纯数据** — 四个实际回调与DataTable受保护数据头、零行表头、UTF-8/转义/记录顺序、纯数据不执行源码、精确十进制及机器实际点往返、重复键/非法格式/超限与真实取消通过。CSV字段为字符串，专门宿主表格渲染留R3.5；原有decimal复用纯有理构造，原53期望不变。201注册名/196身份、描述8、应用仍.2。最终951Rust/2ignored、前端59/lint/typecheck、Python15、fmt/全Clippy/纯WASM/TS无漂移与deny通过；真实CLI能把中文CSV投影为JSON的columns/rows，无诊断。R3.3仍有SI单位、帮助查询和基础表格操作适配，后续科研/绘图/发行继续；发行目标保持完整.3。下一步先核对上批iOS性能证据再推进剩余R3.3，不放宽门禁。
 
 验证：`CARGO_PROFILE_TEST_OPT_LEVEL=2 CARGO_PROFILE_TEST_DEBUG_ASSERTIONS=true CARGO_PROFILE_TEST_OVERFLOW_CHECKS=true cargo test --workspace --locked`、全Clippy/fmt、纯WASM kernel、TS export无漂移、cargo-deny、Python15及目录生成检查；`npm run lint`/`npm test`/`npx tsc --noEmit`。数据边界、表格表达式与具体例见data-formats.md/P123。
+
+R3.3e提交 `5adb742`。随后P124减少Swift响应双遍JSON解码，验收附件增加真实排队/FFI/解码/恢复耗时；原1s断言未改。离线真实#18包平均1.323ms→0.613ms，误差/编码roundtrip与SDK27 ARM64 typecheck通过，generic iOS build-for-testing成功（没有运行测试或模拟器）。Rust手机桥接53与定向Clippy、Python15通过。此变更只减少约0.7ms本地解码，不宣称修复CI额外约1s；等待同SHA CI，依分段附件继续判断。剩余科研范围继续，目标不标完成。

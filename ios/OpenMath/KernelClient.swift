@@ -52,11 +52,6 @@ final class KernelClient: @unchecked Sendable {
     defer { om_ios_buffer_free(buffer) }
     guard let ptr = buffer.data, buffer.len > 0 else { throw KernelError.message("内核返回空缓冲区") }
     let data = Data(bytes: ptr, count: buffer.len)
-    if let error = try? JSONDecoder().decode(JSONValue.self, from: data),
-      !error["bridge_error"].isNull
-    {
-      throw KernelError.message(error["bridge_error"].string)
-    }
     let packet = try JSONDecoder().decode(KernelPacket.self, from: data)
     if packet.response.body["type"].string == "error" {
       throw KernelError.message(packet.response.body["message"].string)
@@ -67,9 +62,11 @@ final class KernelClient: @unchecked Sendable {
     allowCancelledResponse: Bool = false, _ operation: @escaping @Sendable () -> OmBuffer
   ) async throws -> KernelPacket {
     let cancellation = RequestCancellation()
+    let queuedAt = ContinuousClock.now
     return try await withTaskCancellationHandler {
       try await withCheckedThrowingContinuation { continuation in
         queue.async { [self] in
+          let startedAt = ContinuousClock.now
           do {
             guard cancellation.start() else { throw CancellationError() }
             lock.lock()
@@ -80,12 +77,19 @@ final class KernelClient: @unchecked Sendable {
               throw KernelError.message("内核已关闭")
             }
             let buffer = operation()
+            let completedAt = ContinuousClock.now
             let cancelled = cancellation.finish()
             if cancelled && !allowCancelledResponse {
               om_ios_buffer_free(buffer)
               throw CancellationError()
             }
-            continuation.resume(returning: try decode(buffer))
+            var packet = try decode(buffer)
+            let decodedAt = ContinuousClock.now
+            packet.transportTiming = KernelTransportTiming(
+              queuedMS: KernelTransportTiming.milliseconds(queuedAt.duration(to: startedAt)),
+              ffiMS: KernelTransportTiming.milliseconds(startedAt.duration(to: completedAt)),
+              decodeMS: KernelTransportTiming.milliseconds(completedAt.duration(to: decodedAt)))
+            continuation.resume(returning: packet)
           } catch { continuation.resume(throwing: error) }
         }
       }
@@ -96,11 +100,17 @@ final class KernelClient: @unchecked Sendable {
   func request(_ body: JSONValue) async throws -> KernelPacket {
     let id = try correlation()
     let bytes = try JSONEncoder().encode(Envelope(id: id, body: body))
-    let packet = try await perform(allowCancelledResponse: body["type"].string.hasPrefix("llm_")) {
+    let started = ContinuousClock.now
+    var packet = try await perform(allowCancelledResponse: body["type"].string.hasPrefix("llm_")) {
       [handle] in
       bytes.withUnsafeBytes {
         om_ios_request(handle, $0.bindMemory(to: UInt8.self).baseAddress, $0.count)
       }
+    }
+    let measured = KernelTransportTiming.milliseconds(started.duration(to: .now))
+    if var timing = packet.transportTiming {
+      timing.resumeMS = max(0, measured - timing.queuedMS - timing.ffiMS - timing.decodeMS)
+      packet.transportTiming = timing
     }
     guard packet.response.id == id else { throw KernelError.message("内核响应标识不匹配") }
     return packet

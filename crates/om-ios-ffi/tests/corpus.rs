@@ -12,6 +12,11 @@ fn mobile_bridge_matches_every_original_authority_row() {
         config.general.eval_timeout_ms = 120_000;
         let host = Host::new(Some(&serde_json::to_string(&config).unwrap())).unwrap();
         let packet: Value = serde_json::from_str(&host.request(&json!({"id":1,"body":{"type":"evaluate","cell_id":"test","source":case.input,"dialect":"Wolfram"}}).to_string()).unwrap()).unwrap();
+        if case.id == "18"
+            && let Ok(path) = std::env::var("OPENMATH_MOBILE_PACKET_AUDIT_PATH")
+        {
+            std::fs::write(path, serde_json::to_vec(&packet).unwrap()).unwrap();
+        }
         let output = &packet["response"]["body"]["output"];
         let source = output["items"]
             .as_array()

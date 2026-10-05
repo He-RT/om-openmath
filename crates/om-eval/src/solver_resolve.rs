@@ -159,6 +159,52 @@ pub(super) fn resolve(
                 } else if head.as_symbol().is_some_and(|h| h.name() == "Minus") && args.len() == 1 {
                     replacement = Some(Expr::call(B::TIMES, [Expr::int(-1), args[0].clone()]));
                 } else if let Some(h) = head.as_symbol() {
+                    if h.name() == "NthRoot" {
+                        let mut values = vec![];
+                        let mut branch = false;
+                        for arg in &args {
+                            if arg.is_head(B::RULE) && arg.args().len() == 2 {
+                                if branch {
+                                    return Err(EvalError::Other(
+                                        "NthRoot branch option is duplicated".into(),
+                                    ));
+                                }
+                                branch = true;
+                                if arg.args()[0]
+                                    .as_symbol()
+                                    .is_none_or(|s| s.name() != "Branch")
+                                    || !matches!(arg.args()[1].kind(),ExprKind::String(s) if &**s=="principal")
+                                {
+                                    return Err(EvalError::Other(
+                                        "NthRoot only supports the principal branch".into(),
+                                    ));
+                                }
+                            } else {
+                                values.push(arg);
+                            }
+                        }
+                        if values.len() != 2 {
+                            return Err(EvalError::Other(
+                                "NthRoot expects a value and degree".into(),
+                            ));
+                        }
+                        let Some(om_num::Number::Integer(n)) = values[1].as_number() else {
+                            return Err(EvalError::Other(
+                                "NthRoot degree must be a positive integer".into(),
+                            ));
+                        };
+                        let degree = u32::try_from(n)
+                            .ok()
+                            .filter(|n| (1..=4096).contains(n))
+                            .ok_or_else(|| {
+                                EvalError::Other("NthRoot degree must be in 1..4096".into())
+                            })?;
+                        // Keep the raw radicand until P0/P1 records its original exclusions.
+                        replacement = Some(Expr::call(
+                            B::POWER,
+                            [values[0].clone(), Expr::rational(1, i64::from(degree))],
+                        ));
+                    }
                     let rules = ev.defs.down.get(&h).cloned().unwrap_or_default();
                     for rule in rules {
                         let (lhs, rhs) = if rule.delayed

@@ -8049,22 +8049,35 @@
       "name": "cbrt",
       "category": "basics",
       "kind": "function",
-      "status": "planned",
-      "interface_status": "planned",
-      "runtime_names": [],
-      "compatibility_names": [],
-      "current_modern_signatures": [],
+      "status": "implemented",
+      "interface_status": "current",
+      "runtime_names": [
+        "CubeRoot"
+      ],
+      "compatibility_names": [
+        "CubeRoot"
+      ],
+      "current_modern_signatures": [
+        "cbrt(value)"
+      ],
       "signatures": [
         "cbrt(x)"
       ],
-      "current_support": "当前无此规范接口的实现。",
+      "current_support": "实数立方根：负实数为负，不返回复主值；完美立方精确，其他精确数保持根式，机器cbrt和已有高精度守护路径。符号输入保持CubeRoot。",
       "target_support": "精确可识别值及所声明实数机器路径；新调用注册尚未交付。",
       "return_type": "expression",
       "precision_modes": [
-        "planned_machine"
+        "exact",
+        "machine",
+        "arbitrary_supported"
       ],
-      "precision_notes": "精确值或明确的机器路径；precision/accuracy 查询输入已有信息。",
-      "current_platforms": [],
+      "precision_notes": "复用原有精确Power与受预算数值包围近似，保持所声明分支；不新增通用符号假设算法。",
+      "current_platforms": [
+        "cli",
+        "desktop",
+        "web",
+        "ios"
+      ],
       "target_platforms": [
         "cli",
         "desktop",
@@ -8077,35 +8090,48 @@
           "kind": "positional",
           "default": "必填",
           "description": "签名对应的x参数",
-          "availability": "r3"
+          "availability": "current"
         }
       ],
-      "current_examples": [],
-      "planned_examples": [
-        "cbrt(-8)"
-      ]
+      "current_examples": [
+        "CubeRoot[-8]"
+      ],
+      "planned_examples": []
     },
     {
       "id": "fn_000138",
       "name": "nth_root",
       "category": "basics",
       "kind": "function",
-      "status": "planned",
-      "interface_status": "planned",
-      "runtime_names": [],
-      "compatibility_names": [],
-      "current_modern_signatures": [],
+      "status": "implemented",
+      "interface_status": "current",
+      "runtime_names": [
+        "NthRoot"
+      ],
+      "compatibility_names": [
+        "NthRoot"
+      ],
+      "current_modern_signatures": [
+        "nth_root(value,degree,branch:\"principal\")"
+      ],
       "signatures": [
         "nth_root(x, degree, branch: \"principal\")"
       ],
-      "current_support": "当前无此规范接口的实现。",
+      "current_support": "1..4096正整数阶的principal主值根，精确构造/符号Power及已有机器/高精度路径；与实数cbrt、认证Root分开。branch其他模式/非法degree拒绝；旧root/Root语义不改。",
       "target_support": "精确可识别值及所声明实数机器路径；新调用注册尚未交付。",
       "return_type": "expression",
       "precision_modes": [
-        "planned_machine"
+        "exact",
+        "machine",
+        "arbitrary_supported"
       ],
-      "precision_notes": "精确值或明确的机器路径；precision/accuracy 查询输入已有信息。",
-      "current_platforms": [],
+      "precision_notes": "复用原有精确Power与受预算数值包围近似，保持所声明分支；不新增通用符号假设算法。",
+      "current_platforms": [
+        "cli",
+        "desktop",
+        "web",
+        "ios"
+      ],
       "target_platforms": [
         "cli",
         "desktop",
@@ -8118,27 +8144,27 @@
           "kind": "positional",
           "default": "必填",
           "description": "签名对应的x参数",
-          "availability": "r3"
+          "availability": "current"
         },
         {
           "name": "degree",
           "kind": "positional",
           "default": "必填",
           "description": "签名对应的degree参数",
-          "availability": "r3"
+          "availability": "current"
         },
         {
           "name": "branch",
           "kind": "option",
           "default": "\"principal\"",
           "description": "签名对应的branch参数",
-          "availability": "r3"
+          "availability": "current"
         }
       ],
-      "current_examples": [],
-      "planned_examples": [
-        "nth_root(-8,3,branch: \"real\")"
-      ]
+      "current_examples": [
+        "NthRoot[81,4]"
+      ],
+      "planned_examples": []
     },
     {
       "id": "fn_000139",
@@ -9297,7 +9323,7 @@
       "signatures": [
         "diag(values)"
       ],
-      "current_support": "最多64项的对角矩阵；保留表达式元素。",
+      "current_support": "最多64项的对角矩阵；保留表达式元素。 矩形二维列表提取最短轴对角，保留元素；一维列表仍构造对角矩阵，最多64×64，不支持多层张量或块对角隐式构造。",
       "target_support": "维度检查；精确有理数或机器实数的小型稠密矩阵，继承预算；零向量/奇异矩阵明确诊断。",
       "return_type": "scalar_vector_matrix_or_decomposition",
       "precision_modes": [

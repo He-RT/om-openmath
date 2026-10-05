@@ -381,7 +381,7 @@ det([[2,1],[1,3]])
 
 对角矩阵或提取对角
 
-- 当前支持：最多64项的对角矩阵；保留表达式元素。
+- 当前支持：最多64项的对角矩阵；保留表达式元素。 矩形二维列表提取最短轴对角，保留元素；一维列表仍构造对角矩阵，最多64×64，不支持多层张量或块对角隐式构造。
 - 目标范围：维度检查；精确有理数或机器实数的小型稠密矩阵，继承预算；零向量/奇异矩阵明确诊断。
 - 返回：scalar_vector_matrix_or_decomposition
 - 精度：精确有理基础路径与明确的机器分解；分解不承诺任意精度。
@@ -428,7 +428,7 @@ diag([1,2,3])
 
 当前源码：[crates/om-eval/src/science/registry.rs](../../crates/om-eval/src/science/registry.rs)。
 
-当前测试引用：[crates/om-eval/tests/science_basics.rs](../../crates/om-eval/tests/science_basics.rs)。
+当前测试引用：[crates/om-eval/tests/science_basics.rs](../../crates/om-eval/tests/science_basics.rs)、[crates/om-eval/tests/roots.rs](../../crates/om-eval/tests/roots.rs)。
 
 ## dot
 

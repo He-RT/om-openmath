@@ -1,5 +1,7 @@
 # 实施裁决
 
+- **P129 — 实立方根/主值根与diag矩阵路径（2026-10-05，已验证）：** 审计发现旧cbrt只有名字映射/编译数值路径，补真实CubeRoot回调，实负数取负根；精确完美立方/有理数、未完美根式、机器及原有高精度包围近似均按分支保持，符号保留。新增NthRoot为正整数1..4096 principal主值，与Root认证代数数及旧root语法不混用；其他分支拒绝。diag一维列表保持原构造，二维矩形提取最短轴对角并保留元素（≤64×64），不把矩阵当成向量构造嵌套假矩阵。不支持块矩阵/多层张量隐式构造。稳定ID137/138只追加回调，原53/Root/root行为不改，无依赖/unsafe。NthRoot在held resolver降为保留raw radicand的Power，先记录原极点；重复/非法Branch仍拒绝，绘图真实采样复用该路径。
+
 - **P128 — 审计帮助、规划浏览与真实内核能力（2026-10-05，已验证）：** 四个真实Help/Options/Functions/Capabilities回调，共用functions.toml生成的当前runtime与独立documentation索引；稳定ID不变。help/options保持名称不执行，查询名可为文字或符号（安全读取文字ownvalue），被用户绑定遮蔽的名字明确诊断；实际选项是runtime ParameterSchema，目标文档参数另标注为不可执行说明。functions默认只实际回调身份，planned/deferred仅文档浏览；capabilities仅内核版本/身份/计算平台，没有宿主/授权上下文时两者为Null，不安装Agent框架或开放Notebook工具。索引只读静态生成、无运行文件/网络依赖，真实Interrupt贯穿筛选/数据转换；新文档索引不加入可执行补全。
 
 - **P127 — 保持Swift调用方actor并移出编码（2026-10-05）：** acde078的CI原17总1096.388ms，但queued0.010/FFI209.372/decode2.569/resume0.041ms，只覆盖约212ms；缺少的约884ms并非内核计时，不据此归因数学或放宽门槛。Swift6默认非隔离async可发生generic executor切换；对request/feed/perform显式nonisolated(nonsending)保持调用方actor，FFI/解码继续专用串行队列，JSON编码也移入该队列。新增encoded_ms分段，取消后编码结束不进入FFI，throw路径清理running状态。原整次<1000ms断言及全部53期望不改。离线actor队列恢复断言、iOS27 ARM64 typecheck、generic无签名build-for-testing和Python16通过；不把这些当作CI端到端已通过，等待新同SHA分段/原门禁。

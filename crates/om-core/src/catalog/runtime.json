@@ -2594,6 +2594,57 @@
     ]
   },
   {
+    "id": "fn_000137",
+    "canonical_name": "cbrt",
+    "name": "CubeRoot",
+    "modern_name": "cbrt",
+    "aliases": [
+      "cuberoot"
+    ],
+    "arity": {
+      "min": 1,
+      "max": 1
+    },
+    "parameters": [
+      {
+        "name": "value",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": false
+      }
+    ],
+    "options": [],
+    "compatibility_syntax": [],
+    "attributes": [
+      "protected",
+      "listable",
+      "numeric_function"
+    ],
+    "pipe_arg": 1,
+    "effect_class": "pure",
+    "support": "实数立方根：负实数为负，不返回复主值；完美立方精确，其他精确数保持根式，机器cbrt和已有高精度守护路径。符号输入保持CubeRoot。",
+    "return_type": "expression",
+    "precision_modes": [
+      "exact",
+      "machine",
+      "arbitrary_supported"
+    ],
+    "precision_notes": "复用原有精确Power与受预算数值包围近似，保持所声明分支；不新增通用符号假设算法。",
+    "platforms": [
+      "cli",
+      "desktop",
+      "web",
+      "ios"
+    ]
+  },
+  {
     "id": "fn_000032",
     "canonical_name": "diff",
     "name": "D",
@@ -2869,7 +2920,7 @@
     ],
     "pipe_arg": 1,
     "effect_class": "pure",
-    "support": "最多64项的对角矩阵；保留表达式元素。",
+    "support": "最多64项的对角矩阵；保留表达式元素。 矩形二维列表提取最短轴对角，保留元素；一维列表仍构造对角矩阵，最多64×64，不支持多层张量或块对角隐式构造。",
     "return_type": "scalar_vector_matrix_or_decomposition",
     "precision_modes": [
       "planned_machine"
@@ -6935,6 +6986,84 @@
       "arbitrary_supported"
     ],
     "precision_notes": "精确计算与已支持的数值近似子集；不把符号保留或格式位数当作新算法/任意精度支持。",
+    "platforms": [
+      "cli",
+      "desktop",
+      "web",
+      "ios"
+    ]
+  },
+  {
+    "id": "fn_000138",
+    "canonical_name": "nth_root",
+    "name": "NthRoot",
+    "modern_name": "nth_root",
+    "aliases": [],
+    "arity": {
+      "min": 2,
+      "max": 3
+    },
+    "parameters": [
+      {
+        "name": "value",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": false
+      },
+      {
+        "name": "degree",
+        "runtime_name": null,
+        "value_type": "integer",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": 1,
+        "max": 4096,
+        "variadic": false,
+        "held": false
+      }
+    ],
+    "options": [
+      {
+        "name": "branch",
+        "runtime_name": "Branch",
+        "value_type": "enum",
+        "required": false,
+        "default_source": "\"principal\"",
+        "default_context": null,
+        "enum_values": [
+          "principal"
+        ],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": false
+      }
+    ],
+    "compatibility_syntax": [],
+    "attributes": [
+      "protected",
+      "listable",
+      "numeric_function"
+    ],
+    "pipe_arg": 1,
+    "effect_class": "pure",
+    "support": "1..4096正整数阶的principal主值根，精确构造/符号Power及已有机器/高精度路径；与实数cbrt、认证Root分开。branch其他模式/非法degree拒绝；旧root/Root语义不改。",
+    "return_type": "expression",
+    "precision_modes": [
+      "exact",
+      "machine",
+      "arbitrary_supported"
+    ],
+    "precision_notes": "复用原有精确Power与受预算数值包围近似，保持所声明分支；不新增通用符号假设算法。",
     "platforms": [
       "cli",
       "desktop",

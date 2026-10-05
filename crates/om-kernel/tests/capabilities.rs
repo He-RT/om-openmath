@@ -81,7 +81,7 @@ fn capabilities_separate_kernel_presentation_and_future_permissions() {
         assert!(!c.scene_3d);
         assert!(c.task_permissions.is_none());
         assert_eq!(c.kernel_version, env!("CARGO_PKG_VERSION"));
-        assert_eq!(c.function_ids.len(), 204);
+        assert_eq!(c.function_ids.len(), 206);
         assert!(
             !c.rendered_outputs
                 .iter()

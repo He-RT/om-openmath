@@ -13,6 +13,8 @@ mod probability_registry;
 mod reflection;
 mod reflection_registry;
 mod registry;
+mod root_registry;
+mod roots;
 mod special;
 mod statistics;
 mod table_data;
@@ -132,6 +134,9 @@ pub(super) fn dispatch(
         let args = Args::parse(name, args)?;
         if let Some(result) = reflection::dispatch(ev, name, &args, ctx)? {
             return Ok(result);
+        }
+        if matches!(name, "CubeRoot" | "NthRoot") {
+            return roots::dispatch(name, &args, ctx)?.ok_or_else(|| error("根接口未匹配"));
         }
         if let Some(result) = special::dispatch(ev, name, &args, ctx)? {
             return Ok(result);

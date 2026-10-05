@@ -1,6 +1,6 @@
 # 实际注册审计基线：ba3cd2b；稳定身份与名称分离；目录/副作用为设计数据。
 schema_version = 1
-metadata_version = 11
+metadata_version = 12
 validation_stage = "runtime_verified"
 current_version = "0.1.0-pre-alpha.2"
 target_version = "0.1.0-pre-alpha.3"
@@ -4451,64 +4451,64 @@ effect_class = "pure"
 id = "fn_000137"
 name = "cbrt"
 category = "basics"
-status = "planned"
-interface_status = "planned"
-runtime_names = []
-compatibility_names = []
-current_modern_signatures = []
-current_wolfram_signatures = []
+status = "implemented"
+interface_status = "current"
+runtime_names = ["CubeRoot"]
+compatibility_names = ["CubeRoot"]
+current_modern_signatures = ["cbrt(value)"]
+current_wolfram_signatures = ["CubeRoot[value]"]
 signatures = ["cbrt(x)"]
-parameters = [{ name = "x", kind = "positional", default = "必填", description = "签名对应的x参数", availability = "r3" }]
+parameters = [{ name = "x", kind = "positional", default = "必填", description = "签名对应的x参数", availability = "current" }]
 return_type = "expression"
 semantics = "实数立方根"
-current_support = "当前无此规范接口的实现。"
+current_support = "实数立方根：负实数为负，不返回复主值；完美立方精确，其他精确数保持根式，机器cbrt和已有高精度守护路径。符号输入保持CubeRoot。"
 target_support = "精确可识别值及所声明实数机器路径；新调用注册尚未交付。"
-precision_modes = ["planned_machine"]
-precision_notes = "精确值或明确的机器路径；precision/accuracy 查询输入已有信息。"
-current_platforms = []
+precision_modes = ["exact", "machine", "arbitrary_supported"]
+precision_notes = "复用原有精确Power与受预算数值包围近似，保持所声明分支；不新增通用符号假设算法。"
+current_platforms = ["cli", "desktop", "web", "ios"]
 target_platforms = ["cli", "desktop", "web", "ios"]
 render_platforms = []
-current_examples = []
-planned_examples = ["cbrt(-8)"]
-sources = []
-tests = []
+current_examples = ["CubeRoot[-8]"]
+planned_examples = []
+sources = ["crates/om-eval/src/science/root_registry.rs", "crates/om-eval/src/science/roots.rs"]
+tests = ["crates/om-eval/tests/roots.rs"]
 acceptance = "独立数学期望、有效/无效参数、边界、预算、中断及声明的平台/精度测试；范围外不伪造成功。"
 pipe_arg = 1
 target_version = "0.1.0-pre-alpha.3"
 kind = "function"
-validation_stage = "documentation_only"
+validation_stage = "runtime_verified"
 effect_class = "pure"
 
 [[functions]]
 id = "fn_000138"
 name = "nth_root"
 category = "basics"
-status = "planned"
-interface_status = "planned"
-runtime_names = []
-compatibility_names = []
-current_modern_signatures = []
-current_wolfram_signatures = []
+status = "implemented"
+interface_status = "current"
+runtime_names = ["NthRoot"]
+compatibility_names = ["NthRoot"]
+current_modern_signatures = ["nth_root(value,degree,branch:\"principal\")"]
+current_wolfram_signatures = ["NthRoot[value,degree]"]
 signatures = ["nth_root(x, degree, branch: \"principal\")"]
-parameters = [{ name = "x", kind = "positional", default = "必填", description = "签名对应的x参数", availability = "r3" }, { name = "degree", kind = "positional", default = "必填", description = "签名对应的degree参数", availability = "r3" }, { name = "branch", kind = "option", default = "\"principal\"", description = "签名对应的branch参数", availability = "r3" }]
+parameters = [{ name = "x", kind = "positional", default = "必填", description = "签名对应的x参数", availability = "current" }, { name = "degree", kind = "positional", default = "必填", description = "签名对应的degree参数", availability = "current" }, { name = "branch", kind = "option", default = "\"principal\"", description = "签名对应的branch参数", availability = "current" }]
 return_type = "expression"
 semantics = "按声明分支的 n 次根"
-current_support = "当前无此规范接口的实现。"
+current_support = "1..4096正整数阶的principal主值根，精确构造/符号Power及已有机器/高精度路径；与实数cbrt、认证Root分开。branch其他模式/非法degree拒绝；旧root/Root语义不改。"
 target_support = "精确可识别值及所声明实数机器路径；新调用注册尚未交付。"
-precision_modes = ["planned_machine"]
-precision_notes = "精确值或明确的机器路径；precision/accuracy 查询输入已有信息。"
-current_platforms = []
+precision_modes = ["exact", "machine", "arbitrary_supported"]
+precision_notes = "复用原有精确Power与受预算数值包围近似，保持所声明分支；不新增通用符号假设算法。"
+current_platforms = ["cli", "desktop", "web", "ios"]
 target_platforms = ["cli", "desktop", "web", "ios"]
 render_platforms = []
-current_examples = []
-planned_examples = ["nth_root(-8,3,branch: \"real\")"]
-sources = []
-tests = []
+current_examples = ["NthRoot[81,4]"]
+planned_examples = []
+sources = ["crates/om-eval/src/science/root_registry.rs", "crates/om-eval/src/science/roots.rs"]
+tests = ["crates/om-eval/tests/roots.rs"]
 acceptance = "独立数学期望、有效/无效参数、边界、预算、中断及声明的平台/精度测试；范围外不伪造成功。"
 pipe_arg = 1
 target_version = "0.1.0-pre-alpha.3"
 kind = "function"
-validation_stage = "documentation_only"
+validation_stage = "runtime_verified"
 effect_class = "pure"
 
 [[functions]]
@@ -5197,7 +5197,7 @@ signatures = ["diag(values)"]
 parameters = [{ name = "values", kind = "positional", default = "必填", description = "签名对应的values参数", availability = "r3" }]
 return_type = "scalar_vector_matrix_or_decomposition"
 semantics = "对角矩阵或提取对角"
-current_support = "最多64项的对角矩阵；保留表达式元素。"
+current_support = "最多64项的对角矩阵；保留表达式元素。 矩形二维列表提取最短轴对角，保留元素；一维列表仍构造对角矩阵，最多64×64，不支持多层张量或块对角隐式构造。"
 target_support = "维度检查；精确有理数或机器实数的小型稠密矩阵，继承预算；零向量/奇异矩阵明确诊断。"
 precision_modes = ["planned_machine"]
 precision_notes = "精确有理基础路径与明确的机器分解；分解不承诺任意精度。"
@@ -5207,7 +5207,7 @@ render_platforms = []
 current_examples = ["DiagonalMatrix[{2,3}]"]
 planned_examples = ["diag([1,2,3])"]
 sources = ["crates/om-eval/src/science/registry.rs"]
-tests = ["crates/om-eval/tests/science_basics.rs"]
+tests = ["crates/om-eval/tests/science_basics.rs", "crates/om-eval/tests/roots.rs"]
 acceptance = "独立数学期望、有效/无效参数、边界、预算、中断及声明的平台/精度测试；范围外不伪造成功。"
 pipe_arg = 1
 target_version = "0.1.0-pre-alpha.3"
@@ -28851,3 +28851,23 @@ max = 0
 attributes = ["protected"]
 parameters = []
 options = []
+
+[[runtime]]
+name = "CubeRoot"
+modern_name = "cbrt"
+aliases = ["cuberoot"]
+min = 1
+max = 1
+attributes = ["protected", "listable", "numeric_function"]
+parameters = [{ name = "value", value_type = "expression", required = true, variadic = false, held = false }]
+options = []
+
+[[runtime]]
+name = "NthRoot"
+modern_name = "nth_root"
+aliases = []
+min = 2
+max = 3
+attributes = ["protected", "listable", "numeric_function"]
+parameters = [{ name = "value", value_type = "expression", required = true, variadic = false, held = false }, { name = "degree", value_type = "integer", required = true, variadic = false, held = false, min = 1, max = 4096 }]
+options = [{ name = "branch", value_type = "enum", required = false, variadic = false, held = false, runtime_name = "Branch", default_source = "\"principal\"", enum_values = ["principal"] }]

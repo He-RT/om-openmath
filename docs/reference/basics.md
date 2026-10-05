@@ -34,7 +34,7 @@
 | [`bessel_y`](#bessel_y) | 后续规划 | 规划接口，当前不可用 | 基础数值与初等函数中的 BesselY 能力，进入后续全景目录。 |
 | [`beta`](#beta) | 已实现 | 当前可用 | Beta 函数 |
 | [`catalan`](#catalan) | 后续规划 | 规划接口，当前不可用 | 基础数值与初等函数中的 Catalan 能力，进入后续全景目录。 |
-| [`cbrt`](#cbrt) | 下一版规划 | 规划接口，当前不可用 | 实数立方根 |
+| [`cbrt`](#cbrt) | 已实现 | 当前可用 | 实数立方根 |
 | [`ceil`](#ceil) | 已实现 | 现有入口可用，统一接口待实施 | 向上取整或取指定单位的上界。 |
 | [`chebyshev_t`](#chebyshev_t) | 后续规划 | 规划接口，当前不可用 | 基础数值与初等函数中的 ChebyshevT 能力，进入后续全景目录。 |
 | [`chebyshev_u`](#chebyshev_u) | 后续规划 | 规划接口，当前不可用 | 基础数值与初等函数中的 ChebyshevU 能力，进入后续全景目录。 |
@@ -107,7 +107,7 @@
 | [`negate`](#negate) | 已实现 | 现有入口可用，统一接口待实施 | 取负。 |
 | [`next_prime`](#next_prime) | 后续规划 | 规划接口，当前不可用 | 基础数值与初等函数中的 NextPrime 能力，进入后续全景目录。 |
 | [`not`](#not) | 已实现 | 现有入口可用，统一接口待实施 | 逻辑非。 |
-| [`nth_root`](#nth_root) | 下一版规划 | 规划接口，当前不可用 | 按声明分支的 n 次根 |
+| [`nth_root`](#nth_root) | 已实现 | 当前可用 | 按声明分支的 n 次根 |
 | [`numerator`](#numerator) | 已实现 | 现有入口可用，统一接口待实施 | 提取数或乘积的分子。 |
 | [`numeric`](#numeric) | 已实现 | 现有入口可用，统一接口待实施 | 按机器精度或指定十进制位数数值求值。 |
 | [`or`](#or) | 已实现 | 现有入口可用，统一接口待实施 | 短路逻辑或。 |
@@ -1373,21 +1373,33 @@ catalan  # 后续符号，当前未实现
 
 ## cbrt
 
-**当前实现：下一版规划；目标接口：规划接口，当前不可用。** 目标版本：`0.1.0-pre-alpha.3`。
+**当前实现：已实现；目标接口：当前可用。** 目标版本：`0.1.0-pre-alpha.3`。
 
 - 稳定身份：`fn_000137`；条目类型：`function`。
-- 副作用分类（设计预留）：`pure`；参数验证阶段：`documentation_only`，不构成工具授权。
+- 副作用分类（设计预留）：`pure`；参数验证阶段：`runtime_verified`，不构成工具授权。
 
 实数立方根
 
-- 当前支持：当前无此规范接口的实现。
+- 当前支持：实数立方根：负实数为负，不返回复主值；完美立方精确，其他精确数保持根式，机器cbrt和已有高精度守护路径。符号输入保持CubeRoot。
 - 目标范围：精确可识别值及所声明实数机器路径；新调用注册尚未交付。
 - 返回：expression
-- 精度：精确值或明确的机器路径；precision/accuracy 查询输入已有信息。
-- 当前计算平台：无；目标计算平台：cli, desktop, web, ios。
+- 精度：复用原有精确Power与受预算数值包围近似，保持所声明分支；不新增通用符号假设算法。
+- 当前计算平台：cli, desktop, web, ios；目标计算平台：cli, desktop, web, ios。
 - 目标图形/交互展示平台：不适用或后续未定。
-- 兼容名称：无既有兼容入口。
+- 兼容名称：`CubeRoot`。
 - 管道位置：第 1 个位置参数（从 1 起）。
+
+当前现代签名：
+
+```text
+cbrt(value)
+```
+
+当前 Wolfram 签名：
+
+```text
+CubeRoot[value]
+```
 
 目标现代签名（按目标接口状态判断是否已可执行）：
 
@@ -1397,19 +1409,19 @@ cbrt(x)
 
 | 参数 | 类型 | 默认值 | 含义 | 可用阶段 |
 |---|---|---|---|---|
-| `x` | positional | 必填 | 签名对应的x参数 | r3 |
+| `x` | positional | 必填 | 签名对应的x参数 | current |
 
-规划示例（尚未执行；需要目标版本，后续条目不承诺 .3）：
+当前已登记示例（Wolfram）：
 
-```text
-cbrt(-8)
+```wolfram
+CubeRoot[-8]
 ```
 
 验收：独立数学期望、有效/无效参数、边界、预算、中断及声明的平台/精度测试；范围外不伪造成功。
 
-当前源码：暂无当前实现证据。
+当前源码：[crates/om-eval/src/science/root_registry.rs](../../crates/om-eval/src/science/root_registry.rs)、[crates/om-eval/src/science/roots.rs](../../crates/om-eval/src/science/roots.rs)。
 
-当前测试引用：暂无当前实现证据。
+当前测试引用：[crates/om-eval/tests/roots.rs](../../crates/om-eval/tests/roots.rs)。
 
 ## ceil
 
@@ -4728,21 +4740,33 @@ Not[False]
 
 ## nth_root
 
-**当前实现：下一版规划；目标接口：规划接口，当前不可用。** 目标版本：`0.1.0-pre-alpha.3`。
+**当前实现：已实现；目标接口：当前可用。** 目标版本：`0.1.0-pre-alpha.3`。
 
 - 稳定身份：`fn_000138`；条目类型：`function`。
-- 副作用分类（设计预留）：`pure`；参数验证阶段：`documentation_only`，不构成工具授权。
+- 副作用分类（设计预留）：`pure`；参数验证阶段：`runtime_verified`，不构成工具授权。
 
 按声明分支的 n 次根
 
-- 当前支持：当前无此规范接口的实现。
+- 当前支持：1..4096正整数阶的principal主值根，精确构造/符号Power及已有机器/高精度路径；与实数cbrt、认证Root分开。branch其他模式/非法degree拒绝；旧root/Root语义不改。
 - 目标范围：精确可识别值及所声明实数机器路径；新调用注册尚未交付。
 - 返回：expression
-- 精度：精确值或明确的机器路径；precision/accuracy 查询输入已有信息。
-- 当前计算平台：无；目标计算平台：cli, desktop, web, ios。
+- 精度：复用原有精确Power与受预算数值包围近似，保持所声明分支；不新增通用符号假设算法。
+- 当前计算平台：cli, desktop, web, ios；目标计算平台：cli, desktop, web, ios。
 - 目标图形/交互展示平台：不适用或后续未定。
-- 兼容名称：无既有兼容入口。
+- 兼容名称：`NthRoot`。
 - 管道位置：第 1 个位置参数（从 1 起）。
+
+当前现代签名：
+
+```text
+nth_root(value,degree,branch:"principal")
+```
+
+当前 Wolfram 签名：
+
+```text
+NthRoot[value,degree]
+```
 
 目标现代签名（按目标接口状态判断是否已可执行）：
 
@@ -4752,21 +4776,21 @@ nth_root(x, degree, branch: "principal")
 
 | 参数 | 类型 | 默认值 | 含义 | 可用阶段 |
 |---|---|---|---|---|
-| `x` | positional | 必填 | 签名对应的x参数 | r3 |
-| `degree` | positional | 必填 | 签名对应的degree参数 | r3 |
-| `branch` | option | "principal" | 签名对应的branch参数 | r3 |
+| `x` | positional | 必填 | 签名对应的x参数 | current |
+| `degree` | positional | 必填 | 签名对应的degree参数 | current |
+| `branch` | option | "principal" | 签名对应的branch参数 | current |
 
-规划示例（尚未执行；需要目标版本，后续条目不承诺 .3）：
+当前已登记示例（Wolfram）：
 
-```text
-nth_root(-8,3,branch: "real")
+```wolfram
+NthRoot[81,4]
 ```
 
 验收：独立数学期望、有效/无效参数、边界、预算、中断及声明的平台/精度测试；范围外不伪造成功。
 
-当前源码：暂无当前实现证据。
+当前源码：[crates/om-eval/src/science/root_registry.rs](../../crates/om-eval/src/science/root_registry.rs)、[crates/om-eval/src/science/roots.rs](../../crates/om-eval/src/science/roots.rs)。
 
-当前测试引用：暂无当前实现证据。
+当前测试引用：[crates/om-eval/tests/roots.rs](../../crates/om-eval/tests/roots.rs)。
 
 ## numerator
 

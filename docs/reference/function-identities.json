@@ -962,12 +962,16 @@
     {
       "id": "fn_000137",
       "initial_name": "cbrt",
-      "runtime_names": []
+      "runtime_names": [
+        "CubeRoot"
+      ]
     },
     {
       "id": "fn_000138",
       "initial_name": "nth_root",
-      "runtime_names": []
+      "runtime_names": [
+        "NthRoot"
+      ]
     },
     {
       "id": "fn_000139",

@@ -108,6 +108,24 @@ pub(super) fn dispatch(
                 return Err(error("diag需要最多64项的向量"));
             }
             let entries = args.values[0].args();
+            if entries.iter().any(|e| e.is_head(B::LIST)) {
+                let rows = entries;
+                let columns = rows.first().map_or(0, |e| e.args().len());
+                if columns > 64
+                    || rows
+                        .iter()
+                        .any(|e| !e.is_head(B::LIST) || e.args().len() != columns)
+                {
+                    return Err(error("diag提取需要最多64×64矩形矩阵"));
+                }
+                let count = rows.len().min(columns);
+                let mut values = vec![];
+                for (i, row) in rows.iter().enumerate().take(count) {
+                    ctx.tick()?;
+                    values.push(row.args()[i].clone());
+                }
+                return Ok(Some(list(values)));
+            }
             list((0..entries.len()).map(|i| {
                 list((0..entries.len()).map(|j| {
                     if i == j {

@@ -10,6 +10,12 @@ fn floor(q: &Rational) -> Integer {
     n
 }
 fn simplest(mut lo: Rational, mut hi: Rational, ctx: &Interrupt) -> Result<Rational, EvalError> {
+    if lo <= Rational::ZERO && hi >= Rational::ZERO {
+        return Ok(Rational::ZERO);
+    }
+    if hi < Rational::ZERO {
+        return simplest(-hi, -lo, ctx).map(|value| -value);
+    }
     let mut coefficients = vec![];
     for _ in 0..4096 {
         ctx.tick()?;

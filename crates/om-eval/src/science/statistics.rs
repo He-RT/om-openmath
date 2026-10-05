@@ -5,16 +5,29 @@ fn mean(values: &[Number], ctx: &Interrupt) -> Result<Number, EvalError> {
     if values.is_empty() {
         return Err(error("样本不能为空"));
     }
-    let mut sum = Number::Integer(Integer::ZERO);
+    let mut sum = Rational::ZERO;
+    let mut precision = om_num::Precision::Exact;
     for value in values {
         ctx.tick()?;
-        sum = sum.add(value);
+        sum += crate::scalar::rational(value).ok_or_else(|| error("样本需要有限实数"))?;
+        precision = match (precision, value.precision()) {
+            (om_num::Precision::Machine, _) | (_, om_num::Precision::Machine) => {
+                om_num::Precision::Machine
+            }
+            (om_num::Precision::Exact, p) | (p, om_num::Precision::Exact) => p,
+            (om_num::Precision::Bits(a), om_num::Precision::Bits(b)) => {
+                om_num::Precision::Bits(a.min(b))
+            }
+        };
     }
-    Ok(sum.mul(&Number::Rational(Rational::from_parts(
-        Integer::ONE,
-        Integer::from(values.len()).into_parts().1,
-    ))))
+    let value = Number::Rational(sum / Rational::from(Integer::from(values.len()))).normalize();
+    if precision == om_num::Precision::Exact {
+        return Ok(value);
+    }
+    om_simplify::numeval::approximate(&Expr::number(value), precision, ctx)?
+        .ok_or_else(|| error("均值超出所选数值表示范围"))
 }
+
 fn covariance(
     a: &[Number],
     b: &[Number],
@@ -45,33 +58,18 @@ fn quantile(mut values: Vec<Number>, p: Rational, ctx: &Interrupt) -> Result<Num
         let q = crate::scalar::rational(&value).ok_or_else(|| error("样本不可比较"))?;
         keyed.push((q, value));
     }
-    let mut abort = None;
-    keyed.sort_by(|a, b| {
-        if abort.is_none()
-            && let Err(e) = ctx.tick()
-        {
-            abort = Some(e);
-        }
-        if abort.is_some() {
-            std::cmp::Ordering::Equal
-        } else {
-            a.0.cmp(&b.0)
-        }
-    });
-    if let Some(e) = abort {
-        return Err(e.into());
-    }
+    let order = super::ordering::indices(keyed.len(), ctx, |a, b| keyed[a].0.cmp(&keyed[b].0))?;
     let rank = p * Rational::from(Integer::from(keyed.len() - 1));
     let index = usize::try_from(rank.numerator() / Integer::from(rank.denominator().clone()))
         .map_err(|_| error("分位数位置溢出"))?;
     let fraction = rank - Rational::from(Integer::from(index));
     if index + 1 == keyed.len() {
-        return Ok(keyed[index].1.clone());
+        return Ok(keyed[order[index]].1.clone());
     }
-    Ok(keyed[index]
+    Ok(keyed[order[index]]
         .1
         .mul(&Number::Rational(Rational::ONE - &fraction))
-        .add(&keyed[index + 1].1.mul(&Number::Rational(fraction))))
+        .add(&keyed[order[index + 1]].1.mul(&Number::Rational(fraction))))
 }
 pub(super) fn dispatch(
     ev: &mut Evaluator,

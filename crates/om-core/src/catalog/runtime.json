@@ -1031,6 +1031,51 @@
     ]
   },
   {
+    "id": "fn_000171",
+    "canonical_name": "cholesky",
+    "name": "Cholesky",
+    "modern_name": "cholesky",
+    "aliases": [],
+    "arity": {
+      "min": 1,
+      "max": 1
+    },
+    "parameters": [
+      {
+        "name": "matrix",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": false
+      }
+    ],
+    "options": [],
+    "compatibility_syntax": [],
+    "attributes": [
+      "protected"
+    ],
+    "pipe_arg": 1,
+    "effect_class": "pure",
+    "support": "实对称正定机器矩阵≤64×64，返回下三角因子；按32机器epsilon检验对称/正定。非正定、近数值退化、非有限与中断拒绝。",
+    "return_type": "scalar_vector_matrix_or_decomposition",
+    "precision_modes": [
+      "machine"
+    ],
+    "precision_notes": "精确有理基础路径与明确的机器分解；分解不承诺任意精度。",
+    "platforms": [
+      "cli",
+      "desktop",
+      "web",
+      "ios"
+    ]
+  },
+  {
     "id": "fn_000127",
     "canonical_name": "chop",
     "name": "Chop",
@@ -2484,10 +2529,11 @@
     ],
     "pipe_arg": 1,
     "effect_class": "pure",
-    "support": "当前精确有理数矩阵≤64×64，复用Bareiss证书；奇异/欠定/不相容及维度明确诊断。机器矩阵路径仍在实施，不静默将机器系数当成精确保证。",
+    "support": "精确有理数方阵复用Bareiss；机器实数方阵使用部分选主元LU对角乘积，数值溢出明确诊断。",
     "return_type": "scalar_vector_matrix_or_decomposition",
     "precision_modes": [
-      "exact"
+      "exact",
+      "machine"
     ],
     "precision_notes": "精确有理基础路径与明确的机器分解；分解不承诺任意精度。",
     "platforms": [
@@ -2775,6 +2821,96 @@
       "planned_machine"
     ],
     "precision_notes": "保留输入精度。",
+    "platforms": [
+      "cli",
+      "desktop",
+      "web",
+      "ios"
+    ]
+  },
+  {
+    "id": "fn_000174",
+    "canonical_name": "eigensystem",
+    "name": "Eigensystem",
+    "modern_name": "eigensystem",
+    "aliases": [],
+    "arity": {
+      "min": 1,
+      "max": 1
+    },
+    "parameters": [
+      {
+        "name": "matrix",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": false
+      }
+    ],
+    "options": [],
+    "compatibility_syntax": [],
+    "attributes": [
+      "protected"
+    ],
+    "pipe_arg": 1,
+    "effect_class": "pure",
+    "support": "仅实对称机器矩阵≤64×64，返回values/vectors（匹配列向量）/实际residual/method/rotations，向量正交与重根确定性；不将残差称作严格误差界。",
+    "return_type": "scalar_vector_matrix_or_decomposition",
+    "precision_modes": [
+      "machine"
+    ],
+    "precision_notes": "精确有理基础路径与明确的机器分解；分解不承诺任意精度。",
+    "platforms": [
+      "cli",
+      "desktop",
+      "web",
+      "ios"
+    ]
+  },
+  {
+    "id": "fn_000173",
+    "canonical_name": "eigenvalues",
+    "name": "Eigenvalues",
+    "modern_name": "eigenvalues",
+    "aliases": [],
+    "arity": {
+      "min": 1,
+      "max": 1
+    },
+    "parameters": [
+      {
+        "name": "matrix",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": false
+      }
+    ],
+    "options": [],
+    "compatibility_syntax": [],
+    "attributes": [
+      "protected"
+    ],
+    "pipe_arg": 1,
+    "effect_class": "pure",
+    "support": "仅实对称机器矩阵≤64×64，最大枢轴Jacobi；值升序。非对称/复矩阵明确不支持，有限旋转预算内未收敛失败。",
+    "return_type": "scalar_vector_matrix_or_decomposition",
+    "precision_modes": [
+      "machine"
+    ],
+    "precision_notes": "精确有理基础路径与明确的机器分解；分解不承诺任意精度。",
     "platforms": [
       "cli",
       "desktop",
@@ -4471,10 +4607,11 @@
     ],
     "pipe_arg": 1,
     "effect_class": "pure",
-    "support": "当前精确有理数矩阵≤64×64，复用Bareiss证书；奇异/欠定/不相容及维度明确诊断。机器矩阵路径仍在实施，不静默将机器系数当成精确保证。",
+    "support": "精确有理方阵复用Bareiss；机器方阵逐列LU求解，奇异/病态拒绝，相对枢轴阈值1e-12。",
     "return_type": "scalar_vector_matrix_or_decomposition",
     "precision_modes": [
-      "exact"
+      "exact",
+      "machine"
     ],
     "precision_notes": "精确有理基础路径与明确的机器分解；分解不承诺任意精度。",
     "platforms": [
@@ -4571,6 +4708,64 @@
       "preserve_input"
     ],
     "precision_notes": "结构操作保留输入数值类型；迭代、求值和替换继承现有数学/预算限制。",
+    "platforms": [
+      "cli",
+      "desktop",
+      "web",
+      "ios"
+    ]
+  },
+  {
+    "id": "fn_000175",
+    "canonical_name": "least_squares",
+    "name": "LeastSquares",
+    "modern_name": "least_squares",
+    "aliases": [],
+    "arity": {
+      "min": 2,
+      "max": 2
+    },
+    "parameters": [
+      {
+        "name": "matrix",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": false
+      },
+      {
+        "name": "rhs",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": false
+      }
+    ],
+    "options": [],
+    "compatibility_syntax": [],
+    "attributes": [
+      "protected"
+    ],
+    "pipe_arg": 1,
+    "effect_class": "pure",
+    "support": "机器实数满列秩m≥n≤64，Householder QR最小二乘；返回solution/residual_norm/method/converged。欠定、秩不足及病态明确失败；相对枢轴阈值1e-12。",
+    "return_type": "scalar_vector_matrix_or_decomposition",
+    "precision_modes": [
+      "machine"
+    ],
+    "precision_notes": "精确有理基础路径与明确的机器分解；分解不承诺任意精度。",
     "platforms": [
       "cli",
       "desktop",
@@ -4757,7 +4952,7 @@
     ],
     "arity": {
       "min": 2,
-      "max": 2
+      "max": 3
     },
     "parameters": [
       {
@@ -4787,17 +4982,35 @@
         "held": false
       }
     ],
-    "options": [],
+    "options": [
+      {
+        "name": "mode",
+        "runtime_name": "Mode",
+        "value_type": "enum",
+        "required": false,
+        "default_source": "\"exact\"",
+        "default_context": null,
+        "enum_values": [
+          "exact",
+          "numeric"
+        ],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": false
+      }
+    ],
     "compatibility_syntax": [],
     "attributes": [
       "protected"
     ],
     "pipe_arg": 1,
     "effect_class": "pure",
-    "support": "当前精确有理数矩阵≤64×64，复用Bareiss证书；奇异/欠定/不相容及维度明确诊断。机器矩阵路径仍在实施，不静默将机器系数当成精确保证。",
+    "support": "默认mode exact，精确有理矩阵复用Bareiss；mode numeric首版方阵部分选主元LU，奇异/病态/不相容维度拒绝。矩形机器系统及自由轴返回仍待接入。",
     "return_type": "scalar_vector_matrix_or_decomposition",
     "precision_modes": [
-      "exact"
+      "exact",
+      "machine"
     ],
     "precision_notes": "精确有理基础路径与明确的机器分解；分解不承诺任意精度。",
     "platforms": [
@@ -4909,6 +5122,51 @@
       "arbitrary_supported"
     ],
     "precision_notes": "精确计算与已支持的数值近似子集；不把符号保留或格式位数当作新算法/任意精度支持。",
+    "platforms": [
+      "cli",
+      "desktop",
+      "web",
+      "ios"
+    ]
+  },
+  {
+    "id": "fn_000169",
+    "canonical_name": "lu",
+    "name": "Lu",
+    "modern_name": "lu",
+    "aliases": [],
+    "arity": {
+      "min": 1,
+      "max": 1
+    },
+    "parameters": [
+      {
+        "name": "matrix",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": false
+      }
+    ],
+    "options": [],
+    "compatibility_syntax": [],
+    "attributes": [
+      "protected"
+    ],
+    "pipe_arg": 1,
+    "effect_class": "pure",
+    "support": "机器实数矩形矩阵≤64×64，部分选主元LU，L(m×m)/U(m×n)满足P*A=L*U；返回1起始行置换及真实重构残差。奇异矩阵可以分解，求解时明确拒绝奇异/病态。",
+    "return_type": "scalar_vector_matrix_or_decomposition",
+    "precision_modes": [
+      "machine"
+    ],
+    "precision_notes": "精确有理基础路径与明确的机器分解；分解不承诺任意精度。",
     "platforms": [
       "cli",
       "desktop",
@@ -7028,6 +7286,51 @@
       "arbitrary_supported"
     ],
     "precision_notes": "精确计算与已支持的数值近似子集；不把符号保留或格式位数当作新算法/任意精度支持。",
+    "platforms": [
+      "cli",
+      "desktop",
+      "web",
+      "ios"
+    ]
+  },
+  {
+    "id": "fn_000170",
+    "canonical_name": "qr",
+    "name": "Qr",
+    "modern_name": "qr",
+    "aliases": [],
+    "arity": {
+      "min": 1,
+      "max": 1
+    },
+    "parameters": [
+      {
+        "name": "matrix",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": false
+      }
+    ],
+    "options": [],
+    "compatibility_syntax": [],
+    "attributes": [
+      "protected"
+    ],
+    "pipe_arg": 1,
+    "effect_class": "pure",
+    "support": "机器实数矩形矩阵≤64×64，完整Householder Q(m×m)/R(m×n)，返回真实重构残差。",
+    "return_type": "scalar_vector_matrix_or_decomposition",
+    "precision_modes": [
+      "machine"
+    ],
+    "precision_notes": "精确有理基础路径与明确的机器分解；分解不承诺任意精度。",
     "platforms": [
       "cli",
       "desktop",
@@ -9832,6 +10135,51 @@
       "preserve_input"
     ],
     "precision_notes": "结构操作保留输入数值类型；迭代、求值和替换继承现有数学/预算限制。",
+    "platforms": [
+      "cli",
+      "desktop",
+      "web",
+      "ios"
+    ]
+  },
+  {
+    "id": "fn_000172",
+    "canonical_name": "svd",
+    "name": "Svd",
+    "modern_name": "svd",
+    "aliases": [],
+    "arity": {
+      "min": 1,
+      "max": 1
+    },
+    "parameters": [
+      {
+        "name": "matrix",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": false
+      }
+    ],
+    "options": [],
+    "compatibility_syntax": [],
+    "attributes": [
+      "protected"
+    ],
+    "pipe_arg": 1,
+    "effect_class": "pure",
+    "support": "有限实数矩形矩阵≤64×64，一侧Jacobi，完整u(m×m)/s(m×n)/v(n×n)，A=u@s@transpose(v)，values降序；实际重构residual与sweeps；不可表示旋转下的微小相关残列可视作数值零，独立微小奇异值保留，未收敛/非有限/不可表示极端尺度拒绝；不把残差作为严格认证。",
+    "return_type": "scalar_vector_matrix_or_decomposition",
+    "precision_modes": [
+      "machine"
+    ],
+    "precision_notes": "精确有理基础路径与明确的机器分解；分解不承诺任意精度。",
     "platforms": [
       "cli",
       "desktop",

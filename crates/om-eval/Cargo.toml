@@ -7,6 +7,7 @@ license.workspace = true
 description = "OpenMath expression evaluator"
 
 [dependencies]
+om-analysis.workspace = true
 om-core.workspace = true
 om-num.workspace = true
 om-poly.workspace = true

@@ -1,0 +1,14 @@
+[package]
+name = "om-analysis"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+description = "Portable budgeted numerical analysis algorithms"
+
+[dependencies]
+om-num.workspace = true
+thiserror.workspace = true
+
+[lints]
+workspace = true

@@ -2,6 +2,8 @@
 mod basics;
 mod data;
 mod matrix;
+mod matrix_numeric;
+mod ordering;
 mod registry;
 mod statistics;
 use crate::{EvalError, Evaluator};
@@ -111,6 +113,9 @@ pub(super) fn dispatch(
         }
         if let Some(result) = statistics::dispatch(ev, name, &args, ctx)? {
             return Ok(result);
+        }
+        if matrix_numeric::wants_numeric(name, &args)? {
+            return matrix_numeric::dispatch(name, &args, ctx);
         }
         if let Some(result) = matrix::dispatch(ev, name, &args, ctx)? {
             return Ok(result);

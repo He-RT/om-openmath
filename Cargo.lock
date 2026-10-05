@@ -3044,6 +3044,14 @@ dependencies = [
 ]
 
 [[package]]
+name = "om-analysis"
+version = "0.1.0-pre-alpha.2"
+dependencies = [
+ "om-num",
+ "thiserror 2.0.21",
+]
+
+[[package]]
 name = "om-cli"
 version = "0.1.0-pre-alpha.2"
 dependencies = [
@@ -3102,6 +3110,7 @@ dependencies = [
 name = "om-eval"
 version = "0.1.0-pre-alpha.2"
 dependencies = [
+ "om-analysis",
  "om-core",
  "om-format",
  "om-num",

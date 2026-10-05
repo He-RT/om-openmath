@@ -430,7 +430,7 @@ pub(crate) fn register(specs: &mut BTreeMap<&'static str, BuiltinSpec>) {
     entry!(
         linear_solve,
         "LinearSolve",
-        Arity::Exactly(2),
+        Arity::Range(2, 3),
         A::default(),
         "linear_solve(...)",
         "LinearSolve[...]",
@@ -466,5 +466,75 @@ pub(crate) fn register(specs: &mut BTreeMap<&'static str, BuiltinSpec>) {
         "Normalize[...]",
         "按范数归一化",
         "Normalize[{3,4}]"
+    );
+    entry!(
+        lu,
+        "Lu",
+        Arity::Exactly(1),
+        A::default(),
+        "lu(matrix)",
+        "Lu[matrix]",
+        "机器方阵部分选主元LU及真实重构残差。",
+        "Lu[{{0.,2.},{1.,3.}}]"
+    );
+    entry!(
+        qr,
+        "Qr",
+        Arity::Exactly(1),
+        A::default(),
+        "qr(matrix)",
+        "Qr[matrix]",
+        "机器矩阵Householder QR及真实重构残差。",
+        "Qr[{{1.,2.},{3.,4.},{5.,6.}}]"
+    );
+    entry!(
+        least_squares,
+        "LeastSquares",
+        Arity::Exactly(2),
+        A::default(),
+        "least_squares(matrix,rhs)",
+        "LeastSquares[matrix,rhs]",
+        "机器实数QR最小二乘；输出解与真实残差。",
+        "LeastSquares[{{1.,0.},{1.,1.},{1.,2.}},{1.,2.,2.}]"
+    );
+    entry!(
+        cholesky,
+        "Cholesky",
+        Arity::Exactly(1),
+        A::default(),
+        "cholesky(matrix)",
+        "Cholesky[matrix]",
+        "实对称正定矩阵Cholesky；输出下三角因子。",
+        "Cholesky[{{4.,2.},{2.,3.}}]"
+    );
+    entry!(
+        eigenvalues,
+        "Eigenvalues",
+        Arity::Exactly(1),
+        A::default(),
+        "eigenvalues(matrix)",
+        "Eigenvalues[matrix]",
+        "实对称机器矩阵Jacobi特征值，升序排列。",
+        "Eigenvalues[{{2.,1.},{1.,2.}}]"
+    );
+    entry!(
+        eigensystem,
+        "Eigensystem",
+        Arity::Exactly(1),
+        A::default(),
+        "eigensystem(matrix)",
+        "Eigensystem[matrix]",
+        "实对称机器矩阵特征系统，向量按列及真实残差。",
+        "Eigensystem[{{2.,1.},{1.,2.}}]"
+    );
+    entry!(
+        svd,
+        "Svd",
+        Arity::Exactly(1),
+        A::default(),
+        "svd(matrix)",
+        "Svd[matrix]",
+        "机器矩阵一侧Jacobi SVD，真实因子与残差。",
+        "Svd[{{1.,2.},{3.,4.},{5.,6.}}]"
     );
 }

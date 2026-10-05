@@ -134,3 +134,7 @@ R3.1提交 `10244da` 的CI `37235798105` 已全部通过。R3.2最终工作区91
 R3.2提交 `588952c` 的CI `37239127048` 已全部通过（含iOS27）。
 
 - [x] **R3.3a 数值/统计/数据与精确矩阵首批** — 新增46真实回调，当前共172注册名/167身份；新增min/max/minmax、整数/小数部分、名义precision/accuracy、chop/rationalize/clip/rescale/decimal；均值/中位数/样本或总体方差/std/协方差/相关/type7样本分位数/百分位与counts；filter/sort/sort_by/unique/take/drop/slice/flatten/reshape/zip/fold/group_by；identity/diag/transpose/adjoint/trace、精确det/inverse/rank/null_space/linear_solve及cross/norm/normalize。独立统计定义、正反计数与形状失败、排序键只执行一次、逆矩阵重构/精确残差/奇异欠定拒绝、十进制原文直接大浮点及误差界通过。矩阵消元复用Bareiss，仅精确有理数；机器矩阵、数值分解和分布分位数仍标partial/待实施，不伪装支持。输入/索引/节点/维数上限及ctx中断保留。描述版本4，运行时/发行仍.2。工作区918项/2ignored、前端59、Python15、fmt/Clippy已通过，纯WASM、TS确定导出无漂移、同源目录、lint/typecheck全部通过。R3.3整体仍未完成，后续为特殊函数/概率随机/数据解析/单位/机器矩阵及分解。
+
+- [x] **R3.3b 机器数值线代首批与健壮性修复** — 新增om-analysis纯算法层、七个真回调（lu/qr/cholesky/svd/eigenvalues/eigensystem/least_squares），目前179注册名/174身份。机器det/inverse与显式numeric方阵linear_solve接真实LU；矩形LU、完整QR/SVD、实对称谱与重复谱、正定失败、秩亏及极端尺度诊断、重构/正交性/解析残差和固定种子48矩阵通过。修复均值小项抵消、排序中断比较器、有理化包含零/负对称。工作区933项/2ignored、Python15、Clippy/fmt、纯WASM、前端59/lint/typecheck、TS确定导出无漂移及cargo-deny通过；当前描述版本5、应用仍.2。具体限制见numeric-analysis.md和目录；机器rank/null_space/欠定系统仍待完成，R3.3整体未完成。
+
+2026-10-05用户再次明确完整.3门禁：不把未完成模块移到.4提前发布，完整科研计算、绘图、三维与发行检查全部完成后发行。当前工作目标保持「尝试完善并发行」，尚未完成。

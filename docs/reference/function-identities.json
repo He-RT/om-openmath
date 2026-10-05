@@ -1140,37 +1140,51 @@
     {
       "id": "fn_000169",
       "initial_name": "lu",
-      "runtime_names": []
+      "runtime_names": [
+        "Lu"
+      ]
     },
     {
       "id": "fn_000170",
       "initial_name": "qr",
-      "runtime_names": []
+      "runtime_names": [
+        "Qr"
+      ]
     },
     {
       "id": "fn_000171",
       "initial_name": "cholesky",
-      "runtime_names": []
+      "runtime_names": [
+        "Cholesky"
+      ]
     },
     {
       "id": "fn_000172",
       "initial_name": "svd",
-      "runtime_names": []
+      "runtime_names": [
+        "Svd"
+      ]
     },
     {
       "id": "fn_000173",
       "initial_name": "eigenvalues",
-      "runtime_names": []
+      "runtime_names": [
+        "Eigenvalues"
+      ]
     },
     {
       "id": "fn_000174",
       "initial_name": "eigensystem",
-      "runtime_names": []
+      "runtime_names": [
+        "Eigensystem"
+      ]
     },
     {
       "id": "fn_000175",
       "initial_name": "least_squares",
-      "runtime_names": []
+      "runtime_names": [
+        "LeastSquares"
+      ]
     },
     {
       "id": "fn_000176",

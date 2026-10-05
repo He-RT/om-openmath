@@ -20,33 +20,26 @@ fn sorted(values: &[Expr], keys: &[Expr], ctx: &Interrupt) -> Result<Expr, EvalE
     if !numeric && !strings {
         return Err(error("排序键须为同类实数或字符串"));
     }
-    let mut order: Vec<_> = (0..values.len()).collect();
     let numbers = if numeric {
-        Some(keys.iter().map(rational).collect::<Result<Vec<_>, _>>()?)
+        let mut numbers = Vec::with_capacity(keys.len());
+        for key in keys {
+            ctx.tick()?;
+            numbers.push(rational(key)?);
+        }
+        Some(numbers)
     } else {
         None
     };
-    let mut abort = None;
-    order.sort_by(|a, b| {
-        if abort.is_none()
-            && let Err(e) = ctx.tick()
-        {
-            abort = Some(e);
-        }
-        if abort.is_some() {
-            return std::cmp::Ordering::Equal;
-        }
+    let order = super::ordering::indices(values.len(), ctx, |a, b| {
         if let Some(numbers) = &numbers {
-            numbers[*a].cmp(&numbers[*b])
+            numbers[a].cmp(&numbers[b])
         } else {
-            string(&keys[*a])
+            // The homogeneous string shape is checked before sorting.
+            string(&keys[a])
                 .unwrap_or("")
-                .cmp(string(&keys[*b]).unwrap_or(""))
+                .cmp(string(&keys[b]).unwrap_or(""))
         }
-    });
-    if let Some(e) = abort {
-        return Err(e.into());
-    }
+    })?;
     Ok(list(order.into_iter().map(|i| values[i].clone())))
 }
 pub(super) fn dispatch(

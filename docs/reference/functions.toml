@@ -1,6 +1,6 @@
 # 实际注册审计基线：ba3cd2b；稳定身份与名称分离；目录/副作用为设计数据。
 schema_version = 1
-metadata_version = 4
+metadata_version = 5
 validation_stage = "runtime_verified"
 current_version = "0.1.0-pre-alpha.2"
 target_version = "0.1.0-pre-alpha.3"
@@ -5315,7 +5315,7 @@ effect_class = "pure"
 id = "fn_000164"
 name = "det"
 category = "linear"
-status = "partial"
+status = "implemented"
 interface_status = "current"
 runtime_names = ["Det"]
 compatibility_names = []
@@ -5325,9 +5325,9 @@ signatures = ["det(matrix)"]
 parameters = [{ name = "matrix", kind = "positional", default = "必填", description = "矩阵/向量或签名的主要输入", availability = "r3" }]
 return_type = "scalar_vector_matrix_or_decomposition"
 semantics = "行列式"
-current_support = "当前精确有理数矩阵≤64×64，复用Bareiss证书；奇异/欠定/不相容及维度明确诊断。机器矩阵路径仍在实施，不静默将机器系数当成精确保证。"
+current_support = "精确有理数方阵复用Bareiss；机器实数方阵使用部分选主元LU对角乘积，数值溢出明确诊断。"
 target_support = "维度检查；精确有理数或机器实数的小型稠密矩阵，继承预算；零向量/奇异矩阵明确诊断。"
-precision_modes = ["exact"]
+precision_modes = ["exact", "machine"]
 precision_notes = "精确有理基础路径与明确的机器分解；分解不承诺任意精度。"
 current_platforms = ["cli", "desktop", "web", "ios"]
 target_platforms = ["cli", "desktop", "web", "ios"]
@@ -5347,7 +5347,7 @@ effect_class = "pure"
 id = "fn_000165"
 name = "inverse"
 category = "linear"
-status = "partial"
+status = "implemented"
 interface_status = "current"
 runtime_names = ["Inverse"]
 compatibility_names = []
@@ -5357,9 +5357,9 @@ signatures = ["inverse(matrix)"]
 parameters = [{ name = "matrix", kind = "positional", default = "必填", description = "矩阵/向量或签名的主要输入", availability = "r3" }]
 return_type = "scalar_vector_matrix_or_decomposition"
 semantics = "矩阵逆"
-current_support = "当前精确有理数矩阵≤64×64，复用Bareiss证书；奇异/欠定/不相容及维度明确诊断。机器矩阵路径仍在实施，不静默将机器系数当成精确保证。"
+current_support = "精确有理方阵复用Bareiss；机器方阵逐列LU求解，奇异/病态拒绝，相对枢轴阈值1e-12。"
 target_support = "维度检查；精确有理数或机器实数的小型稠密矩阵，继承预算；零向量/奇异矩阵明确诊断。"
-precision_modes = ["exact"]
+precision_modes = ["exact", "machine"]
 precision_notes = "精确有理基础路径与明确的机器分解；分解不承诺任意精度。"
 current_platforms = ["cli", "desktop", "web", "ios"]
 target_platforms = ["cli", "desktop", "web", "ios"]
@@ -5453,9 +5453,9 @@ signatures = ["linear_solve(matrix, rhs, mode: \"exact\")"]
 parameters = [{ name = "matrix", kind = "positional", default = "必填", description = "矩阵/向量或签名的主要输入", availability = "r3" }, { name = "rhs", kind = "positional", default = "必填", description = "只读右端函数或右端项", availability = "r3" }, { name = "mode", kind = "option", default = "exact", description = "exact/numeric", availability = "r3" }]
 return_type = "scalar_vector_matrix_or_decomposition"
 semantics = "线性系统解"
-current_support = "当前精确有理数矩阵≤64×64，复用Bareiss证书；奇异/欠定/不相容及维度明确诊断。机器矩阵路径仍在实施，不静默将机器系数当成精确保证。"
+current_support = "默认mode exact，精确有理矩阵复用Bareiss；mode numeric首版方阵部分选主元LU，奇异/病态/不相容维度拒绝。矩形机器系统及自由轴返回仍待接入。"
 target_support = "精确有理矩阵复用Bareiss；机器实数部分选主元；欠定结果保留自由轴，不强行给唯一解。"
-precision_modes = ["exact"]
+precision_modes = ["exact", "machine"]
 precision_notes = "精确有理基础路径与明确的机器分解；分解不承诺任意精度。"
 current_platforms = ["cli", "desktop", "web", "ios"]
 target_platforms = ["cli", "desktop", "web", "ios"]
@@ -5475,224 +5475,224 @@ effect_class = "pure"
 id = "fn_000169"
 name = "lu"
 category = "linear"
-status = "planned"
-interface_status = "planned"
-runtime_names = []
+status = "implemented"
+interface_status = "current"
+runtime_names = ["Lu"]
 compatibility_names = []
-current_modern_signatures = []
-current_wolfram_signatures = []
+current_modern_signatures = ["lu(matrix)"]
+current_wolfram_signatures = ["Lu[matrix]"]
 signatures = ["lu(matrix)"]
 parameters = [{ name = "matrix", kind = "positional", default = "必填", description = "矩阵/向量或签名的主要输入", availability = "r3" }]
 return_type = "scalar_vector_matrix_or_decomposition"
 semantics = "带置换的 LU"
-current_support = "当前无此规范接口的实现。"
+current_support = "机器实数矩形矩阵≤64×64，部分选主元LU，L(m×m)/U(m×n)满足P*A=L*U；返回1起始行置换及真实重构残差。奇异矩阵可以分解，求解时明确拒绝奇异/病态。"
 target_support = "机器实数稠密矩阵≤64×64；LU 部分选主元、QR Householder、SVD 一侧Jacobi；实对称特征系统Jacobi，非对称/复矩阵特征系统本版不承诺。"
-precision_modes = ["planned_machine"]
+precision_modes = ["machine"]
 precision_notes = "精确有理基础路径与明确的机器分解；分解不承诺任意精度。"
-current_platforms = []
+current_platforms = ["cli", "desktop", "web", "ios"]
 target_platforms = ["cli", "desktop", "web", "ios"]
 render_platforms = []
-current_examples = []
+current_examples = ["Lu[{{0.,2.},{1.,3.}}]"]
 planned_examples = ["lu([[2.0,1.0],[1.0,3.0]])"]
-sources = []
-tests = []
+sources = ["crates/om-eval/src/science/matrix_numeric.rs", "crates/om-analysis/src/matrix.rs"]
+tests = ["crates/om-eval/tests/numeric_matrix.rs", "crates/om-analysis/tests/matrix.rs"]
 acceptance = "独立数学期望、有效/无效参数、边界、预算、中断及声明的平台/精度测试；范围外不伪造成功。"
 pipe_arg = 1
 target_version = "0.1.0-pre-alpha.3"
 kind = "function"
-validation_stage = "documentation_only"
+validation_stage = "runtime_verified"
 effect_class = "pure"
 
 [[functions]]
 id = "fn_000170"
 name = "qr"
 category = "linear"
-status = "planned"
-interface_status = "planned"
-runtime_names = []
+status = "implemented"
+interface_status = "current"
+runtime_names = ["Qr"]
 compatibility_names = []
-current_modern_signatures = []
-current_wolfram_signatures = []
+current_modern_signatures = ["qr(matrix)"]
+current_wolfram_signatures = ["Qr[matrix]"]
 signatures = ["qr(matrix)"]
 parameters = [{ name = "matrix", kind = "positional", default = "必填", description = "矩阵/向量或签名的主要输入", availability = "r3" }]
 return_type = "scalar_vector_matrix_or_decomposition"
 semantics = "QR 分解"
-current_support = "当前无此规范接口的实现。"
+current_support = "机器实数矩形矩阵≤64×64，完整Householder Q(m×m)/R(m×n)，返回真实重构残差。"
 target_support = "机器实数稠密矩阵≤64×64；LU 部分选主元、QR Householder、SVD 一侧Jacobi；实对称特征系统Jacobi，非对称/复矩阵特征系统本版不承诺。"
-precision_modes = ["planned_machine"]
+precision_modes = ["machine"]
 precision_notes = "精确有理基础路径与明确的机器分解；分解不承诺任意精度。"
-current_platforms = []
+current_platforms = ["cli", "desktop", "web", "ios"]
 target_platforms = ["cli", "desktop", "web", "ios"]
 render_platforms = []
-current_examples = []
+current_examples = ["Qr[{{1.,2.},{3.,4.},{5.,6.}}]"]
 planned_examples = ["qr([[1.0,2.0],[3.0,4.0],[5.0,6.0]])"]
-sources = []
-tests = []
+sources = ["crates/om-eval/src/science/matrix_numeric.rs", "crates/om-analysis/src/matrix.rs"]
+tests = ["crates/om-eval/tests/numeric_matrix.rs", "crates/om-analysis/tests/matrix.rs"]
 acceptance = "独立数学期望、有效/无效参数、边界、预算、中断及声明的平台/精度测试；范围外不伪造成功。"
 pipe_arg = 1
 target_version = "0.1.0-pre-alpha.3"
 kind = "function"
-validation_stage = "documentation_only"
+validation_stage = "runtime_verified"
 effect_class = "pure"
 
 [[functions]]
 id = "fn_000171"
 name = "cholesky"
 category = "linear"
-status = "planned"
-interface_status = "planned"
-runtime_names = []
+status = "implemented"
+interface_status = "current"
+runtime_names = ["Cholesky"]
 compatibility_names = []
-current_modern_signatures = []
-current_wolfram_signatures = []
+current_modern_signatures = ["cholesky(matrix)"]
+current_wolfram_signatures = ["Cholesky[matrix]"]
 signatures = ["cholesky(matrix)"]
 parameters = [{ name = "matrix", kind = "positional", default = "必填", description = "矩阵/向量或签名的主要输入", availability = "r3" }]
 return_type = "scalar_vector_matrix_or_decomposition"
 semantics = "正定矩阵 Cholesky"
-current_support = "当前无此规范接口的实现。"
+current_support = "实对称正定机器矩阵≤64×64，返回下三角因子；按32机器epsilon检验对称/正定。非正定、近数值退化、非有限与中断拒绝。"
 target_support = "机器实数稠密矩阵≤64×64；LU 部分选主元、QR Householder、SVD 一侧Jacobi；实对称特征系统Jacobi，非对称/复矩阵特征系统本版不承诺。"
-precision_modes = ["planned_machine"]
+precision_modes = ["machine"]
 precision_notes = "精确有理基础路径与明确的机器分解；分解不承诺任意精度。"
-current_platforms = []
+current_platforms = ["cli", "desktop", "web", "ios"]
 target_platforms = ["cli", "desktop", "web", "ios"]
 render_platforms = []
-current_examples = []
+current_examples = ["Cholesky[{{4.,2.},{2.,3.}}]"]
 planned_examples = ["cholesky([[2.0,1.0],[1.0,3.0]])"]
-sources = []
-tests = []
+sources = ["crates/om-eval/src/science/matrix_numeric.rs", "crates/om-analysis/src/matrix/symmetric.rs"]
+tests = ["crates/om-analysis/tests/matrix.rs", "crates/om-eval/tests/numeric_matrix.rs"]
 acceptance = "独立数学期望、有效/无效参数、边界、预算、中断及声明的平台/精度测试；范围外不伪造成功。"
 pipe_arg = 1
 target_version = "0.1.0-pre-alpha.3"
 kind = "function"
-validation_stage = "documentation_only"
+validation_stage = "runtime_verified"
 effect_class = "pure"
 
 [[functions]]
 id = "fn_000172"
 name = "svd"
 category = "linear"
-status = "planned"
-interface_status = "planned"
-runtime_names = []
+status = "implemented"
+interface_status = "current"
+runtime_names = ["Svd"]
 compatibility_names = []
-current_modern_signatures = []
-current_wolfram_signatures = []
+current_modern_signatures = ["svd(matrix)"]
+current_wolfram_signatures = ["Svd[matrix]"]
 signatures = ["svd(matrix)"]
 parameters = [{ name = "matrix", kind = "positional", default = "必填", description = "矩阵/向量或签名的主要输入", availability = "r3" }]
 return_type = "scalar_vector_matrix_or_decomposition"
 semantics = "奇异值分解"
-current_support = "当前无此规范接口的实现。"
+current_support = "有限实数矩形矩阵≤64×64，一侧Jacobi，完整u(m×m)/s(m×n)/v(n×n)，A=u@s@transpose(v)，values降序；实际重构residual与sweeps；不可表示旋转下的微小相关残列可视作数值零，独立微小奇异值保留，未收敛/非有限/不可表示极端尺度拒绝；不把残差作为严格认证。"
 target_support = "机器实数稠密矩阵≤64×64；LU 部分选主元、QR Householder、SVD 一侧Jacobi；实对称特征系统Jacobi，非对称/复矩阵特征系统本版不承诺。"
-precision_modes = ["planned_machine"]
+precision_modes = ["machine"]
 precision_notes = "精确有理基础路径与明确的机器分解；分解不承诺任意精度。"
-current_platforms = []
+current_platforms = ["cli", "desktop", "web", "ios"]
 target_platforms = ["cli", "desktop", "web", "ios"]
 render_platforms = []
-current_examples = []
+current_examples = ["Svd[{{1.,2.},{3.,4.},{5.,6.}}]"]
 planned_examples = ["svd([[1.0,2.0],[3.0,4.0]])"]
-sources = []
-tests = []
+sources = ["crates/om-eval/src/science/matrix_numeric.rs", "crates/om-analysis/src/matrix/svd.rs"]
+tests = ["crates/om-analysis/tests/matrix.rs", "crates/om-eval/tests/numeric_matrix.rs"]
 acceptance = "独立数学期望、有效/无效参数、边界、预算、中断及声明的平台/精度测试；范围外不伪造成功。"
 pipe_arg = 1
 target_version = "0.1.0-pre-alpha.3"
 kind = "function"
-validation_stage = "documentation_only"
+validation_stage = "runtime_verified"
 effect_class = "pure"
 
 [[functions]]
 id = "fn_000173"
 name = "eigenvalues"
 category = "linear"
-status = "planned"
-interface_status = "planned"
-runtime_names = []
+status = "implemented"
+interface_status = "current"
+runtime_names = ["Eigenvalues"]
 compatibility_names = []
-current_modern_signatures = []
-current_wolfram_signatures = []
+current_modern_signatures = ["eigenvalues(matrix)"]
+current_wolfram_signatures = ["Eigenvalues[matrix]"]
 signatures = ["eigenvalues(matrix)"]
 parameters = [{ name = "matrix", kind = "positional", default = "必填", description = "矩阵/向量或签名的主要输入", availability = "r3" }]
 return_type = "scalar_vector_matrix_or_decomposition"
 semantics = "特征值"
-current_support = "当前无此规范接口的实现。"
+current_support = "仅实对称机器矩阵≤64×64，最大枢轴Jacobi；值升序。非对称/复矩阵明确不支持，有限旋转预算内未收敛失败。"
 target_support = "机器实数稠密矩阵≤64×64；LU 部分选主元、QR Householder、SVD 一侧Jacobi；实对称特征系统Jacobi，非对称/复矩阵特征系统本版不承诺。"
-precision_modes = ["planned_machine"]
+precision_modes = ["machine"]
 precision_notes = "精确有理基础路径与明确的机器分解；分解不承诺任意精度。"
-current_platforms = []
+current_platforms = ["cli", "desktop", "web", "ios"]
 target_platforms = ["cli", "desktop", "web", "ios"]
 render_platforms = []
-current_examples = []
+current_examples = ["Eigenvalues[{{2.,1.},{1.,2.}}]"]
 planned_examples = ["eigenvalues([[2.0,1.0],[1.0,2.0]])"]
-sources = []
-tests = []
+sources = ["crates/om-eval/src/science/matrix_numeric.rs", "crates/om-analysis/src/matrix/symmetric.rs"]
+tests = ["crates/om-analysis/tests/matrix.rs", "crates/om-eval/tests/numeric_matrix.rs"]
 acceptance = "独立数学期望、有效/无效参数、边界、预算、中断及声明的平台/精度测试；范围外不伪造成功。"
 pipe_arg = 1
 target_version = "0.1.0-pre-alpha.3"
 kind = "function"
-validation_stage = "documentation_only"
+validation_stage = "runtime_verified"
 effect_class = "pure"
 
 [[functions]]
 id = "fn_000174"
 name = "eigensystem"
 category = "linear"
-status = "planned"
-interface_status = "planned"
-runtime_names = []
+status = "implemented"
+interface_status = "current"
+runtime_names = ["Eigensystem"]
 compatibility_names = []
-current_modern_signatures = []
-current_wolfram_signatures = []
+current_modern_signatures = ["eigensystem(matrix)"]
+current_wolfram_signatures = ["Eigensystem[matrix]"]
 signatures = ["eigensystem(matrix)"]
 parameters = [{ name = "matrix", kind = "positional", default = "必填", description = "矩阵/向量或签名的主要输入", availability = "r3" }]
 return_type = "scalar_vector_matrix_or_decomposition"
 semantics = "特征值与特征向量"
-current_support = "当前无此规范接口的实现。"
+current_support = "仅实对称机器矩阵≤64×64，返回values/vectors（匹配列向量）/实际residual/method/rotations，向量正交与重根确定性；不将残差称作严格误差界。"
 target_support = "机器实数稠密矩阵≤64×64；LU 部分选主元、QR Householder、SVD 一侧Jacobi；实对称特征系统Jacobi，非对称/复矩阵特征系统本版不承诺。"
-precision_modes = ["planned_machine"]
+precision_modes = ["machine"]
 precision_notes = "精确有理基础路径与明确的机器分解；分解不承诺任意精度。"
-current_platforms = []
+current_platforms = ["cli", "desktop", "web", "ios"]
 target_platforms = ["cli", "desktop", "web", "ios"]
 render_platforms = []
-current_examples = []
+current_examples = ["Eigensystem[{{2.,1.},{1.,2.}}]"]
 planned_examples = ["eigensystem([[2.0,1.0],[1.0,2.0]])"]
-sources = []
-tests = []
+sources = ["crates/om-eval/src/science/matrix_numeric.rs", "crates/om-analysis/src/matrix/symmetric.rs"]
+tests = ["crates/om-analysis/tests/matrix.rs", "crates/om-eval/tests/numeric_matrix.rs"]
 acceptance = "独立数学期望、有效/无效参数、边界、预算、中断及声明的平台/精度测试；范围外不伪造成功。"
 pipe_arg = 1
 target_version = "0.1.0-pre-alpha.3"
 kind = "function"
-validation_stage = "documentation_only"
+validation_stage = "runtime_verified"
 effect_class = "pure"
 
 [[functions]]
 id = "fn_000175"
 name = "least_squares"
 category = "linear"
-status = "planned"
-interface_status = "planned"
-runtime_names = []
+status = "implemented"
+interface_status = "current"
+runtime_names = ["LeastSquares"]
 compatibility_names = []
-current_modern_signatures = []
-current_wolfram_signatures = []
+current_modern_signatures = ["least_squares(matrix,rhs)"]
+current_wolfram_signatures = ["LeastSquares[matrix,rhs]"]
 signatures = ["least_squares(matrix, rhs)"]
 parameters = [{ name = "matrix", kind = "positional", default = "必填", description = "矩阵/向量或签名的主要输入", availability = "r3" }, { name = "rhs", kind = "positional", default = "必填", description = "只读右端函数或右端项", availability = "r3" }]
 return_type = "scalar_vector_matrix_or_decomposition"
 semantics = "最小二乘解"
-current_support = "当前无此规范接口的实现。"
+current_support = "机器实数满列秩m≥n≤64，Householder QR最小二乘；返回solution/residual_norm/method/converged。欠定、秩不足及病态明确失败；相对枢轴阈值1e-12。"
 target_support = "机器实数稠密矩阵≤64×64；LU 部分选主元、QR Householder、SVD 一侧Jacobi；实对称特征系统Jacobi，非对称/复矩阵特征系统本版不承诺。"
-precision_modes = ["planned_machine"]
+precision_modes = ["machine"]
 precision_notes = "精确有理基础路径与明确的机器分解；分解不承诺任意精度。"
-current_platforms = []
+current_platforms = ["cli", "desktop", "web", "ios"]
 target_platforms = ["cli", "desktop", "web", "ios"]
 render_platforms = []
-current_examples = []
+current_examples = ["LeastSquares[{{1.,0.},{1.,1.},{1.,2.}},{1.,2.,2.}]"]
 planned_examples = ["least_squares([[1.0,0.0],[1.0,1.0],[1.0,2.0]],[1.0,2.0,3.0])"]
-sources = []
-tests = []
+sources = ["crates/om-eval/src/science/matrix_numeric.rs", "crates/om-analysis/src/matrix.rs"]
+tests = ["crates/om-eval/tests/numeric_matrix.rs", "crates/om-analysis/tests/matrix.rs"]
 acceptance = "独立数学期望、有效/无效参数、边界、预算、中断及声明的平台/精度测试；范围外不伪造成功。"
 pipe_arg = 1
 target_version = "0.1.0-pre-alpha.3"
 kind = "function"
-validation_stage = "documentation_only"
+validation_stage = "runtime_verified"
 effect_class = "pure"
 
 [[functions]]
@@ -28427,10 +28427,10 @@ name = "LinearSolve"
 modern_name = "linear_solve"
 aliases = ["linearsolve"]
 min = 2
-max = 2
+max = 3
 attributes = ["protected"]
 parameters = [{ name = "matrix", value_type = "expression", required = true, variadic = false, held = false }, { name = "rhs", value_type = "expression", required = true, variadic = false, held = false }]
-options = []
+options = [{ name = "mode", runtime_name = "Mode", value_type = "enum", required = false, default_source = "\"exact\"", enum_values = ["exact", "numeric"], variadic = false, held = false }]
 
 [[runtime]]
 name = "Cross"
@@ -28481,3 +28481,73 @@ max = 3
 attributes = ["protected"]
 parameters = [{ name = "value", value_type = "expression", required = true, variadic = false, held = false }]
 options = [{ name = "from", runtime_name = "From", value_type = "expression", required = false, variadic = false, held = false, default_context = "从真实数据最小/最大值推断；零宽区间拒绝" }, { name = "to", runtime_name = "To", value_type = "expression", required = false, variadic = false, held = false, default_source = "{0,1}" }]
+
+[[runtime]]
+name = "Lu"
+modern_name = "lu"
+aliases = []
+min = 1
+max = 1
+attributes = ["protected"]
+parameters = [{ name = "matrix", value_type = "expression", required = true, variadic = false, held = false }]
+options = []
+
+[[runtime]]
+name = "Qr"
+modern_name = "qr"
+aliases = []
+min = 1
+max = 1
+attributes = ["protected"]
+parameters = [{ name = "matrix", value_type = "expression", required = true, variadic = false, held = false }]
+options = []
+
+[[runtime]]
+name = "LeastSquares"
+modern_name = "least_squares"
+aliases = []
+min = 2
+max = 2
+attributes = ["protected"]
+parameters = [{ name = "matrix", value_type = "expression", required = true, variadic = false, held = false }, { name = "rhs", value_type = "expression", required = true, variadic = false, held = false }]
+options = []
+
+[[runtime]]
+name = "Cholesky"
+modern_name = "cholesky"
+aliases = []
+min = 1
+max = 1
+attributes = ["protected"]
+parameters = [{ name = "matrix", value_type = "expression", required = true, variadic = false, held = false }]
+options = []
+
+[[runtime]]
+name = "Eigenvalues"
+modern_name = "eigenvalues"
+aliases = []
+min = 1
+max = 1
+attributes = ["protected"]
+parameters = [{ name = "matrix", value_type = "expression", required = true, variadic = false, held = false }]
+options = []
+
+[[runtime]]
+name = "Eigensystem"
+modern_name = "eigensystem"
+aliases = []
+min = 1
+max = 1
+attributes = ["protected"]
+parameters = [{ name = "matrix", value_type = "expression", required = true, variadic = false, held = false }]
+options = []
+
+[[runtime]]
+name = "Svd"
+modern_name = "svd"
+aliases = []
+min = 1
+max = 1
+attributes = ["protected"]
+parameters = [{ name = "matrix", value_type = "expression", required = true, variadic = false, held = false }]
+options = []

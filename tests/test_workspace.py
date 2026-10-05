@@ -38,6 +38,7 @@ class WorkspaceTests(unittest.TestCase):
         packages = {p["name"]: p for p in json.loads(result.stdout)["packages"]}
         expected = {
             "om-num": set(),
+            "om-analysis": {"om-num"},
             "om-core": {"om-num"},
             "om-parse": {"om-core"},
             "om-format": {"om-core"},
@@ -66,6 +67,7 @@ class WorkspaceTests(unittest.TestCase):
                 reachable.add(node)
                 pending.extend(graph[node])
         self.assertNotIn("om-core", reachable)
+        self.assertEqual(graph["om-analysis"], {"om-num"})
         self.assertIn("native", packages["om-kernel"]["features"])
         self.assertIn("http", packages["om-llm"]["features"])
 

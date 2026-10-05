@@ -9,6 +9,13 @@ pub(crate) fn differentiate(e: &Expr, x: &Expr, ctx: &Interrupt) -> Result<Expr,
     diff::apply(&[e.clone(), x.clone()], ctx)?
         .ok_or_else(|| EvalError::Other("无法按给定变量求导".into()))
 }
+pub(crate) fn partial_fractions(
+    e: &Expr,
+    x: &Expr,
+    ctx: &Interrupt,
+) -> Result<Option<Expr>, EvalError> {
+    apart::apply(&[e.clone(), x.clone()], ctx)
+}
 #[path = "algebra_poly.rs"]
 mod poly;
 #[path = "algebra_root.rs"]

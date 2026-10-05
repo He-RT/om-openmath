@@ -1,6 +1,6 @@
 # 微积分与数值分析实现
 
-本页随 `.3` 开发批次记录真实算法，不是完整阶段已完成的声明。当前首先接通六个笛卡尔微分工具；积分、极限/级数、ODE、优化与拟合继续按 NEXT_RELEASE 实施。
+本页随 `.3` 开发批次记录真实算法，不是完整阶段已完成的声明。当前已接通笛卡尔微分、精确规则积分和数值积分；极限/级数、ODE、优化与拟合继续按 NEXT_RELEASE 实施。
 
 ## 笛卡尔微分
 
@@ -31,7 +31,7 @@ integrate((x^2-1)/(x-1), x: 0..2, mode: "numeric", breakpoints: [1])
 n_integrate(sin(x), [x,0,pi])
 ```
 
-当前 `Integrate` 的数学路径是显式 numeric，`NIntegrate` 默认为 numeric；符号/精确分支尚未交付，默认 exact 继续保留原式并说明，不自动变为近似。数值模式是机器实数的一维自适应 Gauss–Kronrod 15/7，默认 abs_tol=1e-10/rel_tol=1e-8、max_intervals=10000（限1..100000）、method=gauss_kronrod、precision=machine。高精度请求明确拒绝，不能靠补足显示位数宣称精度。
+`Integrate` 默认 exact 使用下述精确规则，显式 numeric 或 `NIntegrate` 才使用数值路径；不能处理的精确请求保留原式，不自动近似。数值模式是机器实数的一维自适应 Gauss–Kronrod 15/7，默认 abs_tol=1e-10/rel_tol=1e-8、max_intervals=10000（限1..100000）、method=gauss_kronrod、precision=machine。高精度数值积分请求明确拒绝，不能靠补足显示位数宣称精度。
 
 返回 Record：value 是实际近似值，error_estimate 是绝对误差估计，converged 是成功收敛状态，evaluations/intervals 是实际工作统计，precision/method 记录真实路径，certified=false。参与后续数值运算时显式使用 `.value`。估计误差不是严格区间或证明，宿主专门的数值诊断展示在 R3.5 接续。
 
@@ -41,4 +41,30 @@ n_integrate(sin(x), [x,0,pi])
 
 非有限样本、输入/方法/精度错误、限额耗尽、误差停滞/机器分辨率及真实取消分别失败；已算出的部分估计、误差和工作量仅作未收敛诊断，保留调用源码。零长度有限范围返回0而不采样，相同无限端点拒绝。每轮规则、堆统计、回调与编译均使用真实 Interrupt。
 
-独立解析参考、无限尾部/反向/端点奇点/断点、发散拒绝、极端尺度、原始孔洞、只读与预算验证见 [纯算法](../../crates/om-analysis/tests/integration.rs)、[实际API](../../crates/om-eval/tests/numeric_integration.rs)。原53数学期望不改；完整符号积分及 R3.4 其他模块仍须继续实施。
+独立解析参考、无限尾部/反向/端点奇点/断点、发散拒绝、极端尺度、原始孔洞、只读与预算验证见 [纯算法](../../crates/om-analysis/tests/integration.rs)、[实际API](../../crates/om-eval/tests/numeric_integration.rs)。原53数学期望不改；R3.4 其他模块继续实施。
+
+## 精确规则积分
+
+```text
+integrate(3*x^4+2*x-7, x)
+integrate(sin(3*x+2), x)
+integrate(2*x*cos(x^2), x)
+integrate(x^2*exp(2*x), x)
+integrate(x*log(x), x)
+integrate(1/(x^2+1)^2, x)
+integrate(exp(-2*x^2+4*x), x)
+integrate(exp(-x^2), x: -inf..inf)       # sqrt(pi)
+integrate(x^2, x: 0..1)                 # 精确 1/3
+```
+
+公式依据包括 [NIST 微积分](https://dlmf.nist.gov/1.4) 与 [NIST Erf 定义](https://dlmf.nist.gov/7.2)；本项目自行实现规则与递推，不复制外部运行时代码。
+
+真实规则覆盖最多256次多项式、仿射代换的常见初等/反三角/反双曲及实立方根形式、识别出的导数因子链式代换、最多16次多项式的有限分部积分；有理式复用 Q 系数精确部分分式，处理一次/二次因子及重复二次递推（重复≤32）。Gaussian 二次完成平方转 Erf；Gaussian完整或半无限区间定积分要求明确正实衰减系数。没有通用 Risch 或任意复路径积分。
+
+exact原函数验证首版要求精确系数，不能用浮点舍入成零伪造证书。含近似系数的被积函数须显式有理化，或对定积分选择 numeric；不把机器小数默默填充成假精度。端点值仍保留其已有数值精度。
+
+每个候选原函数实际经过求导，并以等价三角比值变换及精确化简验证残差为零；失败或预算耗尽保留输入，附近采样不成为符号证书。符号系数的非零假设、原源码孔洞、Log/分数幂的充分主值分支条件进入 ConditionalExpression。分支条件可能比最大数学定义域更严格，表示已交付的局部原函数范围；不宣称通过省略条件涵盖全部复平面。输出不包括任意积分常数。
+
+有限定积分使用已证明的原函数，先验证局部条件在整个实区间成立，再消去哑变量条件，额外验证实际极点不跨区间；当前检查可识别的低次有理极点与有理 Pi 三角边界。可去孔洞可按不当积分计算，真正极点拒绝；无法证明符号幂在端点可积、参数区域或复杂分支时保持原式，不用端点相减伪造成功。尚未支持一般代数奇点端点和任意参数收敛条件。数值选项不适用于 exact 分支。
+
+真求导、独立多项式系数向量、重复因子、分部积分、Gaussian、区间极点/分支、参数拒绝、只读与预算验收见 [symbolic_integration.rs](../../crates/om-eval/tests/symbolic_integration.rs)。独立算法的有理积分递推与基本链式/分部积分规则由本项目编写，无新依赖、外部运行时或 unsafe。

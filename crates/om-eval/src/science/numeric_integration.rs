@@ -86,9 +86,7 @@ pub(super) fn dispatch(
         return Err(error("积分模式不受支持：NIntegrate只支持numeric"));
     }
     if mode != "numeric" {
-        return Err(error(
-            "符号积分尚在后续批次实施；保留原式，不自动进行数值近似",
-        ));
+        return Ok(Some(super::symbolic_integration::apply(ev, args, ctx)?));
     }
     if let Some(p) = args.options.get("WorkingPrecision") {
         let p = fork.evaluate(p, ctx)?;

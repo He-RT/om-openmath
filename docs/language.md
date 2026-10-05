@@ -82,7 +82,7 @@ plot(x^2+y^2=1, x: -2..2, y: -2..2, view: "contour")
 
 管道根据元数据选择主参数；map的数据在第二位置，不重复执行左侧。fn按后续箭头识别，原fn(x)调用仍保留；内层参数可遮蔽外层，插入值不会被同名参数捕获。范围为有方向闭区间，切片端点必须存在且不能为0；旧单项索引0取头仍保留。记录的键按文字保存，重复键拒绝，空{}仍为列表，空记录用record()。矩阵乘积双线性；两个向量的内积共轭第一向量，尺寸上限64。Wolfram @原义不变。
 
-模式只选择已有真实算法；精确求解不能接受数值精度选项，局部find_root不承诺完整解集。初值与括区间互斥。line/零轮廓contour已支持，显式机器数值积分已接通；surface/density、符号积分、ODE及explore按后续批次交付，当前不会被当作成功计算。笔记本继续仅保存原源码，使用本节源码时需要.3；不自动改写旧笔记本。
+模式只选择已有真实算法；精确求解不能接受数值精度选项，局部find_root不承诺完整解集。初值与括区间互斥。line/零轮廓contour已支持，精确规则与显式机器积分已接通；surface/density、ODE及explore按后续批次交付，当前不会被当作成功计算。笔记本继续仅保存原源码，使用本节源码时需要.3；不自动改写旧笔记本。
 
 ## .3 开发版的概率与特殊函数（R3.3d）
 
@@ -108,4 +108,8 @@ seed_random(42)                                 # 重置主会话流
 
 ## .3 开发版的数值积分
 
-显式 `integrate(expr,x:a..b,mode:"numeric")` 或 `n_integrate(expr,[x,a,b])` 使用自适应GK15/7机器路径；结果含 value/error_estimate/converged/evaluations/intervals 和 certified=false，可用 `.value` 参与运算。支持有限、反向、无限范围和 breakpoints；高精度/未实现的exact不静默降级，原极点、失败和取消保留真实诊断。详细边界见[微积分实现](design/calculus.md)。公开 `.2` 不包含这些新增入口。
+显式 `integrate(expr,x:a..b,mode:"numeric")` 或 `n_integrate(expr,[x,a,b])` 使用自适应GK15/7机器路径；结果含 value/error_estimate/converged/evaluations/intervals 和 certified=false，可用 `.value` 参与运算。支持有限、反向、无限范围和 breakpoints；高精度numeric/不支持的exact不静默降级，原极点、失败和取消保留真实诊断。详细边界见[微积分实现](design/calculus.md)。公开 `.2` 不包含这些新增入口。
+
+## .3 开发版的精确规则积分
+
+`integrate(expr,x)` 默认exact：多项式、常用仿射初等形式、识别链式代换、有限分部积分、一次/二次因子的精确有理式及Gaussian→Erf。所有候选经过真实求导/精确残差验证；充分成立条件保留在ConditionalExpression，无法证明区间奇点/参数可积或分支时保留输入。有限定积分支持已验证区间，`integrate(x^2,x:0..1)` 为精确1/3，整个实轴Gaussian可得sqrt(pi)。精确请求不会静默改成近似，详细范围见[微积分实现](design/calculus.md)。

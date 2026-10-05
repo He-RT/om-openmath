@@ -23,7 +23,7 @@
 | [`generating_function`](#generating_function) | 后续规划 | 规划接口，当前不可用 | 微积分与变换中的 GeneratingFunction 能力，进入后续全景目录。 |
 | [`grad`](#grad) | 已实现 | 当前可用 | 笛卡尔梯度 |
 | [`hessian`](#hessian) | 已实现 | 当前可用 | Hessian 矩阵 |
-| [`integrate`](#integrate) | 部分支持 | 现有入口可用，统一接口待实施 | 符号或显式数值积分 |
+| [`integrate`](#integrate) | 已实现 | 当前可用 | 符号或显式数值积分 |
 | [`inverse_fourier_transform`](#inverse_fourier_transform) | 后续规划 | 规划接口，当前不可用 | 微积分与变换中的 InverseFourierTransform 能力，进入后续全景目录。 |
 | [`inverse_laplace_transform`](#inverse_laplace_transform) | 后续规划 | 规划接口，当前不可用 | 微积分与变换中的 InverseLaplaceTransform 能力，进入后续全景目录。 |
 | [`inverse_z_transform`](#inverse_z_transform) | 后续规划 | 规划接口，当前不可用 | 微积分与变换中的 InverseZTransform 能力，进入后续全景目录。 |
@@ -650,17 +650,17 @@ Hessian[x^2*y,{x,y}]
 
 ## integrate
 
-**当前实现：部分支持；目标接口：现有入口可用，统一接口待实施。** 目标版本：`0.1.0-pre-alpha.3`。
+**当前实现：已实现；目标接口：当前可用。** 目标版本：`0.1.0-pre-alpha.3`。
 
 - 稳定身份：`fn_000148`；条目类型：`function`。
 - 副作用分类（设计预留）：`pure`；参数验证阶段：`runtime_verified`，不构成工具授权。
 
 符号或显式数值积分
 
-- 当前支持：一维真实自适应GK15/7机器积分，有限/反向/单侧与双侧无限区间、显式内部断点。源码readonly原极点保留、坐标局部化，实际误差/采样/区间记录；误差非证书。Mode exact默认尚未交付，不自动近似；precision只machine，奇点/非收敛/舍入/限额/预算真实失败并报告已有部分估计。
+- 当前支持：默认exact：有界多项式/仿射初等形式/可识别链式/有限分部积分、Q系数有理式一次或二次因子（重复≤32）、Gaussian→Erf，exact原函数验证限精确系数，近似系数须用户显式有理化；所有候选实际求导并精确化简验证；保留非零/实轴/主值分支条件。定积分验证真实端点和区间奇点，可去孔洞与实际极点区分；无法证明参数收敛/分支时原子拒绝。Gaussian完整或半无限区间限明确正实二次系数。numeric保持实际GK15/7机器路径，误差非证书，高精度/非收敛/预算真实失败。
 - 目标范围：符号：多项式、线性初等、有限分部积分、一次/二次因子有理式、Gaussian→Erf，保留条件；数值：一维自适应Gauss–Kronrod15/7、有限/无限区间和显式断点，报告误差估计。
 - 返回：exact_expression_or_numeric_diagnostics
-- 精度：仅明确机器算法；指定高精度拒绝，近似误差是估计不是严格包围；符号积分后续同入口接通。
+- 精度：exact仅所列规则并实际求导验证，不自动近似；符号常数/条件保持。numeric仅机器精度和估计误差，不把误差当包围证书或宣称通用Risch。
 - 当前计算平台：cli, desktop, web, ios；目标计算平台：cli, desktop, web, ios。
 - 目标图形/交互展示平台：不适用或后续未定。
 - 兼容名称：`Integrate`、`NIntegrate`。
@@ -669,14 +669,14 @@ Hessian[x^2*y,{x,y}]
 当前现代签名：
 
 ```text
-integrate(expr,axis,mode:"numeric")
+integrate(expr,variable_or_range,mode:"exact")
 n_integrate(expr,axis)
 ```
 
 当前 Wolfram 签名：
 
 ```text
-Integrate[expr,axis,Mode->"numeric"]
+Integrate[expr,variable_or_range]
 NIntegrate[expr,axis]
 ```
 
@@ -694,22 +694,15 @@ integrate(expr, x); integrate(expr, x: a..b, mode: "exact")
 当前已登记示例（Wolfram）：
 
 ```wolfram
-Integrate[x^2,{x,0,1},Mode->"numeric"]
+Integrate[x^2,x]
 NIntegrate[x^2,{x,0,1}]
-```
-
-规划示例（尚未执行；需要目标版本，后续条目不承诺 .3）：
-
-```text
-integrate(x^2, x)
-integrate(exp(-x^2), x: -inf..inf, mode: "numeric")
 ```
 
 验收：独立数学期望、有效/无效参数、边界、预算、中断及声明的平台/精度测试；范围外不伪造成功。
 
-当前源码：[crates/om-analysis/src/integration.rs](../../crates/om-analysis/src/integration.rs)、[crates/om-eval/src/science/numeric_integration.rs](../../crates/om-eval/src/science/numeric_integration.rs)、[crates/om-eval/src/science/integration_registry.rs](../../crates/om-eval/src/science/integration_registry.rs)。
+当前源码：[crates/om-analysis/src/integration.rs](../../crates/om-analysis/src/integration.rs)、[crates/om-eval/src/science/numeric_integration.rs](../../crates/om-eval/src/science/numeric_integration.rs)、[crates/om-eval/src/science/integration_registry.rs](../../crates/om-eval/src/science/integration_registry.rs)、[crates/om-eval/src/science/symbolic_integration.rs](../../crates/om-eval/src/science/symbolic_integration.rs)、[crates/om-eval/src/science/integral_rules.rs](../../crates/om-eval/src/science/integral_rules.rs)、[crates/om-eval/src/science/integral_rational.rs](../../crates/om-eval/src/science/integral_rational.rs)。
 
-当前测试引用：[crates/om-analysis/tests/integration.rs](../../crates/om-analysis/tests/integration.rs)、[crates/om-eval/tests/numeric_integration.rs](../../crates/om-eval/tests/numeric_integration.rs)。
+当前测试引用：[crates/om-analysis/tests/integration.rs](../../crates/om-analysis/tests/integration.rs)、[crates/om-eval/tests/numeric_integration.rs](../../crates/om-eval/tests/numeric_integration.rs)、[crates/om-eval/tests/symbolic_integration.rs](../../crates/om-eval/tests/symbolic_integration.rs)。
 
 ## inverse_fourier_transform
 

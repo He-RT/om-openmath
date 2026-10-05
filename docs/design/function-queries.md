@@ -4,7 +4,7 @@
 
 ```text
 help("ode")                       # 可看规划；executable=false
-help("integrate")                 # 当前partial：显式numeric可执行
+help("integrate")                 # 精确规则/numeric及其支持边界
 help("map").runtime.pipe_arg      # 真实 2
 options("quantity")               # 单位必填二选一的实际规则
 functions()                       # 默认仅当前回调身份，不含规划

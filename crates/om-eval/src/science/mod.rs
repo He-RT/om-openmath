@@ -4,6 +4,9 @@ mod calculus_registry;
 mod csv_data;
 mod data;
 mod data_number;
+mod integral_poly;
+mod integral_rational;
+mod integral_rules;
 mod integration_registry;
 mod io_registry;
 mod json_data;
@@ -20,6 +23,7 @@ mod root_registry;
 mod roots;
 mod special;
 mod statistics;
+mod symbolic_integration;
 mod table_data;
 mod unit_parse;
 mod unit_registry;
@@ -33,7 +37,7 @@ pub(crate) use special::is_machine_special;
 pub(crate) fn calculus_terminal(s: om_core::Symbol) -> bool {
     matches!(
         s.name(),
-        "Grad" | "Jacobian" | "Hessian" | "Divergence" | "Curl" | "Laplacian"
+        "Grad" | "Jacobian" | "Hessian" | "Divergence" | "Curl" | "Laplacian" | "Integrate"
     )
 }
 use std::collections::BTreeMap;

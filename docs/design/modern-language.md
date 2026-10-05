@@ -21,7 +21,7 @@
 | 条件与消元 | `reduce`、`eliminate` | 各自保持布尔解集/消元关系语义 | Reduce/Eliminate |
 | 化简 | `simplify(expr, level: "basic", assumptions: true)` | deep调用真实深层路径，仍保护主值与定义域 | Simplify/FullSimplify |
 | 微分 | `diff(expr, x, order: 1)` | 具名阶数或旧混合规格；grad/jacobian/hessian独立 | D/diff/derivative |
-| 积分 | `integrate(expr, x, mode: "exact")` | 默认exact尚未实现；显式numeric已接通，要求边界，不静默转换 | Integrate/NIntegrate |
+| 积分 | `integrate(expr, x, mode: "exact")` | 默认精确规则及成立条件；numeric要求边界，不静默转换 | Integrate/NIntegrate |
 | 绘图 | `plot(expr, ...axes, view: ...)` | 一轴line、二轴surface；contour/density明确选择 | Plot/ContourPlot及后续绘图族 |
 | 参数图 | `parametric_plot(vector, ...axes)` | 一参数曲线、两参数三维曲面；坐标长度决定空间维度 | ParametricPlot/ParametricPlot3D（目标） |
 | 优化 | `optimize(expr, vars, goal: "min", scope: "local")` | 局部为默认；global仅限已认证支持的凸二次子集 | FindMinimum/FindMaximum（目标） |
@@ -33,7 +33,7 @@
 
 ## 组合语法与降级到表达式树
 
-以下示例需要 `.3` 开发版本；`integrate(mode:"numeric")` 已接通；符号积分、深层科研能力与 `explore` 按后续批次交付：
+以下示例需要 `.3` 开发版本；精确规则与数值 `integrate` 已接通；深层科研能力与 `explore` 按后续批次交付：
 
 ```text
 let f(x) = sin(x) + x^2
@@ -91,7 +91,7 @@ numeric(1/10, precision: 50)  # .3命名写法；当前可用 N(1/10,50)
 
 - 规范函数ID保持稳定，别名和显示名称不作为唯一身份。参数的文字说明与实际类型/必填/枚举/默认值分开，后续可生成模型无关的工具描述；能力查询区分实现、精度、展示平台与任务权限，规划条目不能被推荐为当前可执行工具。
 
-本轮目录先分配独立 `fn_000001` 等稳定身份，[身份账本](../reference/function-identities.json)锁定已有注册归属；规范名称可变但ID不自动重分配。目录 `metadata_version=14`，runtime 区域已提供可验证类型、必填、枚举、数值范围、字面或上下文默认值。GetFunctionCatalog 仅返回实际回调；GetCapabilities 区分内核身份、调用方指定的展示平台与未来任务权限（当前为 null）。副作用标签不授权任意嵌套表达式，`unclassified` 不授予执行权。目标参数文字与六项 Notebook 工具仍是预留，不作为可执行 schema。
+本轮目录先分配独立 `fn_000001` 等稳定身份，[身份账本](../reference/function-identities.json)锁定已有注册归属；规范名称可变但ID不自动重分配。目录 `metadata_version=15`，runtime 区域已提供可验证类型、必填、枚举、数值范围、字面或上下文默认值。GetFunctionCatalog 仅返回实际回调；GetCapabilities 区分内核身份、调用方指定的展示平台与未来任务权限（当前为 null）。副作用标签不授权任意嵌套表达式，`unclassified` 不授予执行权。目标参数文字与六项 Notebook 工具仍是预留，不作为可执行 schema。
 
 - 可执行入口声明 `pure` / `read_session` / `write_session` / `write_document` / `host_io` 副作用类别。标签只用于描述和筛选，只读求值仍由实际执行环境保护；间接用户函数、随机状态与宿主操作不能绕过约束。
 - 解析、求值、数据结果和公共Notebook协议不携带Pi/Rig类型。框架适配器可以转换消息与工具格式，不能改变精确/近似、局部/全局、条件或版本冲突的业务含义。

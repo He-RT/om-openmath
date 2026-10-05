@@ -8709,8 +8709,8 @@
       "name": "integrate",
       "category": "calculus",
       "kind": "function",
-      "status": "partial",
-      "interface_status": "partial",
+      "status": "implemented",
+      "interface_status": "current",
       "runtime_names": [
         "Integrate",
         "NIntegrate"
@@ -8720,19 +8720,20 @@
         "NIntegrate"
       ],
       "current_modern_signatures": [
-        "integrate(expr,axis,mode:\"numeric\")",
+        "integrate(expr,variable_or_range,mode:\"exact\")",
         "n_integrate(expr,axis)"
       ],
       "signatures": [
         "integrate(expr, x); integrate(expr, x: a..b, mode: \"exact\")"
       ],
-      "current_support": "一维真实自适应GK15/7机器积分，有限/反向/单侧与双侧无限区间、显式内部断点。源码readonly原极点保留、坐标局部化，实际误差/采样/区间记录；误差非证书。Mode exact默认尚未交付，不自动近似；precision只machine，奇点/非收敛/舍入/限额/预算真实失败并报告已有部分估计。",
+      "current_support": "默认exact：有界多项式/仿射初等形式/可识别链式/有限分部积分、Q系数有理式一次或二次因子（重复≤32）、Gaussian→Erf，exact原函数验证限精确系数，近似系数须用户显式有理化；所有候选实际求导并精确化简验证；保留非零/实轴/主值分支条件。定积分验证真实端点和区间奇点，可去孔洞与实际极点区分；无法证明参数收敛/分支时原子拒绝。Gaussian完整或半无限区间限明确正实二次系数。numeric保持实际GK15/7机器路径，误差非证书，高精度/非收敛/预算真实失败。",
       "target_support": "符号：多项式、线性初等、有限分部积分、一次/二次因子有理式、Gaussian→Erf，保留条件；数值：一维自适应Gauss–Kronrod15/7、有限/无限区间和显式断点，报告误差估计。",
       "return_type": "exact_expression_or_numeric_diagnostics",
       "precision_modes": [
+        "exact_symbolic",
         "machine"
       ],
-      "precision_notes": "仅明确机器算法；指定高精度拒绝，近似误差是估计不是严格包围；符号积分后续同入口接通。",
+      "precision_notes": "exact仅所列规则并实际求导验证，不自动近似；符号常数/条件保持。numeric仅机器精度和估计误差，不把误差当包围证书或宣称通用Risch。",
       "current_platforms": [
         "cli",
         "desktop",
@@ -8762,13 +8763,10 @@
         }
       ],
       "current_examples": [
-        "Integrate[x^2,{x,0,1},Mode->\"numeric\"]",
+        "Integrate[x^2,x]",
         "NIntegrate[x^2,{x,0,1}]"
       ],
-      "planned_examples": [
-        "integrate(x^2, x)",
-        "integrate(exp(-x^2), x: -inf..inf, mode: \"numeric\")"
-      ]
+      "planned_examples": []
     },
     {
       "id": "fn_000149",

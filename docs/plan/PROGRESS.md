@@ -186,3 +186,9 @@ R3.4a提交 `25f5c75` 的CI37341713046全部通过（Rust/前端/依赖/iOS27）
 - [x] **R3.4b 自适应机器数值积分** — om-analysis纯GK15/7、最大估计误差细分、有限/反向/无限和内部断点、原式只读编译、实际误差与样本/区间统计接通Integrate显式numeric/NIntegrate。双侧尾部独立，不把发散相消成主值成功；非有限/输入/限额/舍入/回调/真实Abort区分，已有部分估计只做未收敛诊断，certified=false。机器路径不接受虚假高精度，exact默认仍保留诊断，不冒充符号算法；同ID148当前partial。新轴语法与旧位置/Wolfram调用、原始孔洞/断点、全局坐标值/间接写入、独立解析/极端尺度/奇点/预算通过。219回调/213身份、描述14/.2；980Rust/2ignored、前端59、Python16、Clippy/fmt/纯WASM/TS/deny通过，原53不变。磁盘free24GiB，无新增incremental。下一任务符号积分及极限/级数，然后ODE/插值/优化/拟合和原R3.5–R3.6，完整.3仍未发行。
 
 R3.4b数值积分提交 `abccd9e`。随后同步非生成的语言/设计/帮助例，规划不可执行示例改为仍规划ode，integrate说明当前partial numeric；不更改功能源码或数学期望。
+
+R3.4b运行时提交 `abccd9e`、文档同步 `502c970`；后者CI37352256560的Rust/前端/依赖通过，iPhone原17总1276.092ms、原18总1327.551ms失败，原1s断言保持。实际附件kernel318.610/161.042ms、恢复953.721/1151.942ms，主线程恢复仍是额外延迟；target/ci-evidence/r34b保留记录，不凭数学门禁成功标移动性能全通过。
+
+- [x] **R3.4c 精确规则积分与条件证明** — Integrate默认exact已接入有界多项式、常用仿射初等/反三角反双曲/实立方根、识别链式、有限分部、Q一次/二次因子部分分式及重复二次递推、Gaussian→Erf。候选实际求导，经等价三角比值及精确FullSimplify验证；近似系数不得以浮点舍入伪证，须显式有理化或numeric定积分。充分非零/实轴/主值条件保留，有限区间先证明局部条件并消去哑变量，再证实际极点/原函数分支连续；可去Q孔洞与实极点区分，未知参数端点收敛或复路径拒绝。完整/半无限Gaussian限明确正实衰减系数，无通用Risch承诺。六组真实验收含32固定种子独立多项式系数、求导/分部/重复因子/Gaussian、branch/parameter/interval/readonly/budget；原53期望未改。219回调/213身份、描述15，应用仍.2。最终986Rust/2ignored、59前端、16Python、Clippy/fmt/纯WASM/TS/deny全通过；CLI精确1/3和sqrt(pi)/2无诊断，1/x保留非零/实轴/主值条件。磁盘可用约22GiB，无incremental回填。下一任务极限/有限Taylor/normal及系数，再ODE/插值/优化/拟合、R3.5–R3.6与同SHA发行；完整.3尚未发行。
+
+最终验证命令：启用opt2并保留debug/overflow检查的`cargo test --workspace --locked`，全工作区Clippy/fmt，纯WASM kernel，TS确定导出/无漂移，cargo-deny，Python16与目录生成检查，前端lint/test/typecheck。开发期补充近似系数与复分支拒绝回归暴露了早期候选边界，已修复并针对最终冻结源码完整重跑；先前失败未当作通过。算法与范围见calculus.md/P133。

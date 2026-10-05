@@ -98,7 +98,7 @@ fn raw_holes_split_points_global_axes_and_readonly_state_are_preserved() {
 fn unsupported_exact_precision_singularities_and_budget_are_real_failures() {
     let mut ev = Evaluator::new();
     for source in [
-        "integrate(sin(x),x)",
+        "integrate(sin(x^x),x)",
         "integrate(1/x,x:-1..1,mode:\"numeric\")",
         "integrate(x,x:0..1,mode:\"numeric\",precision:50)",
         "integrate(x,x:0..1,mode:\"numeric\",breakpoints:[2])",

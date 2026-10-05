@@ -39,3 +39,7 @@ P127 Swift接续：acde078的失败分段总1096ms vs方法内212ms，不据此�
 CI37307173022 iPhone原17总1325ms，kernel291ms/FFI291ms/decode2ms/resume1032ms，原18 resume772ms；真正主线程恢复阻塞已定位，保持整次1s门槛不能仅用kernel时间替代，后续查主线程启动/布局工作。证据target/ci-evidence/r33i。目标更新为尝试完善并发行+随时清理无用构建缓存；仅仓库缓存。刚清21GiB target/debug/incremental及两个iOS中间目录（构建已停止），free5.1→23GiB；dev/test incremental=false，保留release/安装包/当前deps/验收附件，不开启本机模拟器，单代理直接执行。
 
 最新R3.4b数值积分已验证：om-analysisGK15/7纯callback、有限/反向/无限/断点、真实错误估计/部分失败与预算，Integrate只显式numeric/NIntegrate实际接通，raw poles/readonly/local axis保留；默认exact未实现保持partial，后续符号分支不许自动近似。219回调/213身份、描述14/.2；980Rust/2ignored、59前端/16Python、全Clippy/fmt/纯WASM/TS/deny通过，原53不动。上一批25f5c75 CI37341713046已全通过。接着真实符号积分、极限/级数，再ODE/插值/优化/拟合，R3.5–R3.6仍完整待完成；goal不要标complete/不要发.3。最新free24GiB，dev/test incremental=false，及时仅清本仓库未用缓存（保留release/产物/当前运行与源码）。本机不启动模拟器，单代理直接执行。
+
+最新R3.4c精确规则积分已验证：默认exact，256次以内poly/常用仿射初等反三角反双曲实cbrt/链式/≤16次有限分部/Q一次二次因子及≤32重复递推/Gaussian→Erf。候选真正求导及精确残差，近似系数拒绝伪证，必要系数/实轴/主值条件保留；定积分证明局部条件/真实极点/原函数分支连续并消去哑变量条件，Q可去孔洞允许，未知参数可积/复路径拒绝；Gaussian整条/半无限支持。219回调/213身份、描述15/.2；986Rust/2ignored、前端59/Python16、Clippy/fmt/纯WASM/TS/deny最终完整通过，原53不动。下一任务limit/series/series_coefficient/normal，再ODE/插值/优化/拟合，随后原R3.5–R3.6和完整发行，不提前发.3/不标goal complete。
+
+最新iOS线上失败CI37352256560：Rust/前端/依赖成功，phone原17/18整次1276/1328ms，kernel319/161ms、MainActor恢复954/1152ms，原1s断言保留，证据target/ci-evidence/r34b。仍需专门解决主线程恢复延迟，不能把数学通过当作平台全通过。磁盘free约22GiB，incremental关闭，及时清仅本仓库已停止使用的缓存，保留运行release/源码/发行与验收产物。不启动本地模拟器，不用子代理，继续dev。

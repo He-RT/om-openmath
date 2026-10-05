@@ -109,7 +109,7 @@ fn rank_deficiency_invalid_modes_and_nonreal_inputs_decline() {
     let mut ev = Evaluator::new();
     for s in [
         "inverse([[1.0,2.0],[2.0,4.0]])",
-        "least_squares([[1.0,2.0],[2.0,4.0]],[1.0,2.0])",
+        "least_squares([[1.0,2.0],[2.0,4.0]],[1.0])",
         "qr([[i,1],[2,3]])",
         "linear_solve([[1.0]],[1.0])",
     ] {
@@ -163,4 +163,129 @@ fn singular_value_factors_reconstruct_and_are_not_placeholder_answers() {
         }
     }
     assert!(field(&e, "residual").as_number().unwrap().to_f64().unwrap() < 1e-11);
+}
+
+#[test]
+fn machine_rank_nullspace_and_rectangular_affine_solutions_are_actual() {
+    let mut ev = Evaluator::new();
+    assert_eq!(
+        evaluate(&mut ev, "rank([[1.0,2.0,3.0],[2.0,4.0,6.0]])"),
+        Expr::int(1)
+    );
+    let basis = matrix(&evaluate(
+        &mut ev,
+        "null_space([[1.0,2.0,3.0],[2.0,4.0,6.0]])",
+    ));
+    assert_eq!(basis.len(), 2);
+    for row in &basis {
+        close(row[0] + 2. * row[1] + 3. * row[2], 0.);
+    }
+    let solution = evaluate(&mut ev, "linear_solve([[1.0,2.0]],[3.0],mode:\"numeric\")");
+    let p = field(&solution, "particular");
+    close(p.args()[0].as_number().unwrap().to_f64().unwrap(), 0.6);
+    close(p.args()[1].as_number().unwrap().to_f64().unwrap(), 1.2);
+    assert_eq!(field(&solution, "parameters").args().len(), 1);
+    assert_eq!(field(&solution, "consistent"), &Expr::sym(B::TRUE));
+    let solution = evaluate(&mut ev, "least_squares([[1.0,2.0],[2.0,4.0]],[1.0,2.0])");
+    assert_eq!(field(&solution, "rank"), &Expr::int(1));
+    close(
+        field(&solution, "solution").args()[0]
+            .as_number()
+            .unwrap()
+            .to_f64()
+            .unwrap(),
+        0.2,
+    );
+    close(
+        field(&solution, "solution").args()[1]
+            .as_number()
+            .unwrap()
+            .to_f64()
+            .unwrap(),
+        0.4,
+    );
+    let x = evaluate(
+        &mut ev,
+        "linear_solve([[1.0,0.0],[1.0,1.0],[1.0,2.0]],[1.0,2.0,3.0],mode:\"numeric\")",
+    );
+    close(x.args()[0].as_number().unwrap().to_f64().unwrap(), 1.);
+    close(x.args()[1].as_number().unwrap().to_f64().unwrap(), 1.);
+    ev.messages.take();
+    evaluate(
+        &mut ev,
+        "linear_solve([[1.0],[1.0]],[1.0,2.0],mode:\"numeric\")",
+    );
+    assert!(!ev.messages.take().is_empty());
+}
+#[test]
+fn exact_affine_result_satisfies_every_free_parameter_without_changing_unique_shape() {
+    let mut ev = Evaluator::new();
+    let result = evaluate(&mut ev, "linear_solve([[1,2,3]],[4])");
+    assert!(result.is_head(B::RECORD));
+    assert_eq!(field(&result, "exact"), &Expr::sym(B::TRUE));
+    assert_eq!(field(&result, "parameters").args().len(), 2);
+    let particular = field(&result, "particular");
+    let null = field(&result, "null_space");
+    for (t1, t2) in [(0, 0), (2, -3), (-7, 11)] {
+        let x: Vec<Expr> = (0..3)
+            .map(|i| {
+                om_core::add([
+                    particular.args()[i].clone(),
+                    om_core::mul([Expr::int(t1), null.args()[0].args()[i].clone()]),
+                    om_core::mul([Expr::int(t2), null.args()[1].args()[i].clone()]),
+                ])
+            })
+            .collect();
+        let value = ev
+            .evaluate(
+                &om_core::add([
+                    x[0].clone(),
+                    om_core::mul([Expr::int(2), x[1].clone()]),
+                    om_core::mul([Expr::int(3), x[2].clone()]),
+                ]),
+                &Interrupt::default(),
+            )
+            .unwrap();
+        assert_eq!(value, Expr::int(4));
+    }
+    assert_eq!(
+        evaluate(&mut ev, "linear_solve([[2,1],[1,3]],[1,2])"),
+        om_core::canonicalize(&om_parse::parse_expr("{1/5,3/5}", Dialect::Wolfram).unwrap())
+    );
+}
+
+#[test]
+fn vector_angle_and_complex_projection_obey_the_declared_inner_product() {
+    let mut ev = Evaluator::new();
+    assert_eq!(
+        evaluate(&mut ev, "angle([1,0],[0,1])"),
+        om_core::div(Expr::sym(B::PI), Expr::int(2))
+    );
+    let angle = evaluate(&mut ev, "angle([1.0,0.0],[1.0,1.0])");
+    close(
+        angle.as_number().unwrap().to_f64().unwrap(),
+        std::f64::consts::FRAC_PI_4,
+    );
+    assert_eq!(
+        evaluate(&mut ev, "projection([1,2],[1,0])"),
+        om_parse::parse_expr("{1,0}", Dialect::Wolfram).unwrap()
+    );
+    let projected = evaluate(&mut ev, "projection([1,i],[1,0])");
+    assert_eq!(
+        projected,
+        om_parse::parse_expr("{1,0}", Dialect::Wolfram).unwrap()
+    );
+    let projected = evaluate(&mut ev, "projection([1,0],[1,i])");
+    let expected =
+        om_core::canonicalize(&om_parse::parse_expr("{1/2,I/2}", Dialect::Wolfram).unwrap());
+    assert_eq!(projected, expected);
+    for source in [
+        "angle([0,0],[1,0])",
+        "angle([1],[1,2])",
+        "projection([1,2],[0,0])",
+    ] {
+        ev.messages.take();
+        evaluate(&mut ev, source);
+        assert!(!ev.messages.take().is_empty());
+    }
 }

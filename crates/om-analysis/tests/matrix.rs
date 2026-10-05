@@ -241,3 +241,49 @@ fn deterministic_small_matrix_properties_cover_ranks_rectangles_and_repeated_spe
         }
     }
 }
+
+#[test]
+fn svd_solution_exposes_rectangular_free_axes_and_minimum_norm_without_fake_consistency() {
+    use om_analysis::matrix::svd;
+    let ctx = Interrupt::default();
+    let a = matrix(1, 2, &[1., 2.]);
+    let f = svd(&a, &ctx).unwrap();
+    let s = f.solve(&a, &[3.], 1e-12, &ctx).unwrap();
+    assert!(s.consistent);
+    assert_eq!(s.rank, 1);
+    close(s.particular[0], 0.6);
+    close(s.particular[1], 1.2);
+    assert_eq!(s.nullspace.len(), 1);
+    for basis in &s.nullspace {
+        close(basis[0] + 2. * basis[1], 0.);
+        close(
+            basis.iter().zip(&s.particular).map(|(a, b)| a * b).sum(),
+            0.,
+        );
+    }
+    let a = matrix(3, 2, &[1., 0., 1., 1., 1., 2.]);
+    let f = svd(&a, &ctx).unwrap();
+    let s = f.solve(&a, &[1., 2., 2.], 1e-12, &ctx).unwrap();
+    assert!(!s.consistent);
+    close(s.particular[0], 7. / 6.);
+    close(s.particular[1], 0.5);
+    let s = f.solve(&a, &[1., 2., 3.], 1e-12, &ctx).unwrap();
+    assert!(s.consistent);
+    assert!(s.nullspace.is_empty());
+    let a = matrix(2, 3, &[1., 2., 3., 2., 4., 6.]);
+    let f = svd(&a, &ctx).unwrap();
+    let s = f.solve(&a, &[1., 2.], 1e-12, &ctx).unwrap();
+    assert!(s.consistent);
+    assert_eq!(s.rank, 1);
+    assert_eq!(s.nullspace.len(), 2);
+    assert!(!f.solve(&a, &[1., 3.], 1e-12, &ctx).unwrap().consistent);
+    let zero = matrix(2, 3, &[0.; 6]);
+    let f = svd(&zero, &ctx).unwrap();
+    let s = f.solve(&zero, &[0., 0.], 1e-12, &ctx).unwrap();
+    assert_eq!(s.rank, 0);
+    assert!(s.consistent);
+    assert_eq!(s.nullspace.len(), 3);
+    assert!(!f.solve(&zero, &[0., 1.], 1e-12, &ctx).unwrap().consistent);
+    assert!(f.rank(-1.).is_err());
+    assert!(f.rank(f64::NAN).is_err());
+}

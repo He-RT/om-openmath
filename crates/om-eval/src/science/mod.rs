@@ -93,6 +93,14 @@ pub(super) fn vector(e: &Expr, ctx: &Interrupt) -> Result<Vec<Number>, EvalError
 pub(super) fn list(values: impl IntoIterator<Item = Expr>) -> Expr {
     Expr::call(B::LIST, values)
 }
+pub(super) fn record(values: impl IntoIterator<Item = (&'static str, Expr)>) -> Expr {
+    Expr::call(
+        B::RECORD,
+        values
+            .into_iter()
+            .map(|(key, value)| Expr::call(B::RULE, [Expr::string(key), value])),
+    )
+}
 pub(super) fn real(value: f64) -> Result<Expr, EvalError> {
     if !value.is_finite() {
         return Err(error("结果超出机器有限值范围"));

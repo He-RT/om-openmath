@@ -1,6 +1,6 @@
 # 实际注册审计基线：ba3cd2b；稳定身份与名称分离；目录/副作用为设计数据。
 schema_version = 1
-metadata_version = 5
+metadata_version = 6
 validation_stage = "runtime_verified"
 current_version = "0.1.0-pre-alpha.2"
 target_version = "0.1.0-pre-alpha.3"
@@ -5091,64 +5091,64 @@ effect_class = "pure"
 id = "fn_000157"
 name = "angle"
 category = "linear"
-status = "planned"
-interface_status = "planned"
-runtime_names = []
+status = "implemented"
+interface_status = "current"
+runtime_names = ["VectorAngle"]
 compatibility_names = []
-current_modern_signatures = []
-current_wolfram_signatures = []
+current_modern_signatures = ["angle(a,b)"]
+current_wolfram_signatures = ["VectorAngle[a,b]"]
 signatures = ["angle(a, b)"]
 parameters = [{ name = "a", kind = "positional", default = "必填", description = "签名对应的a参数", availability = "r3" }, { name = "b", kind = "positional", default = "必填", description = "签名对应的b参数", availability = "r3" }]
 return_type = "scalar_vector_matrix_or_decomposition"
 semantics = "向量夹角"
-current_support = "当前无此规范接口的实现。"
+current_support = "1..64维非零等维数值向量；acos(共轭内积/(范数乘积))，弧度，复数可返回精确ArcCos式或已支持的复数值。机器实数只夹除64epsilon内舍入越界，不伪造域外解。"
 target_support = "维度检查；精确有理数或机器实数的小型稠密矩阵，继承预算；零向量/奇异矩阵明确诊断。 复数运算使用正确的共轭语义；机器夹角仅将舍入越界夹到[-1,1]。"
-precision_modes = ["planned_machine"]
+precision_modes = ["exact", "machine"]
 precision_notes = "精确有理基础路径与明确的机器分解；分解不承诺任意精度。"
-current_platforms = []
+current_platforms = ["cli", "desktop", "web", "ios"]
 target_platforms = ["cli", "desktop", "web", "ios"]
 render_platforms = []
-current_examples = []
+current_examples = ["VectorAngle[{1,0},{0,1}]"]
 planned_examples = ["angle([1,0],[0,1])"]
-sources = []
-tests = []
+sources = ["crates/om-eval/src/science/matrix.rs"]
+tests = ["crates/om-eval/tests/numeric_matrix.rs"]
 acceptance = "独立数学期望、有效/无效参数、边界、预算、中断及声明的平台/精度测试；范围外不伪造成功。"
 pipe_arg = 1
 target_version = "0.1.0-pre-alpha.3"
 kind = "function"
-validation_stage = "documentation_only"
+validation_stage = "runtime_verified"
 effect_class = "pure"
 
 [[functions]]
 id = "fn_000158"
 name = "projection"
 category = "linear"
-status = "planned"
-interface_status = "planned"
-runtime_names = []
+status = "implemented"
+interface_status = "current"
+runtime_names = ["Projection"]
 compatibility_names = []
-current_modern_signatures = []
-current_wolfram_signatures = []
+current_modern_signatures = ["projection(a,onto)"]
+current_wolfram_signatures = ["Projection[a,onto]"]
 signatures = ["projection(a, onto)"]
 parameters = [{ name = "a", kind = "positional", default = "必填", description = "签名对应的a参数", availability = "r3" }, { name = "onto", kind = "positional", default = "必填", description = "签名对应的onto参数", availability = "r3" }]
 return_type = "scalar_vector_matrix_or_decomposition"
 semantics = "向量投影"
-current_support = "当前无此规范接口的实现。"
+current_support = "1..64维等维数值向量，(dot(onto,a)/dot(onto,onto))*onto，首参数共轭的内积约定；拒绝零目标向量，保留精确或机器结果。"
 target_support = "维度检查；精确有理数或机器实数的小型稠密矩阵，继承预算；零向量/奇异矩阵明确诊断。 复数运算使用正确的共轭语义；机器夹角仅将舍入越界夹到[-1,1]。"
-precision_modes = ["planned_machine"]
+precision_modes = ["exact", "machine"]
 precision_notes = "精确有理基础路径与明确的机器分解；分解不承诺任意精度。"
-current_platforms = []
+current_platforms = ["cli", "desktop", "web", "ios"]
 target_platforms = ["cli", "desktop", "web", "ios"]
 render_platforms = []
-current_examples = []
+current_examples = ["Projection[{1,2},{1,0}]"]
 planned_examples = ["projection([1,2],[1,0])"]
-sources = []
-tests = []
+sources = ["crates/om-eval/src/science/matrix.rs"]
+tests = ["crates/om-eval/tests/numeric_matrix.rs"]
 acceptance = "独立数学期望、有效/无效参数、边界、预算、中断及声明的平台/精度测试；范围外不伪造成功。"
 pipe_arg = 1
 target_version = "0.1.0-pre-alpha.3"
 kind = "function"
-validation_stage = "documentation_only"
+validation_stage = "runtime_verified"
 effect_class = "pure"
 
 [[functions]]
@@ -5379,7 +5379,7 @@ effect_class = "pure"
 id = "fn_000166"
 name = "rank"
 category = "linear"
-status = "partial"
+status = "implemented"
 interface_status = "current"
 runtime_names = ["MatrixRank"]
 compatibility_names = []
@@ -5389,9 +5389,9 @@ signatures = ["rank(matrix)"]
 parameters = [{ name = "matrix", kind = "positional", default = "必填", description = "矩阵/向量或签名的主要输入", availability = "r3" }]
 return_type = "scalar_vector_matrix_or_decomposition"
 semantics = "矩阵秩"
-current_support = "当前精确有理数矩阵≤64×64，复用Bareiss证书；奇异/欠定/不相容及维度明确诊断。机器矩阵路径仍在实施，不静默将机器系数当成精确保证。"
+current_support = "精确有理数≤64×64复用Bareiss；机器实数用SVD数值秩，相对阈值1e-12，不将数值秩声称为精确证书。"
 target_support = "维度检查；精确有理数或机器实数的小型稠密矩阵，继承预算；零向量/奇异矩阵明确诊断。"
-precision_modes = ["exact"]
+precision_modes = ["exact", "machine"]
 precision_notes = "精确有理基础路径与明确的机器分解；分解不承诺任意精度。"
 current_platforms = ["cli", "desktop", "web", "ios"]
 target_platforms = ["cli", "desktop", "web", "ios"]
@@ -5411,7 +5411,7 @@ effect_class = "pure"
 id = "fn_000167"
 name = "null_space"
 category = "linear"
-status = "partial"
+status = "implemented"
 interface_status = "current"
 runtime_names = ["NullSpace"]
 compatibility_names = []
@@ -5421,9 +5421,9 @@ signatures = ["null_space(matrix)"]
 parameters = [{ name = "matrix", kind = "positional", default = "必填", description = "矩阵/向量或签名的主要输入", availability = "r3" }]
 return_type = "scalar_vector_matrix_or_decomposition"
 semantics = "零空间基"
-current_support = "当前精确有理数矩阵≤64×64，复用Bareiss证书；奇异/欠定/不相容及维度明确诊断。机器矩阵路径仍在实施，不静默将机器系数当成精确保证。"
+current_support = "精确有理数≤64×64复用Bareiss，机器实数用SVD右零空间，基向量按行返回，正交；相对阈值1e-12。"
 target_support = "维度检查；精确有理数或机器实数的小型稠密矩阵，继承预算；零向量/奇异矩阵明确诊断。"
-precision_modes = ["exact"]
+precision_modes = ["exact", "machine"]
 precision_notes = "精确有理基础路径与明确的机器分解；分解不承诺任意精度。"
 current_platforms = ["cli", "desktop", "web", "ios"]
 target_platforms = ["cli", "desktop", "web", "ios"]
@@ -5443,7 +5443,7 @@ effect_class = "pure"
 id = "fn_000168"
 name = "linear_solve"
 category = "linear"
-status = "partial"
+status = "implemented"
 interface_status = "current"
 runtime_names = ["LinearSolve"]
 compatibility_names = []
@@ -5453,7 +5453,7 @@ signatures = ["linear_solve(matrix, rhs, mode: \"exact\")"]
 parameters = [{ name = "matrix", kind = "positional", default = "必填", description = "矩阵/向量或签名的主要输入", availability = "r3" }, { name = "rhs", kind = "positional", default = "必填", description = "只读右端函数或右端项", availability = "r3" }, { name = "mode", kind = "option", default = "exact", description = "exact/numeric", availability = "r3" }]
 return_type = "scalar_vector_matrix_or_decomposition"
 semantics = "线性系统解"
-current_support = "默认mode exact，精确有理矩阵复用Bareiss；mode numeric首版方阵部分选主元LU，奇异/病态/不相容维度拒绝。矩形机器系统及自由轴返回仍待接入。"
+current_support = "默认exact，精确有理矩阵Bareiss返回唯一值列表或solution/particular/null_space/parameters/free_columns/rank/exact全解记录。numeric模式支持矩形/欠定/秩亏：唯一解保留列表，非唯一返回SVD最小范数特解及数值自由方向/参数/实际残差；不相容拒绝，rank_kind明确numerical，相对阈值1e-12。"
 target_support = "精确有理矩阵复用Bareiss；机器实数部分选主元；欠定结果保留自由轴，不强行给唯一解。"
 precision_modes = ["exact", "machine"]
 precision_notes = "精确有理基础路径与明确的机器分解；分解不承诺任意精度。"
@@ -5677,7 +5677,7 @@ signatures = ["least_squares(matrix, rhs)"]
 parameters = [{ name = "matrix", kind = "positional", default = "必填", description = "矩阵/向量或签名的主要输入", availability = "r3" }, { name = "rhs", kind = "positional", default = "必填", description = "只读右端函数或右端项", availability = "r3" }]
 return_type = "scalar_vector_matrix_or_decomposition"
 semantics = "最小二乘解"
-current_support = "机器实数满列秩m≥n≤64，Householder QR最小二乘；返回solution/residual_norm/method/converged。欠定、秩不足及病态明确失败；相对枢轴阈值1e-12。"
+current_support = "机器实数矩形≤64×64，满列秩Householder QR，欠定或秩亏SVD最小范数；返回solution/particular/null_space/parameters/rank/residual_norm/consistent/method/converged。consistent只描述容差下可解，不把最小二乘拟合误差说成失败或精确认证。"
 target_support = "机器实数稠密矩阵≤64×64；LU 部分选主元、QR Householder、SVD 一侧Jacobi；实对称特征系统Jacobi，非对称/复矩阵特征系统本版不承诺。"
 precision_modes = ["machine"]
 precision_notes = "精确有理基础路径与明确的机器分解；分解不承诺任意精度。"
@@ -28550,4 +28550,24 @@ min = 1
 max = 1
 attributes = ["protected"]
 parameters = [{ name = "matrix", value_type = "expression", required = true, variadic = false, held = false }]
+options = []
+
+[[runtime]]
+name = "VectorAngle"
+modern_name = "angle"
+aliases = ["vectorangle"]
+min = 2
+max = 2
+attributes = ["protected"]
+parameters = [{ name = "a", value_type = "expression", required = true, variadic = false, held = false }, { name = "b", value_type = "expression", required = true, variadic = false, held = false }]
+options = []
+
+[[runtime]]
+name = "Projection"
+modern_name = "projection"
+aliases = []
+min = 2
+max = 2
+attributes = ["protected"]
+parameters = [{ name = "a", value_type = "expression", required = true, variadic = false, held = false }, { name = "onto", value_type = "expression", required = true, variadic = false, held = false }]
 options = []

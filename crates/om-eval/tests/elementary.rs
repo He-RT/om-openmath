@@ -216,6 +216,8 @@ fn all_docs_matches_implemented_milestones_and_elementary_functions_check_arity(
         "Svd",
     ]);
     expected.sort();
+    expected.extend(["VectorAngle", "Projection"]);
+    expected.sort();
     let actual: Vec<_> = Evaluator::all_docs().map(|d| d.name).collect();
     assert_eq!(actual, expected);
     for name in [

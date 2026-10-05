@@ -9,7 +9,7 @@
 | 规范名称 | 当前实现 | 目标接口状态 | 数学含义 |
 |---|---|---|---|
 | [`adjoint`](#adjoint) | 已实现 | 当前可用 | 共轭转置 |
-| [`angle`](#angle) | 下一版规划 | 规划接口，当前不可用 | 向量夹角 |
+| [`angle`](#angle) | 已实现 | 当前可用 | 向量夹角 |
 | [`band`](#band) | 后续规划 | 规划接口，当前不可用 | 向量、矩阵与张量中的 Band 能力，进入后续全景目录。 |
 | [`cholesky`](#cholesky) | 已实现 | 当前可用 | 正定矩阵 Cholesky |
 | [`cross`](#cross) | 已实现 | 当前可用 | 三维叉积 |
@@ -21,19 +21,19 @@
 | [`identity`](#identity) | 已实现 | 当前可用 | 单位矩阵 |
 | [`inverse`](#inverse) | 已实现 | 当前可用 | 矩阵逆 |
 | [`least_squares`](#least_squares) | 已实现 | 当前可用 | 最小二乘解 |
-| [`linear_solve`](#linear_solve) | 部分支持 | 当前可用 | 线性系统解 |
+| [`linear_solve`](#linear_solve) | 已实现 | 当前可用 | 线性系统解 |
 | [`lu`](#lu) | 已实现 | 当前可用 | 带置换的 LU |
 | [`matrix_exp`](#matrix_exp) | 后续规划 | 规划接口，当前不可用 | 向量、矩阵与张量中的 MatrixExp 能力，进入后续全景目录。 |
 | [`matrix_log`](#matrix_log) | 后续规划 | 规划接口，当前不可用 | 向量、矩阵与张量中的 MatrixLog 能力，进入后续全景目录。 |
 | [`matrix_power`](#matrix_power) | 后续规划 | 规划接口，当前不可用 | 向量、矩阵与张量中的 MatrixPower 能力，进入后续全景目录。 |
 | [`norm`](#norm) | 已实现 | 当前可用 | 向量范数 |
 | [`normalize`](#normalize) | 已实现 | 当前可用 | 按范数归一化 |
-| [`null_space`](#null_space) | 部分支持 | 当前可用 | 零空间基 |
+| [`null_space`](#null_space) | 已实现 | 当前可用 | 零空间基 |
 | [`orthogonalize`](#orthogonalize) | 后续规划 | 规划接口，当前不可用 | 向量、矩阵与张量中的 Orthogonalize 能力，进入后续全景目录。 |
-| [`projection`](#projection) | 下一版规划 | 规划接口，当前不可用 | 向量投影 |
+| [`projection`](#projection) | 已实现 | 当前可用 | 向量投影 |
 | [`pseudo_inverse`](#pseudo_inverse) | 后续规划 | 规划接口，当前不可用 | 向量、矩阵与张量中的 PseudoInverse 能力，进入后续全景目录。 |
 | [`qr`](#qr) | 已实现 | 当前可用 | QR 分解 |
-| [`rank`](#rank) | 部分支持 | 当前可用 | 矩阵秩 |
+| [`rank`](#rank) | 已实现 | 当前可用 | 矩阵秩 |
 | [`sparse_array`](#sparse_array) | 后续规划 | 规划接口，当前不可用 | 向量、矩阵与张量中的 SparseArray 能力，进入后续全景目录。 |
 | [`svd`](#svd) | 已实现 | 当前可用 | 奇异值分解 |
 | [`tensor_contract`](#tensor_contract) | 后续规划 | 规划接口，当前不可用 | 向量、矩阵与张量中的 TensorContract 能力，进入后续全景目录。 |
@@ -106,21 +106,33 @@ adjoint([[1,i],[0,1]])
 
 ## angle
 
-**当前实现：下一版规划；目标接口：规划接口，当前不可用。** 目标版本：`0.1.0-pre-alpha.3`。
+**当前实现：已实现；目标接口：当前可用。** 目标版本：`0.1.0-pre-alpha.3`。
 
 - 稳定身份：`fn_000157`；条目类型：`function`。
-- 副作用分类（设计预留）：`pure`；参数验证阶段：`documentation_only`，不构成工具授权。
+- 副作用分类（设计预留）：`pure`；参数验证阶段：`runtime_verified`，不构成工具授权。
 
 向量夹角
 
-- 当前支持：当前无此规范接口的实现。
+- 当前支持：1..64维非零等维数值向量；acos(共轭内积/(范数乘积))，弧度，复数可返回精确ArcCos式或已支持的复数值。机器实数只夹除64epsilon内舍入越界，不伪造域外解。
 - 目标范围：维度检查；精确有理数或机器实数的小型稠密矩阵，继承预算；零向量/奇异矩阵明确诊断。 复数运算使用正确的共轭语义；机器夹角仅将舍入越界夹到[-1,1]。
 - 返回：scalar_vector_matrix_or_decomposition
 - 精度：精确有理基础路径与明确的机器分解；分解不承诺任意精度。
-- 当前计算平台：无；目标计算平台：cli, desktop, web, ios。
+- 当前计算平台：cli, desktop, web, ios；目标计算平台：cli, desktop, web, ios。
 - 目标图形/交互展示平台：不适用或后续未定。
 - 兼容名称：无既有兼容入口。
 - 管道位置：第 1 个位置参数（从 1 起）。
+
+当前现代签名：
+
+```text
+angle(a,b)
+```
+
+当前 Wolfram 签名：
+
+```text
+VectorAngle[a,b]
+```
 
 目标现代签名（按目标接口状态判断是否已可执行）：
 
@@ -133,6 +145,12 @@ angle(a, b)
 | `a` | positional | 必填 | 签名对应的a参数 | r3 |
 | `b` | positional | 必填 | 签名对应的b参数 | r3 |
 
+当前已登记示例（Wolfram）：
+
+```wolfram
+VectorAngle[{1,0},{0,1}]
+```
+
 规划示例（尚未执行；需要目标版本，后续条目不承诺 .3）：
 
 ```text
@@ -141,9 +159,9 @@ angle([1,0],[0,1])
 
 验收：独立数学期望、有效/无效参数、边界、预算、中断及声明的平台/精度测试；范围外不伪造成功。
 
-当前源码：暂无当前实现证据。
+当前源码：[crates/om-eval/src/science/matrix.rs](../../crates/om-eval/src/science/matrix.rs)。
 
-当前测试引用：暂无当前实现证据。
+当前测试引用：[crates/om-eval/tests/numeric_matrix.rs](../../crates/om-eval/tests/numeric_matrix.rs)。
 
 ## band
 
@@ -713,7 +731,7 @@ inverse([[2,1],[1,3]])
 
 最小二乘解
 
-- 当前支持：机器实数满列秩m≥n≤64，Householder QR最小二乘；返回solution/residual_norm/method/converged。欠定、秩不足及病态明确失败；相对枢轴阈值1e-12。
+- 当前支持：机器实数矩形≤64×64，满列秩Householder QR，欠定或秩亏SVD最小范数；返回solution/particular/null_space/parameters/rank/residual_norm/consistent/method/converged。consistent只描述容差下可解，不把最小二乘拟合误差说成失败或精确认证。
 - 目标范围：机器实数稠密矩阵≤64×64；LU 部分选主元、QR Householder、SVD 一侧Jacobi；实对称特征系统Jacobi，非对称/复矩阵特征系统本版不承诺。
 - 返回：scalar_vector_matrix_or_decomposition
 - 精度：精确有理基础路径与明确的机器分解；分解不承诺任意精度。
@@ -765,14 +783,14 @@ least_squares([[1.0,0.0],[1.0,1.0],[1.0,2.0]],[1.0,2.0,3.0])
 
 ## linear_solve
 
-**当前实现：部分支持；目标接口：当前可用。** 目标版本：`0.1.0-pre-alpha.3`。
+**当前实现：已实现；目标接口：当前可用。** 目标版本：`0.1.0-pre-alpha.3`。
 
 - 稳定身份：`fn_000168`；条目类型：`function`。
 - 副作用分类（设计预留）：`pure`；参数验证阶段：`runtime_verified`，不构成工具授权。
 
 线性系统解
 
-- 当前支持：默认mode exact，精确有理矩阵复用Bareiss；mode numeric首版方阵部分选主元LU，奇异/病态/不相容维度拒绝。矩形机器系统及自由轴返回仍待接入。
+- 当前支持：默认exact，精确有理矩阵Bareiss返回唯一值列表或solution/particular/null_space/parameters/free_columns/rank/exact全解记录。numeric模式支持矩形/欠定/秩亏：唯一解保留列表，非唯一返回SVD最小范数特解及数值自由方向/参数/实际残差；不相容拒绝，rank_kind明确numerical，相对阈值1e-12。
 - 目标范围：精确有理矩阵复用Bareiss；机器实数部分选主元；欠定结果保留自由轴，不强行给唯一解。
 - 返回：scalar_vector_matrix_or_decomposition
 - 精度：精确有理基础路径与明确的机器分解；分解不承诺任意精度。
@@ -1102,14 +1120,14 @@ normalize([3,4])
 
 ## null_space
 
-**当前实现：部分支持；目标接口：当前可用。** 目标版本：`0.1.0-pre-alpha.3`。
+**当前实现：已实现；目标接口：当前可用。** 目标版本：`0.1.0-pre-alpha.3`。
 
 - 稳定身份：`fn_000167`；条目类型：`function`。
 - 副作用分类（设计预留）：`pure`；参数验证阶段：`runtime_verified`，不构成工具授权。
 
 零空间基
 
-- 当前支持：当前精确有理数矩阵≤64×64，复用Bareiss证书；奇异/欠定/不相容及维度明确诊断。机器矩阵路径仍在实施，不静默将机器系数当成精确保证。
+- 当前支持：精确有理数≤64×64复用Bareiss，机器实数用SVD右零空间，基向量按行返回，正交；相对阈值1e-12。
 - 目标范围：维度检查；精确有理数或机器实数的小型稠密矩阵，继承预算；零向量/奇异矩阵明确诊断。
 - 返回：scalar_vector_matrix_or_decomposition
 - 精度：精确有理基础路径与明确的机器分解；分解不承诺任意精度。
@@ -1194,21 +1212,33 @@ orthogonalize(...)  # 后续接口尚未锁定
 
 ## projection
 
-**当前实现：下一版规划；目标接口：规划接口，当前不可用。** 目标版本：`0.1.0-pre-alpha.3`。
+**当前实现：已实现；目标接口：当前可用。** 目标版本：`0.1.0-pre-alpha.3`。
 
 - 稳定身份：`fn_000158`；条目类型：`function`。
-- 副作用分类（设计预留）：`pure`；参数验证阶段：`documentation_only`，不构成工具授权。
+- 副作用分类（设计预留）：`pure`；参数验证阶段：`runtime_verified`，不构成工具授权。
 
 向量投影
 
-- 当前支持：当前无此规范接口的实现。
+- 当前支持：1..64维等维数值向量，(dot(onto,a)/dot(onto,onto))*onto，首参数共轭的内积约定；拒绝零目标向量，保留精确或机器结果。
 - 目标范围：维度检查；精确有理数或机器实数的小型稠密矩阵，继承预算；零向量/奇异矩阵明确诊断。 复数运算使用正确的共轭语义；机器夹角仅将舍入越界夹到[-1,1]。
 - 返回：scalar_vector_matrix_or_decomposition
 - 精度：精确有理基础路径与明确的机器分解；分解不承诺任意精度。
-- 当前计算平台：无；目标计算平台：cli, desktop, web, ios。
+- 当前计算平台：cli, desktop, web, ios；目标计算平台：cli, desktop, web, ios。
 - 目标图形/交互展示平台：不适用或后续未定。
 - 兼容名称：无既有兼容入口。
 - 管道位置：第 1 个位置参数（从 1 起）。
+
+当前现代签名：
+
+```text
+projection(a,onto)
+```
+
+当前 Wolfram 签名：
+
+```text
+Projection[a,onto]
+```
 
 目标现代签名（按目标接口状态判断是否已可执行）：
 
@@ -1221,6 +1251,12 @@ projection(a, onto)
 | `a` | positional | 必填 | 签名对应的a参数 | r3 |
 | `onto` | positional | 必填 | 签名对应的onto参数 | r3 |
 
+当前已登记示例（Wolfram）：
+
+```wolfram
+Projection[{1,2},{1,0}]
+```
+
 规划示例（尚未执行；需要目标版本，后续条目不承诺 .3）：
 
 ```text
@@ -1229,9 +1265,9 @@ projection([1,2],[1,0])
 
 验收：独立数学期望、有效/无效参数、边界、预算、中断及声明的平台/精度测试；范围外不伪造成功。
 
-当前源码：暂无当前实现证据。
+当前源码：[crates/om-eval/src/science/matrix.rs](../../crates/om-eval/src/science/matrix.rs)。
 
-当前测试引用：暂无当前实现证据。
+当前测试引用：[crates/om-eval/tests/numeric_matrix.rs](../../crates/om-eval/tests/numeric_matrix.rs)。
 
 ## pseudo_inverse
 
@@ -1327,14 +1363,14 @@ qr([[1.0,2.0],[3.0,4.0],[5.0,6.0]])
 
 ## rank
 
-**当前实现：部分支持；目标接口：当前可用。** 目标版本：`0.1.0-pre-alpha.3`。
+**当前实现：已实现；目标接口：当前可用。** 目标版本：`0.1.0-pre-alpha.3`。
 
 - 稳定身份：`fn_000166`；条目类型：`function`。
 - 副作用分类（设计预留）：`pure`；参数验证阶段：`runtime_verified`，不构成工具授权。
 
 矩阵秩
 
-- 当前支持：当前精确有理数矩阵≤64×64，复用Bareiss证书；奇异/欠定/不相容及维度明确诊断。机器矩阵路径仍在实施，不静默将机器系数当成精确保证。
+- 当前支持：精确有理数≤64×64复用Bareiss；机器实数用SVD数值秩，相对阈值1e-12，不将数值秩声称为精确证书。
 - 目标范围：维度检查；精确有理数或机器实数的小型稠密矩阵，继承预算；零向量/奇异矩阵明确诊断。
 - 返回：scalar_vector_matrix_or_decomposition
 - 精度：精确有理基础路径与明确的机器分解；分解不承诺任意精度。

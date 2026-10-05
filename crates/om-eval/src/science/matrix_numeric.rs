@@ -52,14 +52,6 @@ fn numbers(values: &[f64]) -> Result<Expr, EvalError> {
             .collect::<Result<Vec<_>, _>>()?,
     ))
 }
-fn record(values: impl IntoIterator<Item = (&'static str, Expr)>) -> Expr {
-    Expr::call(
-        B::RECORD,
-        values
-            .into_iter()
-            .map(|(key, value)| Expr::call(B::RULE, [Expr::string(key), value])),
-    )
-}
 fn residual(a: &Matrix, x: &[f64], b: &[f64], ctx: &Interrupt) -> Result<f64, EvalError> {
     let mut norm = 0.0_f64;
     for (i, rhs) in b.iter().enumerate() {
@@ -82,7 +74,10 @@ pub(super) fn wants_numeric(name: &str, args: &Args<'_>) -> Result<bool, EvalErr
     ) {
         return Ok(true);
     }
-    if !matches!(name, "Det" | "Inverse" | "LinearSolve") {
+    if !matches!(
+        name,
+        "Det" | "Inverse" | "LinearSolve" | "MatrixRank" | "NullSpace"
+    ) {
         return Ok(false);
     }
     if name == "LinearSolve" {
@@ -208,6 +203,20 @@ pub(super) fn dispatch(name: &str, args: &Args<'_>, ctx: &Interrupt) -> Result<E
                 .collect();
             view(&Matrix::new(n, n, data).map_err(failure)?)
         }
+        "MatrixRank" | "NullSpace" => {
+            let f = svd(&a, ctx).map_err(failure)?;
+            if name == "MatrixRank" {
+                Ok(Expr::int(f.rank(1e-12).map_err(failure)? as i64))
+            } else {
+                Ok(list(
+                    f.nullspace(1e-12, ctx)
+                        .map_err(failure)?
+                        .iter()
+                        .map(|row| numbers(row))
+                        .collect::<Result<Vec<_>, _>>()?,
+                ))
+            }
+        }
         "LinearSolve" | "LeastSquares" => {
             if args.values.len() != 2 {
                 return Err(error("需要矩阵和右端向量"));
@@ -223,29 +232,81 @@ pub(super) fn dispatch(name: &str, args: &Args<'_>, ctx: &Interrupt) -> Result<E
             if b.len() != a.rows() {
                 return Err(error("右端维度与矩阵行数不匹配"));
             }
-            let x = if name == "LinearSolve" {
-                lu(&a, ctx)
-                    .map_err(failure)?
-                    .solve(&b, 1e-12, ctx)
-                    .map_err(failure)?
+            let f = svd(&a, ctx).map_err(failure)?;
+            let mut solved = f.solve(&a, &b, 1e-12, ctx).map_err(failure)?;
+            let method = if solved.rank == a.cols() && a.rows() >= a.cols() {
+                solved.particular = if name == "LinearSolve" && a.rows() == a.cols() {
+                    lu(&a, ctx)
+                        .map_err(failure)?
+                        .solve(&b, 1e-12, ctx)
+                        .map_err(failure)?
+                } else {
+                    qr(&a, ctx)
+                        .map_err(failure)?
+                        .least_squares(&b, 1e-12, ctx)
+                        .map_err(failure)?
+                };
+                solved.residual_norm = residual(&a, &solved.particular, &b, ctx)?;
+                if name == "LinearSolve" && a.rows() == a.cols() {
+                    "partial_pivot_lu"
+                } else {
+                    "householder_qr"
+                }
             } else {
-                qr(&a, ctx)
-                    .map_err(failure)?
-                    .least_squares(&b, 1e-12, ctx)
-                    .map_err(failure)?
+                "svd_minimum_norm"
             };
-            let norm = residual(&a, &x, &b, ctx)?;
-            if name == "LinearSolve" {
-                numbers(&x)
-            } else {
-                Ok(record([
-                    ("solution", numbers(&x)?),
-                    ("residual_norm", real(norm)?),
-                    ("method", Expr::string("householder_qr")),
-                    ("converged", Expr::sym(B::TRUE)),
-                ]))
+            if name == "LinearSolve" && !solved.consistent {
+                return Err(error("线性系统在当前机器容差下不相容"));
             }
+            let solution = numbers(&solved.particular)?;
+            if name == "LinearSolve" && solved.nullspace.is_empty() {
+                return Ok(solution);
+            }
+            let basis = list(
+                solved
+                    .nullspace
+                    .iter()
+                    .map(|row| numbers(row))
+                    .collect::<Result<Vec<_>, _>>()?,
+            );
+            let parameters = list(
+                (0..solved.nullspace.len()).map(|i| Expr::call(B::C, [Expr::int(i as i64 + 1)])),
+            );
+            let mut affine = vec![];
+            for i in 0..a.cols() {
+                let mut terms = vec![real(solved.particular[i])?];
+                for (j, row) in solved.nullspace.iter().enumerate() {
+                    ctx.tick()?;
+                    terms.push(om_core::mul([real(row[i])?, parameters.args()[j].clone()]));
+                }
+                affine.push(om_core::add(terms));
+            }
+            let affine = list(affine);
+            Ok(record([
+                (
+                    "solution",
+                    if name == "LinearSolve" {
+                        affine
+                    } else {
+                        solution.clone()
+                    },
+                ),
+                ("particular", solution),
+                ("null_space", basis),
+                ("parameters", parameters),
+                ("rank", Expr::int(solved.rank as i64)),
+                ("rank_kind", Expr::string("numerical")),
+                ("relative_tolerance", real(1e-12)?),
+                ("residual_norm", real(solved.residual_norm)?),
+                (
+                    "consistent",
+                    Expr::sym(if solved.consistent { B::TRUE } else { B::FALSE }),
+                ),
+                ("method", Expr::string(method)),
+                ("converged", Expr::sym(B::TRUE)),
+            ]))
         }
+
         _ => Err(error("未匹配机器矩阵算法")),
     }
 }

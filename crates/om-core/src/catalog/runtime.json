@@ -4760,7 +4760,7 @@
     ],
     "pipe_arg": 1,
     "effect_class": "pure",
-    "support": "机器实数满列秩m≥n≤64，Householder QR最小二乘；返回solution/residual_norm/method/converged。欠定、秩不足及病态明确失败；相对枢轴阈值1e-12。",
+    "support": "机器实数矩形≤64×64，满列秩Householder QR，欠定或秩亏SVD最小范数；返回solution/particular/null_space/parameters/rank/residual_norm/consistent/method/converged。consistent只描述容差下可解，不把最小二乘拟合误差说成失败或精确认证。",
     "return_type": "scalar_vector_matrix_or_decomposition",
     "precision_modes": [
       "machine"
@@ -5006,7 +5006,7 @@
     ],
     "pipe_arg": 1,
     "effect_class": "pure",
-    "support": "默认mode exact，精确有理矩阵复用Bareiss；mode numeric首版方阵部分选主元LU，奇异/病态/不相容维度拒绝。矩形机器系统及自由轴返回仍待接入。",
+    "support": "默认exact，精确有理矩阵Bareiss返回唯一值列表或solution/particular/null_space/parameters/free_columns/rank/exact全解记录。numeric模式支持矩形/欠定/秩亏：唯一解保留列表，非唯一返回SVD最小范数特解及数值自由方向/参数/实际残差；不相容拒绝，rank_kind明确numerical，相对阈值1e-12。",
     "return_type": "scalar_vector_matrix_or_decomposition",
     "precision_modes": [
       "exact",
@@ -5266,10 +5266,11 @@
     ],
     "pipe_arg": 1,
     "effect_class": "pure",
-    "support": "当前精确有理数矩阵≤64×64，复用Bareiss证书；奇异/欠定/不相容及维度明确诊断。机器矩阵路径仍在实施，不静默将机器系数当成精确保证。",
+    "support": "精确有理数≤64×64复用Bareiss；机器实数用SVD数值秩，相对阈值1e-12，不将数值秩声称为精确证书。",
     "return_type": "scalar_vector_matrix_or_decomposition",
     "precision_modes": [
-      "exact"
+      "exact",
+      "machine"
     ],
     "precision_notes": "精确有理基础路径与明确的机器分解；分解不承诺任意精度。",
     "platforms": [
@@ -6299,10 +6300,11 @@
     ],
     "pipe_arg": 1,
     "effect_class": "pure",
-    "support": "当前精确有理数矩阵≤64×64，复用Bareiss证书；奇异/欠定/不相容及维度明确诊断。机器矩阵路径仍在实施，不静默将机器系数当成精确保证。",
+    "support": "精确有理数≤64×64复用Bareiss，机器实数用SVD右零空间，基向量按行返回，正交；相对阈值1e-12。",
     "return_type": "scalar_vector_matrix_or_decomposition",
     "precision_modes": [
-      "exact"
+      "exact",
+      "machine"
     ],
     "precision_notes": "精确有理基础路径与明确的机器分解；分解不承诺任意精度。",
     "platforms": [
@@ -7286,6 +7288,65 @@
       "arbitrary_supported"
     ],
     "precision_notes": "精确计算与已支持的数值近似子集；不把符号保留或格式位数当作新算法/任意精度支持。",
+    "platforms": [
+      "cli",
+      "desktop",
+      "web",
+      "ios"
+    ]
+  },
+  {
+    "id": "fn_000158",
+    "canonical_name": "projection",
+    "name": "Projection",
+    "modern_name": "projection",
+    "aliases": [],
+    "arity": {
+      "min": 2,
+      "max": 2
+    },
+    "parameters": [
+      {
+        "name": "a",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": false
+      },
+      {
+        "name": "onto",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": false
+      }
+    ],
+    "options": [],
+    "compatibility_syntax": [],
+    "attributes": [
+      "protected"
+    ],
+    "pipe_arg": 1,
+    "effect_class": "pure",
+    "support": "1..64维等维数值向量，(dot(onto,a)/dot(onto,onto))*onto，首参数共轭的内积约定；拒绝零目标向量，保留精确或机器结果。",
+    "return_type": "scalar_vector_matrix_or_decomposition",
+    "precision_modes": [
+      "exact",
+      "machine"
+    ],
+    "precision_notes": "精确有理基础路径与明确的机器分解；分解不承诺任意精度。",
     "platforms": [
       "cli",
       "desktop",
@@ -10883,6 +10944,67 @@
       "planned_machine"
     ],
     "precision_notes": "基础聚合可保留精确有理值；标准差/相关等机器路径明确标记。",
+    "platforms": [
+      "cli",
+      "desktop",
+      "web",
+      "ios"
+    ]
+  },
+  {
+    "id": "fn_000157",
+    "canonical_name": "angle",
+    "name": "VectorAngle",
+    "modern_name": "angle",
+    "aliases": [
+      "vectorangle"
+    ],
+    "arity": {
+      "min": 2,
+      "max": 2
+    },
+    "parameters": [
+      {
+        "name": "a",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": false
+      },
+      {
+        "name": "b",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": false
+      }
+    ],
+    "options": [],
+    "compatibility_syntax": [],
+    "attributes": [
+      "protected"
+    ],
+    "pipe_arg": 1,
+    "effect_class": "pure",
+    "support": "1..64维非零等维数值向量；acos(共轭内积/(范数乘积))，弧度，复数可返回精确ArcCos式或已支持的复数值。机器实数只夹除64epsilon内舍入越界，不伪造域外解。",
+    "return_type": "scalar_vector_matrix_or_decomposition",
+    "precision_modes": [
+      "exact",
+      "machine"
+    ],
+    "precision_notes": "精确有理基础路径与明确的机器分解；分解不承诺任意精度。",
     "platforms": [
       "cli",
       "desktop",

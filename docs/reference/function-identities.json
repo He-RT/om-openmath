@@ -1060,12 +1060,16 @@
     {
       "id": "fn_000157",
       "initial_name": "angle",
-      "runtime_names": []
+      "runtime_names": [
+        "VectorAngle"
+      ]
     },
     {
       "id": "fn_000158",
       "initial_name": "projection",
-      "runtime_names": []
+      "runtime_names": [
+        "Projection"
+      ]
     },
     {
       "id": "fn_000159",

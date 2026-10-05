@@ -1,8 +1,10 @@
 //! Handwritten small dense LU/Householder QR algorithms; all loops use the caller's budget.
 use crate::Error;
+mod solve;
 mod svd;
 mod symmetric;
 use om_num::ctx::Interrupt;
+pub use solve::Solution;
 pub use svd::{Svd, svd};
 pub use symmetric::{Eigen, cholesky, eigensystem};
 /// A checked, finite row-major real matrix, at most 64 by 64.

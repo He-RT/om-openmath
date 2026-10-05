@@ -124,7 +124,7 @@ fn exact_matrix_operations_reconstruct_and_reject_singular_or_mismatched_inputs(
     }
     for source in [
         "inverse([[1,2],[2,4]])",
-        "linear_solve([[1,2]],[1])",
+        "linear_solve([[0,0]],[1])",
         "normalize([0,0])",
     ] {
         ev.messages.take();

@@ -193,10 +193,51 @@ pub(super) fn dispatch(
                         .map(|n| crate::scalar::rational(n).ok_or_else(|| error("需要有理数右端")))
                         .collect::<Result<Vec<_>, _>>()?;
                     let solution = solve(&a, &b, ctx)?;
-                    if !solution.free_columns.is_empty() {
-                        return Err(error("欠定系统没有唯一解；请查询null_space"));
+                    let particular = list(solution.particular.iter().map(fraction));
+                    if solution.free_columns.is_empty() {
+                        particular
+                    } else {
+                        let basis = list(
+                            solution
+                                .nullspace
+                                .iter()
+                                .map(|row| list(row.iter().map(fraction))),
+                        );
+                        let parameters = list(
+                            (0..solution.free_columns.len())
+                                .map(|i| Expr::call(B::C, [Expr::int(i as i64 + 1)])),
+                        );
+                        let affine = list((0..columns).map(|i| {
+                            om_core::add(std::iter::once(particular.args()[i].clone()).chain(
+                                basis.args().iter().enumerate().map(|(j, row)| {
+                                    om_core::mul([
+                                        row.args()[i].clone(),
+                                        parameters.args()[j].clone(),
+                                    ])
+                                }),
+                            ))
+                        }));
+                        record([
+                            ("solution", affine),
+                            ("particular", particular),
+                            ("null_space", basis),
+                            ("parameters", parameters),
+                            (
+                                "free_columns",
+                                list(
+                                    solution
+                                        .free_columns
+                                        .iter()
+                                        .map(|i| Expr::int(*i as i64 + 1)),
+                                ),
+                            ),
+                            (
+                                "rank",
+                                Expr::int((columns - solution.free_columns.len()) as i64),
+                            ),
+                            ("exact", Expr::sym(B::TRUE)),
+                        ])
                     }
-                    list(solution.particular.iter().map(fraction))
                 }
                 "Inverse" => {
                     if rows != columns {
@@ -259,6 +300,58 @@ pub(super) fn dispatch(
                     om_core::mul([a[j].clone(), b[i].clone()]),
                 )
             }))
+        }
+        "VectorAngle" | "Projection" => {
+            if args.values.len() != 2 {
+                return Err(error("需要两个等维向量"));
+            }
+            let (a, b) = (args.values[0], args.values[1]);
+            if !a.is_head(B::LIST)
+                || !b.is_head(B::LIST)
+                || a.args().is_empty()
+                || a.args().len() > 64
+                || a.args().len() != b.args().len()
+                || a.args()
+                    .iter()
+                    .chain(b.args())
+                    .any(|x| x.as_number().is_none())
+            {
+                return Err(error("需要1..64维等长数值向量"));
+            }
+            let bb = ev.evaluate(&Expr::call(B::DOT, [b.clone(), b.clone()]), ctx)?;
+            if bb.is_zero() {
+                return Err(error("目标向量不能为零"));
+            }
+            if name == "Projection" {
+                let inner = ev.evaluate(&Expr::call(B::DOT, [b.clone(), a.clone()]), ctx)?;
+                let scale = ev.evaluate(&om_core::div(inner, bb), ctx)?;
+                let mut result = vec![];
+                for value in b.args() {
+                    ctx.tick()?;
+                    result.push(ev.evaluate(&om_core::mul([scale.clone(), value.clone()]), ctx)?);
+                }
+                list(result)
+            } else {
+                let aa = ev.evaluate(&Expr::call(B::DOT, [a.clone(), a.clone()]), ctx)?;
+                if aa.is_zero() {
+                    return Err(error("零向量的夹角没有定义"));
+                }
+                let inner = ev.evaluate(&Expr::call(B::DOT, [a.clone(), b.clone()]), ctx)?;
+                let mut cosine = ev.evaluate(
+                    &om_core::div(inner, om_core::sqrt(om_core::mul([aa, bb]))),
+                    ctx,
+                )?;
+                if let Some(Number::Real(_)) = cosine.as_number()
+                    && let Some(value) = cosine.as_number().and_then(Number::to_f64)
+                    && value.abs() > 1.0
+                {
+                    if value.abs() > 1.0 + 64.0 * f64::EPSILON {
+                        return Err(error("夹角余弦越界，不能伪造有效结果"));
+                    }
+                    cosine = real(value.clamp(-1.0, 1.0))?;
+                }
+                ev.evaluate(&Expr::call(B::ARCCOS, [cosine]), ctx)?
+            }
         }
         "Norm" | "Normalize" => {
             let data = args.values[0];

@@ -537,4 +537,24 @@ pub(crate) fn register(specs: &mut BTreeMap<&'static str, BuiltinSpec>) {
         "机器矩阵一侧Jacobi SVD，真实因子与残差。",
         "Svd[{{1.,2.},{3.,4.},{5.,6.}}]"
     );
+    entry!(
+        angle,
+        "VectorAngle",
+        Arity::Exactly(2),
+        A::default(),
+        "angle(a,b)",
+        "VectorAngle[a,b]",
+        "等维非零数值向量夹角（弧度）；复数使用共轭内积。",
+        "VectorAngle[{1,0},{0,1}]"
+    );
+    entry!(
+        projection,
+        "Projection",
+        Arity::Exactly(2),
+        A::default(),
+        "projection(a,onto)",
+        "Projection[a,onto]",
+        "向目标向量的Hermitian投影；目标零向量拒绝。",
+        "Projection[{1,2},{1,0}]"
+    );
 }

@@ -10,6 +10,7 @@
 | 理解现代语法与统一接口设计 | [现代语言设计](design/modern-language.md) |
 | 查看下一版科研功能与Agent预留 | [下一版计划](plan/NEXT_RELEASE.md) |
 | 查看特殊函数、概率与随机流的实际边界 | [特殊函数与概率实现](design/special-probability.md) |
+| 解析或导出 CSV/JSON 纯数据 | [数据格式契约](design/data-formats.md) |
 | 了解求解支持范围和验证含义 | [求解指南](solve.md) |
 | 接入 DeepSeek 或其他模型 | [AI 配置](llm.md) |
 | 编译、测试和贡献代码 | [开发指南](development.md) |

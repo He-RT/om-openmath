@@ -7052,6 +7052,110 @@
     ]
   },
   {
+    "id": "fn_000211",
+    "canonical_name": "parse_csv",
+    "name": "ParseCSV",
+    "modern_name": "parse_csv",
+    "aliases": [],
+    "arity": {
+      "min": 1,
+      "max": 2
+    },
+    "parameters": [
+      {
+        "name": "text",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": false
+      }
+    ],
+    "options": [
+      {
+        "name": "header",
+        "runtime_name": "Header",
+        "value_type": "boolean",
+        "required": false,
+        "default_source": "true",
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": false
+      }
+    ],
+    "compatibility_syntax": [],
+    "attributes": [
+      "protected"
+    ],
+    "pipe_arg": 1,
+    "effect_class": "pure",
+    "support": "CSV字段保留字符串，header=true默认返回DataTable[columns,records]，保留零行表头；header=false矩形行列表。UTF-8/引号/嵌入换行支持，重复表头/不等宽拒绝。 输入/输出≤8MiB，字段或数据节点≤100000，JSON深度≤64，十进制位/指数≤20000；真实中断预算。",
+    "return_type": "record_table_or_string",
+    "precision_modes": [
+      "exact"
+    ],
+    "precision_notes": "数据十进制直接精确有理，不制造高精度浮点；数值点值可往返，CSV/JSON不保存原Number精度标签，CSV输入字段保持字符串。",
+    "platforms": [
+      "cli",
+      "desktop",
+      "web",
+      "ios"
+    ]
+  },
+  {
+    "id": "fn_000212",
+    "canonical_name": "parse_json",
+    "name": "ParseJSON",
+    "modern_name": "parse_json",
+    "aliases": [],
+    "arity": {
+      "min": 1,
+      "max": 1
+    },
+    "parameters": [
+      {
+        "name": "text",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": false
+      }
+    ],
+    "options": [],
+    "compatibility_syntax": [],
+    "attributes": [
+      "protected"
+    ],
+    "pipe_arg": 1,
+    "effect_class": "pure",
+    "support": "RFC8259纯数据；解码后重复键拒绝，整数及有限十进制精确有理，空对象Record/空数组List；不执行源码。 输入/输出≤8MiB，字段或数据节点≤100000，JSON深度≤64，十进制位/指数≤20000；真实中断预算。",
+    "return_type": "record_table_or_string",
+    "precision_modes": [
+      "exact"
+    ],
+    "precision_notes": "数据十进制直接精确有理，不制造高精度浮点；数值点值可往返，CSV/JSON不保存原Number精度标签，CSV输入字段保持字符串。",
+    "platforms": [
+      "cli",
+      "desktop",
+      "web",
+      "ios"
+    ]
+  },
+  {
     "id": "fn_000071",
     "canonical_name": "at",
     "name": "Part",
@@ -11378,6 +11482,96 @@
       "arbitrary_supported"
     ],
     "precision_notes": "精确计算与已支持的数值近似子集；不把符号保留或格式位数当作新算法/任意精度支持。",
+    "platforms": [
+      "cli",
+      "desktop",
+      "web",
+      "ios"
+    ]
+  },
+  {
+    "id": "fn_000213",
+    "canonical_name": "to_csv",
+    "name": "ToCSV",
+    "modern_name": "to_csv",
+    "aliases": [],
+    "arity": {
+      "min": 1,
+      "max": 1
+    },
+    "parameters": [
+      {
+        "name": "table",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": false
+      }
+    ],
+    "options": [],
+    "compatibility_syntax": [],
+    "attributes": [
+      "protected"
+    ],
+    "pipe_arg": 1,
+    "effect_class": "pure",
+    "support": "原生DataTable、同字段记录行或等宽标量行列表导出；CRLF行尾、引号转义，空表头保留。CSV格式保留文本，数值转换不保存源精度标签。 输入/输出≤8MiB，字段或数据节点≤100000，JSON深度≤64，十进制位/指数≤20000；真实中断预算。",
+    "return_type": "record_table_or_string",
+    "precision_modes": [
+      "exact"
+    ],
+    "precision_notes": "数据十进制直接精确有理，不制造高精度浮点；数值点值可往返，CSV/JSON不保存原Number精度标签，CSV输入字段保持字符串。",
+    "platforms": [
+      "cli",
+      "desktop",
+      "web",
+      "ios"
+    ]
+  },
+  {
+    "id": "fn_000214",
+    "canonical_name": "to_json",
+    "name": "ToJSON",
+    "modern_name": "to_json",
+    "aliases": [],
+    "arity": {
+      "min": 1,
+      "max": 1
+    },
+    "parameters": [
+      {
+        "name": "value",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": false
+      }
+    ],
+    "options": [],
+    "compatibility_syntax": [],
+    "attributes": [
+      "protected"
+    ],
+    "pipe_arg": 1,
+    "effect_class": "pure",
+    "support": "纯List/Record/字符串/数/布尔/Null导出；表格投影columns/rows。有限终止十进制值精确输出，非有限或非终止有理拒绝，不序列化任意表达式。 输入/输出≤8MiB，字段或数据节点≤100000，JSON深度≤64，十进制位/指数≤20000；真实中断预算。",
+    "return_type": "record_table_or_string",
+    "precision_modes": [
+      "exact"
+    ],
+    "precision_notes": "数据十进制直接精确有理，不制造高精度浮点；数值点值可往返，CSV/JSON不保存原Number精度标签，CSV输入字段保持字符串。",
     "platforms": [
       "cli",
       "desktop",

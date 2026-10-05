@@ -1,6 +1,10 @@
 //! Pure scientific/data callbacks share validated arguments and portable budgets.
 mod basics;
+mod csv_data;
 mod data;
+mod data_number;
+mod io_registry;
+mod json_data;
 mod matrix;
 mod matrix_numeric;
 mod ordering;
@@ -124,6 +128,9 @@ pub(super) fn dispatch(
             return Ok(result);
         }
         if let Some(result) = probability::dispatch(ev, name, &args, ctx)? {
+            return Ok(result);
+        }
+        if let Some(result) = io_registry::dispatch(name, &args, ctx)? {
             return Ok(result);
         }
         if let Some(result) = statistics::dispatch(ev, name, &args, ctx)? {

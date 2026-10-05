@@ -19,3 +19,5 @@
 R3.3c当前：精确/机器矩形欠定全解、机器rank/null_space、LS最小范数与angle/projection已验证，唯一解仍列表，非唯一为参数化Record。NEXT_RELEASE「欠定保留自由轴」已恢复，前轮拒绝样例改真正不相容，未动53数学语料。当前181回调/176身份，描述6，应用.2；下一任务从特殊函数/随机概率/CSVJSON/SI单位/help等R3.3剩余开始，随后R3.4–R3.6。活动目标保持完整.3，不提前发行；本机不运行模拟器。
 
 R3.3d最新：特殊函数/实主值补齐与正态/均匀分布、PDF/CDF/分布Quantile、SplitMix64会话随机已验证，197回调/192身份、描述7、运行时仍.2。最终946Rust/2ignored、Python15、前端59/lint/typecheck、全Clippy/fmt、纯WASM、TS无漂移与deny均通过；原53数学期望未改。小尾部、LogGamma接近1和2的微小值、高精度拒绝、随机失败/取消不推进和只读隔离均实际测试。下一任务继续R3.3的CSV/JSON纯数据、SI单位及help/functions/options/capabilities求值，再R3.4–R3.6，不提前发行、不缩减完整范围。接口/算法裁决见P122和special-probability.md；本机不运行模拟器，不使用子代理，Agent/事务仍预留。
+
+R3.3e已验证：CSV/JSON四真回调、DataTable只追加数据头、空表头/Unicode/无执行/精确数值/预算往返完整，201回调/196身份，描述8，应用仍.2。951Rust/2ignored、Python15、前端59、Clippy/fmt/纯WASM/TS/deny已通过。上一批ceea0b5的CI37280109336仅iOS原始#18耗时1306ms超1s失败，Rust/前端/依赖成功；实际xcresult已下载target/ci-evidence/r33d，本机不要开模拟器/不要放宽门槛。接续先分析原18的Swift总时间与kernel timing，再继续基础表格操作、SI单位和帮助查询，然后原R3.4–R3.6与完整发行；保持goal active不提前发行。data-formats.md/P123记录真实类型与限制。

@@ -55,8 +55,8 @@
 | [`nest_list`](#nest_list) | 后续规划 | 规划接口，当前不可用 | 列表、记录与表格中的 NestList 能力，进入后续全景目录。 |
 | [`normal`](#normal) | 下一版规划 | 规划接口，当前不可用 | 取结构对象的普通表达式表示 |
 | [`ordering`](#ordering) | 后续规划 | 规划接口，当前不可用 | 列表、记录与表格中的 Ordering 能力，进入后续全景目录。 |
-| [`parse_csv`](#parse_csv) | 下一版规划 | 规划接口，当前不可用 | 解析CSV数据 |
-| [`parse_json`](#parse_json) | 下一版规划 | 规划接口，当前不可用 | 解析JSON数据 |
+| [`parse_csv`](#parse_csv) | 已实现 | 当前可用 | 解析CSV数据 |
+| [`parse_json`](#parse_json) | 已实现 | 当前可用 | 解析JSON数据 |
 | [`partition`](#partition) | 后续规划 | 规划接口，当前不可用 | 列表、记录与表格中的 Partition 能力，进入后续全景目录。 |
 | [`product`](#product) | 部分支持 | 当前可用 | 在有限迭代区间累乘。 |
 | [`query`](#query) | 后续规划 | 规划接口，当前不可用 | 列表、记录与表格中的 Query 能力，进入后续全景目录。 |
@@ -75,8 +75,8 @@
 | [`table`](#table) | 部分支持 | 当前可用 | 在有限迭代区间构造结果列表。 |
 | [`take`](#take) | 已实现 | 当前可用 | 取前/后片段 |
 | [`thread`](#thread) | 后续规划 | 规划接口，当前不可用 | 列表、记录与表格中的 Thread 能力，进入后续全景目录。 |
-| [`to_csv`](#to_csv) | 下一版规划 | 规划接口，当前不可用 | 编码CSV数据 |
-| [`to_json`](#to_json) | 下一版规划 | 规划接口，当前不可用 | 编码JSON数据 |
+| [`to_csv`](#to_csv) | 已实现 | 当前可用 | 编码CSV数据 |
+| [`to_json`](#to_json) | 已实现 | 当前可用 | 编码JSON数据 |
 | [`union`](#union) | 后续规划 | 规划接口，当前不可用 | 列表、记录与表格中的 Union 能力，进入后续全景目录。 |
 | [`unique`](#unique) | 已实现 | 当前可用 | 保留首次出现顺序去重 |
 | [`values`](#values) | 后续规划 | 规划接口，当前不可用 | 列表、记录与表格中的 Values 能力，进入后续全景目录。 |
@@ -1970,21 +1970,33 @@ ordering(...)  # 后续接口尚未锁定
 
 ## parse_csv
 
-**当前实现：下一版规划；目标接口：规划接口，当前不可用。** 目标版本：`0.1.0-pre-alpha.3`。
+**当前实现：已实现；目标接口：当前可用。** 目标版本：`0.1.0-pre-alpha.3`。
 
 - 稳定身份：`fn_000211`；条目类型：`function`。
-- 副作用分类（设计预留）：`pure`；参数验证阶段：`documentation_only`，不构成工具授权。
+- 副作用分类（设计预留）：`pure`；参数验证阶段：`runtime_verified`，不构成工具授权。
 
 解析CSV数据
 
-- 当前支持：当前无此规范接口的实现。
+- 当前支持：CSV字段保留字符串，header=true默认返回DataTable[columns,records]，保留零行表头；header=false矩形行列表。UTF-8/引号/嵌入换行支持，重复表头/不等宽拒绝。 输入/输出≤8MiB，字段或数据节点≤100000，JSON深度≤64，十进制位/指数≤20000；真实中断预算。
 - 目标范围：纯数据，无文件系统/网络/求值；CSV完整处理引号、嵌入换行与UTF-8，JSON重复键/无效数字明确处理；空记录使用record()而不是改变旧{}列表含义。
 - 返回：record_table_or_string
-- 精度：数值转换类型明确，不把JSON小数自动声称为任意精度。
-- 当前计算平台：无；目标计算平台：cli, desktop, web, ios。
+- 精度：数据十进制直接精确有理，不制造高精度浮点；数值点值可往返，CSV/JSON不保存原Number精度标签，CSV输入字段保持字符串。
+- 当前计算平台：cli, desktop, web, ios；目标计算平台：cli, desktop, web, ios。
 - 目标图形/交互展示平台：不适用或后续未定。
-- 兼容名称：无既有兼容入口。
+- 兼容名称：`ParseCSV`。
 - 管道位置：第 1 个位置参数（从 1 起）。
+
+当前现代签名：
+
+```text
+parse_csv(text,header:true)
+```
+
+当前 Wolfram 签名：
+
+```text
+ParseCSV[text,Header->True]
+```
 
 目标现代签名（按目标接口状态判断是否已可执行）：
 
@@ -1994,38 +2006,50 @@ parse_csv(text, header: true)
 
 | 参数 | 类型 | 默认值 | 含义 | 可用阶段 |
 |---|---|---|---|---|
-| `text` | positional | 必填 | 文本 | r3 |
-| `header` | option | true | 签名对应的header参数 | r3 |
+| `text` | positional | 必填 | 文本 | current |
+| `header` | option | true | 签名对应的header参数 | current |
 
-规划示例（尚未执行；需要目标版本，后续条目不承诺 .3）：
+当前已登记示例（Wolfram）：
 
-```text
-parse_csv("x,y\n1,2\n3,4")
+```wolfram
+ParseCSV["a,b\n1,2"]
 ```
 
 验收：独立数学期望、有效/无效参数、边界、预算、中断及声明的平台/精度测试；范围外不伪造成功。
 
-当前源码：暂无当前实现证据。
+当前源码：[crates/om-eval/src/science/io_registry.rs](../../crates/om-eval/src/science/io_registry.rs)、[crates/om-eval/src/science/csv_data.rs](../../crates/om-eval/src/science/csv_data.rs)。
 
-当前测试引用：暂无当前实现证据。
+当前测试引用：[crates/om-eval/tests/data_io.rs](../../crates/om-eval/tests/data_io.rs)。
 
 ## parse_json
 
-**当前实现：下一版规划；目标接口：规划接口，当前不可用。** 目标版本：`0.1.0-pre-alpha.3`。
+**当前实现：已实现；目标接口：当前可用。** 目标版本：`0.1.0-pre-alpha.3`。
 
 - 稳定身份：`fn_000212`；条目类型：`function`。
-- 副作用分类（设计预留）：`pure`；参数验证阶段：`documentation_only`，不构成工具授权。
+- 副作用分类（设计预留）：`pure`；参数验证阶段：`runtime_verified`，不构成工具授权。
 
 解析JSON数据
 
-- 当前支持：当前无此规范接口的实现。
+- 当前支持：RFC8259纯数据；解码后重复键拒绝，整数及有限十进制精确有理，空对象Record/空数组List；不执行源码。 输入/输出≤8MiB，字段或数据节点≤100000，JSON深度≤64，十进制位/指数≤20000；真实中断预算。
 - 目标范围：纯数据，无文件系统/网络/求值；CSV完整处理引号、嵌入换行与UTF-8，JSON重复键/无效数字明确处理；空记录使用record()而不是改变旧{}列表含义。
 - 返回：record_table_or_string
-- 精度：数值转换类型明确，不把JSON小数自动声称为任意精度。
-- 当前计算平台：无；目标计算平台：cli, desktop, web, ios。
+- 精度：数据十进制直接精确有理，不制造高精度浮点；数值点值可往返，CSV/JSON不保存原Number精度标签，CSV输入字段保持字符串。
+- 当前计算平台：cli, desktop, web, ios；目标计算平台：cli, desktop, web, ios。
 - 目标图形/交互展示平台：不适用或后续未定。
-- 兼容名称：无既有兼容入口。
+- 兼容名称：`ParseJSON`。
 - 管道位置：第 1 个位置参数（从 1 起）。
+
+当前现代签名：
+
+```text
+parse_json(text)
+```
+
+当前 Wolfram 签名：
+
+```text
+ParseJSON[text]
+```
 
 目标现代签名（按目标接口状态判断是否已可执行）：
 
@@ -2035,19 +2059,19 @@ parse_json(text)
 
 | 参数 | 类型 | 默认值 | 含义 | 可用阶段 |
 |---|---|---|---|---|
-| `text` | positional | 必填 | 文本 | r3 |
+| `text` | positional | 必填 | 文本 | current |
 
-规划示例（尚未执行；需要目标版本，后续条目不承诺 .3）：
+当前已登记示例（Wolfram）：
 
-```text
-parse_json("{\"x\":2}")
+```wolfram
+ParseJSON["{\"a\":1}"]
 ```
 
 验收：独立数学期望、有效/无效参数、边界、预算、中断及声明的平台/精度测试；范围外不伪造成功。
 
-当前源码：暂无当前实现证据。
+当前源码：[crates/om-eval/src/science/io_registry.rs](../../crates/om-eval/src/science/io_registry.rs)、[crates/om-eval/src/science/json_data.rs](../../crates/om-eval/src/science/json_data.rs)。
 
-当前测试引用：暂无当前实现证据。
+当前测试引用：[crates/om-eval/tests/data_io.rs](../../crates/om-eval/tests/data_io.rs)。
 
 ## partition
 
@@ -2910,21 +2934,33 @@ thread(...)  # 后续接口尚未锁定
 
 ## to_csv
 
-**当前实现：下一版规划；目标接口：规划接口，当前不可用。** 目标版本：`0.1.0-pre-alpha.3`。
+**当前实现：已实现；目标接口：当前可用。** 目标版本：`0.1.0-pre-alpha.3`。
 
 - 稳定身份：`fn_000213`；条目类型：`function`。
-- 副作用分类（设计预留）：`pure`；参数验证阶段：`documentation_only`，不构成工具授权。
+- 副作用分类（设计预留）：`pure`；参数验证阶段：`runtime_verified`，不构成工具授权。
 
 编码CSV数据
 
-- 当前支持：当前无此规范接口的实现。
+- 当前支持：原生DataTable、同字段记录行或等宽标量行列表导出；CRLF行尾、引号转义，空表头保留。CSV格式保留文本，数值转换不保存源精度标签。 输入/输出≤8MiB，字段或数据节点≤100000，JSON深度≤64，十进制位/指数≤20000；真实中断预算。
 - 目标范围：纯数据，无文件系统/网络/求值；CSV完整处理引号、嵌入换行与UTF-8，JSON重复键/无效数字明确处理；空记录使用record()而不是改变旧{}列表含义。
 - 返回：record_table_or_string
-- 精度：数值转换类型明确，不把JSON小数自动声称为任意精度。
-- 当前计算平台：无；目标计算平台：cli, desktop, web, ios。
+- 精度：数据十进制直接精确有理，不制造高精度浮点；数值点值可往返，CSV/JSON不保存原Number精度标签，CSV输入字段保持字符串。
+- 当前计算平台：cli, desktop, web, ios；目标计算平台：cli, desktop, web, ios。
 - 目标图形/交互展示平台：不适用或后续未定。
-- 兼容名称：无既有兼容入口。
+- 兼容名称：`ToCSV`。
 - 管道位置：第 1 个位置参数（从 1 起）。
+
+当前现代签名：
+
+```text
+to_csv(table)
+```
+
+当前 Wolfram 签名：
+
+```text
+ToCSV[table]
+```
 
 目标现代签名（按目标接口状态判断是否已可执行）：
 
@@ -2934,37 +2970,49 @@ to_csv(table)
 
 | 参数 | 类型 | 默认值 | 含义 | 可用阶段 |
 |---|---|---|---|---|
-| `table` | positional | 必填 | 签名对应的table参数 | r3 |
+| `table` | positional | 必填 | 签名对应的table参数 | current |
 
-规划示例（尚未执行；需要目标版本，后续条目不承诺 .3）：
+当前已登记示例（Wolfram）：
 
-```text
-to_csv([[1,2],[3,4]])
+```wolfram
+ToCSV[{{1,2},{3,4}}]
 ```
 
 验收：独立数学期望、有效/无效参数、边界、预算、中断及声明的平台/精度测试；范围外不伪造成功。
 
-当前源码：暂无当前实现证据。
+当前源码：[crates/om-eval/src/science/io_registry.rs](../../crates/om-eval/src/science/io_registry.rs)、[crates/om-eval/src/science/csv_data.rs](../../crates/om-eval/src/science/csv_data.rs)。
 
-当前测试引用：暂无当前实现证据。
+当前测试引用：[crates/om-eval/tests/data_io.rs](../../crates/om-eval/tests/data_io.rs)。
 
 ## to_json
 
-**当前实现：下一版规划；目标接口：规划接口，当前不可用。** 目标版本：`0.1.0-pre-alpha.3`。
+**当前实现：已实现；目标接口：当前可用。** 目标版本：`0.1.0-pre-alpha.3`。
 
 - 稳定身份：`fn_000214`；条目类型：`function`。
-- 副作用分类（设计预留）：`pure`；参数验证阶段：`documentation_only`，不构成工具授权。
+- 副作用分类（设计预留）：`pure`；参数验证阶段：`runtime_verified`，不构成工具授权。
 
 编码JSON数据
 
-- 当前支持：当前无此规范接口的实现。
+- 当前支持：纯List/Record/字符串/数/布尔/Null导出；表格投影columns/rows。有限终止十进制值精确输出，非有限或非终止有理拒绝，不序列化任意表达式。 输入/输出≤8MiB，字段或数据节点≤100000，JSON深度≤64，十进制位/指数≤20000；真实中断预算。
 - 目标范围：纯数据，无文件系统/网络/求值；CSV完整处理引号、嵌入换行与UTF-8，JSON重复键/无效数字明确处理；空记录使用record()而不是改变旧{}列表含义。
 - 返回：record_table_or_string
-- 精度：数值转换类型明确，不把JSON小数自动声称为任意精度。
-- 当前计算平台：无；目标计算平台：cli, desktop, web, ios。
+- 精度：数据十进制直接精确有理，不制造高精度浮点；数值点值可往返，CSV/JSON不保存原Number精度标签，CSV输入字段保持字符串。
+- 当前计算平台：cli, desktop, web, ios；目标计算平台：cli, desktop, web, ios。
 - 目标图形/交互展示平台：不适用或后续未定。
-- 兼容名称：无既有兼容入口。
+- 兼容名称：`ToJSON`。
 - 管道位置：第 1 个位置参数（从 1 起）。
+
+当前现代签名：
+
+```text
+to_json(value)
+```
+
+当前 Wolfram 签名：
+
+```text
+ToJSON[value]
+```
 
 目标现代签名（按目标接口状态判断是否已可执行）：
 
@@ -2974,19 +3022,19 @@ to_json(value)
 
 | 参数 | 类型 | 默认值 | 含义 | 可用阶段 |
 |---|---|---|---|---|
-| `value` | positional | 必填 | 签名对应的value参数 | r3 |
+| `value` | positional | 必填 | 签名对应的value参数 | current |
 
-规划示例（尚未执行；需要目标版本，后续条目不承诺 .3）：
+当前已登记示例（Wolfram）：
 
-```text
-to_json({x: 2,y: 3})
+```wolfram
+ToJSON[Record["a"->1]]
 ```
 
 验收：独立数学期望、有效/无效参数、边界、预算、中断及声明的平台/精度测试；范围外不伪造成功。
 
-当前源码：暂无当前实现证据。
+当前源码：[crates/om-eval/src/science/io_registry.rs](../../crates/om-eval/src/science/io_registry.rs)、[crates/om-eval/src/science/json_data.rs](../../crates/om-eval/src/science/json_data.rs)。
 
-当前测试引用：暂无当前实现证据。
+当前测试引用：[crates/om-eval/tests/data_io.rs](../../crates/om-eval/tests/data_io.rs)。
 
 ## union
 

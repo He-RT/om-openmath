@@ -1,6 +1,6 @@
 # 实际注册审计基线：ba3cd2b；稳定身份与名称分离；目录/副作用为设计数据。
 schema_version = 1
-metadata_version = 7
+metadata_version = 8
 validation_stage = "runtime_verified"
 current_version = "0.1.0-pre-alpha.2"
 target_version = "0.1.0-pre-alpha.3"
@@ -6819,128 +6819,128 @@ effect_class = "pure"
 id = "fn_000211"
 name = "parse_csv"
 category = "data"
-status = "planned"
-interface_status = "planned"
-runtime_names = []
-compatibility_names = []
-current_modern_signatures = []
-current_wolfram_signatures = []
+status = "implemented"
+interface_status = "current"
+runtime_names = ["ParseCSV"]
+compatibility_names = ["ParseCSV"]
+current_modern_signatures = ["parse_csv(text,header:true)"]
+current_wolfram_signatures = ["ParseCSV[text,Header->True]"]
 signatures = ["parse_csv(text, header: true)"]
-parameters = [{ name = "text", kind = "positional", default = "必填", description = "文本", availability = "r3" }, { name = "header", kind = "option", default = "true", description = "签名对应的header参数", availability = "r3" }]
+parameters = [{ name = "text", kind = "positional", default = "必填", description = "文本", availability = "current" }, { name = "header", kind = "option", default = "true", description = "签名对应的header参数", availability = "current" }]
 return_type = "record_table_or_string"
 semantics = "解析CSV数据"
-current_support = "当前无此规范接口的实现。"
+current_support = "CSV字段保留字符串，header=true默认返回DataTable[columns,records]，保留零行表头；header=false矩形行列表。UTF-8/引号/嵌入换行支持，重复表头/不等宽拒绝。 输入/输出≤8MiB，字段或数据节点≤100000，JSON深度≤64，十进制位/指数≤20000；真实中断预算。"
 target_support = "纯数据，无文件系统/网络/求值；CSV完整处理引号、嵌入换行与UTF-8，JSON重复键/无效数字明确处理；空记录使用record()而不是改变旧{}列表含义。"
-precision_modes = ["planned_machine"]
-precision_notes = "数值转换类型明确，不把JSON小数自动声称为任意精度。"
-current_platforms = []
+precision_modes = ["exact"]
+precision_notes = "数据十进制直接精确有理，不制造高精度浮点；数值点值可往返，CSV/JSON不保存原Number精度标签，CSV输入字段保持字符串。"
+current_platforms = ["cli", "desktop", "web", "ios"]
 target_platforms = ["cli", "desktop", "web", "ios"]
 render_platforms = []
-current_examples = []
-planned_examples = ["parse_csv(\"x,y\\n1,2\\n3,4\")"]
-sources = []
-tests = []
+current_examples = ["ParseCSV[\"a,b\\n1,2\"]"]
+planned_examples = []
+sources = ["crates/om-eval/src/science/io_registry.rs", "crates/om-eval/src/science/csv_data.rs"]
+tests = ["crates/om-eval/tests/data_io.rs"]
 acceptance = "独立数学期望、有效/无效参数、边界、预算、中断及声明的平台/精度测试；范围外不伪造成功。"
 pipe_arg = 1
 target_version = "0.1.0-pre-alpha.3"
 kind = "function"
-validation_stage = "documentation_only"
+validation_stage = "runtime_verified"
 effect_class = "pure"
 
 [[functions]]
 id = "fn_000212"
 name = "parse_json"
 category = "data"
-status = "planned"
-interface_status = "planned"
-runtime_names = []
-compatibility_names = []
-current_modern_signatures = []
-current_wolfram_signatures = []
+status = "implemented"
+interface_status = "current"
+runtime_names = ["ParseJSON"]
+compatibility_names = ["ParseJSON"]
+current_modern_signatures = ["parse_json(text)"]
+current_wolfram_signatures = ["ParseJSON[text]"]
 signatures = ["parse_json(text)"]
-parameters = [{ name = "text", kind = "positional", default = "必填", description = "文本", availability = "r3" }]
+parameters = [{ name = "text", kind = "positional", default = "必填", description = "文本", availability = "current" }]
 return_type = "record_table_or_string"
 semantics = "解析JSON数据"
-current_support = "当前无此规范接口的实现。"
+current_support = "RFC8259纯数据；解码后重复键拒绝，整数及有限十进制精确有理，空对象Record/空数组List；不执行源码。 输入/输出≤8MiB，字段或数据节点≤100000，JSON深度≤64，十进制位/指数≤20000；真实中断预算。"
 target_support = "纯数据，无文件系统/网络/求值；CSV完整处理引号、嵌入换行与UTF-8，JSON重复键/无效数字明确处理；空记录使用record()而不是改变旧{}列表含义。"
-precision_modes = ["planned_machine"]
-precision_notes = "数值转换类型明确，不把JSON小数自动声称为任意精度。"
-current_platforms = []
+precision_modes = ["exact"]
+precision_notes = "数据十进制直接精确有理，不制造高精度浮点；数值点值可往返，CSV/JSON不保存原Number精度标签，CSV输入字段保持字符串。"
+current_platforms = ["cli", "desktop", "web", "ios"]
 target_platforms = ["cli", "desktop", "web", "ios"]
 render_platforms = []
-current_examples = []
-planned_examples = ["parse_json(\"{\\\"x\\\":2}\")"]
-sources = []
-tests = []
+current_examples = ["ParseJSON[\"{\\\"a\\\":1}\"]"]
+planned_examples = []
+sources = ["crates/om-eval/src/science/io_registry.rs", "crates/om-eval/src/science/json_data.rs"]
+tests = ["crates/om-eval/tests/data_io.rs"]
 acceptance = "独立数学期望、有效/无效参数、边界、预算、中断及声明的平台/精度测试；范围外不伪造成功。"
 pipe_arg = 1
 target_version = "0.1.0-pre-alpha.3"
 kind = "function"
-validation_stage = "documentation_only"
+validation_stage = "runtime_verified"
 effect_class = "pure"
 
 [[functions]]
 id = "fn_000213"
 name = "to_csv"
 category = "data"
-status = "planned"
-interface_status = "planned"
-runtime_names = []
-compatibility_names = []
-current_modern_signatures = []
-current_wolfram_signatures = []
+status = "implemented"
+interface_status = "current"
+runtime_names = ["ToCSV"]
+compatibility_names = ["ToCSV"]
+current_modern_signatures = ["to_csv(table)"]
+current_wolfram_signatures = ["ToCSV[table]"]
 signatures = ["to_csv(table)"]
-parameters = [{ name = "table", kind = "positional", default = "必填", description = "签名对应的table参数", availability = "r3" }]
+parameters = [{ name = "table", kind = "positional", default = "必填", description = "签名对应的table参数", availability = "current" }]
 return_type = "record_table_or_string"
 semantics = "编码CSV数据"
-current_support = "当前无此规范接口的实现。"
+current_support = "原生DataTable、同字段记录行或等宽标量行列表导出；CRLF行尾、引号转义，空表头保留。CSV格式保留文本，数值转换不保存源精度标签。 输入/输出≤8MiB，字段或数据节点≤100000，JSON深度≤64，十进制位/指数≤20000；真实中断预算。"
 target_support = "纯数据，无文件系统/网络/求值；CSV完整处理引号、嵌入换行与UTF-8，JSON重复键/无效数字明确处理；空记录使用record()而不是改变旧{}列表含义。"
-precision_modes = ["planned_machine"]
-precision_notes = "数值转换类型明确，不把JSON小数自动声称为任意精度。"
-current_platforms = []
+precision_modes = ["exact"]
+precision_notes = "数据十进制直接精确有理，不制造高精度浮点；数值点值可往返，CSV/JSON不保存原Number精度标签，CSV输入字段保持字符串。"
+current_platforms = ["cli", "desktop", "web", "ios"]
 target_platforms = ["cli", "desktop", "web", "ios"]
 render_platforms = []
-current_examples = []
-planned_examples = ["to_csv([[1,2],[3,4]])"]
-sources = []
-tests = []
+current_examples = ["ToCSV[{{1,2},{3,4}}]"]
+planned_examples = []
+sources = ["crates/om-eval/src/science/io_registry.rs", "crates/om-eval/src/science/csv_data.rs"]
+tests = ["crates/om-eval/tests/data_io.rs"]
 acceptance = "独立数学期望、有效/无效参数、边界、预算、中断及声明的平台/精度测试；范围外不伪造成功。"
 pipe_arg = 1
 target_version = "0.1.0-pre-alpha.3"
 kind = "function"
-validation_stage = "documentation_only"
+validation_stage = "runtime_verified"
 effect_class = "pure"
 
 [[functions]]
 id = "fn_000214"
 name = "to_json"
 category = "data"
-status = "planned"
-interface_status = "planned"
-runtime_names = []
-compatibility_names = []
-current_modern_signatures = []
-current_wolfram_signatures = []
+status = "implemented"
+interface_status = "current"
+runtime_names = ["ToJSON"]
+compatibility_names = ["ToJSON"]
+current_modern_signatures = ["to_json(value)"]
+current_wolfram_signatures = ["ToJSON[value]"]
 signatures = ["to_json(value)"]
-parameters = [{ name = "value", kind = "positional", default = "必填", description = "签名对应的value参数", availability = "r3" }]
+parameters = [{ name = "value", kind = "positional", default = "必填", description = "签名对应的value参数", availability = "current" }]
 return_type = "record_table_or_string"
 semantics = "编码JSON数据"
-current_support = "当前无此规范接口的实现。"
+current_support = "纯List/Record/字符串/数/布尔/Null导出；表格投影columns/rows。有限终止十进制值精确输出，非有限或非终止有理拒绝，不序列化任意表达式。 输入/输出≤8MiB，字段或数据节点≤100000，JSON深度≤64，十进制位/指数≤20000；真实中断预算。"
 target_support = "纯数据，无文件系统/网络/求值；CSV完整处理引号、嵌入换行与UTF-8，JSON重复键/无效数字明确处理；空记录使用record()而不是改变旧{}列表含义。"
-precision_modes = ["planned_machine"]
-precision_notes = "数值转换类型明确，不把JSON小数自动声称为任意精度。"
-current_platforms = []
+precision_modes = ["exact"]
+precision_notes = "数据十进制直接精确有理，不制造高精度浮点；数值点值可往返，CSV/JSON不保存原Number精度标签，CSV输入字段保持字符串。"
+current_platforms = ["cli", "desktop", "web", "ios"]
 target_platforms = ["cli", "desktop", "web", "ios"]
 render_platforms = []
-current_examples = []
-planned_examples = ["to_json({x: 2,y: 3})"]
-sources = []
-tests = []
+current_examples = ["ToJSON[Record[\"a\"->1]]"]
+planned_examples = []
+sources = ["crates/om-eval/src/science/io_registry.rs", "crates/om-eval/src/science/json_data.rs"]
+tests = ["crates/om-eval/tests/data_io.rs"]
 acceptance = "独立数学期望、有效/无效参数、边界、预算、中断及声明的平台/精度测试；范围外不伪造成功。"
 pipe_arg = 1
 target_version = "0.1.0-pre-alpha.3"
 kind = "function"
-validation_stage = "documentation_only"
+validation_stage = "runtime_verified"
 effect_class = "pure"
 
 [[functions]]
@@ -28730,4 +28730,44 @@ min = 1
 max = 1
 attributes = ["protected"]
 parameters = [{ name = "seed", value_type = "integer", required = true, variadic = false, held = false, min = 0 }]
+options = []
+
+[[runtime]]
+name = "ParseJSON"
+modern_name = "parse_json"
+aliases = []
+min = 1
+max = 1
+attributes = ["protected"]
+parameters = [{ name = "text", value_type = "expression", required = true, variadic = false, held = false }]
+options = []
+
+[[runtime]]
+name = "ParseCSV"
+modern_name = "parse_csv"
+aliases = []
+min = 1
+max = 2
+attributes = ["protected"]
+parameters = [{ name = "text", value_type = "expression", required = true, variadic = false, held = false }]
+options = [{ name = "header", runtime_name = "Header", value_type = "boolean", required = false, default_source = "true", variadic = false, held = false }]
+
+[[runtime]]
+name = "ToJSON"
+modern_name = "to_json"
+aliases = []
+min = 1
+max = 1
+attributes = ["protected"]
+parameters = [{ name = "value", value_type = "expression", required = true, variadic = false, held = false }]
+options = []
+
+[[runtime]]
+name = "ToCSV"
+modern_name = "to_csv"
+aliases = []
+min = 1
+max = 1
+attributes = ["protected"]
+parameters = [{ name = "table", value_type = "expression", required = true, variadic = false, held = false }]
 options = []

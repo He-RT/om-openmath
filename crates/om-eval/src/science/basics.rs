@@ -194,52 +194,7 @@ pub(super) fn dispatch(
                 return Err(error("precision须为1..4931十进制位数"));
             }
             let bits = (precision * std::f64::consts::LOG2_10).ceil() as usize;
-            let (negative, text) = if let Some(t) = text.strip_prefix('-') {
-                (true, t)
-            } else {
-                (false, text.strip_prefix('+').unwrap_or(text))
-            };
-            let (mantissa, exponent) = if let Some(i) = text.find(['e', 'E']) {
-                (
-                    &text[..i],
-                    text[i + 1..]
-                        .parse::<i32>()
-                        .map_err(|_| error("无效十进制指数"))?,
-                )
-            } else {
-                (text, 0)
-            };
-            let (whole, fraction) = mantissa.split_once('.').unwrap_or((mantissa, ""));
-            if whole.len() + fraction.len() == 0
-                || !whole
-                    .bytes()
-                    .chain(fraction.bytes())
-                    .all(|c| c.is_ascii_digit())
-            {
-                return Err(error("需要纯十进制文字，不能包含代码或非有限值"));
-            }
-            let exponent = exponent
-                .checked_sub(i32::try_from(fraction.len()).map_err(|_| error("输入过长"))?)
-                .ok_or_else(|| error("十进制指数超出范围"))?;
-            if exponent.unsigned_abs() > 20000 {
-                return Err(error("十进制指数超过资源界限"));
-            }
-            let mut integer = format!("{whole}{fraction}")
-                .parse::<Integer>()
-                .map_err(|_| error("无效十进制文字"))?;
-            if negative {
-                integer = -integer;
-            }
-            let mut scale = Integer::ONE;
-            for _ in 0..exponent.unsigned_abs() {
-                ctx.tick()?;
-                scale *= 10;
-            }
-            let rational = if exponent >= 0 {
-                Rational::from(integer * scale)
-            } else {
-                Rational::from_parts(integer, scale.into_parts().1)
-            };
+            let rational = super::data_number::decimal(text, ctx)?;
             let value: om_num::BigFloat = rational.to_float(bits).value();
             Expr::number(Number::Real(om_num::Real::Big(value)))
         }

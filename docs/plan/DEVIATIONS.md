@@ -1,5 +1,7 @@
 # 实施裁决
 
+- **P123 — CSV/JSON纯数据与表格形状（2026-10-05，已验证）：** JSON仅RFC8259纯数据，整数与有限十进制直接精确有理（不制造高精度浮点），解码后重复键拒绝；字符串不执行源码。CSV字段保持字符串，默认header=true返回受保护DataTable[columns,records]，保留零数据行表头；header=false为矩形行列表。ToCSV支持表格/记录行/矩形标量行，ToJSON支持纯数据及表格columns/rows投影；非有限或非终止十进制有理数拒绝，原精度标签不属于数据格式。8MiB输入/输出、100000字段/数据节点、64层与20000十进制位/指数限制，真实中断贯穿。DataTable仅追加核心数据头，不伪注册函数；专门跨端表格展示留R3.5。复用白名单serde_json仅处理字符串转义，不新增外部包/unsafe；保留原53期望。
+
 - **P122 — 特殊函数、分布与会话随机契约（2026-10-05）：** om-analysis 新增正实Gamma/LogGamma/Beta与实数Erf/Erfc，使用本项目手写递推/Stirling与不完全Gamma级数/连续分式；机器算法不宣称包围证书或任意精度。Gamma正整数复用Factorial，其他精确非特殊值保持原式，N显式机器近似；高精度/复杂分支拒绝。补acoth/asech/acsch实主值与稳定小输入形式。NormalDistribution/UniformDistribution是经校验的原生表达式对象；均匀PDF/CDF/quantile保留精确值，正态机器CDF直接尾部/分位反解，精确概率舍入撞端点明确拒绝。新增SplitMix64会话状态默认0，seed范围u64、Box–Muller/无偏选择、count省略标量/显式0..100000列表；显式seed局部流、只读fork快照隔离，SeedRandom拒绝只读，完整成功后才提交流，错误与取消不推进。随机范围若在机器下不可区分则拒绝，避免夹取panic。四个随机入口明确write_session；.omnb仅源码。新增16真实回调，197注册名/192身份，描述7，应用仍.2；保持所有原53期望。算法及参考许可依据在special-probability.md，未添加外部包/unsafe/运行时。
 
 - **P121 — 完整仿射线性解与向量运算（2026-10-05）：** 精确欠定/秩亏linear_solve不再按前轮临时测试当作失败，改为真实solution/particular/null_space/parameters/free_columns/rank/exact记录，C[i]仅为结果参数，不修改会话；唯一解保留列表。该裁决恢复NEXT_RELEASE原先要求的「欠定保留自由轴」，仅修改本轮新加的不完整拒绝例为真正不相容例，原53语料/旧数学期望未改。数值SVD新增相对1e-12秩、右零空间和最小范数解/后向容差一致性；矩形、欠定、秩亏可解记录含真实残差及rank_kind=numerical，不相容拒绝；满列秩仍QR/方阵LU，最小二乘接受不相容数据但consistent=false说明拟合残差。补angle/projection，两向量等维≤64、零向量拒绝、共轭内积声明，实角度只夹舍入级越界。精确仿射用多组独立参数代入验证；最小范数解与零空间正交、残差、样本形状及失败验证。描述版本6，181注册名/176身份，应用仍.2；完整.3目标未完成。

@@ -1444,22 +1444,30 @@
     {
       "id": "fn_000211",
       "initial_name": "parse_csv",
-      "runtime_names": []
+      "runtime_names": [
+        "ParseCSV"
+      ]
     },
     {
       "id": "fn_000212",
       "initial_name": "parse_json",
-      "runtime_names": []
+      "runtime_names": [
+        "ParseJSON"
+      ]
     },
     {
       "id": "fn_000213",
       "initial_name": "to_csv",
-      "runtime_names": []
+      "runtime_names": [
+        "ToCSV"
+      ]
     },
     {
       "id": "fn_000214",
       "initial_name": "to_json",
-      "runtime_names": []
+      "runtime_names": [
+        "ToJSON"
+      ]
     },
     {
       "id": "fn_000215",

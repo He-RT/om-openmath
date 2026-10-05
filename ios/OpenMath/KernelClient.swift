@@ -24,6 +24,11 @@ private final class RequestCancellation: @unchecked Sendable {
     cancelled = true
     if running { interrupt() }
   }
+  func canProceed() -> Bool {
+    lock.lock()
+    defer { lock.unlock() }
+    return !cancelled
+  }
 }
 
 final class KernelClient: @unchecked Sendable {
@@ -58,8 +63,9 @@ final class KernelClient: @unchecked Sendable {
     }
     return packet
   }
-  private func perform(
-    allowCancelledResponse: Bool = false, _ operation: @escaping @Sendable () -> OmBuffer
+  private nonisolated(nonsending) func perform(
+    allowCancelledResponse: Bool = false,
+    _ operation: @escaping @Sendable (RequestCancellation) throws -> (OmBuffer, Double)
   ) async throws -> KernelPacket {
     let cancellation = RequestCancellation()
     let queuedAt = ContinuousClock.now
@@ -76,7 +82,7 @@ final class KernelClient: @unchecked Sendable {
               _ = cancellation.finish()
               throw KernelError.message("内核已关闭")
             }
-            let buffer = operation()
+            let (buffer, encodedMS) = try operation(cancellation)
             let completedAt = ContinuousClock.now
             let cancelled = cancellation.finish()
             if cancelled && !allowCancelledResponse {
@@ -87,45 +93,60 @@ final class KernelClient: @unchecked Sendable {
             let decodedAt = ContinuousClock.now
             packet.transportTiming = KernelTransportTiming(
               queuedMS: KernelTransportTiming.milliseconds(queuedAt.duration(to: startedAt)),
-              ffiMS: KernelTransportTiming.milliseconds(startedAt.duration(to: completedAt)),
-              decodeMS: KernelTransportTiming.milliseconds(completedAt.duration(to: decodedAt)))
+              ffiMS: max(
+                0,
+                KernelTransportTiming.milliseconds(startedAt.duration(to: completedAt)) - encodedMS),
+              decodeMS: KernelTransportTiming.milliseconds(completedAt.duration(to: decodedAt)),
+              encodedMS: encodedMS)
             continuation.resume(returning: packet)
-          } catch { continuation.resume(throwing: error) }
+          } catch {
+            _ = cancellation.finish()
+            continuation.resume(throwing: error)
+          }
         }
       }
     } onCancel: { [self] in
       cancellation.cancel { interrupt() }
     }
   }
-  func request(_ body: JSONValue) async throws -> KernelPacket {
+  nonisolated(nonsending) func request(_ body: JSONValue) async throws -> KernelPacket {
     let id = try correlation()
-    let bytes = try JSONEncoder().encode(Envelope(id: id, body: body))
     let started = ContinuousClock.now
     var packet = try await perform(allowCancelledResponse: body["type"].string.hasPrefix("llm_")) {
-      [handle] in
-      bytes.withUnsafeBytes {
+      [handle] cancellation in
+      let encodedAt = ContinuousClock.now
+      let bytes = try JSONEncoder().encode(Envelope(id: id, body: body))
+      let encodedMS = KernelTransportTiming.milliseconds(encodedAt.duration(to: .now))
+      guard cancellation.canProceed() else { throw CancellationError() }
+      let buffer = bytes.withUnsafeBytes {
         om_ios_request(handle, $0.bindMemory(to: UInt8.self).baseAddress, $0.count)
       }
+      return (buffer, encodedMS)
     }
     let measured = KernelTransportTiming.milliseconds(started.duration(to: .now))
     if var timing = packet.transportTiming {
-      timing.resumeMS = max(0, measured - timing.queuedMS - timing.ffiMS - timing.decodeMS)
+      timing.resumeMS = max(
+        0, measured - timing.queuedMS - timing.encodedMS - timing.ffiMS - timing.decodeMS)
       packet.transportTiming = timing
     }
     guard packet.response.id == id else { throw KernelError.message("内核响应标识不匹配") }
     return packet
   }
-  func feed(id: String, status: UInt16, bytes: Data) async throws -> KernelPacket {
+  nonisolated(nonsending) func feed(id: String, status: UInt16, bytes: Data) async throws
+    -> KernelPacket
+  {
     let correlation = try correlation()
     let name = Data(id.utf8)
-    let packet = try await perform(allowCancelledResponse: true) { [handle] in
-      name.withUnsafeBytes { request in
+    let packet = try await perform(allowCancelledResponse: true) { [handle] cancellation in
+      guard cancellation.canProceed() else { throw CancellationError() }
+      let buffer = name.withUnsafeBytes { request in
         bytes.withUnsafeBytes { data in
           om_ios_http_bytes(
             handle, correlation, request.bindMemory(to: UInt8.self).baseAddress, request.count,
             status, data.bindMemory(to: UInt8.self).baseAddress, data.count)
         }
       }
+      return (buffer, 0)
     }
     guard packet.response.id == correlation else { throw KernelError.message("内核响应标识不匹配") }
     return packet

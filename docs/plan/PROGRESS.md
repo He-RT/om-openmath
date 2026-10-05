@@ -164,3 +164,5 @@ P124提交 `eb17b60` 的CI37296195523已全部通过，含原1s门禁。离线�
 R3.3f提交 `acde078`；CI37299136370的Rust/前端/依赖通过，iPhone原17整次1096.388ms失败。实际分段queued0.010/FFI209.372/decode2.569/resume0.041ms，kernel209.195ms；约884ms不在当前request方法内部计时中，不能归因为数学或放宽门槛，后续检查Swift执行器边界。
 
 - [x] **R3.3g 标量SI单位** — 四个真实Quantity/UnitConvert/QuantityMagnitude/QuantityUnit回调；七维量纲、SI/派生/2022前缀/固定时间体积与国际英制长度转换、受预算单位DSL与量纲加减/乘除/整数幂真实接通。量纲检查先于普通规范化，保留零量单位；纯数非零仅加无量纲量。输入已有精度保持，不把根式/符号/复杂量、仿射温标、货币或所有带单位求解冒充支持。独立电学等派生关系、精确比例、两个参数写法/嵌套转换、机器/已有高精度以及冲突/非法/预算通过。205回调/200身份、描述10、运行时仍.2。最终959Rust/2ignored、前端59、Python16、Clippy/fmt/纯WASM/TS/deny全通过；原53期望未变。R3.3仍有帮助查询，R3.4–R3.6原完整功能及发行门禁继续；不提前发行。单位边界和原始来源见units.md/P126。
+
+R3.3g单位提交 `b668869`。P127按实际分段证据减少Swift generic executor跳转，编码改在工作队列并独立计时，保留取消及wire约定；离线caller actor连续性、SDK27 typecheck、generic build-for-testing与Python16通过，本机无模拟器。新CI仍须验证原1s门禁，旧实际失败记录保留。

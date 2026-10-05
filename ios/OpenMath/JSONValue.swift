@@ -97,11 +97,13 @@ struct KernelTransportTiming: Sendable {
   var queuedMS: Double
   var ffiMS: Double
   var decodeMS: Double
+  var encodedMS: Double = 0
   var resumeMS: Double = 0
   var json: JSONValue {
     .object([
       "queued_ms": .number(queuedMS), "ffi_ms": .number(ffiMS), "decode_ms": .number(decodeMS),
       "resume_ms": .number(resumeMS),
+      "encoded_ms": .number(encodedMS),
     ])
   }
   static func milliseconds(_ duration: Duration) -> Double {

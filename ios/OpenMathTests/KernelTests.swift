@@ -3,6 +3,28 @@ import XCTest
 @testable import OpenMath
 
 final class KernelTests: XCTestCase {
+  @MainActor func testCallerCancellationBeforeDispatchKeepsNextRequestUsable() async throws {
+    let client = try KernelClient()
+    defer { client.close() }
+    let task = Task {
+      try await client.request(
+        .object([
+          "type": .string("inspect_expression"), "source": .string("x+1"), "numeric": .bool(false),
+        ]))
+    }
+    task.cancel()
+    do {
+      _ = try await task.value
+      XCTFail("Cancelled request must not be accepted")
+    } catch is CancellationError {}
+    let packet = try await client.request(
+      .object([
+        "type": .string("evaluate"), "cell_id": .string("after-cancel"), "source": .string("1+1"),
+        "dialect": .string("Modern"),
+      ]))
+    XCTAssertEqual(packet.response.body["output"]["items"][0]["input_form"].string, "2")
+    XCTAssertNotNil(packet.transportTiming)
+  }
   func testPacketDecodingRejectsBridgeErrorsAndPreservesNestedData() throws {
     let decoder = JSONDecoder()
     XCTAssertThrowsError(
@@ -33,6 +55,7 @@ final class KernelTests: XCTestCase {
     XCTAssertGreaterThanOrEqual(timing.queuedMS, 0)
     XCTAssertGreaterThanOrEqual(timing.ffiMS, 0)
     XCTAssertGreaterThanOrEqual(timing.decodeMS, 0)
+    XCTAssertGreaterThanOrEqual(timing.encodedMS, 0)
     XCTAssertGreaterThanOrEqual(timing.resumeMS, 0)
     XCTAssertEqual(packet.response.body["output"]["items"][0]["view"]["solutions"].array.count, 2)
     let stored = try await client.request(.object(["type": .string("save_notebook")]))

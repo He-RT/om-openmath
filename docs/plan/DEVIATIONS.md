@@ -1,5 +1,7 @@
 # 实施裁决
 
+- **P127 — 保持Swift调用方actor并移出编码（2026-10-05）：** acde078的CI原17总1096.388ms，但queued0.010/FFI209.372/decode2.569/resume0.041ms，只覆盖约212ms；缺少的约884ms并非内核计时，不据此归因数学或放宽门槛。Swift6默认非隔离async可发生generic executor切换；对request/feed/perform显式nonisolated(nonsending)保持调用方actor，FFI/解码继续专用串行队列，JSON编码也移入该队列。新增encoded_ms分段，取消后编码结束不进入FFI，throw路径清理running状态。原整次<1000ms断言及全部53期望不改。离线actor队列恢复断言、iOS27 ARM64 typecheck、generic无签名build-for-testing和Python16通过；不把这些当作CI端到端已通过，等待新同SHA分段/原门禁。
+
 - **P126 — 标量SI单位与量纲算术（2026-10-05，已验证）：** 四个真实Quantity/UnitConvert/QuantityMagnitude/QuantityUnit回调，纯文本单位DSL与七维整数指数，比例始终精确有理；真实2022 SI前缀、基本/派生与固定分钟/小时/日/升/吨/英制长度因子。单位操作在求值参数后、核心Plus/Times/Power规范化前执行，防止单位零量或不相容量纲先被吞掉；兼容加减使用首个单位，乘除/整数幂使用SI基准单位，纯数零为加法中性元素，非零裸数只能与无量纲量相加。没有单位量的路径仍走原核心规范化。有限实数与已有精度保持，复杂/符号量、仿射温标、货币/联网和非整数单位乘方未支持；不伪承诺所有带单位求解或物理含义相同。256bytes/64词元/16层/幂±32/维度±128界限并真实中断，无依赖/unsafe。回调仅追加既有稳定ID；原53期望不动。
 
 - **P125 — 原生表格行语义与目录个数契约（2026-10-05）：** DataTable的filter/sort/sort_by/unique/take/drop/slice/rest/append保留列；Map对记录行真实求值并返回List，Fold真实归约，GroupBy values为子表格，Zip/Flatten/Reshape以记录行输入并维持原列表结果语义，Length计行、First/Last取记录。字段columns/rows为元数据，其他列名返回向量；数字1/2仍访问原构造字段以保留此前dev源码约定，行范围用slice。表格按表头归一记录字段顺序，Unique/Counts不因字段书写顺序差异误分；同字段记录支持标量稳定字典序（数/文本/布尔/Null），复杂键明确拒绝并可使用sort_by。比较器内部也能传播真实Interrupt，保持排序全序不以取消改变比较结果。发现Slice回调2参但runtime参数表漏range；恢复真实必填range并新增固定无选项位置参数个数校验。无新回调/依赖/unsafe；描述9，201回调/196身份，应用仍.2。原53/旧列表行为保留，专门跨端表格展示仍待R3.5。

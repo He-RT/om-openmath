@@ -1,5 +1,7 @@
 # 实施裁决
 
+- **P128 — 审计帮助、规划浏览与真实内核能力（2026-10-05，已验证）：** 四个真实Help/Options/Functions/Capabilities回调，共用functions.toml生成的当前runtime与独立documentation索引；稳定ID不变。help/options保持名称不执行，查询名可为文字或符号（安全读取文字ownvalue），被用户绑定遮蔽的名字明确诊断；实际选项是runtime ParameterSchema，目标文档参数另标注为不可执行说明。functions默认只实际回调身份，planned/deferred仅文档浏览；capabilities仅内核版本/身份/计算平台，没有宿主/授权上下文时两者为Null，不安装Agent框架或开放Notebook工具。索引只读静态生成、无运行文件/网络依赖，真实Interrupt贯穿筛选/数据转换；新文档索引不加入可执行补全。
+
 - **P127 — 保持Swift调用方actor并移出编码（2026-10-05）：** acde078的CI原17总1096.388ms，但queued0.010/FFI209.372/decode2.569/resume0.041ms，只覆盖约212ms；缺少的约884ms并非内核计时，不据此归因数学或放宽门槛。Swift6默认非隔离async可发生generic executor切换；对request/feed/perform显式nonisolated(nonsending)保持调用方actor，FFI/解码继续专用串行队列，JSON编码也移入该队列。新增encoded_ms分段，取消后编码结束不进入FFI，throw路径清理running状态。原整次<1000ms断言及全部53期望不改。离线actor队列恢复断言、iOS27 ARM64 typecheck、generic无签名build-for-testing和Python16通过；不把这些当作CI端到端已通过，等待新同SHA分段/原门禁。
 
 - **P126 — 标量SI单位与量纲算术（2026-10-05，已验证）：** 四个真实Quantity/UnitConvert/QuantityMagnitude/QuantityUnit回调，纯文本单位DSL与七维整数指数，比例始终精确有理；真实2022 SI前缀、基本/派生与固定分钟/小时/日/升/吨/英制长度因子。单位操作在求值参数后、核心Plus/Times/Power规范化前执行，防止单位零量或不相容量纲先被吞掉；兼容加减使用首个单位，乘除/整数幂使用SI基准单位，纯数零为加法中性元素，非零裸数只能与无量纲量相加。没有单位量的路径仍走原核心规范化。有限实数与已有精度保持，复杂/符号量、仿射温标、货币/联网和非整数单位乘方未支持；不伪承诺所有带单位求解或物理含义相同。256bytes/64词元/16层/幂±32/维度±128界限并真实中断，无依赖/unsafe。回调仅追加既有稳定ID；原53期望不动。

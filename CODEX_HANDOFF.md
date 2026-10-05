@@ -29,3 +29,5 @@ R3.3e已验证：CSV/JSON四真回调、DataTable只追加数据头、空表头/
 最新R3.3g：SI标量单位四回调、精确因子/七维量纲、受预算纯单位DSL及单位算术已验证；205回调/200身份、描述10/.2，959Rust/2ignored、前端59/Python16/Clippy/fmt/纯WASM/TS/deny通过，原53不动。下一步帮助查询，再R3.4–R3.6全原范围。R3.3f的CI37299136370 iPhone原17总1096ms，实际内部queued/FFI/decode/resume仅约212ms、kernel209ms；约884ms在现有request计时之外（入口前/编码/返回边界待区分），需核对Swift执行器边界。附件target/ci-evidence/r33f。保持1s原门槛，不能改用kernel时间冒充通过；本机不运行模拟器，单代理直接执行。
 
 P127 Swift接续：acde078的失败分段总1096ms vs方法内212ms，不据此认定计算慢。request/feed/perform已显式nonisolated(nonsending)保持caller actor，减少generic executor往返；JSON编码移到串行工作队列并新增encoded_ms，编码后检查取消并清理running状态。原1s整次断言不改，旧wire/.omnb不加字段。Swift6.4离线caller actor跨queue连续性断言通过，iOS27 ARM64 typecheck和generic无签名build-for-testing成功，Python16通过；没有本地模拟器/真机执行，不宣称新的端到端门禁已通过。单位提交b668869；接下来核对新CI分段后继续help/functions/options/capabilities并完成R3.4–R3.6全原范围。
+
+最新R3.3h：help/options/functions/capabilities四真查询完成，209回调/204身份、描述11/.2；964Rust/2ignored、前端59/Python16、Clippy/fmt/纯WASM/TS/deny通过。P127 CI37302584053全部通过，phone53最大339ms/pad315ms，原1s与数学期望未动。附件target/ci-evidence/p127。R3.3审计发现cbrt/nth_root仍规划（旧cbrt仅名字映射/编译数值路径，不等于当前求值回调）及diag未提取矩阵对角，先补真路径后进入R3.4–R3.6。normal为Series依赖留R3.4。保持完整.3/goal active，不提前发版，本机不启动模拟器，不使用子代理。

@@ -55,4 +55,11 @@ def render_runtime(catalog: dict) -> dict[Path, str]:
     if seen != set(owners):
         raise ValueError(f'缺少实际调用描述：{sorted(set(owners)-seen)}')
     payload=json.dumps(sorted(entries,key=lambda e:e['name']),ensure_ascii=False,indent=2)+'\n'
-    return {ROOT/'crates/om-core/src/catalog/runtime.json': payload}
+    documentation=[{k:f[k] for k in [
+        'id','name','category','kind','status','interface_status','runtime_names','compatibility_names',
+        'current_modern_signatures','signatures','current_support','target_support','return_type',
+        'precision_modes','precision_notes','current_platforms','target_platforms','parameters',
+        'current_examples','planned_examples']} for f in catalog['functions']]
+    doc_payload=json.dumps({'categories':catalog['categories'],'functions':documentation},ensure_ascii=False,indent=2)+'\n'
+    return {ROOT/'crates/om-core/src/catalog/runtime.json': payload,
+            ROOT/'crates/om-core/src/catalog/documentation.json':doc_payload}

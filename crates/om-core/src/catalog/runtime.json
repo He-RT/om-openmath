@@ -1214,6 +1214,37 @@
     ]
   },
   {
+    "id": "fn_000248",
+    "canonical_name": "capabilities",
+    "name": "Capabilities",
+    "modern_name": "capabilities",
+    "aliases": [],
+    "arity": {
+      "min": 0,
+      "max": 0
+    },
+    "parameters": [],
+    "options": [],
+    "compatibility_syntax": [],
+    "attributes": [
+      "protected"
+    ],
+    "pipe_arg": 0,
+    "effect_class": "read_session",
+    "support": "共享审计目录与稳定身份；help/options名称保持不执行，真实运行参数与仅文档的规划参数分开。functions默认实际回调身份，可显式浏览planned/deferred及分类；规划不授予执行。capabilities报告实际版本/身份/计算平台，宿主展示及任务权限无上下文时为Null。用户绑定遮蔽的名字不冒充内置文档，未知输入/预算真实诊断。",
+    "return_type": "record_or_table",
+    "precision_modes": [
+      "metadata"
+    ],
+    "precision_notes": "只查询已有审计描述，不执行名称表达式、不进行数学近似、不读取文件/网络或增加权限。",
+    "platforms": [
+      "cli",
+      "desktop",
+      "web",
+      "ios"
+    ]
+  },
+  {
     "id": "fn_000018",
     "canonical_name": "ceil",
     "name": "Ceiling",
@@ -4391,6 +4422,68 @@
     ]
   },
   {
+    "id": "fn_000246",
+    "canonical_name": "functions",
+    "name": "Functions",
+    "modern_name": "functions",
+    "aliases": [],
+    "arity": {
+      "min": 0,
+      "max": 2
+    },
+    "parameters": [],
+    "options": [
+      {
+        "name": "category",
+        "runtime_name": "Category",
+        "value_type": "expression",
+        "required": false,
+        "default_source": null,
+        "default_context": "所有分类",
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": false
+      },
+      {
+        "name": "stage",
+        "runtime_name": "Stage",
+        "value_type": "enum",
+        "required": false,
+        "default_source": "\"current\"",
+        "default_context": null,
+        "enum_values": [
+          "current",
+          "planned",
+          "deferred"
+        ],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": false
+      }
+    ],
+    "compatibility_syntax": [],
+    "attributes": [
+      "protected"
+    ],
+    "pipe_arg": 0,
+    "effect_class": "read_session",
+    "support": "共享审计目录与稳定身份；help/options名称保持不执行，真实运行参数与仅文档的规划参数分开。functions默认实际回调身份，可显式浏览planned/deferred及分类；规划不授予执行。capabilities报告实际版本/身份/计算平台，宿主展示及任务权限无上下文时为Null。用户绑定遮蔽的名字不冒充内置文档，未知输入/预算真实诊断。",
+    "return_type": "record_or_table",
+    "precision_modes": [
+      "metadata"
+    ],
+    "precision_notes": "只查询已有审计描述，不执行名称表达式、不进行数学近似、不读取文件/网络或增加权限。",
+    "platforms": [
+      "cli",
+      "desktop",
+      "web",
+      "ios"
+    ]
+  },
+  {
     "id": "fn_000049",
     "canonical_name": "gcd",
     "name": "GCD",
@@ -4662,6 +4755,52 @@
       "planned_machine"
     ],
     "precision_notes": "保留输入精度。",
+    "platforms": [
+      "cli",
+      "desktop",
+      "web",
+      "ios"
+    ]
+  },
+  {
+    "id": "fn_000245",
+    "canonical_name": "help",
+    "name": "Help",
+    "modern_name": "help",
+    "aliases": [],
+    "arity": {
+      "min": 1,
+      "max": 1
+    },
+    "parameters": [
+      {
+        "name": "name",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": true
+      }
+    ],
+    "options": [],
+    "compatibility_syntax": [],
+    "attributes": [
+      "protected",
+      "hold_first"
+    ],
+    "pipe_arg": 0,
+    "effect_class": "read_session",
+    "support": "共享审计目录与稳定身份；help/options名称保持不执行，真实运行参数与仅文档的规划参数分开。functions默认实际回调身份，可显式浏览planned/deferred及分类；规划不授予执行。capabilities报告实际版本/身份/计算平台，宿主展示及任务权限无上下文时为Null。用户绑定遮蔽的名字不冒充内置文档，未知输入/预算真实诊断。",
+    "return_type": "record_or_table",
+    "precision_modes": [
+      "metadata"
+    ],
+    "precision_notes": "只查询已有审计描述，不执行名称表达式、不进行数学近似、不读取文件/网络或增加权限。",
     "platforms": [
       "cli",
       "desktop",
@@ -6892,6 +7031,52 @@
       "arbitrary_supported"
     ],
     "precision_notes": "精确计算与已支持的数值近似子集；不把符号保留或格式位数当作新算法/任意精度支持。",
+    "platforms": [
+      "cli",
+      "desktop",
+      "web",
+      "ios"
+    ]
+  },
+  {
+    "id": "fn_000247",
+    "canonical_name": "options",
+    "name": "Options",
+    "modern_name": "options",
+    "aliases": [],
+    "arity": {
+      "min": 1,
+      "max": 1
+    },
+    "parameters": [
+      {
+        "name": "name",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": true
+      }
+    ],
+    "options": [],
+    "compatibility_syntax": [],
+    "attributes": [
+      "protected",
+      "hold_first"
+    ],
+    "pipe_arg": 0,
+    "effect_class": "read_session",
+    "support": "共享审计目录与稳定身份；help/options名称保持不执行，真实运行参数与仅文档的规划参数分开。functions默认实际回调身份，可显式浏览planned/deferred及分类；规划不授予执行。capabilities报告实际版本/身份/计算平台，宿主展示及任务权限无上下文时为Null。用户绑定遮蔽的名字不冒充内置文档，未知输入/预算真实诊断。",
+    "return_type": "record_or_table",
+    "precision_modes": [
+      "metadata"
+    ],
+    "precision_notes": "只查询已有审计描述，不执行名称表达式、不进行数学近似、不读取文件/网络或增加权限。",
     "platforms": [
       "cli",
       "desktop",

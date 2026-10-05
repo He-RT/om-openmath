@@ -10,6 +10,8 @@ mod matrix_numeric;
 mod ordering;
 mod probability;
 mod probability_registry;
+mod reflection;
+mod reflection_registry;
 mod registry;
 mod special;
 mod statistics;
@@ -128,6 +130,9 @@ pub(super) fn dispatch(
     let result = (|| {
         ctx.tick()?;
         let args = Args::parse(name, args)?;
+        if let Some(result) = reflection::dispatch(ev, name, &args, ctx)? {
+            return Ok(result);
+        }
         if let Some(result) = special::dispatch(ev, name, &args, ctx)? {
             return Ok(result);
         }

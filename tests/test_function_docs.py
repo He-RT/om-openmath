@@ -25,6 +25,8 @@ class FunctionDocsTests(unittest.TestCase):
         self.docs.validate_identities(self.catalog, self.identities)
         for path, expected in self.docs.render(self.catalog).items():
             self.assertEqual(path.read_text(encoding="utf-8"), expected, path.name)
+        for path, expected in self.docs.render_runtime(self.catalog).items():
+            self.assertEqual(path.read_text(encoding="utf-8"), expected, path.name)
 
     def test_planning_cannot_claim_current_callbacks_or_platforms(self):
         for field, value in [("runtime_names", ["ImaginaryCallback"]), ("current_platforms", ["web"]), ("current_examples", ["ImaginaryCallback[]"])]:

@@ -7,6 +7,7 @@
 | 下载、安装、卸载或校验 | [安装指南](install.md) |
 | 写公式、使用笔记本或终端 | [输入语言](language.md) |
 | 查询全部功能族、当前支持和未来接口 | [全景功能目录](reference/README.md) |
+| 在计算环境查询函数、选项和能力 | [帮助与能力查询](design/function-queries.md) |
 | 理解现代语法与统一接口设计 | [现代语言设计](design/modern-language.md) |
 | 查看下一版科研功能与Agent预留 | [下一版计划](plan/NEXT_RELEASE.md) |
 | 查看特殊函数、概率与随机流的实际边界 | [特殊函数与概率实现](design/special-probability.md) |

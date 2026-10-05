@@ -11,7 +11,7 @@
 | [`abort`](#abort) | 后续规划 | 规划接口，当前不可用 | 性能、并行与运行环境中的 Abort 能力，进入后续全景目录。 |
 | [`absolute_timing`](#absolute_timing) | 后续规划 | 规划接口，当前不可用 | 性能、并行与运行环境中的 AbsoluteTiming 能力，进入后续全景目录。 |
 | [`byte_count`](#byte_count) | 后续规划 | 规划接口，当前不可用 | 性能、并行与运行环境中的 ByteCount 能力，进入后续全景目录。 |
-| [`capabilities`](#capabilities) | 下一版规划 | 规划接口，当前不可用 | 查询计算与展示能力 |
+| [`capabilities`](#capabilities) | 已实现 | 当前可用 | 查询计算与展示能力 |
 | [`check`](#check) | 后续规划 | 规划接口，当前不可用 | 性能、并行与运行环境中的 Check 能力，进入后续全景目录。 |
 | [`check_abort`](#check_abort) | 后续规划 | 规划接口，当前不可用 | 性能、并行与运行环境中的 CheckAbort 能力，进入后续全景目录。 |
 | [`close_kernels`](#close_kernels) | 后续规划 | 规划接口，当前不可用 | 性能、并行与运行环境中的 CloseKernels 能力，进入后续全景目录。 |
@@ -20,8 +20,8 @@
 | [`echo`](#echo) | 后续规划 | 规划接口，当前不可用 | 性能、并行与运行环境中的 Echo 能力，进入后续全景目录。 |
 | [`filter_rules`](#filter_rules) | 后续规划 | 规划接口，当前不可用 | 性能、并行与运行环境中的 FilterRules 能力，进入后续全景目录。 |
 | [`function_compile`](#function_compile) | 后续规划 | 规划接口，当前不可用 | 性能、并行与运行环境中的 FunctionCompile 能力，进入后续全景目录。 |
-| [`functions`](#functions) | 下一版规划 | 规划接口，当前不可用 | 查询真实注册与目录 |
-| [`help`](#help) | 下一版规划 | 规划接口，当前不可用 | 查功能说明 |
+| [`functions`](#functions) | 已实现 | 当前可用 | 查询真实注册与目录 |
+| [`help`](#help) | 已实现 | 当前可用 | 查功能说明 |
 | [`information`](#information) | 后续规划 | 规划接口，当前不可用 | 性能、并行与运行环境中的 Information 能力，进入后续全景目录。 |
 | [`launch_kernels`](#launch_kernels) | 后续规划 | 规划接口，当前不可用 | 性能、并行与运行环境中的 LaunchKernels 能力，进入后续全景目录。 |
 | [`max_memory_used`](#max_memory_used) | 后续规划 | 规划接口，当前不可用 | 性能、并行与运行环境中的 MaxMemoryUsed 能力，进入后续全景目录。 |
@@ -30,7 +30,7 @@
 | [`monitor`](#monitor) | 后续规划 | 规划接口，当前不可用 | 性能、并行与运行环境中的 Monitor 能力，进入后续全景目录。 |
 | [`names`](#names) | 后续规划 | 规划接口，当前不可用 | 性能、并行与运行环境中的 Names 能力，进入后续全景目录。 |
 | [`option_value`](#option_value) | 后续规划 | 规划接口，当前不可用 | 性能、并行与运行环境中的 OptionValue 能力，进入后续全景目录。 |
-| [`options`](#options) | 下一版规划 | 规划接口，当前不可用 | 查询该函数参数与默认值 |
+| [`options`](#options) | 已实现 | 当前可用 | 查询该函数参数与默认值 |
 | [`options_pattern`](#options_pattern) | 后续规划 | 规划接口，当前不可用 | 性能、并行与运行环境中的 OptionsPattern 能力，进入后续全景目录。 |
 | [`parallel_evaluate`](#parallel_evaluate) | 后续规划 | 规划接口，当前不可用 | 性能、并行与运行环境中的 ParallelEvaluate 能力，进入后续全景目录。 |
 | [`parallel_map`](#parallel_map) | 后续规划 | 规划接口，当前不可用 | 性能、并行与运行环境中的 ParallelMap 能力，进入后续全景目录。 |
@@ -156,21 +156,33 @@ byte_count(...)  # 后续接口尚未锁定
 
 ## capabilities
 
-**当前实现：下一版规划；目标接口：规划接口，当前不可用。** 目标版本：`0.1.0-pre-alpha.3`。
+**当前实现：已实现；目标接口：当前可用。** 目标版本：`0.1.0-pre-alpha.3`。
 
 - 稳定身份：`fn_000248`；条目类型：`function`。
-- 副作用分类（设计预留）：`read_session`；参数验证阶段：`documentation_only`，不构成工具授权。
+- 副作用分类（设计预留）：`read_session`；参数验证阶段：`runtime_verified`，不构成工具授权。
 
 查询计算与展示能力
 
-- 当前支持：当前无此规范接口的实现。
+- 当前支持：共享审计目录与稳定身份；help/options名称保持不执行，真实运行参数与仅文档的规划参数分开。functions默认实际回调身份，可显式浏览planned/deferred及分类；规划不授予执行。capabilities报告实际版本/身份/计算平台，宿主展示及任务权限无上下文时为Null。用户绑定遮蔽的名字不冒充内置文档，未知输入/预算真实诊断。
 - 目标范围：当前124注册名与目录关联；stage planned可查询但不能进入默认可执行补全；计算/渲染平台分开，真实精度能力不能从选项名推测。
 - 返回：record_or_table
-- 精度：元数据，不进行数学近似。
-- 当前计算平台：无；目标计算平台：cli, desktop, web, ios。
+- 精度：只查询已有审计描述，不执行名称表达式、不进行数学近似、不读取文件/网络或增加权限。
+- 当前计算平台：cli, desktop, web, ios；目标计算平台：cli, desktop, web, ios。
 - 目标图形/交互展示平台：不适用或后续未定。
-- 兼容名称：无既有兼容入口。
+- 兼容名称：`Capabilities`。
 - 管道位置：不接受自动管道输入。
+
+当前现代签名：
+
+```text
+capabilities()
+```
+
+当前 Wolfram 签名：
+
+```text
+Capabilities[]
+```
 
 目标现代签名（按目标接口状态判断是否已可执行）：
 
@@ -182,17 +194,17 @@ capabilities()
 |---|---|---|---|---|
 | 无 | — | — | 无参数 | — |
 
-规划示例（尚未执行；需要目标版本，后续条目不承诺 .3）：
+当前已登记示例（Wolfram）：
 
-```text
-capabilities()
+```wolfram
+Capabilities[]
 ```
 
 验收：独立数学期望、有效/无效参数、边界、预算、中断及声明的平台/精度测试；范围外不伪造成功。
 
-当前源码：暂无当前实现证据。
+当前源码：[crates/om-eval/src/science/reflection_registry.rs](../../crates/om-eval/src/science/reflection_registry.rs)、[crates/om-eval/src/science/reflection.rs](../../crates/om-eval/src/science/reflection.rs)、[crates/om-core/src/catalog.rs](../../crates/om-core/src/catalog.rs)、[scripts/runtime_catalog.py](../../scripts/runtime_catalog.py)。
 
-当前测试引用：暂无当前实现证据。
+当前测试引用：[crates/om-eval/tests/reflection.rs](../../crates/om-eval/tests/reflection.rs)。
 
 ## check
 
@@ -468,21 +480,33 @@ function_compile(...)  # 后续接口尚未锁定
 
 ## functions
 
-**当前实现：下一版规划；目标接口：规划接口，当前不可用。** 目标版本：`0.1.0-pre-alpha.3`。
+**当前实现：已实现；目标接口：当前可用。** 目标版本：`0.1.0-pre-alpha.3`。
 
 - 稳定身份：`fn_000246`；条目类型：`function`。
-- 副作用分类（设计预留）：`read_session`；参数验证阶段：`documentation_only`，不构成工具授权。
+- 副作用分类（设计预留）：`read_session`；参数验证阶段：`runtime_verified`，不构成工具授权。
 
 查询真实注册与目录
 
-- 当前支持：当前无此规范接口的实现。
+- 当前支持：共享审计目录与稳定身份；help/options名称保持不执行，真实运行参数与仅文档的规划参数分开。functions默认实际回调身份，可显式浏览planned/deferred及分类；规划不授予执行。capabilities报告实际版本/身份/计算平台，宿主展示及任务权限无上下文时为Null。用户绑定遮蔽的名字不冒充内置文档，未知输入/预算真实诊断。
 - 目标范围：当前124注册名与目录关联；stage planned可查询但不能进入默认可执行补全；计算/渲染平台分开，真实精度能力不能从选项名推测。
 - 返回：record_or_table
-- 精度：元数据，不进行数学近似。
-- 当前计算平台：无；目标计算平台：cli, desktop, web, ios。
+- 精度：只查询已有审计描述，不执行名称表达式、不进行数学近似、不读取文件/网络或增加权限。
+- 当前计算平台：cli, desktop, web, ios；目标计算平台：cli, desktop, web, ios。
 - 目标图形/交互展示平台：不适用或后续未定。
-- 兼容名称：无既有兼容入口。
+- 兼容名称：`Functions`。
 - 管道位置：不接受自动管道输入。
+
+当前现代签名：
+
+```text
+functions(category:...,stage:"current")
+```
+
+当前 Wolfram 签名：
+
+```text
+Functions[Stage->"current"]
+```
 
 目标现代签名（按目标接口状态判断是否已可执行）：
 
@@ -492,38 +516,50 @@ functions(category: none, stage: "current")
 
 | 参数 | 类型 | 默认值 | 含义 | 可用阶段 |
 |---|---|---|---|---|
-| `category` | option | none | 分类过滤 | r3 |
-| `stage` | option | current | current/planned/deferred | r3 |
+| `category` | option | none | 分类过滤 | current |
+| `stage` | option | current | current/planned/deferred | current |
 
-规划示例（尚未执行；需要目标版本，后续条目不承诺 .3）：
+当前已登记示例（Wolfram）：
 
-```text
-functions(category: "calculus",stage: "planned")
+```wolfram
+Functions[Stage->"current"]
 ```
 
 验收：独立数学期望、有效/无效参数、边界、预算、中断及声明的平台/精度测试；范围外不伪造成功。
 
-当前源码：暂无当前实现证据。
+当前源码：[crates/om-eval/src/science/reflection_registry.rs](../../crates/om-eval/src/science/reflection_registry.rs)、[crates/om-eval/src/science/reflection.rs](../../crates/om-eval/src/science/reflection.rs)、[crates/om-core/src/catalog.rs](../../crates/om-core/src/catalog.rs)、[scripts/runtime_catalog.py](../../scripts/runtime_catalog.py)。
 
-当前测试引用：暂无当前实现证据。
+当前测试引用：[crates/om-eval/tests/reflection.rs](../../crates/om-eval/tests/reflection.rs)。
 
 ## help
 
-**当前实现：下一版规划；目标接口：规划接口，当前不可用。** 目标版本：`0.1.0-pre-alpha.3`。
+**当前实现：已实现；目标接口：当前可用。** 目标版本：`0.1.0-pre-alpha.3`。
 
 - 稳定身份：`fn_000245`；条目类型：`function`。
-- 副作用分类（设计预留）：`read_session`；参数验证阶段：`documentation_only`，不构成工具授权。
+- 副作用分类（设计预留）：`read_session`；参数验证阶段：`runtime_verified`，不构成工具授权。
 
 查功能说明
 
-- 当前支持：当前无此规范接口的实现。
+- 当前支持：共享审计目录与稳定身份；help/options名称保持不执行，真实运行参数与仅文档的规划参数分开。functions默认实际回调身份，可显式浏览planned/deferred及分类；规划不授予执行。capabilities报告实际版本/身份/计算平台，宿主展示及任务权限无上下文时为Null。用户绑定遮蔽的名字不冒充内置文档，未知输入/预算真实诊断。
 - 目标范围：当前124注册名与目录关联；stage planned可查询但不能进入默认可执行补全；计算/渲染平台分开，真实精度能力不能从选项名推测。
 - 返回：record_or_table
-- 精度：元数据，不进行数学近似。
-- 当前计算平台：无；目标计算平台：cli, desktop, web, ios。
+- 精度：只查询已有审计描述，不执行名称表达式、不进行数学近似、不读取文件/网络或增加权限。
+- 当前计算平台：cli, desktop, web, ios；目标计算平台：cli, desktop, web, ios。
 - 目标图形/交互展示平台：不适用或后续未定。
-- 兼容名称：无既有兼容入口。
+- 兼容名称：`Help`。
 - 管道位置：不接受自动管道输入。
+
+当前现代签名：
+
+```text
+help(name)
+```
+
+当前 Wolfram 签名：
+
+```text
+Help[name]
+```
 
 目标现代签名（按目标接口状态判断是否已可执行）：
 
@@ -533,19 +569,19 @@ help(name)
 
 | 参数 | 类型 | 默认值 | 含义 | 可用阶段 |
 |---|---|---|---|---|
-| `name` | positional | functions 可用筛选 | 函数名 | r3 |
+| `name` | positional | functions 可用筛选 | 函数名 | current |
 
-规划示例（尚未执行；需要目标版本，后续条目不承诺 .3）：
+当前已登记示例（Wolfram）：
 
-```text
-help("integrate")
+```wolfram
+Help["map"]
 ```
 
 验收：独立数学期望、有效/无效参数、边界、预算、中断及声明的平台/精度测试；范围外不伪造成功。
 
-当前源码：暂无当前实现证据。
+当前源码：[crates/om-eval/src/science/reflection_registry.rs](../../crates/om-eval/src/science/reflection_registry.rs)、[crates/om-eval/src/science/reflection.rs](../../crates/om-eval/src/science/reflection.rs)、[crates/om-core/src/catalog.rs](../../crates/om-core/src/catalog.rs)、[scripts/runtime_catalog.py](../../scripts/runtime_catalog.py)。
 
-当前测试引用：暂无当前实现证据。
+当前测试引用：[crates/om-eval/tests/reflection.rs](../../crates/om-eval/tests/reflection.rs)。
 
 ## information
 
@@ -821,21 +857,33 @@ option_value(...)  # 后续接口尚未锁定
 
 ## options
 
-**当前实现：下一版规划；目标接口：规划接口，当前不可用。** 目标版本：`0.1.0-pre-alpha.3`。
+**当前实现：已实现；目标接口：当前可用。** 目标版本：`0.1.0-pre-alpha.3`。
 
 - 稳定身份：`fn_000247`；条目类型：`function`。
-- 副作用分类（设计预留）：`read_session`；参数验证阶段：`documentation_only`，不构成工具授权。
+- 副作用分类（设计预留）：`read_session`；参数验证阶段：`runtime_verified`，不构成工具授权。
 
 查询该函数参数与默认值
 
-- 当前支持：当前无此规范接口的实现。
+- 当前支持：共享审计目录与稳定身份；help/options名称保持不执行，真实运行参数与仅文档的规划参数分开。functions默认实际回调身份，可显式浏览planned/deferred及分类；规划不授予执行。capabilities报告实际版本/身份/计算平台，宿主展示及任务权限无上下文时为Null。用户绑定遮蔽的名字不冒充内置文档，未知输入/预算真实诊断。
 - 目标范围：当前124注册名与目录关联；stage planned可查询但不能进入默认可执行补全；计算/渲染平台分开，真实精度能力不能从选项名推测。
 - 返回：record_or_table
-- 精度：元数据，不进行数学近似。
-- 当前计算平台：无；目标计算平台：cli, desktop, web, ios。
+- 精度：只查询已有审计描述，不执行名称表达式、不进行数学近似、不读取文件/网络或增加权限。
+- 当前计算平台：cli, desktop, web, ios；目标计算平台：cli, desktop, web, ios。
 - 目标图形/交互展示平台：不适用或后续未定。
-- 兼容名称：无既有兼容入口。
+- 兼容名称：`Options`。
 - 管道位置：不接受自动管道输入。
+
+当前现代签名：
+
+```text
+options(name)
+```
+
+当前 Wolfram 签名：
+
+```text
+Options[name]
+```
 
 目标现代签名（按目标接口状态判断是否已可执行）：
 
@@ -845,19 +893,19 @@ options(name)
 
 | 参数 | 类型 | 默认值 | 含义 | 可用阶段 |
 |---|---|---|---|---|
-| `name` | positional | functions 可用筛选 | 函数名 | r3 |
+| `name` | positional | functions 可用筛选 | 函数名 | current |
 
-规划示例（尚未执行；需要目标版本，后续条目不承诺 .3）：
+当前已登记示例（Wolfram）：
 
-```text
-options("find_root")
+```wolfram
+Options["solve"]
 ```
 
 验收：独立数学期望、有效/无效参数、边界、预算、中断及声明的平台/精度测试；范围外不伪造成功。
 
-当前源码：暂无当前实现证据。
+当前源码：[crates/om-eval/src/science/reflection_registry.rs](../../crates/om-eval/src/science/reflection_registry.rs)、[crates/om-eval/src/science/reflection.rs](../../crates/om-eval/src/science/reflection.rs)、[crates/om-core/src/catalog.rs](../../crates/om-core/src/catalog.rs)、[scripts/runtime_catalog.py](../../scripts/runtime_catalog.py)。
 
-当前测试引用：暂无当前实现证据。
+当前测试引用：[crates/om-eval/tests/reflection.rs](../../crates/om-eval/tests/reflection.rs)。
 
 ## options_pattern
 

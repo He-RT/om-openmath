@@ -1,6 +1,6 @@
 # 实际注册审计基线：ba3cd2b；稳定身份与名称分离；目录/副作用为设计数据。
 schema_version = 1
-metadata_version = 10
+metadata_version = 11
 validation_stage = "runtime_verified"
 current_version = "0.1.0-pre-alpha.2"
 target_version = "0.1.0-pre-alpha.3"
@@ -7907,128 +7907,128 @@ effect_class = "pure"
 id = "fn_000245"
 name = "help"
 category = "runtime"
-status = "planned"
-interface_status = "planned"
-runtime_names = []
-compatibility_names = []
-current_modern_signatures = []
-current_wolfram_signatures = []
+status = "implemented"
+interface_status = "current"
+runtime_names = ["Help"]
+compatibility_names = ["Help"]
+current_modern_signatures = ["help(name)"]
+current_wolfram_signatures = ["Help[name]"]
 signatures = ["help(name)"]
-parameters = [{ name = "name", kind = "positional", default = "functions 可用筛选", description = "函数名", availability = "r3" }]
+parameters = [{ name = "name", kind = "positional", default = "functions 可用筛选", description = "函数名", availability = "current" }]
 return_type = "record_or_table"
 semantics = "查功能说明"
-current_support = "当前无此规范接口的实现。"
+current_support = "共享审计目录与稳定身份；help/options名称保持不执行，真实运行参数与仅文档的规划参数分开。functions默认实际回调身份，可显式浏览planned/deferred及分类；规划不授予执行。capabilities报告实际版本/身份/计算平台，宿主展示及任务权限无上下文时为Null。用户绑定遮蔽的名字不冒充内置文档，未知输入/预算真实诊断。"
 target_support = "当前124注册名与目录关联；stage planned可查询但不能进入默认可执行补全；计算/渲染平台分开，真实精度能力不能从选项名推测。"
-precision_modes = ["planned_machine"]
-precision_notes = "元数据，不进行数学近似。"
-current_platforms = []
+precision_modes = ["metadata"]
+precision_notes = "只查询已有审计描述，不执行名称表达式、不进行数学近似、不读取文件/网络或增加权限。"
+current_platforms = ["cli", "desktop", "web", "ios"]
 target_platforms = ["cli", "desktop", "web", "ios"]
 render_platforms = []
-current_examples = []
-planned_examples = ["help(\"integrate\")"]
-sources = []
-tests = []
+current_examples = ["Help[\"map\"]"]
+planned_examples = []
+sources = ["crates/om-eval/src/science/reflection_registry.rs", "crates/om-eval/src/science/reflection.rs", "crates/om-core/src/catalog.rs", "scripts/runtime_catalog.py"]
+tests = ["crates/om-eval/tests/reflection.rs"]
 acceptance = "独立数学期望、有效/无效参数、边界、预算、中断及声明的平台/精度测试；范围外不伪造成功。"
 pipe_arg = 0
 target_version = "0.1.0-pre-alpha.3"
 kind = "function"
-validation_stage = "documentation_only"
+validation_stage = "runtime_verified"
 effect_class = "read_session"
 
 [[functions]]
 id = "fn_000246"
 name = "functions"
 category = "runtime"
-status = "planned"
-interface_status = "planned"
-runtime_names = []
-compatibility_names = []
-current_modern_signatures = []
-current_wolfram_signatures = []
+status = "implemented"
+interface_status = "current"
+runtime_names = ["Functions"]
+compatibility_names = ["Functions"]
+current_modern_signatures = ["functions(category:...,stage:\"current\")"]
+current_wolfram_signatures = ["Functions[Stage->\"current\"]"]
 signatures = ["functions(category: none, stage: \"current\")"]
-parameters = [{ name = "category", kind = "option", default = "none", description = "分类过滤", availability = "r3" }, { name = "stage", kind = "option", default = "current", description = "current/planned/deferred", availability = "r3" }]
+parameters = [{ name = "category", kind = "option", default = "none", description = "分类过滤", availability = "current" }, { name = "stage", kind = "option", default = "current", description = "current/planned/deferred", availability = "current" }]
 return_type = "record_or_table"
 semantics = "查询真实注册与目录"
-current_support = "当前无此规范接口的实现。"
+current_support = "共享审计目录与稳定身份；help/options名称保持不执行，真实运行参数与仅文档的规划参数分开。functions默认实际回调身份，可显式浏览planned/deferred及分类；规划不授予执行。capabilities报告实际版本/身份/计算平台，宿主展示及任务权限无上下文时为Null。用户绑定遮蔽的名字不冒充内置文档，未知输入/预算真实诊断。"
 target_support = "当前124注册名与目录关联；stage planned可查询但不能进入默认可执行补全；计算/渲染平台分开，真实精度能力不能从选项名推测。"
-precision_modes = ["planned_machine"]
-precision_notes = "元数据，不进行数学近似。"
-current_platforms = []
+precision_modes = ["metadata"]
+precision_notes = "只查询已有审计描述，不执行名称表达式、不进行数学近似、不读取文件/网络或增加权限。"
+current_platforms = ["cli", "desktop", "web", "ios"]
 target_platforms = ["cli", "desktop", "web", "ios"]
 render_platforms = []
-current_examples = []
-planned_examples = ["functions(category: \"calculus\",stage: \"planned\")"]
-sources = []
-tests = []
+current_examples = ["Functions[Stage->\"current\"]"]
+planned_examples = []
+sources = ["crates/om-eval/src/science/reflection_registry.rs", "crates/om-eval/src/science/reflection.rs", "crates/om-core/src/catalog.rs", "scripts/runtime_catalog.py"]
+tests = ["crates/om-eval/tests/reflection.rs"]
 acceptance = "独立数学期望、有效/无效参数、边界、预算、中断及声明的平台/精度测试；范围外不伪造成功。"
 pipe_arg = 0
 target_version = "0.1.0-pre-alpha.3"
 kind = "function"
-validation_stage = "documentation_only"
+validation_stage = "runtime_verified"
 effect_class = "read_session"
 
 [[functions]]
 id = "fn_000247"
 name = "options"
 category = "runtime"
-status = "planned"
-interface_status = "planned"
-runtime_names = []
-compatibility_names = []
-current_modern_signatures = []
-current_wolfram_signatures = []
+status = "implemented"
+interface_status = "current"
+runtime_names = ["Options"]
+compatibility_names = ["Options"]
+current_modern_signatures = ["options(name)"]
+current_wolfram_signatures = ["Options[name]"]
 signatures = ["options(name)"]
-parameters = [{ name = "name", kind = "positional", default = "functions 可用筛选", description = "函数名", availability = "r3" }]
+parameters = [{ name = "name", kind = "positional", default = "functions 可用筛选", description = "函数名", availability = "current" }]
 return_type = "record_or_table"
 semantics = "查询该函数参数与默认值"
-current_support = "当前无此规范接口的实现。"
+current_support = "共享审计目录与稳定身份；help/options名称保持不执行，真实运行参数与仅文档的规划参数分开。functions默认实际回调身份，可显式浏览planned/deferred及分类；规划不授予执行。capabilities报告实际版本/身份/计算平台，宿主展示及任务权限无上下文时为Null。用户绑定遮蔽的名字不冒充内置文档，未知输入/预算真实诊断。"
 target_support = "当前124注册名与目录关联；stage planned可查询但不能进入默认可执行补全；计算/渲染平台分开，真实精度能力不能从选项名推测。"
-precision_modes = ["planned_machine"]
-precision_notes = "元数据，不进行数学近似。"
-current_platforms = []
+precision_modes = ["metadata"]
+precision_notes = "只查询已有审计描述，不执行名称表达式、不进行数学近似、不读取文件/网络或增加权限。"
+current_platforms = ["cli", "desktop", "web", "ios"]
 target_platforms = ["cli", "desktop", "web", "ios"]
 render_platforms = []
-current_examples = []
-planned_examples = ["options(\"find_root\")"]
-sources = []
-tests = []
+current_examples = ["Options[\"solve\"]"]
+planned_examples = []
+sources = ["crates/om-eval/src/science/reflection_registry.rs", "crates/om-eval/src/science/reflection.rs", "crates/om-core/src/catalog.rs", "scripts/runtime_catalog.py"]
+tests = ["crates/om-eval/tests/reflection.rs"]
 acceptance = "独立数学期望、有效/无效参数、边界、预算、中断及声明的平台/精度测试；范围外不伪造成功。"
 pipe_arg = 0
 target_version = "0.1.0-pre-alpha.3"
 kind = "function"
-validation_stage = "documentation_only"
+validation_stage = "runtime_verified"
 effect_class = "read_session"
 
 [[functions]]
 id = "fn_000248"
 name = "capabilities"
 category = "runtime"
-status = "planned"
-interface_status = "planned"
-runtime_names = []
-compatibility_names = []
-current_modern_signatures = []
-current_wolfram_signatures = []
+status = "implemented"
+interface_status = "current"
+runtime_names = ["Capabilities"]
+compatibility_names = ["Capabilities"]
+current_modern_signatures = ["capabilities()"]
+current_wolfram_signatures = ["Capabilities[]"]
 signatures = ["capabilities()"]
 parameters = []
 return_type = "record_or_table"
 semantics = "查询计算与展示能力"
-current_support = "当前无此规范接口的实现。"
+current_support = "共享审计目录与稳定身份；help/options名称保持不执行，真实运行参数与仅文档的规划参数分开。functions默认实际回调身份，可显式浏览planned/deferred及分类；规划不授予执行。capabilities报告实际版本/身份/计算平台，宿主展示及任务权限无上下文时为Null。用户绑定遮蔽的名字不冒充内置文档，未知输入/预算真实诊断。"
 target_support = "当前124注册名与目录关联；stage planned可查询但不能进入默认可执行补全；计算/渲染平台分开，真实精度能力不能从选项名推测。"
-precision_modes = ["planned_machine"]
-precision_notes = "元数据，不进行数学近似。"
-current_platforms = []
+precision_modes = ["metadata"]
+precision_notes = "只查询已有审计描述，不执行名称表达式、不进行数学近似、不读取文件/网络或增加权限。"
+current_platforms = ["cli", "desktop", "web", "ios"]
 target_platforms = ["cli", "desktop", "web", "ios"]
 render_platforms = []
-current_examples = []
-planned_examples = ["capabilities()"]
-sources = []
-tests = []
+current_examples = ["Capabilities[]"]
+planned_examples = []
+sources = ["crates/om-eval/src/science/reflection_registry.rs", "crates/om-eval/src/science/reflection.rs", "crates/om-core/src/catalog.rs", "scripts/runtime_catalog.py"]
+tests = ["crates/om-eval/tests/reflection.rs"]
 acceptance = "独立数学期望、有效/无效参数、边界、预算、中断及声明的平台/精度测试；范围外不伪造成功。"
 pipe_arg = 0
 target_version = "0.1.0-pre-alpha.3"
 kind = "function"
-validation_stage = "documentation_only"
+validation_stage = "runtime_verified"
 effect_class = "read_session"
 
 [[functions]]
@@ -28810,4 +28810,44 @@ min = 1
 max = 1
 attributes = ["protected"]
 parameters = [{ name = "quantity", value_type = "expression", required = true, variadic = false, held = false }]
+options = []
+
+[[runtime]]
+name = "Help"
+modern_name = "help"
+aliases = []
+min = 1
+max = 1
+attributes = ["protected", "hold_first"]
+parameters = [{ name = "name", value_type = "expression", required = true, variadic = false, held = true }]
+options = []
+
+[[runtime]]
+name = "Options"
+modern_name = "options"
+aliases = []
+min = 1
+max = 1
+attributes = ["protected", "hold_first"]
+parameters = [{ name = "name", value_type = "expression", required = true, variadic = false, held = true }]
+options = []
+
+[[runtime]]
+name = "Functions"
+modern_name = "functions"
+aliases = []
+min = 0
+max = 2
+attributes = ["protected"]
+parameters = []
+options = [{ name = "category", value_type = "expression", required = false, variadic = false, held = false, runtime_name = "Category", default_context = "所有分类" }, { name = "stage", value_type = "enum", required = false, variadic = false, held = false, runtime_name = "Stage", default_source = "\"current\"", enum_values = ["current", "planned", "deferred"] }]
+
+[[runtime]]
+name = "Capabilities"
+modern_name = "capabilities"
+aliases = []
+min = 0
+max = 0
+attributes = ["protected"]
+parameters = []
 options = []

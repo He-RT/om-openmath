@@ -1630,22 +1630,30 @@
     {
       "id": "fn_000245",
       "initial_name": "help",
-      "runtime_names": []
+      "runtime_names": [
+        "Help"
+      ]
     },
     {
       "id": "fn_000246",
       "initial_name": "functions",
-      "runtime_names": []
+      "runtime_names": [
+        "Functions"
+      ]
     },
     {
       "id": "fn_000247",
       "initial_name": "options",
-      "runtime_names": []
+      "runtime_names": [
+        "Options"
+      ]
     },
     {
       "id": "fn_000248",
       "initial_name": "capabilities",
-      "runtime_names": []
+      "runtime_names": [
+        "Capabilities"
+      ]
     },
     {
       "id": "fn_000249",

@@ -8243,6 +8243,212 @@
     ]
   },
   {
+    "id": "fn_000179",
+    "canonical_name": "optimize",
+    "name": "Optimize",
+    "modern_name": "optimize",
+    "aliases": [],
+    "arity": {
+      "min": 2,
+      "max": 12
+    },
+    "parameters": [
+      {
+        "name": "expr",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": true
+      },
+      {
+        "name": "variables",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": true
+      }
+    ],
+    "options": [
+      {
+        "name": "goal",
+        "runtime_name": "Goal",
+        "value_type": "enum",
+        "required": false,
+        "default_source": "\"min\"",
+        "default_context": null,
+        "enum_values": [
+          "min",
+          "max"
+        ],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": true
+      },
+      {
+        "name": "scope",
+        "runtime_name": "Scope",
+        "value_type": "enum",
+        "required": false,
+        "default_source": "\"local\"",
+        "default_context": null,
+        "enum_values": [
+          "local",
+          "global"
+        ],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": true
+      },
+      {
+        "name": "initial",
+        "runtime_name": "Initial",
+        "value_type": "expression",
+        "required": false,
+        "default_source": null,
+        "default_context": "local bfgs必填，brent/global拒绝",
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": true
+      },
+      {
+        "name": "bounds",
+        "runtime_name": "Bounds",
+        "value_type": "expression",
+        "required": false,
+        "default_source": null,
+        "default_context": "省略无盒约束；一维local无initial时必须提供",
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": true
+      },
+      {
+        "name": "abs_tol",
+        "runtime_name": "AbsTolerance",
+        "value_type": "real",
+        "required": false,
+        "default_source": "1e-10",
+        "default_context": null,
+        "enum_values": [],
+        "min": 0,
+        "max": null,
+        "variadic": false,
+        "held": true
+      },
+      {
+        "name": "rel_tol",
+        "runtime_name": "RelTolerance",
+        "value_type": "real",
+        "required": false,
+        "default_source": "1e-8",
+        "default_context": null,
+        "enum_values": [],
+        "min": 0,
+        "max": null,
+        "variadic": false,
+        "held": true
+      },
+      {
+        "name": "gradient_tol",
+        "runtime_name": "GradientTolerance",
+        "value_type": "real",
+        "required": false,
+        "default_source": "1e-8",
+        "default_context": null,
+        "enum_values": [],
+        "min": 0,
+        "max": null,
+        "variadic": false,
+        "held": true
+      },
+      {
+        "name": "max_iterations",
+        "runtime_name": "MaxIterations",
+        "value_type": "integer",
+        "required": false,
+        "default_source": "1000",
+        "default_context": null,
+        "enum_values": [],
+        "min": 1,
+        "max": 100000,
+        "variadic": false,
+        "held": true
+      },
+      {
+        "name": "method",
+        "runtime_name": "Method",
+        "value_type": "enum",
+        "required": false,
+        "default_source": "\"auto\"",
+        "default_context": null,
+        "enum_values": [
+          "auto",
+          "brent",
+          "bfgs",
+          "exact_ldlt"
+        ],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": true
+      },
+      {
+        "name": "precision",
+        "runtime_name": "WorkingPrecision",
+        "value_type": "enum",
+        "required": false,
+        "default_source": null,
+        "default_context": "local machine；global exact",
+        "enum_values": [
+          "machine",
+          "MachinePrecision",
+          "exact"
+        ],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": true
+      }
+    ],
+    "compatibility_syntax": [],
+    "attributes": [
+      "protected",
+      "hold_all"
+    ],
+    "pipe_arg": 1,
+    "effect_class": "pure",
+    "support": "局部机器Brent有界一维（没有initial时自动选择），或真实符号梯度编译的1..64维BFGS/有限盒投影；局部只报告numerical_bounded_candidate/numerical_stationary_candidate，不证明局部/全局最优。初值/边界/目标min/max与模式选项真实校验，readonly原式保留孔洞。global仅精确有理总次数≤2，精确LDLT半正定/重构/驻点及有限盒KKT证书；无约束半正定保留全部null_space自由方向，无界拒绝；盒约束≤8个非固定维度，面数受max_iterations预算，返回一个认证点而非全部边界最优集合。变量名为文字、point有序列表及bindings记录，真实迭代/求值/梯度/区间或证书字段，失败保留调用和实际部分工作；高精度不降级。FindMinimum/Minimize等Wolfram不同约束/返回语义未适配，未加假别名。",
+    "return_type": "optimum_with_diagnostics",
+    "precision_modes": [
+      "machine",
+      "exact_rational"
+    ],
+    "precision_notes": "local仅机器精度，高精度输入拒绝；global只精确有理证明，不把机器数变成证书。",
+    "platforms": [
+      "cli",
+      "desktop",
+      "web",
+      "ios"
+    ]
+  },
+  {
     "id": "fn_000247",
     "canonical_name": "options",
     "name": "Options",

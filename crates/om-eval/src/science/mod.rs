@@ -20,6 +20,10 @@ mod numeric_callback;
 mod numeric_integration;
 mod ode;
 mod ode_registry;
+mod optimization;
+mod optimization_global;
+mod optimization_quadratic;
+mod optimization_registry;
 mod ordering;
 mod probability;
 mod probability_registry;
@@ -178,6 +182,9 @@ pub(super) fn dispatch(
     let result = (|| {
         ctx.tick()?;
         let args = Args::parse(name, args)?;
+        if let Some(result) = optimization::dispatch(ev, name, &args, ctx)? {
+            return Ok(result);
+        }
         if let Some(result) = ode::dispatch(ev, name, &args, ctx)? {
             return Ok(result);
         }

@@ -69,6 +69,7 @@ fn walk(e: &Expr, scope: &Symbols, defines: &mut Symbols, uses: &mut Symbols) {
                 | "Laplacian"
                 | "Ode"
                 | "Sample"
+                | "Optimize"
         )
     }) && args.len() >= 2
     {
@@ -78,7 +79,7 @@ fn walk(e: &Expr, scope: &Symbols, defines: &mut Symbols, uses: &mut Symbols) {
         let vector = head.is_some_and(|s| {
             matches!(
                 s.name(),
-                "Grad" | "Jacobian" | "Hessian" | "Divergence" | "Curl" | "Laplacian"
+                "Grad" | "Jacobian" | "Hessian" | "Divergence" | "Curl" | "Laplacian" | "Optimize"
             )
         });
         if let Some(s) = axis.as_symbol() {

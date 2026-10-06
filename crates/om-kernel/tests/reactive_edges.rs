@@ -368,6 +368,10 @@ fn calculus_coordinates_are_local_but_parameters_and_bounds_remain_real_dependen
             "Sample[Function[x,a*x],{x,b,c},Count->5]",
             vec!["a", "b", "c"],
         ),
+        (
+            "Optimize[a*x+b*y,{x,y},Initial->{c,d}]",
+            vec!["a", "b", "c", "d"],
+        ),
     ] {
         upsert(&mut s, "calculus", src);
         let mut actual = cell(&s, "calculus")

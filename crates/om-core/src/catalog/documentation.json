@@ -10508,27 +10508,34 @@
       "name": "optimize",
       "category": "analysis",
       "kind": "function",
-      "status": "planned",
-      "interface_status": "planned",
-      "runtime_names": [],
-      "compatibility_names": [
-        "FindMinimum",
-        "FindMaximum",
-        "Minimize",
-        "Maximize"
+      "status": "implemented",
+      "interface_status": "current",
+      "runtime_names": [
+        "Optimize"
       ],
-      "current_modern_signatures": [],
+      "compatibility_names": [],
+      "current_modern_signatures": [
+        "optimize(expr, variables, initial: values, scope: \"local\")",
+        "optimize(expr, x, bounds: a..b)",
+        "optimize(expr, variables, scope: \"global\", bounds: ranges)"
+      ],
       "signatures": [
         "optimize(expr, variables, goal: \"min\", scope: \"local\", initial: values)"
       ],
-      "current_support": "当前无此规范接口的实现。",
+      "current_support": "局部机器Brent有界一维（没有initial时自动选择），或真实符号梯度编译的1..64维BFGS/有限盒投影；局部只报告numerical_bounded_candidate/numerical_stationary_candidate，不证明局部/全局最优。初值/边界/目标min/max与模式选项真实校验，readonly原式保留孔洞。global仅精确有理总次数≤2，精确LDLT半正定/重构/驻点及有限盒KKT证书；无约束半正定保留全部null_space自由方向，无界拒绝；盒约束≤8个非固定维度，面数受max_iterations预算，返回一个认证点而非全部边界最优集合。变量名为文字、point有序列表及bindings记录，真实迭代/求值/梯度/区间或证书字段，失败保留调用和实际部分工作；高精度不降级。FindMinimum/Minimize等Wolfram不同约束/返回语义未适配，未加假别名。",
       "target_support": "机器一维有界Brent或多变量BFGS/盒约束投影；scope global 仅支持可认证凸二次问题，其他请求明确拒绝。",
       "return_type": "optimum_with_diagnostics",
       "precision_modes": [
-        "planned_machine"
+        "machine",
+        "exact_rational"
       ],
-      "precision_notes": "机器精度路径优先；不声称任意精度。",
-      "current_platforms": [],
+      "precision_notes": "local仅机器精度，高精度输入拒绝；global只精确有理证明，不把机器数变成证书。",
+      "current_platforms": [
+        "cli",
+        "desktop",
+        "web",
+        "ios"
+      ],
       "target_platforms": [
         "cli",
         "desktop",
@@ -10540,42 +10547,93 @@
           "name": "expr",
           "kind": "positional",
           "default": "必填",
-          "description": "目标表达式",
+          "description": "只读目标表达式；global要求原始有理二次",
           "availability": "r3"
         },
         {
           "name": "variables",
           "kind": "positional",
           "default": "必填",
-          "description": "变量",
+          "description": "互异坐标或1..64维有序列表",
           "availability": "r3"
         },
         {
           "name": "goal",
           "kind": "option",
           "default": "min",
-          "description": "min/max",
+          "description": "min/max；max真实目标翻转后恢复",
           "availability": "r3"
         },
         {
           "name": "scope",
           "kind": "option",
           "default": "local",
-          "description": "local/global",
+          "description": "local数值候选；global独立精确认证",
           "availability": "r3"
         },
         {
           "name": "initial",
           "kind": "option",
-          "default": "局部模式必填",
-          "description": "局部起点",
+          "default": "local BFGS必填；brent/global拒绝",
+          "description": "与变量等维，局部点必须在盒内",
+          "availability": "r3"
+        },
+        {
+          "name": "bounds",
+          "kind": "option",
+          "default": "省略无盒约束",
+          "description": "范围、等长范围列表或坐标记录；global有限有理盒≤8非固定维度",
+          "availability": "r3"
+        },
+        {
+          "name": "abs_tol",
+          "kind": "option",
+          "default": "1e-10，仅local Brent",
+          "description": "正的绝对坐标容差；BFGS/global显式传入拒绝",
+          "availability": "r3"
+        },
+        {
+          "name": "rel_tol",
+          "kind": "option",
+          "default": "1e-8，仅local Brent",
+          "description": "非负相对坐标容差；BFGS/global显式传入拒绝",
+          "availability": "r3"
+        },
+        {
+          "name": "gradient_tol",
+          "kind": "option",
+          "default": "1e-8，仅local BFGS",
+          "description": "正的投影梯度无穷范数容差；Brent/global拒绝",
+          "availability": "r3"
+        },
+        {
+          "name": "max_iterations",
+          "kind": "option",
+          "default": "1000",
+          "description": "1..100000；local外层迭代/global实际枚举面预算",
+          "availability": "r3"
+        },
+        {
+          "name": "method",
+          "kind": "option",
+          "default": "auto",
+          "description": "auto/brent/bfgs/exact_ldlt；模式不匹配拒绝",
+          "availability": "r3"
+        },
+        {
+          "name": "precision",
+          "kind": "option",
+          "default": "local machine；global exact",
+          "description": "不把机器或高精度近似伪装成有理证明",
           "availability": "r3"
         }
       ],
-      "current_examples": [],
-      "planned_examples": [
-        "optimize((x-2)^2, x, initial: 0, goal: \"min\", scope: \"local\")"
-      ]
+      "current_examples": [
+        "Optimize[(x-2)^2,x,Initial->0]",
+        "optimize((x+y-1)^2,[x,y],scope:\"global\")",
+        "optimize((x-2)^2,x,bounds:-1..1,scope:\"global\")"
+      ],
+      "planned_examples": []
     },
     {
       "id": "fn_000180",

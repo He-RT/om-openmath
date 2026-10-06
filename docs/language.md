@@ -130,3 +130,13 @@ interpolate([[0,0,0],[1,1,3]], method:"hermite")(0.37)
 ```
 
 ODE 为非刚性机器实数 DP5(4)，支持连续解与简单零交叉终止事件，记录实际步骤和调用数。插值默认拒绝外推，高精度/写入/非有限/未收敛明确诊断；参数与返回形状可通过 `help("ode")` 和 `options("ode")` 查询。专门表格/数值展示留 R3.5。
+
+## .3 开发版优化
+
+```text
+optimize((x-2)^2,x,initial:0)
+optimize((x-4)^2,x,bounds:-2..1)
+optimize((x+y-1)^2,[x,y],scope:"global")
+```
+
+局部结果是数值候选，Brent 使用坐标容差，BFGS 使用投影梯度容差；global 只返回经真实有理凸二次/LDLT/KKT 验证的全局点，半正定无约束保留自由方向。返回 point/value/variables/bindings、保证与真实工作或证书。边界、精度、预算和不支持范围见 [优化规格](design/optimization.md)，不得把局部收敛误读为已证明最优。公开 `.2` 不包含此入口。

@@ -4,7 +4,7 @@
 
 [全景目录](README.md) · [下一版账本](../plan/NEXT_RELEASE.md)
 
-描述版本 17；下列均有真实回调。现代组合语法及已有回调的 mode/output 已接通，后续数学能力仍须按 R3.3–R3.6 交付。参数类型约束用于字面输入；符号与表达式在真实回调求值后检查。默认表达式仅描述省略行为，不自动插入参数；上下文默认值不伪装成字面值。副作用标签只描述入口，不能授权嵌套函数或替代只读隔离。
+描述版本 18；下列均有真实回调。现代组合语法及已有回调的 mode/output 已接通，后续数学能力仍须按 R3.3–R3.6 交付。参数类型约束用于字面输入；符号与表达式在真实回调求值后检查。默认表达式仅描述省略行为，不自动插入参数；上下文默认值不伪装成字面值。副作用标签只描述入口，不能授权嵌套函数或替代只读隔离。
 
 ## abs
 
@@ -2971,4 +2971,27 @@
 | `precision` | 命名 | enum | 否 | MachinePrecision | machine, MachinePrecision |
 
 数学边界与精度：[所属条目](analysis.md#sample)。
+
+## optimize
+
+稳定身份 `fn_000179`；回调 `Optimize`；归属 `optimize`。兼容拼写：无其他现代拼写。
+
+保持属性：protected, hold_all；管道输入位置：1；入口副作用：`pure`。
+
+| 参数 | 角色 | 类型 | 必填 | 默认值或上下文 | 枚举 / 范围 |
+|---|---|---|---|---|---|
+| `expr` | 位置 | expression | 是 | 必填 |  |
+| `variables` | 位置 | expression | 是 | 必填 |  |
+| `goal` | 命名 | enum | 否 | "min" | min, max |
+| `scope` | 命名 | enum | 否 | "local" | local, global |
+| `initial` | 命名 | expression | 否 | local bfgs必填，brent/global拒绝 |  |
+| `bounds` | 命名 | expression | 否 | 省略无盒约束；一维local无initial时必须提供 |  |
+| `abs_tol` | 命名 | real | 否 | 1e-10 | ; ≥0 |
+| `rel_tol` | 命名 | real | 否 | 1e-8 | ; ≥0 |
+| `gradient_tol` | 命名 | real | 否 | 1e-8 | ; ≥0 |
+| `max_iterations` | 命名 | integer | 否 | 1000 | ; ≥1; ≤100000 |
+| `method` | 命名 | enum | 否 | "auto" | auto, brent, bfgs, exact_ldlt |
+| `precision` | 命名 | enum | 否 | local machine；global exact | machine, MachinePrecision, exact |
+
+数学边界与精度：[所属条目](analysis.md#optimize)。
 

@@ -210,3 +210,9 @@ R3.4c提交 `c970dae` 的CI37363594946：Rust与iOS27全部通过，但frontend/
 空间清理：确认本轮本地构建/测试已结束且没有从 target/debug 运行的程序后，按实际当前测试日志保留207个新测试可执行文件；删除 target/debug/deps 内一小时以上、未被本轮日志引用的646个旧 Mach-O 测试/调试可执行文件及对应.d，逻辑体积5.504GiB。没有删除rlib/rmeta/dylib、当前依赖、Release程序/安装包、源码或证据；目录清单 target/r34e-stale-test-binaries-removed.json。实际磁盘变化见清理后df，不以逻辑字节冒充释放量。
 
 清理后实测磁盘可用27.28GiB（df显示27GiB），此前df约22GiB；debug目录20→14GiB。逻辑删除量5.504GiB与df变化分别记录，不伪称精确释放值。
+
+- [x] **R3.4f Optimize接口与精确凸二次认证** — 一个真回调（稳定ID179），readonly原始目标/真实符号梯度编译、Brent/BFGS/盒约束/min/max、精度/维数/方法和容差冲突实检；局部明确数值候选而不排除鞍点。global完全独立：原始精确有理二次提取、LDLT半正定及独立重构、驻点一致性/自由零空间/无界拒绝，有限盒KKT/真实面枚举/预算/互补与零残差；证书包含目标符号/c/l/H/L/D/梯度/上下乘子/残差/bounds。原始孔洞、非凸、高次、近似/非有理系数和未知方法不造成功。无约束affine全最优自由方向，盒只返回一个认证点，范围明确。227回调/221身份、描述18、应用仍.2，尚无Fit与R3.5/R3.6完整发行。
+
+最终冻结源码 **1023 Rust通过、2原政策ignored**（target/r34f-tests-final.log），全workspace Clippy/fmt、纯WASM无默认kernel、确定TS导出无漂移/cargo-deny通过；前端62/lint/typecheck、Python16全通过。追加精确半正定盒/面预算/参数说明后重新完成全冻结回归，未把此前结果混充最后源码。实际release WASM验证global点/有理值/零KKT与局部鞍点无证书；原53期望未改。实际CLI输出 {{7/5,-11/5},-2/5,"certified_global"}、零诊断。新增许可/运行时依赖为0；全局凸性/KKT依据见Boyd–Vandenberghe原著，算法Rust由本项目实现。
+
+同批命令沿R3.4e：带优化/断言/溢出检查的workspace tests，Clippy/fmt，`cargo build -p om-kernel --no-default-features --locked --target wasm32-unknown-unknown`，`cargo test -p om-kernel export_bindings --locked`与TS目录diff，cargo-deny、Python16、目录生成检查，前端lint/test/typecheck。本机无模拟器；当前磁盘28GiB/incremental关闭，保留Release运行与证据。8a16816 CI37402120764被后续dev推送依ci.yml的同分支并发取消，Rust/iOS cancelled不当作通过；0ff0e90的CI37402859858当前Rust/前端/依赖成功，iOS仍执行，等待实际同SHA完整结果。

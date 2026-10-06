@@ -16,7 +16,7 @@
 | [`neumann_value`](#neumann_value) | 后续规划 | 规划接口，当前不可用 | ODE、优化与拟合中的 NeumannValue 能力，进入后续全景目录。 |
 | [`nyquist_plot`](#nyquist_plot) | 后续规划 | 规划接口，当前不可用 | ODE、优化与拟合中的 NyquistPlot 能力，进入后续全景目录。 |
 | [`ode`](#ode) | 已实现 | 当前可用 | 非刚性常微分方程初值数值解 |
-| [`optimize`](#optimize) | 下一版规划 | 规划接口，当前不可用 | 带明确最优性保证的优化 |
+| [`optimize`](#optimize) | 已实现 | 当前可用 | 带明确最优性保证的优化 |
 | [`output_response`](#output_response) | 后续规划 | 规划接口，当前不可用 | ODE、优化与拟合中的 OutputResponse 能力，进入后续全景目录。 |
 | [`parametric_nd_solve`](#parametric_nd_solve) | 后续规划 | 规划接口，当前不可用 | ODE、优化与拟合中的 ParametricNDSolve 能力，进入后续全景目录。 |
 | [`parametric_nd_solve_value`](#parametric_nd_solve_value) | 后续规划 | 规划接口，当前不可用 | ODE、优化与拟合中的 ParametricNDSolveValue 能力，进入后续全景目录。 |
@@ -358,21 +358,35 @@ Ode[Function[{t,y},y],{t,0,1},Initial->1]
 
 ## optimize
 
-**当前实现：下一版规划；目标接口：规划接口，当前不可用。** 目标版本：`0.1.0-pre-alpha.3`。
+**当前实现：已实现；目标接口：当前可用。** 目标版本：`0.1.0-pre-alpha.3`。
 
 - 稳定身份：`fn_000179`；条目类型：`function`。
-- 副作用分类（设计预留）：`pure`；参数验证阶段：`documentation_only`，不构成工具授权。
+- 副作用分类（设计预留）：`pure`；参数验证阶段：`runtime_verified`，不构成工具授权。
 
 带明确最优性保证的优化
 
-- 当前支持：当前无此规范接口的实现。
+- 当前支持：局部机器Brent有界一维（没有initial时自动选择），或真实符号梯度编译的1..64维BFGS/有限盒投影；局部只报告numerical_bounded_candidate/numerical_stationary_candidate，不证明局部/全局最优。初值/边界/目标min/max与模式选项真实校验，readonly原式保留孔洞。global仅精确有理总次数≤2，精确LDLT半正定/重构/驻点及有限盒KKT证书；无约束半正定保留全部null_space自由方向，无界拒绝；盒约束≤8个非固定维度，面数受max_iterations预算，返回一个认证点而非全部边界最优集合。变量名为文字、point有序列表及bindings记录，真实迭代/求值/梯度/区间或证书字段，失败保留调用和实际部分工作；高精度不降级。FindMinimum/Minimize等Wolfram不同约束/返回语义未适配，未加假别名。
 - 目标范围：机器一维有界Brent或多变量BFGS/盒约束投影；scope global 仅支持可认证凸二次问题，其他请求明确拒绝。
 - 返回：optimum_with_diagnostics
-- 精度：机器精度路径优先；不声称任意精度。
-- 当前计算平台：无；目标计算平台：cli, desktop, web, ios。
+- 精度：local仅机器精度，高精度输入拒绝；global只精确有理证明，不把机器数变成证书。
+- 当前计算平台：cli, desktop, web, ios；目标计算平台：cli, desktop, web, ios。
 - 目标图形/交互展示平台：不适用或后续未定。
-- 兼容名称：`FindMinimum`、`FindMaximum`、`Minimize`、`Maximize`。
+- 兼容名称：无既有兼容入口。
 - 管道位置：第 1 个位置参数（从 1 起）。
+
+当前现代签名：
+
+```text
+optimize(expr, variables, initial: values, scope: "local")
+optimize(expr, x, bounds: a..b)
+optimize(expr, variables, scope: "global", bounds: ranges)
+```
+
+当前 Wolfram 签名：
+
+```text
+Optimize[expr,variables,Initial->values]
+```
 
 目标现代签名（按目标接口状态判断是否已可执行）：
 
@@ -382,23 +396,32 @@ optimize(expr, variables, goal: "min", scope: "local", initial: values)
 
 | 参数 | 类型 | 默认值 | 含义 | 可用阶段 |
 |---|---|---|---|---|
-| `expr` | positional | 必填 | 目标表达式 | r3 |
-| `variables` | positional | 必填 | 变量 | r3 |
-| `goal` | option | min | min/max | r3 |
-| `scope` | option | local | local/global | r3 |
-| `initial` | option | 局部模式必填 | 局部起点 | r3 |
+| `expr` | positional | 必填 | 只读目标表达式；global要求原始有理二次 | r3 |
+| `variables` | positional | 必填 | 互异坐标或1..64维有序列表 | r3 |
+| `goal` | option | min | min/max；max真实目标翻转后恢复 | r3 |
+| `scope` | option | local | local数值候选；global独立精确认证 | r3 |
+| `initial` | option | local BFGS必填；brent/global拒绝 | 与变量等维，局部点必须在盒内 | r3 |
+| `bounds` | option | 省略无盒约束 | 范围、等长范围列表或坐标记录；global有限有理盒≤8非固定维度 | r3 |
+| `abs_tol` | option | 1e-10，仅local Brent | 正的绝对坐标容差；BFGS/global显式传入拒绝 | r3 |
+| `rel_tol` | option | 1e-8，仅local Brent | 非负相对坐标容差；BFGS/global显式传入拒绝 | r3 |
+| `gradient_tol` | option | 1e-8，仅local BFGS | 正的投影梯度无穷范数容差；Brent/global拒绝 | r3 |
+| `max_iterations` | option | 1000 | 1..100000；local外层迭代/global实际枚举面预算 | r3 |
+| `method` | option | auto | auto/brent/bfgs/exact_ldlt；模式不匹配拒绝 | r3 |
+| `precision` | option | local machine；global exact | 不把机器或高精度近似伪装成有理证明 | r3 |
 
-规划示例（尚未执行；需要目标版本，后续条目不承诺 .3）：
+当前已登记示例（Wolfram）：
 
-```text
-optimize((x-2)^2, x, initial: 0, goal: "min", scope: "local")
+```wolfram
+Optimize[(x-2)^2,x,Initial->0]
+optimize((x+y-1)^2,[x,y],scope:"global")
+optimize((x-2)^2,x,bounds:-1..1,scope:"global")
 ```
 
 验收：独立数学期望、有效/无效参数、边界、预算、中断及声明的平台/精度测试；范围外不伪造成功。
 
-当前源码：暂无当前实现证据。
+当前源码：[crates/om-eval/src/science/optimization_registry.rs](../../crates/om-eval/src/science/optimization_registry.rs)、[crates/om-eval/src/science/optimization.rs](../../crates/om-eval/src/science/optimization.rs)、[crates/om-eval/src/science/optimization_global.rs](../../crates/om-eval/src/science/optimization_global.rs)、[crates/om-eval/src/science/optimization_quadratic.rs](../../crates/om-eval/src/science/optimization_quadratic.rs)、[crates/om-analysis/src/optimization.rs](../../crates/om-analysis/src/optimization.rs)。
 
-当前测试引用：暂无当前实现证据。
+当前测试引用：[crates/om-eval/tests/optimization.rs](../../crates/om-eval/tests/optimization.rs)、[crates/om-analysis/tests/optimization.rs](../../crates/om-analysis/tests/optimization.rs)。
 
 ## output_response
 

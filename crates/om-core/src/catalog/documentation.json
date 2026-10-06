@@ -7050,20 +7050,22 @@
       "interface_status": "partial",
       "runtime_names": [
         "Plot",
-        "ContourPlot"
+        "ContourPlot",
+        "DensityPlot"
       ],
       "compatibility_names": [
         "Plot",
         "ContourPlot"
       ],
       "current_modern_signatures": [
-        "plot(expr, [x,min,max])",
-        "implicitplot(equation, [x,min,max], [y,min,max])"
+        "plot(expr,x:a..b)",
+        "plot(expr,x:a..b,y:c..d,view:\"contour\")",
+        "plot(expr,x:a..b,y:c..d,view:\"density\")"
       ],
       "signatures": [
         "plot(expr, x: lo..hi, y: lo..hi, view: \"line\")"
       ],
-      "current_support": "当前 Plot 的二维实函数、ContourPlot 的二维零等值轮廓，保留极点、孔洞与条件解高亮。",
+      "current_support": "二维实函数/标量等高线/96×96密度真实机器采样；log_x/log_y/log_log正窗口；固定color仅曲线。三维surface尚待R3.6。 输入/样本受Interrupt预算，readonly/取消不修改会话。精确输入可机器采样，新增路径拒绝高精度数静默降级；传统Plot/ContourPlot保留机器采样兼容语义，不宣称高精度图形；有限采样不能认证数学边界。",
       "target_support": "统一二维/曲面视图、对数坐标、采样颜色和样式；三维仅桌面/Web可交互展示。",
       "return_type": "plot_or_scene_request",
       "precision_modes": [
@@ -7095,28 +7097,28 @@
           "kind": "axis",
           "default": "必填",
           "description": "一个或两个命名轴",
-          "availability": "r3"
+          "availability": "current"
         },
         {
           "name": "view",
           "kind": "option",
-          "default": "一轴 line；二轴 surface",
+          "default": "line（当前二维）；三维surface尚未实现",
           "description": "line/surface/density/contour",
-          "availability": "r3"
+          "availability": "current"
         },
         {
           "name": "scale",
           "kind": "option",
           "default": "linear",
           "description": "linear/log_x/log_y/log_log",
-          "availability": "r3"
+          "availability": "current"
         },
         {
           "name": "color",
           "kind": "option",
           "default": "主题色",
-          "description": "颜色或受限只读函数",
-          "availability": "r3"
+          "description": "固定颜色名或#RRGGBB；密度/热图拒绝覆盖；函数颜色待R3.6",
+          "availability": "current"
         },
         {
           "name": "precision",
@@ -7128,7 +7130,8 @@
       ],
       "current_examples": [
         "Plot[Sin[x],{x,0,2*Pi}]",
-        "ContourPlot[x^2+y^2==1,{x,-2,2},{y,-2,2}]"
+        "ContourPlot[x^2+y^2==1,{x,-2,2},{y,-2,2}]",
+        "DensityPlot[x*y,{x,-2,2},{y,-2,2}]"
       ],
       "planned_examples": [
         "plot(sin(x), x: -pi..pi)",
@@ -12962,22 +12965,33 @@
       "name": "parametric_plot",
       "category": "plots",
       "kind": "function",
-      "status": "planned",
-      "interface_status": "planned",
-      "runtime_names": [],
-      "compatibility_names": [],
-      "current_modern_signatures": [],
+      "status": "partial",
+      "interface_status": "current",
+      "runtime_names": [
+        "ParametricPlot"
+      ],
+      "compatibility_names": [
+        "ParametricPlot"
+      ],
+      "current_modern_signatures": [
+        "parametric_plot(vector,t:a..b)"
+      ],
       "signatures": [
         "parametric_plot(vector, ...axes)"
       ],
-      "current_support": "当前无此规范接口的实现。",
+      "current_support": "一参数二维两坐标机器曲线，800基础点加中点域检查；参数范围独立于相机；非有限/可识别跳变断开，采样不能发现全部奇点；三维曲线/曲面尚待R3.6。 输入/样本受Interrupt预算，readonly/取消不修改会话。精确输入可机器采样，新增路径拒绝高精度数静默降级；传统Plot/ContourPlot保留机器采样兼容语义，不宣称高精度图形；有限采样不能认证数学边界。",
       "target_support": "二维显示在桌面/Web/iOS；内核采样、保留孔洞、预算和旧请求隔离。 一参数二维/三维曲线；两参数三维曲面；三维显示仅桌面/Web。",
       "return_type": "plot_or_scene_request",
       "precision_modes": [
-        "planned_machine"
+        "machine"
       ],
-      "precision_notes": "只读机器采样，不是认证解。",
-      "current_platforms": [],
+      "precision_notes": "真实只读机器采样，资源/非有限/不支持模式有诊断，不是认证数学边界。",
+      "current_platforms": [
+        "cli",
+        "desktop",
+        "web",
+        "ios"
+      ],
       "target_platforms": [
         "cli",
         "desktop",
@@ -12990,26 +13004,28 @@
           "kind": "positional",
           "default": "必填",
           "description": "二维/三维坐标向量",
-          "availability": "r3"
+          "availability": "current"
         },
         {
           "name": "axes",
           "kind": "axis",
           "default": "必填",
           "description": "一或两个命名范围",
-          "availability": "r3"
+          "availability": "current"
         },
         {
           "name": "color",
           "kind": "option",
           "default": "主题色",
-          "description": "颜色或fn(p,u,v)只读函数",
-          "availability": "r3"
+          "description": "固定颜色名或#RRGGBB；密度/热图拒绝覆盖；函数颜色待R3.6",
+          "availability": "current"
         }
       ],
-      "current_examples": [],
+      "current_examples": [
+        "ParametricPlot[{Cos[t],Sin[t]},{t,0,2*Pi}]"
+      ],
       "planned_examples": [
-        "parametric_plot([cos(t),sin(t)],t: 0..2*pi)"
+        "parametric_plot([cos(t),sin(t),t],t:0..2*pi)"
       ]
     },
     {
@@ -13025,13 +13041,13 @@
       "signatures": [
         "implicit_plot(equation, ...axes)"
       ],
-      "current_support": "当前无此规范接口的实现。",
+      "current_support": "本独立三维扩展身份未实现；当前二维implicit_plot沿用稳定fn_000119/ContourPlot入口，可用levels/log选项，详见plot条目。",
       "target_support": "二维显示在桌面/Web/iOS；内核采样、保留孔洞、预算和旧请求隔离。 二维沿用轮廓算法；三维采用确定性网格及marching tetrahedra，奇点不连接。",
       "return_type": "plot_or_scene_request",
       "precision_modes": [
         "planned_machine"
       ],
-      "precision_notes": "只读机器采样，不是认证解。",
+      "precision_notes": "真实只读机器采样，资源/非有限/不支持模式有诊断，不是认证数学边界。",
       "current_platforms": [],
       "target_platforms": [
         "cli",
@@ -13057,7 +13073,7 @@
       ],
       "current_examples": [],
       "planned_examples": [
-        "implicit_plot(x^2+y^2=1,x: -2..2,y: -2..2)"
+        "implicit_plot(x^2+y^2+z^2=1,x:-2..2,y:-2..2,z:-2..2)"
       ]
     },
     {
@@ -13065,22 +13081,33 @@
       "name": "region_plot",
       "category": "plots",
       "kind": "function",
-      "status": "planned",
-      "interface_status": "planned",
-      "runtime_names": [],
-      "compatibility_names": [],
-      "current_modern_signatures": [],
+      "status": "implemented",
+      "interface_status": "current",
+      "runtime_names": [
+        "RegionPlot"
+      ],
+      "compatibility_names": [
+        "RegionPlot"
+      ],
+      "current_modern_signatures": [
+        "region_plot(condition,x:a..b,y:c..d)"
+      ],
       "signatures": [
         "region_plot(condition, x: a..b, y: c..d)"
       ],
-      "current_support": "当前无此规范接口的实现。",
+      "current_support": "二维实数比较和and/or/not；96×96中点布尔网格，非有限样本跳过且计数；近似填充不保证精确边界/窄区域。 输入/样本受Interrupt预算，readonly/取消不修改会话。精确输入可机器采样，新增路径拒绝高精度数静默降级；传统Plot/ContourPlot保留机器采样兼容语义，不宣称高精度图形；有限采样不能认证数学边界。",
       "target_support": "二维显示在桌面/Web/iOS；内核采样、保留孔洞、预算和旧请求隔离。",
       "return_type": "plot_or_scene_request",
       "precision_modes": [
-        "planned_machine"
+        "machine"
       ],
-      "precision_notes": "只读机器采样，不是认证解。",
-      "current_platforms": [],
+      "precision_notes": "真实只读机器采样，资源/非有限/不支持模式有诊断，不是认证数学边界。",
+      "current_platforms": [
+        "cli",
+        "desktop",
+        "web",
+        "ios"
+      ],
       "target_platforms": [
         "cli",
         "desktop",
@@ -13093,49 +13120,60 @@
           "kind": "positional",
           "default": "必填",
           "description": "签名对应的condition参数",
-          "availability": "r3"
+          "availability": "current"
         },
         {
           "name": "x",
           "kind": "axis",
           "default": "必填",
           "description": "签名对应的x参数",
-          "availability": "r3"
+          "availability": "current"
         },
         {
           "name": "y",
           "kind": "axis",
           "default": "c..d",
           "description": "签名对应的y参数",
-          "availability": "r3"
+          "availability": "current"
         }
       ],
-      "current_examples": [],
-      "planned_examples": [
-        "region_plot(x^2+y^2<1,x: -2..2,y: -2..2)"
-      ]
+      "current_examples": [
+        "RegionPlot[x^2+y^2<1,{x,-2,2},{y,-2,2}]"
+      ],
+      "planned_examples": []
     },
     {
       "id": "fn_000222",
       "name": "field_plot",
       "category": "plots",
       "kind": "function",
-      "status": "planned",
-      "interface_status": "planned",
-      "runtime_names": [],
-      "compatibility_names": [],
-      "current_modern_signatures": [],
+      "status": "implemented",
+      "interface_status": "current",
+      "runtime_names": [
+        "FieldPlot"
+      ],
+      "compatibility_names": [
+        "FieldPlot"
+      ],
+      "current_modern_signatures": [
+        "field_plot(vector,x:a..b,y:c..d,view:\"arrows\")"
+      ],
       "signatures": [
         "field_plot(vector, ...axes, view: \"arrows\")"
       ],
-      "current_support": "当前无此规范接口的实现。",
+      "current_support": "20×20真实向量箭头/共同最大范数视觉归一，原始值保留；stream按归一方向RK4双向≤240步/64种子，轨线不保证全部拓扑或原时间速度。 输入/样本受Interrupt预算，readonly/取消不修改会话。精确输入可机器采样，新增路径拒绝高精度数静默降级；传统Plot/ContourPlot保留机器采样兼容语义，不宣称高精度图形；有限采样不能认证数学边界。",
       "target_support": "二维显示在桌面/Web/iOS；内核采样、保留孔洞、预算和旧请求隔离。",
       "return_type": "plot_or_scene_request",
       "precision_modes": [
-        "planned_machine"
+        "machine"
       ],
-      "precision_notes": "只读机器采样，不是认证解。",
-      "current_platforms": [],
+      "precision_notes": "真实只读机器采样，资源/非有限/不支持模式有诊断，不是认证数学边界。",
+      "current_platforms": [
+        "cli",
+        "desktop",
+        "web",
+        "ios"
+      ],
       "target_platforms": [
         "cli",
         "desktop",
@@ -13148,49 +13186,60 @@
           "kind": "positional",
           "default": "必填",
           "description": "二维向量表达式",
-          "availability": "r3"
+          "availability": "current"
         },
         {
           "name": "axes",
           "kind": "axis",
           "default": "必填",
           "description": "命名范围",
-          "availability": "r3"
+          "availability": "current"
         },
         {
           "name": "view",
           "kind": "option",
-          "default": "arrows",
+          "default": "line（当前二维）；三维surface尚未实现",
           "description": "arrows/stream",
-          "availability": "r3"
+          "availability": "current"
         }
       ],
-      "current_examples": [],
-      "planned_examples": [
-        "field_plot([-y,x],x: -2..2,y: -2..2,view: \"arrows\")"
-      ]
+      "current_examples": [
+        "FieldPlot[{-y,x},{x,-2,2},{y,-2,2}]"
+      ],
+      "planned_examples": []
     },
     {
       "id": "fn_000223",
       "name": "data_plot",
       "category": "plots",
       "kind": "function",
-      "status": "planned",
-      "interface_status": "planned",
-      "runtime_names": [],
-      "compatibility_names": [],
-      "current_modern_signatures": [],
+      "status": "implemented",
+      "interface_status": "current",
+      "runtime_names": [
+        "DataPlot"
+      ],
+      "compatibility_names": [
+        "DataPlot"
+      ],
+      "current_modern_signatures": [
+        "data_plot(data,kind:\"scatter\")"
+      ],
       "signatures": [
         "data_plot(data, kind: \"scatter\")"
       ],
-      "current_support": "当前无此规范接口的实现。",
+      "current_support": "≤100000有限机器标量的[x,y]列表或x/y表格，散点/原输入顺序连线；矩形热图用真实值/内核调色板。热图拒绝固定color覆盖。 输入/样本受Interrupt预算，readonly/取消不修改会话。精确输入可机器采样，新增路径拒绝高精度数静默降级；传统Plot/ContourPlot保留机器采样兼容语义，不宣称高精度图形；有限采样不能认证数学边界。",
       "target_support": "二维显示在桌面/Web/iOS；内核采样、保留孔洞、预算和旧请求隔离。",
       "return_type": "plot_or_scene_request",
       "precision_modes": [
-        "planned_machine"
+        "machine"
       ],
-      "precision_notes": "只读机器采样，不是认证解。",
-      "current_platforms": [],
+      "precision_notes": "真实只读机器采样，资源/非有限/不支持模式有诊断，不是认证数学边界。",
+      "current_platforms": [
+        "cli",
+        "desktop",
+        "web",
+        "ios"
+      ],
       "target_platforms": [
         "cli",
         "desktop",
@@ -13203,42 +13252,53 @@
           "kind": "positional",
           "default": "必填",
           "description": "有序输入数据",
-          "availability": "r3"
+          "availability": "current"
         },
         {
           "name": "kind",
           "kind": "option",
           "default": "签名规定",
           "description": "相应视图/样式/箱数",
-          "availability": "r3"
+          "availability": "current"
         }
       ],
-      "current_examples": [],
-      "planned_examples": [
-        "data_plot([[0,0],[1,1],[2,4]],kind: \"line\")"
-      ]
+      "current_examples": [
+        "DataPlot[{{0,0},{1,1},{2,4}}]"
+      ],
+      "planned_examples": []
     },
     {
       "id": "fn_000224",
       "name": "histogram",
       "category": "plots",
       "kind": "function",
-      "status": "planned",
-      "interface_status": "planned",
-      "runtime_names": [],
-      "compatibility_names": [],
-      "current_modern_signatures": [],
+      "status": "implemented",
+      "interface_status": "current",
+      "runtime_names": [
+        "Histogram"
+      ],
+      "compatibility_names": [
+        "Histogram"
+      ],
+      "current_modern_signatures": [
+        "histogram(data,bins:20)"
+      ],
       "signatures": [
         "histogram(data, bins: 20)"
       ],
-      "current_support": "当前无此规范接口的实现。",
+      "current_support": "≤100000有限机器样本，1..200等宽频数箱（默认20），最大值入最后箱；所有计数守恒；常量样本使用显式非零箱域。 输入/样本受Interrupt预算，readonly/取消不修改会话。精确输入可机器采样，新增路径拒绝高精度数静默降级；传统Plot/ContourPlot保留机器采样兼容语义，不宣称高精度图形；有限采样不能认证数学边界。",
       "target_support": "二维显示在桌面/Web/iOS；内核采样、保留孔洞、预算和旧请求隔离。",
       "return_type": "plot_or_scene_request",
       "precision_modes": [
-        "planned_machine"
+        "machine"
       ],
-      "precision_notes": "只读机器采样，不是认证解。",
-      "current_platforms": [],
+      "precision_notes": "真实只读机器采样，资源/非有限/不支持模式有诊断，不是认证数学边界。",
+      "current_platforms": [
+        "cli",
+        "desktop",
+        "web",
+        "ios"
+      ],
       "target_platforms": [
         "cli",
         "desktop",
@@ -13251,20 +13311,20 @@
           "kind": "positional",
           "default": "必填",
           "description": "有限实数列表",
-          "availability": "r3"
+          "availability": "current"
         },
         {
           "name": "bins",
           "kind": "option",
           "default": "20",
           "description": "正整数箱数",
-          "availability": "r3"
+          "availability": "current"
         }
       ],
-      "current_examples": [],
-      "planned_examples": [
-        "histogram([1,1,2,3,3],bins: 3)"
-      ]
+      "current_examples": [
+        "Histogram[{1,1,2,3,3}]"
+      ],
+      "planned_examples": []
     },
     {
       "id": "fn_000225",

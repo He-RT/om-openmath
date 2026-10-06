@@ -19,6 +19,7 @@ mod editor;
 mod notebook;
 mod output;
 mod plot;
+mod plot_views;
 mod session;
 mod value_views;
 mod views;

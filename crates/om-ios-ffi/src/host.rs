@@ -21,7 +21,7 @@ impl Clock for MonotonicClock {
 }
 type Reply = mpsc::SyncSender<Result<String, String>>;
 enum Input {
-    Request(Envelope<Request>, Reply),
+    Request(Box<Envelope<Request>>, Reply),
     Bytes {
         correlation: u64,
         id: String,
@@ -153,7 +153,7 @@ impl Host {
         }
         let (tx, rx) = mpsc::sync_channel(1);
         self.tx
-            .try_send(Input::Request(envelope, tx))
+            .try_send(Input::Request(Box::new(envelope), tx))
             .map_err(|_| "Kernel queue is full or stopped")?;
         self.wait(rx)
     }

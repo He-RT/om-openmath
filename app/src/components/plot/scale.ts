@@ -50,12 +50,27 @@ export function linearScale(domain: Range, pixels: Range) {
       magnitude,
   };
 }
+/** Display transform only; mathematical samples remain original kernel coordinates. */
+export function axisScale(domain: Range, pixels: Range, logarithmic = false) {
+  if (!logarithmic) return linearScale(domain,pixels);
+  const scale=linearScale([Math.log(domain[0]),Math.log(domain[1])],pixels);
+  return {map:(value:number)=>scale.map(Math.log(value)),invert:(pixel:number)=>Math.exp(scale.invert(pixel))};
+}
+export function axisTicks(domain:Range,count:number,logarithmic=false){
+  return logarithmic ? niceTicks([Math.log10(domain[0]),Math.log10(domain[1])],count).map(v=>10**v) : niceTicks(domain,count);
+}
 /** Zoom around the given fraction, retaining the cursor's world coordinate. */
 export function zoomRange(
   domain: Range,
   fraction: number,
   factor: number,
+  logarithmic = false,
 ): Range {
+  if (logarithmic) {
+    if(domain[0]<=0)return domain;
+    const r=zoomRange([Math.log(domain[0]),Math.log(domain[1])],fraction,factor);
+    const result:Range=[Math.exp(r[0]),Math.exp(r[1])];return validRange(result)&&result[0]>0?result:domain;
+  }
   if (
     !validRange(domain) ||
     !Number.isFinite(fraction) ||
@@ -71,7 +86,8 @@ export function zoomRange(
   return validRange(result) ? result : domain;
 }
 /** Translate by a fraction of the domain width, never creating invalid ranges. */
-export function panRange(domain: Range, fraction: number): Range {
+export function panRange(domain: Range, fraction: number, logarithmic = false): Range {
+  if(logarithmic){if(domain[0]<=0)return domain;const r=panRange([Math.log(domain[0]),Math.log(domain[1])],fraction);const result:Range=[Math.exp(r[0]),Math.exp(r[1])];return validRange(result)&&result[0]>0?result:domain;}
   const offset = (domain[1] - domain[0]) * fraction;
   const result: Range = [domain[0] + offset, domain[1] + offset];
   return Number.isFinite(fraction) && validRange(result) ? result : domain;

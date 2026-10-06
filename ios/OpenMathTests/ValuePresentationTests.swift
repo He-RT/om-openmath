@@ -28,8 +28,12 @@ final class ValuePresentationTests: XCTestCase {
       "type": .string("evaluate"), "cell_id": .string("table"), "dialect": .string("Modern"),
       "source": .string("[4,5,6]"),
     ]))
-    let old = try await client.request(.object(["type": .string("inspect_value"), "query": query]))
-    XCTAssertEqual(old.response.body["type"].string, "error")
+    do {
+      _ = try await client.request(.object(["type": .string("inspect_value"), "query": query]))
+      XCTFail("An obsolete snapshot must be rejected by the kernel")
+    } catch let error as KernelError {
+      XCTAssertEqual(error.localizedDescription, "结果已更新、已过期或分页路径无效")
+    }
   }
   @MainActor func testAuthoredRecordCannotAcquireFreshScientificProvenance() async throws {
     let client = try KernelClient()

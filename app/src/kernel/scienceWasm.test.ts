@@ -80,3 +80,27 @@ it('actual WASM fits callable QR and nonlinear models and reports real residuals
     expect(number(evaluate(kernel, 'residual', 'curve.residual_norm'))).toBeLessThan(1e-7);
   } finally { kernel.free(); }
 });
+it('actual WASM extended 2D samples carry true values, counts and original log coordinates', () => {
+  const kernel=new Kernel();
+  const plot=(source:string)=>{
+    const item=evaluate(kernel,'plot',source).items[0];
+    if(item?.type!=='plot')throw new Error('missing actual plot');
+    return item;
+  };
+  try {
+    const circle=plot('parametric_plot([cos(t),sin(t)],t:0..2*pi)');
+    for(const point of circle.data.curves[0]!.segments.flat())expect(point[0]**2+point[1]**2).toBeCloseTo(1,12);
+    const histogram=plot('histogram([1,1,2,3,3],bins:3)');
+    expect(histogram.data.geometry?.tiles.map(t=>t.value)).toEqual([2,1,2]);
+    const field=plot('field_plot([-y,x],x:-2..2,y:-2..2)');
+    expect(field.data.geometry?.arrows).toHaveLength(400);
+    for(const a of field.data.geometry!.arrows)expect(a.value).toEqual([-a.start[1],a.start[0]]);
+    const density=plot('plot(x*y,x:-2..2,y:-2..2,view:"density")');
+    expect(density.data.geometry?.tiles).toHaveLength(9216);
+    const t=density.data.geometry!.tiles[150]!;
+    expect(t.value).toBeCloseTo((t.bounds[0][0]+t.bounds[1][0])/2*(t.bounds[0][1]+t.bounds[1][1])/2,12);
+    const log=plot('plot(x^2,x:1..1000,scale:"log_log")');
+    expect(log.data.scale).toBe('log_log');
+    expect(log.data.curves[0]!.segments.flat().at(-1)).toEqual([1000,1000000]);
+  }finally{kernel.free();}
+});

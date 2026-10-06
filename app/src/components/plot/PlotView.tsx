@@ -4,7 +4,7 @@ import type { PlotRequest } from "../../kernel/generated/PlotRequest";
 import type { PlotData } from "../../kernel/generated/PlotData";
 import type { Messages } from "../../i18n";
 import {
-  linearScale,
+  axisScale,
   zoomRange,
   panRange,
   validRange,
@@ -51,10 +51,13 @@ function InteractivePlot({
     x: data?.x_range ?? request.x_range,
     y: data?.y_range ?? request.y_range ?? [-5, 5],
   };
+  const axisMode=data?.scale ?? request.options?.scale ?? 'linear';
+  const logX=axisMode==='log_x'||axisMode==='log_log',logY=axisMode==='log_y'||axisMode==='log_log';
   const [view, setView] = useState(initial),
     viewRef = useRef(initial);
   const [params, setParams] = useState({ ...request.params }),
     paramsRef = useRef({ ...request.params });
+  const [showData, setShowData] = useState(false);
   const [cursor, setCursor] = useState<[number, number] | null>(null);
   const [width, setWidth] = useState(640);
   const root = useRef<HTMLElement>(null),
@@ -133,8 +136,8 @@ function InteractivePlot({
         ),
       );
     changeView({
-      x: zoomRange(v.x, fx, factor),
-      y: zoomRange(v.y, fy, factor),
+      x: zoomRange(v.x, fx, factor,logX),
+      y: zoomRange(v.y, fy, factor,logY),
     });
   };
   const wheel = useRef<(e: WheelEvent) => void>(() => {});
@@ -175,10 +178,10 @@ function InteractivePlot({
   }, []);
   const realCursor = cursor
     ? [
-        linearScale(view.x, [margins.left, width - margins.right]).invert(
+        axisScale(view.x, [margins.left, width - margins.right],logX).invert(
           cursor[0],
         ),
-        linearScale(view.y, [320 - margins.bottom, margins.top]).invert(
+        axisScale(view.y, [320 - margins.bottom, margins.top],logY).invert(
           cursor[1],
         ),
       ]
@@ -246,10 +249,12 @@ function InteractivePlot({
             x: panRange(
               start.view.x,
               -(p[0] - start.point[0]) / (width - margins.left - margins.right),
+              logX,
             ),
             y: panRange(
               start.view.y,
               (p[1] - start.point[1]) / (320 - margins.top - margins.bottom),
+              logY,
             ),
           });
         }}
@@ -293,10 +298,12 @@ function InteractivePlot({
                     : e.key === "ArrowLeft"
                       ? -0.1
                       : 0,
+                  logX,
                 ),
                 y: panRange(
                   v.y,
                   e.key === "ArrowUp" ? 0.1 : e.key === "ArrowDown" ? -0.1 : 0,
+                  logY,
                 ),
               });
           }
@@ -342,6 +349,19 @@ function InteractivePlot({
           </button>
         </div>
       )}
+      {sampler.data?.geometry && <p className="plot-approximation">
+        {request.kind !== "Data" && request.kind !== "Histogram" && <span>{t.plotApproximation}</span>}
+        {sampler.data.geometry.skipped > 0 && <span>{t.skippedSamples}: {sampler.data.geometry.skipped}</span>}
+      </p>}
+      <details onToggle={(event) => setShowData(event.currentTarget.open)}>
+        <summary>{t.plotData}</summary>
+        {showData && <pre className="plot-sample-data">{JSON.stringify({
+          scale: sampler.data?.scale ?? 'linear',
+          curves: sampler.data?.curves,
+          geometry: sampler.data?.geometry,
+          highlights: sampler.data?.highlights,
+        }, null, 2)}</pre>}
+      </details>
       <Sliders
         request={request}
         values={params}

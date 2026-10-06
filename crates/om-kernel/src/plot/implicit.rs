@@ -207,6 +207,7 @@ pub(super) fn sample(
         .y_range
         .ok_or_else(|| PlotError::Invalid("implicit y range is missing".into()))?;
     let mut curves = vec![];
+    let mut skipped = 0;
     for (f, label) in fs.iter().zip(&r.exprs) {
         let mut g = Geometry {
             f,
@@ -228,12 +229,18 @@ pub(super) fn sample(
                 g.cell(i, j)?;
             }
         }
+        skipped += g.values.iter().filter(|v| !v.is_finite()).count() as u32;
         curves.push(Curve {
             label: label.clone(),
             segments: g.stitch()?,
         });
     }
     Ok(PlotData {
+        geometry: r.options.as_ref().map(|_| crate::protocol::PlotGeometry2D {
+            skipped,
+            ..Default::default()
+        }),
+        scale: None,
         curves,
         x_range: r.x_range,
         y_range: y,

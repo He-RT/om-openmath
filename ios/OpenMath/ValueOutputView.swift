@@ -83,7 +83,7 @@ struct ValueOutputView: View {
       }
       if busy { ProgressView(controller.text("读取结果…", "Reading result…")) }
       if let error { Text(error).foregroundStyle(.red).textSelection(.enabled).accessibilityAddTraits(.updatesFrequently) }
-    }.accessibilityIdentifier("value.output")
+    }.accessibilityElement(children: .contain).accessibilityIdentifier("value.output")
       .onAppear { alive = true }
       .onDisappear { alive = false; generation += 1; work?.cancel() }
       .onChange(of: fresh) { _, _ in generation += 1; work?.cancel(); busy = false; error = nil }

@@ -1,6 +1,7 @@
 //! Shared JSON request, response and event contract for all clients.
 pub use crate::capabilities::{CapabilityInfo, FunctionCatalog, HostPlatform};
 pub use crate::config::KernelConfig;
+pub use crate::plot_views::*;
 pub use crate::value_views::*;
 pub use crate::views::*;
 pub use crate::wire::*;

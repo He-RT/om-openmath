@@ -69,4 +69,21 @@ final class NotebookUITests: XCTestCase {
     XCTAssertTrue(app.staticTexts["\"emoji🙂\""].waitForExistence(timeout:5))
     screenshot("structured-table-landscape",app)
   }
+  @MainActor func testActualDataPlotExposesKernelSamplesAndKeepsThemAfterRotation() {
+    let app = launch()
+    XCTAssertTrue(app.buttons["example.plot"].waitForExistence(timeout: 30))
+    app.buttons["example.plot"].tap()
+    let plot = app.otherElements["plot.canvas"]
+    XCTAssertTrue(plot.waitForExistence(timeout: 15))
+    XCTAssertTrue(String(describing: plot.value).contains("0/0/0/3"))
+    app.buttons["采样数据"].tap()
+    let samples = app.staticTexts["plot.samples"]
+    XCTAssertTrue(samples.waitForExistence(timeout: 5))
+    XCTAssertTrue(samples.label.contains("points"))
+    screenshot("data-plot-portrait", app)
+    XCUIDevice.shared.orientation = .landscapeLeft
+    XCTAssertTrue(samples.waitForExistence(timeout: 5))
+    screenshot("data-plot-landscape", app)
+  }
+
 }

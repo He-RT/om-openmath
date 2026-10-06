@@ -4,7 +4,7 @@
 
 [全景目录](README.md) · [下一版账本](../plan/NEXT_RELEASE.md)
 
-描述版本 20；下列均有真实回调。现代组合语法及已有回调的 mode/output 已接通，后续数学能力仍须按 R3.3–R3.6 交付。参数类型约束用于字面输入；符号与表达式在真实回调求值后检查。默认表达式仅描述省略行为，不自动插入参数；上下文默认值不伪装成字面值。副作用标签只描述入口，不能授权嵌套函数或替代只读隔离。
+描述版本 21；下列均有真实回调。现代组合语法及已有回调的 mode/output 已接通，后续数学能力仍须按 R3.3–R3.6 交付。参数类型约束用于字面输入；符号与表达式在真实回调求值后检查。默认表达式仅描述省略行为，不自动插入参数；上下文默认值不伪装成字面值。副作用标签只描述入口，不能授权嵌套函数或替代只读隔离。
 
 ## abs
 
@@ -333,6 +333,9 @@
 | `x_axis` | 位置 | expression | 是 | 必填 |  |
 | `y_axis` | 位置 | expression | 是 | 必填 |  |
 | `plot_range` | 命名 | expression | 否 | Automatic |  |
+| `scale` | 命名 | enum | 否 | "linear" | linear, log_x, log_y, log_log |
+| `color` | 命名 | expression | 否 | 省略主题色 |  |
+| `levels` | 命名 | expression | 否 | {0} |  |
 
 数学边界与精度：[所属条目](plots.md#plot)。
 
@@ -993,8 +996,10 @@
 |---|---|---|---|---|---|
 | `expr` | 位置 | expression | 是 | 必填 |  |
 | `axis` | 位置 | expression | 是 | 必填 |  |
-| `view` | 命名 | enum | 否 | "line" | line, contour |
+| `view` | 命名 | enum | 否 | "line" | line, contour, density |
 | `plot_range` | 命名 | expression | 否 | Automatic |  |
+| `scale` | 命名 | enum | 否 | "linear" | linear, log_x, log_y, log_log |
+| `color` | 命名 | expression | 否 | 省略主题色 |  |
 
 数学边界与精度：[所属条目](plots.md#plot)。
 
@@ -3017,4 +3022,101 @@
 | `initial_damping` | 命名 | real | 否 | 1e-3 | ; ≥0 |
 
 数学边界与精度：[所属条目](analysis.md#fit)。
+
+## parametric_plot
+
+稳定身份 `fn_000219`；回调 `ParametricPlot`；归属 `parametric_plot`。兼容拼写：无其他现代拼写。
+
+保持属性：protected, hold_all；管道输入位置：1；入口副作用：`pure`。
+
+| 参数 | 角色 | 类型 | 必填 | 默认值或上下文 | 枚举 / 范围 |
+|---|---|---|---|---|---|
+| `expression` | 位置 | expression | 是 | 必填 |  |
+| `axes` | 位置（重复） | expression | 是 | 必填 |  |
+| `plot_range` | 命名 | expression | 否 | 省略由数学域或真实数据推断 |  |
+| `scale` | 命名 | enum | 否 | "linear" | linear, log_x, log_y, log_log |
+| `color` | 命名 | expression | 否 | 主题绿色/真实密度颜色；固定颜色名/#RRGGBB |  |
+
+数学边界与精度：[所属条目](plots.md#parametric_plot)。
+
+## region_plot
+
+稳定身份 `fn_000221`；回调 `RegionPlot`；归属 `region_plot`。兼容拼写：无其他现代拼写。
+
+保持属性：protected, hold_all；管道输入位置：1；入口副作用：`pure`。
+
+| 参数 | 角色 | 类型 | 必填 | 默认值或上下文 | 枚举 / 范围 |
+|---|---|---|---|---|---|
+| `expression` | 位置 | expression | 是 | 必填 |  |
+| `axes` | 位置（重复） | expression | 是 | 必填 |  |
+| `plot_range` | 命名 | expression | 否 | 省略由数学域或真实数据推断 |  |
+| `scale` | 命名 | enum | 否 | "linear" | linear, log_x, log_y, log_log |
+| `color` | 命名 | expression | 否 | 主题绿色/真实密度颜色；固定颜色名/#RRGGBB |  |
+
+数学边界与精度：[所属条目](plots.md#region_plot)。
+
+## field_plot
+
+稳定身份 `fn_000222`；回调 `FieldPlot`；归属 `field_plot`。兼容拼写：无其他现代拼写。
+
+保持属性：protected, hold_all；管道输入位置：1；入口副作用：`pure`。
+
+| 参数 | 角色 | 类型 | 必填 | 默认值或上下文 | 枚举 / 范围 |
+|---|---|---|---|---|---|
+| `expression` | 位置 | expression | 是 | 必填 |  |
+| `axes` | 位置（重复） | expression | 是 | 必填 |  |
+| `view` | 命名 | enum | 否 | "arrows" | arrows, stream |
+| `plot_range` | 命名 | expression | 否 | 省略由数学域或真实数据推断 |  |
+| `scale` | 命名 | enum | 否 | "linear" | linear, log_x, log_y, log_log |
+| `color` | 命名 | expression | 否 | 主题绿色/真实密度颜色；固定颜色名/#RRGGBB |  |
+
+数学边界与精度：[所属条目](plots.md#field_plot)。
+
+## data_plot
+
+稳定身份 `fn_000223`；回调 `DataPlot`；归属 `data_plot`。兼容拼写：无其他现代拼写。
+
+保持属性：protected, hold_all；管道输入位置：1；入口副作用：`pure`。
+
+| 参数 | 角色 | 类型 | 必填 | 默认值或上下文 | 枚举 / 范围 |
+|---|---|---|---|---|---|
+| `data` | 位置 | expression | 是 | 必填 |  |
+| `kind` | 命名 | enum | 否 | "scatter" | scatter, line, heatmap |
+| `plot_range` | 命名 | expression | 否 | 省略由数学域或真实数据推断 |  |
+| `scale` | 命名 | enum | 否 | "linear" | linear, log_x, log_y, log_log |
+| `color` | 命名 | expression | 否 | 主题绿色/真实密度颜色；固定颜色名/#RRGGBB |  |
+
+数学边界与精度：[所属条目](plots.md#data_plot)。
+
+## histogram
+
+稳定身份 `fn_000224`；回调 `Histogram`；归属 `histogram`。兼容拼写：无其他现代拼写。
+
+保持属性：protected, hold_all；管道输入位置：1；入口副作用：`pure`。
+
+| 参数 | 角色 | 类型 | 必填 | 默认值或上下文 | 枚举 / 范围 |
+|---|---|---|---|---|---|
+| `data` | 位置 | expression | 是 | 必填 |  |
+| `bins` | 命名 | integer | 否 | 20 | ; ≥1; ≤200 |
+| `plot_range` | 命名 | expression | 否 | 省略由数学域或真实数据推断 |  |
+| `scale` | 命名 | enum | 否 | "linear" | linear, log_x, log_y, log_log |
+| `color` | 命名 | expression | 否 | 主题绿色/真实密度颜色；固定颜色名/#RRGGBB |  |
+
+数学边界与精度：[所属条目](plots.md#histogram)。
+
+## density_plot
+
+稳定身份 `fn_000119`；回调 `DensityPlot`；归属 `plot`。兼容拼写：无其他现代拼写。
+
+保持属性：protected, hold_all；管道输入位置：1；入口副作用：`pure`。
+
+| 参数 | 角色 | 类型 | 必填 | 默认值或上下文 | 枚举 / 范围 |
+|---|---|---|---|---|---|
+| `expression` | 位置 | expression | 是 | 必填 |  |
+| `axes` | 位置（重复） | expression | 是 | 必填 |  |
+| `plot_range` | 命名 | expression | 否 | 省略由数学域或真实数据推断 |  |
+| `scale` | 命名 | enum | 否 | "linear" | linear, log_x, log_y, log_log |
+| `color` | 命名 | expression | 否 | 主题绿色/真实密度颜色；固定颜色名/#RRGGBB |  |
+
+数学边界与精度：[所属条目](plots.md#plot)。
 

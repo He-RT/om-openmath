@@ -133,6 +133,9 @@ const en = {
   cancel: "Cancel",
   stepsOutput: "Steps output",
 
+  plotData: "Kernel sample data",
+  plotApproximation: "Sampled visualization; no certified boundary",
+  skippedSamples: "Skipped nonfinite or out-of-domain samples",
   sampling: "Sampling…",
   plotError: "Could not sample this plot",
   copyLatex: "Copy LaTeX",
@@ -375,6 +378,9 @@ const zh: typeof en = {
   cancel: "取消",
   stepsOutput: "步骤输出",
 
+  plotData: "内核采样数据",
+  plotApproximation: "采样示意，边界未经认证",
+  skippedSamples: "跳过非有限或不在定义域的样本",
   sampling: "正在采样…",
   plotError: "无法采样该图像",
   copyLatex: "复制 LaTeX",

@@ -121,6 +121,10 @@ fn walk(e: &Expr, scope: &Symbols, defines: &mut Symbols, uses: &mut Symbols) {
                 | "Ode"
                 | "Sample"
                 | "Optimize"
+                | "ParametricPlot"
+                | "RegionPlot"
+                | "FieldPlot"
+                | "DensityPlot"
         )
     }) && args.len() >= 2
     {

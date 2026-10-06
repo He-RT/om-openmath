@@ -32,3 +32,16 @@ test("scales preserve points and inverse transforms; cursor zoom preserves the a
     1e308, 1.0000000000000002e308,
   ]);
 });
+
+test("log transforms preserve world coordinates, cursor anchors and multiplicative pans", async () => {
+  const { axisScale, axisTicks } = await import('./scale');
+  const scale=axisScale([1,1000],[0,300],true);
+  expect(scale.map(10)).toBeCloseTo(100,12);
+  for(const n of [1,10,100,1000]) expect(scale.invert(scale.map(n))).toBeCloseTo(n,10);
+  expect(axisTicks([1,1000],3,true)).toEqual([1,10,100,1000]);
+  const zoom=zoomRange([1,1000],1/3,0.5,true);
+  expect(Math.exp(Math.log(zoom[0])+(Math.log(zoom[1])-Math.log(zoom[0]))/3)).toBeCloseTo(10,12);
+  const pan=panRange([1,1000],1/3,true);
+  expect(pan[0]).toBeCloseTo(10,12);expect(pan[1]).toBeCloseTo(10000,8);
+  expect(panRange([1,1000],1e10,true)).toEqual([1,1000]);
+});

@@ -1,8 +1,14 @@
 //! Real readonly preparation, compilation and finite plot geometry.
+mod dataset;
 mod explicit;
+mod extended;
+mod field;
 mod function;
+mod grid;
 mod highlights;
 mod implicit;
+mod parametric;
+mod predicate;
 mod shape;
 mod visualization;
 use crate::protocol::*;
@@ -61,6 +67,9 @@ pub(crate) fn sample(
     ctx: &Interrupt,
 ) -> Result<PlotData, PlotError> {
     ctx.tick()?;
+    if r.options.is_some() || !matches!(r.kind, PlotKind::Function | PlotKind::Implicit) {
+        return extended::sample(r, eval, ctx);
+    }
     range(r.x_range)?;
     if let Some(y) = r.y_range {
         range(y)?;
@@ -143,6 +152,7 @@ pub(crate) fn sample(
     let mut data = match r.kind {
         PlotKind::Function => function::sample(r, &compiled, ctx),
         PlotKind::Implicit => implicit::sample(r, &compiled, ctx),
+        _ => return Err(PlotError::Invalid("未接入的绘图类型".into())),
     }?;
     data.highlights = highlights;
     Ok(data)
@@ -154,6 +164,7 @@ mod tests {
     use std::cell::Cell;
     fn request(kind: PlotKind) -> PlotRequest {
         PlotRequest {
+            options: None,
             kind,
             exprs: vec![
                 if kind == PlotKind::Implicit {

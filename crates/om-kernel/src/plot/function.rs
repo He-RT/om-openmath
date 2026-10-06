@@ -48,6 +48,7 @@ struct Refiner<'a> {
     work: Vec<f64>,
     xspan: f64,
     yspan: f64,
+    log_x: bool,
     points: Vec<Option<Point>>,
 }
 impl Refiner<'_> {
@@ -56,7 +57,11 @@ impl Refiner<'_> {
     }
     fn interval(&mut self, l: Point, r: Point, depth: u8) -> Result<(), PlotError> {
         self.ctx.tick()?;
-        let x = l.0 + (r.0 - l.0) * 0.5;
+        let x = if self.log_x {
+            ((l.0.ln() + r.0.ln()) * 0.5).exp()
+        } else {
+            l.0 + (r.0 - l.0) * 0.5
+        };
         if x == l.0 || x == r.0 {
             self.add(r);
             return Ok(());
@@ -102,6 +107,10 @@ pub(super) fn sample(
         for i in 0..BASE {
             let x = if i + 1 == BASE {
                 r.x_range.1
+            } else if r.options.as_ref().is_some_and(|o| o.scale.log_x()) {
+                (r.x_range.0.ln()
+                    + (r.x_range.1.ln() - r.x_range.0.ln()) * (i as f64 / (BASE - 1) as f64))
+                    .exp()
             } else {
                 r.x_range.0 + (r.x_range.1 - r.x_range.0) * (i as f64 / (BASE - 1) as f64)
             };
@@ -111,8 +120,28 @@ pub(super) fn sample(
         }
         bases.push(base);
     }
-    let y_range = r.y_range.unwrap_or_else(|| viewport(ys));
+    let log_y = r.options.as_ref().is_some_and(|o| o.scale.log_y());
+    let y_range = if let Some(y) = r.y_range {
+        y
+    } else if log_y {
+        let positives: Vec<_> = ys
+            .iter()
+            .copied()
+            .filter(|v| v.is_finite() && *v > 0.)
+            .collect();
+        if positives.is_empty() {
+            return Err(PlotError::Invalid("对数纵轴没有正的有限样本".into()));
+        }
+        let lo = positives.iter().copied().fold(f64::INFINITY, f64::min);
+        let hi = positives.iter().copied().fold(0_f64, f64::max);
+        let y = (lo / 1.1, hi * 1.1);
+        super::range(y)?;
+        y
+    } else {
+        viewport(ys)
+    };
     let mut curves = vec![];
+    let mut skipped = 0;
     for ((f, base), label) in fs.iter().zip(bases).zip(&r.exprs) {
         let mut refine = Refiner {
             f,
@@ -120,6 +149,7 @@ pub(super) fn sample(
             work: vec![],
             xspan: r.x_range.1 - r.x_range.0,
             yspan: y_range.1 - y_range.0,
+            log_x: r.options.as_ref().is_some_and(|o| o.scale.log_x()),
             points: vec![],
         };
         refine.add(base[0]);
@@ -134,6 +164,7 @@ pub(super) fn sample(
                     segment.push(p);
                 }
             } else {
+                skipped += 1;
                 if segment.len() >= 2 {
                     segments.push(std::mem::take(&mut segment));
                 }
@@ -149,6 +180,11 @@ pub(super) fn sample(
         });
     }
     Ok(PlotData {
+        geometry: r.options.as_ref().map(|_| crate::protocol::PlotGeometry2D {
+            skipped,
+            ..Default::default()
+        }),
+        scale: None,
         curves,
         x_range: r.x_range,
         y_range,

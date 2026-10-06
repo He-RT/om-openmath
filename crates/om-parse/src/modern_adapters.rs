@@ -63,9 +63,14 @@ impl Parser<'_> {
         }
         if symbol == B::PLOT {
             let view = self.take_keyword(keywords, "view");
-            if self.choice(view, "line", &["line", "contour"])? == "contour" {
-                symbol = B::CONTOUR_PLOT;
-            }
+            symbol = match self
+                .choice(view, "line", &["line", "contour", "density"])?
+                .as_str()
+            {
+                "contour" => B::CONTOUR_PLOT,
+                "density" => Symbol::intern("DensityPlot"),
+                _ => symbol,
+            };
         }
         if symbol == B::D
             && let Some(order) = self.take_keyword(keywords, "order")
@@ -135,7 +140,18 @@ impl Parser<'_> {
             }
         }
         if matches!(symbol, B::PLOT | B::CONTOUR_PLOT)
-            || matches!(symbol.name(), "Integrate" | "NIntegrate" | "Ode" | "Sample")
+            || matches!(
+                symbol.name(),
+                "Integrate"
+                    | "NIntegrate"
+                    | "Ode"
+                    | "Sample"
+                    | "ParametricPlot"
+                    | "ImplicitPlot"
+                    | "RegionPlot"
+                    | "FieldPlot"
+                    | "DensityPlot"
+            )
         {
             let mut remaining = vec![];
             for keyword in std::mem::take(keywords) {

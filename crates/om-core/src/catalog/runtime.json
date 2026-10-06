@@ -2044,6 +2044,50 @@
         "max": null,
         "variadic": false,
         "held": true
+      },
+      {
+        "name": "scale",
+        "runtime_name": "Scale",
+        "value_type": "enum",
+        "required": false,
+        "default_source": "\"linear\"",
+        "default_context": null,
+        "enum_values": [
+          "linear",
+          "log_x",
+          "log_y",
+          "log_log"
+        ],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": true
+      },
+      {
+        "name": "color",
+        "runtime_name": "Color",
+        "value_type": "expression",
+        "required": false,
+        "default_source": null,
+        "default_context": "省略主题色",
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": true
+      },
+      {
+        "name": "levels",
+        "runtime_name": "Levels",
+        "value_type": "expression",
+        "required": false,
+        "default_source": "{0}",
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": true
       }
     ],
     "compatibility_syntax": [],
@@ -2053,7 +2097,7 @@
     ],
     "pipe_arg": 1,
     "effect_class": "pure",
-    "support": "当前 Plot 的二维实函数、ContourPlot 的二维零等值轮廓，保留极点、孔洞与条件解高亮。",
+    "support": "二维实函数/标量等高线/96×96密度真实机器采样；log_x/log_y/log_log正窗口；固定color仅曲线。三维surface尚待R3.6。 输入/样本受Interrupt预算，readonly/取消不修改会话。精确输入可机器采样，新增路径拒绝高精度数静默降级；传统Plot/ContourPlot保留机器采样兼容语义，不宣称高精度图形；有限采样不能认证数学边界。",
     "return_type": "plot_or_scene_request",
     "precision_modes": [
       "machine_sampling"
@@ -2793,6 +2837,114 @@
     ]
   },
   {
+    "id": "fn_000223",
+    "canonical_name": "data_plot",
+    "name": "DataPlot",
+    "modern_name": "data_plot",
+    "aliases": [],
+    "arity": {
+      "min": 1,
+      "max": null
+    },
+    "parameters": [
+      {
+        "name": "data",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": true
+      }
+    ],
+    "options": [
+      {
+        "name": "kind",
+        "runtime_name": "Kind",
+        "value_type": "enum",
+        "required": false,
+        "default_source": "\"scatter\"",
+        "default_context": null,
+        "enum_values": [
+          "scatter",
+          "line",
+          "heatmap"
+        ],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": true
+      },
+      {
+        "name": "plot_range",
+        "runtime_name": "PlotRange",
+        "value_type": "expression",
+        "required": false,
+        "default_source": null,
+        "default_context": "省略由数学域或真实数据推断",
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": true
+      },
+      {
+        "name": "scale",
+        "runtime_name": "Scale",
+        "value_type": "enum",
+        "required": false,
+        "default_source": "\"linear\"",
+        "default_context": null,
+        "enum_values": [
+          "linear",
+          "log_x",
+          "log_y",
+          "log_log"
+        ],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": true
+      },
+      {
+        "name": "color",
+        "runtime_name": "Color",
+        "value_type": "expression",
+        "required": false,
+        "default_source": null,
+        "default_context": "主题绿色/真实密度颜色；固定颜色名/#RRGGBB",
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": true
+      }
+    ],
+    "compatibility_syntax": [],
+    "attributes": [
+      "protected",
+      "hold_all"
+    ],
+    "pipe_arg": 1,
+    "effect_class": "pure",
+    "support": "≤100000有限机器标量的[x,y]列表或x/y表格，散点/原输入顺序连线；矩形热图用真实值/内核调色板。热图拒绝固定color覆盖。 输入/样本受Interrupt预算，readonly/取消不修改会话。精确输入可机器采样，新增路径拒绝高精度数静默降级；传统Plot/ContourPlot保留机器采样兼容语义，不宣称高精度图形；有限采样不能认证数学边界。",
+    "return_type": "plot_or_scene_request",
+    "precision_modes": [
+      "machine"
+    ],
+    "precision_notes": "真实只读机器采样，资源/非有限/不支持模式有诊断，不是认证数学边界。",
+    "platforms": [
+      "cli",
+      "desktop",
+      "web",
+      "ios"
+    ]
+  },
+  {
     "id": "fn_000141",
     "canonical_name": "decimal",
     "name": "Decimal",
@@ -2892,6 +3044,110 @@
       "arbitrary_supported"
     ],
     "precision_notes": "精确计算与已支持的数值近似子集；不把符号保留或格式位数当作新算法/任意精度支持。",
+    "platforms": [
+      "cli",
+      "desktop",
+      "web",
+      "ios"
+    ]
+  },
+  {
+    "id": "fn_000119",
+    "canonical_name": "plot",
+    "name": "DensityPlot",
+    "modern_name": "density_plot",
+    "aliases": [],
+    "arity": {
+      "min": 3,
+      "max": null
+    },
+    "parameters": [
+      {
+        "name": "expression",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": true
+      },
+      {
+        "name": "axes",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": true,
+        "held": true
+      }
+    ],
+    "options": [
+      {
+        "name": "plot_range",
+        "runtime_name": "PlotRange",
+        "value_type": "expression",
+        "required": false,
+        "default_source": null,
+        "default_context": "省略由数学域或真实数据推断",
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": true
+      },
+      {
+        "name": "scale",
+        "runtime_name": "Scale",
+        "value_type": "enum",
+        "required": false,
+        "default_source": "\"linear\"",
+        "default_context": null,
+        "enum_values": [
+          "linear",
+          "log_x",
+          "log_y",
+          "log_log"
+        ],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": true
+      },
+      {
+        "name": "color",
+        "runtime_name": "Color",
+        "value_type": "expression",
+        "required": false,
+        "default_source": null,
+        "default_context": "主题绿色/真实密度颜色；固定颜色名/#RRGGBB",
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": true
+      }
+    ],
+    "compatibility_syntax": [],
+    "attributes": [
+      "protected",
+      "hold_all"
+    ],
+    "pipe_arg": 1,
+    "effect_class": "pure",
+    "support": "二维实函数/标量等高线/96×96密度真实机器采样；log_x/log_y/log_log正窗口；固定color仅曲线。三维surface尚待R3.6。 输入/样本受Interrupt预算，readonly/取消不修改会话。精确输入可机器采样，新增路径拒绝高精度数静默降级；传统Plot/ContourPlot保留机器采样兼容语义，不宣称高精度图形；有限采样不能认证数学边界。",
+    "return_type": "plot_or_scene_request",
+    "precision_modes": [
+      "machine_sampling"
+    ],
+    "precision_notes": "现有绘图经过只读 f64 编译与真实内核采样；符号输入可精确保存，像素/采样不是认证解。",
     "platforms": [
       "cli",
       "desktop",
@@ -3940,6 +4196,126 @@
       "arbitrary_supported"
     ],
     "precision_notes": "精确计算与已支持的数值近似子集；不把符号保留或格式位数当作新算法/任意精度支持。",
+    "platforms": [
+      "cli",
+      "desktop",
+      "web",
+      "ios"
+    ]
+  },
+  {
+    "id": "fn_000222",
+    "canonical_name": "field_plot",
+    "name": "FieldPlot",
+    "modern_name": "field_plot",
+    "aliases": [],
+    "arity": {
+      "min": 3,
+      "max": null
+    },
+    "parameters": [
+      {
+        "name": "expression",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": true
+      },
+      {
+        "name": "axes",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": true,
+        "held": true
+      }
+    ],
+    "options": [
+      {
+        "name": "view",
+        "runtime_name": "View",
+        "value_type": "enum",
+        "required": false,
+        "default_source": "\"arrows\"",
+        "default_context": null,
+        "enum_values": [
+          "arrows",
+          "stream"
+        ],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": true
+      },
+      {
+        "name": "plot_range",
+        "runtime_name": "PlotRange",
+        "value_type": "expression",
+        "required": false,
+        "default_source": null,
+        "default_context": "省略由数学域或真实数据推断",
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": true
+      },
+      {
+        "name": "scale",
+        "runtime_name": "Scale",
+        "value_type": "enum",
+        "required": false,
+        "default_source": "\"linear\"",
+        "default_context": null,
+        "enum_values": [
+          "linear",
+          "log_x",
+          "log_y",
+          "log_log"
+        ],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": true
+      },
+      {
+        "name": "color",
+        "runtime_name": "Color",
+        "value_type": "expression",
+        "required": false,
+        "default_source": null,
+        "default_context": "主题绿色/真实密度颜色；固定颜色名/#RRGGBB",
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": true
+      }
+    ],
+    "compatibility_syntax": [],
+    "attributes": [
+      "protected",
+      "hold_all"
+    ],
+    "pipe_arg": 1,
+    "effect_class": "pure",
+    "support": "20×20真实向量箭头/共同最大范数视觉归一，原始值保留；stream按归一方向RK4双向≤240步/64种子，轨线不保证全部拓扑或原时间速度。 输入/样本受Interrupt预算，readonly/取消不修改会话。精确输入可机器采样，新增路径拒绝高精度数静默降级；传统Plot/ContourPlot保留机器采样兼容语义，不宣称高精度图形；有限采样不能认证数学边界。",
+    "return_type": "plot_or_scene_request",
+    "precision_modes": [
+      "machine"
+    ],
+    "precision_notes": "真实只读机器采样，资源/非有限/不支持模式有诊断，不是认证数学边界。",
     "platforms": [
       "cli",
       "desktop",
@@ -5285,6 +5661,110 @@
       "exact_symbolic"
     ],
     "precision_notes": "符号导数复用真实求导，不把形式未求值导数或函数采样宣称为解析解；笛卡尔首版，不自动获得其他坐标或任意单位支持。",
+    "platforms": [
+      "cli",
+      "desktop",
+      "web",
+      "ios"
+    ]
+  },
+  {
+    "id": "fn_000224",
+    "canonical_name": "histogram",
+    "name": "Histogram",
+    "modern_name": "histogram",
+    "aliases": [],
+    "arity": {
+      "min": 1,
+      "max": null
+    },
+    "parameters": [
+      {
+        "name": "data",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": true
+      }
+    ],
+    "options": [
+      {
+        "name": "bins",
+        "runtime_name": "Bins",
+        "value_type": "integer",
+        "required": false,
+        "default_source": "20",
+        "default_context": null,
+        "enum_values": [],
+        "min": 1,
+        "max": 200,
+        "variadic": false,
+        "held": true
+      },
+      {
+        "name": "plot_range",
+        "runtime_name": "PlotRange",
+        "value_type": "expression",
+        "required": false,
+        "default_source": null,
+        "default_context": "省略由数学域或真实数据推断",
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": true
+      },
+      {
+        "name": "scale",
+        "runtime_name": "Scale",
+        "value_type": "enum",
+        "required": false,
+        "default_source": "\"linear\"",
+        "default_context": null,
+        "enum_values": [
+          "linear",
+          "log_x",
+          "log_y",
+          "log_log"
+        ],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": true
+      },
+      {
+        "name": "color",
+        "runtime_name": "Color",
+        "value_type": "expression",
+        "required": false,
+        "default_source": null,
+        "default_context": "主题绿色/真实密度颜色；固定颜色名/#RRGGBB",
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": true
+      }
+    ],
+    "compatibility_syntax": [],
+    "attributes": [
+      "protected",
+      "hold_all"
+    ],
+    "pipe_arg": 1,
+    "effect_class": "pure",
+    "support": "≤100000有限机器样本，1..200等宽频数箱（默认20），最大值入最后箱；所有计数守恒；常量样本使用显式非零箱域。 输入/样本受Interrupt预算，readonly/取消不修改会话。精确输入可机器采样，新增路径拒绝高精度数静默降级；传统Plot/ContourPlot保留机器采样兼容语义，不宣称高精度图形；有限采样不能认证数学边界。",
+    "return_type": "plot_or_scene_request",
+    "precision_modes": [
+      "machine"
+    ],
+    "precision_notes": "真实只读机器采样，资源/非有限/不支持模式有诊断，不是认证数学边界。",
     "platforms": [
       "cli",
       "desktop",
@@ -8844,6 +9324,110 @@
     ]
   },
   {
+    "id": "fn_000219",
+    "canonical_name": "parametric_plot",
+    "name": "ParametricPlot",
+    "modern_name": "parametric_plot",
+    "aliases": [],
+    "arity": {
+      "min": 2,
+      "max": null
+    },
+    "parameters": [
+      {
+        "name": "expression",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": true
+      },
+      {
+        "name": "axes",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": true,
+        "held": true
+      }
+    ],
+    "options": [
+      {
+        "name": "plot_range",
+        "runtime_name": "PlotRange",
+        "value_type": "expression",
+        "required": false,
+        "default_source": null,
+        "default_context": "省略由数学域或真实数据推断",
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": true
+      },
+      {
+        "name": "scale",
+        "runtime_name": "Scale",
+        "value_type": "enum",
+        "required": false,
+        "default_source": "\"linear\"",
+        "default_context": null,
+        "enum_values": [
+          "linear",
+          "log_x",
+          "log_y",
+          "log_log"
+        ],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": true
+      },
+      {
+        "name": "color",
+        "runtime_name": "Color",
+        "value_type": "expression",
+        "required": false,
+        "default_source": null,
+        "default_context": "主题绿色/真实密度颜色；固定颜色名/#RRGGBB",
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": true
+      }
+    ],
+    "compatibility_syntax": [],
+    "attributes": [
+      "protected",
+      "hold_all"
+    ],
+    "pipe_arg": 1,
+    "effect_class": "pure",
+    "support": "一参数二维两坐标机器曲线，800基础点加中点域检查；参数范围独立于相机；非有限/可识别跳变断开，采样不能发现全部奇点；三维曲线/曲面尚待R3.6。 输入/样本受Interrupt预算，readonly/取消不修改会话。精确输入可机器采样，新增路径拒绝高精度数静默降级；传统Plot/ContourPlot保留机器采样兼容语义，不宣称高精度图形；有限采样不能认证数学边界。",
+    "return_type": "plot_or_scene_request",
+    "precision_modes": [
+      "machine"
+    ],
+    "precision_notes": "真实只读机器采样，资源/非有限/不支持模式有诊断，不是认证数学边界。",
+    "platforms": [
+      "cli",
+      "desktop",
+      "web",
+      "ios"
+    ]
+  },
+  {
     "id": "fn_000211",
     "canonical_name": "parse_csv",
     "name": "ParseCSV",
@@ -9113,7 +9697,8 @@
         "default_context": null,
         "enum_values": [
           "line",
-          "contour"
+          "contour",
+          "density"
         ],
         "min": null,
         "max": null,
@@ -9132,6 +9717,37 @@
         "max": null,
         "variadic": false,
         "held": true
+      },
+      {
+        "name": "scale",
+        "runtime_name": "Scale",
+        "value_type": "enum",
+        "required": false,
+        "default_source": "\"linear\"",
+        "default_context": null,
+        "enum_values": [
+          "linear",
+          "log_x",
+          "log_y",
+          "log_log"
+        ],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": true
+      },
+      {
+        "name": "color",
+        "runtime_name": "Color",
+        "value_type": "expression",
+        "required": false,
+        "default_source": null,
+        "default_context": "省略主题色",
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": true
       }
     ],
     "compatibility_syntax": [],
@@ -9141,7 +9757,7 @@
     ],
     "pipe_arg": 1,
     "effect_class": "pure",
-    "support": "当前 Plot 的二维实函数、ContourPlot 的二维零等值轮廓，保留极点、孔洞与条件解高亮。",
+    "support": "二维实函数/标量等高线/96×96密度真实机器采样；log_x/log_y/log_log正窗口；固定color仅曲线。三维surface尚待R3.6。 输入/样本受Interrupt预算，readonly/取消不修改会话。精确输入可机器采样，新增路径拒绝高精度数静默降级；传统Plot/ContourPlot保留机器采样兼容语义，不宣称高精度图形；有限采样不能认证数学边界。",
     "return_type": "plot_or_scene_request",
     "precision_modes": [
       "machine_sampling"
@@ -10845,6 +11461,110 @@
       "arbitrary_supported"
     ],
     "precision_notes": "精确计算与已支持的数值近似子集；不把符号保留或格式位数当作新算法/任意精度支持。",
+    "platforms": [
+      "cli",
+      "desktop",
+      "web",
+      "ios"
+    ]
+  },
+  {
+    "id": "fn_000221",
+    "canonical_name": "region_plot",
+    "name": "RegionPlot",
+    "modern_name": "region_plot",
+    "aliases": [],
+    "arity": {
+      "min": 3,
+      "max": null
+    },
+    "parameters": [
+      {
+        "name": "expression",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": true
+      },
+      {
+        "name": "axes",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": true,
+        "held": true
+      }
+    ],
+    "options": [
+      {
+        "name": "plot_range",
+        "runtime_name": "PlotRange",
+        "value_type": "expression",
+        "required": false,
+        "default_source": null,
+        "default_context": "省略由数学域或真实数据推断",
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": true
+      },
+      {
+        "name": "scale",
+        "runtime_name": "Scale",
+        "value_type": "enum",
+        "required": false,
+        "default_source": "\"linear\"",
+        "default_context": null,
+        "enum_values": [
+          "linear",
+          "log_x",
+          "log_y",
+          "log_log"
+        ],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": true
+      },
+      {
+        "name": "color",
+        "runtime_name": "Color",
+        "value_type": "expression",
+        "required": false,
+        "default_source": null,
+        "default_context": "主题绿色/真实密度颜色；固定颜色名/#RRGGBB",
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": true
+      }
+    ],
+    "compatibility_syntax": [],
+    "attributes": [
+      "protected",
+      "hold_all"
+    ],
+    "pipe_arg": 1,
+    "effect_class": "pure",
+    "support": "二维实数比较和and/or/not；96×96中点布尔网格，非有限样本跳过且计数；近似填充不保证精确边界/窄区域。 输入/样本受Interrupt预算，readonly/取消不修改会话。精确输入可机器采样，新增路径拒绝高精度数静默降级；传统Plot/ContourPlot保留机器采样兼容语义，不宣称高精度图形；有限采样不能认证数学边界。",
+    "return_type": "plot_or_scene_request",
+    "precision_modes": [
+      "machine"
+    ],
+    "precision_notes": "真实只读机器采样，资源/非有限/不支持模式有诊断，不是认证数学边界。",
     "platforms": [
       "cli",
       "desktop",

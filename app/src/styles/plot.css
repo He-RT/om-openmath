@@ -151,3 +151,5 @@
 .plot-view .output-error button {
   font-size: 11px;
 }
+
+.plot-sample-data { max-height: 320px; max-width: 100%; overflow: auto; font-size: 0.75rem; }

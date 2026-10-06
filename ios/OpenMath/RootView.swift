@@ -188,6 +188,9 @@ struct NotebookView: View {
             Button(controller.text("数据表与精度", "Data table and precision")) {
               controller.example("parse_csv(\"x,y\\n1,中文\\n2,emoji🙂\")")
             }.accessibilityIdentifier("example.table")
+            Button(controller.text("二维数据示例", "2D data example")) {
+              controller.example("data_plot([[0,0],[1,2],[2,4]])")
+            }.accessibilityIdentifier("example.plot")
             Button(controller.text("新建数学单元格", "New math cell")) { controller.add() }
           }.padding(.vertical, 36)
         }

@@ -1,6 +1,6 @@
 # 实际注册审计基线：ba3cd2b；稳定身份与名称分离；目录/副作用为设计数据。
 schema_version = 1
-metadata_version = 20
+metadata_version = 21
 validation_stage = "runtime_verified"
 current_version = "0.1.0-pre-alpha.2"
 target_version = "0.1.0-pre-alpha.3"
@@ -3877,30 +3877,30 @@ name = "plot"
 category = "plots"
 status = "partial"
 interface_status = "partial"
-runtime_names = ["Plot", "ContourPlot"]
+runtime_names = ["Plot", "ContourPlot", "DensityPlot"]
 compatibility_names = ["Plot", "ContourPlot"]
-current_modern_signatures = ["plot(expr, [x,min,max])", "implicitplot(equation, [x,min,max], [y,min,max])"]
-current_wolfram_signatures = ["Plot[expr,{x,min,max}]", "ContourPlot[eq,{x,min,max},{y,min,max}]"]
+current_modern_signatures = ["plot(expr,x:a..b)", "plot(expr,x:a..b,y:c..d,view:\"contour\")", "plot(expr,x:a..b,y:c..d,view:\"density\")"]
+current_wolfram_signatures = ["Plot[expr,{x,min,max}]", "ContourPlot[eq,{x,min,max},{y,min,max}]", "DensityPlot[expr,{x,a,b},{y,c,d}]"]
 signatures = ["plot(expr, x: lo..hi, y: lo..hi, view: \"line\")"]
-parameters = [{ name = "expr", kind = "positional", default = "必填", description = "标量或曲线列表", availability = "current" }, { name = "axes", kind = "axis", default = "必填", description = "一个或两个命名轴", availability = "r3" }, { name = "view", kind = "option", default = "一轴 line；二轴 surface", description = "line/surface/density/contour", availability = "r3" }, { name = "scale", kind = "option", default = "linear", description = "linear/log_x/log_y/log_log", availability = "r3" }, { name = "color", kind = "option", default = "主题色", description = "颜色或受限只读函数", availability = "r3" }, { name = "precision", kind = "option", default = "machine", description = "采样精度", availability = "r3" }]
+parameters = [{name = "expr", kind = "positional", default = "必填", description = "标量或曲线列表", availability = "current"}, {name = "axes", kind = "axis", default = "必填", description = "一个或两个命名轴", availability = "current"}, {name = "view", kind = "option", default = "line（当前二维）；三维surface尚未实现", description = "line/surface/density/contour", availability = "current"}, {name = "scale", kind = "option", default = "linear", description = "linear/log_x/log_y/log_log", availability = "current"}, {name = "color", kind = "option", default = "主题色", description = "固定颜色名或#RRGGBB；密度/热图拒绝覆盖；函数颜色待R3.6", availability = "current"}, {name = "precision", kind = "option", default = "machine", description = "采样精度", availability = "r3"}]
 return_type = "plot_or_scene_request"
 semantics = "采样一元实函数图像。；采样二元隐函数等值轮廓。"
-current_support = "当前 Plot 的二维实函数、ContourPlot 的二维零等值轮廓，保留极点、孔洞与条件解高亮。"
+current_support = "二维实函数/标量等高线/96×96密度真实机器采样；log_x/log_y/log_log正窗口；固定color仅曲线。三维surface尚待R3.6。 输入/样本受Interrupt预算，readonly/取消不修改会话。精确输入可机器采样，新增路径拒绝高精度数静默降级；传统Plot/ContourPlot保留机器采样兼容语义，不宣称高精度图形；有限采样不能认证数学边界。"
 target_support = "统一二维/曲面视图、对数坐标、采样颜色和样式；三维仅桌面/Web可交互展示。"
 precision_modes = ["machine_sampling"]
 precision_notes = "现有绘图经过只读 f64 编译与真实内核采样；符号输入可精确保存，像素/采样不是认证解。"
 current_platforms = ["cli", "desktop", "web", "ios"]
 target_platforms = ["cli", "desktop", "web", "ios"]
 render_platforms = ["desktop", "web", "ios"]
-current_examples = ["Plot[Sin[x],{x,0,2*Pi}]", "ContourPlot[x^2+y^2==1,{x,-2,2},{y,-2,2}]"]
+current_examples = ["Plot[Sin[x],{x,0,2*Pi}]", "ContourPlot[x^2+y^2==1,{x,-2,2},{y,-2,2}]", "DensityPlot[x*y,{x,-2,2},{y,-2,2}]"]
 planned_examples = ["plot(sin(x), x: -pi..pi)", "plot(sin(x)*cos(y), x: -pi..pi, y: -pi..pi, view: \"surface\")"]
 sources = ["crates/om-eval/src/plot_registry.rs"]
-tests = ["crates/om-kernel/tests/plot_sampling.rs", "crates/om-kernel/tests/plot_edges.rs"]
+tests = ["crates/om-kernel/tests/plot_extensions.rs", "crates/om-kernel/tests/plot_sampling.rs", "app/src/components/plot/PlotView.test.tsx", "ios/OpenMathTests/PlotExtensionTests.swift"]
 acceptance = "现有行为、参数拒绝、解析/格式往返、中断和独立数学期望保持不变；新签名另写正反例。"
 pipe_arg = 1
 target_version = "0.1.0-pre-alpha.3"
 kind = "function"
-validation_stage = "documentation_only"
+validation_stage = "runtime_verified"
 effect_class = "pure"
 
 [[functions]]
@@ -7077,33 +7077,34 @@ effect_class = "pure"
 id = "fn_000219"
 name = "parametric_plot"
 category = "plots"
-status = "planned"
-interface_status = "planned"
-runtime_names = []
-compatibility_names = []
-current_modern_signatures = []
-current_wolfram_signatures = []
+status = "partial"
+interface_status = "current"
+runtime_names = ["ParametricPlot"]
+compatibility_names = ["ParametricPlot"]
+current_modern_signatures = ["parametric_plot(vector,t:a..b)"]
+current_wolfram_signatures = ["ParametricPlot[vector,{t,a,b}]"]
 signatures = ["parametric_plot(vector, ...axes)"]
-parameters = [{ name = "vector", kind = "positional", default = "必填", description = "二维/三维坐标向量", availability = "r3" }, { name = "axes", kind = "axis", default = "必填", description = "一或两个命名范围", availability = "r3" }, { name = "color", kind = "option", default = "主题色", description = "颜色或fn(p,u,v)只读函数", availability = "r3" }]
+parameters = [{name = "vector", kind = "positional", default = "必填", description = "二维/三维坐标向量", availability = "current"}, {name = "axes", kind = "axis", default = "必填", description = "一或两个命名范围", availability = "current"}, {name = "color", kind = "option", default = "主题色", description = "固定颜色名或#RRGGBB；密度/热图拒绝覆盖；函数颜色待R3.6", availability = "current"}]
 return_type = "plot_or_scene_request"
 semantics = "参数曲线或曲面"
-current_support = "当前无此规范接口的实现。"
+current_support = "一参数二维两坐标机器曲线，800基础点加中点域检查；参数范围独立于相机；非有限/可识别跳变断开，采样不能发现全部奇点；三维曲线/曲面尚待R3.6。 输入/样本受Interrupt预算，readonly/取消不修改会话。精确输入可机器采样，新增路径拒绝高精度数静默降级；传统Plot/ContourPlot保留机器采样兼容语义，不宣称高精度图形；有限采样不能认证数学边界。"
 target_support = "二维显示在桌面/Web/iOS；内核采样、保留孔洞、预算和旧请求隔离。 一参数二维/三维曲线；两参数三维曲面；三维显示仅桌面/Web。"
-precision_modes = ["planned_machine"]
-precision_notes = "只读机器采样，不是认证解。"
-current_platforms = []
+precision_modes = ["machine"]
+precision_notes = "真实只读机器采样，资源/非有限/不支持模式有诊断，不是认证数学边界。"
+current_platforms = ["cli", "desktop", "web", "ios"]
 target_platforms = ["cli", "desktop", "web", "ios"]
 render_platforms = ["desktop", "web", "ios"]
-current_examples = []
-planned_examples = ["parametric_plot([cos(t),sin(t)],t: 0..2*pi)"]
-sources = []
-tests = []
+current_examples = ["ParametricPlot[{Cos[t],Sin[t]},{t,0,2*Pi}]"]
+planned_examples = ["parametric_plot([cos(t),sin(t),t],t:0..2*pi)"]
+sources = ["crates/om-eval/src/plot_registry.rs", "crates/om-kernel/src/plot/extended.rs"]
+tests = ["crates/om-kernel/tests/plot_extensions.rs", "crates/om-kernel/tests/plot_sampling.rs", "app/src/components/plot/PlotView.test.tsx", "ios/OpenMathTests/PlotExtensionTests.swift"]
 acceptance = "独立数学期望、有效/无效参数、边界、预算、中断及声明的平台/精度测试；范围外不伪造成功。"
 pipe_arg = 1
 target_version = "0.1.0-pre-alpha.3"
 kind = "function"
-validation_stage = "documentation_only"
+validation_stage = "runtime_verified"
 effect_class = "pure"
+
 
 [[functions]]
 id = "fn_000220"
@@ -7116,18 +7117,18 @@ compatibility_names = []
 current_modern_signatures = []
 current_wolfram_signatures = []
 signatures = ["implicit_plot(equation, ...axes)"]
-parameters = [{ name = "equation", kind = "positional", default = "必填", description = "签名对应的equation参数", availability = "r3" }, { name = "axes", kind = "axis", default = "数据图可省略", description = "所需命名轴", availability = "r3" }]
+parameters = [{name = "equation", kind = "positional", default = "必填", description = "签名对应的equation参数", availability = "r3"}, {name = "axes", kind = "axis", default = "数据图可省略", description = "所需命名轴", availability = "r3"}]
 return_type = "plot_or_scene_request"
 semantics = "隐式等值曲线或曲面"
-current_support = "当前无此规范接口的实现。"
+current_support = "本独立三维扩展身份未实现；当前二维implicit_plot沿用稳定fn_000119/ContourPlot入口，可用levels/log选项，详见plot条目。"
 target_support = "二维显示在桌面/Web/iOS；内核采样、保留孔洞、预算和旧请求隔离。 二维沿用轮廓算法；三维采用确定性网格及marching tetrahedra，奇点不连接。"
 precision_modes = ["planned_machine"]
-precision_notes = "只读机器采样，不是认证解。"
+precision_notes = "真实只读机器采样，资源/非有限/不支持模式有诊断，不是认证数学边界。"
 current_platforms = []
 target_platforms = ["cli", "desktop", "web", "ios"]
 render_platforms = ["desktop", "web", "ios"]
 current_examples = []
-planned_examples = ["implicit_plot(x^2+y^2=1,x: -2..2,y: -2..2)"]
+planned_examples = ["implicit_plot(x^2+y^2+z^2=1,x:-2..2,y:-2..2,z:-2..2)"]
 sources = []
 tests = []
 acceptance = "独立数学期望、有效/无效参数、边界、预算、中断及声明的平台/精度测试；范围外不伪造成功。"
@@ -7136,134 +7137,139 @@ target_version = "0.1.0-pre-alpha.3"
 kind = "function"
 validation_stage = "documentation_only"
 effect_class = "pure"
+
 
 [[functions]]
 id = "fn_000221"
 name = "region_plot"
 category = "plots"
-status = "planned"
-interface_status = "planned"
-runtime_names = []
-compatibility_names = []
-current_modern_signatures = []
-current_wolfram_signatures = []
+status = "implemented"
+interface_status = "current"
+runtime_names = ["RegionPlot"]
+compatibility_names = ["RegionPlot"]
+current_modern_signatures = ["region_plot(condition,x:a..b,y:c..d)"]
+current_wolfram_signatures = ["RegionPlot[condition,{x,a,b},{y,c,d}]"]
 signatures = ["region_plot(condition, x: a..b, y: c..d)"]
-parameters = [{ name = "condition", kind = "positional", default = "必填", description = "签名对应的condition参数", availability = "r3" }, { name = "x", kind = "axis", default = "必填", description = "签名对应的x参数", availability = "r3" }, { name = "y", kind = "axis", default = "c..d", description = "签名对应的y参数", availability = "r3" }]
+parameters = [{name = "condition", kind = "positional", default = "必填", description = "签名对应的condition参数", availability = "current"}, {name = "x", kind = "axis", default = "必填", description = "签名对应的x参数", availability = "current"}, {name = "y", kind = "axis", default = "c..d", description = "签名对应的y参数", availability = "current"}]
 return_type = "plot_or_scene_request"
 semantics = "二维不等式区域"
-current_support = "当前无此规范接口的实现。"
+current_support = "二维实数比较和and/or/not；96×96中点布尔网格，非有限样本跳过且计数；近似填充不保证精确边界/窄区域。 输入/样本受Interrupt预算，readonly/取消不修改会话。精确输入可机器采样，新增路径拒绝高精度数静默降级；传统Plot/ContourPlot保留机器采样兼容语义，不宣称高精度图形；有限采样不能认证数学边界。"
 target_support = "二维显示在桌面/Web/iOS；内核采样、保留孔洞、预算和旧请求隔离。"
-precision_modes = ["planned_machine"]
-precision_notes = "只读机器采样，不是认证解。"
-current_platforms = []
+precision_modes = ["machine"]
+precision_notes = "真实只读机器采样，资源/非有限/不支持模式有诊断，不是认证数学边界。"
+current_platforms = ["cli", "desktop", "web", "ios"]
 target_platforms = ["cli", "desktop", "web", "ios"]
 render_platforms = ["desktop", "web", "ios"]
-current_examples = []
-planned_examples = ["region_plot(x^2+y^2<1,x: -2..2,y: -2..2)"]
-sources = []
-tests = []
+current_examples = ["RegionPlot[x^2+y^2<1,{x,-2,2},{y,-2,2}]"]
+planned_examples = []
+sources = ["crates/om-eval/src/plot_registry.rs", "crates/om-kernel/src/plot/extended.rs"]
+tests = ["crates/om-kernel/tests/plot_extensions.rs", "crates/om-kernel/tests/plot_sampling.rs", "app/src/components/plot/PlotView.test.tsx", "ios/OpenMathTests/PlotExtensionTests.swift"]
 acceptance = "独立数学期望、有效/无效参数、边界、预算、中断及声明的平台/精度测试；范围外不伪造成功。"
 pipe_arg = 1
 target_version = "0.1.0-pre-alpha.3"
 kind = "function"
-validation_stage = "documentation_only"
+validation_stage = "runtime_verified"
 effect_class = "pure"
+
 
 [[functions]]
 id = "fn_000222"
 name = "field_plot"
 category = "plots"
-status = "planned"
-interface_status = "planned"
-runtime_names = []
-compatibility_names = []
-current_modern_signatures = []
-current_wolfram_signatures = []
+status = "implemented"
+interface_status = "current"
+runtime_names = ["FieldPlot"]
+compatibility_names = ["FieldPlot"]
+current_modern_signatures = ["field_plot(vector,x:a..b,y:c..d,view:\"arrows\")"]
+current_wolfram_signatures = ["FieldPlot[vector,{x,a,b},{y,c,d}]"]
 signatures = ["field_plot(vector, ...axes, view: \"arrows\")"]
-parameters = [{ name = "vector", kind = "positional", default = "必填", description = "二维向量表达式", availability = "r3" }, { name = "axes", kind = "axis", default = "必填", description = "命名范围", availability = "r3" }, { name = "view", kind = "option", default = "arrows", description = "arrows/stream", availability = "r3" }]
+parameters = [{name = "vector", kind = "positional", default = "必填", description = "二维向量表达式", availability = "current"}, {name = "axes", kind = "axis", default = "必填", description = "命名范围", availability = "current"}, {name = "view", kind = "option", default = "line（当前二维）；三维surface尚未实现", description = "arrows/stream", availability = "current"}]
 return_type = "plot_or_scene_request"
 semantics = "二维向量场或流线"
-current_support = "当前无此规范接口的实现。"
+current_support = "20×20真实向量箭头/共同最大范数视觉归一，原始值保留；stream按归一方向RK4双向≤240步/64种子，轨线不保证全部拓扑或原时间速度。 输入/样本受Interrupt预算，readonly/取消不修改会话。精确输入可机器采样，新增路径拒绝高精度数静默降级；传统Plot/ContourPlot保留机器采样兼容语义，不宣称高精度图形；有限采样不能认证数学边界。"
 target_support = "二维显示在桌面/Web/iOS；内核采样、保留孔洞、预算和旧请求隔离。"
-precision_modes = ["planned_machine"]
-precision_notes = "只读机器采样，不是认证解。"
-current_platforms = []
+precision_modes = ["machine"]
+precision_notes = "真实只读机器采样，资源/非有限/不支持模式有诊断，不是认证数学边界。"
+current_platforms = ["cli", "desktop", "web", "ios"]
 target_platforms = ["cli", "desktop", "web", "ios"]
 render_platforms = ["desktop", "web", "ios"]
-current_examples = []
-planned_examples = ["field_plot([-y,x],x: -2..2,y: -2..2,view: \"arrows\")"]
-sources = []
-tests = []
+current_examples = ["FieldPlot[{-y,x},{x,-2,2},{y,-2,2}]"]
+planned_examples = []
+sources = ["crates/om-eval/src/plot_registry.rs", "crates/om-kernel/src/plot/extended.rs"]
+tests = ["crates/om-kernel/tests/plot_extensions.rs", "crates/om-kernel/tests/plot_sampling.rs", "app/src/components/plot/PlotView.test.tsx", "ios/OpenMathTests/PlotExtensionTests.swift"]
 acceptance = "独立数学期望、有效/无效参数、边界、预算、中断及声明的平台/精度测试；范围外不伪造成功。"
 pipe_arg = 1
 target_version = "0.1.0-pre-alpha.3"
 kind = "function"
-validation_stage = "documentation_only"
+validation_stage = "runtime_verified"
 effect_class = "pure"
+
 
 [[functions]]
 id = "fn_000223"
 name = "data_plot"
 category = "plots"
-status = "planned"
-interface_status = "planned"
-runtime_names = []
-compatibility_names = []
-current_modern_signatures = []
-current_wolfram_signatures = []
+status = "implemented"
+interface_status = "current"
+runtime_names = ["DataPlot"]
+compatibility_names = ["DataPlot"]
+current_modern_signatures = ["data_plot(data,kind:\"scatter\")"]
+current_wolfram_signatures = ["DataPlot[data]"]
 signatures = ["data_plot(data, kind: \"scatter\")"]
-parameters = [{ name = "data", kind = "positional", default = "必填", description = "有序输入数据", availability = "r3" }, { name = "kind", kind = "option", default = "签名规定", description = "相应视图/样式/箱数", availability = "r3" }]
+parameters = [{name = "data", kind = "positional", default = "必填", description = "有序输入数据", availability = "current"}, {name = "kind", kind = "option", default = "签名规定", description = "相应视图/样式/箱数", availability = "current"}]
 return_type = "plot_or_scene_request"
 semantics = "数据散点、连线或热图"
-current_support = "当前无此规范接口的实现。"
+current_support = "≤100000有限机器标量的[x,y]列表或x/y表格，散点/原输入顺序连线；矩形热图用真实值/内核调色板。热图拒绝固定color覆盖。 输入/样本受Interrupt预算，readonly/取消不修改会话。精确输入可机器采样，新增路径拒绝高精度数静默降级；传统Plot/ContourPlot保留机器采样兼容语义，不宣称高精度图形；有限采样不能认证数学边界。"
 target_support = "二维显示在桌面/Web/iOS；内核采样、保留孔洞、预算和旧请求隔离。"
-precision_modes = ["planned_machine"]
-precision_notes = "只读机器采样，不是认证解。"
-current_platforms = []
+precision_modes = ["machine"]
+precision_notes = "真实只读机器采样，资源/非有限/不支持模式有诊断，不是认证数学边界。"
+current_platforms = ["cli", "desktop", "web", "ios"]
 target_platforms = ["cli", "desktop", "web", "ios"]
 render_platforms = ["desktop", "web", "ios"]
-current_examples = []
-planned_examples = ["data_plot([[0,0],[1,1],[2,4]],kind: \"line\")"]
-sources = []
-tests = []
+current_examples = ["DataPlot[{{0,0},{1,1},{2,4}}]"]
+planned_examples = []
+sources = ["crates/om-eval/src/plot_registry.rs", "crates/om-kernel/src/plot/extended.rs"]
+tests = ["crates/om-kernel/tests/plot_extensions.rs", "crates/om-kernel/tests/plot_sampling.rs", "app/src/components/plot/PlotView.test.tsx", "ios/OpenMathTests/PlotExtensionTests.swift"]
 acceptance = "独立数学期望、有效/无效参数、边界、预算、中断及声明的平台/精度测试；范围外不伪造成功。"
 pipe_arg = 1
 target_version = "0.1.0-pre-alpha.3"
 kind = "function"
-validation_stage = "documentation_only"
+validation_stage = "runtime_verified"
 effect_class = "pure"
+
 
 [[functions]]
 id = "fn_000224"
 name = "histogram"
 category = "plots"
-status = "planned"
-interface_status = "planned"
-runtime_names = []
-compatibility_names = []
-current_modern_signatures = []
-current_wolfram_signatures = []
+status = "implemented"
+interface_status = "current"
+runtime_names = ["Histogram"]
+compatibility_names = ["Histogram"]
+current_modern_signatures = ["histogram(data,bins:20)"]
+current_wolfram_signatures = ["Histogram[data]"]
 signatures = ["histogram(data, bins: 20)"]
-parameters = [{ name = "data", kind = "positional", default = "必填", description = "有限实数列表", availability = "r3" }, { name = "bins", kind = "option", default = "20", description = "正整数箱数", availability = "r3" }]
+parameters = [{name = "data", kind = "positional", default = "必填", description = "有限实数列表", availability = "current"}, {name = "bins", kind = "option", default = "20", description = "正整数箱数", availability = "current"}]
 return_type = "plot_or_scene_request"
 semantics = "频数直方图"
-current_support = "当前无此规范接口的实现。"
+current_support = "≤100000有限机器样本，1..200等宽频数箱（默认20），最大值入最后箱；所有计数守恒；常量样本使用显式非零箱域。 输入/样本受Interrupt预算，readonly/取消不修改会话。精确输入可机器采样，新增路径拒绝高精度数静默降级；传统Plot/ContourPlot保留机器采样兼容语义，不宣称高精度图形；有限采样不能认证数学边界。"
 target_support = "二维显示在桌面/Web/iOS；内核采样、保留孔洞、预算和旧请求隔离。"
-precision_modes = ["planned_machine"]
-precision_notes = "只读机器采样，不是认证解。"
-current_platforms = []
+precision_modes = ["machine"]
+precision_notes = "真实只读机器采样，资源/非有限/不支持模式有诊断，不是认证数学边界。"
+current_platforms = ["cli", "desktop", "web", "ios"]
 target_platforms = ["cli", "desktop", "web", "ios"]
 render_platforms = ["desktop", "web", "ios"]
-current_examples = []
-planned_examples = ["histogram([1,1,2,3,3],bins: 3)"]
-sources = []
-tests = []
+current_examples = ["Histogram[{1,1,2,3,3}]"]
+planned_examples = []
+sources = ["crates/om-eval/src/plot_registry.rs", "crates/om-kernel/src/plot/extended.rs"]
+tests = ["crates/om-kernel/tests/plot_extensions.rs", "crates/om-kernel/tests/plot_sampling.rs", "app/src/components/plot/PlotView.test.tsx", "ios/OpenMathTests/PlotExtensionTests.swift"]
 acceptance = "独立数学期望、有效/无效参数、边界、预算、中断及声明的平台/精度测试；范围外不伪造成功。"
 pipe_arg = 1
 target_version = "0.1.0-pre-alpha.3"
 kind = "function"
-validation_stage = "documentation_only"
+validation_stage = "runtime_verified"
 effect_class = "pure"
+
 
 [[functions]]
 id = "fn_000225"
@@ -27050,7 +27056,7 @@ aliases = ["contourplot", "implicitplot"]
 min = 3
 attributes = ["hold_all", "protected"]
 parameters = [{ name = "equation", value_type = "expression", required = true, variadic = false, held = true }, { name = "x_axis", value_type = "expression", required = true, variadic = false, held = true }, { name = "y_axis", value_type = "expression", required = true, variadic = false, held = true }]
-options = [{ name = "plot_range", runtime_name = "PlotRange", value_type = "expression", required = false, variadic = false, held = true, default_source = "Automatic" }]
+options = [{ name = "plot_range", runtime_name = "PlotRange", value_type = "expression", required = false, variadic = false, held = true, default_source = "Automatic" }, { name = "scale", runtime_name = "Scale", value_type = "enum", required = false, held = true, variadic = false, default_source = "\"linear\"", enum_values = ["linear", "log_x", "log_y", "log_log"] }, { name = "color", runtime_name = "Color", value_type = "expression", required = false, held = true, variadic = false, default_context = "省略主题色" }, { name = "levels", runtime_name = "Levels", value_type = "expression", required = false, held = true, variadic = false, default_source = "{0}" }]
 
 [[runtime]]
 name = "Cos"
@@ -27535,7 +27541,7 @@ aliases = []
 min = 2
 attributes = ["hold_all", "protected"]
 parameters = [{ name = "expr", value_type = "expression", required = true, variadic = false, held = true }, { name = "axis", value_type = "expression", required = true, variadic = false, held = true }]
-options = [{ name = "view", value_type = "enum", required = false, variadic = false, held = true, default_source = "\"line\"", enum_values = ["line", "contour"] }, { name = "plot_range", runtime_name = "PlotRange", value_type = "expression", required = false, variadic = false, held = true, default_source = "Automatic" }]
+options = [{ name = "view", value_type = "enum", required = false, variadic = false, held = true, default_source = "\"line\"", enum_values = ["line", "contour", "density"] }, { name = "plot_range", runtime_name = "PlotRange", value_type = "expression", required = false, variadic = false, held = true, default_source = "Automatic" }, { name = "scale", runtime_name = "Scale", value_type = "enum", required = false, held = true, variadic = false, default_source = "\"linear\"", enum_values = ["linear", "log_x", "log_y", "log_log"] }, { name = "color", runtime_name = "Color", value_type = "expression", required = false, held = true, variadic = false, default_context = "省略主题色" }]
 
 [[runtime]]
 name = "Plus"
@@ -29043,3 +29049,57 @@ max = 12
 attributes = ["protected", "hold_all"]
 parameters = [{ name = "data", value_type = "expression", required = true, held = true, variadic = false }]
 options = [{ name = "model", value_type = "expression", required = true, held = true, variadic = false, runtime_name = "Model" }, { name = "parameters", value_type = "expression", required = true, held = true, variadic = false, runtime_name = "Parameters" }, { name = "variables", value_type = "expression", required = false, held = true, variadic = false, runtime_name = "Variables", default_source = "x" }, { name = "target", value_type = "expression", required = false, held = true, variadic = false, runtime_name = "Target", default_source = "\"y\"", default_context = "只选择DataTable列" }, { name = "method", value_type = "enum", required = false, held = true, variadic = false, runtime_name = "Method", default_source = "\"linear\"", enum_values = ["linear", "nonlinear", "levenberg_marquardt"] }, { name = "precision", value_type = "enum", required = false, held = true, variadic = false, runtime_name = "WorkingPrecision", default_source = "MachinePrecision", enum_values = ["machine", "MachinePrecision"] }, { name = "abs_tol", value_type = "real", required = false, held = true, variadic = false, runtime_name = "AbsTolerance", default_source = "1e-10", default_context = "仅nonlinear", min = 0 }, { name = "rel_tol", value_type = "real", required = false, held = true, variadic = false, runtime_name = "RelTolerance", default_source = "1e-8", default_context = "仅nonlinear", min = 0 }, { name = "gradient_tol", value_type = "real", required = false, held = true, variadic = false, runtime_name = "GradientTolerance", default_source = "1e-8", default_context = "仅nonlinear", min = 0, max = 1 }, { name = "max_iterations", value_type = "integer", required = false, held = true, variadic = false, runtime_name = "MaxIterations", default_source = "200", default_context = "仅nonlinear", min = 1, max = 100000 }, { name = "initial_damping", value_type = "real", required = false, held = true, variadic = false, runtime_name = "InitialDamping", default_source = "1e-3", default_context = "仅nonlinear", min = 0 }]
+
+[[runtime]]
+name = "ParametricPlot"
+modern_name = "parametric_plot"
+aliases = []
+min = 2
+attributes = ["protected", "hold_all"]
+parameters = [{ name = "expression", value_type = "expression", required = true, held = true, variadic = false }, { name = "axes", value_type = "expression", required = true, held = true, variadic = true }]
+options = [{ name = "plot_range", runtime_name = "PlotRange", value_type = "expression", required = false, held = true, variadic = false, default_context = "省略由数学域或真实数据推断" }, { name = "scale", runtime_name = "Scale", value_type = "enum", required = false, held = true, variadic = false, default_source = "\"linear\"", enum_values = ["linear", "log_x", "log_y", "log_log"] }, { name = "color", runtime_name = "Color", value_type = "expression", required = false, held = true, variadic = false, default_context = "主题绿色/真实密度颜色；固定颜色名/#RRGGBB" }]
+
+[[runtime]]
+name = "RegionPlot"
+modern_name = "region_plot"
+aliases = []
+min = 3
+attributes = ["protected", "hold_all"]
+parameters = [{ name = "expression", value_type = "expression", required = true, held = true, variadic = false }, { name = "axes", value_type = "expression", required = true, held = true, variadic = true }]
+options = [{ name = "plot_range", runtime_name = "PlotRange", value_type = "expression", required = false, held = true, variadic = false, default_context = "省略由数学域或真实数据推断" }, { name = "scale", runtime_name = "Scale", value_type = "enum", required = false, held = true, variadic = false, default_source = "\"linear\"", enum_values = ["linear", "log_x", "log_y", "log_log"] }, { name = "color", runtime_name = "Color", value_type = "expression", required = false, held = true, variadic = false, default_context = "主题绿色/真实密度颜色；固定颜色名/#RRGGBB" }]
+
+[[runtime]]
+name = "FieldPlot"
+modern_name = "field_plot"
+aliases = []
+min = 3
+attributes = ["protected", "hold_all"]
+parameters = [{ name = "expression", value_type = "expression", required = true, held = true, variadic = false }, { name = "axes", value_type = "expression", required = true, held = true, variadic = true }]
+options = [{ name = "view", runtime_name = "View", value_type = "enum", required = false, held = true, variadic = false, default_source = "\"arrows\"", enum_values = ["arrows", "stream"] }, { name = "plot_range", runtime_name = "PlotRange", value_type = "expression", required = false, held = true, variadic = false, default_context = "省略由数学域或真实数据推断" }, { name = "scale", runtime_name = "Scale", value_type = "enum", required = false, held = true, variadic = false, default_source = "\"linear\"", enum_values = ["linear", "log_x", "log_y", "log_log"] }, { name = "color", runtime_name = "Color", value_type = "expression", required = false, held = true, variadic = false, default_context = "主题绿色/真实密度颜色；固定颜色名/#RRGGBB" }]
+
+[[runtime]]
+name = "DataPlot"
+modern_name = "data_plot"
+aliases = []
+min = 1
+attributes = ["protected", "hold_all"]
+parameters = [{ name = "data", value_type = "expression", required = true, held = true, variadic = false }]
+options = [{ name = "kind", runtime_name = "Kind", value_type = "enum", required = false, held = true, variadic = false, default_source = "\"scatter\"", enum_values = ["scatter", "line", "heatmap"] }, { name = "plot_range", runtime_name = "PlotRange", value_type = "expression", required = false, held = true, variadic = false, default_context = "省略由数学域或真实数据推断" }, { name = "scale", runtime_name = "Scale", value_type = "enum", required = false, held = true, variadic = false, default_source = "\"linear\"", enum_values = ["linear", "log_x", "log_y", "log_log"] }, { name = "color", runtime_name = "Color", value_type = "expression", required = false, held = true, variadic = false, default_context = "主题绿色/真实密度颜色；固定颜色名/#RRGGBB" }]
+
+[[runtime]]
+name = "Histogram"
+modern_name = "histogram"
+aliases = []
+min = 1
+attributes = ["protected", "hold_all"]
+parameters = [{ name = "data", value_type = "expression", required = true, held = true, variadic = false }]
+options = [{ name = "bins", runtime_name = "Bins", value_type = "integer", required = false, held = true, variadic = false, default_source = "20", min = 1, max = 200 }, { name = "plot_range", runtime_name = "PlotRange", value_type = "expression", required = false, held = true, variadic = false, default_context = "省略由数学域或真实数据推断" }, { name = "scale", runtime_name = "Scale", value_type = "enum", required = false, held = true, variadic = false, default_source = "\"linear\"", enum_values = ["linear", "log_x", "log_y", "log_log"] }, { name = "color", runtime_name = "Color", value_type = "expression", required = false, held = true, variadic = false, default_context = "主题绿色/真实密度颜色；固定颜色名/#RRGGBB" }]
+
+[[runtime]]
+name = "DensityPlot"
+modern_name = "density_plot"
+aliases = []
+min = 3
+attributes = ["protected", "hold_all"]
+parameters = [{ name = "expression", value_type = "expression", required = true, held = true, variadic = false }, { name = "axes", value_type = "expression", required = true, held = true, variadic = true }]
+options = [{ name = "plot_range", runtime_name = "PlotRange", value_type = "expression", required = false, held = true, variadic = false, default_context = "省略由数学域或真实数据推断" }, { name = "scale", runtime_name = "Scale", value_type = "enum", required = false, held = true, variadic = false, default_source = "\"linear\"", enum_values = ["linear", "log_x", "log_y", "log_log"] }, { name = "color", runtime_name = "Color", value_type = "expression", required = false, held = true, variadic = false, default_context = "主题绿色/真实密度颜色；固定颜色名/#RRGGBB" }]

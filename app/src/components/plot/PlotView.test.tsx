@@ -181,3 +181,15 @@ test("failures are shown and retry works; stale output and disposed plots do not
   );
   expect((screen.getByLabelText("a") as HTMLInputElement).disabled).toBe(true);
 });
+
+test("extended tiles, vectors and data points render supplied geometry and expose actual values", () => {
+  const extended:PlotData={...data,curves:[],geometry:{tiles:[{bounds:[[1,1],[2,3]],value:7,color:'#abcdef'}],arrows:[{start:[1,2],end:[2,3],value:[4,5]}],points:[[2,4]],skipped:3,color_range:[0,7]}};
+  render(<PlotView request={{...request,kind:'Data'}} data={extended} kernel={new MockKernel()} t={t}/>);
+  expect(document.querySelector('rect[fill="#abcdef"] title')?.textContent).toBe('7');
+  expect(document.querySelector('circle[r="3"] title')?.textContent).toBe('(2, 4)');
+  expect(screen.getByText('Skipped nonfinite or out-of-domain samples: 3')).toBeTruthy();
+  fireEvent(document.querySelector('details')!,new Event('toggle'));
+  const details=document.querySelector('details')!;details.open=true;fireEvent(details,new Event('toggle'));
+  expect(document.querySelector('.plot-sample-data')?.textContent).toContain('"value": 7');
+  expect(document.querySelector('.plot-sample-data')?.textContent).toContain('"arrows"');
+});

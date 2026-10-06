@@ -3,7 +3,7 @@ use super::{PlotError, axis, range};
 use crate::protocol::{PlotKind, PlotRequest};
 use om_core::{BUILTIN as B, Expr, Interrupt};
 use om_eval::Evaluator;
-fn number(e: &Expr, eval: &Evaluator, ctx: &Interrupt) -> Result<f64, PlotError> {
+pub(super) fn number(e: &Expr, eval: &Evaluator, ctx: &Interrupt) -> Result<f64, PlotError> {
     let value = eval
         .fork_readonly()
         .evaluate(&Expr::call(B::N, [e.clone()]), ctx)?;
@@ -12,7 +12,7 @@ fn number(e: &Expr, eval: &Evaluator, ctx: &Interrupt) -> Result<f64, PlotError>
         .and_then(om_num::Number::to_f64)
         .ok_or_else(|| PlotError::Invalid("plot bounds must be finite real numbers".into()))
 }
-fn pair(e: &Expr, eval: &Evaluator, ctx: &Interrupt) -> Result<(f64, f64), PlotError> {
+pub(super) fn pair(e: &Expr, eval: &Evaluator, ctx: &Interrupt) -> Result<(f64, f64), PlotError> {
     if !e.is_head(B::LIST) || e.args().len() != 2 {
         return Err(PlotError::Invalid(
             "PlotRange needs a pair of finite endpoints".into(),
@@ -25,7 +25,7 @@ fn pair(e: &Expr, eval: &Evaluator, ctx: &Interrupt) -> Result<(f64, f64), PlotE
     range(r)?;
     Ok(r)
 }
-fn iterator(
+pub(super) fn iterator(
     e: &Expr,
     eval: &Evaluator,
     ctx: &Interrupt,
@@ -51,6 +51,9 @@ pub(crate) fn from_expr(
     eval: &Evaluator,
     ctx: &Interrupt,
 ) -> Result<Option<PlotRequest>, PlotError> {
+    if let Some(request) = super::extended::from_expr(e, eval, ctx)? {
+        return Ok(Some(request));
+    }
     let kind = match e.head_symbol() {
         Some(B::PLOT) => PlotKind::Function,
         Some(B::CONTOUR_PLOT) => PlotKind::Implicit,
@@ -94,6 +97,7 @@ pub(crate) fn from_expr(
         vec![om_format::input_form(&args[0])]
     };
     Ok(Some(PlotRequest {
+        options: None,
         kind,
         exprs,
         var_x,

@@ -1,7 +1,7 @@
 import { useId } from "react";
 import type { PlotData } from "../../kernel/generated/PlotData";
 import type { PlotRequest } from "../../kernel/generated/PlotRequest";
-import { formatCoordinate, linearScale, niceTicks, type Range } from "./scale";
+import { formatCoordinate, axisScale, axisTicks, type Range } from "./scale";
 export interface Viewport {
   x: Range;
   y: Range;
@@ -24,10 +24,12 @@ export function PlotGeometry({
   const { left, right, top, bottom } = margins,
     edge = width - right,
     floor = 320 - bottom;
-  const x = linearScale(view.x, [left, edge]),
-    y = linearScale(view.y, [floor, top]);
-  const xs = niceTicks(view.x, Math.max(2, Math.floor((edge - left) / 85))),
-    ys = niceTicks(view.y, 5);
+  const scale=data?.scale ?? request.options?.scale ?? 'linear';
+  const logX=scale==='log_x'||scale==='log_log',logY=scale==='log_y'||scale==='log_log';
+  const x = axisScale(view.x, [left, edge],logX),
+    y = axisScale(view.y, [floor, top],logY);
+  const xs = axisTicks(view.x, Math.max(2, Math.floor((edge - left) / 85)),logX),
+    ys = axisTicks(view.y, 5,logY);
   const highlights = data?.highlights ?? {
     points: request.points,
     shade: request.shade,
@@ -66,6 +68,20 @@ export function PlotGeometry({
         ))}
       </g>
       <g clipPath={`url(#${id})`}>
+        {data?.geometry?.tiles.map((tile, i) => {
+          const [[a,b],[c,d]]=tile.bounds;
+          return <rect key={`tile${i}`} x={coordinate(x.map(a))} y={coordinate(y.map(d))}
+            width={Math.max(0,coordinate(x.map(c))-coordinate(x.map(a)))} height={Math.max(0,coordinate(y.map(b))-coordinate(y.map(d)))}
+            fill={tile.color} fillOpacity={request.kind === 'Region' ? 0.28 : 0.85} stroke="none"><title>{tile.value}</title></rect>;
+        })}
+        {data?.geometry?.arrows.map((arrow,i)=>{
+          const a=[x.map(arrow.start[0]),y.map(arrow.start[1])],b=[x.map(arrow.end[0]),y.map(arrow.end[1])];
+          const angle=Math.atan2(b[1]!-a[1]!,b[0]!-a[0]!);
+          return <g key={`vector${i}`} stroke={request.options?.color ?? "var(--accent)"} fill="none"><title>{`(${arrow.start}) → (${arrow.value})`}</title>
+            <path d={`M${a[0]} ${a[1]}L${b[0]} ${b[1]}M${b[0]} ${b[1]}L${b[0]!-5*Math.cos(angle-.45)} ${b[1]!-5*Math.sin(angle-.45)}M${b[0]} ${b[1]}L${b[0]!-5*Math.cos(angle+.45)} ${b[1]!-5*Math.sin(angle+.45)}`} />
+          </g>;
+        })}
+        {data?.geometry?.points.map(([a,b],i)=><circle key={`datum${i}`} cx={x.map(a)} cy={y.map(b)} r="3" fill={request.options?.color ?? "var(--accent)"}><title>{`(${a}, ${b})`}</title></circle>)}
         {highlights.shade.map(([lo, hi], i) => {
           const a = Math.max(lo, view.x[0]),
             b = Math.min(hi, view.x[1]);
@@ -104,7 +120,7 @@ export function PlotGeometry({
             {curve.segments.map((segment, i) => (
               <path
                 key={i}
-                style={{ stroke: `var(--plot-${(index % 6) + 1})` }}
+                style={{ stroke: request.options?.color ?? `var(--plot-${(index % 6) + 1})` }}
                 d={segment
                   .map(
                     ([a, b], j) =>

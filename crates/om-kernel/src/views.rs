@@ -84,6 +84,18 @@ pub enum PlotKind {
     Function,
     /// Implicit.
     Implicit,
+    /// Two-coordinate parameterized curve.
+    Parametric,
+    /// Sampled Boolean region.
+    Region,
+    /// Real two-coordinate vector field.
+    Field,
+    /// Actual finite data points/grid.
+    Data,
+    /// Frequency counts of finite samples.
+    Histogram,
+    /// Scalar two-axis value cells.
+    Density,
 }
 
 /// SolutionKind values accepted by the wire protocol.
@@ -319,6 +331,10 @@ pub struct StepView {
 #[derive(Clone, Debug, Serialize, Deserialize, TS)]
 #[ts(export_to = concat!(env!("CARGO_MANIFEST_DIR"), "/../../app/src/kernel/generated/"))]
 pub struct PlotRequest {
+    /// Additive explicit mathematical domains/data/options for new two-dimensional kinds.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[ts(optional)]
+    pub options: Option<crate::plot_views::PlotOptions2D>,
     /// Function or implicit sampling.
     pub kind: PlotKind,
     /// InputForm source expressions.
@@ -381,6 +397,14 @@ pub struct PlotHighlights {
 #[derive(Clone, Debug, Serialize, Deserialize, TS)]
 #[ts(export_to = concat!(env!("CARGO_MANIFEST_DIR"), "/../../app/src/kernel/generated/"))]
 pub struct PlotData {
+    /// Actual additional geometry, absent on legacy curve data.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[ts(optional)]
+    pub geometry: Option<crate::plot_views::PlotGeometry2D>,
+    /// Display transform, absent on legacy linear plots.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[ts(optional)]
+    pub scale: Option<crate::plot_views::PlotScale>,
     /// Sampled curves.
     pub curves: Vec<Curve>,
     /// Horizontal viewport.

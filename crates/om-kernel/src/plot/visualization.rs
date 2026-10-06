@@ -189,6 +189,7 @@ fn build(
         None
     };
     Ok(Some(PlotRequest {
+        options: None,
         kind: shape.kind(vars.len()),
         exprs: shape
             .curves(vars.len())

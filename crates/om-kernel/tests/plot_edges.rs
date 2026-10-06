@@ -10,6 +10,7 @@ use std::sync::{
 use support::*;
 fn r(kind: PlotKind, expr: &str, x: (f64, f64), y: Option<(f64, f64)>) -> PlotRequest {
     PlotRequest {
+        options: None,
         kind,
         exprs: vec![expr.into()],
         var_x: "x".into(),

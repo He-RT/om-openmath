@@ -360,6 +360,14 @@ fn calculus_coordinates_are_local_but_parameters_and_bounds_remain_real_dependen
         ("Integrate[a*x,{x,b,c}]", vec!["a", "b", "c"]),
         ("Grad[a*x*y,{x,y}]", vec!["a"]),
         ("Grad[x=2,{x}]", vec![]),
+        (
+            "Ode[Function[{t,y},a*y],{t,b,c},Initial->d]",
+            vec!["a", "b", "c", "d"],
+        ),
+        (
+            "Sample[Function[x,a*x],{x,b,c},Count->5]",
+            vec!["a", "b", "c"],
+        ),
     ] {
         upsert(&mut s, "calculus", src);
         let mut actual = cell(&s, "calculus")

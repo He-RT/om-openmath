@@ -37,7 +37,10 @@ fn help_and_options_expose_real_stable_ids_hold_roles_and_precision_boundaries()
 #[test]
 fn planned_and_deferred_docs_are_browsable_but_not_executable() {
     let mut ev = Evaluator::new();
-    for (name, status) in [("ode", "planned"), ("apply_notebook_patch", "deferred")] {
+    for (name, status) in [
+        ("optimize", "planned"),
+        ("apply_notebook_patch", "deferred"),
+    ] {
         let help = eval(&mut ev, &format!("help(\"{name}\")"));
         assert_eq!(field(&help, "status"), &Expr::string(status));
         assert_eq!(field(&help, "executable"), &Expr::sym(B::FALSE));
@@ -86,7 +89,7 @@ fn current_function_identities_and_unknown_host_capabilities_remain_truthful() {
         .iter()
         .map(|r| field(r, "name").clone())
         .collect();
-    assert!(!names.contains(&Expr::string("ode")));
+    assert!(!names.contains(&Expr::string("optimize")));
     assert!(!names.contains(&Expr::string("apply_notebook_patch")));
     assert!(
         current

@@ -6,8 +6,8 @@ use std::collections::BTreeSet;
 /// Rejected numerical syntax, variables or compilation resources.
 #[derive(Debug, thiserror::Error)]
 pub enum CompileError {
-    /// Axes must be distinct user symbols, at most 64.
-    #[error("numeric axes must be distinct user symbols (at most 64)")]
+    /// Axes must be distinct user symbols, at most 65 (64 ODE states plus time).
+    #[error("numeric axes must be distinct user symbols (at most 65)")]
     Variables,
     /// Unsupported symbolic head, arity, unresolved symbol or dynamic Root.
     #[error("unsupported numeric expression: {0}")]
@@ -127,7 +127,7 @@ pub fn compile_f64_with_ctx(
     ctx: &Interrupt,
 ) -> Result<CompiledFn, CompileError> {
     let mut seen = BTreeSet::new();
-    if vars.len() > 64
+    if vars.len() > 65
         || vars.iter().any(|s| {
             s.name().is_empty()
                 || om_core::builtins::names().contains(&s.name())

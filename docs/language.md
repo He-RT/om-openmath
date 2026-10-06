@@ -117,3 +117,16 @@ seed_random(42)                                 # 重置主会话流
 ## .3 开发版的极限与 Taylor
 
 `limit(expr,x,at:point,direction:"both")` 计算可证明的实单侧/双侧/无限极限；左右不一致、振荡和未知方法保留原式。`series(expr,x,at:0,order:6)` 生成真实导数的普通Taylor（0..64阶），携带首个未知阶，原式孔洞/分支点和形式导数拒绝。`series_coefficient(s,n)` 只读已知系数，截断外不伪造0；`normal(s)` 明确舍弃O项得到多项式。原坐标不代入全局赋值，其他参数/边界仍响应真实依赖；标准Wolfram位置语法兼容。完整边界与例见[微积分实现](design/calculus.md)。公开`.2`不含新增入口。
+
+## .3 开发版的 ODE、插值与采样
+
+公开 `.2` 不含本节入口；完整约定见 [ODE 与插值设计](design/ode-interpolation.md)。
+
+```text
+let motion = ode(fn(t,y)=>[y[2],-y[1]], initial:[1,0], t:0..6)
+motion.solution(1.25)
+sample(motion.solution, x:0..6, count:100)
+interpolate([[0,0,0],[1,1,3]], method:"hermite")(0.37)
+```
+
+ODE 为非刚性机器实数 DP5(4)，支持连续解与简单零交叉终止事件，记录实际步骤和调用数。插值默认拒绝外推，高精度/写入/非有限/未收敛明确诊断；参数与返回形状可通过 `help("ode")` 和 `options("ode")` 查询。专门表格/数值展示留 R3.5。

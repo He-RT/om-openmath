@@ -51,6 +51,7 @@ impl Parser<'_> {
                     ],
                     span,
                 )?;
+                left.call_syntax = true;
                 continue;
             }
             if kind == K::Interval {

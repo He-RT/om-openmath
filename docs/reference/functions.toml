@@ -1,6 +1,6 @@
 # 实际注册审计基线：ba3cd2b；稳定身份与名称分离；目录/副作用为设计数据。
 schema_version = 1
-metadata_version = 16
+metadata_version = 17
 validation_stage = "runtime_verified"
 current_version = "0.1.0-pre-alpha.2"
 target_version = "0.1.0-pre-alpha.3"
@@ -5699,96 +5699,96 @@ effect_class = "pure"
 id = "fn_000176"
 name = "ode"
 category = "analysis"
-status = "planned"
-interface_status = "planned"
-runtime_names = []
-compatibility_names = ["NDSolve", "NDSolveValue"]
-current_modern_signatures = []
-current_wolfram_signatures = []
+status = "implemented"
+interface_status = "current"
+runtime_names = ["Ode"]
+compatibility_names = []
+current_modern_signatures = ["ode(rhs, initial: values, t: start..end, abs_tol: 1e-10, rel_tol: 1e-8, max_steps: 100000, event: fn(t,y)=>expr)", "ode(rhs, [t,start,end], initial: values)"]
+current_wolfram_signatures = ["Ode[rhs,{t,start,end},Initial->values]"]
 signatures = ["ode(fn(t, state) => rhs, initial: values, t: start..end)"]
 parameters = [{ name = "rhs", kind = "positional", default = "必填", description = "只读右端函数", availability = "r3" }, { name = "initial", kind = "option", default = "必填", description = "初值", availability = "r3" }, { name = "t", kind = "axis", default = "必填", description = "有方向时间范围", availability = "r3" }, { name = "abs_tol", kind = "option", default = "1e-10", description = "绝对容差", availability = "r3" }, { name = "rel_tol", kind = "option", default = "1e-8", description = "相对容差", availability = "r3" }, { name = "max_steps", kind = "option", default = "100000", description = "步数上限", availability = "r3" }, { name = "event", kind = "option", default = "none", description = "零交叉终止函数", availability = "r3" }]
 return_type = "interpolation_with_diagnostics"
 semantics = "非刚性常微分方程初值数值解"
-current_support = "当前无此规范接口的实现。"
+current_support = "非刚性机器实数1..64维初值；DP5(4)自适应正反时间、四次连续输出、端点零或符号变化事件。返回solution/domain/converged/termination/accepted_steps/rejected_steps/evaluations/event_evaluations/abs_tol/rel_tol/method，实际取值保持标量/向量形状。readonly原式编译不约消极点；失败报告最后实际节点/状态/工作，不伪造收敛。初始步默认跨度1%，可initial_step/max_step；最多100000存储标量。触碰零点、步内多交叉、刚性/DAE/PDE不保证；NDSolve/NDSolveValue方程语法未适配，不能作简单别名。"
 target_support = "机器实数状态≤64维；Dormand–Prince5(4)、连续插值、零交叉终止事件；首版不含刚性、DAE、PDE。"
-precision_modes = ["planned_machine"]
-precision_notes = "机器精度路径优先；不声称任意精度。"
-current_platforms = []
+precision_modes = ["machine"]
+precision_notes = "仅机器实数算法；精确有限常量显式数值化，高精度输入/precision不静默降级。"
+current_platforms = ["cli", "desktop", "web", "ios"]
 target_platforms = ["cli", "desktop", "web", "ios"]
 render_platforms = []
-current_examples = []
-planned_examples = ["ode(fn(t,y) => [y[2], -y[1]], initial: [1,0], t: 0..20)"]
-sources = []
-tests = []
+current_examples = ["let motion=ode(fn(t,y)=>[y[2],-y[1]], initial:[1,0], t:0..6); motion.solution(1.25)", "Ode[Function[{t,y},y],{t,0,1},Initial->1]"]
+planned_examples = []
+sources = ["crates/om-eval/src/science/ode_registry.rs", "crates/om-eval/src/science/ode.rs", "crates/om-analysis/src/ode.rs", "crates/om-analysis/src/interpolation.rs"]
+tests = ["crates/om-eval/tests/ode.rs", "crates/om-analysis/tests/ode.rs", "crates/om-analysis/tests/interpolation.rs"]
 acceptance = "独立数学期望、有效/无效参数、边界、预算、中断及声明的平台/精度测试；范围外不伪造成功。"
 pipe_arg = 0
 target_version = "0.1.0-pre-alpha.3"
 kind = "function"
-validation_stage = "documentation_only"
+validation_stage = "runtime_verified"
 effect_class = "pure"
 
 [[functions]]
 id = "fn_000177"
 name = "interpolate"
 category = "analysis"
-status = "planned"
-interface_status = "planned"
-runtime_names = []
-compatibility_names = ["Interpolation", "ListInterpolation"]
-current_modern_signatures = []
-current_wolfram_signatures = []
+status = "implemented"
+interface_status = "current"
+runtime_names = ["Interpolate"]
+compatibility_names = []
+current_modern_signatures = ["interpolate(points, method: \"linear\")"]
+current_wolfram_signatures = ["Interpolate[points,Method->\"linear\"]"]
 signatures = ["interpolate(points, method: \"linear\")"]
 parameters = [{ name = "points", kind = "positional", default = "必填", description = "有序坐标/值列表", availability = "r3" }, { name = "method", kind = "option", default = "linear", description = "linear/hermite", availability = "r3" }]
 return_type = "interpolation"
 semantics = "从有序样本构造插值函数"
-current_support = "当前无此规范接口的实现。"
+current_support = "有限域scalar/vector节点[x,value]；Hermite可[x,value,slope]，缺导数为有限差分估计并保存estimated来源。严格单调正反节点、维度≤64、100000存储标量、默认拒绝外推；受保护held InterpolationData仅保存真实节点/系数/方法/返回形状/导数来源，取值重新验证，伪造执行表达式拒绝。Wolfram Interpolation/ListInterpolation未声明语义等价，暂不映射。"
 target_support = "线性与分段三次Hermite；时间坐标严格单调；默认拒绝外推。"
-precision_modes = ["planned_machine"]
-precision_notes = "机器精度路径优先；不声称任意精度。"
-current_platforms = []
+precision_modes = ["machine"]
+precision_notes = "仅机器实数算法；精确有限常量显式数值化，高精度输入/precision不静默降级。"
+current_platforms = ["cli", "desktop", "web", "ios"]
 target_platforms = ["cli", "desktop", "web", "ios"]
 render_platforms = []
-current_examples = []
-planned_examples = ["interpolate([[0,0],[1,1],[2,4]],method: \"linear\")"]
-sources = []
-tests = []
+current_examples = ["interpolate([[0,0],[1,2],[2,4]])(0.25)", "interpolate([[0,0,0],[1,1,3]], method:\"hermite\")(0.37)", "Interpolate[{{0,0},{1,2},{2,4}}]"]
+planned_examples = []
+sources = ["crates/om-eval/src/science/ode_registry.rs", "crates/om-eval/src/science/ode.rs", "crates/om-analysis/src/ode.rs", "crates/om-analysis/src/interpolation.rs"]
+tests = ["crates/om-eval/tests/ode.rs", "crates/om-analysis/tests/ode.rs", "crates/om-analysis/tests/interpolation.rs"]
 acceptance = "独立数学期望、有效/无效参数、边界、预算、中断及声明的平台/精度测试；范围外不伪造成功。"
 pipe_arg = 1
 target_version = "0.1.0-pre-alpha.3"
 kind = "function"
-validation_stage = "documentation_only"
+validation_stage = "runtime_verified"
 effect_class = "pure"
 
 [[functions]]
 id = "fn_000178"
 name = "sample"
 category = "analysis"
-status = "planned"
-interface_status = "planned"
-runtime_names = []
+status = "implemented"
+interface_status = "current"
+runtime_names = ["Sample"]
 compatibility_names = []
-current_modern_signatures = []
-current_wolfram_signatures = []
+current_modern_signatures = ["sample(fn, x: a..b, count: 100)"]
+current_wolfram_signatures = ["Sample[fn,{x,a,b},Count->100]"]
 signatures = ["sample(fn, x: a..b, count: 100)"]
 parameters = [{ name = "fn", kind = "positional", default = "必填", description = "可调用对象", availability = "r3" }, { name = "x", kind = "axis", default = "必填", description = "样本范围", availability = "r3" }, { name = "count", kind = "option", default = "100", description = "采样数", availability = "r3" }]
 return_type = "table"
 semantics = "对函数或插值对象取真实样本"
-current_support = "当前无此规范接口的实现。"
+current_support = "真实只读scalar/vector函数或InterpolationData采样，非退化正反有限域、count=2..10000，返回DataTable列x/value；总标量≤100000。机器重复节点/非有限值/高精度/写入拒绝；外推和缺失不补零。专门表格展示留R3.5。"
 target_support = "有限有序区间、count≥2；不把外推或缺失结果补零。"
-precision_modes = ["planned_machine"]
-precision_notes = "机器精度路径优先；不声称任意精度。"
-current_platforms = []
+precision_modes = ["machine"]
+precision_notes = "仅机器实数算法；精确有限常量显式数值化，高精度输入/precision不静默降级。"
+current_platforms = ["cli", "desktop", "web", "ios"]
 target_platforms = ["cli", "desktop", "web", "ios"]
 render_platforms = []
-current_examples = []
-planned_examples = ["sample(fn(x) => x^2,x: 0..1,count: 5)"]
-sources = []
-tests = []
+current_examples = ["sample(fn(x)=>x^2, x:0..1, count:5)", "Sample[Function[x,x^2],{x,0,1},Count->5]"]
+planned_examples = []
+sources = ["crates/om-eval/src/science/ode_registry.rs", "crates/om-eval/src/science/ode.rs", "crates/om-analysis/src/ode.rs", "crates/om-analysis/src/interpolation.rs"]
+tests = ["crates/om-eval/tests/ode.rs", "crates/om-analysis/tests/ode.rs", "crates/om-analysis/tests/interpolation.rs"]
 acceptance = "独立数学期望、有效/无效参数、边界、预算、中断及声明的平台/精度测试；范围外不伪造成功。"
 pipe_arg = 1
 target_version = "0.1.0-pre-alpha.3"
 kind = "function"
-validation_stage = "documentation_only"
+validation_stage = "runtime_verified"
 effect_class = "pure"
 
 [[functions]]
@@ -28991,3 +28991,33 @@ max = 1
 attributes = ["protected", "hold_all"]
 parameters = [{ name = "value", value_type = "expression", required = true, variadic = false, held = true }]
 options = []
+
+[[runtime]]
+name = "Ode"
+modern_name = "ode"
+aliases = []
+min = 3
+max = 11
+attributes = ["protected", "hold_all"]
+parameters = [{ name = "rhs", value_type = "expression", required = true, variadic = false, held = true }, { name = "axis", value_type = "expression", required = true, variadic = false, held = true }]
+options = [{ name = "initial", value_type = "expression", required = true, variadic = false, held = true, runtime_name = "Initial" }, { name = "abs_tol", value_type = "real", required = false, variadic = false, held = true, runtime_name = "AbsTolerance", default_source = "1e-10", min = 0 }, { name = "rel_tol", value_type = "real", required = false, variadic = false, held = true, runtime_name = "RelTolerance", default_source = "1e-8", min = 0 }, { name = "max_steps", value_type = "integer", required = false, variadic = false, held = true, runtime_name = "MaxSteps", default_source = "100000", min = 1, max = 1000000 }, { name = "event", value_type = "expression", required = false, variadic = false, held = true, runtime_name = "Event", default_context = "省略时不检测事件" }, { name = "initial_step", value_type = "real", required = false, variadic = false, held = true, runtime_name = "InitialStep", default_context = "省略取跨度1%，正步长幅度", min = 0 }, { name = "max_step", value_type = "real", required = false, variadic = false, held = true, runtime_name = "MaxStep", default_context = "省略不额外限制步长", min = 0 }, { name = "method", value_type = "enum", required = false, variadic = false, held = true, runtime_name = "Method", default_source = "\"dormand_prince\"", enum_values = ["dormand_prince", "dormand_prince_5_4"] }, { name = "precision", value_type = "enum", required = false, variadic = false, held = true, runtime_name = "WorkingPrecision", default_source = "MachinePrecision", enum_values = ["machine", "MachinePrecision"] }]
+
+[[runtime]]
+name = "Interpolate"
+modern_name = "interpolate"
+aliases = []
+min = 1
+max = 3
+attributes = ["protected", "hold_all"]
+parameters = [{ name = "points", value_type = "expression", required = true, variadic = false, held = true }]
+options = [{ name = "method", value_type = "enum", required = false, variadic = false, held = true, runtime_name = "Method", default_source = "\"linear\"", enum_values = ["linear", "hermite"] }, { name = "precision", value_type = "enum", required = false, variadic = false, held = true, runtime_name = "WorkingPrecision", default_source = "MachinePrecision", enum_values = ["machine", "MachinePrecision"] }]
+
+[[runtime]]
+name = "Sample"
+modern_name = "sample"
+aliases = []
+min = 2
+max = 4
+attributes = ["protected", "hold_all"]
+parameters = [{ name = "fn", value_type = "expression", required = true, variadic = false, held = true }, { name = "axis", value_type = "expression", required = true, variadic = false, held = true }]
+options = [{ name = "count", value_type = "integer", required = false, variadic = false, held = true, runtime_name = "Count", default_source = "100", min = 2, max = 10000 }, { name = "precision", value_type = "enum", required = false, variadic = false, held = true, runtime_name = "WorkingPrecision", default_source = "MachinePrecision", enum_values = ["machine", "MachinePrecision"] }]

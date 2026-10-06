@@ -391,6 +391,14 @@ impl Evaluator {
         for message in messages {
             self.messages.push(message);
         }
+        if pure_head.is_head(B::INTERPOLATION_DATA) {
+            if let Some(value) = crate::science::interpolation_call(self, &pure_head, &args, ctx)? {
+                values.push(value);
+            } else {
+                values.push(rebuilt);
+            }
+            return Ok(());
+        }
         if pure_head.is_head(B::FUNCTION) {
             if let Some(new) = crate::pure::apply(self, &pure_head, &args, ctx)? {
                 frames.push(Frame::Rewrite {

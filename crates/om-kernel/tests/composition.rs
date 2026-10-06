@@ -67,3 +67,64 @@ fn lexical_closure_dependencies_recalculate_and_notebook_remains_source_only() {
             .contains("fn(x)")
     );
 }
+#[test]
+fn continuous_ode_dependencies_real_wire_values_and_source_only_saving() {
+    fn last_number(output: &CellOutput) -> f64 {
+        let source = output
+            .items
+            .iter()
+            .filter_map(|i| match i {
+                OutputItem::Expr { input_form, .. } => Some(input_form),
+                _ => None,
+            })
+            .next_back()
+            .expect("real numeric item");
+        om_parse::parse_expr(source, om_parse::Dialect::Wolfram)
+            .unwrap()
+            .as_number()
+            .unwrap()
+            .to_f64()
+            .unwrap()
+    }
+    let mut s = Session::new(KernelConfig::default(), None);
+    evaluate(&mut s, "rate", "let rate=1");
+    let (report, _) = evaluate(
+        &mut s,
+        "solution",
+        "let solution=ode(fn(t,y)=>rate*y,initial:1,t:0..1)",
+    );
+    assert!(report.messages.is_empty(), "{report:?}");
+    assert!(
+        (last_number(&evaluate(&mut s, "point", "solution.solution(0.5)").0) - 0.5f64.exp()).abs()
+            < 1e-7
+    );
+    let (_, events) = evaluate(&mut s, "rate", "let rate=2");
+    let actual = events
+        .iter()
+        .find_map(|e| match e {
+            Event::CellOutput { cell_id, output } if cell_id == "point" => Some(output),
+            _ => None,
+        })
+        .unwrap();
+    assert!((last_number(actual) - std::f64::consts::E).abs() < 1e-7);
+    let wire = serde_json::to_string(&Response::Evaluated {
+        cell_id: "point".into(),
+        output: actual.clone(),
+        reran: vec![],
+    })
+    .unwrap();
+    let round: Response = serde_json::from_str(&wire).unwrap();
+    assert_eq!(serde_json::to_string(&round).unwrap(), wire);
+    let (response, _) = s.handle(Request::SaveNotebook);
+    let Response::Notebook { file } = response else {
+        panic!("{response:?}")
+    };
+    let file = serde_json::to_value(file).unwrap();
+    assert_eq!(file["version"], 1);
+    let text = serde_json::to_string(&file).unwrap();
+    assert!(text.contains("fn(t,y)"));
+    assert!(!text.contains("InterpolationData"));
+    for cell in file["cells"].as_array().unwrap() {
+        assert_eq!(cell.as_object().unwrap().len(), 4);
+    }
+}

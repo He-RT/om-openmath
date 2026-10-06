@@ -67,6 +67,8 @@ fn walk(e: &Expr, scope: &Symbols, defines: &mut Symbols, uses: &mut Symbols) {
                 | "Divergence"
                 | "Curl"
                 | "Laplacian"
+                | "Ode"
+                | "Sample"
         )
     }) && args.len() >= 2
     {

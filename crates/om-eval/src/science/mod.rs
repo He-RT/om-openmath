@@ -9,13 +9,17 @@ mod integral_poly;
 mod integral_rational;
 mod integral_rules;
 mod integration_registry;
+mod interpolation_data;
 mod io_registry;
 mod json_data;
 mod limit_rational;
 mod limits;
 mod matrix;
 mod matrix_numeric;
+mod numeric_callback;
 mod numeric_integration;
+mod ode;
+mod ode_registry;
 mod ordering;
 mod probability;
 mod probability_registry;
@@ -174,6 +178,9 @@ pub(super) fn dispatch(
     let result = (|| {
         ctx.tick()?;
         let args = Args::parse(name, args)?;
+        if let Some(result) = ode::dispatch(ev, name, &args, ctx)? {
+            return Ok(result);
+        }
         if let Some(result) = limits::dispatch(ev, name, &args, ctx)? {
             return Ok(result);
         }
@@ -297,5 +304,20 @@ pub(super) fn analysis_failure(e: om_analysis::Error) -> EvalError {
     match e {
         om_analysis::Error::Abort(e) => e.into(),
         e => error(&e.to_string()),
+    }
+}
+pub(crate) fn interpolation_call(
+    ev: &mut Evaluator,
+    object: &Expr,
+    args: &[Expr],
+    ctx: &Interrupt,
+) -> Result<Option<Expr>, EvalError> {
+    match interpolation_data::call(object, args, ctx) {
+        Ok(value) => Ok(Some(value)),
+        Err(EvalError::Other(reason)) => {
+            ev.message("InterpolationData", "domain", reason, MsgLevel::Warning);
+            Ok(None)
+        }
+        Err(e) => Err(e),
     }
 }

@@ -135,7 +135,7 @@ impl Parser<'_> {
             }
         }
         if matches!(symbol, B::PLOT | B::CONTOUR_PLOT)
-            || matches!(symbol.name(), "Integrate" | "NIntegrate")
+            || matches!(symbol.name(), "Integrate" | "NIntegrate" | "Ode" | "Sample")
         {
             let mut remaining = vec![];
             for keyword in std::mem::take(keywords) {

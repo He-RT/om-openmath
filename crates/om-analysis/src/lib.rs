@@ -2,8 +2,12 @@
 #![forbid(unsafe_code)]
 /// Adaptive one-dimensional machine integration with explicit estimates and failure states.
 pub mod integration;
+/// Finite-domain piecewise scalar/vector machine interpolation and continuous ODE output.
+pub mod interpolation;
 /// Small dense real matrices and actual LU/Householder QR factorizations.
 pub mod matrix;
+/// Nonstiff adaptive real initial-value problems with true dense output and events.
+pub mod ode;
 /// Real machine special functions and probability tails; no arbitrary-precision claim.
 pub mod special;
 use om_num::ctx::Abort;

@@ -47,3 +47,7 @@ CI37307173022 iPhone原17总1325ms，kernel291ms/FFI291ms/decode2ms/resume1032ms
 最新R3.4d：Limit/Series/SeriesCoefficient/Normal四真回调，SeriesData只追加数据头且HoldAll。Q有理阶/解析真实导数/有限单侧双侧无穷/实函数夹逼/正底幂和倒数坐标、普通Taylor0..64/真实系数/首未知阶/normal、结构/形式导数/截断/readonly/取消已验收；223回调/217身份、描述16/.2。995Rust/2ignored、59前端/16Python、Clippy/fmt/纯WASM/TS/deny通过，原53不动。微积分静态依赖也正确屏蔽局部坐标并保留参数/边界，不声明被拒绝的readonly写入为定义。下一任务ODE Dormand–Prince/插值/简单终止事件、优化BFGS/Brent/凸二次保证与拟合QR/LM，然后原R3.5–R3.6全部展示/三维/导出/发行；goal不标complete，不提前发.3。
 
 CI37363594946 c970dae：Rust+iOS全部成功，前端/依赖cancelled且日志404无法确定原因，整体failure不当作全通过。实际phone53最大572ms/pad523ms，原1s门槛/数学期望不改；附件target/ci-evidence/r34c。新同SHA继续检验完整CI。当前free20GiB、incremental=false；及时仅清仓库已不用缓存，保留运行release/源码/证据。本机不启动模拟器，单代理直接执行dev。
+
+最新R3.4e已验证：Ode/Interpolate/Sample三真回调、纯DP5(4)/四次连续输出/简单零交叉事件、受保护held可调用InterpolationData、linear/hermite、真实DataTable样本已完成，226回调/220身份/描述17/.2。原53不改；workspace1010/2ignored及新增kernel组合/反应式15定向（现覆盖1011Rust）、前端61（含2实际release WASM）、Python16、Clippy/fmt/纯WASM/TS无漂移/deny全通过。字段后相邻圆括号真正调用，不再被dev错误解析成乘法；64状态加时间编译器轴限65，绘图自身轴限不变。InputForm/保存仅源码/参数级联/五阶收敛/取消部分节点/伪造数据不执行/域外与高精度拒绝已测试，专门数值/表格展示与绘图联动留R3.5。下一步原R3.4 optimize（Brent/BFGS/盒约束及可认证凸二次global）和fit（QR/LM），随后R3.5–R3.6完整二维/三维/导出/发行；不要提前发.3，不标goal complete，继续dev单代理不运行本机模拟器。
+
+上一批213036f的CI37370145890全部成功，phone53最大375.084ms/pad524.320ms，原17/18 phone153.116/68.733、pad524.320/69.225ms，恢复max266.823/208.908ms；原1s门槛保留，历史失败仍需考虑最终同SHA门禁，不能声称已永久解决。证据target/ci-evidence/r34d；当前free22GiB、incremental0B，及时仅清停止使用的仓库缓存，保留release运行程序/安装产物/源码/证据。

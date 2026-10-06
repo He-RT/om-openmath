@@ -12,16 +12,16 @@
 | [`dirichlet_condition`](#dirichlet_condition) | 后续规划 | 规划接口，当前不可用 | ODE、优化与拟合中的 DirichletCondition 能力，进入后续全景目录。 |
 | [`feedback_connect`](#feedback_connect) | 后续规划 | 规划接口，当前不可用 | ODE、优化与拟合中的 FeedbackConnect 能力，进入后续全景目录。 |
 | [`fit`](#fit) | 下一版规划 | 规划接口，当前不可用 | 参数拟合及真实残差 |
-| [`interpolate`](#interpolate) | 下一版规划 | 规划接口，当前不可用 | 从有序样本构造插值函数 |
+| [`interpolate`](#interpolate) | 已实现 | 当前可用 | 从有序样本构造插值函数 |
 | [`neumann_value`](#neumann_value) | 后续规划 | 规划接口，当前不可用 | ODE、优化与拟合中的 NeumannValue 能力，进入后续全景目录。 |
 | [`nyquist_plot`](#nyquist_plot) | 后续规划 | 规划接口，当前不可用 | ODE、优化与拟合中的 NyquistPlot 能力，进入后续全景目录。 |
-| [`ode`](#ode) | 下一版规划 | 规划接口，当前不可用 | 非刚性常微分方程初值数值解 |
+| [`ode`](#ode) | 已实现 | 当前可用 | 非刚性常微分方程初值数值解 |
 | [`optimize`](#optimize) | 下一版规划 | 规划接口，当前不可用 | 带明确最优性保证的优化 |
 | [`output_response`](#output_response) | 后续规划 | 规划接口，当前不可用 | ODE、优化与拟合中的 OutputResponse 能力，进入后续全景目录。 |
 | [`parametric_nd_solve`](#parametric_nd_solve) | 后续规划 | 规划接口，当前不可用 | ODE、优化与拟合中的 ParametricNDSolve 能力，进入后续全景目录。 |
 | [`parametric_nd_solve_value`](#parametric_nd_solve_value) | 后续规划 | 规划接口，当前不可用 | ODE、优化与拟合中的 ParametricNDSolveValue 能力，进入后续全景目录。 |
 | [`root_locus_plot`](#root_locus_plot) | 后续规划 | 规划接口，当前不可用 | ODE、优化与拟合中的 RootLocusPlot 能力，进入后续全景目录。 |
-| [`sample`](#sample) | 下一版规划 | 规划接口，当前不可用 | 对函数或插值对象取真实样本 |
+| [`sample`](#sample) | 已实现 | 当前可用 | 对函数或插值对象取真实样本 |
 | [`state_space_model`](#state_space_model) | 后续规划 | 规划接口，当前不可用 | ODE、优化与拟合中的 StateSpaceModel 能力，进入后续全景目录。 |
 | [`system_model`](#system_model) | 后续规划 | 规划接口，当前不可用 | ODE、优化与拟合中的 SystemModel 能力，进入后续全景目录。 |
 | [`system_model_simulate`](#system_model_simulate) | 后续规划 | 规划接口，当前不可用 | ODE、优化与拟合中的 SystemModelSimulate 能力，进入后续全景目录。 |
@@ -175,21 +175,33 @@ fit([[0,1],[1,3],[2,5]],model: a*x+b,parameters: {a: 1,b: 0},method: "linear")
 
 ## interpolate
 
-**当前实现：下一版规划；目标接口：规划接口，当前不可用。** 目标版本：`0.1.0-pre-alpha.3`。
+**当前实现：已实现；目标接口：当前可用。** 目标版本：`0.1.0-pre-alpha.3`。
 
 - 稳定身份：`fn_000177`；条目类型：`function`。
-- 副作用分类（设计预留）：`pure`；参数验证阶段：`documentation_only`，不构成工具授权。
+- 副作用分类（设计预留）：`pure`；参数验证阶段：`runtime_verified`，不构成工具授权。
 
 从有序样本构造插值函数
 
-- 当前支持：当前无此规范接口的实现。
+- 当前支持：有限域scalar/vector节点[x,value]；Hermite可[x,value,slope]，缺导数为有限差分估计并保存estimated来源。严格单调正反节点、维度≤64、100000存储标量、默认拒绝外推；受保护held InterpolationData仅保存真实节点/系数/方法/返回形状/导数来源，取值重新验证，伪造执行表达式拒绝。Wolfram Interpolation/ListInterpolation未声明语义等价，暂不映射。
 - 目标范围：线性与分段三次Hermite；时间坐标严格单调；默认拒绝外推。
 - 返回：interpolation
-- 精度：机器精度路径优先；不声称任意精度。
-- 当前计算平台：无；目标计算平台：cli, desktop, web, ios。
+- 精度：仅机器实数算法；精确有限常量显式数值化，高精度输入/precision不静默降级。
+- 当前计算平台：cli, desktop, web, ios；目标计算平台：cli, desktop, web, ios。
 - 目标图形/交互展示平台：不适用或后续未定。
-- 兼容名称：`Interpolation`、`ListInterpolation`。
+- 兼容名称：无既有兼容入口。
 - 管道位置：第 1 个位置参数（从 1 起）。
+
+当前现代签名：
+
+```text
+interpolate(points, method: "linear")
+```
+
+当前 Wolfram 签名：
+
+```text
+Interpolate[points,Method->"linear"]
+```
 
 目标现代签名（按目标接口状态判断是否已可执行）：
 
@@ -202,17 +214,19 @@ interpolate(points, method: "linear")
 | `points` | positional | 必填 | 有序坐标/值列表 | r3 |
 | `method` | option | linear | linear/hermite | r3 |
 
-规划示例（尚未执行；需要目标版本，后续条目不承诺 .3）：
+当前已登记示例（Wolfram）：
 
-```text
-interpolate([[0,0],[1,1],[2,4]],method: "linear")
+```wolfram
+interpolate([[0,0],[1,2],[2,4]])(0.25)
+interpolate([[0,0,0],[1,1,3]], method:"hermite")(0.37)
+Interpolate[{{0,0},{1,2},{2,4}}]
 ```
 
 验收：独立数学期望、有效/无效参数、边界、预算、中断及声明的平台/精度测试；范围外不伪造成功。
 
-当前源码：暂无当前实现证据。
+当前源码：[crates/om-eval/src/science/ode_registry.rs](../../crates/om-eval/src/science/ode_registry.rs)、[crates/om-eval/src/science/ode.rs](../../crates/om-eval/src/science/ode.rs)、[crates/om-analysis/src/ode.rs](../../crates/om-analysis/src/ode.rs)、[crates/om-analysis/src/interpolation.rs](../../crates/om-analysis/src/interpolation.rs)。
 
-当前测试引用：暂无当前实现证据。
+当前测试引用：[crates/om-eval/tests/ode.rs](../../crates/om-eval/tests/ode.rs)、[crates/om-analysis/tests/ode.rs](../../crates/om-analysis/tests/ode.rs)、[crates/om-analysis/tests/interpolation.rs](../../crates/om-analysis/tests/interpolation.rs)。
 
 ## neumann_value
 
@@ -284,21 +298,34 @@ nyquist_plot(...)  # 后续接口尚未锁定
 
 ## ode
 
-**当前实现：下一版规划；目标接口：规划接口，当前不可用。** 目标版本：`0.1.0-pre-alpha.3`。
+**当前实现：已实现；目标接口：当前可用。** 目标版本：`0.1.0-pre-alpha.3`。
 
 - 稳定身份：`fn_000176`；条目类型：`function`。
-- 副作用分类（设计预留）：`pure`；参数验证阶段：`documentation_only`，不构成工具授权。
+- 副作用分类（设计预留）：`pure`；参数验证阶段：`runtime_verified`，不构成工具授权。
 
 非刚性常微分方程初值数值解
 
-- 当前支持：当前无此规范接口的实现。
+- 当前支持：非刚性机器实数1..64维初值；DP5(4)自适应正反时间、四次连续输出、端点零或符号变化事件。返回solution/domain/converged/termination/accepted_steps/rejected_steps/evaluations/event_evaluations/abs_tol/rel_tol/method，实际取值保持标量/向量形状。readonly原式编译不约消极点；失败报告最后实际节点/状态/工作，不伪造收敛。初始步默认跨度1%，可initial_step/max_step；最多100000存储标量。触碰零点、步内多交叉、刚性/DAE/PDE不保证；NDSolve/NDSolveValue方程语法未适配，不能作简单别名。
 - 目标范围：机器实数状态≤64维；Dormand–Prince5(4)、连续插值、零交叉终止事件；首版不含刚性、DAE、PDE。
 - 返回：interpolation_with_diagnostics
-- 精度：机器精度路径优先；不声称任意精度。
-- 当前计算平台：无；目标计算平台：cli, desktop, web, ios。
+- 精度：仅机器实数算法；精确有限常量显式数值化，高精度输入/precision不静默降级。
+- 当前计算平台：cli, desktop, web, ios；目标计算平台：cli, desktop, web, ios。
 - 目标图形/交互展示平台：不适用或后续未定。
-- 兼容名称：`NDSolve`、`NDSolveValue`。
+- 兼容名称：无既有兼容入口。
 - 管道位置：不接受自动管道输入。
+
+当前现代签名：
+
+```text
+ode(rhs, initial: values, t: start..end, abs_tol: 1e-10, rel_tol: 1e-8, max_steps: 100000, event: fn(t,y)=>expr)
+ode(rhs, [t,start,end], initial: values)
+```
+
+当前 Wolfram 签名：
+
+```text
+Ode[rhs,{t,start,end},Initial->values]
+```
 
 目标现代签名（按目标接口状态判断是否已可执行）：
 
@@ -316,17 +343,18 @@ ode(fn(t, state) => rhs, initial: values, t: start..end)
 | `max_steps` | option | 100000 | 步数上限 | r3 |
 | `event` | option | none | 零交叉终止函数 | r3 |
 
-规划示例（尚未执行；需要目标版本，后续条目不承诺 .3）：
+当前已登记示例（Wolfram）：
 
-```text
-ode(fn(t,y) => [y[2], -y[1]], initial: [1,0], t: 0..20)
+```wolfram
+let motion=ode(fn(t,y)=>[y[2],-y[1]], initial:[1,0], t:0..6); motion.solution(1.25)
+Ode[Function[{t,y},y],{t,0,1},Initial->1]
 ```
 
 验收：独立数学期望、有效/无效参数、边界、预算、中断及声明的平台/精度测试；范围外不伪造成功。
 
-当前源码：暂无当前实现证据。
+当前源码：[crates/om-eval/src/science/ode_registry.rs](../../crates/om-eval/src/science/ode_registry.rs)、[crates/om-eval/src/science/ode.rs](../../crates/om-eval/src/science/ode.rs)、[crates/om-analysis/src/ode.rs](../../crates/om-analysis/src/ode.rs)、[crates/om-analysis/src/interpolation.rs](../../crates/om-analysis/src/interpolation.rs)。
 
-当前测试引用：暂无当前实现证据。
+当前测试引用：[crates/om-eval/tests/ode.rs](../../crates/om-eval/tests/ode.rs)、[crates/om-analysis/tests/ode.rs](../../crates/om-analysis/tests/ode.rs)、[crates/om-analysis/tests/interpolation.rs](../../crates/om-analysis/tests/interpolation.rs)。
 
 ## optimize
 
@@ -510,21 +538,33 @@ root_locus_plot(...)  # 后续接口尚未锁定
 
 ## sample
 
-**当前实现：下一版规划；目标接口：规划接口，当前不可用。** 目标版本：`0.1.0-pre-alpha.3`。
+**当前实现：已实现；目标接口：当前可用。** 目标版本：`0.1.0-pre-alpha.3`。
 
 - 稳定身份：`fn_000178`；条目类型：`function`。
-- 副作用分类（设计预留）：`pure`；参数验证阶段：`documentation_only`，不构成工具授权。
+- 副作用分类（设计预留）：`pure`；参数验证阶段：`runtime_verified`，不构成工具授权。
 
 对函数或插值对象取真实样本
 
-- 当前支持：当前无此规范接口的实现。
+- 当前支持：真实只读scalar/vector函数或InterpolationData采样，非退化正反有限域、count=2..10000，返回DataTable列x/value；总标量≤100000。机器重复节点/非有限值/高精度/写入拒绝；外推和缺失不补零。专门表格展示留R3.5。
 - 目标范围：有限有序区间、count≥2；不把外推或缺失结果补零。
 - 返回：table
-- 精度：机器精度路径优先；不声称任意精度。
-- 当前计算平台：无；目标计算平台：cli, desktop, web, ios。
+- 精度：仅机器实数算法；精确有限常量显式数值化，高精度输入/precision不静默降级。
+- 当前计算平台：cli, desktop, web, ios；目标计算平台：cli, desktop, web, ios。
 - 目标图形/交互展示平台：不适用或后续未定。
 - 兼容名称：无既有兼容入口。
 - 管道位置：第 1 个位置参数（从 1 起）。
+
+当前现代签名：
+
+```text
+sample(fn, x: a..b, count: 100)
+```
+
+当前 Wolfram 签名：
+
+```text
+Sample[fn,{x,a,b},Count->100]
+```
 
 目标现代签名（按目标接口状态判断是否已可执行）：
 
@@ -538,17 +578,18 @@ sample(fn, x: a..b, count: 100)
 | `x` | axis | 必填 | 样本范围 | r3 |
 | `count` | option | 100 | 采样数 | r3 |
 
-规划示例（尚未执行；需要目标版本，后续条目不承诺 .3）：
+当前已登记示例（Wolfram）：
 
-```text
-sample(fn(x) => x^2,x: 0..1,count: 5)
+```wolfram
+sample(fn(x)=>x^2, x:0..1, count:5)
+Sample[Function[x,x^2],{x,0,1},Count->5]
 ```
 
 验收：独立数学期望、有效/无效参数、边界、预算、中断及声明的平台/精度测试；范围外不伪造成功。
 
-当前源码：暂无当前实现证据。
+当前源码：[crates/om-eval/src/science/ode_registry.rs](../../crates/om-eval/src/science/ode_registry.rs)、[crates/om-eval/src/science/ode.rs](../../crates/om-eval/src/science/ode.rs)、[crates/om-analysis/src/ode.rs](../../crates/om-analysis/src/ode.rs)、[crates/om-analysis/src/interpolation.rs](../../crates/om-analysis/src/interpolation.rs)。
 
-当前测试引用：暂无当前实现证据。
+当前测试引用：[crates/om-eval/tests/ode.rs](../../crates/om-eval/tests/ode.rs)、[crates/om-analysis/tests/ode.rs](../../crates/om-analysis/tests/ode.rs)、[crates/om-analysis/tests/interpolation.rs](../../crates/om-analysis/tests/interpolation.rs)。
 
 ## state_space_model
 

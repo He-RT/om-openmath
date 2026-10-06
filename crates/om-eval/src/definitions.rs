@@ -66,7 +66,9 @@ impl Definitions {
                     break false;
                 }
                 if let Some(value) = self.own.get(&cursor) {
-                    if value.is_head(om_core::BUILTIN::FUNCTION) {
+                    if value.is_head(om_core::BUILTIN::FUNCTION)
+                        || value.is_head(om_core::BUILTIN::INTERPOLATION_DATA)
+                    {
                         break true;
                     }
                     if let Some(alias) = value.as_symbol() {

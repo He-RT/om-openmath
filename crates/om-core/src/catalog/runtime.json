@@ -5568,6 +5568,85 @@
     ]
   },
   {
+    "id": "fn_000177",
+    "canonical_name": "interpolate",
+    "name": "Interpolate",
+    "modern_name": "interpolate",
+    "aliases": [],
+    "arity": {
+      "min": 1,
+      "max": 3
+    },
+    "parameters": [
+      {
+        "name": "points",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": true
+      }
+    ],
+    "options": [
+      {
+        "name": "method",
+        "runtime_name": "Method",
+        "value_type": "enum",
+        "required": false,
+        "default_source": "\"linear\"",
+        "default_context": null,
+        "enum_values": [
+          "linear",
+          "hermite"
+        ],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": true
+      },
+      {
+        "name": "precision",
+        "runtime_name": "WorkingPrecision",
+        "value_type": "enum",
+        "required": false,
+        "default_source": "MachinePrecision",
+        "default_context": null,
+        "enum_values": [
+          "machine",
+          "MachinePrecision"
+        ],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": true
+      }
+    ],
+    "compatibility_syntax": [],
+    "attributes": [
+      "protected",
+      "hold_all"
+    ],
+    "pipe_arg": 1,
+    "effect_class": "pure",
+    "support": "有限域scalar/vector节点[x,value]；Hermite可[x,value,slope]，缺导数为有限差分估计并保存estimated来源。严格单调正反节点、维度≤64、100000存储标量、默认拒绝外推；受保护held InterpolationData仅保存真实节点/系数/方法/返回形状/导数来源，取值重新验证，伪造执行表达式拒绝。Wolfram Interpolation/ListInterpolation未声明语义等价，暂不映射。",
+    "return_type": "interpolation",
+    "precision_modes": [
+      "machine"
+    ],
+    "precision_notes": "仅机器实数算法；精确有限常量显式数值化，高精度输入/precision不静默降级。",
+    "platforms": [
+      "cli",
+      "desktop",
+      "web",
+      "ios"
+    ]
+  },
+  {
     "id": "fn_000165",
     "canonical_name": "inverse",
     "name": "Inverse",
@@ -7973,6 +8052,189 @@
       "arbitrary_supported"
     ],
     "precision_notes": "精确计算与已支持的数值近似子集；不把符号保留或格式位数当作新算法/任意精度支持。",
+    "platforms": [
+      "cli",
+      "desktop",
+      "web",
+      "ios"
+    ]
+  },
+  {
+    "id": "fn_000176",
+    "canonical_name": "ode",
+    "name": "Ode",
+    "modern_name": "ode",
+    "aliases": [],
+    "arity": {
+      "min": 3,
+      "max": 11
+    },
+    "parameters": [
+      {
+        "name": "rhs",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": true
+      },
+      {
+        "name": "axis",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": true
+      }
+    ],
+    "options": [
+      {
+        "name": "initial",
+        "runtime_name": "Initial",
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": true
+      },
+      {
+        "name": "abs_tol",
+        "runtime_name": "AbsTolerance",
+        "value_type": "real",
+        "required": false,
+        "default_source": "1e-10",
+        "default_context": null,
+        "enum_values": [],
+        "min": 0,
+        "max": null,
+        "variadic": false,
+        "held": true
+      },
+      {
+        "name": "rel_tol",
+        "runtime_name": "RelTolerance",
+        "value_type": "real",
+        "required": false,
+        "default_source": "1e-8",
+        "default_context": null,
+        "enum_values": [],
+        "min": 0,
+        "max": null,
+        "variadic": false,
+        "held": true
+      },
+      {
+        "name": "max_steps",
+        "runtime_name": "MaxSteps",
+        "value_type": "integer",
+        "required": false,
+        "default_source": "100000",
+        "default_context": null,
+        "enum_values": [],
+        "min": 1,
+        "max": 1000000,
+        "variadic": false,
+        "held": true
+      },
+      {
+        "name": "event",
+        "runtime_name": "Event",
+        "value_type": "expression",
+        "required": false,
+        "default_source": null,
+        "default_context": "省略时不检测事件",
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": true
+      },
+      {
+        "name": "initial_step",
+        "runtime_name": "InitialStep",
+        "value_type": "real",
+        "required": false,
+        "default_source": null,
+        "default_context": "省略取跨度1%，正步长幅度",
+        "enum_values": [],
+        "min": 0,
+        "max": null,
+        "variadic": false,
+        "held": true
+      },
+      {
+        "name": "max_step",
+        "runtime_name": "MaxStep",
+        "value_type": "real",
+        "required": false,
+        "default_source": null,
+        "default_context": "省略不额外限制步长",
+        "enum_values": [],
+        "min": 0,
+        "max": null,
+        "variadic": false,
+        "held": true
+      },
+      {
+        "name": "method",
+        "runtime_name": "Method",
+        "value_type": "enum",
+        "required": false,
+        "default_source": "\"dormand_prince\"",
+        "default_context": null,
+        "enum_values": [
+          "dormand_prince",
+          "dormand_prince_5_4"
+        ],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": true
+      },
+      {
+        "name": "precision",
+        "runtime_name": "WorkingPrecision",
+        "value_type": "enum",
+        "required": false,
+        "default_source": "MachinePrecision",
+        "default_context": null,
+        "enum_values": [
+          "machine",
+          "MachinePrecision"
+        ],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": true
+      }
+    ],
+    "compatibility_syntax": [],
+    "attributes": [
+      "protected",
+      "hold_all"
+    ],
+    "pipe_arg": 0,
+    "effect_class": "pure",
+    "support": "非刚性机器实数1..64维初值；DP5(4)自适应正反时间、四次连续输出、端点零或符号变化事件。返回solution/domain/converged/termination/accepted_steps/rejected_steps/evaluations/event_evaluations/abs_tol/rel_tol/method，实际取值保持标量/向量形状。readonly原式编译不约消极点；失败报告最后实际节点/状态/工作，不伪造收敛。初始步默认跨度1%，可initial_step/max_step；最多100000存储标量。触碰零点、步内多交叉、刚性/DAE/PDE不保证；NDSolve/NDSolveValue方程语法未适配，不能作简单别名。",
+    "return_type": "interpolation_with_diagnostics",
+    "precision_modes": [
+      "machine"
+    ],
+    "precision_notes": "仅机器实数算法；精确有限常量显式数值化，高精度输入/precision不静默降级。",
     "platforms": [
       "cli",
       "desktop",
@@ -11110,6 +11372,95 @@
       "arbitrary_supported"
     ],
     "precision_notes": "精确计算与已支持的数值近似子集；不把符号保留或格式位数当作新算法/任意精度支持。",
+    "platforms": [
+      "cli",
+      "desktop",
+      "web",
+      "ios"
+    ]
+  },
+  {
+    "id": "fn_000178",
+    "canonical_name": "sample",
+    "name": "Sample",
+    "modern_name": "sample",
+    "aliases": [],
+    "arity": {
+      "min": 2,
+      "max": 4
+    },
+    "parameters": [
+      {
+        "name": "fn",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": true
+      },
+      {
+        "name": "axis",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": true
+      }
+    ],
+    "options": [
+      {
+        "name": "count",
+        "runtime_name": "Count",
+        "value_type": "integer",
+        "required": false,
+        "default_source": "100",
+        "default_context": null,
+        "enum_values": [],
+        "min": 2,
+        "max": 10000,
+        "variadic": false,
+        "held": true
+      },
+      {
+        "name": "precision",
+        "runtime_name": "WorkingPrecision",
+        "value_type": "enum",
+        "required": false,
+        "default_source": "MachinePrecision",
+        "default_context": null,
+        "enum_values": [
+          "machine",
+          "MachinePrecision"
+        ],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": true
+      }
+    ],
+    "compatibility_syntax": [],
+    "attributes": [
+      "protected",
+      "hold_all"
+    ],
+    "pipe_arg": 1,
+    "effect_class": "pure",
+    "support": "真实只读scalar/vector函数或InterpolationData采样，非退化正反有限域、count=2..10000，返回DataTable列x/value；总标量≤100000。机器重复节点/非有限值/高精度/写入拒绝；外推和缺失不补零。专门表格展示留R3.5。",
+    "return_type": "table",
+    "precision_modes": [
+      "machine"
+    ],
+    "precision_notes": "仅机器实数算法；精确有限常量显式数值化，高精度输入/precision不静默降级。",
     "platforms": [
       "cli",
       "desktop",

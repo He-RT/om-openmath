@@ -1,6 +1,6 @@
 # 纯数值分析层与机器矩阵
 
-本节记录当前 `dev` 实现；公开 `.2` 不包含这些新增入口。完整 `.3` 的 ODE/优化/拟合/单位/绘图等门禁仍在实施。
+本节记录当前 `dev` 实现；公开 `.2` 不包含这些新增入口。完整 `.3` 的 优化/拟合/绘图等门禁仍在实施。
 
 `om-analysis` 只依赖已有 `om-num`/`thiserror`，接受有限实数样本与宿主注入的 Interrupt。它不解析数学源码、不求表达式值、不访问文件/网络、不创建线程或时钟，禁止 unsafe，并保持 WASM 可编译。源码、表达式及平台展示转换属于 `om-eval`/Kernel/宿主。
 
@@ -28,3 +28,7 @@
 angle/VectorAngle定义为acos(dot(a,b)/(norm(a)*norm(b)))，共轭第一向量的内积约定，弧度；复数输入允许真实复值或精确保留的ArcCos式。机器实数仅修正64机器epsilon内的舍入越界，超过则诊断，不伪造可用角度。projection/Projection定义为(dot(onto,a)/dot(onto,onto))*onto，拒绝零目标。数组1..64维且两向量等长，接受数值实/复元素。
 
 投影的共轭约定参照[Wolfram Projection](https://reference.wolfram.com/language/ref/Projection.html)；复数夹角可以非实，参照[VectorAngle说明](https://reference.wolfram.com/language/ref/VectorAngle.html)。OpenMath的dot向量约定独立列明，不把Wolfram Dot的双线性复数行为冒充为同一保证；此前公开.2无Dot实现。
+
+## ODE 与插值
+
+实际 DP5(4)、四次连续输出、有限域 linear/hermite 与只读 sample 已接入，规格和真实返回见 [ODE/插值](ode-interpolation.md)。同一纯数值层不增加依赖或平台 IO，专门展示留 R3.5。

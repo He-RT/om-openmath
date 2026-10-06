@@ -101,7 +101,13 @@ pub(super) fn resolve(
                     // Lexical function bodies and explicitly held syntax belong to their own scopes.
                     if matches!(
                         n.head.as_symbol(),
-                        Some(B::FUNCTION | B::HOLD | B::HOLD_FORM | B::PATTERN)
+                        Some(
+                            B::FUNCTION
+                                | B::HOLD
+                                | B::HOLD_FORM
+                                | B::PATTERN
+                                | B::FITTED_MODEL_DATA
+                        )
                     ) {
                         values.push(e);
                         continue;
@@ -126,6 +132,8 @@ pub(super) fn resolve(
                 let mut replacement = None;
                 if head.is_head(B::FUNCTION) {
                     replacement = crate::pure::apply(ev, &head, &args, ctx)?;
+                } else if head.is_head(B::FITTED_MODEL_DATA) {
+                    replacement = Some(crate::science::fitted_source(ev, &head, &args, ctx)?);
                 } else if head.as_symbol() == Some(B::CONDITIONAL_EXPRESSION) && args.len() == 2 {
                     match args[1].as_symbol() {
                         Some(B::TRUE) => replacement = Some(args[0].clone()),

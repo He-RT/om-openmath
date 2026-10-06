@@ -25,7 +25,7 @@ function number(output: CellOutput): number {
   const item = output.items.filter(item => item.type === 'expr').at(-1);
   if (item?.type !== 'expr') throw new Error('missing actual numeric result');
   // Wolfram machine markers describe precision; values are checked against independent JS math.
-  return Number(item.input_form.replace(/`.*$/, ''));
+  return Number(item.input_form.replace(/`(?:[-+]?\d+(?:\.\d*)?)?/g, '').replace(/\*\^/g, 'e'));
 }
 it('actual WASM continuous ODE survives parameter re-evaluation and source-only saving', () => {
   const kernel = new Kernel();
@@ -67,5 +67,16 @@ it('actual WASM keeps exact global certificates distinct from local candidates',
     evaluate(kernel, 'local', 'let local=optimize(-x^2,x,initial:0)');
     expect(input(evaluate(kernel, 'kind', 'local.guarantee'))).toBe('"numerical_stationary_candidate"');
     expect(input(evaluate(kernel, 'proof', 'local.certificate'))).toBe('Null');
+  } finally { kernel.free(); }
+});
+it('actual WASM fits callable QR and nonlinear models and reports real residuals', () => {
+  const kernel = new Kernel();
+  try {
+    evaluate(kernel, 'line', 'let line=fit([[0,1],[1,3],[2,5]],model:a*x+b,parameters:[a,b])');
+    expect(number(evaluate(kernel, 'prediction', 'line.model(3)'))).toBeCloseTo(7, 12);
+    evaluate(kernel, 'curve', 'let curve=fit([[0,2],[1,numeric(2*exp(0.3))],[2,numeric(2*exp(0.6))],[3,numeric(2*exp(0.9))]],model:a*exp(b*x),parameters:{a:1,b:0},method:"nonlinear")');
+    expect(number(evaluate(kernel, 'rate', 'curve.parameters.b'))).toBeCloseTo(0.3, 7);
+    expect(number(evaluate(kernel, 'value', 'curve.model(0.5)'))).toBeCloseTo(2 * Math.exp(0.15), 7);
+    expect(number(evaluate(kernel, 'residual', 'curve.residual_norm'))).toBeLessThan(1e-7);
   } finally { kernel.free(); }
 });

@@ -11,7 +11,7 @@
 | [`bode_plot`](#bode_plot) | 后续规划 | 规划接口，当前不可用 | ODE、优化与拟合中的 BodePlot 能力，进入后续全景目录。 |
 | [`dirichlet_condition`](#dirichlet_condition) | 后续规划 | 规划接口，当前不可用 | ODE、优化与拟合中的 DirichletCondition 能力，进入后续全景目录。 |
 | [`feedback_connect`](#feedback_connect) | 后续规划 | 规划接口，当前不可用 | ODE、优化与拟合中的 FeedbackConnect 能力，进入后续全景目录。 |
-| [`fit`](#fit) | 下一版规划 | 规划接口，当前不可用 | 参数拟合及真实残差 |
+| [`fit`](#fit) | 已实现 | 当前可用 | 参数拟合及真实残差 |
 | [`interpolate`](#interpolate) | 已实现 | 当前可用 | 从有序样本构造插值函数 |
 | [`neumann_value`](#neumann_value) | 后续规划 | 规划接口，当前不可用 | ODE、优化与拟合中的 NeumannValue 能力，进入后续全景目录。 |
 | [`nyquist_plot`](#nyquist_plot) | 后续规划 | 规划接口，当前不可用 | ODE、优化与拟合中的 NyquistPlot 能力，进入后续全景目录。 |
@@ -132,21 +132,34 @@ feedback_connect(...)  # 后续接口尚未锁定
 
 ## fit
 
-**当前实现：下一版规划；目标接口：规划接口，当前不可用。** 目标版本：`0.1.0-pre-alpha.3`。
+**当前实现：已实现；目标接口：当前可用。** 目标版本：`0.1.0-pre-alpha.3`。
 
 - 稳定身份：`fn_000180`；条目类型：`function`。
-- 副作用分类（设计预留）：`pure`；参数验证阶段：`documentation_only`，不构成工具授权。
+- 副作用分类（设计预留）：`pure`；参数验证阶段：`runtime_verified`，不构成工具授权。
 
 参数拟合及真实残差
 
-- 当前支持：当前无此规范接口的实现。
+- 当前支持：真实只读1..16参数拟合；1..10000样本、样本≥参数数、设计≤100000标量、输入≤16变量。linear结构仿射/列均衡主元Householder QR，不生成大型完整Q；nonlinear真实符号Jacobian编译/无量纲列与残差归一的增广QR Levenberg–Marquardt，显式初值，无隐式线性回退。局部Jacobian/设计在1e-12列均衡数值阈值下须满列秩；秩亏/原始奇点/非有限/高精度/写入/停滞/未收敛/取消明确诊断。返回可调用model、参数、真实残差/样本表/范数/SSE/RMS状态/数值秩/停止原因/实际工作，汇总指标不可表示时为Null并明确状态，不造置信区间或全局保证。普通行最后列观测；DataTable按variables/target选列，字符串不当代码。Wolfram basis-list Fit/FindFit等语义未适配，不加假别名；本项目Fit采用命名规则。
 - 目标范围：线性QR最小二乘、非线性Levenberg–Marquardt，≤16参数；不捏造统计置信区间。
 - 返回：model_with_diagnostics
-- 精度：机器精度路径优先；不声称任意精度。
-- 当前计算平台：无；目标计算平台：cli, desktop, web, ios。
+- 精度：只有限机器数值与可数值化实常量；高精度输入拒绝，不补成任意精度；秩与误差不是证书。
+- 当前计算平台：cli, desktop, web, ios；目标计算平台：cli, desktop, web, ios。
 - 目标图形/交互展示平台：不适用或后续未定。
-- 兼容名称：`Fit`、`FindFit`、`LinearModelFit`、`NonlinearModelFit`。
+- 兼容名称：无既有兼容入口。
 - 管道位置：第 1 个位置参数（从 1 起）。
+
+当前现代签名：
+
+```text
+fit(data, model: expr, parameters: starts, method: "linear")
+fit(data, model: expr, parameters: starts, method: "nonlinear", variables: x)
+```
+
+当前 Wolfram 签名：
+
+```text
+Fit[data,Model->expr,Parameters->starts]
+```
 
 目标现代签名（按目标接口状态判断是否已可执行）：
 
@@ -156,22 +169,31 @@ fit(data, model: expression, parameters: starts, method: "linear")
 
 | 参数 | 类型 | 默认值 | 含义 | 可用阶段 |
 |---|---|---|---|---|
-| `data` | positional | 必填 | 样本 | r3 |
-| `model` | option | 必填 | 表达式 | r3 |
-| `parameters` | option | 必填 | 参数及初始值 | r3 |
-| `method` | option | linear | linear/nonlinear | r3 |
+| `data` | positional | 必填 | 1..10000有限机器样本行，最后列观测；或具名DataTable | r3 |
+| `model` | option | 必填 | 只读数值表达式；linear结构对参数仿射 | r3 |
+| `parameters` | option | 必填 | 1..16起点记录；linear也接受参数列表；保持声明顺序 | r3 |
+| `variables` | option | x | 1..16互异输入坐标，不能与参数重名 | r3 |
+| `target` | option | y，仅DataTable | 表格观测列名称；普通样本行不接受target | r3 |
+| `method` | option | linear | linear/nonlinear/levenberg_marquardt；不自动切换算法 | r3 |
+| `precision` | option | machine | 只机器路径，不静默降低高精度 | r3 |
+| `abs_tol` | option | 1e-10，仅nonlinear | 正残差范数绝对容差 | r3 |
+| `rel_tol` | option | 1e-8，仅nonlinear | 相对初始残差范数容差 | r3 |
+| `gradient_tol` | option | 1e-8，仅nonlinear | Jacobian列/残差最大夹角余弦容差，0..1 | r3 |
+| `max_iterations` | option | 200，仅nonlinear | 1..100000，含拒绝试探 | r3 |
+| `initial_damping` | option | 1e-3，仅nonlinear | 正的无量纲列归一阻尼 | r3 |
 
-规划示例（尚未执行；需要目标版本，后续条目不承诺 .3）：
+当前已登记示例（Wolfram）：
 
-```text
-fit([[0,1],[1,3],[2,5]],model: a*x+b,parameters: {a: 1,b: 0},method: "linear")
+```wolfram
+Fit[{{0,1},{1,3},{2,5}},Model->a*x+b,Parameters->{a,b}]
+fit([[0,1],[1,3],[2,5]],model:a*x+b,parameters:{a:1,b:0})
 ```
 
 验收：独立数学期望、有效/无效参数、边界、预算、中断及声明的平台/精度测试；范围外不伪造成功。
 
-当前源码：暂无当前实现证据。
+当前源码：[crates/om-eval/src/science/fitting_registry.rs](../../crates/om-eval/src/science/fitting_registry.rs)、[crates/om-eval/src/science/fitting.rs](../../crates/om-eval/src/science/fitting.rs)、[crates/om-analysis/src/fitting.rs](../../crates/om-analysis/src/fitting.rs)。
 
-当前测试引用：暂无当前实现证据。
+当前测试引用：[crates/om-eval/tests/fitting.rs](../../crates/om-eval/tests/fitting.rs)、[crates/om-analysis/tests/fitting.rs](../../crates/om-analysis/tests/fitting.rs)。
 
 ## interpolate
 

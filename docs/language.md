@@ -140,3 +140,13 @@ optimize((x+y-1)^2,[x,y],scope:"global")
 ```
 
 局部结果是数值候选，Brent 使用坐标容差，BFGS 使用投影梯度容差；global 只返回经真实有理凸二次/LDLT/KKT 验证的全局点，半正定无约束保留自由方向。返回 point/value/variables/bindings、保证与真实工作或证书。边界、精度、预算和不支持范围见 [优化规格](design/optimization.md)，不得把局部收敛误读为已证明最优。公开 `.2` 不包含此入口。
+
+## .3 开发版拟合
+
+```text
+let line = fit([[0,1],[1,3],[2,5]],model:a*x+b,parameters:[a,b])
+line.model(3)
+line.parameters
+```
+
+linear使用真实QR，nonlinear显式使用LM，返回真实残差/数值秩/工作与可调用模型。仅机器路径，原奇点、不可识别参数、未收敛和高精度明确诊断；[完整规格](design/fitting.md)。公开`.2`不包含此入口。

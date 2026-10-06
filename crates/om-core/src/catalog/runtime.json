@@ -4200,6 +4200,203 @@
     ]
   },
   {
+    "id": "fn_000180",
+    "canonical_name": "fit",
+    "name": "Fit",
+    "modern_name": "fit",
+    "aliases": [],
+    "arity": {
+      "min": 3,
+      "max": 12
+    },
+    "parameters": [
+      {
+        "name": "data",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": true
+      }
+    ],
+    "options": [
+      {
+        "name": "model",
+        "runtime_name": "Model",
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": true
+      },
+      {
+        "name": "parameters",
+        "runtime_name": "Parameters",
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": true
+      },
+      {
+        "name": "variables",
+        "runtime_name": "Variables",
+        "value_type": "expression",
+        "required": false,
+        "default_source": "x",
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": true
+      },
+      {
+        "name": "target",
+        "runtime_name": "Target",
+        "value_type": "expression",
+        "required": false,
+        "default_source": "\"y\"",
+        "default_context": "只选择DataTable列",
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": true
+      },
+      {
+        "name": "method",
+        "runtime_name": "Method",
+        "value_type": "enum",
+        "required": false,
+        "default_source": "\"linear\"",
+        "default_context": null,
+        "enum_values": [
+          "linear",
+          "nonlinear",
+          "levenberg_marquardt"
+        ],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": true
+      },
+      {
+        "name": "precision",
+        "runtime_name": "WorkingPrecision",
+        "value_type": "enum",
+        "required": false,
+        "default_source": "MachinePrecision",
+        "default_context": null,
+        "enum_values": [
+          "machine",
+          "MachinePrecision"
+        ],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": true
+      },
+      {
+        "name": "abs_tol",
+        "runtime_name": "AbsTolerance",
+        "value_type": "real",
+        "required": false,
+        "default_source": "1e-10",
+        "default_context": "仅nonlinear",
+        "enum_values": [],
+        "min": 0,
+        "max": null,
+        "variadic": false,
+        "held": true
+      },
+      {
+        "name": "rel_tol",
+        "runtime_name": "RelTolerance",
+        "value_type": "real",
+        "required": false,
+        "default_source": "1e-8",
+        "default_context": "仅nonlinear",
+        "enum_values": [],
+        "min": 0,
+        "max": null,
+        "variadic": false,
+        "held": true
+      },
+      {
+        "name": "gradient_tol",
+        "runtime_name": "GradientTolerance",
+        "value_type": "real",
+        "required": false,
+        "default_source": "1e-8",
+        "default_context": "仅nonlinear",
+        "enum_values": [],
+        "min": 0,
+        "max": 1,
+        "variadic": false,
+        "held": true
+      },
+      {
+        "name": "max_iterations",
+        "runtime_name": "MaxIterations",
+        "value_type": "integer",
+        "required": false,
+        "default_source": "200",
+        "default_context": "仅nonlinear",
+        "enum_values": [],
+        "min": 1,
+        "max": 100000,
+        "variadic": false,
+        "held": true
+      },
+      {
+        "name": "initial_damping",
+        "runtime_name": "InitialDamping",
+        "value_type": "real",
+        "required": false,
+        "default_source": "1e-3",
+        "default_context": "仅nonlinear",
+        "enum_values": [],
+        "min": 0,
+        "max": null,
+        "variadic": false,
+        "held": true
+      }
+    ],
+    "compatibility_syntax": [],
+    "attributes": [
+      "protected",
+      "hold_all"
+    ],
+    "pipe_arg": 1,
+    "effect_class": "pure",
+    "support": "真实只读1..16参数拟合；1..10000样本、样本≥参数数、设计≤100000标量、输入≤16变量。linear结构仿射/列均衡主元Householder QR，不生成大型完整Q；nonlinear真实符号Jacobian编译/无量纲列与残差归一的增广QR Levenberg–Marquardt，显式初值，无隐式线性回退。局部Jacobian/设计在1e-12列均衡数值阈值下须满列秩；秩亏/原始奇点/非有限/高精度/写入/停滞/未收敛/取消明确诊断。返回可调用model、参数、真实残差/样本表/范数/SSE/RMS状态/数值秩/停止原因/实际工作，汇总指标不可表示时为Null并明确状态，不造置信区间或全局保证。普通行最后列观测；DataTable按variables/target选列，字符串不当代码。Wolfram basis-list Fit/FindFit等语义未适配，不加假别名；本项目Fit采用命名规则。",
+    "return_type": "model_with_diagnostics",
+    "precision_modes": [
+      "machine"
+    ],
+    "precision_notes": "只有限机器数值与可数值化实常量；高精度输入拒绝，不补成任意精度；秩与误差不是证书。",
+    "platforms": [
+      "cli",
+      "desktop",
+      "web",
+      "ios"
+    ]
+  },
+  {
     "id": "fn_000205",
     "canonical_name": "flatten",
     "name": "Flatten",

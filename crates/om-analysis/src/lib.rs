@@ -1,5 +1,7 @@
 //! Pure numerical analysis: no parsing, expressions, clocks, filesystem or networking.
 #![forbid(unsafe_code)]
+/// Tall QR linear least squares and scaled damped QR nonlinear Levenberg–Marquardt fits.
+pub mod fitting;
 /// Adaptive one-dimensional machine integration with explicit estimates and failure states.
 pub mod integration;
 /// Finite-domain piecewise scalar/vector machine interpolation and continuous ODE output.

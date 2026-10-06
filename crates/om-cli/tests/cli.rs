@@ -140,7 +140,7 @@ fn executable_help_and_capabilities_are_query_only_and_never_include_plans() {
             .as_array()
             .unwrap()
             .iter()
-            .any(|f| f["modern_name"] == "fit")
+            .any(|f| f["modern_name"] == "explore")
     );
     assert!(
         rows[1]

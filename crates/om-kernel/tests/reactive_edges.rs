@@ -372,6 +372,11 @@ fn calculus_coordinates_are_local_but_parameters_and_bounds_remain_real_dependen
             "Optimize[a*x+b*y,{x,y},Initial->{c,d}]",
             vec!["a", "b", "c", "d"],
         ),
+        ("Fit[data,Model->a*x+b,Parameters->{a,b}]", vec!["data"]),
+        (
+            "Fit[data,Model->a*x+p*y,Parameters->Record[\"a\"->seed],Variables->{x,y}]",
+            vec!["data", "p", "seed"],
+        ),
     ] {
         upsert(&mut s, "calculus", src);
         let mut actual = cell(&s, "calculus")

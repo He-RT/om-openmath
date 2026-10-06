@@ -10640,27 +10640,32 @@
       "name": "fit",
       "category": "analysis",
       "kind": "function",
-      "status": "planned",
-      "interface_status": "planned",
-      "runtime_names": [],
-      "compatibility_names": [
-        "Fit",
-        "FindFit",
-        "LinearModelFit",
-        "NonlinearModelFit"
+      "status": "implemented",
+      "interface_status": "current",
+      "runtime_names": [
+        "Fit"
       ],
-      "current_modern_signatures": [],
+      "compatibility_names": [],
+      "current_modern_signatures": [
+        "fit(data, model: expr, parameters: starts, method: \"linear\")",
+        "fit(data, model: expr, parameters: starts, method: \"nonlinear\", variables: x)"
+      ],
       "signatures": [
         "fit(data, model: expression, parameters: starts, method: \"linear\")"
       ],
-      "current_support": "当前无此规范接口的实现。",
+      "current_support": "真实只读1..16参数拟合；1..10000样本、样本≥参数数、设计≤100000标量、输入≤16变量。linear结构仿射/列均衡主元Householder QR，不生成大型完整Q；nonlinear真实符号Jacobian编译/无量纲列与残差归一的增广QR Levenberg–Marquardt，显式初值，无隐式线性回退。局部Jacobian/设计在1e-12列均衡数值阈值下须满列秩；秩亏/原始奇点/非有限/高精度/写入/停滞/未收敛/取消明确诊断。返回可调用model、参数、真实残差/样本表/范数/SSE/RMS状态/数值秩/停止原因/实际工作，汇总指标不可表示时为Null并明确状态，不造置信区间或全局保证。普通行最后列观测；DataTable按variables/target选列，字符串不当代码。Wolfram basis-list Fit/FindFit等语义未适配，不加假别名；本项目Fit采用命名规则。",
       "target_support": "线性QR最小二乘、非线性Levenberg–Marquardt，≤16参数；不捏造统计置信区间。",
       "return_type": "model_with_diagnostics",
       "precision_modes": [
-        "planned_machine"
+        "machine"
       ],
-      "precision_notes": "机器精度路径优先；不声称任意精度。",
-      "current_platforms": [],
+      "precision_notes": "只有限机器数值与可数值化实常量；高精度输入拒绝，不补成任意精度；秩与误差不是证书。",
+      "current_platforms": [
+        "cli",
+        "desktop",
+        "web",
+        "ios"
+      ],
       "target_platforms": [
         "cli",
         "desktop",
@@ -10672,35 +10677,92 @@
           "name": "data",
           "kind": "positional",
           "default": "必填",
-          "description": "样本",
+          "description": "1..10000有限机器样本行，最后列观测；或具名DataTable",
           "availability": "r3"
         },
         {
           "name": "model",
           "kind": "option",
           "default": "必填",
-          "description": "表达式",
+          "description": "只读数值表达式；linear结构对参数仿射",
           "availability": "r3"
         },
         {
           "name": "parameters",
           "kind": "option",
           "default": "必填",
-          "description": "参数及初始值",
+          "description": "1..16起点记录；linear也接受参数列表；保持声明顺序",
+          "availability": "r3"
+        },
+        {
+          "name": "variables",
+          "kind": "option",
+          "default": "x",
+          "description": "1..16互异输入坐标，不能与参数重名",
+          "availability": "r3"
+        },
+        {
+          "name": "target",
+          "kind": "option",
+          "default": "y，仅DataTable",
+          "description": "表格观测列名称；普通样本行不接受target",
           "availability": "r3"
         },
         {
           "name": "method",
           "kind": "option",
           "default": "linear",
-          "description": "linear/nonlinear",
+          "description": "linear/nonlinear/levenberg_marquardt；不自动切换算法",
+          "availability": "r3"
+        },
+        {
+          "name": "precision",
+          "kind": "option",
+          "default": "machine",
+          "description": "只机器路径，不静默降低高精度",
+          "availability": "r3"
+        },
+        {
+          "name": "abs_tol",
+          "kind": "option",
+          "default": "1e-10，仅nonlinear",
+          "description": "正残差范数绝对容差",
+          "availability": "r3"
+        },
+        {
+          "name": "rel_tol",
+          "kind": "option",
+          "default": "1e-8，仅nonlinear",
+          "description": "相对初始残差范数容差",
+          "availability": "r3"
+        },
+        {
+          "name": "gradient_tol",
+          "kind": "option",
+          "default": "1e-8，仅nonlinear",
+          "description": "Jacobian列/残差最大夹角余弦容差，0..1",
+          "availability": "r3"
+        },
+        {
+          "name": "max_iterations",
+          "kind": "option",
+          "default": "200，仅nonlinear",
+          "description": "1..100000，含拒绝试探",
+          "availability": "r3"
+        },
+        {
+          "name": "initial_damping",
+          "kind": "option",
+          "default": "1e-3，仅nonlinear",
+          "description": "正的无量纲列归一阻尼",
           "availability": "r3"
         }
       ],
-      "current_examples": [],
-      "planned_examples": [
-        "fit([[0,1],[1,3],[2,5]],model: a*x+b,parameters: {a: 1,b: 0},method: \"linear\")"
-      ]
+      "current_examples": [
+        "Fit[{{0,1},{1,3},{2,5}},Model->a*x+b,Parameters->{a,b}]",
+        "fit([[0,1],[1,3],[2,5]],model:a*x+b,parameters:{a:1,b:0})"
+      ],
+      "planned_examples": []
     },
     {
       "id": "fn_000181",

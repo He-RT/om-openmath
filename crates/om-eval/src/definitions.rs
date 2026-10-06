@@ -68,6 +68,7 @@ impl Definitions {
                 if let Some(value) = self.own.get(&cursor) {
                     if value.is_head(om_core::BUILTIN::FUNCTION)
                         || value.is_head(om_core::BUILTIN::INTERPOLATION_DATA)
+                        || value.is_head(om_core::BUILTIN::FITTED_MODEL_DATA)
                     {
                         break true;
                     }

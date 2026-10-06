@@ -5,6 +5,12 @@ mod calculus_source;
 mod csv_data;
 mod data;
 mod data_number;
+mod fitted_model;
+mod fitting;
+mod fitting_affine;
+mod fitting_data;
+mod fitting_registry;
+mod fitting_report;
 mod integral_poly;
 mod integral_rational;
 mod integral_rules;
@@ -182,6 +188,9 @@ pub(super) fn dispatch(
     let result = (|| {
         ctx.tick()?;
         let args = Args::parse(name, args)?;
+        if let Some(result) = fitting::dispatch(ev, name, &args, ctx)? {
+            return Ok(result);
+        }
         if let Some(result) = optimization::dispatch(ev, name, &args, ctx)? {
             return Ok(result);
         }
@@ -327,4 +336,27 @@ pub(crate) fn interpolation_call(
         }
         Err(e) => Err(e),
     }
+}
+pub(crate) fn fitted_call(
+    ev: &mut Evaluator,
+    object: &Expr,
+    args: &[Expr],
+    ctx: &Interrupt,
+) -> Result<Option<Expr>, EvalError> {
+    match fitted_model::call(ev, object, args, ctx) {
+        Ok(value) => Ok(Some(value)),
+        Err(EvalError::Other(reason)) => {
+            ev.message("FittedModelData", "domain", reason, MsgLevel::Warning);
+            Ok(None)
+        }
+        Err(e) => Err(e),
+    }
+}
+pub(crate) fn fitted_source(
+    ev: &mut Evaluator,
+    object: &Expr,
+    args: &[Expr],
+    ctx: &Interrupt,
+) -> Result<Expr, EvalError> {
+    fitted_model::source(ev, object, args, ctx)
 }

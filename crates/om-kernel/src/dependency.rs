@@ -54,6 +54,57 @@ fn walk(e: &Expr, scope: &Symbols, defines: &mut Symbols, uses: &mut Symbols) {
     };
     let head = n.head.as_symbol();
     let args = &n.args;
+    if head.is_some_and(|s| s.name() == "Fit") && !args.is_empty() {
+        let mut locals = scope.clone();
+        let mut ignored_defines = Symbols::new();
+        let option = |name: &str| {
+            args.iter()
+                .find(|e| {
+                    e.is_head(B::RULE)
+                        && e.args().len() == 2
+                        && e.args()[0].as_symbol().is_some_and(|s| s.name() == name)
+                })
+                .map(|e| &e.args()[1])
+        };
+        if let Some(vars) = option("Variables") {
+            if let Some(s) = vars.as_symbol() {
+                locals.insert(s);
+            } else if vars.is_head(B::LIST) {
+                locals.extend(vars.args().iter().filter_map(Expr::as_symbol));
+            }
+        } else {
+            locals.insert(Symbol::intern("x"));
+        }
+        if let Some(params) = option("Parameters") {
+            if params.is_head(B::LIST) {
+                locals.extend(params.args().iter().filter_map(Expr::as_symbol));
+            } else if params.is_head(B::RECORD) {
+                for entry in params.args() {
+                    if entry.is_head(B::RULE)
+                        && entry.args().len() == 2
+                        && let ExprKind::String(s) = entry.args()[0].kind()
+                    {
+                        locals.insert(Symbol::intern(s));
+                    }
+                }
+            }
+        }
+        for arg in args {
+            if arg.is_head(B::RULE) && arg.args().len() == 2 {
+                match arg.args()[0].as_symbol().map(Symbol::name) {
+                    Some("Model") => walk(&arg.args()[1], &locals, &mut ignored_defines, uses),
+                    Some("Variables") => {}
+                    Some("Parameters")
+                        if arg.args()[1].is_head(B::LIST)
+                            && arg.args()[1].args().iter().all(|e| e.as_symbol().is_some()) => {}
+                    _ => walk(&arg.args()[1], scope, &mut ignored_defines, uses),
+                }
+            } else {
+                walk(arg, scope, &mut ignored_defines, uses);
+            }
+        }
+        return;
+    }
     if head.is_some_and(|s| {
         matches!(
             s.name(),

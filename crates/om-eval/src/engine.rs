@@ -399,6 +399,19 @@ impl Evaluator {
             }
             return Ok(());
         }
+        if pure_head.is_head(B::FITTED_MODEL_DATA) {
+            if let Some(new) = crate::science::fitted_call(self, &pure_head, &args, ctx)? {
+                frames.push(Frame::Rewrite {
+                    old: rebuilt,
+                    new,
+                    depth,
+                    iterations,
+                });
+            } else {
+                values.push(rebuilt);
+            }
+            return Ok(());
+        }
         if pure_head.is_head(B::FUNCTION) {
             if let Some(new) = crate::pure::apply(self, &pure_head, &args, ctx)? {
                 frames.push(Frame::Rewrite {

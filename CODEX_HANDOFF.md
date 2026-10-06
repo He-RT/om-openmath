@@ -63,3 +63,9 @@ R3.4f接续已新增纯优化层：om-analysis::optimization::bounded/minimize�
 CI8a16816/37402120764在后续dev推送后依ci.yml并发策略cancelled（Rust/iOS），不算平台通过；0ff0e90/37402859858查询时Rust/前端/依赖success、iOS仍进行，后续读取实际结果；保留历史MainActor恢复失败与原1s完整请求门槛。磁盘free约28GiB、incremental仍0B；先前清理646旧测试二进制约5.504GiB后没有删除当前依赖/Release/证据。本轮日志target/r34f-*（最终测试1023以tests-final为准）。
 
 CI结果更新：0ff0e90/37402859858已全success，含iOS27；实际53最大phone516.704ms/pad636.073ms，原17/18 phone199.464/93.301、pad270.650/103.053ms，MainActor恢复max497.648/619.279ms。本轮原1s门槛通过但仍有恢复波动，证据target/ci-evidence/r34f-foundation；保持历史失败记录。Optimize接口提交bbdeb23本地最终1023/62/16通过，尚待其新CI，不用旧SHA成功替代。
+
+最新R3.4g/R3.4已完成：Fit fn180真回调与Tall列均衡/主元Householder QR、真实符号Jacobian增广QR LM；1..16参数/输入、≥参数数的≤10000样本与100000标量，只读局部作用域、表格target/多输入/参数顺序。真实残差/工作/停止/数值秩，SSE/RMS超范围Null+状态，原域/严重消去/秩亏/高精度/未收敛/取消不造成功，不声明global/置信区间。FittedModelData只追加受保护held数据头，数值同编译路径、预算内避免捕获符号beta、InputForm/sample/diff/伪造数据不执行已测；传统Wolfram Fit基函数/FindFit没适配不加假别名。228回调/222身份/描述19/.2，生产源码最终1034Rust/2原ignored、63前端含实际WASM、16Python、Clippy/fmt/纯WASM/TS无漂移/deny全通过；随后仅追加测试边界6项重跑成功，原53不改。WASM测试读数*^辅助解析修复不是计算降级。
+
+下一步按原完整.3进入R3.5：三端数据/数值诊断展示、二维曲线/参数/隐式/区域/场/数据/直方、explore取消/局部参数/旧回复、SVG/PNG/CSVJSON导出；然后R3.6桌面/Web真实三维/图元/OBJ/西瓜/L2与所有同SHA门禁/附件。继续dev、单代理、不启动本机模拟器、不合并main；.3不能提前发布或标goal complete。UI按用户指定telegram-ui-reference本地skill设计行为与真实验收，不复制Telegram类体系；后续Agent/事务仍预留。
+
+CI9865b9b/37405977882已全success含iOS27，实际phone53最大454.186ms/pad310.738ms，原17/18 phone139.700/66.274、pad163.000/76.075ms，恢复max452.648/302.456ms；原1s与历史失败保留，证据target/ci-evidence/r34f。Fit新提交仍需自己的同SHA CI。当前free28GiB、incremental0B，及时只清已停止使用的仓库缓存，保留Release/源码/证据。所有新契约见fitting.md/P137，发行目标保持完整.3。

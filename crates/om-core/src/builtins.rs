@@ -57,4 +57,5 @@ define_builtins! {
     PRECISION_GOAL = "PrecisionGoal", TABLE = "Table", RANGE = "Range", MAP = "Map", APPLY = "Apply", LENGTH = "Length",
     RECORD = "Record", DOT = "Dot", DATA_TABLE = "DataTable", SERIES_DATA = "SeriesData",
     INTERPOLATION_DATA = "InterpolationData",
+    FITTED_MODEL_DATA = "FittedModelData",
 }

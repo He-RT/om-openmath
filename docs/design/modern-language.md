@@ -111,3 +111,5 @@ numeric(1/10, precision: 50)  # .3命名写法；当前可用 N(1/10,50)
 设计参考：[Wolfram规则与模式](https://reference.wolfram.com/language/guide/RulesAndPatterns.html)、[方程求解](https://reference.wolfram.com/language/guide/EquationSolving)、[数值精度](https://reference.wolfram.com/language/guide/NumericalEvaluationAndPrecision.html)。这些资料用于语义核对，不代表OpenMath已实现相同范围。
 
 当前 dev 已补 `ode`、`interpolate` 与 `sample`，机器精度/只读/事件/连续输出/外推及 Wolfram 兼容边界见 [ODE 与插值规格](ode-interpolation.md)。记录字段或调用结果后紧邻 `(...)` 明确表示调用，支持 `motion.solution(1.25)`；这属于未公开的 `.3` 记录语法，显式乘法仍使用 `*`。
+
+当前dev已接入真实`fit`（列主元QR/增广QR LM）及受保护可调用模型，参数/数据/精度/失败和Wolfram兼容边界见[拟合规格](fitting.md)。仅数值局部停止或线性最小二乘，不把报告误差/数值秩当作严格证书。

@@ -133,7 +133,9 @@ impl Evaluator {
             A::default()
         };
         let intrinsic = match symbol {
-            om_core::BUILTIN::SERIES_DATA | om_core::BUILTIN::INTERPOLATION_DATA => A::HOLD_ALL,
+            om_core::BUILTIN::SERIES_DATA
+            | om_core::BUILTIN::INTERPOLATION_DATA
+            | om_core::BUILTIN::FITTED_MODEL_DATA => A::HOLD_ALL,
             om_core::BUILTIN::PATTERN
             | om_core::BUILTIN::BLANK
             | om_core::BUILTIN::BLANK_SEQUENCE

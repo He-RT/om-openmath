@@ -51,3 +51,9 @@ CI37363594946 c970dae：Rust+iOS全部成功，前端/依赖cancelled且日志40
 最新R3.4e已验证：Ode/Interpolate/Sample三真回调、纯DP5(4)/四次连续输出/简单零交叉事件、受保护held可调用InterpolationData、linear/hermite、真实DataTable样本已完成，226回调/220身份/描述17/.2。原53不改；workspace1010/2ignored及新增kernel组合/反应式15定向（现覆盖1011Rust）、前端61（含2实际release WASM）、Python16、Clippy/fmt/纯WASM/TS无漂移/deny全通过。字段后相邻圆括号真正调用，不再被dev错误解析成乘法；64状态加时间编译器轴限65，绘图自身轴限不变。InputForm/保存仅源码/参数级联/五阶收敛/取消部分节点/伪造数据不执行/域外与高精度拒绝已测试，专门数值/表格展示与绘图联动留R3.5。下一步原R3.4 optimize（Brent/BFGS/盒约束及可认证凸二次global）和fit（QR/LM），随后R3.5–R3.6完整二维/三维/导出/发行；不要提前发.3，不标goal complete，继续dev单代理不运行本机模拟器。
 
 上一批213036f的CI37370145890全部成功，phone53最大375.084ms/pad524.320ms，原17/18 phone153.116/68.733、pad524.320/69.225ms，恢复max266.823/208.908ms；原1s门槛保留，历史失败仍需考虑最终同SHA门禁，不能声称已永久解决。证据target/ci-evidence/r34d；当前free22GiB、incremental0B，及时仅清停止使用的仓库缓存，保留release运行程序/安装产物/源码/证据。
+
+R3.4f接续已新增纯优化层：om-analysis::optimization::bounded/minimize真实Brent和BFGS/盒约束/固定维度/部分失败；Options含abs_tol/rel_tol(Brent坐标)、gradient_tol1e-8(BFGS投影梯度)、max_iterations1000。纯analysis33项、Clippy/fmt/WASM通过，6优化测试含Rosenbrock/24耦合凸二次/真实计数/取消；语言optimize和精确凸二次global认证仍planned无回调，别名不得以局部模拟global。下一步先接readonly表达式/真实求导/编译/初值/范围与目标翻转、独立精确凸二次证明和真实诊断，再fit QR/LM与所有R3.5/R3.6。不要发布.3或标goal complete。ODE提交8a16816已推dev，CI37402120764查询时Rust/iOS运行、前端/依赖成功，未声称同SHA全绿。
+
+清理仅仓库已不用缓存：所有本地构建停止后保留本轮日志207当前测试产物，删debug/deps646个一小时以上旧Mach-O测试/调试可执行文件及.d，逻辑5.504GiB；rlib/rmeta/dylib与当前依赖、release运行程序/产物、源码/证据保留。实际剩余空间以df为准，清单target/r34e-stale-test-binaries-removed.json。incremental仍0B，不开本地模拟器。
+
+清理后实测磁盘可用27.28GiB（df显示27GiB），此前df约22GiB；debug目录20→14GiB。逻辑删除量5.504GiB与df变化分别记录，不伪称精确释放值。

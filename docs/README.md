@@ -26,3 +26,5 @@
 [英文入口](../README.en.md)保留英文说明；历史设计条目保留，供核对实施过程。
 
 - [ODE、连续插值与采样（.3 开发版）](design/ode-interpolation.md)
+
+- [局部优化与全局保证边界（.3 实施中）](design/optimization.md)

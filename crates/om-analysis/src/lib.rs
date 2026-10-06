@@ -8,6 +8,8 @@ pub mod interpolation;
 pub mod matrix;
 /// Nonstiff adaptive real initial-value problems with true dense output and events.
 pub mod ode;
+/// Genuine local bounded Brent and projected BFGS, separate from global certification.
+pub mod optimization;
 /// Real machine special functions and probability tails; no arbitrary-precision claim.
 pub mod special;
 use om_num::ctx::Abort;

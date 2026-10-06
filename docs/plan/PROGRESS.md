@@ -204,3 +204,9 @@ R3.4c提交 `c970dae` 的CI37363594946：Rust与iOS27全部通过，但frontend/
 验证命令沿 R3.4d，全测试日志为 target/r34e-tests.log；新增内核测试 target/r34e-kernel.log，Clippy/Python/TS/WASM 同名前缀日志。`npm test` 先重新编译真实 WASM，再执行61项；修复测试 findLast 不符合既有 ES2022 配置后，定向实际WASM两项/lint/typecheck再次通过，未改变产品编译目标。算法/参数/兼容/失败边界见 ode-interpolation.md/P135。专门表格与数值诊断展示、图形联动/导出留 R3.5；优化、拟合、R3.5–R3.6 及完整 .3 发行仍未完成，不缩减目标。
 
 上一批 `213036f` 的 CI `37370145890` 全部通过（Rust/前端/依赖/iOS27）。实际证据在 target/ci-evidence/r34d：iPhone27 全53最大375.084ms、iPad27最大524.320ms，原17/18 phone153.116/68.733ms、pad524.320/69.225ms；MainActor恢复最大266.823/208.908ms，有波动但均通过原1s总时间门槛。保留所有历史失败，不能据此宣布恢复延迟永久解决。当前磁盘可用约22GiB、incremental 0B，没有启动本地模拟器；只在停止构建后清理本仓库无用缓存。
+
+- [ ] **R3.4f 优化进行中：纯数值层已验收** — 新增 bounded Brent 与投影 BFGS/盒约束/固定维度及真实失败/部分进度。om-analysis 全33项、定向 Clippy/fmt 与 WASM 构建通过；独立二次/Rosenbrock/边界/大常数偏移及24组耦合 SPD 数学验收，不依赖新包。语言入口与认证全局仍未实现，目录不提升状态，226回调/220身份/描述17/.2 不变；下一步 readonly Optimize 接口、精确凸二次证明、参数/诊断/回归，再 fit 和 R3.5–R3.6。
+
+空间清理：确认本轮本地构建/测试已结束且没有从 target/debug 运行的程序后，按实际当前测试日志保留207个新测试可执行文件；删除 target/debug/deps 内一小时以上、未被本轮日志引用的646个旧 Mach-O 测试/调试可执行文件及对应.d，逻辑体积5.504GiB。没有删除rlib/rmeta/dylib、当前依赖、Release程序/安装包、源码或证据；目录清单 target/r34e-stale-test-binaries-removed.json。实际磁盘变化见清理后df，不以逻辑字节冒充释放量。
+
+清理后实测磁盘可用27.28GiB（df显示27GiB），此前df约22GiB；debug目录20→14GiB。逻辑删除量5.504GiB与df变化分别记录，不伪称精确释放值。

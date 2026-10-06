@@ -61,3 +61,5 @@ R3.4f接续已新增纯优化层：om-analysis::optimization::bounded/minimize�
 最新R3.4f已完成：Optimize真回调fn179、Brent/BFGS/有限盒/真实符号梯度/readonly局部坐标/minmax，局部仅numerical候选不证明鞍点最优；global独立精确有理二次/LDLT半正定与独立重构/驻点/自由零空间/无界，有限盒≤8非固定维度精确KKT与面预算。返回文字变量名/point/bindings/value/保证/真实工作和L,D,H,c,l,gradient,乘子/残差等证书，precision/method/初值/容差冲突拒绝。227回调/221身份/描述18，应用仍.2；最终1023Rust/2原ignored、62前端含实际WASM、16Python、全Clippy/fmt/纯WASM/TS无漂移/deny通过，原53未改。下一步R3.4 fit线性QR/非线性LM（≤16参数、真实残差/状态/只读模型），然后原R3.5–R3.6二维/数据/探索/导出/三维/发行；不缩减.3、不标goal complete、不提前发布，本机不启动模拟器、单代理继续dev。具体API和证明边界在optimization.md/P136。
 
 CI8a16816/37402120764在后续dev推送后依ci.yml并发策略cancelled（Rust/iOS），不算平台通过；0ff0e90/37402859858查询时Rust/前端/依赖success、iOS仍进行，后续读取实际结果；保留历史MainActor恢复失败与原1s完整请求门槛。磁盘free约28GiB、incremental仍0B；先前清理646旧测试二进制约5.504GiB后没有删除当前依赖/Release/证据。本轮日志target/r34f-*（最终测试1023以tests-final为准）。
+
+CI结果更新：0ff0e90/37402859858已全success，含iOS27；实际53最大phone516.704ms/pad636.073ms，原17/18 phone199.464/93.301、pad270.650/103.053ms，MainActor恢复max497.648/619.279ms。本轮原1s门槛通过但仍有恢复波动，证据target/ci-evidence/r34f-foundation；保持历史失败记录。Optimize接口提交bbdeb23本地最终1023/62/16通过，尚待其新CI，不用旧SHA成功替代。

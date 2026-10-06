@@ -216,3 +216,5 @@ R3.4c提交 `c970dae` 的CI37363594946：Rust与iOS27全部通过，但frontend/
 最终冻结源码 **1023 Rust通过、2原政策ignored**（target/r34f-tests-final.log），全workspace Clippy/fmt、纯WASM无默认kernel、确定TS导出无漂移/cargo-deny通过；前端62/lint/typecheck、Python16全通过。追加精确半正定盒/面预算/参数说明后重新完成全冻结回归，未把此前结果混充最后源码。实际release WASM验证global点/有理值/零KKT与局部鞍点无证书；原53期望未改。实际CLI输出 {{7/5,-11/5},-2/5,"certified_global"}、零诊断。新增许可/运行时依赖为0；全局凸性/KKT依据见Boyd–Vandenberghe原著，算法Rust由本项目实现。
 
 同批命令沿R3.4e：带优化/断言/溢出检查的workspace tests，Clippy/fmt，`cargo build -p om-kernel --no-default-features --locked --target wasm32-unknown-unknown`，`cargo test -p om-kernel export_bindings --locked`与TS目录diff，cargo-deny、Python16、目录生成检查，前端lint/test/typecheck。本机无模拟器；当前磁盘28GiB/incremental关闭，保留Release运行与证据。8a16816 CI37402120764被后续dev推送依ci.yml的同分支并发取消，Rust/iOS cancelled不当作通过；0ff0e90的CI37402859858当前Rust/前端/依赖成功，iOS仍执行，等待实际同SHA完整结果。
+
+随后同SHA `0ff0e90` 的 CI37402859858 已全部成功，含iOS27；下载实际证据 target/ci-evidence/r34f-foundation。iPhone53最大516.704ms（原27）、iPad636.073ms（原21），原17/18 phone199.464/93.301ms、pad270.650/103.053ms；MainActor恢复最大497.648/619.279ms，有波动但本轮均通过原1s整次请求门槛。历史失败保留，不据此声称永久解决。此次成功属于纯优化层提交0ff0e90，新Optimize接口提交仍需自己的同SHA门禁。

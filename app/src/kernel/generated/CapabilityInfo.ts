@@ -30,7 +30,7 @@ platform: HostPlatform,
  */
 rendered_outputs: Array<string>,
 /**
- * Native scene interaction is unavailable until the 3D milestone passes its gates.
+ * Documented desktop/Web 3D renderer; actual WebGL2 availability is checked by the host, while mobile stays unsupported.
  */
 scene_3d: boolean,
 /**

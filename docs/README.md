@@ -13,6 +13,7 @@
 | 查看特殊函数、概率与随机流的实际边界 | [特殊函数与概率实现](design/special-probability.md) |
 | 解析 CSV/JSON 纯数据 | [数据格式契约](design/data-formats.md) |
 | 导出真实二维 SVG/PNG、数据 CSV/JSON 或用 CLI 保存 | [导出契约与用法](design/artifact-export.md) |
+| 三维曲面/参数/隐式采样、相机和 OBJ | [三维基础契约](design/scene3d.md) |
 | 使用单位并检查量纲 | [单位计算](design/units.md) |
 | 查看微积分与数值分析的实际实现 | [微积分实现](design/calculus.md) |
 | 了解求解支持范围和验证含义 | [求解指南](solve.md) |

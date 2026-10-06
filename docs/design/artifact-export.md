@@ -41,7 +41,7 @@ om --no-config export -e '[[1,2],[3,4]]' --format csv --output table.csv
 om --no-config export --input notebook.omnb --format json --output result.json
 ```
 
---input使用原宿主源码/笔记本加载路径并导出实际末个结果；指定-e与--input互斥。默认不覆盖现有文件，--overwrite是显式覆盖动作；写完sync/readback一致才输出persisted=true回执。非法源式/格式/维度、已有目标或错误输出类型失败，不能只创建空文件冒充导出。OBJ仍待R3.6。
+--input使用原宿主源码/笔记本加载路径并导出实际末个结果；指定-e与--input互斥。默认不覆盖现有文件，--overwrite是显式覆盖动作；写完sync/readback一致才输出persisted=true回执。非法源式/格式/维度、已有目标或错误输出类型失败，不能只创建空文件冒充导出。OBJ已在R3.6a接入，见[三维契约](scene3d.md)；完整场景/最终发行仍继续。
 
 依据用户指定portable UI参考的progress-and-result-feedback（真实producer/取消/完成分离）和system-fonts-and-long-text（长标签/窄宽度/系统字体一次）落实静态路径；真实验证与未执行平台项区别记录。本机不启动模拟器。
 

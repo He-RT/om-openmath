@@ -1,7 +1,7 @@
 //! Real readonly preparation, compilation and finite plot geometry.
 mod dataset;
 mod explicit;
-mod extended;
+pub(crate) mod extended;
 mod field;
 mod function;
 mod grid;
@@ -13,6 +13,7 @@ mod shape;
 mod visualization;
 use crate::protocol::*;
 pub(crate) use explicit::from_expr;
+pub(crate) use extended::{checked_precision as check_machine_source, machine as machine_value};
 use om_core::{BUILTIN as B, Expr, Interrupt, Symbol};
 use om_eval::{Evaluator, numeric::compile_f64_with_ctx};
 pub(crate) use visualization::automatic;

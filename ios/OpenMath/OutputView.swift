@@ -10,7 +10,9 @@ struct CellOutputView: View {
           .foregroundStyle(.orange)
       }
       ForEach(Array(cell.output["items"].array.enumerated()), id: \.offset) { _, item in
-        if item["type"].string == "explore" {
+        if item["type"].string == "scene3_d" {
+          SceneUnavailableView(item: item, controller: controller)
+        } else if item["type"].string == "explore" {
           ExploreOutputView(item: item, cell: cell, controller: controller)
             .id("\(cell.id):\(item["out_index"].double):\(item["view_id"].string)")
         } else if item["type"].string == "solutions" {
@@ -270,5 +272,20 @@ enum NumericDisplay {
     source.replacingOccurrences(of: #"`[0-9]+(?:\.[0-9]*)?"#, with: "", options: .regularExpression)
       .replacingOccurrences(of: #"\.(?=$|[ +),])"#, with: "", options: .regularExpression)
       .replacingOccurrences(of: "*^", with: "×10^")
+  }
+}
+
+/// Native 3D display is explicitly outside this first mobile renderer; never show an empty image or auto-sample an unseen mesh.
+struct SceneUnavailableView: View {
+  var item: JSONValue
+  var controller: NotebookController
+  var body: some View {
+    VStack(alignment: .leading, spacing: 12) {
+      Text(controller.text("三维场景", "3D scene")).font(.headline)
+      Text(controller.text("iOS/iPadOS 三维展示尚未适配。可在桌面/Web 查看或导出 OBJ。", "iOS/iPadOS 3D rendering is not yet supported. View or export OBJ on desktop/Web."))
+        .fixedSize(horizontal: false, vertical: true)
+      Text(item["request"]["expressions"].array.map(\.string).joined(separator: ", "))
+        .font(.system(.body, design: .monospaced)).textSelection(.enabled)
+    }.accessibilityElement(children: .contain).accessibilityIdentifier("scene.unsupported")
   }
 }

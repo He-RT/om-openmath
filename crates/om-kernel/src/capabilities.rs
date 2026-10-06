@@ -44,7 +44,7 @@ pub struct CapabilityInfo {
     pub platform: HostPlatform,
     /// Actual supported UI output families.
     pub rendered_outputs: Vec<String>,
-    /// Native scene interaction is unavailable until the 3D milestone passes its gates.
+    /// Documented desktop/Web 3D renderer; actual WebGL2 availability is checked by the host, while mobile stays unsupported.
     pub scene_3d: bool,
     /// Current explicit host artifact formats, independent of notebook/agent write permissions.
     #[serde(default)]
@@ -67,7 +67,7 @@ pub fn capabilities(platform: HostPlatform) -> CapabilityInfo {
     let catalog = function_catalog();
     let ids: std::collections::BTreeSet<_> =
         catalog.functions.iter().map(|f| f.id.clone()).collect();
-    let rendered_outputs = if matches!(platform, HostPlatform::Cli) {
+    let mut rendered_outputs = if matches!(platform, HostPlatform::Cli) {
         vec!["expression", "solutions", "steps"]
     } else {
         vec![
@@ -82,6 +82,9 @@ pub fn capabilities(platform: HostPlatform) -> CapabilityInfo {
             "parameter_exploration",
         ]
     };
+    if matches!(platform, HostPlatform::Desktop | HostPlatform::Web) {
+        rendered_outputs.push("scene_3d");
+    }
     CapabilityInfo {
         kernel_version: env!("CARGO_PKG_VERSION").into(),
         schema_version: catalog.schema_version,
@@ -89,8 +92,8 @@ pub fn capabilities(platform: HostPlatform) -> CapabilityInfo {
         function_ids: ids.into_iter().collect(),
         platform,
         rendered_outputs: rendered_outputs.into_iter().map(String::from).collect(),
-        scene_3d: false,
-        export_formats: ["svg", "png", "csv", "json"]
+        scene_3d: matches!(platform, HostPlatform::Desktop | HostPlatform::Web),
+        export_formats: ["svg", "png", "csv", "json", "obj"]
             .into_iter()
             .map(String::from)
             .collect(),

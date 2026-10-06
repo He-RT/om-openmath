@@ -61,14 +61,51 @@ impl Parser<'_> {
                 symbol = B::FULL_SIMPLIFY;
             }
         }
+        let axis_count = args
+            .iter()
+            .skip(1)
+            .filter(|a| {
+                a.expr.is_head(B::LIST)
+                    && a.expr.args().len() == 3
+                    && a.expr.args()[0].as_symbol().is_some()
+            })
+            .count()
+            + keywords
+                .iter()
+                .filter(|k| {
+                    k.value.expr.is_head(B::SPAN)
+                        && !om_core::catalog::by_runtime(symbol.name()).is_some_and(|f| {
+                            f.options
+                                .iter()
+                                .any(|p| p.name.eq_ignore_ascii_case(text(self.src, k.key)))
+                        })
+                })
+                .count();
+        if symbol.name() == "ParametricPlot"
+            && (args
+                .first()
+                .is_some_and(|a| a.expr.is_head(B::LIST) && a.expr.args().len() == 3)
+                || axis_count == 2)
+        {
+            symbol = Symbol::intern("ParametricPlot3D");
+        }
+        if symbol == B::CONTOUR_PLOT && axis_count == 3 {
+            symbol = Symbol::intern("ImplicitPlot3D");
+        }
         if symbol == B::PLOT {
             let view = self.take_keyword(keywords, "view");
             symbol = match self
-                .choice(view, "line", &["line", "contour", "density"])?
+                .choice(
+                    view,
+                    if axis_count >= 2 { "surface" } else { "line" },
+                    &["line", "contour", "density", "surface"],
+                )?
                 .as_str()
             {
                 "contour" => B::CONTOUR_PLOT,
                 "density" => Symbol::intern("DensityPlot"),
+                "surface" if axis_count != 2 => return self.fail("E027", "surface需要两个数学轴"),
+                "surface" => Symbol::intern("Plot3D"),
                 _ => symbol,
             };
         }
@@ -147,6 +184,9 @@ impl Parser<'_> {
                     | "Ode"
                     | "Sample"
                     | "ParametricPlot"
+                    | "Plot3D"
+                    | "ParametricPlot3D"
+                    | "ImplicitPlot3D"
                     | "ImplicitPlot"
                     | "RegionPlot"
                     | "FieldPlot"

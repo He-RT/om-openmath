@@ -50,6 +50,7 @@ pub(crate) fn compute(
     parameters: BTreeMap<String, f64>,
     revision: u32,
     ctx: &Interrupt,
+    scene_enabled: bool,
 ) -> Result<ExploreResult, PlotError> {
     let started = ctx.clock.as_ref().map(|clock| clock.now_ms());
     if parameters.len() != s.plan.controls.len() {
@@ -93,7 +94,7 @@ pub(crate) fn compute(
     } else {
         None
     };
-    let mut item = crate::output::pack(&mut record, &ev, ctx, false)?;
+    let mut item = crate::output::pack(&mut record, &ev, ctx, false, scene_enabled)?;
     // Ephemeral slider results are not stored in notebook history; do not expose pages bound to the held Explore record.
     if let OutputItem::Expr { presentation, .. } = &mut item {
         *presentation = None;
@@ -112,12 +113,24 @@ pub(crate) fn compute(
             .unwrap_or(0.),
     })
 }
-pub(crate) fn initial(record: &StatementRecord, ctx: &Interrupt) -> Result<OutputItem, PlotError> {
+pub(crate) fn initial(
+    record: &StatementRecord,
+    ctx: &Interrupt,
+    scene_enabled: bool,
+) -> Result<OutputItem, PlotError> {
     let s = record
         .exploration
         .as_ref()
         .ok_or_else(|| error("缺少真实快照"))?;
-    let result = compute(s, &record.view_id, record.out_index, values(s), 0, ctx)?;
+    let result = compute(
+        s,
+        &record.view_id,
+        record.out_index,
+        values(s),
+        0,
+        ctx,
+        scene_enabled,
+    )?;
     Ok(OutputItem::Explore {
         out_index: record.out_index,
         view_id: record.view_id.clone(),
@@ -353,9 +366,10 @@ pub(crate) fn detached(
     values: BTreeMap<String, f64>,
     revision: u32,
     ctx: &Interrupt,
+    scene_enabled: bool,
 ) -> Result<ExploreResult, PlotError> {
     let (s, id, index) = restore(source, ctx)?;
-    compute(&s, &id, index, values, revision, ctx)
+    compute(&s, &id, index, values, revision, ctx, scene_enabled)
 }
 pub(crate) fn detached_plot(
     source: &str,
@@ -499,4 +513,29 @@ pub(crate) fn token_value(token: &str, ctx: &Interrupt) -> Result<Expr, PlotErro
         .get(value.root as usize)
         .cloned()
         .ok_or_else(|| error("值图索引无效"))
+}
+
+pub(crate) fn detached_scene(
+    source: &str,
+    values: BTreeMap<String, f64>,
+    request: Scene3DRequest,
+    ctx: &Interrupt,
+) -> Result<Scene3DData, PlotError> {
+    let (s, _, _) = restore(source, ctx)?;
+    if values.len() != s.plan.controls.len() {
+        return Err(error("参数集合必须与controls相同"));
+    }
+    let mut locals = vec![];
+    for c in &s.plan.controls {
+        ctx.tick()?;
+        let v = values
+            .get(&c.name)
+            .copied()
+            .ok_or_else(|| error("缺少参数"))?;
+        if !v.is_finite() || v < c.range.0 || v > c.range.1 {
+            return Err(error("参数非有限或越界"));
+        }
+        locals.push((crate::plot::axis(&c.name)?, Expr::real(v)));
+    }
+    crate::scene3d::sample(&request, &s.eval.fork_with_locals(&locals), ctx)
 }

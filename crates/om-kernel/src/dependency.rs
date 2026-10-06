@@ -54,6 +54,27 @@ fn walk(e: &Expr, scope: &Symbols, defines: &mut Symbols, uses: &mut Symbols) {
     };
     let head = n.head.as_symbol();
     let args = &n.args;
+    if head.is_some_and(|s| matches!(s.name(), "Plot3D" | "ParametricPlot3D" | "ImplicitPlot3D"))
+        && !args.is_empty()
+    {
+        let mut locals = scope.clone();
+        let mut ignored = Symbols::new();
+        for axis in args.iter().skip(1).filter(|a| {
+            a.is_head(B::LIST) && a.args().len() == 3 && a.args()[0].as_symbol().is_some()
+        }) {
+            locals.insert(axis.args()[0].as_symbol().unwrap());
+            for bound in &axis.args()[1..] {
+                walk(bound, scope, &mut ignored, uses);
+            }
+        }
+        walk(&args[0], &locals, &mut ignored, uses);
+        for option in &args[1..] {
+            if option.is_head(B::RULE) && option.args().len() == 2 {
+                walk(&option.args()[1], scope, &mut ignored, uses);
+            }
+        }
+        return;
+    }
     if head.is_some_and(|s| s.name() == "Explore") && !args.is_empty() {
         let mut locals = scope.clone();
         let mut ignored = Symbols::new();

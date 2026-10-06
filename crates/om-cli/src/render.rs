@@ -88,6 +88,7 @@ pub fn output(output: &CellOutput, json: bool, labels: bool, zh: bool) -> io::Re
             OutputItem::Explore { result, .. } => {
                 writeln!(out, "{}", serde_json::to_string(&result.item)?)?
             }
+            OutputItem::Scene3D { data, .. } => writeln!(out, "{}", serde_json::to_string(data)?)?,
             OutputItem::Plot { data, .. } => writeln!(
                 out,
                 "{}: {}",

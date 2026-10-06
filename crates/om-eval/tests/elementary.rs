@@ -151,7 +151,13 @@ fn all_docs_matches_implemented_milestones_and_elementary_functions_check_arity(
         .split_whitespace()
         .chain(algebra.split_whitespace())
         .chain(solving.split_whitespace())
-        .chain(["Plot", "ContourPlot"])
+        .chain([
+            "Plot",
+            "ContourPlot",
+            "Plot3D",
+            "ParametricPlot3D",
+            "ImplicitPlot3D",
+        ])
         .collect();
     expected.sort();
     expected.extend([

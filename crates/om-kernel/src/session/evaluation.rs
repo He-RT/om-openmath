@@ -222,6 +222,7 @@ impl Session {
                             &self.eval,
                             ctx,
                             self.config.general.auto_plot,
+                            self.scene_enabled(),
                         ) {
                             Ok(item) => result.output.items.push(item),
                             Err(error) => {

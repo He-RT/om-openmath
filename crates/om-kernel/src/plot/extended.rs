@@ -9,7 +9,7 @@ fn valid_color(s: &str) -> bool {
 pub(super) fn invalid(s: &str) -> PlotError {
     PlotError::Invalid(s.into())
 }
-pub(super) fn machine(e: &Expr, eval: &Evaluator, ctx: &Interrupt) -> Result<f64, PlotError> {
+pub(crate) fn machine(e: &Expr, eval: &Evaluator, ctx: &Interrupt) -> Result<f64, PlotError> {
     let e = eval.fork_readonly().evaluate(e, ctx)?;
     if e.as_number()
         .is_some_and(|n| matches!(n.precision(), om_num::Precision::Bits(_)))
@@ -67,7 +67,7 @@ pub(super) fn log_bounds(values: &[f64]) -> Result<(f64, f64), PlotError> {
     range(result)?;
     Ok(result)
 }
-pub(super) fn checked_precision(e: &Expr, ctx: &Interrupt) -> Result<(), PlotError> {
+pub(crate) fn checked_precision(e: &Expr, ctx: &Interrupt) -> Result<(), PlotError> {
     let mut work = vec![e];
     while let Some(e) = work.pop() {
         ctx.tick()?;

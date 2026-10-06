@@ -1,6 +1,7 @@
 import type { CellOutput } from "../../kernel/generated/CellOutput";
 import type { Messages, Locale } from "../../i18n";
 import type { KernelClient } from "../../kernel/client";
+import { SceneView, type CameraMemory } from "../scene/SceneView";
 import { ExprView } from "./ExprView";
 import { SolutionCards } from "./SolutionCards";
 import { Messages as OutputMessages } from "./Messages";
@@ -17,6 +18,7 @@ export function OutputView({
   onSteps,
   cellId = '',
   exportParameters = {},
+  sceneCameraMemory,
 }: {
   output: CellOutput;
   stale: boolean;
@@ -27,6 +29,7 @@ export function OutputView({
   onSteps: (outIndex: number) => void;
   cellId?: string;
   exportParameters?: Record<string,number>;
+  sceneCameraMemory?: CameraMemory;
 }) {
   return (
     <div
@@ -36,7 +39,7 @@ export function OutputView({
       {stale && <div className="stale-label">{t.stale}</div>}
       {output.items.map((item, i) => (
         <div className="output-item" key={i}>
-          {item.type === "explore" ? <ExploreView key={`${cellId}:${item.out_index}:${item.view_id}`} item={item} cellId={cellId} fresh={!stale} kernel={kernel} t={t} language={language} onInsert={onInsert}/> : item.type === "expr" ? (
+          {item.type === "scene3_d" ? <SceneView item={item} kernel={kernel} t={t} language={language} active={!stale} cameraMemory={sceneCameraMemory}/> : item.type === "explore" ? <ExploreView key={`${cellId}:${item.out_index}:${item.view_id}`} item={item} cellId={cellId} fresh={!stale} kernel={kernel} t={t} language={language} onInsert={onInsert}/> : item.type === "expr" ? (
             item.presentation ? <ValueView key={`${item.out_index}:${item.presentation.view_id}`}
               initial={item.presentation} cellId={cellId} outIndex={item.out_index} value={item}
               fresh={!stale} kernel={kernel} language={language} t={t} onInsert={onInsert} /> : <ExprView

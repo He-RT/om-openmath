@@ -56,6 +56,9 @@ impl Host {
             .map_err(|_| "Invalid configuration")?
             .unwrap_or_default();
         let mut session = Session::new(config, Some(Arc::new(MonotonicClock(Instant::now()))));
+        session.handle(Request::SetHostPlatform {
+            platform: om_kernel::protocol::HostPlatform::Ios,
+        });
         session.set_llm_target(om_llm::Target::Native)?;
         let shared = Arc::new(Shared {
             closed: AtomicBool::new(false),

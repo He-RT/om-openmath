@@ -78,15 +78,18 @@ fn capabilities_separate_kernel_presentation_and_future_permissions() {
         let Response::Capabilities { capabilities: c } = response else {
             panic!("{response:?}")
         };
-        assert!(!c.scene_3d);
+        assert_eq!(
+            c.scene_3d,
+            matches!(platform, HostPlatform::Desktop | HostPlatform::Web)
+        );
         assert!(c.task_permissions.is_none());
         assert_eq!(c.kernel_version, env!("CARGO_PKG_VERSION"));
-        assert_eq!(c.function_ids.len(), 228);
-        assert!(
-            !c.rendered_outputs
-                .iter()
-                .any(|s| matches!(s.as_str(), "scene_3d" | "interpolation"))
+        assert_eq!(c.function_ids.len(), 229);
+        assert_eq!(
+            c.rendered_outputs.iter().any(|s| s == "scene_3d"),
+            matches!(platform, HostPlatform::Desktop | HostPlatform::Web)
         );
+        assert!(!c.rendered_outputs.iter().any(|s| s == "interpolation"));
     }
     assert!(s.notebook.cells.is_empty());
     assert!(cancel.load(std::sync::atomic::Ordering::Relaxed));

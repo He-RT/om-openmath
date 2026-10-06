@@ -41,7 +41,7 @@ Windows 包携带 WebView2 引导程序；系统没有 WebView2 时，首次安�
 
 启动桌面版，点击“二次方程”示例，或添加数学单元格输入 `solve(x^2=2,x)`。Shift-Enter 或 Ctrl/Cmd-Enter 运行，结果卡片可查看精确值、数值近似、步骤和图像。分别运行 `let a=2` 与 `a+1`，再将定义改为 `let a=5`，依赖结果更新为 6。
 
-原生菜单支持新建、打开、保存 `.omnb`，以及 Markdown/LaTeX 导出。`.3` dev 已接通 [二维 SVG/PNG、纯数据 CSV/JSON 与 CLI 导出](docs/design/artifact-export.md)，公开版本仍为 `.2`，完整三维与发行门禁完成后才发布 `.3`。笔记本只保存源码；导出包含当前计算结果，排除过期输出。界面提供中文和英文，默认跟随系统，可在偏好设置中切换。
+原生菜单支持新建、打开、保存 `.omnb`，以及 Markdown/LaTeX 导出。`.3` dev 已接通 [二维 SVG/PNG、纯数据 CSV/JSON 与 CLI 导出](docs/design/artifact-export.md)，公开版本仍为 `.2`，[基础三维与 OBJ](docs/design/scene3d.md) 也已接入；完整场景与发行门禁完成后才发布 `.3`。笔记本只保存源码；导出包含当前计算结果，排除过期输出。界面提供中文和英文，默认跟随系统，可在偏好设置中切换。
 
 AI 在设置中接入自己的模型服务，支持编辑模型、地址、能力和功能映射。Web 版需要服务允许 CORS，桌面和终端使用原生 HTTP。细节见[模型接入指南](docs/llm.md)。
 

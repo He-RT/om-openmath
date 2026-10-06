@@ -36,6 +36,18 @@ impl Host {
             item
         };
         let request = match args.format.as_str() {
+            "obj" => {
+                let OutputItem::Scene3D {
+                    data: Some(data), ..
+                } = item
+                else {
+                    return Err("OBJ需要真实已采样三维场景".into());
+                };
+                Request::ExportScene3D {
+                    data: data.clone(),
+                    title: "OpenMath".into(),
+                }
+            }
             "svg" | "png" => {
                 let OutputItem::Plot { request, data } = item else {
                     return Err("SVG/PNG需要真实二维绘图输出".into());

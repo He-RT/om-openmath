@@ -97,7 +97,7 @@ export async function saveTextArtifact(text: string, title: string, extension: "
 
 /** Concrete artifact bytes; browser success means download initiation, native success includes byte readback. */
 export async function saveArtifact(artifact: import('../kernel/generated/Artifact').Artifact, title:string, kind:'wasm'|'tauri'):Promise<boolean>{
-  const types:Record<string,string>={svg:'image/svg+xml',png:'image/png',csv:'text/csv;charset=utf-8',json:'application/json;charset=utf-8'};
+  const types:Record<string,string>={svg:'image/svg+xml',png:'image/png',csv:'text/csv;charset=utf-8',json:'application/json;charset=utf-8',obj:'model/obj'};
   if(types[artifact.extension]!==artifact.mime||artifact.byte_len>16*1024*1024)throw new Error('Invalid export artifact');
   const raw=atob(artifact.base64),bytes=new Uint8Array(raw.length);
   for(let i=0;i<raw.length;i++)bytes[i]=raw.charCodeAt(i);

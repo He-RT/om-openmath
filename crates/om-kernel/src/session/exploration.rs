@@ -61,6 +61,7 @@ impl Session {
             values,
             revision,
             &self.explore_budget(),
+            self.scene_enabled(),
         ) {
             Ok(result) => Response::Explored { result },
             Err(e) => Response::Error {
@@ -88,6 +89,37 @@ impl Session {
             },
         }
     }
+    pub(super) fn sample_scene3d(&self, request: Scene3DRequest) -> Response {
+        if !self.scene_enabled() {
+            return Response::Error {
+                message: "当前宿主三维展示尚未适配，不自动采样".into(),
+            };
+        }
+        match crate::scene3d::sample(&request, &self.eval, &self.explore_budget()) {
+            Ok(data) => Response::Scene3D { data },
+            Err(e) => Response::Error {
+                message: self.plot_error(&e).1,
+            },
+        }
+    }
+    pub(super) fn sample_explore_scene3d(
+        &self,
+        context: String,
+        values: BTreeMap<String, f64>,
+        request: Scene3DRequest,
+    ) -> Response {
+        if !self.scene_enabled() {
+            return Response::Error {
+                message: "当前宿主三维展示尚未适配，不自动采样".into(),
+            };
+        }
+        match crate::explore::detached_scene(&context, values, request, &self.explore_budget()) {
+            Ok(data) => Response::Scene3D { data },
+            Err(e) => Response::Error {
+                message: self.plot_error(&e).1,
+            },
+        }
+    }
     pub(super) fn sample_explore_plot(
         &self,
         context: String,
@@ -107,7 +139,13 @@ impl Session {
         values: BTreeMap<String, f64>,
         revision: u32,
     ) -> Response {
-        match crate::explore::detached(&context, values, revision, &self.explore_budget()) {
+        match crate::explore::detached(
+            &context,
+            values,
+            revision,
+            &self.explore_budget(),
+            self.scene_enabled(),
+        ) {
             Ok(result) => Response::Explored { result },
             Err(e) => Response::Error {
                 message: self.plot_error(&e).1,

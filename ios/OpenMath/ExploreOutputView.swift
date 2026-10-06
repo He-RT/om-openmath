@@ -51,6 +51,8 @@ struct ExploreOutputView: View {
       } else if output["type"].string == "plot" {
         PlotView(request: output["request"], initial: output["data"], controller: controller, sample: sample, exportParameters: displayed["values"])
           .id("\(item["view_id"].string):\(displayed["revision"].double)").disabled(!fresh || busy || changed)
+      } else if output["type"].string == "scene3_d" {
+        SceneUnavailableView(item: output, controller: controller)
       } else if output["type"].string == "solutions" {
         SolutionCards(item: output, cell: cell, controller: controller)
       } else { Text(output["message"].string).foregroundStyle(.red) }

@@ -1,9 +1,18 @@
 //! Pure deterministic SVG/PNG generation and data serialization; no CAS reevaluation or host IO.
 mod figure;
+mod obj;
 mod png;
 mod raster;
 use crate::protocol::*;
 pub use figure::export_plot;
+/// Export genuine world-coordinate mesh/curve data without resampling.
+pub fn export_scene(
+    data: &Scene3DData,
+    title: &str,
+    ctx: &Interrupt,
+) -> Result<Artifact, ArtifactError> {
+    obj::export(data, title, ctx)
+}
 use om_core::{Expr, Interrupt};
 /// Real artifact failure, including the shared interrupt budget.
 #[derive(Debug, thiserror::Error)]
@@ -124,4 +133,15 @@ pub fn decode(artifact: &Artifact) -> Result<Vec<u8>, ArtifactError> {
         return Err(invalid("导出字节长度不匹配"));
     }
     Ok(bytes)
+}
+
+/// Checked fixed RGBA color for the independent three-dimensional sampler.
+pub fn scene_color(name: &str) -> Result<[f64; 4], ArtifactError> {
+    let c = figure::color(name)?;
+    Ok([
+        c.0[0] as f64 / 255.,
+        c.0[1] as f64 / 255.,
+        c.0[2] as f64 / 255.,
+        1.,
+    ])
 }

@@ -37,6 +37,7 @@ pub struct Session {
     owners: std::collections::BTreeMap<om_core::Symbol, CellId>,
     llm: llm::LlmState,
     output_serial: u64,
+    host_platform: HostPlatform,
     #[cfg(feature = "native")]
     config_store: Option<crate::native::ConfigStore>,
 }
@@ -54,6 +55,7 @@ impl Session {
             owners: Default::default(),
             llm: Default::default(),
             output_serial: 0,
+            host_platform: HostPlatform::Cli,
             #[cfg(feature = "native")]
             config_store: None,
         };
@@ -61,6 +63,9 @@ impl Session {
         session
     }
 
+    pub(super) fn scene_enabled(&self) -> bool {
+        !matches!(self.host_platform, HostPlatform::Ios)
+    }
     /// Shared flag that a host may set while synchronous evaluation is running.
     pub fn interrupt_handle(&self) -> Arc<AtomicBool> {
         self.interrupt.clone()
@@ -69,6 +74,24 @@ impl Session {
     /// Handle one client request and return its reply plus any asynchronous events.
     pub fn handle(&mut self, req: Request) -> (Response, Vec<Event>) {
         match req {
+            Request::ExportScene3D { data, title } => {
+                return (self.export_scene3d(data, title), vec![]);
+            }
+            Request::SetHostPlatform { platform } => {
+                self.host_platform = platform;
+                return (Response::Ok, vec![]);
+            }
+            Request::SampleScene3D { request } => return (self.sample_scene3d(request), vec![]),
+            Request::SampleExploreScene3D {
+                context,
+                values,
+                request,
+            } => {
+                return (
+                    self.sample_explore_scene3d(context, values, request),
+                    vec![],
+                );
+            }
             Request::ExportPlot { figure, format } => {
                 return (self.export_plot(figure, format), vec![]);
             }

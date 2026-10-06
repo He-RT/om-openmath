@@ -4,6 +4,7 @@ pub use crate::capabilities::{CapabilityInfo, FunctionCatalog, HostPlatform};
 pub use crate::config::KernelConfig;
 pub use crate::explore_views::*;
 pub use crate::plot_views::*;
+pub use crate::scene_views::*;
 pub use crate::value_views::*;
 pub use crate::views::*;
 pub use crate::wire::*;
@@ -21,6 +22,32 @@ pub type RequestId = String;
 #[ts(export_to = concat!(env!("CARGO_MANIFEST_DIR"), "/../../app/src/kernel/generated/"))]
 #[serde(tag = "type", rename_all = "snake_case")]
 pub enum Request {
+    /// Produce OBJ from already sampled world-coordinate mesh/curve data.
+    ExportScene3D {
+        /// Actual validated mesh, normals, colors and indices.
+        data: Scene3DData,
+        /// User-visible title.
+        title: String,
+    },
+    /// Declare actual host rendering capability, without changing mathematical definitions or permissions.
+    SetHostPlatform {
+        /// Actual presentation target.
+        platform: HostPlatform,
+    },
+    /// Explicitly request real 3D mesh generation against live readonly mathematical definitions.
+    SampleScene3D {
+        /// Held mathematical source/domains.
+        request: Scene3DRequest,
+    },
+    /// Recompute a three-dimensional sample against frozen exploration mathematics.
+    SampleExploreScene3D {
+        /// Credential-free immutable context.
+        context: String,
+        /// Actual local parameter values.
+        values: std::collections::BTreeMap<String, f64>,
+        /// Explicit sampling request.
+        request: Scene3DRequest,
+    },
     /// Export already sampled real geometry; never re-evaluate source.
     ExportPlot {
         /// Data and display dimensions.
@@ -286,6 +313,11 @@ pub enum Request {
 #[ts(export_to = concat!(env!("CARGO_MANIFEST_DIR"), "/../../app/src/kernel/generated/"))]
 #[serde(tag = "type", rename_all = "snake_case")]
 pub enum Response {
+    /// Genuine kernel mesh/curve data.
+    Scene3D {
+        /// Actual finite geometry.
+        data: Scene3DData,
+    },
     /// Concrete bytes ready for host saving; not a persistence success claim.
     Artifact {
         /// Actual exact bytes and encoding.
@@ -489,6 +521,8 @@ pub fn request_size_allowed(bytes: usize, request: &Request) -> bool {
         || bytes <= 16 * 1024 * 1024
             && matches!(
                 request,
-                Request::ExportPlot { .. } | Request::ExportValueToken { .. }
+                Request::ExportPlot { .. }
+                    | Request::ExportValueToken { .. }
+                    | Request::ExportScene3D { .. }
             )
 }

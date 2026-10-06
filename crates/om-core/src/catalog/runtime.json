@@ -2097,12 +2097,12 @@
     ],
     "pipe_arg": 1,
     "effect_class": "pure",
-    "support": "二维实函数/标量等高线/96×96密度真实机器采样；log_x/log_y/log_log正窗口；固定color仅曲线。三维surface尚待R3.6。 输入/样本受Interrupt预算，readonly/取消不修改会话。精确输入可机器采样，新增路径拒绝高精度数静默降级；传统Plot/ContourPlot保留机器采样兼容语义，不宣称高精度图形；有限采样不能认证数学边界。",
+    "support": "原二维Plot/ContourPlot/DensityPlot保持；三维Plot3D真实固定网格、中心域检查、三角形/法线/颜色由Rust生成。现代一轴默认line、两轴默认surface，也可显式view。mesh_points8..64默认48，readonly color(position,x,y)或固定颜色。桌面/Web真实WebGL2交互、无WebGL2保留原式和OBJ；iOS不自动采样3D并明确fallback。网格不是认证/完整曲面。",
     "return_type": "plot_or_scene_request",
     "precision_modes": [
       "machine_sampling"
     ],
-    "precision_notes": "现有绘图经过只读 f64 编译与真实内核采样；符号输入可精确保存，像素/采样不是认证解。",
+    "precision_notes": "真实readonly机器采样、精确源式保留，不把网格或光照宣称数学认证；高精度数字不静默降级。",
     "platforms": [
       "cli",
       "desktop",
@@ -3142,12 +3142,12 @@
     ],
     "pipe_arg": 1,
     "effect_class": "pure",
-    "support": "二维实函数/标量等高线/96×96密度真实机器采样；log_x/log_y/log_log正窗口；固定color仅曲线。三维surface尚待R3.6。 输入/样本受Interrupt预算，readonly/取消不修改会话。精确输入可机器采样，新增路径拒绝高精度数静默降级；传统Plot/ContourPlot保留机器采样兼容语义，不宣称高精度图形；有限采样不能认证数学边界。",
+    "support": "原二维Plot/ContourPlot/DensityPlot保持；三维Plot3D真实固定网格、中心域检查、三角形/法线/颜色由Rust生成。现代一轴默认line、两轴默认surface，也可显式view。mesh_points8..64默认48，readonly color(position,x,y)或固定颜色。桌面/Web真实WebGL2交互、无WebGL2保留原式和OBJ；iOS不自动采样3D并明确fallback。网格不是认证/完整曲面。",
     "return_type": "plot_or_scene_request",
     "precision_modes": [
       "machine_sampling"
     ],
-    "precision_notes": "现有绘图经过只读 f64 编译与真实内核采样；符号输入可精确保存，像素/采样不是认证解。",
+    "precision_notes": "真实readonly机器采样、精确源式保留，不把网格或光照宣称数学认证；高精度数字不静默降级。",
     "platforms": [
       "cli",
       "desktop",
@@ -6028,6 +6028,118 @@
       "arbitrary_supported"
     ],
     "precision_notes": "精确计算与已支持的数值近似子集；不把符号保留或格式位数当作新算法/任意精度支持。",
+    "platforms": [
+      "cli",
+      "desktop",
+      "web",
+      "ios"
+    ]
+  },
+  {
+    "id": "fn_000220",
+    "canonical_name": "implicit_plot",
+    "name": "ImplicitPlot3D",
+    "modern_name": "implicit_plot_3d",
+    "aliases": [],
+    "arity": {
+      "min": 4,
+      "max": null
+    },
+    "parameters": [
+      {
+        "name": "expression",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": true
+      },
+      {
+        "name": "axis_1",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": true
+      },
+      {
+        "name": "axis_2",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": true
+      },
+      {
+        "name": "axis_3",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": true
+      }
+    ],
+    "options": [
+      {
+        "name": "mesh_points",
+        "runtime_name": "MeshPoints",
+        "value_type": "integer",
+        "required": false,
+        "default_source": "24",
+        "default_context": null,
+        "enum_values": [],
+        "min": 8,
+        "max": 64,
+        "variadic": false,
+        "held": true
+      },
+      {
+        "name": "color",
+        "runtime_name": "Color",
+        "value_type": "expression",
+        "required": false,
+        "default_source": null,
+        "default_context": "绿色；固定颜色名/#RRGGBB或只读fn(position,...axes)",
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": true
+      }
+    ],
+    "compatibility_syntax": [],
+    "attributes": [
+      "hold_all",
+      "protected"
+    ],
+    "pipe_arg": 1,
+    "effect_class": "pure",
+    "support": "三维零等值曲面，默认24×24×24格、8..64网格分段；marching tetrahedra共享实际边根、原表达式实残差检查拒绝极点伪根，三角形法线向标量增大方向。未知/无采到有限曲面明确失败，不返回伪造全解。桌面/WebWebGL2/OBJ，iOS明确fallback且不自动采样。二维implicit_plot继续fn119/ContourPlot原解析，未改原有效表达式。",
+    "return_type": "plot_or_scene_request",
+    "precision_modes": [
+      "machine_sampling"
+    ],
+    "precision_notes": "真实readonly机器采样、精确源式保留，不把网格或光照宣称数学认证；高精度数字不静默降级。",
     "platforms": [
       "cli",
       "desktop",
@@ -9487,12 +9599,98 @@
     ],
     "pipe_arg": 1,
     "effect_class": "pure",
-    "support": "一参数二维两坐标机器曲线，800基础点加中点域检查；参数范围独立于相机；非有限/可识别跳变断开，采样不能发现全部奇点；三维曲线/曲面尚待R3.6。 输入/样本受Interrupt预算，readonly/取消不修改会话。精确输入可机器采样，新增路径拒绝高精度数静默降级；传统Plot/ContourPlot保留机器采样兼容语义，不宣称高精度图形；有限采样不能认证数学边界。",
+    "support": "原二维单参数曲线保持；三坐标一参数3D曲线/两参数3D曲面，独立数学域、有限点/中点原域检查和断开，Rust法线/readonly颜色，mesh_points8..64默认48。color(position,...parameters)按实际参数计算。常量曲线是实际点标记。桌面/WebWebGL2与OBJ，iOS明确未适配且不自动采样。有限网格不能证明全部奇点/边界。",
     "return_type": "plot_or_scene_request",
     "precision_modes": [
       "machine"
     ],
-    "precision_notes": "真实只读机器采样，资源/非有限/不支持模式有诊断，不是认证数学边界。",
+    "precision_notes": "真实readonly机器采样、精确源式保留，不把网格或光照宣称数学认证；高精度数字不静默降级。",
+    "platforms": [
+      "cli",
+      "desktop",
+      "web",
+      "ios"
+    ]
+  },
+  {
+    "id": "fn_000219",
+    "canonical_name": "parametric_plot",
+    "name": "ParametricPlot3D",
+    "modern_name": "parametric_plot_3d",
+    "aliases": [],
+    "arity": {
+      "min": 2,
+      "max": null
+    },
+    "parameters": [
+      {
+        "name": "expression",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": true
+      },
+      {
+        "name": "axis_1",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": true,
+        "held": true
+      }
+    ],
+    "options": [
+      {
+        "name": "mesh_points",
+        "runtime_name": "MeshPoints",
+        "value_type": "integer",
+        "required": false,
+        "default_source": "48",
+        "default_context": null,
+        "enum_values": [],
+        "min": 8,
+        "max": 64,
+        "variadic": false,
+        "held": true
+      },
+      {
+        "name": "color",
+        "runtime_name": "Color",
+        "value_type": "expression",
+        "required": false,
+        "default_source": null,
+        "default_context": "绿色；固定颜色名/#RRGGBB或只读fn(position,...axes)",
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": true
+      }
+    ],
+    "compatibility_syntax": [],
+    "attributes": [
+      "hold_all",
+      "protected"
+    ],
+    "pipe_arg": 1,
+    "effect_class": "pure",
+    "support": "原二维单参数曲线保持；三坐标一参数3D曲线/两参数3D曲面，独立数学域、有限点/中点原域检查和断开，Rust法线/readonly颜色，mesh_points8..64默认48。color(position,...parameters)按实际参数计算。常量曲线是实际点标记。桌面/WebWebGL2与OBJ，iOS明确未适配且不自动采样。有限网格不能证明全部奇点/边界。",
+    "return_type": "plot_or_scene_request",
+    "precision_modes": [
+      "machine"
+    ],
+    "precision_notes": "真实readonly机器采样、精确源式保留，不把网格或光照宣称数学认证；高精度数字不静默降级。",
     "platforms": [
       "cli",
       "desktop",
@@ -9771,7 +9969,8 @@
         "enum_values": [
           "line",
           "contour",
-          "density"
+          "density",
+          "surface"
         ],
         "min": null,
         "max": null,
@@ -9830,12 +10029,111 @@
     ],
     "pipe_arg": 1,
     "effect_class": "pure",
-    "support": "二维实函数/标量等高线/96×96密度真实机器采样；log_x/log_y/log_log正窗口；固定color仅曲线。三维surface尚待R3.6。 输入/样本受Interrupt预算，readonly/取消不修改会话。精确输入可机器采样，新增路径拒绝高精度数静默降级；传统Plot/ContourPlot保留机器采样兼容语义，不宣称高精度图形；有限采样不能认证数学边界。",
+    "support": "原二维Plot/ContourPlot/DensityPlot保持；三维Plot3D真实固定网格、中心域检查、三角形/法线/颜色由Rust生成。现代一轴默认line、两轴默认surface，也可显式view。mesh_points8..64默认48，readonly color(position,x,y)或固定颜色。桌面/Web真实WebGL2交互、无WebGL2保留原式和OBJ；iOS不自动采样3D并明确fallback。网格不是认证/完整曲面。",
     "return_type": "plot_or_scene_request",
     "precision_modes": [
       "machine_sampling"
     ],
-    "precision_notes": "现有绘图经过只读 f64 编译与真实内核采样；符号输入可精确保存，像素/采样不是认证解。",
+    "precision_notes": "真实readonly机器采样、精确源式保留，不把网格或光照宣称数学认证；高精度数字不静默降级。",
+    "platforms": [
+      "cli",
+      "desktop",
+      "web",
+      "ios"
+    ]
+  },
+  {
+    "id": "fn_000119",
+    "canonical_name": "plot",
+    "name": "Plot3D",
+    "modern_name": "plot_surface",
+    "aliases": [],
+    "arity": {
+      "min": 3,
+      "max": null
+    },
+    "parameters": [
+      {
+        "name": "expression",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": true
+      },
+      {
+        "name": "axis_1",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": true
+      },
+      {
+        "name": "axis_2",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": true
+      }
+    ],
+    "options": [
+      {
+        "name": "mesh_points",
+        "runtime_name": "MeshPoints",
+        "value_type": "integer",
+        "required": false,
+        "default_source": "48",
+        "default_context": null,
+        "enum_values": [],
+        "min": 8,
+        "max": 64,
+        "variadic": false,
+        "held": true
+      },
+      {
+        "name": "color",
+        "runtime_name": "Color",
+        "value_type": "expression",
+        "required": false,
+        "default_source": null,
+        "default_context": "绿色；固定颜色名/#RRGGBB或只读fn(position,...axes)",
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": true
+      }
+    ],
+    "compatibility_syntax": [],
+    "attributes": [
+      "hold_all",
+      "protected"
+    ],
+    "pipe_arg": 1,
+    "effect_class": "pure",
+    "support": "原二维Plot/ContourPlot/DensityPlot保持；三维Plot3D真实固定网格、中心域检查、三角形/法线/颜色由Rust生成。现代一轴默认line、两轴默认surface，也可显式view。mesh_points8..64默认48，readonly color(position,x,y)或固定颜色。桌面/Web真实WebGL2交互、无WebGL2保留原式和OBJ；iOS不自动采样3D并明确fallback。网格不是认证/完整曲面。",
+    "return_type": "plot_or_scene_request",
+    "precision_modes": [
+      "machine_sampling"
+    ],
+    "precision_notes": "真实readonly机器采样、精确源式保留，不把网格或光照宣称数学认证；高精度数字不静默降级。",
     "platforms": [
       "cli",
       "desktop",

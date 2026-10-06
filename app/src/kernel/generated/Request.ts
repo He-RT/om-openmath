@@ -12,12 +12,42 @@ import type { PlotExportFormat } from "./PlotExportFormat";
 import type { PlotFigure } from "./PlotFigure";
 import type { PlotRequest } from "./PlotRequest";
 import type { ProfileConfig } from "./ProfileConfig";
+import type { Scene3DData } from "./Scene3DData";
+import type { Scene3DRequest } from "./Scene3DRequest";
 import type { ValueQuery } from "./ValueQuery";
 
 /**
  * A client operation; runtime dispatch is implemented by Session.
  */
-export type Request = { "type": "export_plot",
+export type Request = { "type": "export_scene3_d",
+/**
+ * Actual validated mesh, normals, colors and indices.
+ */
+data: Scene3DData,
+/**
+ * User-visible title.
+ */
+title: string, } | { "type": "set_host_platform",
+/**
+ * Actual presentation target.
+ */
+platform: HostPlatform, } | { "type": "sample_scene3_d",
+/**
+ * Held mathematical source/domains.
+ */
+request: Scene3DRequest, } | { "type": "sample_explore_scene3_d",
+/**
+ * Credential-free immutable context.
+ */
+context: string,
+/**
+ * Actual local parameter values.
+ */
+values: { [key in string]: number },
+/**
+ * Explicit sampling request.
+ */
+request: Scene3DRequest, } | { "type": "export_plot",
 /**
  * Data and display dimensions.
  */

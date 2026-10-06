@@ -16,6 +16,14 @@ impl Session {
             steps_left: Cell::new(16 * 1024 * 1024),
         }
     }
+    pub(super) fn export_scene3d(&self, data: Scene3DData, title: String) -> Response {
+        match crate::artifact::export_scene(&data, &title, &self.artifact_budget()) {
+            Ok(artifact) => Response::Artifact { artifact },
+            Err(e) => Response::Error {
+                message: e.to_string(),
+            },
+        }
+    }
     pub(super) fn export_plot(&self, figure: PlotFigure, format: PlotExportFormat) -> Response {
         match crate::artifact::export_plot(&figure, format, &self.artifact_budget()) {
             Ok(artifact) => Response::Artifact { artifact },

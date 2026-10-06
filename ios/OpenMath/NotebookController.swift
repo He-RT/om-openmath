@@ -466,7 +466,7 @@ import SwiftUI
   }
   func shareArtifact(_ artifact: JSONValue, name: String) throws {
     let ext = artifact["extension"].string
-    let types = ["svg": "image/svg+xml", "png": "image/png", "csv": "text/csv;charset=utf-8", "json": "application/json;charset=utf-8"]
+    let types = ["svg": "image/svg+xml", "png": "image/png", "csv": "text/csv;charset=utf-8", "json": "application/json;charset=utf-8", "obj": "model/obj"]
     guard types[ext] == artifact["mime"].string,
       artifact["byte_len"].double <= Double(16*1024*1024),
       let bytes = Data(base64Encoded: artifact["base64"].string),

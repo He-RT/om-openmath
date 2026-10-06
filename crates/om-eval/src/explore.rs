@@ -190,6 +190,12 @@ impl Evaluator {
             .push(locals.iter().map(|(s, v)| (*s, Some(v.clone()))).collect());
         fork
     }
+    /// A readonly local scope that masks coordinate ownvalues and preserves concrete local parameters.
+    pub fn fork_with_optional_locals(&self, locals: &[(Symbol, Option<Expr>)]) -> Self {
+        let mut fork = self.fork_readonly();
+        fork.scopes.push(locals.iter().cloned().collect());
+        fork
+    }
     /// Capture actual state without executing delayed definitions or accessing host credentials.
     pub fn readonly_state(&self) -> ReadonlyState {
         ReadonlyState {

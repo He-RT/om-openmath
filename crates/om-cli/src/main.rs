@@ -31,7 +31,7 @@ fn run() -> Result<i32, String> {
     };
     if matches!(args.command, args::Command::Help) {
         println!(
-            "OpenMath\nUsage: om [-e SOURCE] [--json] [--dialect modern|wolfram|auto] [--language en|zh-CN]\n       om run FILE | config path|show|edit | llm test PROFILE\n       om export -e SOURCE --format svg|png|csv|json --output FILE [--input FILE] [--overwrite]\n       --config PATH | --no-config"
+            "OpenMath\nUsage: om [-e SOURCE] [--json] [--dialect modern|wolfram|auto] [--language en|zh-CN]\n       om run FILE | config path|show|edit | llm test PROFILE\n       om export -e SOURCE --format svg|png|csv|json|obj --output FILE [--input FILE] [--overwrite]\n       --config PATH | --no-config"
         );
         return Ok(0);
     }

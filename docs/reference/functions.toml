@@ -1,6 +1,6 @@
 # 实际注册审计基线：ba3cd2b；稳定身份与名称分离；目录/副作用为设计数据。
 schema_version = 1
-metadata_version = 23
+metadata_version = 24
 validation_stage = "runtime_verified"
 current_version = "0.1.0-pre-alpha.2"
 target_version = "0.1.0-pre-alpha.3"
@@ -3877,25 +3877,25 @@ name = "plot"
 category = "plots"
 status = "partial"
 interface_status = "partial"
-runtime_names = ["Plot", "ContourPlot", "DensityPlot"]
+runtime_names = ["Plot", "ContourPlot", "DensityPlot", "Plot3D"]
 compatibility_names = ["Plot", "ContourPlot"]
-current_modern_signatures = ["plot(expr,x:a..b)", "plot(expr,x:a..b,y:c..d,view:\"contour\")", "plot(expr,x:a..b,y:c..d,view:\"density\")"]
-current_wolfram_signatures = ["Plot[expr,{x,min,max}]", "ContourPlot[eq,{x,min,max},{y,min,max}]", "DensityPlot[expr,{x,a,b},{y,c,d}]"]
+current_modern_signatures = ["plot(expr,x:a..b)", "plot(expr,x:a..b,y:c..d,view:\"contour\")", "plot(expr,x:a..b,y:c..d,view:\"density\")", "plot(expr,x:a..b,y:c..d,view:\"surface\")"]
+current_wolfram_signatures = ["Plot[expr,{x,min,max}]", "ContourPlot[eq,{x,min,max},{y,min,max}]", "DensityPlot[expr,{x,a,b},{y,c,d}]", "Plot3D[expr,{x,a,b},{y,c,d}]"]
 signatures = ["plot(expr, x: lo..hi, y: lo..hi, view: \"line\")"]
 parameters = [{name = "expr", kind = "positional", default = "必填", description = "标量或曲线列表", availability = "current"}, {name = "axes", kind = "axis", default = "必填", description = "一个或两个命名轴", availability = "current"}, {name = "view", kind = "option", default = "line（当前二维）；三维surface尚未实现", description = "line/surface/density/contour", availability = "current"}, {name = "scale", kind = "option", default = "linear", description = "linear/log_x/log_y/log_log", availability = "current"}, {name = "color", kind = "option", default = "主题色", description = "固定颜色名或#RRGGBB；密度/热图拒绝覆盖；函数颜色待R3.6", availability = "current"}, {name = "precision", kind = "option", default = "machine", description = "采样精度", availability = "r3"}]
 return_type = "plot_or_scene_request"
 semantics = "采样一元实函数图像。；采样二元隐函数等值轮廓。"
-current_support = "二维实函数/标量等高线/96×96密度真实机器采样；log_x/log_y/log_log正窗口；固定color仅曲线。三维surface尚待R3.6。 输入/样本受Interrupt预算，readonly/取消不修改会话。精确输入可机器采样，新增路径拒绝高精度数静默降级；传统Plot/ContourPlot保留机器采样兼容语义，不宣称高精度图形；有限采样不能认证数学边界。"
+current_support = "原二维Plot/ContourPlot/DensityPlot保持；三维Plot3D真实固定网格、中心域检查、三角形/法线/颜色由Rust生成。现代一轴默认line、两轴默认surface，也可显式view。mesh_points8..64默认48，readonly color(position,x,y)或固定颜色。桌面/Web真实WebGL2交互、无WebGL2保留原式和OBJ；iOS不自动采样3D并明确fallback。网格不是认证/完整曲面。"
 target_support = "统一二维/曲面视图、对数坐标、采样颜色和样式；三维仅桌面/Web可交互展示。"
 precision_modes = ["machine_sampling"]
-precision_notes = "现有绘图经过只读 f64 编译与真实内核采样；符号输入可精确保存，像素/采样不是认证解。"
+precision_notes = "真实readonly机器采样、精确源式保留，不把网格或光照宣称数学认证；高精度数字不静默降级。"
 current_platforms = ["cli", "desktop", "web", "ios"]
 target_platforms = ["cli", "desktop", "web", "ios"]
 render_platforms = ["desktop", "web", "ios"]
-current_examples = ["Plot[Sin[x],{x,0,2*Pi}]", "ContourPlot[x^2+y^2==1,{x,-2,2},{y,-2,2}]", "DensityPlot[x*y,{x,-2,2},{y,-2,2}]"]
+current_examples = ["Plot[Sin[x],{x,0,2*Pi}]", "ContourPlot[x^2+y^2==1,{x,-2,2},{y,-2,2}]", "DensityPlot[x*y,{x,-2,2},{y,-2,2}]", "Plot3D[Sin[x]*Cos[y],{x,-2,2},{y,-2,2}]"]
 planned_examples = ["plot(sin(x), x: -pi..pi)", "plot(sin(x)*cos(y), x: -pi..pi, y: -pi..pi, view: \"surface\")"]
-sources = ["crates/om-eval/src/plot_registry.rs"]
-tests = ["crates/om-kernel/tests/plot_extensions.rs", "crates/om-kernel/tests/plot_sampling.rs", "app/src/components/plot/PlotView.test.tsx", "ios/OpenMathTests/PlotExtensionTests.swift"]
+sources = ["crates/om-eval/src/plot_registry.rs", "crates/om-kernel/src/scene3d.rs"]
+tests = ["crates/om-kernel/tests/scene3d.rs", "crates/om-kernel/tests/plot_extensions.rs"]
 acceptance = "现有行为、参数拒绝、解析/格式往返、中断和独立数学期望保持不变；新签名另写正反例。"
 pipe_arg = 1
 target_version = "0.1.0-pre-alpha.3"
@@ -7079,25 +7079,25 @@ name = "parametric_plot"
 category = "plots"
 status = "partial"
 interface_status = "current"
-runtime_names = ["ParametricPlot"]
+runtime_names = ["ParametricPlot", "ParametricPlot3D"]
 compatibility_names = ["ParametricPlot"]
-current_modern_signatures = ["parametric_plot(vector,t:a..b)"]
-current_wolfram_signatures = ["ParametricPlot[vector,{t,a,b}]"]
+current_modern_signatures = ["parametric_plot(vector,t:a..b)", "parametric_plot([x,y,z],...axes)"]
+current_wolfram_signatures = ["ParametricPlot[vector,{t,a,b}]", "ParametricPlot3D[vector,{u,a,b},{v,c,d}]"]
 signatures = ["parametric_plot(vector, ...axes)"]
 parameters = [{name = "vector", kind = "positional", default = "必填", description = "二维/三维坐标向量", availability = "current"}, {name = "axes", kind = "axis", default = "必填", description = "一或两个命名范围", availability = "current"}, {name = "color", kind = "option", default = "主题色", description = "固定颜色名或#RRGGBB；密度/热图拒绝覆盖；函数颜色待R3.6", availability = "current"}]
 return_type = "plot_or_scene_request"
 semantics = "参数曲线或曲面"
-current_support = "一参数二维两坐标机器曲线，800基础点加中点域检查；参数范围独立于相机；非有限/可识别跳变断开，采样不能发现全部奇点；三维曲线/曲面尚待R3.6。 输入/样本受Interrupt预算，readonly/取消不修改会话。精确输入可机器采样，新增路径拒绝高精度数静默降级；传统Plot/ContourPlot保留机器采样兼容语义，不宣称高精度图形；有限采样不能认证数学边界。"
+current_support = "原二维单参数曲线保持；三坐标一参数3D曲线/两参数3D曲面，独立数学域、有限点/中点原域检查和断开，Rust法线/readonly颜色，mesh_points8..64默认48。color(position,...parameters)按实际参数计算。常量曲线是实际点标记。桌面/WebWebGL2与OBJ，iOS明确未适配且不自动采样。有限网格不能证明全部奇点/边界。"
 target_support = "二维显示在桌面/Web/iOS；内核采样、保留孔洞、预算和旧请求隔离。 一参数二维/三维曲线；两参数三维曲面；三维显示仅桌面/Web。"
 precision_modes = ["machine"]
-precision_notes = "真实只读机器采样，资源/非有限/不支持模式有诊断，不是认证数学边界。"
+precision_notes = "真实readonly机器采样、精确源式保留，不把网格或光照宣称数学认证；高精度数字不静默降级。"
 current_platforms = ["cli", "desktop", "web", "ios"]
 target_platforms = ["cli", "desktop", "web", "ios"]
 render_platforms = ["desktop", "web", "ios"]
-current_examples = ["ParametricPlot[{Cos[t],Sin[t]},{t,0,2*Pi}]"]
+current_examples = ["ParametricPlot[{Cos[t],Sin[t]},{t,0,2*Pi}]", "ParametricPlot3D[{Cos[t],Sin[t],t},{t,0,2*Pi}]"]
 planned_examples = ["parametric_plot([cos(t),sin(t),t],t:0..2*pi)"]
-sources = ["crates/om-eval/src/plot_registry.rs", "crates/om-kernel/src/plot/extended.rs"]
-tests = ["crates/om-kernel/tests/plot_extensions.rs", "crates/om-kernel/tests/plot_sampling.rs", "app/src/components/plot/PlotView.test.tsx", "ios/OpenMathTests/PlotExtensionTests.swift"]
+sources = ["crates/om-eval/src/plot_registry.rs", "crates/om-kernel/src/scene3d.rs"]
+tests = ["crates/om-kernel/tests/scene3d.rs", "crates/om-kernel/tests/plot_extensions.rs"]
 acceptance = "独立数学期望、有效/无效参数、边界、预算、中断及声明的平台/精度测试；范围外不伪造成功。"
 pipe_arg = 1
 target_version = "0.1.0-pre-alpha.3"
@@ -7110,32 +7110,32 @@ effect_class = "pure"
 id = "fn_000220"
 name = "implicit_plot"
 category = "plots"
-status = "planned"
-interface_status = "planned"
-runtime_names = []
-compatibility_names = []
-current_modern_signatures = []
-current_wolfram_signatures = []
+status = "partial"
+interface_status = "current"
+runtime_names = ["ImplicitPlot3D"]
+compatibility_names = ["ImplicitPlot3D"]
+current_modern_signatures = ["implicit_plot(equation,x:a..b,y:c..d,z:e..f)"]
+current_wolfram_signatures = ["ImplicitPlot3D[equation,{x,a,b},{y,c,d},{z,e,f}]"]
 signatures = ["implicit_plot(equation, ...axes)"]
 parameters = [{name = "equation", kind = "positional", default = "必填", description = "签名对应的equation参数", availability = "r3"}, {name = "axes", kind = "axis", default = "数据图可省略", description = "所需命名轴", availability = "r3"}]
 return_type = "plot_or_scene_request"
 semantics = "隐式等值曲线或曲面"
-current_support = "本独立三维扩展身份未实现；当前二维implicit_plot沿用稳定fn_000119/ContourPlot入口，可用levels/log选项，详见plot条目。"
+current_support = "三维零等值曲面，默认24×24×24格、8..64网格分段；marching tetrahedra共享实际边根、原表达式实残差检查拒绝极点伪根，三角形法线向标量增大方向。未知/无采到有限曲面明确失败，不返回伪造全解。桌面/WebWebGL2/OBJ，iOS明确fallback且不自动采样。二维implicit_plot继续fn119/ContourPlot原解析，未改原有效表达式。"
 target_support = "二维显示在桌面/Web/iOS；内核采样、保留孔洞、预算和旧请求隔离。 二维沿用轮廓算法；三维采用确定性网格及marching tetrahedra，奇点不连接。"
-precision_modes = ["planned_machine"]
-precision_notes = "真实只读机器采样，资源/非有限/不支持模式有诊断，不是认证数学边界。"
-current_platforms = []
+precision_modes = ["machine_sampling"]
+precision_notes = "真实readonly机器采样、精确源式保留，不把网格或光照宣称数学认证；高精度数字不静默降级。"
+current_platforms = ["cli", "desktop", "web", "ios"]
 target_platforms = ["cli", "desktop", "web", "ios"]
-render_platforms = ["desktop", "web", "ios"]
-current_examples = []
+render_platforms = ["desktop", "web"]
+current_examples = ["ImplicitPlot3D[x^2+y^2+z^2==1,{x,-2,2},{y,-2,2},{z,-2,2}]"]
 planned_examples = ["implicit_plot(x^2+y^2+z^2=1,x:-2..2,y:-2..2,z:-2..2)"]
-sources = []
-tests = []
+sources = ["crates/om-eval/src/plot_registry.rs", "crates/om-kernel/src/scene3d.rs"]
+tests = ["crates/om-kernel/tests/scene3d.rs", "crates/om-kernel/tests/plot_extensions.rs"]
 acceptance = "独立数学期望、有效/无效参数、边界、预算、中断及声明的平台/精度测试；范围外不伪造成功。"
 pipe_arg = 1
 target_version = "0.1.0-pre-alpha.3"
 kind = "function"
-validation_stage = "documentation_only"
+validation_stage = "runtime_verified"
 effect_class = "pure"
 
 
@@ -26676,9 +26676,9 @@ evidence = ["crates/om-kernel/tests/plot_extensions.rs", "crates/om-kernel/tests
 [[features]]
 id = "plot3d"
 title = "三维显示与场景"
-status = "planned"
-scope = ".3 桌面/Web WebGL2；移动端明确未适配；CLI OBJ导出。无WebGL2明确提示而非假图。"
-evidence = ["docs/plan/NEXT_RELEASE.md"]
+status = "partial"
+scope = "R3.6a真实Rust曲面/参数曲线曲面/隐式网格、WebGL2相机/光照/资源生命周期和OBJ已接；iOS明确fallback不自动采样。场景图元/变换/L2/西瓜完整案例仍待R3.6b；无WebGL2保留源式/数据/OBJ。"
+evidence = ["docs/design/scene3d.md", "crates/om-kernel/tests/scene3d.rs", "app/e2e/scene.spec.ts"]
 
 [[features]]
 id = "export_r3"
@@ -27541,7 +27541,7 @@ aliases = []
 min = 2
 attributes = ["hold_all", "protected"]
 parameters = [{ name = "expr", value_type = "expression", required = true, variadic = false, held = true }, { name = "axis", value_type = "expression", required = true, variadic = false, held = true }]
-options = [{ name = "view", value_type = "enum", required = false, variadic = false, held = true, default_source = "\"line\"", enum_values = ["line", "contour", "density"] }, { name = "plot_range", runtime_name = "PlotRange", value_type = "expression", required = false, variadic = false, held = true, default_source = "Automatic" }, { name = "scale", runtime_name = "Scale", value_type = "enum", required = false, held = true, variadic = false, default_source = "\"linear\"", enum_values = ["linear", "log_x", "log_y", "log_log"] }, { name = "color", runtime_name = "Color", value_type = "expression", required = false, held = true, variadic = false, default_context = "省略主题色" }]
+options = [{ name = "view", value_type = "enum", required = false, variadic = false, held = true, default_source = "\"line\"", enum_values = ["line", "contour", "density", "surface"] }, { name = "plot_range", runtime_name = "PlotRange", value_type = "expression", required = false, variadic = false, held = true, default_source = "Automatic" }, { name = "scale", runtime_name = "Scale", value_type = "enum", required = false, held = true, variadic = false, default_source = "\"linear\"", enum_values = ["linear", "log_x", "log_y", "log_log"] }, { name = "color", runtime_name = "Color", value_type = "expression", required = false, held = true, variadic = false, default_context = "省略主题色" }]
 
 [[runtime]]
 name = "Plus"
@@ -29113,3 +29113,30 @@ max = 3
 attributes = ["hold_all", "protected"]
 parameters = [{ name = "expression", value_type = "expression", required = true, variadic = false, held = true }]
 options = [{ name = "controls", runtime_name = "Controls", value_type = "expression", required = true, variadic = false, held = true }, { name = "initial", runtime_name = "Initial", value_type = "expression", required = false, variadic = false, held = true, default_context = "每个参数范围中点；部分指定允许" }]
+
+[[runtime]]
+name = "Plot3D"
+modern_name = "plot_surface"
+aliases = []
+min = 3
+attributes = ["hold_all", "protected"]
+parameters = [{ name = "expression", value_type = "expression", required = true, variadic = false, held = true }, { name = "axis_1", value_type = "expression", required = true, variadic = false, held = true }, { name = "axis_2", value_type = "expression", required = true, variadic = false, held = true }]
+options = [{ name = "mesh_points", runtime_name = "MeshPoints", value_type = "integer", required = false, variadic = false, held = true, default_source = "48", min = 8, max = 64 }, { name = "color", runtime_name = "Color", value_type = "expression", required = false, variadic = false, held = true, default_context = "\u7eff\u8272\uff1b\u56fa\u5b9a\u989c\u8272\u540d/#RRGGBB\u6216\u53ea\u8bfbfn(position,...axes)" }]
+
+[[runtime]]
+name = "ParametricPlot3D"
+modern_name = "parametric_plot_3d"
+aliases = []
+min = 2
+attributes = ["hold_all", "protected"]
+parameters = [{ name = "expression", value_type = "expression", required = true, variadic = false, held = true }, { name = "axis_1", value_type = "expression", required = true, variadic = true, held = true }]
+options = [{ name = "mesh_points", runtime_name = "MeshPoints", value_type = "integer", required = false, variadic = false, held = true, default_source = "48", min = 8, max = 64 }, { name = "color", runtime_name = "Color", value_type = "expression", required = false, variadic = false, held = true, default_context = "\u7eff\u8272\uff1b\u56fa\u5b9a\u989c\u8272\u540d/#RRGGBB\u6216\u53ea\u8bfbfn(position,...axes)" }]
+
+[[runtime]]
+name = "ImplicitPlot3D"
+modern_name = "implicit_plot_3d"
+aliases = []
+min = 4
+attributes = ["hold_all", "protected"]
+parameters = [{ name = "expression", value_type = "expression", required = true, variadic = false, held = true }, { name = "axis_1", value_type = "expression", required = true, variadic = false, held = true }, { name = "axis_2", value_type = "expression", required = true, variadic = false, held = true }, { name = "axis_3", value_type = "expression", required = true, variadic = false, held = true }]
+options = [{ name = "mesh_points", runtime_name = "MeshPoints", value_type = "integer", required = false, variadic = false, held = true, default_source = "24", min = 8, max = 64 }, { name = "color", runtime_name = "Color", value_type = "expression", required = false, variadic = false, held = true, default_context = "\u7eff\u8272\uff1b\u56fa\u5b9a\u989c\u8272\u540d/#RRGGBB\u6216\u53ea\u8bfbfn(position,...axes)" }]

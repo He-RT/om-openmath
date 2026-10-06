@@ -11,11 +11,11 @@
 | 状态 | 条目数 | 含义 |
 |---|---:|---|
 | 已实现 | 215 | 在所列支持范围内已有实现 |
-| 部分支持 | 13 | 已有真实入口，但数学范围或目标接口未完整交付 |
-| 下一版规划 | 20 | 锁定下一版，当前不可用 |
+| 部分支持 | 14 | 已有真实入口，但数学范围或目标接口未完整交付 |
+| 下一版规划 | 19 | 锁定下一版，当前不可用 |
 | 后续规划 | 581 | 进入全景目录，下一版不承诺实现 |
 
-当前登记 `235` 个真实注册名；条目按语义归并，与注册名数量不同。
+当前登记 `238` 个真实注册名；条目按语义归并，与注册名数量不同。
 
 | 分类 | 条目数 | 已实现 / 部分 / 下一版 / 后续 |
 |---|---:|---|
@@ -28,7 +28,7 @@
 | [统计、概率与随机](statistics.md) | 49 | 17 / 0 / 0 / 32 |
 | [列表、记录与表格](data.md) | 73 | 28 / 3 / 0 / 42 |
 | [语言、求值与模式](language.md) | 60 | 15 / 0 / 0 / 45 |
-| [函数与数据绘图](plots.md) | 30 | 4 / 2 / 1 / 23 |
+| [函数与数据绘图](plots.md) | 30 | 4 / 3 / 0 / 23 |
 | [图元、场景与交互](scene.md) | 87 | 0 / 1 / 19 / 67 |
 | [单位、时间与知识库](units.md) | 50 | 4 / 0 / 0 / 46 |
 | [文件、导出与系统接口](io.md) | 55 | 0 / 0 / 0 / 55 |
@@ -48,7 +48,7 @@
 | 编辑器与本地帮助 | 已实现 | Preview/Complete/Hover/诊断/Greek/IME与ghost继续，函数目录已真实接入补全/Hover/能力查询，未实现条目不进入可执行推荐。 | [crates/om-kernel/tests/editor.rs](../../crates/om-kernel/tests/editor.rs)、[crates/om-kernel/tests/capabilities.rs](../../crates/om-kernel/tests/capabilities.rs)、[ios/OpenMath/MathEditor.swift](../../ios/OpenMath/MathEditor.swift) |
 | AI 与凭据 | 已实现 | 已有 Ask/讲解/对话/只读工具/修复/模型配置/探测及各宿主凭据隔离；规划语法不写入当前提示词。 | [docs/llm.md](../../docs/llm.md)、[crates/om-kernel/tests/llm.rs](../../crates/om-kernel/tests/llm.rs)、[ios/OpenMathTests/TransportTests.swift](../../ios/OpenMathTests/TransportTests.swift) |
 | 当前二维绘图 | 已实现 | 真实内核实函数/参数曲线/轮廓/区域/场与流线/数据/频数/密度/log、解点/区间及相机；三端展示与独立只读explore，有限采样不是认证边界。 | [crates/om-kernel/tests/plot_extensions.rs](../../crates/om-kernel/tests/plot_extensions.rs)、[crates/om-kernel/tests/explore.rs](../../crates/om-kernel/tests/explore.rs)、[ios/OpenMath/PlotView.swift](../../ios/OpenMath/PlotView.swift) |
-| 三维显示与场景 | 下一版规划 | .3 桌面/Web WebGL2；移动端明确未适配；CLI OBJ导出。无WebGL2明确提示而非假图。 | [docs/plan/NEXT_RELEASE.md](../../docs/plan/NEXT_RELEASE.md) |
+| 三维显示与场景 | 部分支持 | R3.6a真实Rust曲面/参数曲线曲面/隐式网格、WebGL2相机/光照/资源生命周期和OBJ已接；iOS明确fallback不自动采样。场景图元/变换/L2/西瓜完整案例仍待R3.6b；无WebGL2保留源式/数据/OBJ。 | [docs/design/scene3d.md](../../docs/design/scene3d.md)、[crates/om-kernel/tests/scene3d.rs](../../crates/om-kernel/tests/scene3d.rs)、[app/e2e/scene.spec.ts](../../app/e2e/scene.spec.ts) |
 | 数据/图形导出 | 部分支持 | 表格/选中值CSV/JSON与真实二维SVG/PNG已实现，三端按钮和CLI非交互写入/字节回读；临时探索结果有不可变值图。OBJ待R3.6，不含通用Export函数/CAD/glTF/视频。 | [docs/design/artifact-export.md](../../docs/design/artifact-export.md)、[crates/om-kernel/tests/artifacts.rs](../../crates/om-kernel/tests/artifacts.rs)、[crates/om-cli/tests/artifact.rs](../../crates/om-cli/tests/artifact.rs) |
 | 分发与平台门禁 | 已实现 | .2九类附件已发布；.3实现完成才升级版本/发新Release；不启动本机模拟器。 | [docs/ios-acceptance.md](../../docs/ios-acceptance.md)、[docs/releasing.md](../../docs/releasing.md) |
 | 无障碍人工组合验收 | 部分支持 | 已有源码语义、静态路径与大字体证据；用户暂缓的旁白/浮动键盘/真机窄窗口仍未验证。 | [docs/ios-acceptance.md](../../docs/ios-acceptance.md) |

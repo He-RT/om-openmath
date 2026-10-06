@@ -7,6 +7,31 @@ fn held(_: &mut Evaluator, _: &[Expr], _: &Interrupt) -> Result<Option<Expr>, Ev
 }
 pub(crate) fn register(specs: &mut BTreeMap<&'static str, BuiltinSpec>) {
     crate::explore::register(specs);
+    for (name, arity, modern, wolfram, examples) in [
+        (
+            "Plot3D",
+            3,
+            "plot(expr,x:a..b,y:c..d,view:\"surface\")",
+            "Plot3D[expr,{x,a,b},{y,c,d}]",
+            &["Plot3D[Sin[x]*Cos[y],{x,-2,2},{y,-2,2}]"][..],
+        ),
+        (
+            "ParametricPlot3D",
+            2,
+            "parametric_plot([x,y,z],...axes)",
+            "ParametricPlot3D[vector,{u,a,b},{v,c,d}]",
+            &["ParametricPlot3D[{Cos[t],Sin[t],t},{t,0,2*Pi}]"][..],
+        ),
+        (
+            "ImplicitPlot3D",
+            4,
+            "implicit_plot(equation,x:a..b,y:c..d,z:e..f)",
+            "ImplicitPlot3D[equation,{x,a,b},{y,c,d},{z,e,f}]",
+            &["ImplicitPlot3D[x^2+y^2+z^2==1,{x,-2,2},{y,-2,2},{z,-2,2}]"][..],
+        ),
+    ] {
+        specs.insert(name,BuiltinSpec{symbol:Symbol::intern(name),f:held,attrs:A::HOLD_ALL|A::PROTECTED,arity:Arity::AtLeast(arity),doc:DocEntry{name,modern,wolfram,examples,summary_zh:"真实三维机器采样与内核颜色/法线；网格不是认证曲面。",summary_en:"Actual finite 3D machine samples with kernel colors and normals; meshes are not certified boundaries.",category:"Visualization"}});
+    }
     for (name, symbol, arity, modern, wolfram, example, zh, en) in [
         (
             "Plot",

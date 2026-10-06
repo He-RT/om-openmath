@@ -432,6 +432,15 @@ pub struct Curve {
 #[ts(export_to = concat!(env!("CARGO_MANIFEST_DIR"), "/../../app/src/kernel/generated/"))]
 #[serde(tag = "type", rename_all = "snake_case")]
 pub enum OutputItem {
+    /// An independent 3D mathematical scene; unsupported hosts keep its source without automatic mesh sampling.
+    Scene3D {
+        /// Held portable request.
+        request: crate::scene_views::Scene3DRequest,
+        /// Actual geometry; absent for hosts with no 3D renderer.
+        data: Option<crate::scene_views::Scene3DData>,
+        /// Explicit current host limitation, never a fake image.
+        unavailable: Option<String>,
+    },
     /// A held expression with genuine isolated initial computation and local controls.
     Explore {
         /// Actual history index.

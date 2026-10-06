@@ -3,6 +3,7 @@ import type { OutputItem } from '../../kernel/generated/OutputItem';
 import type { KernelClient } from '../../kernel/client';
 import type { Messages,Locale } from '../../i18n';
 import { ExploreTask } from '../../kernel/exploreTask';
+import {defaultCamera} from '../scene/camera';
 import { ArtifactButton } from '../output/ArtifactButton';
 import { OutputView } from '../output/OutputView';
 export function ExploreView({item,cellId,fresh,kernel,t,language,onInsert,taskFactory=()=>new ExploreTask()}: {
@@ -14,6 +15,7 @@ export function ExploreView({item,cellId,fresh,kernel,t,language,onInsert,taskFa
   const [result,setResult]=useState(item.result);
   const [context,setContext]=useState<string|null>(null);
   const [busy,setBusy]=useState(false),[error,setError]=useState<string|null>(null);
+  const sceneCameraMemory=useRef({...defaultCamera});
   const owner=useRef({alive:true,revision:0,timer:undefined as ReturnType<typeof setTimeout>|undefined});
   const cancel=()=>{owner.current.revision++;if(owner.current.timer)clearTimeout(owner.current.timer);owner.current.timer=undefined;task.cancel();setBusy(false);};
   useEffect(()=>{
@@ -50,7 +52,8 @@ export function ExploreView({item,cellId,fresh,kernel,t,language,onInsert,taskFa
     request:request=>{
       if(!fresh||busy||changed)return Promise.resolve({type:'error',message:label('当前参数结果已过期','Current parameter result is stale')});
       if(!context)return Promise.resolve({type:'error',message:label('等待只读快照','Waiting for readonly snapshot')});
-      if(request.type==='export_plot'||request.type==='export_value_token')return kernel.request(request);
+      if(request.type==='export_plot'||request.type==='export_value_token'||request.type==='export_scene3_d')return kernel.request(request);
+      if(request.type==='sample_scene3_d')return task.request({type:'sample_explore_scene3_d',context,values:result.values,request:request.request});
       if(request.type==='sample_plot')return task.request({type:'sample_explore_plot',context,values:result.values,request:request.request});
       if(request.type==='inspect_expression')return task.request({type:'inspect_explore_expression',context,values:result.values,source:request.source,numeric:request.numeric});
       return Promise.resolve({type:'error',message:label('此临时结果不写入主笔记本历史','Ephemeral results do not write notebook history')});
@@ -69,6 +72,6 @@ export function ExploreView({item,cellId,fresh,kernel,t,language,onInsert,taskFa
     </div>
     {error&&<p role="alert">{error}</p>}
     {result.value_token&&<div className="explore-data-export">{(['csv','json'] as const).map(format=><ArtifactButton key={format} kernel={proxy} t={t} title="OpenMath-explore-data" label={format==='csv'?t.exportCsv:t.exportJson} version={result} enabled={fresh&&!busy&&!changed} request={()=>({type:'export_value_token',token:result.value_token!,format})}/>)}</div>}
-    <OutputView key={`${item.view_id}:${result.revision}`} output={{items:[result.item],messages:result.messages,timing_ms:result.timing_ms}} stale={!fresh||busy||changed} t={t} language={language} kernel={proxy} cellId={cellId} onInsert={onInsert} onSteps={()=>{}} exportParameters={result.values}/>
+    <OutputView key={`${item.view_id}:${result.revision}`} output={{items:[result.item],messages:result.messages,timing_ms:result.timing_ms}} stale={!fresh||busy||changed} t={t} language={language} kernel={proxy} cellId={cellId} onInsert={onInsert} onSteps={()=>{}} exportParameters={result.values} sceneCameraMemory={sceneCameraMemory}/>
   </section>;
 }

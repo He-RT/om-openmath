@@ -13,6 +13,7 @@ pub(crate) fn pack(
     eval: &Evaluator,
     ctx: &Interrupt,
     auto_plot: bool,
+    scene_enabled: bool,
 ) -> Result<OutputItem, crate::plot::PlotError> {
     if record
         .value
@@ -22,7 +23,20 @@ pub(crate) fn pack(
         if record.exploration.is_none() {
             record.exploration = crate::explore::capture(&record.value, eval, ctx)?;
         }
-        return crate::explore::initial(record, ctx);
+        return crate::explore::initial(record, ctx, scene_enabled);
+    }
+    if let Some(request) = crate::scene3d::from_expr(&record.value, eval, ctx)? {
+        let data = if scene_enabled {
+            Some(crate::scene3d::sample(&request, eval, ctx)?)
+        } else {
+            None
+        };
+        return Ok(OutputItem::Scene3D {
+            request,
+            data,
+            unavailable: (!scene_enabled)
+                .then(|| "iOS/iPadOS三维展示尚未适配；保留源式，桌面/Web可查看或导出OBJ。".into()),
+        });
     }
     if let Some(request) = crate::plot::from_expr(&record.value, eval, ctx)? {
         let data = crate::plot::sample(&request, eval, ctx)?;

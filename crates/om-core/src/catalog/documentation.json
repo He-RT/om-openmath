@@ -7051,7 +7051,8 @@
       "runtime_names": [
         "Plot",
         "ContourPlot",
-        "DensityPlot"
+        "DensityPlot",
+        "Plot3D"
       ],
       "compatibility_names": [
         "Plot",
@@ -7060,18 +7061,19 @@
       "current_modern_signatures": [
         "plot(expr,x:a..b)",
         "plot(expr,x:a..b,y:c..d,view:\"contour\")",
-        "plot(expr,x:a..b,y:c..d,view:\"density\")"
+        "plot(expr,x:a..b,y:c..d,view:\"density\")",
+        "plot(expr,x:a..b,y:c..d,view:\"surface\")"
       ],
       "signatures": [
         "plot(expr, x: lo..hi, y: lo..hi, view: \"line\")"
       ],
-      "current_support": "二维实函数/标量等高线/96×96密度真实机器采样；log_x/log_y/log_log正窗口；固定color仅曲线。三维surface尚待R3.6。 输入/样本受Interrupt预算，readonly/取消不修改会话。精确输入可机器采样，新增路径拒绝高精度数静默降级；传统Plot/ContourPlot保留机器采样兼容语义，不宣称高精度图形；有限采样不能认证数学边界。",
+      "current_support": "原二维Plot/ContourPlot/DensityPlot保持；三维Plot3D真实固定网格、中心域检查、三角形/法线/颜色由Rust生成。现代一轴默认line、两轴默认surface，也可显式view。mesh_points8..64默认48，readonly color(position,x,y)或固定颜色。桌面/Web真实WebGL2交互、无WebGL2保留原式和OBJ；iOS不自动采样3D并明确fallback。网格不是认证/完整曲面。",
       "target_support": "统一二维/曲面视图、对数坐标、采样颜色和样式；三维仅桌面/Web可交互展示。",
       "return_type": "plot_or_scene_request",
       "precision_modes": [
         "machine_sampling"
       ],
-      "precision_notes": "现有绘图经过只读 f64 编译与真实内核采样；符号输入可精确保存，像素/采样不是认证解。",
+      "precision_notes": "真实readonly机器采样、精确源式保留，不把网格或光照宣称数学认证；高精度数字不静默降级。",
       "current_platforms": [
         "cli",
         "desktop",
@@ -7131,7 +7133,8 @@
       "current_examples": [
         "Plot[Sin[x],{x,0,2*Pi}]",
         "ContourPlot[x^2+y^2==1,{x,-2,2},{y,-2,2}]",
-        "DensityPlot[x*y,{x,-2,2},{y,-2,2}]"
+        "DensityPlot[x*y,{x,-2,2},{y,-2,2}]",
+        "Plot3D[Sin[x]*Cos[y],{x,-2,2},{y,-2,2}]"
       ],
       "planned_examples": [
         "plot(sin(x), x: -pi..pi)",
@@ -12968,24 +12971,26 @@
       "status": "partial",
       "interface_status": "current",
       "runtime_names": [
-        "ParametricPlot"
+        "ParametricPlot",
+        "ParametricPlot3D"
       ],
       "compatibility_names": [
         "ParametricPlot"
       ],
       "current_modern_signatures": [
-        "parametric_plot(vector,t:a..b)"
+        "parametric_plot(vector,t:a..b)",
+        "parametric_plot([x,y,z],...axes)"
       ],
       "signatures": [
         "parametric_plot(vector, ...axes)"
       ],
-      "current_support": "一参数二维两坐标机器曲线，800基础点加中点域检查；参数范围独立于相机；非有限/可识别跳变断开，采样不能发现全部奇点；三维曲线/曲面尚待R3.6。 输入/样本受Interrupt预算，readonly/取消不修改会话。精确输入可机器采样，新增路径拒绝高精度数静默降级；传统Plot/ContourPlot保留机器采样兼容语义，不宣称高精度图形；有限采样不能认证数学边界。",
+      "current_support": "原二维单参数曲线保持；三坐标一参数3D曲线/两参数3D曲面，独立数学域、有限点/中点原域检查和断开，Rust法线/readonly颜色，mesh_points8..64默认48。color(position,...parameters)按实际参数计算。常量曲线是实际点标记。桌面/WebWebGL2与OBJ，iOS明确未适配且不自动采样。有限网格不能证明全部奇点/边界。",
       "target_support": "二维显示在桌面/Web/iOS；内核采样、保留孔洞、预算和旧请求隔离。 一参数二维/三维曲线；两参数三维曲面；三维显示仅桌面/Web。",
       "return_type": "plot_or_scene_request",
       "precision_modes": [
         "machine"
       ],
-      "precision_notes": "真实只读机器采样，资源/非有限/不支持模式有诊断，不是认证数学边界。",
+      "precision_notes": "真实readonly机器采样、精确源式保留，不把网格或光照宣称数学认证；高精度数字不静默降级。",
       "current_platforms": [
         "cli",
         "desktop",
@@ -13022,7 +13027,8 @@
         }
       ],
       "current_examples": [
-        "ParametricPlot[{Cos[t],Sin[t]},{t,0,2*Pi}]"
+        "ParametricPlot[{Cos[t],Sin[t]},{t,0,2*Pi}]",
+        "ParametricPlot3D[{Cos[t],Sin[t],t},{t,0,2*Pi}]"
       ],
       "planned_examples": [
         "parametric_plot([cos(t),sin(t),t],t:0..2*pi)"
@@ -13033,22 +13039,33 @@
       "name": "implicit_plot",
       "category": "plots",
       "kind": "function",
-      "status": "planned",
-      "interface_status": "planned",
-      "runtime_names": [],
-      "compatibility_names": [],
-      "current_modern_signatures": [],
+      "status": "partial",
+      "interface_status": "current",
+      "runtime_names": [
+        "ImplicitPlot3D"
+      ],
+      "compatibility_names": [
+        "ImplicitPlot3D"
+      ],
+      "current_modern_signatures": [
+        "implicit_plot(equation,x:a..b,y:c..d,z:e..f)"
+      ],
       "signatures": [
         "implicit_plot(equation, ...axes)"
       ],
-      "current_support": "本独立三维扩展身份未实现；当前二维implicit_plot沿用稳定fn_000119/ContourPlot入口，可用levels/log选项，详见plot条目。",
+      "current_support": "三维零等值曲面，默认24×24×24格、8..64网格分段；marching tetrahedra共享实际边根、原表达式实残差检查拒绝极点伪根，三角形法线向标量增大方向。未知/无采到有限曲面明确失败，不返回伪造全解。桌面/WebWebGL2/OBJ，iOS明确fallback且不自动采样。二维implicit_plot继续fn119/ContourPlot原解析，未改原有效表达式。",
       "target_support": "二维显示在桌面/Web/iOS；内核采样、保留孔洞、预算和旧请求隔离。 二维沿用轮廓算法；三维采用确定性网格及marching tetrahedra，奇点不连接。",
       "return_type": "plot_or_scene_request",
       "precision_modes": [
-        "planned_machine"
+        "machine_sampling"
       ],
-      "precision_notes": "真实只读机器采样，资源/非有限/不支持模式有诊断，不是认证数学边界。",
-      "current_platforms": [],
+      "precision_notes": "真实readonly机器采样、精确源式保留，不把网格或光照宣称数学认证；高精度数字不静默降级。",
+      "current_platforms": [
+        "cli",
+        "desktop",
+        "web",
+        "ios"
+      ],
       "target_platforms": [
         "cli",
         "desktop",
@@ -13071,7 +13088,9 @@
           "availability": "r3"
         }
       ],
-      "current_examples": [],
+      "current_examples": [
+        "ImplicitPlot3D[x^2+y^2+z^2==1,{x,-2,2},{y,-2,2},{z,-2,2}]"
+      ],
       "planned_examples": [
         "implicit_plot(x^2+y^2+z^2=1,x:-2..2,y:-2..2,z:-2..2)"
       ]

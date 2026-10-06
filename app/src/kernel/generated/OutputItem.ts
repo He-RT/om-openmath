@@ -3,6 +3,8 @@ import type { ExploreControl } from "./ExploreControl";
 import type { ExploreResult } from "./ExploreResult";
 import type { PlotData } from "./PlotData";
 import type { PlotRequest } from "./PlotRequest";
+import type { Scene3DData } from "./Scene3DData";
+import type { Scene3DRequest } from "./Scene3DRequest";
 import type { SolutionSetView } from "./SolutionSetView";
 import type { Span } from "./Span";
 import type { StepsView } from "./StepsView";
@@ -11,7 +13,19 @@ import type { ValuePage } from "./ValuePage";
 /**
  * Visible statement output, tagged independently of responses.
  */
-export type OutputItem = { "type": "explore",
+export type OutputItem = { "type": "scene3_d",
+/**
+ * Held portable request.
+ */
+request: Scene3DRequest,
+/**
+ * Actual geometry; absent for hosts with no 3D renderer.
+ */
+data: Scene3DData | null,
+/**
+ * Explicit current host limitation, never a fake image.
+ */
+unavailable: string | null, } | { "type": "explore",
 /**
  * Actual history index.
  */

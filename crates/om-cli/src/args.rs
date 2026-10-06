@@ -114,8 +114,10 @@ pub fn parse(mut values: Vec<String>) -> Result<Args, String> {
                 if source.is_some() == input.is_some() {
                     return Err("export需要唯一 -e SOURCE、SOURCE位置参数或--input FILE".into());
                 }
-                let format = format.take().ok_or("export需要--format svg|png|csv|json")?;
-                if !["svg", "png", "csv", "json"].contains(&format.as_str()) {
+                let format = format
+                    .take()
+                    .ok_or("export需要--format svg|png|csv|json|obj")?;
+                if !["svg", "png", "csv", "json", "obj"].contains(&format.as_str()) {
                     return Err("Unsupported export format".into());
                 }
                 Command::Export(crate::artifact::ExportArgs {

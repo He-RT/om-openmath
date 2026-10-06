@@ -120,3 +120,41 @@ fn source_only_notebook_exports_the_actual_last_table_and_scope_rejects_export_f
     );
     fs::remove_dir_all(dir).unwrap();
 }
+
+#[test]
+fn cli_obj_contains_original_3d_helix_geometry_and_real_normals_without_an_interactive_window() {
+    let dir = folder();
+    let target = dir.join("helix.obj");
+    let out = Command::new(env!("CARGO_BIN_EXE_om"))
+        .args([
+            "--no-config",
+            "--json",
+            "--dialect",
+            "modern",
+            "export",
+            "-e",
+            "parametric_plot([cos(t),sin(t),t],t:0..2*pi)",
+            "--format",
+            "obj",
+            "--output",
+        ])
+        .arg(&target)
+        .output()
+        .unwrap();
+    assert!(
+        out.status.success(),
+        "{}",
+        String::from_utf8_lossy(&out.stderr)
+    );
+    let data = fs::read_to_string(target).unwrap();
+    assert!(data.lines().any(|line| line.starts_with("l ")));
+    for vertex in data.lines().filter(|line| line.starts_with("v ")) {
+        let p = vertex
+            .split_whitespace()
+            .skip(1)
+            .map(|s| s.parse::<f64>().unwrap())
+            .collect::<Vec<_>>();
+        assert!((p[0] * p[0] + p[1] * p[1] - 1.).abs() < 1e-12);
+    }
+    fs::remove_dir_all(dir).unwrap();
+}

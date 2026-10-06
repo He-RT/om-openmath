@@ -141,7 +141,7 @@ fn named_scalar_contours_and_log_function_geometry_keep_original_coordinates() {
 fn nonfinite_raw_poles_wrong_shapes_and_readonly_writes_are_not_successful_samples() {
     let mut s = Session::new(Default::default(), None);
     for source in [
-        "parametric_plot([t,t,t],t:0..1)",
+        "parametric_plot([t,t,t,t],t:0..1)",
         "field_plot([x],x:-1..1,y:-1..1)",
         "data_plot([[1,2],[3]])",
         "histogram([1,2],bins:0)",

@@ -25,6 +25,8 @@ mod notebook;
 mod output;
 mod plot;
 mod plot_views;
+mod scene3d;
+mod scene_views;
 mod session;
 mod value_views;
 mod views;

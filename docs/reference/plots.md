@@ -18,7 +18,7 @@
 | [`field_plot`](#field_plot) | 已实现 | 当前可用 | 二维向量场或流线 |
 | [`histogram`](#histogram) | 已实现 | 当前可用 | 频数直方图 |
 | [`histogram3_d`](#histogram3_d) | 后续规划 | 规划接口，当前不可用 | 函数与数据绘图中的 Histogram3D 能力，进入后续全景目录。 |
-| [`implicit_plot`](#implicit_plot) | 下一版规划 | 规划接口，当前不可用 | 隐式等值曲线或曲面 |
+| [`implicit_plot`](#implicit_plot) | 部分支持 | 当前可用 | 隐式等值曲线或曲面 |
 | [`list_contour_plot`](#list_contour_plot) | 后续规划 | 规划接口，当前不可用 | 函数与数据绘图中的 ListContourPlot 能力，进入后续全景目录。 |
 | [`list_density_plot`](#list_density_plot) | 后续规划 | 规划接口，当前不可用 | 函数与数据绘图中的 ListDensityPlot 能力，进入后续全景目录。 |
 | [`list_plot3_d`](#list_plot3_d) | 后续规划 | 规划接口，当前不可用 | 函数与数据绘图中的 ListPlot3D 能力，进入后续全景目录。 |
@@ -439,21 +439,33 @@ histogram3_d(...)  # 后续接口尚未锁定
 
 ## implicit_plot
 
-**当前实现：下一版规划；目标接口：规划接口，当前不可用。** 目标版本：`0.1.0-pre-alpha.3`。
+**当前实现：部分支持；目标接口：当前可用。** 目标版本：`0.1.0-pre-alpha.3`。
 
 - 稳定身份：`fn_000220`；条目类型：`function`。
-- 副作用分类（设计预留）：`pure`；参数验证阶段：`documentation_only`，不构成工具授权。
+- 副作用分类（设计预留）：`pure`；参数验证阶段：`runtime_verified`，不构成工具授权。
 
 隐式等值曲线或曲面
 
-- 当前支持：本独立三维扩展身份未实现；当前二维implicit_plot沿用稳定fn_000119/ContourPlot入口，可用levels/log选项，详见plot条目。
+- 当前支持：三维零等值曲面，默认24×24×24格、8..64网格分段；marching tetrahedra共享实际边根、原表达式实残差检查拒绝极点伪根，三角形法线向标量增大方向。未知/无采到有限曲面明确失败，不返回伪造全解。桌面/WebWebGL2/OBJ，iOS明确fallback且不自动采样。二维implicit_plot继续fn119/ContourPlot原解析，未改原有效表达式。
 - 目标范围：二维显示在桌面/Web/iOS；内核采样、保留孔洞、预算和旧请求隔离。 二维沿用轮廓算法；三维采用确定性网格及marching tetrahedra，奇点不连接。
 - 返回：plot_or_scene_request
-- 精度：真实只读机器采样，资源/非有限/不支持模式有诊断，不是认证数学边界。
-- 当前计算平台：无；目标计算平台：cli, desktop, web, ios。
-- 目标图形/交互展示平台：desktop, web, ios。
-- 兼容名称：无既有兼容入口。
+- 精度：真实readonly机器采样、精确源式保留，不把网格或光照宣称数学认证；高精度数字不静默降级。
+- 当前计算平台：cli, desktop, web, ios；目标计算平台：cli, desktop, web, ios。
+- 目标图形/交互展示平台：desktop, web。
+- 兼容名称：`ImplicitPlot3D`。
 - 管道位置：第 1 个位置参数（从 1 起）。
+
+当前现代签名：
+
+```text
+implicit_plot(equation,x:a..b,y:c..d,z:e..f)
+```
+
+当前 Wolfram 签名：
+
+```text
+ImplicitPlot3D[equation,{x,a,b},{y,c,d},{z,e,f}]
+```
 
 目标现代签名（按目标接口状态判断是否已可执行）：
 
@@ -466,6 +478,12 @@ implicit_plot(equation, ...axes)
 | `equation` | positional | 必填 | 签名对应的equation参数 | r3 |
 | `axes` | axis | 数据图可省略 | 所需命名轴 | r3 |
 
+当前已登记示例（Wolfram）：
+
+```wolfram
+ImplicitPlot3D[x^2+y^2+z^2==1,{x,-2,2},{y,-2,2},{z,-2,2}]
+```
+
 规划示例（尚未执行；需要目标版本，后续条目不承诺 .3）：
 
 ```text
@@ -474,9 +492,9 @@ implicit_plot(x^2+y^2+z^2=1,x:-2..2,y:-2..2,z:-2..2)
 
 验收：独立数学期望、有效/无效参数、边界、预算、中断及声明的平台/精度测试；范围外不伪造成功。
 
-当前源码：暂无当前实现证据。
+当前源码：[crates/om-eval/src/plot_registry.rs](../../crates/om-eval/src/plot_registry.rs)、[crates/om-kernel/src/scene3d.rs](../../crates/om-kernel/src/scene3d.rs)。
 
-当前测试引用：暂无当前实现证据。
+当前测试引用：[crates/om-kernel/tests/scene3d.rs](../../crates/om-kernel/tests/scene3d.rs)、[crates/om-kernel/tests/plot_extensions.rs](../../crates/om-kernel/tests/plot_extensions.rs)。
 
 ## list_contour_plot
 
@@ -725,10 +743,10 @@ matrix_plot(...)  # 后续接口尚未锁定
 
 参数曲线或曲面
 
-- 当前支持：一参数二维两坐标机器曲线，800基础点加中点域检查；参数范围独立于相机；非有限/可识别跳变断开，采样不能发现全部奇点；三维曲线/曲面尚待R3.6。 输入/样本受Interrupt预算，readonly/取消不修改会话。精确输入可机器采样，新增路径拒绝高精度数静默降级；传统Plot/ContourPlot保留机器采样兼容语义，不宣称高精度图形；有限采样不能认证数学边界。
+- 当前支持：原二维单参数曲线保持；三坐标一参数3D曲线/两参数3D曲面，独立数学域、有限点/中点原域检查和断开，Rust法线/readonly颜色，mesh_points8..64默认48。color(position,...parameters)按实际参数计算。常量曲线是实际点标记。桌面/WebWebGL2与OBJ，iOS明确未适配且不自动采样。有限网格不能证明全部奇点/边界。
 - 目标范围：二维显示在桌面/Web/iOS；内核采样、保留孔洞、预算和旧请求隔离。 一参数二维/三维曲线；两参数三维曲面；三维显示仅桌面/Web。
 - 返回：plot_or_scene_request
-- 精度：真实只读机器采样，资源/非有限/不支持模式有诊断，不是认证数学边界。
+- 精度：真实readonly机器采样、精确源式保留，不把网格或光照宣称数学认证；高精度数字不静默降级。
 - 当前计算平台：cli, desktop, web, ios；目标计算平台：cli, desktop, web, ios。
 - 目标图形/交互展示平台：desktop, web, ios。
 - 兼容名称：`ParametricPlot`。
@@ -738,12 +756,14 @@ matrix_plot(...)  # 后续接口尚未锁定
 
 ```text
 parametric_plot(vector,t:a..b)
+parametric_plot([x,y,z],...axes)
 ```
 
 当前 Wolfram 签名：
 
 ```text
 ParametricPlot[vector,{t,a,b}]
+ParametricPlot3D[vector,{u,a,b},{v,c,d}]
 ```
 
 目标现代签名（按目标接口状态判断是否已可执行）：
@@ -762,6 +782,7 @@ parametric_plot(vector, ...axes)
 
 ```wolfram
 ParametricPlot[{Cos[t],Sin[t]},{t,0,2*Pi}]
+ParametricPlot3D[{Cos[t],Sin[t],t},{t,0,2*Pi}]
 ```
 
 规划示例（尚未执行；需要目标版本，后续条目不承诺 .3）：
@@ -772,9 +793,9 @@ parametric_plot([cos(t),sin(t),t],t:0..2*pi)
 
 验收：独立数学期望、有效/无效参数、边界、预算、中断及声明的平台/精度测试；范围外不伪造成功。
 
-当前源码：[crates/om-eval/src/plot_registry.rs](../../crates/om-eval/src/plot_registry.rs)、[crates/om-kernel/src/plot/extended.rs](../../crates/om-kernel/src/plot/extended.rs)。
+当前源码：[crates/om-eval/src/plot_registry.rs](../../crates/om-eval/src/plot_registry.rs)、[crates/om-kernel/src/scene3d.rs](../../crates/om-kernel/src/scene3d.rs)。
 
-当前测试引用：[crates/om-kernel/tests/plot_extensions.rs](../../crates/om-kernel/tests/plot_extensions.rs)、[crates/om-kernel/tests/plot_sampling.rs](../../crates/om-kernel/tests/plot_sampling.rs)、[app/src/components/plot/PlotView.test.tsx](../../app/src/components/plot/PlotView.test.tsx)、[ios/OpenMathTests/PlotExtensionTests.swift](../../ios/OpenMathTests/PlotExtensionTests.swift)。
+当前测试引用：[crates/om-kernel/tests/scene3d.rs](../../crates/om-kernel/tests/scene3d.rs)、[crates/om-kernel/tests/plot_extensions.rs](../../crates/om-kernel/tests/plot_extensions.rs)。
 
 ## pie_chart
 
@@ -819,10 +840,10 @@ pie_chart(...)  # 后续接口尚未锁定
 
 采样一元实函数图像。；采样二元隐函数等值轮廓。
 
-- 当前支持：二维实函数/标量等高线/96×96密度真实机器采样；log_x/log_y/log_log正窗口；固定color仅曲线。三维surface尚待R3.6。 输入/样本受Interrupt预算，readonly/取消不修改会话。精确输入可机器采样，新增路径拒绝高精度数静默降级；传统Plot/ContourPlot保留机器采样兼容语义，不宣称高精度图形；有限采样不能认证数学边界。
+- 当前支持：原二维Plot/ContourPlot/DensityPlot保持；三维Plot3D真实固定网格、中心域检查、三角形/法线/颜色由Rust生成。现代一轴默认line、两轴默认surface，也可显式view。mesh_points8..64默认48，readonly color(position,x,y)或固定颜色。桌面/Web真实WebGL2交互、无WebGL2保留原式和OBJ；iOS不自动采样3D并明确fallback。网格不是认证/完整曲面。
 - 目标范围：统一二维/曲面视图、对数坐标、采样颜色和样式；三维仅桌面/Web可交互展示。
 - 返回：plot_or_scene_request
-- 精度：现有绘图经过只读 f64 编译与真实内核采样；符号输入可精确保存，像素/采样不是认证解。
+- 精度：真实readonly机器采样、精确源式保留，不把网格或光照宣称数学认证；高精度数字不静默降级。
 - 当前计算平台：cli, desktop, web, ios；目标计算平台：cli, desktop, web, ios。
 - 目标图形/交互展示平台：desktop, web, ios。
 - 兼容名称：`Plot`、`ContourPlot`。
@@ -834,6 +855,7 @@ pie_chart(...)  # 后续接口尚未锁定
 plot(expr,x:a..b)
 plot(expr,x:a..b,y:c..d,view:"contour")
 plot(expr,x:a..b,y:c..d,view:"density")
+plot(expr,x:a..b,y:c..d,view:"surface")
 ```
 
 当前 Wolfram 签名：
@@ -842,6 +864,7 @@ plot(expr,x:a..b,y:c..d,view:"density")
 Plot[expr,{x,min,max}]
 ContourPlot[eq,{x,min,max},{y,min,max}]
 DensityPlot[expr,{x,a,b},{y,c,d}]
+Plot3D[expr,{x,a,b},{y,c,d}]
 ```
 
 目标现代签名（按目标接口状态判断是否已可执行）：
@@ -865,6 +888,7 @@ plot(expr, x: lo..hi, y: lo..hi, view: "line")
 Plot[Sin[x],{x,0,2*Pi}]
 ContourPlot[x^2+y^2==1,{x,-2,2},{y,-2,2}]
 DensityPlot[x*y,{x,-2,2},{y,-2,2}]
+Plot3D[Sin[x]*Cos[y],{x,-2,2},{y,-2,2}]
 ```
 
 规划示例（尚未执行；需要目标版本，后续条目不承诺 .3）：
@@ -876,9 +900,9 @@ plot(sin(x)*cos(y), x: -pi..pi, y: -pi..pi, view: "surface")
 
 验收：现有行为、参数拒绝、解析/格式往返、中断和独立数学期望保持不变；新签名另写正反例。
 
-当前源码：[crates/om-eval/src/plot_registry.rs](../../crates/om-eval/src/plot_registry.rs)。
+当前源码：[crates/om-eval/src/plot_registry.rs](../../crates/om-eval/src/plot_registry.rs)、[crates/om-kernel/src/scene3d.rs](../../crates/om-kernel/src/scene3d.rs)。
 
-当前测试引用：[crates/om-kernel/tests/plot_extensions.rs](../../crates/om-kernel/tests/plot_extensions.rs)、[crates/om-kernel/tests/plot_sampling.rs](../../crates/om-kernel/tests/plot_sampling.rs)、[app/src/components/plot/PlotView.test.tsx](../../app/src/components/plot/PlotView.test.tsx)、[ios/OpenMathTests/PlotExtensionTests.swift](../../ios/OpenMathTests/PlotExtensionTests.swift)。
+当前测试引用：[crates/om-kernel/tests/scene3d.rs](../../crates/om-kernel/tests/scene3d.rs)、[crates/om-kernel/tests/plot_extensions.rs](../../crates/om-kernel/tests/plot_extensions.rs)。
 
 ## polar_plot
 

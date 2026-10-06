@@ -13,12 +13,17 @@ import type { NotebookFile } from "./NotebookFile";
 import type { NotebookState } from "./NotebookState";
 import type { PlotData } from "./PlotData";
 import type { PreviewResult } from "./PreviewResult";
+import type { Scene3DData } from "./Scene3DData";
 import type { ValuePage } from "./ValuePage";
 
 /**
  * Synchronous reply to a client request.
  */
-export type Response = { "type": "artifact",
+export type Response = { "type": "scene3_d",
+/**
+ * Actual finite geometry.
+ */
+data: Scene3DData, } | { "type": "artifact",
 /**
  * Actual exact bytes and encoding.
  */

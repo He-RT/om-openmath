@@ -4,7 +4,7 @@
 
 [全景目录](README.md) · [下一版账本](../plan/NEXT_RELEASE.md)
 
-描述版本 23；下列均有真实回调。现代组合语法及已有回调的 mode/output 已接通，后续数学能力仍须按 R3.3–R3.6 交付。参数类型约束用于字面输入；符号与表达式在真实回调求值后检查。默认表达式仅描述省略行为，不自动插入参数；上下文默认值不伪装成字面值。副作用标签只描述入口，不能授权嵌套函数或替代只读隔离。
+描述版本 24；下列均有真实回调。现代组合语法及已有回调的 mode/output 已接通，后续数学能力仍须按 R3.3–R3.6 交付。参数类型约束用于字面输入；符号与表达式在真实回调求值后检查。默认表达式仅描述省略行为，不自动插入参数；上下文默认值不伪装成字面值。副作用标签只描述入口，不能授权嵌套函数或替代只读隔离。
 
 ## abs
 
@@ -996,7 +996,7 @@
 |---|---|---|---|---|---|
 | `expr` | 位置 | expression | 是 | 必填 |  |
 | `axis` | 位置 | expression | 是 | 必填 |  |
-| `view` | 命名 | enum | 否 | "line" | line, contour, density |
+| `view` | 命名 | enum | 否 | "line" | line, contour, density, surface |
 | `plot_range` | 命名 | expression | 否 | Automatic |  |
 | `scale` | 命名 | enum | 否 | "linear" | linear, log_x, log_y, log_log |
 | `color` | 命名 | expression | 否 | 省略主题色 |  |
@@ -3133,4 +3133,52 @@
 | `initial` | 命名 | expression | 否 | 每个参数范围中点；部分指定允许 |  |
 
 数学边界与精度：[所属条目](scene.md#explore)。
+
+## plot_surface
+
+稳定身份 `fn_000119`；回调 `Plot3D`；归属 `plot`。兼容拼写：无其他现代拼写。
+
+保持属性：hold_all, protected；管道输入位置：1；入口副作用：`pure`。
+
+| 参数 | 角色 | 类型 | 必填 | 默认值或上下文 | 枚举 / 范围 |
+|---|---|---|---|---|---|
+| `expression` | 位置 | expression | 是 | 必填 |  |
+| `axis_1` | 位置 | expression | 是 | 必填 |  |
+| `axis_2` | 位置 | expression | 是 | 必填 |  |
+| `mesh_points` | 命名 | integer | 否 | 48 | ; ≥8; ≤64 |
+| `color` | 命名 | expression | 否 | 绿色；固定颜色名/#RRGGBB或只读fn(position,...axes) |  |
+
+数学边界与精度：[所属条目](plots.md#plot)。
+
+## parametric_plot_3d
+
+稳定身份 `fn_000219`；回调 `ParametricPlot3D`；归属 `parametric_plot`。兼容拼写：无其他现代拼写。
+
+保持属性：hold_all, protected；管道输入位置：1；入口副作用：`pure`。
+
+| 参数 | 角色 | 类型 | 必填 | 默认值或上下文 | 枚举 / 范围 |
+|---|---|---|---|---|---|
+| `expression` | 位置 | expression | 是 | 必填 |  |
+| `axis_1` | 位置（重复） | expression | 是 | 必填 |  |
+| `mesh_points` | 命名 | integer | 否 | 48 | ; ≥8; ≤64 |
+| `color` | 命名 | expression | 否 | 绿色；固定颜色名/#RRGGBB或只读fn(position,...axes) |  |
+
+数学边界与精度：[所属条目](plots.md#parametric_plot)。
+
+## implicit_plot_3d
+
+稳定身份 `fn_000220`；回调 `ImplicitPlot3D`；归属 `implicit_plot`。兼容拼写：无其他现代拼写。
+
+保持属性：hold_all, protected；管道输入位置：1；入口副作用：`pure`。
+
+| 参数 | 角色 | 类型 | 必填 | 默认值或上下文 | 枚举 / 范围 |
+|---|---|---|---|---|---|
+| `expression` | 位置 | expression | 是 | 必填 |  |
+| `axis_1` | 位置 | expression | 是 | 必填 |  |
+| `axis_2` | 位置 | expression | 是 | 必填 |  |
+| `axis_3` | 位置 | expression | 是 | 必填 |  |
+| `mesh_points` | 命名 | integer | 否 | 24 | ; ≥8; ≤64 |
+| `color` | 命名 | expression | 否 | 绿色；固定颜色名/#RRGGBB或只读fn(position,...axes) |  |
+
+数学边界与精度：[所属条目](plots.md#implicit_plot)。
 

@@ -46,6 +46,9 @@ pub struct CapabilityInfo {
     pub rendered_outputs: Vec<String>,
     /// Native scene interaction is unavailable until the 3D milestone passes its gates.
     pub scene_3d: bool,
+    /// Current explicit host artifact formats, independent of notebook/agent write permissions.
+    #[serde(default)]
+    pub export_formats: Vec<String>,
     /// None: this query does not implement or grant future Notebook Agent permissions.
     pub task_permissions: Option<Vec<String>>,
 }
@@ -87,6 +90,10 @@ pub fn capabilities(platform: HostPlatform) -> CapabilityInfo {
         platform,
         rendered_outputs: rendered_outputs.into_iter().map(String::from).collect(),
         scene_3d: false,
+        export_formats: ["svg", "png", "csv", "json"]
+            .into_iter()
+            .map(String::from)
+            .collect(),
         task_permissions: None,
     }
 }

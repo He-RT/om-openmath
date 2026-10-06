@@ -32,6 +32,7 @@ for package in metadata["packages"]:
 
 for name in ["LICENSE-MIT", "LICENSE-APACHE", "THIRD_PARTY_NOTICES.md"]:
     shutil.copyfile(root / name, out / name)
+shutil.copytree(root / "licenses/plot-font", out / "OpenMathPlotLabels", dirs_exist_ok=True)
 framework = root / "ios/Frameworks/OpenMathKernel.xcframework"
 if framework.is_dir():
     shutil.copytree(out, framework / "Licenses", dirs_exist_ok=True)

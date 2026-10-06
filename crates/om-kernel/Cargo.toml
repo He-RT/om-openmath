@@ -22,6 +22,7 @@ om-simplify.workspace = true
 om-llm.workspace = true
 serde.workspace = true
 serde_json.workspace = true
+swash.workspace = true
 ts-rs.workspace = true
 thiserror.workspace = true
 toml = {workspace=true,optional=true}

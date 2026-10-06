@@ -1,0 +1,20 @@
+{
+  "upstream": "https://github.com/notofonts/noto-cjk",
+  "commit": "f8d157532fbfaeda587e826d4cd5b21a49186f7c",
+  "source_path": "Sans/SubsetOTF/SC/NotoSansSC-Regular.otf",
+  "source_sha256": "faa6c9df652116dde789d351359f3d7e5d2285a2b2a1f04a2d7244df706d5ea9",
+  "fonttools": "4.62.1",
+  "asset_sha256": "2d0e527f23981252159ff1ff7c65a667e0e3249844a0be549afa66813821566b",
+  "bytes": 6014392,
+  "glyph_count": 21743,
+  "license": "OFL-1.1",
+  "unicode_ranges": [
+    "0020-00FF",
+    "0370-03FF",
+    "2000-206F",
+    "2100-22FF",
+    "3000-303F",
+    "4E00-9FFF",
+    "FF00-FFEF"
+  ]
+}

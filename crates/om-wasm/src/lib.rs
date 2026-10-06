@@ -55,11 +55,14 @@ impl Kernel {
     }
 }
 fn dispatch(session: &mut Session, source: &str) -> Result<String, String> {
-    if source.len() > 2_097_152 {
+    if source.len() > 16 * 1024 * 1024 {
         return Err("Kernel envelope exceeds limit".into());
     }
     let request: Envelope<Request> =
         serde_json::from_str(source).map_err(|_| "Invalid kernel envelope")?;
+    if !om_kernel::protocol::request_size_allowed(source.len(), &request.body) {
+        return Err("Kernel envelope exceeds limit".into());
+    }
     if request.id == 0 || request.id > 9_007_199_254_740_991 {
         return Err("Invalid request correlation ID".into());
     }

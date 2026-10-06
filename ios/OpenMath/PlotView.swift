@@ -5,6 +5,7 @@ struct PlotView: View {
   var initial: JSONValue = .null
   var controller: NotebookController
   var sample: ((JSONValue) async throws -> KernelPacket)? = nil
+  var exportParameters: JSONValue = .null
   @Environment(\.isEnabled) private var isEnabled
   @State private var data: JSONValue = .null
   @State private var working: JSONValue = .null
@@ -168,6 +169,20 @@ struct PlotView: View {
         if sampling { ProgressView() }
       }
       .buttonStyle(.borderless)
+      HStack {
+        ForEach(["svg", "png"], id: \.self) { format in
+          ExportArtifactButton(title: controller.text("导出 ", "Export ") + format.uppercased(), name: "OpenMath-plot", version: "\(revision)", enabled: isEnabled && !sampling && failure == nil && !data.isNull, controller: controller) {
+            var parameters = working["params"].object
+            parameters.merge(exportParameters.object) { _, new in new }
+            return .object(["type": .string("export_plot"), "format": .string(format), "figure": .object([
+              "data": data, "axis_x": .string(request["kind"].string == "Parametric" ? "x" : request["var_x"].string),
+              "axis_y": .string(request["var_y"].isNull ? "y" : request["var_y"].string), "title": .string("OpenMath"),
+              "color": working["options"]["color"], "region": .bool(request["kind"].string == "Region"),
+              "parameters": .object(parameters), "width": .number(1000), "height": .number(600),
+            ])])
+          }
+        }
+      }.buttonStyle(.borderless).font(.caption)
       ForEach(working["params"].object.keys.sorted(), id: \.self) { name in
         let ranges = working["param_ranges"][name].array.map(\.double)
         let lower = ranges.first ?? -5

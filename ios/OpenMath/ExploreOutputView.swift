@@ -49,12 +49,21 @@ struct ExploreOutputView: View {
         ExpressionOutput(item: output, controller: controller, fresh: fresh && !busy && !changed, inspect: inspect)
           .id("\(item["view_id"].string):\(displayed["revision"].double)")
       } else if output["type"].string == "plot" {
-        PlotView(request: output["request"], initial: output["data"], controller: controller, sample: sample)
+        PlotView(request: output["request"], initial: output["data"], controller: controller, sample: sample, exportParameters: displayed["values"])
           .id("\(item["view_id"].string):\(displayed["revision"].double)").disabled(!fresh || busy || changed)
       } else if output["type"].string == "solutions" {
         SolutionCards(item: output, cell: cell, controller: controller)
       } else { Text(output["message"].string).foregroundStyle(.red) }
       Text("\(displayed["timing_ms"].double.formatted(.number.precision(.fractionLength(0...2)))) ms").font(.caption2).foregroundStyle(.secondary)
+      if !displayed["value_token"].isNull {
+        HStack {
+          ForEach(["csv", "json"], id: \.self) { format in
+            ExportArtifactButton(title: controller.text("导出 ", "Export ") + format.uppercased(), name: "OpenMath-explore-data", version: "\(displayed["revision"].double)", enabled: fresh && !busy && !changed, controller: controller) {
+              .object(["type": .string("export_value_token"), "format": .string(format), "token": displayed["value_token"]])
+            }
+          }
+        }.font(.caption).buttonStyle(.borderless)
+      }
       ForEach(Array(displayed["messages"].array.enumerated()), id: \.offset) { _, message in
         Text(message["text"].string).font(.caption).foregroundStyle(.secondary).textSelection(.enabled)
       }

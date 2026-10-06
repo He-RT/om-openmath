@@ -5,6 +5,7 @@ import type { ExpressionView } from '../../kernel/generated/ExpressionView';
 import type { ValuePage } from '../../kernel/generated/ValuePage';
 import type { ValueEntry } from '../../kernel/generated/ValueEntry';
 import { Katex } from './Katex';
+import { ArtifactButton } from './ArtifactButton';
 import { SourceActions } from './Actions';
 import { fieldLabel, kindLabel, natureLabel, statusLabel } from './valueLabels';
 
@@ -94,6 +95,10 @@ export function ValueView({ initial, cellId, outIndex, value, fresh, kernel, lan
       </>}
     </nav>}
     <div className="value-actions">
+      {(['csv','json'] as const).map(format=><ArtifactButton key={format} kernel={kernel} t={t} title="OpenMath-data" label={format==='csv'?t.exportCsv:t.exportJson}
+        version={`${initial.view_id}:${page.path.join('.')}`} enabled={fresh&&!busy&&!!cellId}
+        request={()=>({type:'export_value',format,query:{cell_id:cellId,out_index:outIndex,view_id:initial.view_id,path:page.path,offset:0,limit:32,column_offset:0,column_limit:8,include_source:false}})}/>)}
+
       {shownSource && <SourceActions value={shownSource} t={t} onInsert={onInsert} />}
       <button disabled={!root && (!fresh || busy || !cellId)} onClick={() => {
         if (shownSource) setSourceVisible(previous => !previous); else load(page.path, page.offset, page.column_offset, true);

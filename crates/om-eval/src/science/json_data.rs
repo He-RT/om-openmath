@@ -272,7 +272,7 @@ impl Writer<'_> {
         }
     }
 }
-pub(super) fn encode(e: &Expr, ctx: &Interrupt) -> Result<String, EvalError> {
+pub(crate) fn encode(e: &Expr, ctx: &Interrupt) -> Result<String, EvalError> {
     let mut writer = Writer {
         text: String::new(),
         nodes: 0,

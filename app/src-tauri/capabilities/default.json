@@ -1,7 +1,7 @@
 {
   "$schema": "../gen/schemas/desktop-schema.json",
   "identifier": "default",
-  "description": "Core commands and explicit user-picked source notebook files.",
+  "description": "内核操作与用户明确选择的笔记本和导出文件。",
   "windows": ["main"],
-  "permissions": ["core:default", "dialog:allow-open", "dialog:allow-save", "fs:allow-read-text-file", "fs:allow-write-text-file"]
+  "permissions": ["core:default", "dialog:allow-open", "dialog:allow-save", "fs:allow-read-text-file", "fs:allow-write-text-file", "fs:allow-write-file", "fs:allow-read-file"]
 }

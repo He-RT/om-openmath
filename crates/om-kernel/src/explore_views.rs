@@ -40,4 +40,8 @@ pub struct ExploreResult {
     pub messages: Vec<crate::wire::Message>,
     /// Actual evaluator/sampling elapsed time when a host clock exists; zero otherwise.
     pub timing_ms: f64,
+    /// Immutable raw expression graph for explicit pure data export; omitted for other results.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[ts(optional)]
+    pub value_token: Option<String>,
 }

@@ -34,6 +34,10 @@ rendered_outputs: Array<string>,
  */
 scene_3d: boolean,
 /**
+ * Current explicit host artifact formats, independent of notebook/agent write permissions.
+ */
+export_formats: Array<string>,
+/**
  * None: this query does not implement or grant future Notebook Agent permissions.
  */
 task_permissions: Array<string> | null, };

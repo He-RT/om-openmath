@@ -143,11 +143,14 @@ impl Host {
     }
     /// Dispatch one bounded JSON envelope and return actual response/events.
     pub fn request(&self, source: &str) -> Result<String, String> {
-        if source.len() > 2_097_152 || self.shared.closed.load(Ordering::Acquire) {
+        if source.len() > 16 * 1024 * 1024 || self.shared.closed.load(Ordering::Acquire) {
             return Err("Kernel is closed or envelope exceeds limit".into());
         }
         let envelope: Envelope<Request> =
             serde_json::from_str(source).map_err(|_| "Invalid kernel envelope")?;
+        if !om_kernel::protocol::request_size_allowed(source.len(), &envelope.body) {
+            return Err("Kernel envelope exceeds limit".into());
+        }
         if envelope.id == 0 || envelope.id > 9_007_199_254_740_991 {
             return Err("Invalid correlation ID".into());
         }

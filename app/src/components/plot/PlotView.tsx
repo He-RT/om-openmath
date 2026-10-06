@@ -10,6 +10,7 @@ import {
   validRange,
   formatCoordinate,
 } from "./scale";
+import { ArtifactButton } from "../output/ArtifactButton";
 import { PlotGeometry, margins, type Viewport } from "./geometry";
 import { usePlotSampler } from "./usePlotSampler";
 import { Sliders } from "./sliders";
@@ -19,6 +20,7 @@ export interface PlotProps {
   kernel: KernelClient;
   t: Messages;
   active?: boolean;
+  exportParameters?: Record<string,number>;
 }
 const identities = new WeakMap<object, number>();
 let nextIdentity = 0;
@@ -46,6 +48,7 @@ function InteractivePlot({
   kernel,
   t,
   active = true,
+  exportParameters = {},
 }: PlotProps) {
   const initial: Viewport = {
     x: data?.x_range ?? request.x_range,
@@ -317,6 +320,11 @@ function InteractivePlot({
           cursor={cursor}
         />
       </svg>
+      <div className="plot-exports">
+        {(['svg','png'] as const).map(format=><ArtifactButton key={format} kernel={kernel} t={t} label={format==='svg'?t.exportSvg:t.exportPng}
+          title="OpenMath-plot" version={sampler.data} enabled={active&&!sampler.pending&&!sampler.error&&sampler.data!==null}
+          request={()=>sampler.data?{type:'export_plot',format,figure:{data:sampler.data,axis_x:request.kind==='Parametric'?'x':request.var_x,axis_y:request.var_y??'y',title:'OpenMath',color:request.options?.color??null,region:request.kind==='Region',parameters:{...paramsRef.current,...exportParameters},width:1000,height:600}}:undefined}/>)}
+      </div>
       <div className="plot-readout">
         <span>
           {t.coordinates}:{" "}

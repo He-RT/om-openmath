@@ -16,6 +16,7 @@ export function OutputView({
   onInsert,
   onSteps,
   cellId = '',
+  exportParameters = {},
 }: {
   output: CellOutput;
   stale: boolean;
@@ -25,6 +26,7 @@ export function OutputView({
   onInsert: (source: string) => void;
   onSteps: (outIndex: number) => void;
   cellId?: string;
+  exportParameters?: Record<string,number>;
 }) {
   return (
     <div
@@ -65,6 +67,7 @@ export function OutputView({
               kernel={kernel}
               t={t}
               active={!stale}
+              exportParameters={exportParameters}
             />
           )}
         </div>

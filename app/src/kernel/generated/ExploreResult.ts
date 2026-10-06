@@ -29,4 +29,8 @@ messages: Array<Message>,
 /**
  * Actual evaluator/sampling elapsed time when a host clock exists; zero otherwise.
  */
-timing_ms: number, };
+timing_ms: number,
+/**
+ * Immutable raw expression graph for explicit pure data export; omitted for other results.
+ */
+value_token?: string, };

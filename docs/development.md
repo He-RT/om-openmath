@@ -85,3 +85,5 @@ CARGO_PROFILE_TEST_OPT_LEVEL=2 cargo test -p om-eval --test function_catalog --l
 ```
 
 Rust审计穷尽真实DocEntry注册名并检查当前示例；Python检查目录/证据/稳定身份/生成一致性和未实现条目不冒充支持。副作用和Agent事务的运行时仍在后续阶段；不引入Pi/Rig类型到业务协议，不把Agent会话/日志/提示词/权限或凭据塞进.omnb。
+
+`.3` dev 的共享图形导出在om-kernel/artifact：仅绘制已采样几何，PNG标签用固定OFL字体/Swash纯Rust，支持WASM和两个iOS ARM64切片，不需要系统字体路径/GPU/Python运行时。新纯导出请求的独立尺寸/字节/遍历预算及SVG/PNG规范、实际文件回读在[导出设计](design/artifact-export.md)；维护字体时用锁定生成脚本和licenses/plot-font/manifest.json验证，不更新库内任意精度数学算法。

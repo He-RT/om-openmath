@@ -224,7 +224,7 @@ impl Writer<'_> {
         self.push("\r\n")
     }
 }
-pub(super) fn encode(e: &Expr, ctx: &Interrupt) -> Result<String, EvalError> {
+pub(crate) fn encode(e: &Expr, ctx: &Interrupt) -> Result<String, EvalError> {
     let mut writer = Writer {
         text: String::new(),
         ctx,

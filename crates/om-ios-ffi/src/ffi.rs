@@ -111,7 +111,7 @@ pub unsafe extern "C" fn om_ios_create(data: *const u8, len: usize) -> u64 {
 pub unsafe extern "C" fn om_ios_request(id: u64, data: *const u8, len: usize) -> OmBuffer {
     let result = std::panic::catch_unwind(|| {
         // SAFETY: the exported caller contract supplies this readable buffer.
-        let bytes = unsafe { input(data, len, 2_097_152) }?;
+        let bytes = unsafe { input(data, len, 16 * 1024 * 1024) }?;
         let text = std::str::from_utf8(bytes).map_err(|_| "Invalid UTF-8")?;
         host(id)?.request(text)
     })

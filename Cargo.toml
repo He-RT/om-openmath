@@ -27,7 +27,8 @@ rustc-hash = "2.1.3"
 indexmap = "2.14.2"
 thiserror = "2.0.21"
 serde = { version = "1.0.229", features = ["derive"] }
-serde_json = "1.0.151"
+serde_json = { version = "1.0.151", features = ["float_roundtrip"] }
+swash = { version = "=0.2.10", default-features = false, features = ["std", "scale", "render"] }
 ts-rs = { version = "12.0.1", features = ["serde-json-impl"] }
 toml = "1.1.6"
 directories = "6.0.0"

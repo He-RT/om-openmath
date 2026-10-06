@@ -2,7 +2,7 @@
 mod basics;
 mod calculus_registry;
 mod calculus_source;
-mod csv_data;
+pub(crate) mod csv_data;
 mod data;
 mod data_number;
 mod fitted_model;
@@ -17,7 +17,7 @@ mod integral_rules;
 mod integration_registry;
 mod interpolation_data;
 mod io_registry;
-mod json_data;
+pub(crate) mod json_data;
 mod limit_rational;
 mod limits;
 mod matrix;

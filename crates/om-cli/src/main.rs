@@ -2,6 +2,7 @@
 #![forbid(unsafe_code)]
 
 mod args;
+mod artifact;
 mod catalog;
 mod commands;
 mod editor;
@@ -30,7 +31,7 @@ fn run() -> Result<i32, String> {
     };
     if matches!(args.command, args::Command::Help) {
         println!(
-            "OpenMath\nUsage: om [-e SOURCE] [--json] [--dialect modern|wolfram|auto] [--language en|zh-CN]\n       om run FILE | config path|show|edit | llm test PROFILE\n       --config PATH | --no-config"
+            "OpenMath\nUsage: om [-e SOURCE] [--json] [--dialect modern|wolfram|auto] [--language en|zh-CN]\n       om run FILE | config path|show|edit | llm test PROFILE\n       om export -e SOURCE --format svg|png|csv|json --output FILE [--input FILE] [--overwrite]\n       --config PATH | --no-config"
         );
         return Ok(0);
     }
@@ -42,6 +43,7 @@ fn run() -> Result<i32, String> {
     let signal = host.signal.clone();
     ctrlc::set_handler(move || signal.stop()).map_err(|_| "Interrupt handler unavailable")?;
     match args.command {
+        args::Command::Export(export) => host.export_artifact(export),
         args::Command::Eval(source) => host.evaluate(source, false),
         args::Command::Run(path) => host.run_file(&path),
         args::Command::Config(action) => {

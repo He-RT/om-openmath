@@ -100,6 +100,14 @@ struct ValueOutputView: View {
     }
   }
   @ViewBuilder private var actions: some View {
+    ForEach(["csv", "json"], id: \.self) { format in
+      ExportArtifactButton(title: controller.text("导出 ", "Export ") + format.uppercased(), name: "OpenMath-data", version: item["presentation"]["view_id"].string + page["path"].pretty, enabled: fresh && !busy, controller: controller) {
+        .object(["type": .string("export_value"), "format": .string(format), "query": .object([
+          "cell_id": .string(cell.id), "out_index": item["out_index"], "view_id": item["presentation"]["view_id"],
+          "path": page["path"], "offset": .number(0), "limit": .number(32), "column_offset": .number(0), "column_limit": .number(8), "include_source": .bool(false),
+        ])])
+      }
+    }
     if !source.isNull {
       Menu(controller.text("复制", "Copy")) {
         Button("Wolfram") { UIPasteboard.general.string = source["input_form"].string }

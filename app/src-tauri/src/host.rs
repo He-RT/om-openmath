@@ -87,11 +87,14 @@ impl KernelHost {
         if self.shared.closed.load(Ordering::Relaxed) {
             return Err("Kernel host is closed".into());
         }
-        if envelope.len() > 2_097_152 {
+        if envelope.len() > 16 * 1024 * 1024 {
             return Err("Kernel envelope exceeds limit".into());
         }
         let request: Envelope<Request> =
             serde_json::from_str(&envelope).map_err(|_| "Invalid kernel envelope")?;
+        if !om_kernel::protocol::request_size_allowed(envelope.len(), &request.body) {
+            return Err("Kernel envelope exceeds limit".into());
+        }
         if request.id == 0 || request.id > 9_007_199_254_740_991 {
             return Err("Invalid request correlation ID".into());
         }

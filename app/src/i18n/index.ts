@@ -133,6 +133,8 @@ const en = {
   cancel: "Cancel",
   stepsOutput: "Steps output",
 
+  exportSvg: "Export SVG", exportPng: "Export PNG", exportCsv: "Export CSV", exportJson: "Export JSON",
+  exporting: "Exporting…", exportFailure: "Export failed", exportSaved: "File saved and verified", exportDownload: "Download started",
   plotData: "Kernel sample data",
   plotApproximation: "Sampled visualization; no certified boundary",
   skippedSamples: "Skipped nonfinite or out-of-domain samples",
@@ -378,6 +380,8 @@ const zh: typeof en = {
   cancel: "取消",
   stepsOutput: "步骤输出",
 
+  exportSvg: "导出 SVG", exportPng: "导出 PNG", exportCsv: "导出 CSV", exportJson: "导出 JSON",
+  exporting: "正在导出…", exportFailure: "导出失败", exportSaved: "文件已保存并回读校验", exportDownload: "已开始下载",
   plotData: "内核采样数据",
   plotApproximation: "采样示意，边界未经认证",
   skippedSamples: "跳过非有限或不在定义域的样本",

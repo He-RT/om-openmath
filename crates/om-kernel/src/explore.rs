@@ -85,6 +85,14 @@ pub(crate) fn compute(
         view_id: view_id.into(),
         exploration: None,
     };
+    let value_token = if matches!(
+        crate::output::values::kind(&record.value),
+        ValueKind::List | ValueKind::Matrix | ValueKind::Record | ValueKind::Table
+    ) {
+        Some(value_token(&record.value, ctx)?)
+    } else {
+        None
+    };
     let mut item = crate::output::pack(&mut record, &ev, ctx, false)?;
     // Ephemeral slider results are not stored in notebook history; do not expose pages bound to the held Explore record.
     if let OutputItem::Expr { presentation, .. } = &mut item {
@@ -97,6 +105,7 @@ pub(crate) fn compute(
         values: parameters,
         item: Box::new(item),
         messages,
+        value_token,
         timing_ms: started
             .and_then(|start| ctx.clock.as_ref().map(|clock| clock.now_ms() - start))
             .filter(|v| v.is_finite() && *v >= 0.)
@@ -282,53 +291,7 @@ fn restore(source: &str, ctx: &Interrupt) -> Result<(Snapshot, String, u32), Plo
     {
         return Err(error("只读状态求值限制无效"));
     }
-    let mut exprs: Vec<Expr> = vec![];
-    for node in c.nodes {
-        ctx.tick()?;
-        let expr = match node {
-            Node::Number(n) => {
-                fn valid(n: &om_num::Number) -> bool {
-                    match n {
-                        om_num::Number::Real(om_num::Real::Machine(v)) => v.is_finite(),
-                        om_num::Number::Real(om_num::Real::Big(v)) => {
-                            v.repr().is_finite() && v.precision() <= 16384
-                        }
-                        om_num::Number::Complex(c) => {
-                            !matches!(c.re, om_num::Number::Complex(_))
-                                && !matches!(c.im, om_num::Number::Complex(_))
-                                && valid(&c.re)
-                                && valid(&c.im)
-                        }
-                        _ => true,
-                    }
-                }
-                if !valid(&n) {
-                    return Err(error("只读状态包含无效数值/精度"));
-                }
-                Expr::number(n)
-            }
-            Node::Symbol(s) => Expr::symbol(&s),
-            Node::String(s) => Expr::string(&s),
-            Node::Normal { head, args } => {
-                let head = exprs
-                    .get(head as usize)
-                    .ok_or_else(|| error("无效向前/循环结构引用"))?
-                    .clone();
-                let args = args
-                    .iter()
-                    .map(|i| {
-                        ctx.tick()?;
-                        exprs
-                            .get(*i as usize)
-                            .cloned()
-                            .ok_or_else(|| error("无效结构引用"))
-                    })
-                    .collect::<Result<Vec<_>, PlotError>>()?;
-                Expr::normal(head, args)
-            }
-        };
-        exprs.push(expr);
-    }
+    let exprs = decode_nodes(c.nodes, ctx)?;
     let get = |i: u32| {
         exprs
             .get(i as usize)
@@ -451,4 +414,89 @@ pub(crate) fn detached_expression(
     };
     let value = ev.evaluate(&expr, ctx)?;
     Ok(crate::output::expression_view(&value))
+}
+
+fn decode_nodes(nodes: Vec<Node>, ctx: &Interrupt) -> Result<Vec<Expr>, PlotError> {
+    let mut exprs: Vec<Expr> = vec![];
+    for node in nodes {
+        ctx.tick()?;
+        let expr = match node {
+            Node::Number(n) => {
+                fn valid(n: &om_num::Number) -> bool {
+                    match n {
+                        om_num::Number::Real(om_num::Real::Machine(v)) => v.is_finite(),
+                        om_num::Number::Real(om_num::Real::Big(v)) => {
+                            v.repr().is_finite() && v.precision() <= 16384
+                        }
+                        om_num::Number::Complex(c) => {
+                            !matches!(c.re, om_num::Number::Complex(_))
+                                && !matches!(c.im, om_num::Number::Complex(_))
+                                && valid(&c.re)
+                                && valid(&c.im)
+                        }
+                        _ => true,
+                    }
+                }
+                if !valid(&n) {
+                    return Err(error("只读状态包含无效数值/精度"));
+                }
+                Expr::number(n)
+            }
+            Node::Symbol(s) => Expr::symbol(&s),
+            Node::String(s) => Expr::string(&s),
+            Node::Normal { head, args } => {
+                let head = exprs
+                    .get(head as usize)
+                    .ok_or_else(|| error("无效向前/循环结构引用"))?
+                    .clone();
+                let args = args
+                    .iter()
+                    .map(|i| {
+                        ctx.tick()?;
+                        exprs
+                            .get(*i as usize)
+                            .cloned()
+                            .ok_or_else(|| error("无效结构引用"))
+                    })
+                    .collect::<Result<Vec<_>, PlotError>>()?;
+                Expr::normal(head, args)
+            }
+        };
+        exprs.push(expr);
+    }
+    Ok(exprs)
+}
+#[derive(Serialize, Deserialize)]
+struct ValueToken {
+    version: u32,
+    root: u32,
+    nodes: Vec<Node>,
+}
+pub(crate) fn value_token(value: &Expr, ctx: &Interrupt) -> Result<String, PlotError> {
+    let mut nodes = vec![];
+    let root = encode(value, &mut nodes, ctx)?;
+    let out = serde_json::to_string(&ValueToken {
+        version: 1,
+        root,
+        nodes,
+    })
+    .map_err(|_| error("无法编码值"))?;
+    if out.len() > 8 * 1024 * 1024 {
+        return Err(error("值图超过8MiB"));
+    }
+    Ok(out)
+}
+pub(crate) fn token_value(token: &str, ctx: &Interrupt) -> Result<Expr, PlotError> {
+    if token.len() > 8 * 1024 * 1024 {
+        return Err(error("值图超过8MiB"));
+    }
+    let value: ValueToken = serde_json::from_str(token).map_err(|_| error("值图格式无效"))?;
+    if value.version != 1 || value.nodes.len() > 100000 {
+        return Err(error("值图版本/节点数无效"));
+    }
+    let nodes = decode_nodes(value.nodes, ctx)?;
+    nodes
+        .get(value.root as usize)
+        .cloned()
+        .ok_or_else(|| error("值图索引无效"))
 }

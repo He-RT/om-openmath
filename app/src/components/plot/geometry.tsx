@@ -168,7 +168,7 @@ export function PlotGeometry({
         )}
       </g>
       <text className="plot-axis-name" x={edge} y={313} textAnchor="end">
-        {request.var_x}
+        {request.kind === "Parametric" ? "x" : request.var_x}
       </text>
       <text className="plot-axis-name" x={left} y={12}>
         {request.var_y ?? "y"}

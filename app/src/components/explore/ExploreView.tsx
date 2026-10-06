@@ -3,6 +3,7 @@ import type { OutputItem } from '../../kernel/generated/OutputItem';
 import type { KernelClient } from '../../kernel/client';
 import type { Messages,Locale } from '../../i18n';
 import { ExploreTask } from '../../kernel/exploreTask';
+import { ArtifactButton } from '../output/ArtifactButton';
 import { OutputView } from '../output/OutputView';
 export function ExploreView({item,cellId,fresh,kernel,t,language,onInsert,taskFactory=()=>new ExploreTask()}: {
   item:Extract<OutputItem,{type:'explore'}>;cellId:string;fresh:boolean;kernel:KernelClient;t:Messages;language:Locale;onInsert:(source:string)=>void;taskFactory?:()=>ExploreTask;
@@ -45,10 +46,11 @@ export function ExploreView({item,cellId,fresh,kernel,t,language,onInsert,taskFa
   };
   const changed=item.controls.some(c=>values[c.name]!==result.values[c.name]);
   const proxy=useMemo<KernelClient>(()=>({
-    kind:'wasm',ready:Promise.resolve(),onEvent:callback=>kernel.onEvent(callback),
+    kind:kernel.kind,ready:Promise.resolve(),onEvent:callback=>kernel.onEvent(callback),
     request:request=>{
       if(!fresh||busy||changed)return Promise.resolve({type:'error',message:label('当前参数结果已过期','Current parameter result is stale')});
       if(!context)return Promise.resolve({type:'error',message:label('等待只读快照','Waiting for readonly snapshot')});
+      if(request.type==='export_plot'||request.type==='export_value_token')return kernel.request(request);
       if(request.type==='sample_plot')return task.request({type:'sample_explore_plot',context,values:result.values,request:request.request});
       if(request.type==='inspect_expression')return task.request({type:'inspect_explore_expression',context,values:result.values,source:request.source,numeric:request.numeric});
       return Promise.resolve({type:'error',message:label('此临时结果不写入主笔记本历史','Ephemeral results do not write notebook history')});
@@ -66,6 +68,7 @@ export function ExploreView({item,cellId,fresh,kernel,t,language,onInsert,taskFa
       <span role="status">{busy?t.sampling:changed?label('下方保留上次成功参数的结果','Below: last successful parameter result'):''}</span>
     </div>
     {error&&<p role="alert">{error}</p>}
-    <OutputView key={`${item.view_id}:${result.revision}`} output={{items:[result.item],messages:result.messages,timing_ms:result.timing_ms}} stale={!fresh||busy||changed} t={t} language={language} kernel={proxy} cellId={cellId} onInsert={onInsert} onSteps={()=>{}}/>
+    {result.value_token&&<div className="explore-data-export">{(['csv','json'] as const).map(format=><ArtifactButton key={format} kernel={proxy} t={t} title="OpenMath-explore-data" label={format==='csv'?t.exportCsv:t.exportJson} version={result} enabled={fresh&&!busy&&!changed} request={()=>({type:'export_value_token',token:result.value_token!,format})}/>)}</div>}
+    <OutputView key={`${item.view_id}:${result.revision}`} output={{items:[result.item],messages:result.messages,timing_ms:result.timing_ms}} stale={!fresh||busy||changed} t={t} language={language} kernel={proxy} cellId={cellId} onInsert={onInsert} onSteps={()=>{}} exportParameters={result.values}/>
   </section>;
 }

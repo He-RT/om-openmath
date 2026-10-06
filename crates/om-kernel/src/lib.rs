@@ -14,6 +14,9 @@ pub mod native;
 /// Shared JSON transport types.
 pub mod protocol;
 
+/// Pure vector/raster and structured data artifact generation.
+pub mod artifact;
+mod artifact_views;
 mod dependency;
 mod editor;
 mod explore;

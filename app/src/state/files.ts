@@ -94,3 +94,23 @@ export async function saveTextArtifact(text: string, title: string, extension: "
   setTimeout(() => URL.revokeObjectURL(url), 0);
   return true;
 }
+
+/** Concrete artifact bytes; browser success means download initiation, native success includes byte readback. */
+export async function saveArtifact(artifact: import('../kernel/generated/Artifact').Artifact, title:string, kind:'wasm'|'tauri'):Promise<boolean>{
+  const types:Record<string,string>={svg:'image/svg+xml',png:'image/png',csv:'text/csv;charset=utf-8',json:'application/json;charset=utf-8'};
+  if(types[artifact.extension]!==artifact.mime||artifact.byte_len>16*1024*1024)throw new Error('Invalid export artifact');
+  const raw=atob(artifact.base64),bytes=new Uint8Array(raw.length);
+  for(let i=0;i<raw.length;i++)bytes[i]=raw.charCodeAt(i);
+  if(bytes.length!==artifact.byte_len)throw new Error('Export byte length mismatch');
+  const safe=[...(title||'OpenMath')].map(c=>c.codePointAt(0)!<32||'/\\:*?"<>|'.includes(c)?'-':c).join('');
+  const name=`${safe}.${artifact.extension}`;
+  if(kind==='tauri'){
+    const {save}=await import('@tauri-apps/plugin-dialog');const {writeFile,readFile}=await import('@tauri-apps/plugin-fs');
+    const path=await save({defaultPath:name,filters:[{name:artifact.extension.toUpperCase(),extensions:[artifact.extension]}]});
+    if(!path)return false;
+    await writeFile(path,bytes);const check=await readFile(path);
+    if(check.length!==bytes.length||check.some((byte,index)=>byte!==bytes[index]))throw new Error('Export readback differs from actual bytes');
+    return true;
+  }
+  const url=URL.createObjectURL(new Blob([bytes],{type:artifact.mime}));const link=document.createElement('a');link.href=url;link.download=name;link.click();setTimeout(()=>URL.revokeObjectURL(url),0);return true;
+}

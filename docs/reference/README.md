@@ -42,14 +42,14 @@
 
 | 功能族 | 当前状态 | 当前/目标范围 | 证据 |
 |---|---|---|---|
-| 现有现代/Wolfram双语法 | 已实现 | 当前 let/等式/1起始列表/关键字/where 保留；管道、fn、记录、区间和@尚未实现。 | [docs/language.md](../../docs/language.md)、[crates/om-parse/tests/modern.rs](../../crates/om-parse/tests/modern.rs) |
-| 现代组合与统一接口 | 下一版规划 | .3 管道/匿名函数/记录/区间/字段/矩阵@；mode/output等只在目标实现后可用。 | [docs/design/modern-language.md](../../docs/design/modern-language.md) |
+| 现有现代/Wolfram双语法 | 已实现 | let/裸等式/1起始列表/隐式乘法/Wolfram子集与已有源码保持；.3 dev也已接通管道/fn/记录/字段/区间/切片/@。 | [docs/language.md](../../docs/language.md)、[crates/om-parse/tests/modern.rs](../../crates/om-parse/tests/modern.rs)、[crates/om-parse/tests/composition.rs](../../crates/om-parse/tests/composition.rs) |
+| 现代组合与统一接口 | 已实现 | R3.1/R3.2真实组合语法、当前已接通入口的显式mode/output/命名参数与用户别名优先级；规划数学入口不推荐为可执行补全。 | [docs/design/modern-language.md](../../docs/design/modern-language.md)、[crates/om-parse/tests/composition.rs](../../crates/om-parse/tests/composition.rs)、[crates/om-kernel/tests/capabilities.rs](../../crates/om-kernel/tests/capabilities.rs) |
 | 笔记本与文件生命周期 | 已实现 | 已有源码.omnb v1、响应式重算、恢复/中断、Markdown/LaTeX导出；新格式或自动执行不由本轮引入。 | [docs/ios-acceptance.md](../../docs/ios-acceptance.md)、[crates/om-kernel/tests/reactive.rs](../../crates/om-kernel/tests/reactive.rs)、[crates/om-kernel/tests/recovery.rs](../../crates/om-kernel/tests/recovery.rs) |
-| 编辑器与本地帮助 | 已实现 | 已有真实Preview/Complete/Hover/诊断/Greek/IME与ghost；本轮目录尚未接入运行时补全。 | [crates/om-kernel/tests/editor.rs](../../crates/om-kernel/tests/editor.rs)、[ios/OpenMath/MathEditor.swift](../../ios/OpenMath/MathEditor.swift) |
+| 编辑器与本地帮助 | 已实现 | Preview/Complete/Hover/诊断/Greek/IME与ghost继续，函数目录已真实接入补全/Hover/能力查询，未实现条目不进入可执行推荐。 | [crates/om-kernel/tests/editor.rs](../../crates/om-kernel/tests/editor.rs)、[crates/om-kernel/tests/capabilities.rs](../../crates/om-kernel/tests/capabilities.rs)、[ios/OpenMath/MathEditor.swift](../../ios/OpenMath/MathEditor.swift) |
 | AI 与凭据 | 已实现 | 已有 Ask/讲解/对话/只读工具/修复/模型配置/探测及各宿主凭据隔离；规划语法不写入当前提示词。 | [docs/llm.md](../../docs/llm.md)、[crates/om-kernel/tests/llm.rs](../../crates/om-kernel/tests/llm.rs)、[ios/OpenMathTests/TransportTests.swift](../../ios/OpenMathTests/TransportTests.swift) |
-| 当前二维绘图 | 已实现 | 实函数/零等值轮廓、求解点/区间、参数滑块、平移缩放复位；数据来自内核。 | [crates/om-kernel/tests/plot_sampling.rs](../../crates/om-kernel/tests/plot_sampling.rs)、[ios/OpenMath/PlotView.swift](../../ios/OpenMath/PlotView.swift) |
+| 当前二维绘图 | 已实现 | 真实内核实函数/参数曲线/轮廓/区域/场与流线/数据/频数/密度/log、解点/区间及相机；三端展示与独立只读explore，有限采样不是认证边界。 | [crates/om-kernel/tests/plot_extensions.rs](../../crates/om-kernel/tests/plot_extensions.rs)、[crates/om-kernel/tests/explore.rs](../../crates/om-kernel/tests/explore.rs)、[ios/OpenMath/PlotView.swift](../../ios/OpenMath/PlotView.swift) |
 | 三维显示与场景 | 下一版规划 | .3 桌面/Web WebGL2；移动端明确未适配；CLI OBJ导出。无WebGL2明确提示而非假图。 | [docs/plan/NEXT_RELEASE.md](../../docs/plan/NEXT_RELEASE.md) |
-| 数据/图形导出 | 下一版规划 | .3 表格CSV/JSON、二维SVG/PNG、三维OBJ；暂不含完整CAD/glTF/视频。 | [docs/plan/NEXT_RELEASE.md](../../docs/plan/NEXT_RELEASE.md) |
+| 数据/图形导出 | 部分支持 | 表格/选中值CSV/JSON与真实二维SVG/PNG已实现，三端按钮和CLI非交互写入/字节回读；临时探索结果有不可变值图。OBJ待R3.6，不含通用Export函数/CAD/glTF/视频。 | [docs/design/artifact-export.md](../../docs/design/artifact-export.md)、[crates/om-kernel/tests/artifacts.rs](../../crates/om-kernel/tests/artifacts.rs)、[crates/om-cli/tests/artifact.rs](../../crates/om-cli/tests/artifact.rs) |
 | 分发与平台门禁 | 已实现 | .2九类附件已发布；.3实现完成才升级版本/发新Release；不启动本机模拟器。 | [docs/ios-acceptance.md](../../docs/ios-acceptance.md)、[docs/releasing.md](../../docs/releasing.md) |
 | 无障碍人工组合验收 | 部分支持 | 已有源码语义、静态路径与大字体证据；用户暂缓的旁白/浮动键盘/真机窄窗口仍未验证。 | [docs/ios-acceptance.md](../../docs/ios-acceptance.md) |
 | 专业计算与系统集成 | 后续规划 | PDE/完整符号ODE/Risch/CAD/稀疏张量/媒体/ML/网络/云/外部语言分阶段，不属于.3交付承诺。 | [docs/plan/NEXT_RELEASE.md](../../docs/plan/NEXT_RELEASE.md) |

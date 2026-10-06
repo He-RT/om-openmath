@@ -36,3 +36,12 @@ pub use evaluator::Evaluator;
 pub use scientific::ScientificResult;
 pub use solver::SolverResult;
 pub use types::{Arity, Attributes, BuiltinFn, BuiltinSpec, DocEntry, EvalError, EvalSettings};
+
+/// Serialize already retained pure tabular data, without invoking the evaluator.
+pub fn data_csv(value: &om_core::Expr, ctx: &om_core::Interrupt) -> Result<String, EvalError> {
+    science::csv_data::encode(value, ctx)
+}
+/// Serialize already retained pure JSON data, without invoking the evaluator.
+pub fn data_json(value: &om_core::Expr, ctx: &om_core::Interrupt) -> Result<String, EvalError> {
+    science::json_data::encode(value, ctx)
+}

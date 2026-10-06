@@ -93,11 +93,11 @@ final class NotebookUITests: XCTestCase {
     let slider = app.sliders["explore.slider.a"]
     XCTAssertTrue(slider.waitForExistence(timeout: 15))
     slider.adjust(toNormalizedSliderPosition: 1)
-    XCTAssertTrue(app.otherElements["expression.16."].waitForExistence(timeout: 15))
+    XCTAssertTrue(app.descendants(matching: .any)["expression.16."].firstMatch.waitForExistence(timeout: 15))
     screenshot("explore-portrait", app)
     XCUIDevice.shared.orientation = .landscapeLeft
     XCTAssertTrue(slider.waitForExistence(timeout: 5))
-    XCTAssertTrue(app.otherElements["expression.16."].exists)
+    XCTAssertTrue(app.descendants(matching: .any)["expression.16."].firstMatch.exists)
     screenshot("explore-landscape", app)
   }
 

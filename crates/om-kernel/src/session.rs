@@ -1,4 +1,5 @@
 //! Synchronous shared-kernel entry point with host-injected time and cancellation.
+mod artifacts;
 mod assistant;
 mod editing;
 mod editor;
@@ -68,6 +69,15 @@ impl Session {
     /// Handle one client request and return its reply plus any asynchronous events.
     pub fn handle(&mut self, req: Request) -> (Response, Vec<Event>) {
         match req {
+            Request::ExportPlot { figure, format } => {
+                return (self.export_plot(figure, format), vec![]);
+            }
+            Request::ExportValue { query, format } => {
+                return (self.export_value(query, format), vec![]);
+            }
+            Request::ExportValueToken { token, format } => {
+                return (self.export_value_token(token, format), vec![]);
+            }
             Request::InspectExploreExpression {
                 context,
                 values,

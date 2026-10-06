@@ -1,4 +1,5 @@
 //! Shared JSON request, response and event contract for all clients.
+pub use crate::artifact_views::*;
 pub use crate::capabilities::{CapabilityInfo, FunctionCatalog, HostPlatform};
 pub use crate::config::KernelConfig;
 pub use crate::explore_views::*;
@@ -20,6 +21,27 @@ pub type RequestId = String;
 #[ts(export_to = concat!(env!("CARGO_MANIFEST_DIR"), "/../../app/src/kernel/generated/"))]
 #[serde(tag = "type", rename_all = "snake_case")]
 pub enum Request {
+    /// Export already sampled real geometry; never re-evaluate source.
+    ExportPlot {
+        /// Data and display dimensions.
+        figure: PlotFigure,
+        /// Requested output encoding.
+        format: PlotExportFormat,
+    },
+    /// Export a retained immutable value subtree, including every row/column rather than the current page.
+    ExportValue {
+        /// Checked producer and internal data path.
+        query: ValueQuery,
+        /// Pure data format.
+        format: DataExportFormat,
+    },
+    /// Export an immutable ephemeral value graph from an actual slider result; no code evaluation.
+    ExportValueToken {
+        /// Bounded mathematical data nodes.
+        token: String,
+        /// Pure data format.
+        format: DataExportFormat,
+    },
     /// Inspect a displayed value against its isolated readonly definitions and controls.
     InspectExploreExpression {
         /// Frozen context.
@@ -264,6 +286,11 @@ pub enum Request {
 #[ts(export_to = concat!(env!("CARGO_MANIFEST_DIR"), "/../../app/src/kernel/generated/"))]
 #[serde(tag = "type", rename_all = "snake_case")]
 pub enum Response {
+    /// Concrete bytes ready for host saving; not a persistence success claim.
+    Artifact {
+        /// Actual exact bytes and encoding.
+        artifact: Artifact,
+    },
     /// A validated credential-free context of the retained output.
     ExploreContext {
         /// Opaque producer ID.
@@ -454,4 +481,14 @@ pub struct Envelope<T> {
     pub id: u64,
     /// Request, response or event payload.
     pub body: T,
+}
+
+/// Existing operations retain the 2MiB envelope ceiling; pure geometry/value exports have a 16MiB ceiling.
+pub fn request_size_allowed(bytes: usize, request: &Request) -> bool {
+    bytes <= 2_097_152
+        || bytes <= 16 * 1024 * 1024
+            && matches!(
+                request,
+                Request::ExportPlot { .. } | Request::ExportValueToken { .. }
+            )
 }

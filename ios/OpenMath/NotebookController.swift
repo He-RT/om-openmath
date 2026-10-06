@@ -464,6 +464,19 @@ import SwiftUI
       shareURL = url
     } catch { self.error = error.localizedDescription }
   }
+  func shareArtifact(_ artifact: JSONValue, name: String) throws {
+    let ext = artifact["extension"].string
+    let types = ["svg": "image/svg+xml", "png": "image/png", "csv": "text/csv;charset=utf-8", "json": "application/json;charset=utf-8"]
+    guard types[ext] == artifact["mime"].string,
+      artifact["byte_len"].double <= Double(16*1024*1024),
+      let bytes = Data(base64Encoded: artifact["base64"].string),
+      Double(bytes.count) == artifact["byte_len"].double else { throw KernelError.message("导出字节格式或长度无效") }
+    let safe = name.replacingOccurrences(of: #"[/\\:*?"<>|\x00-\x1f]"#, with: "-", options: .regularExpression)
+    let url = FileManager.default.temporaryDirectory.appendingPathComponent(safe + "-" + UUID().uuidString + "." + ext)
+    try bytes.write(to: url, options: .atomic)
+    guard try Data(contentsOf: url) == bytes else { throw KernelError.message("导出文件回读校验失败") }
+    shareURL = url
+  }
   private func remember(_ url: URL) {
     defaults.set(url.path, forKey: "OpenMathLastDocument")
     if let bookmark = try? url.bookmarkData(

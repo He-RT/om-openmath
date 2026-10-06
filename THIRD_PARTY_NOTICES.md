@@ -46,3 +46,9 @@ SwiftPM 版本及传递依赖固定于 `ios/OpenMath.xcodeproj/project.xcworkspa
 SwiftMath 随附 `mathFonts.bundle` 作为未经修改的字体资源分发。默认排版使用 Latin Modern Math；完整包的字体资源仍由 SwiftPM 保留。上游 bundle 随附的 MIT、GUST Font License（含对 LPPL 的引用）与 SIL Open Font License 必须保留，不能将其字体许可视为 OpenMath Rust 代码的统一许可。副本保存在 `ios/OpenMath/Resources/SwiftMath-*.txt`，同其他组件许可一起编入应用并随模拟器应用分发。禁止移除版权及字体保留名称条款。
 
 原生 UI 参考库仅用于阅读可移植行为契约；没有复制 Telegram 类体系或源码，没有引入 Telegram 构建依赖。OpenMath 的 C ABI 桥接为本仓库原创实现。
+
+## 二维导出标签字体与光栅化
+
+`.3` dev 的共享 PNG 导出使用固定 `Swash 0.2.10`（Apache-2.0 OR MIT，仅std/scale/render）及其真实锁文件传递依赖，许可由现有包装脚本保留。它只解析/光栅化字体，不执行数学或提供三维框架。
+
+字体 `OpenMathPlotLabels-Regular.otf` 是固定 Noto Sans SC Regular 的子集与重命名版本，OFL-1.1；版权/作者字段保留，文本许可、上游/产物 SHA256 与可复现生成方式见 [字体清单](licenses/plot-font/README.md)。正常运行使用内嵌资源，不下载字体或读取宿主系统字体路径。

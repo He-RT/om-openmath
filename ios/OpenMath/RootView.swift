@@ -185,6 +185,9 @@ struct NotebookView: View {
               controller.add(source: "a+1")
               Task { await controller.runAll() }
             }.accessibilityIdentifier("example.reactive")
+            Button(controller.text("数据表与精度", "Data table and precision")) {
+              controller.example("parse_csv(\"x,y\\n1,中文\\n2,emoji🙂\")")
+            }.accessibilityIdentifier("example.table")
             Button(controller.text("新建数学单元格", "New math cell")) { controller.add() }
           }.padding(.vertical, 36)
         }

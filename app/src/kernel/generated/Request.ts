@@ -8,11 +8,16 @@ import type { Language } from "./Language";
 import type { NotebookFile } from "./NotebookFile";
 import type { PlotRequest } from "./PlotRequest";
 import type { ProfileConfig } from "./ProfileConfig";
+import type { ValueQuery } from "./ValueQuery";
 
 /**
  * A client operation; runtime dispatch is implemented by Session.
  */
-export type Request = { "type": "get_function_catalog" } | { "type": "get_capabilities",
+export type Request = { "type": "inspect_value",
+/**
+ * Snapshot-bound data coordinates and paging limits.
+ */
+query: ValueQuery, } | { "type": "get_function_catalog" } | { "type": "get_capabilities",
 /**
  * Host presentation target.
  */

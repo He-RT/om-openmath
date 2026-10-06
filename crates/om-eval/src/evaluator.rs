@@ -20,6 +20,7 @@ pub struct Evaluator {
     pub(crate) readonly: bool,
     pub(crate) scopes: Vec<std::collections::BTreeMap<Symbol, Option<Expr>>>,
     pub(crate) last_solver_result: Option<crate::SolverResult>,
+    pub(crate) last_scientific_result: Option<crate::ScientificResult>,
     pub(crate) evaluating: u32,
     pub(crate) random: om_num::rng::SplitMix64,
 }
@@ -42,6 +43,7 @@ impl Evaluator {
             readonly: false,
             scopes: vec![],
             last_solver_result: None,
+            last_scientific_result: None,
             evaluating: 0,
             random: om_num::rng::SplitMix64::new(0),
         }
@@ -51,6 +53,7 @@ impl Evaluator {
         let evaluating = self.evaluating;
         if evaluating == 0 {
             self.last_solver_result = None;
+            self.last_scientific_result = None;
         }
         self.evaluating += 1;
         let previous = self.depth;
@@ -67,6 +70,14 @@ impl Evaluator {
         {
             self.last_solver_result = None;
         }
+        if evaluating == 0
+            && self
+                .last_scientific_result
+                .as_ref()
+                .is_some_and(|r| result.as_ref().ok() != Some(&r.value))
+        {
+            self.last_scientific_result = None;
+        }
         result
     }
     /// Record a successful statement once, including its original input tree.
@@ -80,6 +91,10 @@ impl Evaluator {
     /// Absent for cached literals, unrelated wrappers, failures and discarded calls.
     pub fn take_solver_result(&mut self) -> Option<crate::SolverResult> {
         self.last_solver_result.take()
+    }
+    /// Fresh callback provenance only, never inferred from a record's keys or a cached literal.
+    pub fn take_scientific_result(&mut self) -> Option<crate::ScientificResult> {
+        self.last_scientific_result.take()
     }
     /// Expand numeric source in a readonly local scope without cancelling raw poles.
     /// None masks an axis's global value; Some supplies an actual local parameter value.
@@ -118,6 +133,7 @@ impl Evaluator {
             readonly: true,
             scopes: self.scopes.clone(),
             last_solver_result: None,
+            last_scientific_result: None,
             evaluating: 0,
             random: self.random.clone(),
         }

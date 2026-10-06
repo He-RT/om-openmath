@@ -12,6 +12,7 @@ mod native;
 mod plotting;
 mod reactive;
 mod recovery;
+mod values;
 
 use crate::{KernelConfig, Notebook, config::Language, notebook::FileError, protocol::*};
 use om_eval::Evaluator;
@@ -33,6 +34,7 @@ pub struct Session {
     system_language: Language,
     owners: std::collections::BTreeMap<om_core::Symbol, CellId>,
     llm: llm::LlmState,
+    output_serial: u64,
     #[cfg(feature = "native")]
     config_store: Option<crate::native::ConfigStore>,
 }
@@ -49,6 +51,7 @@ impl Session {
             system_language: Language::ZhCn,
             owners: Default::default(),
             llm: Default::default(),
+            output_serial: 0,
             #[cfg(feature = "native")]
             config_store: None,
         };
@@ -94,6 +97,7 @@ impl Session {
             Request::InspectExpression { source, numeric } => {
                 return (self.inspect_expression(source, numeric), vec![]);
             }
+            Request::InspectValue { query } => return (self.inspect_value(query), vec![]),
             Request::GetNotebookState => return (self.notebook_state(), vec![]),
             Request::GetVariables => return (self.variables(), vec![]),
             Request::RestoreDefinitions => return self.restore_definitions(),

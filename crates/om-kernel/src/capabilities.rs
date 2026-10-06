@@ -67,7 +67,16 @@ pub fn capabilities(platform: HostPlatform) -> CapabilityInfo {
     let rendered_outputs = if matches!(platform, HostPlatform::Cli) {
         vec!["expression", "solutions", "steps"]
     } else {
-        vec!["expression", "solutions", "steps", "plot_2d", "markdown"]
+        vec![
+            "expression",
+            "solutions",
+            "steps",
+            "plot_2d",
+            "markdown",
+            "table",
+            "record",
+            "numerical_diagnostics",
+        ]
     };
     CapabilityInfo {
         kernel_version: env!("CARGO_PKG_VERSION").into(),

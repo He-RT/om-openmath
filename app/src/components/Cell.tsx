@@ -196,6 +196,7 @@ export function Cell({
         )}
         {cell.kind === "Math" && cell.output && (
           <OutputView
+            cellId={cell.id}
             output={cell.output}
             stale={
               cell.status === "Stale" ||

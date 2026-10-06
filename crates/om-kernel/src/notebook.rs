@@ -43,6 +43,8 @@ pub(crate) struct StatementRecord {
     pub suppress_output: bool,
     pub out_index: u32,
     pub solver: Option<om_eval::SolverResult>,
+    pub scientific: Option<om_eval::ScientificResult>,
+    pub view_id: String,
 }
 
 impl Cell {

@@ -190,10 +190,14 @@ impl Session {
                 });
                 break;
             };
-            let outcome = ctx
-                .tick()
-                .map_err(EvalError::from)
-                .and_then(|()| self.eval.evaluate_statement(&statement.expr, ctx));
+            let outcome = if let Some(serial) = self.output_serial.checked_add(1) {
+                self.output_serial = serial;
+                ctx.tick()
+                    .map_err(EvalError::from)
+                    .and_then(|()| self.eval.evaluate_statement(&statement.expr, ctx))
+            } else {
+                Err(EvalError::Other("输出快照编号已耗尽".into()))
+            };
             result
                 .output
                 .messages
@@ -208,6 +212,8 @@ impl Session {
                         suppress_output: statement.suppress_output,
                         out_index,
                         solver: self.eval.take_solver_result(),
+                        scientific: self.eval.take_scientific_result(),
+                        view_id: self.output_serial.to_string(),
                     };
                     if !record.suppress_output {
                         match crate::output::pack(

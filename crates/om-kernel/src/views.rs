@@ -418,6 +418,10 @@ pub enum OutputItem {
         modern_form: String,
         /// LaTeX display form.
         latex: String,
+        /// Optional structured first page; omitted for original scalar wire outputs.
+        #[serde(default, skip_serializing_if = "Option::is_none")]
+        #[ts(optional)]
+        presentation: Option<crate::value_views::ValuePage>,
     },
     /// Solver output with actual derivation and an optional visualization.
     Solutions {

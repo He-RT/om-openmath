@@ -11,11 +11,16 @@ import type { NotebookFile } from "./NotebookFile";
 import type { NotebookState } from "./NotebookState";
 import type { PlotData } from "./PlotData";
 import type { PreviewResult } from "./PreviewResult";
+import type { ValuePage } from "./ValuePage";
 
 /**
  * Synchronous reply to a client request.
  */
-export type Response = { "type": "function_catalog",
+export type Response = { "type": "value_page",
+/**
+ * Actual page.
+ */
+page: ValuePage, } | { "type": "function_catalog",
 /**
  * Versioned executable catalog.
  */

@@ -56,4 +56,17 @@ final class NotebookUITests: XCTestCase {
     XCTAssertEqual(app.textViews.count, 2)
     screenshot("reactive-landscape", app)
   }
+  @MainActor func testActualStructuredTableKeepsHeadersTextAndRotation() {
+    let app=launch()
+    XCTAssertTrue(app.buttons["example.table"].waitForExistence(timeout:30))
+    app.buttons["example.table"].tap()
+    XCTAssertTrue(app.otherElements["value.output"].waitForExistence(timeout:15))
+    XCTAssertTrue(app.staticTexts["表格"].exists)
+    XCTAssertTrue(app.staticTexts["x"].exists)
+    XCTAssertTrue(app.staticTexts["\"中文\""].exists)
+    screenshot("structured-table-portrait",app)
+    XCUIDevice.shared.orientation = .landscapeLeft
+    XCTAssertTrue(app.staticTexts["\"emoji🙂\""].waitForExistence(timeout:5))
+    screenshot("structured-table-landscape",app)
+  }
 }

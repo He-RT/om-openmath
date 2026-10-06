@@ -16,7 +16,12 @@ struct CellOutputView: View {
           PlotView(request: item["request"], initial: item["data"], controller: controller)
             .disabled(cell.status != .Done)
         } else if item["type"].string == "expr" {
-          ExpressionOutput(item: item, controller: controller, fresh: cell.status == .Done)
+          if !item["presentation"].isNull {
+            ValueOutputView(item: item, cell: cell, controller: controller)
+              .id("\(cell.id):\(item["out_index"].double):\(item["presentation"]["view_id"].string)")
+          } else {
+            ExpressionOutput(item: item, controller: controller, fresh: cell.status == .Done)
+          }
         } else {
           Text(item["message"].string).foregroundStyle(.red).textSelection(.enabled)
         }

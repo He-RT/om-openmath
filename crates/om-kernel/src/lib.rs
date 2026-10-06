@@ -20,6 +20,7 @@ mod notebook;
 mod output;
 mod plot;
 mod session;
+mod value_views;
 mod views;
 mod wire;
 

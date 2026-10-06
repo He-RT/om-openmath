@@ -4,6 +4,7 @@ import type { PlotRequest } from "./PlotRequest";
 import type { SolutionSetView } from "./SolutionSetView";
 import type { Span } from "./Span";
 import type { StepsView } from "./StepsView";
+import type { ValuePage } from "./ValuePage";
 
 /**
  * Visible statement output, tagged independently of responses.
@@ -24,7 +25,11 @@ modern_form: string,
 /**
  * LaTeX display form.
  */
-latex: string, } | { "type": "solutions",
+latex: string,
+/**
+ * Optional structured first page; omitted for original scalar wire outputs.
+ */
+presentation?: ValuePage, } | { "type": "solutions",
 /**
  * Output history index.
  */

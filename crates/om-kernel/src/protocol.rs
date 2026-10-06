@@ -1,6 +1,7 @@
 //! Shared JSON request, response and event contract for all clients.
 pub use crate::capabilities::{CapabilityInfo, FunctionCatalog, HostPlatform};
 pub use crate::config::KernelConfig;
+pub use crate::value_views::*;
 pub use crate::views::*;
 pub use crate::wire::*;
 pub use om_llm::{ChatMessage, HttpRequest, Role, Suggestion, ToolCall};
@@ -17,6 +18,11 @@ pub type RequestId = String;
 #[ts(export_to = concat!(env!("CARGO_MANIFEST_DIR"), "/../../app/src/kernel/generated/"))]
 #[serde(tag = "type", rename_all = "snake_case")]
 pub enum Request {
+    /// Read a retained immutable output page; never re-evaluate source or mutate definitions.
+    InspectValue {
+        /// Snapshot-bound data coordinates and paging limits.
+        query: ValueQuery,
+    },
     /// Query actual executable descriptions without running source.
     GetFunctionCatalog,
     /// Query kernel and documented host rendering support; grants no task permissions.
@@ -213,6 +219,11 @@ pub enum Request {
 #[ts(export_to = concat!(env!("CARGO_MANIFEST_DIR"), "/../../app/src/kernel/generated/"))]
 #[serde(tag = "type", rename_all = "snake_case")]
 pub enum Response {
+    /// Actual readonly structured page, correlated to the immutable snapshot.
+    ValuePage {
+        /// Actual page.
+        page: ValuePage,
+    },
     /// Actual callable function descriptions.
     FunctionCatalog {
         /// Versioned executable catalog.

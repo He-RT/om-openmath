@@ -69,3 +69,9 @@ CI结果更新：0ff0e90/37402859858已全success，含iOS27；实际53最大pho
 下一步按原完整.3进入R3.5：三端数据/数值诊断展示、二维曲线/参数/隐式/区域/场/数据/直方、explore取消/局部参数/旧回复、SVG/PNG/CSVJSON导出；然后R3.6桌面/Web真实三维/图元/OBJ/西瓜/L2与所有同SHA门禁/附件。继续dev、单代理、不启动本机模拟器、不合并main；.3不能提前发布或标goal complete。UI按用户指定telegram-ui-reference本地skill设计行为与真实验收，不复制Telegram类体系；后续Agent/事务仍预留。
 
 CI9865b9b/37405977882已全success含iOS27，实际phone53最大454.186ms/pad310.738ms，原17/18 phone139.700/66.274、pad163.000/76.075ms，恢复max452.648/302.456ms；原1s与历史失败保留，证据target/ci-evidence/r34f。Fit新提交仍需自己的同SHA CI。当前free28GiB、incremental0B，及时只清已停止使用的仓库缓存，保留Release/源码/证据。所有新契约见fitting.md/P137，发行目标保持完整.3。
+
+最新R3.5a基础数据/报告展示已验证：Expr optional presentation +保留结果InspectValue/ValuePage Query（不执行源式），opaque输出serial/producer路径出现ID、owner/history/代次/路径/行列限额与过期守卫；ScientificResult只本次真回调尾返回/最终值匹配，普通/缓存/包装记录无本次来源。React ValueView与SwiftUI ValueOutputView native表格/字段/精度类别/嵌套/返回/行列分页/完整源码/复制插入，请求liveness/generation/view_id隔离旧回复。真实Web40行CSV中文emoji、390窄宽、clipboard读回、global报告/7/5−11/5展开返回验收，截图docs/acceptance/r35a（非合成），具体skill引用result-pages.md。1038Rust/2原ignored、67前端/16Python、Clippy/fmt/deny/纯WASM/TS生成无漂移通过；两个Rust iOS切片XCFramework创建与generic iOS27 build/build-for-testing成功，新增Swift协议2项/UI表格旋转测试由CI执行，本机未模拟器/真机执行。228回调/222身份/描述20/.2；不把源码detail当专用插值/模型图表已完成。
+
+下一步R3.5其余完整范围：二维参数/隐式/区域/场/数据/直方、log scale、explore独立参数/旧回复取消、SVG/PNG与数据导出；然后R3.6桌面/Web真实三维/图元/OBJ/L2/西瓜与完整同SHA发行。保持dev单代理、本机不启动模拟器、不合main，.3不提前发行，goal不complete。已读用户指定telegram-ui-reference SKILL及路由/locator；当前所读topic为04-pages-and-flows/information-lists.md、06-state-and-feedback/progress-and-result-feedback.md、09-adaptation-and-accessibility/system-fonts-and-long-text.md（完整portable基础路径），不重读或读原源码archive；后续效果仅基础完成后。
+
+CI a904654/37409786321全success含iOS27，真实phone882.144ms/pad648.273ms最大、恢复832.610/577.029ms；原53及1s门槛与历史失败保持，证据target/ci-evidence/r34g。新展示commit等自身CI，不用旧成功替代。当前free25GiB/incremental0B，ios-device中间仅50MiB，无需为小缓存清当前deps/Release。所有本机检查日志target/r35a-*；实际图片target/ui-evidence和已跟踪docs/acceptance/r35a。

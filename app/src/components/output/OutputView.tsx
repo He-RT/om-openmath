@@ -5,6 +5,7 @@ import { ExprView } from "./ExprView";
 import { SolutionCards } from "./SolutionCards";
 import { Messages as OutputMessages } from "./Messages";
 import { PlotView } from "../plot/PlotView";
+import { ValueView } from './ValueView';
 export function OutputView({
   output,
   stale,
@@ -13,6 +14,7 @@ export function OutputView({
   kernel,
   onInsert,
   onSteps,
+  cellId = '',
 }: {
   output: CellOutput;
   stale: boolean;
@@ -21,6 +23,7 @@ export function OutputView({
   kernel: KernelClient;
   onInsert: (source: string) => void;
   onSteps: (outIndex: number) => void;
+  cellId?: string;
 }) {
   return (
     <div
@@ -31,7 +34,9 @@ export function OutputView({
       {output.items.map((item, i) => (
         <div className="output-item" key={i}>
           {item.type === "expr" ? (
-            <ExprView
+            item.presentation ? <ValueView key={`${item.out_index}:${item.presentation.view_id}`}
+              initial={item.presentation} cellId={cellId} outIndex={item.out_index} value={item}
+              fresh={!stale} kernel={kernel} language={language} t={t} onInsert={onInsert} /> : <ExprView
               key={`${item.out_index}:${item.input_form}`}
               value={item}
               kernel={kernel}

@@ -30,3 +30,5 @@
 - [局部优化与全局保证边界（.3 实施中）](design/optimization.md)
 
 - [真实拟合、可调用模型与数值诊断（.3开发版）](design/fitting.md)
+
+- [结构化结果、科学诊断与只读分页](design/result-pages.md) · [R3.5a真实验收截图](acceptance/r35a/README.md)

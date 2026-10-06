@@ -85,7 +85,7 @@ fn capabilities_separate_kernel_presentation_and_future_permissions() {
         assert!(
             !c.rendered_outputs
                 .iter()
-                .any(|s| matches!(s.as_str(), "scene_3d" | "table" | "interpolation"))
+                .any(|s| matches!(s.as_str(), "scene_3d" | "interpolation"))
         );
     }
     assert!(s.notebook.cells.is_empty());

@@ -1,5 +1,6 @@
 //! Protocol output is a rendering of actual evaluator results and solver evidence.
 mod steps;
+pub(crate) mod values;
 use crate::{notebook::StatementRecord, protocol::*};
 use om_core::{BUILTIN as B, Expr, ExprKind, Interrupt};
 use om_eval::Evaluator;
@@ -36,11 +37,32 @@ pub(crate) fn pack(
             });
         }
     }
+    let presentation = if values::kind(&record.value) != ValueKind::Scalar {
+        let query = ValueQuery {
+            cell_id: String::new(),
+            out_index: record.out_index,
+            view_id: record.view_id.clone(),
+            path: vec![],
+            offset: 0,
+            limit: 32,
+            column_offset: 0,
+            column_limit: 8,
+            include_source: false,
+        };
+        match values::page(record, &query, ctx) {
+            Ok(p) => Some(p),
+            Err(e) if e.abort().is_some() => return Err(e),
+            Err(_) => None,
+        }
+    } else {
+        None
+    };
     Ok(OutputItem::Expr {
         out_index: record.out_index,
         input_form,
         modern_form,
         latex: om_format::latex(&record.value),
+        presentation,
     })
 }
 

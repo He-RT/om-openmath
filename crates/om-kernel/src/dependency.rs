@@ -54,6 +54,33 @@ fn walk(e: &Expr, scope: &Symbols, defines: &mut Symbols, uses: &mut Symbols) {
     };
     let head = n.head.as_symbol();
     let args = &n.args;
+    if head.is_some_and(|s| s.name() == "Explore") && !args.is_empty() {
+        let mut locals = scope.clone();
+        let mut ignored = Symbols::new();
+        for option in &args[1..] {
+            if option.is_head(B::RULE) && option.args().len() == 2 {
+                let record = &option.args()[1];
+                if option.args()[0]
+                    .as_symbol()
+                    .is_some_and(|s| s.name() == "Controls")
+                    && record.is_head(B::RECORD)
+                {
+                    for entry in record.args() {
+                        if entry.is_head(B::RULE) && entry.args().len() == 2 {
+                            if let ExprKind::String(name) = entry.args()[0].kind() {
+                                locals.insert(Symbol::intern(name));
+                            }
+                            walk(&entry.args()[1], scope, &mut ignored, uses);
+                        }
+                    }
+                } else {
+                    walk(record, scope, &mut ignored, uses);
+                }
+            }
+        }
+        walk(&args[0], &locals, &mut ignored, uses);
+        return;
+    }
     if head.is_some_and(|s| s.name() == "Fit") && !args.is_empty() {
         let mut locals = scope.clone();
         let mut ignored_defines = Symbols::new();

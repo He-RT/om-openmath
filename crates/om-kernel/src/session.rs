@@ -6,6 +6,7 @@ mod evaluation;
 mod graph;
 mod llm;
 pub use llm::LlmCancellation;
+mod exploration;
 mod inspection;
 #[cfg(feature = "native")]
 mod native;
@@ -67,6 +68,33 @@ impl Session {
     /// Handle one client request and return its reply plus any asynchronous events.
     pub fn handle(&mut self, req: Request) -> (Response, Vec<Event>) {
         match req {
+            Request::InspectExploreExpression {
+                context,
+                values,
+                source,
+                numeric,
+            } => {
+                return (
+                    self.inspect_explore_expression(context, values, source, numeric),
+                    vec![],
+                );
+            }
+            Request::SampleExplorePlot {
+                context,
+                values,
+                request,
+            } => return (self.sample_explore_plot(context, values, request), vec![]),
+            Request::GetExploreContext { query } => return (self.explore_context(query), vec![]),
+            Request::SampleExplore {
+                query,
+                values,
+                revision,
+            } => return (self.sample_explore(query, values, revision), vec![]),
+            Request::RunExploreContext {
+                context,
+                values,
+                revision,
+            } => return (self.run_explore_context(context, values, revision), vec![]),
             Request::GetFunctionCatalog => {
                 return (
                     Response::FunctionCatalog {

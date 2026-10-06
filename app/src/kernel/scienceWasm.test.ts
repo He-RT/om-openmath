@@ -104,3 +104,21 @@ it('actual WASM extended 2D samples carry true values, counts and original log c
     expect(log.data.curves[0]!.segments.flat().at(-1)).toEqual([1000,1000000]);
   }finally{kernel.free();}
 });
+it('actual WASM immutable exploration context restores exact state without replay or notebook mutation',()=>{
+  const main=new Kernel(),task=new Kernel();
+  try{
+    evaluate(main,'definitions','let a=99;let rate=2;let f(x)=rate*x');
+    const output=evaluate(main,'explore','explore([[a,f(a)],[rate,a^2]],controls:{a:0..4})');
+    const item=output.items[0];if(item?.type!=='explore')throw new Error('missing actual exploration');
+    const ctx=request(main,{type:'get_explore_context',query:{cell_id:'explore',out_index:item.out_index,view_id:item.view_id}});
+    if(ctx.type!=='explore_context')throw new Error('no readonly context');
+    evaluate(main,'definitions','let a=100;let rate=20;let f(x)=rate*x');
+    const answer=request(task,{type:'run_explore_context',context:ctx.context,values:{a:3},revision:7});
+    if(answer.type!=='explored'||answer.result.item.type!=='expr')throw new Error('no genuine result');
+    expect(answer.result.item.input_form).toBe('{{3., 6.}, {2, 9.}}');
+    expect(answer.result.revision).toBe(7);
+    expect(number(evaluate(main,'main-value','a'))).toBe(100);
+    expect(number(evaluate(main,'main-rate','rate'))).toBe(20);
+    const file=request(task,{type:'save_notebook'});if(file.type!=='notebook')throw new Error('no file');expect(file.file.cells).toHaveLength(0);
+  }finally{main.free();task.free();}
+});

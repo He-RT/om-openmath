@@ -4,6 +4,7 @@ struct PlotView: View {
   var request: JSONValue
   var initial: JSONValue = .null
   var controller: NotebookController
+  var sample: ((JSONValue) async throws -> KernelPacket)? = nil
   @Environment(\.isEnabled) private var isEnabled
   @State private var data: JSONValue = .null
   @State private var working: JSONValue = .null
@@ -316,8 +317,9 @@ struct PlotView: View {
       sampling = true
       defer { if token == revision { sampling = false } }
       do {
-        let packet = try await controller.call(
-          .object(["type": .string("sample_plot"), "request": value]))
+        let packet: KernelPacket
+        if let sample { packet = try await sample(value) }
+        else { packet = try await controller.call(.object(["type": .string("sample_plot"), "request": value])) }
         guard !Task.isCancelled, token == revision else { return }
         data = packet.response.body["data"]
         working["x_range"] = data["x_range"]

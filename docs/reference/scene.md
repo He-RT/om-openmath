@@ -37,7 +37,7 @@
 | [`ellipsoid`](#ellipsoid) | 下一版规划 | 规划接口，当前不可用 | 椭球面 |
 | [`engineering_form`](#engineering_form) | 后续规划 | 规划接口，当前不可用 | 图元、场景与交互中的 EngineeringForm 能力，进入后续全景目录。 |
 | [`event_handler`](#event_handler) | 后续规划 | 规划接口，当前不可用 | 图元、场景与交互中的 EventHandler 能力，进入后续全景目录。 |
-| [`explore`](#explore) | 下一版规划 | 规划接口，当前不可用 | 隔离主变量的交互参数探索 |
+| [`explore`](#explore) | 部分支持 | 当前可用 | 隔离主变量的交互参数探索 |
 | [`face_form`](#face_form) | 后续规划 | 规划接口，当前不可用 | 图元、场景与交互中的 FaceForm 能力，进入后续全景目录。 |
 | [`fortran_form`](#fortran_form) | 后续规划 | 规划接口，当前不可用 | 图元、场景与交互中的 FortranForm 能力，进入后续全景目录。 |
 | [`framed`](#framed) | 后续规划 | 规划接口，当前不可用 | 图元、场景与交互中的 Framed 能力，进入后续全景目录。 |
@@ -1142,21 +1142,33 @@ event_handler(...)  # 后续接口尚未锁定
 
 ## explore
 
-**当前实现：下一版规划；目标接口：规划接口，当前不可用。** 目标版本：`0.1.0-pre-alpha.3`。
+**当前实现：部分支持；目标接口：当前可用。** 目标版本：`0.1.0-pre-alpha.3`。
 
 - 稳定身份：`fn_000225`；条目类型：`function`。
-- 副作用分类（设计预留）：`pure`；参数验证阶段：`documentation_only`，不构成工具授权。
+- 副作用分类（设计预留）：`pure`；参数验证阶段：`runtime_verified`，不构成工具授权。
 
 隔离主变量的交互参数探索
 
-- 当前支持：当前无此规范接口的实现。
+- 当前支持：机器滑块、独立只读快照、标量/矩阵/二维图与本次真实结果；专用可取消任务不修改主变量/随机/文档。controls≤16、context≤512KiB、未知/重复/越界参数拒绝，输出身份/过期和迟到回复检查。三维等待R3.6，传统Manipulate迭代器语法尚未适配。
 - 目标范围：数值滑块控制标量、矩阵、二维图及桌面/Web三维；变参取消旧计算，参数作用域不写主会话。
 - 返回：expression
-- 精度：机器精度路径优先；不声称任意精度。
-- 当前计算平台：无；目标计算平台：cli, desktop, web, ios。
+- 精度：控制范围与数值为机器精度；表达式可返回真实精确/符号结果，不承诺未实现的任意精度算法。
+- 当前计算平台：cli, desktop, web, ios；目标计算平台：cli, desktop, web, ios。
 - 目标图形/交互展示平台：desktop, web, ios。
 - 兼容名称：`Manipulate`。
 - 管道位置：第 1 个位置参数（从 1 起）。
+
+当前现代签名：
+
+```text
+explore(expression,controls:{a:lo..hi},initial:{a:value})
+```
+
+当前 Wolfram 签名：
+
+```text
+Explore[expression,Controls->Record["a"->Span[lo,hi]]]
+```
 
 目标现代签名（按目标接口状态判断是否已可执行）：
 
@@ -1166,9 +1178,15 @@ explore(expression, controls: {a: lo..hi}, initial: {a: value})
 
 | 参数 | 类型 | 默认值 | 含义 | 可用阶段 |
 |---|---|---|---|---|
-| `expression` | positional | 必填 | 保持源表达式 | r3 |
-| `controls` | option | 必填 | 参数范围记录 | r3 |
-| `initial` | option | 中点 | 范围内初值记录 | r3 |
+| `expression` | positional | 必填 | 保持源表达式 | current |
+| `controls` | option | 必填 | 参数范围记录 | current |
+| `initial` | option | 中点 | 范围内初值记录 | current |
+
+当前已登记示例（Wolfram）：
+
+```wolfram
+Explore[a^2,Controls->Record["a"->Span[0,4]]]
+```
 
 规划示例（尚未执行；需要目标版本，后续条目不承诺 .3）：
 
@@ -1178,9 +1196,9 @@ explore(plot(sin(a*x),x: 0..2*pi),controls: {a: 0.1..5})
 
 验收：独立数学期望、有效/无效参数、边界、预算、中断及声明的平台/精度测试；范围外不伪造成功。
 
-当前源码：暂无当前实现证据。
+当前源码：[crates/om-eval/src/explore.rs](../../crates/om-eval/src/explore.rs)、[crates/om-kernel/src/explore.rs](../../crates/om-kernel/src/explore.rs)。
 
-当前测试引用：暂无当前实现证据。
+当前测试引用：[crates/om-kernel/tests/explore.rs](../../crates/om-kernel/tests/explore.rs)。
 
 ## face_form
 

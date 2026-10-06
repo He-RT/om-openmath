@@ -136,11 +136,18 @@ fn executable_help_and_capabilities_are_query_only_and_never_include_plans() {
             .any(|f| f["modern_name"] == "polynomial_gcd")
     );
     assert!(
+        rows[0]["functions"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .any(|f| f["modern_name"] == "explore" && f["id"] == "fn_000225")
+    );
+    assert!(
         !rows[0]["functions"]
             .as_array()
             .unwrap()
             .iter()
-            .any(|f| f["modern_name"] == "explore")
+            .any(|f| f["modern_name"] == "scene")
     );
     assert!(
         rows[1]

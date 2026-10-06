@@ -9,11 +9,21 @@ use std::collections::BTreeSet;
 pub(crate) use steps::render as render_steps;
 
 pub(crate) fn pack(
-    record: &StatementRecord,
+    record: &mut StatementRecord,
     eval: &Evaluator,
     ctx: &Interrupt,
     auto_plot: bool,
 ) -> Result<OutputItem, crate::plot::PlotError> {
+    if record
+        .value
+        .head_symbol()
+        .is_some_and(|s| s.name() == "Explore")
+    {
+        if record.exploration.is_none() {
+            record.exploration = crate::explore::capture(&record.value, eval, ctx)?;
+        }
+        return crate::explore::initial(record, ctx);
+    }
     if let Some(request) = crate::plot::from_expr(&record.value, eval, ctx)? {
         let data = crate::plot::sample(&request, eval, ctx)?;
         return Ok(OutputItem::Plot { request, data });

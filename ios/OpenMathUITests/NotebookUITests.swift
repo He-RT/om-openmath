@@ -86,4 +86,19 @@ final class NotebookUITests: XCTestCase {
     screenshot("data-plot-landscape", app)
   }
 
+  @MainActor func testExplorationRunsInIsolatedScopeAndKeepsSliderAfterRotation() {
+    let app = launch()
+    XCTAssertTrue(app.buttons["example.explore"].waitForExistence(timeout: 30))
+    app.buttons["example.explore"].tap()
+    let slider = app.sliders["explore.slider.a"]
+    XCTAssertTrue(slider.waitForExistence(timeout: 15))
+    slider.adjust(toNormalizedSliderPosition: 1)
+    XCTAssertTrue(app.otherElements["expression.16."].waitForExistence(timeout: 15))
+    screenshot("explore-portrait", app)
+    XCUIDevice.shared.orientation = .landscapeLeft
+    XCTAssertTrue(slider.waitForExistence(timeout: 5))
+    XCTAssertTrue(app.otherElements["expression.16."].exists)
+    screenshot("explore-landscape", app)
+  }
+
 }

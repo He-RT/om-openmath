@@ -5,6 +5,7 @@ import { ExprView } from "./ExprView";
 import { SolutionCards } from "./SolutionCards";
 import { Messages as OutputMessages } from "./Messages";
 import { PlotView } from "../plot/PlotView";
+import { ExploreView } from "../explore/ExploreView";
 import { ValueView } from './ValueView';
 export function OutputView({
   output,
@@ -33,7 +34,7 @@ export function OutputView({
       {stale && <div className="stale-label">{t.stale}</div>}
       {output.items.map((item, i) => (
         <div className="output-item" key={i}>
-          {item.type === "expr" ? (
+          {item.type === "explore" ? <ExploreView key={`${cellId}:${item.out_index}:${item.view_id}`} item={item} cellId={cellId} fresh={!stale} kernel={kernel} t={t} language={language} onInsert={onInsert}/> : item.type === "expr" ? (
             item.presentation ? <ValueView key={`${item.out_index}:${item.presentation.view_id}`}
               initial={item.presentation} cellId={cellId} outIndex={item.out_index} value={item}
               fresh={!stale} kernel={kernel} language={language} t={t} onInsert={onInsert} /> : <ExprView

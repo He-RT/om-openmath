@@ -153,3 +153,10 @@
 }
 
 .plot-sample-data { max-height: 320px; max-width: 100%; overflow: auto; font-size: 0.75rem; }
+.explore-view { padding: 12px 0; }
+.explore-heading, .explore-actions { display:flex; align-items:center; flex-wrap:wrap; gap:12px; margin-bottom:12px; }
+.explore-heading span { color:var(--muted); font-size:.8rem; }
+.explore-control { display:grid; grid-template-columns:minmax(40px,auto) minmax(80px,1fr) minmax(60px,auto); gap:12px; align-items:center; margin:10px 0; }
+.explore-control input { min-width:0; width:100%; accent-color:var(--accent); }
+.explore-control output { font-variant-numeric:tabular-nums; font-size:.8rem; }
+.explore-view .output-toolbar { opacity: 1; pointer-events: auto; }

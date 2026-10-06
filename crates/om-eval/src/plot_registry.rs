@@ -6,6 +6,7 @@ fn held(_: &mut Evaluator, _: &[Expr], _: &Interrupt) -> Result<Option<Expr>, Ev
     Ok(None)
 }
 pub(crate) fn register(specs: &mut BTreeMap<&'static str, BuiltinSpec>) {
+    crate::explore::register(specs);
     for (name, symbol, arity, modern, wolfram, example, zh, en) in [
         (
             "Plot",

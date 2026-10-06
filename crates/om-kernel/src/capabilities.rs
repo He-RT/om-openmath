@@ -76,6 +76,7 @@ pub fn capabilities(platform: HostPlatform) -> CapabilityInfo {
             "table",
             "record",
             "numerical_diagnostics",
+            "parameter_exploration",
         ]
     };
     CapabilityInfo {

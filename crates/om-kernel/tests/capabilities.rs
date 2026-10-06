@@ -28,7 +28,7 @@ fn catalog_is_versioned_deterministic_and_callback_filtered() {
         !catalog
             .functions
             .iter()
-            .any(|f| matches!(f.modern_name.as_str(), "explore" | "apply_notebook_patch"))
+            .any(|f| matches!(f.modern_name.as_str(), "scene" | "apply_notebook_patch"))
     );
     let solve = catalog
         .functions
@@ -81,7 +81,7 @@ fn capabilities_separate_kernel_presentation_and_future_permissions() {
         assert!(!c.scene_3d);
         assert!(c.task_permissions.is_none());
         assert_eq!(c.kernel_version, env!("CARGO_PKG_VERSION"));
-        assert_eq!(c.function_ids.len(), 227);
+        assert_eq!(c.function_ids.len(), 228);
         assert!(
             !c.rendered_outputs
                 .iter()

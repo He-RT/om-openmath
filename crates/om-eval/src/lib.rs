@@ -10,6 +10,8 @@ mod elementary;
 mod elementary_registry;
 mod engine;
 mod evaluator;
+/// Held exploration and credential-free readonly state.
+pub mod explore;
 mod logic;
 /// Real numeric compilation and existing N support.
 pub mod numeric;

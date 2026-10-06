@@ -122,7 +122,7 @@ pub struct FunctionDescriptor {
 /// Version of the executable descriptor schema.
 pub const SCHEMA_VERSION: u32 = 1;
 /// Description revision; independent of the application release version.
-pub const METADATA_VERSION: u32 = 21;
+pub const METADATA_VERSION: u32 = 22;
 static FUNCTIONS: LazyLock<Vec<FunctionDescriptor>> = LazyLock::new(|| {
     // The generated JSON is validated by Python and registry contract tests in CI.
     serde_json::from_str(include_str!("catalog/runtime.json"))

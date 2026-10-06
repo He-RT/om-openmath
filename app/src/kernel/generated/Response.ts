@@ -2,6 +2,7 @@
 import type { CapabilityInfo } from "./CapabilityInfo";
 import type { CellOutput } from "./CellOutput";
 import type { CompletionItem } from "./CompletionItem";
+import type { ExploreResult } from "./ExploreResult";
 import type { ExpressionView } from "./ExpressionView";
 import type { FunctionCatalog } from "./FunctionCatalog";
 import type { HoverInfo } from "./HoverInfo";
@@ -16,7 +17,19 @@ import type { ValuePage } from "./ValuePage";
 /**
  * Synchronous reply to a client request.
  */
-export type Response = { "type": "value_page",
+export type Response = { "type": "explore_context",
+/**
+ * Opaque producer ID.
+ */
+view_id: string,
+/**
+ * Bounded private mathematical state.
+ */
+context: string, } | { "type": "explored",
+/**
+ * Actual output and interaction generation.
+ */
+result: ExploreResult, } | { "type": "value_page",
 /**
  * Actual page.
  */

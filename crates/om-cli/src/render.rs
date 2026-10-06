@@ -85,6 +85,9 @@ pub fn output(output: &CellOutput, json: bool, labels: bool, zh: bool) -> io::Re
                 )?;
             }
             OutputItem::Error { message, .. } => writeln!(out, "{message}")?,
+            OutputItem::Explore { result, .. } => {
+                writeln!(out, "{}", serde_json::to_string(&result.item)?)?
+            }
             OutputItem::Plot { data, .. } => writeln!(
                 out,
                 "{}: {}",

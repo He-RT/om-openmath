@@ -205,8 +205,9 @@ impl Session {
             let steps = self.eval.last_steps.take();
             match outcome {
                 Ok(value) => {
-                    let record = StatementRecord {
+                    let mut record = StatementRecord {
                         input: statement.expr.clone(),
+                        exploration: None,
                         value,
                         steps,
                         suppress_output: statement.suppress_output,
@@ -217,7 +218,7 @@ impl Session {
                     };
                     if !record.suppress_output {
                         match crate::output::pack(
-                            &record,
+                            &mut record,
                             &self.eval,
                             ctx,
                             self.config.general.auto_plot,

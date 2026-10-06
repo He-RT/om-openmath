@@ -1,6 +1,6 @@
 # 实际注册审计基线：ba3cd2b；稳定身份与名称分离；目录/副作用为设计数据。
 schema_version = 1
-metadata_version = 21
+metadata_version = 22
 validation_stage = "runtime_verified"
 current_version = "0.1.0-pre-alpha.2"
 target_version = "0.1.0-pre-alpha.3"
@@ -7275,32 +7275,32 @@ effect_class = "pure"
 id = "fn_000225"
 name = "explore"
 category = "scene"
-status = "planned"
-interface_status = "planned"
-runtime_names = []
+status = "partial"
+interface_status = "current"
+runtime_names = ["Explore"]
 compatibility_names = ["Manipulate"]
-current_modern_signatures = []
-current_wolfram_signatures = []
+current_modern_signatures = ["explore(expression,controls:{a:lo..hi},initial:{a:value})"]
+current_wolfram_signatures = ["Explore[expression,Controls->Record[\"a\"->Span[lo,hi]]]"]
 signatures = ["explore(expression, controls: {a: lo..hi}, initial: {a: value})"]
-parameters = [{ name = "expression", kind = "positional", default = "必填", description = "保持源表达式", availability = "r3" }, { name = "controls", kind = "option", default = "必填", description = "参数范围记录", availability = "r3" }, { name = "initial", kind = "option", default = "中点", description = "范围内初值记录", availability = "r3" }]
+parameters = [{ name = "expression", kind = "positional", default = "必填", description = "保持源表达式", availability = "current" }, { name = "controls", kind = "option", default = "必填", description = "参数范围记录", availability = "current" }, { name = "initial", kind = "option", default = "中点", description = "范围内初值记录", availability = "current" }]
 return_type = "expression"
 semantics = "隔离主变量的交互参数探索"
-current_support = "当前无此规范接口的实现。"
+current_support = "机器滑块、独立只读快照、标量/矩阵/二维图与本次真实结果；专用可取消任务不修改主变量/随机/文档。controls≤16、context≤512KiB、未知/重复/越界参数拒绝，输出身份/过期和迟到回复检查。三维等待R3.6，传统Manipulate迭代器语法尚未适配。"
 target_support = "数值滑块控制标量、矩阵、二维图及桌面/Web三维；变参取消旧计算，参数作用域不写主会话。"
-precision_modes = ["planned_machine"]
-precision_notes = "机器精度路径优先；不声称任意精度。"
-current_platforms = []
+precision_modes = ["machine_controls"]
+precision_notes = "控制范围与数值为机器精度；表达式可返回真实精确/符号结果，不承诺未实现的任意精度算法。"
+current_platforms = ["cli", "desktop", "web", "ios"]
 target_platforms = ["cli", "desktop", "web", "ios"]
 render_platforms = ["desktop", "web", "ios"]
-current_examples = []
+current_examples = ["Explore[a^2,Controls->Record[\"a\"->Span[0,4]]]"]
 planned_examples = ["explore(plot(sin(a*x),x: 0..2*pi),controls: {a: 0.1..5})"]
-sources = []
-tests = []
+sources = ["crates/om-eval/src/explore.rs", "crates/om-kernel/src/explore.rs"]
+tests = ["crates/om-kernel/tests/explore.rs"]
 acceptance = "独立数学期望、有效/无效参数、边界、预算、中断及声明的平台/精度测试；范围外不伪造成功。"
 pipe_arg = 1
 target_version = "0.1.0-pre-alpha.3"
 kind = "function"
-validation_stage = "documentation_only"
+validation_stage = "runtime_verified"
 effect_class = "pure"
 
 [[functions]]
@@ -29103,3 +29103,13 @@ min = 3
 attributes = ["protected", "hold_all"]
 parameters = [{ name = "expression", value_type = "expression", required = true, held = true, variadic = false }, { name = "axes", value_type = "expression", required = true, held = true, variadic = true }]
 options = [{ name = "plot_range", runtime_name = "PlotRange", value_type = "expression", required = false, held = true, variadic = false, default_context = "省略由数学域或真实数据推断" }, { name = "scale", runtime_name = "Scale", value_type = "enum", required = false, held = true, variadic = false, default_source = "\"linear\"", enum_values = ["linear", "log_x", "log_y", "log_log"] }, { name = "color", runtime_name = "Color", value_type = "expression", required = false, held = true, variadic = false, default_context = "主题绿色/真实密度颜色；固定颜色名/#RRGGBB" }]
+
+[[runtime]]
+name = "Explore"
+modern_name = "explore"
+aliases = []
+min = 2
+max = 3
+attributes = ["hold_all", "protected"]
+parameters = [{ name = "expression", value_type = "expression", required = true, variadic = false, held = true }]
+options = [{ name = "controls", runtime_name = "Controls", value_type = "expression", required = true, variadic = false, held = true }, { name = "initial", runtime_name = "Initial", value_type = "expression", required = false, variadic = false, held = true, default_context = "每个参数范围中点；部分指定允许" }]

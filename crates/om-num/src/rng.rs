@@ -9,6 +9,10 @@ impl SplitMix64 {
     pub fn new(seed: u64) -> Self {
         Self(seed)
     }
+    /// Capture the stream without advancing it, for isolated readonly computations.
+    pub fn state(&self) -> u64 {
+        self.0
+    }
     /// Produce the next 64-bit word.
     pub fn next_u64(&mut self) -> u64 {
         self.0 = self.0.wrapping_add(0x9e3779b97f4a7c15);

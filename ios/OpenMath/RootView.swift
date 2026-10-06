@@ -191,6 +191,9 @@ struct NotebookView: View {
             Button(controller.text("二维数据示例", "2D data example")) {
               controller.example("data_plot([[0,0],[1,2],[2,4]])")
             }.accessibilityIdentifier("example.plot")
+            Button(controller.text("参数探索示例", "Parameter exploration example")) {
+              controller.example("explore(a^2,controls:{a:0..4},initial:{a:2})")
+            }.accessibilityIdentifier("example.explore")
             Button(controller.text("新建数学单元格", "New math cell")) { controller.add() }
           }.padding(.vertical, 36)
         }

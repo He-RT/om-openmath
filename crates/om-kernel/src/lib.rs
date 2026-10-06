@@ -16,6 +16,8 @@ pub mod protocol;
 
 mod dependency;
 mod editor;
+mod explore;
+mod explore_views;
 mod notebook;
 mod output;
 mod plot;

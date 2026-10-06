@@ -432,6 +432,21 @@ pub struct Curve {
 #[ts(export_to = concat!(env!("CARGO_MANIFEST_DIR"), "/../../app/src/kernel/generated/"))]
 #[serde(tag = "type", rename_all = "snake_case")]
 pub enum OutputItem {
+    /// A held expression with genuine isolated initial computation and local controls.
+    Explore {
+        /// Actual history index.
+        out_index: u32,
+        /// Opaque retained output identity.
+        view_id: String,
+        /// Held source in Wolfram syntax.
+        input_form: String,
+        /// Held source in modern syntax.
+        modern_form: String,
+        /// Actual finite controls.
+        controls: Vec<crate::explore_views::ExploreControl>,
+        /// Actual initial readonly result.
+        result: Box<crate::explore_views::ExploreResult>,
+    },
     /// A symbolic or numeric expression.
     Expr {
         /// Output history index.

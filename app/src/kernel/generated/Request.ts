@@ -2,6 +2,7 @@
 import type { CellInput } from "./CellInput";
 import type { ChatMessage } from "./ChatMessage";
 import type { Dialect } from "./Dialect";
+import type { ExploreQuery } from "./ExploreQuery";
 import type { HostPlatform } from "./HostPlatform";
 import type { KernelConfig } from "./KernelConfig";
 import type { Language } from "./Language";
@@ -13,7 +14,63 @@ import type { ValueQuery } from "./ValueQuery";
 /**
  * A client operation; runtime dispatch is implemented by Session.
  */
-export type Request = { "type": "inspect_value",
+export type Request = { "type": "inspect_explore_expression",
+/**
+ * Frozen context.
+ */
+context: string,
+/**
+ * Actual local values.
+ */
+values: { [key in string]: number },
+/**
+ * Wolfram source projection.
+ */
+source: string,
+/**
+ * Actual N[..,20] projection when requested.
+ */
+numeric: boolean, } | { "type": "sample_explore_plot",
+/**
+ * Frozen credential-free context.
+ */
+context: string,
+/**
+ * Actual local values.
+ */
+values: { [key in string]: number },
+/**
+ * Checked mathematical geometry request.
+ */
+request: PlotRequest, } | { "type": "get_explore_context",
+/**
+ * Current retained output identity.
+ */
+query: ExploreQuery, } | { "type": "sample_explore",
+/**
+ * Current retained output identity.
+ */
+query: ExploreQuery,
+/**
+ * Actual local values.
+ */
+values: { [key in string]: number },
+/**
+ * Interaction generation.
+ */
+revision: number, } | { "type": "run_explore_context",
+/**
+ * No credentials, configuration paths or agent data.
+ */
+context: string,
+/**
+ * Actual local values.
+ */
+values: { [key in string]: number },
+/**
+ * Interaction generation.
+ */
+revision: number, } | { "type": "inspect_value",
 /**
  * Snapshot-bound data coordinates and paging limits.
  */

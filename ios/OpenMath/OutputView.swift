@@ -10,7 +10,10 @@ struct CellOutputView: View {
           .foregroundStyle(.orange)
       }
       ForEach(Array(cell.output["items"].array.enumerated()), id: \.offset) { _, item in
-        if item["type"].string == "solutions" {
+        if item["type"].string == "explore" {
+          ExploreOutputView(item: item, cell: cell, controller: controller)
+            .id("\(cell.id):\(item["out_index"].double):\(item["view_id"].string)")
+        } else if item["type"].string == "solutions" {
           SolutionCards(item: item, cell: cell, controller: controller)
         } else if item["type"].string == "plot" {
           PlotView(request: item["request"], initial: item["data"], controller: controller)
@@ -49,6 +52,7 @@ struct ExpressionOutput: View {
   var item: JSONValue
   var controller: NotebookController
   var fresh = true
+  var inspect: ((JSONValue) async throws -> KernelPacket)? = nil
   @State private var numeric: JSONValue = .null
   @State private var numericSource: String?
   private var showsNumeric: Bool { !numeric.isNull && numericSource == item["input_form"].string }
@@ -76,7 +80,8 @@ struct ExpressionOutput: View {
           }
           let source = item["input_form"].string
           Task {
-            if let result = try? await controller.call(
+            let operation = inspect ?? controller.call
+            if let result = try? await operation(
               .object([
                 "type": .string("inspect_expression"), "source": .string(source),
                 "numeric": .bool(true),

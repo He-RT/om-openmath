@@ -34,7 +34,8 @@ fn runtime_schemas_match_every_actual_callback() {
         }
     }
     assert_eq!(catalog::functions().len(), Evaluator::all_specs().count());
-    assert!(catalog::by_alias("explore").is_none());
+    assert_eq!(catalog::by_alias("explore").unwrap().id, "fn_000225");
+    assert!(catalog::by_alias("scene").is_none());
     assert!(catalog::by_alias("apply_notebook_patch").is_none());
     assert_eq!(catalog::by_alias("map").unwrap().pipe_arg, 2);
     assert_eq!(catalog::by_alias("algebraic_root").unwrap().id, "fn_000090");

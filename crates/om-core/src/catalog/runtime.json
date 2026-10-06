@@ -3997,6 +3997,79 @@
     ]
   },
   {
+    "id": "fn_000225",
+    "canonical_name": "explore",
+    "name": "Explore",
+    "modern_name": "explore",
+    "aliases": [],
+    "arity": {
+      "min": 2,
+      "max": 3
+    },
+    "parameters": [
+      {
+        "name": "expression",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": true
+      }
+    ],
+    "options": [
+      {
+        "name": "controls",
+        "runtime_name": "Controls",
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": true
+      },
+      {
+        "name": "initial",
+        "runtime_name": "Initial",
+        "value_type": "expression",
+        "required": false,
+        "default_source": null,
+        "default_context": "每个参数范围中点；部分指定允许",
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": true
+      }
+    ],
+    "compatibility_syntax": [],
+    "attributes": [
+      "hold_all",
+      "protected"
+    ],
+    "pipe_arg": 1,
+    "effect_class": "pure",
+    "support": "机器滑块、独立只读快照、标量/矩阵/二维图与本次真实结果；专用可取消任务不修改主变量/随机/文档。controls≤16、context≤512KiB、未知/重复/越界参数拒绝，输出身份/过期和迟到回复检查。三维等待R3.6，传统Manipulate迭代器语法尚未适配。",
+    "return_type": "expression",
+    "precision_modes": [
+      "machine_controls"
+    ],
+    "precision_notes": "控制范围与数值为机器精度；表达式可返回真实精确/符号结果，不承诺未实现的任意精度算法。",
+    "platforms": [
+      "cli",
+      "desktop",
+      "web",
+      "ios"
+    ]
+  },
+  {
     "id": "fn_000041",
     "canonical_name": "exponent",
     "name": "Exponent",

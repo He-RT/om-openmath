@@ -270,6 +270,7 @@ fn all_docs_matches_implemented_milestones_and_elementary_functions_check_arity(
         "ParametricPlot",
         "RegionPlot",
         "FieldPlot",
+        "Explore",
         "DataPlot",
         "Histogram",
         "DensityPlot",

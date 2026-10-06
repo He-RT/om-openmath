@@ -13331,24 +13331,33 @@
       "name": "explore",
       "category": "scene",
       "kind": "function",
-      "status": "planned",
-      "interface_status": "planned",
-      "runtime_names": [],
+      "status": "partial",
+      "interface_status": "current",
+      "runtime_names": [
+        "Explore"
+      ],
       "compatibility_names": [
         "Manipulate"
       ],
-      "current_modern_signatures": [],
+      "current_modern_signatures": [
+        "explore(expression,controls:{a:lo..hi},initial:{a:value})"
+      ],
       "signatures": [
         "explore(expression, controls: {a: lo..hi}, initial: {a: value})"
       ],
-      "current_support": "当前无此规范接口的实现。",
+      "current_support": "机器滑块、独立只读快照、标量/矩阵/二维图与本次真实结果；专用可取消任务不修改主变量/随机/文档。controls≤16、context≤512KiB、未知/重复/越界参数拒绝，输出身份/过期和迟到回复检查。三维等待R3.6，传统Manipulate迭代器语法尚未适配。",
       "target_support": "数值滑块控制标量、矩阵、二维图及桌面/Web三维；变参取消旧计算，参数作用域不写主会话。",
       "return_type": "expression",
       "precision_modes": [
-        "planned_machine"
+        "machine_controls"
       ],
-      "precision_notes": "机器精度路径优先；不声称任意精度。",
-      "current_platforms": [],
+      "precision_notes": "控制范围与数值为机器精度；表达式可返回真实精确/符号结果，不承诺未实现的任意精度算法。",
+      "current_platforms": [
+        "cli",
+        "desktop",
+        "web",
+        "ios"
+      ],
       "target_platforms": [
         "cli",
         "desktop",
@@ -13361,24 +13370,26 @@
           "kind": "positional",
           "default": "必填",
           "description": "保持源表达式",
-          "availability": "r3"
+          "availability": "current"
         },
         {
           "name": "controls",
           "kind": "option",
           "default": "必填",
           "description": "参数范围记录",
-          "availability": "r3"
+          "availability": "current"
         },
         {
           "name": "initial",
           "kind": "option",
           "default": "中点",
           "description": "范围内初值记录",
-          "availability": "r3"
+          "availability": "current"
         }
       ],
-      "current_examples": [],
+      "current_examples": [
+        "Explore[a^2,Controls->Record[\"a\"->Span[0,4]]]"
+      ],
       "planned_examples": [
         "explore(plot(sin(a*x),x: 0..2*pi),controls: {a: 0.1..5})"
       ]

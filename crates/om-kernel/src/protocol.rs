@@ -1,6 +1,7 @@
 //! Shared JSON request, response and event contract for all clients.
 pub use crate::capabilities::{CapabilityInfo, FunctionCatalog, HostPlatform};
 pub use crate::config::KernelConfig;
+pub use crate::explore_views::*;
 pub use crate::plot_views::*;
 pub use crate::value_views::*;
 pub use crate::views::*;
@@ -19,6 +20,49 @@ pub type RequestId = String;
 #[ts(export_to = concat!(env!("CARGO_MANIFEST_DIR"), "/../../app/src/kernel/generated/"))]
 #[serde(tag = "type", rename_all = "snake_case")]
 pub enum Request {
+    /// Inspect a displayed value against its isolated readonly definitions and controls.
+    InspectExploreExpression {
+        /// Frozen context.
+        context: String,
+        /// Actual local values.
+        values: std::collections::BTreeMap<String, f64>,
+        /// Wolfram source projection.
+        source: String,
+        /// Actual N[..,20] projection when requested.
+        numeric: bool,
+    },
+    /// Resample a plot against the same disposable readonly context and controls.
+    SampleExplorePlot {
+        /// Frozen credential-free context.
+        context: String,
+        /// Actual local values.
+        values: std::collections::BTreeMap<String, f64>,
+        /// Checked mathematical geometry request.
+        request: PlotRequest,
+    },
+    /// Read a credential-free immutable context for an isolated host task.
+    GetExploreContext {
+        /// Current retained output identity.
+        query: ExploreQuery,
+    },
+    /// Compute locally against a retained readonly snapshot without changing notebook state.
+    SampleExplore {
+        /// Current retained output identity.
+        query: ExploreQuery,
+        /// Actual local values.
+        values: std::collections::BTreeMap<String, f64>,
+        /// Interaction generation.
+        revision: u32,
+    },
+    /// Compute in a dedicated disposable host worker from a bounded pure context.
+    RunExploreContext {
+        /// No credentials, configuration paths or agent data.
+        context: String,
+        /// Actual local values.
+        values: std::collections::BTreeMap<String, f64>,
+        /// Interaction generation.
+        revision: u32,
+    },
     /// Read a retained immutable output page; never re-evaluate source or mutate definitions.
     InspectValue {
         /// Snapshot-bound data coordinates and paging limits.
@@ -220,6 +264,18 @@ pub enum Request {
 #[ts(export_to = concat!(env!("CARGO_MANIFEST_DIR"), "/../../app/src/kernel/generated/"))]
 #[serde(tag = "type", rename_all = "snake_case")]
 pub enum Response {
+    /// A validated credential-free context of the retained output.
+    ExploreContext {
+        /// Opaque producer ID.
+        view_id: String,
+        /// Bounded private mathematical state.
+        context: String,
+    },
+    /// Real local computation result.
+    Explored {
+        /// Actual output and interaction generation.
+        result: ExploreResult,
+    },
     /// Actual readonly structured page, correlated to the immutable snapshot.
     ValuePage {
         /// Actual page.

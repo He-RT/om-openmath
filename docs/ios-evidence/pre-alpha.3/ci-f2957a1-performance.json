@@ -1,0 +1,43 @@
+{
+  "version": "0.1.0-pre-alpha.3",
+  "revision": "f2957a1b0fcde48e28359887994ad5ef1fc6709f",
+  "ci_run": 37603643620,
+  "tests": [
+    {
+      "platform": "phone",
+      "device": "iPhone",
+      "os": "27.0",
+      "count": 53,
+      "unsupported_latex": [],
+      "maxima": {
+        "ms": 597.865083
+      },
+      "transport_maxima": {
+        "queued_ms": 0.276042,
+        "resume_ms": 493.826,
+        "encoded_ms": 0.090375,
+        "ffi_ms": 194.453416,
+        "decode_ms": 12.474459
+      },
+      "kernel_max_ms": 194.297417
+    },
+    {
+      "platform": "pad",
+      "device": "iPad",
+      "os": "27.0",
+      "count": 53,
+      "unsupported_latex": [],
+      "maxima": {
+        "ms": 336.760584
+      },
+      "transport_maxima": {
+        "queued_ms": 0.095334,
+        "decode_ms": 11.907916,
+        "encoded_ms": 0.093542,
+        "resume_ms": 233.21837599999998,
+        "ffi_ms": 201.859625
+      },
+      "kernel_max_ms": 201.70975
+    }
+  ]
+}

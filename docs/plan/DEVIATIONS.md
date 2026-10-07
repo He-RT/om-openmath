@@ -371,3 +371,5 @@ No preflight agent returned a completed report; neither math nor protocol correc
 现代下划线符号经过原InputForm文本回读被公共Wolfram模式词法拆分的实际缺陷由独立parse_input_form修复；Pattern/Blank显式头，源码Wolfram x_不改，Auto明确Modern组合优先于模糊f[index]。标量/绘图/探索传输用该读取器，不添加新用户方言或以字符串执行宿主代码。Wolfram分号的CompoundExpression合法性保留，多独立语句才拒绝。Translate元数据max2和实际Exactly2对齐；点width是实际逻辑像素半径，不暗中设置另一个默认值。
 
 L2使用精确标称GM分数、50位FindRoot/1000迭代和真实残差，报告保留Big、展示明确machine，x比例/点半径显示语义分离；西瓜实际条纹两参数曲面+皮层/切面/12椭球籽/变换/光照/OBJ读回，不拿球面条纹代替完整案例。较粗的籽mesh8在既有导出预算内。UI依据与真实截图见scene-graph.md/acceptance/r36b；iOS只有XYCanvas和真实XYZ源式fallback，不自动未展示采样。Agent事务/框架仍deferred，.omnb只有v1源码；原53与1s不改，本机不模拟器、不多代理、不合main。
+
+- **P144 — Windows发行验收选择器按实际状态同步**：NSIS实装已通过本次数学与WebGL2像素/旋转/复位，details pre.first错误读取源码折叠区导致JSON.parse失败。选择器改为包含网格summary的唯一details/pre并等待其可见，以真实生产Web显示与OBJ一致验收复现该路径。失败捕获实际窗口和文本，不删检查/不mock原生窗口/不放宽超时。源软件与数学完全不变，发布仍要求新同SHA CI及安装成功。

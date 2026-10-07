@@ -28,6 +28,12 @@ test('complete watermelon is actual kernel geometry with skin cut rind seeds GPU
  const download=page.waitForEvent('download');await scene.getByRole('button',{name:'Export OBJ',exact:true}).click();const file=await download;const path=await file.path();if(!path)throw new Error('No actual OBJ');
  const obj=await readFile(path,'utf8');const data=JSON.parse(obj.split('\n').find(v=>v.startsWith('# scene_json '))!.slice(13)).scene;
  expect(data.meshes).toHaveLength(16);expect(data.labels).toHaveLength(2);
+ await scene.getByText('Kernel mesh data',{exact:true}).click();
+ const meshData=scene.locator('details').filter({has:page.getByText('Kernel mesh data',{exact:true})}).locator('pre');
+ await expect(meshData).toBeVisible();
+ const displayed=JSON.parse((await meshData.textContent())!);
+ expect(displayed).toEqual(data);
+ await scene.getByText('Kernel mesh data',{exact:true}).click();
  expect(obj.split('\n').filter(v=>v.startsWith('f ')).length).toBe(data.meshes.reduce((n:number,m:{triangles:unknown[]})=>n+m.triangles.length,0));
  await page.setViewportSize({width:390,height:900});const close=page.locator('.inspector').getByRole('button',{name:'Close',exact:true});if(await close.isVisible())await close.click();await canvas.scrollIntoViewIfNeeded();expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
  await scene.screenshot({path:'test-results/scenario-watermelon-narrow.png'});

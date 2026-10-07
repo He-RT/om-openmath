@@ -77,8 +77,11 @@ try {
   await expect.poll(async()=>(await fingerprint()).sum).not.toBe(original.sum);
   await scene.getByRole('button',{name:'复位视窗',exact:true}).click();
   await expect.poll(async()=>(await fingerprint()).sum).toBe(original.sum);
+  await scene.screenshot({path:`${output}/watermelon-native.png`});
   await scene.getByText('内核网格数据',{exact:true}).click();
-  const geometry=JSON.parse(await scene.locator('details pre').first().textContent());
+  const meshData=scene.locator('details').filter({has:page.getByText('内核网格数据',{exact:true})}).locator('pre');
+  await expect(meshData).toBeVisible();
+  const geometry=JSON.parse(await meshData.textContent());
   expect(geometry.meshes).toHaveLength(16);expect(geometry.labels).toHaveLength(2);
   await scene.getByText('内核网格数据',{exact:true}).click();
   await scene.screenshot({path:`${output}/watermelon-native.png`});
@@ -88,6 +91,13 @@ try {
     checks: ['exact -3/1 roots', 'recorded steps', 'reactive 3 to 6', 'exact radical roots', 'native kernel full watermelon 16 meshes', 'actual WebGL2 pixels rotation reset'],
     errors,
   }, null, 2));
+} catch(error) {
+  const page=browser.contexts()[0]?.pages()[0];
+  if(page){
+    await page.screenshot({path:`${output}/failure-window.png`}).catch(()=>{});
+    await writeFile(`${output}/failure-context.txt`,(await page.locator('body').innerText()).slice(0,16000)).catch(()=>{});
+  }
+  throw error;
 } finally {
   await browser.close();
 }

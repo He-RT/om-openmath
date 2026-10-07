@@ -1,0 +1,16 @@
+{
+  "title": "Test - OpenMath",
+  "totalTestCount": 34,
+  "passedTests": 34,
+  "failedTests": 0,
+  "skippedTests": 0,
+  "devices": [
+    {
+      "modelName": "iPhone 18 Pro",
+      "architecture": "arm64",
+      "osVersion": "27.0",
+      "osBuildNumber": "24A434",
+      "platform": "iOS Simulator"
+    }
+  ]
+}

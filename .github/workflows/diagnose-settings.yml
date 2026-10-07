@@ -1,0 +1,47 @@
+name: 诊断真实 Web 设置流程
+on:
+  workflow_dispatch:
+    inputs:
+      artifact_run:
+        description: 包含真实 release-web 产物的本仓库运行 ID
+        required: true
+        default: '37605696619'
+permissions:
+  contents: read
+  actions: read
+jobs:
+  settings:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: app/.nvmrc
+          cache: npm
+          cache-dependency-path: app/package-lock.json
+      - run: npm ci --prefix app
+      - name: 读取实际发行 Web 产物和来源记录
+        env:
+          GH_TOKEN: ${{ github.token }}
+          ARTIFACT_RUN: ${{ inputs.artifact_run }}
+        run: |
+          [[ "$ARTIFACT_RUN" =~ ^[0-9]+$ ]]
+          gh run view "$ARTIFACT_RUN" --json headSha > artifact-source.json
+          gh run download "$ARTIFACT_RUN" --name release-web --dir target/diagnose-web
+          mkdir -p app/dist
+          unzip -q target/diagnose-web/OpenMath-web_*.zip -d app/dist
+      - run: npx playwright install --with-deps chromium
+        working-directory: app
+      - name: 实际 Linux 浏览器设置与持久化
+        run: npm run test:e2e -- --grep 'profile CRUD' --workers=1 --repeat-each=3
+        working-directory: app
+        env:
+          OPENMATH_E2E_PREVIEW: '1'
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: settings-diagnostic-evidence
+          path: |
+            app/test-results
+            artifact-source.json
+          if-no-files-found: error

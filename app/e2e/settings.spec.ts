@@ -1,4 +1,18 @@
 import { test, expect } from "@playwright/test";
+test.afterEach(async ({page}, info)=>{
+  if(info.status===info.expectedStatus)return;
+  const snapshot=await page.evaluate(()=>{
+    const raw=localStorage.getItem('openmath-settings-v1');
+    const stored=raw?JSON.parse(raw):null;
+    return {dialog:!!document.querySelector('[role="dialog"]'),
+      statuses:[...document.querySelectorAll('[role="status"]')].map(e=>e.textContent),
+      alerts:[...document.querySelectorAll('[role="alert"]')].map(e=>e.textContent),
+      saved:stored?{routes:stored.routes,profiles:stored.profiles.map((p:{name:string;kind:string;model:string})=>({name:p.name,kind:p.kind,model:p.model}))}:null};
+  }).catch(e=>({unavailable:String(e)}));
+  console.info('Settings failure state:',JSON.stringify(snapshot));
+  await info.attach('settings-state',{body:JSON.stringify(snapshot),contentType:'application/json'});
+  await info.attach('settings-window',{body:await page.screenshot(),contentType:'image/png'});
+});
 function pong() {
   return `data: ${JSON.stringify({ choices: [{ index: 0, delta: { content: "pong" }, finish_reason: "stop" }] })}\n\ndata: [DONE]\n\n`;
 }

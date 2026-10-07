@@ -67,6 +67,12 @@ jobs:
           name: release-web
           path: release-assets/*
           if-no-files-found: error
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: release-web-failure-evidence
+          path: app/test-results
+          if-no-files-found: warn
 
   macos:
     runs-on: macos-15

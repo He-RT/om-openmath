@@ -75,6 +75,12 @@ jobs:
         run: OPENMATH_PERFORMANCE=1 OPENMATH_E2E_PREVIEW=1 npm run test:e2e -- --workers=1
       - name: Independently check all original production WASM math results
         run: CARGO_PROFILE_TEST_OPT_LEVEL=2 cargo test -p om-cli --test corpus production_wasm_results_match_all_original_authority_rows --locked -- --ignored
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: frontend-failure-evidence
+          path: app/test-results
+          if-no-files-found: warn
 
   dependencies:
     runs-on: ubuntu-latest

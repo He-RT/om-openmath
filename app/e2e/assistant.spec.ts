@@ -169,6 +169,7 @@ for (const width of [375, 1280])
       exact: true,
     });
     await input.fill("Use solve and propose code; inspect @cell1");
+    await expect(page.locator(".chat-composer").getByRole("button",{name:"Send",exact:true})).toBeEnabled();
     await input.press("Enter");
     await page
       .getByRole("checkbox", {

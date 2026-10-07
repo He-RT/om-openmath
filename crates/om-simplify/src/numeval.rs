@@ -2,6 +2,10 @@
 
 use om_core::{Abort, BUILTIN as B, Expr, ExprKind, Interrupt};
 use om_num::{Ball, BigFloat, BitTest, CBall, Complex, Integer, Number, Precision, Rational, Real};
+use std::{
+    collections::HashMap,
+    hash::{BuildHasherDefault, DefaultHasher},
+};
 
 #[path = "numeval_elementary.rs"]
 mod elementary;
@@ -80,6 +84,11 @@ fn evaluate_ball(e: &Expr, bits: u32, ctx: &Interrupt) -> Result<Option<CBall>, 
     }
     let mut frames = vec![Frame::Visit(e)];
     let mut values = Vec::new();
+    // Repeated immutable numeric subtrees use the same directed enclosure at
+    // this working precision. The cache is local, bounded and never iterated;
+    // no session bindings or rounded/failed point results are remembered.
+    let mut memo: HashMap<Expr, CBall, BuildHasherDefault<DefaultHasher>> = HashMap::default();
+    const MEMO_LIMIT: usize = 256;
     while let Some(frame) = frames.pop() {
         ctx.tick()?;
         match frame {
@@ -95,6 +104,10 @@ fn evaluate_ball(e: &Expr, bits: u32, ctx: &Interrupt) -> Result<Option<CBall>, 
                     values.push(z);
                 }
                 ExprKind::Normal(_) => {
+                    if let Some(z) = memo.get(e) {
+                        values.push(realness::project(e, z.clone()));
+                        continue;
+                    }
                     if e.is_head(B::ROOT) {
                         let Some(value) = crate::root_reduce::root_value(e, ctx)? else {
                             return Ok(None);
@@ -131,7 +144,11 @@ fn evaluate_ball(e: &Expr, bits: u32, ctx: &Interrupt) -> Result<Option<CBall>, 
                 if !finite(&z) {
                     return Ok(None);
                 }
-                values.push(realness::project_sum(e, &args, z, ctx)?);
+                let z = realness::project_sum(e, &args, z, ctx)?;
+                if memo.len() < MEMO_LIMIT {
+                    memo.insert(e.clone(), z.clone());
+                }
+                values.push(z);
             }
         }
     }

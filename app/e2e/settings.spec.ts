@@ -155,6 +155,8 @@ for (const width of [375, 1280])
     await page
       .getByLabel("Extra headers (JSON)", { exact: true })
       .fill('{"X-Synthetic":"one"}');
+    await expect(page.getByRole("alert")).toHaveCount(0);
+    await expect(page.getByRole("button",{name:"Test connection",exact:true})).toBeEnabled();
     await page
       .getByRole("tab", { name: "Feature mapping", exact: true })
       .click();

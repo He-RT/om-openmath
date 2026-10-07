@@ -6,6 +6,56 @@ use om_simplify::numeval::{approximate, evaluate};
 fn e(src: &str) -> Expr {
     canonicalize(&parse_expr(src, Dialect::Wolfram).unwrap())
 }
+
+#[test]
+fn repeated_numeric_subtrees_keep_directed_rounding_precision_and_cancellation() {
+    use om_core::BUILTIN as B;
+    use std::{
+        cell::Cell,
+        sync::{Arc, atomic::AtomicBool},
+    };
+    let term = e("Sin[Pi/7]");
+    let repeated = Expr::call(B::PLUS, (0..64).map(|_| term.clone()));
+    let expected = 64. * (std::f64::consts::PI / 7.).sin();
+    for precision in [Precision::Machine, Precision::Bits(167)] {
+        let ctx = Interrupt {
+            steps_left: Cell::new(10000),
+            ..Interrupt::default()
+        };
+        let value = approximate(&repeated, precision, &ctx).unwrap().unwrap();
+        assert!((value.to_f64().unwrap() - expected).abs() < 1e-13);
+        assert_eq!(value.precision(), precision);
+        // Sharing reduces real computation while all visits still spend budget.
+        assert!(ctx.steps_left.get() > 9000);
+    }
+    let cancelled = Interrupt {
+        flag: Arc::new(AtomicBool::new(true)),
+        ..Interrupt::default()
+    };
+    assert!(approximate(&repeated, Precision::Machine, &cancelled).is_err());
+    let tiny = e("(1+I/10^80)^(1/3)+(1+I/10^80)^(1/3)");
+    let value = approximate(&tiny, Precision::Bits(400), &Interrupt::default())
+        .unwrap()
+        .unwrap();
+    assert!(
+        matches!(value, Number::Complex(_)),
+        "tiny true imaginary part must survive sharing"
+    );
+    let many = Expr::call(
+        B::PLUS,
+        (1..=300).map(|i| Expr::call(B::SQRT, [Expr::int(i)])),
+    );
+    let expected = (1..=300).map(|i| (i as f64).sqrt()).sum::<f64>();
+    let actual = approximate(&many, Precision::Machine, &Interrupt::default())
+        .unwrap()
+        .unwrap()
+        .to_f64()
+        .unwrap();
+    assert!(
+        (actual - expected).abs() < 1e-10,
+        "reaching the local memo cap must not discard terms"
+    );
+}
 #[test]
 fn scalar_elementary_functions_match_binary64_and_both_precision_modes() {
     for (name, reference) in [

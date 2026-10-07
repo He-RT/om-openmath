@@ -1,0 +1,7 @@
+{
+  "kind": "nsis",
+  "bytes": 44528640,
+  "original_sha256": "6bbe87959f0fa872416a7f9ca9c4cb7fdee592f641c84c0acaa7fa6b5ad1d2b5",
+  "installed_sha256": "2ba27d9902b13d6519e3d8a45a05e488410891c20545d2b15658d413e57e0248",
+  "allowed_change": "__TAURI_BUNDLE_TYPE_VAR_UNK -> NSS"
+}

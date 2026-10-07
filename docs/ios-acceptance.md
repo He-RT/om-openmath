@@ -81,3 +81,9 @@ iPad 真机在 Device Hub 最大字号（11）下完成真实求解，源码、�
 [发行流程](https://github.com/He-RT/om-openmath/actions/runs/37218757011) 全通过，包含 Windows 两种安装包实际安装/中文窗口、macOS 权威数学/性能、Web 与原生移动附件。已公开 [v0.1.0-pre-alpha.2](https://github.com/He-RT/om-openmath/releases/tag/v0.1.0-pre-alpha.2)，九类分发文件加清单；此前 `.1` 保留。源码工程随标签交付，个人签名配置不上传。此后记录更新只修改文档，分发源码与清单提交不变。
 
 公开附件完整下载后逐字节检查九类文件的大小、清单 SHA256 与 GitHub digest，清单自身的 GitHub digest 也一致；全部 ZIP 的 CRC 通过，标签准确指向发行源码 SHA。再次确认两个 ARM64 切片、模拟器应用版本/平台/许可和签名材料隔离；DMG 的 `hdiutil verify` 通过，公开 macOS CLI 显示 `.2` 并真实求解出 −3 / 1。回读记录与原始清单分别为 `ios-evidence/release-final-verification.json`、`release-manifest-pre-alpha.2.json`。最新版已重新安装并启动于 iPad，未重开本机模拟器。
+
+## pre-alpha.3 最终发行（2026-10-08）
+
+完整科研/二维/三维桌面扩展已随 [pre-alpha.3](https://github.com/He-RT/om-openmath/releases/tag/v0.1.0-pre-alpha.3) 交付，标签源码0889d34。新同SHA CI与发行门禁全部成功，iPhone18Pro/iPadM5 iOS27各29单元+5UI；原53保持数学期望，CI完整请求max702.975/374.767ms，独立发行max888.380/441.161ms，全部<1s，无unsupported原始公式排版。实际两移动ARM64切片/无签名device链接、公开app版本.3/build3/min27与许可已回读。
+
+移动端新增计算、原生结构化结果、二维图元/绘图、探索和SVG/PNG/CSV/JSON导出已通过；3D仍按计划保留源式fallback不自动采样。九附件与公开SHA256逐文件核验，完整数据/截图见[最终发行验收](acceptance/r3-release/README.md)及ios-evidence/pre-alpha.3。原真机/旁白/浮动/窄窗口历史与用户暂缓项不改成通过，本机没有启动模拟器。

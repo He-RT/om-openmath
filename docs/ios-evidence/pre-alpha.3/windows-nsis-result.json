@@ -1,0 +1,14 @@
+{
+  "installed": true,
+  "native": true,
+  "locale": "zh-CN",
+  "checks": [
+    "exact -3/1 roots",
+    "recorded steps",
+    "reactive 3 to 6",
+    "exact radical roots",
+    "native kernel full watermelon 16 meshes",
+    "actual WebGL2 pixels rotation reset"
+  ],
+  "errors": []
+}

@@ -1,0 +1,7 @@
+{
+  "kind": "msi",
+  "bytes": 44528640,
+  "original_sha256": "eec6c34a3325119c28a16d4fc56ed59646781d747ccb900b0cd6910fc96b26e1",
+  "installed_sha256": "aa2d43a24639617ddf729a572e731646eb4637fe1528523bb5858a152a1d3391",
+  "allowed_change": "__TAURI_BUNDLE_TYPE_VAR_UNK -> MSI"
+}

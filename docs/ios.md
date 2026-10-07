@@ -1,6 +1,6 @@
 # iOS / iPadOS 原生客户端
 
-已随 [0.1.0-pre-alpha.2](https://github.com/He-RT/om-openmath/releases/tag/v0.1.0-pre-alpha.2) 交付。最低 iOS/iPadOS 27，支持 iPhone 和 iPad、横竖屏、单窗口及硬件键盘。使用 SwiftUI/UIKit/TextKit 2、SwiftMath 和原生 Canvas；所有计算复用 Rust 内核。
+当前发行 [0.1.0-pre-alpha.3](https://github.com/He-RT/om-openmath/releases/tag/v0.1.0-pre-alpha.3)，保留首次移动交付的 `.2`。最低 iOS/iPadOS 27，支持 iPhone 和 iPad、横竖屏、单窗口及硬件键盘。使用 SwiftUI/UIKit/TextKit 2、SwiftMath 和原生 Canvas；所有计算复用 Rust 内核。
 
 `.3` 共用新增的微积分、矩阵、ODE/插值、优化/拟合、统计、数据与单位计算，并提供原生表格/报告、二维图元与曲线、独立参数探索及 SVG/PNG/CSV/JSON 导出。三维场景保留源码并明确提示未适配，不自动采样未展示的大网格。示例与精度边界见[功能目录](reference/README.md)及[科研案例](examples/README.md)。
 

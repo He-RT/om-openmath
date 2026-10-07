@@ -26691,7 +26691,7 @@ evidence = ["docs/design/artifact-export.md", "crates/om-kernel/tests/artifacts.
 id = "platforms"
 title = "分发与平台门禁"
 status = "implemented"
-scope = ".2九类附件已发布；.3实现完成才升级版本/发新Release；不启动本机模拟器。"
+scope = ".3原完整科研/图形范围与九类附件已通过同提交CI/安装/移动/数学门禁并发布；.1/.2保留，公开SHA256已回读，不启动本机模拟器。"
 evidence = ["docs/ios-acceptance.md", "docs/releasing.md"]
 
 [[features]]

@@ -4,7 +4,7 @@
 
 OpenMath 是以方程求解为核心的开源计算机代数系统。终端、响应式浏览器笔记本、桌面应用和原生 iOS/iPadOS 客户端共享 Rust 内核，支持现代数学写法与 Wolfram 语言子集、精确解卡片、推导步骤、交互绘图和可配置 AI。
 
-当前源码版本 [**0.1.0-pre-alpha.3**](https://github.com/He-RT/om-openmath/releases/tag/v0.1.0-pre-alpha.3)，保留已公开的 `.1/.2`。支持有资源边界的求解子集；无法支持的问题保留原表达式并给出诊断。兼容范围见[求解指南](docs/solve.md)。
+已发布 [**0.1.0-pre-alpha.3**](https://github.com/He-RT/om-openmath/releases/tag/v0.1.0-pre-alpha.3)，保留已公开的 `.1/.2`。支持有资源边界的求解子集；无法支持的问题保留原表达式并给出诊断。兼容范围见[求解指南](docs/solve.md)。
 
 ```sh
 om -e 'solve(x^2 - 5x + 6 = 0, x)'
@@ -41,7 +41,7 @@ Windows 包携带 WebView2 引导程序；系统没有 WebView2 时，首次安�
 
 启动桌面版，点击“二次方程”示例，或添加数学单元格输入 `solve(x^2=2,x)`。Shift-Enter 或 Ctrl/Cmd-Enter 运行，结果卡片可查看精确值、数值近似、步骤和图像。分别运行 `let a=2` 与 `a+1`，再将定义改为 `let a=5`，依赖结果更新为 6。
 
-原生菜单支持新建、打开、保存 `.omnb`，以及 Markdown/LaTeX 导出。`.3` 提供 [二维 SVG/PNG、纯数据 CSV/JSON 与 CLI 导出](docs/design/artifact-export.md)、[三维曲面/场景与 OBJ](docs/design/scene3d.md)。完整安装附件在同提交 CI 与平台安装门禁通过后发布。笔记本只保存源码；导出包含当前计算结果，排除过期输出。界面提供中文和英文，默认跟随系统，可在偏好设置中切换。
+原生菜单支持新建、打开、保存 `.omnb`，以及 Markdown/LaTeX 导出。`.3` 提供 [二维 SVG/PNG、纯数据 CSV/JSON 与 CLI 导出](docs/design/artifact-export.md)、[三维曲面/场景与 OBJ](docs/design/scene3d.md)。完整九类安装/应用/CLI/Web/移动内核附件已通过同提交门禁并公开，SHA256 清单随发行提供。笔记本只保存源码；导出包含当前计算结果，排除过期输出。界面提供中文和英文，默认跟随系统，可在偏好设置中切换。
 
 AI 在设置中接入自己的模型服务，支持编辑模型、地址、能力和功能映射。Web 版需要服务允许 CORS，桌面和终端使用原生 HTTP。细节见[模型接入指南](docs/llm.md)。
 

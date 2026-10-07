@@ -1,0 +1,27 @@
+{
+  "revision": "0889d34e4fce9926054025ca71ea328f6cc65b39",
+  "release_run": 37655070652,
+  "version": "0.1.0-pre-alpha.3",
+  "results": [
+    {
+      "platform": "pad",
+      "device": "iPad Pro 11-inch (M5)",
+      "os": "27.0",
+      "tests": 34,
+      "original_corpus_count": 53,
+      "max_total_ms": 441.160584,
+      "max_kernel_ms": 312.08566599999995,
+      "unsupported_latex": []
+    },
+    {
+      "platform": "phone",
+      "device": "iPhone 18 Pro",
+      "os": "27.0",
+      "tests": 34,
+      "original_corpus_count": 53,
+      "max_total_ms": 888.379709,
+      "max_kernel_ms": 286.813958,
+      "unsupported_latex": []
+    }
+  ]
+}

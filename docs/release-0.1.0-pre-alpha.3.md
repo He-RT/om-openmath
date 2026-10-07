@@ -26,6 +26,8 @@ iOS 继续完整计算与二维原生显示，三维明确提示尚未适配并�
 
 ## 验收与发布门禁
 
+已于 2026-10-08（亚洲/新加坡）公开发布。发行源码 `0889d34e4fce9926054025ca71ea328f6cc65b39` 的 [CI](https://github.com/He-RT/om-openmath/actions/runs/37654889786) 与[发行流程](https://github.com/He-RT/om-openmath/actions/runs/37655070652) 全部通过；九类公开附件、清单、GitHub SHA256、实际 CLI 与 DMG 已逐项回读核验。手机/平板各 29 项单元＋5 项界面流程，发行原 53 条整次请求最大约 888/441 ms；Mac 原生 200 ms 门槛和 Windows 两种实际安装/完整三维检查通过。[完整证据](acceptance/r3-release/README.md)随仓库交付。
+
 原 53 条数学权威语料和数学期望保持，原单项 1 秒平台门槛不放宽。本地完整 Rust 回归、纯 WASM、前端/真实生产图形/导出、两架构和无签名 iOS 测试构建已执行；最终实际结果记录在[研发账本](plan/PROGRESS.md)。GitHub 最终同提交 CI、iPhone/iPad 27 实跑、Windows 两种实际安装/中文窗口及包字节核验、macOS DMG/CLI 与九类附件门禁全部成功后，工作流才公开此预发行版。
 
 本机不启动模拟器；云端运行不替代人工设备组合验收。用户暂缓的 VoiceOver 完整遍历、浮动键盘和真机窄窗口仍保留为未验证；已有 iPhone 真机 UI 驱动 code 74 与历史 MainActor 恢复延迟记录也保留，不声称永久消除所有平台问题。

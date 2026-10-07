@@ -358,7 +358,7 @@ function InteractivePlot({
         </div>
       )}
       {sampler.data?.geometry && <p className="plot-approximation">
-        {request.kind !== "Data" && request.kind !== "Histogram" && <span>{t.plotApproximation}</span>}
+        {request.kind !== "Data" && request.kind !== "Histogram" && request.kind !== "Scene" && <span>{t.plotApproximation}</span>}
         {sampler.data.geometry.skipped > 0 && <span>{t.skippedSamples}: {sampler.data.geometry.skipped}</span>}
       </p>}
       <details onToggle={(event) => setShowData(event.currentTarget.open)}>

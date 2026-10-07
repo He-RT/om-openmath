@@ -13418,22 +13418,33 @@
       "name": "scene",
       "category": "scene",
       "kind": "function",
-      "status": "planned",
-      "interface_status": "planned",
-      "runtime_names": [],
-      "compatibility_names": [],
-      "current_modern_signatures": [],
+      "status": "partial",
+      "interface_status": "current",
+      "runtime_names": [
+        "Scene"
+      ],
+      "compatibility_names": [
+        "Scene"
+      ],
+      "current_modern_signatures": [
+        "scene(nodes,dimensions:2)"
+      ],
       "signatures": [
         "scene(nodes, dimensions: 2)"
       ],
-      "current_support": "当前无此规范接口的实现。",
+      "current_support": "真实只读场景图元/组合/仿射变换；坐标维数与scene dimensions一致，固定颜色或readonly颜色函数、有限opacity与明确资源边界。二维XY几何保留路径/多边形/marker/label并在桌面Web/iOS原生展示导出；三维Rust真实网格/世界法线/颜色和WebGL2/OBJ，iOS明确fallback不自动采样。曲面/圆曲线和圆管有限机器采样不认证边界；Polygon共面简单边界真实ear clipping，自交/非共面拒绝；Tube平行运输框架/端帽，不保证全局自交不存在。变换不写主变量，退化面可成为实际采样线/点。",
       "target_support": "共享场景与内核几何数据；二维桌面/Web/iOS，三维WebGL2桌面/Web；无WebGL2或移动端3D明确提示并保留源式及OBJ导出，不制作假图。",
       "return_type": "scene_node_or_color",
       "precision_modes": [
-        "planned_machine"
+        "machine_geometry"
       ],
-      "precision_notes": "几何/颜色数据机器采样；未承诺任意精度光栅。",
-      "current_platforms": [],
+      "precision_notes": "机器几何/标签展示；源码保留精确数学意义，不宣称任意精度光栅或认证拓扑。",
+      "current_platforms": [
+        "cli",
+        "desktop",
+        "web",
+        "ios"
+      ],
       "target_platforms": [
         "cli",
         "desktop",
@@ -13446,17 +13457,19 @@
           "kind": "positional",
           "default": "必填",
           "description": "签名对应的nodes参数",
-          "availability": "r3"
+          "availability": "current"
         },
         {
           "name": "dimensions",
           "kind": "option",
           "default": "2",
           "description": "2或3",
-          "availability": "r3"
+          "availability": "current"
         }
       ],
-      "current_examples": [],
+      "current_examples": [
+        "Scene[{Point[{0,0}],Line[{{0,0},{1,1}}]}]"
+      ],
       "planned_examples": [
         "scene([point([0,0]),line([[0,0],[1,1]])])"
       ]
@@ -13466,22 +13479,33 @@
       "name": "point",
       "category": "scene",
       "kind": "function",
-      "status": "planned",
-      "interface_status": "planned",
-      "runtime_names": [],
-      "compatibility_names": [],
-      "current_modern_signatures": [],
+      "status": "partial",
+      "interface_status": "current",
+      "runtime_names": [
+        "Point"
+      ],
+      "compatibility_names": [
+        "Point"
+      ],
+      "current_modern_signatures": [
+        "point(position,color:\"blue\")"
+      ],
       "signatures": [
         "point(position, color: \"blue\")"
       ],
-      "current_support": "当前无此规范接口的实现。",
+      "current_support": "真实只读场景图元/组合/仿射变换；坐标维数与scene dimensions一致，固定颜色或readonly颜色函数、有限opacity与明确资源边界。二维XY几何保留路径/多边形/marker/label并在桌面Web/iOS原生展示导出；三维Rust真实网格/世界法线/颜色和WebGL2/OBJ，iOS明确fallback不自动采样。曲面/圆曲线和圆管有限机器采样不认证边界；Polygon共面简单边界真实ear clipping，自交/非共面拒绝；Tube平行运输框架/端帽，不保证全局自交不存在。变换不写主变量，退化面可成为实际采样线/点。",
       "target_support": "共享场景与内核几何数据；二维桌面/Web/iOS，三维WebGL2桌面/Web；无WebGL2或移动端3D明确提示并保留源式及OBJ导出，不制作假图。",
       "return_type": "scene_node_or_color",
       "precision_modes": [
-        "planned_machine"
+        "machine_geometry"
       ],
-      "precision_notes": "几何/颜色数据机器采样；未承诺任意精度光栅。",
-      "current_platforms": [],
+      "precision_notes": "机器几何/标签展示；源码保留精确数学意义，不宣称任意精度光栅或认证拓扑。",
+      "current_platforms": [
+        "cli",
+        "desktop",
+        "web",
+        "ios"
+      ],
       "target_platforms": [
         "cli",
         "desktop",
@@ -13494,17 +13518,19 @@
           "kind": "positional",
           "default": "必填",
           "description": "坐标",
-          "availability": "r3"
+          "availability": "current"
         },
         {
           "name": "color",
           "kind": "option",
           "default": "\"blue\"",
           "description": "颜色或只读颜色函数",
-          "availability": "r3"
+          "availability": "current"
         }
       ],
-      "current_examples": [],
+      "current_examples": [
+        "Point[{0,0}]"
+      ],
       "planned_examples": [
         "point([0,0],color: \"blue\")"
       ]
@@ -13514,22 +13540,33 @@
       "name": "line",
       "category": "scene",
       "kind": "function",
-      "status": "planned",
-      "interface_status": "planned",
-      "runtime_names": [],
-      "compatibility_names": [],
-      "current_modern_signatures": [],
+      "status": "partial",
+      "interface_status": "current",
+      "runtime_names": [
+        "Line"
+      ],
+      "compatibility_names": [
+        "Line"
+      ],
+      "current_modern_signatures": [
+        "line(points,color:\"blue\")"
+      ],
       "signatures": [
         "line(points, color: \"blue\")"
       ],
-      "current_support": "当前无此规范接口的实现。",
+      "current_support": "真实只读场景图元/组合/仿射变换；坐标维数与scene dimensions一致，固定颜色或readonly颜色函数、有限opacity与明确资源边界。二维XY几何保留路径/多边形/marker/label并在桌面Web/iOS原生展示导出；三维Rust真实网格/世界法线/颜色和WebGL2/OBJ，iOS明确fallback不自动采样。曲面/圆曲线和圆管有限机器采样不认证边界；Polygon共面简单边界真实ear clipping，自交/非共面拒绝；Tube平行运输框架/端帽，不保证全局自交不存在。变换不写主变量，退化面可成为实际采样线/点。",
       "target_support": "共享场景与内核几何数据；二维桌面/Web/iOS，三维WebGL2桌面/Web；无WebGL2或移动端3D明确提示并保留源式及OBJ导出，不制作假图。",
       "return_type": "scene_node_or_color",
       "precision_modes": [
-        "planned_machine"
+        "machine_geometry"
       ],
-      "precision_notes": "几何/颜色数据机器采样；未承诺任意精度光栅。",
-      "current_platforms": [],
+      "precision_notes": "机器几何/标签展示；源码保留精确数学意义，不宣称任意精度光栅或认证拓扑。",
+      "current_platforms": [
+        "cli",
+        "desktop",
+        "web",
+        "ios"
+      ],
       "target_platforms": [
         "cli",
         "desktop",
@@ -13542,17 +13579,19 @@
           "kind": "positional",
           "default": "必填",
           "description": "有序坐标列表",
-          "availability": "r3"
+          "availability": "current"
         },
         {
           "name": "color",
           "kind": "option",
           "default": "\"blue\"",
           "description": "颜色或只读颜色函数",
-          "availability": "r3"
+          "availability": "current"
         }
       ],
-      "current_examples": [],
+      "current_examples": [
+        "Line[{{0,0},{1,1}}]"
+      ],
       "planned_examples": [
         "line([[0,0],[1,1]])"
       ]
@@ -13562,22 +13601,33 @@
       "name": "arrow",
       "category": "scene",
       "kind": "function",
-      "status": "planned",
-      "interface_status": "planned",
-      "runtime_names": [],
-      "compatibility_names": [],
-      "current_modern_signatures": [],
+      "status": "partial",
+      "interface_status": "current",
+      "runtime_names": [
+        "Arrow"
+      ],
+      "compatibility_names": [
+        "Arrow"
+      ],
+      "current_modern_signatures": [
+        "arrow(start,end)"
+      ],
       "signatures": [
         "arrow(start, end)"
       ],
-      "current_support": "当前无此规范接口的实现。",
+      "current_support": "真实只读场景图元/组合/仿射变换；坐标维数与scene dimensions一致，固定颜色或readonly颜色函数、有限opacity与明确资源边界。二维XY几何保留路径/多边形/marker/label并在桌面Web/iOS原生展示导出；三维Rust真实网格/世界法线/颜色和WebGL2/OBJ，iOS明确fallback不自动采样。曲面/圆曲线和圆管有限机器采样不认证边界；Polygon共面简单边界真实ear clipping，自交/非共面拒绝；Tube平行运输框架/端帽，不保证全局自交不存在。变换不写主变量，退化面可成为实际采样线/点。",
       "target_support": "共享场景与内核几何数据；二维桌面/Web/iOS，三维WebGL2桌面/Web；无WebGL2或移动端3D明确提示并保留源式及OBJ导出，不制作假图。",
       "return_type": "scene_node_or_color",
       "precision_modes": [
-        "planned_machine"
+        "machine_geometry"
       ],
-      "precision_notes": "几何/颜色数据机器采样；未承诺任意精度光栅。",
-      "current_platforms": [],
+      "precision_notes": "机器几何/标签展示；源码保留精确数学意义，不宣称任意精度光栅或认证拓扑。",
+      "current_platforms": [
+        "cli",
+        "desktop",
+        "web",
+        "ios"
+      ],
       "target_platforms": [
         "cli",
         "desktop",
@@ -13590,17 +13640,19 @@
           "kind": "positional",
           "default": "必填",
           "description": "签名对应的start参数",
-          "availability": "r3"
+          "availability": "current"
         },
         {
           "name": "end",
           "kind": "positional",
           "default": "必填",
           "description": "签名对应的end参数",
-          "availability": "r3"
+          "availability": "current"
         }
       ],
-      "current_examples": [],
+      "current_examples": [
+        "Arrow[{0,0},{1,1}]"
+      ],
       "planned_examples": [
         "arrow([0,0],[1,1])"
       ]
@@ -13610,22 +13662,33 @@
       "name": "circle",
       "category": "scene",
       "kind": "function",
-      "status": "planned",
-      "interface_status": "planned",
-      "runtime_names": [],
-      "compatibility_names": [],
-      "current_modern_signatures": [],
+      "status": "partial",
+      "interface_status": "current",
+      "runtime_names": [
+        "Circle"
+      ],
+      "compatibility_names": [
+        "Circle"
+      ],
+      "current_modern_signatures": [
+        "circle(center,radius)"
+      ],
       "signatures": [
         "circle(center, radius)"
       ],
-      "current_support": "当前无此规范接口的实现。",
+      "current_support": "真实只读场景图元/组合/仿射变换；坐标维数与scene dimensions一致，固定颜色或readonly颜色函数、有限opacity与明确资源边界。二维XY几何保留路径/多边形/marker/label并在桌面Web/iOS原生展示导出；三维Rust真实网格/世界法线/颜色和WebGL2/OBJ，iOS明确fallback不自动采样。曲面/圆曲线和圆管有限机器采样不认证边界；Polygon共面简单边界真实ear clipping，自交/非共面拒绝；Tube平行运输框架/端帽，不保证全局自交不存在。变换不写主变量，退化面可成为实际采样线/点。",
       "target_support": "共享场景与内核几何数据；二维桌面/Web/iOS，三维WebGL2桌面/Web；无WebGL2或移动端3D明确提示并保留源式及OBJ导出，不制作假图。",
       "return_type": "scene_node_or_color",
       "precision_modes": [
-        "planned_machine"
+        "machine_geometry"
       ],
-      "precision_notes": "几何/颜色数据机器采样；未承诺任意精度光栅。",
-      "current_platforms": [],
+      "precision_notes": "机器几何/标签展示；源码保留精确数学意义，不宣称任意精度光栅或认证拓扑。",
+      "current_platforms": [
+        "cli",
+        "desktop",
+        "web",
+        "ios"
+      ],
       "target_platforms": [
         "cli",
         "desktop",
@@ -13638,17 +13701,19 @@
           "kind": "positional",
           "default": "必填",
           "description": "中心坐标",
-          "availability": "r3"
+          "availability": "current"
         },
         {
           "name": "radius",
           "kind": "positional",
           "default": "必填",
           "description": "正半径",
-          "availability": "r3"
+          "availability": "current"
         }
       ],
-      "current_examples": [],
+      "current_examples": [
+        "Circle[{0,0},1]"
+      ],
       "planned_examples": [
         "circle([0,0],1)"
       ]
@@ -13658,22 +13723,33 @@
       "name": "disk",
       "category": "scene",
       "kind": "function",
-      "status": "planned",
-      "interface_status": "planned",
-      "runtime_names": [],
-      "compatibility_names": [],
-      "current_modern_signatures": [],
+      "status": "partial",
+      "interface_status": "current",
+      "runtime_names": [
+        "Disk"
+      ],
+      "compatibility_names": [
+        "Disk"
+      ],
+      "current_modern_signatures": [
+        "disk(center,radius)"
+      ],
       "signatures": [
         "disk(center, radius)"
       ],
-      "current_support": "当前无此规范接口的实现。",
+      "current_support": "真实只读场景图元/组合/仿射变换；坐标维数与scene dimensions一致，固定颜色或readonly颜色函数、有限opacity与明确资源边界。二维XY几何保留路径/多边形/marker/label并在桌面Web/iOS原生展示导出；三维Rust真实网格/世界法线/颜色和WebGL2/OBJ，iOS明确fallback不自动采样。曲面/圆曲线和圆管有限机器采样不认证边界；Polygon共面简单边界真实ear clipping，自交/非共面拒绝；Tube平行运输框架/端帽，不保证全局自交不存在。变换不写主变量，退化面可成为实际采样线/点。",
       "target_support": "共享场景与内核几何数据；二维桌面/Web/iOS，三维WebGL2桌面/Web；无WebGL2或移动端3D明确提示并保留源式及OBJ导出，不制作假图。",
       "return_type": "scene_node_or_color",
       "precision_modes": [
-        "planned_machine"
+        "machine_geometry"
       ],
-      "precision_notes": "几何/颜色数据机器采样；未承诺任意精度光栅。",
-      "current_platforms": [],
+      "precision_notes": "机器几何/标签展示；源码保留精确数学意义，不宣称任意精度光栅或认证拓扑。",
+      "current_platforms": [
+        "cli",
+        "desktop",
+        "web",
+        "ios"
+      ],
       "target_platforms": [
         "cli",
         "desktop",
@@ -13686,17 +13762,19 @@
           "kind": "positional",
           "default": "必填",
           "description": "中心坐标",
-          "availability": "r3"
+          "availability": "current"
         },
         {
           "name": "radius",
           "kind": "positional",
           "default": "必填",
           "description": "正半径",
-          "availability": "r3"
+          "availability": "current"
         }
       ],
-      "current_examples": [],
+      "current_examples": [
+        "Disk[{0,0},1]"
+      ],
       "planned_examples": [
         "disk([0,0],1)"
       ]
@@ -13706,22 +13784,33 @@
       "name": "polygon",
       "category": "scene",
       "kind": "function",
-      "status": "planned",
-      "interface_status": "planned",
-      "runtime_names": [],
-      "compatibility_names": [],
-      "current_modern_signatures": [],
+      "status": "partial",
+      "interface_status": "current",
+      "runtime_names": [
+        "Polygon"
+      ],
+      "compatibility_names": [
+        "Polygon"
+      ],
+      "current_modern_signatures": [
+        "polygon(vertices)"
+      ],
       "signatures": [
         "polygon(vertices)"
       ],
-      "current_support": "当前无此规范接口的实现。",
+      "current_support": "真实只读场景图元/组合/仿射变换；坐标维数与scene dimensions一致，固定颜色或readonly颜色函数、有限opacity与明确资源边界。二维XY几何保留路径/多边形/marker/label并在桌面Web/iOS原生展示导出；三维Rust真实网格/世界法线/颜色和WebGL2/OBJ，iOS明确fallback不自动采样。曲面/圆曲线和圆管有限机器采样不认证边界；Polygon共面简单边界真实ear clipping，自交/非共面拒绝；Tube平行运输框架/端帽，不保证全局自交不存在。变换不写主变量，退化面可成为实际采样线/点。",
       "target_support": "共享场景与内核几何数据；二维桌面/Web/iOS，三维WebGL2桌面/Web；无WebGL2或移动端3D明确提示并保留源式及OBJ导出，不制作假图。",
       "return_type": "scene_node_or_color",
       "precision_modes": [
-        "planned_machine"
+        "machine_geometry"
       ],
-      "precision_notes": "几何/颜色数据机器采样；未承诺任意精度光栅。",
-      "current_platforms": [],
+      "precision_notes": "机器几何/标签展示；源码保留精确数学意义，不宣称任意精度光栅或认证拓扑。",
+      "current_platforms": [
+        "cli",
+        "desktop",
+        "web",
+        "ios"
+      ],
       "target_platforms": [
         "cli",
         "desktop",
@@ -13734,10 +13823,12 @@
           "kind": "positional",
           "default": "必填",
           "description": "多边形顶点",
-          "availability": "r3"
+          "availability": "current"
         }
       ],
-      "current_examples": [],
+      "current_examples": [
+        "Polygon[{{0,0},{1,0},{0,1}}]"
+      ],
       "planned_examples": [
         "polygon([[0,0],[1,0],[0,1]])"
       ]
@@ -13747,22 +13838,33 @@
       "name": "sphere",
       "category": "scene",
       "kind": "function",
-      "status": "planned",
-      "interface_status": "planned",
-      "runtime_names": [],
-      "compatibility_names": [],
-      "current_modern_signatures": [],
+      "status": "partial",
+      "interface_status": "current",
+      "runtime_names": [
+        "Sphere"
+      ],
+      "compatibility_names": [
+        "Sphere"
+      ],
+      "current_modern_signatures": [
+        "sphere(center,radius)"
+      ],
       "signatures": [
         "sphere(center, radius)"
       ],
-      "current_support": "当前无此规范接口的实现。",
+      "current_support": "真实只读场景图元/组合/仿射变换；坐标维数与scene dimensions一致，固定颜色或readonly颜色函数、有限opacity与明确资源边界。二维XY几何保留路径/多边形/marker/label并在桌面Web/iOS原生展示导出；三维Rust真实网格/世界法线/颜色和WebGL2/OBJ，iOS明确fallback不自动采样。曲面/圆曲线和圆管有限机器采样不认证边界；Polygon共面简单边界真实ear clipping，自交/非共面拒绝；Tube平行运输框架/端帽，不保证全局自交不存在。变换不写主变量，退化面可成为实际采样线/点。",
       "target_support": "共享场景与内核几何数据；二维桌面/Web/iOS，三维WebGL2桌面/Web；无WebGL2或移动端3D明确提示并保留源式及OBJ导出，不制作假图。",
       "return_type": "scene_node_or_color",
       "precision_modes": [
-        "planned_machine"
+        "machine_geometry"
       ],
-      "precision_notes": "几何/颜色数据机器采样；未承诺任意精度光栅。",
-      "current_platforms": [],
+      "precision_notes": "机器几何/标签展示；源码保留精确数学意义，不宣称任意精度光栅或认证拓扑。",
+      "current_platforms": [
+        "cli",
+        "desktop",
+        "web",
+        "ios"
+      ],
       "target_platforms": [
         "cli",
         "desktop",
@@ -13775,17 +13877,19 @@
           "kind": "positional",
           "default": "必填",
           "description": "中心坐标",
-          "availability": "r3"
+          "availability": "current"
         },
         {
           "name": "radius",
           "kind": "positional",
           "default": "必填",
           "description": "正半径",
-          "availability": "r3"
+          "availability": "current"
         }
       ],
-      "current_examples": [],
+      "current_examples": [
+        "Sphere[{0,0,0},1]"
+      ],
       "planned_examples": [
         "sphere([0,0,0],1)"
       ]
@@ -13795,22 +13899,33 @@
       "name": "ellipsoid",
       "category": "scene",
       "kind": "function",
-      "status": "planned",
-      "interface_status": "planned",
-      "runtime_names": [],
-      "compatibility_names": [],
-      "current_modern_signatures": [],
+      "status": "partial",
+      "interface_status": "current",
+      "runtime_names": [
+        "Ellipsoid"
+      ],
+      "compatibility_names": [
+        "Ellipsoid"
+      ],
+      "current_modern_signatures": [
+        "ellipsoid(center,radii)"
+      ],
       "signatures": [
         "ellipsoid(center, radii)"
       ],
-      "current_support": "当前无此规范接口的实现。",
+      "current_support": "真实只读场景图元/组合/仿射变换；坐标维数与scene dimensions一致，固定颜色或readonly颜色函数、有限opacity与明确资源边界。二维XY几何保留路径/多边形/marker/label并在桌面Web/iOS原生展示导出；三维Rust真实网格/世界法线/颜色和WebGL2/OBJ，iOS明确fallback不自动采样。曲面/圆曲线和圆管有限机器采样不认证边界；Polygon共面简单边界真实ear clipping，自交/非共面拒绝；Tube平行运输框架/端帽，不保证全局自交不存在。变换不写主变量，退化面可成为实际采样线/点。",
       "target_support": "共享场景与内核几何数据；二维桌面/Web/iOS，三维WebGL2桌面/Web；无WebGL2或移动端3D明确提示并保留源式及OBJ导出，不制作假图。",
       "return_type": "scene_node_or_color",
       "precision_modes": [
-        "planned_machine"
+        "machine_geometry"
       ],
-      "precision_notes": "几何/颜色数据机器采样；未承诺任意精度光栅。",
-      "current_platforms": [],
+      "precision_notes": "机器几何/标签展示；源码保留精确数学意义，不宣称任意精度光栅或认证拓扑。",
+      "current_platforms": [
+        "cli",
+        "desktop",
+        "web",
+        "ios"
+      ],
       "target_platforms": [
         "cli",
         "desktop",
@@ -13823,17 +13938,19 @@
           "kind": "positional",
           "default": "必填",
           "description": "中心坐标",
-          "availability": "r3"
+          "availability": "current"
         },
         {
           "name": "radii",
           "kind": "positional",
           "default": "必填",
           "description": "正半轴向量",
-          "availability": "r3"
+          "availability": "current"
         }
       ],
-      "current_examples": [],
+      "current_examples": [
+        "Ellipsoid[{0,0,0},{1,2,3}]"
+      ],
       "planned_examples": [
         "ellipsoid([0,0,0],[1.35,1,1])"
       ]
@@ -13843,22 +13960,33 @@
       "name": "box",
       "category": "scene",
       "kind": "function",
-      "status": "planned",
-      "interface_status": "planned",
-      "runtime_names": [],
-      "compatibility_names": [],
-      "current_modern_signatures": [],
+      "status": "partial",
+      "interface_status": "current",
+      "runtime_names": [
+        "Box"
+      ],
+      "compatibility_names": [
+        "Box"
+      ],
+      "current_modern_signatures": [
+        "box(min,max)"
+      ],
       "signatures": [
         "box(min, max)"
       ],
-      "current_support": "当前无此规范接口的实现。",
+      "current_support": "真实只读场景图元/组合/仿射变换；坐标维数与scene dimensions一致，固定颜色或readonly颜色函数、有限opacity与明确资源边界。二维XY几何保留路径/多边形/marker/label并在桌面Web/iOS原生展示导出；三维Rust真实网格/世界法线/颜色和WebGL2/OBJ，iOS明确fallback不自动采样。曲面/圆曲线和圆管有限机器采样不认证边界；Polygon共面简单边界真实ear clipping，自交/非共面拒绝；Tube平行运输框架/端帽，不保证全局自交不存在。变换不写主变量，退化面可成为实际采样线/点。",
       "target_support": "共享场景与内核几何数据；二维桌面/Web/iOS，三维WebGL2桌面/Web；无WebGL2或移动端3D明确提示并保留源式及OBJ导出，不制作假图。",
       "return_type": "scene_node_or_color",
       "precision_modes": [
-        "planned_machine"
+        "machine_geometry"
       ],
-      "precision_notes": "几何/颜色数据机器采样；未承诺任意精度光栅。",
-      "current_platforms": [],
+      "precision_notes": "机器几何/标签展示；源码保留精确数学意义，不宣称任意精度光栅或认证拓扑。",
+      "current_platforms": [
+        "cli",
+        "desktop",
+        "web",
+        "ios"
+      ],
       "target_platforms": [
         "cli",
         "desktop",
@@ -13871,17 +13999,19 @@
           "kind": "positional",
           "default": "必填",
           "description": "签名对应的min参数",
-          "availability": "r3"
+          "availability": "current"
         },
         {
           "name": "max",
           "kind": "positional",
           "default": "必填",
           "description": "签名对应的max参数",
-          "availability": "r3"
+          "availability": "current"
         }
       ],
-      "current_examples": [],
+      "current_examples": [
+        "Box[{-1,-1,-1},{1,1,1}]"
+      ],
       "planned_examples": [
         "box([0,0,0],[1,1,1])"
       ]
@@ -13891,22 +14021,33 @@
       "name": "cylinder",
       "category": "scene",
       "kind": "function",
-      "status": "planned",
-      "interface_status": "planned",
-      "runtime_names": [],
-      "compatibility_names": [],
-      "current_modern_signatures": [],
+      "status": "partial",
+      "interface_status": "current",
+      "runtime_names": [
+        "Cylinder"
+      ],
+      "compatibility_names": [
+        "Cylinder"
+      ],
+      "current_modern_signatures": [
+        "cylinder(start,end,radius)"
+      ],
       "signatures": [
         "cylinder(start,end,radius)"
       ],
-      "current_support": "当前无此规范接口的实现。",
+      "current_support": "真实只读场景图元/组合/仿射变换；坐标维数与scene dimensions一致，固定颜色或readonly颜色函数、有限opacity与明确资源边界。二维XY几何保留路径/多边形/marker/label并在桌面Web/iOS原生展示导出；三维Rust真实网格/世界法线/颜色和WebGL2/OBJ，iOS明确fallback不自动采样。曲面/圆曲线和圆管有限机器采样不认证边界；Polygon共面简单边界真实ear clipping，自交/非共面拒绝；Tube平行运输框架/端帽，不保证全局自交不存在。变换不写主变量，退化面可成为实际采样线/点。",
       "target_support": "共享场景与内核几何数据；二维桌面/Web/iOS，三维WebGL2桌面/Web；无WebGL2或移动端3D明确提示并保留源式及OBJ导出，不制作假图。",
       "return_type": "scene_node_or_color",
       "precision_modes": [
-        "planned_machine"
+        "machine_geometry"
       ],
-      "precision_notes": "几何/颜色数据机器采样；未承诺任意精度光栅。",
-      "current_platforms": [],
+      "precision_notes": "机器几何/标签展示；源码保留精确数学意义，不宣称任意精度光栅或认证拓扑。",
+      "current_platforms": [
+        "cli",
+        "desktop",
+        "web",
+        "ios"
+      ],
       "target_platforms": [
         "cli",
         "desktop",
@@ -13919,24 +14060,26 @@
           "kind": "positional",
           "default": "必填",
           "description": "签名对应的start参数",
-          "availability": "r3"
+          "availability": "current"
         },
         {
           "name": "end",
           "kind": "positional",
           "default": "必填",
           "description": "签名对应的end参数",
-          "availability": "r3"
+          "availability": "current"
         },
         {
           "name": "radius",
           "kind": "positional",
           "default": "必填",
           "description": "正半径",
-          "availability": "r3"
+          "availability": "current"
         }
       ],
-      "current_examples": [],
+      "current_examples": [
+        "Cylinder[{0,0,0},{0,0,1},1]"
+      ],
       "planned_examples": [
         "cylinder([0,0,0],[0,0,1],0.2)"
       ]
@@ -13946,22 +14089,33 @@
       "name": "cone",
       "category": "scene",
       "kind": "function",
-      "status": "planned",
-      "interface_status": "planned",
-      "runtime_names": [],
-      "compatibility_names": [],
-      "current_modern_signatures": [],
+      "status": "partial",
+      "interface_status": "current",
+      "runtime_names": [
+        "Cone"
+      ],
+      "compatibility_names": [
+        "Cone"
+      ],
+      "current_modern_signatures": [
+        "cone(start,end,radius)"
+      ],
       "signatures": [
         "cone(start,end,radius)"
       ],
-      "current_support": "当前无此规范接口的实现。",
+      "current_support": "真实只读场景图元/组合/仿射变换；坐标维数与scene dimensions一致，固定颜色或readonly颜色函数、有限opacity与明确资源边界。二维XY几何保留路径/多边形/marker/label并在桌面Web/iOS原生展示导出；三维Rust真实网格/世界法线/颜色和WebGL2/OBJ，iOS明确fallback不自动采样。曲面/圆曲线和圆管有限机器采样不认证边界；Polygon共面简单边界真实ear clipping，自交/非共面拒绝；Tube平行运输框架/端帽，不保证全局自交不存在。变换不写主变量，退化面可成为实际采样线/点。",
       "target_support": "共享场景与内核几何数据；二维桌面/Web/iOS，三维WebGL2桌面/Web；无WebGL2或移动端3D明确提示并保留源式及OBJ导出，不制作假图。",
       "return_type": "scene_node_or_color",
       "precision_modes": [
-        "planned_machine"
+        "machine_geometry"
       ],
-      "precision_notes": "几何/颜色数据机器采样；未承诺任意精度光栅。",
-      "current_platforms": [],
+      "precision_notes": "机器几何/标签展示；源码保留精确数学意义，不宣称任意精度光栅或认证拓扑。",
+      "current_platforms": [
+        "cli",
+        "desktop",
+        "web",
+        "ios"
+      ],
       "target_platforms": [
         "cli",
         "desktop",
@@ -13974,24 +14128,26 @@
           "kind": "positional",
           "default": "必填",
           "description": "签名对应的start参数",
-          "availability": "r3"
+          "availability": "current"
         },
         {
           "name": "end",
           "kind": "positional",
           "default": "必填",
           "description": "签名对应的end参数",
-          "availability": "r3"
+          "availability": "current"
         },
         {
           "name": "radius",
           "kind": "positional",
           "default": "必填",
           "description": "正半径",
-          "availability": "r3"
+          "availability": "current"
         }
       ],
-      "current_examples": [],
+      "current_examples": [
+        "Cone[{0,0,0},{0,0,1},1]"
+      ],
       "planned_examples": [
         "cone([0,0,0],[0,0,1],0.2)"
       ]
@@ -14001,22 +14157,33 @@
       "name": "tube",
       "category": "scene",
       "kind": "function",
-      "status": "planned",
-      "interface_status": "planned",
-      "runtime_names": [],
-      "compatibility_names": [],
-      "current_modern_signatures": [],
+      "status": "partial",
+      "interface_status": "current",
+      "runtime_names": [
+        "Tube"
+      ],
+      "compatibility_names": [
+        "Tube"
+      ],
+      "current_modern_signatures": [
+        "tube(path,radius)"
+      ],
       "signatures": [
         "tube(path,radius)"
       ],
-      "current_support": "当前无此规范接口的实现。",
+      "current_support": "真实只读场景图元/组合/仿射变换；坐标维数与scene dimensions一致，固定颜色或readonly颜色函数、有限opacity与明确资源边界。二维XY几何保留路径/多边形/marker/label并在桌面Web/iOS原生展示导出；三维Rust真实网格/世界法线/颜色和WebGL2/OBJ，iOS明确fallback不自动采样。曲面/圆曲线和圆管有限机器采样不认证边界；Polygon共面简单边界真实ear clipping，自交/非共面拒绝；Tube平行运输框架/端帽，不保证全局自交不存在。变换不写主变量，退化面可成为实际采样线/点。",
       "target_support": "共享场景与内核几何数据；二维桌面/Web/iOS，三维WebGL2桌面/Web；无WebGL2或移动端3D明确提示并保留源式及OBJ导出，不制作假图。",
       "return_type": "scene_node_or_color",
       "precision_modes": [
-        "planned_machine"
+        "machine_geometry"
       ],
-      "precision_notes": "几何/颜色数据机器采样；未承诺任意精度光栅。",
-      "current_platforms": [],
+      "precision_notes": "机器几何/标签展示；源码保留精确数学意义，不宣称任意精度光栅或认证拓扑。",
+      "current_platforms": [
+        "cli",
+        "desktop",
+        "web",
+        "ios"
+      ],
       "target_platforms": [
         "cli",
         "desktop",
@@ -14029,17 +14196,19 @@
           "kind": "positional",
           "default": "必填",
           "description": "签名对应的path参数",
-          "availability": "r3"
+          "availability": "current"
         },
         {
           "name": "radius",
           "kind": "positional",
           "default": "必填",
           "description": "正半径",
-          "availability": "r3"
+          "availability": "current"
         }
       ],
-      "current_examples": [],
+      "current_examples": [
+        "Tube[{{0,0,0},{0,0,1},{1,0,2}},0.1]"
+      ],
       "planned_examples": [
         "tube([[0,0,0],[1,0,0],[1,1,0]],0.05)"
       ]
@@ -14049,22 +14218,33 @@
       "name": "label",
       "category": "scene",
       "kind": "function",
-      "status": "planned",
-      "interface_status": "planned",
-      "runtime_names": [],
-      "compatibility_names": [],
-      "current_modern_signatures": [],
+      "status": "partial",
+      "interface_status": "current",
+      "runtime_names": [
+        "Label"
+      ],
+      "compatibility_names": [
+        "Label"
+      ],
+      "current_modern_signatures": [
+        "label(text,position)"
+      ],
       "signatures": [
         "label(text, position)"
       ],
-      "current_support": "当前无此规范接口的实现。",
+      "current_support": "真实只读场景图元/组合/仿射变换；坐标维数与scene dimensions一致，固定颜色或readonly颜色函数、有限opacity与明确资源边界。二维XY几何保留路径/多边形/marker/label并在桌面Web/iOS原生展示导出；三维Rust真实网格/世界法线/颜色和WebGL2/OBJ，iOS明确fallback不自动采样。曲面/圆曲线和圆管有限机器采样不认证边界；Polygon共面简单边界真实ear clipping，自交/非共面拒绝；Tube平行运输框架/端帽，不保证全局自交不存在。变换不写主变量，退化面可成为实际采样线/点。",
       "target_support": "共享场景与内核几何数据；二维桌面/Web/iOS，三维WebGL2桌面/Web；无WebGL2或移动端3D明确提示并保留源式及OBJ导出，不制作假图。",
       "return_type": "scene_node_or_color",
       "precision_modes": [
-        "planned_machine"
+        "machine_geometry"
       ],
-      "precision_notes": "几何/颜色数据机器采样；未承诺任意精度光栅。",
-      "current_platforms": [],
+      "precision_notes": "机器几何/标签展示；源码保留精确数学意义，不宣称任意精度光栅或认证拓扑。",
+      "current_platforms": [
+        "cli",
+        "desktop",
+        "web",
+        "ios"
+      ],
       "target_platforms": [
         "cli",
         "desktop",
@@ -14077,17 +14257,19 @@
           "kind": "positional",
           "default": "必填",
           "description": "文本",
-          "availability": "r3"
+          "availability": "current"
         },
         {
           "name": "position",
           "kind": "positional",
           "default": "必填",
           "description": "坐标",
-          "availability": "r3"
+          "availability": "current"
         }
       ],
-      "current_examples": [],
+      "current_examples": [
+        "Label[\"地球\",{0,0}]"
+      ],
       "planned_examples": [
         "label(\"L2\",[1,0])"
       ]
@@ -14097,22 +14279,33 @@
       "name": "translate",
       "category": "scene",
       "kind": "function",
-      "status": "planned",
-      "interface_status": "planned",
-      "runtime_names": [],
-      "compatibility_names": [],
-      "current_modern_signatures": [],
+      "status": "partial",
+      "interface_status": "current",
+      "runtime_names": [
+        "Translate"
+      ],
+      "compatibility_names": [
+        "Translate"
+      ],
+      "current_modern_signatures": [
+        "translate(node,vector)"
+      ],
       "signatures": [
         "translate(node, vector)"
       ],
-      "current_support": "当前无此规范接口的实现。",
+      "current_support": "真实只读场景图元/组合/仿射变换；坐标维数与scene dimensions一致，固定颜色或readonly颜色函数、有限opacity与明确资源边界。二维XY几何保留路径/多边形/marker/label并在桌面Web/iOS原生展示导出；三维Rust真实网格/世界法线/颜色和WebGL2/OBJ，iOS明确fallback不自动采样。曲面/圆曲线和圆管有限机器采样不认证边界；Polygon共面简单边界真实ear clipping，自交/非共面拒绝；Tube平行运输框架/端帽，不保证全局自交不存在。变换不写主变量，退化面可成为实际采样线/点。",
       "target_support": "共享场景与内核几何数据；二维桌面/Web/iOS，三维WebGL2桌面/Web；无WebGL2或移动端3D明确提示并保留源式及OBJ导出，不制作假图。",
       "return_type": "scene_node_or_color",
       "precision_modes": [
-        "planned_machine"
+        "machine_geometry"
       ],
-      "precision_notes": "几何/颜色数据机器采样；未承诺任意精度光栅。",
-      "current_platforms": [],
+      "precision_notes": "机器几何/标签展示；源码保留精确数学意义，不宣称任意精度光栅或认证拓扑。",
+      "current_platforms": [
+        "cli",
+        "desktop",
+        "web",
+        "ios"
+      ],
       "target_platforms": [
         "cli",
         "desktop",
@@ -14125,17 +14318,19 @@
           "kind": "positional",
           "default": "必填",
           "description": "签名对应的node参数",
-          "availability": "r3"
+          "availability": "current"
         },
         {
           "name": "vector",
           "kind": "positional",
           "default": "必填",
           "description": "向量",
-          "availability": "r3"
+          "availability": "current"
         }
       ],
-      "current_examples": [],
+      "current_examples": [
+        "Translate[Point[{0,0}],{1,2}]"
+      ],
       "planned_examples": [
         "sphere([0,0,0],1) |> translate([2,0,0])"
       ]
@@ -14145,22 +14340,33 @@
       "name": "rotate",
       "category": "scene",
       "kind": "function",
-      "status": "planned",
-      "interface_status": "planned",
-      "runtime_names": [],
-      "compatibility_names": [],
-      "current_modern_signatures": [],
+      "status": "partial",
+      "interface_status": "current",
+      "runtime_names": [
+        "Rotate"
+      ],
+      "compatibility_names": [
+        "Rotate"
+      ],
+      "current_modern_signatures": [
+        "rotate(node,angle,axis:[0,0,1],center:[0,0,0])"
+      ],
       "signatures": [
         "rotate(node, angle, axis: [0,0,1], center: [0,0,0])"
       ],
-      "current_support": "当前无此规范接口的实现。",
+      "current_support": "真实只读场景图元/组合/仿射变换；坐标维数与scene dimensions一致，固定颜色或readonly颜色函数、有限opacity与明确资源边界。二维XY几何保留路径/多边形/marker/label并在桌面Web/iOS原生展示导出；三维Rust真实网格/世界法线/颜色和WebGL2/OBJ，iOS明确fallback不自动采样。曲面/圆曲线和圆管有限机器采样不认证边界；Polygon共面简单边界真实ear clipping，自交/非共面拒绝；Tube平行运输框架/端帽，不保证全局自交不存在。变换不写主变量，退化面可成为实际采样线/点。",
       "target_support": "共享场景与内核几何数据；二维桌面/Web/iOS，三维WebGL2桌面/Web；无WebGL2或移动端3D明确提示并保留源式及OBJ导出，不制作假图。",
       "return_type": "scene_node_or_color",
       "precision_modes": [
-        "planned_machine"
+        "machine_geometry"
       ],
-      "precision_notes": "几何/颜色数据机器采样；未承诺任意精度光栅。",
-      "current_platforms": [],
+      "precision_notes": "机器几何/标签展示；源码保留精确数学意义，不宣称任意精度光栅或认证拓扑。",
+      "current_platforms": [
+        "cli",
+        "desktop",
+        "web",
+        "ios"
+      ],
       "target_platforms": [
         "cli",
         "desktop",
@@ -14173,31 +14379,33 @@
           "kind": "positional",
           "default": "必填",
           "description": "签名对应的node参数",
-          "availability": "r3"
+          "availability": "current"
         },
         {
           "name": "angle",
           "kind": "positional",
           "default": "必填",
           "description": "弧度角",
-          "availability": "r3"
+          "availability": "current"
         },
         {
           "name": "axis",
           "kind": "option",
           "default": "[0,0,1]",
           "description": "旋转轴",
-          "availability": "r3"
+          "availability": "current"
         },
         {
           "name": "center",
           "kind": "option",
           "default": "[0,0,0]",
           "description": "中心坐标",
-          "availability": "r3"
+          "availability": "current"
         }
       ],
-      "current_examples": [],
+      "current_examples": [
+        "Rotate[Line[{{0,0},{1,0}}],Pi/2]"
+      ],
       "planned_examples": [
         "ellipsoid([0,0,0],[2,1,1]) |> rotate(pi/4,axis: [0,0,1])"
       ]
@@ -14207,22 +14415,33 @@
       "name": "scale",
       "category": "scene",
       "kind": "function",
-      "status": "planned",
-      "interface_status": "planned",
-      "runtime_names": [],
-      "compatibility_names": [],
-      "current_modern_signatures": [],
+      "status": "partial",
+      "interface_status": "current",
+      "runtime_names": [
+        "Scale"
+      ],
+      "compatibility_names": [
+        "Scale"
+      ],
+      "current_modern_signatures": [
+        "scale(node,factors,center:[0,0,0])"
+      ],
       "signatures": [
         "scale(node, factors, center: [0,0,0])"
       ],
-      "current_support": "当前无此规范接口的实现。",
+      "current_support": "真实只读场景图元/组合/仿射变换；坐标维数与scene dimensions一致，固定颜色或readonly颜色函数、有限opacity与明确资源边界。二维XY几何保留路径/多边形/marker/label并在桌面Web/iOS原生展示导出；三维Rust真实网格/世界法线/颜色和WebGL2/OBJ，iOS明确fallback不自动采样。曲面/圆曲线和圆管有限机器采样不认证边界；Polygon共面简单边界真实ear clipping，自交/非共面拒绝；Tube平行运输框架/端帽，不保证全局自交不存在。变换不写主变量，退化面可成为实际采样线/点。",
       "target_support": "共享场景与内核几何数据；二维桌面/Web/iOS，三维WebGL2桌面/Web；无WebGL2或移动端3D明确提示并保留源式及OBJ导出，不制作假图。",
       "return_type": "scene_node_or_color",
       "precision_modes": [
-        "planned_machine"
+        "machine_geometry"
       ],
-      "precision_notes": "几何/颜色数据机器采样；未承诺任意精度光栅。",
-      "current_platforms": [],
+      "precision_notes": "机器几何/标签展示；源码保留精确数学意义，不宣称任意精度光栅或认证拓扑。",
+      "current_platforms": [
+        "cli",
+        "desktop",
+        "web",
+        "ios"
+      ],
       "target_platforms": [
         "cli",
         "desktop",
@@ -14235,24 +14454,26 @@
           "kind": "positional",
           "default": "必填",
           "description": "签名对应的node参数",
-          "availability": "r3"
+          "availability": "current"
         },
         {
           "name": "factors",
           "kind": "positional",
           "default": "必填",
           "description": "签名对应的factors参数",
-          "availability": "r3"
+          "availability": "current"
         },
         {
           "name": "center",
           "kind": "option",
           "default": "[0,0,0]",
           "description": "中心坐标",
-          "availability": "r3"
+          "availability": "current"
         }
       ],
-      "current_examples": [],
+      "current_examples": [
+        "Scale[Circle[{0,0},1],{2,1}]"
+      ],
       "planned_examples": [
         "sphere([0,0,0],1) |> scale([2,1,1])"
       ]
@@ -14262,22 +14483,33 @@
       "name": "style",
       "category": "scene",
       "kind": "function",
-      "status": "planned",
-      "interface_status": "planned",
-      "runtime_names": [],
-      "compatibility_names": [],
-      "current_modern_signatures": [],
+      "status": "implemented",
+      "interface_status": "current",
+      "runtime_names": [
+        "Style"
+      ],
+      "compatibility_names": [
+        "Style"
+      ],
+      "current_modern_signatures": [
+        "style(node,color:\"green\",opacity:1)"
+      ],
       "signatures": [
         "style(node, color: \"green\", opacity: 1)"
       ],
-      "current_support": "当前无此规范接口的实现。",
+      "current_support": "held样式包装；二维/三维实际scene节点与列表分组继承color/opacity，子节点显式样式覆盖继承；图元外包需放入scene容器。",
       "target_support": "共享场景与内核几何数据；二维桌面/Web/iOS，三维WebGL2桌面/Web；无WebGL2或移动端3D明确提示并保留源式及OBJ导出，不制作假图。",
       "return_type": "scene_node_or_color",
       "precision_modes": [
-        "planned_machine"
+        "machine"
       ],
       "precision_notes": "几何/颜色数据机器采样；未承诺任意精度光栅。",
-      "current_platforms": [],
+      "current_platforms": [
+        "cli",
+        "desktop",
+        "web",
+        "ios"
+      ],
       "target_platforms": [
         "cli",
         "desktop",
@@ -14307,7 +14539,9 @@
           "availability": "r3"
         }
       ],
-      "current_examples": [],
+      "current_examples": [
+        "Style[Circle[{0,0},1],Color->\"green\",Opacity->0.8]"
+      ],
       "planned_examples": [
         "circle([0,0],1) |> style(color: \"green\",opacity: 0.8)"
       ]
@@ -14317,22 +14551,33 @@
       "name": "blend",
       "category": "scene",
       "kind": "function",
-      "status": "planned",
-      "interface_status": "planned",
-      "runtime_names": [],
-      "compatibility_names": [],
-      "current_modern_signatures": [],
+      "status": "implemented",
+      "interface_status": "current",
+      "runtime_names": [
+        "Blend"
+      ],
+      "compatibility_names": [
+        "Blend"
+      ],
+      "current_modern_signatures": [
+        "blend([color1,color2],weight)"
+      ],
       "signatures": [
         "blend(colors, weight)"
       ],
-      "current_support": "当前无此规范接口的实现。",
+      "current_support": "恰好两个受支持颜色名/#RRGGBB或RGB/RGBA列表，weight在0..1，逐分量插值返回RGBA机器实数，不做光学线性化或多色权重。",
       "target_support": "共享场景与内核几何数据；二维桌面/Web/iOS，三维WebGL2桌面/Web；无WebGL2或移动端3D明确提示并保留源式及OBJ导出，不制作假图。",
       "return_type": "scene_node_or_color",
       "precision_modes": [
-        "planned_machine"
+        "machine"
       ],
       "precision_notes": "几何/颜色数据机器采样；未承诺任意精度光栅。",
-      "current_platforms": [],
+      "current_platforms": [
+        "cli",
+        "desktop",
+        "web",
+        "ios"
+      ],
       "target_platforms": [
         "cli",
         "desktop",
@@ -14355,7 +14600,9 @@
           "availability": "r3"
         }
       ],
-      "current_examples": [],
+      "current_examples": [
+        "Blend[{\"dark_green\",\"light_green\"},0.5]"
+      ],
       "planned_examples": [
         "blend([\"dark_green\",\"light_green\"],0.5)"
       ]

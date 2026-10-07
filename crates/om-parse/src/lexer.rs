@@ -155,6 +155,14 @@ pub struct LexOutput {
 /// Tokenize input without numerical conversion or semantic normalization.
 /// Auto defaults to Modern; automatic detection belongs to the parser.
 pub fn lex(src: &str, dialect: Dialect) -> LexOutput {
+    lex_mode(src, dialect, false)
+}
+// InputForm is an expression transport: Pattern/Blank are explicit heads, while
+// underscore-bearing modern symbol identities must survive without becoming patterns.
+pub(crate) fn lex_input_form(src: &str) -> LexOutput {
+    lex_mode(src, Dialect::Wolfram, true)
+}
+fn lex_mode(src: &str, dialect: Dialect, serialized_symbols: bool) -> LexOutput {
     if u32::try_from(src.len()).is_err() {
         return LexOutput {
             tokens: vec![],
@@ -171,6 +179,7 @@ pub fn lex(src: &str, dialect: Dialect) -> LexOutput {
         src,
         pos: 0,
         dialect,
+        serialized_symbols,
         output: LexOutput {
             tokens: vec![],
             diagnostics: vec![],
@@ -198,6 +207,7 @@ struct Scanner<'a> {
     src: &'a str,
     pos: usize,
     dialect: Dialect,
+    serialized_symbols: bool,
     output: LexOutput,
 }
 
@@ -302,7 +312,7 @@ impl Scanner<'_> {
         if ch.is_alphabetic()
             || ch == '$'
             || ch == '∞'
-            || (ch == '_' && self.dialect != Dialect::Wolfram)
+            || (ch == '_' && (self.dialect != Dialect::Wolfram || self.serialized_symbols))
         {
             self.bump();
             self.identifier_tail();
@@ -343,7 +353,8 @@ impl Scanner<'_> {
                 !superscript(c)
                     && (c.is_alphanumeric()
                         || c == '$'
-                        || (c == '_' && self.dialect != Dialect::Wolfram))
+                        || (c == '_'
+                            && (self.dialect != Dialect::Wolfram || self.serialized_symbols)))
             }) {
                 self.bump();
             } else if let Some(rest) = self.rest().strip_prefix("\\[") {

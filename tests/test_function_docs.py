@@ -31,7 +31,8 @@ class FunctionDocsTests(unittest.TestCase):
     def test_planning_cannot_claim_current_callbacks_or_platforms(self):
         for field, value in [("runtime_names", ["ImaginaryCallback"]), ("current_platforms", ["web"]), ("current_examples", ["ImaginaryCallback[]"])]:
             catalog = copy.deepcopy(self.catalog)
-            entry = next(e for e in catalog["functions"] if e["status"] == "planned")
+            entry = next(e for e in catalog["functions"] if e["status"] in {"planned", "deferred"})
+            entry["status"] = "planned"
             entry[field] = value
             with self.assertRaises(ValueError):
                 self.docs.validate(catalog)

@@ -7,6 +7,7 @@ fn held(_: &mut Evaluator, _: &[Expr], _: &Interrupt) -> Result<Option<Expr>, Ev
 }
 pub(crate) fn register(specs: &mut BTreeMap<&'static str, BuiltinSpec>) {
     crate::explore::register(specs);
+    crate::scene_registry::register(specs);
     for (name, arity, modern, wolfram, examples) in [
         (
             "Plot3D",

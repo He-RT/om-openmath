@@ -73,7 +73,7 @@ explore(plot(sin(a*x), x: 0..2*pi), controls: {a: 0.1..5})
 `mode: "exact"`是符号/精确数学请求；`mode: "numeric"`是用户明确接受的近似请求。`precision`为十进制有效位或`"machine"`，不等于显示小数位。现有N支持的精度与求根精度边界分开声明。新增积分/ODE/优化/拟合首版仅机器路径，拒绝冒充任意精度。
 
 ```text
-decimal("0.1", precision: 50)  # .3规划：直接十进制字符串到大浮点
+decimal("0.1", precision: 50)  # .3 dev已实现：直接十进制字符串到大浮点
 numeric(1/10, precision: 50)  # .3命名写法；当前可用 N(1/10,50)
 ```
 
@@ -91,7 +91,7 @@ numeric(1/10, precision: 50)  # .3命名写法；当前可用 N(1/10,50)
 
 - 规范函数ID保持稳定，别名和显示名称不作为唯一身份。参数的文字说明与实际类型/必填/枚举/默认值分开，后续可生成模型无关的工具描述；能力查询区分实现、精度、展示平台与任务权限，规划条目不能被推荐为当前可执行工具。
 
-本轮目录先分配独立 `fn_000001` 等稳定身份，[身份账本](../reference/function-identities.json)锁定已有注册归属；规范名称可变但ID不自动重分配。目录 `metadata_version=16`，runtime 区域已提供可验证类型、必填、枚举、数值范围、字面或上下文默认值。GetFunctionCatalog 仅返回实际回调；GetCapabilities 区分内核身份、调用方指定的展示平台与未来任务权限（当前为 null）。副作用标签不授权任意嵌套表达式，`unclassified` 不授予执行权。目标参数文字与六项 Notebook 工具仍是预留，不作为可执行 schema。
+本轮目录先分配独立 `fn_000001` 等稳定身份，[身份账本](../reference/function-identities.json)锁定已有注册归属；规范名称可变但ID不自动重分配。目录 `metadata_version=26`，runtime 区域已提供可验证类型、必填、枚举、数值范围、字面或上下文默认值。GetFunctionCatalog 仅返回实际回调；GetCapabilities 区分内核身份、调用方指定的展示平台与未来任务权限（当前为 null）。副作用标签不授权任意嵌套表达式，`unclassified` 不授予执行权。目标参数文字与六项 Notebook 工具仍是预留，不作为可执行 schema。
 
 - 可执行入口声明 `pure` / `read_session` / `write_session` / `write_document` / `host_io` 副作用类别。标签只用于描述和筛选，只读求值仍由实际执行环境保护；间接用户函数、随机状态与宿主操作不能绕过约束。
 - 解析、求值、数据结果和公共Notebook协议不携带Pi/Rig类型。框架适配器可以转换消息与工具格式，不能改变精确/近似、局部/全局、条件或版本冲突的业务含义。

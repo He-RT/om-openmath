@@ -12,29 +12,29 @@
 | [`absolute_thickness`](#absolute_thickness) | 后续规划 | 规划接口，当前不可用 | 图元、场景与交互中的 AbsoluteThickness 能力，进入后续全景目录。 |
 | [`animate`](#animate) | 后续规划 | 规划接口，当前不可用 | 图元、场景与交互中的 Animate 能力，进入后续全景目录。 |
 | [`animator`](#animator) | 后续规划 | 规划接口，当前不可用 | 图元、场景与交互中的 Animator 能力，进入后续全景目录。 |
-| [`arrow`](#arrow) | 下一版规划 | 规划接口，当前不可用 | 方向箭头 |
+| [`arrow`](#arrow) | 部分支持 | 当前可用 | 方向箭头 |
 | [`b_spline_curve`](#b_spline_curve) | 后续规划 | 规划接口，当前不可用 | 图元、场景与交互中的 BSplineCurve 能力，进入后续全景目录。 |
 | [`b_spline_surface`](#b_spline_surface) | 后续规划 | 规划接口，当前不可用 | 图元、场景与交互中的 BSplineSurface 能力，进入后续全景目录。 |
 | [`bezier_curve`](#bezier_curve) | 后续规划 | 规划接口，当前不可用 | 图元、场景与交互中的 BezierCurve 能力，进入后续全景目录。 |
-| [`blend`](#blend) | 下一版规划 | 规划接口，当前不可用 | 颜色插值 |
-| [`box`](#box) | 下一版规划 | 规划接口，当前不可用 | 长方体 |
+| [`blend`](#blend) | 已实现 | 当前可用 | 颜色插值 |
+| [`box`](#box) | 部分支持 | 当前可用 | 长方体 |
 | [`button`](#button) | 后续规划 | 规划接口，当前不可用 | 图元、场景与交互中的 Button 能力，进入后续全景目录。 |
 | [`c_form`](#c_form) | 后续规划 | 规划接口，当前不可用 | 图元、场景与交互中的 CForm 能力，进入后续全景目录。 |
 | [`callout`](#callout) | 后续规划 | 规划接口，当前不可用 | 图元、场景与交互中的 Callout 能力，进入后续全景目录。 |
 | [`checkbox`](#checkbox) | 后续规划 | 规划接口，当前不可用 | 图元、场景与交互中的 Checkbox 能力，进入后续全景目录。 |
-| [`circle`](#circle) | 下一版规划 | 规划接口，当前不可用 | 二维圆周 |
+| [`circle`](#circle) | 部分支持 | 当前可用 | 二维圆周 |
 | [`click_pane`](#click_pane) | 后续规划 | 规划接口，当前不可用 | 图元、场景与交互中的 ClickPane 能力，进入后续全景目录。 |
 | [`cmyk_color`](#cmyk_color) | 后续规划 | 规划接口，当前不可用 | 图元、场景与交互中的 CMYKColor 能力，进入后续全景目录。 |
 | [`color_data`](#color_data) | 后续规划 | 规划接口，当前不可用 | 图元、场景与交互中的 ColorData 能力，进入后续全景目录。 |
 | [`column`](#column) | 后续规划 | 规划接口，当前不可用 | 图元、场景与交互中的 Column 能力，进入后续全景目录。 |
-| [`cone`](#cone) | 下一版规划 | 规划接口，当前不可用 | 圆锥 |
-| [`cylinder`](#cylinder) | 下一版规划 | 规划接口，当前不可用 | 圆柱 |
+| [`cone`](#cone) | 部分支持 | 当前可用 | 圆锥 |
+| [`cylinder`](#cylinder) | 部分支持 | 当前可用 | 圆柱 |
 | [`dashing`](#dashing) | 后续规划 | 规划接口，当前不可用 | 图元、场景与交互中的 Dashing 能力，进入后续全景目录。 |
-| [`disk`](#disk) | 下一版规划 | 规划接口，当前不可用 | 二维圆盘 |
+| [`disk`](#disk) | 部分支持 | 当前可用 | 二维圆盘 |
 | [`dynamic`](#dynamic) | 后续规划 | 规划接口，当前不可用 | 图元、场景与交互中的 Dynamic 能力，进入后续全景目录。 |
 | [`dynamic_module`](#dynamic_module) | 后续规划 | 规划接口，当前不可用 | 图元、场景与交互中的 DynamicModule 能力，进入后续全景目录。 |
 | [`edge_form`](#edge_form) | 后续规划 | 规划接口，当前不可用 | 图元、场景与交互中的 EdgeForm 能力，进入后续全景目录。 |
-| [`ellipsoid`](#ellipsoid) | 下一版规划 | 规划接口，当前不可用 | 椭球面 |
+| [`ellipsoid`](#ellipsoid) | 部分支持 | 当前可用 | 椭球面 |
 | [`engineering_form`](#engineering_form) | 后续规划 | 规划接口，当前不可用 | 图元、场景与交互中的 EngineeringForm 能力，进入后续全景目录。 |
 | [`event_handler`](#event_handler) | 后续规划 | 规划接口，当前不可用 | 图元、场景与交互中的 EventHandler 能力，进入后续全景目录。 |
 | [`explore`](#explore) | 部分支持 | 当前可用 | 隔离主变量的交互参数探索 |
@@ -51,10 +51,10 @@
 | [`hue`](#hue) | 后续规划 | 规划接口，当前不可用 | 图元、场景与交互中的 Hue 能力，进入后续全景目录。 |
 | [`input_field`](#input_field) | 后续规划 | 规划接口，当前不可用 | 图元、场景与交互中的 InputField 能力，进入后续全景目录。 |
 | [`input_form`](#input_form) | 后续规划 | 规划接口，当前不可用 | 图元、场景与交互中的 InputForm 能力，进入后续全景目录。 |
-| [`label`](#label) | 下一版规划 | 规划接口，当前不可用 | 场景标签 |
+| [`label`](#label) | 部分支持 | 当前可用 | 场景标签 |
 | [`labeled`](#labeled) | 后续规划 | 规划接口，当前不可用 | 图元、场景与交互中的 Labeled 能力，进入后续全景目录。 |
 | [`legended`](#legended) | 后续规划 | 规划接口，当前不可用 | 图元、场景与交互中的 Legended 能力，进入后续全景目录。 |
-| [`line`](#line) | 下一版规划 | 规划接口，当前不可用 | 折线 |
+| [`line`](#line) | 部分支持 | 当前可用 | 折线 |
 | [`list_animate`](#list_animate) | 后续规划 | 规划接口，当前不可用 | 图元、场景与交互中的 ListAnimate 能力，进入后续全景目录。 |
 | [`locator`](#locator) | 后续规划 | 规划接口，当前不可用 | 图元、场景与交互中的 Locator 能力，进入后续全景目录。 |
 | [`locator_pane`](#locator_pane) | 后续规划 | 规划接口，当前不可用 | 图元、场景与交互中的 LocatorPane 能力，进入后续全景目录。 |
@@ -67,16 +67,16 @@
 | [`pane`](#pane) | 后续规划 | 规划接口，当前不可用 | 图元、场景与交互中的 Pane 能力，进入后续全景目录。 |
 | [`pane_selector`](#pane_selector) | 后续规划 | 规划接口，当前不可用 | 图元、场景与交互中的 PaneSelector 能力，进入后续全景目录。 |
 | [`panel`](#panel) | 后续规划 | 规划接口，当前不可用 | 图元、场景与交互中的 Panel 能力，进入后续全景目录。 |
-| [`point`](#point) | 下一版规划 | 规划接口，当前不可用 | 位置标记 |
+| [`point`](#point) | 部分支持 | 当前可用 | 位置标记 |
 | [`point_size`](#point_size) | 后续规划 | 规划接口，当前不可用 | 图元、场景与交互中的 PointSize 能力，进入后续全景目录。 |
-| [`polygon`](#polygon) | 下一版规划 | 规划接口，当前不可用 | 多边形 |
+| [`polygon`](#polygon) | 部分支持 | 当前可用 | 多边形 |
 | [`popup_menu`](#popup_menu) | 后续规划 | 规划接口，当前不可用 | 图元、场景与交互中的 PopupMenu 能力，进入后续全景目录。 |
 | [`refresh`](#refresh) | 后续规划 | 规划接口，当前不可用 | 图元、场景与交互中的 Refresh 能力，进入后续全景目录。 |
 | [`rgb_color`](#rgb_color) | 后续规划 | 规划接口，当前不可用 | 图元、场景与交互中的 RGBColor 能力，进入后续全景目录。 |
-| [`rotate`](#rotate) | 下一版规划 | 规划接口，当前不可用 | 旋转 |
+| [`rotate`](#rotate) | 部分支持 | 当前可用 | 旋转 |
 | [`row`](#row) | 后续规划 | 规划接口，当前不可用 | 图元、场景与交互中的 Row 能力，进入后续全景目录。 |
-| [`scale`](#scale) | 下一版规划 | 规划接口，当前不可用 | 缩放 |
-| [`scene`](#scene) | 下一版规划 | 规划接口，当前不可用 | 组合场景 |
+| [`scale`](#scale) | 部分支持 | 当前可用 | 缩放 |
+| [`scene`](#scene) | 部分支持 | 当前可用 | 组合场景 |
 | [`scientific_form`](#scientific_form) | 后续规划 | 规划接口，当前不可用 | 图元、场景与交互中的 ScientificForm 能力，进入后续全景目录。 |
 | [`setter_bar`](#setter_bar) | 后续规划 | 规划接口，当前不可用 | 图元、场景与交互中的 SetterBar 能力，进入后续全景目录。 |
 | [`show`](#show) | 后续规划 | 规划接口，当前不可用 | 图元、场景与交互中的 Show 能力，进入后续全景目录。 |
@@ -84,17 +84,17 @@
 | [`slider2_d`](#slider2_d) | 后续规划 | 规划接口，当前不可用 | 图元、场景与交互中的 Slider2D 能力，进入后续全景目录。 |
 | [`spacer`](#spacer) | 后续规划 | 规划接口，当前不可用 | 图元、场景与交互中的 Spacer 能力，进入后续全景目录。 |
 | [`specularity`](#specularity) | 后续规划 | 规划接口，当前不可用 | 图元、场景与交互中的 Specularity 能力，进入后续全景目录。 |
-| [`sphere`](#sphere) | 下一版规划 | 规划接口，当前不可用 | 球面 |
+| [`sphere`](#sphere) | 部分支持 | 当前可用 | 球面 |
 | [`standard_form`](#standard_form) | 后续规划 | 规划接口，当前不可用 | 图元、场景与交互中的 StandardForm 能力，进入后续全景目录。 |
-| [`style`](#style) | 下一版规划 | 规划接口，当前不可用 | 样式 |
+| [`style`](#style) | 已实现 | 当前可用 | 样式 |
 | [`tab_view`](#tab_view) | 后续规划 | 规划接口，当前不可用 | 图元、场景与交互中的 TabView 能力，进入后续全景目录。 |
 | [`table_form`](#table_form) | 后续规划 | 规划接口，当前不可用 | 图元、场景与交互中的 TableForm 能力，进入后续全景目录。 |
 | [`te_x_form`](#te_x_form) | 后续规划 | 规划接口，当前不可用 | 图元、场景与交互中的 TeXForm 能力，进入后续全景目录。 |
 | [`thickness`](#thickness) | 后续规划 | 规划接口，当前不可用 | 图元、场景与交互中的 Thickness 能力，进入后续全景目录。 |
 | [`tooltip`](#tooltip) | 后续规划 | 规划接口，当前不可用 | 图元、场景与交互中的 Tooltip 能力，进入后续全景目录。 |
 | [`traditional_form`](#traditional_form) | 后续规划 | 规划接口，当前不可用 | 图元、场景与交互中的 TraditionalForm 能力，进入后续全景目录。 |
-| [`translate`](#translate) | 下一版规划 | 规划接口，当前不可用 | 平移 |
-| [`tube`](#tube) | 下一版规划 | 规划接口，当前不可用 | 沿路径的管 |
+| [`translate`](#translate) | 部分支持 | 当前可用 | 平移 |
+| [`tube`](#tube) | 部分支持 | 当前可用 | 沿路径的管 |
 
 ## absolute_point_size
 
@@ -234,21 +234,33 @@ animator(...)  # 后续接口尚未锁定
 
 ## arrow
 
-**当前实现：下一版规划；目标接口：规划接口，当前不可用。** 目标版本：`0.1.0-pre-alpha.3`。
+**当前实现：部分支持；目标接口：当前可用。** 目标版本：`0.1.0-pre-alpha.3`。
 
 - 稳定身份：`fn_000229`；条目类型：`function`。
-- 副作用分类（设计预留）：`pure`；参数验证阶段：`documentation_only`，不构成工具授权。
+- 副作用分类（设计预留）：`pure`；参数验证阶段：`runtime_verified`，不构成工具授权。
 
 方向箭头
 
-- 当前支持：当前无此规范接口的实现。
+- 当前支持：真实只读场景图元/组合/仿射变换；坐标维数与scene dimensions一致，固定颜色或readonly颜色函数、有限opacity与明确资源边界。二维XY几何保留路径/多边形/marker/label并在桌面Web/iOS原生展示导出；三维Rust真实网格/世界法线/颜色和WebGL2/OBJ，iOS明确fallback不自动采样。曲面/圆曲线和圆管有限机器采样不认证边界；Polygon共面简单边界真实ear clipping，自交/非共面拒绝；Tube平行运输框架/端帽，不保证全局自交不存在。变换不写主变量，退化面可成为实际采样线/点。
 - 目标范围：共享场景与内核几何数据；二维桌面/Web/iOS，三维WebGL2桌面/Web；无WebGL2或移动端3D明确提示并保留源式及OBJ导出，不制作假图。
 - 返回：scene_node_or_color
-- 精度：几何/颜色数据机器采样；未承诺任意精度光栅。
-- 当前计算平台：无；目标计算平台：cli, desktop, web, ios。
+- 精度：机器几何/标签展示；源码保留精确数学意义，不宣称任意精度光栅或认证拓扑。
+- 当前计算平台：cli, desktop, web, ios；目标计算平台：cli, desktop, web, ios。
 - 目标图形/交互展示平台：desktop, web, ios。
-- 兼容名称：无既有兼容入口。
+- 兼容名称：`Arrow`。
 - 管道位置：不接受自动管道输入。
+
+当前现代签名：
+
+```text
+arrow(start,end)
+```
+
+当前 Wolfram 签名：
+
+```text
+Arrow[start,end]
+```
 
 目标现代签名（按目标接口状态判断是否已可执行）：
 
@@ -258,8 +270,14 @@ arrow(start, end)
 
 | 参数 | 类型 | 默认值 | 含义 | 可用阶段 |
 |---|---|---|---|---|
-| `start` | positional | 必填 | 签名对应的start参数 | r3 |
-| `end` | positional | 必填 | 签名对应的end参数 | r3 |
+| `start` | positional | 必填 | 签名对应的start参数 | current |
+| `end` | positional | 必填 | 签名对应的end参数 | current |
+
+当前已登记示例（Wolfram）：
+
+```wolfram
+Arrow[{0,0},{1,1}]
+```
 
 规划示例（尚未执行；需要目标版本，后续条目不承诺 .3）：
 
@@ -269,9 +287,9 @@ arrow([0,0],[1,1])
 
 验收：独立数学期望、有效/无效参数、边界、预算、中断及声明的平台/精度测试；范围外不伪造成功。
 
-当前源码：暂无当前实现证据。
+当前源码：[crates/om-eval/src/scene_registry.rs](../../crates/om-eval/src/scene_registry.rs)、[crates/om-kernel/src/scene_graph.rs](../../crates/om-kernel/src/scene_graph.rs)。
 
-当前测试引用：暂无当前实现证据。
+当前测试引用：[crates/om-kernel/tests/scene_graph.rs](../../crates/om-kernel/tests/scene_graph.rs)。
 
 ## b_spline_curve
 
@@ -377,21 +395,33 @@ bezier_curve(...)  # 后续接口尚未锁定
 
 ## blend
 
-**当前实现：下一版规划；目标接口：规划接口，当前不可用。** 目标版本：`0.1.0-pre-alpha.3`。
+**当前实现：已实现；目标接口：当前可用。** 目标版本：`0.1.0-pre-alpha.3`。
 
 - 稳定身份：`fn_000244`；条目类型：`function`。
-- 副作用分类（设计预留）：`pure`；参数验证阶段：`documentation_only`，不构成工具授权。
+- 副作用分类（设计预留）：`pure`；参数验证阶段：`runtime_verified`，不构成工具授权。
 
 颜色插值
 
-- 当前支持：当前无此规范接口的实现。
+- 当前支持：恰好两个受支持颜色名/#RRGGBB或RGB/RGBA列表，weight在0..1，逐分量插值返回RGBA机器实数，不做光学线性化或多色权重。
 - 目标范围：共享场景与内核几何数据；二维桌面/Web/iOS，三维WebGL2桌面/Web；无WebGL2或移动端3D明确提示并保留源式及OBJ导出，不制作假图。
 - 返回：scene_node_or_color
 - 精度：几何/颜色数据机器采样；未承诺任意精度光栅。
-- 当前计算平台：无；目标计算平台：cli, desktop, web, ios。
+- 当前计算平台：cli, desktop, web, ios；目标计算平台：cli, desktop, web, ios。
 - 目标图形/交互展示平台：desktop, web, ios。
-- 兼容名称：无既有兼容入口。
+- 兼容名称：`Blend`。
 - 管道位置：不接受自动管道输入。
+
+当前现代签名：
+
+```text
+blend([color1,color2],weight)
+```
+
+当前 Wolfram 签名：
+
+```text
+Blend[{color1,color2},weight]
+```
 
 目标现代签名（按目标接口状态判断是否已可执行）：
 
@@ -404,6 +434,12 @@ blend(colors, weight)
 | `colors` | positional | 必填 | 签名对应的colors参数 | r3 |
 | `weight` | positional | 必填 | 签名对应的weight参数 | r3 |
 
+当前已登记示例（Wolfram）：
+
+```wolfram
+Blend[{"dark_green","light_green"},0.5]
+```
+
 规划示例（尚未执行；需要目标版本，后续条目不承诺 .3）：
 
 ```text
@@ -412,27 +448,39 @@ blend(["dark_green","light_green"],0.5)
 
 验收：独立数学期望、有效/无效参数、边界、预算、中断及声明的平台/精度测试；范围外不伪造成功。
 
-当前源码：暂无当前实现证据。
+当前源码：[crates/om-eval/src/scene_registry.rs](../../crates/om-eval/src/scene_registry.rs)、[crates/om-kernel/src/scene_graph.rs](../../crates/om-kernel/src/scene_graph.rs)。
 
-当前测试引用：暂无当前实现证据。
+当前测试引用：[crates/om-kernel/tests/scene_graph.rs](../../crates/om-kernel/tests/scene_graph.rs)。
 
 ## box
 
-**当前实现：下一版规划；目标接口：规划接口，当前不可用。** 目标版本：`0.1.0-pre-alpha.3`。
+**当前实现：部分支持；目标接口：当前可用。** 目标版本：`0.1.0-pre-alpha.3`。
 
 - 稳定身份：`fn_000235`；条目类型：`function`。
-- 副作用分类（设计预留）：`pure`；参数验证阶段：`documentation_only`，不构成工具授权。
+- 副作用分类（设计预留）：`pure`；参数验证阶段：`runtime_verified`，不构成工具授权。
 
 长方体
 
-- 当前支持：当前无此规范接口的实现。
+- 当前支持：真实只读场景图元/组合/仿射变换；坐标维数与scene dimensions一致，固定颜色或readonly颜色函数、有限opacity与明确资源边界。二维XY几何保留路径/多边形/marker/label并在桌面Web/iOS原生展示导出；三维Rust真实网格/世界法线/颜色和WebGL2/OBJ，iOS明确fallback不自动采样。曲面/圆曲线和圆管有限机器采样不认证边界；Polygon共面简单边界真实ear clipping，自交/非共面拒绝；Tube平行运输框架/端帽，不保证全局自交不存在。变换不写主变量，退化面可成为实际采样线/点。
 - 目标范围：共享场景与内核几何数据；二维桌面/Web/iOS，三维WebGL2桌面/Web；无WebGL2或移动端3D明确提示并保留源式及OBJ导出，不制作假图。
 - 返回：scene_node_or_color
-- 精度：几何/颜色数据机器采样；未承诺任意精度光栅。
-- 当前计算平台：无；目标计算平台：cli, desktop, web, ios。
-- 目标图形/交互展示平台：desktop, web。
-- 兼容名称：无既有兼容入口。
+- 精度：机器几何/标签展示；源码保留精确数学意义，不宣称任意精度光栅或认证拓扑。
+- 当前计算平台：cli, desktop, web, ios；目标计算平台：cli, desktop, web, ios。
+- 目标图形/交互展示平台：desktop, web, ios。
+- 兼容名称：`Box`。
 - 管道位置：不接受自动管道输入。
+
+当前现代签名：
+
+```text
+box(min,max)
+```
+
+当前 Wolfram 签名：
+
+```text
+Box[min,max]
+```
 
 目标现代签名（按目标接口状态判断是否已可执行）：
 
@@ -442,8 +490,14 @@ box(min, max)
 
 | 参数 | 类型 | 默认值 | 含义 | 可用阶段 |
 |---|---|---|---|---|
-| `min` | positional | 必填 | 签名对应的min参数 | r3 |
-| `max` | positional | 必填 | 签名对应的max参数 | r3 |
+| `min` | positional | 必填 | 签名对应的min参数 | current |
+| `max` | positional | 必填 | 签名对应的max参数 | current |
+
+当前已登记示例（Wolfram）：
+
+```wolfram
+Box[{-1,-1,-1},{1,1,1}]
+```
 
 规划示例（尚未执行；需要目标版本，后续条目不承诺 .3）：
 
@@ -453,9 +507,9 @@ box([0,0,0],[1,1,1])
 
 验收：独立数学期望、有效/无效参数、边界、预算、中断及声明的平台/精度测试；范围外不伪造成功。
 
-当前源码：暂无当前实现证据。
+当前源码：[crates/om-eval/src/scene_registry.rs](../../crates/om-eval/src/scene_registry.rs)、[crates/om-kernel/src/scene_graph.rs](../../crates/om-kernel/src/scene_graph.rs)。
 
-当前测试引用：暂无当前实现证据。
+当前测试引用：[crates/om-kernel/tests/scene_graph.rs](../../crates/om-kernel/tests/scene_graph.rs)。
 
 ## button
 
@@ -595,21 +649,33 @@ checkbox(...)  # 后续接口尚未锁定
 
 ## circle
 
-**当前实现：下一版规划；目标接口：规划接口，当前不可用。** 目标版本：`0.1.0-pre-alpha.3`。
+**当前实现：部分支持；目标接口：当前可用。** 目标版本：`0.1.0-pre-alpha.3`。
 
 - 稳定身份：`fn_000230`；条目类型：`function`。
-- 副作用分类（设计预留）：`pure`；参数验证阶段：`documentation_only`，不构成工具授权。
+- 副作用分类（设计预留）：`pure`；参数验证阶段：`runtime_verified`，不构成工具授权。
 
 二维圆周
 
-- 当前支持：当前无此规范接口的实现。
+- 当前支持：真实只读场景图元/组合/仿射变换；坐标维数与scene dimensions一致，固定颜色或readonly颜色函数、有限opacity与明确资源边界。二维XY几何保留路径/多边形/marker/label并在桌面Web/iOS原生展示导出；三维Rust真实网格/世界法线/颜色和WebGL2/OBJ，iOS明确fallback不自动采样。曲面/圆曲线和圆管有限机器采样不认证边界；Polygon共面简单边界真实ear clipping，自交/非共面拒绝；Tube平行运输框架/端帽，不保证全局自交不存在。变换不写主变量，退化面可成为实际采样线/点。
 - 目标范围：共享场景与内核几何数据；二维桌面/Web/iOS，三维WebGL2桌面/Web；无WebGL2或移动端3D明确提示并保留源式及OBJ导出，不制作假图。
 - 返回：scene_node_or_color
-- 精度：几何/颜色数据机器采样；未承诺任意精度光栅。
-- 当前计算平台：无；目标计算平台：cli, desktop, web, ios。
+- 精度：机器几何/标签展示；源码保留精确数学意义，不宣称任意精度光栅或认证拓扑。
+- 当前计算平台：cli, desktop, web, ios；目标计算平台：cli, desktop, web, ios。
 - 目标图形/交互展示平台：desktop, web, ios。
-- 兼容名称：无既有兼容入口。
+- 兼容名称：`Circle`。
 - 管道位置：不接受自动管道输入。
+
+当前现代签名：
+
+```text
+circle(center,radius)
+```
+
+当前 Wolfram 签名：
+
+```text
+Circle[center,radius]
+```
 
 目标现代签名（按目标接口状态判断是否已可执行）：
 
@@ -619,8 +685,14 @@ circle(center, radius)
 
 | 参数 | 类型 | 默认值 | 含义 | 可用阶段 |
 |---|---|---|---|---|
-| `center` | positional | 必填 | 中心坐标 | r3 |
-| `radius` | positional | 必填 | 正半径 | r3 |
+| `center` | positional | 必填 | 中心坐标 | current |
+| `radius` | positional | 必填 | 正半径 | current |
+
+当前已登记示例（Wolfram）：
+
+```wolfram
+Circle[{0,0},1]
+```
 
 规划示例（尚未执行；需要目标版本，后续条目不承诺 .3）：
 
@@ -630,9 +702,9 @@ circle([0,0],1)
 
 验收：独立数学期望、有效/无效参数、边界、预算、中断及声明的平台/精度测试；范围外不伪造成功。
 
-当前源码：暂无当前实现证据。
+当前源码：[crates/om-eval/src/scene_registry.rs](../../crates/om-eval/src/scene_registry.rs)、[crates/om-kernel/src/scene_graph.rs](../../crates/om-kernel/src/scene_graph.rs)。
 
-当前测试引用：暂无当前实现证据。
+当前测试引用：[crates/om-kernel/tests/scene_graph.rs](../../crates/om-kernel/tests/scene_graph.rs)。
 
 ## click_pane
 
@@ -772,21 +844,33 @@ column(...)  # 后续接口尚未锁定
 
 ## cone
 
-**当前实现：下一版规划；目标接口：规划接口，当前不可用。** 目标版本：`0.1.0-pre-alpha.3`。
+**当前实现：部分支持；目标接口：当前可用。** 目标版本：`0.1.0-pre-alpha.3`。
 
 - 稳定身份：`fn_000237`；条目类型：`function`。
-- 副作用分类（设计预留）：`pure`；参数验证阶段：`documentation_only`，不构成工具授权。
+- 副作用分类（设计预留）：`pure`；参数验证阶段：`runtime_verified`，不构成工具授权。
 
 圆锥
 
-- 当前支持：当前无此规范接口的实现。
+- 当前支持：真实只读场景图元/组合/仿射变换；坐标维数与scene dimensions一致，固定颜色或readonly颜色函数、有限opacity与明确资源边界。二维XY几何保留路径/多边形/marker/label并在桌面Web/iOS原生展示导出；三维Rust真实网格/世界法线/颜色和WebGL2/OBJ，iOS明确fallback不自动采样。曲面/圆曲线和圆管有限机器采样不认证边界；Polygon共面简单边界真实ear clipping，自交/非共面拒绝；Tube平行运输框架/端帽，不保证全局自交不存在。变换不写主变量，退化面可成为实际采样线/点。
 - 目标范围：共享场景与内核几何数据；二维桌面/Web/iOS，三维WebGL2桌面/Web；无WebGL2或移动端3D明确提示并保留源式及OBJ导出，不制作假图。
 - 返回：scene_node_or_color
-- 精度：几何/颜色数据机器采样；未承诺任意精度光栅。
-- 当前计算平台：无；目标计算平台：cli, desktop, web, ios。
+- 精度：机器几何/标签展示；源码保留精确数学意义，不宣称任意精度光栅或认证拓扑。
+- 当前计算平台：cli, desktop, web, ios；目标计算平台：cli, desktop, web, ios。
 - 目标图形/交互展示平台：desktop, web。
-- 兼容名称：无既有兼容入口。
+- 兼容名称：`Cone`。
 - 管道位置：不接受自动管道输入。
+
+当前现代签名：
+
+```text
+cone(start,end,radius)
+```
+
+当前 Wolfram 签名：
+
+```text
+Cone[start,end,radius]
+```
 
 目标现代签名（按目标接口状态判断是否已可执行）：
 
@@ -796,9 +880,15 @@ cone(start,end,radius)
 
 | 参数 | 类型 | 默认值 | 含义 | 可用阶段 |
 |---|---|---|---|---|
-| `start` | positional | 必填 | 签名对应的start参数 | r3 |
-| `end` | positional | 必填 | 签名对应的end参数 | r3 |
-| `radius` | positional | 必填 | 正半径 | r3 |
+| `start` | positional | 必填 | 签名对应的start参数 | current |
+| `end` | positional | 必填 | 签名对应的end参数 | current |
+| `radius` | positional | 必填 | 正半径 | current |
+
+当前已登记示例（Wolfram）：
+
+```wolfram
+Cone[{0,0,0},{0,0,1},1]
+```
 
 规划示例（尚未执行；需要目标版本，后续条目不承诺 .3）：
 
@@ -808,27 +898,39 @@ cone([0,0,0],[0,0,1],0.2)
 
 验收：独立数学期望、有效/无效参数、边界、预算、中断及声明的平台/精度测试；范围外不伪造成功。
 
-当前源码：暂无当前实现证据。
+当前源码：[crates/om-eval/src/scene_registry.rs](../../crates/om-eval/src/scene_registry.rs)、[crates/om-kernel/src/scene_graph.rs](../../crates/om-kernel/src/scene_graph.rs)。
 
-当前测试引用：暂无当前实现证据。
+当前测试引用：[crates/om-kernel/tests/scene_graph.rs](../../crates/om-kernel/tests/scene_graph.rs)。
 
 ## cylinder
 
-**当前实现：下一版规划；目标接口：规划接口，当前不可用。** 目标版本：`0.1.0-pre-alpha.3`。
+**当前实现：部分支持；目标接口：当前可用。** 目标版本：`0.1.0-pre-alpha.3`。
 
 - 稳定身份：`fn_000236`；条目类型：`function`。
-- 副作用分类（设计预留）：`pure`；参数验证阶段：`documentation_only`，不构成工具授权。
+- 副作用分类（设计预留）：`pure`；参数验证阶段：`runtime_verified`，不构成工具授权。
 
 圆柱
 
-- 当前支持：当前无此规范接口的实现。
+- 当前支持：真实只读场景图元/组合/仿射变换；坐标维数与scene dimensions一致，固定颜色或readonly颜色函数、有限opacity与明确资源边界。二维XY几何保留路径/多边形/marker/label并在桌面Web/iOS原生展示导出；三维Rust真实网格/世界法线/颜色和WebGL2/OBJ，iOS明确fallback不自动采样。曲面/圆曲线和圆管有限机器采样不认证边界；Polygon共面简单边界真实ear clipping，自交/非共面拒绝；Tube平行运输框架/端帽，不保证全局自交不存在。变换不写主变量，退化面可成为实际采样线/点。
 - 目标范围：共享场景与内核几何数据；二维桌面/Web/iOS，三维WebGL2桌面/Web；无WebGL2或移动端3D明确提示并保留源式及OBJ导出，不制作假图。
 - 返回：scene_node_or_color
-- 精度：几何/颜色数据机器采样；未承诺任意精度光栅。
-- 当前计算平台：无；目标计算平台：cli, desktop, web, ios。
+- 精度：机器几何/标签展示；源码保留精确数学意义，不宣称任意精度光栅或认证拓扑。
+- 当前计算平台：cli, desktop, web, ios；目标计算平台：cli, desktop, web, ios。
 - 目标图形/交互展示平台：desktop, web。
-- 兼容名称：无既有兼容入口。
+- 兼容名称：`Cylinder`。
 - 管道位置：不接受自动管道输入。
+
+当前现代签名：
+
+```text
+cylinder(start,end,radius)
+```
+
+当前 Wolfram 签名：
+
+```text
+Cylinder[start,end,radius]
+```
 
 目标现代签名（按目标接口状态判断是否已可执行）：
 
@@ -838,9 +940,15 @@ cylinder(start,end,radius)
 
 | 参数 | 类型 | 默认值 | 含义 | 可用阶段 |
 |---|---|---|---|---|
-| `start` | positional | 必填 | 签名对应的start参数 | r3 |
-| `end` | positional | 必填 | 签名对应的end参数 | r3 |
-| `radius` | positional | 必填 | 正半径 | r3 |
+| `start` | positional | 必填 | 签名对应的start参数 | current |
+| `end` | positional | 必填 | 签名对应的end参数 | current |
+| `radius` | positional | 必填 | 正半径 | current |
+
+当前已登记示例（Wolfram）：
+
+```wolfram
+Cylinder[{0,0,0},{0,0,1},1]
+```
 
 规划示例（尚未执行；需要目标版本，后续条目不承诺 .3）：
 
@@ -850,9 +958,9 @@ cylinder([0,0,0],[0,0,1],0.2)
 
 验收：独立数学期望、有效/无效参数、边界、预算、中断及声明的平台/精度测试；范围外不伪造成功。
 
-当前源码：暂无当前实现证据。
+当前源码：[crates/om-eval/src/scene_registry.rs](../../crates/om-eval/src/scene_registry.rs)、[crates/om-kernel/src/scene_graph.rs](../../crates/om-kernel/src/scene_graph.rs)。
 
-当前测试引用：暂无当前实现证据。
+当前测试引用：[crates/om-kernel/tests/scene_graph.rs](../../crates/om-kernel/tests/scene_graph.rs)。
 
 ## dashing
 
@@ -890,21 +998,33 @@ dashing(...)  # 后续接口尚未锁定
 
 ## disk
 
-**当前实现：下一版规划；目标接口：规划接口，当前不可用。** 目标版本：`0.1.0-pre-alpha.3`。
+**当前实现：部分支持；目标接口：当前可用。** 目标版本：`0.1.0-pre-alpha.3`。
 
 - 稳定身份：`fn_000231`；条目类型：`function`。
-- 副作用分类（设计预留）：`pure`；参数验证阶段：`documentation_only`，不构成工具授权。
+- 副作用分类（设计预留）：`pure`；参数验证阶段：`runtime_verified`，不构成工具授权。
 
 二维圆盘
 
-- 当前支持：当前无此规范接口的实现。
+- 当前支持：真实只读场景图元/组合/仿射变换；坐标维数与scene dimensions一致，固定颜色或readonly颜色函数、有限opacity与明确资源边界。二维XY几何保留路径/多边形/marker/label并在桌面Web/iOS原生展示导出；三维Rust真实网格/世界法线/颜色和WebGL2/OBJ，iOS明确fallback不自动采样。曲面/圆曲线和圆管有限机器采样不认证边界；Polygon共面简单边界真实ear clipping，自交/非共面拒绝；Tube平行运输框架/端帽，不保证全局自交不存在。变换不写主变量，退化面可成为实际采样线/点。
 - 目标范围：共享场景与内核几何数据；二维桌面/Web/iOS，三维WebGL2桌面/Web；无WebGL2或移动端3D明确提示并保留源式及OBJ导出，不制作假图。
 - 返回：scene_node_or_color
-- 精度：几何/颜色数据机器采样；未承诺任意精度光栅。
-- 当前计算平台：无；目标计算平台：cli, desktop, web, ios。
+- 精度：机器几何/标签展示；源码保留精确数学意义，不宣称任意精度光栅或认证拓扑。
+- 当前计算平台：cli, desktop, web, ios；目标计算平台：cli, desktop, web, ios。
 - 目标图形/交互展示平台：desktop, web, ios。
-- 兼容名称：无既有兼容入口。
+- 兼容名称：`Disk`。
 - 管道位置：不接受自动管道输入。
+
+当前现代签名：
+
+```text
+disk(center,radius)
+```
+
+当前 Wolfram 签名：
+
+```text
+Disk[center,radius]
+```
 
 目标现代签名（按目标接口状态判断是否已可执行）：
 
@@ -914,8 +1034,14 @@ disk(center, radius)
 
 | 参数 | 类型 | 默认值 | 含义 | 可用阶段 |
 |---|---|---|---|---|
-| `center` | positional | 必填 | 中心坐标 | r3 |
-| `radius` | positional | 必填 | 正半径 | r3 |
+| `center` | positional | 必填 | 中心坐标 | current |
+| `radius` | positional | 必填 | 正半径 | current |
+
+当前已登记示例（Wolfram）：
+
+```wolfram
+Disk[{0,0},1]
+```
 
 规划示例（尚未执行；需要目标版本，后续条目不承诺 .3）：
 
@@ -925,9 +1051,9 @@ disk([0,0],1)
 
 验收：独立数学期望、有效/无效参数、边界、预算、中断及声明的平台/精度测试；范围外不伪造成功。
 
-当前源码：暂无当前实现证据。
+当前源码：[crates/om-eval/src/scene_registry.rs](../../crates/om-eval/src/scene_registry.rs)、[crates/om-kernel/src/scene_graph.rs](../../crates/om-kernel/src/scene_graph.rs)。
 
-当前测试引用：暂无当前实现证据。
+当前测试引用：[crates/om-kernel/tests/scene_graph.rs](../../crates/om-kernel/tests/scene_graph.rs)。
 
 ## dynamic
 
@@ -1033,21 +1159,33 @@ edge_form(...)  # 后续接口尚未锁定
 
 ## ellipsoid
 
-**当前实现：下一版规划；目标接口：规划接口，当前不可用。** 目标版本：`0.1.0-pre-alpha.3`。
+**当前实现：部分支持；目标接口：当前可用。** 目标版本：`0.1.0-pre-alpha.3`。
 
 - 稳定身份：`fn_000234`；条目类型：`function`。
-- 副作用分类（设计预留）：`pure`；参数验证阶段：`documentation_only`，不构成工具授权。
+- 副作用分类（设计预留）：`pure`；参数验证阶段：`runtime_verified`，不构成工具授权。
 
 椭球面
 
-- 当前支持：当前无此规范接口的实现。
+- 当前支持：真实只读场景图元/组合/仿射变换；坐标维数与scene dimensions一致，固定颜色或readonly颜色函数、有限opacity与明确资源边界。二维XY几何保留路径/多边形/marker/label并在桌面Web/iOS原生展示导出；三维Rust真实网格/世界法线/颜色和WebGL2/OBJ，iOS明确fallback不自动采样。曲面/圆曲线和圆管有限机器采样不认证边界；Polygon共面简单边界真实ear clipping，自交/非共面拒绝；Tube平行运输框架/端帽，不保证全局自交不存在。变换不写主变量，退化面可成为实际采样线/点。
 - 目标范围：共享场景与内核几何数据；二维桌面/Web/iOS，三维WebGL2桌面/Web；无WebGL2或移动端3D明确提示并保留源式及OBJ导出，不制作假图。
 - 返回：scene_node_or_color
-- 精度：几何/颜色数据机器采样；未承诺任意精度光栅。
-- 当前计算平台：无；目标计算平台：cli, desktop, web, ios。
+- 精度：机器几何/标签展示；源码保留精确数学意义，不宣称任意精度光栅或认证拓扑。
+- 当前计算平台：cli, desktop, web, ios；目标计算平台：cli, desktop, web, ios。
 - 目标图形/交互展示平台：desktop, web。
-- 兼容名称：无既有兼容入口。
+- 兼容名称：`Ellipsoid`。
 - 管道位置：不接受自动管道输入。
+
+当前现代签名：
+
+```text
+ellipsoid(center,radii)
+```
+
+当前 Wolfram 签名：
+
+```text
+Ellipsoid[center,radii]
+```
 
 目标现代签名（按目标接口状态判断是否已可执行）：
 
@@ -1057,8 +1195,14 @@ ellipsoid(center, radii)
 
 | 参数 | 类型 | 默认值 | 含义 | 可用阶段 |
 |---|---|---|---|---|
-| `center` | positional | 必填 | 中心坐标 | r3 |
-| `radii` | positional | 必填 | 正半轴向量 | r3 |
+| `center` | positional | 必填 | 中心坐标 | current |
+| `radii` | positional | 必填 | 正半轴向量 | current |
+
+当前已登记示例（Wolfram）：
+
+```wolfram
+Ellipsoid[{0,0,0},{1,2,3}]
+```
 
 规划示例（尚未执行；需要目标版本，后续条目不承诺 .3）：
 
@@ -1068,9 +1212,9 @@ ellipsoid([0,0,0],[1.35,1,1])
 
 验收：独立数学期望、有效/无效参数、边界、预算、中断及声明的平台/精度测试；范围外不伪造成功。
 
-当前源码：暂无当前实现证据。
+当前源码：[crates/om-eval/src/scene_registry.rs](../../crates/om-eval/src/scene_registry.rs)、[crates/om-kernel/src/scene_graph.rs](../../crates/om-kernel/src/scene_graph.rs)。
 
-当前测试引用：暂无当前实现证据。
+当前测试引用：[crates/om-kernel/tests/scene_graph.rs](../../crates/om-kernel/tests/scene_graph.rs)。
 
 ## engineering_form
 
@@ -1644,21 +1788,33 @@ input_form(...)  # 后续接口尚未锁定
 
 ## label
 
-**当前实现：下一版规划；目标接口：规划接口，当前不可用。** 目标版本：`0.1.0-pre-alpha.3`。
+**当前实现：部分支持；目标接口：当前可用。** 目标版本：`0.1.0-pre-alpha.3`。
 
 - 稳定身份：`fn_000239`；条目类型：`function`。
-- 副作用分类（设计预留）：`pure`；参数验证阶段：`documentation_only`，不构成工具授权。
+- 副作用分类（设计预留）：`pure`；参数验证阶段：`runtime_verified`，不构成工具授权。
 
 场景标签
 
-- 当前支持：当前无此规范接口的实现。
+- 当前支持：真实只读场景图元/组合/仿射变换；坐标维数与scene dimensions一致，固定颜色或readonly颜色函数、有限opacity与明确资源边界。二维XY几何保留路径/多边形/marker/label并在桌面Web/iOS原生展示导出；三维Rust真实网格/世界法线/颜色和WebGL2/OBJ，iOS明确fallback不自动采样。曲面/圆曲线和圆管有限机器采样不认证边界；Polygon共面简单边界真实ear clipping，自交/非共面拒绝；Tube平行运输框架/端帽，不保证全局自交不存在。变换不写主变量，退化面可成为实际采样线/点。
 - 目标范围：共享场景与内核几何数据；二维桌面/Web/iOS，三维WebGL2桌面/Web；无WebGL2或移动端3D明确提示并保留源式及OBJ导出，不制作假图。
 - 返回：scene_node_or_color
-- 精度：几何/颜色数据机器采样；未承诺任意精度光栅。
-- 当前计算平台：无；目标计算平台：cli, desktop, web, ios。
+- 精度：机器几何/标签展示；源码保留精确数学意义，不宣称任意精度光栅或认证拓扑。
+- 当前计算平台：cli, desktop, web, ios；目标计算平台：cli, desktop, web, ios。
 - 目标图形/交互展示平台：desktop, web, ios。
-- 兼容名称：无既有兼容入口。
+- 兼容名称：`Label`。
 - 管道位置：不接受自动管道输入。
+
+当前现代签名：
+
+```text
+label(text,position)
+```
+
+当前 Wolfram 签名：
+
+```text
+Label[text,position]
+```
 
 目标现代签名（按目标接口状态判断是否已可执行）：
 
@@ -1668,8 +1824,14 @@ label(text, position)
 
 | 参数 | 类型 | 默认值 | 含义 | 可用阶段 |
 |---|---|---|---|---|
-| `text` | positional | 必填 | 文本 | r3 |
-| `position` | positional | 必填 | 坐标 | r3 |
+| `text` | positional | 必填 | 文本 | current |
+| `position` | positional | 必填 | 坐标 | current |
+
+当前已登记示例（Wolfram）：
+
+```wolfram
+Label["地球",{0,0}]
+```
 
 规划示例（尚未执行；需要目标版本，后续条目不承诺 .3）：
 
@@ -1679,9 +1841,9 @@ label("L2",[1,0])
 
 验收：独立数学期望、有效/无效参数、边界、预算、中断及声明的平台/精度测试；范围外不伪造成功。
 
-当前源码：暂无当前实现证据。
+当前源码：[crates/om-eval/src/scene_registry.rs](../../crates/om-eval/src/scene_registry.rs)、[crates/om-kernel/src/scene_graph.rs](../../crates/om-kernel/src/scene_graph.rs)。
 
-当前测试引用：暂无当前实现证据。
+当前测试引用：[crates/om-kernel/tests/scene_graph.rs](../../crates/om-kernel/tests/scene_graph.rs)。
 
 ## labeled
 
@@ -1753,21 +1915,33 @@ legended(...)  # 后续接口尚未锁定
 
 ## line
 
-**当前实现：下一版规划；目标接口：规划接口，当前不可用。** 目标版本：`0.1.0-pre-alpha.3`。
+**当前实现：部分支持；目标接口：当前可用。** 目标版本：`0.1.0-pre-alpha.3`。
 
 - 稳定身份：`fn_000228`；条目类型：`function`。
-- 副作用分类（设计预留）：`pure`；参数验证阶段：`documentation_only`，不构成工具授权。
+- 副作用分类（设计预留）：`pure`；参数验证阶段：`runtime_verified`，不构成工具授权。
 
 折线
 
-- 当前支持：当前无此规范接口的实现。
+- 当前支持：真实只读场景图元/组合/仿射变换；坐标维数与scene dimensions一致，固定颜色或readonly颜色函数、有限opacity与明确资源边界。二维XY几何保留路径/多边形/marker/label并在桌面Web/iOS原生展示导出；三维Rust真实网格/世界法线/颜色和WebGL2/OBJ，iOS明确fallback不自动采样。曲面/圆曲线和圆管有限机器采样不认证边界；Polygon共面简单边界真实ear clipping，自交/非共面拒绝；Tube平行运输框架/端帽，不保证全局自交不存在。变换不写主变量，退化面可成为实际采样线/点。
 - 目标范围：共享场景与内核几何数据；二维桌面/Web/iOS，三维WebGL2桌面/Web；无WebGL2或移动端3D明确提示并保留源式及OBJ导出，不制作假图。
 - 返回：scene_node_or_color
-- 精度：几何/颜色数据机器采样；未承诺任意精度光栅。
-- 当前计算平台：无；目标计算平台：cli, desktop, web, ios。
+- 精度：机器几何/标签展示；源码保留精确数学意义，不宣称任意精度光栅或认证拓扑。
+- 当前计算平台：cli, desktop, web, ios；目标计算平台：cli, desktop, web, ios。
 - 目标图形/交互展示平台：desktop, web, ios。
-- 兼容名称：无既有兼容入口。
+- 兼容名称：`Line`。
 - 管道位置：不接受自动管道输入。
+
+当前现代签名：
+
+```text
+line(points,color:"blue")
+```
+
+当前 Wolfram 签名：
+
+```text
+Line[points]
+```
 
 目标现代签名（按目标接口状态判断是否已可执行）：
 
@@ -1777,8 +1951,14 @@ line(points, color: "blue")
 
 | 参数 | 类型 | 默认值 | 含义 | 可用阶段 |
 |---|---|---|---|---|
-| `points` | positional | 必填 | 有序坐标列表 | r3 |
-| `color` | option | "blue" | 颜色或只读颜色函数 | r3 |
+| `points` | positional | 必填 | 有序坐标列表 | current |
+| `color` | option | "blue" | 颜色或只读颜色函数 | current |
+
+当前已登记示例（Wolfram）：
+
+```wolfram
+Line[{{0,0},{1,1}}]
+```
 
 规划示例（尚未执行；需要目标版本，后续条目不承诺 .3）：
 
@@ -1788,9 +1968,9 @@ line([[0,0],[1,1]])
 
 验收：独立数学期望、有效/无效参数、边界、预算、中断及声明的平台/精度测试；范围外不伪造成功。
 
-当前源码：暂无当前实现证据。
+当前源码：[crates/om-eval/src/scene_registry.rs](../../crates/om-eval/src/scene_registry.rs)、[crates/om-kernel/src/scene_graph.rs](../../crates/om-kernel/src/scene_graph.rs)。
 
-当前测试引用：暂无当前实现证据。
+当前测试引用：[crates/om-kernel/tests/scene_graph.rs](../../crates/om-kernel/tests/scene_graph.rs)。
 
 ## list_animate
 
@@ -2202,21 +2382,33 @@ panel(...)  # 后续接口尚未锁定
 
 ## point
 
-**当前实现：下一版规划；目标接口：规划接口，当前不可用。** 目标版本：`0.1.0-pre-alpha.3`。
+**当前实现：部分支持；目标接口：当前可用。** 目标版本：`0.1.0-pre-alpha.3`。
 
 - 稳定身份：`fn_000227`；条目类型：`function`。
-- 副作用分类（设计预留）：`pure`；参数验证阶段：`documentation_only`，不构成工具授权。
+- 副作用分类（设计预留）：`pure`；参数验证阶段：`runtime_verified`，不构成工具授权。
 
 位置标记
 
-- 当前支持：当前无此规范接口的实现。
+- 当前支持：真实只读场景图元/组合/仿射变换；坐标维数与scene dimensions一致，固定颜色或readonly颜色函数、有限opacity与明确资源边界。二维XY几何保留路径/多边形/marker/label并在桌面Web/iOS原生展示导出；三维Rust真实网格/世界法线/颜色和WebGL2/OBJ，iOS明确fallback不自动采样。曲面/圆曲线和圆管有限机器采样不认证边界；Polygon共面简单边界真实ear clipping，自交/非共面拒绝；Tube平行运输框架/端帽，不保证全局自交不存在。变换不写主变量，退化面可成为实际采样线/点。
 - 目标范围：共享场景与内核几何数据；二维桌面/Web/iOS，三维WebGL2桌面/Web；无WebGL2或移动端3D明确提示并保留源式及OBJ导出，不制作假图。
 - 返回：scene_node_or_color
-- 精度：几何/颜色数据机器采样；未承诺任意精度光栅。
-- 当前计算平台：无；目标计算平台：cli, desktop, web, ios。
+- 精度：机器几何/标签展示；源码保留精确数学意义，不宣称任意精度光栅或认证拓扑。
+- 当前计算平台：cli, desktop, web, ios；目标计算平台：cli, desktop, web, ios。
 - 目标图形/交互展示平台：desktop, web, ios。
-- 兼容名称：无既有兼容入口。
+- 兼容名称：`Point`。
 - 管道位置：不接受自动管道输入。
+
+当前现代签名：
+
+```text
+point(position,color:"blue")
+```
+
+当前 Wolfram 签名：
+
+```text
+Point[position]
+```
 
 目标现代签名（按目标接口状态判断是否已可执行）：
 
@@ -2226,8 +2418,14 @@ point(position, color: "blue")
 
 | 参数 | 类型 | 默认值 | 含义 | 可用阶段 |
 |---|---|---|---|---|
-| `position` | positional | 必填 | 坐标 | r3 |
-| `color` | option | "blue" | 颜色或只读颜色函数 | r3 |
+| `position` | positional | 必填 | 坐标 | current |
+| `color` | option | "blue" | 颜色或只读颜色函数 | current |
+
+当前已登记示例（Wolfram）：
+
+```wolfram
+Point[{0,0}]
+```
 
 规划示例（尚未执行；需要目标版本，后续条目不承诺 .3）：
 
@@ -2237,9 +2435,9 @@ point([0,0],color: "blue")
 
 验收：独立数学期望、有效/无效参数、边界、预算、中断及声明的平台/精度测试；范围外不伪造成功。
 
-当前源码：暂无当前实现证据。
+当前源码：[crates/om-eval/src/scene_registry.rs](../../crates/om-eval/src/scene_registry.rs)、[crates/om-kernel/src/scene_graph.rs](../../crates/om-kernel/src/scene_graph.rs)。
 
-当前测试引用：暂无当前实现证据。
+当前测试引用：[crates/om-kernel/tests/scene_graph.rs](../../crates/om-kernel/tests/scene_graph.rs)。
 
 ## point_size
 
@@ -2277,21 +2475,33 @@ point_size(...)  # 后续接口尚未锁定
 
 ## polygon
 
-**当前实现：下一版规划；目标接口：规划接口，当前不可用。** 目标版本：`0.1.0-pre-alpha.3`。
+**当前实现：部分支持；目标接口：当前可用。** 目标版本：`0.1.0-pre-alpha.3`。
 
 - 稳定身份：`fn_000232`；条目类型：`function`。
-- 副作用分类（设计预留）：`pure`；参数验证阶段：`documentation_only`，不构成工具授权。
+- 副作用分类（设计预留）：`pure`；参数验证阶段：`runtime_verified`，不构成工具授权。
 
 多边形
 
-- 当前支持：当前无此规范接口的实现。
+- 当前支持：真实只读场景图元/组合/仿射变换；坐标维数与scene dimensions一致，固定颜色或readonly颜色函数、有限opacity与明确资源边界。二维XY几何保留路径/多边形/marker/label并在桌面Web/iOS原生展示导出；三维Rust真实网格/世界法线/颜色和WebGL2/OBJ，iOS明确fallback不自动采样。曲面/圆曲线和圆管有限机器采样不认证边界；Polygon共面简单边界真实ear clipping，自交/非共面拒绝；Tube平行运输框架/端帽，不保证全局自交不存在。变换不写主变量，退化面可成为实际采样线/点。
 - 目标范围：共享场景与内核几何数据；二维桌面/Web/iOS，三维WebGL2桌面/Web；无WebGL2或移动端3D明确提示并保留源式及OBJ导出，不制作假图。
 - 返回：scene_node_or_color
-- 精度：几何/颜色数据机器采样；未承诺任意精度光栅。
-- 当前计算平台：无；目标计算平台：cli, desktop, web, ios。
+- 精度：机器几何/标签展示；源码保留精确数学意义，不宣称任意精度光栅或认证拓扑。
+- 当前计算平台：cli, desktop, web, ios；目标计算平台：cli, desktop, web, ios。
 - 目标图形/交互展示平台：desktop, web, ios。
-- 兼容名称：无既有兼容入口。
+- 兼容名称：`Polygon`。
 - 管道位置：不接受自动管道输入。
+
+当前现代签名：
+
+```text
+polygon(vertices)
+```
+
+当前 Wolfram 签名：
+
+```text
+Polygon[vertices]
+```
 
 目标现代签名（按目标接口状态判断是否已可执行）：
 
@@ -2301,7 +2511,13 @@ polygon(vertices)
 
 | 参数 | 类型 | 默认值 | 含义 | 可用阶段 |
 |---|---|---|---|---|
-| `vertices` | positional | 必填 | 多边形顶点 | r3 |
+| `vertices` | positional | 必填 | 多边形顶点 | current |
+
+当前已登记示例（Wolfram）：
+
+```wolfram
+Polygon[{{0,0},{1,0},{0,1}}]
+```
 
 规划示例（尚未执行；需要目标版本，后续条目不承诺 .3）：
 
@@ -2311,9 +2527,9 @@ polygon([[0,0],[1,0],[0,1]])
 
 验收：独立数学期望、有效/无效参数、边界、预算、中断及声明的平台/精度测试；范围外不伪造成功。
 
-当前源码：暂无当前实现证据。
+当前源码：[crates/om-eval/src/scene_registry.rs](../../crates/om-eval/src/scene_registry.rs)、[crates/om-kernel/src/scene_graph.rs](../../crates/om-kernel/src/scene_graph.rs)。
 
-当前测试引用：暂无当前实现证据。
+当前测试引用：[crates/om-kernel/tests/scene_graph.rs](../../crates/om-kernel/tests/scene_graph.rs)。
 
 ## popup_menu
 
@@ -2419,21 +2635,33 @@ rgb_color(...)  # 后续接口尚未锁定
 
 ## rotate
 
-**当前实现：下一版规划；目标接口：规划接口，当前不可用。** 目标版本：`0.1.0-pre-alpha.3`。
+**当前实现：部分支持；目标接口：当前可用。** 目标版本：`0.1.0-pre-alpha.3`。
 
 - 稳定身份：`fn_000241`；条目类型：`function`。
-- 副作用分类（设计预留）：`pure`；参数验证阶段：`documentation_only`，不构成工具授权。
+- 副作用分类（设计预留）：`pure`；参数验证阶段：`runtime_verified`，不构成工具授权。
 
 旋转
 
-- 当前支持：当前无此规范接口的实现。
+- 当前支持：真实只读场景图元/组合/仿射变换；坐标维数与scene dimensions一致，固定颜色或readonly颜色函数、有限opacity与明确资源边界。二维XY几何保留路径/多边形/marker/label并在桌面Web/iOS原生展示导出；三维Rust真实网格/世界法线/颜色和WebGL2/OBJ，iOS明确fallback不自动采样。曲面/圆曲线和圆管有限机器采样不认证边界；Polygon共面简单边界真实ear clipping，自交/非共面拒绝；Tube平行运输框架/端帽，不保证全局自交不存在。变换不写主变量，退化面可成为实际采样线/点。
 - 目标范围：共享场景与内核几何数据；二维桌面/Web/iOS，三维WebGL2桌面/Web；无WebGL2或移动端3D明确提示并保留源式及OBJ导出，不制作假图。
 - 返回：scene_node_or_color
-- 精度：几何/颜色数据机器采样；未承诺任意精度光栅。
-- 当前计算平台：无；目标计算平台：cli, desktop, web, ios。
+- 精度：机器几何/标签展示；源码保留精确数学意义，不宣称任意精度光栅或认证拓扑。
+- 当前计算平台：cli, desktop, web, ios；目标计算平台：cli, desktop, web, ios。
 - 目标图形/交互展示平台：desktop, web, ios。
-- 兼容名称：无既有兼容入口。
+- 兼容名称：`Rotate`。
 - 管道位置：第 1 个位置参数（从 1 起）。
+
+当前现代签名：
+
+```text
+rotate(node,angle,axis:[0,0,1],center:[0,0,0])
+```
+
+当前 Wolfram 签名：
+
+```text
+Rotate[node,angle,Axis->axis,Center->center]
+```
 
 目标现代签名（按目标接口状态判断是否已可执行）：
 
@@ -2443,10 +2671,16 @@ rotate(node, angle, axis: [0,0,1], center: [0,0,0])
 
 | 参数 | 类型 | 默认值 | 含义 | 可用阶段 |
 |---|---|---|---|---|
-| `node` | positional | 必填 | 签名对应的node参数 | r3 |
-| `angle` | positional | 必填 | 弧度角 | r3 |
-| `axis` | option | [0,0,1] | 旋转轴 | r3 |
-| `center` | option | [0,0,0] | 中心坐标 | r3 |
+| `node` | positional | 必填 | 签名对应的node参数 | current |
+| `angle` | positional | 必填 | 弧度角 | current |
+| `axis` | option | [0,0,1] | 旋转轴 | current |
+| `center` | option | [0,0,0] | 中心坐标 | current |
+
+当前已登记示例（Wolfram）：
+
+```wolfram
+Rotate[Line[{{0,0},{1,0}}],Pi/2]
+```
 
 规划示例（尚未执行；需要目标版本，后续条目不承诺 .3）：
 
@@ -2456,9 +2690,9 @@ ellipsoid([0,0,0],[2,1,1]) |> rotate(pi/4,axis: [0,0,1])
 
 验收：独立数学期望、有效/无效参数、边界、预算、中断及声明的平台/精度测试；范围外不伪造成功。
 
-当前源码：暂无当前实现证据。
+当前源码：[crates/om-eval/src/scene_registry.rs](../../crates/om-eval/src/scene_registry.rs)、[crates/om-kernel/src/scene_graph.rs](../../crates/om-kernel/src/scene_graph.rs)。
 
-当前测试引用：暂无当前实现证据。
+当前测试引用：[crates/om-kernel/tests/scene_graph.rs](../../crates/om-kernel/tests/scene_graph.rs)。
 
 ## row
 
@@ -2496,21 +2730,33 @@ row(...)  # 后续接口尚未锁定
 
 ## scale
 
-**当前实现：下一版规划；目标接口：规划接口，当前不可用。** 目标版本：`0.1.0-pre-alpha.3`。
+**当前实现：部分支持；目标接口：当前可用。** 目标版本：`0.1.0-pre-alpha.3`。
 
 - 稳定身份：`fn_000242`；条目类型：`function`。
-- 副作用分类（设计预留）：`pure`；参数验证阶段：`documentation_only`，不构成工具授权。
+- 副作用分类（设计预留）：`pure`；参数验证阶段：`runtime_verified`，不构成工具授权。
 
 缩放
 
-- 当前支持：当前无此规范接口的实现。
+- 当前支持：真实只读场景图元/组合/仿射变换；坐标维数与scene dimensions一致，固定颜色或readonly颜色函数、有限opacity与明确资源边界。二维XY几何保留路径/多边形/marker/label并在桌面Web/iOS原生展示导出；三维Rust真实网格/世界法线/颜色和WebGL2/OBJ，iOS明确fallback不自动采样。曲面/圆曲线和圆管有限机器采样不认证边界；Polygon共面简单边界真实ear clipping，自交/非共面拒绝；Tube平行运输框架/端帽，不保证全局自交不存在。变换不写主变量，退化面可成为实际采样线/点。
 - 目标范围：共享场景与内核几何数据；二维桌面/Web/iOS，三维WebGL2桌面/Web；无WebGL2或移动端3D明确提示并保留源式及OBJ导出，不制作假图。
 - 返回：scene_node_or_color
-- 精度：几何/颜色数据机器采样；未承诺任意精度光栅。
-- 当前计算平台：无；目标计算平台：cli, desktop, web, ios。
+- 精度：机器几何/标签展示；源码保留精确数学意义，不宣称任意精度光栅或认证拓扑。
+- 当前计算平台：cli, desktop, web, ios；目标计算平台：cli, desktop, web, ios。
 - 目标图形/交互展示平台：desktop, web, ios。
-- 兼容名称：无既有兼容入口。
+- 兼容名称：`Scale`。
 - 管道位置：第 1 个位置参数（从 1 起）。
+
+当前现代签名：
+
+```text
+scale(node,factors,center:[0,0,0])
+```
+
+当前 Wolfram 签名：
+
+```text
+Scale[node,factors,Center->center]
+```
 
 目标现代签名（按目标接口状态判断是否已可执行）：
 
@@ -2520,9 +2766,15 @@ scale(node, factors, center: [0,0,0])
 
 | 参数 | 类型 | 默认值 | 含义 | 可用阶段 |
 |---|---|---|---|---|
-| `node` | positional | 必填 | 签名对应的node参数 | r3 |
-| `factors` | positional | 必填 | 签名对应的factors参数 | r3 |
-| `center` | option | [0,0,0] | 中心坐标 | r3 |
+| `node` | positional | 必填 | 签名对应的node参数 | current |
+| `factors` | positional | 必填 | 签名对应的factors参数 | current |
+| `center` | option | [0,0,0] | 中心坐标 | current |
+
+当前已登记示例（Wolfram）：
+
+```wolfram
+Scale[Circle[{0,0},1],{2,1}]
+```
 
 规划示例（尚未执行；需要目标版本，后续条目不承诺 .3）：
 
@@ -2532,27 +2784,39 @@ sphere([0,0,0],1) |> scale([2,1,1])
 
 验收：独立数学期望、有效/无效参数、边界、预算、中断及声明的平台/精度测试；范围外不伪造成功。
 
-当前源码：暂无当前实现证据。
+当前源码：[crates/om-eval/src/scene_registry.rs](../../crates/om-eval/src/scene_registry.rs)、[crates/om-kernel/src/scene_graph.rs](../../crates/om-kernel/src/scene_graph.rs)。
 
-当前测试引用：暂无当前实现证据。
+当前测试引用：[crates/om-kernel/tests/scene_graph.rs](../../crates/om-kernel/tests/scene_graph.rs)。
 
 ## scene
 
-**当前实现：下一版规划；目标接口：规划接口，当前不可用。** 目标版本：`0.1.0-pre-alpha.3`。
+**当前实现：部分支持；目标接口：当前可用。** 目标版本：`0.1.0-pre-alpha.3`。
 
 - 稳定身份：`fn_000226`；条目类型：`function`。
-- 副作用分类（设计预留）：`pure`；参数验证阶段：`documentation_only`，不构成工具授权。
+- 副作用分类（设计预留）：`pure`；参数验证阶段：`runtime_verified`，不构成工具授权。
 
 组合场景
 
-- 当前支持：当前无此规范接口的实现。
+- 当前支持：真实只读场景图元/组合/仿射变换；坐标维数与scene dimensions一致，固定颜色或readonly颜色函数、有限opacity与明确资源边界。二维XY几何保留路径/多边形/marker/label并在桌面Web/iOS原生展示导出；三维Rust真实网格/世界法线/颜色和WebGL2/OBJ，iOS明确fallback不自动采样。曲面/圆曲线和圆管有限机器采样不认证边界；Polygon共面简单边界真实ear clipping，自交/非共面拒绝；Tube平行运输框架/端帽，不保证全局自交不存在。变换不写主变量，退化面可成为实际采样线/点。
 - 目标范围：共享场景与内核几何数据；二维桌面/Web/iOS，三维WebGL2桌面/Web；无WebGL2或移动端3D明确提示并保留源式及OBJ导出，不制作假图。
 - 返回：scene_node_or_color
-- 精度：几何/颜色数据机器采样；未承诺任意精度光栅。
-- 当前计算平台：无；目标计算平台：cli, desktop, web, ios。
+- 精度：机器几何/标签展示；源码保留精确数学意义，不宣称任意精度光栅或认证拓扑。
+- 当前计算平台：cli, desktop, web, ios；目标计算平台：cli, desktop, web, ios。
 - 目标图形/交互展示平台：desktop, web, ios。
-- 兼容名称：无既有兼容入口。
+- 兼容名称：`Scene`。
 - 管道位置：第 1 个位置参数（从 1 起）。
+
+当前现代签名：
+
+```text
+scene(nodes,dimensions:2)
+```
+
+当前 Wolfram 签名：
+
+```text
+Scene[nodes,Dimensions->2]
+```
 
 目标现代签名（按目标接口状态判断是否已可执行）：
 
@@ -2562,8 +2826,14 @@ scene(nodes, dimensions: 2)
 
 | 参数 | 类型 | 默认值 | 含义 | 可用阶段 |
 |---|---|---|---|---|
-| `nodes` | positional | 必填 | 签名对应的nodes参数 | r3 |
-| `dimensions` | option | 2 | 2或3 | r3 |
+| `nodes` | positional | 必填 | 签名对应的nodes参数 | current |
+| `dimensions` | option | 2 | 2或3 | current |
+
+当前已登记示例（Wolfram）：
+
+```wolfram
+Scene[{Point[{0,0}],Line[{{0,0},{1,1}}]}]
+```
 
 规划示例（尚未执行；需要目标版本，后续条目不承诺 .3）：
 
@@ -2573,9 +2843,9 @@ scene([point([0,0]),line([[0,0],[1,1]])])
 
 验收：独立数学期望、有效/无效参数、边界、预算、中断及声明的平台/精度测试；范围外不伪造成功。
 
-当前源码：暂无当前实现证据。
+当前源码：[crates/om-eval/src/scene_registry.rs](../../crates/om-eval/src/scene_registry.rs)、[crates/om-kernel/src/scene_graph.rs](../../crates/om-kernel/src/scene_graph.rs)。
 
-当前测试引用：暂无当前实现证据。
+当前测试引用：[crates/om-kernel/tests/scene_graph.rs](../../crates/om-kernel/tests/scene_graph.rs)。
 
 ## scientific_form
 
@@ -2817,21 +3087,33 @@ specularity(...)  # 后续接口尚未锁定
 
 ## sphere
 
-**当前实现：下一版规划；目标接口：规划接口，当前不可用。** 目标版本：`0.1.0-pre-alpha.3`。
+**当前实现：部分支持；目标接口：当前可用。** 目标版本：`0.1.0-pre-alpha.3`。
 
 - 稳定身份：`fn_000233`；条目类型：`function`。
-- 副作用分类（设计预留）：`pure`；参数验证阶段：`documentation_only`，不构成工具授权。
+- 副作用分类（设计预留）：`pure`；参数验证阶段：`runtime_verified`，不构成工具授权。
 
 球面
 
-- 当前支持：当前无此规范接口的实现。
+- 当前支持：真实只读场景图元/组合/仿射变换；坐标维数与scene dimensions一致，固定颜色或readonly颜色函数、有限opacity与明确资源边界。二维XY几何保留路径/多边形/marker/label并在桌面Web/iOS原生展示导出；三维Rust真实网格/世界法线/颜色和WebGL2/OBJ，iOS明确fallback不自动采样。曲面/圆曲线和圆管有限机器采样不认证边界；Polygon共面简单边界真实ear clipping，自交/非共面拒绝；Tube平行运输框架/端帽，不保证全局自交不存在。变换不写主变量，退化面可成为实际采样线/点。
 - 目标范围：共享场景与内核几何数据；二维桌面/Web/iOS，三维WebGL2桌面/Web；无WebGL2或移动端3D明确提示并保留源式及OBJ导出，不制作假图。
 - 返回：scene_node_or_color
-- 精度：几何/颜色数据机器采样；未承诺任意精度光栅。
-- 当前计算平台：无；目标计算平台：cli, desktop, web, ios。
+- 精度：机器几何/标签展示；源码保留精确数学意义，不宣称任意精度光栅或认证拓扑。
+- 当前计算平台：cli, desktop, web, ios；目标计算平台：cli, desktop, web, ios。
 - 目标图形/交互展示平台：desktop, web。
-- 兼容名称：无既有兼容入口。
+- 兼容名称：`Sphere`。
 - 管道位置：不接受自动管道输入。
+
+当前现代签名：
+
+```text
+sphere(center,radius)
+```
+
+当前 Wolfram 签名：
+
+```text
+Sphere[center,radius]
+```
 
 目标现代签名（按目标接口状态判断是否已可执行）：
 
@@ -2841,8 +3123,14 @@ sphere(center, radius)
 
 | 参数 | 类型 | 默认值 | 含义 | 可用阶段 |
 |---|---|---|---|---|
-| `center` | positional | 必填 | 中心坐标 | r3 |
-| `radius` | positional | 必填 | 正半径 | r3 |
+| `center` | positional | 必填 | 中心坐标 | current |
+| `radius` | positional | 必填 | 正半径 | current |
+
+当前已登记示例（Wolfram）：
+
+```wolfram
+Sphere[{0,0,0},1]
+```
 
 规划示例（尚未执行；需要目标版本，后续条目不承诺 .3）：
 
@@ -2852,9 +3140,9 @@ sphere([0,0,0],1)
 
 验收：独立数学期望、有效/无效参数、边界、预算、中断及声明的平台/精度测试；范围外不伪造成功。
 
-当前源码：暂无当前实现证据。
+当前源码：[crates/om-eval/src/scene_registry.rs](../../crates/om-eval/src/scene_registry.rs)、[crates/om-kernel/src/scene_graph.rs](../../crates/om-kernel/src/scene_graph.rs)。
 
-当前测试引用：暂无当前实现证据。
+当前测试引用：[crates/om-kernel/tests/scene_graph.rs](../../crates/om-kernel/tests/scene_graph.rs)。
 
 ## standard_form
 
@@ -2892,21 +3180,33 @@ standard_form(...)  # 后续接口尚未锁定
 
 ## style
 
-**当前实现：下一版规划；目标接口：规划接口，当前不可用。** 目标版本：`0.1.0-pre-alpha.3`。
+**当前实现：已实现；目标接口：当前可用。** 目标版本：`0.1.0-pre-alpha.3`。
 
 - 稳定身份：`fn_000243`；条目类型：`function`。
-- 副作用分类（设计预留）：`pure`；参数验证阶段：`documentation_only`，不构成工具授权。
+- 副作用分类（设计预留）：`pure`；参数验证阶段：`runtime_verified`，不构成工具授权。
 
 样式
 
-- 当前支持：当前无此规范接口的实现。
+- 当前支持：held样式包装；二维/三维实际scene节点与列表分组继承color/opacity，子节点显式样式覆盖继承；图元外包需放入scene容器。
 - 目标范围：共享场景与内核几何数据；二维桌面/Web/iOS，三维WebGL2桌面/Web；无WebGL2或移动端3D明确提示并保留源式及OBJ导出，不制作假图。
 - 返回：scene_node_or_color
 - 精度：几何/颜色数据机器采样；未承诺任意精度光栅。
-- 当前计算平台：无；目标计算平台：cli, desktop, web, ios。
+- 当前计算平台：cli, desktop, web, ios；目标计算平台：cli, desktop, web, ios。
 - 目标图形/交互展示平台：desktop, web, ios。
-- 兼容名称：无既有兼容入口。
+- 兼容名称：`Style`。
 - 管道位置：第 1 个位置参数（从 1 起）。
+
+当前现代签名：
+
+```text
+style(node,color:"green",opacity:1)
+```
+
+当前 Wolfram 签名：
+
+```text
+Style[node,Color->color,Opacity->opacity]
+```
 
 目标现代签名（按目标接口状态判断是否已可执行）：
 
@@ -2920,6 +3220,12 @@ style(node, color: "green", opacity: 1)
 | `color` | option | 主题色 | 颜色/只读颜色函数 | r3 |
 | `opacity` | option | 1 | 0..1 | r3 |
 
+当前已登记示例（Wolfram）：
+
+```wolfram
+Style[Circle[{0,0},1],Color->"green",Opacity->0.8]
+```
+
 规划示例（尚未执行；需要目标版本，后续条目不承诺 .3）：
 
 ```text
@@ -2928,9 +3234,9 @@ circle([0,0],1) |> style(color: "green",opacity: 0.8)
 
 验收：独立数学期望、有效/无效参数、边界、预算、中断及声明的平台/精度测试；范围外不伪造成功。
 
-当前源码：暂无当前实现证据。
+当前源码：[crates/om-eval/src/scene_registry.rs](../../crates/om-eval/src/scene_registry.rs)、[crates/om-kernel/src/scene_graph.rs](../../crates/om-kernel/src/scene_graph.rs)。
 
-当前测试引用：暂无当前实现证据。
+当前测试引用：[crates/om-kernel/tests/scene_graph.rs](../../crates/om-kernel/tests/scene_graph.rs)。
 
 ## tab_view
 
@@ -3138,21 +3444,33 @@ traditional_form(...)  # 后续接口尚未锁定
 
 ## translate
 
-**当前实现：下一版规划；目标接口：规划接口，当前不可用。** 目标版本：`0.1.0-pre-alpha.3`。
+**当前实现：部分支持；目标接口：当前可用。** 目标版本：`0.1.0-pre-alpha.3`。
 
 - 稳定身份：`fn_000240`；条目类型：`function`。
-- 副作用分类（设计预留）：`pure`；参数验证阶段：`documentation_only`，不构成工具授权。
+- 副作用分类（设计预留）：`pure`；参数验证阶段：`runtime_verified`，不构成工具授权。
 
 平移
 
-- 当前支持：当前无此规范接口的实现。
+- 当前支持：真实只读场景图元/组合/仿射变换；坐标维数与scene dimensions一致，固定颜色或readonly颜色函数、有限opacity与明确资源边界。二维XY几何保留路径/多边形/marker/label并在桌面Web/iOS原生展示导出；三维Rust真实网格/世界法线/颜色和WebGL2/OBJ，iOS明确fallback不自动采样。曲面/圆曲线和圆管有限机器采样不认证边界；Polygon共面简单边界真实ear clipping，自交/非共面拒绝；Tube平行运输框架/端帽，不保证全局自交不存在。变换不写主变量，退化面可成为实际采样线/点。
 - 目标范围：共享场景与内核几何数据；二维桌面/Web/iOS，三维WebGL2桌面/Web；无WebGL2或移动端3D明确提示并保留源式及OBJ导出，不制作假图。
 - 返回：scene_node_or_color
-- 精度：几何/颜色数据机器采样；未承诺任意精度光栅。
-- 当前计算平台：无；目标计算平台：cli, desktop, web, ios。
+- 精度：机器几何/标签展示；源码保留精确数学意义，不宣称任意精度光栅或认证拓扑。
+- 当前计算平台：cli, desktop, web, ios；目标计算平台：cli, desktop, web, ios。
 - 目标图形/交互展示平台：desktop, web, ios。
-- 兼容名称：无既有兼容入口。
+- 兼容名称：`Translate`。
 - 管道位置：第 1 个位置参数（从 1 起）。
+
+当前现代签名：
+
+```text
+translate(node,vector)
+```
+
+当前 Wolfram 签名：
+
+```text
+Translate[node,vector]
+```
 
 目标现代签名（按目标接口状态判断是否已可执行）：
 
@@ -3162,8 +3480,14 @@ translate(node, vector)
 
 | 参数 | 类型 | 默认值 | 含义 | 可用阶段 |
 |---|---|---|---|---|
-| `node` | positional | 必填 | 签名对应的node参数 | r3 |
-| `vector` | positional | 必填 | 向量 | r3 |
+| `node` | positional | 必填 | 签名对应的node参数 | current |
+| `vector` | positional | 必填 | 向量 | current |
+
+当前已登记示例（Wolfram）：
+
+```wolfram
+Translate[Point[{0,0}],{1,2}]
+```
 
 规划示例（尚未执行；需要目标版本，后续条目不承诺 .3）：
 
@@ -3173,27 +3497,39 @@ sphere([0,0,0],1) |> translate([2,0,0])
 
 验收：独立数学期望、有效/无效参数、边界、预算、中断及声明的平台/精度测试；范围外不伪造成功。
 
-当前源码：暂无当前实现证据。
+当前源码：[crates/om-eval/src/scene_registry.rs](../../crates/om-eval/src/scene_registry.rs)、[crates/om-kernel/src/scene_graph.rs](../../crates/om-kernel/src/scene_graph.rs)。
 
-当前测试引用：暂无当前实现证据。
+当前测试引用：[crates/om-kernel/tests/scene_graph.rs](../../crates/om-kernel/tests/scene_graph.rs)。
 
 ## tube
 
-**当前实现：下一版规划；目标接口：规划接口，当前不可用。** 目标版本：`0.1.0-pre-alpha.3`。
+**当前实现：部分支持；目标接口：当前可用。** 目标版本：`0.1.0-pre-alpha.3`。
 
 - 稳定身份：`fn_000238`；条目类型：`function`。
-- 副作用分类（设计预留）：`pure`；参数验证阶段：`documentation_only`，不构成工具授权。
+- 副作用分类（设计预留）：`pure`；参数验证阶段：`runtime_verified`，不构成工具授权。
 
 沿路径的管
 
-- 当前支持：当前无此规范接口的实现。
+- 当前支持：真实只读场景图元/组合/仿射变换；坐标维数与scene dimensions一致，固定颜色或readonly颜色函数、有限opacity与明确资源边界。二维XY几何保留路径/多边形/marker/label并在桌面Web/iOS原生展示导出；三维Rust真实网格/世界法线/颜色和WebGL2/OBJ，iOS明确fallback不自动采样。曲面/圆曲线和圆管有限机器采样不认证边界；Polygon共面简单边界真实ear clipping，自交/非共面拒绝；Tube平行运输框架/端帽，不保证全局自交不存在。变换不写主变量，退化面可成为实际采样线/点。
 - 目标范围：共享场景与内核几何数据；二维桌面/Web/iOS，三维WebGL2桌面/Web；无WebGL2或移动端3D明确提示并保留源式及OBJ导出，不制作假图。
 - 返回：scene_node_or_color
-- 精度：几何/颜色数据机器采样；未承诺任意精度光栅。
-- 当前计算平台：无；目标计算平台：cli, desktop, web, ios。
+- 精度：机器几何/标签展示；源码保留精确数学意义，不宣称任意精度光栅或认证拓扑。
+- 当前计算平台：cli, desktop, web, ios；目标计算平台：cli, desktop, web, ios。
 - 目标图形/交互展示平台：desktop, web。
-- 兼容名称：无既有兼容入口。
+- 兼容名称：`Tube`。
 - 管道位置：不接受自动管道输入。
+
+当前现代签名：
+
+```text
+tube(path,radius)
+```
+
+当前 Wolfram 签名：
+
+```text
+Tube[path,radius]
+```
 
 目标现代签名（按目标接口状态判断是否已可执行）：
 
@@ -3203,8 +3539,14 @@ tube(path,radius)
 
 | 参数 | 类型 | 默认值 | 含义 | 可用阶段 |
 |---|---|---|---|---|
-| `path` | positional | 必填 | 签名对应的path参数 | r3 |
-| `radius` | positional | 必填 | 正半径 | r3 |
+| `path` | positional | 必填 | 签名对应的path参数 | current |
+| `radius` | positional | 必填 | 正半径 | current |
+
+当前已登记示例（Wolfram）：
+
+```wolfram
+Tube[{{0,0,0},{0,0,1},{1,0,2}},0.1]
+```
 
 规划示例（尚未执行；需要目标版本，后续条目不承诺 .3）：
 
@@ -3214,6 +3556,6 @@ tube([[0,0,0],[1,0,0],[1,1,0]],0.05)
 
 验收：独立数学期望、有效/无效参数、边界、预算、中断及声明的平台/精度测试；范围外不伪造成功。
 
-当前源码：暂无当前实现证据。
+当前源码：[crates/om-eval/src/scene_registry.rs](../../crates/om-eval/src/scene_registry.rs)、[crates/om-kernel/src/scene_graph.rs](../../crates/om-kernel/src/scene_graph.rs)。
 
-当前测试引用：暂无当前实现证据。
+当前测试引用：[crates/om-kernel/tests/scene_graph.rs](../../crates/om-kernel/tests/scene_graph.rs)。

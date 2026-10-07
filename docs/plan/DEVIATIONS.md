@@ -365,3 +365,9 @@ No preflight agent returned a completed report; neither math nor protocol correc
 原生客户端保留单文档/共享内核协议。NotebookController 的内部构造器允许注入 UserDefaults，生产默认仍为 standard；恢复测试用独立 suite。合成 HTTP fixture 用独立端点与计数，避免已取消请求晚到污染后续用例。环境检查完整消费 Xcode 输出；仓库/发行文本和 Cargo 输出明确按 UTF-8 解码，CI 拒绝隐式编码读取。每轮模拟器结果独立，临时设备在退出时清理，不添加自动重试或放宽计算阈值。绘图新增可复制的原始采样坐标与缩放/参数语义，不引入新的采样算法、协议或依赖。
 
 用户要求本轮跳过剩余旁白、浮动键盘、真机窄窗口等人工杂项，并停止本机模拟器；相应验收记录为未验证，模拟器自动化门禁转由 GitHub runner 执行，保留真机单元/既有界面证据与实际失败记录。
+
+- **P143 — 有限场景图与完整科研案例（R3.6b）**：独立scene_graph生成XY/XYZ真实有限图元/列表分组/Style/Translate/Rotate/Scale；二维仅可选追加paths/polygons/markers/labels，三维标签为世界锚点。Style继承、显式子选项覆盖；Blend仅两色0..1逐分量RGBA机器插值，无光学/多色/任意精度承诺；固定RGB名/hex共享om-core，不增加依赖/unsafe。Import展开前计总200000，退化实际面/线/点，负变换翻绕序再取世界法线；反射/不共面/自交/折返/readonly/高精度/超限均真拒绝。
+
+现代下划线符号经过原InputForm文本回读被公共Wolfram模式词法拆分的实际缺陷由独立parse_input_form修复；Pattern/Blank显式头，源码Wolfram x_不改，Auto明确Modern组合优先于模糊f[index]。标量/绘图/探索传输用该读取器，不添加新用户方言或以字符串执行宿主代码。Wolfram分号的CompoundExpression合法性保留，多独立语句才拒绝。Translate元数据max2和实际Exactly2对齐；点width是实际逻辑像素半径，不暗中设置另一个默认值。
+
+L2使用精确标称GM分数、50位FindRoot/1000迭代和真实残差，报告保留Big、展示明确machine，x比例/点半径显示语义分离；西瓜实际条纹两参数曲面+皮层/切面/12椭球籽/变换/光照/OBJ读回，不拿球面条纹代替完整案例。较粗的籽mesh8在既有导出预算内。UI依据与真实截图见scene-graph.md/acceptance/r36b；iOS只有XYCanvas和真实XYZ源式fallback，不自动未展示采样。Agent事务/框架仍deferred，.omnb只有v1源码；原53与1s不改，本机不模拟器、不多代理、不合main。

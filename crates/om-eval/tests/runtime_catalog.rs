@@ -35,7 +35,10 @@ fn runtime_schemas_match_every_actual_callback() {
     }
     assert_eq!(catalog::functions().len(), Evaluator::all_specs().count());
     assert_eq!(catalog::by_alias("explore").unwrap().id, "fn_000225");
-    assert!(catalog::by_alias("scene").is_none());
+    assert_eq!(catalog::by_alias("scene").unwrap().id, "fn_000226");
+    assert_eq!(catalog::by_alias("style").unwrap().id, "fn_000243");
+    assert_eq!(catalog::by_alias("blend").unwrap().id, "fn_000244");
+    assert!(catalog::by_alias("polar_plot").is_none());
     assert!(catalog::by_alias("apply_notebook_patch").is_none());
     assert_eq!(catalog::by_alias("map").unwrap().pipe_arg, 2);
     assert_eq!(catalog::by_alias("algebraic_root").unwrap().id, "fn_000090");

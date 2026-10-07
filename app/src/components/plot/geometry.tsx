@@ -68,6 +68,10 @@ export function PlotGeometry({
         ))}
       </g>
       <g clipPath={`url(#${id})`}>
+        {(data?.geometry?.polygons??[]).map((polygon,i)=><polygon key={`polygon${i}`} points={polygon.points.map(([a,b])=>`${coordinate(x.map(a))},${coordinate(y.map(b))}`).join(' ')} fill={polygon.color} fillOpacity={polygon.opacity} stroke="none"/>)}
+        {(data?.geometry?.paths??[]).map((path,i)=><path key={`scene-path${i}`} d={path.points.map(([a,b],j)=>`${j?'L':'M'}${coordinate(x.map(a))} ${coordinate(y.map(b))}`).join(' ')} fill="none" stroke={path.color} strokeOpacity={path.opacity} strokeWidth={path.width}/>)}
+        {(data?.geometry?.markers??[]).map((marker,i)=><circle key={`marker${i}`} cx={x.map(marker.position[0])} cy={y.map(marker.position[1])} r={marker.radius} fill={marker.color} fillOpacity={marker.opacity}><title>{`(${marker.position})`}</title></circle>)}
+        {(data?.geometry?.labels??[]).map((label,i)=><text key={`label${i}`} x={x.map(label.position[0])+label.offset[0]} y={y.map(label.position[1])+label.offset[1]} fill={label.color} fillOpacity={label.opacity} fontSize="13">{label.text}</text>)}
         {data?.geometry?.tiles.map((tile, i) => {
           const [[a,b],[c,d]]=tile.bounds;
           return <rect key={`tile${i}`} x={coordinate(x.map(a))} y={coordinate(y.map(d))}

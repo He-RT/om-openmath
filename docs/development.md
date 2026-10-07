@@ -57,7 +57,7 @@ PowerShell 使用 `$env:OPENMATH_E2E_PREVIEW = '1'`，再运行相同 npm 命令
 
 ## 新增常用函数
 
-下一版按[研发账本](plan/NEXT_RELEASE.md)推进；[现代设计](design/modern-language.md)与[功能目录](reference/README.md)锁定接口。本轮目录尚未接入运行时，R3.1再统一别名/参数/补全/帮助/能力查询，不以计划条目扩展当前可执行集合。
+科研扩展按[研发账本](plan/NEXT_RELEASE.md)维护；[现代设计](design/modern-language.md)与[功能目录](reference/README.md)锁定接口。目录已接入运行时，统一规范别名、命名参数、管道位置、补全/Hover、帮助、AI 与能力查询；未实现条目不进入可执行推荐。
 
 普通数学函数在共享 Rust 内核实现一次，桌面、Web、CLI 和原生移动端复用。按所属类别更新 `crates/om-eval/src/*_registry.rs` 的求值入口、参数约束和中英文 `DocEntry`；解析名称和显示语法分别检查 `om-core` / `om-parse` / `om-format`。本地补全与 Hover 读取同一函数文档，不另写 Swift 函数分发表。
 

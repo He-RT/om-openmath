@@ -115,7 +115,7 @@ impl Host {
                     }
                 }
             }
-            _ => return Err("导出格式支持svg/png/csv/json；OBJ在三维阶段接入".into()),
+            _ => return Err("导出格式支持svg/png/csv/json/obj".into()),
         };
         self.signal.evaluating.store(true, Ordering::Relaxed);
         let response = self

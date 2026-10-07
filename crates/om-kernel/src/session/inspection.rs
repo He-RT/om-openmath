@@ -14,7 +14,7 @@ impl Session {
         if source.len() > 65_536 {
             return invalid();
         }
-        let Ok(expr) = om_parse::parse_expr(&source, om_parse::Dialect::Wolfram) else {
+        let Ok(expr) = om_parse::parse_input_form(&source) else {
             return invalid();
         };
         let start = self.clock.as_ref().map(|c| c.now_ms());

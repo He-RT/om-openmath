@@ -171,3 +171,4 @@
 .scene-summary, .scene-bounds { font-size:.8rem; color:var(--muted); }
 .scene-bounds { display:flex; flex-wrap:wrap; gap:16px; }
 .scene-view pre { max-height:320px; max-width:100%; overflow:auto; font-size:.75rem; }
+.scene-text-label { position:absolute; pointer-events:none; font-size:.8rem; white-space:pre-wrap; max-width:240px; }

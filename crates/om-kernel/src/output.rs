@@ -25,6 +25,15 @@ pub(crate) fn pack(
         }
         return crate::explore::initial(record, ctx, scene_enabled);
     }
+    if record
+        .value
+        .head_symbol()
+        .is_some_and(|s| s.name() == "Scene")
+        && crate::scene_graph::dimensions(&record.value, eval, ctx)? == 2
+    {
+        let (request, data) = crate::scene_graph::plot_from_expr(&record.value, eval, ctx)?;
+        return Ok(OutputItem::Plot { request, data });
+    }
     if let Some(request) = crate::scene3d::from_expr(&record.value, eval, ctx)? {
         let data = if scene_enabled {
             Some(crate::scene3d::sample(&request, eval, ctx)?)

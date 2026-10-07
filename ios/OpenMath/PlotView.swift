@@ -68,6 +68,28 @@ struct PlotView: View {
             }
           }
           context.clip(to: Path(rect))
+          for polygon in data["geometry"]["polygons"].array {
+            var path = Path()
+            for (i,p) in polygon["points"].array.enumerated() {
+              let v = point(p[0].double,p[1].double)
+              if i == 0 { path.move(to:v) } else { path.addLine(to:v) }
+            }
+            path.closeSubpath()
+            context.fill(path,with:.color(plotColor(polygon["color"].string).opacity(polygon["opacity"].double)))
+          }
+          for line in data["geometry"]["paths"].array {
+            var path = Path()
+            for (i,p) in line["points"].array.enumerated() {let v=point(p[0].double,p[1].double);if i == 0 {path.move(to:v)}else{path.addLine(to:v)}}
+            context.stroke(path,with:.color(plotColor(line["color"].string).opacity(line["opacity"].double)),lineWidth:line["width"].double)
+          }
+          for marker in data["geometry"]["markers"].array {
+            let p = point(marker["position"][0].double,marker["position"][1].double),r=marker["radius"].double
+            context.fill(Path(ellipseIn:CGRect(x:p.x-r,y:p.y-r,width:r*2,height:r*2)),with:.color(plotColor(marker["color"].string).opacity(marker["opacity"].double)))
+          }
+          for label in data["geometry"]["labels"].array {
+            let p=point(label["position"][0].double,label["position"][1].double)
+            context.draw(Text(label["text"].string).font(.caption).foregroundStyle(plotColor(label["color"].string).opacity(label["opacity"].double)),at:CGPoint(x:p.x+label["offset"][0].double,y:p.y+label["offset"][1].double),anchor:.leading)
+          }
           for tile in data["geometry"]["tiles"].array {
             let a=point(tile["bounds"][0][0].double,tile["bounds"][0][1].double)
             let b=point(tile["bounds"][1][0].double,tile["bounds"][1][1].double)
@@ -208,7 +230,7 @@ struct PlotView: View {
           Button(controller.text("重试", "Retry")) { schedule(working, delay: 0) }
         }
       }
-      if !data["geometry"].isNull && !["Data", "Histogram"].contains(request["kind"].string) { Text(controller.text("采样示意，边界未经认证", "Sampled visualization; no certified boundary")).font(.caption).foregroundStyle(.secondary) }
+      if !data["geometry"].isNull && !["Data", "Histogram", "Scene"].contains(request["kind"].string) { Text(controller.text("采样示意，边界未经认证", "Sampled visualization; no certified boundary")).font(.caption).foregroundStyle(.secondary) }
       if data["geometry"]["skipped"].double > 0 {Text(controller.text("跳过非有限/不在定义域样本：", "Skipped nonfinite/out-of-domain samples: ")+"\(Int(data["geometry"]["skipped"].double))").font(.caption).foregroundStyle(.secondary)}
       DisclosureGroup(
         controller.text("采样数据", "Sampled data"), isExpanded: $showSamples

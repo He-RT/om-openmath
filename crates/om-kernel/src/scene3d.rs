@@ -1,5 +1,5 @@
 //! Real readonly three-dimensional sampling, never frontend function evaluation.
-mod geometry;
+pub(crate) mod geometry;
 mod implicit;
 mod parametric;
 mod parse;
@@ -23,6 +23,7 @@ pub(super) fn setup(
         SceneKind::Surface => 2,
         SceneKind::Implicit => 3,
         SceneKind::Parametric => r.axes.len(),
+        SceneKind::Scene => 0,
     };
     if !(8..=64).contains(&r.mesh_points)
         || !(1..=3).contains(&count)
@@ -70,7 +71,7 @@ pub(super) fn raw(source: &str) -> Result<Expr, PlotError> {
     if source.len() > 65536 {
         return Err(invalid("表达式源码超限"));
     }
-    om_parse::parse_expr(source, om_parse::Dialect::Wolfram).map_err(|_| invalid("源码无效"))
+    om_parse::parse_input_form(source).map_err(|_| invalid("源码无效"))
 }
 pub(super) fn compile(
     source: &str,
@@ -103,13 +104,17 @@ pub(super) fn compile(
     let vars = locals.iter().map(|(s, _)| *s).collect::<Vec<_>>();
     compile_f64_with_ctx(&expression, &vars, ctx).map_err(PlotError::from)
 }
-pub(super) struct Colorizer {
+pub(crate) struct Colorizer {
     fixed: Option<[f64; 4]>,
     function: Option<Expr>,
     eval: Evaluator,
 }
 impl Colorizer {
-    fn new(source: &Option<String>, ev: &Evaluator, ctx: &Interrupt) -> Result<Self, PlotError> {
+    pub(crate) fn new(
+        source: &Option<String>,
+        ev: &Evaluator,
+        ctx: &Interrupt,
+    ) -> Result<Self, PlotError> {
         let mut fixed = Some([0.1294, 0.5216, 0.2902, 1.]);
         let mut function = None;
         if let Some(source) = source {
@@ -118,6 +123,17 @@ impl Colorizer {
                 fixed = Some(
                     crate::artifact::scene_color(name).map_err(|_| invalid("颜色不在支持范围"))?,
                 );
+            } else if expr.is_head(B::LIST) && (3..=4).contains(&expr.args().len()) {
+                let mut color = [0., 0., 0., 1.];
+                for (i, component) in expr.args().iter().enumerate() {
+                    ctx.tick()?;
+                    let value = crate::plot::machine_value(component, ev, ctx)?;
+                    if !(0.0..=1.0).contains(&value) {
+                        return Err(invalid("RGB/RGBA颜色分量需要0..1"));
+                    }
+                    color[i] = value;
+                }
+                fixed = Some(color);
             } else {
                 if !expr.is_head(B::FUNCTION)
                     || expr.args().len() != 2
@@ -143,6 +159,14 @@ impl Colorizer {
         parameters: &[f64],
         ctx: &Interrupt,
     ) -> Result<[f64; 4], PlotError> {
+        self.at_coordinates(&p, parameters, ctx)
+    }
+    pub(crate) fn at_coordinates(
+        &mut self,
+        p: &[f64],
+        parameters: &[f64],
+        ctx: &Interrupt,
+    ) -> Result<[f64; 4], PlotError> {
         ctx.tick()?;
         if let Some(color) = self.fixed {
             return Ok(color);
@@ -162,7 +186,7 @@ impl Colorizer {
                 "颜色函数接收position向量或position加全部数学轴参数",
             ));
         }
-        let mut args = vec![Expr::call(B::LIST, p.map(Expr::real))];
+        let mut args = vec![Expr::call(B::LIST, p.iter().map(|v| Expr::real(*v)))];
         if arity > 1 {
             args.extend(parameters.iter().map(|v| Expr::real(*v)));
         }
@@ -200,10 +224,14 @@ pub(crate) fn sample(
     ev: &Evaluator,
     ctx: &Interrupt,
 ) -> Result<Scene3DData, PlotError> {
+    if r.kind == SceneKind::Scene {
+        return crate::scene_graph::sample_request(r, ev, ctx);
+    }
     let ev = setup(r, ev, ctx)?;
     let mut colors = Colorizer::new(&r.color, &ev, ctx)?;
     let mut data = match r.kind {
         SceneKind::Implicit => implicit::sample(r, &ev, &mut colors, ctx)?,
+        SceneKind::Scene => unreachable!(),
         _ => parametric::sample(r, &ev, &mut colors, ctx)?,
     };
     geometry::finish(&mut data, ctx)?;

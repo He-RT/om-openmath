@@ -11,6 +11,8 @@ pub mod catalog;
 pub mod ctx;
 /// Immutable expression trees and structural operations.
 pub mod expr;
+/// Shared finite display colors.
+pub mod graphics_color;
 /// Shared symbol interning.
 pub mod symbol;
 

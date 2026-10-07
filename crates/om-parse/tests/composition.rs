@@ -52,6 +52,30 @@ fn lambda_is_contextual_and_keeps_lexical_parameter_names() {
             .any(|d| d.severity == Severity::Error)
     );
 }
+
+#[test]
+fn auto_detection_preserves_explicit_modern_programs_with_ambiguous_index_brackets() {
+    for source in [
+        "let seeds=[[1,2]];map(fn(p)=>p[1],seeds)",
+        "[1,2] |> map(fn(p)=>p^2)",
+        "fn(p)=>p[1]",
+        "plot(axis_x,axis_x:0..1)",
+    ] {
+        assert_eq!(om_parse::detect_dialect(source), Dialect::Modern);
+        assert!(
+            !parse(source, Dialect::Auto)
+                .diagnostics
+                .iter()
+                .any(|d| d.severity == Severity::Error),
+            "{source}"
+        );
+    }
+    assert_eq!(om_parse::detect_dialect("f[x]"), Dialect::Wolfram);
+    assert_eq!(
+        om_parse::detect_dialect("%wl\nf[x_] := x^2"),
+        Dialect::Wolfram
+    );
+}
 #[test]
 fn ranges_decimal_boundaries_and_slices_are_unambiguous() {
     assert_eq!(

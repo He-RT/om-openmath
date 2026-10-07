@@ -51,7 +51,7 @@ pub(super) fn axis(name: &str) -> Result<Symbol, PlotError> {
     Ok(s)
 }
 fn parse(source: &str) -> Result<Expr, PlotError> {
-    om_parse::parse_expr(source, om_parse::Dialect::Wolfram)
+    om_parse::parse_input_form(source)
         .map_err(|e| PlotError::Invalid(format!("invalid plot source: {e:?}")))
 }
 pub(super) fn range(r: (f64, f64)) -> Result<(), PlotError> {
@@ -68,6 +68,9 @@ pub(crate) fn sample(
     ctx: &Interrupt,
 ) -> Result<PlotData, PlotError> {
     ctx.tick()?;
+    if r.kind == PlotKind::Scene {
+        return crate::scene_graph::sample_plot(r, eval, ctx);
+    }
     if r.options.is_some() || !matches!(r.kind, PlotKind::Function | PlotKind::Implicit) {
         return extended::sample(r, eval, ctx);
     }

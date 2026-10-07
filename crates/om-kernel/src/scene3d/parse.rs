@@ -5,6 +5,9 @@ pub(crate) fn from_expr(
     ev: &Evaluator,
     ctx: &Interrupt,
 ) -> Result<Option<Scene3DRequest>, PlotError> {
+    if e.head_symbol().is_some_and(|s| s.name() == "Scene") {
+        return crate::scene_graph::request(e, ev, ctx).map(Some);
+    }
     let name = e.head_symbol().map(Symbol::name).unwrap_or("");
     let kind = match name {
         "Plot3D" => SceneKind::Surface,

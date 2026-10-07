@@ -283,7 +283,7 @@ fn source_expression(source: &str, ctx: &Interrupt) -> Result<Expr, PlotError> {
     if source.len() > 65536 {
         return Err(error("表达式源码超限"));
     }
-    om_parse::parse_expr(source, om_parse::Dialect::Wolfram).map_err(|_| error("表达式源码无效"))
+    om_parse::parse_input_form(source).map_err(|_| error("表达式源码无效"))
 }
 fn restore(source: &str, ctx: &Interrupt) -> Result<(Snapshot, String, u32), PlotError> {
     if source.len() > 524288 {

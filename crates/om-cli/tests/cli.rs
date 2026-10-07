@@ -143,11 +143,18 @@ fn executable_help_and_capabilities_are_query_only_and_never_include_plans() {
             .any(|f| f["modern_name"] == "explore" && f["id"] == "fn_000225")
     );
     assert!(
+        rows[0]["functions"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .any(|f| f["modern_name"] == "scene" && f["id"] == "fn_000226")
+    );
+    assert!(
         !rows[0]["functions"]
             .as_array()
             .unwrap()
             .iter()
-            .any(|f| f["modern_name"] == "scene")
+            .any(|f| f["modern_name"] == "polar_plot")
     );
     assert!(
         rows[1]

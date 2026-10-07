@@ -13,6 +13,8 @@ pub enum SceneKind {
     Parametric,
     /// A scalar zero set in three actual coordinates.
     Implicit,
+    /// Composed mathematical primitives and sampled child scenes.
+    Scene,
 }
 /// Held portable mathematical request; the renderer never interprets these source expressions.
 #[derive(Clone, Debug, Serialize, Deserialize, TS)]
@@ -85,4 +87,22 @@ pub struct Scene3DData {
     pub skipped: u32,
     /// True: finite sampling is not an exact/complete surface certificate.
     pub sampled: bool,
+    /// Real text at mathematical positions, not a remote image or HTML instruction.
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    #[ts(optional, as = "Option<Vec<SceneLabel>>")]
+    pub labels: Vec<SceneLabel>,
+}
+
+/// Real mathematical label in original coordinates.
+#[derive(Clone, Debug, Serialize, Deserialize, TS)]
+#[ts(export_to=concat!(env!("CARGO_MANIFEST_DIR"),"/../../app/src/kernel/generated/"))]
+pub struct SceneLabel {
+    /// Exact sampled label position in the world frame.
+    pub position: [f64; 3],
+    /// Plain Unicode text, never executed as source or markup.
+    pub text: String,
+    /// Actual fixed RGBA.
+    pub color: [f64; 4],
+    /// Display-only pixel offset from the mathematical anchor.
+    pub offset: (f64, f64),
 }

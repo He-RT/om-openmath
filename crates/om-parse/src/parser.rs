@@ -13,6 +13,18 @@ pub fn detect_dialect(src: &str) -> Dialect {
         return dialect;
     }
     let out = lex(src, Dialect::Modern);
+    // Explicit modern composition wins over the ambiguous f[index] heuristic.
+    // Otherwise let/lambda programs containing p[1] are misclassified as Wolfram.
+    if out.tokens.iter().enumerate().any(|(i, t)| {
+        matches!(t.kind, K::Pipe | K::LambdaArrow | K::Interval)
+            || t.kind == K::Let
+                && out
+                    .tokens
+                    .get(i + 1)
+                    .is_some_and(|next| next.kind == K::Identifier)
+    }) {
+        return Dialect::Modern;
+    }
     let mut evidence = 0u8;
     for (i, token) in out.tokens.iter().enumerate() {
         match token.kind {
@@ -67,6 +79,14 @@ pub fn parse(src: &str, dialect: Dialect) -> ParseOutput {
 
 /// Parse with session function names and the configured constant interpretation.
 pub fn parse_with(src: &str, dialect: Dialect, env: &ParseEnv) -> ParseOutput {
+    parse_mode(src, dialect, env, false)
+}
+fn parse_mode(
+    src: &str,
+    dialect: Dialect,
+    env: &ParseEnv,
+    serialized_symbols: bool,
+) -> ParseOutput {
     if u32::try_from(src.len()).is_err() {
         let dialect = if dialect == Dialect::Auto {
             Dialect::Modern
@@ -86,7 +106,11 @@ pub fn parse_with(src: &str, dialect: Dialect, env: &ParseEnv) -> ParseOutput {
         dialect
     };
     let offset = marker(src).map_or(0, |(_, offset)| offset);
-    let mut out = lex(&src[offset..], dialect);
+    let mut out = if serialized_symbols {
+        crate::lexer::lex_input_form(&src[offset..])
+    } else {
+        lex(&src[offset..], dialect)
+    };
     for token in &mut out.tokens {
         token.span.start += offset as u32;
         token.span.end += offset as u32;
@@ -172,7 +196,17 @@ pub fn parse_with(src: &str, dialect: Dialect, env: &ParseEnv) -> ParseOutput {
 
 /// Parse exactly one statement, accepting hints but rejecting all errors.
 pub fn parse_expr(src: &str, dialect: Dialect) -> Result<Expr, Vec<Diagnostic>> {
-    let mut out = parse(src, dialect);
+    single_expression(src, parse(src, dialect))
+}
+/// Read a formatter-produced expression without interpreting modern underscores as WL patterns.
+/// This is a serialization reader, not a source dialect; ordinary Wolfram parsing is unchanged.
+pub fn parse_input_form(src: &str) -> Result<Expr, Vec<Diagnostic>> {
+    single_expression(
+        src,
+        parse_mode(src, Dialect::Wolfram, &ParseEnv::default(), true),
+    )
+}
+fn single_expression(src: &str, mut out: ParseOutput) -> Result<Expr, Vec<Diagnostic>> {
     if out.statements.len() != 1 {
         out.diagnostics.push(Diagnostic {
             span: Span {

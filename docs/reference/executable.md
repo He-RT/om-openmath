@@ -4,7 +4,7 @@
 
 [全景目录](README.md) · [下一版账本](../plan/NEXT_RELEASE.md)
 
-描述版本 24；下列均有真实回调。现代组合语法及已有回调的 mode/output 已接通，后续数学能力仍须按 R3.3–R3.6 交付。参数类型约束用于字面输入；符号与表达式在真实回调求值后检查。默认表达式仅描述省略行为，不自动插入参数；上下文默认值不伪装成字面值。副作用标签只描述入口，不能授权嵌套函数或替代只读隔离。
+描述版本 26；下列均有真实回调。现代组合语法及已有回调的 mode/output 已接通，后续数学能力仍须按 R3.3–R3.6 交付。参数类型约束用于字面输入；符号与表达式在真实回调求值后检查。默认表达式仅描述省略行为，不自动插入参数；上下文默认值不伪装成字面值。副作用标签只描述入口，不能授权嵌套函数或替代只读隔离。
 
 ## abs
 
@@ -3181,4 +3181,290 @@
 | `color` | 命名 | expression | 否 | 绿色；固定颜色名/#RRGGBB或只读fn(position,...axes) |  |
 
 数学边界与精度：[所属条目](plots.md#implicit_plot)。
+
+## scene
+
+稳定身份 `fn_000226`；回调 `Scene`；归属 `scene`。兼容拼写：无其他现代拼写。
+
+保持属性：hold_all, protected；管道输入位置：1；入口副作用：`pure`。
+
+| 参数 | 角色 | 类型 | 必填 | 默认值或上下文 | 枚举 / 范围 |
+|---|---|---|---|---|---|
+| `nodes` | 位置 | expression | 是 | 必填 |  |
+| `color` | 命名 | expression | 否 | 从scene继承；point/line默认blue，面默认green，支持readonly fn(position) |  |
+| `opacity` | 命名 | real | 否 | 1 | ; ≥0; ≤1 |
+| `dimensions` | 命名 | integer | 否 | 2 | ; ≥2; ≤3 |
+| `mesh_points` | 命名 | integer | 否 | 32 | ; ≥8; ≤64 |
+
+数学边界与精度：[所属条目](scene.md#scene)。
+
+## point
+
+稳定身份 `fn_000227`；回调 `Point`；归属 `point`。兼容拼写：无其他现代拼写。
+
+保持属性：hold_all, protected；管道输入位置：0；入口副作用：`pure`。
+
+| 参数 | 角色 | 类型 | 必填 | 默认值或上下文 | 枚举 / 范围 |
+|---|---|---|---|---|---|
+| `position` | 位置 | expression | 是 | 必填 |  |
+| `color` | 命名 | expression | 否 | 从scene继承；point/line默认blue，面默认green，支持readonly fn(position) |  |
+| `opacity` | 命名 | real | 否 | 1 | ; ≥0; ≤1 |
+| `width` | 命名 | real | 否 | 2 | ; ≥0; ≤32 |
+
+数学边界与精度：[所属条目](scene.md#point)。
+
+## line
+
+稳定身份 `fn_000228`；回调 `Line`；归属 `line`。兼容拼写：无其他现代拼写。
+
+保持属性：hold_all, protected；管道输入位置：0；入口副作用：`pure`。
+
+| 参数 | 角色 | 类型 | 必填 | 默认值或上下文 | 枚举 / 范围 |
+|---|---|---|---|---|---|
+| `points` | 位置 | expression | 是 | 必填 |  |
+| `color` | 命名 | expression | 否 | 从scene继承；point/line默认blue，面默认green，支持readonly fn(position) |  |
+| `opacity` | 命名 | real | 否 | 1 | ; ≥0; ≤1 |
+| `width` | 命名 | real | 否 | 2 | ; ≥0; ≤32 |
+
+数学边界与精度：[所属条目](scene.md#line)。
+
+## arrow
+
+稳定身份 `fn_000229`；回调 `Arrow`；归属 `arrow`。兼容拼写：无其他现代拼写。
+
+保持属性：hold_all, protected；管道输入位置：0；入口副作用：`pure`。
+
+| 参数 | 角色 | 类型 | 必填 | 默认值或上下文 | 枚举 / 范围 |
+|---|---|---|---|---|---|
+| `start` | 位置 | expression | 是 | 必填 |  |
+| `end` | 位置 | expression | 是 | 必填 |  |
+| `color` | 命名 | expression | 否 | 从scene继承；point/line默认blue，面默认green，支持readonly fn(position) |  |
+| `opacity` | 命名 | real | 否 | 1 | ; ≥0; ≤1 |
+| `width` | 命名 | real | 否 | 2 | ; ≥0; ≤32 |
+
+数学边界与精度：[所属条目](scene.md#arrow)。
+
+## circle
+
+稳定身份 `fn_000230`；回调 `Circle`；归属 `circle`。兼容拼写：无其他现代拼写。
+
+保持属性：hold_all, protected；管道输入位置：0；入口副作用：`pure`。
+
+| 参数 | 角色 | 类型 | 必填 | 默认值或上下文 | 枚举 / 范围 |
+|---|---|---|---|---|---|
+| `center` | 位置 | expression | 是 | 必填 |  |
+| `radius` | 位置 | expression | 是 | 必填 |  |
+| `color` | 命名 | expression | 否 | 从scene继承；point/line默认blue，面默认green，支持readonly fn(position) |  |
+| `opacity` | 命名 | real | 否 | 1 | ; ≥0; ≤1 |
+| `width` | 命名 | real | 否 | 2 | ; ≥0; ≤32 |
+| `normal` | 命名 | expression | 否 | 默认{0,0,1}；二维必须垂直XY |  |
+
+数学边界与精度：[所属条目](scene.md#circle)。
+
+## disk
+
+稳定身份 `fn_000231`；回调 `Disk`；归属 `disk`。兼容拼写：无其他现代拼写。
+
+保持属性：hold_all, protected；管道输入位置：0；入口副作用：`pure`。
+
+| 参数 | 角色 | 类型 | 必填 | 默认值或上下文 | 枚举 / 范围 |
+|---|---|---|---|---|---|
+| `center` | 位置 | expression | 是 | 必填 |  |
+| `radius` | 位置 | expression | 是 | 必填 |  |
+| `color` | 命名 | expression | 否 | 从scene继承；point/line默认blue，面默认green，支持readonly fn(position) |  |
+| `opacity` | 命名 | real | 否 | 1 | ; ≥0; ≤1 |
+| `normal` | 命名 | expression | 否 | 默认{0,0,1}；二维必须垂直XY |  |
+
+数学边界与精度：[所属条目](scene.md#disk)。
+
+## polygon
+
+稳定身份 `fn_000232`；回调 `Polygon`；归属 `polygon`。兼容拼写：无其他现代拼写。
+
+保持属性：hold_all, protected；管道输入位置：0；入口副作用：`pure`。
+
+| 参数 | 角色 | 类型 | 必填 | 默认值或上下文 | 枚举 / 范围 |
+|---|---|---|---|---|---|
+| `vertices` | 位置 | expression | 是 | 必填 |  |
+| `color` | 命名 | expression | 否 | 从scene继承；point/line默认blue，面默认green，支持readonly fn(position) |  |
+| `opacity` | 命名 | real | 否 | 1 | ; ≥0; ≤1 |
+
+数学边界与精度：[所属条目](scene.md#polygon)。
+
+## sphere
+
+稳定身份 `fn_000233`；回调 `Sphere`；归属 `sphere`。兼容拼写：无其他现代拼写。
+
+保持属性：hold_all, protected；管道输入位置：0；入口副作用：`pure`。
+
+| 参数 | 角色 | 类型 | 必填 | 默认值或上下文 | 枚举 / 范围 |
+|---|---|---|---|---|---|
+| `center` | 位置 | expression | 是 | 必填 |  |
+| `radius` | 位置 | expression | 是 | 必填 |  |
+| `color` | 命名 | expression | 否 | 从scene继承；point/line默认blue，面默认green，支持readonly fn(position) |  |
+| `opacity` | 命名 | real | 否 | 1 | ; ≥0; ≤1 |
+
+数学边界与精度：[所属条目](scene.md#sphere)。
+
+## ellipsoid
+
+稳定身份 `fn_000234`；回调 `Ellipsoid`；归属 `ellipsoid`。兼容拼写：无其他现代拼写。
+
+保持属性：hold_all, protected；管道输入位置：0；入口副作用：`pure`。
+
+| 参数 | 角色 | 类型 | 必填 | 默认值或上下文 | 枚举 / 范围 |
+|---|---|---|---|---|---|
+| `center` | 位置 | expression | 是 | 必填 |  |
+| `radii` | 位置 | expression | 是 | 必填 |  |
+| `color` | 命名 | expression | 否 | 从scene继承；point/line默认blue，面默认green，支持readonly fn(position) |  |
+| `opacity` | 命名 | real | 否 | 1 | ; ≥0; ≤1 |
+
+数学边界与精度：[所属条目](scene.md#ellipsoid)。
+
+## box
+
+稳定身份 `fn_000235`；回调 `Box`；归属 `box`。兼容拼写：无其他现代拼写。
+
+保持属性：hold_all, protected；管道输入位置：0；入口副作用：`pure`。
+
+| 参数 | 角色 | 类型 | 必填 | 默认值或上下文 | 枚举 / 范围 |
+|---|---|---|---|---|---|
+| `min` | 位置 | expression | 是 | 必填 |  |
+| `max` | 位置 | expression | 是 | 必填 |  |
+| `color` | 命名 | expression | 否 | 从scene继承；point/line默认blue，面默认green，支持readonly fn(position) |  |
+| `opacity` | 命名 | real | 否 | 1 | ; ≥0; ≤1 |
+
+数学边界与精度：[所属条目](scene.md#box)。
+
+## cylinder
+
+稳定身份 `fn_000236`；回调 `Cylinder`；归属 `cylinder`。兼容拼写：无其他现代拼写。
+
+保持属性：hold_all, protected；管道输入位置：0；入口副作用：`pure`。
+
+| 参数 | 角色 | 类型 | 必填 | 默认值或上下文 | 枚举 / 范围 |
+|---|---|---|---|---|---|
+| `start` | 位置 | expression | 是 | 必填 |  |
+| `end` | 位置 | expression | 是 | 必填 |  |
+| `radius` | 位置 | expression | 是 | 必填 |  |
+| `color` | 命名 | expression | 否 | 从scene继承；point/line默认blue，面默认green，支持readonly fn(position) |  |
+| `opacity` | 命名 | real | 否 | 1 | ; ≥0; ≤1 |
+
+数学边界与精度：[所属条目](scene.md#cylinder)。
+
+## cone
+
+稳定身份 `fn_000237`；回调 `Cone`；归属 `cone`。兼容拼写：无其他现代拼写。
+
+保持属性：hold_all, protected；管道输入位置：0；入口副作用：`pure`。
+
+| 参数 | 角色 | 类型 | 必填 | 默认值或上下文 | 枚举 / 范围 |
+|---|---|---|---|---|---|
+| `start` | 位置 | expression | 是 | 必填 |  |
+| `end` | 位置 | expression | 是 | 必填 |  |
+| `radius` | 位置 | expression | 是 | 必填 |  |
+| `color` | 命名 | expression | 否 | 从scene继承；point/line默认blue，面默认green，支持readonly fn(position) |  |
+| `opacity` | 命名 | real | 否 | 1 | ; ≥0; ≤1 |
+
+数学边界与精度：[所属条目](scene.md#cone)。
+
+## tube
+
+稳定身份 `fn_000238`；回调 `Tube`；归属 `tube`。兼容拼写：无其他现代拼写。
+
+保持属性：hold_all, protected；管道输入位置：0；入口副作用：`pure`。
+
+| 参数 | 角色 | 类型 | 必填 | 默认值或上下文 | 枚举 / 范围 |
+|---|---|---|---|---|---|
+| `path` | 位置 | expression | 是 | 必填 |  |
+| `radius` | 位置 | expression | 是 | 必填 |  |
+| `color` | 命名 | expression | 否 | 从scene继承；point/line默认blue，面默认green，支持readonly fn(position) |  |
+| `opacity` | 命名 | real | 否 | 1 | ; ≥0; ≤1 |
+
+数学边界与精度：[所属条目](scene.md#tube)。
+
+## label
+
+稳定身份 `fn_000239`；回调 `Label`；归属 `label`。兼容拼写：无其他现代拼写。
+
+保持属性：hold_all, protected；管道输入位置：0；入口副作用：`pure`。
+
+| 参数 | 角色 | 类型 | 必填 | 默认值或上下文 | 枚举 / 范围 |
+|---|---|---|---|---|---|
+| `text` | 位置 | expression | 是 | 必填 |  |
+| `position` | 位置 | expression | 是 | 必填 |  |
+| `color` | 命名 | expression | 否 | 从scene继承；point/line默认blue，面默认green，支持readonly fn(position) |  |
+| `opacity` | 命名 | real | 否 | 1 | ; ≥0; ≤1 |
+| `offset` | 命名 | expression | 否 | {8,-10} |  |
+
+数学边界与精度：[所属条目](scene.md#label)。
+
+## translate
+
+稳定身份 `fn_000240`；回调 `Translate`；归属 `translate`。兼容拼写：无其他现代拼写。
+
+保持属性：hold_all, protected；管道输入位置：1；入口副作用：`pure`。
+
+| 参数 | 角色 | 类型 | 必填 | 默认值或上下文 | 枚举 / 范围 |
+|---|---|---|---|---|---|
+| `node` | 位置 | expression | 是 | 必填 |  |
+| `vector` | 位置 | expression | 是 | 必填 |  |
+
+数学边界与精度：[所属条目](scene.md#translate)。
+
+## rotate
+
+稳定身份 `fn_000241`；回调 `Rotate`；归属 `rotate`。兼容拼写：无其他现代拼写。
+
+保持属性：hold_all, protected；管道输入位置：1；入口副作用：`pure`。
+
+| 参数 | 角色 | 类型 | 必填 | 默认值或上下文 | 枚举 / 范围 |
+|---|---|---|---|---|---|
+| `node` | 位置 | expression | 是 | 必填 |  |
+| `angle` | 位置 | expression | 是 | 必填 |  |
+| `center` | 命名 | expression | 否 | 当前scene维数的原点 |  |
+| `axis` | 命名 | expression | 否 | 三维默认{0,0,1}；二维不接受axis |  |
+
+数学边界与精度：[所属条目](scene.md#rotate)。
+
+## scale
+
+稳定身份 `fn_000242`；回调 `Scale`；归属 `scale`。兼容拼写：无其他现代拼写。
+
+保持属性：hold_all, protected；管道输入位置：1；入口副作用：`pure`。
+
+| 参数 | 角色 | 类型 | 必填 | 默认值或上下文 | 枚举 / 范围 |
+|---|---|---|---|---|---|
+| `node` | 位置 | expression | 是 | 必填 |  |
+| `factors` | 位置 | expression | 是 | 必填 |  |
+| `center` | 命名 | expression | 否 | 当前scene维数的原点 |  |
+
+数学边界与精度：[所属条目](scene.md#scale)。
+
+## style
+
+稳定身份 `fn_000243`；回调 `Style`；归属 `style`。兼容拼写：无其他现代拼写。
+
+保持属性：hold_all, protected；管道输入位置：1；入口副作用：`pure`。
+
+| 参数 | 角色 | 类型 | 必填 | 默认值或上下文 | 枚举 / 范围 |
+|---|---|---|---|---|---|
+| `node` | 位置 | expression | 是 | 必填 |  |
+| `color` | 命名 | expression | 否 | 继承父scene；颜色名/#RRGGBB/RGB/RGBA或只读fn(position) |  |
+| `opacity` | 命名 | real | 否 | 1 | ; ≥0; ≤1 |
+
+数学边界与精度：[所属条目](scene.md#style)。
+
+## blend
+
+稳定身份 `fn_000244`；回调 `Blend`；归属 `blend`。兼容拼写：无其他现代拼写。
+
+保持属性：protected；管道输入位置：0；入口副作用：`pure`。
+
+| 参数 | 角色 | 类型 | 必填 | 默认值或上下文 | 枚举 / 范围 |
+|---|---|---|---|---|---|
+| `colors` | 位置 | expression | 是 | 必填 |  |
+| `weight` | 位置 | real | 是 | 必填 | ; ≥0; ≤1 |
+
+数学边界与精度：[所属条目](scene.md#blend)。
 

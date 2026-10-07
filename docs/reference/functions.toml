@@ -1,6 +1,6 @@
 # 实际注册审计基线：ba3cd2b；稳定身份与名称分离；目录/副作用为设计数据。
 schema_version = 1
-metadata_version = 24
+metadata_version = 26
 validation_stage = "runtime_verified"
 current_version = "0.1.0-pre-alpha.2"
 target_version = "0.1.0-pre-alpha.3"
@@ -7307,608 +7307,608 @@ effect_class = "pure"
 id = "fn_000226"
 name = "scene"
 category = "scene"
-status = "planned"
-interface_status = "planned"
-runtime_names = []
-compatibility_names = []
-current_modern_signatures = []
-current_wolfram_signatures = []
+status = "partial"
+interface_status = "current"
+runtime_names = ["Scene"]
+compatibility_names = ["Scene"]
+current_modern_signatures = ["scene(nodes,dimensions:2)"]
+current_wolfram_signatures = ["Scene[nodes,Dimensions->2]"]
 signatures = ["scene(nodes, dimensions: 2)"]
-parameters = [{ name = "nodes", kind = "positional", default = "必填", description = "签名对应的nodes参数", availability = "r3" }, { name = "dimensions", kind = "option", default = "2", description = "2或3", availability = "r3" }]
+parameters = [{ name = "nodes", kind = "positional", default = "必填", description = "签名对应的nodes参数", availability = "current" }, { name = "dimensions", kind = "option", default = "2", description = "2或3", availability = "current" }]
 return_type = "scene_node_or_color"
 semantics = "组合场景"
-current_support = "当前无此规范接口的实现。"
+current_support = "真实只读场景图元/组合/仿射变换；坐标维数与scene dimensions一致，固定颜色或readonly颜色函数、有限opacity与明确资源边界。二维XY几何保留路径/多边形/marker/label并在桌面Web/iOS原生展示导出；三维Rust真实网格/世界法线/颜色和WebGL2/OBJ，iOS明确fallback不自动采样。曲面/圆曲线和圆管有限机器采样不认证边界；Polygon共面简单边界真实ear clipping，自交/非共面拒绝；Tube平行运输框架/端帽，不保证全局自交不存在。变换不写主变量，退化面可成为实际采样线/点。"
 target_support = "共享场景与内核几何数据；二维桌面/Web/iOS，三维WebGL2桌面/Web；无WebGL2或移动端3D明确提示并保留源式及OBJ导出，不制作假图。"
-precision_modes = ["planned_machine"]
-precision_notes = "几何/颜色数据机器采样；未承诺任意精度光栅。"
-current_platforms = []
+precision_modes = ["machine_geometry"]
+precision_notes = "机器几何/标签展示；源码保留精确数学意义，不宣称任意精度光栅或认证拓扑。"
+current_platforms = ["cli", "desktop", "web", "ios"]
 target_platforms = ["cli", "desktop", "web", "ios"]
 render_platforms = ["desktop", "web", "ios"]
-current_examples = []
+current_examples = ["Scene[{Point[{0,0}],Line[{{0,0},{1,1}}]}]"]
 planned_examples = ["scene([point([0,0]),line([[0,0],[1,1]])])"]
-sources = []
-tests = []
+sources = ["crates/om-eval/src/scene_registry.rs", "crates/om-kernel/src/scene_graph.rs"]
+tests = ["crates/om-kernel/tests/scene_graph.rs"]
 acceptance = "独立数学期望、有效/无效参数、边界、预算、中断及声明的平台/精度测试；范围外不伪造成功。"
 pipe_arg = 1
 target_version = "0.1.0-pre-alpha.3"
 kind = "function"
-validation_stage = "documentation_only"
+validation_stage = "runtime_verified"
 effect_class = "pure"
 
 [[functions]]
 id = "fn_000227"
 name = "point"
 category = "scene"
-status = "planned"
-interface_status = "planned"
-runtime_names = []
-compatibility_names = []
-current_modern_signatures = []
-current_wolfram_signatures = []
+status = "partial"
+interface_status = "current"
+runtime_names = ["Point"]
+compatibility_names = ["Point"]
+current_modern_signatures = ["point(position,color:\"blue\")"]
+current_wolfram_signatures = ["Point[position]"]
 signatures = ["point(position, color: \"blue\")"]
-parameters = [{ name = "position", kind = "positional", default = "必填", description = "坐标", availability = "r3" }, { name = "color", kind = "option", default = "\"blue\"", description = "颜色或只读颜色函数", availability = "r3" }]
+parameters = [{ name = "position", kind = "positional", default = "必填", description = "坐标", availability = "current" }, { name = "color", kind = "option", default = "\"blue\"", description = "颜色或只读颜色函数", availability = "current" }]
 return_type = "scene_node_or_color"
 semantics = "位置标记"
-current_support = "当前无此规范接口的实现。"
+current_support = "真实只读场景图元/组合/仿射变换；坐标维数与scene dimensions一致，固定颜色或readonly颜色函数、有限opacity与明确资源边界。二维XY几何保留路径/多边形/marker/label并在桌面Web/iOS原生展示导出；三维Rust真实网格/世界法线/颜色和WebGL2/OBJ，iOS明确fallback不自动采样。曲面/圆曲线和圆管有限机器采样不认证边界；Polygon共面简单边界真实ear clipping，自交/非共面拒绝；Tube平行运输框架/端帽，不保证全局自交不存在。变换不写主变量，退化面可成为实际采样线/点。"
 target_support = "共享场景与内核几何数据；二维桌面/Web/iOS，三维WebGL2桌面/Web；无WebGL2或移动端3D明确提示并保留源式及OBJ导出，不制作假图。"
-precision_modes = ["planned_machine"]
-precision_notes = "几何/颜色数据机器采样；未承诺任意精度光栅。"
-current_platforms = []
+precision_modes = ["machine_geometry"]
+precision_notes = "机器几何/标签展示；源码保留精确数学意义，不宣称任意精度光栅或认证拓扑。"
+current_platforms = ["cli", "desktop", "web", "ios"]
 target_platforms = ["cli", "desktop", "web", "ios"]
 render_platforms = ["desktop", "web", "ios"]
-current_examples = []
+current_examples = ["Point[{0,0}]"]
 planned_examples = ["point([0,0],color: \"blue\")"]
-sources = []
-tests = []
+sources = ["crates/om-eval/src/scene_registry.rs", "crates/om-kernel/src/scene_graph.rs"]
+tests = ["crates/om-kernel/tests/scene_graph.rs"]
 acceptance = "独立数学期望、有效/无效参数、边界、预算、中断及声明的平台/精度测试；范围外不伪造成功。"
 pipe_arg = 0
 target_version = "0.1.0-pre-alpha.3"
 kind = "function"
-validation_stage = "documentation_only"
+validation_stage = "runtime_verified"
 effect_class = "pure"
 
 [[functions]]
 id = "fn_000228"
 name = "line"
 category = "scene"
-status = "planned"
-interface_status = "planned"
-runtime_names = []
-compatibility_names = []
-current_modern_signatures = []
-current_wolfram_signatures = []
+status = "partial"
+interface_status = "current"
+runtime_names = ["Line"]
+compatibility_names = ["Line"]
+current_modern_signatures = ["line(points,color:\"blue\")"]
+current_wolfram_signatures = ["Line[points]"]
 signatures = ["line(points, color: \"blue\")"]
-parameters = [{ name = "points", kind = "positional", default = "必填", description = "有序坐标列表", availability = "r3" }, { name = "color", kind = "option", default = "\"blue\"", description = "颜色或只读颜色函数", availability = "r3" }]
+parameters = [{ name = "points", kind = "positional", default = "必填", description = "有序坐标列表", availability = "current" }, { name = "color", kind = "option", default = "\"blue\"", description = "颜色或只读颜色函数", availability = "current" }]
 return_type = "scene_node_or_color"
 semantics = "折线"
-current_support = "当前无此规范接口的实现。"
+current_support = "真实只读场景图元/组合/仿射变换；坐标维数与scene dimensions一致，固定颜色或readonly颜色函数、有限opacity与明确资源边界。二维XY几何保留路径/多边形/marker/label并在桌面Web/iOS原生展示导出；三维Rust真实网格/世界法线/颜色和WebGL2/OBJ，iOS明确fallback不自动采样。曲面/圆曲线和圆管有限机器采样不认证边界；Polygon共面简单边界真实ear clipping，自交/非共面拒绝；Tube平行运输框架/端帽，不保证全局自交不存在。变换不写主变量，退化面可成为实际采样线/点。"
 target_support = "共享场景与内核几何数据；二维桌面/Web/iOS，三维WebGL2桌面/Web；无WebGL2或移动端3D明确提示并保留源式及OBJ导出，不制作假图。"
-precision_modes = ["planned_machine"]
-precision_notes = "几何/颜色数据机器采样；未承诺任意精度光栅。"
-current_platforms = []
+precision_modes = ["machine_geometry"]
+precision_notes = "机器几何/标签展示；源码保留精确数学意义，不宣称任意精度光栅或认证拓扑。"
+current_platforms = ["cli", "desktop", "web", "ios"]
 target_platforms = ["cli", "desktop", "web", "ios"]
 render_platforms = ["desktop", "web", "ios"]
-current_examples = []
+current_examples = ["Line[{{0,0},{1,1}}]"]
 planned_examples = ["line([[0,0],[1,1]])"]
-sources = []
-tests = []
+sources = ["crates/om-eval/src/scene_registry.rs", "crates/om-kernel/src/scene_graph.rs"]
+tests = ["crates/om-kernel/tests/scene_graph.rs"]
 acceptance = "独立数学期望、有效/无效参数、边界、预算、中断及声明的平台/精度测试；范围外不伪造成功。"
 pipe_arg = 0
 target_version = "0.1.0-pre-alpha.3"
 kind = "function"
-validation_stage = "documentation_only"
+validation_stage = "runtime_verified"
 effect_class = "pure"
 
 [[functions]]
 id = "fn_000229"
 name = "arrow"
 category = "scene"
-status = "planned"
-interface_status = "planned"
-runtime_names = []
-compatibility_names = []
-current_modern_signatures = []
-current_wolfram_signatures = []
+status = "partial"
+interface_status = "current"
+runtime_names = ["Arrow"]
+compatibility_names = ["Arrow"]
+current_modern_signatures = ["arrow(start,end)"]
+current_wolfram_signatures = ["Arrow[start,end]"]
 signatures = ["arrow(start, end)"]
-parameters = [{ name = "start", kind = "positional", default = "必填", description = "签名对应的start参数", availability = "r3" }, { name = "end", kind = "positional", default = "必填", description = "签名对应的end参数", availability = "r3" }]
+parameters = [{ name = "start", kind = "positional", default = "必填", description = "签名对应的start参数", availability = "current" }, { name = "end", kind = "positional", default = "必填", description = "签名对应的end参数", availability = "current" }]
 return_type = "scene_node_or_color"
 semantics = "方向箭头"
-current_support = "当前无此规范接口的实现。"
+current_support = "真实只读场景图元/组合/仿射变换；坐标维数与scene dimensions一致，固定颜色或readonly颜色函数、有限opacity与明确资源边界。二维XY几何保留路径/多边形/marker/label并在桌面Web/iOS原生展示导出；三维Rust真实网格/世界法线/颜色和WebGL2/OBJ，iOS明确fallback不自动采样。曲面/圆曲线和圆管有限机器采样不认证边界；Polygon共面简单边界真实ear clipping，自交/非共面拒绝；Tube平行运输框架/端帽，不保证全局自交不存在。变换不写主变量，退化面可成为实际采样线/点。"
 target_support = "共享场景与内核几何数据；二维桌面/Web/iOS，三维WebGL2桌面/Web；无WebGL2或移动端3D明确提示并保留源式及OBJ导出，不制作假图。"
-precision_modes = ["planned_machine"]
-precision_notes = "几何/颜色数据机器采样；未承诺任意精度光栅。"
-current_platforms = []
+precision_modes = ["machine_geometry"]
+precision_notes = "机器几何/标签展示；源码保留精确数学意义，不宣称任意精度光栅或认证拓扑。"
+current_platforms = ["cli", "desktop", "web", "ios"]
 target_platforms = ["cli", "desktop", "web", "ios"]
 render_platforms = ["desktop", "web", "ios"]
-current_examples = []
+current_examples = ["Arrow[{0,0},{1,1}]"]
 planned_examples = ["arrow([0,0],[1,1])"]
-sources = []
-tests = []
+sources = ["crates/om-eval/src/scene_registry.rs", "crates/om-kernel/src/scene_graph.rs"]
+tests = ["crates/om-kernel/tests/scene_graph.rs"]
 acceptance = "独立数学期望、有效/无效参数、边界、预算、中断及声明的平台/精度测试；范围外不伪造成功。"
 pipe_arg = 0
 target_version = "0.1.0-pre-alpha.3"
 kind = "function"
-validation_stage = "documentation_only"
+validation_stage = "runtime_verified"
 effect_class = "pure"
 
 [[functions]]
 id = "fn_000230"
 name = "circle"
 category = "scene"
-status = "planned"
-interface_status = "planned"
-runtime_names = []
-compatibility_names = []
-current_modern_signatures = []
-current_wolfram_signatures = []
+status = "partial"
+interface_status = "current"
+runtime_names = ["Circle"]
+compatibility_names = ["Circle"]
+current_modern_signatures = ["circle(center,radius)"]
+current_wolfram_signatures = ["Circle[center,radius]"]
 signatures = ["circle(center, radius)"]
-parameters = [{ name = "center", kind = "positional", default = "必填", description = "中心坐标", availability = "r3" }, { name = "radius", kind = "positional", default = "必填", description = "正半径", availability = "r3" }]
+parameters = [{ name = "center", kind = "positional", default = "必填", description = "中心坐标", availability = "current" }, { name = "radius", kind = "positional", default = "必填", description = "正半径", availability = "current" }]
 return_type = "scene_node_or_color"
 semantics = "二维圆周"
-current_support = "当前无此规范接口的实现。"
+current_support = "真实只读场景图元/组合/仿射变换；坐标维数与scene dimensions一致，固定颜色或readonly颜色函数、有限opacity与明确资源边界。二维XY几何保留路径/多边形/marker/label并在桌面Web/iOS原生展示导出；三维Rust真实网格/世界法线/颜色和WebGL2/OBJ，iOS明确fallback不自动采样。曲面/圆曲线和圆管有限机器采样不认证边界；Polygon共面简单边界真实ear clipping，自交/非共面拒绝；Tube平行运输框架/端帽，不保证全局自交不存在。变换不写主变量，退化面可成为实际采样线/点。"
 target_support = "共享场景与内核几何数据；二维桌面/Web/iOS，三维WebGL2桌面/Web；无WebGL2或移动端3D明确提示并保留源式及OBJ导出，不制作假图。"
-precision_modes = ["planned_machine"]
-precision_notes = "几何/颜色数据机器采样；未承诺任意精度光栅。"
-current_platforms = []
+precision_modes = ["machine_geometry"]
+precision_notes = "机器几何/标签展示；源码保留精确数学意义，不宣称任意精度光栅或认证拓扑。"
+current_platforms = ["cli", "desktop", "web", "ios"]
 target_platforms = ["cli", "desktop", "web", "ios"]
 render_platforms = ["desktop", "web", "ios"]
-current_examples = []
+current_examples = ["Circle[{0,0},1]"]
 planned_examples = ["circle([0,0],1)"]
-sources = []
-tests = []
+sources = ["crates/om-eval/src/scene_registry.rs", "crates/om-kernel/src/scene_graph.rs"]
+tests = ["crates/om-kernel/tests/scene_graph.rs"]
 acceptance = "独立数学期望、有效/无效参数、边界、预算、中断及声明的平台/精度测试；范围外不伪造成功。"
 pipe_arg = 0
 target_version = "0.1.0-pre-alpha.3"
 kind = "function"
-validation_stage = "documentation_only"
+validation_stage = "runtime_verified"
 effect_class = "pure"
 
 [[functions]]
 id = "fn_000231"
 name = "disk"
 category = "scene"
-status = "planned"
-interface_status = "planned"
-runtime_names = []
-compatibility_names = []
-current_modern_signatures = []
-current_wolfram_signatures = []
+status = "partial"
+interface_status = "current"
+runtime_names = ["Disk"]
+compatibility_names = ["Disk"]
+current_modern_signatures = ["disk(center,radius)"]
+current_wolfram_signatures = ["Disk[center,radius]"]
 signatures = ["disk(center, radius)"]
-parameters = [{ name = "center", kind = "positional", default = "必填", description = "中心坐标", availability = "r3" }, { name = "radius", kind = "positional", default = "必填", description = "正半径", availability = "r3" }]
+parameters = [{ name = "center", kind = "positional", default = "必填", description = "中心坐标", availability = "current" }, { name = "radius", kind = "positional", default = "必填", description = "正半径", availability = "current" }]
 return_type = "scene_node_or_color"
 semantics = "二维圆盘"
-current_support = "当前无此规范接口的实现。"
+current_support = "真实只读场景图元/组合/仿射变换；坐标维数与scene dimensions一致，固定颜色或readonly颜色函数、有限opacity与明确资源边界。二维XY几何保留路径/多边形/marker/label并在桌面Web/iOS原生展示导出；三维Rust真实网格/世界法线/颜色和WebGL2/OBJ，iOS明确fallback不自动采样。曲面/圆曲线和圆管有限机器采样不认证边界；Polygon共面简单边界真实ear clipping，自交/非共面拒绝；Tube平行运输框架/端帽，不保证全局自交不存在。变换不写主变量，退化面可成为实际采样线/点。"
 target_support = "共享场景与内核几何数据；二维桌面/Web/iOS，三维WebGL2桌面/Web；无WebGL2或移动端3D明确提示并保留源式及OBJ导出，不制作假图。"
-precision_modes = ["planned_machine"]
-precision_notes = "几何/颜色数据机器采样；未承诺任意精度光栅。"
-current_platforms = []
+precision_modes = ["machine_geometry"]
+precision_notes = "机器几何/标签展示；源码保留精确数学意义，不宣称任意精度光栅或认证拓扑。"
+current_platforms = ["cli", "desktop", "web", "ios"]
 target_platforms = ["cli", "desktop", "web", "ios"]
 render_platforms = ["desktop", "web", "ios"]
-current_examples = []
+current_examples = ["Disk[{0,0},1]"]
 planned_examples = ["disk([0,0],1)"]
-sources = []
-tests = []
+sources = ["crates/om-eval/src/scene_registry.rs", "crates/om-kernel/src/scene_graph.rs"]
+tests = ["crates/om-kernel/tests/scene_graph.rs"]
 acceptance = "独立数学期望、有效/无效参数、边界、预算、中断及声明的平台/精度测试；范围外不伪造成功。"
 pipe_arg = 0
 target_version = "0.1.0-pre-alpha.3"
 kind = "function"
-validation_stage = "documentation_only"
+validation_stage = "runtime_verified"
 effect_class = "pure"
 
 [[functions]]
 id = "fn_000232"
 name = "polygon"
 category = "scene"
-status = "planned"
-interface_status = "planned"
-runtime_names = []
-compatibility_names = []
-current_modern_signatures = []
-current_wolfram_signatures = []
+status = "partial"
+interface_status = "current"
+runtime_names = ["Polygon"]
+compatibility_names = ["Polygon"]
+current_modern_signatures = ["polygon(vertices)"]
+current_wolfram_signatures = ["Polygon[vertices]"]
 signatures = ["polygon(vertices)"]
-parameters = [{ name = "vertices", kind = "positional", default = "必填", description = "多边形顶点", availability = "r3" }]
+parameters = [{ name = "vertices", kind = "positional", default = "必填", description = "多边形顶点", availability = "current" }]
 return_type = "scene_node_or_color"
 semantics = "多边形"
-current_support = "当前无此规范接口的实现。"
+current_support = "真实只读场景图元/组合/仿射变换；坐标维数与scene dimensions一致，固定颜色或readonly颜色函数、有限opacity与明确资源边界。二维XY几何保留路径/多边形/marker/label并在桌面Web/iOS原生展示导出；三维Rust真实网格/世界法线/颜色和WebGL2/OBJ，iOS明确fallback不自动采样。曲面/圆曲线和圆管有限机器采样不认证边界；Polygon共面简单边界真实ear clipping，自交/非共面拒绝；Tube平行运输框架/端帽，不保证全局自交不存在。变换不写主变量，退化面可成为实际采样线/点。"
 target_support = "共享场景与内核几何数据；二维桌面/Web/iOS，三维WebGL2桌面/Web；无WebGL2或移动端3D明确提示并保留源式及OBJ导出，不制作假图。"
-precision_modes = ["planned_machine"]
-precision_notes = "几何/颜色数据机器采样；未承诺任意精度光栅。"
-current_platforms = []
+precision_modes = ["machine_geometry"]
+precision_notes = "机器几何/标签展示；源码保留精确数学意义，不宣称任意精度光栅或认证拓扑。"
+current_platforms = ["cli", "desktop", "web", "ios"]
 target_platforms = ["cli", "desktop", "web", "ios"]
 render_platforms = ["desktop", "web", "ios"]
-current_examples = []
+current_examples = ["Polygon[{{0,0},{1,0},{0,1}}]"]
 planned_examples = ["polygon([[0,0],[1,0],[0,1]])"]
-sources = []
-tests = []
+sources = ["crates/om-eval/src/scene_registry.rs", "crates/om-kernel/src/scene_graph.rs"]
+tests = ["crates/om-kernel/tests/scene_graph.rs"]
 acceptance = "独立数学期望、有效/无效参数、边界、预算、中断及声明的平台/精度测试；范围外不伪造成功。"
 pipe_arg = 0
 target_version = "0.1.0-pre-alpha.3"
 kind = "function"
-validation_stage = "documentation_only"
+validation_stage = "runtime_verified"
 effect_class = "pure"
 
 [[functions]]
 id = "fn_000233"
 name = "sphere"
 category = "scene"
-status = "planned"
-interface_status = "planned"
-runtime_names = []
-compatibility_names = []
-current_modern_signatures = []
-current_wolfram_signatures = []
+status = "partial"
+interface_status = "current"
+runtime_names = ["Sphere"]
+compatibility_names = ["Sphere"]
+current_modern_signatures = ["sphere(center,radius)"]
+current_wolfram_signatures = ["Sphere[center,radius]"]
 signatures = ["sphere(center, radius)"]
-parameters = [{ name = "center", kind = "positional", default = "必填", description = "中心坐标", availability = "r3" }, { name = "radius", kind = "positional", default = "必填", description = "正半径", availability = "r3" }]
+parameters = [{ name = "center", kind = "positional", default = "必填", description = "中心坐标", availability = "current" }, { name = "radius", kind = "positional", default = "必填", description = "正半径", availability = "current" }]
 return_type = "scene_node_or_color"
 semantics = "球面"
-current_support = "当前无此规范接口的实现。"
+current_support = "真实只读场景图元/组合/仿射变换；坐标维数与scene dimensions一致，固定颜色或readonly颜色函数、有限opacity与明确资源边界。二维XY几何保留路径/多边形/marker/label并在桌面Web/iOS原生展示导出；三维Rust真实网格/世界法线/颜色和WebGL2/OBJ，iOS明确fallback不自动采样。曲面/圆曲线和圆管有限机器采样不认证边界；Polygon共面简单边界真实ear clipping，自交/非共面拒绝；Tube平行运输框架/端帽，不保证全局自交不存在。变换不写主变量，退化面可成为实际采样线/点。"
 target_support = "共享场景与内核几何数据；二维桌面/Web/iOS，三维WebGL2桌面/Web；无WebGL2或移动端3D明确提示并保留源式及OBJ导出，不制作假图。"
-precision_modes = ["planned_machine"]
-precision_notes = "几何/颜色数据机器采样；未承诺任意精度光栅。"
-current_platforms = []
+precision_modes = ["machine_geometry"]
+precision_notes = "机器几何/标签展示；源码保留精确数学意义，不宣称任意精度光栅或认证拓扑。"
+current_platforms = ["cli", "desktop", "web", "ios"]
 target_platforms = ["cli", "desktop", "web", "ios"]
 render_platforms = ["desktop", "web"]
-current_examples = []
+current_examples = ["Sphere[{0,0,0},1]"]
 planned_examples = ["sphere([0,0,0],1)"]
-sources = []
-tests = []
+sources = ["crates/om-eval/src/scene_registry.rs", "crates/om-kernel/src/scene_graph.rs"]
+tests = ["crates/om-kernel/tests/scene_graph.rs"]
 acceptance = "独立数学期望、有效/无效参数、边界、预算、中断及声明的平台/精度测试；范围外不伪造成功。"
 pipe_arg = 0
 target_version = "0.1.0-pre-alpha.3"
 kind = "function"
-validation_stage = "documentation_only"
+validation_stage = "runtime_verified"
 effect_class = "pure"
 
 [[functions]]
 id = "fn_000234"
 name = "ellipsoid"
 category = "scene"
-status = "planned"
-interface_status = "planned"
-runtime_names = []
-compatibility_names = []
-current_modern_signatures = []
-current_wolfram_signatures = []
+status = "partial"
+interface_status = "current"
+runtime_names = ["Ellipsoid"]
+compatibility_names = ["Ellipsoid"]
+current_modern_signatures = ["ellipsoid(center,radii)"]
+current_wolfram_signatures = ["Ellipsoid[center,radii]"]
 signatures = ["ellipsoid(center, radii)"]
-parameters = [{ name = "center", kind = "positional", default = "必填", description = "中心坐标", availability = "r3" }, { name = "radii", kind = "positional", default = "必填", description = "正半轴向量", availability = "r3" }]
+parameters = [{ name = "center", kind = "positional", default = "必填", description = "中心坐标", availability = "current" }, { name = "radii", kind = "positional", default = "必填", description = "正半轴向量", availability = "current" }]
 return_type = "scene_node_or_color"
 semantics = "椭球面"
-current_support = "当前无此规范接口的实现。"
+current_support = "真实只读场景图元/组合/仿射变换；坐标维数与scene dimensions一致，固定颜色或readonly颜色函数、有限opacity与明确资源边界。二维XY几何保留路径/多边形/marker/label并在桌面Web/iOS原生展示导出；三维Rust真实网格/世界法线/颜色和WebGL2/OBJ，iOS明确fallback不自动采样。曲面/圆曲线和圆管有限机器采样不认证边界；Polygon共面简单边界真实ear clipping，自交/非共面拒绝；Tube平行运输框架/端帽，不保证全局自交不存在。变换不写主变量，退化面可成为实际采样线/点。"
 target_support = "共享场景与内核几何数据；二维桌面/Web/iOS，三维WebGL2桌面/Web；无WebGL2或移动端3D明确提示并保留源式及OBJ导出，不制作假图。"
-precision_modes = ["planned_machine"]
-precision_notes = "几何/颜色数据机器采样；未承诺任意精度光栅。"
-current_platforms = []
+precision_modes = ["machine_geometry"]
+precision_notes = "机器几何/标签展示；源码保留精确数学意义，不宣称任意精度光栅或认证拓扑。"
+current_platforms = ["cli", "desktop", "web", "ios"]
 target_platforms = ["cli", "desktop", "web", "ios"]
 render_platforms = ["desktop", "web"]
-current_examples = []
+current_examples = ["Ellipsoid[{0,0,0},{1,2,3}]"]
 planned_examples = ["ellipsoid([0,0,0],[1.35,1,1])"]
-sources = []
-tests = []
+sources = ["crates/om-eval/src/scene_registry.rs", "crates/om-kernel/src/scene_graph.rs"]
+tests = ["crates/om-kernel/tests/scene_graph.rs"]
 acceptance = "独立数学期望、有效/无效参数、边界、预算、中断及声明的平台/精度测试；范围外不伪造成功。"
 pipe_arg = 0
 target_version = "0.1.0-pre-alpha.3"
 kind = "function"
-validation_stage = "documentation_only"
+validation_stage = "runtime_verified"
 effect_class = "pure"
 
 [[functions]]
 id = "fn_000235"
 name = "box"
 category = "scene"
-status = "planned"
-interface_status = "planned"
-runtime_names = []
-compatibility_names = []
-current_modern_signatures = []
-current_wolfram_signatures = []
+status = "partial"
+interface_status = "current"
+runtime_names = ["Box"]
+compatibility_names = ["Box"]
+current_modern_signatures = ["box(min,max)"]
+current_wolfram_signatures = ["Box[min,max]"]
 signatures = ["box(min, max)"]
-parameters = [{ name = "min", kind = "positional", default = "必填", description = "签名对应的min参数", availability = "r3" }, { name = "max", kind = "positional", default = "必填", description = "签名对应的max参数", availability = "r3" }]
+parameters = [{ name = "min", kind = "positional", default = "必填", description = "签名对应的min参数", availability = "current" }, { name = "max", kind = "positional", default = "必填", description = "签名对应的max参数", availability = "current" }]
 return_type = "scene_node_or_color"
 semantics = "长方体"
-current_support = "当前无此规范接口的实现。"
+current_support = "真实只读场景图元/组合/仿射变换；坐标维数与scene dimensions一致，固定颜色或readonly颜色函数、有限opacity与明确资源边界。二维XY几何保留路径/多边形/marker/label并在桌面Web/iOS原生展示导出；三维Rust真实网格/世界法线/颜色和WebGL2/OBJ，iOS明确fallback不自动采样。曲面/圆曲线和圆管有限机器采样不认证边界；Polygon共面简单边界真实ear clipping，自交/非共面拒绝；Tube平行运输框架/端帽，不保证全局自交不存在。变换不写主变量，退化面可成为实际采样线/点。"
 target_support = "共享场景与内核几何数据；二维桌面/Web/iOS，三维WebGL2桌面/Web；无WebGL2或移动端3D明确提示并保留源式及OBJ导出，不制作假图。"
-precision_modes = ["planned_machine"]
-precision_notes = "几何/颜色数据机器采样；未承诺任意精度光栅。"
-current_platforms = []
+precision_modes = ["machine_geometry"]
+precision_notes = "机器几何/标签展示；源码保留精确数学意义，不宣称任意精度光栅或认证拓扑。"
+current_platforms = ["cli", "desktop", "web", "ios"]
 target_platforms = ["cli", "desktop", "web", "ios"]
-render_platforms = ["desktop", "web"]
-current_examples = []
+render_platforms = ["desktop", "web", "ios"]
+current_examples = ["Box[{-1,-1,-1},{1,1,1}]"]
 planned_examples = ["box([0,0,0],[1,1,1])"]
-sources = []
-tests = []
+sources = ["crates/om-eval/src/scene_registry.rs", "crates/om-kernel/src/scene_graph.rs"]
+tests = ["crates/om-kernel/tests/scene_graph.rs"]
 acceptance = "独立数学期望、有效/无效参数、边界、预算、中断及声明的平台/精度测试；范围外不伪造成功。"
 pipe_arg = 0
 target_version = "0.1.0-pre-alpha.3"
 kind = "function"
-validation_stage = "documentation_only"
+validation_stage = "runtime_verified"
 effect_class = "pure"
 
 [[functions]]
 id = "fn_000236"
 name = "cylinder"
 category = "scene"
-status = "planned"
-interface_status = "planned"
-runtime_names = []
-compatibility_names = []
-current_modern_signatures = []
-current_wolfram_signatures = []
+status = "partial"
+interface_status = "current"
+runtime_names = ["Cylinder"]
+compatibility_names = ["Cylinder"]
+current_modern_signatures = ["cylinder(start,end,radius)"]
+current_wolfram_signatures = ["Cylinder[start,end,radius]"]
 signatures = ["cylinder(start,end,radius)"]
-parameters = [{ name = "start", kind = "positional", default = "必填", description = "签名对应的start参数", availability = "r3" }, { name = "end", kind = "positional", default = "必填", description = "签名对应的end参数", availability = "r3" }, { name = "radius", kind = "positional", default = "必填", description = "正半径", availability = "r3" }]
+parameters = [{ name = "start", kind = "positional", default = "必填", description = "签名对应的start参数", availability = "current" }, { name = "end", kind = "positional", default = "必填", description = "签名对应的end参数", availability = "current" }, { name = "radius", kind = "positional", default = "必填", description = "正半径", availability = "current" }]
 return_type = "scene_node_or_color"
 semantics = "圆柱"
-current_support = "当前无此规范接口的实现。"
+current_support = "真实只读场景图元/组合/仿射变换；坐标维数与scene dimensions一致，固定颜色或readonly颜色函数、有限opacity与明确资源边界。二维XY几何保留路径/多边形/marker/label并在桌面Web/iOS原生展示导出；三维Rust真实网格/世界法线/颜色和WebGL2/OBJ，iOS明确fallback不自动采样。曲面/圆曲线和圆管有限机器采样不认证边界；Polygon共面简单边界真实ear clipping，自交/非共面拒绝；Tube平行运输框架/端帽，不保证全局自交不存在。变换不写主变量，退化面可成为实际采样线/点。"
 target_support = "共享场景与内核几何数据；二维桌面/Web/iOS，三维WebGL2桌面/Web；无WebGL2或移动端3D明确提示并保留源式及OBJ导出，不制作假图。"
-precision_modes = ["planned_machine"]
-precision_notes = "几何/颜色数据机器采样；未承诺任意精度光栅。"
-current_platforms = []
+precision_modes = ["machine_geometry"]
+precision_notes = "机器几何/标签展示；源码保留精确数学意义，不宣称任意精度光栅或认证拓扑。"
+current_platforms = ["cli", "desktop", "web", "ios"]
 target_platforms = ["cli", "desktop", "web", "ios"]
 render_platforms = ["desktop", "web"]
-current_examples = []
+current_examples = ["Cylinder[{0,0,0},{0,0,1},1]"]
 planned_examples = ["cylinder([0,0,0],[0,0,1],0.2)"]
-sources = []
-tests = []
+sources = ["crates/om-eval/src/scene_registry.rs", "crates/om-kernel/src/scene_graph.rs"]
+tests = ["crates/om-kernel/tests/scene_graph.rs"]
 acceptance = "独立数学期望、有效/无效参数、边界、预算、中断及声明的平台/精度测试；范围外不伪造成功。"
 pipe_arg = 0
 target_version = "0.1.0-pre-alpha.3"
 kind = "function"
-validation_stage = "documentation_only"
+validation_stage = "runtime_verified"
 effect_class = "pure"
 
 [[functions]]
 id = "fn_000237"
 name = "cone"
 category = "scene"
-status = "planned"
-interface_status = "planned"
-runtime_names = []
-compatibility_names = []
-current_modern_signatures = []
-current_wolfram_signatures = []
+status = "partial"
+interface_status = "current"
+runtime_names = ["Cone"]
+compatibility_names = ["Cone"]
+current_modern_signatures = ["cone(start,end,radius)"]
+current_wolfram_signatures = ["Cone[start,end,radius]"]
 signatures = ["cone(start,end,radius)"]
-parameters = [{ name = "start", kind = "positional", default = "必填", description = "签名对应的start参数", availability = "r3" }, { name = "end", kind = "positional", default = "必填", description = "签名对应的end参数", availability = "r3" }, { name = "radius", kind = "positional", default = "必填", description = "正半径", availability = "r3" }]
+parameters = [{ name = "start", kind = "positional", default = "必填", description = "签名对应的start参数", availability = "current" }, { name = "end", kind = "positional", default = "必填", description = "签名对应的end参数", availability = "current" }, { name = "radius", kind = "positional", default = "必填", description = "正半径", availability = "current" }]
 return_type = "scene_node_or_color"
 semantics = "圆锥"
-current_support = "当前无此规范接口的实现。"
+current_support = "真实只读场景图元/组合/仿射变换；坐标维数与scene dimensions一致，固定颜色或readonly颜色函数、有限opacity与明确资源边界。二维XY几何保留路径/多边形/marker/label并在桌面Web/iOS原生展示导出；三维Rust真实网格/世界法线/颜色和WebGL2/OBJ，iOS明确fallback不自动采样。曲面/圆曲线和圆管有限机器采样不认证边界；Polygon共面简单边界真实ear clipping，自交/非共面拒绝；Tube平行运输框架/端帽，不保证全局自交不存在。变换不写主变量，退化面可成为实际采样线/点。"
 target_support = "共享场景与内核几何数据；二维桌面/Web/iOS，三维WebGL2桌面/Web；无WebGL2或移动端3D明确提示并保留源式及OBJ导出，不制作假图。"
-precision_modes = ["planned_machine"]
-precision_notes = "几何/颜色数据机器采样；未承诺任意精度光栅。"
-current_platforms = []
+precision_modes = ["machine_geometry"]
+precision_notes = "机器几何/标签展示；源码保留精确数学意义，不宣称任意精度光栅或认证拓扑。"
+current_platforms = ["cli", "desktop", "web", "ios"]
 target_platforms = ["cli", "desktop", "web", "ios"]
 render_platforms = ["desktop", "web"]
-current_examples = []
+current_examples = ["Cone[{0,0,0},{0,0,1},1]"]
 planned_examples = ["cone([0,0,0],[0,0,1],0.2)"]
-sources = []
-tests = []
+sources = ["crates/om-eval/src/scene_registry.rs", "crates/om-kernel/src/scene_graph.rs"]
+tests = ["crates/om-kernel/tests/scene_graph.rs"]
 acceptance = "独立数学期望、有效/无效参数、边界、预算、中断及声明的平台/精度测试；范围外不伪造成功。"
 pipe_arg = 0
 target_version = "0.1.0-pre-alpha.3"
 kind = "function"
-validation_stage = "documentation_only"
+validation_stage = "runtime_verified"
 effect_class = "pure"
 
 [[functions]]
 id = "fn_000238"
 name = "tube"
 category = "scene"
-status = "planned"
-interface_status = "planned"
-runtime_names = []
-compatibility_names = []
-current_modern_signatures = []
-current_wolfram_signatures = []
+status = "partial"
+interface_status = "current"
+runtime_names = ["Tube"]
+compatibility_names = ["Tube"]
+current_modern_signatures = ["tube(path,radius)"]
+current_wolfram_signatures = ["Tube[path,radius]"]
 signatures = ["tube(path,radius)"]
-parameters = [{ name = "path", kind = "positional", default = "必填", description = "签名对应的path参数", availability = "r3" }, { name = "radius", kind = "positional", default = "必填", description = "正半径", availability = "r3" }]
+parameters = [{ name = "path", kind = "positional", default = "必填", description = "签名对应的path参数", availability = "current" }, { name = "radius", kind = "positional", default = "必填", description = "正半径", availability = "current" }]
 return_type = "scene_node_or_color"
 semantics = "沿路径的管"
-current_support = "当前无此规范接口的实现。"
+current_support = "真实只读场景图元/组合/仿射变换；坐标维数与scene dimensions一致，固定颜色或readonly颜色函数、有限opacity与明确资源边界。二维XY几何保留路径/多边形/marker/label并在桌面Web/iOS原生展示导出；三维Rust真实网格/世界法线/颜色和WebGL2/OBJ，iOS明确fallback不自动采样。曲面/圆曲线和圆管有限机器采样不认证边界；Polygon共面简单边界真实ear clipping，自交/非共面拒绝；Tube平行运输框架/端帽，不保证全局自交不存在。变换不写主变量，退化面可成为实际采样线/点。"
 target_support = "共享场景与内核几何数据；二维桌面/Web/iOS，三维WebGL2桌面/Web；无WebGL2或移动端3D明确提示并保留源式及OBJ导出，不制作假图。"
-precision_modes = ["planned_machine"]
-precision_notes = "几何/颜色数据机器采样；未承诺任意精度光栅。"
-current_platforms = []
+precision_modes = ["machine_geometry"]
+precision_notes = "机器几何/标签展示；源码保留精确数学意义，不宣称任意精度光栅或认证拓扑。"
+current_platforms = ["cli", "desktop", "web", "ios"]
 target_platforms = ["cli", "desktop", "web", "ios"]
 render_platforms = ["desktop", "web"]
-current_examples = []
+current_examples = ["Tube[{{0,0,0},{0,0,1},{1,0,2}},0.1]"]
 planned_examples = ["tube([[0,0,0],[1,0,0],[1,1,0]],0.05)"]
-sources = []
-tests = []
+sources = ["crates/om-eval/src/scene_registry.rs", "crates/om-kernel/src/scene_graph.rs"]
+tests = ["crates/om-kernel/tests/scene_graph.rs"]
 acceptance = "独立数学期望、有效/无效参数、边界、预算、中断及声明的平台/精度测试；范围外不伪造成功。"
 pipe_arg = 0
 target_version = "0.1.0-pre-alpha.3"
 kind = "function"
-validation_stage = "documentation_only"
+validation_stage = "runtime_verified"
 effect_class = "pure"
 
 [[functions]]
 id = "fn_000239"
 name = "label"
 category = "scene"
-status = "planned"
-interface_status = "planned"
-runtime_names = []
-compatibility_names = []
-current_modern_signatures = []
-current_wolfram_signatures = []
+status = "partial"
+interface_status = "current"
+runtime_names = ["Label"]
+compatibility_names = ["Label"]
+current_modern_signatures = ["label(text,position)"]
+current_wolfram_signatures = ["Label[text,position]"]
 signatures = ["label(text, position)"]
-parameters = [{ name = "text", kind = "positional", default = "必填", description = "文本", availability = "r3" }, { name = "position", kind = "positional", default = "必填", description = "坐标", availability = "r3" }]
+parameters = [{ name = "text", kind = "positional", default = "必填", description = "文本", availability = "current" }, { name = "position", kind = "positional", default = "必填", description = "坐标", availability = "current" }]
 return_type = "scene_node_or_color"
 semantics = "场景标签"
-current_support = "当前无此规范接口的实现。"
+current_support = "真实只读场景图元/组合/仿射变换；坐标维数与scene dimensions一致，固定颜色或readonly颜色函数、有限opacity与明确资源边界。二维XY几何保留路径/多边形/marker/label并在桌面Web/iOS原生展示导出；三维Rust真实网格/世界法线/颜色和WebGL2/OBJ，iOS明确fallback不自动采样。曲面/圆曲线和圆管有限机器采样不认证边界；Polygon共面简单边界真实ear clipping，自交/非共面拒绝；Tube平行运输框架/端帽，不保证全局自交不存在。变换不写主变量，退化面可成为实际采样线/点。"
 target_support = "共享场景与内核几何数据；二维桌面/Web/iOS，三维WebGL2桌面/Web；无WebGL2或移动端3D明确提示并保留源式及OBJ导出，不制作假图。"
-precision_modes = ["planned_machine"]
-precision_notes = "几何/颜色数据机器采样；未承诺任意精度光栅。"
-current_platforms = []
+precision_modes = ["machine_geometry"]
+precision_notes = "机器几何/标签展示；源码保留精确数学意义，不宣称任意精度光栅或认证拓扑。"
+current_platforms = ["cli", "desktop", "web", "ios"]
 target_platforms = ["cli", "desktop", "web", "ios"]
 render_platforms = ["desktop", "web", "ios"]
-current_examples = []
+current_examples = ["Label[\"地球\",{0,0}]"]
 planned_examples = ["label(\"L2\",[1,0])"]
-sources = []
-tests = []
+sources = ["crates/om-eval/src/scene_registry.rs", "crates/om-kernel/src/scene_graph.rs"]
+tests = ["crates/om-kernel/tests/scene_graph.rs"]
 acceptance = "独立数学期望、有效/无效参数、边界、预算、中断及声明的平台/精度测试；范围外不伪造成功。"
 pipe_arg = 0
 target_version = "0.1.0-pre-alpha.3"
 kind = "function"
-validation_stage = "documentation_only"
+validation_stage = "runtime_verified"
 effect_class = "pure"
 
 [[functions]]
 id = "fn_000240"
 name = "translate"
 category = "scene"
-status = "planned"
-interface_status = "planned"
-runtime_names = []
-compatibility_names = []
-current_modern_signatures = []
-current_wolfram_signatures = []
+status = "partial"
+interface_status = "current"
+runtime_names = ["Translate"]
+compatibility_names = ["Translate"]
+current_modern_signatures = ["translate(node,vector)"]
+current_wolfram_signatures = ["Translate[node,vector]"]
 signatures = ["translate(node, vector)"]
-parameters = [{ name = "node", kind = "positional", default = "必填", description = "签名对应的node参数", availability = "r3" }, { name = "vector", kind = "positional", default = "必填", description = "向量", availability = "r3" }]
+parameters = [{ name = "node", kind = "positional", default = "必填", description = "签名对应的node参数", availability = "current" }, { name = "vector", kind = "positional", default = "必填", description = "向量", availability = "current" }]
 return_type = "scene_node_or_color"
 semantics = "平移"
-current_support = "当前无此规范接口的实现。"
+current_support = "真实只读场景图元/组合/仿射变换；坐标维数与scene dimensions一致，固定颜色或readonly颜色函数、有限opacity与明确资源边界。二维XY几何保留路径/多边形/marker/label并在桌面Web/iOS原生展示导出；三维Rust真实网格/世界法线/颜色和WebGL2/OBJ，iOS明确fallback不自动采样。曲面/圆曲线和圆管有限机器采样不认证边界；Polygon共面简单边界真实ear clipping，自交/非共面拒绝；Tube平行运输框架/端帽，不保证全局自交不存在。变换不写主变量，退化面可成为实际采样线/点。"
 target_support = "共享场景与内核几何数据；二维桌面/Web/iOS，三维WebGL2桌面/Web；无WebGL2或移动端3D明确提示并保留源式及OBJ导出，不制作假图。"
-precision_modes = ["planned_machine"]
-precision_notes = "几何/颜色数据机器采样；未承诺任意精度光栅。"
-current_platforms = []
+precision_modes = ["machine_geometry"]
+precision_notes = "机器几何/标签展示；源码保留精确数学意义，不宣称任意精度光栅或认证拓扑。"
+current_platforms = ["cli", "desktop", "web", "ios"]
 target_platforms = ["cli", "desktop", "web", "ios"]
 render_platforms = ["desktop", "web", "ios"]
-current_examples = []
+current_examples = ["Translate[Point[{0,0}],{1,2}]"]
 planned_examples = ["sphere([0,0,0],1) |> translate([2,0,0])"]
-sources = []
-tests = []
+sources = ["crates/om-eval/src/scene_registry.rs", "crates/om-kernel/src/scene_graph.rs"]
+tests = ["crates/om-kernel/tests/scene_graph.rs"]
 acceptance = "独立数学期望、有效/无效参数、边界、预算、中断及声明的平台/精度测试；范围外不伪造成功。"
 pipe_arg = 1
 target_version = "0.1.0-pre-alpha.3"
 kind = "function"
-validation_stage = "documentation_only"
+validation_stage = "runtime_verified"
 effect_class = "pure"
 
 [[functions]]
 id = "fn_000241"
 name = "rotate"
 category = "scene"
-status = "planned"
-interface_status = "planned"
-runtime_names = []
-compatibility_names = []
-current_modern_signatures = []
-current_wolfram_signatures = []
+status = "partial"
+interface_status = "current"
+runtime_names = ["Rotate"]
+compatibility_names = ["Rotate"]
+current_modern_signatures = ["rotate(node,angle,axis:[0,0,1],center:[0,0,0])"]
+current_wolfram_signatures = ["Rotate[node,angle,Axis->axis,Center->center]"]
 signatures = ["rotate(node, angle, axis: [0,0,1], center: [0,0,0])"]
-parameters = [{ name = "node", kind = "positional", default = "必填", description = "签名对应的node参数", availability = "r3" }, { name = "angle", kind = "positional", default = "必填", description = "弧度角", availability = "r3" }, { name = "axis", kind = "option", default = "[0,0,1]", description = "旋转轴", availability = "r3" }, { name = "center", kind = "option", default = "[0,0,0]", description = "中心坐标", availability = "r3" }]
+parameters = [{ name = "node", kind = "positional", default = "必填", description = "签名对应的node参数", availability = "current" }, { name = "angle", kind = "positional", default = "必填", description = "弧度角", availability = "current" }, { name = "axis", kind = "option", default = "[0,0,1]", description = "旋转轴", availability = "current" }, { name = "center", kind = "option", default = "[0,0,0]", description = "中心坐标", availability = "current" }]
 return_type = "scene_node_or_color"
 semantics = "旋转"
-current_support = "当前无此规范接口的实现。"
+current_support = "真实只读场景图元/组合/仿射变换；坐标维数与scene dimensions一致，固定颜色或readonly颜色函数、有限opacity与明确资源边界。二维XY几何保留路径/多边形/marker/label并在桌面Web/iOS原生展示导出；三维Rust真实网格/世界法线/颜色和WebGL2/OBJ，iOS明确fallback不自动采样。曲面/圆曲线和圆管有限机器采样不认证边界；Polygon共面简单边界真实ear clipping，自交/非共面拒绝；Tube平行运输框架/端帽，不保证全局自交不存在。变换不写主变量，退化面可成为实际采样线/点。"
 target_support = "共享场景与内核几何数据；二维桌面/Web/iOS，三维WebGL2桌面/Web；无WebGL2或移动端3D明确提示并保留源式及OBJ导出，不制作假图。"
-precision_modes = ["planned_machine"]
-precision_notes = "几何/颜色数据机器采样；未承诺任意精度光栅。"
-current_platforms = []
+precision_modes = ["machine_geometry"]
+precision_notes = "机器几何/标签展示；源码保留精确数学意义，不宣称任意精度光栅或认证拓扑。"
+current_platforms = ["cli", "desktop", "web", "ios"]
 target_platforms = ["cli", "desktop", "web", "ios"]
 render_platforms = ["desktop", "web", "ios"]
-current_examples = []
+current_examples = ["Rotate[Line[{{0,0},{1,0}}],Pi/2]"]
 planned_examples = ["ellipsoid([0,0,0],[2,1,1]) |> rotate(pi/4,axis: [0,0,1])"]
-sources = []
-tests = []
+sources = ["crates/om-eval/src/scene_registry.rs", "crates/om-kernel/src/scene_graph.rs"]
+tests = ["crates/om-kernel/tests/scene_graph.rs"]
 acceptance = "独立数学期望、有效/无效参数、边界、预算、中断及声明的平台/精度测试；范围外不伪造成功。"
 pipe_arg = 1
 target_version = "0.1.0-pre-alpha.3"
 kind = "function"
-validation_stage = "documentation_only"
+validation_stage = "runtime_verified"
 effect_class = "pure"
 
 [[functions]]
 id = "fn_000242"
 name = "scale"
 category = "scene"
-status = "planned"
-interface_status = "planned"
-runtime_names = []
-compatibility_names = []
-current_modern_signatures = []
-current_wolfram_signatures = []
+status = "partial"
+interface_status = "current"
+runtime_names = ["Scale"]
+compatibility_names = ["Scale"]
+current_modern_signatures = ["scale(node,factors,center:[0,0,0])"]
+current_wolfram_signatures = ["Scale[node,factors,Center->center]"]
 signatures = ["scale(node, factors, center: [0,0,0])"]
-parameters = [{ name = "node", kind = "positional", default = "必填", description = "签名对应的node参数", availability = "r3" }, { name = "factors", kind = "positional", default = "必填", description = "签名对应的factors参数", availability = "r3" }, { name = "center", kind = "option", default = "[0,0,0]", description = "中心坐标", availability = "r3" }]
+parameters = [{ name = "node", kind = "positional", default = "必填", description = "签名对应的node参数", availability = "current" }, { name = "factors", kind = "positional", default = "必填", description = "签名对应的factors参数", availability = "current" }, { name = "center", kind = "option", default = "[0,0,0]", description = "中心坐标", availability = "current" }]
 return_type = "scene_node_or_color"
 semantics = "缩放"
-current_support = "当前无此规范接口的实现。"
+current_support = "真实只读场景图元/组合/仿射变换；坐标维数与scene dimensions一致，固定颜色或readonly颜色函数、有限opacity与明确资源边界。二维XY几何保留路径/多边形/marker/label并在桌面Web/iOS原生展示导出；三维Rust真实网格/世界法线/颜色和WebGL2/OBJ，iOS明确fallback不自动采样。曲面/圆曲线和圆管有限机器采样不认证边界；Polygon共面简单边界真实ear clipping，自交/非共面拒绝；Tube平行运输框架/端帽，不保证全局自交不存在。变换不写主变量，退化面可成为实际采样线/点。"
 target_support = "共享场景与内核几何数据；二维桌面/Web/iOS，三维WebGL2桌面/Web；无WebGL2或移动端3D明确提示并保留源式及OBJ导出，不制作假图。"
-precision_modes = ["planned_machine"]
-precision_notes = "几何/颜色数据机器采样；未承诺任意精度光栅。"
-current_platforms = []
+precision_modes = ["machine_geometry"]
+precision_notes = "机器几何/标签展示；源码保留精确数学意义，不宣称任意精度光栅或认证拓扑。"
+current_platforms = ["cli", "desktop", "web", "ios"]
 target_platforms = ["cli", "desktop", "web", "ios"]
 render_platforms = ["desktop", "web", "ios"]
-current_examples = []
+current_examples = ["Scale[Circle[{0,0},1],{2,1}]"]
 planned_examples = ["sphere([0,0,0],1) |> scale([2,1,1])"]
-sources = []
-tests = []
+sources = ["crates/om-eval/src/scene_registry.rs", "crates/om-kernel/src/scene_graph.rs"]
+tests = ["crates/om-kernel/tests/scene_graph.rs"]
 acceptance = "独立数学期望、有效/无效参数、边界、预算、中断及声明的平台/精度测试；范围外不伪造成功。"
 pipe_arg = 1
 target_version = "0.1.0-pre-alpha.3"
 kind = "function"
-validation_stage = "documentation_only"
+validation_stage = "runtime_verified"
 effect_class = "pure"
 
 [[functions]]
 id = "fn_000243"
 name = "style"
 category = "scene"
-status = "planned"
-interface_status = "planned"
-runtime_names = []
-compatibility_names = []
-current_modern_signatures = []
-current_wolfram_signatures = []
+status = "implemented"
+interface_status = "current"
+runtime_names = ["Style"]
+compatibility_names = ["Style"]
+current_modern_signatures = ["style(node,color:\"green\",opacity:1)"]
+current_wolfram_signatures = ["Style[node,Color->color,Opacity->opacity]"]
 signatures = ["style(node, color: \"green\", opacity: 1)"]
 parameters = [{ name = "node", kind = "positional", default = "必填", description = "签名对应的node参数", availability = "r3" }, { name = "color", kind = "option", default = "主题色", description = "颜色/只读颜色函数", availability = "r3" }, { name = "opacity", kind = "option", default = "1", description = "0..1", availability = "r3" }]
 return_type = "scene_node_or_color"
 semantics = "样式"
-current_support = "当前无此规范接口的实现。"
+current_support = "held样式包装；二维/三维实际scene节点与列表分组继承color/opacity，子节点显式样式覆盖继承；图元外包需放入scene容器。"
 target_support = "共享场景与内核几何数据；二维桌面/Web/iOS，三维WebGL2桌面/Web；无WebGL2或移动端3D明确提示并保留源式及OBJ导出，不制作假图。"
-precision_modes = ["planned_machine"]
+precision_modes = ["machine"]
 precision_notes = "几何/颜色数据机器采样；未承诺任意精度光栅。"
-current_platforms = []
+current_platforms = ["cli", "desktop", "web", "ios"]
 target_platforms = ["cli", "desktop", "web", "ios"]
 render_platforms = ["desktop", "web", "ios"]
-current_examples = []
+current_examples = ["Style[Circle[{0,0},1],Color->\"green\",Opacity->0.8]"]
 planned_examples = ["circle([0,0],1) |> style(color: \"green\",opacity: 0.8)"]
-sources = []
-tests = []
+sources = ["crates/om-eval/src/scene_registry.rs", "crates/om-kernel/src/scene_graph.rs"]
+tests = ["crates/om-kernel/tests/scene_graph.rs"]
 acceptance = "独立数学期望、有效/无效参数、边界、预算、中断及声明的平台/精度测试；范围外不伪造成功。"
 pipe_arg = 1
 target_version = "0.1.0-pre-alpha.3"
 kind = "function"
-validation_stage = "documentation_only"
+validation_stage = "runtime_verified"
 effect_class = "pure"
 
 [[functions]]
 id = "fn_000244"
 name = "blend"
 category = "scene"
-status = "planned"
-interface_status = "planned"
-runtime_names = []
-compatibility_names = []
-current_modern_signatures = []
-current_wolfram_signatures = []
+status = "implemented"
+interface_status = "current"
+runtime_names = ["Blend"]
+compatibility_names = ["Blend"]
+current_modern_signatures = ["blend([color1,color2],weight)"]
+current_wolfram_signatures = ["Blend[{color1,color2},weight]"]
 signatures = ["blend(colors, weight)"]
 parameters = [{ name = "colors", kind = "positional", default = "必填", description = "签名对应的colors参数", availability = "r3" }, { name = "weight", kind = "positional", default = "必填", description = "签名对应的weight参数", availability = "r3" }]
 return_type = "scene_node_or_color"
 semantics = "颜色插值"
-current_support = "当前无此规范接口的实现。"
+current_support = "恰好两个受支持颜色名/#RRGGBB或RGB/RGBA列表，weight在0..1，逐分量插值返回RGBA机器实数，不做光学线性化或多色权重。"
 target_support = "共享场景与内核几何数据；二维桌面/Web/iOS，三维WebGL2桌面/Web；无WebGL2或移动端3D明确提示并保留源式及OBJ导出，不制作假图。"
-precision_modes = ["planned_machine"]
+precision_modes = ["machine"]
 precision_notes = "几何/颜色数据机器采样；未承诺任意精度光栅。"
-current_platforms = []
+current_platforms = ["cli", "desktop", "web", "ios"]
 target_platforms = ["cli", "desktop", "web", "ios"]
 render_platforms = ["desktop", "web", "ios"]
-current_examples = []
+current_examples = ["Blend[{\"dark_green\",\"light_green\"},0.5]"]
 planned_examples = ["blend([\"dark_green\",\"light_green\"],0.5)"]
-sources = []
-tests = []
+sources = ["crates/om-eval/src/scene_registry.rs", "crates/om-kernel/src/scene_graph.rs"]
+tests = ["crates/om-kernel/tests/scene_graph.rs"]
 acceptance = "独立数学期望、有效/无效参数、边界、预算、中断及声明的平台/精度测试；范围外不伪造成功。"
 pipe_arg = 0
 target_version = "0.1.0-pre-alpha.3"
 kind = "function"
-validation_stage = "documentation_only"
+validation_stage = "runtime_verified"
 effect_class = "pure"
 
 [[functions]]
@@ -26676,15 +26676,15 @@ evidence = ["crates/om-kernel/tests/plot_extensions.rs", "crates/om-kernel/tests
 [[features]]
 id = "plot3d"
 title = "三维显示与场景"
-status = "partial"
-scope = "R3.6a真实Rust曲面/参数曲线曲面/隐式网格、WebGL2相机/光照/资源生命周期和OBJ已接；iOS明确fallback不自动采样。场景图元/变换/L2/西瓜完整案例仍待R3.6b；无WebGL2保留源式/数据/OBJ。"
+status = "implemented"
+scope = "真实Rust曲面/参数曲线曲面/隐式网格、有限场景图元/样式/变换、WebGL2相机/光照/资源生命周期、完整西瓜与OBJ已接。iOS明确fallback不自动采样；无WebGL2保留源式/数据/OBJ。"
 evidence = ["docs/design/scene3d.md", "crates/om-kernel/tests/scene3d.rs", "app/e2e/scene.spec.ts"]
 
 [[features]]
 id = "export_r3"
 title = "数据/图形导出"
-status = "partial"
-scope = "表格/选中值CSV/JSON与真实二维SVG/PNG已实现，三端按钮和CLI非交互写入/字节回读；临时探索结果有不可变值图。OBJ待R3.6，不含通用Export函数/CAD/glTF/视频。"
+status = "implemented"
+scope = "保留表格/选中值CSV/JSON、二维SVG/PNG和三维OBJ；三端/CLI实际字节写入与回读，临时探索结果保持不可变值图。不含通用Export/CAD/glTF/视频。"
 evidence = ["docs/design/artifact-export.md", "crates/om-kernel/tests/artifacts.rs", "crates/om-cli/tests/artifact.rs"]
 
 [[features]]
@@ -29140,3 +29140,176 @@ min = 4
 attributes = ["hold_all", "protected"]
 parameters = [{ name = "expression", value_type = "expression", required = true, variadic = false, held = true }, { name = "axis_1", value_type = "expression", required = true, variadic = false, held = true }, { name = "axis_2", value_type = "expression", required = true, variadic = false, held = true }, { name = "axis_3", value_type = "expression", required = true, variadic = false, held = true }]
 options = [{ name = "mesh_points", runtime_name = "MeshPoints", value_type = "integer", required = false, variadic = false, held = true, default_source = "24", min = 8, max = 64 }, { name = "color", runtime_name = "Color", value_type = "expression", required = false, variadic = false, held = true, default_context = "\u7eff\u8272\uff1b\u56fa\u5b9a\u989c\u8272\u540d/#RRGGBB\u6216\u53ea\u8bfbfn(position,...axes)" }]
+
+[[runtime]]
+name = "Scene"
+modern_name = "scene"
+aliases = []
+min = 1
+attributes = ["hold_all", "protected"]
+parameters = [{ name = "nodes", value_type = "expression", required = true, held = true, variadic = false }]
+options = [{ name = "color", runtime_name = "Color", value_type = "expression", required = false, held = true, variadic = false, default_context = "从scene继承；point/line默认blue，面默认green，支持readonly fn(position)" }, { name = "opacity", runtime_name = "Opacity", value_type = "real", required = false, held = true, variadic = false, default_source = "1", min = 0, max = 1 }, { name = "dimensions", runtime_name = "Dimensions", value_type = "integer", required = false, held = true, variadic = false, default_source = "2", min = 2, max = 3 }, { name = "mesh_points", runtime_name = "MeshPoints", value_type = "integer", required = false, held = true, variadic = false, default_source = "32", min = 8, max = 64 }]
+
+[[runtime]]
+name = "Point"
+modern_name = "point"
+aliases = []
+min = 1
+attributes = ["hold_all", "protected"]
+parameters = [{ name = "position", value_type = "expression", required = true, held = true, variadic = false }]
+options = [{ name = "color", runtime_name = "Color", value_type = "expression", required = false, held = true, variadic = false, default_context = "从scene继承；point/line默认blue，面默认green，支持readonly fn(position)" }, { name = "opacity", runtime_name = "Opacity", value_type = "real", required = false, held = true, variadic = false, default_source = "1", min = 0, max = 1 }, { name = "width", runtime_name = "Width", value_type = "real", required = false, held = true, variadic = false, default_source = "2", min = 0, max = 32 }]
+
+[[runtime]]
+name = "Line"
+modern_name = "line"
+aliases = []
+min = 1
+attributes = ["hold_all", "protected"]
+parameters = [{ name = "points", value_type = "expression", required = true, held = true, variadic = false }]
+options = [{ name = "color", runtime_name = "Color", value_type = "expression", required = false, held = true, variadic = false, default_context = "从scene继承；point/line默认blue，面默认green，支持readonly fn(position)" }, { name = "opacity", runtime_name = "Opacity", value_type = "real", required = false, held = true, variadic = false, default_source = "1", min = 0, max = 1 }, { name = "width", runtime_name = "Width", value_type = "real", required = false, held = true, variadic = false, default_source = "2", min = 0, max = 32 }]
+
+[[runtime]]
+name = "Arrow"
+modern_name = "arrow"
+aliases = []
+min = 2
+attributes = ["hold_all", "protected"]
+parameters = [{ name = "start", value_type = "expression", required = true, held = true, variadic = false }, { name = "end", value_type = "expression", required = true, held = true, variadic = false }]
+options = [{ name = "color", runtime_name = "Color", value_type = "expression", required = false, held = true, variadic = false, default_context = "从scene继承；point/line默认blue，面默认green，支持readonly fn(position)" }, { name = "opacity", runtime_name = "Opacity", value_type = "real", required = false, held = true, variadic = false, default_source = "1", min = 0, max = 1 }, { name = "width", runtime_name = "Width", value_type = "real", required = false, held = true, variadic = false, default_source = "2", min = 0, max = 32 }]
+
+[[runtime]]
+name = "Circle"
+modern_name = "circle"
+aliases = []
+min = 2
+attributes = ["hold_all", "protected"]
+parameters = [{ name = "center", value_type = "expression", required = true, held = true, variadic = false }, { name = "radius", value_type = "expression", required = true, held = true, variadic = false }]
+options = [{ name = "color", runtime_name = "Color", value_type = "expression", required = false, held = true, variadic = false, default_context = "从scene继承；point/line默认blue，面默认green，支持readonly fn(position)" }, { name = "opacity", runtime_name = "Opacity", value_type = "real", required = false, held = true, variadic = false, default_source = "1", min = 0, max = 1 }, { name = "width", runtime_name = "Width", value_type = "real", required = false, held = true, variadic = false, default_source = "2", min = 0, max = 32 }, { name = "normal", runtime_name = "Normal", value_type = "expression", required = false, held = true, variadic = false, default_context = "默认{0,0,1}；二维必须垂直XY" }]
+
+[[runtime]]
+name = "Disk"
+modern_name = "disk"
+aliases = []
+min = 2
+attributes = ["hold_all", "protected"]
+parameters = [{ name = "center", value_type = "expression", required = true, held = true, variadic = false }, { name = "radius", value_type = "expression", required = true, held = true, variadic = false }]
+options = [{ name = "color", runtime_name = "Color", value_type = "expression", required = false, held = true, variadic = false, default_context = "从scene继承；point/line默认blue，面默认green，支持readonly fn(position)" }, { name = "opacity", runtime_name = "Opacity", value_type = "real", required = false, held = true, variadic = false, default_source = "1", min = 0, max = 1 }, { name = "normal", runtime_name = "Normal", value_type = "expression", required = false, held = true, variadic = false, default_context = "默认{0,0,1}；二维必须垂直XY" }]
+
+[[runtime]]
+name = "Polygon"
+modern_name = "polygon"
+aliases = []
+min = 1
+attributes = ["hold_all", "protected"]
+parameters = [{ name = "vertices", value_type = "expression", required = true, held = true, variadic = false }]
+options = [{ name = "color", runtime_name = "Color", value_type = "expression", required = false, held = true, variadic = false, default_context = "从scene继承；point/line默认blue，面默认green，支持readonly fn(position)" }, { name = "opacity", runtime_name = "Opacity", value_type = "real", required = false, held = true, variadic = false, default_source = "1", min = 0, max = 1 }]
+
+[[runtime]]
+name = "Sphere"
+modern_name = "sphere"
+aliases = []
+min = 2
+attributes = ["hold_all", "protected"]
+parameters = [{ name = "center", value_type = "expression", required = true, held = true, variadic = false }, { name = "radius", value_type = "expression", required = true, held = true, variadic = false }]
+options = [{ name = "color", runtime_name = "Color", value_type = "expression", required = false, held = true, variadic = false, default_context = "从scene继承；point/line默认blue，面默认green，支持readonly fn(position)" }, { name = "opacity", runtime_name = "Opacity", value_type = "real", required = false, held = true, variadic = false, default_source = "1", min = 0, max = 1 }]
+
+[[runtime]]
+name = "Ellipsoid"
+modern_name = "ellipsoid"
+aliases = []
+min = 2
+attributes = ["hold_all", "protected"]
+parameters = [{ name = "center", value_type = "expression", required = true, held = true, variadic = false }, { name = "radii", value_type = "expression", required = true, held = true, variadic = false }]
+options = [{ name = "color", runtime_name = "Color", value_type = "expression", required = false, held = true, variadic = false, default_context = "从scene继承；point/line默认blue，面默认green，支持readonly fn(position)" }, { name = "opacity", runtime_name = "Opacity", value_type = "real", required = false, held = true, variadic = false, default_source = "1", min = 0, max = 1 }]
+
+[[runtime]]
+name = "Box"
+modern_name = "box"
+aliases = []
+min = 2
+attributes = ["hold_all", "protected"]
+parameters = [{ name = "min", value_type = "expression", required = true, held = true, variadic = false }, { name = "max", value_type = "expression", required = true, held = true, variadic = false }]
+options = [{ name = "color", runtime_name = "Color", value_type = "expression", required = false, held = true, variadic = false, default_context = "从scene继承；point/line默认blue，面默认green，支持readonly fn(position)" }, { name = "opacity", runtime_name = "Opacity", value_type = "real", required = false, held = true, variadic = false, default_source = "1", min = 0, max = 1 }]
+
+[[runtime]]
+name = "Cylinder"
+modern_name = "cylinder"
+aliases = []
+min = 3
+attributes = ["hold_all", "protected"]
+parameters = [{ name = "start", value_type = "expression", required = true, held = true, variadic = false }, { name = "end", value_type = "expression", required = true, held = true, variadic = false }, { name = "radius", value_type = "expression", required = true, held = true, variadic = false }]
+options = [{ name = "color", runtime_name = "Color", value_type = "expression", required = false, held = true, variadic = false, default_context = "从scene继承；point/line默认blue，面默认green，支持readonly fn(position)" }, { name = "opacity", runtime_name = "Opacity", value_type = "real", required = false, held = true, variadic = false, default_source = "1", min = 0, max = 1 }]
+
+[[runtime]]
+name = "Cone"
+modern_name = "cone"
+aliases = []
+min = 3
+attributes = ["hold_all", "protected"]
+parameters = [{ name = "start", value_type = "expression", required = true, held = true, variadic = false }, { name = "end", value_type = "expression", required = true, held = true, variadic = false }, { name = "radius", value_type = "expression", required = true, held = true, variadic = false }]
+options = [{ name = "color", runtime_name = "Color", value_type = "expression", required = false, held = true, variadic = false, default_context = "从scene继承；point/line默认blue，面默认green，支持readonly fn(position)" }, { name = "opacity", runtime_name = "Opacity", value_type = "real", required = false, held = true, variadic = false, default_source = "1", min = 0, max = 1 }]
+
+[[runtime]]
+name = "Tube"
+modern_name = "tube"
+aliases = []
+min = 2
+attributes = ["hold_all", "protected"]
+parameters = [{ name = "path", value_type = "expression", required = true, held = true, variadic = false }, { name = "radius", value_type = "expression", required = true, held = true, variadic = false }]
+options = [{ name = "color", runtime_name = "Color", value_type = "expression", required = false, held = true, variadic = false, default_context = "从scene继承；point/line默认blue，面默认green，支持readonly fn(position)" }, { name = "opacity", runtime_name = "Opacity", value_type = "real", required = false, held = true, variadic = false, default_source = "1", min = 0, max = 1 }]
+
+[[runtime]]
+name = "Label"
+modern_name = "label"
+aliases = []
+min = 2
+attributes = ["hold_all", "protected"]
+parameters = [{ name = "text", value_type = "expression", required = true, held = true, variadic = false }, { name = "position", value_type = "expression", required = true, held = true, variadic = false }]
+options = [{ name = "color", runtime_name = "Color", value_type = "expression", required = false, held = true, variadic = false, default_context = "从scene继承；point/line默认blue，面默认green，支持readonly fn(position)" }, { name = "opacity", runtime_name = "Opacity", value_type = "real", required = false, held = true, variadic = false, default_source = "1", min = 0, max = 1 }, { name = "offset", runtime_name = "Offset", value_type = "expression", required = false, held = true, variadic = false, default_source = "{8,-10}" }]
+
+[[runtime]]
+name = "Translate"
+modern_name = "translate"
+aliases = []
+min = 2
+max = 2
+attributes = ["hold_all", "protected"]
+parameters = [{ name = "node", value_type = "expression", required = true, held = true, variadic = false }, { name = "vector", value_type = "expression", required = true, held = true, variadic = false }]
+options = []
+
+[[runtime]]
+name = "Rotate"
+modern_name = "rotate"
+aliases = []
+min = 2
+attributes = ["hold_all", "protected"]
+parameters = [{ name = "node", value_type = "expression", required = true, held = true, variadic = false }, { name = "angle", value_type = "expression", required = true, held = true, variadic = false }]
+options = [{ name = "center", runtime_name = "Center", value_type = "expression", required = false, held = true, variadic = false, default_context = "当前scene维数的原点" }, { name = "axis", runtime_name = "Axis", value_type = "expression", required = false, held = true, variadic = false, default_context = "三维默认{0,0,1}；二维不接受axis" }]
+
+[[runtime]]
+name = "Scale"
+modern_name = "scale"
+aliases = []
+min = 2
+attributes = ["hold_all", "protected"]
+parameters = [{ name = "node", value_type = "expression", required = true, held = true, variadic = false }, { name = "factors", value_type = "expression", required = true, held = true, variadic = false }]
+options = [{ name = "center", runtime_name = "Center", value_type = "expression", required = false, held = true, variadic = false, default_context = "当前scene维数的原点" }]
+
+[[runtime]]
+name = "Style"
+modern_name = "style"
+aliases = []
+min = 1
+attributes = ["hold_all", "protected"]
+parameters = [{ name = "node", value_type = "expression", required = true, held = true, variadic = false }]
+options = [{ name = "color", runtime_name = "Color", value_type = "expression", required = false, held = true, variadic = false, default_context = "继承父scene；颜色名/#RRGGBB/RGB/RGBA或只读fn(position)" }, { name = "opacity", runtime_name = "Opacity", value_type = "real", required = false, held = true, variadic = false, default_source = "1", min = 0, max = 1 }]
+
+[[runtime]]
+name = "Blend"
+modern_name = "blend"
+aliases = []
+min = 2
+max = 2
+attributes = ["protected"]
+parameters = [{ name = "colors", value_type = "expression", required = true, held = false, variadic = false }, { name = "weight", value_type = "real", required = true, held = false, variadic = false, min = 0, max = 1 }]
+options = []

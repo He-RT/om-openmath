@@ -29,5 +29,6 @@ export function fittedCamera(data:import('../../kernel/generated/Scene3DData').S
  for(const mesh of data.meshes)for(const p of mesh.positions)consider(p);
  for(const line of data.lines)for(const p of line.positions)consider(p);
  for(const p of data.points)consider(p.position);
+ for(const label of data.labels??[])consider(label.position);
  return {...defaultCamera,distance:Math.max(1.5,Math.min(30,radius/Math.sin(Math.PI/8)*1.12))};
 }

@@ -3,4 +3,4 @@
 /**
  * Mathematical scene sampling family.
  */
-export type SceneKind = "surface" | "parametric" | "implicit";
+export type SceneKind = "surface" | "parametric" | "implicit" | "scene";

@@ -3,4 +3,4 @@
 /**
  * PlotKind values accepted by the wire protocol.
  */
-export type PlotKind = "Function" | "Implicit" | "Parametric" | "Region" | "Field" | "Data" | "Histogram" | "Density";
+export type PlotKind = "Function" | "Implicit" | "Parametric" | "Region" | "Field" | "Data" | "Histogram" | "Density" | "Scene";

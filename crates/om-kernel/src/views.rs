@@ -96,6 +96,8 @@ pub enum PlotKind {
     Histogram,
     /// Scalar two-axis value cells.
     Density,
+    /// Explicit composed XY scene.
+    Scene,
 }
 
 /// SolutionKind values accepted by the wire protocol.

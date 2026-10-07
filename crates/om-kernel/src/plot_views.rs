@@ -103,4 +103,73 @@ pub struct PlotGeometry2D {
     pub skipped: u32,
     /// Actual finite color value range when applicable.
     pub color_range: Option<(f64, f64)>,
+    /// Actual styled scene paths; absent for legacy geometry.
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    #[ts(optional, as = "Option<Vec<PlotPath>>")]
+    pub paths: Vec<PlotPath>,
+    /// Kernel-triangulated filled scene polygons.
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    #[ts(optional, as = "Option<Vec<PlotPolygon>>")]
+    pub polygons: Vec<PlotPolygon>,
+    /// Actual sized/colored markers.
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    #[ts(optional, as = "Option<Vec<PlotMarker>>")]
+    pub markers: Vec<PlotMarker>,
+    /// Plain Unicode scene labels.
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    #[ts(optional, as = "Option<Vec<PlotLabel>>")]
+    pub labels: Vec<PlotLabel>,
+}
+
+/// An actual colored two-dimensional path, independent of legacy function curves.
+#[derive(Clone, Debug, Serialize, Deserialize, TS)]
+#[ts(export_to=concat!(env!("CARGO_MANIFEST_DIR"),"/../../app/src/kernel/generated/"))]
+pub struct PlotPath {
+    /// Original mathematical coordinates.
+    pub points: Vec<(f64, f64)>,
+    /// Kernel-derived RGB.
+    pub color: String,
+    /// Actual opacity in [0,1].
+    pub opacity: f64,
+    /// Display-only logical pixel stroke width.
+    pub width: f64,
+}
+/// A real finite filled polygon, already triangulated by the kernel when necessary.
+#[derive(Clone, Debug, Serialize, Deserialize, TS)]
+#[ts(export_to=concat!(env!("CARGO_MANIFEST_DIR"),"/../../app/src/kernel/generated/"))]
+pub struct PlotPolygon {
+    /// Actual boundary coordinates.
+    pub points: Vec<(f64, f64)>,
+    /// Actual kernel-generated fill RGB.
+    pub color: String,
+    /// Actual opacity.
+    pub opacity: f64,
+}
+/// A mathematical point marker with separate visual size.
+#[derive(Clone, Debug, Serialize, Deserialize, TS)]
+#[ts(export_to=concat!(env!("CARGO_MANIFEST_DIR"),"/../../app/src/kernel/generated/"))]
+pub struct PlotMarker {
+    /// Actual position.
+    pub position: (f64, f64),
+    /// Actual RGB.
+    pub color: String,
+    /// Actual alpha.
+    pub opacity: f64,
+    /// Display-only marker radius.
+    pub radius: f64,
+}
+/// Plain mathematical label; never HTML or executable source.
+#[derive(Clone, Debug, Serialize, Deserialize, TS)]
+#[ts(export_to=concat!(env!("CARGO_MANIFEST_DIR"),"/../../app/src/kernel/generated/"))]
+pub struct PlotLabel {
+    /// Actual anchor coordinate.
+    pub position: (f64, f64),
+    /// Plain Unicode text.
+    pub text: String,
+    /// Actual RGB.
+    pub color: String,
+    /// Actual alpha.
+    pub opacity: f64,
+    /// Display pixel offset.
+    pub offset: (f64, f64),
 }

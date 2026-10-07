@@ -1,0 +1,24 @@
+{
+  "version": 1,
+  "title": "三维西瓜：条纹、切面和瓜籽",
+  "cells": [
+    {
+      "id": "intro",
+      "kind": "Text",
+      "source": "需要 OpenMath .3。桌面/Web 支持旋转、缩放、复位和 OBJ 导出。iOS 保留原式并明确提示三维未适配。",
+      "dialect": "Modern"
+    },
+    {
+      "id": "setup",
+      "kind": "Math",
+      "source": "# 需要 OpenMath 0.1.0-pre-alpha.3；三维交互仅桌面/Web，CLI 可导出 OBJ。\n# 左边整瓜，右边半瓜。条纹由真实参数 u 的颜色函数产生。\nlet whole_melon = translate(rotate(parametric_plot([1.25*cos(u)*sin(v),sin(u)*sin(v),cos(v)],u:0..2*pi,v:0..pi,mesh_points:32,color:fn(p,u,v)=>[0.06,0.34+0.14*cos(12*u+0.35*sin(3*v)),0.1]),pi/9,axis:[0,1,0]),[-2,0,0]);\nlet half_skin = translate(parametric_plot([1.25*cos(u)*sin(v),sin(u)*sin(v),cos(v)],u:0..2*pi,v:pi/2..pi,mesh_points:32,color:fn(p,u,v)=>[0.06,0.34+0.14*cos(12*u+0.35*sin(3*v)),0.1]),[2,0,0]);\nlet rind = translate(scale(disk([0,0,0],1,color:\"#d8e7b2\"),[1.25,1,1]),[2,0,0.003]);\nlet flesh = translate(scale(disk([0,0,0],0.91,color:\"#ed4a55\"),[1.25,1,1]),[2,0,0.009]);\nlet seed_locations = [[-0.72,-0.25],[-0.55,0.35],[-0.35,-0.56],[-0.2,0.12],[0,-0.33],[0.13,0.57],[0.35,-0.55],[0.52,0.22],[0.74,-0.17],[0.22,0.05],[-0.16,0.59],[-0.78,0.1]];\nlet seeds = map(fn(p)=>translate(rotate(ellipsoid([0,0,0],[0.045,0.085,0.022],color:\"#38251b\"),p[1],axis:[0,0,1]),[2+p[1],p[2],0.022]),seed_locations);\n",
+      "dialect": "Modern"
+    },
+    {
+      "id": "figure",
+      "kind": "Math",
+      "source": "scene([whole_melon,half_skin,rind,flesh,seeds,label(\"整瓜\",[-2,0,-1.1],offset:[-16,25]),label(\"切面与瓜籽\",[2,0,-1.1],offset:[-36,25])],dimensions:3,mesh_points:8)",
+      "dialect": "Modern"
+    }
+  ]
+}

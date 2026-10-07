@@ -2,11 +2,11 @@
 
 [下一版账本](../plan/NEXT_RELEASE.md) · [验收](../acceptance/r36a/README.md) · [原二维契约](plotting-2d.md)
 
-本节为 `.3` dev 的 R3.6a 基础路径，应用版本仍是 `.2`。曲面、三维参数曲线/曲面、隐式零曲面与OBJ已接入；场景组合/图元/变换及L2/西瓜完整场景继续下一批，不把它们标为已支持。
+本节为 `.3` dev 的 R3.6a 基础路径，应用版本仍是 `.2`。曲面、三维参数曲线/曲面、隐式零曲面与OBJ已接入；场景组合/图元/样式/变换与L2/西瓜已接，规格见[场景图](scene-graph.md)和[可运行案例](../examples/README.md)。完整发行仍须最终同SHA门禁。
 
 ## 入口与边界
 
-实际held注册 `Plot3D`（fn119）、`ParametricPlot3D`（fn219）与 `ImplicitPlot3D`（fn220），描述版本24，兼容原大小写/Wolfram与原现代别名优先级。二维 implicit_plot 的两个轴仍解析为 ContourPlot/fn119，三轴才选三维入口；没有改变原有效二维表达式的数学含义。已有用户parametric_plot绑定仍优先。
+实际held注册 `Plot3D`（fn119）、`ParametricPlot3D`（fn219）与 `ImplicitPlot3D`（fn220），描述版本26，兼容原大小写/Wolfram与原现代别名优先级。二维 implicit_plot 的两个轴仍解析为 ContourPlot/fn119，三轴才选三维入口；没有改变原有效二维表达式的数学含义。已有用户parametric_plot绑定仍优先。
 
 ```om
 # 以下为.3 dev已接通接口。

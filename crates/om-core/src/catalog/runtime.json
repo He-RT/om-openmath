@@ -982,6 +982,105 @@
     ]
   },
   {
+    "id": "fn_000229",
+    "canonical_name": "arrow",
+    "name": "Arrow",
+    "modern_name": "arrow",
+    "aliases": [],
+    "arity": {
+      "min": 2,
+      "max": null
+    },
+    "parameters": [
+      {
+        "name": "start",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": true
+      },
+      {
+        "name": "end",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": true
+      }
+    ],
+    "options": [
+      {
+        "name": "color",
+        "runtime_name": "Color",
+        "value_type": "expression",
+        "required": false,
+        "default_source": null,
+        "default_context": "从scene继承；point/line默认blue，面默认green，支持readonly fn(position)",
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": true
+      },
+      {
+        "name": "opacity",
+        "runtime_name": "Opacity",
+        "value_type": "real",
+        "required": false,
+        "default_source": "1",
+        "default_context": null,
+        "enum_values": [],
+        "min": 0,
+        "max": 1,
+        "variadic": false,
+        "held": true
+      },
+      {
+        "name": "width",
+        "runtime_name": "Width",
+        "value_type": "real",
+        "required": false,
+        "default_source": "2",
+        "default_context": null,
+        "enum_values": [],
+        "min": 0,
+        "max": 32,
+        "variadic": false,
+        "held": true
+      }
+    ],
+    "compatibility_syntax": [],
+    "attributes": [
+      "hold_all",
+      "protected"
+    ],
+    "pipe_arg": 0,
+    "effect_class": "pure",
+    "support": "真实只读场景图元/组合/仿射变换；坐标维数与scene dimensions一致，固定颜色或readonly颜色函数、有限opacity与明确资源边界。二维XY几何保留路径/多边形/marker/label并在桌面Web/iOS原生展示导出；三维Rust真实网格/世界法线/颜色和WebGL2/OBJ，iOS明确fallback不自动采样。曲面/圆曲线和圆管有限机器采样不认证边界；Polygon共面简单边界真实ear clipping，自交/非共面拒绝；Tube平行运输框架/端帽，不保证全局自交不存在。变换不写主变量，退化面可成为实际采样线/点。",
+    "return_type": "scene_node_or_color",
+    "precision_modes": [
+      "machine_geometry"
+    ],
+    "precision_notes": "机器几何/标签展示；源码保留精确数学意义，不宣称任意精度光栅或认证拓扑。",
+    "platforms": [
+      "cli",
+      "desktop",
+      "web",
+      "ios"
+    ]
+  },
+  {
     "id": "fn_000136",
     "canonical_name": "beta",
     "name": "Beta",
@@ -1099,6 +1198,150 @@
       "arbitrary_supported"
     ],
     "precision_notes": "精确计算与已支持的数值近似子集；不把符号保留或格式位数当作新算法/任意精度支持。",
+    "platforms": [
+      "cli",
+      "desktop",
+      "web",
+      "ios"
+    ]
+  },
+  {
+    "id": "fn_000244",
+    "canonical_name": "blend",
+    "name": "Blend",
+    "modern_name": "blend",
+    "aliases": [],
+    "arity": {
+      "min": 2,
+      "max": 2
+    },
+    "parameters": [
+      {
+        "name": "colors",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": false
+      },
+      {
+        "name": "weight",
+        "runtime_name": null,
+        "value_type": "real",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": 0,
+        "max": 1,
+        "variadic": false,
+        "held": false
+      }
+    ],
+    "options": [],
+    "compatibility_syntax": [],
+    "attributes": [
+      "protected"
+    ],
+    "pipe_arg": 0,
+    "effect_class": "pure",
+    "support": "恰好两个受支持颜色名/#RRGGBB或RGB/RGBA列表，weight在0..1，逐分量插值返回RGBA机器实数，不做光学线性化或多色权重。",
+    "return_type": "scene_node_or_color",
+    "precision_modes": [
+      "machine"
+    ],
+    "precision_notes": "几何/颜色数据机器采样；未承诺任意精度光栅。",
+    "platforms": [
+      "cli",
+      "desktop",
+      "web",
+      "ios"
+    ]
+  },
+  {
+    "id": "fn_000235",
+    "canonical_name": "box",
+    "name": "Box",
+    "modern_name": "box",
+    "aliases": [],
+    "arity": {
+      "min": 2,
+      "max": null
+    },
+    "parameters": [
+      {
+        "name": "min",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": true
+      },
+      {
+        "name": "max",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": true
+      }
+    ],
+    "options": [
+      {
+        "name": "color",
+        "runtime_name": "Color",
+        "value_type": "expression",
+        "required": false,
+        "default_source": null,
+        "default_context": "从scene继承；point/line默认blue，面默认green，支持readonly fn(position)",
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": true
+      },
+      {
+        "name": "opacity",
+        "runtime_name": "Opacity",
+        "value_type": "real",
+        "required": false,
+        "default_source": "1",
+        "default_context": null,
+        "enum_values": [],
+        "min": 0,
+        "max": 1,
+        "variadic": false,
+        "held": true
+      }
+    ],
+    "compatibility_syntax": [],
+    "attributes": [
+      "hold_all",
+      "protected"
+    ],
+    "pipe_arg": 0,
+    "effect_class": "pure",
+    "support": "真实只读场景图元/组合/仿射变换；坐标维数与scene dimensions一致，固定颜色或readonly颜色函数、有限opacity与明确资源边界。二维XY几何保留路径/多边形/marker/label并在桌面Web/iOS原生展示导出；三维Rust真实网格/世界法线/颜色和WebGL2/OBJ，iOS明确fallback不自动采样。曲面/圆曲线和圆管有限机器采样不认证边界；Polygon共面简单边界真实ear clipping，自交/非共面拒绝；Tube平行运输框架/端帽，不保证全局自交不存在。变换不写主变量，退化面可成为实际采样线/点。",
+    "return_type": "scene_node_or_color",
+    "precision_modes": [
+      "machine_geometry"
+    ],
+    "precision_notes": "机器几何/标签展示；源码保留精确数学意义，不宣称任意精度光栅或认证拓扑。",
     "platforms": [
       "cli",
       "desktop",
@@ -1419,6 +1662,118 @@
       "planned_machine"
     ],
     "precision_notes": "精确值或明确的机器路径；precision/accuracy 查询输入已有信息。",
+    "platforms": [
+      "cli",
+      "desktop",
+      "web",
+      "ios"
+    ]
+  },
+  {
+    "id": "fn_000230",
+    "canonical_name": "circle",
+    "name": "Circle",
+    "modern_name": "circle",
+    "aliases": [],
+    "arity": {
+      "min": 2,
+      "max": null
+    },
+    "parameters": [
+      {
+        "name": "center",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": true
+      },
+      {
+        "name": "radius",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": true
+      }
+    ],
+    "options": [
+      {
+        "name": "color",
+        "runtime_name": "Color",
+        "value_type": "expression",
+        "required": false,
+        "default_source": null,
+        "default_context": "从scene继承；point/line默认blue，面默认green，支持readonly fn(position)",
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": true
+      },
+      {
+        "name": "opacity",
+        "runtime_name": "Opacity",
+        "value_type": "real",
+        "required": false,
+        "default_source": "1",
+        "default_context": null,
+        "enum_values": [],
+        "min": 0,
+        "max": 1,
+        "variadic": false,
+        "held": true
+      },
+      {
+        "name": "width",
+        "runtime_name": "Width",
+        "value_type": "real",
+        "required": false,
+        "default_source": "2",
+        "default_context": null,
+        "enum_values": [],
+        "min": 0,
+        "max": 32,
+        "variadic": false,
+        "held": true
+      },
+      {
+        "name": "normal",
+        "runtime_name": "Normal",
+        "value_type": "expression",
+        "required": false,
+        "default_source": null,
+        "default_context": "默认{0,0,1}；二维必须垂直XY",
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": true
+      }
+    ],
+    "compatibility_syntax": [],
+    "attributes": [
+      "hold_all",
+      "protected"
+    ],
+    "pipe_arg": 0,
+    "effect_class": "pure",
+    "support": "真实只读场景图元/组合/仿射变换；坐标维数与scene dimensions一致，固定颜色或readonly颜色函数、有限opacity与明确资源边界。二维XY几何保留路径/多边形/marker/label并在桌面Web/iOS原生展示导出；三维Rust真实网格/世界法线/颜色和WebGL2/OBJ，iOS明确fallback不自动采样。曲面/圆曲线和圆管有限机器采样不认证边界；Polygon共面简单边界真实ear clipping，自交/非共面拒绝；Tube平行运输框架/端帽，不保证全局自交不存在。变换不写主变量，退化面可成为实际采样线/点。",
+    "return_type": "scene_node_or_color",
+    "precision_modes": [
+      "machine_geometry"
+    ],
+    "precision_notes": "机器几何/标签展示；源码保留精确数学意义，不宣称任意精度光栅或认证拓扑。",
     "platforms": [
       "cli",
       "desktop",
@@ -1872,6 +2227,105 @@
       "arbitrary_supported"
     ],
     "precision_notes": "精确计算与已支持的数值近似子集；不把符号保留或格式位数当作新算法/任意精度支持。",
+    "platforms": [
+      "cli",
+      "desktop",
+      "web",
+      "ios"
+    ]
+  },
+  {
+    "id": "fn_000237",
+    "canonical_name": "cone",
+    "name": "Cone",
+    "modern_name": "cone",
+    "aliases": [],
+    "arity": {
+      "min": 3,
+      "max": null
+    },
+    "parameters": [
+      {
+        "name": "start",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": true
+      },
+      {
+        "name": "end",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": true
+      },
+      {
+        "name": "radius",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": true
+      }
+    ],
+    "options": [
+      {
+        "name": "color",
+        "runtime_name": "Color",
+        "value_type": "expression",
+        "required": false,
+        "default_source": null,
+        "default_context": "从scene继承；point/line默认blue，面默认green，支持readonly fn(position)",
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": true
+      },
+      {
+        "name": "opacity",
+        "runtime_name": "Opacity",
+        "value_type": "real",
+        "required": false,
+        "default_source": "1",
+        "default_context": null,
+        "enum_values": [],
+        "min": 0,
+        "max": 1,
+        "variadic": false,
+        "held": true
+      }
+    ],
+    "compatibility_syntax": [],
+    "attributes": [
+      "hold_all",
+      "protected"
+    ],
+    "pipe_arg": 0,
+    "effect_class": "pure",
+    "support": "真实只读场景图元/组合/仿射变换；坐标维数与scene dimensions一致，固定颜色或readonly颜色函数、有限opacity与明确资源边界。二维XY几何保留路径/多边形/marker/label并在桌面Web/iOS原生展示导出；三维Rust真实网格/世界法线/颜色和WebGL2/OBJ，iOS明确fallback不自动采样。曲面/圆曲线和圆管有限机器采样不认证边界；Polygon共面简单边界真实ear clipping，自交/非共面拒绝；Tube平行运输框架/端帽，不保证全局自交不存在。变换不写主变量，退化面可成为实际采样线/点。",
+    "return_type": "scene_node_or_color",
+    "precision_modes": [
+      "machine_geometry"
+    ],
+    "precision_notes": "机器几何/标签展示；源码保留精确数学意义，不宣称任意精度光栅或认证拓扑。",
     "platforms": [
       "cli",
       "desktop",
@@ -2748,6 +3202,105 @@
     ]
   },
   {
+    "id": "fn_000236",
+    "canonical_name": "cylinder",
+    "name": "Cylinder",
+    "modern_name": "cylinder",
+    "aliases": [],
+    "arity": {
+      "min": 3,
+      "max": null
+    },
+    "parameters": [
+      {
+        "name": "start",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": true
+      },
+      {
+        "name": "end",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": true
+      },
+      {
+        "name": "radius",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": true
+      }
+    ],
+    "options": [
+      {
+        "name": "color",
+        "runtime_name": "Color",
+        "value_type": "expression",
+        "required": false,
+        "default_source": null,
+        "default_context": "从scene继承；point/line默认blue，面默认green，支持readonly fn(position)",
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": true
+      },
+      {
+        "name": "opacity",
+        "runtime_name": "Opacity",
+        "value_type": "real",
+        "required": false,
+        "default_source": "1",
+        "default_context": null,
+        "enum_values": [],
+        "min": 0,
+        "max": 1,
+        "variadic": false,
+        "held": true
+      }
+    ],
+    "compatibility_syntax": [],
+    "attributes": [
+      "hold_all",
+      "protected"
+    ],
+    "pipe_arg": 0,
+    "effect_class": "pure",
+    "support": "真实只读场景图元/组合/仿射变换；坐标维数与scene dimensions一致，固定颜色或readonly颜色函数、有限opacity与明确资源边界。二维XY几何保留路径/多边形/marker/label并在桌面Web/iOS原生展示导出；三维Rust真实网格/世界法线/颜色和WebGL2/OBJ，iOS明确fallback不自动采样。曲面/圆曲线和圆管有限机器采样不认证边界；Polygon共面简单边界真实ear clipping，自交/非共面拒绝；Tube平行运输框架/端帽，不保证全局自交不存在。变换不写主变量，退化面可成为实际采样线/点。",
+    "return_type": "scene_node_or_color",
+    "precision_modes": [
+      "machine_geometry"
+    ],
+    "precision_notes": "机器几何/标签展示；源码保留精确数学意义，不宣称任意精度光栅或认证拓扑。",
+    "platforms": [
+      "cli",
+      "desktop",
+      "web",
+      "ios"
+    ]
+  },
+  {
     "id": "fn_000032",
     "canonical_name": "diff",
     "name": "D",
@@ -3309,6 +3862,105 @@
     ]
   },
   {
+    "id": "fn_000231",
+    "canonical_name": "disk",
+    "name": "Disk",
+    "modern_name": "disk",
+    "aliases": [],
+    "arity": {
+      "min": 2,
+      "max": null
+    },
+    "parameters": [
+      {
+        "name": "center",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": true
+      },
+      {
+        "name": "radius",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": true
+      }
+    ],
+    "options": [
+      {
+        "name": "color",
+        "runtime_name": "Color",
+        "value_type": "expression",
+        "required": false,
+        "default_source": null,
+        "default_context": "从scene继承；point/line默认blue，面默认green，支持readonly fn(position)",
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": true
+      },
+      {
+        "name": "opacity",
+        "runtime_name": "Opacity",
+        "value_type": "real",
+        "required": false,
+        "default_source": "1",
+        "default_context": null,
+        "enum_values": [],
+        "min": 0,
+        "max": 1,
+        "variadic": false,
+        "held": true
+      },
+      {
+        "name": "normal",
+        "runtime_name": "Normal",
+        "value_type": "expression",
+        "required": false,
+        "default_source": null,
+        "default_context": "默认{0,0,1}；二维必须垂直XY",
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": true
+      }
+    ],
+    "compatibility_syntax": [],
+    "attributes": [
+      "hold_all",
+      "protected"
+    ],
+    "pipe_arg": 0,
+    "effect_class": "pure",
+    "support": "真实只读场景图元/组合/仿射变换；坐标维数与scene dimensions一致，固定颜色或readonly颜色函数、有限opacity与明确资源边界。二维XY几何保留路径/多边形/marker/label并在桌面Web/iOS原生展示导出；三维Rust真实网格/世界法线/颜色和WebGL2/OBJ，iOS明确fallback不自动采样。曲面/圆曲线和圆管有限机器采样不认证边界；Polygon共面简单边界真实ear clipping，自交/非共面拒绝；Tube平行运输框架/端帽，不保证全局自交不存在。变换不写主变量，退化面可成为实际采样线/点。",
+    "return_type": "scene_node_or_color",
+    "precision_modes": [
+      "machine_geometry"
+    ],
+    "precision_notes": "机器几何/标签展示；源码保留精确数学意义，不宣称任意精度光栅或认证拓扑。",
+    "platforms": [
+      "cli",
+      "desktop",
+      "web",
+      "ios"
+    ]
+  },
+  {
     "id": "fn_000145",
     "canonical_name": "div",
     "name": "Divergence",
@@ -3749,6 +4401,92 @@
       "arbitrary_supported"
     ],
     "precision_notes": "精确计算与已支持的数值近似子集；不把符号保留或格式位数当作新算法/任意精度支持。",
+    "platforms": [
+      "cli",
+      "desktop",
+      "web",
+      "ios"
+    ]
+  },
+  {
+    "id": "fn_000234",
+    "canonical_name": "ellipsoid",
+    "name": "Ellipsoid",
+    "modern_name": "ellipsoid",
+    "aliases": [],
+    "arity": {
+      "min": 2,
+      "max": null
+    },
+    "parameters": [
+      {
+        "name": "center",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": true
+      },
+      {
+        "name": "radii",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": true
+      }
+    ],
+    "options": [
+      {
+        "name": "color",
+        "runtime_name": "Color",
+        "value_type": "expression",
+        "required": false,
+        "default_source": null,
+        "default_context": "从scene继承；point/line默认blue，面默认green，支持readonly fn(position)",
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": true
+      },
+      {
+        "name": "opacity",
+        "runtime_name": "Opacity",
+        "value_type": "real",
+        "required": false,
+        "default_source": "1",
+        "default_context": null,
+        "enum_values": [],
+        "min": 0,
+        "max": 1,
+        "variadic": false,
+        "held": true
+      }
+    ],
+    "compatibility_syntax": [],
+    "attributes": [
+      "hold_all",
+      "protected"
+    ],
+    "pipe_arg": 0,
+    "effect_class": "pure",
+    "support": "真实只读场景图元/组合/仿射变换；坐标维数与scene dimensions一致，固定颜色或readonly颜色函数、有限opacity与明确资源边界。二维XY几何保留路径/多边形/marker/label并在桌面Web/iOS原生展示导出；三维Rust真实网格/世界法线/颜色和WebGL2/OBJ，iOS明确fallback不自动采样。曲面/圆曲线和圆管有限机器采样不认证边界；Polygon共面简单边界真实ear clipping，自交/非共面拒绝；Tube平行运输框架/端帽，不保证全局自交不存在。变换不写主变量，退化面可成为实际采样线/点。",
+    "return_type": "scene_node_or_color",
+    "precision_modes": [
+      "machine_geometry"
+    ],
+    "precision_notes": "机器几何/标签展示；源码保留精确数学意义，不宣称任意精度光栅或认证拓扑。",
     "platforms": [
       "cli",
       "desktop",
@@ -6663,6 +7401,105 @@
     ]
   },
   {
+    "id": "fn_000239",
+    "canonical_name": "label",
+    "name": "Label",
+    "modern_name": "label",
+    "aliases": [],
+    "arity": {
+      "min": 2,
+      "max": null
+    },
+    "parameters": [
+      {
+        "name": "text",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": true
+      },
+      {
+        "name": "position",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": true
+      }
+    ],
+    "options": [
+      {
+        "name": "color",
+        "runtime_name": "Color",
+        "value_type": "expression",
+        "required": false,
+        "default_source": null,
+        "default_context": "从scene继承；point/line默认blue，面默认green，支持readonly fn(position)",
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": true
+      },
+      {
+        "name": "opacity",
+        "runtime_name": "Opacity",
+        "value_type": "real",
+        "required": false,
+        "default_source": "1",
+        "default_context": null,
+        "enum_values": [],
+        "min": 0,
+        "max": 1,
+        "variadic": false,
+        "held": true
+      },
+      {
+        "name": "offset",
+        "runtime_name": "Offset",
+        "value_type": "expression",
+        "required": false,
+        "default_source": "{8,-10}",
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": true
+      }
+    ],
+    "compatibility_syntax": [],
+    "attributes": [
+      "hold_all",
+      "protected"
+    ],
+    "pipe_arg": 0,
+    "effect_class": "pure",
+    "support": "真实只读场景图元/组合/仿射变换；坐标维数与scene dimensions一致，固定颜色或readonly颜色函数、有限opacity与明确资源边界。二维XY几何保留路径/多边形/marker/label并在桌面Web/iOS原生展示导出；三维Rust真实网格/世界法线/颜色和WebGL2/OBJ，iOS明确fallback不自动采样。曲面/圆曲线和圆管有限机器采样不认证边界；Polygon共面简单边界真实ear clipping，自交/非共面拒绝；Tube平行运输框架/端帽，不保证全局自交不存在。变换不写主变量，退化面可成为实际采样线/点。",
+    "return_type": "scene_node_or_color",
+    "precision_modes": [
+      "machine_geometry"
+    ],
+    "precision_notes": "机器几何/标签展示；源码保留精确数学意义，不宣称任意精度光栅或认证拓扑。",
+    "platforms": [
+      "cli",
+      "desktop",
+      "web",
+      "ios"
+    ]
+  },
+  {
     "id": "fn_000147",
     "canonical_name": "laplacian",
     "name": "Laplacian",
@@ -7076,6 +7913,92 @@
       "exact_symbolic"
     ],
     "precision_notes": "首版精确系数与精确实点；不把机器/大浮点输入舍入成符号证书。Taylor不是Laurent/渐近误差界，未计算或截断外不声称零。",
+    "platforms": [
+      "cli",
+      "desktop",
+      "web",
+      "ios"
+    ]
+  },
+  {
+    "id": "fn_000228",
+    "canonical_name": "line",
+    "name": "Line",
+    "modern_name": "line",
+    "aliases": [],
+    "arity": {
+      "min": 1,
+      "max": null
+    },
+    "parameters": [
+      {
+        "name": "points",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": true
+      }
+    ],
+    "options": [
+      {
+        "name": "color",
+        "runtime_name": "Color",
+        "value_type": "expression",
+        "required": false,
+        "default_source": null,
+        "default_context": "从scene继承；point/line默认blue，面默认green，支持readonly fn(position)",
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": true
+      },
+      {
+        "name": "opacity",
+        "runtime_name": "Opacity",
+        "value_type": "real",
+        "required": false,
+        "default_source": "1",
+        "default_context": null,
+        "enum_values": [],
+        "min": 0,
+        "max": 1,
+        "variadic": false,
+        "held": true
+      },
+      {
+        "name": "width",
+        "runtime_name": "Width",
+        "value_type": "real",
+        "required": false,
+        "default_source": "2",
+        "default_context": null,
+        "enum_values": [],
+        "min": 0,
+        "max": 32,
+        "variadic": false,
+        "held": true
+      }
+    ],
+    "compatibility_syntax": [],
+    "attributes": [
+      "hold_all",
+      "protected"
+    ],
+    "pipe_arg": 0,
+    "effect_class": "pure",
+    "support": "真实只读场景图元/组合/仿射变换；坐标维数与scene dimensions一致，固定颜色或readonly颜色函数、有限opacity与明确资源边界。二维XY几何保留路径/多边形/marker/label并在桌面Web/iOS原生展示导出；三维Rust真实网格/世界法线/颜色和WebGL2/OBJ，iOS明确fallback不自动采样。曲面/圆曲线和圆管有限机器采样不认证边界；Polygon共面简单边界真实ear clipping，自交/非共面拒绝；Tube平行运输框架/端帽，不保证全局自交不存在。变换不写主变量，退化面可成为实际采样线/点。",
+    "return_type": "scene_node_or_color",
+    "precision_modes": [
+      "machine_geometry"
+    ],
+    "precision_notes": "机器几何/标签展示；源码保留精确数学意义，不宣称任意精度光栅或认证拓扑。",
     "platforms": [
       "cli",
       "desktop",
@@ -10196,6 +11119,165 @@
     ]
   },
   {
+    "id": "fn_000227",
+    "canonical_name": "point",
+    "name": "Point",
+    "modern_name": "point",
+    "aliases": [],
+    "arity": {
+      "min": 1,
+      "max": null
+    },
+    "parameters": [
+      {
+        "name": "position",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": true
+      }
+    ],
+    "options": [
+      {
+        "name": "color",
+        "runtime_name": "Color",
+        "value_type": "expression",
+        "required": false,
+        "default_source": null,
+        "default_context": "从scene继承；point/line默认blue，面默认green，支持readonly fn(position)",
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": true
+      },
+      {
+        "name": "opacity",
+        "runtime_name": "Opacity",
+        "value_type": "real",
+        "required": false,
+        "default_source": "1",
+        "default_context": null,
+        "enum_values": [],
+        "min": 0,
+        "max": 1,
+        "variadic": false,
+        "held": true
+      },
+      {
+        "name": "width",
+        "runtime_name": "Width",
+        "value_type": "real",
+        "required": false,
+        "default_source": "2",
+        "default_context": null,
+        "enum_values": [],
+        "min": 0,
+        "max": 32,
+        "variadic": false,
+        "held": true
+      }
+    ],
+    "compatibility_syntax": [],
+    "attributes": [
+      "hold_all",
+      "protected"
+    ],
+    "pipe_arg": 0,
+    "effect_class": "pure",
+    "support": "真实只读场景图元/组合/仿射变换；坐标维数与scene dimensions一致，固定颜色或readonly颜色函数、有限opacity与明确资源边界。二维XY几何保留路径/多边形/marker/label并在桌面Web/iOS原生展示导出；三维Rust真实网格/世界法线/颜色和WebGL2/OBJ，iOS明确fallback不自动采样。曲面/圆曲线和圆管有限机器采样不认证边界；Polygon共面简单边界真实ear clipping，自交/非共面拒绝；Tube平行运输框架/端帽，不保证全局自交不存在。变换不写主变量，退化面可成为实际采样线/点。",
+    "return_type": "scene_node_or_color",
+    "precision_modes": [
+      "machine_geometry"
+    ],
+    "precision_notes": "机器几何/标签展示；源码保留精确数学意义，不宣称任意精度光栅或认证拓扑。",
+    "platforms": [
+      "cli",
+      "desktop",
+      "web",
+      "ios"
+    ]
+  },
+  {
+    "id": "fn_000232",
+    "canonical_name": "polygon",
+    "name": "Polygon",
+    "modern_name": "polygon",
+    "aliases": [],
+    "arity": {
+      "min": 1,
+      "max": null
+    },
+    "parameters": [
+      {
+        "name": "vertices",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": true
+      }
+    ],
+    "options": [
+      {
+        "name": "color",
+        "runtime_name": "Color",
+        "value_type": "expression",
+        "required": false,
+        "default_source": null,
+        "default_context": "从scene继承；point/line默认blue，面默认green，支持readonly fn(position)",
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": true
+      },
+      {
+        "name": "opacity",
+        "runtime_name": "Opacity",
+        "value_type": "real",
+        "required": false,
+        "default_source": "1",
+        "default_context": null,
+        "enum_values": [],
+        "min": 0,
+        "max": 1,
+        "variadic": false,
+        "held": true
+      }
+    ],
+    "compatibility_syntax": [],
+    "attributes": [
+      "hold_all",
+      "protected"
+    ],
+    "pipe_arg": 0,
+    "effect_class": "pure",
+    "support": "真实只读场景图元/组合/仿射变换；坐标维数与scene dimensions一致，固定颜色或readonly颜色函数、有限opacity与明确资源边界。二维XY几何保留路径/多边形/marker/label并在桌面Web/iOS原生展示导出；三维Rust真实网格/世界法线/颜色和WebGL2/OBJ，iOS明确fallback不自动采样。曲面/圆曲线和圆管有限机器采样不认证边界；Polygon共面简单边界真实ear clipping，自交/非共面拒绝；Tube平行运输框架/端帽，不保证全局自交不存在。变换不写主变量，退化面可成为实际采样线/点。",
+    "return_type": "scene_node_or_color",
+    "precision_modes": [
+      "machine_geometry"
+    ],
+    "precision_notes": "机器几何/标签展示；源码保留精确数学意义，不宣称任意精度光栅或认证拓扑。",
+    "platforms": [
+      "cli",
+      "desktop",
+      "web",
+      "ios"
+    ]
+  },
+  {
     "id": "fn_000073",
     "canonical_name": "polynomial_gcd",
     "name": "PolynomialGCD",
@@ -12617,6 +13699,92 @@
     ]
   },
   {
+    "id": "fn_000241",
+    "canonical_name": "rotate",
+    "name": "Rotate",
+    "modern_name": "rotate",
+    "aliases": [],
+    "arity": {
+      "min": 2,
+      "max": null
+    },
+    "parameters": [
+      {
+        "name": "node",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": true
+      },
+      {
+        "name": "angle",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": true
+      }
+    ],
+    "options": [
+      {
+        "name": "center",
+        "runtime_name": "Center",
+        "value_type": "expression",
+        "required": false,
+        "default_source": null,
+        "default_context": "当前scene维数的原点",
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": true
+      },
+      {
+        "name": "axis",
+        "runtime_name": "Axis",
+        "value_type": "expression",
+        "required": false,
+        "default_source": null,
+        "default_context": "三维默认{0,0,1}；二维不接受axis",
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": true
+      }
+    ],
+    "compatibility_syntax": [],
+    "attributes": [
+      "hold_all",
+      "protected"
+    ],
+    "pipe_arg": 1,
+    "effect_class": "pure",
+    "support": "真实只读场景图元/组合/仿射变换；坐标维数与scene dimensions一致，固定颜色或readonly颜色函数、有限opacity与明确资源边界。二维XY几何保留路径/多边形/marker/label并在桌面Web/iOS原生展示导出；三维Rust真实网格/世界法线/颜色和WebGL2/OBJ，iOS明确fallback不自动采样。曲面/圆曲线和圆管有限机器采样不认证边界；Polygon共面简单边界真实ear clipping，自交/非共面拒绝；Tube平行运输框架/端帽，不保证全局自交不存在。变换不写主变量，退化面可成为实际采样线/点。",
+    "return_type": "scene_node_or_color",
+    "precision_modes": [
+      "machine_geometry"
+    ],
+    "precision_notes": "机器几何/标签展示；源码保留精确数学意义，不宣称任意精度光栅或认证拓扑。",
+    "platforms": [
+      "cli",
+      "desktop",
+      "web",
+      "ios"
+    ]
+  },
+  {
     "id": "fn_000093",
     "canonical_name": "round",
     "name": "Round",
@@ -12955,6 +14123,178 @@
       "machine"
     ],
     "precision_notes": "仅机器实数算法；精确有限常量显式数值化，高精度输入/precision不静默降级。",
+    "platforms": [
+      "cli",
+      "desktop",
+      "web",
+      "ios"
+    ]
+  },
+  {
+    "id": "fn_000242",
+    "canonical_name": "scale",
+    "name": "Scale",
+    "modern_name": "scale",
+    "aliases": [],
+    "arity": {
+      "min": 2,
+      "max": null
+    },
+    "parameters": [
+      {
+        "name": "node",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": true
+      },
+      {
+        "name": "factors",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": true
+      }
+    ],
+    "options": [
+      {
+        "name": "center",
+        "runtime_name": "Center",
+        "value_type": "expression",
+        "required": false,
+        "default_source": null,
+        "default_context": "当前scene维数的原点",
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": true
+      }
+    ],
+    "compatibility_syntax": [],
+    "attributes": [
+      "hold_all",
+      "protected"
+    ],
+    "pipe_arg": 1,
+    "effect_class": "pure",
+    "support": "真实只读场景图元/组合/仿射变换；坐标维数与scene dimensions一致，固定颜色或readonly颜色函数、有限opacity与明确资源边界。二维XY几何保留路径/多边形/marker/label并在桌面Web/iOS原生展示导出；三维Rust真实网格/世界法线/颜色和WebGL2/OBJ，iOS明确fallback不自动采样。曲面/圆曲线和圆管有限机器采样不认证边界；Polygon共面简单边界真实ear clipping，自交/非共面拒绝；Tube平行运输框架/端帽，不保证全局自交不存在。变换不写主变量，退化面可成为实际采样线/点。",
+    "return_type": "scene_node_or_color",
+    "precision_modes": [
+      "machine_geometry"
+    ],
+    "precision_notes": "机器几何/标签展示；源码保留精确数学意义，不宣称任意精度光栅或认证拓扑。",
+    "platforms": [
+      "cli",
+      "desktop",
+      "web",
+      "ios"
+    ]
+  },
+  {
+    "id": "fn_000226",
+    "canonical_name": "scene",
+    "name": "Scene",
+    "modern_name": "scene",
+    "aliases": [],
+    "arity": {
+      "min": 1,
+      "max": null
+    },
+    "parameters": [
+      {
+        "name": "nodes",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": true
+      }
+    ],
+    "options": [
+      {
+        "name": "color",
+        "runtime_name": "Color",
+        "value_type": "expression",
+        "required": false,
+        "default_source": null,
+        "default_context": "从scene继承；point/line默认blue，面默认green，支持readonly fn(position)",
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": true
+      },
+      {
+        "name": "opacity",
+        "runtime_name": "Opacity",
+        "value_type": "real",
+        "required": false,
+        "default_source": "1",
+        "default_context": null,
+        "enum_values": [],
+        "min": 0,
+        "max": 1,
+        "variadic": false,
+        "held": true
+      },
+      {
+        "name": "dimensions",
+        "runtime_name": "Dimensions",
+        "value_type": "integer",
+        "required": false,
+        "default_source": "2",
+        "default_context": null,
+        "enum_values": [],
+        "min": 2,
+        "max": 3,
+        "variadic": false,
+        "held": true
+      },
+      {
+        "name": "mesh_points",
+        "runtime_name": "MeshPoints",
+        "value_type": "integer",
+        "required": false,
+        "default_source": "32",
+        "default_context": null,
+        "enum_values": [],
+        "min": 8,
+        "max": 64,
+        "variadic": false,
+        "held": true
+      }
+    ],
+    "compatibility_syntax": [],
+    "attributes": [
+      "hold_all",
+      "protected"
+    ],
+    "pipe_arg": 1,
+    "effect_class": "pure",
+    "support": "真实只读场景图元/组合/仿射变换；坐标维数与scene dimensions一致，固定颜色或readonly颜色函数、有限opacity与明确资源边界。二维XY几何保留路径/多边形/marker/label并在桌面Web/iOS原生展示导出；三维Rust真实网格/世界法线/颜色和WebGL2/OBJ，iOS明确fallback不自动采样。曲面/圆曲线和圆管有限机器采样不认证边界；Polygon共面简单边界真实ear clipping，自交/非共面拒绝；Tube平行运输框架/端帽，不保证全局自交不存在。变换不写主变量，退化面可成为实际采样线/点。",
+    "return_type": "scene_node_or_color",
+    "precision_modes": [
+      "machine_geometry"
+    ],
+    "precision_notes": "机器几何/标签展示；源码保留精确数学意义，不宣称任意精度光栅或认证拓扑。",
     "platforms": [
       "cli",
       "desktop",
@@ -14243,6 +15583,92 @@
     ]
   },
   {
+    "id": "fn_000233",
+    "canonical_name": "sphere",
+    "name": "Sphere",
+    "modern_name": "sphere",
+    "aliases": [],
+    "arity": {
+      "min": 2,
+      "max": null
+    },
+    "parameters": [
+      {
+        "name": "center",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": true
+      },
+      {
+        "name": "radius",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": true
+      }
+    ],
+    "options": [
+      {
+        "name": "color",
+        "runtime_name": "Color",
+        "value_type": "expression",
+        "required": false,
+        "default_source": null,
+        "default_context": "从scene继承；point/line默认blue，面默认green，支持readonly fn(position)",
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": true
+      },
+      {
+        "name": "opacity",
+        "runtime_name": "Opacity",
+        "value_type": "real",
+        "required": false,
+        "default_source": "1",
+        "default_context": null,
+        "enum_values": [],
+        "min": 0,
+        "max": 1,
+        "variadic": false,
+        "held": true
+      }
+    ],
+    "compatibility_syntax": [],
+    "attributes": [
+      "hold_all",
+      "protected"
+    ],
+    "pipe_arg": 0,
+    "effect_class": "pure",
+    "support": "真实只读场景图元/组合/仿射变换；坐标维数与scene dimensions一致，固定颜色或readonly颜色函数、有限opacity与明确资源边界。二维XY几何保留路径/多边形/marker/label并在桌面Web/iOS原生展示导出；三维Rust真实网格/世界法线/颜色和WebGL2/OBJ，iOS明确fallback不自动采样。曲面/圆曲线和圆管有限机器采样不认证边界；Polygon共面简单边界真实ear clipping，自交/非共面拒绝；Tube平行运输框架/端帽，不保证全局自交不存在。变换不写主变量，退化面可成为实际采样线/点。",
+    "return_type": "scene_node_or_color",
+    "precision_modes": [
+      "machine_geometry"
+    ],
+    "precision_notes": "机器几何/标签展示；源码保留精确数学意义，不宣称任意精度光栅或认证拓扑。",
+    "platforms": [
+      "cli",
+      "desktop",
+      "web",
+      "ios"
+    ]
+  },
+  {
     "id": "fn_000105",
     "canonical_name": "sqrt",
     "name": "Sqrt",
@@ -14345,6 +15771,79 @@
       "planned_machine"
     ],
     "precision_notes": "基础聚合可保留精确有理值；标准差/相关等机器路径明确标记。",
+    "platforms": [
+      "cli",
+      "desktop",
+      "web",
+      "ios"
+    ]
+  },
+  {
+    "id": "fn_000243",
+    "canonical_name": "style",
+    "name": "Style",
+    "modern_name": "style",
+    "aliases": [],
+    "arity": {
+      "min": 1,
+      "max": null
+    },
+    "parameters": [
+      {
+        "name": "node",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": true
+      }
+    ],
+    "options": [
+      {
+        "name": "color",
+        "runtime_name": "Color",
+        "value_type": "expression",
+        "required": false,
+        "default_source": null,
+        "default_context": "继承父scene；颜色名/#RRGGBB/RGB/RGBA或只读fn(position)",
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": true
+      },
+      {
+        "name": "opacity",
+        "runtime_name": "Opacity",
+        "value_type": "real",
+        "required": false,
+        "default_source": "1",
+        "default_context": null,
+        "enum_values": [],
+        "min": 0,
+        "max": 1,
+        "variadic": false,
+        "held": true
+      }
+    ],
+    "compatibility_syntax": [],
+    "attributes": [
+      "hold_all",
+      "protected"
+    ],
+    "pipe_arg": 1,
+    "effect_class": "pure",
+    "support": "held样式包装；二维/三维实际scene节点与列表分组继承color/opacity，子节点显式样式覆盖继承；图元外包需放入scene容器。",
+    "return_type": "scene_node_or_color",
+    "precision_modes": [
+      "machine"
+    ],
+    "precision_notes": "几何/颜色数据机器采样；未承诺任意精度光栅。",
     "platforms": [
       "cli",
       "desktop",
@@ -15023,6 +16522,65 @@
     ]
   },
   {
+    "id": "fn_000240",
+    "canonical_name": "translate",
+    "name": "Translate",
+    "modern_name": "translate",
+    "aliases": [],
+    "arity": {
+      "min": 2,
+      "max": 2
+    },
+    "parameters": [
+      {
+        "name": "node",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": true
+      },
+      {
+        "name": "vector",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": true
+      }
+    ],
+    "options": [],
+    "compatibility_syntax": [],
+    "attributes": [
+      "hold_all",
+      "protected"
+    ],
+    "pipe_arg": 1,
+    "effect_class": "pure",
+    "support": "真实只读场景图元/组合/仿射变换；坐标维数与scene dimensions一致，固定颜色或readonly颜色函数、有限opacity与明确资源边界。二维XY几何保留路径/多边形/marker/label并在桌面Web/iOS原生展示导出；三维Rust真实网格/世界法线/颜色和WebGL2/OBJ，iOS明确fallback不自动采样。曲面/圆曲线和圆管有限机器采样不认证边界；Polygon共面简单边界真实ear clipping，自交/非共面拒绝；Tube平行运输框架/端帽，不保证全局自交不存在。变换不写主变量，退化面可成为实际采样线/点。",
+    "return_type": "scene_node_or_color",
+    "precision_modes": [
+      "machine_geometry"
+    ],
+    "precision_notes": "机器几何/标签展示；源码保留精确数学意义，不宣称任意精度光栅或认证拓扑。",
+    "platforms": [
+      "cli",
+      "desktop",
+      "web",
+      "ios"
+    ]
+  },
+  {
     "id": "fn_000161",
     "canonical_name": "transpose",
     "name": "Transpose",
@@ -15060,6 +16618,92 @@
       "planned_machine"
     ],
     "precision_notes": "精确有理基础路径与明确的机器分解；分解不承诺任意精度。",
+    "platforms": [
+      "cli",
+      "desktop",
+      "web",
+      "ios"
+    ]
+  },
+  {
+    "id": "fn_000238",
+    "canonical_name": "tube",
+    "name": "Tube",
+    "modern_name": "tube",
+    "aliases": [],
+    "arity": {
+      "min": 2,
+      "max": null
+    },
+    "parameters": [
+      {
+        "name": "path",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": true
+      },
+      {
+        "name": "radius",
+        "runtime_name": null,
+        "value_type": "expression",
+        "required": true,
+        "default_source": null,
+        "default_context": null,
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": true
+      }
+    ],
+    "options": [
+      {
+        "name": "color",
+        "runtime_name": "Color",
+        "value_type": "expression",
+        "required": false,
+        "default_source": null,
+        "default_context": "从scene继承；point/line默认blue，面默认green，支持readonly fn(position)",
+        "enum_values": [],
+        "min": null,
+        "max": null,
+        "variadic": false,
+        "held": true
+      },
+      {
+        "name": "opacity",
+        "runtime_name": "Opacity",
+        "value_type": "real",
+        "required": false,
+        "default_source": "1",
+        "default_context": null,
+        "enum_values": [],
+        "min": 0,
+        "max": 1,
+        "variadic": false,
+        "held": true
+      }
+    ],
+    "compatibility_syntax": [],
+    "attributes": [
+      "hold_all",
+      "protected"
+    ],
+    "pipe_arg": 0,
+    "effect_class": "pure",
+    "support": "真实只读场景图元/组合/仿射变换；坐标维数与scene dimensions一致，固定颜色或readonly颜色函数、有限opacity与明确资源边界。二维XY几何保留路径/多边形/marker/label并在桌面Web/iOS原生展示导出；三维Rust真实网格/世界法线/颜色和WebGL2/OBJ，iOS明确fallback不自动采样。曲面/圆曲线和圆管有限机器采样不认证边界；Polygon共面简单边界真实ear clipping，自交/非共面拒绝；Tube平行运输框架/端帽，不保证全局自交不存在。变换不写主变量，退化面可成为实际采样线/点。",
+    "return_type": "scene_node_or_color",
+    "precision_modes": [
+      "machine_geometry"
+    ],
+    "precision_notes": "机器几何/标签展示；源码保留精确数学意义，不宣称任意精度光栅或认证拓扑。",
     "platforms": [
       "cli",
       "desktop",

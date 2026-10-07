@@ -476,6 +476,7 @@ pub(super) fn sample(
 ) -> Result<PlotData, PlotError> {
     let (vars, locals) = setup(r, eval, ctx)?;
     let mut data = match r.kind {
+        PlotKind::Scene => return crate::scene_graph::sample_plot(r, eval, ctx),
         PlotKind::Parametric => parametric::sample(r, eval, ctx)?,
         PlotKind::Field => field::sample(r, eval, ctx)?,
         PlotKind::Region => grid::region(r, eval, ctx)?,

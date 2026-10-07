@@ -15,6 +15,10 @@ pub(super) enum Shape {
     Rect(Point, Point, Color, f64),
     Circle(Point, f64, Color),
     Text(Point, String, f32, Color, Anchor),
+    Polygon(Vec<Point>, Color, f64),
+    StyledLine(Point, Point, Color, f64, f64),
+    StyledMarker(Point, f64, Color, f64),
+    StyledText(Point, String, f32, Color, f64),
 }
 pub(super) struct Drawing {
     pub width: u32,
@@ -23,27 +27,9 @@ pub(super) struct Drawing {
     pub metadata: String,
 }
 pub(super) fn color(s: &str) -> Result<Color, ArtifactError> {
-    let hex = match s {
-        "green" => "21854a",
-        "blue" => "3266b0",
-        "red" => "bc3838",
-        "orange" => "ba7425",
-        "purple" => "81549e",
-        "cyan" => "248d91",
-        _ => {
-            if s.len() != 7 || !s.starts_with('#') || !s[1..].bytes().all(|b| b.is_ascii_hexdigit())
-            {
-                return Err(invalid("导出颜色需要受支持颜色名或#RRGGBB"));
-            }
-            &s[1..]
-        }
-    };
-    let value = u32::from_str_radix(hex, 16).map_err(|_| invalid("颜色无效"))?;
-    Ok(Color([
-        (value >> 16) as u8,
-        (value >> 8) as u8,
-        value as u8,
-    ]))
+    om_core::graphics_color::rgb(s)
+        .map(Color)
+        .ok_or_else(|| invalid("导出颜色需要受支持颜色名或#RRGGBB"))
 }
 fn text(s: &str, max: usize) -> Result<(), ArtifactError> {
     if s.len() > max || s.chars().any(|c| c.is_control()) {
@@ -163,6 +149,48 @@ fn line(
         shapes.push(Shape::Line(a, b, color, width));
     }
 }
+fn clipped_polygon(mut points: Vec<Point>, rect: (Point, Point)) -> Vec<Point> {
+    for (axis, bound, lower) in [
+        (0, rect.0.0, true),
+        (0, rect.1.0, false),
+        (1, rect.0.1, true),
+        (1, rect.1.1, false),
+    ] {
+        if points.is_empty() {
+            break;
+        }
+        let mut out = vec![];
+        let coordinate = |p: Point| if axis == 0 { p.0 } else { p.1 };
+        let inside = |p: Point| {
+            if lower {
+                coordinate(p) >= bound
+            } else {
+                coordinate(p) <= bound
+            }
+        };
+        let mut a = *points.last().unwrap();
+        for &b in &points {
+            let (ai, bi) = (inside(a), inside(b));
+            if ai != bi {
+                let t = (bound - coordinate(a)) / (coordinate(b) - coordinate(a));
+                out.push((a.0 + (b.0 - a.0) * t, a.1 + (b.1 - a.1) * t));
+            }
+            if bi {
+                out.push(b);
+            }
+            a = b;
+        }
+        points = out;
+    }
+    points
+}
+fn opacity(value: f64) -> Result<(), ArtifactError> {
+    if !value.is_finite() || !(0.0..=1.0).contains(&value) {
+        Err(invalid("图元opacity无效"))
+    } else {
+        Ok(())
+    }
+}
 fn drawing(f: &PlotFigure, ctx: &Interrupt) -> Result<Drawing, ArtifactError> {
     if !(320..=2048).contains(&f.width)
         || !(240..=2048).contains(&f.height)
@@ -261,7 +289,86 @@ fn drawing(f: &PlotFigure, ctx: &Interrupt) -> Result<Drawing, ArtifactError> {
         }
     }
     if let Some(g) = &d.geometry {
-        count(g.tiles.len() + g.arrows.len() + g.points.len())?;
+        count(
+            g.tiles.len()
+                + g.arrows.len()
+                + g.points.len()
+                + g.paths.len()
+                + g.polygons.len()
+                + g.markers.len()
+                + g.labels.len(),
+        )?;
+        for polygon in &g.polygons {
+            count(polygon.points.len())?;
+            opacity(polygon.opacity)?;
+            if polygon.points.len() < 3 {
+                return Err(invalid("polygon数据至少三点"));
+            }
+            for &p in &polygon.points {
+                checked(p, log_x, log_y)?;
+            }
+            let points = clipped_polygon(polygon.points.iter().copied().map(point).collect(), rect);
+            if points.len() >= 3 {
+                shapes.push(Shape::Polygon(
+                    points,
+                    color(&polygon.color)?,
+                    polygon.opacity,
+                ));
+            }
+        }
+        for path in &g.paths {
+            count(path.points.len())?;
+            opacity(path.opacity)?;
+            if !path.width.is_finite() || !(0.0..=32.0).contains(&path.width) {
+                return Err(invalid("path宽度无效"));
+            }
+            for &p in &path.points {
+                checked(p, log_x, log_y)?;
+            }
+            for pair in path.points.windows(2) {
+                if let Some((a, b)) = clip(point(pair[0]), point(pair[1]), rect) {
+                    shapes.push(Shape::StyledLine(
+                        a,
+                        b,
+                        color(&path.color)?,
+                        path.width,
+                        path.opacity,
+                    ));
+                }
+            }
+        }
+        for marker in &g.markers {
+            checked(marker.position, log_x, log_y)?;
+            opacity(marker.opacity)?;
+            if !marker.radius.is_finite() || !(0.0..=64.0).contains(&marker.radius) {
+                return Err(invalid("marker半径无效"));
+            }
+            let p = point(marker.position);
+            if p.0 >= rect.0.0 && p.0 <= rect.1.0 && p.1 >= rect.0.1 && p.1 <= rect.1.1 {
+                shapes.push(Shape::StyledMarker(
+                    p,
+                    marker.radius,
+                    color(&marker.color)?,
+                    marker.opacity,
+                ));
+            }
+        }
+        for label in &g.labels {
+            checked(label.position, log_x, log_y)?;
+            opacity(label.opacity)?;
+            text(&label.text, 1024)?;
+            if !label.offset.0.is_finite() || !label.offset.1.is_finite() {
+                return Err(invalid("label偏移无效"));
+            }
+            let p = point(label.position);
+            shapes.push(Shape::StyledText(
+                (p.0 + label.offset.0, p.1 + label.offset.1),
+                label.text.clone(),
+                14.,
+                color(&label.color)?,
+                label.opacity,
+            ));
+        }
         if g.color_range
             .is_some_and(|(a, b)| !a.is_finite() || !b.is_finite() || a > b)
         {
@@ -392,6 +499,10 @@ fn svg(d: &Drawing, ctx: &Interrupt) -> Result<Vec<u8>, ArtifactError> {
         Shape::Line(a,b,c,w)=>write!(text,"<path d=\"M{:.3} {:.3}L{:.3} {:.3}\" fill=\"none\" stroke=\"#{:02x}{:02x}{:02x}\" stroke-width=\"{w}\"/>",a.0,a.1,b.0,b.1,c.0[0],c.0[1],c.0[2]),
         Shape::Rect(a,b,c,o)=>write!(text,"<rect x=\"{:.3}\" y=\"{:.3}\" width=\"{:.3}\" height=\"{:.3}\" fill=\"#{:02x}{:02x}{:02x}\" fill-opacity=\"{o}\"/>",a.0,a.1,b.0-a.0,b.1-a.1,c.0[0],c.0[1],c.0[2]),
         Shape::Circle(p,r,c)=>write!(text,"<circle cx=\"{:.3}\" cy=\"{:.3}\" r=\"{r}\" fill=\"#{:02x}{:02x}{:02x}\"/>",p.0,p.1,c.0[0],c.0[1],c.0[2]),
+        Shape::Polygon(points,c,a)=>write!(text,"<polygon points=\"{}\" fill=\"#{:02x}{:02x}{:02x}\" fill-opacity=\"{a}\"/>",points.iter().map(|p|format!("{:.3},{:.3}",p.0,p.1)).collect::<Vec<_>>().join(" "),c.0[0],c.0[1],c.0[2]),
+        Shape::StyledLine(p,q,c,w,a)=>write!(text,"<path d=\"M{:.3} {:.3}L{:.3} {:.3}\" fill=\"none\" stroke=\"#{:02x}{:02x}{:02x}\" stroke-width=\"{w}\" stroke-opacity=\"{a}\"/>",p.0,p.1,q.0,q.1,c.0[0],c.0[1],c.0[2]),
+        Shape::StyledMarker(p,r,c,a)=>write!(text,"<circle cx=\"{:.3}\" cy=\"{:.3}\" r=\"{r}\" fill=\"#{:02x}{:02x}{:02x}\" fill-opacity=\"{a}\"/>",p.0,p.1,c.0[0],c.0[1],c.0[2]),
+        Shape::StyledText(p,s,size,c,a)=>write!(text,"<text x=\"{:.3}\" y=\"{:.3}\" dominant-baseline=\"hanging\" font-family=\"sans-serif\" font-size=\"{size}\" fill=\"#{:02x}{:02x}{:02x}\" fill-opacity=\"{a}\">{}</text>",p.0,p.1,c.0[0],c.0[1],c.0[2],escaped(s)),
         Shape::Text(p,s,size,c,anchor)=>write!(text,"<text x=\"{:.3}\" y=\"{:.3}\" dominant-baseline=\"hanging\" text-anchor=\"{}\" font-family=\"sans-serif\" font-size=\"{size}\" fill=\"#{:02x}{:02x}{:02x}\">{}</text>",p.0,p.1,match anchor {Anchor::Left=>"start",Anchor::Center=>"middle",Anchor::Right=>"end"},c.0[0],c.0[1],c.0[2],escaped(s)),
     }.map_err(|_|invalid("SVG格式化失败"))?;
         if text.len() > 16 * 1024 * 1024 {

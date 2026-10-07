@@ -16,7 +16,7 @@ pub use names_editor::{identifier_symbol, modern_name};
 mod parser;
 mod wolfram;
 
-pub use parser::{detect_dialect, parse, parse_expr, parse_with};
+pub use parser::{detect_dialect, parse, parse_expr, parse_input_form, parse_with};
 
 use om_core::{Expr, Symbol};
 use std::collections::BTreeSet;

@@ -1,0 +1,16 @@
+# 需要 OpenMath 0.1.0-pre-alpha.3；圆型限制性三体模型，质心原点。
+let separation_km = 384400;
+let gm_earth = 398600435507/1000000;
+let gm_moon = 4902800118/1000000;
+let mu = gm_moon/(gm_earth+gm_moon);
+let balance(x) = x-(1-mu)/(x+mu)^2-mu/(x-1+mu)^2;
+let l2_rules = find_root(balance(x)=0,x,initial:6/5,precision:50,max_iterations:1000);
+let l2_x = substitute(x,l2_rules);
+let l2_report = {barycentric_km:numeric(l2_x*separation_km,precision:50),earth_centered_km:numeric((l2_x+mu)*separation_km,precision:50),moon_distance_km:numeric((l2_x-1+mu)*separation_km,precision:50),dimensionless_residual:numeric(balance(l2_x),precision:50)};
+l2_report
+# 只在显示边界显式转机器数；质心、地球、月球、L2 的横坐标按比例。
+# 标记半径/文字偏移使用逻辑像素，不代表天体大小；y 坐标均为零。
+let earth_x_km = numeric(-mu*separation_km);
+let moon_x_km = numeric((1-mu)*separation_km);
+let l2_x_km = numeric(l2_x*separation_km);
+scene([line([[earth_x_km,0],[l2_x_km,0]],color:"#819087",width:1),point([earth_x_km,0],color:"blue",width:8),point([0,0],color:"purple",width:3),point([moon_x_km,0],color:"#819087",width:5),point([l2_x_km,0],color:"red",width:6),label("地球",[earth_x_km,0],offset:[0,-22],color:"blue"),label("质心",[0,0],offset:[8,35],color:"purple"),label("月球",[moon_x_km,0],offset:[-16,25],color:"#819087"),label("L2",[l2_x_km,0],offset:[-16,-22],color:"red")])

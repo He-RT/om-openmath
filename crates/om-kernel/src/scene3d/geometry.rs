@@ -1,6 +1,6 @@
 //! Finite geometry, real winding and normals computed from actual mathematical samples.
 use super::*;
-pub(super) fn empty() -> Scene3DData {
+pub(crate) fn empty() -> Scene3DData {
     Scene3DData {
         meshes: vec![],
         lines: vec![],
@@ -8,9 +8,10 @@ pub(super) fn empty() -> Scene3DData {
         bounds: ([0.; 3], [0.; 3]),
         skipped: 0,
         sampled: true,
+        labels: vec![],
     }
 }
-pub(super) fn mesh(label: String) -> SceneMesh {
+pub(crate) fn mesh(label: String) -> SceneMesh {
     SceneMesh {
         positions: vec![],
         normals: vec![],
@@ -19,7 +20,7 @@ pub(super) fn mesh(label: String) -> SceneMesh {
         label,
     }
 }
-pub(super) fn normal(a: [f64; 3], b: [f64; 3], c: [f64; 3]) -> Option<[f64; 3]> {
+pub(crate) fn normal(a: [f64; 3], b: [f64; 3], c: [f64; 3]) -> Option<[f64; 3]> {
     let u = std::array::from_fn::<_, 3, _>(|i| b[i] - a[i]);
     let v = std::array::from_fn::<_, 3, _>(|i| c[i] - a[i]);
     let scale = u.iter().chain(v.iter()).fold(0_f64, |m, x| m.max(x.abs()));
@@ -36,7 +37,7 @@ pub(super) fn normal(a: [f64; 3], b: [f64; 3], c: [f64; 3]) -> Option<[f64; 3]> 
     let length = n[0].hypot(n[1]).hypot(n[2]);
     (length > 0. && length.is_finite()).then(|| n.map(|x| x / length))
 }
-pub(super) fn triangle(
+pub(crate) fn triangle(
     mesh: &mut SceneMesh,
     points: [[f64; 3]; 3],
     colors: [[f64; 4]; 3],
@@ -45,7 +46,7 @@ pub(super) fn triangle(
     ctx.tick()?;
     if let Some(normal) = normal(points[0], points[1], points[2]) {
         let at = mesh.positions.len() as u32;
-        if at > 200000 {
+        if mesh.positions.len().saturating_add(3) > 200000 {
             return Err(invalid("三维顶点超过200000预算"));
         }
         mesh.positions.extend(points);
@@ -55,7 +56,7 @@ pub(super) fn triangle(
     }
     Ok(())
 }
-pub(super) fn finish(data: &mut Scene3DData, ctx: &Interrupt) -> Result<(), PlotError> {
+pub(crate) fn finish(data: &mut Scene3DData, ctx: &Interrupt) -> Result<(), PlotError> {
     let mut lo = [f64::INFINITY; 3];
     let mut hi = [f64::NEG_INFINITY; 3];
     let mut count = 0usize;
@@ -92,6 +93,9 @@ pub(super) fn finish(data: &mut Scene3DData, ctx: &Interrupt) -> Result<(), Plot
     }
     for p in &data.points {
         add(p.position)?;
+    }
+    for label in &data.labels {
+        add(label.position)?;
     }
     if count == 0 {
         return Err(invalid(
@@ -181,6 +185,19 @@ pub(crate) fn validate(data: &Scene3DData, ctx: &Interrupt) -> Result<(), PlotEr
             || !(0.0..=64.0).contains(&point.radius)
         {
             return Err(invalid("点坐标/颜色/半径无效"));
+        }
+    }
+    for label in &data.labels {
+        ctx.tick()?;
+        count += 1;
+        if !valid_point(&label.position)
+            || !valid_color(&label.color)
+            || label.text.len() > 1024
+            || label.text.chars().any(|c| c.is_control())
+            || !label.offset.0.is_finite()
+            || !label.offset.1.is_finite()
+        {
+            return Err(invalid("场景标签无效"));
         }
     }
     if count == 0 || count > 200000 {

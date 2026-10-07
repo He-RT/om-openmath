@@ -24,12 +24,10 @@ fn catalog_is_versioned_deterministic_and_callback_filtered() {
             .collect::<BTreeSet<_>>(),
         expected
     );
-    assert!(
-        !catalog
-            .functions
-            .iter()
-            .any(|f| matches!(f.modern_name.as_str(), "scene" | "apply_notebook_patch"))
-    );
+    assert!(!catalog.functions.iter().any(|f| matches!(
+        f.modern_name.as_str(),
+        "laplace_transform" | "apply_notebook_patch"
+    )));
     let solve = catalog
         .functions
         .iter()
@@ -84,7 +82,7 @@ fn capabilities_separate_kernel_presentation_and_future_permissions() {
         );
         assert!(c.task_permissions.is_none());
         assert_eq!(c.kernel_version, env!("CARGO_PKG_VERSION"));
-        assert_eq!(c.function_ids.len(), 229);
+        assert_eq!(c.function_ids.len(), 248);
         assert_eq!(
             c.rendered_outputs.iter().any(|s| s == "scene_3d"),
             matches!(platform, HostPlatform::Desktop | HostPlatform::Web)

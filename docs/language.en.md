@@ -2,6 +2,10 @@
 
 OpenMath parses modern and Wolfram syntax into the same expression tree. Modern calls use parentheses and lists use square brackets; Wolfram calls use square brackets and lists use braces. Modern `let x = value` assigns a value, while `x = value` expresses equality. Wolfram uses `x = value` for assignment and `x == value` for equality. Full syntax is specified in [PLAN §7](plan/PLAN.md#7-输入语言规格).
 
+The current release is `0.1.0-pre-alpha.3`. Pipelines, `fn`, ranges/slices, records/fields, matrix `@`, and unified `mode/output` are implemented. Prefer the current catalog's lowercase snake_case names; existing names and aliases remain compatible. See the [modern language rules](design/modern-language.md) and [executable interfaces](reference/executable.md) for actual signatures and limits. Planned catalog entries are not executable capabilities.
+
+In `.3`, a top-level `let` definition must start its right-hand expression or opening parenthesis on the same line as `=`. Newlines inside parentheses are supported. Automatic continuation is a [next-release task](plan/NEXT_RELEASE.md), not yet implemented.
+
 The evaluator exposes the following algebra functions. These examples are executable in the indicated dialect.
 
 | Operation | Modern | Wolfram | Result |

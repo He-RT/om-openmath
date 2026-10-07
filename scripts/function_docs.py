@@ -186,7 +186,7 @@ def render(catalog: dict) -> dict[Path, str]:
     for symbol in catalog.get("symbols", []):
         index.append(f"| {code(symbol['name'])} | {cell(', '.join(symbol['aliases']))} | {cell(symbol['meaning'])} |\n")
     index.append("\n## 维护与验证\n\n```sh\npython3 scripts/function_docs.py --check\nCARGO_PROFILE_TEST_OPT_LEVEL=2 cargo test -p om-eval --test function_catalog --locked\n```\n\n目录校验检查状态、稳定身份、副作用预留、必填字段、证据和生成文件一致性；Rust 契约比较真实注册表与当前示例。测试引用表示已有覆盖入口，不代替本轮执行日志，也不意味着规划接口已实现。后续类型/必填/枚举/范围及实际默认值接入时另升级描述版本，不能将文字说明直接传给模型。\n")
-    runtime = [generated, "# 当前可执行接口与参数 schema\n\n", "[全景目录](README.md) · [下一版账本](../plan/NEXT_RELEASE.md)\n\n", f"描述版本 {catalog['metadata_version']}；下列均有真实回调。现代组合语法及已有回调的 mode/output 已接通，后续数学能力仍须按 R3.3–R3.6 交付。参数类型约束用于字面输入；符号与表达式在真实回调求值后检查。默认表达式仅描述省略行为，不自动插入参数；上下文默认值不伪装成字面值。副作用标签只描述入口，不能授权嵌套函数或替代只读隔离。\n\n"]
+    runtime = [generated, "# 当前可执行接口与参数 schema\n\n", "[全景目录](README.md) · [下一版账本](../plan/NEXT_RELEASE.md)\n\n", f"描述版本 {catalog['metadata_version']}；下列均有真实回调。现代组合语法及 mode/output 已接通，R3.3–R3.6 科研/图形能力已随 .3 交付，具体支持边界以各条目与实际回调为准。参数类型约束用于字面输入；符号与表达式在真实回调求值后检查。默认表达式仅描述省略行为，不自动插入参数；上下文默认值不伪装成字面值。副作用标签只描述入口，不能授权嵌套函数或替代只读隔离。\n\n"]
     owners = {n: f for f in entries for n in f["runtime_names"]}
     for r in catalog.get("runtime", []):
         f = owners[r["name"]]

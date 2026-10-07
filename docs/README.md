@@ -13,6 +13,7 @@
 | 设计 Mac 右侧助手与可操作笔记本的 Pi Agent | [Notebook Agent 草案](design/notebook-agent.md) |
 | 查看助手输入框、供应商模型选择与媒体附件设计 | [输入框与媒体规格](design/agent-composer.md)、[交互草案](design/prototypes/mac-agent-composer.html) |
 | 管理 Agent 提示词层、实际上下文、任务记忆与会话压缩 | [上下文和提示词管理设计](design/agent-context.md) |
+| 教 Agent 使用 OpenMath 并验收实际操作能力 | [操作提示词草案](design/prompts/notebook-operation.md) |
 | 查看特殊函数、概率与随机流的实际边界 | [特殊函数与概率实现](design/special-probability.md) |
 | 解析 CSV/JSON 纯数据 | [数据格式契约](design/data-formats.md) |
 | 导出真实二维 SVG/PNG、数据 CSV/JSON 或用 CLI 保存 | [导出契约与用法](design/artifact-export.md) |

@@ -4,7 +4,9 @@
 
 现代语法与 Wolfram 语法解析到同一棵表达式树。现代函数用圆括号、列表用方括号，`let x=value` 赋值，`x=value` 表示等式；Wolfram 函数用方括号、列表用花括号，`x=value` 赋值，`x==value` 表示等式。完整规格见[计划 §7](plan/PLAN.md#7-输入语言规格现代方言--wolfram-方言)。
 
-本页描述当前 `.2`。新管道、`fn`、区间、记录、矩阵 `@` 及统一 `mode/output` 尚未实现，设计见[现代语言](design/modern-language.md)。[全景目录](reference/README.md)分别列当前可用签名与目标接口，不能把规范名称或已被解析的名字当作已实现函数。
+本页以已发布的 `0.1.0-pre-alpha.3` 为准。管道、`fn`、区间/切片、记录/字段、矩阵 `@` 及统一 `mode/output` 已实现，规则见[现代语言](design/modern-language.md)。推荐使用当前目录的小写 snake_case 名称，已有大小写入口和旧别名继续兼容。[全景目录](reference/README.md)区分当前能力与后续规划，实际签名和限制以[可执行接口](reference/executable.md)及运行时能力查询为准。
+
+当前 `.3` 的顶层 `let` 定义中，右侧表达式或其左括号应与 `=` 位于同一行；括号内部允许换行。自动续行修复已列入[下一版待办](plan/NEXT_RELEASE.md)，尚未实现。
 
 ## 常用表达式
 

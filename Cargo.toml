@@ -3,23 +3,23 @@ members = ["crates/*", "app/src-tauri"]
 resolver = "3"
 
 [workspace.package]
-version = "0.1.0-pre-alpha.2"
+version = "0.1.0-pre-alpha.3"
 edition = "2024"
 rust-version = "1.94"
 license = "MIT OR Apache-2.0"
 
 [workspace.dependencies]
-om-analysis = { path = "crates/om-analysis", version = "0.1.0-pre-alpha.2" }
-om-num = { path = "crates/om-num", version = "0.1.0-pre-alpha.2" }
-om-core = { path = "crates/om-core", version = "0.1.0-pre-alpha.2" }
-om-parse = { path = "crates/om-parse", version = "0.1.0-pre-alpha.2" }
-om-format = { path = "crates/om-format", version = "0.1.0-pre-alpha.2" }
-om-poly = { path = "crates/om-poly", version = "0.1.0-pre-alpha.2" }
-om-simplify = { path = "crates/om-simplify", version = "0.1.0-pre-alpha.2" }
-om-solve = { path = "crates/om-solve", version = "0.1.0-pre-alpha.2" }
-om-eval = { path = "crates/om-eval", version = "0.1.0-pre-alpha.2" }
-om-llm = { path = "crates/om-llm", version = "0.1.0-pre-alpha.2", default-features = false }
-om-kernel = { path = "crates/om-kernel", version = "0.1.0-pre-alpha.2", default-features = false }
+om-analysis = { path = "crates/om-analysis", version = "0.1.0-pre-alpha.3" }
+om-num = { path = "crates/om-num", version = "0.1.0-pre-alpha.3" }
+om-core = { path = "crates/om-core", version = "0.1.0-pre-alpha.3" }
+om-parse = { path = "crates/om-parse", version = "0.1.0-pre-alpha.3" }
+om-format = { path = "crates/om-format", version = "0.1.0-pre-alpha.3" }
+om-poly = { path = "crates/om-poly", version = "0.1.0-pre-alpha.3" }
+om-simplify = { path = "crates/om-simplify", version = "0.1.0-pre-alpha.3" }
+om-solve = { path = "crates/om-solve", version = "0.1.0-pre-alpha.3" }
+om-eval = { path = "crates/om-eval", version = "0.1.0-pre-alpha.3" }
+om-llm = { path = "crates/om-llm", version = "0.1.0-pre-alpha.3", default-features = false }
+om-kernel = { path = "crates/om-kernel", version = "0.1.0-pre-alpha.3", default-features = false }
 dashu = { version = "=0.6.1", default-features = false, features = ["std", "num-traits", "serde"] }
 num-traits = "0.2.19"
 smallvec = "1.16.2"

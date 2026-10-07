@@ -2,12 +2,13 @@
 import argparse
 import hashlib
 import json
+import plistlib
 import re
 import tomllib
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-VERSION = "0.1.0-pre-alpha.2"
+VERSION = "0.1.0-pre-alpha.3"
 
 
 def verify_version(root: Path, tag: str) -> str:
@@ -24,6 +25,18 @@ def verify_version(root: Path, tag: str) -> str:
     versions.extend(p["version"] for p in lock["package"] if p["name"].startswith("om-"))
     if any(version != VERSION for version in versions):
         raise ValueError("版本不一致，请同步 Cargo/npm/Tauri 及锁文件")
+    ios = plistlib.loads((root / "ios/OpenMath/Info.plist").read_bytes())
+    build = VERSION.rsplit(".", 1)[1]
+    base = VERSION.split("-", 1)[0]
+    windows = json.loads((root / "app/src-tauri/tauri.windows.conf.json").read_text(encoding="utf-8"))
+    if (ios.get("OpenMathReleaseVersion") != VERSION
+            or ios.get("CFBundleShortVersionString") != base
+            or ios.get("CFBundleVersion") != build
+            or windows["bundle"]["windows"]["wix"]["version"] != f"{base}.{build}"):
+        raise ValueError("iOS 版本或 Windows 数字产品版本与发行版不一致")
+    catalog = tomllib.loads((root / "docs/reference/functions.toml").read_text(encoding="utf-8"))
+    if catalog["current_version"] != VERSION:
+        raise ValueError("函数目录版本与内核发行版不一致")
     return VERSION
 
 

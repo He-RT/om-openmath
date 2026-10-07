@@ -3192,7 +3192,7 @@
 |---|---|---|---|---|---|
 | `nodes` | 位置 | expression | 是 | 必填 |  |
 | `color` | 命名 | expression | 否 | 从scene继承；point/line默认blue，面默认green，支持readonly fn(position) |  |
-| `opacity` | 命名 | real | 否 | 1 | ; ≥0; ≤1 |
+| `opacity` | 命名 | real | 否 | 继承父样式；根scene默认1 | ; ≥0; ≤1 |
 | `dimensions` | 命名 | integer | 否 | 2 | ; ≥2; ≤3 |
 | `mesh_points` | 命名 | integer | 否 | 32 | ; ≥8; ≤64 |
 
@@ -3208,7 +3208,7 @@
 |---|---|---|---|---|---|
 | `position` | 位置 | expression | 是 | 必填 |  |
 | `color` | 命名 | expression | 否 | 从scene继承；point/line默认blue，面默认green，支持readonly fn(position) |  |
-| `opacity` | 命名 | real | 否 | 1 | ; ≥0; ≤1 |
+| `opacity` | 命名 | real | 否 | 继承父样式；根scene默认1 | ; ≥0; ≤1 |
 | `width` | 命名 | real | 否 | 2 | ; ≥0; ≤32 |
 
 数学边界与精度：[所属条目](scene.md#point)。
@@ -3223,7 +3223,7 @@
 |---|---|---|---|---|---|
 | `points` | 位置 | expression | 是 | 必填 |  |
 | `color` | 命名 | expression | 否 | 从scene继承；point/line默认blue，面默认green，支持readonly fn(position) |  |
-| `opacity` | 命名 | real | 否 | 1 | ; ≥0; ≤1 |
+| `opacity` | 命名 | real | 否 | 继承父样式；根scene默认1 | ; ≥0; ≤1 |
 | `width` | 命名 | real | 否 | 2 | ; ≥0; ≤32 |
 
 数学边界与精度：[所属条目](scene.md#line)。
@@ -3239,7 +3239,7 @@
 | `start` | 位置 | expression | 是 | 必填 |  |
 | `end` | 位置 | expression | 是 | 必填 |  |
 | `color` | 命名 | expression | 否 | 从scene继承；point/line默认blue，面默认green，支持readonly fn(position) |  |
-| `opacity` | 命名 | real | 否 | 1 | ; ≥0; ≤1 |
+| `opacity` | 命名 | real | 否 | 继承父样式；根scene默认1 | ; ≥0; ≤1 |
 | `width` | 命名 | real | 否 | 2 | ; ≥0; ≤32 |
 
 数学边界与精度：[所属条目](scene.md#arrow)。
@@ -3255,7 +3255,7 @@
 | `center` | 位置 | expression | 是 | 必填 |  |
 | `radius` | 位置 | expression | 是 | 必填 |  |
 | `color` | 命名 | expression | 否 | 从scene继承；point/line默认blue，面默认green，支持readonly fn(position) |  |
-| `opacity` | 命名 | real | 否 | 1 | ; ≥0; ≤1 |
+| `opacity` | 命名 | real | 否 | 继承父样式；根scene默认1 | ; ≥0; ≤1 |
 | `width` | 命名 | real | 否 | 2 | ; ≥0; ≤32 |
 | `normal` | 命名 | expression | 否 | 默认{0,0,1}；二维必须垂直XY |  |
 
@@ -3272,7 +3272,7 @@
 | `center` | 位置 | expression | 是 | 必填 |  |
 | `radius` | 位置 | expression | 是 | 必填 |  |
 | `color` | 命名 | expression | 否 | 从scene继承；point/line默认blue，面默认green，支持readonly fn(position) |  |
-| `opacity` | 命名 | real | 否 | 1 | ; ≥0; ≤1 |
+| `opacity` | 命名 | real | 否 | 继承父样式；根scene默认1 | ; ≥0; ≤1 |
 | `normal` | 命名 | expression | 否 | 默认{0,0,1}；二维必须垂直XY |  |
 
 数学边界与精度：[所属条目](scene.md#disk)。
@@ -3287,7 +3287,7 @@
 |---|---|---|---|---|---|
 | `vertices` | 位置 | expression | 是 | 必填 |  |
 | `color` | 命名 | expression | 否 | 从scene继承；point/line默认blue，面默认green，支持readonly fn(position) |  |
-| `opacity` | 命名 | real | 否 | 1 | ; ≥0; ≤1 |
+| `opacity` | 命名 | real | 否 | 继承父样式；根scene默认1 | ; ≥0; ≤1 |
 
 数学边界与精度：[所属条目](scene.md#polygon)。
 
@@ -3302,7 +3302,7 @@
 | `center` | 位置 | expression | 是 | 必填 |  |
 | `radius` | 位置 | expression | 是 | 必填 |  |
 | `color` | 命名 | expression | 否 | 从scene继承；point/line默认blue，面默认green，支持readonly fn(position) |  |
-| `opacity` | 命名 | real | 否 | 1 | ; ≥0; ≤1 |
+| `opacity` | 命名 | real | 否 | 继承父样式；根scene默认1 | ; ≥0; ≤1 |
 
 数学边界与精度：[所属条目](scene.md#sphere)。
 
@@ -3317,7 +3317,7 @@
 | `center` | 位置 | expression | 是 | 必填 |  |
 | `radii` | 位置 | expression | 是 | 必填 |  |
 | `color` | 命名 | expression | 否 | 从scene继承；point/line默认blue，面默认green，支持readonly fn(position) |  |
-| `opacity` | 命名 | real | 否 | 1 | ; ≥0; ≤1 |
+| `opacity` | 命名 | real | 否 | 继承父样式；根scene默认1 | ; ≥0; ≤1 |
 
 数学边界与精度：[所属条目](scene.md#ellipsoid)。
 
@@ -3332,7 +3332,7 @@
 | `min` | 位置 | expression | 是 | 必填 |  |
 | `max` | 位置 | expression | 是 | 必填 |  |
 | `color` | 命名 | expression | 否 | 从scene继承；point/line默认blue，面默认green，支持readonly fn(position) |  |
-| `opacity` | 命名 | real | 否 | 1 | ; ≥0; ≤1 |
+| `opacity` | 命名 | real | 否 | 继承父样式；根scene默认1 | ; ≥0; ≤1 |
 
 数学边界与精度：[所属条目](scene.md#box)。
 
@@ -3348,7 +3348,7 @@
 | `end` | 位置 | expression | 是 | 必填 |  |
 | `radius` | 位置 | expression | 是 | 必填 |  |
 | `color` | 命名 | expression | 否 | 从scene继承；point/line默认blue，面默认green，支持readonly fn(position) |  |
-| `opacity` | 命名 | real | 否 | 1 | ; ≥0; ≤1 |
+| `opacity` | 命名 | real | 否 | 继承父样式；根scene默认1 | ; ≥0; ≤1 |
 
 数学边界与精度：[所属条目](scene.md#cylinder)。
 
@@ -3364,7 +3364,7 @@
 | `end` | 位置 | expression | 是 | 必填 |  |
 | `radius` | 位置 | expression | 是 | 必填 |  |
 | `color` | 命名 | expression | 否 | 从scene继承；point/line默认blue，面默认green，支持readonly fn(position) |  |
-| `opacity` | 命名 | real | 否 | 1 | ; ≥0; ≤1 |
+| `opacity` | 命名 | real | 否 | 继承父样式；根scene默认1 | ; ≥0; ≤1 |
 
 数学边界与精度：[所属条目](scene.md#cone)。
 
@@ -3379,7 +3379,7 @@
 | `path` | 位置 | expression | 是 | 必填 |  |
 | `radius` | 位置 | expression | 是 | 必填 |  |
 | `color` | 命名 | expression | 否 | 从scene继承；point/line默认blue，面默认green，支持readonly fn(position) |  |
-| `opacity` | 命名 | real | 否 | 1 | ; ≥0; ≤1 |
+| `opacity` | 命名 | real | 否 | 继承父样式；根scene默认1 | ; ≥0; ≤1 |
 
 数学边界与精度：[所属条目](scene.md#tube)。
 
@@ -3394,7 +3394,7 @@
 | `text` | 位置 | expression | 是 | 必填 |  |
 | `position` | 位置 | expression | 是 | 必填 |  |
 | `color` | 命名 | expression | 否 | 从scene继承；point/line默认blue，面默认green，支持readonly fn(position) |  |
-| `opacity` | 命名 | real | 否 | 1 | ; ≥0; ≤1 |
+| `opacity` | 命名 | real | 否 | 继承父样式；根scene默认1 | ; ≥0; ≤1 |
 | `offset` | 命名 | expression | 否 | {8,-10} |  |
 
 数学边界与精度：[所属条目](scene.md#label)。
@@ -3451,7 +3451,7 @@
 |---|---|---|---|---|---|
 | `node` | 位置 | expression | 是 | 必填 |  |
 | `color` | 命名 | expression | 否 | 继承父scene；颜色名/#RRGGBB/RGB/RGBA或只读fn(position) |  |
-| `opacity` | 命名 | real | 否 | 1 | ; ≥0; ≤1 |
+| `opacity` | 命名 | real | 否 | 继承父样式；根scene默认1 | ; ≥0; ≤1 |
 
 数学边界与精度：[所属条目](scene.md#style)。
 

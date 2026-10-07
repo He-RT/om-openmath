@@ -1,6 +1,6 @@
 // Connect to the installed application's real WebView2, never a browser mock.
 import { chromium, expect } from '@playwright/test';
-import { mkdir, writeFile } from 'node:fs/promises';
+import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import { setTimeout as delay } from 'node:timers/promises';
 
 const output = `test-results/windows-${process.env.OPENMATH_INSTALL_KIND ?? 'install'}`;
@@ -60,9 +60,32 @@ try {
   await expect(page.locator('.notebook-cell').nth(1)).toHaveAttribute('data-status', 'Done');
   expect(errors).toEqual([]);
   await page.screenshot({ path: `${output}/reactive-and-radicals.png`, fullPage: true });
+  // The installed desktop must also exercise the new native kernel -> WebGL2 path.
+  await first.fill(await readFile(new URL('../../docs/examples/watermelon.om',import.meta.url),'utf8'));
+  await first.press('Shift+Enter');
+  const scene=page.locator('.scene-view');
+  await expect(scene).toBeVisible({timeout:30_000});
+  await expect(scene.getByRole('alert')).toHaveCount(0);
+  const canvas=scene.locator('canvas');
+  const fingerprint=()=>canvas.evaluate(c=>{
+    const gl=c.getContext('webgl2');if(!gl)throw new Error('Installed desktop needs real WebGL2');
+    const data=new Uint8Array(c.width*c.height*4);gl.readPixels(0,0,c.width,c.height,gl.RGBA,gl.UNSIGNED_BYTE,data);
+    let sum=0,colored=0;for(let i=0;i<data.length;i+=4){sum=(sum+data[i]*3+data[i+1]*7+data[i+2]*11)%1_000_000_007;if(data[i]<150||data[i+1]<150||data[i+2]<150)colored++;}return{sum,colored};
+  });
+  const original=await fingerprint();expect(original.colored).toBeGreaterThan(1000);
+  await scene.getByRole('button',{name:'右转',exact:true}).click();
+  await expect.poll(async()=>(await fingerprint()).sum).not.toBe(original.sum);
+  await scene.getByRole('button',{name:'复位视窗',exact:true}).click();
+  await expect.poll(async()=>(await fingerprint()).sum).toBe(original.sum);
+  await scene.getByText('内核网格数据',{exact:true}).click();
+  const geometry=JSON.parse(await scene.locator('details pre').first().textContent());
+  expect(geometry.meshes).toHaveLength(16);expect(geometry.labels).toHaveLength(2);
+  await scene.getByText('内核网格数据',{exact:true}).click();
+  await scene.screenshot({path:`${output}/watermelon-native.png`});
+  expect(errors).toEqual([]);
   await writeFile(`${output}/result.json`, JSON.stringify({
     installed: true, native: true, locale: 'zh-CN',
-    checks: ['exact -3/1 roots', 'recorded steps', 'reactive 3 to 6', 'exact radical roots'],
+    checks: ['exact -3/1 roots', 'recorded steps', 'reactive 3 to 6', 'exact radical roots', 'native kernel full watermelon 16 meshes', 'actual WebGL2 pixels rotation reset'],
     errors,
   }, null, 2));
 } finally {

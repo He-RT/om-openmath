@@ -14,6 +14,8 @@
 | 解析 CSV/JSON 纯数据 | [数据格式契约](design/data-formats.md) |
 | 导出真实二维 SVG/PNG、数据 CSV/JSON 或用 CLI 保存 | [导出契约与用法](design/artifact-export.md) |
 | 三维曲面/参数/隐式采样、相机和 OBJ | [三维基础契约](design/scene3d.md) |
+| 有限图元、样式、变换与二维/三维组合 | [场景图契约](design/scene-graph.md) |
+| 运行地月 L2 与完整西瓜 | [源码与笔记本](examples/README.md)、[真实验收](acceptance/r36b/README.md) |
 | 使用单位并检查量纲 | [单位计算](design/units.md) |
 | 查看微积分与数值分析的实际实现 | [微积分实现](design/calculus.md) |
 | 了解求解支持范围和验证含义 | [求解指南](solve.md) |
@@ -21,16 +23,16 @@
 | 编译、测试和贡献代码 | [开发指南](development.md) |
 | 开发内核客户端 | [JSON 协议](protocol.md) |
 | 构建与发布 GitHub Release | [发布流程](releasing.md) |
-| 了解此次版本和验收证据 | [发行说明](release-0.1.0-pre-alpha.2.md)、[验收记录](pre-alpha.md) |
+| 了解此次版本和验收证据 | [发行说明](release-0.1.0-pre-alpha.3.md)、[验收记录](pre-alpha.md) |
 | iPhone / iPad 使用与构建 | [原生移动端指南](ios.md)、[移动验收](ios-acceptance.md) |
 | 接续开发 | [计划](plan/PLAN.md)、[进度](plan/PROGRESS.md)、[裁决](plan/DEVIATIONS.md)、[问题](plan/QUESTIONS.md) |
 
 [英文入口](../README.en.md)保留英文说明；历史设计条目保留，供核对实施过程。
 
-- [ODE、连续插值与采样（.3 开发版）](design/ode-interpolation.md)
+- [ODE、连续插值与采样（.3）](design/ode-interpolation.md)
 
-- [局部优化与全局保证边界（.3 实施中）](design/optimization.md)
+- [局部优化与全局保证边界（.3）](design/optimization.md)
 
-- [真实拟合、可调用模型与数值诊断（.3开发版）](design/fitting.md)
+- [真实拟合、可调用模型与数值诊断（.3）](design/fitting.md)
 
 - [结构化结果、科学诊断与只读分页](design/result-pages.md) · [R3.5a真实验收截图](acceptance/r35a/README.md)

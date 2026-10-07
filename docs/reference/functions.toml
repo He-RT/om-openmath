@@ -2,7 +2,7 @@
 schema_version = 1
 metadata_version = 26
 validation_stage = "runtime_verified"
-current_version = "0.1.0-pre-alpha.2"
+current_version = "0.1.0-pre-alpha.3"
 target_version = "0.1.0-pre-alpha.3"
 
 [[categories]]
@@ -29148,7 +29148,7 @@ aliases = []
 min = 1
 attributes = ["hold_all", "protected"]
 parameters = [{ name = "nodes", value_type = "expression", required = true, held = true, variadic = false }]
-options = [{ name = "color", runtime_name = "Color", value_type = "expression", required = false, held = true, variadic = false, default_context = "从scene继承；point/line默认blue，面默认green，支持readonly fn(position)" }, { name = "opacity", runtime_name = "Opacity", value_type = "real", required = false, held = true, variadic = false, default_source = "1", min = 0, max = 1 }, { name = "dimensions", runtime_name = "Dimensions", value_type = "integer", required = false, held = true, variadic = false, default_source = "2", min = 2, max = 3 }, { name = "mesh_points", runtime_name = "MeshPoints", value_type = "integer", required = false, held = true, variadic = false, default_source = "32", min = 8, max = 64 }]
+options = [{ name = "color", runtime_name = "Color", value_type = "expression", required = false, held = true, variadic = false, default_context = "从scene继承；point/line默认blue，面默认green，支持readonly fn(position)" }, { name = "opacity", runtime_name = "Opacity", value_type = "real", required = false, held = true, variadic = false, default_context = "继承父样式；根scene默认1", min = 0, max = 1 }, { name = "dimensions", runtime_name = "Dimensions", value_type = "integer", required = false, held = true, variadic = false, default_source = "2", min = 2, max = 3 }, { name = "mesh_points", runtime_name = "MeshPoints", value_type = "integer", required = false, held = true, variadic = false, default_source = "32", min = 8, max = 64 }]
 
 [[runtime]]
 name = "Point"
@@ -29157,7 +29157,7 @@ aliases = []
 min = 1
 attributes = ["hold_all", "protected"]
 parameters = [{ name = "position", value_type = "expression", required = true, held = true, variadic = false }]
-options = [{ name = "color", runtime_name = "Color", value_type = "expression", required = false, held = true, variadic = false, default_context = "从scene继承；point/line默认blue，面默认green，支持readonly fn(position)" }, { name = "opacity", runtime_name = "Opacity", value_type = "real", required = false, held = true, variadic = false, default_source = "1", min = 0, max = 1 }, { name = "width", runtime_name = "Width", value_type = "real", required = false, held = true, variadic = false, default_source = "2", min = 0, max = 32 }]
+options = [{ name = "color", runtime_name = "Color", value_type = "expression", required = false, held = true, variadic = false, default_context = "从scene继承；point/line默认blue，面默认green，支持readonly fn(position)" }, { name = "opacity", runtime_name = "Opacity", value_type = "real", required = false, held = true, variadic = false, default_context = "继承父样式；根scene默认1", min = 0, max = 1 }, { name = "width", runtime_name = "Width", value_type = "real", required = false, held = true, variadic = false, default_source = "2", min = 0, max = 32 }]
 
 [[runtime]]
 name = "Line"
@@ -29166,7 +29166,7 @@ aliases = []
 min = 1
 attributes = ["hold_all", "protected"]
 parameters = [{ name = "points", value_type = "expression", required = true, held = true, variadic = false }]
-options = [{ name = "color", runtime_name = "Color", value_type = "expression", required = false, held = true, variadic = false, default_context = "从scene继承；point/line默认blue，面默认green，支持readonly fn(position)" }, { name = "opacity", runtime_name = "Opacity", value_type = "real", required = false, held = true, variadic = false, default_source = "1", min = 0, max = 1 }, { name = "width", runtime_name = "Width", value_type = "real", required = false, held = true, variadic = false, default_source = "2", min = 0, max = 32 }]
+options = [{ name = "color", runtime_name = "Color", value_type = "expression", required = false, held = true, variadic = false, default_context = "从scene继承；point/line默认blue，面默认green，支持readonly fn(position)" }, { name = "opacity", runtime_name = "Opacity", value_type = "real", required = false, held = true, variadic = false, default_context = "继承父样式；根scene默认1", min = 0, max = 1 }, { name = "width", runtime_name = "Width", value_type = "real", required = false, held = true, variadic = false, default_source = "2", min = 0, max = 32 }]
 
 [[runtime]]
 name = "Arrow"
@@ -29175,7 +29175,7 @@ aliases = []
 min = 2
 attributes = ["hold_all", "protected"]
 parameters = [{ name = "start", value_type = "expression", required = true, held = true, variadic = false }, { name = "end", value_type = "expression", required = true, held = true, variadic = false }]
-options = [{ name = "color", runtime_name = "Color", value_type = "expression", required = false, held = true, variadic = false, default_context = "从scene继承；point/line默认blue，面默认green，支持readonly fn(position)" }, { name = "opacity", runtime_name = "Opacity", value_type = "real", required = false, held = true, variadic = false, default_source = "1", min = 0, max = 1 }, { name = "width", runtime_name = "Width", value_type = "real", required = false, held = true, variadic = false, default_source = "2", min = 0, max = 32 }]
+options = [{ name = "color", runtime_name = "Color", value_type = "expression", required = false, held = true, variadic = false, default_context = "从scene继承；point/line默认blue，面默认green，支持readonly fn(position)" }, { name = "opacity", runtime_name = "Opacity", value_type = "real", required = false, held = true, variadic = false, default_context = "继承父样式；根scene默认1", min = 0, max = 1 }, { name = "width", runtime_name = "Width", value_type = "real", required = false, held = true, variadic = false, default_source = "2", min = 0, max = 32 }]
 
 [[runtime]]
 name = "Circle"
@@ -29184,7 +29184,7 @@ aliases = []
 min = 2
 attributes = ["hold_all", "protected"]
 parameters = [{ name = "center", value_type = "expression", required = true, held = true, variadic = false }, { name = "radius", value_type = "expression", required = true, held = true, variadic = false }]
-options = [{ name = "color", runtime_name = "Color", value_type = "expression", required = false, held = true, variadic = false, default_context = "从scene继承；point/line默认blue，面默认green，支持readonly fn(position)" }, { name = "opacity", runtime_name = "Opacity", value_type = "real", required = false, held = true, variadic = false, default_source = "1", min = 0, max = 1 }, { name = "width", runtime_name = "Width", value_type = "real", required = false, held = true, variadic = false, default_source = "2", min = 0, max = 32 }, { name = "normal", runtime_name = "Normal", value_type = "expression", required = false, held = true, variadic = false, default_context = "默认{0,0,1}；二维必须垂直XY" }]
+options = [{ name = "color", runtime_name = "Color", value_type = "expression", required = false, held = true, variadic = false, default_context = "从scene继承；point/line默认blue，面默认green，支持readonly fn(position)" }, { name = "opacity", runtime_name = "Opacity", value_type = "real", required = false, held = true, variadic = false, default_context = "继承父样式；根scene默认1", min = 0, max = 1 }, { name = "width", runtime_name = "Width", value_type = "real", required = false, held = true, variadic = false, default_source = "2", min = 0, max = 32 }, { name = "normal", runtime_name = "Normal", value_type = "expression", required = false, held = true, variadic = false, default_context = "默认{0,0,1}；二维必须垂直XY" }]
 
 [[runtime]]
 name = "Disk"
@@ -29193,7 +29193,7 @@ aliases = []
 min = 2
 attributes = ["hold_all", "protected"]
 parameters = [{ name = "center", value_type = "expression", required = true, held = true, variadic = false }, { name = "radius", value_type = "expression", required = true, held = true, variadic = false }]
-options = [{ name = "color", runtime_name = "Color", value_type = "expression", required = false, held = true, variadic = false, default_context = "从scene继承；point/line默认blue，面默认green，支持readonly fn(position)" }, { name = "opacity", runtime_name = "Opacity", value_type = "real", required = false, held = true, variadic = false, default_source = "1", min = 0, max = 1 }, { name = "normal", runtime_name = "Normal", value_type = "expression", required = false, held = true, variadic = false, default_context = "默认{0,0,1}；二维必须垂直XY" }]
+options = [{ name = "color", runtime_name = "Color", value_type = "expression", required = false, held = true, variadic = false, default_context = "从scene继承；point/line默认blue，面默认green，支持readonly fn(position)" }, { name = "opacity", runtime_name = "Opacity", value_type = "real", required = false, held = true, variadic = false, default_context = "继承父样式；根scene默认1", min = 0, max = 1 }, { name = "normal", runtime_name = "Normal", value_type = "expression", required = false, held = true, variadic = false, default_context = "默认{0,0,1}；二维必须垂直XY" }]
 
 [[runtime]]
 name = "Polygon"
@@ -29202,7 +29202,7 @@ aliases = []
 min = 1
 attributes = ["hold_all", "protected"]
 parameters = [{ name = "vertices", value_type = "expression", required = true, held = true, variadic = false }]
-options = [{ name = "color", runtime_name = "Color", value_type = "expression", required = false, held = true, variadic = false, default_context = "从scene继承；point/line默认blue，面默认green，支持readonly fn(position)" }, { name = "opacity", runtime_name = "Opacity", value_type = "real", required = false, held = true, variadic = false, default_source = "1", min = 0, max = 1 }]
+options = [{ name = "color", runtime_name = "Color", value_type = "expression", required = false, held = true, variadic = false, default_context = "从scene继承；point/line默认blue，面默认green，支持readonly fn(position)" }, { name = "opacity", runtime_name = "Opacity", value_type = "real", required = false, held = true, variadic = false, default_context = "继承父样式；根scene默认1", min = 0, max = 1 }]
 
 [[runtime]]
 name = "Sphere"
@@ -29211,7 +29211,7 @@ aliases = []
 min = 2
 attributes = ["hold_all", "protected"]
 parameters = [{ name = "center", value_type = "expression", required = true, held = true, variadic = false }, { name = "radius", value_type = "expression", required = true, held = true, variadic = false }]
-options = [{ name = "color", runtime_name = "Color", value_type = "expression", required = false, held = true, variadic = false, default_context = "从scene继承；point/line默认blue，面默认green，支持readonly fn(position)" }, { name = "opacity", runtime_name = "Opacity", value_type = "real", required = false, held = true, variadic = false, default_source = "1", min = 0, max = 1 }]
+options = [{ name = "color", runtime_name = "Color", value_type = "expression", required = false, held = true, variadic = false, default_context = "从scene继承；point/line默认blue，面默认green，支持readonly fn(position)" }, { name = "opacity", runtime_name = "Opacity", value_type = "real", required = false, held = true, variadic = false, default_context = "继承父样式；根scene默认1", min = 0, max = 1 }]
 
 [[runtime]]
 name = "Ellipsoid"
@@ -29220,7 +29220,7 @@ aliases = []
 min = 2
 attributes = ["hold_all", "protected"]
 parameters = [{ name = "center", value_type = "expression", required = true, held = true, variadic = false }, { name = "radii", value_type = "expression", required = true, held = true, variadic = false }]
-options = [{ name = "color", runtime_name = "Color", value_type = "expression", required = false, held = true, variadic = false, default_context = "从scene继承；point/line默认blue，面默认green，支持readonly fn(position)" }, { name = "opacity", runtime_name = "Opacity", value_type = "real", required = false, held = true, variadic = false, default_source = "1", min = 0, max = 1 }]
+options = [{ name = "color", runtime_name = "Color", value_type = "expression", required = false, held = true, variadic = false, default_context = "从scene继承；point/line默认blue，面默认green，支持readonly fn(position)" }, { name = "opacity", runtime_name = "Opacity", value_type = "real", required = false, held = true, variadic = false, default_context = "继承父样式；根scene默认1", min = 0, max = 1 }]
 
 [[runtime]]
 name = "Box"
@@ -29229,7 +29229,7 @@ aliases = []
 min = 2
 attributes = ["hold_all", "protected"]
 parameters = [{ name = "min", value_type = "expression", required = true, held = true, variadic = false }, { name = "max", value_type = "expression", required = true, held = true, variadic = false }]
-options = [{ name = "color", runtime_name = "Color", value_type = "expression", required = false, held = true, variadic = false, default_context = "从scene继承；point/line默认blue，面默认green，支持readonly fn(position)" }, { name = "opacity", runtime_name = "Opacity", value_type = "real", required = false, held = true, variadic = false, default_source = "1", min = 0, max = 1 }]
+options = [{ name = "color", runtime_name = "Color", value_type = "expression", required = false, held = true, variadic = false, default_context = "从scene继承；point/line默认blue，面默认green，支持readonly fn(position)" }, { name = "opacity", runtime_name = "Opacity", value_type = "real", required = false, held = true, variadic = false, default_context = "继承父样式；根scene默认1", min = 0, max = 1 }]
 
 [[runtime]]
 name = "Cylinder"
@@ -29238,7 +29238,7 @@ aliases = []
 min = 3
 attributes = ["hold_all", "protected"]
 parameters = [{ name = "start", value_type = "expression", required = true, held = true, variadic = false }, { name = "end", value_type = "expression", required = true, held = true, variadic = false }, { name = "radius", value_type = "expression", required = true, held = true, variadic = false }]
-options = [{ name = "color", runtime_name = "Color", value_type = "expression", required = false, held = true, variadic = false, default_context = "从scene继承；point/line默认blue，面默认green，支持readonly fn(position)" }, { name = "opacity", runtime_name = "Opacity", value_type = "real", required = false, held = true, variadic = false, default_source = "1", min = 0, max = 1 }]
+options = [{ name = "color", runtime_name = "Color", value_type = "expression", required = false, held = true, variadic = false, default_context = "从scene继承；point/line默认blue，面默认green，支持readonly fn(position)" }, { name = "opacity", runtime_name = "Opacity", value_type = "real", required = false, held = true, variadic = false, default_context = "继承父样式；根scene默认1", min = 0, max = 1 }]
 
 [[runtime]]
 name = "Cone"
@@ -29247,7 +29247,7 @@ aliases = []
 min = 3
 attributes = ["hold_all", "protected"]
 parameters = [{ name = "start", value_type = "expression", required = true, held = true, variadic = false }, { name = "end", value_type = "expression", required = true, held = true, variadic = false }, { name = "radius", value_type = "expression", required = true, held = true, variadic = false }]
-options = [{ name = "color", runtime_name = "Color", value_type = "expression", required = false, held = true, variadic = false, default_context = "从scene继承；point/line默认blue，面默认green，支持readonly fn(position)" }, { name = "opacity", runtime_name = "Opacity", value_type = "real", required = false, held = true, variadic = false, default_source = "1", min = 0, max = 1 }]
+options = [{ name = "color", runtime_name = "Color", value_type = "expression", required = false, held = true, variadic = false, default_context = "从scene继承；point/line默认blue，面默认green，支持readonly fn(position)" }, { name = "opacity", runtime_name = "Opacity", value_type = "real", required = false, held = true, variadic = false, default_context = "继承父样式；根scene默认1", min = 0, max = 1 }]
 
 [[runtime]]
 name = "Tube"
@@ -29256,7 +29256,7 @@ aliases = []
 min = 2
 attributes = ["hold_all", "protected"]
 parameters = [{ name = "path", value_type = "expression", required = true, held = true, variadic = false }, { name = "radius", value_type = "expression", required = true, held = true, variadic = false }]
-options = [{ name = "color", runtime_name = "Color", value_type = "expression", required = false, held = true, variadic = false, default_context = "从scene继承；point/line默认blue，面默认green，支持readonly fn(position)" }, { name = "opacity", runtime_name = "Opacity", value_type = "real", required = false, held = true, variadic = false, default_source = "1", min = 0, max = 1 }]
+options = [{ name = "color", runtime_name = "Color", value_type = "expression", required = false, held = true, variadic = false, default_context = "从scene继承；point/line默认blue，面默认green，支持readonly fn(position)" }, { name = "opacity", runtime_name = "Opacity", value_type = "real", required = false, held = true, variadic = false, default_context = "继承父样式；根scene默认1", min = 0, max = 1 }]
 
 [[runtime]]
 name = "Label"
@@ -29265,7 +29265,7 @@ aliases = []
 min = 2
 attributes = ["hold_all", "protected"]
 parameters = [{ name = "text", value_type = "expression", required = true, held = true, variadic = false }, { name = "position", value_type = "expression", required = true, held = true, variadic = false }]
-options = [{ name = "color", runtime_name = "Color", value_type = "expression", required = false, held = true, variadic = false, default_context = "从scene继承；point/line默认blue，面默认green，支持readonly fn(position)" }, { name = "opacity", runtime_name = "Opacity", value_type = "real", required = false, held = true, variadic = false, default_source = "1", min = 0, max = 1 }, { name = "offset", runtime_name = "Offset", value_type = "expression", required = false, held = true, variadic = false, default_source = "{8,-10}" }]
+options = [{ name = "color", runtime_name = "Color", value_type = "expression", required = false, held = true, variadic = false, default_context = "从scene继承；point/line默认blue，面默认green，支持readonly fn(position)" }, { name = "opacity", runtime_name = "Opacity", value_type = "real", required = false, held = true, variadic = false, default_context = "继承父样式；根scene默认1", min = 0, max = 1 }, { name = "offset", runtime_name = "Offset", value_type = "expression", required = false, held = true, variadic = false, default_source = "{8,-10}" }]
 
 [[runtime]]
 name = "Translate"
@@ -29302,7 +29302,7 @@ aliases = []
 min = 1
 attributes = ["hold_all", "protected"]
 parameters = [{ name = "node", value_type = "expression", required = true, held = true, variadic = false }]
-options = [{ name = "color", runtime_name = "Color", value_type = "expression", required = false, held = true, variadic = false, default_context = "继承父scene；颜色名/#RRGGBB/RGB/RGBA或只读fn(position)" }, { name = "opacity", runtime_name = "Opacity", value_type = "real", required = false, held = true, variadic = false, default_source = "1", min = 0, max = 1 }]
+options = [{ name = "color", runtime_name = "Color", value_type = "expression", required = false, held = true, variadic = false, default_context = "继承父scene；颜色名/#RRGGBB/RGB/RGBA或只读fn(position)" }, { name = "opacity", runtime_name = "Opacity", value_type = "real", required = false, held = true, variadic = false, default_context = "继承父样式；根scene默认1", min = 0, max = 1 }]
 
 [[runtime]]
 name = "Blend"

@@ -8,7 +8,7 @@ on:
       tag:
         description: 发行标签（所有版本必须一致）
         required: true
-        default: v0.1.0-pre-alpha.2
+        default: v0.1.0-pre-alpha.3
 
 permissions:
   contents: read
@@ -49,10 +49,13 @@ jobs:
         working-directory: app
       - run: npm run test:e2e
         working-directory: app
-      - run: npm run test:e2e
+      - run: npm run test:e2e -- --workers=1
         working-directory: app
         env:
           OPENMATH_E2E_PREVIEW: '1'
+          OPENMATH_PERFORMANCE: '1'
+      - name: 独立回读原 53 条生产 WASM 数学结果
+        run: cargo test -p om-cli --test corpus production_wasm_results_match_all_original_authority_rows --locked -- --ignored
       - name: 打包静态网站
         run: |
           mkdir release-assets

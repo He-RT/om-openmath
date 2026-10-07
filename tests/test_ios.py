@@ -13,7 +13,7 @@ class IOSTests(unittest.TestCase):
         version = tomllib.loads((ROOT / "Cargo.toml").read_text(encoding="utf-8"))["workspace"]["package"]["version"]
         info = plistlib.loads((ROOT / "ios/OpenMath/Info.plist").read_bytes())
         self.assertEqual(info["OpenMathReleaseVersion"], version)
-        self.assertEqual(info["CFBundleVersion"], "2")
+        self.assertEqual(info["CFBundleVersion"], version.rsplit(".", 1)[1])
         pins = json.loads((ROOT / "ios/OpenMath.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/Package.resolved").read_text(encoding="utf-8"))["pins"]
         self.assertEqual({p["identity"]: p["state"]["version"] for p in pins}, {"swiftmath": "1.7.3", "swift-markdown": "0.9.0", "swift-cmark": "0.9.0"})
         original = tomllib.loads((ROOT / "tests/corpus/solve.toml").read_text(encoding="utf-8"))["case"]

@@ -72,7 +72,9 @@ jobs:
       - run: npx playwright install --with-deps chromium
       - run: npm run test:e2e
       - name: Test production static notebook
-        run: OPENMATH_E2E_PREVIEW=1 npm run test:e2e
+        run: OPENMATH_PERFORMANCE=1 OPENMATH_E2E_PREVIEW=1 npm run test:e2e -- --workers=1
+      - name: Independently check all original production WASM math results
+        run: CARGO_PROFILE_TEST_OPT_LEVEL=2 cargo test -p om-cli --test corpus production_wasm_results_match_all_original_authority_rows --locked -- --ignored
 
   dependencies:
     runs-on: ubuntu-latest

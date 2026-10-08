@@ -12,6 +12,8 @@
 
 建议作为同一目标版本的主线，但属于完整 Mac 客户端换代；必须保留 `.3` 原功能与已确定的 Agent 范围并真实验收，不只做原生壳。当前仅记录方案建议，没有开始重写，没有锁定新版本号/最低 macOS 或同版发行范围。
 
+用户补充要求 UX/动效一同重做并报告 Apple 原生组件率，随后允许直接阅读 Telegram GitHub。已形成 [完整 UX 与动效规格](../design/macos-ux.md)、[组件清单](../design/macos-ui-inventory.json)及[评审交互草案](../design/prototypes/mac-workspace-ux.html)。设计组件族计数为 30/40 Apple 标准（75%），9 原生自定义、1 第三方原生，平台原生技术目标 100%；不是当前应用的实现比例。实际框架/默认样式、录屏、减少动态效果与业务竞态需原生验收后复核。
+
 ### Mac Notebook Agent（Pi Agent Core，设计草案）
 
 2026-10-08，用户选择以 Pi Agent Core 重做右侧助手，允许直接操作左侧笔记本；随后明确先只考虑 Mac。初步方案见 [Mac Notebook Agent 设计](../design/notebook-agent.md)，尚未安装依赖或开放自动写入。

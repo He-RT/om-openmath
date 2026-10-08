@@ -1,0 +1,389 @@
+{
+  "schema_version": 1,
+  "status": "design_only",
+  "scope": "下一版原生 Mac UI，当前 .3 与 HTML 草案均不属于本次实现统计。",
+  "unit": "一个具有独立交互/显示职责的组件族；各族等权计一次，复用的 Button/Text/系统图标不按实例叠加。",
+  "classifications": {
+    "apple_standard": "主要呈现与交互由默认 SwiftUI/AppKit/Apple 标准组件承担；仅传数据/动作或普通组合。",
+    "custom_native": "Apple 原生宿主内由应用自绘或自定义业务布局/renderer，保守归类；内部系统控件不重复计数。",
+    "third_party_native": "第三方原生渲染视图，不属于 Apple 标准组件。"
+  },
+  "totals": {
+    "families": 40,
+    "apple_standard": 30,
+    "custom_native": 9,
+    "third_party_native": 1,
+    "apple_standard_percent": 75.0,
+    "platform_native_percent": 100.0
+  },
+  "not_measured": [
+    "运行时代码实现",
+    "像素面积",
+    "代码行数",
+    "组件实例数量",
+    "渲染耗时"
+  ],
+  "implementation_audit": "实现后按同一清单核对文件/类型/默认样式/可访问性和功能，替换项必须更新分类，不允许把 NSView/MTKView 宿主本身冒算标准业务组件。",
+  "components": [
+    {
+      "id": "mac.ui.01",
+      "group": "窗口导航",
+      "name": "窗口与标题栏",
+      "classification": "apple_standard",
+      "planned_apis": "NSWindow / SwiftUI Window",
+      "basis": "保留系统绘制、状态及交互；应用仅提供数据、目标和可用性。",
+      "implementation_status": "planned"
+    },
+    {
+      "id": "mac.ui.02",
+      "group": "窗口导航",
+      "name": "窗口控制与全屏",
+      "classification": "apple_standard",
+      "planned_apis": "系统窗口控件",
+      "basis": "保留系统绘制、状态及交互；应用仅提供数据、目标和可用性。",
+      "implementation_status": "planned"
+    },
+    {
+      "id": "mac.ui.03",
+      "group": "窗口导航",
+      "name": "工具栏与常用按钮",
+      "classification": "apple_standard",
+      "planned_apis": "NSToolbar / ToolbarItem / Button",
+      "basis": "保留系统绘制、状态及交互；应用仅提供数据、目标和可用性。",
+      "implementation_status": "planned"
+    },
+    {
+      "id": "mac.ui.04",
+      "group": "窗口导航",
+      "name": "应用菜单与快捷键",
+      "classification": "apple_standard",
+      "planned_apis": "NSMenu / SwiftUI Commands",
+      "basis": "保留系统绘制、状态及交互；应用仅提供数据、目标和可用性。",
+      "implementation_status": "planned"
+    },
+    {
+      "id": "mac.ui.05",
+      "group": "窗口导航",
+      "name": "可调整分栏",
+      "classification": "apple_standard",
+      "planned_apis": "NSSplitView / NSSplitViewController",
+      "basis": "保留系统绘制、状态及交互；应用仅提供数据、目标和可用性。",
+      "implementation_status": "planned"
+    },
+    {
+      "id": "mac.ui.06",
+      "group": "窗口导航",
+      "name": "单元格大纲与选择",
+      "classification": "apple_standard",
+      "planned_apis": "NSOutlineView / SwiftUI List",
+      "basis": "保留系统绘制、状态及交互；应用仅提供数据、目标和可用性。",
+      "implementation_status": "planned"
+    },
+    {
+      "id": "mac.ui.07",
+      "group": "编辑与笔记本",
+      "name": "数学源码编辑",
+      "classification": "apple_standard",
+      "planned_apis": "NSTextView / TextKit 2",
+      "basis": "保留原生文字布局、IME、选区及撤销，语法颜色属文本属性。",
+      "implementation_status": "planned"
+    },
+    {
+      "id": "mac.ui.08",
+      "group": "编辑与笔记本",
+      "name": "查找与替换",
+      "classification": "apple_standard",
+      "planned_apis": "NSTextFinder / findBar",
+      "basis": "优先系统查找交互，不手绘工具条。",
+      "implementation_status": "planned"
+    },
+    {
+      "id": "mac.ui.09",
+      "group": "编辑与笔记本",
+      "name": "选区与复制粘贴",
+      "classification": "apple_standard",
+      "planned_apis": "原生文本系统 / NSMenu",
+      "basis": "沿用响应链、Unicode 边界和编辑命令。",
+      "implementation_status": "planned"
+    },
+    {
+      "id": "mac.ui.10",
+      "group": "编辑与笔记本",
+      "name": "补全与 Hover 列表",
+      "classification": "apple_standard",
+      "planned_apis": "NSPopover + List/Text",
+      "basis": "系统弹层和列表，数据/锚点由应用提供；不额外绘制自定义按钮。",
+      "implementation_status": "planned"
+    },
+    {
+      "id": "mac.ui.11",
+      "group": "编辑与笔记本",
+      "name": "ghost 补全与诊断覆盖",
+      "classification": "custom_native",
+      "planned_apis": "NSTextView 装饰 / Core Graphics",
+      "basis": "源码范围、ghost 布局和诊断绘制需要自定义，不能算标准文本控件。",
+      "implementation_status": "planned"
+    },
+    {
+      "id": "mac.ui.12",
+      "group": "编辑与笔记本",
+      "name": "笔记本单元格容器",
+      "classification": "custom_native",
+      "planned_apis": "SwiftUI 自定义 View / AppKit NSView",
+      "basis": "源码、结果、状态与操作的数学单元布局自定义，内部标准按钮不重复计数。",
+      "implementation_status": "planned"
+    },
+    {
+      "id": "mac.ui.13",
+      "group": "数学展示",
+      "name": "数学公式排版",
+      "classification": "third_party_native",
+      "planned_apis": "SwiftMath Mac 原生视图",
+      "basis": "第三方数学排版器，原生宿主显示；不冒称 Apple 提供的公式控件。",
+      "implementation_status": "planned"
+    },
+    {
+      "id": "mac.ui.14",
+      "group": "数学展示",
+      "name": "解集与条件列表",
+      "classification": "apple_standard",
+      "planned_apis": "List / DisclosureGroup / Text",
+      "basis": "系统列表、展开与文本组合，不手绘解卡片和控制件。",
+      "implementation_status": "planned"
+    },
+    {
+      "id": "mac.ui.15",
+      "group": "数学展示",
+      "name": "Markdown 与行内数学流",
+      "classification": "custom_native",
+      "planned_apis": "swift-markdown AST → 原生 View",
+      "basis": "混合数学、代码、链接与表格的流式布局由应用组装；解析器不是 Apple UI。",
+      "implementation_status": "planned"
+    },
+    {
+      "id": "mac.ui.16",
+      "group": "数学展示",
+      "name": "真实步骤树",
+      "classification": "apple_standard",
+      "planned_apis": "NSOutlineView / DisclosureGroup",
+      "basis": "系统树结构与选中行为，步骤数据由内核提供。",
+      "implementation_status": "planned"
+    },
+    {
+      "id": "mac.ui.17",
+      "group": "数学展示",
+      "name": "数值与诊断表单",
+      "classification": "apple_standard",
+      "planned_apis": "Form / LabeledContent / Text",
+      "basis": "标准标签/值/错误文本组合，不绘制仪表盘卡片。",
+      "implementation_status": "planned"
+    },
+    {
+      "id": "mac.ui.18",
+      "group": "数学展示",
+      "name": "矩阵与数据表格",
+      "classification": "apple_standard",
+      "planned_apis": "NSTableView / SwiftUI Table",
+      "basis": "标准行列选择、滚动与分页按钮；数据来自真实结果。",
+      "implementation_status": "planned"
+    },
+    {
+      "id": "mac.ui.19",
+      "group": "数学展示",
+      "name": "记录与变量树",
+      "classification": "apple_standard",
+      "planned_apis": "NSOutlineView / List",
+      "basis": "系统树行与字段展开，业务数据不属于控件重写。",
+      "implementation_status": "planned"
+    },
+    {
+      "id": "mac.ui.20",
+      "group": "数学展示",
+      "name": "二维绘图视图",
+      "classification": "custom_native",
+      "planned_apis": "Canvas / Core Graphics",
+      "basis": "内核采样的坐标、曲线、标签及拾取属于自绘内容。",
+      "implementation_status": "planned"
+    },
+    {
+      "id": "mac.ui.21",
+      "group": "数学展示",
+      "name": "三维场景视图",
+      "classification": "custom_native",
+      "planned_apis": "MTKView / Metal",
+      "basis": "Apple 宿主中的自定义 renderer，相机/材质/网格不是现成系统图表。",
+      "implementation_status": "planned"
+    },
+    {
+      "id": "mac.ui.22",
+      "group": "数学展示",
+      "name": "参数探索控件",
+      "classification": "apple_standard",
+      "planned_apis": "Slider / TextField / Stepper",
+      "basis": "系统滑块和数值输入，参数作用域由业务服务维护。",
+      "implementation_status": "planned"
+    },
+    {
+      "id": "mac.ui.23",
+      "group": "助手",
+      "name": "对话内容与消息分组",
+      "classification": "custom_native",
+      "planned_apis": "原生文本视图 / 自定义消息布局",
+      "basis": "消息排列、引用和分组样式自定义，不因为使用 Text 就算标准聊天控件。",
+      "implementation_status": "planned"
+    },
+    {
+      "id": "mac.ui.24",
+      "group": "助手",
+      "name": "助手输入容器",
+      "classification": "custom_native",
+      "planned_apis": "SwiftUI/AppKit 自定义组合",
+      "basis": "圆角容器、附件区域与固定操作行整体布局为自定义；按钮不另重复计数。",
+      "implementation_status": "planned"
+    },
+    {
+      "id": "mac.ui.25",
+      "group": "助手",
+      "name": "助手正文编辑",
+      "classification": "apple_standard",
+      "planned_apis": "NSTextView / TextKit 2",
+      "basis": "输入核心使用系统文本组件和合成/选区。",
+      "implementation_status": "planned"
+    },
+    {
+      "id": "mac.ui.26",
+      "group": "助手",
+      "name": "模型与模式菜单",
+      "classification": "apple_standard",
+      "planned_apis": "NSMenu / NSPopover + List/Picker",
+      "basis": "原生菜单、分组、搜索和选中行为。",
+      "implementation_status": "planned"
+    },
+    {
+      "id": "mac.ui.27",
+      "group": "助手",
+      "name": "附件预览条",
+      "classification": "custom_native",
+      "planned_apis": "原生 Image/View 自定义组合",
+      "basis": "缩略图、处理状态和移除区域自定义，原媒体预览另计。",
+      "implementation_status": "planned"
+    },
+    {
+      "id": "mac.ui.28",
+      "group": "助手",
+      "name": "工具轨迹与回执列表",
+      "classification": "apple_standard",
+      "planned_apis": "List / DisclosureGroup / ProgressView",
+      "basis": "标准列表及展开控件提供动作轨迹，不定制成功动画按钮。",
+      "implementation_status": "planned"
+    },
+    {
+      "id": "mac.ui.29",
+      "group": "助手",
+      "name": "源码差异视图",
+      "classification": "custom_native",
+      "planned_apis": "NSTextView + 自绘行标/差异背景",
+      "basis": "行号映射和差异背景自绘，不以两块 NSTextView 报为标准差异控件。",
+      "implementation_status": "planned"
+    },
+    {
+      "id": "mac.ui.30",
+      "group": "助手",
+      "name": "上下文与任务管理页",
+      "classification": "apple_standard",
+      "planned_apis": "TabView / Table / Form / TextEditor",
+      "basis": "标准标签页、表单、列表与文本编辑器，来源数据由宿主生成。",
+      "implementation_status": "planned"
+    },
+    {
+      "id": "mac.ui.31",
+      "group": "设置与反馈",
+      "name": "设置窗口与分组",
+      "classification": "apple_standard",
+      "planned_apis": "Settings / NSWindow / Form",
+      "basis": "使用标准平台控件、语义与焦点行为，保存事实由业务回执确认。",
+      "implementation_status": "planned"
+    },
+    {
+      "id": "mac.ui.32",
+      "group": "设置与反馈",
+      "name": "供应商和模型管理",
+      "classification": "apple_standard",
+      "planned_apis": "List / Form / TextField / Picker",
+      "basis": "使用标准平台控件、语义与焦点行为，保存事实由业务回执确认。",
+      "implementation_status": "planned"
+    },
+    {
+      "id": "mac.ui.33",
+      "group": "设置与反馈",
+      "name": "凭据输入",
+      "classification": "apple_standard",
+      "planned_apis": "SecureField / NSSecureTextField",
+      "basis": "使用标准平台控件、语义与焦点行为，保存事实由业务回执确认。",
+      "implementation_status": "planned"
+    },
+    {
+      "id": "mac.ui.34",
+      "group": "设置与反馈",
+      "name": "主题与行为偏好",
+      "classification": "apple_standard",
+      "planned_apis": "Toggle / Picker / Slider",
+      "basis": "使用标准平台控件、语义与焦点行为，保存事实由业务回执确认。",
+      "implementation_status": "planned"
+    },
+    {
+      "id": "mac.ui.35",
+      "group": "设置与反馈",
+      "name": "进度与状态反馈",
+      "classification": "apple_standard",
+      "planned_apis": "ProgressView / NSProgressIndicator / Text",
+      "basis": "使用标准平台控件、语义与焦点行为，保存事实由业务回执确认。",
+      "implementation_status": "planned"
+    },
+    {
+      "id": "mac.ui.36",
+      "group": "设置与反馈",
+      "name": "确认与失败对话框",
+      "classification": "apple_standard",
+      "planned_apis": "NSAlert / SwiftUI alert",
+      "basis": "使用标准平台控件、语义与焦点行为，保存事实由业务回执确认。",
+      "implementation_status": "planned"
+    },
+    {
+      "id": "mac.ui.37",
+      "group": "文件与媒体",
+      "name": "打开和保存面板",
+      "classification": "apple_standard",
+      "planned_apis": "NSOpenPanel / NSSavePanel",
+      "basis": "采用系统能力与标准操作入口；数据/附件类型限制由宿主提供。",
+      "implementation_status": "planned"
+    },
+    {
+      "id": "mac.ui.38",
+      "group": "文件与媒体",
+      "name": "导出与分享入口",
+      "classification": "apple_standard",
+      "planned_apis": "Menu / NSSharingServicePicker",
+      "basis": "采用系统能力与标准操作入口；数据/附件类型限制由宿主提供。",
+      "implementation_status": "planned"
+    },
+    {
+      "id": "mac.ui.39",
+      "group": "文件与媒体",
+      "name": "媒体和文件预览",
+      "classification": "apple_standard",
+      "planned_apis": "QuickLook / PDFKit / AVKit",
+      "basis": "采用系统能力与标准操作入口；数据/附件类型限制由宿主提供。",
+      "implementation_status": "planned"
+    },
+    {
+      "id": "mac.ui.40",
+      "group": "文件与媒体",
+      "name": "上下文动作与解释弹层",
+      "classification": "apple_standard",
+      "planned_apis": "NSMenu / NSPopover / 标准按钮",
+      "basis": "采用系统能力与标准操作入口；数据/附件类型限制由宿主提供。",
+      "implementation_status": "planned"
+    }
+  ]
+}

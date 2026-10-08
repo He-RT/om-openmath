@@ -1,0 +1,160 @@
+{
+  "date": "2026-10-08",
+  "status": "design_only",
+  "scope": "HTML 评审与机器契约结构，不是原生/供应商/媒体运行时验收",
+  "browser": "Playwright Chromium headless",
+  "viewports": {
+    "review_screenshots": [
+      1360,
+      1050
+    ],
+    "responsive_checks_widths": [
+      1000,
+      760,
+      640
+    ]
+  },
+  "browser_checks": [
+    {
+      "name": "01 供应商首屏及已存凭据保持空输入",
+      "status": "passed"
+    },
+    {
+      "name": "02 跨目的地保留非秘密编辑草稿",
+      "status": "passed"
+    },
+    {
+      "name": "03 草稿连接测试不保存名称",
+      "status": "passed"
+    },
+    {
+      "name": "04 保存失败保留旧配置和新草稿",
+      "status": "passed"
+    },
+    {
+      "name": "05 unknown 提交冻结对象并核对原回执",
+      "status": "passed"
+    },
+    {
+      "name": "06 无效远程 HTTP 地址就地拒绝",
+      "status": "passed"
+    },
+    {
+      "name": "07 替换凭据不写浏览器持久存储或配置明文",
+      "status": "passed"
+    },
+    {
+      "name": "08 模型能力列与未知容量显示",
+      "status": "passed"
+    },
+    {
+      "name": "09 工具探测只产生草稿保存后才可用于执行",
+      "status": "passed"
+    },
+    {
+      "name": "10 参数组合变化后旧工具证据失效",
+      "status": "passed"
+    },
+    {
+      "name": "11 取消探测迟到完成不覆盖停止状态",
+      "status": "passed"
+    },
+    {
+      "name": "12 探测失败不把能力改成成功",
+      "status": "passed"
+    },
+    {
+      "name": "13 目录只纳入所选新模型且不覆盖原配置",
+      "status": "passed"
+    },
+    {
+      "name": "14 供应商添加前后导航与未保存草稿",
+      "status": "passed"
+    },
+    {
+      "name": "15 删除依赖处理和取消保持原对象",
+      "status": "passed"
+    },
+    {
+      "name": "16 用途映射不隐式改变本次助手选型",
+      "status": "passed"
+    },
+    {
+      "name": "17 模型菜单键盘与关闭焦点恢复",
+      "status": "passed"
+    },
+    {
+      "name": "18 运行中模型切换仅下一轮及媒体兼容选择",
+      "status": "passed"
+    },
+    {
+      "name": "19 附件准备范围与移除后的迟到结果",
+      "status": "passed"
+    },
+    {
+      "name": "20 主题最小宽度与系统减少动态效果",
+      "status": "passed"
+    },
+    {
+      "name": "21 改草稿期间迟到探测不更新当前能力",
+      "status": "passed"
+    },
+    {
+      "name": "22 删除所有连接后空页保持可操作",
+      "status": "passed"
+    },
+    {
+      "name": "23 初始模型逐项继承与已有模型显式图片覆盖",
+      "status": "passed"
+    },
+    {
+      "name": "24 供应商默认保存后传播到继承子项",
+      "status": "passed"
+    },
+    {
+      "name": "25 单模型上下文覆盖不被父默认变更覆盖",
+      "status": "passed"
+    },
+    {
+      "name": "26 全部恢复继承先形成草稿并显式保存",
+      "status": "passed"
+    },
+    {
+      "name": "27 思考映射默认继承与单模型独立覆盖",
+      "status": "passed"
+    }
+  ],
+  "page_script_errors": [],
+  "external_network_requests": [],
+  "schema_checks": {
+    "scope": "design shape validation only",
+    "positive_examples": 15,
+    "negative_examples": 32,
+    "existing_schemas_valid": 3,
+    "component_families": {
+      "apple_standard": 30,
+      "custom_native": 9,
+      "third_party_native": 1
+    }
+  },
+  "previous_attempt": {
+    "browser_checks_passed": 21,
+    "browser_checks_failed": 1,
+    "reason": "保存等待期间仍显示上一笔成功提示，导致误读旧确认；已改为 pending 反馈并由新保存回执确认。",
+    "raw_evidence": "target/model-media-evidence/checks-before-inheritance.json"
+  },
+  "not_executed": [
+    "SwiftUI/AppKit 原生设置",
+    "Keychain 与迁移真实存储",
+    "Pi/单轮供应商请求及付费探测",
+    "真实 PDF OCR 音视频解码/转写/上传",
+    "VoiceOver/原生性能/实际数学回归"
+  ],
+  "native_component_inventory": {
+    "status": "planned",
+    "apple_standard_families": 30,
+    "all_families": 40,
+    "percent": 75,
+    "platform_native_target_percent": 100
+  }
+}

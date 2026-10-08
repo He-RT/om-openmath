@@ -47,6 +47,8 @@ Swift/Rust/Pi 的实际所有权、文档控制与计算通道分离、草稿/IM
 
 本地源码/回执/幂等同库原子提交、无损计算状态、文件保存 intent、会话/上下文/附件隔离、迁移/备份与崩溃恢复见[存储与恢复契约](macos-storage-recovery.md)及[存储 Schema](macos-storage.schema.json)。N0/N2 开放写入前完成实际持久化与恢复门禁；此设计仍未实现。
 
+N3 的供应商、模型、功能映射和媒体处理已进一步形成[服务契约](model-media.md)、[原生 UI/UX](macos-model-media-ux.md)和[交互草案](prototypes/mac-model-settings.html)。列表/表单/凭据/探测/系统媒体预览复用原组件族；原生技术/组件率仍按原清单审计，不以 HTML 草案证明已实现。
+
 ## 分阶段交付
 
 | 阶段 | 交付 | 验收门槛 |

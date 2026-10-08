@@ -16,6 +16,8 @@
 | 保存和恢复 Mac 笔记本、Agent 会话、上下文与附件 | [存储、事务与恢复](design/macos-storage-recovery.md)、[存储 Schema](design/macos-storage.schema.json) |
 | 查看 Mac UX、动效与苹果原生组件率 | [UX 与动效](design/macos-ux.md)、[组件清单](design/macos-ui-inventory.json) |
 | 查看助手输入框、供应商模型选择与媒体附件设计 | [输入框与媒体规格](design/agent-composer.md)、[交互草案](design/prototypes/mac-agent-composer.html) |
+| 设计供应商连接、多模型、能力、探测和媒体请求路由 | [模型与媒体服务](design/model-media.md)、[机器 Schema](design/model-media.schema.json) |
+| 查看供应商、模型、功能映射与媒体处理的原生界面 | [模型媒体 UI/UX](design/macos-model-media-ux.md)、[设置交互草案](design/prototypes/mac-model-settings.html) |
 | 管理 Agent 提示词层、实际上下文、任务记忆与会话压缩 | [上下文和提示词管理设计](design/agent-context.md) |
 | 教 Agent 使用 OpenMath 并验收实际操作能力 | [操作提示词草案](design/prompts/notebook-operation.md) |
 | 查看 Agent 工具的参数、返回、错误和副作用 | [工具契约](design/agent-tools.md)、[完整 JSON Schema](design/agent-tools.schema.json) |

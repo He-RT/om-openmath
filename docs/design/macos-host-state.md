@@ -4,7 +4,7 @@
 
 2026-10-08。Swift/AppKit 负责原生交互和系统服务，Rust 负责权威文档/事务/计算状态，Pi 负责模型与工具循环。文档控制和耗时计算使用独立执行通道；UI 持有确认状态的投影及原生编辑草稿，不维护第二份权威笔记本。
 
-本契约针对下一版 Mac 单活动文档与单活动 Agent 任务，尚未实现。新包名、类型、ABI 和消息为计划接口；不改变 `.3`、现有 iOS ABI 或其数学语义。物理存储/事务/恢复已细化为[存储契约](macos-storage-recovery.md)，仍待实现；模型/媒体具体路由和发行打包另行设计。
+本契约针对下一版 Mac 单活动文档与单活动 Agent 任务，尚未实现。新包名、类型、ABI 和消息为计划接口；不改变 `.3`、现有 iOS ABI 或其数学语义。物理存储/事务/恢复已细化为[存储契约](macos-storage-recovery.md)，模型/媒体路由细化为[服务契约](model-media.md)，均待实现；发行打包另行设计。
 
 ## 现有实现依据
 
@@ -226,6 +226,8 @@ Pi prepareRequest 从宿主取得规范投影，不凭本地 chat 数组生成�
 
 采用 Swift URLSession + Keychain，Rust om-llm/新单轮 codec 负责可复用的请求校验和流解码，Pi 只循环，不同时运行旧 LlmChat 循环。新单轮模型状态与 CAS worker 分开，模型字节处理不会因一次长求值堵在 Session owner 后。
 
+稳定连接/路由/模型/预设、能力证据和发现/探测、canonical rich message 与 Pi 投影、原生音视频/文件部件、媒体准备/上传与真实覆盖见[模型与媒体契约](model-media.md)。所有控制 IPC 传受控引用，大字节走宿主 Blob/流，不把多媒体塞进普通 submit 上限；尚未接通的 adapter 不进入可执行能力。
+
 已有 Swift HTTP 原始字节接入与 Rust 流解码可参考，但要新增/抽取真正单轮接口，不直接对旧 chat job 标记成单轮。codec 可在单独 Rust 模型通道持有状态；ProviderTransport 按实际配置快照解析认证和已批准处理服务，HTTP auth 不进入工具回执、Pi transcript 或 ContextSnapshot。
 
 模型/提示词切换只在下一个请求边界使用新版本；正在流式输出的请求保留原身份。stdout 管道有背压时，独立 Swift 网络/CAS 取消仍可执行；不把停止寄希望于 Pi 恰好读到 cancel 帧。
@@ -266,7 +268,7 @@ NativeDocument 从已确认 revision 获取 immutable SaveSnapshot；存在待�
 
 保存期间文档推进到更高 revision 时，只确认旧 saved_revision，当前 dirty 仍为 true。重命名/另存为造成 URL 绑定变化时，迟到旧文件回执不能改新目标的保存状态。主笔记本文件成功与事务恢复记录落盘成功分别命名，不用日志写入证明 `.omnb` 已保存。
 
-附件服务/模型设置遵循同一 actor/代次原则，但它们不增加 document_revision。物理格式、原配置/Keychain 迁移、附件保留和恢复已由[存储契约](macos-storage-recovery.md)定义；具体供应商媒体路由后续细化。此层只消费实际成功/失败/未知回执，不提前实现占位保存。
+附件服务/模型设置遵循同一 actor/代次原则，但它们不增加 document_revision。物理格式、原配置/Keychain 迁移、附件保留和恢复由[存储契约](macos-storage-recovery.md)定义；供应商路由、模型/能力/参数和准备/提交路径由[模型媒体契约](model-media.md)定义。此层只消费实际成功/失败/未知回执，不提前实现占位保存。
 
 ## 首批实现与验收
 

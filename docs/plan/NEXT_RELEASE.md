@@ -25,6 +25,14 @@
 - 定义草稿/IME、文件绑定/外部冲突、Keychain 迁移、格式升级/代次发布、备份回退隔离、保留/容量/GC 和原生恢复入口；会话损坏不清空健康文档，`.omnb` v1 仍仅源码。
 - S0–S4 对应 N0–N4 的实际实施门禁，SR01–SR12 为 planned 崩溃/并发/迁移验收；本轮仅文档和结构校验，没有新数据库服务/codec、Pi 依赖或原生程序。写入开放前必须补齐这些真实测试。
 
+### Mac 模型与媒体、供应商/模型 UI（设计，尚未实现）
+
+2026-10-08，用户指定设计“模型与媒体”并补供应商、模型 UI/UX。已形成[服务契约](../design/model-media.md)、[机器 Schema](../design/model-media.schema.json)、[原生 UI/UX](../design/macos-model-media-ux.md)和[设置交互草案](../design/prototypes/mac-model-settings.html)。ProviderConnection/EndpointRoute/ModelEntry/ModelPreset 分离、稳定 ID 与功能映射；目录/官方/用户/实际探测证据分开，已支持参数由描述生成；Swift 传输/凭据/媒体、Rust 单轮 wire 与 Pi 循环共用冻结请求和真实回执。
+
+原生设置细分供应商、模型、功能映射和媒体处理；短表单/高级参数、目录选择导入、测试不保存、保存失败/unknown 核对、运行中模型切换下一轮生效。媒体原件、原生模型输入、本地提取/选页/抽帧与已配置转写服务分别显示实际接收方和覆盖，不自动漏附件或改供应商。协议/媒体目标及 M0–M4/MM01–MM15 门禁均 planned，没有新增真实 handler 或注册未实现能力。
+
+用户进一步指定供应商默认配置与单模型覆盖：供应商集中设置上下文、多模态与按协议的思考强度映射，各模型逐项默认 inherit，可单独 override/选择 auto，并显示来源/恢复继承。父配置变化只更新继承项，探测证据不自动继承；配置声明仍受服务真实限制和已接通 adapter 约束。此裁决同步到服务/机器契约及 UI 草案，仍未接入运行时。
+
 ### Mac Notebook Agent（Pi Agent Core，设计草案）
 
 2026-10-08，用户选择以 Pi Agent Core 重做右侧助手，允许直接操作左侧笔记本；随后明确先只考虑 Mac。初步方案见 [Mac Notebook Agent 设计](../design/notebook-agent.md)，尚未安装依赖或开放自动写入。

@@ -257,7 +257,8 @@
       "classification": "apple_standard",
       "planned_apis": "NSMenu / NSPopover + List/Picker",
       "basis": "原生菜单、分组、搜索和选中行为。",
-      "implementation_status": "planned"
+      "implementation_status": "planned",
+      "design_reference": "macos-model-media-ux.md"
     },
     {
       "id": "mac.ui.27",
@@ -309,9 +310,10 @@
       "group": "设置与反馈",
       "name": "供应商和模型管理",
       "classification": "apple_standard",
-      "planned_apis": "List / Form / TextField / Picker",
+      "planned_apis": "List / Table / Form / TextField / Picker / DisclosureGroup",
       "basis": "使用标准平台控件、语义与焦点行为，保存事实由业务回执确认。",
-      "implementation_status": "planned"
+      "implementation_status": "planned",
+      "design_reference": "macos-model-media-ux.md"
     },
     {
       "id": "mac.ui.33",
@@ -320,7 +322,8 @@
       "classification": "apple_standard",
       "planned_apis": "SecureField / NSSecureTextField",
       "basis": "使用标准平台控件、语义与焦点行为，保存事实由业务回执确认。",
-      "implementation_status": "planned"
+      "implementation_status": "planned",
+      "design_reference": "macos-model-media-ux.md"
     },
     {
       "id": "mac.ui.34",
@@ -374,7 +377,8 @@
       "classification": "apple_standard",
       "planned_apis": "QuickLook / PDFKit / AVKit",
       "basis": "采用系统能力与标准操作入口；数据/附件类型限制由宿主提供。",
-      "implementation_status": "planned"
+      "implementation_status": "planned",
+      "design_reference": "macos-model-media-ux.md"
     },
     {
       "id": "mac.ui.40",

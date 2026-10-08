@@ -2,6 +2,8 @@
 
 [宿主与状态](macos-host-state.md) · [存储 Schema](macos-storage.schema.json) · [Agent](notebook-agent.md) · [上下文](agent-context.md) · [下一版](../plan/NEXT_RELEASE.md)
 
+供应商默认/单模型覆盖、参数预设/能力证据、具体媒体准备与请求路由见[模型媒体契约](model-media.md)。本文件只规定它们的版本、存储和恢复，不另存一份失去继承来源的模型有效配置。
+
 2026-10-08。下一版 Mac 设计，**尚未实现**。本方案补齐 DocCommitPort 的真实事务边界：源码、撤销信息、操作回执和幂等记录在同一个 SQLite 数据库事务中提交。会话、上下文和附件独立于 `.omnb` v1；重新打开应用先恢复记录和核对事实，用户接续后才启动 Agent 或计算。
 
 ## 调研依据与取舍

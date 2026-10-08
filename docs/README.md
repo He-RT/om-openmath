@@ -15,6 +15,7 @@
 | 实施原生 Mac 宿主并统一 Swift Rust Pi 状态 | [宿主与状态契约](design/macos-host-state.md)、[状态 Schema](design/macos-host-state.schema.json) |
 | 保存和恢复 Mac 笔记本、Agent 会话、上下文与附件 | [存储、事务与恢复](design/macos-storage-recovery.md)、[存储 Schema](design/macos-storage.schema.json) |
 | 查看 Mac UX、动效与苹果原生组件率 | [UX 与动效](design/macos-ux.md)、[组件清单](design/macos-ui-inventory.json) |
+| 细化 Mac 原生源码编辑、公式/Markdown/结果与二维/Metal 展示 | [编辑与渲染契约](design/macos-editor-rendering.md)、[机器 Schema](design/macos-editor-rendering.schema.json)、[交互草案](design/prototypes/mac-editor-rendering.html) |
 | 查看助手输入框、供应商模型选择与媒体附件设计 | [输入框与媒体规格](design/agent-composer.md)、[交互草案](design/prototypes/mac-agent-composer.html) |
 | 设计供应商连接、多模型、能力、探测和媒体请求路由 | [模型与媒体服务](design/model-media.md)、[机器 Schema](design/model-media.schema.json) |
 | 查看供应商、模型、功能映射与媒体处理的原生界面 | [模型媒体 UI/UX](design/macos-model-media-ux.md)、[设置交互草案](design/prototypes/mac-model-settings.html) |

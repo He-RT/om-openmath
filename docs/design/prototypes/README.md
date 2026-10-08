@@ -45,3 +45,15 @@ python3 -m http.server 8766 --bind 127.0.0.1 --directory docs/design/prototypes
 2026-10-08，**27 项 Playwright/Chromium 浏览器交互通过**，页面无脚本异常且无外部网络请求；检查包含 1000/760/640px 宽度无页面横向溢出、深浅主题和系统减少动态效果。新增 Schema 的 15 正例/32 反例及原组件族计数核验通过。一次早期草案检查发现保存等待时保留了旧成功文字，已改为 pending/新回执确认；原记录保留在本仓库 `target/model-media-evidence/`。
 
 三张截图来自最终 HTML 草案；另外的暗色/窄窗截图和测试脚本/日志位于 `target/model-media-evidence/`。浏览器测的是演示状态/导航/继承与布局，不证明原生控件、秘密存储、真实供应商能力、Office/PDF/OCR/音视频或模型理解已验收。原生 MM01–MM15 仍全部 planned。
+
+## 原生编辑器与内容渲染草案
+
+[契约](../macos-editor-rendering.md) · [机器 Schema](../macos-editor-rendering.schema.json) · [交互草案](mac-editor-rendering.html) · [编辑/过期输出截图](mac-editor-rendering-editing.png) · [Markdown 截图](mac-editor-rendering-markdown.png) · [图形截图](mac-editor-rendering-plot.png) · [实际检查范围](editor-rendering-review.json)
+
+本轮本地服务为 `http://127.0.0.1:8770/mac-editor-rendering.html`，也可用同一目录的任意 localhost HTTP 服务打开本 HTML。代码在 [mac-editor-rendering.js](mac-editor-rendering.js)，只在内存保存两格源码、选区、历史样例与视图状态；没有编译或调用 Rust/原生 Mac/供应商服务，不自动求值任意源码。
+
+可评审源码/未执行预览/已接纳结果三层、本地/ghost 候选与接受/一次撤销、诊断 EOF 修复、合成守卫、3→6 静态结果接纳与迟到/停止隔离、完整原式复制、精确字符串分页、Markdown 样式/代码保护示意、固定2D样例坐标的相机与 renderer unavailable 状态。页面只接受 `let a = 2`/`let a = 5` 和 `a+1` 的预设结果，不把浏览器算法当 CAS。
+
+2026-10-09，**26 项 Playwright/Chromium 浏览器检查通过**，无页面脚本异常、外部网络请求或资源404；1000/760/640px 无页面横向溢出，深浅/系统减少动态效果保持操作。UTF-8/UTF-16/字素检查为草案辅助算法，合成使用浏览器事件/演示状态，不是原生中文输入验收。新增 Schema 14 个正例/26 个反例通过；本地脚本与过程证据在 `target/editor-rendering-evidence/`。
+
+首轮发现两个实际草案问题：建议按钮焦点时 Escape 未关闭、三维参考图 hidden 被样式覆盖；修复后整套通过，早期失败记录保留。截图来自最终 HTML，公式是 HTML 示意，三维 `assets/editor-watermelon.png` 是本仓库已有 `.3` 验收图副本，明确标静态参考，不是新的 Metal 画面；原生 ER01–ER12 与性能仍 planned。本页与截图不计 Apple 原生组件实现比例。

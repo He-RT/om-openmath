@@ -33,6 +33,12 @@
 
 用户进一步指定供应商默认配置与单模型覆盖：供应商集中设置上下文、多模态与按协议的思考强度映射，各模型逐项默认 inherit，可单独 override/选择 auto，并显示来源/恢复继承。父配置变化只更新继承项，探测证据不自动继承；配置声明仍受服务真实限制和已接通 adapter 约束。此裁决同步到服务/机器契约及 UI 草案，仍未接入运行时。
 
+### Mac 编辑器与渲染细节（设计，尚未实现）
+
+2026-10-09，用户指定继续设计“编辑器与渲染细节”。已形成[契约](../design/macos-editor-rendering.md)、[机器 Schema](../design/macos-editor-rendering.schema.json)和[交互草案](../design/prototypes/mac-editor-rendering.html)：NSTextView/TextKit 2、严格 UTF-8/UTF-16/字素范围、IME/undo/draft/fence、非求值 Preview/Complete/Hover、snippets/Greek/ghost、诊断/Fix与稳定长文布局；SwiftMath/Markdown的原式 fallback/基线/source map，真实结果/步骤/精度/结构化分页，Core Graphics/Metal 的采样/相机/GPU/截图生命周期。
+
+E0–E5 对应 N0/N1/N2/N4，ER01–ER12 全部 planned；共享自动续行修复是 E0 的 parser 前置，不用 Mac UI 改写原源码遮掩问题。复用既有40组件族，Apple标准设计比例仍30/40=75%，原生技术目标100%；没有创建新Mac handler/renderer或改已发布`.3`，本机不启动iOS模拟器。
+
 ### Mac Notebook Agent（Pi Agent Core，设计草案）
 
 2026-10-08，用户选择以 Pi Agent Core 重做右侧助手，允许直接操作左侧笔记本；随后明确先只考虑 Mac。初步方案见 [Mac Notebook Agent 设计](../design/notebook-agent.md)，尚未安装依赖或开放自动写入。

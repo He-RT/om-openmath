@@ -1,0 +1,1494 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:openmath:mac-editor-rendering:planned:v1",
+  "title": "OpenMath Mac editor and native rendering design",
+  "description": "所有接口planned，无原生handler。仅校验形状，非Unicode/源码/数学/GPU/权限的真实性证明。合成示例不表示已经运行。",
+  "oneOf": [
+    {
+      "$ref": "#/$defs/EditorSnapshot"
+    },
+    {
+      "$ref": "#/$defs/AnalysisRequest"
+    },
+    {
+      "$ref": "#/$defs/LocalCompletion"
+    },
+    {
+      "$ref": "#/$defs/GhostCandidate"
+    },
+    {
+      "$ref": "#/$defs/DiagnosticView"
+    },
+    {
+      "$ref": "#/$defs/ResultBinding"
+    },
+    {
+      "$ref": "#/$defs/MathRenderPlan"
+    },
+    {
+      "$ref": "#/$defs/MarkdownBlock"
+    },
+    {
+      "$ref": "#/$defs/ScrollAnchor"
+    },
+    {
+      "$ref": "#/$defs/Camera2D"
+    },
+    {
+      "$ref": "#/$defs/FrameReceipt"
+    }
+  ],
+  "$defs": {
+    "Identity": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 256,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "Serial": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "ByteOffset": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 4294967295
+    },
+    "Sha256": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "Dialect": {
+      "type": "string",
+      "enum": [
+        "Modern",
+        "Wolfram",
+        "Auto"
+      ]
+    },
+    "SourceSpan": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "start": {
+          "$ref": "#/$defs/ByteOffset"
+        },
+        "end": {
+          "$ref": "#/$defs/ByteOffset"
+        }
+      },
+      "required": [
+        "start",
+        "end"
+      ],
+      "description": "UTF-8 半开范围。start<=end<=source长度且是 scalar boundary 必须由 SourceIndexMap 核验。"
+    },
+    "NativeRange": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "location": {
+          "$ref": "#/$defs/Serial"
+        },
+        "length": {
+          "$ref": "#/$defs/Serial"
+        }
+      },
+      "required": [
+        "location",
+        "length"
+      ],
+      "description": "原生 UTF-16 单位，不能 clamp 越界/半代理对以便执行编辑。"
+    },
+    "EditorKey": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "runtime_instance_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "document_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "document_generation": {
+          "$ref": "#/$defs/Serial"
+        },
+        "cell_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "editor_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "editor_generation": {
+          "$ref": "#/$defs/Serial"
+        },
+        "draft_sequence": {
+          "$ref": "#/$defs/Serial"
+        },
+        "source_hash": {
+          "$ref": "#/$defs/Sha256"
+        },
+        "requested_dialect": {
+          "$ref": "#/$defs/Dialect"
+        },
+        "effective_dialect": {
+          "$ref": "#/$defs/Dialect"
+        },
+        "analysis_generation": {
+          "$ref": "#/$defs/Serial"
+        },
+        "metadata_version": {
+          "$ref": "#/$defs/Serial"
+        },
+        "definition_snapshot_revision": {
+          "$ref": "#/$defs/Serial"
+        },
+        "config_revision": {
+          "$ref": "#/$defs/Serial"
+        },
+        "cursor_utf8": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ByteOffset"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "selection_utf16": {
+          "$ref": "#/$defs/NativeRange"
+        }
+      },
+      "required": [
+        "runtime_instance_id",
+        "document_id",
+        "document_generation",
+        "cell_id",
+        "editor_id",
+        "editor_generation",
+        "draft_sequence",
+        "source_hash",
+        "requested_dialect",
+        "effective_dialect",
+        "analysis_generation",
+        "metadata_version",
+        "definition_snapshot_revision",
+        "config_revision",
+        "cursor_utf8",
+        "selection_utf16"
+      ],
+      "description": "宿主绑定值，不允许模型/异步 renderer 自行升代次；回执匹配源码/光标/定义 provenance。"
+    },
+    "EditorSnapshot": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "record_type": {
+          "const": "editor_snapshot"
+        },
+        "key": {
+          "$ref": "#/$defs/EditorKey"
+        },
+        "source": {
+          "type": "string",
+          "maxLength": 2097152
+        },
+        "composition": {
+          "type": "string",
+          "enum": [
+            "none",
+            "marked"
+          ]
+        },
+        "marked_range_utf16": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/NativeRange"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "committed_cell_revision": {
+          "$ref": "#/$defs/Serial"
+        },
+        "is_source_dirty": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "record_type",
+        "key",
+        "source",
+        "composition",
+        "marked_range_utf16",
+        "committed_cell_revision",
+        "is_source_dirty"
+      ],
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "composition": {
+                "const": "marked"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "marked_range_utf16": {
+                "$ref": "#/$defs/NativeRange"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "composition": {
+                "const": "none"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "marked_range_utf16": {
+                "type": "null"
+              }
+            }
+          }
+        }
+      ],
+      "x-implementation-status": "planned"
+    },
+    "AnalysisRequest": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "record_type": {
+          "const": "analysis_request"
+        },
+        "request_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "key": {
+          "$ref": "#/$defs/EditorKey"
+        },
+        "kind": {
+          "type": "string",
+          "enum": [
+            "preview",
+            "complete",
+            "hover"
+          ]
+        },
+        "non_evaluating": {
+          "const": true
+        }
+      },
+      "required": [
+        "record_type",
+        "request_id",
+        "key",
+        "kind",
+        "non_evaluating"
+      ],
+      "description": "仅 planned envelope，实际 kernel请求与非求值保证由 EditorWorker，非当前源码响应不可变更显示。",
+      "x-implementation-status": "planned"
+    },
+    "LocalCompletion": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "record_type": {
+          "const": "local_completion"
+        },
+        "candidate_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "key": {
+          "$ref": "#/$defs/EditorKey"
+        },
+        "replacement_span": {
+          "$ref": "#/$defs/SourceSpan"
+        },
+        "label": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 256
+        },
+        "insert_text": {
+          "type": "string",
+          "maxLength": 65536
+        },
+        "insertion_kind": {
+          "type": "string",
+          "enum": [
+            "plain",
+            "verified_snippet"
+          ]
+        },
+        "detail": {
+          "anyOf": [
+            {
+              "type": "string",
+              "maxLength": 4096
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "origin": {
+          "type": "string",
+          "enum": [
+            "builtin",
+            "user_definition",
+            "parameter",
+            "greek_shortcut"
+          ]
+        }
+      },
+      "required": [
+        "record_type",
+        "candidate_id",
+        "key",
+        "replacement_span",
+        "label",
+        "insert_text",
+        "insertion_kind",
+        "detail",
+        "origin"
+      ],
+      "x-implementation-status": "planned"
+    },
+    "GhostCandidate": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "record_type": {
+          "const": "ghost_candidate"
+        },
+        "candidate_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "request_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "key": {
+          "$ref": "#/$defs/EditorKey"
+        },
+        "anchor_utf8": {
+          "$ref": "#/$defs/ByteOffset"
+        },
+        "model_request_snapshot_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "suggestion_text": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 65536
+        },
+        "phase": {
+          "type": "string",
+          "enum": [
+            "ready",
+            "expired",
+            "cancelled"
+          ]
+        },
+        "enters_source_before_accept": {
+          "const": false
+        }
+      },
+      "required": [
+        "record_type",
+        "candidate_id",
+        "request_id",
+        "key",
+        "anchor_utf8",
+        "model_request_snapshot_id",
+        "suggestion_text",
+        "phase",
+        "enters_source_before_accept"
+      ],
+      "description": "decorative suggestion；accept 时还需零选区/非composition、source/cursor与权限/参数scope匹配。",
+      "x-implementation-status": "planned"
+    },
+    "DiagnosticView": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "record_type": {
+          "const": "diagnostic_view"
+        },
+        "diagnostic_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "key": {
+          "$ref": "#/$defs/EditorKey"
+        },
+        "code": {
+          "$ref": "#/$defs/Identity"
+        },
+        "severity": {
+          "type": "string",
+          "enum": [
+            "Error",
+            "Warning",
+            "Hint"
+          ]
+        },
+        "message": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 4096
+        },
+        "source_span": {
+          "$ref": "#/$defs/SourceSpan"
+        },
+        "display_range_utf16": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/NativeRange"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "location_state": {
+          "type": "string",
+          "enum": [
+            "located",
+            "invalid_span"
+          ]
+        },
+        "fix": {
+          "anyOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "source_span": {
+                  "$ref": "#/$defs/SourceSpan"
+                },
+                "replacement": {
+                  "type": "string",
+                  "maxLength": 65536
+                },
+                "label": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 256
+                }
+              },
+              "required": [
+                "source_span",
+                "replacement",
+                "label"
+              ]
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "record_type",
+        "diagnostic_id",
+        "key",
+        "code",
+        "severity",
+        "message",
+        "source_span",
+        "display_range_utf16",
+        "location_state",
+        "fix"
+      ],
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "location_state": {
+                "const": "invalid_span"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "display_range_utf16": {
+                "type": "null"
+              },
+              "fix": {
+                "type": "null"
+              }
+            }
+          }
+        }
+      ],
+      "description": "扩大显示范围不扩大真实 Fix；非法span消息可见但禁用替换/定位。",
+      "x-implementation-status": "planned"
+    },
+    "ResultBinding": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "record_type": {
+          "const": "result_binding"
+        },
+        "result_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "result_ref": {
+          "$ref": "#/$defs/Identity"
+        },
+        "runtime_instance_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "document_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "document_generation": {
+          "$ref": "#/$defs/Serial"
+        },
+        "cell_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "operation_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "source_hash": {
+          "$ref": "#/$defs/Sha256"
+        },
+        "source_revision": {
+          "$ref": "#/$defs/Serial"
+        },
+        "execution_epoch": {
+          "$ref": "#/$defs/Serial"
+        },
+        "kernel_state_revision": {
+          "$ref": "#/$defs/Serial"
+        },
+        "out_index": {
+          "$ref": "#/$defs/Serial"
+        },
+        "view_id": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Identity"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "acceptance": {
+          "type": "string",
+          "enum": [
+            "accepted",
+            "history_only"
+          ]
+        },
+        "freshness": {
+          "type": "string",
+          "enum": [
+            "current",
+            "stale",
+            "refreshing",
+            "partial"
+          ]
+        },
+        "source_fully_available": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "record_type",
+        "result_id",
+        "result_ref",
+        "runtime_instance_id",
+        "document_id",
+        "document_generation",
+        "cell_id",
+        "operation_id",
+        "source_hash",
+        "source_revision",
+        "execution_epoch",
+        "kernel_state_revision",
+        "out_index",
+        "view_id",
+        "acceptance",
+        "freshness",
+        "source_fully_available"
+      ],
+      "description": "render出现不能给 candidate acceptance；当前性和partial依据真实 source/epoch/操作回执，不依据schema文字。",
+      "x-implementation-status": "planned"
+    },
+    "LayoutKey": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "component_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "content_hash": {
+          "$ref": "#/$defs/Sha256"
+        },
+        "result_id": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Identity"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "renderer_version": {
+          "$ref": "#/$defs/Identity"
+        },
+        "layout_generation": {
+          "$ref": "#/$defs/Serial"
+        },
+        "viewport_generation": {
+          "$ref": "#/$defs/Serial"
+        },
+        "camera_generation": {
+          "$ref": "#/$defs/Serial"
+        },
+        "theme_generation": {
+          "$ref": "#/$defs/Serial"
+        },
+        "font_generation": {
+          "$ref": "#/$defs/Serial"
+        },
+        "width_points": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "maximum": 100000
+        },
+        "font_size_points": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "maximum": 1000
+        }
+      },
+      "required": [
+        "component_id",
+        "content_hash",
+        "result_id",
+        "renderer_version",
+        "layout_generation",
+        "viewport_generation",
+        "camera_generation",
+        "theme_generation",
+        "font_generation",
+        "width_points",
+        "font_size_points"
+      ]
+    },
+    "MathRenderPlan": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "record_type": {
+          "const": "math_render_plan"
+        },
+        "layout_key": {
+          "$ref": "#/$defs/LayoutKey"
+        },
+        "original_latex": {
+          "type": "string",
+          "maxLength": 2097152
+        },
+        "display_latex": {
+          "type": "string",
+          "maxLength": 65536
+        },
+        "source_alternative": {
+          "type": "string",
+          "maxLength": 2097152
+        },
+        "style": {
+          "type": "string",
+          "enum": [
+            "inline",
+            "display"
+          ]
+        },
+        "transform_ids": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Identity"
+          },
+          "uniqueItems": true
+        },
+        "parse_state": {
+          "type": "string",
+          "enum": [
+            "pending",
+            "typeset",
+            "unsupported",
+            "invalid",
+            "budget_exceeded",
+            "font_unavailable"
+          ]
+        },
+        "fallback_source_visible": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "record_type",
+        "layout_key",
+        "original_latex",
+        "display_latex",
+        "source_alternative",
+        "style",
+        "transform_ids",
+        "parse_state",
+        "fallback_source_visible"
+      ],
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "parse_state": {
+                "enum": [
+                  "unsupported",
+                  "invalid",
+                  "budget_exceeded",
+                  "font_unavailable"
+                ]
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "fallback_source_visible": {
+                "const": true
+              }
+            }
+          }
+        }
+      ],
+      "description": "typeset 状态需真实 parser/layout evidence；保留原 latex/源式，display转换不得代替 original复制。",
+      "x-implementation-status": "planned"
+    },
+    "MarkdownSpan": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "span_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "source_span": {
+          "$ref": "#/$defs/SourceSpan"
+        },
+        "rendered_range_utf16": {
+          "$ref": "#/$defs/NativeRange"
+        },
+        "kind": {
+          "type": "string",
+          "enum": [
+            "text",
+            "code",
+            "link",
+            "math_attachment",
+            "image_placeholder"
+          ]
+        },
+        "mapping": {
+          "type": "string",
+          "enum": [
+            "exact",
+            "atomic",
+            "unavailable"
+          ]
+        }
+      },
+      "required": [
+        "span_id",
+        "source_span",
+        "rendered_range_utf16",
+        "kind",
+        "mapping"
+      ]
+    },
+    "MarkdownBlock": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "record_type": {
+          "const": "markdown_block"
+        },
+        "block_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "source_hash": {
+          "$ref": "#/$defs/Sha256"
+        },
+        "source_span": {
+          "$ref": "#/$defs/SourceSpan"
+        },
+        "kind": {
+          "type": "string",
+          "enum": [
+            "paragraph",
+            "heading",
+            "list",
+            "quote",
+            "code",
+            "table",
+            "math",
+            "raw_html",
+            "fallback"
+          ]
+        },
+        "renderer_version": {
+          "$ref": "#/$defs/Identity"
+        },
+        "complete_block": {
+          "type": "boolean"
+        },
+        "span_map": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/MarkdownSpan"
+          }
+        },
+        "loads_remote_media": {
+          "const": false
+        },
+        "executes_code": {
+          "const": false
+        }
+      },
+      "required": [
+        "record_type",
+        "block_id",
+        "source_hash",
+        "source_span",
+        "kind",
+        "renderer_version",
+        "complete_block",
+        "span_map",
+        "loads_remote_media",
+        "executes_code"
+      ],
+      "description": "typed AST块，source_map和保留 nested style 的正确性需真实 Markdown/source map 测试；不靠正则全局占位字符串。",
+      "x-implementation-status": "planned"
+    },
+    "ScrollAnchor": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "record_type": {
+          "const": "scroll_anchor"
+        },
+        "cell_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "block_or_result_id": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Identity"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "source_range_utf16": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/NativeRange"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "viewport_offset_points": {
+          "type": "number",
+          "minimum": -100000,
+          "maximum": 100000
+        },
+        "layout_generation": {
+          "$ref": "#/$defs/Serial"
+        },
+        "requires_active_editor_pin": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "record_type",
+        "cell_id",
+        "block_or_result_id",
+        "source_range_utf16",
+        "viewport_offset_points",
+        "layout_generation",
+        "requires_active_editor_pin"
+      ],
+      "x-implementation-status": "planned"
+    },
+    "Camera2D": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "record_type": {
+          "const": "camera_2d"
+        },
+        "result_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "producer_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "camera_generation": {
+          "$ref": "#/$defs/Serial"
+        },
+        "sample_generation": {
+          "$ref": "#/$defs/Serial"
+        },
+        "x_range": {
+          "type": "array",
+          "items": {
+            "type": "number"
+          },
+          "minItems": 2,
+          "maxItems": 2
+        },
+        "y_range": {
+          "type": "array",
+          "items": {
+            "type": "number"
+          },
+          "minItems": 2,
+          "maxItems": 2
+        },
+        "scale": {
+          "type": "string",
+          "enum": [
+            "linear",
+            "log_x",
+            "log_y",
+            "log_log"
+          ]
+        },
+        "parameter_domain_hash": {
+          "$ref": "#/$defs/Sha256"
+        },
+        "changes_math_domain": {
+          "const": false
+        }
+      },
+      "required": [
+        "record_type",
+        "result_id",
+        "producer_id",
+        "camera_generation",
+        "sample_generation",
+        "x_range",
+        "y_range",
+        "scale",
+        "parameter_domain_hash",
+        "changes_math_domain"
+      ],
+      "description": "有限/增序/正对数范围与anchor transform由renderer严格检查；保持固定数学参数域，viewport采样是独立真实请求。",
+      "x-implementation-status": "planned"
+    },
+    "FrameReceipt": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "record_type": {
+          "const": "frame_receipt"
+        },
+        "frame_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "result_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "renderer_instance_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "layout_key": {
+          "$ref": "#/$defs/LayoutKey"
+        },
+        "frame_state": {
+          "type": "string",
+          "enum": [
+            "queued",
+            "gpu_completed",
+            "presented",
+            "failed",
+            "discarded"
+          ]
+        },
+        "render_state": {
+          "type": "string",
+          "enum": [
+            "pending",
+            "rendered",
+            "data_only",
+            "unavailable"
+          ]
+        },
+        "screenshot_artifact_id": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Identity"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "error_code": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Identity"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "record_type",
+        "frame_id",
+        "result_id",
+        "renderer_instance_id",
+        "layout_key",
+        "frame_state",
+        "render_state",
+        "screenshot_artifact_id",
+        "error_code"
+      ],
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "render_state": {
+                "const": "rendered"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "frame_state": {
+                "const": "presented"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "frame_state": {
+                "enum": [
+                  "queued",
+                  "gpu_completed",
+                  "failed",
+                  "discarded"
+                ]
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "screenshot_artifact_id": {
+                "type": "null"
+              }
+            }
+          }
+        }
+      ],
+      "description": "命令完成不等于用户已见；drawable present证据/截图真实内容、result/camera/liveness仍需renderer验收。",
+      "x-implementation-status": "planned"
+    }
+  },
+  "examples": [
+    {
+      "record_type": "editor_snapshot",
+      "key": {
+        "runtime_instance_id": "host-1",
+        "document_id": "doc-1",
+        "document_generation": 1,
+        "cell_id": "cell-1",
+        "editor_id": "editor-1",
+        "editor_generation": 1,
+        "draft_sequence": 2,
+        "source_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "requested_dialect": "Modern",
+        "effective_dialect": "Modern",
+        "analysis_generation": 2,
+        "metadata_version": 26,
+        "definition_snapshot_revision": 3,
+        "config_revision": 1,
+        "cursor_utf8": 6,
+        "selection_utf16": {
+          "location": 4,
+          "length": 0
+        }
+      },
+      "source": "A🙂B",
+      "composition": "none",
+      "marked_range_utf16": null,
+      "committed_cell_revision": 1,
+      "is_source_dirty": true
+    },
+    {
+      "record_type": "analysis_request",
+      "request_id": "analysis-1",
+      "key": {
+        "runtime_instance_id": "host-1",
+        "document_id": "doc-1",
+        "document_generation": 1,
+        "cell_id": "cell-1",
+        "editor_id": "editor-1",
+        "editor_generation": 1,
+        "draft_sequence": 2,
+        "source_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "requested_dialect": "Modern",
+        "effective_dialect": "Modern",
+        "analysis_generation": 2,
+        "metadata_version": 26,
+        "definition_snapshot_revision": 3,
+        "config_revision": 1,
+        "cursor_utf8": 6,
+        "selection_utf16": {
+          "location": 4,
+          "length": 0
+        }
+      },
+      "kind": "preview",
+      "non_evaluating": true
+    },
+    {
+      "record_type": "local_completion",
+      "candidate_id": "completion-1",
+      "key": {
+        "runtime_instance_id": "host-1",
+        "document_id": "doc-1",
+        "document_generation": 1,
+        "cell_id": "cell-1",
+        "editor_id": "editor-1",
+        "editor_generation": 1,
+        "draft_sequence": 2,
+        "source_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "requested_dialect": "Modern",
+        "effective_dialect": "Modern",
+        "analysis_generation": 2,
+        "metadata_version": 26,
+        "definition_snapshot_revision": 3,
+        "config_revision": 1,
+        "cursor_utf8": 6,
+        "selection_utf16": {
+          "location": 4,
+          "length": 0
+        }
+      },
+      "replacement_span": {
+        "start": 5,
+        "end": 6
+      },
+      "label": "alpha",
+      "insert_text": "α",
+      "insertion_kind": "plain",
+      "detail": null,
+      "origin": "greek_shortcut"
+    },
+    {
+      "record_type": "ghost_candidate",
+      "candidate_id": "ghost-1",
+      "request_id": "fim-1",
+      "key": {
+        "runtime_instance_id": "host-1",
+        "document_id": "doc-1",
+        "document_generation": 1,
+        "cell_id": "cell-1",
+        "editor_id": "editor-1",
+        "editor_generation": 1,
+        "draft_sequence": 2,
+        "source_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "requested_dialect": "Modern",
+        "effective_dialect": "Modern",
+        "analysis_generation": 2,
+        "metadata_version": 26,
+        "definition_snapshot_revision": 3,
+        "config_revision": 1,
+        "cursor_utf8": 6,
+        "selection_utf16": {
+          "location": 4,
+          "length": 0
+        }
+      },
+      "anchor_utf8": 6,
+      "model_request_snapshot_id": "model-snapshot-1",
+      "suggestion_text": "+1",
+      "phase": "ready",
+      "enters_source_before_accept": false
+    },
+    {
+      "record_type": "diagnostic_view",
+      "diagnostic_id": "diagnostic-1",
+      "key": {
+        "runtime_instance_id": "host-1",
+        "document_id": "doc-1",
+        "document_generation": 1,
+        "cell_id": "cell-1",
+        "editor_id": "editor-1",
+        "editor_generation": 1,
+        "draft_sequence": 2,
+        "source_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "requested_dialect": "Modern",
+        "effective_dialect": "Modern",
+        "analysis_generation": 2,
+        "metadata_version": 26,
+        "definition_snapshot_revision": 3,
+        "config_revision": 1,
+        "cursor_utf8": 6,
+        "selection_utf16": {
+          "location": 4,
+          "length": 0
+        }
+      },
+      "code": "Parse:E022",
+      "severity": "Error",
+      "message": "需要表达式",
+      "source_span": {
+        "start": 6,
+        "end": 6
+      },
+      "display_range_utf16": {
+        "location": 4,
+        "length": 0
+      },
+      "location_state": "located",
+      "fix": null
+    },
+    {
+      "record_type": "result_binding",
+      "result_id": "result-1",
+      "result_ref": "result-ref-1",
+      "runtime_instance_id": "host-1",
+      "document_id": "doc-1",
+      "document_generation": 1,
+      "cell_id": "cell-1",
+      "operation_id": "run-1",
+      "source_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "source_revision": 1,
+      "execution_epoch": 2,
+      "kernel_state_revision": 3,
+      "out_index": 1,
+      "view_id": null,
+      "acceptance": "accepted",
+      "freshness": "current",
+      "source_fully_available": true
+    },
+    {
+      "record_type": "math_render_plan",
+      "layout_key": {
+        "component_id": "math-1",
+        "content_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "result_id": "result-1",
+        "renderer_version": "math-v1",
+        "layout_generation": 2,
+        "viewport_generation": 1,
+        "camera_generation": 0,
+        "theme_generation": 1,
+        "font_generation": 1,
+        "width_points": 600,
+        "font_size_points": 22
+      },
+      "original_latex": "\\unsupported{x}",
+      "display_latex": "\\unsupported{x}",
+      "source_alternative": "\\unsupported{x}",
+      "style": "display",
+      "transform_ids": [],
+      "parse_state": "unsupported",
+      "fallback_source_visible": true
+    },
+    {
+      "record_type": "markdown_block",
+      "block_id": "block-1",
+      "source_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "source_span": {
+        "start": 0,
+        "end": 4
+      },
+      "kind": "paragraph",
+      "renderer_version": "markdown-v1",
+      "complete_block": true,
+      "span_map": [
+        {
+          "span_id": "span-1",
+          "source_span": {
+            "start": 0,
+            "end": 4
+          },
+          "rendered_range_utf16": {
+            "location": 0,
+            "length": 4
+          },
+          "kind": "text",
+          "mapping": "exact"
+        }
+      ],
+      "loads_remote_media": false,
+      "executes_code": false
+    },
+    {
+      "record_type": "scroll_anchor",
+      "cell_id": "cell-1",
+      "block_or_result_id": null,
+      "source_range_utf16": {
+        "location": 4,
+        "length": 0
+      },
+      "viewport_offset_points": 80,
+      "layout_generation": 2,
+      "requires_active_editor_pin": true
+    },
+    {
+      "record_type": "camera_2d",
+      "result_id": "result-1",
+      "producer_id": "producer-1",
+      "camera_generation": 2,
+      "sample_generation": 3,
+      "x_range": [
+        -1,
+        1
+      ],
+      "y_range": [
+        -1,
+        1
+      ],
+      "scale": "linear",
+      "parameter_domain_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "changes_math_domain": false
+    },
+    {
+      "record_type": "frame_receipt",
+      "frame_id": "frame-1",
+      "result_id": "result-1",
+      "renderer_instance_id": "metal-1",
+      "layout_key": {
+        "component_id": "math-1",
+        "content_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "result_id": "result-1",
+        "renderer_version": "math-v1",
+        "layout_generation": 2,
+        "viewport_generation": 1,
+        "camera_generation": 0,
+        "theme_generation": 1,
+        "font_generation": 1,
+        "width_points": 600,
+        "font_size_points": 22
+      },
+      "frame_state": "gpu_completed",
+      "render_state": "pending",
+      "screenshot_artifact_id": null,
+      "error_code": null
+    },
+    {
+      "record_type": "editor_snapshot",
+      "key": {
+        "runtime_instance_id": "host-1",
+        "document_id": "doc-1",
+        "document_generation": 1,
+        "cell_id": "cell-1",
+        "editor_id": "editor-1",
+        "editor_generation": 1,
+        "draft_sequence": 2,
+        "source_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "requested_dialect": "Modern",
+        "effective_dialect": "Modern",
+        "analysis_generation": 2,
+        "metadata_version": 26,
+        "definition_snapshot_revision": 3,
+        "config_revision": 1,
+        "cursor_utf8": 6,
+        "selection_utf16": {
+          "location": 4,
+          "length": 0
+        }
+      },
+      "source": "A🙂B",
+      "composition": "marked",
+      "marked_range_utf16": {
+        "location": 1,
+        "length": 2
+      },
+      "committed_cell_revision": 1,
+      "is_source_dirty": true
+    },
+    {
+      "record_type": "frame_receipt",
+      "frame_id": "frame-1",
+      "result_id": "result-1",
+      "renderer_instance_id": "metal-1",
+      "layout_key": {
+        "component_id": "math-1",
+        "content_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "result_id": "result-1",
+        "renderer_version": "math-v1",
+        "layout_generation": 2,
+        "viewport_generation": 1,
+        "camera_generation": 0,
+        "theme_generation": 1,
+        "font_generation": 1,
+        "width_points": 600,
+        "font_size_points": 22
+      },
+      "frame_state": "presented",
+      "render_state": "rendered",
+      "screenshot_artifact_id": "screenshot-1",
+      "error_code": null
+    },
+    {
+      "record_type": "diagnostic_view",
+      "diagnostic_id": "diagnostic-1",
+      "key": {
+        "runtime_instance_id": "host-1",
+        "document_id": "doc-1",
+        "document_generation": 1,
+        "cell_id": "cell-1",
+        "editor_id": "editor-1",
+        "editor_generation": 1,
+        "draft_sequence": 2,
+        "source_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "requested_dialect": "Modern",
+        "effective_dialect": "Modern",
+        "analysis_generation": 2,
+        "metadata_version": 26,
+        "definition_snapshot_revision": 3,
+        "config_revision": 1,
+        "cursor_utf8": 6,
+        "selection_utf16": {
+          "location": 4,
+          "length": 0
+        }
+      },
+      "code": "Parse:E022",
+      "severity": "Error",
+      "message": "需要表达式",
+      "source_span": {
+        "start": 6,
+        "end": 6
+      },
+      "display_range_utf16": null,
+      "location_state": "invalid_span",
+      "fix": null
+    }
+  ]
+}

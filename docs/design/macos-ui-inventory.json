@@ -86,7 +86,8 @@
       "classification": "apple_standard",
       "planned_apis": "NSTextView / TextKit 2",
       "basis": "保留原生文字布局、IME、选区及撤销，语法颜色属文本属性。",
-      "implementation_status": "planned"
+      "implementation_status": "planned",
+      "design_reference": "macos-editor-rendering.md"
     },
     {
       "id": "mac.ui.08",
@@ -95,7 +96,8 @@
       "classification": "apple_standard",
       "planned_apis": "NSTextFinder / findBar",
       "basis": "优先系统查找交互，不手绘工具条。",
-      "implementation_status": "planned"
+      "implementation_status": "planned",
+      "design_reference": "macos-editor-rendering.md"
     },
     {
       "id": "mac.ui.09",
@@ -104,7 +106,8 @@
       "classification": "apple_standard",
       "planned_apis": "原生文本系统 / NSMenu",
       "basis": "沿用响应链、Unicode 边界和编辑命令。",
-      "implementation_status": "planned"
+      "implementation_status": "planned",
+      "design_reference": "macos-editor-rendering.md"
     },
     {
       "id": "mac.ui.10",
@@ -113,7 +116,8 @@
       "classification": "apple_standard",
       "planned_apis": "NSPopover + List/Text",
       "basis": "系统弹层和列表，数据/锚点由应用提供；不额外绘制自定义按钮。",
-      "implementation_status": "planned"
+      "implementation_status": "planned",
+      "design_reference": "macos-editor-rendering.md"
     },
     {
       "id": "mac.ui.11",
@@ -122,7 +126,8 @@
       "classification": "custom_native",
       "planned_apis": "NSTextView 装饰 / Core Graphics",
       "basis": "源码范围、ghost 布局和诊断绘制需要自定义，不能算标准文本控件。",
-      "implementation_status": "planned"
+      "implementation_status": "planned",
+      "design_reference": "macos-editor-rendering.md"
     },
     {
       "id": "mac.ui.12",
@@ -131,7 +136,8 @@
       "classification": "custom_native",
       "planned_apis": "SwiftUI 自定义 View / AppKit NSView",
       "basis": "源码、结果、状态与操作的数学单元布局自定义，内部标准按钮不重复计数。",
-      "implementation_status": "planned"
+      "implementation_status": "planned",
+      "design_reference": "macos-editor-rendering.md"
     },
     {
       "id": "mac.ui.13",
@@ -140,7 +146,8 @@
       "classification": "third_party_native",
       "planned_apis": "SwiftMath Mac 原生视图",
       "basis": "第三方数学排版器，原生宿主显示；不冒称 Apple 提供的公式控件。",
-      "implementation_status": "planned"
+      "implementation_status": "planned",
+      "design_reference": "macos-editor-rendering.md"
     },
     {
       "id": "mac.ui.14",
@@ -149,16 +156,18 @@
       "classification": "apple_standard",
       "planned_apis": "List / DisclosureGroup / Text",
       "basis": "系统列表、展开与文本组合，不手绘解卡片和控制件。",
-      "implementation_status": "planned"
+      "implementation_status": "planned",
+      "design_reference": "macos-editor-rendering.md"
     },
     {
       "id": "mac.ui.15",
       "group": "数学展示",
       "name": "Markdown 与行内数学流",
       "classification": "custom_native",
-      "planned_apis": "swift-markdown AST → 原生 View",
+      "planned_apis": "swift-markdown AST / NSTextView / NSTextAttachmentViewProvider / 原生块视图",
       "basis": "混合数学、代码、链接与表格的流式布局由应用组装；解析器不是 Apple UI。",
-      "implementation_status": "planned"
+      "implementation_status": "planned",
+      "design_reference": "macos-editor-rendering.md"
     },
     {
       "id": "mac.ui.16",
@@ -167,7 +176,8 @@
       "classification": "apple_standard",
       "planned_apis": "NSOutlineView / DisclosureGroup",
       "basis": "系统树结构与选中行为，步骤数据由内核提供。",
-      "implementation_status": "planned"
+      "implementation_status": "planned",
+      "design_reference": "macos-editor-rendering.md"
     },
     {
       "id": "mac.ui.17",
@@ -176,7 +186,8 @@
       "classification": "apple_standard",
       "planned_apis": "Form / LabeledContent / Text",
       "basis": "标准标签/值/错误文本组合，不绘制仪表盘卡片。",
-      "implementation_status": "planned"
+      "implementation_status": "planned",
+      "design_reference": "macos-editor-rendering.md"
     },
     {
       "id": "mac.ui.18",
@@ -185,7 +196,8 @@
       "classification": "apple_standard",
       "planned_apis": "NSTableView / SwiftUI Table",
       "basis": "标准行列选择、滚动与分页按钮；数据来自真实结果。",
-      "implementation_status": "planned"
+      "implementation_status": "planned",
+      "design_reference": "macos-editor-rendering.md"
     },
     {
       "id": "mac.ui.19",
@@ -194,7 +206,8 @@
       "classification": "apple_standard",
       "planned_apis": "NSOutlineView / List",
       "basis": "系统树行与字段展开，业务数据不属于控件重写。",
-      "implementation_status": "planned"
+      "implementation_status": "planned",
+      "design_reference": "macos-editor-rendering.md"
     },
     {
       "id": "mac.ui.20",
@@ -203,7 +216,8 @@
       "classification": "custom_native",
       "planned_apis": "Canvas / Core Graphics",
       "basis": "内核采样的坐标、曲线、标签及拾取属于自绘内容。",
-      "implementation_status": "planned"
+      "implementation_status": "planned",
+      "design_reference": "macos-editor-rendering.md"
     },
     {
       "id": "mac.ui.21",
@@ -212,7 +226,8 @@
       "classification": "custom_native",
       "planned_apis": "MTKView / Metal",
       "basis": "Apple 宿主中的自定义 renderer，相机/材质/网格不是现成系统图表。",
-      "implementation_status": "planned"
+      "implementation_status": "planned",
+      "design_reference": "macos-editor-rendering.md"
     },
     {
       "id": "mac.ui.22",
@@ -221,7 +236,8 @@
       "classification": "apple_standard",
       "planned_apis": "Slider / TextField / Stepper",
       "basis": "系统滑块和数值输入，参数作用域由业务服务维护。",
-      "implementation_status": "planned"
+      "implementation_status": "planned",
+      "design_reference": "macos-editor-rendering.md"
     },
     {
       "id": "mac.ui.23",

@@ -159,6 +159,8 @@ Math 修改使相关计算定义失效，旧 checkpoint 仅作为带生产来源
 
 ## FFI 与 Swift 客户端
 
+EditorWorker 的请求身份与严格源码位置、原生编辑/IME/undo、结果/布局/相机/帧 owner 和渲染资源预算已细化为[编辑与渲染契约](macos-editor-rendering.md)及[机器 Schema](macos-editor-rendering.schema.json)。这是 planned envelope，现有 Preview/Complete/Hover/数学返回的含义不改变；新 Mac 控制层验证其 source/cursor/definition/metadata 身份，renderer 不能自行接纳数学候选。
+
 建议采用新 om_host_* ABI 前缀，JSON 控制请求与不可变结果引用作为跨语言主边界。接口名为计划：
 
 | ABI | 语义 |

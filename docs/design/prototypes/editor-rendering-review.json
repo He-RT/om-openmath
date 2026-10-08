@@ -1,0 +1,158 @@
+{
+  "date": "2026-10-09",
+  "status": "design_only",
+  "scope": "HTML 编辑/展示评审与机器契约形状，非 NSTextView/原生CAS/SwiftMath/Metal验收",
+  "browser": "Playwright Chromium headless",
+  "browser_checks": [
+    {
+      "name": "01 初始源码预览与已接纳样例分开",
+      "status": "passed"
+    },
+    {
+      "name": "02 编辑参数保留旧值并标记依赖过期",
+      "status": "passed"
+    },
+    {
+      "name": "03 只接纳预设3到6样例",
+      "status": "passed"
+    },
+    {
+      "name": "04 演示执行期间新源码使旧回复拒绝",
+      "status": "passed"
+    },
+    {
+      "name": "05 停止迟到样例不替换历史结果",
+      "status": "passed"
+    },
+    {
+      "name": "06 任意其他源码没有浏览器数学求值",
+      "status": "passed"
+    },
+    {
+      "name": "07 本地补全替换词范围且一次撤销",
+      "status": "passed"
+    },
+    {
+      "name": "08 ghost出现不进入源码或复制正文",
+      "status": "passed"
+    },
+    {
+      "name": "09 ghost分段接收重绑余下候选",
+      "status": "passed"
+    },
+    {
+      "name": "10 待返回候选在新编辑后不再出现",
+      "status": "passed"
+    },
+    {
+      "name": "11 旧候选不能在光标变化后接受",
+      "status": "passed"
+    },
+    {
+      "name": "12 演示合成屏障保留editor owner与内容",
+      "status": "passed"
+    },
+    {
+      "name": "13 浏览器composition事件取消建议仅验证事件守卫",
+      "status": "passed"
+    },
+    {
+      "name": "14 Fix EOF插入与一次撤销",
+      "status": "passed"
+    },
+    {
+      "name": "15 修改源码后旧诊断修复失效",
+      "status": "passed"
+    },
+    {
+      "name": "16 字节与UTF16映射严格拒绝半代理/非法字节",
+      "status": "passed"
+    },
+    {
+      "name": "17 非法替换范围拒绝而非裁剪修改",
+      "status": "passed"
+    },
+    {
+      "name": "18 字素内部替换不扩大删除范围",
+      "status": "passed"
+    },
+    {
+      "name": "19 视觉换行方言切换保留源码选择",
+      "status": "passed"
+    },
+    {
+      "name": "20 切格保存各自草稿和选区",
+      "status": "passed"
+    },
+    {
+      "name": "21 未支持公式完整源式与复制焦点回返",
+      "status": "passed"
+    },
+    {
+      "name": "22 结构化分页保持完整精确字符串",
+      "status": "passed"
+    },
+    {
+      "name": "23 Markdown样例代码不解释且无远程图片",
+      "status": "passed"
+    },
+    {
+      "name": "24 二维相机变换不改样例坐标",
+      "status": "passed"
+    },
+    {
+      "name": "25 三维不可用不把历史截图当新renderer",
+      "status": "passed"
+    },
+    {
+      "name": "26 主题窄窗和系统减少动态效果保持可用",
+      "status": "passed"
+    }
+  ],
+  "page_script_errors": [],
+  "external_network_requests": [],
+  "http_failures": [],
+  "schema": {
+    "status": "design_only",
+    "positive_examples": 14,
+    "negative_examples": 26,
+    "boundary_truth": "Unicode/source/Math/GPU invariants require runtime validation"
+  },
+  "viewports": {
+    "screenshots": [
+      1360,
+      980
+    ],
+    "responsive_widths": [
+      1000,
+      760,
+      640
+    ]
+  },
+  "earlier_attempt": {
+    "passed": 24,
+    "failed": 2,
+    "reason": [
+      "焦点位于建议按钮时Escape没有关闭候选",
+      "display样式覆盖hidden使旧三维参考截图仍显示"
+    ],
+    "resolved": "窗口级合法Escape路由与hidden优先样式修复后26项全部通过",
+    "evidence": "target/editor-rendering-evidence/checks-first-attempt.json"
+  },
+  "not_executed": [
+    "原生中文/日文IME与UndoManager",
+    "SwiftMath排版/公式基线与字体许可打包",
+    "真实Markdown/source map及流式解析",
+    "CAS/步骤/分页/数值/采样接纳与原53回归",
+    "Metal真实GPU/资源/呈现/截图",
+    "VoiceOver与原生Release性能/内存",
+    "共享自动续行parser实现"
+  ],
+  "component_inventory": {
+    "status": "planned",
+    "apple_standard_families": 30,
+    "all_families": 40,
+    "apple_standard_percent": 75,
+    "platform_native_target_percent": 100
+  }
+}

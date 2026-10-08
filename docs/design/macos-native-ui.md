@@ -49,6 +49,8 @@ Swift/Rust/Pi 的实际所有权、文档控制与计算通道分离、草稿/IM
 
 N3 的供应商、模型、功能映射和媒体处理已进一步形成[服务契约](model-media.md)、[原生 UI/UX](macos-model-media-ux.md)和[交互草案](prototypes/mac-model-settings.html)。列表/表单/凭据/探测/系统媒体预览复用原组件族；原生技术/组件率仍按原清单审计，不以 HTML 草案证明已实现。
 
+N0/N1 的编辑器与全部内容展示细化见[原生编辑与渲染契约](macos-editor-rendering.md)、[机器 Schema](macos-editor-rendering.schema.json)及[评审草案](prototypes/mac-editor-rendering.html)。严格 Unicode/IME/undo/草稿身份，真实 Preview/Complete/Hover/ghost，SwiftMath fallback、Markdown/source map、解/步骤/分页与2D/Metal lifecycle 均有独立门禁；仍未实现原生客户端。
+
 ## 分阶段交付
 
 | 阶段 | 交付 | 验收门槛 |

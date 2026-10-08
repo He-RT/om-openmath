@@ -44,6 +44,8 @@ cancel_task 是 UI/宿主直接控制，不需要等待模型调用；focus_cell
 
 模型使用宿主返回的 snapshot_ref、preview_ref、result_ref、media_ref、operation_ref 和 transaction_ref。引用解析检查来源类型、归属、代次、版本及有效期；字符串格式合法不表示引用有效，也不表示拥有权限。分页 cursor 同样绑定原快照，不能跨文档复用。
 
+具体引用租约、稳定账本 ID 与临时 scope token 的区别、跨重启的重新签发、冻结预览失效、幂等 tombstone 和未知效果核对见[存储与恢复契约](macos-storage-recovery.md#附件结果和引用生命周期)。原始工具 admission 必须耐久确认后才执行；get_operation_status 查真实账本，不从对话文字推断修改成功。这些仍为 planned 服务。
+
 cell_id 来自读取结果，不使用显示顺序或文件路径。新单元格用 client_key 标识计划内身份，预览时宿主分配最终 cell_id；插入位置及移动可引用先前已声明的 client_key。修改/删除/文本替换只针对已有 cell_id；若需改变计划中的新格，改其 insert 源码后重新预览。模型不手算 UTF-8 字节偏移。
 
 所有读取结果有界且可分页。源码不完整时优先使用唯一片段 replace_text；整格 update_cell 要求完整原源码可用，防止把一个截取片段当整格替换。全文散列按实际 UTF-8 原文计算，不能因格式化或 Unicode 归一化悄悄改变内容；同一计划中多项操作的 expected_source_hash 对照原快照，片段匹配按操作顺序作用于临时文档。

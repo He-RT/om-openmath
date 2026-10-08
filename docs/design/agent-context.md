@@ -185,7 +185,9 @@ ContextSnapshot 必须区分 planned 与 sent：发送前准备了快照但请�
 
 新增 context_revision 独立于 document_revision。保存提示词不会把单元格视为已修改；恢复配置不会撤销笔记本事务。单次模型请求使用冻结的 PromptRevision、文档/附件引用和 ContextSnapshot；重试、重启与晚到事件都保留身份。
 
-数据存于 Mac 应用支持目录：PromptRegistry、AgentSessions、ContextSnapshots 与 Attachments 分开。`.omnb` v1 只保存源码；数学导出不混入 Agent 提示、会话或附件字节。模型 HTTP 凭据及会话认证不进入上下文快照/日志，媒体使用独立文件引用。
+数据存于 Mac 应用支持目录，PromptRegistry、会话、ContextSnapshots 与 Attachments 保持独立的逻辑服务；实际物理格式见[存储与恢复契约](macos-storage-recovery.md)及[存储 Schema](macos-storage.schema.json)：Library SQLite 原始事件/版本记录、每文档事务库、不可变 Blob，JSONL 为可重建投影。`.omnb` v1 只保存源码；数学导出不混入 Agent 提示、会话或附件字节。模型 HTTP 凭据及会话认证不进入上下文快照/日志，媒体使用独立文件引用。
+
+发送阶段进一步细化为 planned/dispatch_started/response_started/finished/failed/interrupted；旧设计的 sent 在界面需要注明具体发送证据，dispatch_started 不证明供应商完整收到。压缩只推进 ContextView，原事件和实际操作回执不被摘要改写；工具效果未知先查原 operation，恢复后的新请求重建授权/引用，不自动收费重发或重做写入。
 
 从原始日志重建视图与重发模型请求、重新运行单元格是不同操作。恢复首先核对事务回执，不自动重放修改；快照可解释本轮输入，但不承诺第三方模型回答可完全复现。[DeepSeek 事件与会话投影](https://github.com/deepseek-ai/deepseek-harness/blob/5badb15009ae1756c3afe0ae0cef1faafc290ccc/packages/core/session/README.md)
 

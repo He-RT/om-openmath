@@ -16,6 +16,15 @@
 
 用户指定先设计「原生宿主与状态」，已形成 [宿主/状态契约](../design/macos-host-state.md)和 [状态 Schema](../design/macos-host-state.schema.json)。明确 Swift 原生/系统服务、Rust 权威文档/事务与不可变计算 checkpoint、Pi 循环的所有权，独立文档/计算通道、草稿屏障、事件泵、按操作取消、IPC/单轮模型传输和关闭恢复边界。新接口均 planned，未创建宿主 crate 或修改既有 ABI。
 
+### Mac 存储与恢复（设计，尚未实现）
+
+2026-10-08，用户要求参考主流 Agent 软件设计存储与恢复。已形成[存储、事务与恢复契约](../design/macos-storage-recovery.md)和[机器 Schema](../design/macos-storage.schema.json)，参考 Pi 的消息身份/压缩、DeepSeek Harness 的耐久事件/未知工具效果、Codex/Claude Code 的会话恢复以及 OpenCode 的管理/导出行为。
+
+- 每文档 SQLite 事务一次提交源码、撤销、幂等回执与 outbox；Library 保存独立会话/提示词/实际 ContextSnapshot，JSONL 是派生投影，大媒体/结果/无损 checkpoint 为内容寻址 Blob。
+- 恢复先核对原 operation 与保存 intent；区分工具未开始、效果未知、修改已提交与文件未保存，不自动重写、付费重发或运行全部单元格。
+- 定义草稿/IME、文件绑定/外部冲突、Keychain 迁移、格式升级/代次发布、备份回退隔离、保留/容量/GC 和原生恢复入口；会话损坏不清空健康文档，`.omnb` v1 仍仅源码。
+- S0–S4 对应 N0–N4 的实际实施门禁，SR01–SR12 为 planned 崩溃/并发/迁移验收；本轮仅文档和结构校验，没有新数据库服务/codec、Pi 依赖或原生程序。写入开放前必须补齐这些真实测试。
+
 ### Mac Notebook Agent（Pi Agent Core，设计草案）
 
 2026-10-08，用户选择以 Pi Agent Core 重做右侧助手，允许直接操作左侧笔记本；随后明确先只考虑 Mac。初步方案见 [Mac Notebook Agent 设计](../design/notebook-agent.md)，尚未安装依赖或开放自动写入。

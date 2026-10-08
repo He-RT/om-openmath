@@ -1,10 +1,10 @@
 # Mac 原生宿主与状态契约
 
-[原生客户端](macos-native-ui.md) · [UX](macos-ux.md) · [Agent 工具](agent-tools.md) · [上下文](agent-context.md) · [状态 Schema](macos-host-state.schema.json)
+[原生客户端](macos-native-ui.md) · [UX](macos-ux.md) · [Agent 工具](agent-tools.md) · [上下文](agent-context.md) · [状态 Schema](macos-host-state.schema.json) · [存储与恢复](macos-storage-recovery.md)
 
 2026-10-08。Swift/AppKit 负责原生交互和系统服务，Rust 负责权威文档/事务/计算状态，Pi 负责模型与工具循环。文档控制和耗时计算使用独立执行通道；UI 持有确认状态的投影及原生编辑草稿，不维护第二份权威笔记本。
 
-本契约针对下一版 Mac 单活动文档与单活动 Agent 任务，尚未实现。新包名、类型、ABI 和消息为计划接口；不改变 `.3`、现有 iOS ABI 或其数学语义。物理存储格式、模型/媒体具体路由和发行打包另行设计，但本层明确它们的操作与回执边界。
+本契约针对下一版 Mac 单活动文档与单活动 Agent 任务，尚未实现。新包名、类型、ABI 和消息为计划接口；不改变 `.3`、现有 iOS ABI 或其数学语义。物理存储/事务/恢复已细化为[存储契约](macos-storage-recovery.md)，仍待实现；模型/媒体具体路由和发行打包另行设计。
 
 ## 现有实现依据
 
@@ -124,7 +124,7 @@ Agent 预览后的 commit 请求先通过当前版本和权限校验，再向 Sw
 
 Agent 先 preview_source 形成冻结计划，提交时只传 preview_ref；宿主补实际 operation_id、预期修订和操作。临时文档验证、解析/影响分析在工作通道完成，源/计划散列一致且 editor_fence 有效后才进入提交。
 
-提交必须协调「新文档源码、事务回执、幂等记录」的原子持久化；DocCommitPort 返回可靠成功后才发布 committed revision。失败保留旧文档，未知提交状态先用 operation_id 查询，不开始新写入。具体数据库/日志格式在存储设计中选择，不能用三个独立文件写入冒称原子完成。
+提交必须协调「新文档源码、事务回执、幂等记录」的原子持久化；DocCommitPort 返回可靠成功后才发布 committed revision。失败保留旧文档，未知提交状态先用 operation_id 查询，不开始依赖该提交的新写入。[存储设计](macos-storage-recovery.md#源码提交的完整算法)规定每文档同库 SQLite 事务、同步提交与回执读回，并将真实业务 outbox 一起提交；会话/JSONL 只投影确定事实，不能用三个独立文件写入冒称原子完成。
 
 逻辑提交门保持提交顺序，控制队列仍可处理读取、取消、状态与事件；后续同文档写入等待门释放，UI 继续保留草稿。文档 reads 明确返回已提交修订与 pending 状态，Agent 的当前读需要完成草稿屏障。
 
@@ -145,7 +145,7 @@ working state 中实际数学执行与文档事务是不同层。每个单元格
 3. 当前生产源码/必要依赖与源快照一致；
 4. 此候选还未接纳，任务没有越过可接纳的取消/关闭边界。
 
-通过时，协调器在同一个短控制步骤中推进 active_checkpoint_ref、kernel_state_revision 与结果接纳事件；下一个 job 必须显式使用这个已接纳引用。worker 不持有会自行更新的第二个活跃指针，因此不存在「UI 已拒绝、worker 仍继续使用旧 working 定义」的情况。拒绝则发送 discard/release，候选不能被后续主任务使用。
+通过时，协调器先经[存储接纳契约](macos-storage-recovery.md#撤销与执行接纳)同步持久化候选的无损 Blob 与接纳记录，再在同一个短控制步骤中推进 active_checkpoint_ref、kernel_state_revision 与结果接纳事件；下一个 job 必须显式使用这个已接纳引用。持久化等待走后台和文档逻辑提交门，不持有控制/CAS 锁阻塞 UI；最终屏障仍核对版本/取消。worker 不持有会自行更新的第二个活跃指针，因此不存在「UI 已拒绝、worker 仍继续使用旧 working 定义」的情况。拒绝则发送 discard/release，候选不能被后续主任务使用。
 
 协调器与独立取消入口共用短操作生命周期同步，确定 accept 与 cancel 的线性化先后；不在这个锁内进行 CAS。引用注册完成后才发送候选，释放也等引用不再被操作使用。首版对所有数学相关变化采用 execution_epoch 的保守检查，不提前承诺依赖精确到任意动态调用。
 
@@ -250,7 +250,7 @@ paused 只在用户明确暂停或停止后选择等待接续时进入。停下�
 
 停止按钮的目标是 UI 当前已知任务/计算，不需要模型决定 id。Agent 的停止阻止后续工具 admission，并取消其当前计算和模型 HTTP；用户手工计算若不属于该任务不被误取消。较大的 user stop 可以按明确 scope 停止当前笔记本工作。
 
-commit 的线性化点在真实文档提交与幂等回执确定后：其前取消不提交，其后保留 committed 修改并停止后续计算。完成先被接纳而取消晚到时保留 completed；反之收到取消尚未说明实际 worker 停止。未知提交应保留 operation_ref，查回执而非重试。
+commit 的业务成功在真实耐久提交与幂等回执确定后发布。最终提交屏障之前取消胜出则不提交；SQLite COMMIT 已进入时的取消等待核对，不能承诺一个可能已提交的操作会回滚。确定已提交后保留 committed 修改并停止后续计算。完成先被接纳而取消晚到时保留 completed；反之收到取消尚未说明实际 worker 停止。未知提交应保留 operation_ref，查回执而非重试，具体磁盘/取消竞态见[存储契约](macos-storage-recovery.md#源码提交的完整算法)。
 
 ### 打开、切换和关闭
 
@@ -266,7 +266,7 @@ NativeDocument 从已确认 revision 获取 immutable SaveSnapshot；存在待�
 
 保存期间文档推进到更高 revision 时，只确认旧 saved_revision，当前 dirty 仍为 true。重命名/另存为造成 URL 绑定变化时，迟到旧文件回执不能改新目标的保存状态。主笔记本文件成功与事务恢复记录落盘成功分别命名，不用日志写入证明 `.omnb` 已保存。
 
-附件服务/模型设置遵循同一 actor/代次原则，但它们不增加 document_revision。物理存储格式、原配置/Keychain 迁移、附件保留期限和媒体路由在后续设计中选择；此层只消费实际成功/失败/未知回执，不提前实现占位保存。
+附件服务/模型设置遵循同一 actor/代次原则，但它们不增加 document_revision。物理格式、原配置/Keychain 迁移、附件保留和恢复已由[存储契约](macos-storage-recovery.md)定义；具体供应商媒体路由后续细化。此层只消费实际成功/失败/未知回执，不提前实现占位保存。
 
 ## 首批实现与验收
 

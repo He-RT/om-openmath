@@ -1,0 +1,1907 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:openmath:mac-storage:planned:v1",
+  "title": "OpenMath native Mac storage and recovery design",
+  "description": "下一版 planned 设计，未实现存储服务。校验逻辑记录形状；事务耐久性、跨字段散列/版本、权限、状态转移和恢复需运行时验证。示例为合成数据。",
+  "oneOf": [
+    {
+      "$ref": "#/$defs/StoreHeader"
+    },
+    {
+      "$ref": "#/$defs/DocumentCommit"
+    },
+    {
+      "$ref": "#/$defs/OperationReceipt"
+    },
+    {
+      "$ref": "#/$defs/SessionEvent"
+    },
+    {
+      "$ref": "#/$defs/ContextSnapshot"
+    },
+    {
+      "$ref": "#/$defs/BlobRecord"
+    },
+    {
+      "$ref": "#/$defs/KernelCheckpoint"
+    },
+    {
+      "$ref": "#/$defs/SaveRecord"
+    },
+    {
+      "$ref": "#/$defs/DraftRecord"
+    },
+    {
+      "$ref": "#/$defs/CompactionCheckpoint"
+    },
+    {
+      "$ref": "#/$defs/ReferenceLease"
+    },
+    {
+      "$ref": "#/$defs/RecoveryRecord"
+    },
+    {
+      "$ref": "#/$defs/BackupManifest"
+    },
+    {
+      "$ref": "#/$defs/StoreSelector"
+    }
+  ],
+  "$defs": {
+    "Identity": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 256,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "Serial": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "Sha256": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$",
+      "minLength": 64,
+      "maxLength": 64
+    },
+    "Timestamp": {
+      "type": "string",
+      "format": "date-time",
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d+)?(?:Z|[+-]\\d{2}:\\d{2})$"
+    },
+    "BlobHash": {
+      "$ref": "#/$defs/Sha256"
+    },
+    "Scope": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "document_id": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Identity"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "task_id": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Identity"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "agent_session_id": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Identity"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "document_id",
+        "task_id",
+        "agent_session_id"
+      ]
+    },
+    "StoreHeader": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "record_type": {
+          "const": "store_header"
+        },
+        "format_version": {
+          "const": 1
+        },
+        "minimum_reader_version": {
+          "const": 1
+        },
+        "store_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "store_kind": {
+          "type": "string",
+          "enum": [
+            "document",
+            "library"
+          ]
+        },
+        "store_generation": {
+          "$ref": "#/$defs/Serial"
+        },
+        "document_id": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Identity"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "sqlite_user_version": {
+          "const": 1
+        },
+        "created_at": {
+          "$ref": "#/$defs/Timestamp"
+        },
+        "last_clean_shutdown": {
+          "type": "boolean"
+        },
+        "recovery_mode": {
+          "type": "string",
+          "enum": [
+            "normal",
+            "read_only",
+            "rollback_quarantine"
+          ]
+        }
+      },
+      "required": [
+        "record_type",
+        "format_version",
+        "minimum_reader_version",
+        "store_id",
+        "store_kind",
+        "store_generation",
+        "document_id",
+        "sqlite_user_version",
+        "created_at",
+        "last_clean_shutdown",
+        "recovery_mode"
+      ],
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "store_kind": {
+                "const": "document"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "document_id": {
+                "$ref": "#/$defs/Identity"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "store_kind": {
+                "const": "library"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "document_id": {
+                "type": "null"
+              }
+            }
+          }
+        }
+      ],
+      "x-implementation-status": "planned"
+    },
+    "DocumentCommit": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "record_type": {
+          "const": "document_commit"
+        },
+        "document_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "operation_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "transaction_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "request_hash": {
+          "$ref": "#/$defs/Sha256"
+        },
+        "base_revision": {
+          "$ref": "#/$defs/Serial"
+        },
+        "committed_revision": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        },
+        "snapshot_hash": {
+          "$ref": "#/$defs/Sha256"
+        },
+        "snapshot_blob_hash": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/BlobHash"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "inverse_plan_hash": {
+          "$ref": "#/$defs/Sha256"
+        },
+        "execution_epoch": {
+          "$ref": "#/$defs/Serial"
+        },
+        "actor": {
+          "type": "string",
+          "enum": [
+            "manual",
+            "agent",
+            "undo",
+            "external_merge"
+          ]
+        },
+        "task_id": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Identity"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "undo_of": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Identity"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "changed_cell_ids": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Identity"
+          },
+          "uniqueItems": true
+        },
+        "outbox_event_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "committed_at": {
+          "$ref": "#/$defs/Timestamp"
+        }
+      },
+      "required": [
+        "record_type",
+        "document_id",
+        "operation_id",
+        "transaction_id",
+        "request_hash",
+        "base_revision",
+        "committed_revision",
+        "snapshot_hash",
+        "snapshot_blob_hash",
+        "inverse_plan_hash",
+        "execution_epoch",
+        "actor",
+        "task_id",
+        "undo_of",
+        "changed_cell_ids",
+        "outbox_event_id",
+        "committed_at"
+      ],
+      "description": "同库提交记录；revision=base+1、head/receipt/idempotency/outbox 一致性及 actor 授权由运行时验证。",
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "actor": {
+                "const": "agent"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "task_id": {
+                "$ref": "#/$defs/Identity"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "actor": {
+                "const": "undo"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "undo_of": {
+                "$ref": "#/$defs/Identity"
+              }
+            }
+          }
+        }
+      ],
+      "x-implementation-status": "planned"
+    },
+    "OperationReceipt": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "record_type": {
+          "const": "operation_receipt"
+        },
+        "store_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "document_id": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Identity"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "operation_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "operation_kind": {
+          "type": "string",
+          "enum": [
+            "source_edit",
+            "undo",
+            "run_cells",
+            "scratch",
+            "media_prepare",
+            "save_file"
+          ]
+        },
+        "request_hash": {
+          "$ref": "#/$defs/Sha256"
+        },
+        "phase": {
+          "type": "string",
+          "enum": [
+            "accepted",
+            "queued",
+            "running",
+            "cancelling",
+            "completed",
+            "partial",
+            "failed",
+            "cancelled",
+            "unknown"
+          ]
+        },
+        "transaction_id": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Identity"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "committed_revision": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Serial"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "accepted_result_ids": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Identity"
+          },
+          "uniqueItems": true
+        },
+        "details_blob_hash": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/BlobHash"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "details_retention": {
+          "type": "string",
+          "enum": [
+            "full",
+            "tombstone"
+          ]
+        },
+        "error_code": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Identity"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "updated_at": {
+          "$ref": "#/$defs/Timestamp"
+        }
+      },
+      "required": [
+        "record_type",
+        "store_id",
+        "document_id",
+        "operation_id",
+        "operation_kind",
+        "request_hash",
+        "phase",
+        "transaction_id",
+        "committed_revision",
+        "accepted_result_ids",
+        "details_blob_hash",
+        "details_retention",
+        "error_code",
+        "updated_at"
+      ],
+      "description": "幂等事实保留；终止状态转移、操作归属及参数散列由宿主验证，不以 expired token 代替 ledger ID。",
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "operation_kind": {
+                "enum": [
+                  "source_edit",
+                  "undo"
+                ]
+              },
+              "phase": {
+                "const": "completed"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "document_id": {
+                "$ref": "#/$defs/Identity"
+              },
+              "transaction_id": {
+                "$ref": "#/$defs/Identity"
+              },
+              "committed_revision": {
+                "$ref": "#/$defs/Serial"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "details_retention": {
+                "const": "tombstone"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "details_blob_hash": {
+                "type": "null"
+              }
+            }
+          }
+        }
+      ],
+      "x-implementation-status": "planned"
+    },
+    "SessionEvent": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "record_type": {
+          "const": "session_event"
+        },
+        "event_version": {
+          "const": 1
+        },
+        "agent_session_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "event_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "event_sequence": {
+          "$ref": "#/$defs/Serial"
+        },
+        "source_instance_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "source_sequence": {
+          "$ref": "#/$defs/Serial"
+        },
+        "parent_event_id": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Identity"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "agent_turn_id": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Identity"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "task_id": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Identity"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "event_kind": {
+          "type": "string",
+          "enum": [
+            "user_message",
+            "assistant_batch",
+            "assistant_end",
+            "tool_admitted",
+            "tool_started",
+            "tool_result",
+            "user_stop",
+            "task_transition",
+            "prompt_change",
+            "compaction",
+            "recovery"
+          ]
+        },
+        "payload_hash": {
+          "$ref": "#/$defs/Sha256"
+        },
+        "payload_inline_json": {
+          "anyOf": [
+            {
+              "type": "string",
+              "maxLength": 2097152
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "payload_blob_hash": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/BlobHash"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "operation_id": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Identity"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "operation_store_id": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Identity"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "created_at": {
+          "$ref": "#/$defs/Timestamp"
+        }
+      },
+      "required": [
+        "record_type",
+        "event_version",
+        "agent_session_id",
+        "event_id",
+        "event_sequence",
+        "source_instance_id",
+        "source_sequence",
+        "parent_event_id",
+        "agent_turn_id",
+        "task_id",
+        "event_kind",
+        "payload_hash",
+        "payload_inline_json",
+        "payload_blob_hash",
+        "operation_id",
+        "operation_store_id",
+        "created_at"
+      ],
+      "oneOf": [
+        {
+          "properties": {
+            "payload_inline_json": {
+              "type": "string",
+              "maxLength": 2097152
+            },
+            "payload_blob_hash": {
+              "type": "null"
+            }
+          }
+        },
+        {
+          "properties": {
+            "payload_inline_json": {
+              "type": "null"
+            },
+            "payload_blob_hash": {
+              "$ref": "#/$defs/BlobHash"
+            }
+          }
+        }
+      ],
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "event_kind": {
+                "enum": [
+                  "tool_admitted",
+                  "tool_started",
+                  "tool_result"
+                ]
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "operation_id": {
+                "$ref": "#/$defs/Identity"
+              },
+              "operation_store_id": {
+                "$ref": "#/$defs/Identity"
+              },
+              "agent_turn_id": {
+                "$ref": "#/$defs/Identity"
+              },
+              "task_id": {
+                "$ref": "#/$defs/Identity"
+              }
+            }
+          }
+        }
+      ],
+      "description": "payload 是纯数据的规范 JSON 或已发布 Blob；解析/散列、消息配对、sequence 和 outbox provenance 需运行时校验。",
+      "x-implementation-status": "planned"
+    },
+    "ContextSnapshot": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "record_type": {
+          "const": "context_snapshot"
+        },
+        "context_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "agent_session_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "agent_turn_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "task_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "document_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "document_generation": {
+          "$ref": "#/$defs/Serial"
+        },
+        "document_revision": {
+          "$ref": "#/$defs/Serial"
+        },
+        "model_config_revision": {
+          "$ref": "#/$defs/Serial"
+        },
+        "adapter_version": {
+          "$ref": "#/$defs/Identity"
+        },
+        "prompt_revision_ids": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Identity"
+          },
+          "uniqueItems": true
+        },
+        "message_event_ids": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Identity"
+          },
+          "uniqueItems": true
+        },
+        "tool_schema_hash": {
+          "$ref": "#/$defs/Sha256"
+        },
+        "payload_blob_hash": {
+          "$ref": "#/$defs/BlobHash"
+        },
+        "payload_hash": {
+          "$ref": "#/$defs/Sha256"
+        },
+        "media_artifact_ids": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Identity"
+          },
+          "uniqueItems": true
+        },
+        "dispatch_phase": {
+          "type": "string",
+          "enum": [
+            "planned",
+            "dispatch_started",
+            "response_started",
+            "finished",
+            "failed",
+            "interrupted"
+          ]
+        },
+        "delivery_evidence": {
+          "type": "string",
+          "enum": [
+            "not_dispatched",
+            "dispatch_outcome_unknown",
+            "response_observed"
+          ]
+        },
+        "usage_source": {
+          "type": "string",
+          "enum": [
+            "unknown",
+            "estimate",
+            "tokenizer",
+            "provider"
+          ]
+        },
+        "input_tokens": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Serial"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "context_capacity": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Serial"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "created_at": {
+          "$ref": "#/$defs/Timestamp"
+        }
+      },
+      "required": [
+        "record_type",
+        "context_id",
+        "agent_session_id",
+        "agent_turn_id",
+        "task_id",
+        "document_id",
+        "document_generation",
+        "document_revision",
+        "model_config_revision",
+        "adapter_version",
+        "prompt_revision_ids",
+        "message_event_ids",
+        "tool_schema_hash",
+        "payload_blob_hash",
+        "payload_hash",
+        "media_artifact_ids",
+        "dispatch_phase",
+        "delivery_evidence",
+        "usage_source",
+        "input_tokens",
+        "context_capacity",
+        "created_at"
+      ],
+      "description": "实际模型可见载荷不含认证；hash/消息顺序/权限真实性由实际 wire 校验，response 也不证明供应商读完全部输入。",
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "dispatch_phase": {
+                "const": "planned"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "delivery_evidence": {
+                "const": "not_dispatched"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "dispatch_phase": {
+                "enum": [
+                  "response_started",
+                  "finished"
+                ]
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "delivery_evidence": {
+                "const": "response_observed"
+              }
+            }
+          }
+        }
+      ],
+      "x-implementation-status": "planned"
+    },
+    "BlobRecord": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "record_type": {
+          "const": "blob"
+        },
+        "blob_hash": {
+          "$ref": "#/$defs/BlobHash"
+        },
+        "byte_length": {
+          "$ref": "#/$defs/Serial"
+        },
+        "media_type": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 256
+        },
+        "artifact_kind": {
+          "type": "string",
+          "enum": [
+            "original_attachment",
+            "derived_media",
+            "source_snapshot",
+            "result",
+            "kernel_checkpoint",
+            "context_payload",
+            "compaction_summary",
+            "export"
+          ]
+        },
+        "codec_version": {
+          "$ref": "#/$defs/Identity"
+        },
+        "publication_state": {
+          "type": "string",
+          "enum": [
+            "published",
+            "quarantined"
+          ]
+        },
+        "source_blob_hash": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/BlobHash"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "created_at": {
+          "$ref": "#/$defs/Timestamp"
+        }
+      },
+      "required": [
+        "record_type",
+        "blob_hash",
+        "byte_length",
+        "media_type",
+        "artifact_kind",
+        "codec_version",
+        "publication_state",
+        "source_blob_hash",
+        "created_at"
+      ],
+      "description": "不含任意 path/URL；散列、文件长度和实际已同步发布均由 BlobStore 校验。",
+      "x-implementation-status": "planned"
+    },
+    "KernelCheckpoint": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "record_type": {
+          "const": "kernel_checkpoint"
+        },
+        "checkpoint_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "document_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "operation_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "codec_version": {
+          "$ref": "#/$defs/Identity"
+        },
+        "kernel_build": {
+          "$ref": "#/$defs/Identity"
+        },
+        "registry_hash": {
+          "$ref": "#/$defs/Sha256"
+        },
+        "source_snapshot_hash": {
+          "$ref": "#/$defs/Sha256"
+        },
+        "dependencies_hash": {
+          "$ref": "#/$defs/Sha256"
+        },
+        "settings_hash": {
+          "$ref": "#/$defs/Sha256"
+        },
+        "kernel_projection_revision": {
+          "$ref": "#/$defs/Serial"
+        },
+        "execution_epoch": {
+          "$ref": "#/$defs/Serial"
+        },
+        "kernel_state_revision": {
+          "$ref": "#/$defs/Serial"
+        },
+        "checkpoint_blob_hash": {
+          "$ref": "#/$defs/BlobHash"
+        },
+        "accepted_result_ids": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Identity"
+          },
+          "uniqueItems": true
+        },
+        "acceptance": {
+          "const": "accepted"
+        },
+        "accepted_at": {
+          "$ref": "#/$defs/Timestamp"
+        }
+      },
+      "required": [
+        "record_type",
+        "checkpoint_id",
+        "document_id",
+        "operation_id",
+        "codec_version",
+        "kernel_build",
+        "registry_hash",
+        "source_snapshot_hash",
+        "dependencies_hash",
+        "settings_hash",
+        "kernel_projection_revision",
+        "execution_epoch",
+        "kernel_state_revision",
+        "checkpoint_blob_hash",
+        "accepted_result_ids",
+        "acceptance",
+        "accepted_at"
+      ],
+      "description": "这里只表示已接纳的无损 checkpoint 元数据；working candidate 不得写此记录。核心节点 codec 和恢复兼容另行实现。",
+      "x-implementation-status": "planned"
+    },
+    "SaveRecord": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "record_type": {
+          "const": "save_record"
+        },
+        "document_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "save_operation_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "snapshot_revision": {
+          "$ref": "#/$defs/Serial"
+        },
+        "file_binding_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "file_binding_revision": {
+          "$ref": "#/$defs/Serial"
+        },
+        "snapshot_hash": {
+          "$ref": "#/$defs/Sha256"
+        },
+        "new_file_bytes_hash": {
+          "$ref": "#/$defs/Sha256"
+        },
+        "expected_old_file_bytes_hash": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Sha256"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "phase": {
+          "type": "string",
+          "enum": [
+            "intent",
+            "writing",
+            "unknown",
+            "completed",
+            "failed",
+            "conflict"
+          ]
+        },
+        "readback_file_bytes_hash": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Sha256"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "saved_revision": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Serial"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "error_code": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Identity"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "updated_at": {
+          "$ref": "#/$defs/Timestamp"
+        }
+      },
+      "required": [
+        "record_type",
+        "document_id",
+        "save_operation_id",
+        "snapshot_revision",
+        "file_binding_id",
+        "file_binding_revision",
+        "snapshot_hash",
+        "new_file_bytes_hash",
+        "expected_old_file_bytes_hash",
+        "phase",
+        "readback_file_bytes_hash",
+        "saved_revision",
+        "error_code",
+        "updated_at"
+      ],
+      "description": "completed 要求实际回读一致；saved_revision=snapshot_revision、不超过当前修订、绑定和 dirty 规则由宿主验证。",
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "phase": {
+                "const": "completed"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "readback_file_bytes_hash": {
+                "$ref": "#/$defs/Sha256"
+              },
+              "saved_revision": {
+                "$ref": "#/$defs/Serial"
+              },
+              "error_code": {
+                "type": "null"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "phase": {
+                "enum": [
+                  "intent",
+                  "writing",
+                  "unknown",
+                  "failed",
+                  "conflict"
+                ]
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "saved_revision": {
+                "type": "null"
+              }
+            }
+          }
+        }
+      ],
+      "x-implementation-status": "planned"
+    },
+    "DraftRecord": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "record_type": {
+          "const": "draft"
+        },
+        "owner_kind": {
+          "type": "string",
+          "enum": [
+            "cell",
+            "composer"
+          ]
+        },
+        "owner_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "scope": {
+          "$ref": "#/$defs/Scope"
+        },
+        "editor_generation": {
+          "$ref": "#/$defs/Serial"
+        },
+        "draft_sequence": {
+          "$ref": "#/$defs/Serial"
+        },
+        "base_revision": {
+          "$ref": "#/$defs/Serial"
+        },
+        "text": {
+          "type": "string",
+          "maxLength": 2097152
+        },
+        "contains_uncommitted_composition": {
+          "type": "boolean"
+        },
+        "selection_utf16_start": {
+          "$ref": "#/$defs/Serial"
+        },
+        "selection_utf16_length": {
+          "$ref": "#/$defs/Serial"
+        },
+        "media_artifact_ids": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Identity"
+          },
+          "uniqueItems": true
+        },
+        "persisted_at": {
+          "$ref": "#/$defs/Timestamp"
+        }
+      },
+      "required": [
+        "record_type",
+        "owner_kind",
+        "owner_id",
+        "scope",
+        "editor_generation",
+        "draft_sequence",
+        "base_revision",
+        "text",
+        "contains_uncommitted_composition",
+        "selection_utf16_start",
+        "selection_utf16_length",
+        "media_artifact_ids",
+        "persisted_at"
+      ],
+      "description": "合成文本只恢复为草稿；选择范围、cell baseline 和 ack 清理规则需运行时校验。",
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "owner_kind": {
+                "const": "cell"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "scope": {
+                "properties": {
+                  "document_id": {
+                    "$ref": "#/$defs/Identity"
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "owner_kind": {
+                "const": "composer"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "scope": {
+                "properties": {
+                  "agent_session_id": {
+                    "$ref": "#/$defs/Identity"
+                  }
+                }
+              }
+            }
+          }
+        }
+      ],
+      "x-implementation-status": "planned"
+    },
+    "CompactionCheckpoint": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "record_type": {
+          "const": "compaction_checkpoint"
+        },
+        "compaction_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "agent_session_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "covered_event_ids": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Identity"
+          },
+          "minItems": 1,
+          "uniqueItems": true
+        },
+        "covered_range_hash": {
+          "$ref": "#/$defs/Sha256"
+        },
+        "first_kept_event_id": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Identity"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "summary_blob_hash": {
+          "$ref": "#/$defs/BlobHash"
+        },
+        "evidence_event_ids": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Identity"
+          },
+          "uniqueItems": true
+        },
+        "generation_context_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "tokens_before": {
+          "$ref": "#/$defs/Serial"
+        },
+        "tokens_after": {
+          "$ref": "#/$defs/Serial"
+        },
+        "committed_at": {
+          "$ref": "#/$defs/Timestamp"
+        }
+      },
+      "required": [
+        "record_type",
+        "compaction_id",
+        "agent_session_id",
+        "covered_event_ids",
+        "covered_range_hash",
+        "first_kept_event_id",
+        "summary_blob_hash",
+        "evidence_event_ids",
+        "generation_context_id",
+        "tokens_before",
+        "tokens_after",
+        "committed_at"
+      ],
+      "description": "只能在摘要成功/范围未漂移/工具配对/确实缩小时提交；不能覆盖原始事件，跨字段规则由上下文服务检查。",
+      "x-implementation-status": "planned"
+    },
+    "ReferenceLease": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "record_type": {
+          "const": "reference_lease"
+        },
+        "ref": {
+          "$ref": "#/$defs/Identity"
+        },
+        "ref_kind": {
+          "type": "string",
+          "enum": [
+            "snapshot",
+            "preview",
+            "result",
+            "media",
+            "operation",
+            "transaction"
+          ]
+        },
+        "artifact_or_ledger_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "scope": {
+          "$ref": "#/$defs/Scope"
+        },
+        "runtime_instance_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "document_generation": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Serial"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "issued_at": {
+          "$ref": "#/$defs/Timestamp"
+        },
+        "expires_at": {
+          "$ref": "#/$defs/Timestamp"
+        },
+        "grant_revision": {
+          "$ref": "#/$defs/Serial"
+        },
+        "state": {
+          "type": "string",
+          "enum": [
+            "active",
+            "expired",
+            "revoked"
+          ]
+        }
+      },
+      "required": [
+        "record_type",
+        "ref",
+        "ref_kind",
+        "artifact_or_ledger_id",
+        "scope",
+        "runtime_instance_id",
+        "document_generation",
+        "issued_at",
+        "expires_at",
+        "grant_revision",
+        "state"
+      ],
+      "description": "租约是临时 capability，持久化记录仅作审计；重启后不得按此行自动复活授权。",
+      "x-implementation-status": "planned"
+    },
+    "RecoveryRecord": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "record_type": {
+          "const": "recovery_record"
+        },
+        "recovery_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "store_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "runtime_instance_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "scope": {
+          "$ref": "#/$defs/Scope"
+        },
+        "operation_id": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Identity"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "classification": {
+          "type": "string",
+          "enum": [
+            "tool_not_started",
+            "tool_outcome_unknown",
+            "commit_recovered",
+            "save_recovered",
+            "external_conflict",
+            "compute_interrupted",
+            "model_dispatch_unknown",
+            "checkpoint_unavailable",
+            "projection_rebuilt",
+            "authority_corrupt",
+            "rollback_quarantine"
+          ]
+        },
+        "evidence_ids": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Identity"
+          },
+          "uniqueItems": true
+        },
+        "next_action": {
+          "type": "string",
+          "enum": [
+            "continue_available",
+            "verify_operation",
+            "open_file_copy",
+            "recompute_by_user",
+            "reconnect_provider",
+            "resolve_file_conflict",
+            "read_only_recovery",
+            "none"
+          ]
+        },
+        "auto_replay_allowed": {
+          "const": false
+        },
+        "created_at": {
+          "$ref": "#/$defs/Timestamp"
+        }
+      },
+      "required": [
+        "record_type",
+        "recovery_id",
+        "store_id",
+        "runtime_instance_id",
+        "scope",
+        "operation_id",
+        "classification",
+        "evidence_ids",
+        "next_action",
+        "auto_replay_allowed",
+        "created_at"
+      ],
+      "description": "append-only 恢复结论不改原事件；未启动与效果未知不能互换。",
+      "x-implementation-status": "planned"
+    },
+    "BackupManifest": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "record_type": {
+          "const": "backup_manifest"
+        },
+        "backup_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "format_version": {
+          "const": 1
+        },
+        "created_at": {
+          "$ref": "#/$defs/Timestamp"
+        },
+        "stores": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "store_id": {
+                "$ref": "#/$defs/Identity"
+              },
+              "store_generation": {
+                "$ref": "#/$defs/Serial"
+              },
+              "sqlite_snapshot_hash": {
+                "$ref": "#/$defs/Sha256"
+              }
+            },
+            "required": [
+              "store_id",
+              "store_generation",
+              "sqlite_snapshot_hash"
+            ]
+          },
+          "minItems": 1
+        },
+        "blob_hashes": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/BlobHash"
+          },
+          "uniqueItems": true
+        },
+        "manifest_hash": {
+          "$ref": "#/$defs/Sha256"
+        },
+        "verified": {
+          "const": true
+        }
+      },
+      "required": [
+        "record_type",
+        "backup_id",
+        "format_version",
+        "created_at",
+        "stores",
+        "blob_hashes",
+        "manifest_hash",
+        "verified"
+      ],
+      "description": "SQLite backup API 的一致副本+pin 的全量引用；文件发布、store 唯一性和真实校验不由 Schema 证明。",
+      "x-implementation-status": "planned"
+    },
+    "StoreSelector": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "record_type": {
+          "const": "store_selector"
+        },
+        "format_version": {
+          "const": 1
+        },
+        "store_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "store_generation": {
+          "$ref": "#/$defs/Serial"
+        },
+        "immutable_header_hash": {
+          "$ref": "#/$defs/Sha256"
+        }
+      },
+      "required": [
+        "record_type",
+        "format_version",
+        "store_id",
+        "store_generation",
+        "immutable_header_hash"
+      ],
+      "description": "active.json 只选择已验证 generation；header hash 只覆盖不可变身份/格式。原子发布、路径推导和完整性由 StorageService 校验。",
+      "x-implementation-status": "planned"
+    }
+  },
+  "examples": [
+    {
+      "record_type": "store_header",
+      "format_version": 1,
+      "minimum_reader_version": 1,
+      "store_id": "store-doc-1",
+      "store_kind": "document",
+      "store_generation": 1,
+      "document_id": "doc-1",
+      "sqlite_user_version": 1,
+      "created_at": "2026-10-08T08:00:00Z",
+      "last_clean_shutdown": false,
+      "recovery_mode": "normal"
+    },
+    {
+      "record_type": "document_commit",
+      "document_id": "doc-1",
+      "operation_id": "op-1",
+      "transaction_id": "tx-1",
+      "request_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "base_revision": 10,
+      "committed_revision": 11,
+      "snapshot_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "snapshot_blob_hash": null,
+      "inverse_plan_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "execution_epoch": 6,
+      "actor": "agent",
+      "task_id": "task-1",
+      "undo_of": null,
+      "changed_cell_ids": [
+        "cell-1"
+      ],
+      "outbox_event_id": "event-doc-1",
+      "committed_at": "2026-10-08T08:00:00Z"
+    },
+    {
+      "record_type": "operation_receipt",
+      "store_id": "store-doc-1",
+      "document_id": "doc-1",
+      "operation_id": "op-1",
+      "operation_kind": "source_edit",
+      "request_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "phase": "completed",
+      "transaction_id": "tx-1",
+      "committed_revision": 11,
+      "accepted_result_ids": [],
+      "details_blob_hash": null,
+      "details_retention": "tombstone",
+      "error_code": null,
+      "updated_at": "2026-10-08T08:00:00Z"
+    },
+    {
+      "record_type": "session_event",
+      "event_version": 1,
+      "agent_session_id": "session-1",
+      "event_id": "event-1",
+      "event_sequence": 1,
+      "source_instance_id": "host-1",
+      "source_sequence": 1,
+      "parent_event_id": null,
+      "agent_turn_id": "turn-1",
+      "task_id": "task-1",
+      "event_kind": "tool_admitted",
+      "payload_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "payload_inline_json": "{\"tool\":\"apply_notebook_patch\",\"preview_ref\":\"preview-1\"}",
+      "payload_blob_hash": null,
+      "operation_id": "op-1",
+      "operation_store_id": "store-doc-1",
+      "created_at": "2026-10-08T08:00:00Z"
+    },
+    {
+      "record_type": "context_snapshot",
+      "context_id": "context-1",
+      "agent_session_id": "session-1",
+      "agent_turn_id": "turn-1",
+      "task_id": "task-1",
+      "document_id": "doc-1",
+      "document_generation": 2,
+      "document_revision": 11,
+      "model_config_revision": 3,
+      "adapter_version": "adapter-v1",
+      "prompt_revision_ids": [
+        "prompt-1"
+      ],
+      "message_event_ids": [
+        "event-1"
+      ],
+      "tool_schema_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "payload_blob_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "payload_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "media_artifact_ids": [],
+      "dispatch_phase": "planned",
+      "delivery_evidence": "not_dispatched",
+      "usage_source": "estimate",
+      "input_tokens": 800,
+      "context_capacity": null,
+      "created_at": "2026-10-08T08:00:00Z"
+    },
+    {
+      "record_type": "blob",
+      "blob_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "byte_length": 1024,
+      "media_type": "image/png",
+      "artifact_kind": "original_attachment",
+      "codec_version": "raw-v1",
+      "publication_state": "published",
+      "source_blob_hash": null,
+      "created_at": "2026-10-08T08:00:00Z"
+    },
+    {
+      "record_type": "kernel_checkpoint",
+      "checkpoint_id": "checkpoint-1",
+      "document_id": "doc-1",
+      "operation_id": "run-1",
+      "codec_version": "kernel-v1",
+      "kernel_build": "0.1.0-pre-alpha.3",
+      "registry_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "source_snapshot_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "dependencies_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "settings_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "kernel_projection_revision": 11,
+      "execution_epoch": 6,
+      "kernel_state_revision": 7,
+      "checkpoint_blob_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "accepted_result_ids": [
+        "result-1"
+      ],
+      "acceptance": "accepted",
+      "accepted_at": "2026-10-08T08:00:00Z"
+    },
+    {
+      "record_type": "save_record",
+      "document_id": "doc-1",
+      "save_operation_id": "save-1",
+      "snapshot_revision": 11,
+      "file_binding_id": "binding-1",
+      "file_binding_revision": 1,
+      "snapshot_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "new_file_bytes_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "expected_old_file_bytes_hash": null,
+      "phase": "completed",
+      "readback_file_bytes_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "saved_revision": 11,
+      "error_code": null,
+      "updated_at": "2026-10-08T08:00:00Z"
+    },
+    {
+      "record_type": "draft",
+      "owner_kind": "cell",
+      "owner_id": "cell-1",
+      "scope": {
+        "document_id": "doc-1",
+        "task_id": "task-1",
+        "agent_session_id": "session-1"
+      },
+      "editor_generation": 1,
+      "draft_sequence": 12,
+      "base_revision": 11,
+      "text": "let a = 5",
+      "contains_uncommitted_composition": false,
+      "selection_utf16_start": 9,
+      "selection_utf16_length": 0,
+      "media_artifact_ids": [],
+      "persisted_at": "2026-10-08T08:00:00Z"
+    },
+    {
+      "record_type": "compaction_checkpoint",
+      "compaction_id": "compact-1",
+      "agent_session_id": "session-1",
+      "covered_event_ids": [
+        "event-1",
+        "event-2"
+      ],
+      "covered_range_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "first_kept_event_id": "event-3",
+      "summary_blob_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "evidence_event_ids": [
+        "event-2"
+      ],
+      "generation_context_id": "context-2",
+      "tokens_before": 1200,
+      "tokens_after": 600,
+      "committed_at": "2026-10-08T08:00:00Z"
+    },
+    {
+      "record_type": "reference_lease",
+      "ref": "snapshot-1",
+      "ref_kind": "snapshot",
+      "artifact_or_ledger_id": "revision-11",
+      "scope": {
+        "document_id": "doc-1",
+        "task_id": "task-1",
+        "agent_session_id": "session-1"
+      },
+      "runtime_instance_id": "host-1",
+      "document_generation": 2,
+      "issued_at": "2026-10-08T08:00:00Z",
+      "expires_at": "2026-10-08T08:10:00Z",
+      "grant_revision": 1,
+      "state": "active"
+    },
+    {
+      "record_type": "recovery_record",
+      "recovery_id": "recovery-1",
+      "store_id": "store-doc-1",
+      "runtime_instance_id": "host-2",
+      "scope": {
+        "document_id": "doc-1",
+        "task_id": "task-1",
+        "agent_session_id": "session-1"
+      },
+      "operation_id": "op-1",
+      "classification": "commit_recovered",
+      "evidence_ids": [
+        "tx-1",
+        "event-doc-1"
+      ],
+      "next_action": "continue_available",
+      "auto_replay_allowed": false,
+      "created_at": "2026-10-08T08:00:00Z"
+    },
+    {
+      "record_type": "backup_manifest",
+      "backup_id": "backup-1",
+      "format_version": 1,
+      "created_at": "2026-10-08T08:00:00Z",
+      "stores": [
+        {
+          "store_id": "store-doc-1",
+          "store_generation": 1,
+          "sqlite_snapshot_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        }
+      ],
+      "blob_hashes": [
+        "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+      ],
+      "manifest_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "verified": true
+    },
+    {
+      "record_type": "store_selector",
+      "format_version": 1,
+      "store_id": "store-doc-1",
+      "store_generation": 1,
+      "immutable_header_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    }
+  ]
+}

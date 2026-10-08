@@ -45,6 +45,8 @@ Swift/AppKit 宿主负责窗口、编辑状态、文件/粘贴入口、任务展
 
 Swift/Rust/Pi 的实际所有权、文档控制与计算通道分离、草稿/IME 屏障、checkpoint 接纳、事件泵及按操作取消，进一步锁定见 [原生宿主与状态契约](macos-host-state.md)。这是实施设计，不表示新宿主已经接通。
 
+本地源码/回执/幂等同库原子提交、无损计算状态、文件保存 intent、会话/上下文/附件隔离、迁移/备份与崩溃恢复见[存储与恢复契约](macos-storage-recovery.md)及[存储 Schema](macos-storage.schema.json)。N0/N2 开放写入前完成实际持久化与恢复门禁；此设计仍未实现。
+
 ## 分阶段交付
 
 | 阶段 | 交付 | 验收门槛 |

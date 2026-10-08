@@ -6,6 +6,12 @@
 
 ## 下一版待办（版本号待定，尚未实现）
 
+### Mac 完全原生界面重写 同版整合建议
+
+2026-10-08，用户提出参考 telegram-ui-reference 完全重写 Mac UI，询问是否适合与 Agent 同版。已形成 [原生 Mac UI 与 Agent 整合方案](../design/macos-native-ui.md)：SwiftUI/AppKit 原生窗口/编辑/展示，共享 Rust 计算和 Pi 进程；按桥接/真实计算 → `.3` 功能对齐 → Agent 事务闭环 → 输入/媒体/上下文 → Mac 发行门禁分阶段交付。
+
+建议作为同一目标版本的主线，但属于完整 Mac 客户端换代；必须保留 `.3` 原功能与已确定的 Agent 范围并真实验收，不只做原生壳。当前仅记录方案建议，没有开始重写，没有锁定新版本号/最低 macOS 或同版发行范围。
+
 ### Mac Notebook Agent（Pi Agent Core，设计草案）
 
 2026-10-08，用户选择以 Pi Agent Core 重做右侧助手，允许直接操作左侧笔记本；随后明确先只考虑 Mac。初步方案见 [Mac Notebook Agent 设计](../design/notebook-agent.md)，尚未安装依赖或开放自动写入。

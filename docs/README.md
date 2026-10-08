@@ -12,6 +12,7 @@
 | 查看下一版科研功能与Agent预留 | [下一版计划](plan/NEXT_RELEASE.md) |
 | 设计 Mac 右侧助手与可操作笔记本的 Pi Agent | [Notebook Agent 草案](design/notebook-agent.md) |
 | 将 Mac UI 完全原生化并与 Agent 整合 | [原生 Mac 客户端方案](design/macos-native-ui.md) |
+| 实施原生 Mac 宿主并统一 Swift Rust Pi 状态 | [宿主与状态契约](design/macos-host-state.md)、[状态 Schema](design/macos-host-state.schema.json) |
 | 查看 Mac UX、动效与苹果原生组件率 | [UX 与动效](design/macos-ux.md)、[组件清单](design/macos-ui-inventory.json) |
 | 查看助手输入框、供应商模型选择与媒体附件设计 | [输入框与媒体规格](design/agent-composer.md)、[交互草案](design/prototypes/mac-agent-composer.html) |
 | 管理 Agent 提示词层、实际上下文、任务记忆与会话压缩 | [上下文和提示词管理设计](design/agent-context.md) |

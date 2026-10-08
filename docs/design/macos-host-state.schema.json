@@ -1,0 +1,624 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:openmath:mac-host-state:planned:v1",
+  "title": "OpenMath native Mac host state design",
+  "description": "下一版设计。仅校验形状/边界，绑定真实性、版本与状态迁移在实际宿主校验。没有运行时 handler。",
+  "$ref": "#/$defs/HostState",
+  "$defs": {
+    "Identity": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 256,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "Serial": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991,
+      "description": "共同可精确表示的单调计数；不能静默回绕。"
+    },
+    "Sha256": {
+      "type": "string",
+      "minLength": 64,
+      "maxLength": 64,
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "HostPhase": {
+      "type": "string",
+      "enum": [
+        "starting",
+        "ready",
+        "closing",
+        "closed",
+        "failed"
+      ]
+    },
+    "DocumentPhase": {
+      "type": "string",
+      "enum": [
+        "opening",
+        "open",
+        "switching",
+        "closing"
+      ]
+    },
+    "OperationPhase": {
+      "type": "string",
+      "enum": [
+        "accepted",
+        "queued",
+        "running",
+        "awaiting_confirmation",
+        "cancelling",
+        "completed",
+        "partial",
+        "failed",
+        "cancelled",
+        "unknown"
+      ]
+    },
+    "AgentPhase": {
+      "type": "string",
+      "enum": [
+        "ready",
+        "running",
+        "waiting_user",
+        "paused",
+        "cancelling",
+        "completed",
+        "failed",
+        "cancelled",
+        "interrupted"
+      ]
+    },
+    "PiPhase": {
+      "type": "string",
+      "enum": [
+        "stopped",
+        "starting",
+        "ready",
+        "running",
+        "stopping",
+        "crashed"
+      ]
+    },
+    "DocumentBinding": {
+      "type": "object",
+      "properties": {
+        "document_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "generation": {
+          "$ref": "#/$defs/Serial"
+        },
+        "document_revision": {
+          "$ref": "#/$defs/Serial"
+        },
+        "execution_epoch": {
+          "$ref": "#/$defs/Serial"
+        }
+      },
+      "required": [
+        "document_id",
+        "generation",
+        "document_revision",
+        "execution_epoch"
+      ],
+      "additionalProperties": false
+    },
+    "ProducerBinding": {
+      "type": "object",
+      "properties": {
+        "document_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "generation": {
+          "$ref": "#/$defs/Serial"
+        },
+        "source_document_revision": {
+          "$ref": "#/$defs/Serial"
+        },
+        "execution_epoch": {
+          "$ref": "#/$defs/Serial"
+        },
+        "calculation_config_revision": {
+          "$ref": "#/$defs/Serial"
+        },
+        "kernel_base_revision": {
+          "$ref": "#/$defs/Serial"
+        },
+        "cell_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "source_hash": {
+          "$ref": "#/$defs/Sha256"
+        }
+      },
+      "required": [
+        "document_id",
+        "generation",
+        "source_document_revision",
+        "execution_epoch",
+        "calculation_config_revision",
+        "kernel_base_revision",
+        "cell_id",
+        "source_hash"
+      ],
+      "additionalProperties": false
+    },
+    "SaveState": {
+      "type": "object",
+      "properties": {
+        "state": {
+          "type": "string",
+          "enum": [
+            "unbound",
+            "dirty",
+            "saving",
+            "saved",
+            "failed",
+            "unknown"
+          ]
+        },
+        "save_operation_ref": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Identity"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "file_binding_revision": {
+          "$ref": "#/$defs/Serial"
+        },
+        "saved_document_revision": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Serial"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "in_flight_revision": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Serial"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "snapshot_hash": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Sha256"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "state",
+        "save_operation_ref",
+        "file_binding_revision",
+        "saved_document_revision",
+        "in_flight_revision",
+        "snapshot_hash"
+      ],
+      "additionalProperties": false
+    },
+    "DraftState": {
+      "type": "object",
+      "properties": {
+        "cell_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "editor_generation": {
+          "$ref": "#/$defs/Serial"
+        },
+        "draft_sequence": {
+          "$ref": "#/$defs/Serial"
+        },
+        "base_cell_revision": {
+          "$ref": "#/$defs/Serial"
+        },
+        "marked_text_active": {
+          "type": "boolean"
+        },
+        "has_unconfirmed_text": {
+          "type": "boolean"
+        },
+        "pending_operation_ref": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Identity"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "cell_id",
+        "editor_generation",
+        "draft_sequence",
+        "base_cell_revision",
+        "marked_text_active",
+        "has_unconfirmed_text",
+        "pending_operation_ref"
+      ],
+      "additionalProperties": false
+    },
+    "Operation": {
+      "type": "object",
+      "properties": {
+        "operation_ref": {
+          "$ref": "#/$defs/Identity"
+        },
+        "task_id": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Identity"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "kind": {
+          "type": "string",
+          "enum": [
+            "document_commit",
+            "main_compute",
+            "scratch",
+            "sampling",
+            "editor_analysis",
+            "save",
+            "media_prepare",
+            "model_request",
+            "undo"
+          ]
+        },
+        "phase": {
+          "$ref": "#/$defs/OperationPhase"
+        },
+        "effect_state": {
+          "type": "string",
+          "enum": [
+            "none",
+            "not_committed",
+            "committed",
+            "partially_committed",
+            "unknown"
+          ]
+        },
+        "producer": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ProducerBinding"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "cancel_requested": {
+          "type": "boolean"
+        },
+        "result_refs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Identity"
+          },
+          "maxItems": 1000
+        }
+      },
+      "required": [
+        "operation_ref",
+        "task_id",
+        "kind",
+        "phase",
+        "effect_state",
+        "producer",
+        "cancel_requested",
+        "result_refs"
+      ],
+      "additionalProperties": false
+    },
+    "DocumentState": {
+      "type": "object",
+      "properties": {
+        "phase": {
+          "$ref": "#/$defs/DocumentPhase"
+        },
+        "binding": {
+          "$ref": "#/$defs/DocumentBinding"
+        },
+        "title": {
+          "type": "string",
+          "maxLength": 500
+        },
+        "kernel_state_revision": {
+          "$ref": "#/$defs/Serial"
+        },
+        "calculation_config_revision": {
+          "$ref": "#/$defs/Serial"
+        },
+        "pending_mutation_operation_ref": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Identity"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "save": {
+          "$ref": "#/$defs/SaveState"
+        },
+        "drafts": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/DraftState"
+          },
+          "maxItems": 1000
+        },
+        "active_checkpoint_ref": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Identity"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "kernel_projection_revision": {
+          "$ref": "#/$defs/Serial"
+        }
+      },
+      "required": [
+        "phase",
+        "binding",
+        "title",
+        "kernel_state_revision",
+        "calculation_config_revision",
+        "pending_mutation_operation_ref",
+        "save",
+        "drafts",
+        "active_checkpoint_ref",
+        "kernel_projection_revision"
+      ],
+      "additionalProperties": false
+    },
+    "AgentTaskState": {
+      "type": "object",
+      "properties": {
+        "task_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "task_generation": {
+          "$ref": "#/$defs/Serial"
+        },
+        "document_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "document_generation": {
+          "$ref": "#/$defs/Serial"
+        },
+        "phase": {
+          "$ref": "#/$defs/AgentPhase"
+        },
+        "mode": {
+          "type": "string",
+          "enum": [
+            "discuss",
+            "execute"
+          ]
+        },
+        "active_operation_refs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Identity"
+          },
+          "maxItems": 128
+        },
+        "model_config_revision": {
+          "$ref": "#/$defs/Serial"
+        },
+        "context_revision": {
+          "$ref": "#/$defs/Serial"
+        }
+      },
+      "required": [
+        "task_id",
+        "task_generation",
+        "document_id",
+        "document_generation",
+        "phase",
+        "mode",
+        "active_operation_refs",
+        "model_config_revision",
+        "context_revision"
+      ],
+      "additionalProperties": false
+    },
+    "PiState": {
+      "type": "object",
+      "properties": {
+        "phase": {
+          "$ref": "#/$defs/PiPhase"
+        },
+        "connection_id": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Identity"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "connection_generation": {
+          "$ref": "#/$defs/Serial"
+        },
+        "protocol_version": {
+          "anyOf": [
+            {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 2147483647
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "phase",
+        "connection_id",
+        "connection_generation",
+        "protocol_version"
+      ],
+      "additionalProperties": false
+    },
+    "HostState": {
+      "type": "object",
+      "properties": {
+        "contract_version": {
+          "const": 1
+        },
+        "runtime_instance_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "host_phase": {
+          "$ref": "#/$defs/HostPhase"
+        },
+        "ui_event_sequence": {
+          "$ref": "#/$defs/Serial"
+        },
+        "rust_event_sequence": {
+          "$ref": "#/$defs/Serial"
+        },
+        "document": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/DocumentState"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "agent_task": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/AgentTaskState"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "pi": {
+          "$ref": "#/$defs/PiState"
+        },
+        "operations": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Operation"
+          },
+          "maxItems": 256
+        }
+      },
+      "required": [
+        "contract_version",
+        "runtime_instance_id",
+        "host_phase",
+        "ui_event_sequence",
+        "rust_event_sequence",
+        "document",
+        "agent_task",
+        "pi",
+        "operations"
+      ],
+      "additionalProperties": false,
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "host_phase": {
+                "const": "closed"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "document": {
+                "type": "null"
+              },
+              "agent_task": {
+                "type": "null"
+              },
+              "operations": {
+                "maxItems": 0
+              },
+              "pi": {
+                "allOf": [
+                  {
+                    "$ref": "#/$defs/PiState"
+                  },
+                  {
+                    "properties": {
+                      "phase": {
+                        "const": "stopped"
+                      },
+                      "connection_id": {
+                        "type": "null"
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        }
+      ]
+    }
+  },
+  "x-openmath-contract": {
+    "status": "planned",
+    "owner_rules": {
+      "document": "Rust DocumentCoordinator",
+      "kernel_state": "Rust KernelWorker accepts/discards via DocumentCoordinator",
+      "draft_and_view": "Swift MainActor",
+      "agent_task_and_transcript": "Swift AgentSessionService, operation facts from Rust",
+      "pi_loop": "Pi process local execution projection",
+      "credentials_and_file_url": "Swift SystemServices"
+    },
+    "runtime_checks": [
+      "document/task binding matches active scope",
+      "source/settings/execution epoch matches candidate",
+      "monotonic sequences and legal transitions",
+      "save revision and file binding still correspond",
+      "per-operation cancellation and known outcome",
+      "editor fence generation and overlay preservation",
+      "host closed only after owners settle and handles release",
+      "worker reconciles source projection before execution without invoking automatic cascade",
+      "candidate exists in immutable registry before active checkpoint reference swap",
+      "partial mathematical effects follow original Session semantics",
+      "separate raw event sequences are not merged as a single source sequence"
+    ],
+    "version_values_are_not_permissions": true
+  }
+}

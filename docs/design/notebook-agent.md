@@ -35,6 +35,8 @@
 
 用户随后提出完全原生 Mac UI。对应 [整合方案](macos-native-ui.md)建议以 SwiftUI/AppKit 宿主接入同一 Rust/Pi 服务契约；现有 Tauri host 作为机制参考，原生桥接和 UI 功能对齐需要另行验收。当前仍为同版范围建议，不改变已安装 `.3`。
 
+原生宿主设计进一步明确为 Swift MainActor/系统服务、Rust 文档控制与计算工作状态、Pi 循环三层，见 [宿主与状态契约](macos-host-state.md)。模型传输选择 Swift URLSession/Keychain 与独立 Rust 单轮 codec；文档/事务事实由 Rust 提供，模型文本或 Pi 动效事件不标记业务成功。
+
 建议使用随应用交付的独立 Node 进程运行 Pi；最终用户无需另装 Node。开发时对齐仓库 Node 环境，发行前固定可再分发的 Mac ARM64 运行时、SHA256 和许可证。进程启动、打包、签名/验证、退出与崩溃恢复均属于实际实施门禁，目前没有通过验证。
 
 ```mermaid

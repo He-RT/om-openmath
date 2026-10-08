@@ -107,6 +107,8 @@
 
 Mac 宿主管理 PromptRegistry、MemoryStore、文档/附件事实及授权范围；Pi 适配层负责把 OpenMath 的消息视图转换成当前版本支持的 transcript。业务状态不直接保存为 Pi 内部对象。
 
+具体所有权和生命周期见 [原生宿主与状态契约](macos-host-state.md)：文档与操作事实由 Rust 产生，Swift 协调原生草稿/会话和系统服务，Pi 仅循环。来源版本、事件序列和已接纳 checkpoint 分开记录，计算或模型等待不阻塞 MainActor/文档控制通道。
+
 ```mermaid
 flowchart LR
     P[版本化提示词] --> C[上下文规划与组装]

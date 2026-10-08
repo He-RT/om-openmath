@@ -14,6 +14,8 @@
 
 用户补充要求 UX/动效一同重做并报告 Apple 原生组件率，随后允许直接阅读 Telegram GitHub。已形成 [完整 UX 与动效规格](../design/macos-ux.md)、[组件清单](../design/macos-ui-inventory.json)及[评审交互草案](../design/prototypes/mac-workspace-ux.html)。设计组件族计数为 30/40 Apple 标准（75%），9 原生自定义、1 第三方原生，平台原生技术目标 100%；不是当前应用的实现比例。实际框架/默认样式、录屏、减少动态效果与业务竞态需原生验收后复核。
 
+用户指定先设计「原生宿主与状态」，已形成 [宿主/状态契约](../design/macos-host-state.md)和 [状态 Schema](../design/macos-host-state.schema.json)。明确 Swift 原生/系统服务、Rust 权威文档/事务与不可变计算 checkpoint、Pi 循环的所有权，独立文档/计算通道、草稿屏障、事件泵、按操作取消、IPC/单轮模型传输和关闭恢复边界。新接口均 planned，未创建宿主 crate 或修改既有 ABI。
+
 ### Mac Notebook Agent（Pi Agent Core，设计草案）
 
 2026-10-08，用户选择以 Pi Agent Core 重做右侧助手，允许直接操作左侧笔记本；随后明确先只考虑 Mac。初步方案见 [Mac Notebook Agent 设计](../design/notebook-agent.md)，尚未安装依赖或开放自动写入。

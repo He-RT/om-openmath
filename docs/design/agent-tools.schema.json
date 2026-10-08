@@ -1,0 +1,3859 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:openmath:planned-agent-tools:v1",
+  "title": "OpenMath Mac Agent planned tool invocation contracts",
+  "description": "设计草案。校验结构不代表工具已注册、引用有效、获得权限或操作已完成。",
+  "type": "object",
+  "properties": {
+    "tool": {
+      "type": "string",
+      "enum": [
+        "read_notebook",
+        "search_functions",
+        "get_function_docs",
+        "preview_source",
+        "apply_notebook_patch",
+        "run_cells",
+        "inspect_result",
+        "evaluate_scratch",
+        "read_attachment",
+        "prepare_attachment",
+        "get_operation_status",
+        "undo_transaction"
+      ]
+    },
+    "arguments": {
+      "type": "object"
+    }
+  },
+  "required": [
+    "tool",
+    "arguments"
+  ],
+  "additionalProperties": false,
+  "oneOf": [
+    {
+      "properties": {
+        "tool": {
+          "const": "read_notebook"
+        },
+        "arguments": {
+          "$ref": "#/$defs/read_notebook_args"
+        }
+      }
+    },
+    {
+      "properties": {
+        "tool": {
+          "const": "search_functions"
+        },
+        "arguments": {
+          "$ref": "#/$defs/search_functions_args"
+        }
+      }
+    },
+    {
+      "properties": {
+        "tool": {
+          "const": "get_function_docs"
+        },
+        "arguments": {
+          "$ref": "#/$defs/get_function_docs_args"
+        }
+      }
+    },
+    {
+      "properties": {
+        "tool": {
+          "const": "preview_source"
+        },
+        "arguments": {
+          "$ref": "#/$defs/preview_source_args"
+        }
+      }
+    },
+    {
+      "properties": {
+        "tool": {
+          "const": "apply_notebook_patch"
+        },
+        "arguments": {
+          "$ref": "#/$defs/apply_notebook_patch_args"
+        }
+      }
+    },
+    {
+      "properties": {
+        "tool": {
+          "const": "run_cells"
+        },
+        "arguments": {
+          "$ref": "#/$defs/run_cells_args"
+        }
+      }
+    },
+    {
+      "properties": {
+        "tool": {
+          "const": "inspect_result"
+        },
+        "arguments": {
+          "$ref": "#/$defs/inspect_result_args"
+        }
+      }
+    },
+    {
+      "properties": {
+        "tool": {
+          "const": "evaluate_scratch"
+        },
+        "arguments": {
+          "$ref": "#/$defs/evaluate_scratch_args"
+        }
+      }
+    },
+    {
+      "properties": {
+        "tool": {
+          "const": "read_attachment"
+        },
+        "arguments": {
+          "$ref": "#/$defs/read_attachment_args"
+        }
+      }
+    },
+    {
+      "properties": {
+        "tool": {
+          "const": "prepare_attachment"
+        },
+        "arguments": {
+          "$ref": "#/$defs/prepare_attachment_args"
+        }
+      }
+    },
+    {
+      "properties": {
+        "tool": {
+          "const": "get_operation_status"
+        },
+        "arguments": {
+          "$ref": "#/$defs/get_operation_status_args"
+        }
+      }
+    },
+    {
+      "properties": {
+        "tool": {
+          "const": "undo_transaction"
+        },
+        "arguments": {
+          "$ref": "#/$defs/undo_transaction_args"
+        }
+      }
+    }
+  ],
+  "$defs": {
+    "OpaqueRef": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 256,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$",
+      "description": "宿主返回且绑定任务/文档代次的引用，不是文件路径或权限凭证。"
+    },
+    "CellId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 256,
+      "description": "read_notebook 返回的稳定单元格身份，不是显示顺序号。"
+    },
+    "Source": {
+      "type": "string",
+      "minLength": 0,
+      "maxLength": 65536,
+      "description": "数学或 Markdown 源码；仅交给对应解析器，不是宿主脚本。"
+    },
+    "Dialect": {
+      "type": "string",
+      "enum": [
+        "Modern",
+        "Wolfram",
+        "Auto"
+      ]
+    },
+    "Sha256": {
+      "type": "string",
+      "minLength": 64,
+      "maxLength": 64,
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "Cursor": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/OpaqueRef"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "CellSelector": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "cell_id": {
+              "$ref": "#/$defs/CellId"
+            }
+          },
+          "required": [
+            "cell_id"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "client_key": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 64
+            }
+          },
+          "required": [
+            "client_key"
+          ],
+          "additionalProperties": false
+        }
+      ]
+    },
+    "Document": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 256
+        },
+        "generation": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "revision": {
+          "type": "integer",
+          "minimum": 0
+        }
+      },
+      "required": [
+        "id",
+        "generation",
+        "revision"
+      ],
+      "additionalProperties": false
+    },
+    "Pagination": {
+      "type": "object",
+      "properties": {
+        "truncated": {
+          "type": "boolean"
+        },
+        "next_cursor": {
+          "$ref": "#/$defs/Cursor"
+        }
+      },
+      "required": [
+        "truncated",
+        "next_cursor"
+      ],
+      "additionalProperties": false
+    },
+    "Diagnostic": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 80
+        },
+        "message": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 4000
+        },
+        "severity": {
+          "type": "string",
+          "enum": [
+            "error",
+            "warning",
+            "hint"
+          ]
+        },
+        "cell_id": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/CellId"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "start_utf8": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "end_utf8": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0
+        }
+      },
+      "required": [
+        "code",
+        "message",
+        "severity",
+        "cell_id",
+        "start_utf8",
+        "end_utf8"
+      ],
+      "additionalProperties": false
+    },
+    "OperationState": {
+      "type": "string",
+      "enum": [
+        "queued",
+        "running",
+        "completed",
+        "partial",
+        "failed",
+        "cancelled",
+        "unknown"
+      ]
+    },
+    "Error": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "string",
+          "enum": [
+            "INVALID_ARGUMENT",
+            "NOT_AVAILABLE",
+            "PERMISSION_DENIED",
+            "INVALID_REFERENCE",
+            "STALE_SNAPSHOT",
+            "EDITING_BUSY",
+            "INVALID_SOURCE",
+            "INVALID_PATCH",
+            "PREVIEW_MISMATCH",
+            "DEPENDENCY_NOT_READY",
+            "EXECUTION_FAILED",
+            "STALE_RESULT",
+            "CONTEXT_NOT_READY",
+            "LIMIT_EXCEEDED",
+            "TIMEOUT",
+            "CANCELLED",
+            "NOT_SUPPORTED",
+            "PREPARATION_REQUIRED",
+            "MODEL_INCOMPATIBLE",
+            "UNDO_CONFLICT",
+            "UNKNOWN_OUTCOME"
+          ]
+        },
+        "message": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 4000
+        },
+        "recovery": {
+          "type": "string",
+          "enum": [
+            "none",
+            "refresh_snapshot",
+            "query_operation",
+            "reprepare",
+            "reduce_request",
+            "choose_supported_model",
+            "retry_read"
+          ]
+        },
+        "details": {
+          "type": "object",
+          "additionalProperties": true
+        }
+      },
+      "required": [
+        "code",
+        "message",
+        "recovery",
+        "details"
+      ],
+      "additionalProperties": false
+    },
+    "JsonPayload": {
+      "description": "对应已验证协议对象的有界 JSON 视图；不得改精度或把未求值改成成功。",
+      "type": [
+        "object",
+        "array",
+        "string",
+        "number",
+        "boolean",
+        "null"
+      ]
+    },
+    "CellSummary": {
+      "type": "object",
+      "properties": {
+        "cell_id": {
+          "$ref": "#/$defs/CellId"
+        },
+        "kind": {
+          "type": "string",
+          "enum": [
+            "Math",
+            "Text",
+            "Ask"
+          ]
+        },
+        "dialect": {
+          "$ref": "#/$defs/Dialect"
+        },
+        "source_hash": {
+          "$ref": "#/$defs/Sha256"
+        },
+        "revision": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "Queued",
+            "Running",
+            "Done",
+            "Error",
+            "Stale"
+          ]
+        },
+        "source": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Source"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "source_complete": {
+          "type": "boolean"
+        },
+        "source_cursor": {
+          "$ref": "#/$defs/Cursor"
+        },
+        "result_ref": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/OpaqueRef"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "cell_id",
+        "kind",
+        "dialect",
+        "source_hash",
+        "revision",
+        "status",
+        "source",
+        "source_complete",
+        "source_cursor",
+        "result_ref"
+      ],
+      "additionalProperties": false
+    },
+    "Patch_insert_cell": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "const": "insert_cell"
+        },
+        "client_key": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 64
+        },
+        "after": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/CellSelector"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "kind": {
+          "type": "string",
+          "enum": [
+            "Math",
+            "Text"
+          ]
+        },
+        "dialect": {
+          "$ref": "#/$defs/Dialect"
+        },
+        "source": {
+          "$ref": "#/$defs/Source"
+        }
+      },
+      "required": [
+        "type",
+        "client_key",
+        "after",
+        "kind",
+        "dialect",
+        "source"
+      ],
+      "additionalProperties": false
+    },
+    "Patch_update_cell": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "const": "update_cell"
+        },
+        "target": {
+          "$ref": "#/$defs/ExistingCellSelector"
+        },
+        "expected_source_hash": {
+          "$ref": "#/$defs/Sha256"
+        },
+        "source": {
+          "$ref": "#/$defs/Source"
+        },
+        "kind": {
+          "type": "string",
+          "enum": [
+            "Math",
+            "Text"
+          ]
+        },
+        "dialect": {
+          "$ref": "#/$defs/Dialect"
+        }
+      },
+      "required": [
+        "type",
+        "target",
+        "expected_source_hash",
+        "source"
+      ],
+      "additionalProperties": false
+    },
+    "Patch_replace_text": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "const": "replace_text"
+        },
+        "target": {
+          "$ref": "#/$defs/ExistingCellSelector"
+        },
+        "expected_source_hash": {
+          "$ref": "#/$defs/Sha256"
+        },
+        "match": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 65536
+        },
+        "replacement": {
+          "$ref": "#/$defs/Source"
+        }
+      },
+      "required": [
+        "type",
+        "target",
+        "expected_source_hash",
+        "match",
+        "replacement"
+      ],
+      "additionalProperties": false
+    },
+    "Patch_delete_cell": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "const": "delete_cell"
+        },
+        "target": {
+          "$ref": "#/$defs/ExistingCellSelector"
+        },
+        "expected_source_hash": {
+          "$ref": "#/$defs/Sha256"
+        }
+      },
+      "required": [
+        "type",
+        "target",
+        "expected_source_hash"
+      ],
+      "additionalProperties": false
+    },
+    "Patch_move_cell": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "const": "move_cell"
+        },
+        "target": {
+          "$ref": "#/$defs/CellSelector"
+        },
+        "after": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/CellSelector"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "type",
+        "target",
+        "after"
+      ],
+      "additionalProperties": false
+    },
+    "Patch_rename_notebook": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "const": "rename_notebook"
+        },
+        "title": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 500
+        }
+      },
+      "required": [
+        "type",
+        "title"
+      ],
+      "additionalProperties": false
+    },
+    "PatchOperation": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/Patch_insert_cell"
+        },
+        {
+          "$ref": "#/$defs/Patch_update_cell"
+        },
+        {
+          "$ref": "#/$defs/Patch_replace_text"
+        },
+        {
+          "$ref": "#/$defs/Patch_delete_cell"
+        },
+        {
+          "$ref": "#/$defs/Patch_move_cell"
+        },
+        {
+          "$ref": "#/$defs/Patch_rename_notebook"
+        }
+      ]
+    },
+    "CellIdList": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/CellId"
+      },
+      "minItems": 1,
+      "maxItems": 50,
+      "uniqueItems": true
+    },
+    "MediaSelection": {
+      "type": "object",
+      "properties": {
+        "page_start": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "page_end": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "time_start_seconds": {
+          "type": "number",
+          "minimum": 0
+        },
+        "time_end_seconds": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        "frame_limit": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 32
+        }
+      },
+      "required": [],
+      "additionalProperties": false
+    },
+    "FunctionSummary": {
+      "type": "object",
+      "properties": {
+        "function_id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 80
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128
+        },
+        "signature": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 2000
+        },
+        "support": {
+          "type": "string",
+          "minLength": 0,
+          "maxLength": 4000
+        },
+        "metadata_version": {
+          "type": "integer",
+          "minimum": 1
+        }
+      },
+      "required": [
+        "function_id",
+        "name",
+        "signature",
+        "support",
+        "metadata_version"
+      ],
+      "additionalProperties": false
+    },
+    "RunCellSummary": {
+      "type": "object",
+      "properties": {
+        "cell_id": {
+          "$ref": "#/$defs/CellId"
+        },
+        "source_hash": {
+          "$ref": "#/$defs/Sha256"
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "done",
+            "error",
+            "cancelled",
+            "skipped",
+            "stale"
+          ]
+        },
+        "result_ref": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/OpaqueRef"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "diagnostics": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Diagnostic"
+          },
+          "minItems": 0,
+          "maxItems": 100
+        }
+      },
+      "required": [
+        "cell_id",
+        "source_hash",
+        "status",
+        "result_ref",
+        "diagnostics"
+      ],
+      "additionalProperties": false
+    },
+    "read_notebook_args": {
+      "type": "object",
+      "properties": {
+        "view": {
+          "type": "string",
+          "enum": [
+            "outline",
+            "cells",
+            "symbols"
+          ],
+          "default": "outline"
+        },
+        "cell_ids": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/CellId"
+          },
+          "minItems": 1,
+          "maxItems": 50,
+          "uniqueItems": true
+        },
+        "snapshot_ref": {
+          "$ref": "#/$defs/OpaqueRef"
+        },
+        "cursor": {
+          "$ref": "#/$defs/Cursor"
+        },
+        "include_outputs": {
+          "type": "boolean",
+          "default": false
+        },
+        "limit": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 50,
+          "default": 20
+        }
+      },
+      "required": [],
+      "additionalProperties": false,
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "view": {
+                "const": "cells"
+              }
+            },
+            "required": [
+              "view"
+            ]
+          },
+          "then": {
+            "required": [
+              "cell_ids"
+            ]
+          }
+        }
+      ]
+    },
+    "read_notebook_data": {
+      "type": "object",
+      "properties": {
+        "snapshot_ref": {
+          "$ref": "#/$defs/OpaqueRef"
+        },
+        "is_current": {
+          "type": "boolean"
+        },
+        "title": {
+          "type": "string",
+          "minLength": 0,
+          "maxLength": 500
+        },
+        "cells": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/CellSummary"
+          },
+          "minItems": 0,
+          "maxItems": 50
+        },
+        "symbols": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/JsonPayload"
+          },
+          "minItems": 0,
+          "maxItems": 100
+        },
+        "recent_transaction_refs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/OpaqueRef"
+          },
+          "minItems": 0,
+          "maxItems": 32
+        }
+      },
+      "required": [
+        "snapshot_ref",
+        "is_current",
+        "title",
+        "cells",
+        "symbols",
+        "recent_transaction_refs"
+      ],
+      "additionalProperties": false
+    },
+    "read_notebook_result": {
+      "type": "object",
+      "properties": {
+        "ok": {
+          "type": "boolean"
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "completed",
+            "partial",
+            "failed",
+            "cancelled",
+            "unknown"
+          ]
+        },
+        "request_ref": {
+          "$ref": "#/$defs/OpaqueRef"
+        },
+        "operation_ref": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/OpaqueRef"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "document": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Document"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "data": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/read_notebook_data"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "error": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Error"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "pagination": {
+          "$ref": "#/$defs/Pagination"
+        }
+      },
+      "required": [
+        "ok",
+        "status",
+        "request_ref",
+        "operation_ref",
+        "document",
+        "data",
+        "error",
+        "pagination"
+      ],
+      "additionalProperties": false,
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "status": {
+                "const": "completed"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "ok": {
+                "const": true
+              },
+              "error": {
+                "type": "null"
+              },
+              "data": {
+                "$ref": "#/$defs/read_notebook_data"
+              }
+            }
+          },
+          "else": {
+            "properties": {
+              "ok": {
+                "const": false
+              },
+              "error": {
+                "$ref": "#/$defs/Error"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "status": {
+                "const": "unknown"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "operation_ref": {
+                "$ref": "#/$defs/OpaqueRef"
+              },
+              "error": {
+                "allOf": [
+                  {
+                    "$ref": "#/$defs/Error"
+                  },
+                  {
+                    "properties": {
+                      "code": {
+                        "const": "UNKNOWN_OUTCOME"
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        }
+      ]
+    },
+    "search_functions_args": {
+      "type": "object",
+      "properties": {
+        "query": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 500
+        },
+        "category": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128
+        },
+        "limit": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 20,
+          "default": 8
+        }
+      },
+      "required": [
+        "query"
+      ],
+      "additionalProperties": false
+    },
+    "search_functions_data": {
+      "type": "object",
+      "properties": {
+        "functions": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/FunctionSummary"
+          },
+          "minItems": 0,
+          "maxItems": 20
+        },
+        "metadata_version": {
+          "type": "integer",
+          "minimum": 1
+        }
+      },
+      "required": [
+        "functions",
+        "metadata_version"
+      ],
+      "additionalProperties": false
+    },
+    "search_functions_result": {
+      "type": "object",
+      "properties": {
+        "ok": {
+          "type": "boolean"
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "completed",
+            "partial",
+            "failed",
+            "cancelled",
+            "unknown"
+          ]
+        },
+        "request_ref": {
+          "$ref": "#/$defs/OpaqueRef"
+        },
+        "operation_ref": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/OpaqueRef"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "document": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Document"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "data": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/search_functions_data"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "error": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Error"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "pagination": {
+          "$ref": "#/$defs/Pagination"
+        }
+      },
+      "required": [
+        "ok",
+        "status",
+        "request_ref",
+        "operation_ref",
+        "document",
+        "data",
+        "error",
+        "pagination"
+      ],
+      "additionalProperties": false,
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "status": {
+                "const": "completed"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "ok": {
+                "const": true
+              },
+              "error": {
+                "type": "null"
+              },
+              "data": {
+                "$ref": "#/$defs/search_functions_data"
+              }
+            }
+          },
+          "else": {
+            "properties": {
+              "ok": {
+                "const": false
+              },
+              "error": {
+                "$ref": "#/$defs/Error"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "status": {
+                "const": "unknown"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "operation_ref": {
+                "$ref": "#/$defs/OpaqueRef"
+              },
+              "error": {
+                "allOf": [
+                  {
+                    "$ref": "#/$defs/Error"
+                  },
+                  {
+                    "properties": {
+                      "code": {
+                        "const": "UNKNOWN_OUTCOME"
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        }
+      ]
+    },
+    "get_function_docs_args": {
+      "type": "object",
+      "properties": {
+        "function_id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 80
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128
+        },
+        "metadata_version": {
+          "type": "integer",
+          "minimum": 1
+        }
+      },
+      "required": [],
+      "additionalProperties": false,
+      "oneOf": [
+        {
+          "required": [
+            "function_id"
+          ],
+          "not": {
+            "required": [
+              "name"
+            ]
+          }
+        },
+        {
+          "required": [
+            "name"
+          ],
+          "not": {
+            "required": [
+              "function_id"
+            ]
+          }
+        }
+      ]
+    },
+    "get_function_docs_data": {
+      "type": "object",
+      "properties": {
+        "function": {
+          "$ref": "#/$defs/JsonPayload"
+        },
+        "examples": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "source": {
+                "$ref": "#/$defs/Source"
+              },
+              "dialect": {
+                "$ref": "#/$defs/Dialect"
+              },
+              "verification": {
+                "type": "string",
+                "enum": [
+                  "kernel_test",
+                  "release_fixture",
+                  "not_verified"
+                ]
+              }
+            },
+            "required": [
+              "source",
+              "dialect",
+              "verification"
+            ],
+            "additionalProperties": false
+          },
+          "minItems": 0,
+          "maxItems": 10
+        },
+        "metadata_version": {
+          "type": "integer",
+          "minimum": 1
+        }
+      },
+      "required": [
+        "function",
+        "examples",
+        "metadata_version"
+      ],
+      "additionalProperties": false
+    },
+    "get_function_docs_result": {
+      "type": "object",
+      "properties": {
+        "ok": {
+          "type": "boolean"
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "completed",
+            "partial",
+            "failed",
+            "cancelled",
+            "unknown"
+          ]
+        },
+        "request_ref": {
+          "$ref": "#/$defs/OpaqueRef"
+        },
+        "operation_ref": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/OpaqueRef"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "document": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Document"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "data": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/get_function_docs_data"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "error": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Error"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "pagination": {
+          "$ref": "#/$defs/Pagination"
+        }
+      },
+      "required": [
+        "ok",
+        "status",
+        "request_ref",
+        "operation_ref",
+        "document",
+        "data",
+        "error",
+        "pagination"
+      ],
+      "additionalProperties": false,
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "status": {
+                "const": "completed"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "ok": {
+                "const": true
+              },
+              "error": {
+                "type": "null"
+              },
+              "data": {
+                "$ref": "#/$defs/get_function_docs_data"
+              }
+            }
+          },
+          "else": {
+            "properties": {
+              "ok": {
+                "const": false
+              },
+              "error": {
+                "$ref": "#/$defs/Error"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "status": {
+                "const": "unknown"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "operation_ref": {
+                "$ref": "#/$defs/OpaqueRef"
+              },
+              "error": {
+                "allOf": [
+                  {
+                    "$ref": "#/$defs/Error"
+                  },
+                  {
+                    "properties": {
+                      "code": {
+                        "const": "UNKNOWN_OUTCOME"
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        }
+      ]
+    },
+    "preview_source_args": {
+      "type": "object",
+      "properties": {
+        "snapshot_ref": {
+          "$ref": "#/$defs/OpaqueRef"
+        },
+        "input": {
+          "oneOf": [
+            {
+              "type": "object",
+              "properties": {
+                "kind": {
+                  "const": "source"
+                },
+                "source": {
+                  "$ref": "#/$defs/Source"
+                },
+                "dialect": {
+                  "$ref": "#/$defs/Dialect"
+                }
+              },
+              "required": [
+                "kind",
+                "source",
+                "dialect"
+              ],
+              "additionalProperties": false
+            },
+            {
+              "type": "object",
+              "properties": {
+                "kind": {
+                  "const": "patch"
+                },
+                "operations": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/$defs/PatchOperation"
+                  },
+                  "minItems": 1,
+                  "maxItems": 64
+                }
+              },
+              "required": [
+                "kind",
+                "operations"
+              ],
+              "additionalProperties": false
+            }
+          ]
+        }
+      },
+      "required": [
+        "snapshot_ref",
+        "input"
+      ],
+      "additionalProperties": false
+    },
+    "preview_source_data": {
+      "type": "object",
+      "properties": {
+        "preview_kind": {
+          "type": "string",
+          "enum": [
+            "source",
+            "patch"
+          ]
+        },
+        "valid": {
+          "type": "boolean"
+        },
+        "preview_ref": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/OpaqueRef"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "plan_hash": {
+          "$ref": "#/$defs/Sha256"
+        },
+        "diagnostics": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Diagnostic"
+          },
+          "minItems": 0,
+          "maxItems": 100
+        },
+        "affected_cell_ids": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/CellId"
+          },
+          "minItems": 0,
+          "maxItems": 1000
+        },
+        "assigned_cell_ids": {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/$defs/CellId"
+          }
+        }
+      },
+      "required": [
+        "preview_kind",
+        "valid",
+        "preview_ref",
+        "plan_hash",
+        "diagnostics",
+        "affected_cell_ids",
+        "assigned_cell_ids"
+      ],
+      "additionalProperties": false,
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "preview_kind": {
+                "const": "patch"
+              },
+              "valid": {
+                "const": true
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "preview_ref": {
+                "$ref": "#/$defs/OpaqueRef"
+              }
+            }
+          },
+          "else": {
+            "properties": {
+              "preview_ref": {
+                "type": "null"
+              }
+            }
+          }
+        }
+      ]
+    },
+    "preview_source_result": {
+      "type": "object",
+      "properties": {
+        "ok": {
+          "type": "boolean"
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "completed",
+            "partial",
+            "failed",
+            "cancelled",
+            "unknown"
+          ]
+        },
+        "request_ref": {
+          "$ref": "#/$defs/OpaqueRef"
+        },
+        "operation_ref": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/OpaqueRef"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "document": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Document"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "data": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/preview_source_data"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "error": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Error"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "pagination": {
+          "$ref": "#/$defs/Pagination"
+        }
+      },
+      "required": [
+        "ok",
+        "status",
+        "request_ref",
+        "operation_ref",
+        "document",
+        "data",
+        "error",
+        "pagination"
+      ],
+      "additionalProperties": false,
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "status": {
+                "const": "completed"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "ok": {
+                "const": true
+              },
+              "error": {
+                "type": "null"
+              },
+              "data": {
+                "$ref": "#/$defs/preview_source_data"
+              }
+            }
+          },
+          "else": {
+            "properties": {
+              "ok": {
+                "const": false
+              },
+              "error": {
+                "$ref": "#/$defs/Error"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "status": {
+                "const": "unknown"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "operation_ref": {
+                "$ref": "#/$defs/OpaqueRef"
+              },
+              "error": {
+                "allOf": [
+                  {
+                    "$ref": "#/$defs/Error"
+                  },
+                  {
+                    "properties": {
+                      "code": {
+                        "const": "UNKNOWN_OUTCOME"
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        }
+      ]
+    },
+    "apply_notebook_patch_args": {
+      "type": "object",
+      "properties": {
+        "preview_ref": {
+          "$ref": "#/$defs/OpaqueRef"
+        }
+      },
+      "required": [
+        "preview_ref"
+      ],
+      "additionalProperties": false
+    },
+    "apply_notebook_patch_data": {
+      "type": "object",
+      "properties": {
+        "transaction_ref": {
+          "$ref": "#/$defs/OpaqueRef"
+        },
+        "snapshot_ref": {
+          "$ref": "#/$defs/OpaqueRef"
+        },
+        "changed_cell_ids": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/CellId"
+          },
+          "minItems": 0,
+          "maxItems": 1000
+        },
+        "invalidated_cell_ids": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/CellId"
+          },
+          "minItems": 0,
+          "maxItems": 1000
+        },
+        "plan_hash": {
+          "$ref": "#/$defs/Sha256"
+        },
+        "saved": {
+          "const": false
+        }
+      },
+      "required": [
+        "transaction_ref",
+        "snapshot_ref",
+        "changed_cell_ids",
+        "invalidated_cell_ids",
+        "plan_hash",
+        "saved"
+      ],
+      "additionalProperties": false
+    },
+    "apply_notebook_patch_result": {
+      "type": "object",
+      "properties": {
+        "ok": {
+          "type": "boolean"
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "completed",
+            "partial",
+            "failed",
+            "cancelled",
+            "unknown"
+          ]
+        },
+        "request_ref": {
+          "$ref": "#/$defs/OpaqueRef"
+        },
+        "operation_ref": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/OpaqueRef"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "document": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Document"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "data": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/apply_notebook_patch_data"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "error": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Error"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "pagination": {
+          "$ref": "#/$defs/Pagination"
+        }
+      },
+      "required": [
+        "ok",
+        "status",
+        "request_ref",
+        "operation_ref",
+        "document",
+        "data",
+        "error",
+        "pagination"
+      ],
+      "additionalProperties": false,
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "status": {
+                "const": "completed"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "ok": {
+                "const": true
+              },
+              "error": {
+                "type": "null"
+              },
+              "data": {
+                "$ref": "#/$defs/apply_notebook_patch_data"
+              }
+            }
+          },
+          "else": {
+            "properties": {
+              "ok": {
+                "const": false
+              },
+              "error": {
+                "$ref": "#/$defs/Error"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "status": {
+                "const": "unknown"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "operation_ref": {
+                "$ref": "#/$defs/OpaqueRef"
+              },
+              "error": {
+                "allOf": [
+                  {
+                    "$ref": "#/$defs/Error"
+                  },
+                  {
+                    "properties": {
+                      "code": {
+                        "const": "UNKNOWN_OUTCOME"
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        }
+      ]
+    },
+    "run_cells_args": {
+      "type": "object",
+      "properties": {
+        "snapshot_ref": {
+          "$ref": "#/$defs/OpaqueRef"
+        },
+        "cell_ids": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/CellId"
+          },
+          "minItems": 1,
+          "maxItems": 50,
+          "uniqueItems": true
+        },
+        "scope": {
+          "type": "string",
+          "enum": [
+            "selected",
+            "required",
+            "affected"
+          ],
+          "default": "required"
+        },
+        "continue_on_error": {
+          "type": "boolean",
+          "default": false
+        }
+      },
+      "required": [
+        "snapshot_ref",
+        "cell_ids"
+      ],
+      "additionalProperties": false
+    },
+    "run_cells_data": {
+      "type": "object",
+      "properties": {
+        "run_ref": {
+          "$ref": "#/$defs/OpaqueRef"
+        },
+        "run_outcome": {
+          "type": "string",
+          "enum": [
+            "completed",
+            "partial",
+            "failed",
+            "cancelled"
+          ]
+        },
+        "cells": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/RunCellSummary"
+          },
+          "minItems": 0,
+          "maxItems": 1000
+        },
+        "executed_cell_ids": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/CellId"
+          },
+          "minItems": 0,
+          "maxItems": 1000
+        }
+      },
+      "required": [
+        "run_ref",
+        "run_outcome",
+        "cells",
+        "executed_cell_ids"
+      ],
+      "additionalProperties": false
+    },
+    "run_cells_result": {
+      "type": "object",
+      "properties": {
+        "ok": {
+          "type": "boolean"
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "completed",
+            "partial",
+            "failed",
+            "cancelled",
+            "unknown"
+          ]
+        },
+        "request_ref": {
+          "$ref": "#/$defs/OpaqueRef"
+        },
+        "operation_ref": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/OpaqueRef"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "document": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Document"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "data": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/run_cells_data"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "error": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Error"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "pagination": {
+          "$ref": "#/$defs/Pagination"
+        }
+      },
+      "required": [
+        "ok",
+        "status",
+        "request_ref",
+        "operation_ref",
+        "document",
+        "data",
+        "error",
+        "pagination"
+      ],
+      "additionalProperties": false,
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "status": {
+                "const": "completed"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "ok": {
+                "const": true
+              },
+              "error": {
+                "type": "null"
+              },
+              "data": {
+                "$ref": "#/$defs/run_cells_data"
+              }
+            }
+          },
+          "else": {
+            "properties": {
+              "ok": {
+                "const": false
+              },
+              "error": {
+                "$ref": "#/$defs/Error"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "status": {
+                "const": "unknown"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "operation_ref": {
+                "$ref": "#/$defs/OpaqueRef"
+              },
+              "error": {
+                "allOf": [
+                  {
+                    "$ref": "#/$defs/Error"
+                  },
+                  {
+                    "properties": {
+                      "code": {
+                        "const": "UNKNOWN_OUTCOME"
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        }
+      ]
+    },
+    "inspect_result_args": {
+      "type": "object",
+      "properties": {
+        "result_ref": {
+          "$ref": "#/$defs/OpaqueRef"
+        },
+        "part": {
+          "type": "string",
+          "enum": [
+            "summary",
+            "value",
+            "diagnostics",
+            "steps",
+            "geometry",
+            "preview"
+          ],
+          "default": "summary"
+        },
+        "cursor": {
+          "$ref": "#/$defs/Cursor"
+        },
+        "limit": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 100,
+          "default": 20
+        }
+      },
+      "required": [
+        "result_ref"
+      ],
+      "additionalProperties": false
+    },
+    "inspect_result_data": {
+      "type": "object",
+      "properties": {
+        "origin": {
+          "type": "string",
+          "enum": [
+            "notebook",
+            "scratch"
+          ]
+        },
+        "is_current": {
+          "type": "boolean"
+        },
+        "part": {
+          "type": "string",
+          "enum": [
+            "summary",
+            "value",
+            "diagnostics",
+            "steps",
+            "geometry",
+            "preview"
+          ]
+        },
+        "payload": {
+          "$ref": "#/$defs/JsonPayload"
+        },
+        "render_state": {
+          "type": "string",
+          "enum": [
+            "rendered",
+            "data_only",
+            "unavailable",
+            "not_applicable"
+          ]
+        },
+        "media_ref": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/OpaqueRef"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "origin",
+        "is_current",
+        "part",
+        "payload",
+        "render_state",
+        "media_ref"
+      ],
+      "additionalProperties": false
+    },
+    "inspect_result_result": {
+      "type": "object",
+      "properties": {
+        "ok": {
+          "type": "boolean"
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "completed",
+            "partial",
+            "failed",
+            "cancelled",
+            "unknown"
+          ]
+        },
+        "request_ref": {
+          "$ref": "#/$defs/OpaqueRef"
+        },
+        "operation_ref": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/OpaqueRef"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "document": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Document"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "data": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/inspect_result_data"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "error": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Error"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "pagination": {
+          "$ref": "#/$defs/Pagination"
+        }
+      },
+      "required": [
+        "ok",
+        "status",
+        "request_ref",
+        "operation_ref",
+        "document",
+        "data",
+        "error",
+        "pagination"
+      ],
+      "additionalProperties": false,
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "status": {
+                "const": "completed"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "ok": {
+                "const": true
+              },
+              "error": {
+                "type": "null"
+              },
+              "data": {
+                "$ref": "#/$defs/inspect_result_data"
+              }
+            }
+          },
+          "else": {
+            "properties": {
+              "ok": {
+                "const": false
+              },
+              "error": {
+                "$ref": "#/$defs/Error"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "status": {
+                "const": "unknown"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "operation_ref": {
+                "$ref": "#/$defs/OpaqueRef"
+              },
+              "error": {
+                "allOf": [
+                  {
+                    "$ref": "#/$defs/Error"
+                  },
+                  {
+                    "properties": {
+                      "code": {
+                        "const": "UNKNOWN_OUTCOME"
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        }
+      ]
+    },
+    "evaluate_scratch_args": {
+      "type": "object",
+      "properties": {
+        "snapshot_ref": {
+          "$ref": "#/$defs/OpaqueRef"
+        },
+        "source": {
+          "$ref": "#/$defs/Source"
+        },
+        "dialect": {
+          "$ref": "#/$defs/Dialect"
+        },
+        "use_notebook_definitions": {
+          "type": "boolean",
+          "default": true
+        }
+      },
+      "required": [
+        "snapshot_ref",
+        "source",
+        "dialect"
+      ],
+      "additionalProperties": false
+    },
+    "evaluate_scratch_data": {
+      "type": "object",
+      "properties": {
+        "result_ref": {
+          "$ref": "#/$defs/OpaqueRef"
+        },
+        "evaluation_status": {
+          "type": "string",
+          "enum": [
+            "done",
+            "error",
+            "cancelled",
+            "unevaluated"
+          ]
+        },
+        "output_summary": {
+          "$ref": "#/$defs/JsonPayload"
+        },
+        "diagnostics": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Diagnostic"
+          },
+          "minItems": 0,
+          "maxItems": 100
+        },
+        "notebook_modified": {
+          "const": false
+        }
+      },
+      "required": [
+        "result_ref",
+        "evaluation_status",
+        "output_summary",
+        "diagnostics",
+        "notebook_modified"
+      ],
+      "additionalProperties": false
+    },
+    "evaluate_scratch_result": {
+      "type": "object",
+      "properties": {
+        "ok": {
+          "type": "boolean"
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "completed",
+            "partial",
+            "failed",
+            "cancelled",
+            "unknown"
+          ]
+        },
+        "request_ref": {
+          "$ref": "#/$defs/OpaqueRef"
+        },
+        "operation_ref": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/OpaqueRef"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "document": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Document"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "data": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/evaluate_scratch_data"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "error": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Error"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "pagination": {
+          "$ref": "#/$defs/Pagination"
+        }
+      },
+      "required": [
+        "ok",
+        "status",
+        "request_ref",
+        "operation_ref",
+        "document",
+        "data",
+        "error",
+        "pagination"
+      ],
+      "additionalProperties": false,
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "status": {
+                "const": "completed"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "ok": {
+                "const": true
+              },
+              "error": {
+                "type": "null"
+              },
+              "data": {
+                "$ref": "#/$defs/evaluate_scratch_data"
+              }
+            }
+          },
+          "else": {
+            "properties": {
+              "ok": {
+                "const": false
+              },
+              "error": {
+                "$ref": "#/$defs/Error"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "status": {
+                "const": "unknown"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "operation_ref": {
+                "$ref": "#/$defs/OpaqueRef"
+              },
+              "error": {
+                "allOf": [
+                  {
+                    "$ref": "#/$defs/Error"
+                  },
+                  {
+                    "properties": {
+                      "code": {
+                        "const": "UNKNOWN_OUTCOME"
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        }
+      ]
+    },
+    "read_attachment_args": {
+      "type": "object",
+      "properties": {
+        "media_ref": {
+          "$ref": "#/$defs/OpaqueRef"
+        },
+        "view": {
+          "type": "string",
+          "enum": [
+            "metadata",
+            "text",
+            "image",
+            "frames"
+          ],
+          "default": "metadata"
+        },
+        "cursor": {
+          "$ref": "#/$defs/Cursor"
+        },
+        "limit": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 32,
+          "default": 8
+        }
+      },
+      "required": [
+        "media_ref"
+      ],
+      "additionalProperties": false
+    },
+    "read_attachment_data": {
+      "type": "object",
+      "properties": {
+        "media_ref": {
+          "$ref": "#/$defs/OpaqueRef"
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 500
+        },
+        "mime_type": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200
+        },
+        "bytes": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "processing_state": {
+          "type": "string",
+          "enum": [
+            "original",
+            "prepared",
+            "unavailable"
+          ]
+        },
+        "payload": {
+          "$ref": "#/$defs/JsonPayload"
+        },
+        "coverage": {
+          "$ref": "#/$defs/JsonPayload"
+        }
+      },
+      "required": [
+        "media_ref",
+        "name",
+        "mime_type",
+        "bytes",
+        "processing_state",
+        "payload",
+        "coverage"
+      ],
+      "additionalProperties": false
+    },
+    "read_attachment_result": {
+      "type": "object",
+      "properties": {
+        "ok": {
+          "type": "boolean"
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "completed",
+            "partial",
+            "failed",
+            "cancelled",
+            "unknown"
+          ]
+        },
+        "request_ref": {
+          "$ref": "#/$defs/OpaqueRef"
+        },
+        "operation_ref": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/OpaqueRef"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "document": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Document"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "data": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/read_attachment_data"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "error": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Error"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "pagination": {
+          "$ref": "#/$defs/Pagination"
+        }
+      },
+      "required": [
+        "ok",
+        "status",
+        "request_ref",
+        "operation_ref",
+        "document",
+        "data",
+        "error",
+        "pagination"
+      ],
+      "additionalProperties": false,
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "status": {
+                "const": "completed"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "ok": {
+                "const": true
+              },
+              "error": {
+                "type": "null"
+              },
+              "data": {
+                "$ref": "#/$defs/read_attachment_data"
+              }
+            }
+          },
+          "else": {
+            "properties": {
+              "ok": {
+                "const": false
+              },
+              "error": {
+                "$ref": "#/$defs/Error"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "status": {
+                "const": "unknown"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "operation_ref": {
+                "$ref": "#/$defs/OpaqueRef"
+              },
+              "error": {
+                "allOf": [
+                  {
+                    "$ref": "#/$defs/Error"
+                  },
+                  {
+                    "properties": {
+                      "code": {
+                        "const": "UNKNOWN_OUTCOME"
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        }
+      ]
+    },
+    "prepare_attachment_args": {
+      "type": "object",
+      "properties": {
+        "media_ref": {
+          "$ref": "#/$defs/OpaqueRef"
+        },
+        "method": {
+          "type": "string",
+          "enum": [
+            "auto",
+            "image_normalize",
+            "document_text",
+            "ocr",
+            "audio_transcribe",
+            "video_frames",
+            "video_transcript"
+          ],
+          "default": "auto"
+        },
+        "selection": {
+          "$ref": "#/$defs/MediaSelection"
+        }
+      },
+      "required": [
+        "media_ref"
+      ],
+      "additionalProperties": false
+    },
+    "prepare_attachment_data": {
+      "type": "object",
+      "properties": {
+        "prepared_media_ref": {
+          "$ref": "#/$defs/OpaqueRef"
+        },
+        "method": {
+          "type": "string",
+          "enum": [
+            "native",
+            "image_normalize",
+            "document_text",
+            "ocr",
+            "audio_transcribe",
+            "video_frames",
+            "video_transcript"
+          ]
+        },
+        "coverage": {
+          "$ref": "#/$defs/JsonPayload"
+        },
+        "limitations": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 2000
+          },
+          "minItems": 0,
+          "maxItems": 20
+        },
+        "target_model_config_revision": {
+          "type": "integer",
+          "minimum": 0
+        }
+      },
+      "required": [
+        "prepared_media_ref",
+        "method",
+        "coverage",
+        "limitations",
+        "target_model_config_revision"
+      ],
+      "additionalProperties": false
+    },
+    "prepare_attachment_result": {
+      "type": "object",
+      "properties": {
+        "ok": {
+          "type": "boolean"
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "completed",
+            "partial",
+            "failed",
+            "cancelled",
+            "unknown"
+          ]
+        },
+        "request_ref": {
+          "$ref": "#/$defs/OpaqueRef"
+        },
+        "operation_ref": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/OpaqueRef"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "document": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Document"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "data": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/prepare_attachment_data"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "error": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Error"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "pagination": {
+          "$ref": "#/$defs/Pagination"
+        }
+      },
+      "required": [
+        "ok",
+        "status",
+        "request_ref",
+        "operation_ref",
+        "document",
+        "data",
+        "error",
+        "pagination"
+      ],
+      "additionalProperties": false,
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "status": {
+                "const": "completed"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "ok": {
+                "const": true
+              },
+              "error": {
+                "type": "null"
+              },
+              "data": {
+                "$ref": "#/$defs/prepare_attachment_data"
+              }
+            }
+          },
+          "else": {
+            "properties": {
+              "ok": {
+                "const": false
+              },
+              "error": {
+                "$ref": "#/$defs/Error"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "status": {
+                "const": "unknown"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "operation_ref": {
+                "$ref": "#/$defs/OpaqueRef"
+              },
+              "error": {
+                "allOf": [
+                  {
+                    "$ref": "#/$defs/Error"
+                  },
+                  {
+                    "properties": {
+                      "code": {
+                        "const": "UNKNOWN_OUTCOME"
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        }
+      ]
+    },
+    "get_operation_status_args": {
+      "type": "object",
+      "properties": {
+        "operation_ref": {
+          "$ref": "#/$defs/OpaqueRef"
+        }
+      },
+      "required": [
+        "operation_ref"
+      ],
+      "additionalProperties": false
+    },
+    "get_operation_status_data": {
+      "type": "object",
+      "properties": {
+        "operation_state": {
+          "$ref": "#/$defs/OperationState"
+        },
+        "outcome_known": {
+          "type": "boolean"
+        },
+        "effect_committed": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "transaction_ref": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/OpaqueRef"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "run_ref": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/OpaqueRef"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "result_refs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/OpaqueRef"
+          },
+          "minItems": 0,
+          "maxItems": 1000
+        },
+        "recovery_hint": {
+          "type": "string",
+          "minLength": 0,
+          "maxLength": 2000
+        }
+      },
+      "required": [
+        "operation_state",
+        "outcome_known",
+        "effect_committed",
+        "transaction_ref",
+        "run_ref",
+        "result_refs",
+        "recovery_hint"
+      ],
+      "additionalProperties": false
+    },
+    "get_operation_status_result": {
+      "type": "object",
+      "properties": {
+        "ok": {
+          "type": "boolean"
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "completed",
+            "partial",
+            "failed",
+            "cancelled",
+            "unknown"
+          ]
+        },
+        "request_ref": {
+          "$ref": "#/$defs/OpaqueRef"
+        },
+        "operation_ref": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/OpaqueRef"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "document": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Document"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "data": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/get_operation_status_data"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "error": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Error"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "pagination": {
+          "$ref": "#/$defs/Pagination"
+        }
+      },
+      "required": [
+        "ok",
+        "status",
+        "request_ref",
+        "operation_ref",
+        "document",
+        "data",
+        "error",
+        "pagination"
+      ],
+      "additionalProperties": false,
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "status": {
+                "const": "completed"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "ok": {
+                "const": true
+              },
+              "error": {
+                "type": "null"
+              },
+              "data": {
+                "$ref": "#/$defs/get_operation_status_data"
+              }
+            }
+          },
+          "else": {
+            "properties": {
+              "ok": {
+                "const": false
+              },
+              "error": {
+                "$ref": "#/$defs/Error"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "status": {
+                "const": "unknown"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "operation_ref": {
+                "$ref": "#/$defs/OpaqueRef"
+              },
+              "error": {
+                "allOf": [
+                  {
+                    "$ref": "#/$defs/Error"
+                  },
+                  {
+                    "properties": {
+                      "code": {
+                        "const": "UNKNOWN_OUTCOME"
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        }
+      ]
+    },
+    "undo_transaction_args": {
+      "type": "object",
+      "properties": {
+        "snapshot_ref": {
+          "$ref": "#/$defs/OpaqueRef"
+        },
+        "transaction_refs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/OpaqueRef"
+          },
+          "minItems": 1,
+          "maxItems": 32,
+          "uniqueItems": true
+        }
+      },
+      "required": [
+        "snapshot_ref",
+        "transaction_refs"
+      ],
+      "additionalProperties": false
+    },
+    "undo_transaction_data": {
+      "type": "object",
+      "properties": {
+        "undo_transaction_ref": {
+          "$ref": "#/$defs/OpaqueRef"
+        },
+        "snapshot_ref": {
+          "$ref": "#/$defs/OpaqueRef"
+        },
+        "changed_cell_ids": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/CellId"
+          },
+          "minItems": 0,
+          "maxItems": 1000
+        },
+        "invalidated_cell_ids": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/CellId"
+          },
+          "minItems": 0,
+          "maxItems": 1000
+        },
+        "saved": {
+          "const": false
+        }
+      },
+      "required": [
+        "undo_transaction_ref",
+        "snapshot_ref",
+        "changed_cell_ids",
+        "invalidated_cell_ids",
+        "saved"
+      ],
+      "additionalProperties": false
+    },
+    "undo_transaction_result": {
+      "type": "object",
+      "properties": {
+        "ok": {
+          "type": "boolean"
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "completed",
+            "partial",
+            "failed",
+            "cancelled",
+            "unknown"
+          ]
+        },
+        "request_ref": {
+          "$ref": "#/$defs/OpaqueRef"
+        },
+        "operation_ref": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/OpaqueRef"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "document": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Document"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "data": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/undo_transaction_data"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "error": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Error"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "pagination": {
+          "$ref": "#/$defs/Pagination"
+        }
+      },
+      "required": [
+        "ok",
+        "status",
+        "request_ref",
+        "operation_ref",
+        "document",
+        "data",
+        "error",
+        "pagination"
+      ],
+      "additionalProperties": false,
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "status": {
+                "const": "completed"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "ok": {
+                "const": true
+              },
+              "error": {
+                "type": "null"
+              },
+              "data": {
+                "$ref": "#/$defs/undo_transaction_data"
+              }
+            }
+          },
+          "else": {
+            "properties": {
+              "ok": {
+                "const": false
+              },
+              "error": {
+                "$ref": "#/$defs/Error"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "status": {
+                "const": "unknown"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "operation_ref": {
+                "$ref": "#/$defs/OpaqueRef"
+              },
+              "error": {
+                "allOf": [
+                  {
+                    "$ref": "#/$defs/Error"
+                  },
+                  {
+                    "properties": {
+                      "code": {
+                        "const": "UNKNOWN_OUTCOME"
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        }
+      ]
+    },
+    "ExistingCellSelector": {
+      "type": "object",
+      "properties": {
+        "cell_id": {
+          "$ref": "#/$defs/CellId"
+        }
+      },
+      "required": [
+        "cell_id"
+      ],
+      "additionalProperties": false
+    }
+  },
+  "x-openmath-catalog": {
+    "contract_version": 1,
+    "status": "planned",
+    "platforms": [
+      "macos"
+    ],
+    "registration_policy": "Only actual verified handlers are exposed; intersect task grants and provider/schema capability. This file does not register any tool.",
+    "bound_host_context": [
+      "agent_session_id",
+      "agent_turn_id",
+      "tool_call_id",
+      "task_id",
+      "document_id",
+      "document_generation",
+      "mode",
+      "grants",
+      "model_config_revision",
+      "budgets"
+    ],
+    "model_tools": [
+      {
+        "id": "om.agent.read_notebook.v1",
+        "name": "read_notebook",
+        "label": "读取笔记本",
+        "status": "planned",
+        "description": "读取当前任务绑定的笔记本。首次取 outline，再按 cell_id 取源码/依赖/输出。返回 snapshot_ref、版本和稳定身份；分页用 cursor，源码不完整时不能整格覆盖。不得把顺序号或路径当 cell_id。",
+        "parameters": {
+          "$ref": "#/$defs/read_notebook_args"
+        },
+        "result_schema": {
+          "$ref": "#/$defs/read_notebook_result"
+        },
+        "effect_class": "read_session",
+        "modes": [
+          "discuss",
+          "execute"
+        ],
+        "required_permissions": [
+          "notebook.read"
+        ],
+        "registration_preconditions": [
+          "document_snapshot_service"
+        ],
+        "execution_mode": "sequential",
+        "example_arguments": {
+          "view": "cells",
+          "cell_ids": [
+            "cell-a"
+          ]
+        }
+      },
+      {
+        "id": "om.agent.search_functions.v1",
+        "name": "search_functions",
+        "label": "查找数学功能",
+        "status": "planned",
+        "description": "按数学目的、名称或别名搜索当前真实回调，不执行源码。返回有限条 function_id/签名/边界和元数据版本；详细参数用 get_function_docs。计划目录条目不得作为可执行结果。",
+        "parameters": {
+          "$ref": "#/$defs/search_functions_args"
+        },
+        "result_schema": {
+          "$ref": "#/$defs/search_functions_result"
+        },
+        "effect_class": "pure",
+        "modes": [
+          "discuss",
+          "execute"
+        ],
+        "required_permissions": [
+          "catalog.read"
+        ],
+        "registration_preconditions": [
+          "runtime_catalog_filter"
+        ],
+        "execution_mode": "sequential",
+        "example_arguments": {
+          "query": "求解一元方程",
+          "limit": 5
+        }
+      },
+      {
+        "id": "om.agent.get_function_docs.v1",
+        "name": "get_function_docs",
+        "label": "读取函数契约",
+        "status": "planned",
+        "description": "查询实际函数的签名、参数/默认值、返回语义、精度、平台和已验证示例。用 function_id 优先，也可用准确名称。已有同版本资料可复用；未知名字返回 NOT_AVAILABLE，不补造 Mathematica 接口。",
+        "parameters": {
+          "$ref": "#/$defs/get_function_docs_args"
+        },
+        "result_schema": {
+          "$ref": "#/$defs/get_function_docs_result"
+        },
+        "effect_class": "pure",
+        "modes": [
+          "discuss",
+          "execute"
+        ],
+        "required_permissions": [
+          "catalog.read"
+        ],
+        "registration_preconditions": [
+          "runtime_catalog_filter"
+        ],
+        "execution_mode": "sequential",
+        "example_arguments": {
+          "name": "solve"
+        }
+      },
+      {
+        "id": "om.agent.preview_source.v1",
+        "name": "preview_source",
+        "label": "检查源码或修改计划",
+        "status": "planned",
+        "description": "在 snapshot_ref 的临时文档中检查源码。kind=patch 才返回可提交的 preview_ref；kind=source 只检查，不授权提交。检查完整操作序列及新定义，返回诊断、影响单元格、规范化计划散列和新身份。语法通过不等于计算成功。",
+        "parameters": {
+          "$ref": "#/$defs/preview_source_args"
+        },
+        "result_schema": {
+          "$ref": "#/$defs/preview_source_result"
+        },
+        "effect_class": "read_session",
+        "modes": [
+          "discuss",
+          "execute"
+        ],
+        "required_permissions": [
+          "notebook.read"
+        ],
+        "registration_preconditions": [
+          "staged_document_preview",
+          "reference_store"
+        ],
+        "execution_mode": "sequential",
+        "example_arguments": {
+          "snapshot_ref": "snap-demo",
+          "input": {
+            "kind": "patch",
+            "operations": [
+              {
+                "type": "replace_text",
+                "target": {
+                  "cell_id": "cell-a"
+                },
+                "expected_source_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+                "match": "let a = 2",
+                "replacement": "let a = 5"
+              }
+            ]
+          }
+        }
+      },
+      {
+        "id": "om.agent.apply_notebook_patch.v1",
+        "name": "apply_notebook_patch",
+        "label": "提交已检查修改",
+        "status": "planned",
+        "description": "提交 preview_source 返回的有效 patch preview_ref。不要再次发送或重新排版源码，宿主提交冻结计划并检查文档版本/IME/任务范围。相同预览重复提交返回原事务回执；来源变化先重新读取和预览。提交不执行计算、不表示已保存。",
+        "parameters": {
+          "$ref": "#/$defs/apply_notebook_patch_args"
+        },
+        "result_schema": {
+          "$ref": "#/$defs/apply_notebook_patch_result"
+        },
+        "effect_class": "write_document",
+        "modes": [
+          "execute"
+        ],
+        "required_permissions": [
+          "notebook.write"
+        ],
+        "registration_preconditions": [
+          "atomic_patch_service",
+          "durable_operation_receipts",
+          "reference_store"
+        ],
+        "execution_mode": "sequential",
+        "example_arguments": {
+          "preview_ref": "preview-demo"
+        }
+      },
+      {
+        "id": "om.agent.run_cells.v1",
+        "name": "run_cells",
+        "label": "执行相关单元格",
+        "status": "planned",
+        "description": "在指定 snapshot_ref 的源码版本上执行 Math 单元格。selected 仅目标；required 可补必要前置；affected 还重算受影响下游，扩展仍须在任务范围内。返回实际执行列表与 result_ref；错误/取消保留部分结果和先前修改，不伪称回滚。未知结果先查询 operation_ref。",
+        "parameters": {
+          "$ref": "#/$defs/run_cells_args"
+        },
+        "result_schema": {
+          "$ref": "#/$defs/run_cells_result"
+        },
+        "effect_class": "write_session",
+        "modes": [
+          "execute"
+        ],
+        "required_permissions": [
+          "notebook.run"
+        ],
+        "registration_preconditions": [
+          "scoped_run_scheduler",
+          "source_version_guards",
+          "durable_operation_receipts"
+        ],
+        "execution_mode": "sequential",
+        "example_arguments": {
+          "snapshot_ref": "snap-after-patch",
+          "cell_ids": [
+            "cell-a"
+          ],
+          "scope": "affected"
+        }
+      },
+      {
+        "id": "om.agent.inspect_result.v1",
+        "name": "inspect_result",
+        "label": "检查真实结果",
+        "status": "planned",
+        "description": "读取同版本的 notebook/scratch result_ref，选择值、诊断、步骤、几何摘要或实际渲染预览。大结果使用 cursor；保留条件和精度。preview 仅在实际宿主/模型支持时返回图像，不截取整个桌面。过期输出返回 STALE_RESULT，不能当作当前成功。",
+        "parameters": {
+          "$ref": "#/$defs/inspect_result_args"
+        },
+        "result_schema": {
+          "$ref": "#/$defs/inspect_result_result"
+        },
+        "effect_class": "read_session",
+        "modes": [
+          "discuss",
+          "execute"
+        ],
+        "required_permissions": [
+          "results.read"
+        ],
+        "registration_preconditions": [
+          "immutable_result_store",
+          "result_version_guards"
+        ],
+        "execution_mode": "sequential",
+        "example_arguments": {
+          "result_ref": "result-demo",
+          "part": "diagnostics"
+        }
+      },
+      {
+        "id": "om.agent.evaluate_scratch.v1",
+        "name": "evaluate_scratch",
+        "label": "隔离试算",
+        "status": "planned",
+        "description": "在一次性 CAS 中解析/计算源码，临时变量和随机状态不影响主笔记本。use_notebook_definitions=true 只读取当前有效的执行定义，过期依赖返回 CONTEXT_NOT_READY；false 使用空上下文。无宿主文件/网络/模型调用能力。返回 scratch result_ref，不等于已写入或运行左侧单元格。",
+        "parameters": {
+          "$ref": "#/$defs/evaluate_scratch_args"
+        },
+        "result_schema": {
+          "$ref": "#/$defs/evaluate_scratch_result"
+        },
+        "effect_class": "read_session",
+        "modes": [
+          "discuss",
+          "execute"
+        ],
+        "required_permissions": [
+          "cas.scratch"
+        ],
+        "registration_preconditions": [
+          "isolated_cas_service",
+          "result_store",
+          "independent_cancellation"
+        ],
+        "execution_mode": "sequential",
+        "example_arguments": {
+          "snapshot_ref": "snap-demo",
+          "source": "solve(x^2-5*x+6=0,x)",
+          "dialect": "Modern"
+        }
+      },
+      {
+        "id": "om.agent.read_attachment.v1",
+        "name": "read_attachment",
+        "label": "读取用户附件",
+        "status": "planned",
+        "description": "读取当前任务主动附加的原始或准备后 media_ref。metadata 查看类型和状态；text/image/frames 只返回真实可读取内容。分页及页码/时间来源必须保留；未处理的输入返回 PREPARATION_REQUIRED。没有任意路径或 URL 参数。",
+        "parameters": {
+          "$ref": "#/$defs/read_attachment_args"
+        },
+        "result_schema": {
+          "$ref": "#/$defs/read_attachment_result"
+        },
+        "effect_class": "read_session",
+        "modes": [
+          "discuss",
+          "execute"
+        ],
+        "required_permissions": [
+          "attachments.read"
+        ],
+        "registration_preconditions": [
+          "task_attachment_store"
+        ],
+        "execution_mode": "sequential",
+        "example_arguments": {
+          "media_ref": "attachment-demo",
+          "view": "metadata"
+        }
+      },
+      {
+        "id": "om.agent.prepare_attachment.v1",
+        "name": "prepare_attachment",
+        "label": "准备媒体输入",
+        "status": "planned",
+        "description": "按用户所选模型和已配置处理服务准备 media_ref。auto 使用真实可用路由；其他方法包括图片规范化、文档提取、OCR、转写和视频抽帧。只在宿主允许预算内工作，返回 prepared media_ref、方法和覆盖范围；未支持的路由明确报错。模型不能传入密钥、服务 URL 或其他文件路径。",
+        "parameters": {
+          "$ref": "#/$defs/prepare_attachment_args"
+        },
+        "result_schema": {
+          "$ref": "#/$defs/prepare_attachment_result"
+        },
+        "effect_class": "host_io",
+        "modes": [
+          "discuss",
+          "execute"
+        ],
+        "required_permissions": [
+          "attachments.prepare"
+        ],
+        "registration_preconditions": [
+          "actual_media_adapters",
+          "task_attachment_store",
+          "configured_processing_routes"
+        ],
+        "execution_mode": "sequential",
+        "example_arguments": {
+          "media_ref": "attachment-video",
+          "method": "video_frames",
+          "selection": {
+            "time_start_seconds": 0,
+            "time_end_seconds": 30,
+            "frame_limit": 8
+          }
+        }
+      },
+      {
+        "id": "om.agent.get_operation_status.v1",
+        "name": "get_operation_status",
+        "label": "核对操作回执",
+        "status": "planned",
+        "description": "查询工具返回的 operation_ref，核对排队、运行、完成、取消或未知结果。用于超时/断线恢复，查询本身不会重放编辑或计算。只返回当前任务/允许历史的真实账本状态；账本未恢复时保持 unknown。",
+        "parameters": {
+          "$ref": "#/$defs/get_operation_status_args"
+        },
+        "result_schema": {
+          "$ref": "#/$defs/get_operation_status_result"
+        },
+        "effect_class": "read_session",
+        "modes": [
+          "discuss",
+          "execute"
+        ],
+        "required_permissions": [
+          "operations.read"
+        ],
+        "registration_preconditions": [
+          "durable_operation_receipts"
+        ],
+        "execution_mode": "sequential",
+        "example_arguments": {
+          "operation_ref": "operation-demo"
+        }
+      },
+      {
+        "id": "om.agent.undo_transaction.v1",
+        "name": "undo_transaction",
+        "label": "撤销允许的事务",
+        "status": "planned",
+        "description": "根据当前 snapshot_ref 撤销获准 transaction_refs，在临时文档检查所有反向操作后原子提交。仅用于用户要求撤销或本任务允许的回退；后续内容不匹配返回 UNDO_CONFLICT，不以旧整本覆盖手工编辑。撤销源码后结果待重算，不自动执行或保存。",
+        "parameters": {
+          "$ref": "#/$defs/undo_transaction_args"
+        },
+        "result_schema": {
+          "$ref": "#/$defs/undo_transaction_result"
+        },
+        "effect_class": "write_document",
+        "modes": [
+          "execute"
+        ],
+        "required_permissions": [
+          "transactions.undo"
+        ],
+        "registration_preconditions": [
+          "atomic_undo_service",
+          "durable_operation_receipts"
+        ],
+        "execution_mode": "sequential",
+        "example_arguments": {
+          "snapshot_ref": "snap-current",
+          "transaction_refs": [
+            "transaction-demo"
+          ]
+        }
+      }
+    ],
+    "host_controls": [
+      {
+        "name": "cancel_task",
+        "status": "planned",
+        "exposure": "ui_host_only",
+        "reason": "Immediate independent cancellation must work while the model or CAS is busy."
+      },
+      {
+        "name": "focus_cell",
+        "status": "planned",
+        "exposure": "ui_host_only",
+        "reason": "User-triggered navigation does not steal editor focus during agent execution."
+      }
+    ],
+    "proposed_limits": {
+      "source_unicode_codepoints": 65536,
+      "operations_per_patch": 64,
+      "model_result_text_bytes": 65536,
+      "transport_budget": "实际聚合字节/图片/时长/计算预算由宿主进一步限制，不由模型参数提升。"
+    }
+  }
+}

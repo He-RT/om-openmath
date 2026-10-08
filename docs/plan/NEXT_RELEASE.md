@@ -4,13 +4,17 @@
 
 `.3` 已按原完整范围发布。发行源码 `0889d34e4fce9926054025ca71ea328f6cc65b39` 的 [CI](https://github.com/He-RT/om-openmath/actions/runs/37654889786) 与 [四平台发行门禁](https://github.com/He-RT/om-openmath/actions/runs/37655070652) 全部通过，九类公开附件和清单已逐文件下载核验。保留 `.1/.2`，继续 `dev`，未合并 `main`。详见[实际发行验收](../acceptance/r3-release/README.md)。
 
-## 下一版待办（版本号待定，尚未实现）
+## 下一版目标：0.1.0-pre-alpha.4（设计，尚未实现）
+
+2026-10-09，用户要求设计“版本与验收门禁”，目标版号及完整范围已收敛为[`.4`统一规格](PRE_ALPHA_4.md)。[32个机器门禁](../acceptance/pre-alpha.4/gates.toml)覆盖133个稳定验收条目，31项公开前必过、1项公开后下载回读；[报告Schema](../acceptance/pre-alpha.4/report.schema.json)与[证据入口](../acceptance/pre-alpha.4/README.md)区分设计/真实代码/native/最终包。当前全部运行gate为not_run，未分配public candidate SHA，不能因Schema/HTML绿色宣称可发布。
+
+本版按原生Mac UI/UX与`.3`功能对齐、Pi Notebook Agent/12工具、宿主/事务/恢复、模型默认/单模型覆盖与媒体、上下文提示词、安装签名/手工更新、共享续行同版实施。运行版本暂保持`.3`，R4.5冻结时再统一Cargo/npm/平台/资产版本；保留公开`.1/.2/.3`、dev、不合main、不启动本机iOS模拟器。旧版数据迁移已排除，未来新数据升级/普通`.omnb`兼容保留。
 
 ### Mac 完全原生界面重写 同版整合建议
 
 2026-10-08，用户提出参考 telegram-ui-reference 完全重写 Mac UI，询问是否适合与 Agent 同版。已形成 [原生 Mac UI 与 Agent 整合方案](../design/macos-native-ui.md)：SwiftUI/AppKit 原生窗口/编辑/展示，共享 Rust 计算和 Pi 进程；按桥接/真实计算 → `.3` 功能对齐 → Agent 事务闭环 → 输入/媒体/上下文 → Mac 发行门禁分阶段交付。
 
-建议作为同一目标版本的主线，但属于完整 Mac 客户端换代；必须保留 `.3` 原功能与已确定的 Agent 范围并真实验收，不只做原生壳。当前未开始重写，新版本号/最终发行构建仍待锁定；2026-10-09安装设计已选首版macOS27+/Apple Silicon目标。
+作为目标`.4`同版主线，属于完整Mac客户端换代；必须保留`.3`原功能与已确定Agent范围并真实验收，不只做原生壳。当前未开始重写，实际运行版本/最终发行构建在R4.5冻结；安装设计已选首版macOS27+/Apple Silicon目标。
 
 用户补充要求 UX/动效一同重做并报告 Apple 原生组件率，随后允许直接阅读 Telegram GitHub。已形成 [完整 UX 与动效规格](../design/macos-ux.md)、[组件清单](../design/macos-ui-inventory.json)及[评审交互草案](../design/prototypes/mac-workspace-ux.html)。设计组件族计数为 30/40 Apple 标准（75%），9 原生自定义、1 第三方原生，平台原生技术目标 100%；不是当前应用的实现比例。实际框架/默认样式、录屏、减少动态效果与业务竞态需原生验收后复核。
 

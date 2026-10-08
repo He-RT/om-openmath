@@ -219,7 +219,7 @@ E5 首轮性能目标为：10 KiB 普通活动格的本地输入到下一次可�
 - ER09：二维全部实际 geometry/log/参数域/标签/拾取/内核交点，手势与键盘相同，快速变参/旧采样拒绝/真实导出。
 - ER10：真实3D曲面/图元/切开西瓜、Float显示与世界导出、法线/透明/相机/resize/GPU资源/失败、当前截图与帧身份，缺Metal明确 data_only。
 - ER11：1000格混合笔记本、活动长源/大公式/矩阵/网格的真实滚动/高度更新/caret/selection pin，内存/输入p95/layout/frame记实际设备与Release数据，不放宽数学门槛。
-- ER12：各状态浅深/字体/全键盘/VoiceOver/Reduce Motion和正常/失败恢复，减少装饰不删结果，平台/包/原53/`.omnb`/Windows/Web/iOS 兼容；本机不启动 iOS 模拟器。
+- ER12：各状态浅深/字体/全键盘/原生AX语义与关键可访问动作/Reduce Motion和正常/失败恢复，减少装饰不删结果，平台/包/原53/`.omnb`/Windows/Web/iOS兼容；完整人工VoiceOver遍历另列覆盖范围，不因API存在而标通过，暂缓规则按[`.4`统一门禁](../plan/PRE_ALPHA_4.md#原生ui平台与暂缓边界)。本机不启动iOS模拟器。
 
 ## Skill 与组件率
 

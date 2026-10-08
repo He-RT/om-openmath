@@ -1,0 +1,1479 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:openmath:release-gates:planned:v1",
+  "title": "OpenMath pre-alpha.4 acceptance evidence design",
+  "description": "planned数据形状，不是运行时publisher/聚合器。合成正例不表示证据真实或任务通过；全部原生/发行门禁当前not_run。",
+  "oneOf": [
+    {
+      "$ref": "#/$defs/CandidateIdentity"
+    },
+    {
+      "$ref": "#/$defs/EvidenceRecord"
+    },
+    {
+      "$ref": "#/$defs/GateRun"
+    },
+    {
+      "$ref": "#/$defs/IssueRecord"
+    },
+    {
+      "$ref": "#/$defs/ScopeDeferral"
+    },
+    {
+      "$ref": "#/$defs/ReleaseVerdict"
+    }
+  ],
+  "$defs": {
+    "Identity": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 256,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "GateId": {
+      "type": "string",
+      "pattern": "^R4G(?:0[1-9]|[12][0-9]|3[0-2])$"
+    },
+    "GitSha": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{40}$"
+    },
+    "Sha256": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "Serial": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "Timestamp": {
+      "type": "string",
+      "format": "date-time",
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d+)?(?:Z|[+-]\\d{2}:\\d{2})$"
+    },
+    "Result": {
+      "type": "string",
+      "enum": [
+        "not_run",
+        "passed",
+        "failed",
+        "partial",
+        "blocked",
+        "skipped",
+        "stale",
+        "unavailable"
+      ]
+    },
+    "ProofKind": {
+      "type": "string",
+      "enum": [
+        "design_schema",
+        "html_prototype",
+        "version_audit",
+        "dependency_audit",
+        "native_build",
+        "ci_checks",
+        "cas_correctness",
+        "native_runtime",
+        "race_fixture",
+        "crash_fixture",
+        "native_ui",
+        "manual_ui",
+        "gpu_render",
+        "artifact_readback",
+        "native_performance",
+        "handler_contract",
+        "agent_fixture",
+        "model_fixture",
+        "context_wire",
+        "live_model",
+        "component_audit",
+        "installed_runtime",
+        "bundle_audit",
+        "signature_notary",
+        "web_runtime",
+        "web_performance",
+        "mobile_performance",
+        "documentation_audit",
+        "ci_aggregation",
+        "public_readback"
+      ]
+    },
+    "Platform": {
+      "type": "string",
+      "enum": [
+        "core",
+        "mac-native",
+        "mac-installed",
+        "windows-installed",
+        "web",
+        "ios-phone",
+        "ios-pad",
+        "assets",
+        "multi-platform"
+      ]
+    },
+    "CandidateIdentity": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "record_type": {
+          "const": "candidate_identity"
+        },
+        "candidate_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "release_version": {
+          "const": "0.1.0-pre-alpha.4"
+        },
+        "base_version": {
+          "const": "0.1.0"
+        },
+        "scope_version": {
+          "const": 1
+        },
+        "source_sha": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/GitSha"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "build_number": {
+          "anyOf": [
+            {
+              "type": "string",
+              "pattern": "^[1-9][0-9]*$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "channel": {
+          "type": "string",
+          "enum": [
+            "preview",
+            "public"
+          ]
+        },
+        "milestone": {
+          "type": "string",
+          "enum": [
+            "design",
+            "development",
+            "release_candidate",
+            "published"
+          ]
+        },
+        "working_tree_clean": {
+          "type": "boolean"
+        },
+        "dependency_lock_hash": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Sha256"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "input_manifest_hash": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Sha256"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "record_type",
+        "candidate_id",
+        "release_version",
+        "base_version",
+        "scope_version",
+        "source_sha",
+        "build_number",
+        "channel",
+        "milestone",
+        "working_tree_clean",
+        "dependency_lock_hash",
+        "input_manifest_hash"
+      ],
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "milestone": {
+                "enum": [
+                  "release_candidate",
+                  "published"
+                ]
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "source_sha": {
+                "$ref": "#/$defs/GitSha"
+              },
+              "build_number": {
+                "type": "string",
+                "pattern": "^[1-9][0-9]*$"
+              },
+              "working_tree_clean": {
+                "const": true
+              },
+              "dependency_lock_hash": {
+                "$ref": "#/$defs/Sha256"
+              },
+              "input_manifest_hash": {
+                "$ref": "#/$defs/Sha256"
+              }
+            }
+          }
+        }
+      ],
+      "x-implementation-status": "planned"
+    },
+    "Environment": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "platform": {
+          "$ref": "#/$defs/Platform"
+        },
+        "os": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128
+        },
+        "architecture": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 64
+        },
+        "device": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 256
+        },
+        "toolchain": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 512
+        },
+        "configuration": {
+          "type": "string",
+          "enum": [
+            "design",
+            "Debug",
+            "Release"
+          ]
+        },
+        "uses_local_ios_simulator": {
+          "const": false
+        }
+      },
+      "required": [
+        "platform",
+        "os",
+        "architecture",
+        "device",
+        "toolchain",
+        "configuration",
+        "uses_local_ios_simulator"
+      ]
+    },
+    "ArtifactRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "uri": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 4096
+        },
+        "sha256": {
+          "$ref": "#/$defs/Sha256"
+        },
+        "byte_length": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        },
+        "redacted": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "uri",
+        "sha256",
+        "byte_length",
+        "redacted"
+      ],
+      "description": "URI/hash必须真实回读、可保留；这里只校验非空，不授权聚合器执行它或上传任意路径。"
+    },
+    "EvidenceRecord": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "record_type": {
+          "const": "evidence_record"
+        },
+        "evidence_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "candidate_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "source_sha": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/GitSha"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "gate_id": {
+          "$ref": "#/$defs/GateId"
+        },
+        "case_ids": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Identity"
+          },
+          "minItems": 1,
+          "uniqueItems": true
+        },
+        "proof_kind": {
+          "$ref": "#/$defs/ProofKind"
+        },
+        "attempt": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "result": {
+          "$ref": "#/$defs/Result"
+        },
+        "environment": {
+          "$ref": "#/$defs/Environment"
+        },
+        "started_at": {
+          "$ref": "#/$defs/Timestamp"
+        },
+        "finished_at": {
+          "$ref": "#/$defs/Timestamp"
+        },
+        "test_target": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1024
+        },
+        "test_input_hash": {
+          "$ref": "#/$defs/Sha256"
+        },
+        "artifacts": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/ArtifactRef"
+          },
+          "minItems": 1
+        },
+        "contains_authentication_material": {
+          "const": false
+        },
+        "coverage_note": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 4096
+        },
+        "supersedes_evidence_id": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Identity"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "record_type",
+        "evidence_id",
+        "candidate_id",
+        "source_sha",
+        "gate_id",
+        "case_ids",
+        "proof_kind",
+        "attempt",
+        "result",
+        "environment",
+        "started_at",
+        "finished_at",
+        "test_target",
+        "test_input_hash",
+        "artifacts",
+        "contains_authentication_material",
+        "coverage_note",
+        "supersedes_evidence_id"
+      ],
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "proof_kind": {
+                "not": {
+                  "enum": [
+                    "design_schema",
+                    "html_prototype"
+                  ]
+                }
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "source_sha": {
+                "$ref": "#/$defs/GitSha"
+              },
+              "environment": {
+                "properties": {
+                  "configuration": {
+                    "enum": [
+                      "Debug",
+                      "Release"
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        }
+      ],
+      "description": "真实原件、SHA/候选、范围/平台/时间与方法由汇总器校验；passed设计证据不可满足实际运行gate。",
+      "x-implementation-status": "planned"
+    },
+    "CaseResult": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "case_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "result": {
+          "$ref": "#/$defs/Result"
+        },
+        "evidence_ids": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Identity"
+          },
+          "uniqueItems": true
+        },
+        "reason": {
+          "anyOf": [
+            {
+              "type": "string",
+              "maxLength": 4096
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "case_id",
+        "result",
+        "evidence_ids",
+        "reason"
+      ],
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "result": {
+                "const": "passed"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "evidence_ids": {
+                "minItems": 1
+              }
+            }
+          }
+        }
+      ]
+    },
+    "GateRun": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "record_type": {
+          "const": "gate_run"
+        },
+        "gate_id": {
+          "$ref": "#/$defs/GateId"
+        },
+        "candidate_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "source_sha": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/GitSha"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "scope_version": {
+          "const": 1
+        },
+        "attempt": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "result": {
+          "$ref": "#/$defs/Result"
+        },
+        "case_results": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/CaseResult"
+          }
+        },
+        "evidence_ids": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Identity"
+          },
+          "uniqueItems": true
+        },
+        "observed_proof_kinds": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/ProofKind"
+          },
+          "uniqueItems": true
+        },
+        "root_cause_class": {
+          "anyOf": [
+            {
+              "type": "string",
+              "enum": [
+                "product",
+                "test",
+                "environment",
+                "third_party",
+                "missing_prerequisite"
+              ]
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "reason": {
+          "anyOf": [
+            {
+              "type": "string",
+              "maxLength": 4096
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "record_type",
+        "gate_id",
+        "candidate_id",
+        "source_sha",
+        "scope_version",
+        "attempt",
+        "result",
+        "case_results",
+        "evidence_ids",
+        "observed_proof_kinds",
+        "root_cause_class",
+        "reason"
+      ],
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "result": {
+                "const": "passed"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "source_sha": {
+                "$ref": "#/$defs/GitSha"
+              },
+              "case_results": {
+                "minItems": 1,
+                "items": {
+                  "properties": {
+                    "result": {
+                      "const": "passed"
+                    },
+                    "evidence_ids": {
+                      "minItems": 1
+                    }
+                  }
+                }
+              },
+              "evidence_ids": {
+                "minItems": 1
+              },
+              "observed_proof_kinds": {
+                "minItems": 1,
+                "items": {
+                  "not": {
+                    "enum": [
+                      "design_schema",
+                      "html_prototype"
+                    ]
+                  }
+                }
+              },
+              "root_cause_class": {
+                "type": "null"
+              }
+            }
+          }
+        }
+      ],
+      "description": "是否覆盖gate.toml全部case/proof、是否有效原件/依赖/平台/source仍需实际aggregator，不能仅按此记录passed采信。",
+      "x-implementation-status": "planned"
+    },
+    "IssueRecord": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "record_type": {
+          "const": "issue_record"
+        },
+        "issue_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "candidate_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "gate_ids": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/GateId"
+          },
+          "minItems": 1,
+          "uniqueItems": true
+        },
+        "severity": {
+          "type": "string",
+          "enum": [
+            "P0",
+            "P1",
+            "P2",
+            "P3"
+          ]
+        },
+        "state": {
+          "type": "string",
+          "enum": [
+            "open",
+            "fixed_pending_retest",
+            "verified_fixed",
+            "known_limitation"
+          ]
+        },
+        "root_cause_class": {
+          "type": "string",
+          "enum": [
+            "product",
+            "test",
+            "environment",
+            "third_party",
+            "missing_prerequisite"
+          ]
+        },
+        "evidence_ids": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Identity"
+          },
+          "uniqueItems": true
+        },
+        "description": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 4096
+        },
+        "verified_fix_evidence_ids": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Identity"
+          },
+          "uniqueItems": true
+        }
+      },
+      "required": [
+        "record_type",
+        "issue_id",
+        "candidate_id",
+        "gate_ids",
+        "severity",
+        "state",
+        "root_cause_class",
+        "evidence_ids",
+        "description",
+        "verified_fix_evidence_ids"
+      ],
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "state": {
+                "const": "verified_fixed"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "verified_fix_evidence_ids": {
+                "minItems": 1
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "severity": {
+                "const": "P0"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "state": {
+                "not": {
+                  "const": "known_limitation"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "x-implementation-status": "planned"
+    },
+    "ScopeDeferral": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "record_type": {
+          "const": "scope_deferral"
+        },
+        "deferral_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "scope_version": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "scope": {
+          "type": "string",
+          "enum": [
+            "historic_ios_manual",
+            "noncritical_known_limitation",
+            "human_scope_revision"
+          ]
+        },
+        "affected_case_ids": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Identity"
+          },
+          "minItems": 1,
+          "uniqueItems": true
+        },
+        "reason": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 4096
+        },
+        "requires_no_pass_claim": {
+          "const": true
+        },
+        "authorization_source_type": {
+          "const": "direct_user_message"
+        },
+        "authorization_source_ref": {
+          "$ref": "#/$defs/Identity"
+        },
+        "direct_user_text": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 4096
+        },
+        "disables_required_capability": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "record_type",
+        "deferral_id",
+        "scope_version",
+        "scope",
+        "affected_case_ids",
+        "reason",
+        "requires_no_pass_claim",
+        "authorization_source_type",
+        "authorization_source_ref",
+        "direct_user_text",
+        "disables_required_capability"
+      ],
+      "description": "直接人类授权真实性和可豁免范围必须验证；Agent文本或第三方报告不是用户授权。P0/签名/关键安全/未删必交范围不自行豁免。",
+      "x-implementation-status": "planned"
+    },
+    "ReleaseVerdict": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "record_type": {
+          "const": "release_verdict"
+        },
+        "candidate_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "source_sha": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/GitSha"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "scope_version": {
+          "const": 1
+        },
+        "phase": {
+          "type": "string",
+          "enum": [
+            "design",
+            "not_ready",
+            "ready_to_publish",
+            "published_unverified",
+            "released_verified"
+          ]
+        },
+        "prepublish_passed_gate_ids": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/GateId"
+          },
+          "uniqueItems": true
+        },
+        "postpublish_passed_gate_ids": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/GateId"
+          },
+          "uniqueItems": true
+        },
+        "open_p0_p1_issue_ids": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Identity"
+          },
+          "uniqueItems": true
+        },
+        "unsatisfied_gate_ids": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/GateId"
+          },
+          "uniqueItems": true
+        },
+        "unverified_deferral_ids": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Identity"
+          },
+          "uniqueItems": true
+        },
+        "artifact_manifest_hash": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Sha256"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "ready_to_publish": {
+          "type": "boolean"
+        },
+        "released_verified": {
+          "type": "boolean"
+        },
+        "includes_previous_release_as_current_evidence": {
+          "const": false
+        }
+      },
+      "required": [
+        "record_type",
+        "candidate_id",
+        "source_sha",
+        "scope_version",
+        "phase",
+        "prepublish_passed_gate_ids",
+        "postpublish_passed_gate_ids",
+        "open_p0_p1_issue_ids",
+        "unsatisfied_gate_ids",
+        "unverified_deferral_ids",
+        "artifact_manifest_hash",
+        "ready_to_publish",
+        "released_verified",
+        "includes_previous_release_as_current_evidence"
+      ],
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "phase": {
+                "enum": [
+                  "design",
+                  "not_ready"
+                ]
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "ready_to_publish": {
+                "const": false
+              },
+              "released_verified": {
+                "const": false
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "phase": {
+                "enum": [
+                  "ready_to_publish",
+                  "published_unverified",
+                  "released_verified"
+                ]
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "source_sha": {
+                "$ref": "#/$defs/GitSha"
+              },
+              "prepublish_passed_gate_ids": {
+                "minItems": 31,
+                "maxItems": 31,
+                "items": {
+                  "not": {
+                    "const": "R4G32"
+                  }
+                }
+              },
+              "open_p0_p1_issue_ids": {
+                "maxItems": 0
+              },
+              "unverified_deferral_ids": {
+                "maxItems": 0
+              },
+              "artifact_manifest_hash": {
+                "$ref": "#/$defs/Sha256"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "phase": {
+                "const": "ready_to_publish"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "ready_to_publish": {
+                "const": true
+              },
+              "released_verified": {
+                "const": false
+              },
+              "postpublish_passed_gate_ids": {
+                "maxItems": 0
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "phase": {
+                "const": "published_unverified"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "ready_to_publish": {
+                "const": false
+              },
+              "released_verified": {
+                "const": false
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "phase": {
+                "const": "released_verified"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "ready_to_publish": {
+                "const": false
+              },
+              "released_verified": {
+                "const": true
+              },
+              "postpublish_passed_gate_ids": {
+                "const": [
+                  "R4G32"
+                ]
+              },
+              "unsatisfied_gate_ids": {
+                "maxItems": 0
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "phase": {
+                "enum": [
+                  "ready_to_publish",
+                  "published_unverified"
+                ]
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "unsatisfied_gate_ids": {
+                "maxItems": 1,
+                "items": {
+                  "const": "R4G32"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "description": "计数形状并非真实发布证明。实际31gate/原件/案例/签名/包/公开readback由汇总器读取，不允许人手填true跳过。",
+      "x-implementation-status": "planned"
+    }
+  },
+  "examples": [
+    {
+      "record_type": "candidate_identity",
+      "candidate_id": "design-plan-1",
+      "release_version": "0.1.0-pre-alpha.4",
+      "base_version": "0.1.0",
+      "scope_version": 1,
+      "source_sha": null,
+      "build_number": null,
+      "channel": "preview",
+      "milestone": "design",
+      "working_tree_clean": false,
+      "dependency_lock_hash": null,
+      "input_manifest_hash": null
+    },
+    {
+      "record_type": "evidence_record",
+      "evidence_id": "design-check-1",
+      "candidate_id": "design-plan-1",
+      "source_sha": null,
+      "gate_id": "R4G01",
+      "case_ids": [
+        "VR01"
+      ],
+      "proof_kind": "design_schema",
+      "attempt": 1,
+      "result": "passed",
+      "environment": {
+        "platform": "multi-platform",
+        "os": "design-only",
+        "architecture": "none",
+        "device": "no-native-device",
+        "toolchain": "jsonschema",
+        "configuration": "design",
+        "uses_local_ios_simulator": false
+      },
+      "started_at": "2026-10-09T12:00:00Z",
+      "finished_at": "2026-10-09T12:00:00Z",
+      "test_target": "synthetic-schema-positive",
+      "test_input_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "artifacts": [
+        {
+          "uri": "example-artifact-schema.json",
+          "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "byte_length": 10,
+          "redacted": true
+        }
+      ],
+      "contains_authentication_material": false,
+      "coverage_note": "仅合成设计形状，不是版本冻结或实际执行",
+      "supersedes_evidence_id": null
+    },
+    {
+      "record_type": "gate_run",
+      "gate_id": "R4G01",
+      "candidate_id": "design-plan-1",
+      "source_sha": null,
+      "scope_version": 1,
+      "attempt": 1,
+      "result": "not_run",
+      "case_results": [],
+      "evidence_ids": [],
+      "observed_proof_kinds": [],
+      "root_cause_class": "missing_prerequisite",
+      "reason": "尚未实施或冻结真实candidate"
+    },
+    {
+      "record_type": "issue_record",
+      "issue_id": "prerequisite-signing",
+      "candidate_id": "design-plan-1",
+      "gate_ids": [
+        "R4G21"
+      ],
+      "severity": "P1",
+      "state": "open",
+      "root_cause_class": "missing_prerequisite",
+      "evidence_ids": [],
+      "description": "设计前置：Developer ID材料尚未配置，不声称已执行签名失败",
+      "verified_fix_evidence_ids": []
+    },
+    {
+      "record_type": "scope_deferral",
+      "deferral_id": "historic-ios-voiceover",
+      "scope_version": 1,
+      "scope": "historic_ios_manual",
+      "affected_case_ids": [
+        "HISTORIC-IOS-VOICEOVER"
+      ],
+      "reason": "此前用户暂缓的iOS人工专项，不是新的Mac关键门禁通过",
+      "requires_no_pass_claim": true,
+      "authorization_source_type": "direct_user_message",
+      "authorization_source_ref": "user-history-voiceover-deferral",
+      "direct_user_text": "不管旁白了",
+      "disables_required_capability": false
+    },
+    {
+      "record_type": "release_verdict",
+      "candidate_id": "design-plan-1",
+      "source_sha": null,
+      "scope_version": 1,
+      "phase": "design",
+      "prepublish_passed_gate_ids": [],
+      "postpublish_passed_gate_ids": [],
+      "open_p0_p1_issue_ids": [
+        "prerequisite-signing"
+      ],
+      "unsatisfied_gate_ids": [
+        "R4G01",
+        "R4G02",
+        "R4G03",
+        "R4G04",
+        "R4G05",
+        "R4G06",
+        "R4G07",
+        "R4G08",
+        "R4G09",
+        "R4G10",
+        "R4G11",
+        "R4G12",
+        "R4G13",
+        "R4G14",
+        "R4G15",
+        "R4G16",
+        "R4G17",
+        "R4G18",
+        "R4G19",
+        "R4G20",
+        "R4G21",
+        "R4G22",
+        "R4G23",
+        "R4G24",
+        "R4G25",
+        "R4G26",
+        "R4G27",
+        "R4G28",
+        "R4G29",
+        "R4G30",
+        "R4G31",
+        "R4G32"
+      ],
+      "unverified_deferral_ids": [],
+      "artifact_manifest_hash": null,
+      "ready_to_publish": false,
+      "released_verified": false,
+      "includes_previous_release_as_current_evidence": false
+    },
+    {
+      "record_type": "candidate_identity",
+      "candidate_id": "synthetic-rc-1",
+      "release_version": "0.1.0-pre-alpha.4",
+      "base_version": "0.1.0",
+      "scope_version": 1,
+      "source_sha": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "build_number": "1001",
+      "channel": "public",
+      "milestone": "release_candidate",
+      "working_tree_clean": true,
+      "dependency_lock_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "input_manifest_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    },
+    {
+      "record_type": "gate_run",
+      "gate_id": "R4G01",
+      "candidate_id": "synthetic-rc-1",
+      "source_sha": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "scope_version": 1,
+      "attempt": 1,
+      "result": "passed",
+      "case_results": [
+        {
+          "case_id": "VR01",
+          "result": "passed",
+          "evidence_ids": [
+            "synthetic-evidence-1"
+          ],
+          "reason": null
+        },
+        {
+          "case_id": "VR02",
+          "result": "passed",
+          "evidence_ids": [
+            "synthetic-evidence-1"
+          ],
+          "reason": null
+        },
+        {
+          "case_id": "VR03",
+          "result": "passed",
+          "evidence_ids": [
+            "synthetic-evidence-1"
+          ],
+          "reason": null
+        },
+        {
+          "case_id": "VR04",
+          "result": "passed",
+          "evidence_ids": [
+            "synthetic-evidence-1"
+          ],
+          "reason": null
+        }
+      ],
+      "evidence_ids": [
+        "synthetic-evidence-1"
+      ],
+      "observed_proof_kinds": [
+        "version_audit"
+      ],
+      "root_cause_class": null,
+      "reason": null
+    },
+    {
+      "record_type": "release_verdict",
+      "candidate_id": "synthetic-rc-1",
+      "source_sha": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "scope_version": 1,
+      "phase": "ready_to_publish",
+      "prepublish_passed_gate_ids": [
+        "R4G01",
+        "R4G02",
+        "R4G03",
+        "R4G04",
+        "R4G05",
+        "R4G06",
+        "R4G07",
+        "R4G08",
+        "R4G09",
+        "R4G10",
+        "R4G11",
+        "R4G12",
+        "R4G13",
+        "R4G14",
+        "R4G15",
+        "R4G16",
+        "R4G17",
+        "R4G18",
+        "R4G19",
+        "R4G20",
+        "R4G21",
+        "R4G22",
+        "R4G23",
+        "R4G24",
+        "R4G25",
+        "R4G26",
+        "R4G27",
+        "R4G28",
+        "R4G29",
+        "R4G30",
+        "R4G31"
+      ],
+      "postpublish_passed_gate_ids": [],
+      "open_p0_p1_issue_ids": [],
+      "unsatisfied_gate_ids": [
+        "R4G32"
+      ],
+      "unverified_deferral_ids": [],
+      "artifact_manifest_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "ready_to_publish": true,
+      "released_verified": false,
+      "includes_previous_release_as_current_evidence": false
+    },
+    {
+      "record_type": "release_verdict",
+      "candidate_id": "synthetic-rc-1",
+      "source_sha": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "scope_version": 1,
+      "phase": "released_verified",
+      "prepublish_passed_gate_ids": [
+        "R4G01",
+        "R4G02",
+        "R4G03",
+        "R4G04",
+        "R4G05",
+        "R4G06",
+        "R4G07",
+        "R4G08",
+        "R4G09",
+        "R4G10",
+        "R4G11",
+        "R4G12",
+        "R4G13",
+        "R4G14",
+        "R4G15",
+        "R4G16",
+        "R4G17",
+        "R4G18",
+        "R4G19",
+        "R4G20",
+        "R4G21",
+        "R4G22",
+        "R4G23",
+        "R4G24",
+        "R4G25",
+        "R4G26",
+        "R4G27",
+        "R4G28",
+        "R4G29",
+        "R4G30",
+        "R4G31"
+      ],
+      "postpublish_passed_gate_ids": [
+        "R4G32"
+      ],
+      "open_p0_p1_issue_ids": [],
+      "unsatisfied_gate_ids": [],
+      "unverified_deferral_ids": [],
+      "artifact_manifest_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "ready_to_publish": false,
+      "released_verified": true,
+      "includes_previous_release_as_current_evidence": false
+    },
+    {
+      "record_type": "release_verdict",
+      "candidate_id": "synthetic-rc-1",
+      "source_sha": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "scope_version": 1,
+      "phase": "published_unverified",
+      "prepublish_passed_gate_ids": [
+        "R4G01",
+        "R4G02",
+        "R4G03",
+        "R4G04",
+        "R4G05",
+        "R4G06",
+        "R4G07",
+        "R4G08",
+        "R4G09",
+        "R4G10",
+        "R4G11",
+        "R4G12",
+        "R4G13",
+        "R4G14",
+        "R4G15",
+        "R4G16",
+        "R4G17",
+        "R4G18",
+        "R4G19",
+        "R4G20",
+        "R4G21",
+        "R4G22",
+        "R4G23",
+        "R4G24",
+        "R4G25",
+        "R4G26",
+        "R4G27",
+        "R4G28",
+        "R4G29",
+        "R4G30",
+        "R4G31"
+      ],
+      "postpublish_passed_gate_ids": [],
+      "open_p0_p1_issue_ids": [],
+      "unsatisfied_gate_ids": [
+        "R4G32"
+      ],
+      "unverified_deferral_ids": [],
+      "artifact_manifest_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "ready_to_publish": false,
+      "released_verified": false,
+      "includes_previous_release_as_current_evidence": false
+    }
+  ]
+}

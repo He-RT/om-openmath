@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "urn:openmath:mac-distribution:planned:v1",
   "title": "OpenMath native Mac installation and distribution design",
-  "description": "全部planned，无安装/签名/公证handler。例中pre-alpha.4是合成数据，不锁定新版本；shape校验不证明真实签名/发行/安装。",
+  "description": "全部planned，无安装/签名/公证handler。目标版号由PRE_ALPHA_4.md定义，运行版本尚未冻结；合成正例不表示真实新包。shape校验不证明签名/发行/安装。",
   "oneOf": [
     {
       "$ref": "#/$defs/ChannelIdentity"

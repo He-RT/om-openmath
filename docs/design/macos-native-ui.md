@@ -2,7 +2,7 @@
 
 [下一版计划](../plan/NEXT_RELEASE.md) · [Agent 架构](notebook-agent.md) · [工具契约](agent-tools.md) · [输入框](agent-composer.md)
 
-2026-10-08，用户提出彻底重写 Mac UI，参考 telegram-ui-reference，采用完全原生界面，并询问是否适合与 Agent 同版。建议将原生 Mac 客户端与 Agent 作为同一目标版本的主线，按下列阶段实施验收；这是版本范围建议，当前尚未开始重写或锁定新发行版本。
+2026-10-08，用户提出彻底重写Mac UI，参考telegram-ui-reference，采用完全原生界面，并询问是否适合与Agent同版。原生客户端与Agent按下列阶段同版实施验收；2026-10-09已收敛为[目标`.4`范围与门禁](../plan/PRE_ALPHA_4.md)，当前仍未开始重写或生成新发行构建。
 
 原生编辑器与 Agent 共用文档状态、事务、执行和撤销入口，统一设计可以保持手工编辑与 Agent 修改的一致性。此次属于 Mac 客户端换代，范围包括笔记本编辑和全部结果展示，不只是右侧助手样式。
 
@@ -82,4 +82,4 @@ N0/N1 的编辑器与全部内容展示细化见[原生编辑与渲染契约](ma
 
 具体本地依据：[窗口尺寸与方向](/Users/hert/Documents/ChatGPT/ui-learning/09-adaptation-and-accessibility/screen-size-and-orientation.md) 的状态保留与可用空间算法、[导航栈](/Users/hert/Documents/ChatGPT/ui-learning/02-layout-and-navigation/tabs-and-navigation-stacks.md) 的稳定身份/焦点/滚动恢复，以及 [文本选择和编辑](/Users/hert/Documents/ChatGPT/ui-learning/05-input-and-actions/text-selection-and-editing.md) 的原生选区、单次编辑事务与 Unicode 边界。右栏继续沿用已读的输入框、进度、菜单和撤销契约。
 
-当前为可评审的整体方案与同版建议，Mac 原生重写未开始。首版安装目标已选macOS27+/Apple Silicon；新版本号、具体发行构建/签名与门禁仍待实施锁定，现有公开`.3`保持不变。
+当前为可评审的整体方案，Mac原生重写未开始。首版安装目标macOS27+/Apple Silicon、版号目标`.4`已选；具体运行版本/候选构建/签名与门禁仍待实施，现有公开`.3`保持不变。

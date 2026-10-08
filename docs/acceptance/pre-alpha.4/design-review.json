@@ -1,0 +1,58 @@
+{
+  "date": "2026-10-09",
+  "status": "design_only",
+  "scope": "版本/门禁/证据契约设计校验；没有运行新的native/Agent/发行门禁",
+  "target_version": "0.1.0-pre-alpha.4",
+  "current_runtime_version": "0.1.0-pre-alpha.3",
+  "catalog_validation": {
+    "status": "design_only",
+    "gate_count": 32,
+    "case_count": 133,
+    "prepublish_required_count": 31,
+    "postpublish_required_count": 1,
+    "dependency_dag_valid": true,
+    "source_case_coverage": {
+      "SR": 12,
+      "ER": 12,
+      "MM": 15,
+      "IN": 12
+    },
+    "asset_count": 9,
+    "runtime_checks_executed": 0,
+    "ready_to_publish": false,
+    "released_verified": false,
+    "existing_schema_count": 6
+  },
+  "schema_validation": {
+    "status": "design_only",
+    "positive_examples": 11,
+    "negative_examples": 27,
+    "runtime_aggregator_implemented": false,
+    "ready_to_publish": false,
+    "released_verified": false
+  },
+  "public_candidate_sha": null,
+  "runtime_gate_checks_executed": 0,
+  "ready_to_publish": false,
+  "released_verified": false,
+  "not_executed": [
+    ".4运行版本切换或构建",
+    "新CI lanes/运行时aggregator/publisher",
+    "所有32个运行/发行gate的真实代码或包验收",
+    "native/live模型/GPU/崩溃/媒体/签名/公开下载回读"
+  ],
+  "clarifications": [
+    "133是稳定验收条目，不是已经编写/运行的测试函数数量",
+    "31公开前必过与1公开后回读分开，无发布循环",
+    "旧数据迁移排除；历史iOS人工专项暂缓不算passed",
+    "Scope和签名/数据/数学核心门禁不能由Agent自行waive"
+  ],
+  "existing_release_version_check": "0.1.0-pre-alpha.3",
+  "existing_release_script_tests_passed": 5,
+  "local_document_links_checked": 233,
+  "function_catalog_check": {
+    "semantic_entries": 829,
+    "reference_pages": 22,
+    "passed": true
+  }
+}

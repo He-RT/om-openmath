@@ -4,9 +4,9 @@
 
 2026-10-09。目标`0.1.0-pre-alpha.4`，当前运行/公开版本`.3`；开发`dev`，不合main、不改旧标签、本机不启动iOS模拟器。本文只记录结果，规格及完成标准唯一见主计划；计划编写本身不计实施完成。
 
-**当前状态：** 98任务全部planned；32运行/发行gate全部not_run；candidate未分配，ready_to_publish=false，released_verified=false。设计/HTML/Schema通过不填运行时pass。
+**当前状态：** 2任务完成（R4.0.01/11）；其余96任务尚未完成；32最终运行/发行gate全部not_run；candidate未分配，ready_to_publish=false，released_verified=false。设计/HTML/Schema通过不填运行时pass。
 
-**下一任务：** R4.0.01（建立基线、任务账本和恢复入口）。前置就绪后优先R4.0.02/03/04；共享续行R4.0.08、环境/签名预检R4.0.11可独立提前。先读完整计划第0节。按DAG推进，R4.5.07必须在R4.5.05候选冻结前完成，不机械按编号。
+**下一任务：** R4.0.08续行修复正在实施和验证；随后推进R4.0.02依赖/许可闭包与原生工程。基线和环境预检已完成。先读完整计划第0节。按DAG推进，R4.5.07必须在R4.5.05候选冻结前完成，不机械按编号。
 
 ## 已知外部前置
 
@@ -20,17 +20,17 @@
 
 | 任务 | 目标 | 状态 | 验证/证据 | 提交 |
 |---|---|---|---|---|
-| [ ] [R4.0.01](PRE_ALPHA_4.md#task-r4.0.01) | 建立基线、任务账本和恢复入口 | planned | — | — |
+| [x] [R4.0.01](PRE_ALPHA_4.md#task-r4.0.01) | 建立基线、任务账本和恢复入口 | completed | [基线](../acceptance/pre-alpha.4/baseline/index.json) | 下次补记 |
 | [ ] [R4.0.02](PRE_ALPHA_4.md#task-r4.0.02) | 依赖与许可闭包核对 | planned | — | — |
 | [ ] [R4.0.03](PRE_ALPHA_4.md#task-r4.0.03) | 原生Mac工程和数学链接骨架 | planned | — | — |
 | [ ] [R4.0.04](PRE_ALPHA_4.md#task-r4.0.04) | 冻结框架无关DTO与新MacABI契约 | planned | — | — |
 | [ ] [R4.0.05](PRE_ALPHA_4.md#task-r4.0.05) | 安全host-service所有者与调度骨架 | planned | — | — |
 | [ ] [R4.0.06](PRE_ALPHA_4.md#task-r4.0.06) | 新CABI句柄、缓冲与直接取消 | planned | — | — |
 | [ ] [R4.0.07](PRE_ALPHA_4.md#task-r4.0.07) | Swift客户端、事件泵和权威投影 | planned | — | — |
-| [ ] [R4.0.08](PRE_ALPHA_4.md#task-r4.0.08) | 共享Modern自动续行与根因诊断 | planned | — | — |
+| [ ] [R4.0.08](PRE_ALPHA_4.md#task-r4.0.08) | 共享Modern自动续行与根因诊断 | in_progress | — | — |
 | [ ] [R4.0.09](PRE_ALPHA_4.md#task-r4.0.09) | 原语言和数学基线持续兼容 | planned | — | — |
 | [ ] [R4.0.10](PRE_ALPHA_4.md#task-r4.0.10) | fixture与真实故障注入基础设施 | planned | — | — |
-| [ ] [R4.0.11](PRE_ALPHA_4.md#task-r4.0.11) | 发行前置、签名和现场环境预检 | planned | — | — |
+| [x] [R4.0.11](PRE_ALPHA_4.md#task-r4.0.11) | 发行前置、签名和现场环境预检 | completed | [环境](../acceptance/pre-alpha.4/baseline/environment.json) / verify-env.sh | 下次补记 |
 | [ ] [R4.1.01](PRE_ALPHA_4.md#task-r4.1.01) | SQLite单写者与新通道初始化 | planned | — | — |
 | [ ] [R4.1.02](PRE_ALPHA_4.md#task-r4.1.02) | 权威源码、事务和幂等表 | planned | — | — |
 | [ ] [R4.1.03](PRE_ALPHA_4.md#task-r4.1.03) | 不可变Blob和资源引用发布 | planned | — | — |
@@ -138,3 +138,10 @@ Done依据与覆盖case/proof:
 ## 本次计划整合记录
 
 已按旧PLAN的规格＋逐任务格式合并13篇专题、共享续行、版本/门禁及完整发行步骤；没有执行R4任务。结构检查见[planning-review.json](../acceptance/pre-alpha.4/planning-review.json)。
+
+## R4开发记录 D001 — 基线与发行前置
+
+- R4.0.01：公开`.3`与本地tag同为0889d34e4fce9926054025ca71ea328f6cc65b39；原53语料逐字节与公开tag一致，保存逐条散列、三个受保护tag、九公开附件/digest与已有功能源索引。历史发行证据是发布后文档，不误称包含在原tag。当前安装仍为Tauri`.3`。
+- R4.0.11：实际macOS27.0/26A428、Xcode27.0/27A266a、ARM64、Rust1.94及四targets就绪；host Node25.9与拟随包Node26.11.1区分。`bash macos/Scripts/verify-env.sh`通过；`--require-distribution-signing`按预期拒绝，仅developer_id_application_missing。Developer ID身份0、Apple Development1，没有导出个人身份/凭据。
+- 签名CI秘密接口/临时Keychain/finally清理与新Registry现场测试范围见macos/native-package/signing.example.json；它不是已签名配置或真实live通过。最终R4G21/live仍not_run，缺材料不阻挡独立开发。
+- 证据：[baseline/index.json](../acceptance/pre-alpha.4/baseline/index.json)、[环境摘要](../acceptance/pre-alpha.4/baseline/environment.json)；原命令输出在target/acceptance/pre-alpha.4/development/r40/。结构、版本、tag和任务状态核对，不改`.3`源码版本或资产。

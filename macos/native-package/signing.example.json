@@ -1,0 +1,40 @@
+{
+  "schema_version": 1,
+  "channel": "developer_preview",
+  "architecture": "arm64",
+  "minimum_os": "27.0",
+  "xcode_version": "27.0",
+  "public_signing_required": {
+    "identity_kind": "Developer ID Application",
+    "hardened_runtime": true,
+    "secure_timestamp": true,
+    "notary_status": "Accepted",
+    "staple_app_and_dmg": true,
+    "default_disable_library_validation": false,
+    "main_allow_jit": false,
+    "helper_allow_jit": "only_if_fixed_runtime_requires_it"
+  },
+  "ci_secret_names": [
+    "MACOS_SIGNING_CERTIFICATE_P12_B64",
+    "MACOS_SIGNING_CERTIFICATE_PASSWORD",
+    "MACOS_SIGNING_IDENTITY",
+    "MACOS_NOTARY_API_KEY_P8",
+    "MACOS_NOTARY_API_KEY_ID",
+    "MACOS_NOTARY_API_ISSUER_ID"
+  ],
+  "ci_keychain_policy": {
+    "temporary_keychain_per_job": true,
+    "restore_default_keychain_in_finally": true,
+    "remove_temporary_keychain_and_api_key_in_finally": true,
+    "do_not_print_identity_or_secret_values": true
+  },
+  "live_model_policy": {
+    "registry": "new_native_mac_registry",
+    "import_legacy_credentials": false,
+    "use_only_authorized_test_content": true,
+    "automatic_paid_retry": false,
+    "required_new_sessions_per_scenario": 3,
+    "scenarios": ["dependency_3_to_6", "earth_moon_l2", "grass_block_and_cut_watermelon", "self_owned_visual_input"]
+  },
+  "status": "configuration_example_only"
+}

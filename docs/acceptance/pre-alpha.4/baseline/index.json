@@ -1,0 +1,411 @@
+{
+  "kind": "development_baseline",
+  "release_gate_evidence": false,
+  "source_sha": "a9e39fc53edc302afb26582efc443af853c8bc4f",
+  "baseline_sha": "0889d34e4fce9926054025ca71ea328f6cc65b39",
+  "branch": "dev",
+  "runtime_version": "0.1.0-pre-alpha.3",
+  "target_version": "0.1.0-pre-alpha.4",
+  "scope_version": 1,
+  "original_corpus": {
+    "path": "tests/corpus/solve.toml",
+    "sha256": "2dd0163d35d19c9fe482306e50a381b515a75b47a07e6e07e055095b5adc4fb8",
+    "case_count": 53,
+    "identical_to_public_tag": true,
+    "cases": [
+      {
+        "id": "1",
+        "check": "=",
+        "entry_sha256": "552d44387180f62e7d625ec6e2620503ac8fedcab47ecd8b68e12535602a30b2"
+      },
+      {
+        "id": "2",
+        "check": "=",
+        "entry_sha256": "3318302d393a892cdf00715146ac648df80266271922bf683e4c2c5468e77a06"
+      },
+      {
+        "id": "3",
+        "check": "=",
+        "entry_sha256": "e6457d7783ac6c42e1bccc110e89f893f1bbc61c6a427a06beb362f790551a04"
+      },
+      {
+        "id": "4",
+        "check": "=",
+        "entry_sha256": "c219ed44b29aef76d4722ba6f8696dfc5057c479339cb12792858d2bd34d5e6b"
+      },
+      {
+        "id": "5",
+        "check": "=",
+        "entry_sha256": "648ca1288344e142e3232c3a34ed3728ff41eae90e466c327b12438d669c4ec5"
+      },
+      {
+        "id": "6",
+        "check": "=",
+        "entry_sha256": "76932b0d0c266ee58de2b0bea3962ff4f5bb5ca6c2e01596ad9ea27853b7c728"
+      },
+      {
+        "id": "7",
+        "check": "=",
+        "entry_sha256": "aaad5711e54fc7cee48bb348874230d5b1b2890ad7da55d7c783d683a201eaf9"
+      },
+      {
+        "id": "8",
+        "check": "~",
+        "entry_sha256": "4236de75f4f11b8f6b31e84261e47396d76fc93de383b896225227ad9603d007"
+      },
+      {
+        "id": "9",
+        "check": "=",
+        "entry_sha256": "05c0bc74c1315f52c485b5f32cc1b46ee1ff5dc6d9ff2badc3bae9da9434d02c"
+      },
+      {
+        "id": "10",
+        "check": "=",
+        "entry_sha256": "ad02e7848bef2c6d37a7b9edc8dd6d6d0d53e997b85d0359b49164f107b4acf4"
+      },
+      {
+        "id": "11",
+        "check": "~",
+        "entry_sha256": "cd1a6e45489ebdb24c120b2316ecc3dfc58bfc981fa8e9bc0e5f49cf95459ef1"
+      },
+      {
+        "id": "12",
+        "check": "~",
+        "entry_sha256": "e9f44be34f07e594ba290fc909917e962d0e5d398a454fe856a30adc50b1eeff"
+      },
+      {
+        "id": "13",
+        "check": "~",
+        "entry_sha256": "a290b4c7581473d9e8896653b4a09418629cc36c51bcfa071701997c4dec414b"
+      },
+      {
+        "id": "14",
+        "check": "~",
+        "entry_sha256": "45409558a09701e3c88b3bff774606bc7806cbffb37674d5f7d25885b17014fd"
+      },
+      {
+        "id": "15",
+        "check": "=",
+        "entry_sha256": "d49b1de9972d31ece6fa4502a0ea6b49620aae6e00c0d32a189df596b7ab88cf"
+      },
+      {
+        "id": "16",
+        "check": "~",
+        "entry_sha256": "15360db5818b6b213d17a44720bfa783c437244e21e9229047dc286bf991a057"
+      },
+      {
+        "id": "17",
+        "check": "~",
+        "entry_sha256": "b2ddb2ddee7629a70db15698782ab5ef301a533716138a748fc0b65c55ee6216"
+      },
+      {
+        "id": "18",
+        "check": "~",
+        "entry_sha256": "d0d40d073aaf0c44cd38423261cf190b42cb07d09d6dde18f0af115210897510"
+      },
+      {
+        "id": "19",
+        "check": "=",
+        "entry_sha256": "bfd457dc73c21aa4a4226051fe822deba488a0a338d56f7527f6befc6de823f3"
+      },
+      {
+        "id": "20",
+        "check": "=",
+        "entry_sha256": "bfda0e0109d1ab965bcbd3e3282366c86f3de15553ce15b385dec2267ee07c7e"
+      },
+      {
+        "id": "21",
+        "check": "~",
+        "entry_sha256": "040e0eebf61c259145936225deddcd45ac0a3010952c214d7fb0bd2a6d130016"
+      },
+      {
+        "id": "22",
+        "check": "=",
+        "entry_sha256": "6d9c4bf8acf7640bc00c97ec3b011478152f310f1f641d4a6bc499548c030680"
+      },
+      {
+        "id": "23",
+        "check": "=",
+        "entry_sha256": "5316ed7ef8ff45abc66b4f92435a918f6dccd6a17dde06c2091a23c50cb805f9"
+      },
+      {
+        "id": "24",
+        "check": "=",
+        "entry_sha256": "c7e36d9bbe23d5f3809a1b58e193806b9d57b371fc923424d7fc1bedeefbb0c8"
+      },
+      {
+        "id": "25",
+        "check": "=",
+        "entry_sha256": "c1ce064224b081204479a9f9fae229f60d7919eb085b966b4ea89f2dd492e793"
+      },
+      {
+        "id": "26",
+        "check": "~",
+        "entry_sha256": "bb42eb5a3f6133e2bb62c4c72afad20a591ea235d89e1b38db598b32cea35633"
+      },
+      {
+        "id": "27",
+        "check": "=",
+        "entry_sha256": "8342132fcf417b9a998a2266e2a1701fe8f4552734b5730f8888e1bac8953dad"
+      },
+      {
+        "id": "28",
+        "check": "=",
+        "entry_sha256": "9889aea1c5250bc912181088da0f1afaa2749f093ca7e6dcbc0ebe5fb170c5bb"
+      },
+      {
+        "id": "29",
+        "check": "=",
+        "entry_sha256": "5f0dfb6bcf4aeb5d3b475f12f7e8792f8e2fd7f926cc0cd9862538a727a04f99"
+      },
+      {
+        "id": "30",
+        "check": "~",
+        "entry_sha256": "62950a8786aee78f1d02983a8443a2b01d13b6a3519f7586b9af5b0694ad0537"
+      },
+      {
+        "id": "31",
+        "check": "=",
+        "entry_sha256": "7433ea67c58577dfeb22db680484c9c9f6a7fe5c7c30e2e549151cde1e2901fd"
+      },
+      {
+        "id": "32",
+        "check": "=",
+        "entry_sha256": "267a0d0676286e7988ad38027d541cf991dadf41d78a9191ab5dee9da7de913c"
+      },
+      {
+        "id": "33",
+        "check": "=",
+        "entry_sha256": "1e10684c4aa0a37111808c26a775ef82260141170fd524709769368ccc8bdb6a"
+      },
+      {
+        "id": "34",
+        "check": "~",
+        "entry_sha256": "cd60e1e1a54fa9d6906032006b2d9fdf30d5b82420a0739c3c8616ce9bb41fc0"
+      },
+      {
+        "id": "35",
+        "check": "=",
+        "entry_sha256": "0422b71a6a04fcd80a521b161d9d67809e5df2a5f13f05fdee96d595eb8cd1c8"
+      },
+      {
+        "id": "36",
+        "check": "=",
+        "entry_sha256": "c5a84dd1a7ad4d385d7b590cdd3ee26aa2ca8de5a3dcb3e5adfd2116b3b0820f"
+      },
+      {
+        "id": "37",
+        "check": "~",
+        "entry_sha256": "e0b9f36507a8f5708cedfcee06f300fc23c33c6181b6cc314082591067d6db01"
+      },
+      {
+        "id": "38a",
+        "check": "=",
+        "entry_sha256": "5466defc99e20efda68e636218c71338bc7f127d59b27f8d7552e35849369d64"
+      },
+      {
+        "id": "38b",
+        "check": "=",
+        "entry_sha256": "d6c532400f13ac0e9ee2a0182e53a02f3f69b435d5ecef86723b1c2a7eebb87f"
+      },
+      {
+        "id": "38c",
+        "check": "=",
+        "entry_sha256": "92430672adc66a71a4fc3fbe6ac4add2c70cb9dc8ca561c47eb182266ee2b3b9"
+      },
+      {
+        "id": "38d",
+        "check": "=",
+        "entry_sha256": "5558a842164fb3886fa94b2c67da32d9ef7b69e2e6f0637df72fe3ebeaa5a748"
+      },
+      {
+        "id": "39",
+        "check": "=",
+        "entry_sha256": "d433bb8a79ec39b648c4d41833e1747bd2d8c0bb4ae325fc1ebac8e590297a21"
+      },
+      {
+        "id": "40",
+        "check": "~",
+        "entry_sha256": "51f74bce682f7c97401315093f75ff2028809ae6e48a45aed01abad925d29bae"
+      },
+      {
+        "id": "41",
+        "check": "~",
+        "entry_sha256": "5ce3b64adec11333a69af65bb49129b92c59cb36188f6498362e7d497c9fa4a0"
+      },
+      {
+        "id": "42",
+        "check": "=",
+        "entry_sha256": "5677686cf22329f9818a8d596bd315e2d20da7e70aba06833ebbe086dbafd947"
+      },
+      {
+        "id": "43",
+        "check": "=",
+        "entry_sha256": "2518060bbdcd54bc9b10ae74c599dcf250a4d409421a223a77a5e48a5266c8f0"
+      },
+      {
+        "id": "44",
+        "check": "=",
+        "entry_sha256": "63f7c254b98725de822531e017ad80a9801150522bbd3ab3f3b420387981cc22"
+      },
+      {
+        "id": "45",
+        "check": "~",
+        "entry_sha256": "5b05e7f6f1c160216c10c625018c2d2643b654c108fa5b2ecef5651d8b2c38b2"
+      },
+      {
+        "id": "46",
+        "check": "=",
+        "entry_sha256": "49944048d44c2206329ea9f5041715cabf89d933958a0b4634e48bb94f6f1c17"
+      },
+      {
+        "id": "47",
+        "check": "=",
+        "entry_sha256": "a2b2c80e16d69f751dca7d1ba8e188e357002211f8948c7d741b5859731da354"
+      },
+      {
+        "id": "48",
+        "check": "=",
+        "entry_sha256": "94544b2b9b6e10b3d791dd9a9cf5aa5d46c41e9cdc033a07970193a840bae35d"
+      },
+      {
+        "id": "49",
+        "check": "=",
+        "entry_sha256": "c277514139760f30a011737a071a9d94126bc560e29e67c4d89d7d3409af37c4"
+      },
+      {
+        "id": "50",
+        "check": "=",
+        "entry_sha256": "6c094702b08410bcf821d49667e39aa7e233955bcdb3f87a1ffbf745de9a3297"
+      }
+    ]
+  },
+  "protected_tags": {
+    "v0.1.0-pre-alpha.1": "d674a19330a4ccc94870dac430c65d6a097b7618",
+    "v0.1.0-pre-alpha.2": "c930fcdf13ce1bc2b698c5cafb3d78fb5a415ce2",
+    "v0.1.0-pre-alpha.3": "0889d34e4fce9926054025ca71ea328f6cc65b39"
+  },
+  "public_baseline": {
+    "url": "https://github.com/He-RT/om-openmath/releases/tag/v0.1.0-pre-alpha.3",
+    "tag": "v0.1.0-pre-alpha.3",
+    "source_sha": "0889d34e4fce9926054025ca71ea328f6cc65b39",
+    "is_draft": false,
+    "is_prerelease": true,
+    "assets": [
+      {
+        "name": "om-cli_0.1.0-pre-alpha.3_macos_arm64.zip",
+        "bytes": 14475404,
+        "github_digest": "sha256:14874d426114917ae5439710c6d1ed9b99f04ca4ba1645ced7ebd5cad5ffa50c",
+        "url": "https://github.com/He-RT/om-openmath/releases/download/v0.1.0-pre-alpha.3/om-cli_0.1.0-pre-alpha.3_macos_arm64.zip"
+      },
+      {
+        "name": "om-cli_0.1.0-pre-alpha.3_windows_x64.zip",
+        "bytes": 15047865,
+        "github_digest": "sha256:12a12d5de49d741abf1dd33c3ab1fb88ee5f7909f7577c1bd5a928611828c32f",
+        "url": "https://github.com/He-RT/om-openmath/releases/download/v0.1.0-pre-alpha.3/om-cli_0.1.0-pre-alpha.3_windows_x64.zip"
+      },
+      {
+        "name": "OpenMath-web_0.1.0-pre-alpha.3.zip",
+        "bytes": 11613256,
+        "github_digest": "sha256:dd86dcbc1b01f104569346b80172d7db44ea0be9867ffc718b78727934cf9068",
+        "url": "https://github.com/He-RT/om-openmath/releases/download/v0.1.0-pre-alpha.3/OpenMath-web_0.1.0-pre-alpha.3.zip"
+      },
+      {
+        "name": "OpenMathKernel_0.1.0-pre-alpha.3.xcframework.zip",
+        "bytes": 81333211,
+        "github_digest": "sha256:3ba481461bd822bfe98c81d9101c2baca3a9c7d70057e86b8b5b52a464326afa",
+        "url": "https://github.com/He-RT/om-openmath/releases/download/v0.1.0-pre-alpha.3/OpenMathKernel_0.1.0-pre-alpha.3.xcframework.zip"
+      },
+      {
+        "name": "OpenMath_0.1.0-pre-alpha.3_aarch64.dmg",
+        "bytes": 23521334,
+        "github_digest": "sha256:5005cb4c12dd0699e7849f7648d4ae2e854f55efe83ffeeba25526a1c4cfc01d",
+        "url": "https://github.com/He-RT/om-openmath/releases/download/v0.1.0-pre-alpha.3/OpenMath_0.1.0-pre-alpha.3_aarch64.dmg"
+      },
+      {
+        "name": "OpenMath_0.1.0-pre-alpha.3_ios_simulator_arm64.app.zip",
+        "bytes": 22057201,
+        "github_digest": "sha256:1e32315529fb5c4e0039cc3e41410f068020709be340cd4b6a2d3c9ae14c0a2e",
+        "url": "https://github.com/He-RT/om-openmath/releases/download/v0.1.0-pre-alpha.3/OpenMath_0.1.0-pre-alpha.3_ios_simulator_arm64.app.zip"
+      },
+      {
+        "name": "OpenMath_0.1.0-pre-alpha.3_macos_arm64.app.zip",
+        "bytes": 25646275,
+        "github_digest": "sha256:9044efaa0db29b76cea2abf9f97627875c21a95d6c26eabe5f17d844c5fad586",
+        "url": "https://github.com/He-RT/om-openmath/releases/download/v0.1.0-pre-alpha.3/OpenMath_0.1.0-pre-alpha.3_macos_arm64.app.zip"
+      },
+      {
+        "name": "OpenMath_0.1.0-pre-alpha.3_x64-setup.exe",
+        "bytes": 21697228,
+        "github_digest": "sha256:b6ae73256ba9ba22edf27ca9a1a18e4e622d75dddf3c099f6bdf5845c9b6548d",
+        "url": "https://github.com/He-RT/om-openmath/releases/download/v0.1.0-pre-alpha.3/OpenMath_0.1.0-pre-alpha.3_x64-setup.exe"
+      },
+      {
+        "name": "OpenMath_0.1.0-pre-alpha.3_x64_zh-CN.msi",
+        "bytes": 26794759,
+        "github_digest": "sha256:1212792525ecef44b1f335859b950e6645cdb7bd1a69883d741e5c2ec83f20bc",
+        "url": "https://github.com/He-RT/om-openmath/releases/download/v0.1.0-pre-alpha.3/OpenMath_0.1.0-pre-alpha.3_x64_zh-CN.msi"
+      },
+      {
+        "name": "release-manifest.json",
+        "bytes": 1775,
+        "github_digest": "sha256:32b21052e7ec7ff26875bbb4841195fee28a1eb9a84a26d98dee85cb6a106f4b",
+        "url": "https://github.com/He-RT/om-openmath/releases/download/v0.1.0-pre-alpha.3/release-manifest.json"
+      }
+    ]
+  },
+  "feature_sources": [
+    {
+      "path": "docs/reference/functions.toml",
+      "sha256": "971ecc2a7da25a213a09908403d3537af7e9de104b8c47dc61062a5bb257f002",
+      "same_as_public_tag": false,
+      "provenance": "release_source"
+    },
+    {
+      "path": "crates/om-core/src/catalog.rs",
+      "sha256": "b49afa0afd410a157f2ff7859329e712c4b9ad8eb21ebbf1e5a2e048b1eb9733",
+      "same_as_public_tag": true,
+      "provenance": "release_source"
+    },
+    {
+      "path": "crates/om-kernel/src/wire.rs",
+      "sha256": "1f9bf8a3687177cb311ea68d097d4ee6ac9a9cdd6e1a14d573e03c360d8ea21f",
+      "same_as_public_tag": true,
+      "provenance": "release_source"
+    },
+    {
+      "path": "crates/om-kernel/src/notebook.rs",
+      "sha256": "ecc87f446ba1756032cd71e6a3d985fe9948835d5c7a7208c743b38953361d85",
+      "same_as_public_tag": true,
+      "provenance": "release_source"
+    },
+    {
+      "path": "docs/examples/earth-moon-l2.om",
+      "sha256": "d19537bd5ee97a49b33c10b993d4af70d5c838d5233b5dbceeba7b8fea175e85",
+      "same_as_public_tag": true,
+      "provenance": "release_source"
+    },
+    {
+      "path": "docs/examples/watermelon.om",
+      "sha256": "fc77864c5e83a4c0cf3ab28cb8e525bc0f8edc3327a3c55c4b93e70fe544923c",
+      "same_as_public_tag": true,
+      "provenance": "release_source"
+    },
+    {
+      "path": "docs/ios-evidence/pre-alpha.3/release-manifest.json",
+      "sha256": "32b21052e7ec7ff26875bbb4841195fee28a1eb9a84a26d98dee85cb6a106f4b",
+      "same_as_public_tag": null,
+      "provenance": "post_release_evidence"
+    },
+    {
+      "path": "docs/acceptance/r3-release/README.md",
+      "sha256": "c17af347eeb8510903e104ac1af7eeda2d6a4991eef4c4ebe21f3c1fa69c9aec",
+      "same_as_public_tag": null,
+      "provenance": "post_release_evidence"
+    }
+  ],
+  "candidate_sha": null,
+  "runtime_gate_checks_executed": 0,
+  "ready_to_publish": false,
+  "released_verified": false
+}

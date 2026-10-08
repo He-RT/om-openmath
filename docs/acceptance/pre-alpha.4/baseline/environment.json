@@ -1,0 +1,32 @@
+{
+  "kind": "development_preflight",
+  "release_gate_evidence": false,
+  "source_sha": "a9e39fc53edc302afb26582efc443af853c8bc4f",
+  "architecture": "arm64",
+  "os_version": "27.0",
+  "os_build": "26A428",
+  "xcode": "Xcode 27.0\nBuild version 27A266a",
+  "selected_developer_directory": "/Applications/Xcode.app/Contents/Developer",
+  "macos_sdk": "27.0",
+  "rust": "rustc 1.94.0 (4a4ef493e 2026-03-02)",
+  "installed_rust_targets": [
+    "aarch64-apple-darwin",
+    "aarch64-apple-ios",
+    "aarch64-apple-ios-sim",
+    "wasm32-unknown-unknown"
+  ],
+  "host_node": "v25.9.0",
+  "host_npm": "11.12.1",
+  "host_node_is_distribution_runtime": false,
+  "planned_distribution_node": "26.11.1",
+  "local_ios_simulators_started": false,
+  "installed_public_app": {
+    "CFBundleIdentifier": "org.openmath.OpenMath",
+    "CFBundleShortVersionString": "0.1.0-pre-alpha.3",
+    "CFBundleExecutable": "om-desktop"
+  },
+  "codesigning_identity_counts": {
+    "developer_id_application": 0,
+    "apple_development": 1
+  }
+}

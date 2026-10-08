@@ -6,6 +6,8 @@
 
 ## 下一版目标：0.1.0-pre-alpha.4（设计，尚未实现）
 
+2026-10-09，全部既定设计已按旧 [PLAN.md](PLAN.md) 的规格＋实施格式合并为 [`.4` 完整实施计划](PRE_ALPHA_4.md)：13 篇专题正文、R4.0–R4.7 共 98 个任务，每项包含 Files / Interfaces / Depends / Steps / Tests / Done / Gates，终点为原生 Mac 签名公证安装包公开发布并完成下载回读。[独立进度账本](PRE_ALPHA_4_PROGRESS.md)用于接续执行，当前全部任务仍为 planned；以下专题条目保留作设计来源，不是另一套实施顺序。
+
 2026-10-09，用户要求设计“版本与验收门禁”，目标版号及完整范围已收敛为[`.4`统一规格](PRE_ALPHA_4.md)。[32个机器门禁](../acceptance/pre-alpha.4/gates.toml)覆盖133个稳定验收条目，31项公开前必过、1项公开后下载回读；[报告Schema](../acceptance/pre-alpha.4/report.schema.json)与[证据入口](../acceptance/pre-alpha.4/README.md)区分设计/真实代码/native/最终包。当前全部运行gate为not_run，未分配public candidate SHA，不能因Schema/HTML绿色宣称可发布。
 
 本版按原生Mac UI/UX与`.3`功能对齐、Pi Notebook Agent/12工具、宿主/事务/恢复、模型默认/单模型覆盖与媒体、上下文提示词、安装签名/手工更新、共享续行同版实施。运行版本暂保持`.3`，R4.5冻结时再统一Cargo/npm/平台/资产版本；保留公开`.1/.2/.3`、dev、不合main、不启动本机iOS模拟器。旧版数据迁移已排除，未来新数据升级/普通`.omnb`兼容保留。

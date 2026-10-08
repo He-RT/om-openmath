@@ -1,5 +1,7 @@
 # 项目接续提示词
 
+最新接续入口（2026-10-09）：`.3` 已公开发行，下一版 `0.1.0-pre-alpha.4` 的全部设计已合并到 `docs/plan/PRE_ALPHA_4.md`（98项实施任务）与 `docs/plan/PRE_ALPHA_4_PROGRESS.md`。若接续 `.4` 实施，先读新计划第0节、任务进度、32项机器门禁和实际 Git 状态，再从最早前置满足的任务执行；本次只完成计划整合，全部运行时任务/gate仍 planned/not_run。下文 `.3` 阶段的“不安装Pi/Agent仍预留”等记录是历史边界，不覆盖新计划已经选定的Pi/Node、原生宿主与事务范围；保持dev、不合main、不改旧tag、不启动本机iOS模拟器、直接实施不使用子代理。
+
 请接续当前 OpenMath 项目，不要从零重建或重新制定计划。
 
 先阅读 `docs/plan/PLAN.md`、`docs/plan/PROGRESS.md`、`docs/plan/DEVIATIONS.md` 和 `docs/plan/QUESTIONS.md`，再检查现有代码、测试以及 `git status`、`git diff`、`git log`，据此确认实际进度。若存在 `.superpowers/sdd/PLAN/`，也参考其中的执行账本和当前任务简报；这些本地记录不是必需依赖。

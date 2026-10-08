@@ -1,5 +1,7 @@
 # OpenMath（om）实施计划 —— 以 Solve 为核心的开源 Rust 计算机代数系统
 
+**2026-10-09 接续入口：** 本文保留初版与既有数学规格。下一版原生 Mac / Notebook Agent / 模型媒体 / 存储恢复 / 签名公证与公开发行，统一执行 [pre-alpha.4 完整计划](PRE_ALPHA_4.md) 和 [任务进度](PRE_ALPHA_4_PROGRESS.md)。本版的工作方式、unsafe 边界、网络验收与 Git 规则以新计划第0节为准；不照搬下文的子代理或自动合并 main 指令。
+
 > **给执行代理（agentic workers）：** 必须使用 superpowers:subagent-driven-development（推荐）或 superpowers:executing-plans 逐任务执行本计划。步骤使用复选框（`- [ ]`）跟踪。**先完整读完第 0 节，再开始任何任务。**
 
 **Goal（目标）：** 用 Rust 写一个开源的、兼容 Mathematica `Solve` 语义的符号方程求解系统，提供比 Mathematica 更现代的笔记本界面（桌面 Tauri + 浏览器 WASM + 终端 REPL），内置可自定义接入的 LLM 接口，用于自然语言转公式、解题步骤讲解和智能补全。

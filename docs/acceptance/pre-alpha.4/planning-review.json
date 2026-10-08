@@ -1,0 +1,71 @@
+{
+  "task_count": 98,
+  "phase_task_counts": {
+    "0": 11,
+    "1": 13,
+    "2": 18,
+    "3": 12,
+    "4": 20,
+    "5": 7,
+    "6": 12,
+    "7": 5
+  },
+  "gate_count": 32,
+  "unique_case_count": 133,
+  "pre_publish_gate_count": 31,
+  "post_publish_gate_count": 1,
+  "source_design_count": 13,
+  "asset_count": 9,
+  "task_dependency_dag_valid": true,
+  "gate_dependency_dag_valid": true,
+  "all_tasks_and_gates_mapped": true,
+  "schema_version": 1,
+  "check_kind": "design_plan_structure",
+  "status": "passed",
+  "markdown_local_links_checked": 886,
+  "optional_local_reference_links": 36,
+  "runtime_gate_checks_executed": 0,
+  "ready_to_publish": false,
+  "released_verified": false,
+  "negative_cases_rejected": 7,
+  "initial_baseline_checked": true,
+  "inputs": [
+    {
+      "path": "docs/plan/PRE_ALPHA_4.md",
+      "sha256": "7c4567d231f92c75ee6b4ade9032e565b649a658a6cdf4c57fb21bcc8be020bb"
+    },
+    {
+      "path": "docs/plan/PRE_ALPHA_4_PROGRESS.md",
+      "sha256": "7df7036b32b00a21cca790f8ba09cc113d811153cc60a14c2f388820ba8aa7c5"
+    },
+    {
+      "path": "docs/plan/NEXT_RELEASE.md",
+      "sha256": "965bdc6a7950d82ce7b0d36e2fb16e9343f38f891b49ae6a22005389f658d2db"
+    },
+    {
+      "path": "docs/plan/PLAN.md",
+      "sha256": "a7c41386d39d900d6bd650e7ed7a8ce1fa926850167fded5860807bdf5972ae1"
+    },
+    {
+      "path": "docs/README.md",
+      "sha256": "4332c2cb802e948373941cef5f56b62f9ab913c9368c6f463c43fccc1496671e"
+    },
+    {
+      "path": "CODEX_HANDOFF.md",
+      "sha256": "3c949842713a43478b0fe082ade973b72249039ba23686f45b57eb9d056cd942"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/README.md",
+      "sha256": "0b342462fe6b73de8df938b3f2735955bf5bb3b74a4a118d46d221bca07397be"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/gates.toml",
+      "sha256": "64f157615a3513f4d6cde95e1d7ae2483693746a1d3c199df5e23038588054b2"
+    },
+    {
+      "path": "scripts/check_pre_alpha_4_plan.py",
+      "sha256": "fcbe4b7b2a5d5504f047e3f657775b236835c1acd5942029d2b553f26637e520"
+    }
+  ],
+  "command": "python3 scripts/check_pre_alpha_4_plan.py --check --initial --self-test"
+}

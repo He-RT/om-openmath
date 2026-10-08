@@ -2,6 +2,8 @@
 
 [版本/范围规格](../../plan/PRE_ALPHA_4.md) · [32门禁/133验收条目](gates.toml) · [报告 Schema](report.schema.json) · [.3历史证据](../r3-release/README.md)
 
+完整实施入口已合并为 [PRE_ALPHA_4.md](../../plan/PRE_ALPHA_4.md)，包含全部专题行为规格及98项任务；[任务进度](../../plan/PRE_ALPHA_4_PROGRESS.md)只记执行结果。主计划第16.12节逐项列出全部 gate/case 的贡献任务；[计划整合检查](planning-review.json)只证明结构、依赖和覆盖，不改变运行时门禁。
+
 2026-10-09。本目录仅建立 **planned设计账本**。目标版本`0.1.0-pre-alpha.4`，公开candidate SHA尚未分配；当前程序和公开资产仍`.3`。32个运行/发行gate全部`not_run`，`ready_to_publish=false`、`released_verified=false`；本次结构/文档检查不能改变这两个状态。
 
 ## 如何使用账本

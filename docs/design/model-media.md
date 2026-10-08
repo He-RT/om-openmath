@@ -120,7 +120,7 @@ ProbeRequest 使用草稿模型/预设，不保存、不运行笔记本、不把
 
 Provider/Model/Preset 表单显式保存，普通 UI 偏好即时保存。保存携带 expected_config_revision 和 operation_id；校验引用/协议/参数/密钥 intent，在存储契约的 Keychain 候选写入 + Library 单库 ConfigRevision 事务中提交，回读才显示成功。失败保留旧配置和独立草稿；unknown_commit 禁止同对象二次写入，先查回执。Test 与 Save 两个按钮不相互代替。
 
-credential intent 明确为 keep/replace/clear/none；已保存项仅显示“已存于钥匙串”，不把 `***` 当新密钥。额外认证头同样成为秘密引用，只有非秘密头保存普通值；迁移旧 extra_headers 必须显式分类，不能保证任意名字的头天然无秘密。授权材料不进入 Pi、模型日志、ContextSnapshot 或导出。
+credential intent 明确为 keep/replace/clear/none；已保存项仅显示“已存于钥匙串”，不把 `***` 当新密钥。额外认证头同样成为秘密引用，只有非秘密头保存普通值；新配置由用户明确分类，不能保证任意名字的头天然无秘密。用户排除旧版导入，不读取旧extra_headers/Keychain。授权材料不进入 Pi、模型日志、ContextSnapshot 或导出。
 
 停用连接/模型阻止新请求，已冻结请求可完成，用户可另点停止；删除前展示模型/预设/功能/当前请求依赖，先重新分配或显式关闭映射，再一个配置事务删除。不能静默换供应商。活动请求凭据/版本 pin 到终止，最后再释放；历史请求保留非秘密 provenance。外部更新造成冲突保留草稿并显示差异/重新载入，不盲覆盖。
 
@@ -162,9 +162,9 @@ credential intent 明确为 keep/replace/clear/none；已保存项仅显示“�
 
 远程上传记录 provider/route/credential revision、content hash、用途/期限、处理阶段，重用前检查实际可用性；跨供应商重新上传，不能复用旧 file_id。显式删除会话/撤销附件后在接通删除 adapter 时清理自建 remote file；清理失败列待清理，不宣称服务端已删除。本地原副本仍独立，remote ID 不进入 `.omnb`。
 
-## 配置迁移与服务接口
+## 全新配置与服务接口
 
-旧每 profile 默认迁移为独立 ProviderConnection + EndpointRoute + ModelEntry + 默认 Preset，保留 profile-name→preset-id 映射和旧功能关闭状态。**不按 base_url、品牌或相同掩码自动合并账户**。用户以后主动合并时检查端点/认证/特有参数/映射，查看差异后原子调整；保留旧配置和服务 `openmath` 的 Keychain 项直到新配置真实可用。
+2026-10-09用户明确无需旧版数据迁移，覆盖此前profile导入方案。新Mac第一次以空Provider/Model/Preset Registry和未配置/关闭的AI用途启动，不读取旧profile-name、TOML、环境密钥或service `openmath`。用户从模板/目录或手工重新添加；**不同账户不因base_url/品牌/掩码自动合并**。以后主动合并新连接仍检查端点/认证/参数/映射并原子调整，不删除旧应用数据。
 
 规划服务：ProviderRegistry（CRUD/credential intent）、ModelCatalogService（bounded discovery）、CapabilityResolver（证据与有效能力）、ProbeService、RequestCompiler/StreamDecoder、FeatureRouter、MediaPlanner/MediaPreparationService、RemoteArtifactRegistry。Swift/Rust/Pi 所有权沿用宿主契约，不能把全部状态塞进 View 或 Session 同步计算队列。
 
@@ -176,13 +176,13 @@ credential intent 明确为 keep/replace/clear/none；已保存项仅显示“�
 
 | 批次 | 交付 | 前置与门禁 |
 |---|---|---|
-| M0 | 稳定配置/迁移、供应商和模型原生页、参数描述 | S0/S1 存储、Keychain intent、CRUD 读回/冲突与原功能映射保留 |
+| M0 | 稳定全新配置、供应商和模型原生页、参数描述 | S0/S1 存储、新Keychain intent、CRUD读回/冲突与用途能力；不自动导入旧配置 |
 | M1 | 单轮文本/工具/流、目录发现/分项探测与 picker | N2 Pi 桥接、12 工具声明、协议 fixture 与真实 wire、超时/取消/旧回复隔离 |
 | M2 | 图片/PDF/本地提取及实际 native routes | S3 Blob/ContextSnapshot、Vision/PDFKit 真实格式、范围/成本/能力联合验证 |
 | M3 | 音视频、转写/上传 ready、完整处理页 | AVFoundation/Speech 实际可用性、multipart/文件 lifecycle、时点/页数/模型切换 |
 | M4 | 原生 UI/无障碍、打包与平台回归 | 非开发机依赖/权限、所有失败行为、原 53 数学与 `.omnb` 不变 |
 
-以下验收全部 **planned**：MM01 账户不误合并与旧路由/密钥迁移；MM02 目录分页/partial/漂移/退役不删配置；MM03 草稿测试不保存，假 HTTP 成功/工具参数坏/不匹配结果拒绝；MM04 保存失败/unknown/取消晚回复保留旧配置草稿；MM05 不支持参数省略、互斥/额外参数封闭与真实 effort；MM06 UTF-8/SSE/NDJSON、HTTP/超时/限流/重定向/认证脱敏；MM07 工具与媒体组合、跨模型专有部件/remote file 不误复用；MM08 全部接收入口/类型/大小/原件丢失/迟到转换；MM09 实际页/帧/音频范围、OCR 不伪造数学与未知时长；MM10 发送实际字节/顺序/ContextSnapshot/hash，秘密不进入 IPC/存储/导出；MM11 停用/删除引用、运行中切换下一轮与默认映射；MM12 本地/云处理实际接收方与取消、remote ready/清理失败；MM13 原生焦点/IME/键盘/窄窗/主题/VoiceOver/Reduce Motion；MM14 无开发环境的模型/媒体依赖、权限/解码失败与原回归。
+以下验收全部 **planned**：MM01 全新Registry/新Keychain创建、无旧目录/旧凭据读取、账户不误合并；MM02 目录分页/partial/漂移/退役不删配置；MM03 草稿测试不保存，假 HTTP 成功/工具参数坏/不匹配结果拒绝；MM04 保存失败/unknown/取消晚回复保留旧配置草稿；MM05 不支持参数省略、互斥/额外参数封闭与真实 effort；MM06 UTF-8/SSE/NDJSON、HTTP/超时/限流/重定向/认证脱敏；MM07 工具与媒体组合、跨模型专有部件/remote file 不误复用；MM08 全部接收入口/类型/大小/原件丢失/迟到转换；MM09 实际页/帧/音频范围、OCR 不伪造数学与未知时长；MM10 发送实际字节/顺序/ContextSnapshot/hash，秘密不进入 IPC/存储/导出；MM11 停用/删除引用、运行中切换下一轮与默认映射；MM12 本地/云处理实际接收方与取消、remote ready/清理失败；MM13 原生焦点/IME/键盘/窄窗/主题/VoiceOver/Reduce Motion；MM14 无开发环境的模型/媒体依赖、权限/解码失败与原回归。
 
 MM15：父默认修改只影响 inherit 项，单模型/多模态逐项 override 和 auto/unknown 互不混淆；全部恢复继承是待保存草稿；按协议的思考映射/预算/缺档/重复目标正确，effective_config_hash 与实际 wire 一致，父修订竞争不覆盖子草稿/运行中旧请求；配置声明不会生成虚假的 probe success。
 

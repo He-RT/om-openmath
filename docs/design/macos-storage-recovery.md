@@ -6,6 +6,8 @@
 
 2026-10-08。下一版 Mac 设计，**尚未实现**。本方案补齐 DocCommitPort 的真实事务边界：源码、撤销信息、操作回执和幂等记录在同一个 SQLite 数据库事务中提交。会话、上下文和附件独立于 `.omnb` v1；重新打开应用先恢复记录和核对事实，用户接续后才启动 Agent 或计算。
 
+2026-10-09用户排除旧版数据迁移：首个原生包创建全新通道存储，不导入旧Tauri配置/凭据/聊天/草稿；关于此前配置导入的要求以本次裁决为准。新原生以后格式升级/备份恢复仍保留，具体通道/安装/首次启动见[安装契约](macos-installation.md)。
+
 ## 调研依据与取舍
 
 | 参考与核对范围 | 实际机制 | OpenMath 的取舍 |
@@ -21,7 +23,7 @@
 ## 当前仓库基础
 
 - [Notebook::to_file/from_file](../../crates/om-kernel/src/notebook.rs) 与[桌面文件层](../../app/src/state/files.ts)保持 v1 源码文件，加载后没有运行输出；桌面源码保存目前不具备本方案的事务账本。
-- [原配置写入](../../crates/om-kernel/src/native/file.rs)已有相邻临时文件、sync_all 和替换；[凭据层](../../crates/om-kernel/src/native/credentials.rs)使用 service `openmath`/profile，并兼容环境变量和 TOML 明文。迁移不能假设全部旧密钥已经在 Keychain。
+- [原配置写入](../../crates/om-kernel/src/native/file.rs)已有相邻临时文件、sync_all 和替换；[凭据层](../../crates/om-kernel/src/native/credentials.rs)使用 service `openmath`/profile，并兼容环境变量和TOML明文。这是旧实现依据，新Mac不默认读取它们，也不把旧keyring路径接入新Registry。
 - [移动文档](../../ios/OpenMath/DocumentStore.swift)使用 UIDocument；新 Mac 使用 NSDocument/文件协调，不替换移动协议。
 - 当前没有文档级 durable revision、事务撤销、Agent 原始会话存储或可序列化的完整 kernel checkpoint。以下目录、表和服务均为计划接口。
 
@@ -216,9 +218,9 @@ get_operation_status 在恢复后可查询旧 operation 的确定事实，但新
 
 “删除对话”删除对话/快照/会话附件引用，保留文档源码、事务回执和用户显式长期规则；“清缓存”只删可重建派生物；“恢复提示词”只改下一轮配置；“撤销修改”是新文档事务。分别显示影响，不把这些动作合成一个重置按钮。首版没有跨设备自动同步；本地应用备份也不代替用户自选文档的外部备份。
 
-## 配置、凭据与迁移
+## 新配置、凭据与后续格式升级
 
-旧配置只读导入，分配稳定 provider/profile ID；旧 profile name 作为迁移映射保留，重命名不改变新 credential_ref。旧 Keychain service/profile 在用户已授权的本机迁移路径读取并写入新的版本化项，先验证可读，再提交不含密钥的新 ConfigRevision。失败保持旧配置可用；数据库失败留下的候选 Keychain 项列为可核对孤儿，不提前删旧项。TOML 明文密钥只在受控内存进入 Keychain，不进入日志/数据库/备份/上下文；导入报告可让用户明确选择清除旧明文，新 UI 不自行改写旧 `.3` 配置。环境变量只保存所选变量名。
+新Mac首代Provider/Model/Preset Registry为空，分配全新稳定ID，凭据写专用NativeMac/Preview Keychain service。首次启动不扫描旧配置/环境密钥、不读service `openmath`/旧profile、不转换TOML或创建迁移映射；也不删除旧数据。新配置的Test/Save和Keychain候选写入由用户普通设置入口管理，rename不改变credential_ref；供应商模板仅是非秘密建议。
 
 新密钥更新也采用“写候选 Keychain 项 → 核对 → 配置事务切换 credential_ref → 延迟释放无引用旧项”。Keychain 与 SQLite 无共同事务，不能承诺两者一起原子回滚。删 profile 的配置成功后再释放无引用密钥；后台/锁屏/权限拒绝时保持原引用和明确失败。
 
@@ -250,11 +252,11 @@ GC 在同一调度器获得所有库的稳定引用集合/运行 pin/备份 pin�
 
 | 批次 | 交付 | 必须证明的真实行为 |
 |---|---|---|
-| S0，N0 前置 | 版本化 StorageService、根锁、数据库/Blob、只读旧数据导入 | FULL/同步能力和库版本实际核对，未知格式不写，双实例排他，单 writer 与无 MainActor 阻塞 |
+| S0，N0 前置 | 版本化 StorageService、根锁、新数据库/Blob初始化 | FULL/同步能力和库版本实际核对，未知格式不写、无旧目录/凭据读取，双实例排他，单writer与无MainActor阻塞 |
 | S1，N0/N2 写入门禁 | 源码/撤销/幂等同库事务、草稿/file save intent、outbox | 每个提交阶段故障注入，没有半笔修改、重复插入或晚回执覆盖；保存 N 后 N+1 仍 dirty |
 | S2，N1/N2 接纳门禁 | 无损 checkpoint/result codec 与持久化接纳 | 定义/属性/Out/随机精确恢复；过期候选全部丢弃，损坏/升级不自动运行 |
 | S3，N2/N3 Agent | durable admission、会话事件、ContextSnapshot/Prompt/压缩/附件 | 调用未启动/效果未知/已提交失联分别恢复，凭据隔离与模型载荷真实一致 |
-| S4，N4 发行 | 迁移/备份、quota/GC、原生恢复入口与打包 | 无开发环境可恢复、原配置/用户文件可用、空间满和损坏保留数据，其他平台回归不变 |
+| S4，N4 发行 | 新原生后续格式升级/备份、quota/GC、原生恢复入口与打包 | 无开发环境可恢复、新配置与主动打开用户文件可用、空间满和损坏保留数据，不导入旧应用存储；其他平台回归不变 |
 
 运行时验收编号（全部 **planned**）：
 
@@ -267,9 +269,9 @@ GC 在同一调度器获得所有库的稳定引用集合/运行 pin/备份 pin�
 - SR07：planned/dispatch_started/流文字未落盘/工具 durable admission 无结果/partial，均不自动收费重发、工具重写或跑全部单元格。
 - SR08：Prompt 保存失败/恢复版本、压缩源漂移/配对错误/取消、跨模型继续，实际 ContextSnapshot 与 wire 相同且没有认证数据。
 - SR09：完整事件/Blob 校验坏、SQLite 权威损坏/JSONL 投影截尾、未来格式，分别隔离/重建/拒写，不静默跳过 committed 记录。
-- SR10：每个迁移/备份发布点中断，源代次不变；旧备份恢复 quarantine，不凭缺失旧回执重新写入。
+- SR10：每个新原生格式升级/备份发布点中断，源代次不变；旧备份恢复quarantine，不凭缺失旧回执重新写入；首个原生安装仅初始化，不执行旧版导入。
 - SR11：双实例、stale lock、WAL 长读、GC 与上传/接纳并发、跨库漏索引、低磁盘/OOM，活跃引用保留且 IO 不阻塞 UI。
-- SR12：凭据/TOML/Keychain 迁移半失败、锁屏拒绝、profile 重命名/删除、诊断/会话导出/备份核查，密钥始终不入新普通存储。
+- SR12：新Keychain候选/ConfigRevision半失败、锁屏拒绝、profile重命名/删除、诊断/会话导出/备份核查，密钥始终不入普通存储；旧TOML/service/env不会被自动读取或清理。
 
 这些不是已通过的测试。本轮只进行文档/Schema 结构与引用校验；新增存储、codec、崩溃注入和原生性能需按上述批次实现。原 53 数学期望、`.omnb` 往返、Windows/Web/CLI/iOS 门禁保留；本机不启动 iOS 模拟器。
 

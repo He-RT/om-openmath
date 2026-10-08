@@ -39,6 +39,8 @@ Windows 仅在 CI 设置 `WEBVIEW2_ADDITIONAL_BROWSER_ARGUMENTS=--remote-debuggi
 
 当前包未代码签名，macOS 未公证。说明保留架构、WebView2 联网要求和求解边界，后续签名使用 CI secret 管理证书。
 
+下一版原生Mac的自包含helper、通道、新数据初始化、inside-out签名/公证/staple顺序、首次启动与手工更新另见[安装发行设计](design/macos-installation.md)。它仍为planned门禁，没有改本文件记录的`.3`工作流/公开包；原生公开发行须同SHA证明新的实际app及完整资产，不能用旧Tauri成功替代。
+
 WebView2 150+ 对管理员进程忽略环境变量/HKCU 参数；GitHub Windows runner 以管理员运行，所以 CI 临时设置仅针对 om-desktop.exe 的 HKLM AdditionalBrowserArguments，并在 always 清理。依据[微软 WebView2 权限说明](https://learn.microsoft.com/en-us/microsoft-edge/webview2/concepts/security#for-an-elevated-host-app-use-appropriate-override-flags)。分发程序不包含这项策略。
 
 安装后程序逐字节核对各自构建输入，只允许 Tauri SDK 已记录的唯一 `__TAURI_BUNDLE_TYPE_VAR_UNK` 标记变为 NSIS 的 `NSS` 或 MSI 的 `MSI`，任何其他字节差异都拒绝。依据锁定 tauri-utils 2.10.0 的 platform.rs；两个实际安装文件已证明恰好只有这三字节变化。原始输入、安装后程序和散列报告保留为 Actions artifacts。

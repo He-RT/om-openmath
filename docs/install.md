@@ -64,3 +64,7 @@ shasum -a 256 OpenMath_0.1.0-pre-alpha.3_aarch64.dmg
 ## iPhone / iPad
 
 最低 iOS/iPadOS 27。提供 ARM64 模拟器应用和源码 Xcode 工程；真机通过本机自动签名安装，详见[原生移动端指南](ios.md)。公开 ZIP 不含个人签名材料。
+
+## 下一版原生 Mac 安装设计（尚未发行）
+
+[原生安装/启动契约](design/macos-installation.md)面向macOS27+/Apple Silicon，规划自带Rust/Pi/Node、独立Preview通道和签名/公证DMG。用户排除旧版数据迁移，首次全新配置；这不是当前`.3`安装包的支持或签名声明，当前下载与安装步骤仍以上文为准。

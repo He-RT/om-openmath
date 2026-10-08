@@ -1,0 +1,134 @@
+{
+  "date": "2026-10-09",
+  "status": "design_only",
+  "scope": "HTML安装/启动/更新交互与分发契约形状，非真实安装/原生签名或运行验收",
+  "browser": "Playwright Chromium headless",
+  "browser_checks": [
+    {
+      "name": "01 首次欢迎页没有账号/迁移门禁",
+      "status": "passed"
+    },
+    {
+      "name": "02 无AI直接进入本地笔记本",
+      "status": "passed"
+    },
+    {
+      "name": "03 配置助手采用空供应商列表",
+      "status": "passed"
+    },
+    {
+      "name": "04 打开文件入口不实际读文件/自动执行",
+      "status": "passed"
+    },
+    {
+      "name": "05 源码样例仅展示",
+      "status": "passed"
+    },
+    {
+      "name": "06 只读DMG场景不标就绪",
+      "status": "passed"
+    },
+    {
+      "name": "07 旧系统场景明确不兼容",
+      "status": "passed"
+    },
+    {
+      "name": "08 存储失败保留错误且不显示可写成功",
+      "status": "passed"
+    },
+    {
+      "name": "09 助手运行时失败仍可本地数学",
+      "status": "passed"
+    },
+    {
+      "name": "10 重新检查旧启动回调不覆盖新场景",
+      "status": "passed"
+    },
+    {
+      "name": "11 关于显示Preview/候选runtime与实际待定版本",
+      "status": "passed"
+    },
+    {
+      "name": "12 更新待结果与新版状态分开",
+      "status": "passed"
+    },
+    {
+      "name": "13 网络失败不是已是最新",
+      "status": "passed"
+    },
+    {
+      "name": "14 更新取消拒绝迟到成功",
+      "status": "passed"
+    },
+    {
+      "name": "15 不兼容构建不提供安装下载成功",
+      "status": "passed"
+    },
+    {
+      "name": "16 打开下载页不改变本机版本",
+      "status": "passed"
+    },
+    {
+      "name": "17 完成查询但换页面不抢焦点导航",
+      "status": "passed"
+    },
+    {
+      "name": "18 窄窗主题与系统减少动态效果",
+      "status": "passed"
+    }
+  ],
+  "page_script_errors": [],
+  "external_network_requests": [],
+  "http_failures": [],
+  "schema_checks": {
+    "scope": "planned design shape validation, not actual installation/signature/notary/runtime verification",
+    "positive_examples": 9,
+    "negative_examples": 26
+  },
+  "local_read_only_environment": {
+    "architecture": "arm64",
+    "macos": "27.0",
+    "xcode": "27.0",
+    "developer_id_application_identity_count": 0,
+    "apple_development_identity_count": 1,
+    "identity_names_or_private_material_exported": false
+  },
+  "runtime_candidate": {
+    "node": "26.11.1",
+    "pi_core": "1.0.4",
+    "downloaded_or_installed": false,
+    "upstream_node_archive_sha256": "0ef9b443000681bffc062ec126d53f97933ea9b086ea73dcba0480d87e639b39"
+  },
+  "viewports": {
+    "screenshots": [
+      1280,
+      850
+    ],
+    "responsive_widths": [
+      1000,
+      760,
+      640
+    ]
+  },
+  "legacy_data_policy": {
+    "migration_implemented": false,
+    "legacy_data_imported": false,
+    "legacy_data_deleted": false,
+    "new_native_future_format_upgrade_reserved": true
+  },
+  "not_executed": [
+    "新Mac工程构建/安装",
+    "生产Node/Pi闭包和IPC",
+    "Developer ID签名/公证/staple/Gatekeeper隔离下载",
+    "Keychain新service/无旧配置读取的真实运行",
+    "原生欢迎/About/更新网络服务",
+    "原数学/Metal/UI/最低系统及新同SHA发行门禁"
+  ],
+  "component_inventory": {
+    "status": "planned",
+    "apple_standard_families": 30,
+    "all_families": 40,
+    "apple_standard_percent": 75,
+    "platform_native_target_percent": 100
+  }
+}

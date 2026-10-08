@@ -57,3 +57,13 @@ python3 -m http.server 8766 --bind 127.0.0.1 --directory docs/design/prototypes
 2026-10-09，**26 项 Playwright/Chromium 浏览器检查通过**，无页面脚本异常、外部网络请求或资源404；1000/760/640px 无页面横向溢出，深浅/系统减少动态效果保持操作。UTF-8/UTF-16/字素检查为草案辅助算法，合成使用浏览器事件/演示状态，不是原生中文输入验收。新增 Schema 14 个正例/26 个反例通过；本地脚本与过程证据在 `target/editor-rendering-evidence/`。
 
 首轮发现两个实际草案问题：建议按钮焦点时 Escape 未关闭、三维参考图 hidden 被样式覆盖；修复后整套通过，早期失败记录保留。截图来自最终 HTML，公式是 HTML 示意，三维 `assets/editor-watermelon.png` 是本仓库已有 `.3` 验收图副本，明确标静态参考，不是新的 Metal 画面；原生 ER01–ER12 与性能仍 planned。本页与截图不计 Apple 原生组件实现比例。
+
+## 原生安装、首次启动与更新草案
+
+[安装契约](../macos-installation.md) · [分发 Schema](../macos-distribution.schema.json) · [交互草案](mac-installation.html) · [欢迎截图](mac-installation-welcome.png) · [关于截图](mac-installation-about.png) · [更新失败截图](mac-installation-update.png) · [实际评审记录](installation-review.json)
+
+本轮服务为 `http://127.0.0.1:8772/mac-installation.html`。界面演示可跳过AI的本地开始、空供应商列表、普通文件/示例入口、只读DMG/不兼容系统/存储失败/Pi失败、About版本/通道/候选运行时、手动检查更新/失败/取消/不兼容和下载页不改当前版本。没有旧版迁移向导；账户重新配置，普通`.omnb`v1读取仍是原生实施目标。
+
+2026-10-09，18项Playwright/Chromium交互通过，无页面脚本错误、外部网络或资源失败；1000/760/640px布局与深浅/系统减少动态效果保持操作。分发Schema9正例/26反例、已有5份Schema结构及40组件族计数核验通过。脚本/日志和暗色窄窗图在本仓库 `target/macos-installation-evidence/`。
+
+启动/签名/版本/更新状态全部是明确示例：本页不会运行包校验、Keychain、Pi/CAS、GitHub检查或安装/签名/公证，也没有下载候选Node/Pi。只读环境检查显示本机macOS27/Xcode27/arm64且Developer ID Application身份为0；证书姓名/私钥未导出。新原生IN01–IN12仍planned，不将HTML回调或截图冒充安装通过。

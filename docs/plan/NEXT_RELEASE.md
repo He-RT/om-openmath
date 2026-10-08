@@ -10,7 +10,7 @@
 
 2026-10-08，用户提出参考 telegram-ui-reference 完全重写 Mac UI，询问是否适合与 Agent 同版。已形成 [原生 Mac UI 与 Agent 整合方案](../design/macos-native-ui.md)：SwiftUI/AppKit 原生窗口/编辑/展示，共享 Rust 计算和 Pi 进程；按桥接/真实计算 → `.3` 功能对齐 → Agent 事务闭环 → 输入/媒体/上下文 → Mac 发行门禁分阶段交付。
 
-建议作为同一目标版本的主线，但属于完整 Mac 客户端换代；必须保留 `.3` 原功能与已确定的 Agent 范围并真实验收，不只做原生壳。当前仅记录方案建议，没有开始重写，没有锁定新版本号/最低 macOS 或同版发行范围。
+建议作为同一目标版本的主线，但属于完整 Mac 客户端换代；必须保留 `.3` 原功能与已确定的 Agent 范围并真实验收，不只做原生壳。当前未开始重写，新版本号/最终发行构建仍待锁定；2026-10-09安装设计已选首版macOS27+/Apple Silicon目标。
 
 用户补充要求 UX/动效一同重做并报告 Apple 原生组件率，随后允许直接阅读 Telegram GitHub。已形成 [完整 UX 与动效规格](../design/macos-ux.md)、[组件清单](../design/macos-ui-inventory.json)及[评审交互草案](../design/prototypes/mac-workspace-ux.html)。设计组件族计数为 30/40 Apple 标准（75%），9 原生自定义、1 第三方原生，平台原生技术目标 100%；不是当前应用的实现比例。实际框架/默认样式、录屏、减少动态效果与业务竞态需原生验收后复核。
 
@@ -22,7 +22,7 @@
 
 - 每文档 SQLite 事务一次提交源码、撤销、幂等回执与 outbox；Library 保存独立会话/提示词/实际 ContextSnapshot，JSONL 是派生投影，大媒体/结果/无损 checkpoint 为内容寻址 Blob。
 - 恢复先核对原 operation 与保存 intent；区分工具未开始、效果未知、修改已提交与文件未保存，不自动重写、付费重发或运行全部单元格。
-- 定义草稿/IME、文件绑定/外部冲突、Keychain 迁移、格式升级/代次发布、备份回退隔离、保留/容量/GC 和原生恢复入口；会话损坏不清空健康文档，`.omnb` v1 仍仅源码。
+- 定义草稿/IME、文件绑定/外部冲突、新Keychain配置、后续新原生格式升级/代次发布、备份回退隔离、保留/容量/GC和原生恢复入口；2026-10-09用户排除旧版数据迁移，首次全新初始化；会话损坏不清空健康文档，`.omnb`v1仍仅源码。
 - S0–S4 对应 N0–N4 的实际实施门禁，SR01–SR12 为 planned 崩溃/并发/迁移验收；本轮仅文档和结构校验，没有新数据库服务/codec、Pi 依赖或原生程序。写入开放前必须补齐这些真实测试。
 
 ### Mac 模型与媒体、供应商/模型 UI（设计，尚未实现）
@@ -38,6 +38,12 @@
 2026-10-09，用户指定继续设计“编辑器与渲染细节”。已形成[契约](../design/macos-editor-rendering.md)、[机器 Schema](../design/macos-editor-rendering.schema.json)和[交互草案](../design/prototypes/mac-editor-rendering.html)：NSTextView/TextKit 2、严格 UTF-8/UTF-16/字素范围、IME/undo/draft/fence、非求值 Preview/Complete/Hover、snippets/Greek/ghost、诊断/Fix与稳定长文布局；SwiftMath/Markdown的原式 fallback/基线/source map，真实结果/步骤/精度/结构化分页，Core Graphics/Metal 的采样/相机/GPU/截图生命周期。
 
 E0–E5 对应 N0/N1/N2/N4，ER01–ER12 全部 planned；共享自动续行修复是 E0 的 parser 前置，不用 Mac UI 改写原源码遮掩问题。复用既有40组件族，Apple标准设计比例仍30/40=75%，原生技术目标100%；没有创建新Mac handler/renderer或改已发布`.3`，本机不启动iOS模拟器。
+
+### Mac 安装与首次启动（设计，旧版迁移已排除）
+
+2026-10-09，用户明确之前未保存数据，无需旧版迁移。已形成[安装/发行契约](../design/macos-installation.md)、[分发Schema](../design/macos-distribution.schema.json)和[启动/更新草案](../design/prototypes/mac-installation.html)：macOS27+/Apple Silicon、Preview/public身份/数据隔离、空新Registry与Keychain、Rust/Pi/Node生产闭包随包交付、inside-out签名/Hardened Runtime/公证/DMGZIP、可跳过欢迎/About/手工更新/回退/脱敏诊断。
+
+本机只读复核为macOS27.0/Xcode27.0/arm64，Developer ID Application为0；候选Node26.11.1/Pi1.0.4仅记录版本/hash/许可，未安装。公开原生包的签名/公证材料和I0–I4/IN01–IN12真实门禁仍待实施，不能将开发预览当公开通过。同步移除此前Tauri profile/TOML/Keychain自动导入；`.omnb`v1普通打开与以后新原生格式安全升级保留，不自动清理旧数据。
 
 ### Mac Notebook Agent（Pi Agent Core，设计草案）
 

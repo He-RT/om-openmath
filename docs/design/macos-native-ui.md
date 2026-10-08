@@ -27,6 +27,8 @@ NSTextLayoutManager 属于 macOS 原生 TextKit 网络；MetalKit 提供 MTKView
 
 SwiftMath 固定版本 1.7.3 的包声明支持 macOS 12，具有可复用基础；实际 Mac 数学视图、字体资源、许可和语料需重新验收。[SwiftMath 包定义](https://github.com/mgriebling/SwiftMath/blob/1.7.3/Package.swift) 最低应用 macOS 版本单独确定，不由单个依赖的最低版本自动决定，也不沿用旧包系统版本声明。
 
+2026-10-09的[安装与发行设计](macos-installation.md)将首版目标定为Apple Silicon/macOS27.0+、Xcode27构建、自包含Rust/Pi/Node与新原生数据目录。用户明确不需要旧版数据迁移，首次启动不读取旧配置/凭据/会话；普通`.omnb`v1打开兼容保留。公开包目标Developer ID签名/公证，当前材料和真实包门禁仍待补齐。
+
 ## 可以复用与需要重做的部分
 
 可复用 Rust CAS、协议 DTO、原数学语料、结果/导出数据、函数能力目录，以及 Swift 客户端的请求/取消机制和部分不依赖平台的排版/Markdown逻辑。iOS SwiftUI 输出视图与控制器作为参考，逐项检查平台依赖后拆出共享部分。
@@ -59,7 +61,7 @@ N0/N1 的编辑器与全部内容展示细化见[原生编辑与渲染契约](ma
 | N1 | 编辑器、公式/Markdown、解与步骤、结构化结果、二维/三维 | 当前 `.3` Mac 主要功能逐项对齐，原数学期望不变，真实结果可操作 |
 | N2 | Pi 运行进程、冻结预览/事务、执行/试算/检查和撤销 | 完整编辑—计算—修正闭环，手工编辑竞争、IME、停止与重复调用正确 |
 | N3 | 原生助手输入、模型/媒体、上下文和提示词管理 | 既定媒体/模型能力准确，草稿/引用/实际发送快照及持久化回执正确 |
-| N4 | Mac 发行和跨端回归 | 无开发环境也能运行；旧文档、配置/凭据迁移、安装与附件门禁通过 |
+| N4 | Mac 发行和跨端回归 | 无开发环境自包含启动；全新配置/凭据、普通文档兼容、签名/公证、安装与附件门禁通过 |
 
 每阶段产生可运行开发构建，不能只做一层原生窗口就宣布替换 Mac 客户端。Agent 和 UI 可以在服务接口稳定后交错开发；功能对齐与事务门禁仍按依赖关系验收，避免一次大提交同时改变所有路径。
 
@@ -70,7 +72,7 @@ N0/N1 的编辑器与全部内容展示细化见[原生编辑与渲染契约](ma
 - 数学源码编辑、真实 Preview/Complete/Hover、ghost 补全、诊断修复、UTF-16/UTF-8 转换、中文/emoji 和原生撤销。
 - 解的条件/重数/精确/数值、Root、矩阵、步骤、表格分页、二维采样、完整西瓜三维场景与实际导出。
 - 窗口宽窄、分栏拖动、浅深主题、长公式、选区/滚动恢复、响应链、菜单、键盘和基础无障碍。
-- 模型配置及 Keychain 命名/权限、旧笔记本往返、打开/另存为/保存失败和未保存状态，避免数据迁移丢失。
+- 模型配置及新 Keychain service/命名/权限、普通 `.omnb`v1 往返、打开/另存为/保存失败和未保存状态；不实施旧版数据导入或自动清理。
 - Agent 与手工编辑共用版本、源码检查、事务和回执，用户编辑不被旧回复覆盖；原生媒体只声明实际接通能力。
 - 原 53 数学语料、Swift 原生及 Mac 界面/桥接测试、安装包版本/依赖/许可证检查。其他平台保留原 UI并继续必要回归；本机不启动 iOS 模拟器。
 
@@ -80,4 +82,4 @@ N0/N1 的编辑器与全部内容展示细化见[原生编辑与渲染契约](ma
 
 具体本地依据：[窗口尺寸与方向](/Users/hert/Documents/ChatGPT/ui-learning/09-adaptation-and-accessibility/screen-size-and-orientation.md) 的状态保留与可用空间算法、[导航栈](/Users/hert/Documents/ChatGPT/ui-learning/02-layout-and-navigation/tabs-and-navigation-stacks.md) 的稳定身份/焦点/滚动恢复，以及 [文本选择和编辑](/Users/hert/Documents/ChatGPT/ui-learning/05-input-and-actions/text-selection-and-editing.md) 的原生选区、单次编辑事务与 Unicode 边界。右栏继续沿用已读的输入框、进度、菜单和撤销契约。
 
-当前为可评审的整体方案与同版建议，Mac 原生重写未开始，最低系统版本和最终发行范围未锁定。
+当前为可评审的整体方案与同版建议，Mac 原生重写未开始。首版安装目标已选macOS27+/Apple Silicon；新版本号、具体发行构建/签名与门禁仍待实施锁定，现有公开`.3`保持不变。

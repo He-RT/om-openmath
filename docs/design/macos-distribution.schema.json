@@ -1,0 +1,1171 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:openmath:mac-distribution:planned:v1",
+  "title": "OpenMath native Mac installation and distribution design",
+  "description": "全部planned，无安装/签名/公证handler。例中pre-alpha.4是合成数据，不锁定新版本；shape校验不证明真实签名/发行/安装。",
+  "oneOf": [
+    {
+      "$ref": "#/$defs/ChannelIdentity"
+    },
+    {
+      "$ref": "#/$defs/RuntimeManifest"
+    },
+    {
+      "$ref": "#/$defs/SigningEvidence"
+    },
+    {
+      "$ref": "#/$defs/BootstrapStatus"
+    },
+    {
+      "$ref": "#/$defs/ReleaseDescriptor"
+    },
+    {
+      "$ref": "#/$defs/UpdateCheck"
+    },
+    {
+      "$ref": "#/$defs/InstallationReceipt"
+    }
+  ],
+  "$defs": {
+    "Identity": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 256,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "Sha256": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "GitSha": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{40}$"
+    },
+    "Serial": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "BuildNumber": {
+      "type": "string",
+      "pattern": "^[1-9][0-9]*$"
+    },
+    "ReleaseVersion": {
+      "type": "string",
+      "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+(?:-[A-Za-z0-9.-]+)?$"
+    },
+    "BaseVersion": {
+      "type": "string",
+      "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$"
+    },
+    "Channel": {
+      "type": "string",
+      "enum": [
+        "public",
+        "preview"
+      ]
+    },
+    "Architecture": {
+      "const": "arm64"
+    },
+    "MinimumMacOS": {
+      "const": "27.0"
+    },
+    "BundleRelativePath": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 1024,
+      "pattern": "^(?!/)(?!.*(?:^|/)\\.\\.(?:/|$))[A-Za-z0-9 _./-]+$"
+    },
+    "VersionInfo": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "release_version": {
+          "$ref": "#/$defs/ReleaseVersion"
+        },
+        "base_version": {
+          "$ref": "#/$defs/BaseVersion"
+        },
+        "build_number": {
+          "$ref": "#/$defs/BuildNumber"
+        },
+        "source_sha": {
+          "$ref": "#/$defs/GitSha"
+        },
+        "architecture": {
+          "$ref": "#/$defs/Architecture"
+        },
+        "minimum_macos": {
+          "$ref": "#/$defs/MinimumMacOS"
+        },
+        "native_implementation": {
+          "const": "swift_appkit"
+        }
+      },
+      "required": [
+        "release_version",
+        "base_version",
+        "build_number",
+        "source_sha",
+        "architecture",
+        "minimum_macos",
+        "native_implementation"
+      ]
+    },
+    "ChannelIdentity": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "record_type": {
+          "const": "channel_identity"
+        },
+        "channel": {
+          "$ref": "#/$defs/Channel"
+        },
+        "bundle_id": {
+          "type": "string",
+          "enum": [
+            "org.openmath.OpenMath",
+            "org.openmath.OpenMath.Preview"
+          ]
+        },
+        "app_name": {
+          "type": "string",
+          "enum": [
+            "OpenMath.app",
+            "OpenMath Preview.app"
+          ]
+        },
+        "data_subdirectory": {
+          "type": "string",
+          "enum": [
+            "OpenMath/NativeMac",
+            "OpenMath/NativeMacPreview"
+          ]
+        },
+        "keychain_service": {
+          "type": "string",
+          "enum": [
+            "org.openmath.native.release.provider",
+            "org.openmath.native.preview.provider"
+          ]
+        },
+        "legacy_data_import": {
+          "const": false
+        },
+        "claims_default_document_handler": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "record_type",
+        "channel",
+        "bundle_id",
+        "app_name",
+        "data_subdirectory",
+        "keychain_service",
+        "legacy_data_import",
+        "claims_default_document_handler"
+      ],
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "channel": {
+                "const": "public"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "bundle_id": {
+                "const": "org.openmath.OpenMath"
+              },
+              "app_name": {
+                "const": "OpenMath.app"
+              },
+              "data_subdirectory": {
+                "const": "OpenMath/NativeMac"
+              },
+              "keychain_service": {
+                "const": "org.openmath.native.release.provider"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "channel": {
+                "const": "preview"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "bundle_id": {
+                "const": "org.openmath.OpenMath.Preview"
+              },
+              "app_name": {
+                "const": "OpenMath Preview.app"
+              },
+              "data_subdirectory": {
+                "const": "OpenMath/NativeMacPreview"
+              },
+              "keychain_service": {
+                "const": "org.openmath.native.preview.provider"
+              },
+              "claims_default_document_handler": {
+                "const": false
+              }
+            }
+          }
+        }
+      ],
+      "x-implementation-status": "planned"
+    },
+    "RuntimeComponent": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "component_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "kind": {
+          "type": "string",
+          "enum": [
+            "node",
+            "pi_core",
+            "pi_ai",
+            "adapter",
+            "native_addon",
+            "font",
+            "locale",
+            "license"
+          ]
+        },
+        "version": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128
+        },
+        "bundle_relative_path": {
+          "$ref": "#/$defs/BundleRelativePath"
+        },
+        "component_hash": {
+          "$ref": "#/$defs/Sha256"
+        },
+        "upstream_archive_hash": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Sha256"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "license_identifiers": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "minItems": 1
+        },
+        "requires_system_installation": {
+          "const": false
+        }
+      },
+      "required": [
+        "component_id",
+        "kind",
+        "version",
+        "bundle_relative_path",
+        "component_hash",
+        "upstream_archive_hash",
+        "license_identifiers",
+        "requires_system_installation"
+      ]
+    },
+    "RuntimeManifest": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "record_type": {
+          "const": "runtime_manifest"
+        },
+        "manifest_version": {
+          "const": 1
+        },
+        "version": {
+          "$ref": "#/$defs/VersionInfo"
+        },
+        "channel": {
+          "$ref": "#/$defs/Channel"
+        },
+        "kernel_abi_version": {
+          "$ref": "#/$defs/Serial"
+        },
+        "agent_ipc_version": {
+          "$ref": "#/$defs/Serial"
+        },
+        "metadata_version": {
+          "$ref": "#/$defs/Serial"
+        },
+        "store_reader_version": {
+          "$ref": "#/$defs/Serial"
+        },
+        "components": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/RuntimeComponent"
+          },
+          "minItems": 1
+        },
+        "helper_entry_relative_path": {
+          "$ref": "#/$defs/BundleRelativePath"
+        },
+        "uses_system_node": {
+          "const": false
+        },
+        "downloads_runtime_on_launch": {
+          "const": false
+        },
+        "includes_outer_signature_hash": {
+          "const": false
+        }
+      },
+      "required": [
+        "record_type",
+        "manifest_version",
+        "version",
+        "channel",
+        "kernel_abi_version",
+        "agent_ipc_version",
+        "metadata_version",
+        "store_reader_version",
+        "components",
+        "helper_entry_relative_path",
+        "uses_system_node",
+        "downloads_runtime_on_launch",
+        "includes_outer_signature_hash"
+      ],
+      "description": "只包含内层签名已固定的组件，避免外层签名/manifest自引用。真实hash/闭包/Mach-O/许可/paths/代码身份由包工具核验。",
+      "x-implementation-status": "planned"
+    },
+    "SigningEvidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "record_type": {
+          "const": "signing_evidence"
+        },
+        "evidence_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "distribution_class": {
+          "type": "string",
+          "enum": [
+            "developer_preview",
+            "developer_id_notarized"
+          ]
+        },
+        "signing_kind": {
+          "type": "string",
+          "enum": [
+            "ad_hoc",
+            "apple_development",
+            "developer_id_application"
+          ]
+        },
+        "hardened_runtime": {
+          "type": "boolean"
+        },
+        "secure_timestamp": {
+          "type": "boolean"
+        },
+        "nested_signature_verified": {
+          "type": "boolean"
+        },
+        "notary_status": {
+          "type": "string",
+          "enum": [
+            "not_submitted",
+            "pending",
+            "accepted",
+            "rejected"
+          ]
+        },
+        "app_ticket_stapled": {
+          "type": "boolean"
+        },
+        "dmg_ticket_stapled": {
+          "type": "boolean"
+        },
+        "gatekeeper_assessment": {
+          "type": "string",
+          "enum": [
+            "not_tested",
+            "accepted",
+            "rejected"
+          ]
+        },
+        "main_get_task_allow": {
+          "type": "boolean"
+        },
+        "helper_jit": {
+          "type": "string",
+          "enum": [
+            "not_required",
+            "validated_allow_jit",
+            "unverified"
+          ]
+        }
+      },
+      "required": [
+        "record_type",
+        "evidence_id",
+        "distribution_class",
+        "signing_kind",
+        "hardened_runtime",
+        "secure_timestamp",
+        "nested_signature_verified",
+        "notary_status",
+        "app_ticket_stapled",
+        "dmg_ticket_stapled",
+        "gatekeeper_assessment",
+        "main_get_task_allow",
+        "helper_jit"
+      ],
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "distribution_class": {
+                "const": "developer_id_notarized"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "signing_kind": {
+                "const": "developer_id_application"
+              },
+              "hardened_runtime": {
+                "const": true
+              },
+              "secure_timestamp": {
+                "const": true
+              },
+              "nested_signature_verified": {
+                "const": true
+              },
+              "notary_status": {
+                "const": "accepted"
+              },
+              "app_ticket_stapled": {
+                "const": true
+              },
+              "dmg_ticket_stapled": {
+                "const": true
+              },
+              "gatekeeper_assessment": {
+                "const": "accepted"
+              },
+              "main_get_task_allow": {
+                "const": false
+              },
+              "helper_jit": {
+                "enum": [
+                  "not_required",
+                  "validated_allow_jit"
+                ]
+              }
+            }
+          }
+        }
+      ],
+      "description": "这里校验宣称的形状，不证明真实签名/Apple ticket/用户机启动；必须核对外部证据。",
+      "x-implementation-status": "planned"
+    },
+    "BootstrapStatus": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "record_type": {
+          "const": "bootstrap_status"
+        },
+        "startup_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "channel": {
+          "$ref": "#/$defs/Channel"
+        },
+        "generation": {
+          "$ref": "#/$defs/Serial"
+        },
+        "phase": {
+          "type": "string",
+          "enum": [
+            "package_check",
+            "fresh_store_init",
+            "store_recovery",
+            "kernel_start",
+            "ready",
+            "readonly_location",
+            "failed"
+          ]
+        },
+        "legacy_import_attempted": {
+          "const": false
+        },
+        "kernel_ready": {
+          "type": "boolean"
+        },
+        "document_writes_available": {
+          "type": "boolean"
+        },
+        "agent_state": {
+          "type": "string",
+          "enum": [
+            "not_configured",
+            "not_loaded",
+            "ready",
+            "unavailable"
+          ]
+        },
+        "error_code": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Identity"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "has_reliable_total": {
+          "type": "boolean"
+        },
+        "completed_steps": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Serial"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "total_steps": {
+          "anyOf": [
+            {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 9007199254740991
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "record_type",
+        "startup_id",
+        "channel",
+        "generation",
+        "phase",
+        "legacy_import_attempted",
+        "kernel_ready",
+        "document_writes_available",
+        "agent_state",
+        "error_code",
+        "has_reliable_total",
+        "completed_steps",
+        "total_steps"
+      ],
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "phase": {
+                "const": "ready"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "kernel_ready": {
+                "const": true
+              },
+              "error_code": {
+                "type": "null"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "phase": {
+                "enum": [
+                  "readonly_location",
+                  "failed"
+                ]
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "document_writes_available": {
+                "const": false
+              },
+              "error_code": {
+                "$ref": "#/$defs/Identity"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "has_reliable_total": {
+                "const": false
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "completed_steps": {
+                "type": "null"
+              },
+              "total_steps": {
+                "type": "null"
+              }
+            }
+          }
+        }
+      ],
+      "x-implementation-status": "planned"
+    },
+    "ReleaseAsset": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "asset_name": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 256
+        },
+        "kind": {
+          "type": "string",
+          "enum": [
+            "mac_dmg",
+            "mac_app_zip"
+          ]
+        },
+        "download_url": {
+          "type": "string",
+          "format": "uri",
+          "maxLength": 2048
+        },
+        "byte_length": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        },
+        "sha256": {
+          "$ref": "#/$defs/Sha256"
+        },
+        "architecture": {
+          "$ref": "#/$defs/Architecture"
+        },
+        "minimum_macos": {
+          "$ref": "#/$defs/MinimumMacOS"
+        }
+      },
+      "required": [
+        "asset_name",
+        "kind",
+        "download_url",
+        "byte_length",
+        "sha256",
+        "architecture",
+        "minimum_macos"
+      ],
+      "description": "下载host/资产类型/后缀与可信官方origin在UpdateService验证，URI语法不授予任意网络权限。"
+    },
+    "ReleaseDescriptor": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "record_type": {
+          "const": "release_descriptor"
+        },
+        "release_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "version": {
+          "$ref": "#/$defs/VersionInfo"
+        },
+        "channel": {
+          "$ref": "#/$defs/Channel"
+        },
+        "draft": {
+          "const": false
+        },
+        "prerelease": {
+          "type": "boolean"
+        },
+        "assets": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/ReleaseAsset"
+          },
+          "minItems": 2,
+          "maxItems": 2
+        },
+        "signing_evidence_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "release_page_url": {
+          "type": "string",
+          "format": "uri",
+          "maxLength": 2048
+        }
+      },
+      "required": [
+        "record_type",
+        "release_id",
+        "version",
+        "channel",
+        "draft",
+        "prerelease",
+        "assets",
+        "signing_evidence_id",
+        "release_page_url"
+      ],
+      "description": "恰好两个Mac安装资产的distinctkind/对应同app/公开签名/实际SHA仍需handler验证，不是整个九资产manifest。",
+      "x-implementation-status": "planned"
+    },
+    "UpdateCheck": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "record_type": {
+          "const": "update_check"
+        },
+        "check_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "generation": {
+          "$ref": "#/$defs/Serial"
+        },
+        "current_version": {
+          "$ref": "#/$defs/VersionInfo"
+        },
+        "channel": {
+          "$ref": "#/$defs/Channel"
+        },
+        "phase": {
+          "type": "string",
+          "enum": [
+            "checking",
+            "available",
+            "up_to_date",
+            "incompatible",
+            "failed",
+            "cancelled"
+          ]
+        },
+        "candidate_release_id": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Identity"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "error_code": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Identity"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "download_page_opened": {
+          "type": "boolean"
+        },
+        "automatic_installation": {
+          "const": false
+        },
+        "reports_installed_on_open": {
+          "const": false
+        }
+      },
+      "required": [
+        "record_type",
+        "check_id",
+        "generation",
+        "current_version",
+        "channel",
+        "phase",
+        "candidate_release_id",
+        "error_code",
+        "download_page_opened",
+        "automatic_installation",
+        "reports_installed_on_open"
+      ],
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "phase": {
+                "enum": [
+                  "available",
+                  "incompatible"
+                ]
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "candidate_release_id": {
+                "$ref": "#/$defs/Identity"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "phase": {
+                "const": "failed"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "error_code": {
+                "$ref": "#/$defs/Identity"
+              }
+            }
+          }
+        }
+      ],
+      "x-implementation-status": "planned"
+    },
+    "InstallationReceipt": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "record_type": {
+          "const": "installation_receipt"
+        },
+        "receipt_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "version": {
+          "$ref": "#/$defs/VersionInfo"
+        },
+        "channel": {
+          "$ref": "#/$defs/Channel"
+        },
+        "bundle_identity_verified": {
+          "type": "boolean"
+        },
+        "native_kernel_started": {
+          "type": "boolean"
+        },
+        "helper_started": {
+          "type": "boolean"
+        },
+        "system_node_available": {
+          "type": "boolean"
+        },
+        "existing_new_store_preserved": {
+          "type": "boolean"
+        },
+        "legacy_data_imported": {
+          "const": false
+        },
+        "quarantine_download_tested": {
+          "type": "boolean"
+        },
+        "public_distribution_verified": {
+          "type": "boolean"
+        },
+        "signing_evidence_id": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Identity"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "planned",
+            "verified",
+            "failed"
+          ]
+        }
+      },
+      "required": [
+        "record_type",
+        "receipt_id",
+        "version",
+        "channel",
+        "bundle_identity_verified",
+        "native_kernel_started",
+        "helper_started",
+        "system_node_available",
+        "existing_new_store_preserved",
+        "legacy_data_imported",
+        "quarantine_download_tested",
+        "public_distribution_verified",
+        "signing_evidence_id",
+        "status"
+      ],
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "public_distribution_verified": {
+                "const": true
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "signing_evidence_id": {
+                "$ref": "#/$defs/Identity"
+              },
+              "quarantine_download_tested": {
+                "const": true
+              },
+              "bundle_identity_verified": {
+                "const": true
+              },
+              "native_kernel_started": {
+                "const": true
+              },
+              "helper_started": {
+                "const": true
+              },
+              "status": {
+                "const": "verified"
+              }
+            }
+          }
+        }
+      ],
+      "description": "真实安装和原生行为验证另有证据；Schema示例不能用作公开包通过记录。",
+      "x-implementation-status": "planned"
+    }
+  },
+  "examples": [
+    {
+      "record_type": "channel_identity",
+      "channel": "preview",
+      "bundle_id": "org.openmath.OpenMath.Preview",
+      "app_name": "OpenMath Preview.app",
+      "data_subdirectory": "OpenMath/NativeMacPreview",
+      "keychain_service": "org.openmath.native.preview.provider",
+      "legacy_data_import": false,
+      "claims_default_document_handler": false
+    },
+    {
+      "record_type": "runtime_manifest",
+      "manifest_version": 1,
+      "version": {
+        "release_version": "0.1.0-pre-alpha.4",
+        "base_version": "0.1.0",
+        "build_number": "4",
+        "source_sha": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "architecture": "arm64",
+        "minimum_macos": "27.0",
+        "native_implementation": "swift_appkit"
+      },
+      "channel": "preview",
+      "kernel_abi_version": 1,
+      "agent_ipc_version": 1,
+      "metadata_version": 26,
+      "store_reader_version": 1,
+      "components": [
+        {
+          "component_id": "node",
+          "kind": "node",
+          "version": "26.11.1",
+          "bundle_relative_path": "Contents/Helpers/OpenMathAgentRuntime.app/Contents/MacOS/OpenMathAgentRuntime",
+          "component_hash": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "upstream_archive_hash": "0ef9b443000681bffc062ec126d53f97933ea9b086ea73dcba0480d87e639b39",
+          "license_identifiers": [
+            "MIT",
+            "Node third-party notices"
+          ],
+          "requires_system_installation": false
+        }
+      ],
+      "helper_entry_relative_path": "Contents/Helpers/OpenMathAgentRuntime.app/Contents/MacOS/OpenMathAgentRuntime",
+      "uses_system_node": false,
+      "downloads_runtime_on_launch": false,
+      "includes_outer_signature_hash": false
+    },
+    {
+      "record_type": "signing_evidence",
+      "evidence_id": "signing-1",
+      "distribution_class": "developer_preview",
+      "signing_kind": "apple_development",
+      "hardened_runtime": true,
+      "secure_timestamp": false,
+      "nested_signature_verified": false,
+      "notary_status": "not_submitted",
+      "app_ticket_stapled": false,
+      "dmg_ticket_stapled": false,
+      "gatekeeper_assessment": "not_tested",
+      "main_get_task_allow": true,
+      "helper_jit": "unverified"
+    },
+    {
+      "record_type": "bootstrap_status",
+      "startup_id": "startup-1",
+      "channel": "preview",
+      "generation": 1,
+      "phase": "ready",
+      "legacy_import_attempted": false,
+      "kernel_ready": true,
+      "document_writes_available": true,
+      "agent_state": "not_configured",
+      "error_code": null,
+      "has_reliable_total": false,
+      "completed_steps": null,
+      "total_steps": null
+    },
+    {
+      "record_type": "release_descriptor",
+      "release_id": "release-example",
+      "version": {
+        "release_version": "0.1.0-pre-alpha.4",
+        "base_version": "0.1.0",
+        "build_number": "4",
+        "source_sha": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "architecture": "arm64",
+        "minimum_macos": "27.0",
+        "native_implementation": "swift_appkit"
+      },
+      "channel": "public",
+      "draft": false,
+      "prerelease": true,
+      "assets": [
+        {
+          "asset_name": "OpenMath_EXAMPLE_aarch64.dmg",
+          "kind": "mac_dmg",
+          "download_url": "https://example.com/OpenMath_EXAMPLE_aarch64.dmg",
+          "byte_length": 1000,
+          "sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+          "architecture": "arm64",
+          "minimum_macos": "27.0"
+        },
+        {
+          "asset_name": "OpenMath_EXAMPLE_macos_arm64.app.zip",
+          "kind": "mac_app_zip",
+          "download_url": "https://example.com/OpenMath_EXAMPLE_macos_arm64.app.zip",
+          "byte_length": 900,
+          "sha256": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+          "architecture": "arm64",
+          "minimum_macos": "27.0"
+        }
+      ],
+      "signing_evidence_id": "signing-public-example",
+      "release_page_url": "https://example.com/release"
+    },
+    {
+      "record_type": "update_check",
+      "check_id": "update-1",
+      "generation": 1,
+      "current_version": {
+        "release_version": "0.1.0-pre-alpha.4",
+        "base_version": "0.1.0",
+        "build_number": "4",
+        "source_sha": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "architecture": "arm64",
+        "minimum_macos": "27.0",
+        "native_implementation": "swift_appkit"
+      },
+      "channel": "public",
+      "phase": "failed",
+      "candidate_release_id": null,
+      "error_code": "NETWORK_FAILED",
+      "download_page_opened": false,
+      "automatic_installation": false,
+      "reports_installed_on_open": false
+    },
+    {
+      "record_type": "installation_receipt",
+      "receipt_id": "install-1",
+      "version": {
+        "release_version": "0.1.0-pre-alpha.4",
+        "base_version": "0.1.0",
+        "build_number": "4",
+        "source_sha": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "architecture": "arm64",
+        "minimum_macos": "27.0",
+        "native_implementation": "swift_appkit"
+      },
+      "channel": "preview",
+      "bundle_identity_verified": false,
+      "native_kernel_started": false,
+      "helper_started": false,
+      "system_node_available": false,
+      "existing_new_store_preserved": false,
+      "legacy_data_imported": false,
+      "quarantine_download_tested": false,
+      "public_distribution_verified": false,
+      "signing_evidence_id": null,
+      "status": "planned"
+    },
+    {
+      "record_type": "signing_evidence",
+      "evidence_id": "signed-example",
+      "distribution_class": "developer_id_notarized",
+      "signing_kind": "developer_id_application",
+      "hardened_runtime": true,
+      "secure_timestamp": true,
+      "nested_signature_verified": true,
+      "notary_status": "accepted",
+      "app_ticket_stapled": true,
+      "dmg_ticket_stapled": true,
+      "gatekeeper_assessment": "accepted",
+      "main_get_task_allow": false,
+      "helper_jit": "validated_allow_jit"
+    },
+    {
+      "record_type": "bootstrap_status",
+      "startup_id": "startup-1",
+      "channel": "preview",
+      "generation": 1,
+      "phase": "readonly_location",
+      "legacy_import_attempted": false,
+      "kernel_ready": false,
+      "document_writes_available": false,
+      "agent_state": "not_configured",
+      "error_code": "READ_ONLY_VOLUME",
+      "has_reliable_total": false,
+      "completed_steps": null,
+      "total_steps": null
+    }
+  ]
+}

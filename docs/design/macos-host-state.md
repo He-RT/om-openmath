@@ -270,7 +270,7 @@ NativeDocument 从已确认 revision 获取 immutable SaveSnapshot；存在待�
 
 保存期间文档推进到更高 revision 时，只确认旧 saved_revision，当前 dirty 仍为 true。重命名/另存为造成 URL 绑定变化时，迟到旧文件回执不能改新目标的保存状态。主笔记本文件成功与事务恢复记录落盘成功分别命名，不用日志写入证明 `.omnb` 已保存。
 
-附件服务/模型设置遵循同一 actor/代次原则，但它们不增加 document_revision。物理格式、原配置/Keychain 迁移、附件保留和恢复由[存储契约](macos-storage-recovery.md)定义；供应商路由、模型/能力/参数和准备/提交路径由[模型媒体契约](model-media.md)定义。此层只消费实际成功/失败/未知回执，不提前实现占位保存。
+附件服务/模型设置遵循同一 actor/代次原则，但它们不增加 document_revision。物理格式、新Keychain配置与后续格式升级、附件保留和恢复由[存储契约](macos-storage-recovery.md)定义；供应商路由、模型/能力/参数和准备/提交路径由[模型媒体契约](model-media.md)定义。用户已排除旧版数据迁移，新session采用外部宿主新Registry/凭据端口，不默认读旧TOML/keyring。此层只消费实际成功/失败/未知回执，不提前实现占位保存。
 
 ## 首批实现与验收
 

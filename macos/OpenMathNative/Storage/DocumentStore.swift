@@ -11,11 +11,13 @@ final class DocumentStore {
   private let url:URL
   private let identity:StoreIdentity
   private let admissions:SourceAdmissionStore
+  private let history:SourceHistoryStore?
   init(db:SQLiteDatabase,url:URL,identity:StoreIdentity) throws {
     guard identity.kind=="document",identity.documentID != nil else { throw StorageError.corruptIdentity }
     self.db=db;self.url=url;self.identity=identity
     try DocumentSchema.ensure(db)
     self.admissions=try SourceAdmissionStore(db:db,identity:identity)
+    self.history=identity.storeVersion==2 ? try SourceHistoryStore(db:db,document:identity.documentID!) : nil
   }
   private func encoded<T:Encodable>(_ value:T) throws ->Data {
     let bytes=try JSONEncoder().encode(value)
@@ -57,16 +59,34 @@ final class DocumentStore {
     var current:CalculationReceipt?
     try read.statement("SELECT r.revision,t.forward_plan FROM transactions t JOIN document_revisions r ON t.document_id=r.document_id AND t.committed_revision=r.revision WHERE t.document_id=? ORDER BY t.committed_revision DESC",[.text(identity.documentID!)]) { row in
       if current != nil {return}
-      let plan=try JSONDecoder().decode(NativeSourceCommit.self,from:SQLColumn.data(row,1));try SourceValidation.commit(plan)
+      let bytes=try SQLColumn.data(row,1)
+      if bytes.isEmpty {return} // actual settings transactions remain pinned by retention
+      let plan=try JSONDecoder().decode(NativeSourceCommit.self,from:bytes);try SourceValidation.commit(plan)
       if let setting=plan.calculation_change.value?.after {current=CalculationReceipt(revision:UInt64(sqlite3_column_int64(row,0)),settings:setting)}
     }
     return current
   }
   private func receipt(_ operation:String,reader:SQLiteDatabase) throws ->NativeDurableSourceReceipt? {
     var receipt:NativeDurableSourceReceipt?
-    try reader.statement("SELECT o.request_hash,o.transaction_id,o.committed_revision,o.receipt,t.forward_plan,t.inverse_snapshot,t.inverse_hash,r.snapshot,r.snapshot_hash,e.payload,e.payload_hash,x.receipt_hash FROM operations o JOIN transactions t ON o.transaction_id=t.transaction_id AND o.document_id=t.document_id AND o.operation_id=t.operation_id JOIN document_revisions r ON o.document_id=r.document_id AND o.committed_revision=r.revision JOIN outbox e ON o.document_id=e.document_id AND o.operation_id=e.operation_id JOIN operation_transitions x ON o.document_id=x.document_id AND o.operation_id=x.operation_id AND x.sequence=1 WHERE o.document_id=? AND o.operation_id=?",[.text(identity.documentID!),.text(operation)]) { [self] row in
+    try reader.statement("SELECT o.request_hash,o.transaction_id,o.committed_revision,o.receipt,t.forward_plan,t.inverse_snapshot,t.inverse_hash,r.snapshot,r.snapshot_hash,e.payload,e.payload_hash,x.receipt_hash FROM operations o JOIN transactions t ON o.transaction_id=t.transaction_id AND o.document_id=t.document_id AND o.operation_id=t.operation_id AND o.request_hash=t.request_hash AND o.committed_revision=t.committed_revision JOIN document_revisions r ON o.document_id=r.document_id AND o.committed_revision=r.revision JOIN outbox e ON o.document_id=e.document_id AND o.operation_id=e.operation_id JOIN operation_transitions x ON o.document_id=x.document_id AND o.operation_id=x.operation_id AND x.sequence=1 WHERE o.document_id=? AND o.operation_id=?",[.text(identity.documentID!),.text(operation)]) { [self] row in
       let bytes=try SQLColumn.data(row,3)
       let value=try JSONDecoder().decode(NativeDurableSourceReceipt.self,from:bytes)
+      if (try SQLColumn.data(row,4)).isEmpty {
+        guard identity.storeVersion==2,let (summary,retained)=try SourceHistoryStore.read(reader,document:identity.documentID!,transaction:try SQLColumn.text(row,1)),!retained else {throw StorageError.corruptIdentity}
+        let c=summary.commit
+        guard receipt==nil,value.protocol_version==1,value.receipt.store_id==identity.storeID,value.receipt.document_id.value==identity.documentID,
+          value.receipt.operation_id==operation,value.receipt.phase == .completed,value.receipt.error_code.value==nil,
+          value.receipt.operation_kind == (c.actor == .undo ? .undo : .source_edit),value.receipt.accepted_result_ids.isEmpty,
+          value.receipt.request_hash==c.request_hash,value.receipt.request_hash==(try SQLColumn.text(row,0)),
+          value.receipt.transaction_id.value==c.transaction_id,c.operation_id==operation,
+          value.receipt.committed_revision.value?.value==c.committed_revision.value,
+          Int64(c.committed_revision.value)==sqlite3_column_int64(row,2),value.snapshot_hash==c.snapshot_hash,
+          value.inverse_plan_hash==c.inverse_plan_hash,value.inverse_plan_hash==(try SQLColumn.text(row,6)),
+          value.snapshot_hash==(try SQLColumn.text(row,8)),value.outbox_event_id==c.outbox_event_id,value.execution_epoch.value==c.execution_epoch.value,
+          bytes==(try SQLColumn.data(row,9)),Self.digest(bytes)==(try SQLColumn.text(row,10)),Self.digest(bytes)==(try SQLColumn.text(row,11)),
+          (try SQLColumn.data(row,5)).isEmpty else {throw StorageError.corruptIdentity}
+        receipt=value;return
+      }
       let plan=try JSONDecoder().decode(NativeSourceCommit.self,from:SQLColumn.data(row,4))
       let inverse=try JSONDecoder().decode(NativeSourceSnapshot.self,from:SQLColumn.data(row,5))
       let actual=try JSONDecoder().decode(NativeSourceSnapshot.self,from:SQLColumn.data(row,7))
@@ -105,22 +125,48 @@ final class DocumentStore {
     try admissions.admit(plan,runtime:runtime,completed:query(plan.commit.operation_id),faults:faults)
   }
   /// Real stored plans verified against the immutable source/receipt graph, newest first.
-  func transactions(_ ids:[String]) throws ->[NativeStoredSourceTransaction] {
+  func transactions(_ ids:[String],faults:StorageFaults = .init()) throws ->[NativeStoredSourceTransaction] {
     guard !ids.isEmpty,ids.count<=32,Set(ids).count==ids.count,ids.allSatisfy(SourceValidation.identity) else {throw StorageError.corruptIdentity}
     let read=try SQLiteDatabase(url:url,readonly:true);defer {try? read.close()}
     var records:[NativeStoredSourceTransaction]=[]
     for id in ids {
       var plan:NativeSourceCommit?
       try read.statement("SELECT forward_plan FROM transactions WHERE document_id=? AND transaction_id=?",[.text(identity.documentID!),.text(id)]) {
-        plan=try JSONDecoder().decode(NativeSourceCommit.self,from:SQLColumn.data($0,0))
+        let bytes=try SQLColumn.data($0,0)
+        guard !bytes.isEmpty else {throw StorageError.transactionUnavailable}
+        plan=try JSONDecoder().decode(NativeSourceCommit.self,from:bytes)
       }
       guard let plan,plan.commit.transaction_id==id else {throw StorageError.transactionUnavailable}
       try SourceValidation.commit(plan)
       guard let actual=try receipt(plan.commit.operation_id,reader:read) else {throw StorageError.corruptIdentity}
       records.append(.init(store_id:identity.storeID,transaction_id:id,plan:plan,receipt:actual))
     }
+    try faults.reach("source_transactions_readback")
     try db.confirmCommittedBytes()
     return records.sorted{$0.plan.after.revision.value>$1.plan.after.revision.value}
+  }
+  func undoMetadata(_ operation:String) throws ->NativeUndoGroup? {
+    guard let receipt=try query(operation),let transaction=receipt.receipt.transaction_id.value else {throw StorageError.transactionUnavailable}
+    if identity.storeVersion==2 {
+      let read=try SQLiteDatabase(url:url,readonly:true);defer {try? read.close()}
+      guard let (summary,_)=try SourceHistoryStore.read(read,document:identity.documentID!,transaction:transaction),summary.commit.request_hash==receipt.receipt.request_hash else {throw StorageError.corruptIdentity}
+      return summary.undo_group
+    }
+    return try transactions([transaction]).first?.plan.undo_group
+  }
+  func historyEntries() throws ->[SourceHistoryEntry] {
+    guard let history else {throw StorageError.unsupportedVersion}
+    return try history.entries()
+  }
+  func pinTransaction(_ transaction:String,kind:String,owner:String,enabled:Bool) throws {
+    guard let history else {throw StorageError.unsupportedVersion}
+    try history.pin(transaction:transaction,kind:kind,owner:owner,enabled:enabled)
+  }
+  func compactHistory(faults:StorageFaults) throws ->SourceHistoryPrune {
+    guard let history else {throw StorageError.unsupportedVersion}
+    return try history.compact(faults:faults) {operation in
+      guard try query(operation) != nil else {throw StorageError.corruptIdentity}
+    }
   }
   func admission(_ operation:String) throws ->NativeSourceAdmission? {
     if let actual=try query(operation) {
@@ -167,6 +213,7 @@ final class DocumentStore {
       try db.statement("INSERT INTO outbox VALUES(?,?,?,?,?,0)",[.text(record.outbox_event_id),.text(record.document_id),.text(record.operation_id),.blob(receiptBytes),.text(Self.digest(receiptBytes))])
       try db.statement("UPDATE document_head SET revision=?,execution_epoch=?,snapshot_hash=?,active_checkpoint_ref=NULL WHERE document_id=? AND revision=? AND snapshot_hash=?",[.integer(Int64(record.committed_revision.value)),.integer(Int64(record.execution_epoch.value)),.text(record.snapshot_hash),.text(record.document_id),.integer(Int64(record.base_revision.value)),.text(plan.before.snapshot_hash)])
       try admissions.transition(record.operation_id,.completed)
+      try history?.insert(storedPlan,forward:forward,inverse:inverse)
       try faults.reach("before_source_commit")
       if let controls {try controls.gate.enter(controls.ownerBarrier)}
     }

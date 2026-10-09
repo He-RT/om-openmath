@@ -8,6 +8,7 @@ public struct NativeSourceCommit: Codable, Sendable {
   public var after: NativeSourceSnapshot
   public var calculation_change: HostNullable<NativeCalculationChange>
   public var undo_group: NativeUndoGroup?
+  public var input_group_id: String?
   private enum CodingKeys: String, CodingKey {
     case protocol_version
     case generation
@@ -16,10 +17,11 @@ public struct NativeSourceCommit: Codable, Sendable {
     case after
     case calculation_change
     case undo_group
+    case input_group_id
   }
   public init(from decoder: Decoder) throws {
     let all = try decoder.container(keyedBy: HostCodingKey.self)
-    let allowed: Set<String> = ["protocol_version","generation","commit","before","after","calculation_change","undo_group"]
+    let allowed: Set<String> = ["protocol_version","generation","commit","before","after","calculation_change","undo_group","input_group_id"]
     guard all.allKeys.allSatisfy({ allowed.contains($0.stringValue) }) else { throw DecodingError.dataCorrupted(.init(codingPath: decoder.codingPath, debugDescription: "Unknown native contract field")) }
     let c = try decoder.container(keyedBy: CodingKeys.self)
     self.protocol_version = try c.decode(UInt32.self, forKey: .protocol_version)
@@ -29,8 +31,9 @@ public struct NativeSourceCommit: Codable, Sendable {
     self.after = try c.decode(NativeSourceSnapshot.self, forKey: .after)
     self.calculation_change = try c.decode(HostNullable<NativeCalculationChange>.self, forKey: .calculation_change)
     self.undo_group = try c.decodeIfPresent(NativeUndoGroup.self, forKey: .undo_group)
+    self.input_group_id = try c.decodeIfPresent(String.self, forKey: .input_group_id)
   }
-  public init(protocol_version: UInt32, generation: HostSerial, commit: DocumentCommit, before: NativeSourceSnapshot, after: NativeSourceSnapshot, calculation_change: HostNullable<NativeCalculationChange>, undo_group: NativeUndoGroup?) {
+  public init(protocol_version: UInt32, generation: HostSerial, commit: DocumentCommit, before: NativeSourceSnapshot, after: NativeSourceSnapshot, calculation_change: HostNullable<NativeCalculationChange>, undo_group: NativeUndoGroup? = nil, input_group_id: String? = nil) {
     self.protocol_version = protocol_version
     self.generation = generation
     self.commit = commit
@@ -38,5 +41,6 @@ public struct NativeSourceCommit: Codable, Sendable {
     self.after = after
     self.calculation_change = calculation_change
     self.undo_group = undo_group
+    self.input_group_id = input_group_id
   }
 }

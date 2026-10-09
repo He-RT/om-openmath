@@ -3,6 +3,12 @@ import Foundation
 enum NativeHostSessionError:Error,Sendable {
   case admissionClosed, duplicateOperation, tooManyOperations, tooManySubscribers, staleEvent, unknownOutcome(String)
 }
+/// Host-owned fixture barriers only; no request/model can supply or configure these callbacks.
+struct NativeSessionProbes:Sendable {
+  var beforeAdmission:@Sendable (String) async ->Void = {_ in}
+  var afterAdmission:@Sendable (String) async ->Void = {_ in}
+  var afterSnapshot:@Sendable (HostSnapshot) async ->Void = {_ in}
+}
 /// One event consumer, bounded request correlation and full confirmed snapshots for UI subscribers.
 /// Slow UI never owns terminal delivery: awaiters and the Rust registry settle independently.
 actor NativeHostSession {
@@ -12,6 +18,7 @@ actor NativeHostSession {
   private var subscribers:[UUID:AsyncStream<HostConfirmedProjection>.Continuation]=[:]
   private var pumpTask:Task<Void,Never>?
   private let eventByteBudget:Int
+  private let probes:NativeSessionProbes
   private var shutdownTask:Task<Void,any Error>?
   private var closing=false
   private var recovering=false
@@ -25,14 +32,15 @@ actor NativeHostSession {
     var stopIssued=false
     var early:HostOperationStatus?
   }
-  private init(client:NativeHostClient,runtime:String,eventByteBudget:Int) {
+  private init(client:NativeHostClient,runtime:String,eventByteBudget:Int,probes:NativeSessionProbes) {
     self.eventByteBudget=eventByteBudget
+    self.probes=probes
     self.client=client; router=AppEventRouter(runtime:runtime)
     router.registerLocalProducer("draft",identity:runtime,generation:1)
   }
-  static func open(runtime:String=UUID().uuidString.lowercased(),eventCapacity:UInt32=128,eventByteBudget:Int=512*1024) async throws -> NativeHostSession {
+  static func open(runtime:String=UUID().uuidString.lowercased(),eventCapacity:UInt32=128,eventByteBudget:Int=512*1024,probes:NativeSessionProbes = .init()) async throws -> NativeHostSession {
     let client=try await NativeHostClient.open(runtime:runtime,eventCapacity:eventCapacity)
-    let session=NativeHostSession(client:client,runtime:runtime,eventByteBudget:eventByteBudget)
+    let session=NativeHostSession(client:client,runtime:runtime,eventByteBudget:eventByteBudget,probes:probes)
     try await session.recover()
     await session.startPump()
     return session
@@ -41,6 +49,8 @@ actor NativeHostSession {
     pumpTask=Task { [weak self] in await self?.pump() }
   }
   func projection()->HostConfirmedProjection { router.projection }
+  /// Explicit trusted UI resynchronization; no new operation or mathematical evaluation.
+  func refreshProjection() async throws {try await recover()}
   func updates() throws ->AsyncStream<HostConfirmedProjection> {
     guard subscribers.count<8 else { throw NativeHostSessionError.tooManySubscribers }
     let id=UUID()
@@ -75,9 +85,11 @@ actor NativeHostSession {
     guard let item=pending[id] else { return }
     if item.stopRequested { remove(id,throwing:CancellationError());return }
     do {
+      await probes.beforeAdmission(id)
       _ = try await client.submit(item.request)
       guard var admitted=pending[id] else { return }
       admitted.admitted=true;pending[id]=admitted
+      await probes.afterAdmission(id)
       if let early=admitted.early { resolve(early) }
       else if admitted.stopRequested { await cancel(id) }
       else { try await recover() }
@@ -137,8 +149,15 @@ actor NativeHostSession {
     var queried=Set<String>()
     while !queue.isEmpty {
       let group=Array(queue.prefix(4));queue.removeFirst(group.count);queried.formUnion(group)
+      // A snapshot may linearize before submit, then resume after its ACK. Only IDs already
+      // admitted at dispatch can treat that same snapshot's absence as an unknown real effect.
+      let admittedAtDispatch=Set(group.filter{pending[$0]?.admitted==true})
       let snapshot=try await client.snapshot(operations:group,includeResults:true)
-      if try !router.install(snapshot) { continue }
+      await probes.afterSnapshot(snapshot)
+      if try !router.install(snapshot) {
+        for id in group where pending[id] != nil && !queue.contains(id) {queue.append(id)}
+        continue
+      }
       for status in snapshot.operations where pending[status.operation_ref] != nil && status.phase.isTerminal {
         if status.phase == .completed && status.result.value == nil && status.error_code.value == nil {
           guard !group.contains(status.operation_ref) else { throw NativeHostClientError.invalidReply }
@@ -148,7 +167,8 @@ actor NativeHostSession {
         } else { resolve(status) }
       }
       for id in snapshot.unavailable_operation_refs where pending[id]?.admitted==true {
-        remove(id,throwing:NativeHostSessionError.unknownOutcome(id))
+        if admittedAtDispatch.contains(id) {remove(id,throwing:NativeHostSessionError.unknownOutcome(id))}
+        else if !queue.contains(id) {queue.append(id)}
       }
       // Admission can reenter this actor during IO; include new IDs in the same recovery.
       for id in pending.keys where !queried.contains(id) && !queue.contains(id) { queue.append(id) }

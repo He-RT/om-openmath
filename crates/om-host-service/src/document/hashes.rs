@@ -80,6 +80,10 @@ pub fn request_hash(plan: &NativeSourceCommit) -> String {
             hash.text(id);
         }
     }
+    if let Some(group) = &plan.input_group_id {
+        hash.text("input-group-v1");
+        hash.text(group);
+    }
     if let Some(change) = &plan.calculation_change.0 {
         hash.text("calculation-change-v1");
         for setting in [&change.before, &change.after] {

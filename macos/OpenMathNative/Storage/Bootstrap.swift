@@ -60,9 +60,9 @@ enum StorageBootstrap {
     try db.transaction {
       try db.statement("CREATE TABLE store_header(singleton INTEGER PRIMARY KEY CHECK(singleton=1),store_id TEXT NOT NULL,kind TEXT NOT NULL,generation INTEGER NOT NULL,store_version INTEGER NOT NULL,minimum_reader_version INTEGER NOT NULL,codec_version INTEGER NOT NULL,document_id TEXT)")
       try db.statement("CREATE TABLE store_state(singleton INTEGER PRIMARY KEY CHECK(singleton=1),last_clean_shutdown INTEGER NOT NULL CHECK(last_clean_shutdown IN (0,1)))")
-      try db.statement("INSERT INTO store_header VALUES(1,?,?,?,?,?,?,?)",[.text(header.storeID),.text(kind),.integer(1),.integer(1),.integer(1),.integer(1),document.map(SQLValue.text) ?? .null])
+      try db.statement("INSERT INTO store_header VALUES(1,?,?,?,?,?,?,?)",[.text(header.storeID),.text(kind),.integer(1),.integer(header.storeVersion),.integer(header.minimumReaderVersion),.integer(header.codecVersion),document.map(SQLValue.text) ?? .null])
       try db.statement("INSERT INTO store_state VALUES(1,0)")
-      try db.statement("PRAGMA user_version=1")
+      try db.statement(kind=="document" ? "PRAGMA user_version=2" : "PRAGMA user_version=1")
       try faults.reach("before_bootstrap_commit")
     }
     try faults.reach("bootstrap_committed")
@@ -77,7 +77,8 @@ enum StorageBootstrap {
     return (db,header,runtime)
   }
   static func readHeader(_ db:SQLiteDatabase) throws ->StoreIdentity {
-    guard try db.integer("PRAGMA user_version")==1 else { throw StorageError.unsupportedVersion }
+    let version=try db.integer("PRAGMA user_version")
+    guard version==1 || version==2 else { throw StorageError.unsupportedVersion }
     var header:StoreIdentity?
     try db.statement("SELECT store_id,kind,generation,store_version,minimum_reader_version,codec_version,document_id FROM store_header WHERE singleton=1") { row in
       func text(_ column:Int32) throws ->String {
@@ -90,6 +91,7 @@ enum StorageBootstrap {
     }
     guard let header else { throw StorageError.corruptIdentity }
     try header.validate()
+    guard version==header.storeVersion else {throw StorageError.unsupportedVersion}
     guard try db.integer("SELECT count(*) FROM store_header")==1,
       try db.integer("SELECT count(*) FROM store_state WHERE singleton=1 AND last_clean_shutdown IN (0,1)")==1 else { throw StorageError.corruptIdentity }
     guard try db.text("PRAGMA quick_check(1)")=="ok" else { throw StorageError.corruptIdentity }

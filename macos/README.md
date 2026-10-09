@@ -61,4 +61,8 @@ SQLite首代存储已实现，可运行 `bash macos/Scripts/test-storage.sh`。�
 
 `bash macos/Scripts/test-undo.sh`使用实际C ABI与SQLite验证逆事务及原生UndoManager。`DocCommitPort.undo`先读并校验原事务，再在临时比较视图按最新到最旧合并1..32条逆操作，整体产生一个新修订；不倒退权威计数。相关内容/顺序被后来修改时整笔拒绝，无关后来源码保留。`undo_group`是原生内部source计划的可选扩展，绑定group_id与原事务集合到request hash；原无该字段的记录与`.omnb` v1保持兼容。
 
-重复的undo operation ID先读回原回执，错误组或不同内容拒绝；重开runtime从实际head恢复后可核对旧undo，不重新执行。UndoCoordinator只有真实提交成功才消费原生undo命令并注册实际逆事务用于redo；同组回执合并、相同回显不重复登记，失败保留命令，未知结果锁住命令并按原ID核对。当前尚未将完整笔记本编辑器接入自动文本分组，也未交付跨重启200条历史保留/裁减/pin/tombstone，因此R4.1.07仍进行中；没有注册Pi undo工具。
+重复的undo operation ID先读回原回执，错误组或不同内容拒绝；重开runtime从实际head恢复后可核对旧undo，不重新执行。UndoCoordinator只有真实提交成功才消费原生undo命令并注册实际逆事务用于redo；同组回执合并、相同回显不重复登记，失败保留命令，未知结果锁住命令并按原ID核对。EditorCommitBinding已接通实际NSTextView草稿/IME/原生分组和确认后文档撤销；完整工作台与全部编辑器交互继续R4.2接入，没有注册Pi undo工具。
+
+`bash macos/Scripts/test-history.sh`验证实际206笔源码事务、最近200+固定项、物理裁减、重启和原ID回读。新文档物理格式2，Root/Library仍1；已有Native文档1保持完整而不原地升级。裁减后反向源码不可用时明确拒绝，原receipt/outbox/操作事实仍可核对；旧格式和future版本只读核验，不重建空库。后台维护、quota和备份调度继续R4.1.13。具体数据和接口见[源码历史与文本撤销](../docs/design/source-history-retention.md)。
+
+事件恢复固定发起snapshot时已接纳的ID集合，避免读回在接纳前生成、却在ACK后返回时被误判为unknown。真实ABI fixture将该时序确定性复现；修复保留原ID再读实际结果，不重放计算。普通生产调用不配置fixture barriers。

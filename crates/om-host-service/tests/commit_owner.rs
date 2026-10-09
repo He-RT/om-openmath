@@ -200,6 +200,7 @@ fn cancelled_admission_readback_does_not_release_another_active_gate() {
         &[rename],
         &scope,
         &SourceCoordinator::default(),
+        None,
         "time".into(),
     )
     .unwrap();
@@ -210,7 +211,13 @@ fn cancelled_admission_readback_does_not_release_another_active_gate() {
         NativeCommitStatePhase::Cancelled
     );
     assert!(matches!(
-        c.manual(&[], &scope, &SourceCoordinator::default(), "time".into()),
+        c.manual(
+            &[],
+            &scope,
+            &SourceCoordinator::default(),
+            None,
+            "time".into()
+        ),
         Err(CommitError::Busy)
     ));
 }

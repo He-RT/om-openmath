@@ -27,7 +27,7 @@ public struct PreviewUpdateCell: Codable, Sendable {
     self.kind = try c.decodeIfPresent(PreviewUpdateCellKind.self, forKey: .kind)
     self.dialect = try c.decodeIfPresent(Dialect.self, forKey: .dialect)
   }
-  public init(type: PreviewUpdateCellType, target: PreviewExistingCell, expected_source_hash: String, source: String, kind: PreviewUpdateCellKind?, dialect: Dialect?) {
+  public init(type: PreviewUpdateCellType, target: PreviewExistingCell, expected_source_hash: String, source: String, kind: PreviewUpdateCellKind? = nil, dialect: Dialect? = nil) {
     self.type = type
     self.target = target
     self.expected_source_hash = expected_source_hash

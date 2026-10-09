@@ -4,9 +4,9 @@
 
 2026-10-09。目标`0.1.0-pre-alpha.4`，当前运行/公开版本`.3`；开发`dev`，不合main、不改旧标签、本机不启动iOS模拟器。本文只记录结果，规格及完成标准唯一见主计划；计划编写本身不计实施完成。
 
-**当前状态：** 17任务完成（全部R4.0与R4.1.01–06）；其余81任务尚未完成；32最终运行/发行gate全部not_run；candidate未分配，ready_to_publish=false，released_verified=false。设计/HTML/Schema通过不填运行时pass。
+**当前状态：** 18任务完成（全部R4.0与R4.1.01–07）；其余80任务尚未完成；32最终运行/发行gate全部not_run；candidate未分配，ready_to_publish=false，released_verified=false。设计/HTML/Schema通过不填运行时pass。
 
-**下一任务：** R4.1.07继续完整编辑器自动文本分组、跨重启200条历史/pin/裁减tombstone及生命周期验收；实际逆事务、原ID核对和UndoManager基础已通过，随后完整checkpoint。DocCommitPort与实际原生屏障/SQLite admission/原ID核对已验证；完整笔记本UI与Agent写入尚未注册。继续保持完整同candidate数学/平台门禁。按DAG推进，R4.5.07必须在R4.5.05冻结前完成。
+**下一任务：** R4.1.08完整可写计算状态/无损checkpoint codec，随后主KernelWorker接纳。真实逆事务、原生文本/IME group、200+pin及物理裁减回执已通过；完整工作台与Agent仍继续后续任务。保持同candidate完整门禁，R4.5.07在R4.5.05冻结前完成。
 
 ## 已知外部前置
 
@@ -37,7 +37,7 @@
 | [x] [R4.1.04](PRE_ALPHA_4.md#task-r4.1.04) | 文档操作与非执行失效计划 | completed | 真实parser/owners清理/无cascade / 批量操作 / title/Text epoch / 设置同库 | c72ce17 |
 | [x] [R4.1.05](PRE_ALPHA_4.md#task-r4.1.05) | 冻结Preview与新格身份分配 | completed | 10preview+3ref / 原计划→SQLite→原authority实际回执 / 期限/scope完整性 | 22fc708 |
 | [x] [R4.1.06](PRE_ALPHA_4.md#task-r4.1.06) | DocCommitPort、编辑屏障与未知提交 | completed | [实际提交](../acceptance/pre-alpha.4/development/r41/commit.json) / NSTextView+SQLite / 63Rust / Release | 21b01e7 |
-| [ ] [R4.1.07](PRE_ALPHA_4.md#task-r4.1.07) | 统一源码撤销和后续编辑冲突 | in_progress | [实际逆事务/UndoManager](../acceptance/pre-alpha.4/development/r41/undo-native.json) / 16逆向＋79host/ABI；历史保留与自动分组待完 | 3f8f28f（纯合并）；本批待补 |
+| [x] [R4.1.07](PRE_ALPHA_4.md#task-r4.1.07) | 统一源码撤销和后续编辑冲突 | completed | [历史/文本/回执](../acceptance/pre-alpha.4/development/r41/history-and-groups.json) / 200+pin / actual UTF/IME / 80Rust / Release | 本批待补；前置bbdc2b4 |
 | [ ] [R4.1.08](PRE_ALPHA_4.md#task-r4.1.08) | 完整可写计算状态与无损codec | planned | — | — |
 | [ ] [R4.1.09](PRE_ALPHA_4.md#task-r4.1.09) | 主KernelWorker、候选接纳和直接取消 | planned | — | — |
 | [ ] [R4.1.10](PRE_ALPHA_4.md#task-r4.1.10) | 不可变结果库和只读检查通道 | planned | — | — |
@@ -301,3 +301,13 @@ Done依据与覆盖case/proof:
 - 79host/ABI Rust、相关Clippy/fmt、198 DTO/工程漂移、真实source/preview/commit/Swift ABI/actor/reducer/session、17Python/纯WASM/deny、SDK27 ARM64 Release与12符号/strict ad-hoc签名通过；新增CI实际undo脚本。本机没有运行iOS模拟器、旧公开资产和运行`.3`不改；本机Release仍是Preview完整工作台尚未开放。
 - R4.1.07保持unchecked：完整编辑器实际文本/IME group自动映射、跨重启200完整事务/pin与裁减tombstone、早准备/close和保留故障验收尚待完成。不能把基础NSUndoManager fixture/普通回读当这些条目通过，没有Pi undo handler，也不填32最终candidate门禁。
 - 上一纯合并3f8f28f的CI37971347764全部五jobs实际success；21b01e7的CI除iOS取消外各job成功，取消由后续push中断，不能称全过。当前新工作区/候选仍需同SHA验证。继续完整81项剩余，不缩减原UI、Agent、媒体与发行范围。
+
+## R4开发记录 D019 — 历史保留、文本group与R4.1.07完成
+
+- 实际206个Rust计划经SQLite源码提交；最近200+user/task pin保留，原操作/回执/outbox206项均不删。先整体核验再一次裁减旧full plan/inverse/admission重复source与无active/retained引用的旧snapshot，存不可执行的版本化Tombstone及byte SHA。回滚、lost ACK、重启、取消pin、原ID重复无新效果、损坏拒绝与legacy/full-only/future只读拒写全部实跑。最后counts206/206/206/201/5，完整代码和原件见[history-and-groups.json](../acceptance/pre-alpha.4/development/r41/history-and-groups.json)。
+- 新文档库格式2/min-reader2；Root/selector/Library仍1，老Native文档1完整模式，无原地升级/裁减。input_group_id可选仅manual actor可用，绑定request hash和持久化元数据；原无字段散列不变。200 DTO、Swift optional init默认nil、原.omnb/数学/iOS ABI保持；格式裁决及安装来源hash已同步。
+- 实际NSTextView.insertText emoji/local undo/redo、确认后durable undo/redo、中文IME更新同组/未完成不提交、group随真实source计划存储及history回读通过。原生文本引擎负责范围/选区，服务echo不入undo；EditorCommitBinding消费实际回执，没有以textarea或composing bool模拟原生输入。准备期间stop/close均按真实已知ID处理，close等待read/preparation和SQL，再消费host/storage。
+- 原生undo库18笔source/receipt/outbox计数一致；再真实205笔滚动写入并裁减至200，原undo full source已移除，但重复original undo仍读原metadata/receipt，未产生新source效果。完整工作台、所有R4.2编辑交互、Agent handler、quota/backup/GC调度仍属后续任务，不以此提前勾选。
+- 同批80 Rust host/ABI/16逆向+4225组合、Clippy/fmt/200生成/工程、Swift actual session/ABI/reducer/source/preview/commit/Blob/SQLite六崩溃、17Python/纯WASM/deny和SDK27 ARM64 Release/strict ad-hoc签名/12符号通过；本机没有iOS模拟器。32最终candidate门禁仍not_run，运行`.3`、公开旧标签/资产均保留。
+- 前置bbdc2b4 CI37979609572实际native session exact-0 unknownOutcome，其余四jobs成功。原附件已下载，根因及确定性先失败后修复见D015：接纳前snapshot在ACK后返回，按dispatch时已接纳集合判定并重读原ID，stale group不丢。真实CABI barriers修复后通过，原12丢所有terminal的结果仍正确，未放宽数学/性能标准或隐藏原失败。
+- R4.1.07的Done已满足，当前18/98；下一任务R4.1.08无损完整可写checkpoint，包括definitions/rules/attrs/Out/history/random/owners/precision与格式/资源验证，再R4.1.09候选接纳。完整80剩余任务及发行范围继续，不把开发任务完成当`.4`可发布。

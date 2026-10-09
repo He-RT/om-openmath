@@ -18,7 +18,7 @@ public struct ReadFunctionCatalog: Codable, Sendable {
     self.offset = try c.decodeIfPresent(UInt32.self, forKey: .offset)
     self.limit = try c.decodeIfPresent(UInt32.self, forKey: .limit)
   }
-  public init(kind: ReadFunctionCatalogKind, offset: UInt32?, limit: UInt32?) {
+  public init(kind: ReadFunctionCatalogKind, offset: UInt32? = nil, limit: UInt32? = nil) {
     self.kind = kind
     self.offset = offset
     self.limit = limit

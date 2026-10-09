@@ -3,20 +3,24 @@ import Foundation
 public struct SourcePrepareManual: Codable, Sendable {
   public var type: SourcePrepareManualType
   public var operations: [NativeSourceOperation]
+  public var input_group_id: String?
   private enum CodingKeys: String, CodingKey {
     case type
     case operations
+    case input_group_id
   }
   public init(from decoder: Decoder) throws {
     let all = try decoder.container(keyedBy: HostCodingKey.self)
-    let allowed: Set<String> = ["type","operations"]
+    let allowed: Set<String> = ["type","operations","input_group_id"]
     guard all.allKeys.allSatisfy({ allowed.contains($0.stringValue) }) else { throw DecodingError.dataCorrupted(.init(codingPath: decoder.codingPath, debugDescription: "Unknown native contract field")) }
     let c = try decoder.container(keyedBy: CodingKeys.self)
     self.type = try c.decode(SourcePrepareManualType.self, forKey: .type)
     self.operations = try c.decode([NativeSourceOperation].self, forKey: .operations)
+    self.input_group_id = try c.decodeIfPresent(String.self, forKey: .input_group_id)
   }
-  public init(type: SourcePrepareManualType, operations: [NativeSourceOperation]) {
+  public init(type: SourcePrepareManualType, operations: [NativeSourceOperation], input_group_id: String? = nil) {
     self.type = type
     self.operations = operations
+    self.input_group_id = input_group_id
   }
 }

@@ -512,6 +512,9 @@
         },
         "undo_group": {
           "$ref": "#/$defs/NativeUndoGroup"
+        },
+        "input_group_id": {
+          "$ref": "#/$defs/Identity"
         }
       },
       "required": [
@@ -1380,6 +1383,9 @@
           },
           "minItems": 1,
           "maxItems": 64
+        },
+        "input_group_id": {
+          "$ref": "#/$defs/Identity"
         }
       },
       "required": [
@@ -1477,6 +1483,51 @@
       "required": [
         "type",
         "receipt"
+      ]
+    },
+    "NativeSourceTransactionTombstone": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "record_type": {
+          "const": "source_transaction_tombstone"
+        },
+        "codec_version": {
+          "const": 1
+        },
+        "commit": {
+          "$ref": "#/$defs/DocumentCommit"
+        },
+        "calculation_change": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/NativeCalculationChange"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "undo_group": {
+          "$ref": "#/$defs/NativeUndoGroup"
+        },
+        "forward_plan_hash": {
+          "$ref": "#/$defs/Sha256"
+        },
+        "inverse_payload_hash": {
+          "$ref": "#/$defs/Sha256"
+        },
+        "input_group_id": {
+          "$ref": "#/$defs/Identity"
+        }
+      },
+      "required": [
+        "record_type",
+        "codec_version",
+        "commit",
+        "calculation_change",
+        "forward_plan_hash",
+        "inverse_payload_hash"
       ]
     }
   }

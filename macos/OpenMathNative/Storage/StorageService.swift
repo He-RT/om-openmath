@@ -132,9 +132,25 @@ actor StorageService {
     guard closeTask==nil,let blobs else {throw StorageError.closing}
     return try await blobs.publish(data:data,expectedHash:expectedHash,faults:faults)
   }
-  func sourceTransactions(document:String,ids:[String]) async throws ->[NativeStoredSourceTransaction] {
+  func sourceTransactions(document:String,ids:[String],faults:StorageFaults = .init()) async throws ->[NativeStoredSourceTransaction] {
     guard closeTask==nil,let writer=documents[document] else {throw StorageError.closing}
-    return try await writer.sourceCall {try $0.transactions(ids)}
+    return try await writer.sourceCall {try $0.transactions(ids,faults:faults)}
+  }
+  func sourceUndoMetadata(document:String,operation:String) async throws ->NativeUndoGroup? {
+    guard closeTask==nil,let writer=documents[document] else {throw StorageError.closing}
+    return try await writer.sourceCall {try $0.undoMetadata(operation)}
+  }
+  func sourceHistory(document:String) async throws ->[SourceHistoryEntry] {
+    guard closeTask==nil,let writer=documents[document] else {throw StorageError.closing}
+    return try await writer.sourceCall {try $0.historyEntries()}
+  }
+  func pinSourceTransaction(document:String,transaction:String,kind:String,owner:String,enabled:Bool) async throws {
+    guard closeTask==nil,let writer=documents[document] else {throw StorageError.closing}
+    try await writer.sourceCall {try $0.pinTransaction(transaction,kind:kind,owner:owner,enabled:enabled)}
+  }
+  func compactSourceHistory(document:String,faults:StorageFaults = .init()) async throws ->SourceHistoryPrune {
+    guard closeTask==nil,let writer=documents[document] else {throw StorageError.closing}
+    return try await writer.sourceCall {try $0.compactHistory(faults:faults)}
   }
   func publishBlob(file:URL,expectedHash:String?=nil,faults:StorageFaults = .init()) async throws ->BlobPublication {
     guard closeTask==nil,let blobs else {throw StorageError.closing}

@@ -1,0 +1,261 @@
+{
+  "task": "R4.1.07",
+  "task_done": true,
+  "development_only": true,
+  "runtime_version": "0.1.0-pre-alpha.3",
+  "working_tree_base": "bbdc2b41aa54a00d6e82da1958744ff919e54c78",
+  "rust_host_ABI_passed": 80,
+  "inverse_cases_passed": 16,
+  "original_order_pairs": 4225,
+  "generated_dtos": 200,
+  "physical_formats": {
+    "root_selector_library": 1,
+    "new_document_store_reader_codec": 2,
+    "legacy_native_document": "full-only; no automatic pruning or in-place upgrade"
+  },
+  "history_fixture": {
+    "atomic_prune_rollback": true,
+    "damaged_tombstone_rejected": true,
+    "development_only": true,
+    "final_candidate_gate": false,
+    "fixture_root": "/Users/hert/Projects/openmath/target/macos-storage-tests/history-EGOstQ",
+    "future_document_readonly_rejected": true,
+    "legacy_native_v1_full_only": true,
+    "original_id_no_replay": true,
+    "original_receipt_preserved": true,
+    "payload_removal_verified": true,
+    "persisted_user_task_pins": true,
+    "postcommit_prune_unknown": true,
+    "pruned": 5,
+    "recent_window": 200,
+    "retained": 201,
+    "source_commits": 206,
+    "task": "R4.1.07",
+    "unpin_allows_compaction": true,
+    "version_2_document": true
+  },
+  "native_editor_fixture": {
+    "actual_redo_inverse": true,
+    "close_waited_for_preparation": true,
+    "closed_group_name_fault_fixed": true,
+    "completed_admissions": 18,
+    "development_only": true,
+    "different_hash_echo_rejected": true,
+    "document_id": "00000000-0000-0000-0000-000000000041",
+    "echo_deduplicated": true,
+    "editor_auto_text_groups_complete": true,
+    "failed_command_retained": true,
+    "final_candidate_gate": false,
+    "final_revision": 18,
+    "fixture_root": "/Users/hert/Projects/openmath/target/macos-storage-tests/undo-6fT1LB",
+    "fresh_runtime_original_id_readback": true,
+    "ime_one_group": true,
+    "input_group_bound_to_stored_request": true,
+    "later_manual_conflict_no_effect": true,
+    "native_draft_undo_redo": true,
+    "old_undo_duplicate_after_payload_prune": true,
+    "operations": 18,
+    "outbox": 18,
+    "pending_command_not_consumed": true,
+    "persistent_200_retention_complete": false,
+    "pruned_after_rollover": 23,
+    "real_undo_manager": true,
+    "retained_after_rollover": 200,
+    "same_group_coalesced": true,
+    "source_duplicate_id_one_effect": true,
+    "source_group_inverse_one_commit": true,
+    "stop_before_preparation_no_source_effect": true,
+    "store_id": "d4cdae8e-47e4-40f3-8ce3-627b935f0192",
+    "task": "R4.1.07",
+    "task_done": false,
+    "transactions": 18,
+    "undo_ack_lost_reconciled": true,
+    "unicode_native_input": true,
+    "unknown_command_fenced": true,
+    "unknown_ui_operation": "297b7422-8e5a-4752-85ce-852ef87d9efc",
+    "unknown_ui_reconciles_original_id": true,
+    "wrong_group_same_id_rejected": true
+  },
+  "actual_snapshot_admission_race_reproduced_and_fixed": true,
+  "maximum_write_call_concurrency": 32,
+  "final_candidate_gate": false,
+  "full_notebook_UI_ready": false,
+  "agent_undo_handler_registered": false,
+  "logs": [
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r41/history-groups-rust-fixed.log",
+      "sha256": "6b22c4a1f2ccf88cb77e972831efd363a0e7caf9b25e97d1b20e85f45cdab1ba",
+      "bytes": 9655
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r41/history-groups-clippy-fixed.log",
+      "sha256": "39dec800517c7d0672da4c2fdd5049e45fa45fa6a10082a157e3f42786aa10c6",
+      "bytes": 272
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r41/history-retention-version-verified.log",
+      "sha256": "e25c6658f5cf0d3c60c8f1c05be5e40eb345061300adf4c12b00419a8d2560ca",
+      "bytes": 386
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r41/history-text-retention-all.log",
+      "sha256": "4ba1206525a29d6452b72d4221458416827c72d4e5f872e2af53ef64e9a7e8fd",
+      "bytes": 2060
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r41/history-readback-race-fixed.log",
+      "sha256": "85cf63f9bf0ceace0b0a1af546dda9ab8328d9333628d3826ea0f6b9e6c1e18c",
+      "bytes": 2117
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r41/history-native-build-final.log",
+      "sha256": "ae66ac226520a95e98b7d3c54547ee6ec0252a7c485868e847e608817d6bf8bd",
+      "bytes": 81321
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r41/history-signature-final.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r41/history-native-symbols.txt",
+      "sha256": "ab42a46d1522025bf26b0262a895526db5057351e445c2adebf6070f7d5e00df",
+      "bytes": 1532775
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r41/history-bootstrap-regression.log",
+      "sha256": "52c016033ff1e53c9ccc0cec46c7c6e3c480aaf0a2f18e8246fc33a9307fe96e",
+      "bytes": 415
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r41/history-document-regression.log",
+      "sha256": "244a15c0f7d1b6adb271d86b6a8a28ca88de049146822193614496f26774e9c0",
+      "bytes": 1348
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r41/history-commit-regression.log",
+      "sha256": "5b444209d514675f6fb682507949b47da5815345ceb60e0bd69080f06088fc23",
+      "bytes": 1884
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r41/history-preview-regression.log",
+      "sha256": "4216051e846dec46f3ddc7d9a87f7eb70f6c1114bd23b4d6a0ee95841c4f5829",
+      "bytes": 2168
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r41/history-blob-regression.log",
+      "sha256": "9a89749898020daddce76fa2ebd45dc5d088c87e619b0efb00988a924946155c",
+      "bytes": 346
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r41/history-python.log",
+      "sha256": "0144333b46b45a1e016139ed09ede9d4eb63ff126f1af0847f1b72dcf03be9e5",
+      "bytes": 2835
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r41/history-wasm.log",
+      "sha256": "4cf86278c1e6d659943a46a3d7e3da429ac15be90f0f17742e24ef85228e7d3e",
+      "bytes": 72
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r41/history-deny.log",
+      "sha256": "82052f1205d20b8eda17fb98215c0edf20f9c7edb5df3abcb451c024458fe10f",
+      "bytes": 263032
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r41/history-readback-race-before-fix.log",
+      "sha256": "660be1a7db0c2a8a011e009df1dbfa85e80b3ef78860236749f9ba4a8d782f98",
+      "bytes": 1701
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r41/prior-native-ci-failure.log",
+      "sha256": "54151cd2c622c8944ea8a4103ab5af604b4ec69562e90e8f726f8791ce7cdca7",
+      "bytes": 23721
+    },
+    {
+      "path": "target/macos-storage-tests/history-report.json",
+      "sha256": "1d0c07dc484505798833feb186d31e93ee1cd2d371bd7e70fe0cf77a872a8e68",
+      "bytes": 684
+    },
+    {
+      "path": "target/macos-storage-tests/undo-report.json",
+      "sha256": "1baa617f2151089259e97c7426733a377313f8cdcfec6309ec0db76d548e1385",
+      "bytes": 1573
+    },
+    {
+      "path": "target/ci-evidence/r41-undo-bbdc2b4/contracts.log",
+      "sha256": "b68cf03054416bc0bb5bab5ce16df6beb6978706901d129970780ddfceb2826f",
+      "bytes": 1713
+    }
+  ],
+  "code": [
+    {
+      "path": "macos/OpenMathNative/Storage/SourceHistoryStore.swift",
+      "sha256": "72bf0b2a7944cfc66ba685a2abd680825ccf469a2fbc02ebf43baefd678f3d80",
+      "bytes": 11253
+    },
+    {
+      "path": "macos/OpenMathNative/Storage/DocumentStore.swift",
+      "sha256": "d5f768c2b4d41132b13384d6800efc57e6b95d614c3f5e5c3bf8344bba905689",
+      "bytes": 18224
+    },
+    {
+      "path": "macos/OpenMathNative/Storage/Bootstrap.swift",
+      "sha256": "b624f9ca6e5214bcf09e4f1d98c453944aae0a5eda8b16fe499acdbe3c407d1b",
+      "bytes": 7456
+    },
+    {
+      "path": "macos/OpenMathNative/Editor/DraftTextViewAdapter.swift",
+      "sha256": "1538c6c87105ce96d4ed2d3633475c0dd8320cd22db2939b744ca00b7a06965b",
+      "bytes": 5493
+    },
+    {
+      "path": "macos/OpenMathNative/Editor/EditorCommitBinding.swift",
+      "sha256": "e6d8a8f04fed934d75c9e817663bf8fdd72befbb81356a96f77e64f52aa2c924",
+      "bytes": 1214
+    },
+    {
+      "path": "macos/OpenMathNative/Storage/CommitPort.swift",
+      "sha256": "efcf1c7364335275edfdf359e5bd8cfa1dac1703c57e4a810f2f6d72ff8aec12",
+      "bytes": 17157
+    },
+    {
+      "path": "macos/OpenMathNative/NativeHostSession.swift",
+      "sha256": "4b2da4c11f0c9f6c2331b50e6263c1828e8dc0a473da02483ee8640dbdd767f0",
+      "bytes": 10612
+    },
+    {
+      "path": "macos/OpenMathNativeTests/HistoryFixtures/main.swift",
+      "sha256": "6f5e522af83b9b50f47f1668bf5ddf4fef55e6badbed6ca11c927fe91a78e23c",
+      "bytes": 10184
+    },
+    {
+      "path": "macos/OpenMathNativeTests/UndoFixtures/main.swift",
+      "sha256": "5eae5329981037c073332a2d22bb87f9ae1daa77510e0ee2360ef2299cb42c66",
+      "bytes": 18731
+    },
+    {
+      "path": "macos/OpenMathNativeTests/SessionFixtures/main.swift",
+      "sha256": "f1dc49496b9395db2dcff0655fdc4e6c792b5d6cb211b4179e819ed1f76d79b7",
+      "bytes": 4984
+    },
+    {
+      "path": "docs/design/native-source-store.schema.json",
+      "sha256": "17a3dcc8582a50d9e38352c220ab837fff489bd56b60e9e83fb8d37db84aa0db",
+      "bytes": 33994
+    },
+    {
+      "path": "scripts/native_contracts.py",
+      "sha256": "32945afa142ef29665aa3fd26de47850b69068fbaf2133e7461270057cebf86f",
+      "bytes": 11901
+    }
+  ],
+  "prior_CI": {
+    "run": 37979609572,
+    "sha": "bbdc2b41aa54a00d6e82da1958744ff919e54c78",
+    "conclusion": "failure",
+    "native_cause": "pre-admission unavailable snapshot delivered after actual ACK; deterministic current fix verified",
+    "other_jobs": "Rust/ios/dependencies/frontend success",
+    "current_commit_CI": "not yet run"
+  }
+}

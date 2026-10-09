@@ -6,6 +6,11 @@ private actor FaultOnce {
   var first=true
   func consume()->Bool {let result=first;first=false;return result}
 }
+private final class ReadPause:@unchecked Sendable {
+  let reached=DispatchSemaphore(value:0),release=DispatchSemaphore(value:0)
+  func hold() {reached.signal();release.wait()}
+  func awaitReached() async ->Bool {await withCheckedContinuation {continuation in DispatchQueue.global(qos:.utility).async {continuation.resume(returning:self.reached.wait(timeout:.now()+5) == .success)}}}
+}
 @main struct UndoFixtures {
   @MainActor static func main() async throws {
     let initial=try JSONDecoder().decode(Fixture.self,from:Data(contentsOf:URL(fileURLWithPath:CommandLine.arguments[1]))).initial
@@ -114,6 +119,54 @@ private actor FaultOnce {
     unknownNative.reconcile();try await settle(unknownNative)
     precondition(unknownNative.phase == .ready && unknownNative.lastOperation==originalUnknown)
     precondition(freshDrafts.confirmed.file.cells[0].source=="later native user input" && unknownNative.manager.canRedo)
+    unknownNative.close();freshEditor.reflectAcknowledgedSource()
+    let textUndo=UndoCoordinator {ids,group,operation in try await freshPort.undo(transactions:ids,group:group,operation:operation)}
+    let binding=EditorCommitBinding(editor:freshEditor,port:freshPort,undo:textUndo)
+    let textBefore=freshEditor.textView.string
+    freshEditor.textView.setSelectedRange(NSRange(location:(textBefore as NSString).length,length:0))
+    freshEditor.textView.insertText("🙂",replacementRange:NSRange(location:NSNotFound,length:0))
+    precondition(freshDrafts.overlay(initial.file.cells[0].id)!.source==textBefore+"🙂")
+    precondition(freshEditor.textView.undoManager!.canUndo)
+    freshEditor.textView.undoManager!.undo()
+    precondition(freshDrafts.overlay(initial.file.cells[0].id)!.source==textBefore && freshEditor.textView.undoManager!.canRedo)
+    freshEditor.textView.undoManager!.redo()
+    precondition(freshDrafts.overlay(initial.file.cells[0].id)!.source==textBefore+"🙂")
+    let nativeGroup=freshEditor.inputGroup
+    let textCommit=try await binding.flush()!
+    let textTransaction=textCommit.receipt.value!.receipt.transaction_id.value!
+    let textRecord=try await reopened.sourceTransactions(document:initial.document_id,ids:[textTransaction])
+    precondition(textRecord.first?.plan.input_group_id==nativeGroup)
+    freshEditor.textView.undoManager!.undo();try await settle(textUndo);freshEditor.reflectAcknowledgedSource()
+    precondition(textUndo.phase == .ready && freshEditor.textView.string==textBefore)
+    freshEditor.textView.undoManager!.redo();try await settle(textUndo);freshEditor.reflectAcknowledgedSource()
+    precondition(freshEditor.textView.string==textBefore+"🙂")
+    freshEditor.textView.setSelectedRange(NSRange(location:(freshEditor.textView.string as NSString).length,length:0))
+    freshEditor.textView.setMarkedText("中",selectedRange:NSRange(location:1,length:0),replacementRange:NSRange(location:NSNotFound,length:0))
+    let imeGroup=freshEditor.inputGroup
+    freshEditor.textView.setMarkedText("中文",selectedRange:NSRange(location:2,length:0),replacementRange:NSRange(location:NSNotFound,length:0))
+    precondition(freshEditor.inputGroup==imeGroup && !freshEditor.textView.undoManager!.canUndo)
+    do {_ = try await binding.flush();fatalError("binding committed marked input")}
+    catch CommitPortError.editingBusy { }
+    freshEditor.textView.unmarkText();_ = try await binding.flush()
+    precondition(freshEditor.inputGroup==imeGroup)
+    let history=try await reopened.sourceHistory(document:initial.document_id)
+    precondition(history.first?.inputGroup==imeGroup)
+    let pause=ReadPause(),paused=StorageFaults {point in if point=="source_transactions_readback" {pause.hold()} }
+    let beforeStop=freshDrafts.confirmed.snapshot_hash
+    let preparing=Task {try await freshPort.undo(transactions:[history.first!.transaction],group:"early-stop",operation:"preparing-stop",faults:paused)}
+    let reached=await pause.awaitReached();precondition(reached)
+    let currentOps=await freshPort.activeOperations();precondition(currentOps==["preparing-stop"])
+    await freshPort.cancel("preparing-stop");pause.release.signal()
+    let early=try await preparing.value
+    precondition(early.phase == .cancelled && freshDrafts.confirmed.snapshot_hash==beforeStop)
+    let closePause=ReadPause(),closingFault=StorageFaults {point in if point=="source_transactions_readback" {closePause.hold()} }
+    let duringClose=Task {try await freshPort.undo(transactions:[history.first!.transaction],group:"early-close",operation:"preparing-close",faults:closingFault)}
+    let closeReached=await closePause.awaitReached();precondition(closeReached)
+    let closeTask=Task {await freshPort.close()};await Task.yield();closePause.release.signal()
+    do {_ = try await duringClose.value;fatalError("closed port admitted prepared source IO")}
+    catch StorageError.closing { }
+    await closeTask.value
+    textUndo.close()
     let finalRevision=freshDrafts.confirmed.revision.value
     let database=root.appendingPathComponent("Documents").appendingPathComponent(initial.document_id).appendingPathComponent("Generations").appendingPathComponent(String(format:"%06lld",opened.identity.generation)).appendingPathComponent("authority.sqlite")
     let counts=try await Task.detached {
@@ -121,8 +174,25 @@ private actor FaultOnce {
       return [try db.integer("SELECT COUNT(*) FROM transactions"),try db.integer("SELECT COUNT(*) FROM operations"),try db.integer("SELECT COUNT(*) FROM outbox"),try db.integer("SELECT COUNT(*) FROM source_admissions WHERE phase='completed'")]
     }.value
     precondition(counts.allSatisfy{$0==Int64(finalRevision)})
-    unknownNative.close()
     await freshPort.close();try await fresh.close();try await reopened.close()
+    let (agedStore,_)=try await StorageService.open(paths:.init(root:root,channel:.preview))
+    let agedInfo=try await agedStore.openDocument(initial.document_id)
+    let agedHead=try await agedStore.committedSource(initial.document_id)!
+    let agedClient=try await NativeHostClient.open(runtime:"undo-aged")
+    let agedOpen=try await agedClient.sourceCommand(.source_open(.init(type:.source_open,snapshot:agedHead,store_id:agedInfo.identity.storeID,calculation:.init(nil),config_revision:try .init(0))))
+    let agedClock=SourceOwnerClock();agedClock.calibrate(agedOpen.owner_time_ms.value)
+    let agedDrafts=DraftStore(source:agedHead,runtime:agedClient.runtimeInstanceID,generation:agedOpen.document_generation.value,clock:{agedClock.now()})
+    let agedEditor=try DraftTextViewAdapter(store:agedDrafts,cell:initial.file.cells[0].id,generation:1)
+    let agedPort=DocCommitPort(client:agedClient,storage:agedStore,drafts:agedDrafts,clock:agedClock)
+    for n in 1...205 {agedEditor.textView.string="let rollover=\(n)";try agedEditor.reportCurrentInput();try await agedPort.synchronizeDrafts()}
+    let agedHash=agedDrafts.confirmed.snapshot_hash
+    let compact=try await agedStore.compactSourceHistory(document:initial.document_id)
+    precondition(compact.retained==200 && compact.transactions>0)
+    do {_ = try await agedStore.sourceTransactions(document:initial.document_id,ids:[undoTx]);fatalError("old full inverse still present after physical retention")}
+    catch StorageError.transactionUnavailable { }
+    let compactDuplicate=try await agedPort.undo(transactions:originalGroup,group:group,operation:operation)
+    precondition(compactDuplicate.phase == .completed && agedDrafts.confirmed.snapshot_hash==agedHash)
+    await agedPort.close();try await agedClient.close();try await agedStore.close()
     if CommandLine.arguments.count>3 {
       let report:[String:Any]=["task":"R4.1.07","task_done":false,"development_only":true,"final_candidate_gate":false,
         "fixture_root":root.path,"document_id":initial.document_id,"store_id":opened.identity.storeID,"final_revision":finalRevision,
@@ -133,7 +203,11 @@ private actor FaultOnce {
         "same_group_coalesced":true,"echo_deduplicated":true,"different_hash_echo_rejected":true,
         "pending_command_not_consumed":true,"failed_command_retained":true,"unknown_command_fenced":true,
         "unknown_ui_reconciles_original_id":true,"unknown_ui_operation":originalUnknown ?? "",
-        "persistent_200_retention_complete":false,"editor_auto_text_groups_complete":false]
+        "persistent_200_retention_complete":false,"editor_auto_text_groups_complete":true,
+        "native_draft_undo_redo":true,"unicode_native_input":true,"ime_one_group":true,
+        "input_group_bound_to_stored_request":true,"stop_before_preparation_no_source_effect":true,
+        "close_waited_for_preparation":true,"old_undo_duplicate_after_payload_prune":true,
+        "retained_after_rollover":compact.retained,"pruned_after_rollover":compact.transactions]
       try JSONSerialization.data(withJSONObject:report,options:[.prettyPrinted,.sortedKeys]).write(to:URL(fileURLWithPath:CommandLine.arguments[3]),options:.atomic)
     }
     print("Actual native undo: 2 stored transactions -> 1 inverse COMMIT; original-ID duplicate; redo inverse; later manual conflict; lost ACK recovery; fresh runtime readback; real UndoManager grouping/echo/pending/undo/redo/failed-command retention passed")

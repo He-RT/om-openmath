@@ -457,3 +457,16 @@ L2使用精确标称GM分数、50位FindRoot/1000迭代和真实残差，报告�
 - Swift从实际SQLite不可变图读取transaction/plan/receipt，原ID重复先核对实际undo及原组，不以最新源码重拼。不同组同ID为idempotency conflict，未知确认按原ID恢复；新runtime必须先打开实际head，再确认旧已完成undo事实。已有源码COMMIT/回执/outbox边界复用，不新增模型直接writer。
 - UndoCoordinator使用实际NSUndoManager，异步业务成功前不消费命令；成功才通过原生undo/redo栈登记实际逆事务。初始真实用例发现closed group不能调用setActionName，已改为后续同组回执只扩展事务列表，动作名称在首次group中设置。相同回显不重复登记，不同hash回显拒绝；失败保留原命令，unknown禁用undo/redo且核对保留原ID。
 - 当前实际CABI/SQLite/重开runtime/UndoManager基础已接通。完整编辑器自动文本group与跨重启200完整事务、保留pin和裁减tombstone尚未完成，R4.1.07保持unchecked，后续继续原范围；本批不注册Agent undo handler、不改公开`.3`或发行门禁。
+
+### R4-D014：文档格式2的历史保留与真实文本分组（2026-10-10）
+
+- Root/selector/Library保持格式1，新文档库独立store/minimum-reader/codec/user_version=2；空载荷与裁减事实需要不同读取规则，旧reader必须在只读Header检查拒绝。已有Native文档1继续完整模式、不原地裁减/自动升级；旧Tauri和.omnb不参与版本变更。主计划和安装设计已同步裁决，后续新代次升级仍先备份/原子selector，不降级写入未知格式。
+- source_history在原源码COMMIT同库发布真实元数据及其byte SHA；保留原DocumentCommit/输入与undo group/设置变化、原完整forward/inverse字节散列。后台compact先核验每个原receipt/不可变图，保留最近200和user/task/native_undo固定项；最新真实设置另有system固定。只清除老完整plan/inverse、completed admission重复source及不被head/保留事务引用的旧snapshot。原ID、FK、receipt/outbox字节和散列不改；损坏/unknown不当不存在，不伪造可撤销的source。
+- input_group_id是source计划和裁减元数据的可选宿主字段，绑定Rust/Swift逻辑request hash；无字段的旧hash不变，只有manual actor可携带。生成器为既有optional Swift init参数提供默认nil，不放宽required nullable/字段校验。NSTextView原生输入命令登记真实本地草稿undo，确认后路由document UndoManager；Actual caret/600ms闲置与IME状态形成group，真实IO receipt才登记durable undo，不把programmatic echo当编辑。
+- DocCommitPort限32在途调用，close等待preparation/readback和实际write；准备期间已知undo ID也接受stop，写入前重新送原操作cancel，不锁UI等待SQL。R4.1.07验收包含206物理提交/200+pin/回滚/失联/损坏/旧格式和future拒写、实际emoji/IME/undo group、early stop/close及payload裁减后的原undo重复核对。完整quota/备份/GC调度仍属R4.1.13，完整工作台与Agent仍未开放。
+
+### R4-D015：接纳与旧读回的实际顺序（2026-10-10）
+
+- bbdc2b4的CI37979609572在真实session ABI fixture的exact-0出现unknownOutcome，其他四jobs成功；原件已下载。根因是snapshot在操作接纳前生成unavailable，返回actor前submit ACK先更新admitted，旧读回便被当成“已接纳但丢失”。不是数学错误或要放宽计时。
+- 每组snapshot固定admittedAtDispatch；只有这个集合中的ID才能用同次unavailable判unknown。其间新接纳的ID保留原identity再读一遍，stale snapshot的group重新入查询队列；不会新ID重放或无限容忍真正丢失。新增可信UI refreshProjection只读，不接纳计算。
+- NativeSessionProbes只用于宿主fixture，没有模型/请求配置入口。真实C ABI的admission/readback barriers使旧代码确定性失败；修复后同序通过，随后12个丢弃全部terminal frames的原用例和取消/并发close仍通过。原失败与后续attempt均保留，最终同候选仍需完整CI。

@@ -142,6 +142,7 @@ impl DocumentCommitController {
         operations: &[crate::protocol::generated::NativeSourceOperation],
         scope: &ReferenceScope,
         coordinator: &super::coordinator::SourceCoordinator,
+        input_group: Option<String>,
         time: String,
     ) -> Result<NativeSourceCommit, CommitError> {
         if self.gate.is_some() || self.pending.len() >= 4096 {
@@ -150,9 +151,12 @@ impl DocumentCommitController {
         let operation = format!("manual-{}", uuid_like_id()?);
         let transaction = format!("transaction-{}", uuid_like_id()?);
         let event = format!("event-{}", uuid_like_id()?);
-        let mutation = coordinator
+        let mut mutation = coordinator
             .prepare(&self.owner, operations, operation, transaction, event, time)
             .map_err(|_| CommitError::Invalid)?;
+        mutation.commit.input_group_id = input_group;
+        mutation.commit.commit.request_hash = super::request_hash(&mutation.commit);
+        super::validate_commit(&mutation.commit).map_err(|_| CommitError::Invalid)?;
         let plan = Arc::new(FrozenPreviewPlan {
             scope: scope.clone(),
             commit: mutation.commit.clone(),

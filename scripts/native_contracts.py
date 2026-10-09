@@ -135,7 +135,7 @@ while True:
             for key,sp,optional in fields:
                 swift.append(f'    self.{key} = try c.{"decodeIfPresent" if optional else "decode"}({sp.removesuffix("?")}.self, forKey: .{key})\n')
             swift.append('  }\n')
-            swift.append('  public init(' + ', '.join(f'{k}: {t}' for k,t,_ in fields) + ') {\n' + ''.join(f'    self.{k} = {k}\n' for k,_,_ in fields) + '  }\n}\n')
+            swift.append('  public init(' + ', '.join(f'{k}: {t}' + (' = nil' if optional else '') for k,t,optional in fields) + ') {\n' + ''.join(f'    self.{k} = {k}\n' for k,_,_ in fields) + '  }\n}\n')
         else:
             sys.exit(f'Unsupported top-level DTO: {name}')
         rust_files[f'crates/om-host-service/src/protocol/generated/{snake(name)}.rs'] = ''.join(rust)

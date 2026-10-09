@@ -129,6 +129,13 @@ pub fn validate_commit(plan: &NativeSourceCommit) -> Result<(), String> {
     {
         return Err("INVALID_UNDO_GROUP".into());
     }
+    if plan
+        .input_group_id
+        .as_ref()
+        .is_some_and(|group| !identity(group) || commit.actor != DocumentCommitActor::Manual)
+    {
+        return Err("INVALID_INPUT_GROUP".into());
+    }
     match commit.actor {
         DocumentCommitActor::Agent
             if commit.task_id.0.as_deref().is_none_or(|id| !identity(id)) =>
@@ -291,6 +298,7 @@ impl SourceDocument {
         };
         let mut plan = NativeSourceCommit {
             protocol_version: 1,
+            input_group_id: None,
             undo_group: None,
             calculation_change: Nullable(None),
             generation: self.generation,

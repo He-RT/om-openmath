@@ -1,6 +1,28 @@
 import Foundation
+private final class RaceGate:@unchecked Sendable {
+  let reached=DispatchSemaphore(value:0),release=DispatchSemaphore(value:0)
+  func hold() async {await withCheckedContinuation {continuation in DispatchQueue.global().async {self.reached.signal();self.release.wait();continuation.resume()}}}
+  func wait() async ->Bool {await withCheckedContinuation {continuation in DispatchQueue.global().async {continuation.resume(returning:self.reached.wait(timeout:.now()+5) == .success)}}}
+}
 @main struct SessionFixtures {
   static func main() async throws {
+    let admission=RaceGate(),readback=RaceGate(),acknowledged=RaceGate()
+    let probes=NativeSessionProbes(beforeAdmission:{id in if id=="race-original" {await admission.hold()}},
+      afterAdmission:{id in if id=="race-original" {await acknowledged.hold()}},
+      afterSnapshot:{snapshot in if snapshot.unavailable_operation_refs.contains("race-original") {await readback.hold()}})
+    let race=try await NativeHostSession.open(runtime:"readback-admission-race",eventCapacity:1,eventByteBudget:128,probes:probes)
+    let raceOperation=Task {try await race.perform(.evaluate_scratch(.init(kind:.evaluate_scratch,source:"2+2",dialect:.modern,definition_snapshot_ref:.init(nil),use_notebook_definitions:false,timeout_ms:10000)),operation:"race-original")}
+    let admissionHeld=await admission.wait();precondition(admissionHeld)
+    let refresh=Task {try await race.refreshProjection()}
+    let readbackHeld=await readback.wait();precondition(readbackHeld)
+    admission.release.signal()
+    let actualAcknowledged=await acknowledged.wait();precondition(actualAcknowledged)
+    readback.release.signal();acknowledged.release.signal()
+    let originalResult=try await raceOperation.value
+    try await refresh.value
+    precondition(originalResult.phase == .completed && originalResult.result.value != nil)
+    try await race.close()
+    print("Actual pre-admission snapshot delivered after admission ACK keeps the original ID and reads its real result")
     // A 128-byte event budget intentionally cannot fit terminal frames. This exercises the
     // real ABI overflow/resync path: mathematical results can only arrive through readback.
     let session=try await NativeHostSession.open(runtime:"session-fixture",eventCapacity:1,eventByteBudget:128)

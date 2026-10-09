@@ -67,6 +67,24 @@ fn staged_invalid_math_is_source_and_unknown_receipt_never_changes_authority() {
     assert_eq!(doc.snapshot().revision.get(), 1);
     assert!(doc.accept(&p, &r).is_err());
 }
+
+#[test]
+fn input_group_is_bound_to_the_original_manual_request_and_not_an_agent_grant() {
+    let doc = SourceDocument::new("doc".into(), Serial::new(1).unwrap(), file("2+2")).unwrap();
+    let mut original = plan(&doc, "3+3");
+    let plain = original.commit.request_hash.clone();
+    original.input_group_id = Some("native-input-group".into());
+    original.commit.request_hash = om_host_service::document::request_hash(&original);
+    assert_ne!(plain, original.commit.request_hash);
+    validate_commit(&original).unwrap();
+    let mut modified = original.clone();
+    modified.input_group_id = Some("other-group".into());
+    assert!(validate_commit(&modified).is_err());
+    modified.commit.actor = DocumentCommitActor::Agent;
+    modified.commit.task_id = Nullable(Some("task".into()));
+    modified.commit.request_hash = om_host_service::document::request_hash(&modified);
+    assert!(validate_commit(&modified).is_err());
+}
 #[test]
 fn raw_unicode_order_and_per_cell_revision_are_never_normalized() {
     let doc = SourceDocument::new("doc".into(), Serial::new(1).unwrap(), file("e\u{301}")).unwrap();

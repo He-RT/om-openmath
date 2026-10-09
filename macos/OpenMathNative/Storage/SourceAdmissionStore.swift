@@ -17,9 +17,21 @@ final class SourceAdmissionStore {
     guard SourceValidation.identity(operation) else {throw StorageError.corruptIdentity}
     var result:NativeSourceAdmission?
     try db.statement("SELECT request_hash,created_by_runtime,phase,plan FROM source_admissions WHERE document_id=? AND operation_id=?",[.text(identity.documentID!),.text(operation)]) { [self] row in
-      let plan=try JSONDecoder().decode(NativeSourceCommit.self,from:SQLColumn.data(row,3));try SourceValidation.commit(plan)
+      let bytes=try SQLColumn.data(row,3)
+      let record:DocumentCommit
+      if let plan=try? JSONDecoder().decode(NativeSourceCommit.self,from:bytes) {
+        try SourceValidation.commit(plan);record=plan.commit
+      } else {
+        guard identity.storeVersion==2 else {throw StorageError.corruptIdentity}
+        let summary=try JSONDecoder().decode(NativeSourceTransactionTombstone.self,from:bytes)
+        try SourceHistoryStore.validate(summary);record=summary.commit
+        guard let (_,retained)=try SourceHistoryStore.read(db,document:identity.documentID!,transaction:record.transaction_id),!retained else {throw StorageError.corruptIdentity}
+        var stored:Data?
+        try db.statement("SELECT summary FROM source_history WHERE document_id=? AND transaction_id=?",[.text(identity.documentID!),.text(record.transaction_id)]) {stored=try SQLColumn.data($0,0)}
+        guard stored==bytes else {throw StorageError.corruptIdentity}
+      }
       let hash=try SQLColumn.text(row,0),runtime=try SQLColumn.text(row,1)
-      guard plan.commit.document_id==identity.documentID,plan.commit.operation_id==operation,plan.commit.request_hash==hash,
+      guard record.document_id==identity.documentID,record.operation_id==operation,record.request_hash==hash,
         SourceValidation.identity(runtime),let phase=NativeSourceAdmissionPhase(rawValue:try SQLColumn.text(row,2)) else {throw StorageError.corruptIdentity}
       result=NativeSourceAdmission(protocol_version:1,document_id:identity.documentID!,operation_id:operation,request_hash:hash,phase:phase,created_by_runtime:runtime,receipt:.init(nil))
     }

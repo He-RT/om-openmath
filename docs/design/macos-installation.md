@@ -143,7 +143,7 @@ UpdateService只读受控官方GitHub Releases/发行清单（预发行不可用
 
 手动替换app前结束/核对文档与Agent任务、保存源码/草稿并关闭应用；同版本正式包再次安装是app替换，不重置NativeMac数据。回退app到原`.3`时旧Tauri程序只用它自己的原路径，新NativeMac数据仍保留；不导回新聊天/模型配置。新原生后续版本回退到不支持的库格式只读拒写，按备份/new-document路径恢复，不删库“兼容”。
 
-首次新原生发行store_version=1，没有格式迁移作业；以后若必要schema upgrade，先一致备份/新代次验证/原子selector发布，保留逆向不支持提示。这是未来新数据安全升级，不是本轮旧版导入范围。开发Preview/正式通道之间的业务数据自动合并亦不交付。
+首次新原生发行Root/selector和Library格式为1，新文档库为store_version/minimum_reader_version/codec_version=2（R4.1.07的实际裁减记录需要独立读取规则）；旧Native文档1继续完整记录、不自动裁减或原地升级。实际契约见[源码历史与文本撤销](source-history-retention.md)。以后若必要schema upgrade，先一致备份/新代次验证/原子selector发布，保留逆向不支持提示。这是未来新数据安全升级，不是本轮旧版导入范围。开发Preview/正式通道之间的业务数据自动合并亦不交付。
 
 ## 诊断与安装故障
 

@@ -17,6 +17,8 @@ actor DocCommitPort {
   private let clock:SourceOwnerClock
   private var closing=false
   private var inFlight=Set<String>()
+  private var preparing=Set<String>()
+  private var activeCalls=0
   private var cancelRequests=Set<String>()
   private var acknowledgements:[String:[DraftAcknowledgement]]=[:]
   private var gates:[String:PhysicalCommitGate]=[:]
@@ -25,19 +27,27 @@ actor DocCommitPort {
   init(client:NativeHostClient,storage:StorageService,drafts:DraftStore,clock:SourceOwnerClock) {
     self.client=client;self.storage=storage;self.drafts=drafts;self.clock=clock
   }
+  private func beginCall() throws {
+    guard !closing else {throw StorageError.closing}
+    guard activeCalls<32 else {throw CommitPortError.operationInProgress}
+    activeCalls+=1
+  }
   /// Used before read/run/save/agent preview. Marked text is protected, invalid manual syntax allowed.
-  func synchronizeDrafts(faults:StorageFaults = .init()) async throws {
+  @discardableResult func synchronizeDrafts(faults:StorageFaults = .init(),inputGroup:String?=nil) async throws ->NativeCommitState? {
+    try beginCall();defer {activeCalls-=1}
     guard !closing else {throw StorageError.closing}
     guard blockedUnknown==nil else {throw CommitPortError.unknownOutcome}
     let pending=try await drafts.pendingEdits()
-    guard !pending.isEmpty else {return}
+    guard !pending.isEmpty else {return nil}
     let operations=pending.map { NativeSourceOperation.update_source_cell(.init(kind:.update_cell,cell:$0.0)) }
-    let reply=try await client.sourceCommand(.source_prepare_manual(.init(type:.source_prepare_manual,operations:operations)))
+    let reply=try await client.sourceCommand(.source_prepare_manual(.init(type:.source_prepare_manual,operations:operations,input_group_id:inputGroup)))
     guard let plan=reply.plan.value else {throw NativeHostClientError.invalidReply}
     let committed=try await execute(plan,acknowledgements:pending.map(\.1),manual:true,faults:faults)
     guard committed.phase == .completed else {throw committed.phase == .cancelled ? CommitPortError.cancelled : CommitPortError.sourceConflict}
+    return committed
   }
   func preview(_ input:NativePreviewInput) async throws ->NativePreviewData {
+    try beginCall();defer {activeCalls-=1}
     try await synchronizeDrafts()
     let source=await drafts.confirmed
     let nativeState=try await drafts.editorState()
@@ -52,13 +62,15 @@ actor DocCommitPort {
   }
   /// Duplicate/ref stale reconciliation precedes any new permission to write; actual authority
   func undo(transactions:[String],group:String,operation:String,faults:StorageFaults = .init()) async throws ->NativeCommitState {
+    try beginCall();defer {activeCalls-=1}
     guard !closing else {throw StorageError.closing}
-    guard !inFlight.contains(operation) else {throw CommitPortError.operationInProgress}
+    guard !inFlight.contains(operation),!preparing.contains(operation) else {throw CommitPortError.operationInProgress}
+    preparing.insert(operation);defer {preparing.remove(operation)}
     let source=await drafts.confirmed
     if let actual=try await storage.sourceReceipt(document:source.document_id,operation:operation) {
-      guard actual.receipt.operation_kind == .undo,let transaction=actual.receipt.transaction_id.value else {throw StorageError.idempotencyConflict}
-      let old=try await storage.sourceTransactions(document:source.document_id,ids:[transaction])
-      guard let metadata=old.first?.plan.undo_group,metadata.group_id==group,
+      guard actual.receipt.operation_kind == .undo,actual.receipt.transaction_id.value != nil else {throw StorageError.idempotencyConflict}
+      let metadata=try await storage.sourceUndoMetadata(document:source.document_id,operation:operation)
+      guard let metadata,metadata.group_id==group,
         Set(metadata.transaction_ids)==Set(transactions),metadata.transaction_ids.count==transactions.count else {throw StorageError.idempotencyConflict}
       let reply=try await client.sourceCommand(.source_recover_undo(.init(type:.source_recover_undo,receipt:actual)))
       guard let state=reply.operation.value else {throw NativeHostClientError.invalidReply}
@@ -68,7 +80,7 @@ actor DocCommitPort {
       return state
     }
     try await synchronizeDrafts()
-    let records=try await storage.sourceTransactions(document:source.document_id,ids:transactions)
+    let records=try await storage.sourceTransactions(document:source.document_id,ids:transactions,faults:faults)
     let reply=try await client.sourceCommand(.source_prepare_undo(.init(type:.source_prepare_undo,operation_id:operation,group_id:group,records:records)))
     guard let plan=reply.plan.value else {
       if let state=reply.operation.value {return state}
@@ -80,6 +92,7 @@ actor DocCommitPort {
   /// Duplicate/ref stale reconciliation precedes any new permission to write; actual authority
   /// keeps the original operation mapping. No source is reassembled from current drafts here.
   func apply(_ previewRef:String,faults:StorageFaults = .init()) async throws ->NativeCommitState {
+    try beginCall();defer {activeCalls-=1}
     guard !closing else {throw StorageError.closing}
     let reply=try await client.sourceCommand(.source_begin(.init(type:.source_begin,preview_ref:previewRef)))
     if reply.plan.value==nil,let state=reply.operation.value {
@@ -107,6 +120,7 @@ actor DocCommitPort {
     inFlight.insert(operation);self.acknowledgements[operation]=acknowledgements
     defer {inFlight.remove(operation);if blockedUnknown != operation {self.acknowledgements.removeValue(forKey:operation);cancelRequests.remove(operation)}}
     let runtime=client.runtimeInstanceID
+    if cancelRequests.contains(operation) {_ = try? await client.cancel(operation:operation)}
     let admitted:NativeSourceHostReply
     do {
       let admission=try await storage.admitSource(plan,runtime:runtime,faults:faults)
@@ -189,10 +203,10 @@ actor DocCommitPort {
   }
   /// Synchronous cancellation signal reaches Swift fence now; native operation stop is independent
   /// of the writer queue. A committing state stays pending until the actual receipt is known.
-  func activeOperations()->[String] {Array(inFlight).sorted()}
+  func activeOperations()->[String] {Array(inFlight.union(preparing)).sorted()}
   func unresolvedOperation()->String? {blockedUnknown}
   func cancel(_ operation:String) async {
-    guard inFlight.contains(operation) || blockedUnknown==operation else {return}
+    guard inFlight.contains(operation) || preparing.contains(operation) || blockedUnknown==operation else {return}
     cancelRequests.insert(operation)
     gates[operation]?.cancel()
     _ = try? await client.cancel(operation:operation)
@@ -201,11 +215,12 @@ actor DocCommitPort {
   /// IO owns its original resource references until all active operations actually return.
   func close() async {
     closing=true
-    for id in Array(inFlight) {await cancel(id)}
-    while !inFlight.isEmpty {try? await Task.sleep(for:.milliseconds(5))}
+    for id in Array(inFlight.union(preparing)) {await cancel(id)}
+    while !inFlight.isEmpty || activeCalls>0 {try? await Task.sleep(for:.milliseconds(5))}
     await drafts.invalidateDocument()
   }
   func reconcile(_ operation:String) async throws ->NativeCommitState {
+    try beginCall();defer {activeCalls-=1}
     guard !inFlight.contains(operation) else {throw CommitPortError.operationInProgress}
     let source=await drafts.confirmed
     if let receipt=try await storage.sourceReceipt(document:source.document_id,operation:operation) {

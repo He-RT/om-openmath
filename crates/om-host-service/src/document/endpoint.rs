@@ -185,6 +185,7 @@ impl SourceEndpoint {
                             &body.operations,
                             &self.scope,
                             &self.coordinator,
+                            body.input_group_id,
                             "host-manual-time".into(),
                         )
                         .map_err(error)?,

@@ -2740,7 +2740,7 @@ UpdateService只读受控官方GitHub Releases/发行清单（预发行不可用
 
 手动替换app前结束/核对文档与Agent任务、保存源码/草稿并关闭应用；同版本正式包再次安装是app替换，不重置NativeMac数据。回退app到原`.3`时旧Tauri程序只用它自己的原路径，新NativeMac数据仍保留；不导回新聊天/模型配置。新原生后续版本回退到不支持的库格式只读拒写，按备份/new-document路径恢复，不删库“兼容”。
 
-首次新原生发行store_version=1，没有格式迁移作业；以后若必要schema upgrade，先一致备份/新代次验证/原子selector发布，保留逆向不支持提示。这是未来新数据安全升级，不是本轮旧版导入范围。开发Preview/正式通道之间的业务数据自动合并亦不交付。
+首次新原生发行Root/selector和Library格式为1，新文档库为store_version/minimum_reader_version/codec_version=2（R4.1.07的实际裁减记录需要独立读取规则）；旧Native文档1继续完整记录、不自动裁减或原地升级。实际契约见[源码历史与文本撤销](../design/source-history-retention.md)。以后若必要schema upgrade，先一致备份/新代次验证/原子selector发布，保留逆向不支持提示。这是未来新数据安全升级，不是本轮旧版导入范围。开发Preview/正式通道之间的业务数据自动合并亦不交付。
 
 ### 12.9 诊断与安装故障
 
@@ -3294,7 +3294,7 @@ UpdateService只读受控官方GitHub Releases/发行清单（预发行不可用
 
 #### R4.1.07 统一源码撤销和后续编辑冲突
 
-- [ ] **R4.1.07 完成**（仅在以下Done和验证满足后勾选）
+- [x] **R4.1.07 完成**（仅在以下Done和验证满足后勾选）
 
 **Files：**
 
@@ -3307,10 +3307,10 @@ UpdateService只读受控官方GitHub Releases/发行清单（预发行不可用
 
 **Steps：**
 
-- [ ] 1. 校验当前相关内容/顺序再产生新revision。
-- [ ] 2. 映射原生文本group与durable事务，服务echo不重复登记。
-- [ ] 3. 保留近期200事务与idempotency tombstone。
-- [ ] 4. 执行下面Tests，核对真实输出/失败，更新任务账本与证据后提交本批次。
+- [x] 1. 校验当前相关内容/顺序再产生新revision。
+- [x] 2. 映射原生文本group与durable事务，服务echo不重复登记。
+- [x] 3. 保留近期200事务与idempotency tombstone。
+- [x] 4. 执行下面Tests，核对真实输出/失败，更新任务账本与证据后提交本批次。
 
 **Tests：** 重启/重复undo/部分冲突/后来手工编辑，撤销不覆盖整本旧快照。测试位置以Files和第15节影响范围为准，证据保存完整输入/命令/输出，不仅记录“通过”。
 
@@ -6076,7 +6076,7 @@ Mac主编辑/助手/所有`.3`展示按原生API实际文件审计，截图不�
 | [macos-ux.md](../design/macos-ux.md) | 11.2 | `9d2afa075a700b8e42199e0d44179833f18bb36442d5f05652b478eaae598541` |
 | [agent-composer.md](../design/agent-composer.md) | 11.3 | `9711cdcf7d8aab88b000db5a98803659833a83642896bf1cb5740202fd10cee0` |
 | [macos-model-media-ux.md](../design/macos-model-media-ux.md) | 11.4 | `e3fd1c860054f8e44ea6af4640c41bd252342d0c42fbf489e0bd7d5a4fbbf979` |
-| [macos-installation.md](../design/macos-installation.md) | 12 | `f6f5b999bd960c928a7a127e2b9f15a8b5fe867a165ac59f21a09448a609db2e` |
+| [macos-installation.md](../design/macos-installation.md) | 12 | `4f9cd6ce38ff053b0b7cf005c245542853a715249716b7ce5953eca61335e806` |
 
 ### 19.2 精确机器契约
 

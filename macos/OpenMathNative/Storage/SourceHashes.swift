@@ -22,15 +22,19 @@ enum SourceHashes {
     return hash.finish()
   }
   static func request(_ plan:NativeSourceCommit)->String {
+    request(commit:plan.commit,change:plan.calculation_change.value,group:plan.undo_group,inputGroup:plan.input_group_id)
+  }
+  static func request(commit:DocumentCommit,change:NativeCalculationChange?,group:NativeUndoGroup?,inputGroup:String?=nil)->String {
     var hash=SourceHashFramer("openmath-source-operation-v1")
-    hash.text(plan.commit.document_id);hash.text(plan.commit.operation_id)
-    hash.text(plan.before.snapshot_hash);hash.text(plan.after.snapshot_hash);hash.text(plan.commit.actor.rawValue)
-    hash.text(plan.commit.task_id.value ?? "");hash.text(plan.commit.undo_of.value ?? "")
-    if let group=plan.undo_group {
+    hash.text(commit.document_id);hash.text(commit.operation_id)
+    hash.text(commit.inverse_plan_hash);hash.text(commit.snapshot_hash);hash.text(commit.actor.rawValue)
+    hash.text(commit.task_id.value ?? "");hash.text(commit.undo_of.value ?? "")
+    if let group {
       hash.text("undo-group-v1");hash.text(group.group_id);hash.number(UInt64(group.transaction_ids.count))
       for id in group.transaction_ids {hash.text(id)}
     }
-    if let change=plan.calculation_change.value {
+    if let inputGroup {hash.text("input-group-v1");hash.text(inputGroup)}
+    if let change {
       hash.text("calculation-change-v1")
       for setting in [change.before,change.after] {
         hash.text(setting.dialect.rawValue);hash.text(setting.constants.rawValue)
@@ -100,6 +104,7 @@ enum SourceValidation {
     }
     if commit.actor == .agent { guard let task=commit.task_id.value,identity(task) else { throw StorageError.corruptIdentity } }
     if commit.actor == .undo { guard let undo=commit.undo_of.value,identity(undo) else { throw StorageError.corruptIdentity } }
+    if let input=plan.input_group_id {guard commit.actor == .manual,identity(input) else {throw StorageError.corruptIdentity}}
     if let group=plan.undo_group {
       guard commit.actor == .undo,identity(group.group_id),!group.transaction_ids.isEmpty,group.transaction_ids.count<=32,
         group.transaction_ids.allSatisfy(identity),Set(group.transaction_ids).count==group.transaction_ids.count,

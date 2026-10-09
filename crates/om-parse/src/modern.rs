@@ -38,6 +38,7 @@ impl Parser<'_> {
                     break;
                 }
                 self.bump();
+                self.operand_newlines()?;
                 let field = self.expect(K::Identifier)?;
                 let span = Span {
                     start: left.span.start,
@@ -225,9 +226,14 @@ impl Parser<'_> {
         Ok(left)
     }
     fn prefix(&mut self, stop_bar: bool) -> Parsed {
-        let Some(token) = self.bump() else {
-            return self.fail("E022", "需要表达式");
+        self.operand_newlines()?;
+        let Some(token) = self.current() else {
+            return self.missing_operand();
         };
+        if matches!(token.kind, K::Let | K::Semicolon) {
+            return self.missing_operand();
+        }
+        self.bump();
         match token.kind {
             K::Number => {
                 let expr = literals::number(text(self.src, token)).map_err(|message| {

@@ -75,6 +75,33 @@ import XCTest
     XCTAssertTrue(
       unsupported.isEmpty, "Unsupported corpus formula commands: \(unsupported.sorted())")
   }
+  func testModernContinuationUsesIdenticalSourceForPreviewAndExecution() async throws {
+    for (source, expected) in [
+      ("let square(x) =\n  x^2+1;\nsquare(3)", "10"),
+      ("let cube = fn(x) =>\n x^3;\nmap(cube,[2])", "{8}"),
+      ("[1,2,3] |>\n map(fn(x)=>x^2)", "{1, 4, 9}"),
+      ("1 + # 中文 🧮\r\n\r\n 2", "3"),
+    ] {
+      let client = try KernelClient()
+      let preview = try await client.request(
+        .object([
+          "type": .string("preview"), "source": .string(source), "dialect": .string("Modern"),
+        ]))
+      XCTAssertEqual(preview.response.body["type"].string, "preview", source)
+      XCTAssertNotNil(preview.response.body.object["diagnostics"], source)
+      XCTAssertTrue(preview.response.body["diagnostics"].array.isEmpty, source)
+      let response = try await client.request(
+        .object([
+          "type": .string("evaluate"), "cell_id": .string("continuation"),
+          "source": .string(source), "dialect": .string("Modern"),
+        ]))
+      let output = response.response.body["output"]
+      XCTAssertTrue(output["messages"].array.isEmpty, source)
+      XCTAssertEqual(output["items"].array.last?["input_form"].string, expected, source)
+      client.close()
+    }
+  }
+
   func testUTF16UTF8BoundariesAndIMEOffsets() {
     let text = "A🙂α中文B"
     XCTAssertEqual(EditorOffsets.byte(text, utf16: 1), 1)

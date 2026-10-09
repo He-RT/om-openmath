@@ -9,6 +9,7 @@ use om_core::{BUILTIN as B, Expr, Symbol};
 impl Parser<'_> {
     pub(super) fn pipeline(&mut self, input: Node) -> Parsed {
         let start = input.span.start;
+        self.operand_newlines()?;
         let token = self.expect(K::Identifier)?;
         let name = text(self.src, token);
         let raw = Symbol::intern(name);

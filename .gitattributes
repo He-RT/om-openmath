@@ -3,3 +3,6 @@ crates/om-llm/tests/fixtures/*.sse whitespace=blank-at-eol,space-before-tab,-bla
 
 # 保留上游字体许可证原文空白。
 ios/OpenMath/Resources/SwiftMath-GUST-FONT-LICENSE.txt -whitespace
+
+# Upstream native license notices are preserved byte-for-byte and verified by SHA256.
+macos/OpenMathNative/Resources/Licenses/** -whitespace

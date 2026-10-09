@@ -133,3 +133,31 @@ it('actual WASM creates original-coordinate 3D samples and mobile fallback suppr
   const mobile=evaluate(kernel,'scene','plot(x+y,x:0..1,y:0..1)');const view=mobile.items[0];if(view?.type!=='scene3_d')throw new Error('No explicit mobile fallback');expect(view.data).toBeNull();expect(view.unavailable).toContain('尚未适配');
  }finally{kernel.free();}
 });
+
+it('actual WASM preview and execution preserve modern continuation and source-only files', () => {
+  for (const [source, expected] of [
+    ['let square(x) =\n  x^2+1;\nsquare(3)', '10'],
+    ['let cube = fn(x) =>\n x^3;\nmap(cube,[2])', '{8}'],
+    ['[1,2,3] |>\n map(fn(x)=>x^2)', '{1, 4, 9}'],
+    ['1 + # 中文 🧮\r\n\r\n 2', '3'],
+  ] as const) {
+    const kernel = new Kernel();
+    try {
+      const preview = request(kernel, { type: 'preview', source, dialect: 'Modern', cursor: null });
+      if (preview.type !== 'preview') throw new Error('expected actual preview');
+      expect(preview.diagnostics).toEqual([]);
+      const result = evaluate(kernel, 'continuation', source);
+      const item = result.items.at(-1);
+      if (item?.type !== 'expr') throw new Error('missing actual expression');
+      expect(item.input_form).toBe(expected);
+      const saved = request(kernel, { type: 'save_notebook' });
+      if (saved.type !== 'notebook') throw new Error('missing source-only notebook');
+      const cell = saved.file.cells.at(0);
+      if (!cell) throw new Error('missing saved source cell');
+      expect(cell.source).toBe(source);
+      expect(Object.keys(cell)).not.toContain('output');
+    } finally {
+      kernel.free();
+    }
+  }
+});

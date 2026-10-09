@@ -1,0 +1,30 @@
+let pixels = 12;
+let colors = [
+  "#79553a", "#866043", "#936849", "#694b35", "#a17b57", "#837e73",
+  "#5a9635", "#6da33e", "#75aa48", "#4c852e", "#83b650", "#649d38"
+];
+let noise(col,row,face) =
+  mod(floor(10000*abs(sin(17*col+31*row+13*face+1.0))),6);
+let grass_mask(col,row,face) =
+  (1+sign(row-(pixels-1-mod(col^2+face,3))+1/2))/2;
+let tile(col,row,index) = polygon([
+  [col/pixels-1/2, row/pixels-1/2, 1/2],
+  [(col+1)/pixels-1/2, row/pixels-1/2, 1/2],
+  [(col+1)/pixels-1/2, (row+1)/pixels-1/2, 1/2],
+  [col/pixels-1/2, (row+1)/pixels-1/2, 1/2]
+],color:colors[index]);
+let cells = map(fn(k)=>[mod(k,pixels),floor(k/pixels)],range(0,pixels^2-1));
+let top = map(fn(p)=>tile(p[1],p[2],7+noise(p[1],p[2],4)),cells);
+let sides = map(fn(face)=>
+  rotate(rotate(
+    map(fn(p)=>tile(p[1],p[2],
+      1+noise(p[1],p[2],face)+6*grass_mask(p[1],p[2],face)),cells),
+    pi/2,axis:[1,0,0]
+  ),face*pi/2,axis:[0,0,1]),
+  range(0,3)
+);
+let bottom = polygon([
+  [-1/2,-1/2,-1/2],[-1/2,1/2,-1/2],
+  [1/2,1/2,-1/2],[1/2,-1/2,-1/2]
+],color:"#79553a");
+scene([top,sides,bottom],dimensions:3)

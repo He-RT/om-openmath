@@ -268,6 +268,42 @@ pub(crate) struct Parser<'a> {
     pub dialect: Dialect,
 }
 impl Parser<'_> {
+    /// Consume newline trivia only when a modern operation needs its operand.
+    /// Keep the original separator on failure so recovery cannot eat a new `let`.
+    pub(crate) fn operand_newlines(&mut self) -> Result<(), ()> {
+        let mut next = self.pos;
+        while self.tokens.get(next).is_some_and(|t| t.kind == K::Newline) {
+            next += 1;
+        }
+        if self.tokens.get(next).is_none()
+            || next != self.pos
+                && self
+                    .tokens
+                    .get(next)
+                    .is_some_and(|t| matches!(t.kind, K::Let | K::Semicolon))
+        {
+            return self.missing_operand();
+        }
+        self.pos = next;
+        Ok(())
+    }
+
+    pub(crate) fn missing_operand<T>(&mut self) -> Result<T, ()> {
+        let span = self
+            .tokens
+            .get(self.pos.saturating_sub(1))
+            .map(|token| token.span)
+            .unwrap_or_else(|| self.at_span());
+        self.report(
+            span,
+            Severity::Error,
+            "E022",
+            "表达式尚未完成，需要右侧表达式",
+            None,
+        );
+        Err(())
+    }
+
     pub fn current(&mut self) -> Option<Token> {
         if self.groups > 0 {
             while self
@@ -390,6 +426,9 @@ impl Parser<'_> {
                 continue;
             }
             let start = self.at_span().start;
+            let declaration = self.dialect == Dialect::Modern && self.kind() == Some(K::Let);
+            let previous_env = declaration.then(|| self.env.clone());
+            let previous_diagnostics = self.diagnostics.len();
             let result = if self.dialect == Dialect::Wolfram {
                 self.wl_expression(0)
             } else if self.kind() == Some(K::Let) {
@@ -397,7 +436,7 @@ impl Parser<'_> {
             } else {
                 self.expression(0, false)
             };
-            let expr = match result {
+            let mut expr = match result {
                 Ok(node) => node.expr,
                 Err(()) => {
                     self.recover();
@@ -407,6 +446,14 @@ impl Parser<'_> {
             if !matches!(self.kind(), None | Some(K::Newline | K::Semicolon)) {
                 let _ = self.fail::<()>("E020", "语句后有无法识别的输入");
                 self.recover();
+            }
+            if let Some(previous_env) = previous_env
+                && self.diagnostics[previous_diagnostics..]
+                    .iter()
+                    .any(|d| d.severity == Severity::Error)
+            {
+                self.env = previous_env;
+                expr = Expr::symbol("$Failed");
             }
             let mut end = self
                 .tokens

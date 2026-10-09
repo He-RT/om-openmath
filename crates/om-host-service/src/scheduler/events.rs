@@ -82,7 +82,7 @@ impl Events {
             state
         };
         let mut events = Vec::new();
-        let mut used = 64;
+        let mut used = serde_json::to_vec(&serde_json::json!({"protocol_version":1,"events":[],"needs_resync":false,"last_rust_event_sequence":state.sequence})).map_err(|_| "INTERNAL_ERROR")?.len();
         while let Some(next) = state.events.front() {
             let bytes = serde_json::to_vec(next)
                 .map_err(|_| "INTERNAL_ERROR")?
@@ -108,7 +108,14 @@ impl Events {
             protocol_version: 1,
             events,
             needs_resync: resync,
+            last_rust_event_sequence: state.sequence,
         })
+    }
+    pub fn sequence(&self) -> Result<Serial, &'static str> {
+        self.state
+            .lock()
+            .map(|state| state.sequence)
+            .map_err(|_| "INTERNAL_ERROR")
     }
     pub fn close(&self) {
         if let Ok(mut state) = self.state.lock() {

@@ -36,3 +36,7 @@ bash macos/Scripts/test-native-contracts.sh
 该脚本直接由 Swift 调用新的 C ABI，验证精确 `2+2`、真实数学错误、Desktop 能力、直接取消和解码后释放。`create` 失败必须读取并释放错误 buffer；`submit` 回复只是入队回执。`close_begin` 只撤销入口和发出取消，`close_finish` 必须后台执行并等待活动调用/owner 停止。调用者不读/释放 opaque handle，不再使用已消费的旧 handle。为避免旧地址重新指向新会话，小 token tombstone 保留到进程结束，上限 4096 次创建/128 同时宿主；完整服务和结果内存均在 finish 释放。返回 buffer 恰好释放一次，地址可由后续 buffer 重用。
 
 新增 `macos-native.yml` 在固定 Xcode 27/SDK27 镜像构建和执行这些验收。当前产物仍是独立 ad-hoc 开发预览，不能据此宣称发行签名、公证或完整 `.4` 已通过。
+
+原生窗口现已接通“试算”，支持运行/停止与⌘↩；结果、错误和取消均来自实际CAS及宿主回执。编辑后保留旧结果并标记源码已改，隔离试算的定义不进入下一操作。这个阶段只实现宿主确认投影和本地草稿，完整笔记本/文件仍未开放。
+
+`om_host_read_snapshot`直接读取带序列的真实状态，不经操作/事件队列；普通事件批携带`last_rust_event_sequence`。消费者检测缺口后取得足够新的快照，再恢复增量。Swift脚本新增reducer与真实session验收，将事件预算设为128字节以强制所有终止帧丢弃，确认结果通过原ID读回。旧/重复回执不能二次应用；UI订阅缓冲保存最新完整投影，操作终止交付独立。

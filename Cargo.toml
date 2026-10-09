@@ -19,6 +19,7 @@ om-simplify = { path = "crates/om-simplify", version = "0.1.0-pre-alpha.3" }
 om-solve = { path = "crates/om-solve", version = "0.1.0-pre-alpha.3" }
 om-eval = { path = "crates/om-eval", version = "0.1.0-pre-alpha.3" }
 om-llm = { path = "crates/om-llm", version = "0.1.0-pre-alpha.3", default-features = false }
+om-host-service = { path = "crates/om-host-service", version = "0.1.0-pre-alpha.3" }
 om-kernel = { path = "crates/om-kernel", version = "0.1.0-pre-alpha.3", default-features = false }
 dashu = { version = "=0.6.1", default-features = false, features = ["std", "num-traits", "serde"] }
 num-traits = "0.2.19"

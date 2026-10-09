@@ -11,7 +11,7 @@ crate-type = ["staticlib", "rlib"]
 
 [dependencies]
 om-kernel = { workspace = true, features = ["external-host"] }
-om-host-service = { path = "../om-host-service" }
+om-host-service.workspace = true
 serde.workspace = true
 serde_json.workspace = true
 

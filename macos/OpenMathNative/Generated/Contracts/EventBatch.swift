@@ -4,23 +4,27 @@ public struct EventBatch: Codable, Sendable {
   public var protocol_version: UInt32
   public var events: [EventEnvelope]
   public var needs_resync: Bool
+  public var last_rust_event_sequence: HostSerial
   private enum CodingKeys: String, CodingKey {
     case protocol_version
     case events
     case needs_resync
+    case last_rust_event_sequence
   }
   public init(from decoder: Decoder) throws {
     let all = try decoder.container(keyedBy: HostCodingKey.self)
-    let allowed: Set<String> = ["protocol_version","events","needs_resync"]
+    let allowed: Set<String> = ["protocol_version","events","needs_resync","last_rust_event_sequence"]
     guard all.allKeys.allSatisfy({ allowed.contains($0.stringValue) }) else { throw DecodingError.dataCorrupted(.init(codingPath: decoder.codingPath, debugDescription: "Unknown native contract field")) }
     let c = try decoder.container(keyedBy: CodingKeys.self)
     self.protocol_version = try c.decode(UInt32.self, forKey: .protocol_version)
     self.events = try c.decode([EventEnvelope].self, forKey: .events)
     self.needs_resync = try c.decode(Bool.self, forKey: .needs_resync)
+    self.last_rust_event_sequence = try c.decode(HostSerial.self, forKey: .last_rust_event_sequence)
   }
-  public init(protocol_version: UInt32, events: [EventEnvelope], needs_resync: Bool) {
+  public init(protocol_version: UInt32, events: [EventEnvelope], needs_resync: Bool, last_rust_event_sequence: HostSerial) {
     self.protocol_version = protocol_version
     self.events = events
     self.needs_resync = needs_resync
+    self.last_rust_event_sequence = last_rust_event_sequence
   }
 }

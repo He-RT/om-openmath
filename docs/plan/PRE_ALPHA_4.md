@@ -242,13 +242,14 @@ uint32_t om_host_metadata_version(void);
 om_host_create_result om_host_create(const unsigned char *json, size_t len);
 om_host_buffer om_host_submit(om_host_handle *, const unsigned char *json, size_t len);
 om_host_buffer om_host_next_events(om_host_handle *, uint32_t wait_ms, size_t max_bytes);
+om_host_buffer om_host_read_snapshot(om_host_handle *, const unsigned char *query_json, size_t len);
 int32_t om_host_cancel(om_host_handle *, const unsigned char *operation_id, size_t len);
 om_host_buffer om_host_close_begin(om_host_handle *);
 int32_t om_host_close_finish(om_host_handle *);
 void om_host_buffer_free(om_host_buffer);
 ```
 
-create只copy校验初始化后启动owner，submit有界入队返回request/operation接受或拒绝，不等待CAS；next_events在后台泵使用，缓冲可包含版本化错误；cancel直接触达该op生命周期。close_begin撤销admission/generation并取消；close_finish后台等owner停再释放稳定handle，MainActor不join。调用者buffer仅调用内读，Rust返回buffer由Swift decode后恰好一次free，Rust不得保存Swift临时指针/回调View或跨ABI unwind。
+read_snapshot是可信宿主独立读回端口，不占操作admission或事件队列；返回实际快照及rust_event_sequence，JSON序列化在短投影锁外。event batch同时携带last_rust_event_sequence，即使事件全被字节背压抛弃也保留恢复位置。实现裁决见R4-D005。create只copy校验初始化后启动owner，submit有界入队返回request/operation接受或拒绝，不等待CAS；next_events在后台泵使用，缓冲可包含版本化错误；cancel直接触达该op生命周期。close_begin撤销admission/generation并取消；close_finish后台等owner停再释放稳定handle，MainActor不join。调用者buffer仅调用内读，Rust返回buffer由Swift decode后恰好一次free，Rust不得保存Swift临时指针/回调View或跨ABI unwind。
 
 R4.0.04冻结create返回handle+独立error buffer：失败handle为NULL且错误缓冲必须释放，成功error为空；静态内核版本字符串不释放。C头由native-host-abi.json生成，声明不表示生命周期函数已实现或注册。正式JSON DTO由native-host-wire及状态/编辑Schema生成；如实际平台更适合给create输出error buffer，必须在同一契约记录调整，不用NULL无原因假成功。现有iOS header/函数前缀不改名或偷改含义。
 
@@ -2920,7 +2921,7 @@ UpdateService只读受控官方GitHub Releases/发行清单（预发行不可用
 
 #### R4.0.07 Swift客户端、事件泵和权威投影
 
-- [ ] **R4.0.07 完成**（仅在以下Done和验证满足后勾选）
+- [x] **R4.0.07 完成**（仅在以下Done和验证满足后勾选）
 
 **Files：**
 
@@ -2933,11 +2934,11 @@ UpdateService只读受控官方GitHub Releases/发行清单（预发行不可用
 
 **Steps：**
 
-- [ ] 1. 后台submit/event pump解码并释放buffer。
-- [ ] 2. 用scope/liveness/sequence reducer投影。
-- [ ] 3. 实现重复/缺口/resync与终止回执背压，不混不同producer计数。
+- [x] 1. 后台submit/event pump解码并释放buffer。
+- [x] 2. 用scope/liveness/sequence reducer投影。
+- [x] 3. 实现重复/缺口/resync与终止回执背压，不混不同producer计数。
 - [x] 4. 经新ABI运行真实2+2及错误输入，验证Desktop平台能力。
-- [ ] 5. 执行下面Tests，核对真实输出/失败，更新任务账本与证据后提交本批次。
+- [x] 5. 执行下面Tests，核对真实输出/失败，更新任务账本与证据后提交本批次。
 
 **Tests：** 重复事件不双应用，旧runtime不进当前视图，队列满不丢提交/终止，长CAS仍可操作，真实2+2返回精确4。测试位置以Files和第15节影响范围为准，证据保存完整输入/命令/输出，不仅记录“通过”。
 

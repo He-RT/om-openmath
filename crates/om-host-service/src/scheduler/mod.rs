@@ -28,6 +28,7 @@ pub(crate) enum Control {
 }
 struct Shared {
     admission: Mutex<()>,
+    projection: Mutex<HostPhase>,
     closed: AtomicBool,
     operations: Arc<Operations>,
     events: Events,
@@ -46,6 +47,7 @@ impl NativeHost {
         wire::decode_init(&serde_json::to_vec(&init).map_err(|_| "INVALID_ARGUMENT")?)?;
         let shared = Arc::new(Shared {
             admission: Mutex::new(()),
+            projection: Mutex::new(HostPhase::Starting),
             closed: AtomicBool::new(false),
             operations: Arc::new(Operations::new(init.max_pending_operations as usize)),
             events: Events::new(
@@ -75,12 +77,17 @@ impl NativeHost {
         let owner = thread::Builder::new()
             .name("openmath-document-coordinator".into())
             .spawn(move || {
+                {
+                let Ok(mut phase) = state.projection.lock() else { return; };
+                *phase = HostPhase::Ready;
                 state.events.emit(EventEnvelopeEventKind::HostReady, None, None, json!({
                     "protocol_version":1, "document_storage_ready":false,
                     "registered_requests":["get_state","get_capabilities","get_function_catalog","analyze_editor","evaluate_scratch","get_operation_status"]
                 }));
+                }
                 while let Ok(control) = receiver.recv() {
                     if state.closed.load(Ordering::Acquire) { break; }
+                    let Ok(_projection) = state.projection.lock() else { break; };
                     match control {
                         Control::Stop => break,
                         Control::Finished { request, operation, result } => {
@@ -100,12 +107,14 @@ impl NativeHost {
                 let _ = editor.thread.join();
                 let _ = auxiliary.thread.join();
                 for status in state.operations.all() {
+                    let Ok(_projection) = state.projection.lock() else { break; };
                     if !matches!(status.phase, Phase::Completed | Phase::Failed | Phase::Cancelled)
                         && let Some(done) = state.operations.finish(&status.operation_ref, Err("CANCELLED".into()))
                     {
                         state.events.emit(EventEnvelopeEventKind::OperationFinished, None, Some(status.operation_ref), serde_json::to_value(done).unwrap_or(Value::Null));
                     }
                 }
+                if let Ok(mut phase) = state.projection.lock() { *phase = HostPhase::Closed; }
                 state.events.close();
             }).map_err(|_| "Cannot start document coordinator".to_owned())?;
         Ok(Self {
@@ -158,6 +167,11 @@ impl NativeHost {
     }
     /// Direct cancellation is independent of control and CAS queues.
     pub fn cancel(&self, operation: &str) -> Result<bool, String> {
+        let _projection = self
+            .shared
+            .projection
+            .lock()
+            .map_err(|_| "INTERNAL_ERROR")?;
         self.shared
             .operations
             .cancel(operation)
@@ -174,12 +188,70 @@ impl NativeHost {
     pub fn operation(&self, id: &str) -> Option<OperationStatus> {
         self.shared.operations.status(id)
     }
+    /// Queue-independent fenced facts for a trusted event consumer. No operation is admitted.
+    pub fn read_snapshot(&self, bytes: &[u8]) -> Result<HostSnapshot, String> {
+        let query = wire::decode_snapshot_query(bytes)?;
+        if query.runtime_instance_id != self.shared.runtime {
+            return Err("STALE_RUNTIME".into());
+        }
+        let phase = self
+            .shared
+            .projection
+            .lock()
+            .map_err(|_| "INTERNAL_ERROR")?;
+        let mut operations = self.shared.operations.summaries();
+        let mut unavailable = Vec::new();
+        for id in query.operation_refs {
+            if let Some(mut status) = self.shared.operations.status(&id) {
+                if !query.include_results {
+                    status.result = None;
+                }
+                if let Some(index) = operations.iter().position(|op| op.operation_ref == id) {
+                    operations[index] = status;
+                } else {
+                    operations.push(status);
+                }
+            } else {
+                unavailable.push(id);
+            }
+        }
+        let operations = operations
+            .into_iter()
+            .map(|op| HostOperationStatus {
+                operation_ref: op.operation_ref,
+                phase: match op.phase {
+                    Phase::Queued => HostOperationStatusPhase::Queued,
+                    Phase::Running => HostOperationStatusPhase::Running,
+                    Phase::Cancelling => HostOperationStatusPhase::Cancelling,
+                    Phase::Completed => HostOperationStatusPhase::Completed,
+                    Phase::Cancelled => HostOperationStatusPhase::Cancelled,
+                    Phase::Failed => HostOperationStatusPhase::Failed,
+                },
+                result: Nullable(op.result),
+                error_code: Nullable(op.error_code),
+            })
+            .collect();
+        Ok(HostSnapshot {
+            protocol_version: 1,
+            runtime_instance_id: self.shared.runtime.clone(),
+            host_phase: phase.clone(),
+            rust_event_sequence: self.shared.events.sequence().map_err(str::to_owned)?,
+            document_binding: Nullable(None),
+            document_storage_ready: false,
+            operation_history_complete: false,
+            operations,
+            unavailable_operation_refs: unavailable,
+        })
+    }
     /// Revoke new admission and signal all operation tokens without joining worker threads.
     pub fn close_begin(&self) {
         let Ok(_admission) = self.shared.admission.lock() else {
             return;
         };
         if !self.shared.closed.swap(true, Ordering::AcqRel) {
+            if let Ok(mut phase) = self.shared.projection.lock() {
+                *phase = HostPhase::Closing;
+            }
             self.shared.operations.stop_all();
             let _ = self.sender.try_send(Control::Stop);
         }

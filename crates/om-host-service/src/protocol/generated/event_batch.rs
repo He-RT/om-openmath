@@ -10,6 +10,8 @@ pub struct EventBatch {
     pub events: Vec<EventEnvelope>,
     /// Contract field `needs_resync`.
     pub needs_resync: bool,
+    /// Contract field `last_rust_event_sequence`.
+    pub last_rust_event_sequence: Serial,
 }
 impl std::fmt::Debug for EventBatch {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {

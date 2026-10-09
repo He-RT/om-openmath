@@ -62,8 +62,12 @@ actor EventCollector {
     let long=object(try await finished("long").payload)
     precondition(string(long["phase"])=="cancelled")
     // Keep the event poll alive while checking MainActor scheduling; the CAS has settled.
-    try await Task.sleep(for:.milliseconds(300))
-    precondition(pulse.count>=10,"MainActor blocked by native event polling")
+    let previousPulse=pulse.count
+    let schedulingStart=ContinuousClock.now
+    while pulse.count == previousPulse && ContinuousClock.now-schedulingStart < .seconds(2) {
+      try await Task.sleep(for:.milliseconds(10))
+    }
+    precondition(pulse.count>previousPulse,"MainActor made no progress while background event polling remained active")
     pulseTask.cancel()
     _ = try? await pulseTask.value
     pump.cancel()

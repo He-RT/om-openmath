@@ -730,12 +730,16 @@
         },
         "needs_resync": {
           "type": "boolean"
+        },
+        "last_rust_event_sequence": {
+          "$ref": "#/$defs/Serial"
         }
       },
       "required": [
         "protocol_version",
         "events",
-        "needs_resync"
+        "needs_resync",
+        "last_rust_event_sequence"
       ],
       "additionalProperties": false
     },
@@ -752,6 +756,150 @@
       "required": [
         "protocol_version",
         "error"
+      ],
+      "additionalProperties": false
+    },
+    "HostPhase": {
+      "type": "string",
+      "enum": [
+        "starting",
+        "ready",
+        "closing",
+        "closed",
+        "failed"
+      ]
+    },
+    "HostOperationStatus": {
+      "type": "object",
+      "properties": {
+        "operation_ref": {
+          "$ref": "#/$defs/Identity"
+        },
+        "phase": {
+          "type": "string",
+          "enum": [
+            "queued",
+            "running",
+            "cancelling",
+            "completed",
+            "cancelled",
+            "failed"
+          ]
+        },
+        "result": {
+          "anyOf": [
+            {
+              "type": "object"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "error_code": {
+          "anyOf": [
+            {
+              "type": "string",
+              "maxLength": 256
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "operation_ref",
+        "phase",
+        "result",
+        "error_code"
+      ],
+      "additionalProperties": false
+    },
+    "HostSnapshotQuery": {
+      "type": "object",
+      "properties": {
+        "protocol_version": {
+          "const": 1
+        },
+        "runtime_instance_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "operation_refs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Identity"
+          },
+          "maxItems": 4
+        },
+        "include_results": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "protocol_version",
+        "runtime_instance_id",
+        "operation_refs",
+        "include_results"
+      ],
+      "additionalProperties": false
+    },
+    "HostSnapshot": {
+      "type": "object",
+      "properties": {
+        "protocol_version": {
+          "const": 1
+        },
+        "runtime_instance_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "host_phase": {
+          "$ref": "#/$defs/HostPhase"
+        },
+        "rust_event_sequence": {
+          "$ref": "#/$defs/Serial"
+        },
+        "document_binding": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/DocumentBinding"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "document_storage_ready": {
+          "type": "boolean"
+        },
+        "operation_history_complete": {
+          "const": false
+        },
+        "operations": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/HostOperationStatus"
+          },
+          "maxItems": 100
+        },
+        "unavailable_operation_refs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Identity"
+          },
+          "maxItems": 4
+        }
+      },
+      "required": [
+        "protocol_version",
+        "runtime_instance_id",
+        "host_phase",
+        "rust_event_sequence",
+        "document_binding",
+        "document_storage_ready",
+        "operation_history_complete",
+        "operations",
+        "unavailable_operation_refs"
       ],
       "additionalProperties": false
     }
@@ -774,6 +922,12 @@
     },
     {
       "$ref": "#/$defs/HostFailure"
+    },
+    {
+      "$ref": "#/$defs/HostSnapshotQuery"
+    },
+    {
+      "$ref": "#/$defs/HostSnapshot"
     }
   ]
 }

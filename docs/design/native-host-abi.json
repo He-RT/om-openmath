@@ -39,6 +39,11 @@
       "om_host_handle *host, uint32_t wait_ms, size_t max_bytes"
     ],
     [
+      "om_host_buffer",
+      "om_host_read_snapshot",
+      "om_host_handle *host, const unsigned char *query_json, size_t len"
+    ],
+    [
       "int32_t",
       "om_host_cancel",
       "om_host_handle *host, const unsigned char *operation_id, size_t len"
@@ -77,5 +82,6 @@
       "-2": "invalid or already consumed handle",
       "-4": "internal error/panic"
     }
-  }
+  },
+  "read_snapshot": "Trusted host readback, independent of admission/event queues. Bounded immutable facts and sequence fence; no new operation or CAS/IO. Serialize after short projection lock."
 }

@@ -4,9 +4,9 @@
 
 2026-10-09。目标`0.1.0-pre-alpha.4`，当前运行/公开版本`.3`；开发`dev`，不合main、不改旧标签、本机不启动iOS模拟器。本文只记录结果，规格及完成标准唯一见主计划；计划编写本身不计实施完成。
 
-**当前状态：** 9任务完成（R4.0.01/02/03/04/05/06/08/09/11）；其余89任务尚未完成；32最终运行/发行gate全部not_run；candidate未分配，ready_to_publish=false，released_verified=false。设计/HTML/Schema通过不填运行时pass。
+**当前状态：** 10任务完成（R4.0.01/02/03/04/05/06/07/08/09/11）；其余88任务尚未完成；32最终运行/发行gate全部not_run；candidate未分配，ready_to_publish=false，released_verified=false。设计/HTML/Schema通过不填运行时pass。
 
-**下一任务：** R4.0.07事件路由/去重/缺口恢复与权威投影（后台客户端已接通实际ABI）；R4.0.10故障fixture可按接口前置开始。R4.0.08/09同提交全部CI已通过。按DAG推进，R4.5.07必须在R4.5.05冻结前完成。
+**下一任务：** R4.0.10故障fixture基础与R4.1.01 SQLite单写者（原生宿主/事件/确认投影已接通）；R4.0.10故障fixture可按接口前置开始。R4.0.08/09同提交全部CI已通过。按DAG推进，R4.5.07必须在R4.5.05冻结前完成。
 
 ## 已知外部前置
 
@@ -25,8 +25,8 @@
 | [x] [R4.0.03](PRE_ALPHA_4.md#task-r4.0.03) | 原生Mac工程和数学链接骨架 | completed | Release build / native AX /真实C ABI读回 | 75b4e5c |
 | [x] [R4.0.04](PRE_ALPHA_4.md#task-r4.0.04) | 冻结框架无关DTO与新MacABI契约 | completed | 91 DTO / Rust+Swift / CI37880165376 | 21c9254 |
 | [x] [R4.0.05](PRE_ALPHA_4.md#task-r4.0.05) | 安全host-service所有者与调度骨架 | completed | 10调度+9契约 / 真实CAS / 独立取消 / Clippy | daecc3f |
-| [x] [R4.0.06](PRE_ALPHA_4.md#task-r4.0.06) | 新CABI句柄、缓冲与直接取消 | completed | 9 Rust ABI / 真实 Swift 调用 / Release 链接 | 下次补记 |
-| [ ] [R4.0.07](PRE_ALPHA_4.md#task-r4.0.07) | Swift客户端、事件泵和权威投影 | in_progress | 后台客户端/轮询/取消已接通；路由与权威投影待实现 | — |
+| [x] [R4.0.06](PRE_ALPHA_4.md#task-r4.0.06) | 新CABI句柄、缓冲与直接取消 | completed | 9 Rust ABI / 真实 Swift 调用 / Release 链接 | c9bb366 |
+| [x] [R4.0.07](PRE_ALPHA_4.md#task-r4.0.07) | Swift客户端、事件泵和权威投影 | completed | 纯reducer / 真实ABI丢帧恢复 / 原生AX运行与停止 | 下次补记 |
 | [x] [R4.0.08](PRE_ALPHA_4.md#task-r4.0.08) | 共享Modern自动续行与根因诊断 | completed | 91 DTO / Rust+Swift / CI37880165376 | 21c9254 |
 | [x] [R4.0.09](PRE_ALPHA_4.md#task-r4.0.09) | 原语言和数学基线持续兼容 | completed | 91 DTO / Rust+Swift / CI37880165376 | 21c9254 |
 | [ ] [R4.0.10](PRE_ALPHA_4.md#task-r4.0.10) | fixture与真实故障注入基础设施 | planned | — | — |
@@ -197,3 +197,14 @@ Done依据与覆盖case/proof:
 - 工作区完整Rust1122通过/2原ignored、全Clippy、纯WASM、17Python、生成协议/工程/函数文档与结构检查通过；完整回归之后的新ABI负例单独再验收为9通过。Mac ARM64/SDK27 Release build及strict ad-hoc签名通过。新的macos-native.yml在Xcode27镜像持续构建/执行Swift实际ABI与客户端fixture；它不代替最终签名公证/真实UI/candidate gate。
 - R4.0.07继续in_progress：后台transport与实际计算已实现；App窗口仍是链接预览，NotebookViewModel、producer独立计数、重复/缺口/旧scope reducer与resync尚待接通，不能标完整工作台或此任务完成。
 - [ffi.json](../acceptance/pre-alpha.4/development/r40/ffi.json)记录原始日志/散列；原件在target/acceptance/pre-alpha.4/development/r40/。前一scheduler提交daecc3f的CI37895404872查询时Rust/frontend/dependencies成功、iOS仍进行，不能写同SHA全绿或用它证明本次ABI。下一步直接R4.0.07，随后fixture基础/SQLite持久化与完整原生/Agent。
+
+## R4开发记录 D009 — 独立读回、序列恢复和原生试算
+
+- R4.0.07完成：96个共享DTO新增HostSnapshotQuery/HostSnapshot/HostOperationStatus，新的om_host_read_snapshot通过稳定guard读取实际owner状态与序列，最多4项详情、有界全部摘要，不接纳新操作、不消耗事件队列。终止接纳/事件生成与读取采用同一短投影顺序，JSON编码/解码/释放均后台进行。当前document_binding=null/storage_ready=false，未制造第二份笔记本或保存成功。
+- AppEventRouter按runtime/document/liveness/sequence拒绝旧回执，Rust/source/UI计数独立；未知事件需要owner基线。NativeHostSession建立单事件消费者、最多32 pending/8 UI订阅、admission-before-delivery关联与原ID恢复。UI流是有界最新完整投影，终止awaiters独立；停止只能由实际终止/读回确认，重复停止不再发请求，并发close等待同一真正关闭。
+- 纯reducer验证重复/缺口/旧runtime与文档/不同producer计数/背压/空批次序列位置/关闭后拒绝。真实ABI fixture将event字节预算压到128（所有终止帧无法容纳），12次精确4通过独立读回获得；慢订阅取得最新完整结果，真实解析错误、停止与晚到停止、两次并发关闭通过。
+- 首次强制丢帧fixture停住，sample显示CAS/控制worker已空闲、消费者等待事件；查明在途旧snapshot覆盖较新resync信号。增加batch.last_rust_event_sequence与恢复revision，旧快照不能清除新缺口，读回跨越最新位置才恢复；首轮原件保留。第二attempt又发现await响应先于UI完整投影发布，改为先发布再resume，第三及最终全部通过；不通过无限重试、伪成功或放宽数学预算绕过。
+- NativeHostClient所有ABI/编码/解码队列严格检查非主线程，NotebookViewModel只持确认事实和隔离draft。SDK27 ARM64 Release通过；CUA真实AX观察2+2→4、源码编辑保留旧结果并标已修改、错误显示“表达式尚未完成，需要右侧表达式”、长solve/map仍可停止且实际已停止、停止后新计算4、⌘↩多行f(4)→5。仅手工隔离试算，完整工作台/文件/渲染/Agent仍按后续88任务实施。
+- 本批最新host-service 11调度+9契约、apple-ffi 9 ABI、Clippy/deny、17Python及生成协议/工程检查通过。Swift脚本执行实际ABI/DTO负例/actor/reducer/session五类fixture。原kernel/iOS ABI和53数学期望未改，没有本地模拟器。
+- c9bb366的CI37897937189整体失败：Rust/frontend成功；dependencies准确指出om-apple-ffi内部path缺version（已改workspace固定版本、本地deny全通过）；Mac实际ABI与DTO通过但300ms≥10心跳测试失败（改非主线程硬检查+真实请求/心跳取得进展，并记录时序，不伪称门禁旧绿）。iPhone原18整次1086.392ms/内核88.524ms，transport queued0.074/encoded0.056/FFI88.661/decode3.286/resume994.294ms，仍超原1s。原门槛保持；后续新SHA需实跑，不能将内核88ms当移动端通过。
+- [router.json](../acceptance/pre-alpha.4/development/r40/router.json)登记测试、UI实际观察、原失败与CI附件散列；源码版本仍.3，最终32candidate gates尚未执行。下一步fixture基建/SQLite单写者与真实存储，跟进新CI/移动端恢复阶段延迟。

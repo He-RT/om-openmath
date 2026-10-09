@@ -240,3 +240,40 @@ fn actual_catalog_pagination_and_failed_math_never_claim_success() {
     assert_eq!(result["effect_committed"], false);
     host.close_finish().unwrap();
 }
+
+#[test]
+fn independent_snapshot_recovers_dropped_terminal_facts_and_never_consumes_admission() {
+    let host = host(1);
+    for i in 0..10 {
+        let id = format!("snapshot-{i}");
+        submit(&host, &id, math("2+2"));
+        settle(&host, &id);
+    }
+    assert!(host.next_events(0, 512 * 1024).unwrap().needs_resync);
+    let query=serde_json::to_vec(&json!({"protocol_version":1,"runtime_instance_id":"runtime-1","operation_refs":["snapshot-0","snapshot-9","absent"],"include_results":true})).unwrap();
+    let snapshot = host.read_snapshot(&query).unwrap();
+    assert_eq!(snapshot.unavailable_operation_refs, vec!["absent"]);
+    assert!(!snapshot.operation_history_complete);
+    assert!(!snapshot.document_storage_ready);
+    assert!(snapshot.rust_event_sequence.get() >= 11);
+    for id in ["snapshot-0", "snapshot-9"] {
+        let op = snapshot
+            .operations
+            .iter()
+            .find(|op| op.operation_ref == id)
+            .unwrap();
+        assert_eq!(
+            op.result.0.as_ref().unwrap()["response"]["output"]["items"][0]["input_form"],
+            "4"
+        );
+    }
+    for _ in 0..80 {
+        host.read_snapshot(&query).unwrap();
+    }
+    assert!(host.operation("absent").is_none());
+    assert_eq!(
+        host.read_snapshot(&query).unwrap().rust_event_sequence,
+        snapshot.rust_event_sequence
+    );
+    host.close_finish().unwrap();
+}

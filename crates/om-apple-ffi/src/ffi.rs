@@ -165,6 +165,23 @@ pub extern "C" fn om_host_next_events(
             .next_events(wait_ms, max_bytes)
     })
 }
+/// Read owner facts and their sequence fence on a background caller, without the event queue.
+/// # Safety
+/// `json` must be readable for len bytes during this call; NULL only for len=0.
+#[unsafe(no_mangle)]
+pub unsafe extern "C" fn om_host_read_snapshot(
+    host: *mut OmHostHandle,
+    json: *const u8,
+    len: usize,
+) -> OmHostBuffer {
+    packet(|| {
+        let guard = registry::acquire(host, true).map_err(str::to_owned)?;
+        // SAFETY: exported caller-readable contract applies and input is copied before decode.
+        guard
+            .host()
+            .read_snapshot(&unsafe { copied_input(json, len, protocol::MAX_CONTROL_BYTES) }?)
+    })
+}
 /// Signal the operation directly. 1=signalled, 0=terminal; negative codes are in the C header.
 /// # Safety
 /// `operation_id` must be readable for len bytes during this call; NULL only for len=0.

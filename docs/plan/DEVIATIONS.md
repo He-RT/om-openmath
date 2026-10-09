@@ -398,3 +398,9 @@ L2使用精确标称GM分数、50位FindRoot/1000迭代和真实残差，报告�
 - C opaque pointer只作安全registry key，不解引用；registry admission和活动guard加一原子排序，finish消费live entry、等待已有调用和各owner。为避免内存地址复用造成旧指针ABA，8字节token及小索引保留到进程结束（4096次生命周期创建/128同时宿主）；完整host/results及时释放。此边界上限公开，不声称释放token后任意旧pointer仍可安全识别。
 - buffer有64MiB/1024 outstanding上限，NULL/0明确为空；调用者必须恰好释放一次，不把重复buffer副本当独立所有权。长度不匹配不消费分配，free不构造外部pointer的Box。HostFailure作为版本化typed错误回复加入机器schema；生成枚举名改为正常Rust PascalCase/Swift snake_case，wire字符串保持原样。
 - Swift NativeHostClient拥有ABI生命周期，提交/事件/直接取消/关闭采用独立后台队列。Close等待在utility队列，不在actor或MainActor join。未完成路由/权威笔记本时只交付transport并保留R4.0.07 unchecked；新CI明确是开发桥接验证，不带个人签名或模型秘密。
+
+### R4-D005：队列独立快照与实际事件位置（2026-10-09）
+
+- 新Mac ABI1增加om_host_read_snapshot，仅供可信宿主恢复，不是Pi可调用工具；最多4原操作详情、100摘要。返回实际HostSnapshot、未知引用清单与Rust序列，不通过submit接纳一个会被拥堵事件队列再次丢失的查询，也不重放计算。旧公开iOS接口不变，尚未公开的Mac静态库/Header/客户端/CI同步更新；声明符号现为11项。
+- EventBatch补last_rust_event_sequence：空溢出批次也报告真实恢复位置；快照必须覆盖此位置。恢复revision处理在途读回期间新缺口，旧snapshot不能把新resync清掉。恢复请求不计操作，所有原待完成ID保持；UI只接完整确认投影，终止交付与UI缓冲独立。当前源码/DocCommit功能仍未开放。
+- CI查出内部path wildcard，改为root workspace固定同版依赖，未忽略bans。主线程验证改为全部真实后台操作的线程硬检查与实际state/cancel/调度进展，删除没有产品规格依据的300ms十次心跳假设；原数学/移动1s标准不变。iPhone18约994ms在恢复阶段的失败原件保留，不宣称已解决或把kernel时间替代整次。

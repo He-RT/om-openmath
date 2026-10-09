@@ -17,6 +17,15 @@ swiftc -swift-version 6 -target arm64-apple-macos27.0 "${sources[@]}" \
 target/macos-native-tests/contract-fixtures
 
 swiftc -swift-version 6 -parse-as-library -target arm64-apple-macos27.0 -I macos/Headers \
-  -L target/release -lom_apple_ffi "${sources[@]}" macos/OpenMathNative/NativeHostClient.swift \
+  -L target/release -lom_apple_ffi "${sources[@]}" macos/OpenMathNative/NativeHostClient.swift macos/OpenMathNative/AppEventRouter.swift \
   macos/OpenMathNativeTests/ClientFixtures/main.swift -o target/macos-native-tests/client-fixtures
 target/macos-native-tests/client-fixtures
+
+swiftc -swift-version 6 -target arm64-apple-macos27.0 "${sources[@]}" macos/OpenMathNative/AppEventRouter.swift \
+  macos/OpenMathNativeTests/RouterFixtures/main.swift -o target/macos-native-tests/router-fixtures
+target/macos-native-tests/router-fixtures
+swiftc -swift-version 6 -parse-as-library -target arm64-apple-macos27.0 -I macos/Headers \
+  -L target/release -lom_apple_ffi "${sources[@]}" macos/OpenMathNative/AppEventRouter.swift \
+  macos/OpenMathNative/NativeHostClient.swift macos/OpenMathNative/NativeHostSession.swift \
+  macos/OpenMathNativeTests/SessionFixtures/main.swift -o target/macos-native-tests/session-fixtures
+target/macos-native-tests/session-fixtures

@@ -1,0 +1,83 @@
+{
+  "task": "R4.0.07",
+  "development_only": true,
+  "runtime_version": "0.1.0-pre-alpha.3",
+  "generated_models": 96,
+  "ABI_symbols": 11,
+  "actual_suppressed_terminal_results_recovered": 12,
+  "logs": [
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r40/router-rust-final-complete.log",
+      "sha256": "12e7315721b918503f0eab797464a1f363049f5234a8342c8e0a0d7fd3fbac86"
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r40/router-clippy-final.log",
+      "sha256": "b2a366269a0b407fee28b8dd2dd1cbfbe682eb5c72110a8e70dfc6bcf29f5e99"
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r40/router-deny-final.log",
+      "sha256": "ca24ed5b98eb3d23e57c9f3328ed96afad21a2d9e3645b821bd72d778205861c"
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r40/router-swift-all-final.log",
+      "sha256": "01f6a9202a2e62738d8da40f6931e4bcd66e9be4961b7673ec7a777d6b191d04"
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r40/router-native-build-final.log",
+      "sha256": "cd497096e4e9f3279330053cd671bc0a36bf548aa14e1364eeaafa4f7df486e2"
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r40/router-python-final.log",
+      "sha256": "5a956de1cdc9113d6af78cd4cb43baa369a70e3ca200438f18fb0a9e0a9b5159"
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r40/router-session-stall-sample.txt",
+      "sha256": "f55c825edc02990244c3c84413824afd97e431696672b9ad146d9e3b57b031c8"
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r40/router-session-run-second.log",
+      "sha256": "48abcd21b8a437c6cffe7636b3261d4b84e456157a52f9659963553cfea5bb39"
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r40/router-session-run-third.log",
+      "sha256": "fc55b2485063621a6346ce112b5a1acbe96c867faa08f4f9c86d0a63e1937a16"
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r40/c9-ci-failures-complete.log",
+      "sha256": "450cd246f860724df7195e92a9ab93405435a33a1e6bcf64c8afafab0a313618"
+    }
+  ],
+  "native_UI_CUA": {
+    "exact": "2+2 -> 4",
+    "parse_error": "表达式尚未完成，需要右侧表达式",
+    "source_edit": "old result retained, source changed label",
+    "cancellation": "running solve/map -> actual stopped -> new 2+2 -> 4",
+    "keyboard": "Command-Return: let f(x)=newline x+1; f(4) -> 5",
+    "screenshot": "CUA tool transcript; no exported PNG yet"
+  },
+  "previous_CI": {
+    "run": 37897937189,
+    "sha": "c9bb3665406e78c8c391f3fcddf7aa28620abc62",
+    "conclusion": "failure",
+    "native_artifact_sha256": "05fceec9422662b5038e543d0561da9ed0c5d7bb4394288e6e236969da3af5c7",
+    "ios_row18": {
+      "total_ms": 1086.392125,
+      "kernel_ms": 88.523584,
+      "transport": {
+        "resume_ms": 994.2938760000001,
+        "encoded_ms": 0.055541,
+        "ffi_ms": 88.66108399999999,
+        "queued_ms": 0.073666,
+        "decode_ms": 3.285625
+      }
+    },
+    "ios_1s_gate": "failed; unchanged threshold; unresolved resume delay"
+  },
+  "final_candidate_gates_executed": false,
+  "remaining": [
+    "fault fixtures",
+    "actual SQLite/document transactions/checkpoint",
+    "complete native workspace/renderers/Agent/settings",
+    "final candidate/signing/publication"
+  ]
+}

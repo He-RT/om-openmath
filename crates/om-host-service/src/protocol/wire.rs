@@ -1,6 +1,6 @@
 //! Versioned native request decode; valid shapes still require actual owner admission.
 use super::{
-    generated::{HostInit, RequestEnvelope},
+    generated::{HostInit, HostSnapshotQuery, RequestEnvelope},
     validation,
 };
 use serde_json::Value;
@@ -27,6 +27,11 @@ pub fn decode_init(bytes: &[u8]) -> Result<HostInit, String> {
 /// Decode a submission before separate runtime/generation/scope checks.
 pub fn decode_request(bytes: &[u8]) -> Result<RequestEnvelope, String> {
     validation::decode(bytes, &schema()["$defs"]["RequestEnvelope"], schema())
+}
+
+/// Decode a trusted host readback query; it does not admit an executable operation.
+pub fn decode_snapshot_query(bytes: &[u8]) -> Result<HostSnapshotQuery, String> {
+    validation::decode(bytes, &schema()["$defs"]["HostSnapshotQuery"], schema())
 }
 
 /// Verify owner-provided runtime/document facts after decode. This is not a task grant.

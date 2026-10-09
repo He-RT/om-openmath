@@ -23,6 +23,7 @@ private final class NativeHostHandle: @unchecked Sendable {
 private enum NativeHostQueues {
   static let control = DispatchQueue(label: "org.openmath.native.control", qos: .userInitiated)
   static let events = DispatchQueue(label: "org.openmath.native.events", qos: .userInitiated)
+  static let recovery = DispatchQueue(label: "org.openmath.native.recovery", qos: .userInitiated)
   static let cancel = DispatchQueue(label: "org.openmath.native.cancel", qos: .userInitiated)
   static let shutdown = DispatchQueue(label: "org.openmath.native.shutdown", qos: .utility)
 }
@@ -36,6 +37,7 @@ enum NativeHostClientError: Error, Sendable {
 actor NativeHostClient {
   let runtimeInstanceID: String
   private var handle: NativeHostHandle?
+  private var closeTask:Task<Void,any Error>?
   private init(runtime: String, handle: NativeHostHandle) {
     runtimeInstanceID = runtime
     self.handle = handle
@@ -87,6 +89,43 @@ actor NativeHostClient {
       return batch
     }
   }
+  func nextDecodedEvents(maxBytes:Int=512*1024) async throws -> NativeDecodedBatch {
+    guard let handle else { throw NativeHostClientError.closing }
+    return try await Self.background(NativeHostQueues.events) {
+      let batch: EventBatch = try Self.read(om_host_next_events(handle.pointer,100,maxBytes))
+      guard batch.protocol_version==1 else { throw NativeHostClientError.incompatibleVersion }
+      let events = try batch.events.map { event in
+        var status:HostOperationStatus?
+        if event.event_kind == .operation_finished || event.event_kind == .operation_progress {
+          status = try JSONDecoder().decode(HostOperationStatus.self, from:JSONEncoder().encode(event.payload))
+        }
+        return NativeDecodedEvent(envelope:event,operation:status)
+      }
+      return NativeDecodedBatch(needsResync:batch.needs_resync,lastRustSequence:batch.last_rust_event_sequence.value,events:events)
+    }
+  }
+  func snapshot(operations:[String]=[],includeResults:Bool=false) async throws -> HostSnapshot {
+    guard let handle else { throw NativeHostClientError.closing }
+    let runtime=runtimeInstanceID
+    return try await Self.background(NativeHostQueues.recovery) {
+      let query=HostSnapshotQuery(protocol_version:1,runtime_instance_id:runtime,
+        operation_refs:operations,include_results:includeResults)
+      let data=try JSONEncoder().encode(query)
+      let packet=data.withUnsafeBytes { raw in
+        om_host_read_snapshot(handle.pointer,raw.bindMemory(to:UInt8.self).baseAddress,raw.count)
+      }
+      let snapshot:HostSnapshot=try Self.read(packet)
+      guard snapshot.protocol_version==1,snapshot.runtime_instance_id==runtime else { throw NativeHostClientError.invalidReply }
+      return snapshot
+    }
+  }
+  func beginClose() async throws {
+    guard let handle else { return }
+    try await Self.background(NativeHostQueues.cancel) {
+      let packet=om_host_close_begin(handle.pointer)
+      let _:HostJSONValue=try Self.read(packet)
+    }
+  }
   /// This queue is independent of event polling and submission, and of the Rust CAS workers.
   func cancel(operation: String) async throws -> Bool {
     guard let handle else { throw NativeHostClientError.closing }
@@ -101,15 +140,20 @@ actor NativeHostClient {
   }
   /// Callers stop their event consumer first. Outstanding C calls are guarded and settled in Rust.
   func close() async throws {
+    if let closeTask { return try await closeTask.value }
     guard let handle else { return }
     self.handle = nil
     guard handle.claimFinish() else { return }
-    try await Self.background(NativeHostQueues.shutdown) {
-      let begin = om_host_close_begin(handle.pointer)
-      defer { om_host_buffer_free(begin) }
-      let status = om_host_close_finish(handle.pointer)
-      guard status == 0 else { throw NativeHostClientError.status(status) }
+    let task=Task {
+      try await Self.background(NativeHostQueues.shutdown) {
+        let begin = om_host_close_begin(handle.pointer)
+        defer { om_host_buffer_free(begin) }
+        let status = om_host_close_finish(handle.pointer)
+        guard status == 0 else { throw NativeHostClientError.status(status) }
+      }
     }
+    closeTask=task
+    try await task.value
   }
   private static func read<T: Decodable>(_ buffer: om_host_buffer) throws -> T {
     defer { om_host_buffer_free(buffer) }
@@ -126,6 +170,7 @@ actor NativeHostClient {
     _ work: @escaping @Sendable () throws -> T) async throws -> T {
     try await withCheckedThrowingContinuation { continuation in
       queue.async {
+        precondition(!Thread.isMainThread, "Native ABI/encoding/decoding must stay off the UI thread")
         do { continuation.resume(returning: try work()) }
         catch { continuation.resume(throwing: error) }
       }

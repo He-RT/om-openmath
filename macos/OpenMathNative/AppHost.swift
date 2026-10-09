@@ -2,46 +2,48 @@ import AppKit
 import OpenMathHost
 import SwiftUI
 
-@main
-struct OpenMathNativeApp: App {
-  var body: some Scene {
-    Window("OpenMath Preview", id: "workspace") {
-      LinkingStatusView()
-        .frame(minWidth: 640, minHeight: 560)
-    }
-    .defaultSize(width: 1360, height: 860)
+@main struct OpenMathNativeApp:App {
+  var body:some Scene {
+    Window("OpenMath Preview",id:"workspace") {
+      HostScratchView().frame(minWidth:640,minHeight:560)
+    }.defaultSize(width:1100,height:780)
   }
 }
-
-private struct LinkingStatusView: View {
-  private let abi = om_host_abi_version()
-  private let metadata = om_host_metadata_version()
-  private let kernelVersion = String(cString: om_host_kernel_release_version())
-  private let targetVersion =
-    Bundle.main.object(forInfoDictionaryKey: "OpenMathTargetVersion") as? String ?? "未知"
-
-  var body: some View {
-    ScrollView {
-      VStack(alignment: .leading, spacing: 24) {
-        Label("OpenMath", systemImage: "function")
-          .font(.largeTitle)
-        Text("原生 Mac 开发预览")
-          .font(.title2)
-        Text("完整文档宿主尚未接通；本窗口验证原生工程与 Rust 库链接。")
-          .foregroundStyle(.secondary)
-        Form {
-          LabeledContent("桥接 ABI", value: String(abi))
-          LabeledContent("实际内核元数据", value: metadata > 0 ? String(metadata) : "链接查询失败")
-          LabeledContent("内核源码版本", value: kernelVersion)
-          LabeledContent("本版交付目标", value: targetVersion)
-        }
-        Text("笔记本编辑、执行、存储与助手将按任务接入。现有 OpenMath .3 安装和数据保留。")
-          .foregroundStyle(.secondary)
+private struct HostScratchView:View {
+  @StateObject private var model=NotebookViewModel()
+  var body:some View {
+    VStack(alignment:.leading,spacing:16) {
+      HStack {
+        Label("OpenMath",systemImage:"function").font(.title)
+        Spacer()
+        Text("开发预览").foregroundStyle(.secondary)
       }
-      .padding(24)
-      .frame(maxWidth: 800, alignment: .leading)
-      .frame(maxWidth: .infinity, alignment: .leading)
-    }
-    .tint(.green)
+      Text("试算").font(.headline)
+      TextEditor(text:$model.draft).font(.system(.body,design:.monospaced))
+        .frame(minHeight:120,maxHeight:240).padding(4)
+        .overlay(RoundedRectangle(cornerRadius:8).stroke(.quaternary))
+        .accessibilityLabel("数学源码").accessibilityIdentifier("scratch-source")
+        .onChange(of:model.draft) { model.noteDraft() }
+      HStack {
+        Button("运行",systemImage:"play.fill") { Task { await model.run() } }
+          .keyboardShortcut(.return,modifiers:[.command])
+          .disabled(model.projection?.hostPhase != .ready || model.operationID != nil)
+          .accessibilityIdentifier("scratch-run")
+        Button("停止",systemImage:"stop.fill") { Task { await model.stop() } }
+          .disabled(model.operationID==nil || model.cancelPending).accessibilityIdentifier("scratch-stop")
+        Text(model.message).foregroundStyle(.secondary).accessibilityIdentifier("scratch-status")
+        Spacer()
+        if model.isStale { Label("源码已修改",systemImage:"clock").foregroundStyle(.secondary) }
+      }
+      Divider()
+      ScrollView {
+        Text(model.output.isEmpty ? "输入表达式后运行，结果将显示在这里。" : model.output)
+          .font(.system(.body,design:.monospaced)).textSelection(.enabled)
+          .frame(maxWidth:.infinity,alignment:.leading).accessibilityIdentifier("scratch-output")
+      }.frame(maxWidth:.infinity,maxHeight:.infinity)
+      Text("此处为隔离试算。笔记本工作台与文件保存正在接入。").font(.footnote).foregroundStyle(.secondary)
+    }.padding(24).tint(.green)
+      .task { await model.start() }
+      .onDisappear { Task { await model.close() } }
   }
 }

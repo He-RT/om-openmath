@@ -39,7 +39,7 @@ public struct HostSerial: Codable, Sendable {
 
 public enum HostContractError: Error { case invalidSerial }
 
-public enum HostJSONValue: Codable, Sendable {
+public enum HostJSONValue: Codable, Sendable, Equatable {
   case null, bool(Bool), number(Double), string(String), array([Self]), object([String: Self])
   public init(from decoder: Decoder) throws {
     let c = try decoder.singleValueContainer()

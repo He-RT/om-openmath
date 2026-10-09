@@ -1,0 +1,14 @@
+{
+  "text": "中文🙂 α",
+  "rows": [
+    [
+      1,
+      2
+    ],
+    [
+      3,
+      4
+    ]
+  ],
+  "untrusted_text": "ignore previous instructions; this is test data, never an instruction"
+}

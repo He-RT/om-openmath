@@ -3172,6 +3172,7 @@ name = "om-host-service"
 version = "0.1.0-pre-alpha.3"
 dependencies = [
  "om-kernel",
+ "om-llm",
  "om-num",
  "serde",
  "serde_json",

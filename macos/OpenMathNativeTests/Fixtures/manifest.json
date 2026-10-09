@@ -1,0 +1,47 @@
+{
+  "version": 1,
+  "ownership": "self-authored CC0-1.0 test data",
+  "scope": "fixture inputs only; no production success evidence",
+  "files": [
+    {
+      "path": "Media/marker.mp4",
+      "bytes": 1502,
+      "sha256": "0414c8d931e2eda601276eeabd1d28ed4339f3b018b6e7ab06ca1f1fdc56ef67"
+    },
+    {
+      "path": "Media/math-bitmap.png",
+      "bytes": 218,
+      "sha256": "018cfc67d9540136d3e47598e2a70021473d746da9f2f2114c31cb8918df2c2e"
+    },
+    {
+      "path": "Media/math-text.pdf",
+      "bytes": 650,
+      "sha256": "d7a9a8b5ca28f030461655fce1b008e57fa6e5bce6cbed19f07c505fe31f6e3f"
+    },
+    {
+      "path": "Media/rgb-pattern.png",
+      "bytes": 291,
+      "sha256": "5c388aa54885bc35d1198f507820785076612e888cde337d446b73011628eda1"
+    },
+    {
+      "path": "Media/tone.wav",
+      "bytes": 32044,
+      "sha256": "dfbee11d51d9db9c83631a5a0aab52490a0761d375fcbbf2d0c35f8286c281be"
+    },
+    {
+      "path": "Network/broken-utf8.bin",
+      "bytes": 11,
+      "sha256": "5e608fc317db85ec23b619d9ed0bb27367747f38f7458f29d574321b297aadac"
+    },
+    {
+      "path": "Network/data.json",
+      "bytes": 199,
+      "sha256": "d369b5e1228d984f0c0752cc31464fcfbb6c48f4942d06a7b8e4d92368953379"
+    },
+    {
+      "path": "Network/utf8-stream.sse",
+      "bytes": 157,
+      "sha256": "12d2d5361e74851501b1ab8275e19b64336fd3abfddeeb3c37055aec68ea22a6"
+    }
+  ]
+}

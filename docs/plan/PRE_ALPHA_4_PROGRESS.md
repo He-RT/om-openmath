@@ -4,9 +4,9 @@
 
 2026-10-09。目标`0.1.0-pre-alpha.4`，当前运行/公开版本`.3`；开发`dev`，不合main、不改旧标签、本机不启动iOS模拟器。本文只记录结果，规格及完成标准唯一见主计划；计划编写本身不计实施完成。
 
-**当前状态：** 10任务完成（R4.0.01/02/03/04/05/06/07/08/09/11）；其余88任务尚未完成；32最终运行/发行gate全部not_run；candidate未分配，ready_to_publish=false，released_verified=false。设计/HTML/Schema通过不填运行时pass。
+**当前状态：** 11任务完成（R4.0.01/02/03/04/05/06/07/08/09/10/11）；其余87任务尚未完成；32最终运行/发行gate全部not_run；candidate未分配，ready_to_publish=false，released_verified=false。设计/HTML/Schema通过不填运行时pass。
 
-**下一任务：** R4.0.10故障fixture基础与R4.1.01 SQLite单写者（原生宿主/事件/确认投影已接通）；R4.0.10故障fixture可按接口前置开始。R4.0.08/09同提交全部CI已通过。按DAG推进，R4.5.07必须在R4.5.05冻结前完成。
+**下一任务：** R4.1.01 SQLite单写者与新通道初始化，接着真实文档事务/耐久回执。原生宿主与故障fixture已接通。；R4.0.10故障fixture可按接口前置开始。R4.0.08/09同提交全部CI已通过。按DAG推进，R4.5.07必须在R4.5.05冻结前完成。
 
 ## 已知外部前置
 
@@ -26,10 +26,10 @@
 | [x] [R4.0.04](PRE_ALPHA_4.md#task-r4.0.04) | 冻结框架无关DTO与新MacABI契约 | completed | 91 DTO / Rust+Swift / CI37880165376 | 21c9254 |
 | [x] [R4.0.05](PRE_ALPHA_4.md#task-r4.0.05) | 安全host-service所有者与调度骨架 | completed | 10调度+9契约 / 真实CAS / 独立取消 / Clippy | daecc3f |
 | [x] [R4.0.06](PRE_ALPHA_4.md#task-r4.0.06) | 新CABI句柄、缓冲与直接取消 | completed | 9 Rust ABI / 真实 Swift 调用 / Release 链接 | c9bb366 |
-| [x] [R4.0.07](PRE_ALPHA_4.md#task-r4.0.07) | Swift客户端、事件泵和权威投影 | completed | 纯reducer / 真实ABI丢帧恢复 / 原生AX运行与停止 | 下次补记 |
+| [x] [R4.0.07](PRE_ALPHA_4.md#task-r4.0.07) | Swift客户端、事件泵和权威投影 | completed | 纯reducer / 真实ABI丢帧恢复 / 原生AX运行与停止 | ece80a1 |
 | [x] [R4.0.08](PRE_ALPHA_4.md#task-r4.0.08) | 共享Modern自动续行与根因诊断 | completed | 91 DTO / Rust+Swift / CI37880165376 | 21c9254 |
 | [x] [R4.0.09](PRE_ALPHA_4.md#task-r4.0.09) | 原语言和数学基线持续兼容 | completed | 91 DTO / Rust+Swift / CI37880165376 | 21c9254 |
-| [ ] [R4.0.10](PRE_ALPHA_4.md#task-r4.0.10) | fixture与真实故障注入基础设施 | planned | — | — |
+| [x] [R4.0.10](PRE_ALPHA_4.md#task-r4.0.10) | fixture与真实故障注入基础设施 | completed | 自有媒体封存/真实解码、回环HTTP、SIGKILL/ENOSPC、实际budget/stream codec | 下次补记 |
 | [x] [R4.0.11](PRE_ALPHA_4.md#task-r4.0.11) | 发行前置、签名和现场环境预检 | completed | [环境](../acceptance/pre-alpha.4/baseline/environment.json) / verify-env.sh | e876c16 |
 | [ ] [R4.1.01](PRE_ALPHA_4.md#task-r4.1.01) | SQLite单写者与新通道初始化 | planned | — | — |
 | [ ] [R4.1.02](PRE_ALPHA_4.md#task-r4.1.02) | 权威源码、事务和幂等表 | planned | — | — |
@@ -208,3 +208,12 @@ Done依据与覆盖case/proof:
 - 本批最新host-service 11调度+9契约、apple-ffi 9 ABI、Clippy/deny、17Python及生成协议/工程检查通过。Swift脚本执行实际ABI/DTO负例/actor/reducer/session五类fixture。原kernel/iOS ABI和53数学期望未改，没有本地模拟器。
 - c9bb366的CI37897937189整体失败：Rust/frontend成功；dependencies准确指出om-apple-ffi内部path缺version（已改workspace固定版本、本地deny全通过）；Mac实际ABI与DTO通过但300ms≥10心跳测试失败（改非主线程硬检查+真实请求/心跳取得进展，并记录时序，不伪称门禁旧绿）。iPhone原18整次1086.392ms/内核88.524ms，transport queued0.074/encoded0.056/FFI88.661/decode3.286/resume994.294ms，仍超原1s。原门槛保持；后续新SHA需实跑，不能将内核88ms当移动端通过。
 - [router.json](../acceptance/pre-alpha.4/development/r40/router.json)登记测试、UI实际观察、原失败与CI附件散列；源码版本仍.3，最终32candidate gates尚未执行。下一步fixture基建/SQLite单写者与真实存储，跟进新CI/移动端恢复阶段延迟。
+
+## R4开发记录 D010 — 自有输入与真实故障基础
+
+- R4.0.10完成：Fixtures/generate.py自绘sRGB图案及2+2=4字形、PCM WAV、带真实文本的PDF、JSON/Unicode SSE/截断UTF-8；SDK27的GenerateVideo使用新PixelBufferReceiver/独占CVMutablePixelBuffer，生成10帧移动标记H264。封存8项输入/SHA256，不读取用户私件，不复制系统字体。视频可能非逐字节重编码，验收总是使用固定封存字节。音频是正弦而非语音，不以它宣称ASR准确。
+- 实际ImageIO/PDFKit/AVFoundation读取尺寸/颜色空间、PDF文本、音频帧/采样率/功率及全部10个视频帧的实际时间与移动白标像素；不是读取manifest假装媒体解码。Node26.11.1严格TextDecoder各1/2/3/5/13/64字节split精确还原中文emoji；Rust真正SseDecoder/decode_openai_chunk也跨全部split产生同一文字/Finish，ControlledClock/原token触发实际Interrupt Timeout/Interrupted。
+- 真实回环HTTP服务只绑定127.0.0.1，测试显式禁代理，固定分段UTF8、401/429/500、302拒绝和50ms超时可复现，没有付费模型请求。I/O子进程在opened/written/file_synced/renamed/directory_synced真实SIGSTOP后由父SIGKILL，保留各阶段文件；ENOSPC明确注入且失败，无durable receipt。进程中断不代表断电耐久，SQLite原COMMIT/fsync/selector故障仍由R4.1实测，不拿基础fixture替代业务。
+- 命令test-fixtures.sh（固定Node26运行）和2项Rust真实codec/budget测试通过，Clippy/deny/17Python通过。初始生成器旧API警告、SDK27sending像素所有权错误与修复、新Rust用错Vec返回签名及文档lint原件保留，最终采用新SDK唯一像素所有权API；没有删除检查或改数学期望。
+- manifest、生成器、实际解码测试、agent分片工具和Rust support已入库；原件/残留/attempt保存在target/native-fixture-attempts/及target/acceptance/pre-alpha.4/development/r40/，[fixtures.json](../acceptance/pre-alpha.4/development/r40/fixtures.json)记录散列。macos-native CI新增封存媒体/网络/中断检查。
+- ece80a1的CI37916235119读取时native_macos/rust/frontend/dependencies全部success、iOS仍in_progress；此前c9的原18恢复994ms失败继续保留。新fixture提交需用自己的SHA检查，最终candidate gates仍not_run。下一步R4.1.01实际SQLite单写者、根锁、selector和同步证据。

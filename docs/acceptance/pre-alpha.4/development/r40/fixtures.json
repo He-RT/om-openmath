@@ -1,0 +1,49 @@
+{
+  "task": "R4.0.10",
+  "development_only": true,
+  "input_manifest": "macos/OpenMathNativeTests/Fixtures/manifest.json",
+  "input_manifest_sha256": "3e7cbd8cc7580ab4b211b18c39bbea6ac88d90677a95bfdd9138747ca0b88c87",
+  "input_count": 8,
+  "actual_validation": [
+    "ImageIO/PDFKit/AVFoundation media decoding and moving pixels",
+    "strict Node26 UTF8 streaming",
+    "actual Rust sans-IO SSE/provider codec",
+    "actual Interrupt clock/cancel",
+    "loopback HTTP faults",
+    "SIGKILL interruption points and explicit ENOSPC"
+  ],
+  "logs": [
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r40/fixture-all-final.log",
+      "sha256": "24f38ebf4368dd76f47b5cf5c029897ad0956122c4ffb48278b84e54f5f373ff"
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r40/fixture-rust-real-codec-final.log",
+      "sha256": "de72f570ab0f9e6083c34ec04da332c6f94625240b56a23d9fbd962c216ba921"
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r40/fixture-video-generator-modern-second.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r40/fixture-media-run-modern.log",
+      "sha256": "faff6090ed9707ca51db317408c4316bd492e1fe6eb6cd5479c7c6f13bbfbcf2"
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r40/fixture-clippy-final.log",
+      "sha256": "7da98acd8f64fe61ad5fbf45bd37051d2a656cdbf7d890b403ebb48ac88767dc"
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r40/fixture-deny-final.log",
+      "sha256": "ddff697b583d02a0fa0105933dfd8026a7eda942f00585568ecd4342fa78eb02"
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r40/fixture-python-final.log",
+      "sha256": "9c7559a056944109c081de05c5ff2604e931b01c63b376d3aba4697eeb1abb75"
+    }
+  ],
+  "power_loss_durability_claimed": false,
+  "paid_provider_calls": 0,
+  "source_migration_or_user_media_read": false,
+  "final_candidate_gate": false
+}

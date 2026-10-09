@@ -1,0 +1,13 @@
+{
+  "fixture": "macos/OpenMathNativeTests/Fixtures/Network/utf8-stream.sse",
+  "chunk_sizes": [
+    1,
+    2,
+    3,
+    5,
+    13,
+    64
+  ],
+  "expected_text": "中文🙂 π",
+  "scope": "transport only; no fabricated CAS/tool results"
+}

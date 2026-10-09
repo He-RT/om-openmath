@@ -1476,5 +1476,16 @@
     "post_commit_sync_failure": "unknownCommit",
     "test_interposer_in_app": false,
     "is_final_candidate_evidence": false
+  },
+  "native_reference_crypto": {
+    "host_only": true,
+    "hmac": "0.13.0",
+    "sha256_hmac_digest": "sha2 0.11.0",
+    "existing_source_hash_digest": "sha2 0.10.9",
+    "new_resolved_packages": false,
+    "license": "MIT OR Apache-2.0",
+    "host_entropy_required": true,
+    "fixed_keys_only_in_owned_fixtures": true,
+    "math_WASM_dependency_added": false
   }
 }

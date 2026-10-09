@@ -7,3 +7,6 @@ pub mod scheduler;
 
 /// Authoritative source snapshots and typed frozen persistence plans.
 pub mod document;
+
+/// Host-owned scoped immutable references and deadlines.
+pub mod references;

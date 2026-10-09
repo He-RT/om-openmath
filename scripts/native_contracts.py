@@ -9,8 +9,8 @@ import subprocess
 import tempfile
 
 ROOT = Path(__file__).resolve().parents[1]
-SOURCES = ['macos-host-state.schema.json', 'macos-editor-rendering.schema.json', 'native-host-wire.schema.json', 'native-source-store.schema.json']
-PRIMITIVES = {'CellIdentity': ('String', 'String'), 'Identity': ('String', 'String'), 'Sha256': ('String', 'String'),
+SOURCES = ['macos-host-state.schema.json', 'macos-editor-rendering.schema.json', 'native-host-wire.schema.json', 'native-source-store.schema.json', 'native-preview.schema.json']
+PRIMITIVES = {'PreviewSource': ('String', 'String'), 'CellIdentity': ('String', 'String'), 'Identity': ('String', 'String'), 'Sha256': ('String', 'String'),
               'Serial': ('Serial', 'HostSerial'), 'BlobHash': ('String', 'String'), 'Timestamp': ('String', 'String'), 'ByteOffset': ('u32', 'UInt32')}
 models = {}
 inputs = []
@@ -62,6 +62,9 @@ def type_pair(schema, name):
         models.setdefault(name, schema)
         return name, name
     if kind == 'object':
+        if isinstance(schema.get('additionalProperties'), dict):
+            rust, swift = type_pair(schema['additionalProperties'], name + 'Value')
+            return f'std::collections::BTreeMap<String, {rust}>', f'[String: {swift}]'
         if schema.get('properties'):
             models.setdefault(name, schema)
             return name, name
@@ -119,7 +122,8 @@ while True:
                 if optional:
                     rp, sp = f'Option<{rp}>', f'{sp}?'
                     rust.append('    #[serde(default, skip_serializing_if = "Option::is_none")]\n')
-                rust.append(f'    /// Contract field `{key}`.\n    pub {key}: {rp},\n')
+                rust_key = 'r#' + key if key in ('type','ref','match','loop','fn','mod','move','in','use','where','self','async','await') else key
+                rust.append(f'    /// Contract field `{key}`.\n    pub {rust_key}: {rp},\n')
                 swift.append(f'  public var {key}: {sp}\n')
                 fields.append((key,sp,optional))
             rust.append('}\n')

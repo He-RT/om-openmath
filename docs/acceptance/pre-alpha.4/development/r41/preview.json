@@ -1,0 +1,115 @@
+{
+  "task": "R4.1.05",
+  "development_only": true,
+  "runtime_version": "0.1.0-pre-alpha.3",
+  "generated_dtos": 154,
+  "rust_host_ABI_passed": 54,
+  "preview_cases_passed": 10,
+  "reference_cases_passed": 3,
+  "actual_path": "frozen Rust preview -> actual Swift SQLite -> same Rust authority accepts actual receipt",
+  "reference_limits": {
+    "snapshots_ttl_ms": 600000,
+    "previews_ttl_ms": 300000,
+    "count": 128,
+    "retained_bytes": 33554432
+  },
+  "patch_operations": 64,
+  "output_budget_bytes": 65536,
+  "scope_fields": [
+    "runtime",
+    "document",
+    "generation",
+    "revision",
+    "execution_epoch",
+    "snapshot_hash",
+    "task",
+    "task_generation",
+    "grant_revision",
+    "config_revision",
+    "definition_revision",
+    "metadata_revision",
+    "editor_state_hash",
+    "execution_mode",
+    "can_read",
+    "can_preview",
+    "can_write"
+  ],
+  "production_host_entropy_required": true,
+  "fixed_test_keys_product_runtime": false,
+  "logs": [
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r41/preview-rust-verified.log",
+      "sha256": "d8f95aa64ae348d5ebe056d893a9b1f90f20fa96fa4dbed619d15f09d4122bce"
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r41/preview-clippy-verified.log",
+      "sha256": "9fda2d05479c0adb23eab5ebb595fdab155ae623eda63648868d0b64f4595bf0"
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r41/preview-port-verified.log",
+      "sha256": "e048af0be3dcb90751b1b86439694a927f310d1e9336c96aabe93131b7c72c06"
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r41/preview-document-regression.log",
+      "sha256": "c30cdea7abbb6116cdc437c5a6f1ac0a94cbc5fdb23c1fe6890d43bb3e3d32b3"
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r41/preview-storage-regression.log",
+      "sha256": "508e29b01c0ee1b6fa8f0400d63897f51d76282b090b59be0fed5a3a142c4c35"
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r41/preview-blob-regression.log",
+      "sha256": "9a89749898020daddce76fa2ebd45dc5d088c87e619b0efb00988a924946155c"
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r41/preview-native-regression.log",
+      "sha256": "0d6d69627c2e16869dc760068bb0aab9d420b777185b5b740d84d1f12c396645"
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r41/preview-build-final.log",
+      "sha256": "d6ca1457c379db72a8d3a597a977e9fc0c7490a8f303f31a9fd5317982a96189"
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r41/preview-python.log",
+      "sha256": "89e256da0d57c8a1f8418fecc1393213db0b42d90174bd3a3a309f0a5ce87d64"
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r41/preview-wasm.log",
+      "sha256": "c92508a29848820f033cd2ea015c85dde0953c88b07cc967ce34b7c08f610549"
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r41/preview-deny-final.log",
+      "sha256": "928afdb382b5fa281a3541d0eb807ac9d776a872fd4698c151495ce3d9cd4043"
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r41/preview-reference-initial.log",
+      "sha256": "d8da2d52ff285abdacca31eadec893e7c2a5b9cfa9bc1f488d0824736adff69f"
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r41/preview-patch-second.log",
+      "sha256": "b7fc46669650fda6fdb1a330f50c2aaf8497d8fac3a65c98e0eae51b605786e9"
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r41/preview-clippy.log",
+      "sha256": "95b68f5aa2f38acfd92754c9500d3c26c21f53f4a8e0682d5787072f5dfee91b"
+    },
+    {
+      "path": "target/macos-storage-tests/frozen-preview.json",
+      "sha256": "479cfc31fc2bca2304e1d122b71487477d118abaeb7dcc827df263adfccd4ea5"
+    },
+    {
+      "path": "target/macos-storage-tests/frozen-preview-receipt.json",
+      "sha256": "cab2fd580559e1497c2d55cf37cb82e02290a8e301833d398f4282a8146890c5"
+    }
+  ],
+  "source_only_authorizes_commit": false,
+  "new_agent_tool_registered": false,
+  "native_editor_commit_fence": "pending R4.1.06",
+  "prior_CI": {
+    "run": 37936489563,
+    "sha": "c72ce17291f6f440edec8e88f1539453c5ba6696",
+    "conclusion": "success",
+    "scope": "prior source-operation commit; not this preview SHA"
+  },
+  "final_candidate_gate": false
+}

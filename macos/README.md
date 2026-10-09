@@ -52,3 +52,5 @@ SQLite首代存储已实现，可运行 `bash macos/Scripts/test-storage.sh`。�
 不可变资源基础可运行 `bash macos/Scripts/test-blobs.sh` 验证。128MiB单件按64KiB复制/散列，完整同步后不覆盖发布；读取每页至多1MiB，并校验真实hash/length。数据库引用、内存publication pin和reader保留是不同事实；重启可从已存引用读回原字节，但不恢复旧pin授权。错误hash、损坏目标、输入变化和缺文件不会当ready，完整GC/媒体解码/工具scope仍按后续任务接入。
 
 源码操作基础已支持在临时文档一次验证 insert/update/delete/move/rename，真实依赖/循环/定义冲突分析不求值。计算worker接纳后可一次应用source并清旧owner，保留历史标stale；title/Text和prose移位不清数学值。actual settings转移与source同库确认，locale不混为execution_epoch。真正可提交preview/grants/editor fence及UI/Agent修改入口仍按R4.1.05/06接入。
+
+冻结预览基础可运行 `bash macos/Scripts/test-preview.sh`。source只检查，patch用原snapshot完整校验并分配新cell ID；invalid/source-only不会有可提交ref。真ref绑定runtime/source/permission/editor-state和期限，返回原不可变计划；actual SQLite端口回读由原Rust文档核验。这里仅完成preview数据层，原生编辑屏障、durable admission及真正UI/Agent写入留R4.1.06，普通parse成功不表示执行或保存。

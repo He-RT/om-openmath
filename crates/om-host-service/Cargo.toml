@@ -12,6 +12,8 @@ om-num.workspace = true
 serde.workspace = true
 serde_json.workspace = true
 sha2 = "=0.10.9"
+hmac = "=0.13.0"
+sha2_ref = { package = "sha2", version = "=0.11.0" }
 
 [dev-dependencies]
 om-llm.workspace = true

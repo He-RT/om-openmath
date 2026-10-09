@@ -4,9 +4,9 @@
 
 2026-10-09。目标`0.1.0-pre-alpha.4`，当前运行/公开版本`.3`；开发`dev`，不合main、不改旧标签、本机不启动iOS模拟器。本文只记录结果，规格及完成标准唯一见主计划；计划编写本身不计实施完成。
 
-**当前状态：** 15任务完成（全部R4.0与R4.1.01–04）；其余83任务尚未完成；32最终运行/发行gate全部not_run；candidate未分配，ready_to_publish=false，released_verified=false。设计/HTML/Schema通过不填运行时pass。
+**当前状态：** 16任务完成（全部R4.0与R4.1.01–05）；其余82任务尚未完成；32最终运行/发行gate全部not_run；candidate未分配，ready_to_publish=false，released_verified=false。设计/HTML/Schema通过不填运行时pass。
 
-**下一任务：** R4.1.05冻结预览与新格ID，随后R4.1.06 DocCommitPort/编辑屏障。source批量操作/非执行失效已实现，UI/Agent写入尚未注册。启动旧快照覆盖源码已复现并修复；继续核对CI中的前端和iOS时间波动。按DAG推进，R4.5.07必须在R4.5.05冻结前完成。
+**下一任务：** R4.1.06 DocCommitPort/编辑屏障/未知提交，随后统一undo及完整checkpoint。合法patch的原内容/新cell ID/权限/期限已冻结，UI/Agent写入尚未注册。继续保持完整同candidate数学/平台门禁。按DAG推进，R4.5.07必须在R4.5.05冻结前完成。
 
 ## 已知外部前置
 
@@ -34,8 +34,8 @@
 | [x] [R4.1.01](PRE_ALPHA_4.md#task-r4.1.01) | SQLite单写者与新通道初始化 | completed | SQLite3.54/WAL/FULL / 实际F_FULLFSYNC / 根锁 / SIGKILL/ENOSPC | ddbeb88 |
 | [x] [R4.1.02](PRE_ALPHA_4.md#task-r4.1.02) | 权威源码、事务和幂等表 | completed | Rust实际计划→Swift同库事务→Rust实际回执 / 幂等/回滚/失联/UTF8 | c310565 |
 | [x] [R4.1.03](PRE_ALPHA_4.md#task-r4.1.03) | 不可变Blob和资源引用发布 | completed | 分块实际字节/同库refs/临时pin/恢复读取/六SIGKILL点 | 26078d0 |
-| [x] [R4.1.04](PRE_ALPHA_4.md#task-r4.1.04) | 文档操作与非执行失效计划 | completed | 真实parser/owners清理/无cascade / 批量操作 / title/Text epoch / 设置同库 | 下次补记 |
-| [ ] [R4.1.05](PRE_ALPHA_4.md#task-r4.1.05) | 冻结Preview与新格身份分配 | planned | — | — |
+| [x] [R4.1.04](PRE_ALPHA_4.md#task-r4.1.04) | 文档操作与非执行失效计划 | completed | 真实parser/owners清理/无cascade / 批量操作 / title/Text epoch / 设置同库 | c72ce17 |
+| [x] [R4.1.05](PRE_ALPHA_4.md#task-r4.1.05) | 冻结Preview与新格身份分配 | completed | 10preview+3ref / 原计划→SQLite→原authority实际回执 / 期限/scope完整性 | 下次补记 |
 | [ ] [R4.1.06](PRE_ALPHA_4.md#task-r4.1.06) | DocCommitPort、编辑屏障与未知提交 | planned | — | — |
 | [ ] [R4.1.07](PRE_ALPHA_4.md#task-r4.1.07) | 统一源码撤销和后续编辑冲突 | planned | — | — |
 | [ ] [R4.1.08](PRE_ALPHA_4.md#task-r4.1.08) | 完整可写计算状态与无损codec | planned | — | — |
@@ -263,3 +263,14 @@ Done依据与覆盖case/proof:
 - [source-operations.json](../acceptance/pre-alpha.4/development/r41/source-operations.json)记录日志与失败/修复attempt/hash、范围；UI/Agent写入仍等待R4.1.05/06真实冻结计划与编辑屏障，后续main CAS checkpoint仍需R4.1.08/09，不将本批当完整native数学工作台。下一步预览/身份分配/期限/原始plan，再DocCommitPort，剩余83任务/最终candidate gates继续。
 
 - D014补记：26078d0/CI37931481338已实际全job success（包括iOS和前端），此前失败原件仍保留；本批新source代码还需自己的SHA。旧SHA success不填最终candidate门禁。
+
+## R4开发记录 D015 — 不求值冻结预览与原引用
+
+- R4.1.05完成：PreviewService从实际SourceDocument与完整read exposure构造不可变snapshot，保留原source/title/order及真实coordinator解析绑定。模型参数只含snapshot_ref/input；source仅检查语法/方言/参数且不产可提交ref，patch全部在临时文档校验，再冻结NativeSourceCommit、原normalized operations、实际失效/诊断、新key→cell ID、完整scope与plan_hash。不构造CAS Session，不推进source authority，也不将合法parse当计算成功/保存完成。
+- native-preview.schema.json与agent-tools参数约束逐项对应：source/patch闭联合，新增仅Math/Text、保留既有Ask，最多64操作；new client_key必须唯一，anchor只能引用已存在/先前声明key。update需要原read完全source可用；replace按原快照SHA256核对，片段按临时source顺序匹配原UTF8字符边界，并计入重叠匹配（aaa中的aa不是唯一）。删除/修改只能已有cell，重复整格write或混合整格+片段、错误anchor/未知source hash/extra权限字段全部拒绝，后面的非法操作不发布前面的改动。共享coordinator.apply_operations作为唯一source算法，不另写一套delete/move规则。
+- 不可变FrozenPreviewPlan以Arc原值返回，重复解析同ref得到相同原operation/transaction/newcell ID，绝不以最新draft重拼旧内容。plan hash含冻结原内容、scope与实际影响；实际writer提交UTC仍由writer生成。原源码解析错误、相关cycle/重复定义不产committable ref，diagnostic截断不能把失败藏成valid；结果有64KiB上限/影响ID1000预算。真实sin用户绑定及跨格f空格调用通过实际parser事实核对。
+- ReferenceRegistry为新runtime host提供的32字节安全entropy密钥签发HMAC-SHA256 ID（test key仅自有fixture），counter目的隔离与验签，不以字符串格式当授权。严格绑定runtime/document/generation/revision/epoch/sourcehash/task lifetime/grant/config/definition/metadata/editor state与讨论/执行能力。snapshot TTL≤10min、preview≤5min，deadline相等即expired；不同issuer、非ASCII伪tag、wrong kind、scope/source/permission变化、revoked与重开runtime都拒绝。缓存≤128refs/32MiB、counter不回绕，过期释放资源，临时refs不作durable ledger。真实注册时密钥/绑定只由trusted host提供，不读模型或Transcript；本任务不提前注册CABI/Agent tool。
+- 10个实际preview与3个ref测试通过，涵盖full-source/fragment、wrong kind/重复client key/晚操作/alias、语法cycle/conflict、64/65预算、原hash及permissions/mode、scope变化/expired/revoke/重开。跨语言example创建真preview→Swift物理source事务→真实回执再由原Rustauthorityaccept：原newcell IDs、源let a=5/a+1、duplicate一笔效果均通过，没有synthetic receipt冒充生产成功；fixture导出prepared_only明确。
+- 最新host/ABI共54 Rust通过、Clippy、Swift actual frozen port、source/settings/fullsync失联查询、bootstrap六SIGKILL、Blob六发布点、原native ABI/actor/reducer/session、SDK27 ARM64 Release、17Python、纯WASM/deny/生成检查通过。中途raw type/primitive DTO/Arc serde与large enum错误原件保留并修正，不关闭lint。核心crates仍forbid unsafe，不增加第三方数学或3D框架；hmac0.13/sha2_ref0.11为既有lock包直接host依赖，不传入WASM数学核心，MIT/Apache许可检查通过。
+- [preview.json](../acceptance/pre-alpha.4/development/r41/preview.json)保存日志/实际frozen JSON/回执和hash。原c72ce17的CI37936489563全部jobs实际success，旧失败原件不删除；不能填本批新SHA或最终candidate门禁。
+- 下一任务R4.1.06真正DraftStore/IME/fence/commit admission/IOAck/取消和unknown线性化，之后undo/checkpoint/原生工作台/Agent。没有Native UI或Pi提前获得writer入口、Preview成功不表示持久化/计算/文件保存，剩余82任务全部继续原计划。

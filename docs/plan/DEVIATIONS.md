@@ -428,3 +428,9 @@ L2使用精确标称GM分数、50位FindRoot/1000迭代和真实残差，报告�
 - om-kernel新增source-only分析与kernel-owner一次apply接口，复用真实lexical dependency，不循环旧DeleteCell/触发cascade。runtime成功拥有的symbols与静态声明共同参与失效；受影响owner真正清除，历史保留但stale。配置/epoch/源revision独立；Math相对顺序决定计算变化，prose移位导致view index变化不误清Math。
 - NativeSourceCommit新增required nullable calculation_change，before/after为真实非locale General设置值；同步Rust/Swift canonical hash/epoch校验，同source事务保存并回读。当前Native ABI和新存储通道尚未公开、UI未开放source写入，原.omnb/iOS协议不变，规划记录不授予tool权限。
 - 共享Web startup snapshot确定会覆盖dirty的新源码，已加入先失败后修复的原顺序回归：启动读取只在当前代次活且local source未变时replace。既有后续refresh/open行为保留；未据此声称所有CI Running/主线程恢复故障已解决，最终同candidate门槛保持。
+
+### R4-D010：原输入联合、不可变preview与host密钥引用（2026-10-10）
+
+- native-preview.schema.json落实agent-tools的source/patch和六种patch参数，兼容原type/match等字段名。生成器对Rust关键字使用raw identifier（JSON仍原名），动态assigned_cell_ids为BTreeMap/Swift typed map；不是新Pi自定义协议。结构校验不替代scope/grant/actual read completeness/native editor fence。
+- snapshot/preview refs只在host runtime内保存原值，使用host安全entropy提供的key签发HMAC-SHA256 ID及严格TTL/scope；自有测试的固定key不进入产品runtime。直接host依赖hmac=0.13.0/sha2_ref=0.11.0复用已锁版本（MIT/Apache），核心数学/WASM依赖不改变；此前hash使用sha2=0.10.9保持原canonical source算法。
+- source-only检查绝无committable ref。patch原expected_source_hash永远对原UTF8，fragment匹配按操作顺序并处理重叠；full update必须有原完整曝光。冻结plan包含原source/inverse/实际影响/new IDs和完整owner scope，重复提交只解析同原计划，不补最新草稿。active reference与durable operation账本为不同身份，幂等核对仍由DocCommitPort先查实际存储，不能凭过期ref自动重放。

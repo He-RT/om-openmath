@@ -6,6 +6,7 @@ use om_kernel::{
     protocol::{CellInput, CellKind, Dialect as KernelDialect, NotebookFile},
     source::{SourceInvalidation, SourceOwnership},
 };
+use serde::{Deserialize, Serialize};
 use std::collections::BTreeSet;
 
 /// Typed immutable source plan plus real parser/graph facts. It does not claim IO or CAS success.
@@ -16,7 +17,7 @@ pub struct SourceMutationPlan {
     pub invalidation: SourceInvalidation,
 }
 /// Source-only owner settings, kept separate from Swift UI draft state.
-#[derive(Clone)]
+#[derive(Clone, Serialize, Deserialize)]
 pub struct SourceCoordinator {
     /// Actual input dialect setting.
     pub dialect: ConfigDialect,
@@ -93,6 +94,75 @@ fn position(file: &NativeSourceFile, anchor: Option<&str>) -> Result<usize, Stri
         None => Ok(0),
     }
 }
+/// The shared whole-source operation algorithm, reused by preview normalization at each step.
+/// Only temporary data is returned; it does not update a document or invoke CAS/IO.
+pub fn apply_operations(
+    file: &NativeSourceFile,
+    operations: &[NativeSourceOperation],
+) -> Result<NativeSourceFile, String> {
+    if operations.is_empty() || operations.len() > 64 {
+        return Err("PATCH_BUDGET_EXCEEDED".into());
+    }
+    let mut file = file.clone();
+    for operation in operations {
+        match operation {
+            NativeSourceOperation::InsertSourceCell(body) => {
+                if file.cells.iter().any(|c| c.id == body.cell.id) {
+                    return Err("DUPLICATE_CELL_ID".into());
+                }
+                let at = position(&file, body.after_cell_id.0.as_deref())?;
+                file.cells.insert(at, body.cell.clone());
+            }
+            NativeSourceOperation::UpdateSourceCell(body) => {
+                let index = file
+                    .cells
+                    .iter()
+                    .position(|c| c.id == body.cell.id)
+                    .ok_or("INVALID_CELL_REFERENCE")?;
+                file.cells[index] = body.cell.clone();
+            }
+            NativeSourceOperation::DeleteSourceCells(body) => {
+                unique(&body.cell_ids)?;
+                if body
+                    .cell_ids
+                    .iter()
+                    .any(|id| !file.cells.iter().any(|c| &c.id == id))
+                {
+                    return Err("INVALID_CELL_REFERENCE".into());
+                }
+                let ids = body.cell_ids.iter().collect::<BTreeSet<_>>();
+                file.cells.retain(|c| !ids.contains(&c.id));
+            }
+            NativeSourceOperation::MoveSourceCells(body) => {
+                unique(&body.cell_ids)?;
+                if body
+                    .after_cell_id
+                    .0
+                    .as_ref()
+                    .is_some_and(|id| body.cell_ids.contains(id))
+                {
+                    return Err("INVALID_MOVE_ANCHOR".into());
+                }
+                let selected = body
+                    .cell_ids
+                    .iter()
+                    .map(|id| {
+                        file.cells
+                            .iter()
+                            .find(|c| &c.id == id)
+                            .cloned()
+                            .ok_or("INVALID_CELL_REFERENCE")
+                    })
+                    .collect::<Result<Vec<_>, _>>()?;
+                file.cells.retain(|c| !body.cell_ids.contains(&c.id));
+                let at = position(&file, body.after_cell_id.0.as_deref())?;
+                file.cells.splice(at..at, selected);
+            }
+            NativeSourceOperation::RenameSourceNotebook(body) => file.title = body.title.clone(),
+        }
+    }
+    Ok(file)
+}
 impl SourceCoordinator {
     /// Validate all operations in a temporary source file. No intermediate mutation is published,
     /// no old Upsert/DeleteCell handler is called, and parse/graph analysis never evaluates.
@@ -108,66 +178,7 @@ impl SourceCoordinator {
         if operations.is_empty() || operations.len() > 64 {
             return Err("PATCH_BUDGET_EXCEEDED".into());
         }
-        let mut file = owner.snapshot().file.clone();
-        for operation in operations {
-            match operation {
-                NativeSourceOperation::InsertSourceCell(body) => {
-                    if file.cells.iter().any(|c| c.id == body.cell.id) {
-                        return Err("DUPLICATE_CELL_ID".into());
-                    }
-                    let at = position(&file, body.after_cell_id.0.as_deref())?;
-                    file.cells.insert(at, body.cell.clone());
-                }
-                NativeSourceOperation::UpdateSourceCell(body) => {
-                    let index = file
-                        .cells
-                        .iter()
-                        .position(|c| c.id == body.cell.id)
-                        .ok_or("INVALID_CELL_REFERENCE")?;
-                    file.cells[index] = body.cell.clone();
-                }
-                NativeSourceOperation::DeleteSourceCells(body) => {
-                    unique(&body.cell_ids)?;
-                    if body
-                        .cell_ids
-                        .iter()
-                        .any(|id| !file.cells.iter().any(|c| &c.id == id))
-                    {
-                        return Err("INVALID_CELL_REFERENCE".into());
-                    }
-                    let ids = body.cell_ids.iter().collect::<BTreeSet<_>>();
-                    file.cells.retain(|c| !ids.contains(&c.id));
-                }
-                NativeSourceOperation::MoveSourceCells(body) => {
-                    unique(&body.cell_ids)?;
-                    if body
-                        .after_cell_id
-                        .0
-                        .as_ref()
-                        .is_some_and(|id| body.cell_ids.contains(id))
-                    {
-                        return Err("INVALID_MOVE_ANCHOR".into());
-                    }
-                    let selected = body
-                        .cell_ids
-                        .iter()
-                        .map(|id| {
-                            file.cells
-                                .iter()
-                                .find(|c| &c.id == id)
-                                .cloned()
-                                .ok_or("INVALID_CELL_REFERENCE")
-                        })
-                        .collect::<Result<Vec<_>, _>>()?;
-                    file.cells.retain(|c| !body.cell_ids.contains(&c.id));
-                    let at = position(&file, body.after_cell_id.0.as_deref())?;
-                    file.cells.splice(at..at, selected);
-                }
-                NativeSourceOperation::RenameSourceNotebook(body) => {
-                    file.title = body.title.clone()
-                }
-            }
-        }
+        let file = apply_operations(&owner.snapshot().file, operations)?;
         let commit = owner.prepare(file, operation, transaction, event, time)?;
         let invalidation = om_kernel::source::assess_source_change(
             &kernel_file(&commit.before.file),

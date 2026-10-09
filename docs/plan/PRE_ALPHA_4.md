@@ -3185,7 +3185,7 @@ UpdateService只读受控官方GitHub Releases/发行清单（预发行不可用
 
 #### R4.1.05 冻结Preview与新格身份分配
 
-- [ ] **R4.1.05 完成**（仅在以下Done和验证满足后勾选）
+- [x] **R4.1.05 完成**（仅在以下Done和验证满足后勾选）
 
 **Files：**
 
@@ -3198,10 +3198,10 @@ UpdateService只读受控官方GitHub Releases/发行清单（预发行不可用
 
 **Steps：**
 
-- [ ] 1. 临时文档应用全部patch并非求值parse。
-- [ ] 2. 分配新cell ID/校验唯一片段/全文完整性。
-- [ ] 3. 冻结原内容/影响集/权限/期限，不用最新draft重拼旧plan。
-- [ ] 4. 执行下面Tests，核对真实输出/失败，更新任务账本与证据后提交本批次。
+- [x] 1. 临时文档应用全部patch并非求值parse。
+- [x] 2. 分配新cell ID/校验唯一片段/全文完整性。
+- [x] 3. 冻结原内容/影响集/权限/期限，不用最新draft重拼旧plan。
+- [x] 4. 执行下面Tests，核对真实输出/失败，更新任务账本与证据后提交本批次。
 
 **Tests：** 64操作/错kind/重复clientkey/不唯一replace/别名绑定/expired/stale/source-only不提交。测试位置以Files和第15节影响范围为准，证据保存完整输入/命令/输出，不仅记录“通过”。
 

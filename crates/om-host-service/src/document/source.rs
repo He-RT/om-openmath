@@ -208,6 +208,10 @@ impl SourceDocument {
     pub fn snapshot(&self) -> &NativeSourceSnapshot {
         &self.snapshot
     }
+    /// Trusted current open lifetime, separate from a stored source revision.
+    pub fn generation(&self) -> Serial {
+        self.generation
+    }
     /// Freeze a replacement and its full inverse; same syntax-invalid source remains editable.
     pub fn prepare(
         &self,

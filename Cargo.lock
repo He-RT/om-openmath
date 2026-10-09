@@ -3171,12 +3171,14 @@ dependencies = [
 name = "om-host-service"
 version = "0.1.0-pre-alpha.3"
 dependencies = [
+ "hmac",
  "om-kernel",
  "om-llm",
  "om-num",
  "serde",
  "serde_json",
  "sha2 0.10.9",
+ "sha2 0.11.0",
 ]
 
 [[package]]

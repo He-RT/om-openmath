@@ -375,3 +375,9 @@ L2使用精确标称GM分数、50位FindRoot/1000迭代和真实残差，报告�
 - **P144 — Windows发行验收选择器按实际状态同步**：NSIS实装已通过本次数学与WebGL2像素/旋转/复位，details pre.first错误读取源码折叠区导致JSON.parse失败。选择器改为包含网格summary的唯一details/pre并等待其可见，以真实生产Web显示与OBJ一致验收复现该路径。失败捕获实际窗口和文本，不删检查/不mock原生窗口/不放宽超时。源软件与数学完全不变，发布仍要求新同SHA CI及安装成功。
 
 - **P146 — 有界定向包围区间共享**：3ded1b3全CI37611952772成功，发行37613254467 Windows/Web/iOS全部成功，Mac原case12=207.202ms超原200ms，未发布。profile真实原三次方程的eval与数值展示重复成本占多数，格式化/序列化很少。om-simplify/numeval的evaluate_ball在单次固定bits计算中最多共享256个已finite/project_sum的CBall；DefaultHasher确定，map只查询不迭代输出，不跨请求/会话/精度加倍。hit仍tick并realness::project，失败及最终rounded点值不缓存。公式/主支/精确证明/guarded双精度舍入不变，无新增依赖/unsafe。重复Sin与独立f64、Machine/167bits精度、真实10^-80虚部400bits、取消、300不同项达到cap完整性新增一项真实测试；原12numeval定向、1085Rust/2原ignored、全Clippy和77前端已通过，原53数学期望和200ms/1s门槛不改。profile同输入session auto_plot约115..120ms，旧测量200..400ms；cold本机全语料仍受swap/调度波动影响，失败日志保留，不据profile冒充全平台通过。最后以新SHA cloud同门槛决定发行。此前并行编译因16GiB机swap9.6GiB明确中止，改buildjobs2顺序；中止日志不计为测试通过。
+
+### R4-D001：实际发行依赖与参考源码分开（2026-10-09）
+
+- Pi Core/AI保留已选npm1.0.4，实际SRI固定在专用lock。npm发布gitHead为7c10bd4337495ee613f2224843ecdf349b80d1df，与设计调研的503c605...不相同；实现采用真实发布API并记录二者来源，不偷偷声称由参考提交构建。传递pi-telemetry实际解析为1.1.0，同样锁定；后续helper只使用宿主流函数，遥测为默认空实现，不继承凭据/遥测环境。
+- Node候选26.11.1归档与固定SHA一致，原二进制strict签名通过；实际hostNode25.9不作为随包运行时。系统SDK实际SQLite3.54.0满足最低已修复版本，选择系统库以避免重复原生依赖；VFS同步/耐久仍须R4.1.01实测。
+- npm归档缺许可正文的条目补固定上游或完整README正文，来源/适用范围透明记录。没有全局忽略许可检查，没有安装可选Kerberos/native addon，也没有运行依赖安装钩子或请求真实模型。

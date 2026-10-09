@@ -1,0 +1,20 @@
+[package]
+name = "om-apple-ffi"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+description = "Audited C ABI for the native OpenMath Mac host"
+
+[lib]
+crate-type = ["staticlib", "rlib"]
+
+[dependencies]
+om-kernel = { workspace = true, features = ["external-host"] }
+
+[lints.rust]
+unsafe_op_in_unsafe_fn = "deny"
+missing_docs = "warn"
+
+[lints.clippy]
+dbg_macro = "deny"

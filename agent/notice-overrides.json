@@ -1,0 +1,85 @@
+{
+  "schema_version": 1,
+  "packages": {
+    "node_modules/@aws-sdk/credential-provider-http": {
+      "name": "@aws-sdk/credential-provider-http",
+      "version": "3.972.74",
+      "license": "Apache-2.0",
+      "integrity": "sha512-u91E/hT8f4d1xy0Jl7VG4nVKJ3lxbrZkoBTeSVoJdWBiSEUMwMS/9+e0H/aJVQV//Lt5wuzP+E69v4aRSsNTmw==",
+      "notice_path": "macos/OpenMathNative/Resources/Licenses/Agent/aws__aws-sdk-js-v3-8893344796b1.txt",
+      "sha256": "edea91454b811f127fbdea3d86f378f6719bd372ed440abf82b232f6fca06c3d",
+      "upstream_url": "https://raw.githubusercontent.com/aws/aws-sdk-js-v3/8893344796b14a92844d9a08973bcdc2da89a3eb/LICENSE",
+      "notice_relationship": "repository_license; not proof of published package source commit"
+    },
+    "node_modules/@aws-sdk/credential-provider-login": {
+      "name": "@aws-sdk/credential-provider-login",
+      "version": "3.972.79",
+      "license": "Apache-2.0",
+      "integrity": "sha512-L+Z85anONJd8MaiuraO4wRxATCdEejBZ3K3eymzWI5JPXa9sOS9CkIm72PBKqXKX+Z9p9NGMX5AIMXm0LEflgw==",
+      "notice_path": "macos/OpenMathNative/Resources/Licenses/Agent/aws__aws-sdk-js-v3-8893344796b1.txt",
+      "sha256": "edea91454b811f127fbdea3d86f378f6719bd372ed440abf82b232f6fca06c3d",
+      "upstream_url": "https://raw.githubusercontent.com/aws/aws-sdk-js-v3/8893344796b14a92844d9a08973bcdc2da89a3eb/LICENSE",
+      "notice_relationship": "repository_license; not proof of published package source commit"
+    },
+    "node_modules/@aws-sdk/nested-clients": {
+      "name": "@aws-sdk/nested-clients",
+      "version": "3.997.46",
+      "license": "Apache-2.0",
+      "integrity": "sha512-oRxtBcka/JGHGs9l9p9IVajGoTP8vTPmoAzdHGy4Qcy9P5vPnDf6nhIeM/COQNY9k/OahImTRaLkHftoXvfcmQ==",
+      "notice_path": "macos/OpenMathNative/Resources/Licenses/Agent/aws__aws-sdk-js-v3-8893344796b1.txt",
+      "sha256": "edea91454b811f127fbdea3d86f378f6719bd372ed440abf82b232f6fca06c3d",
+      "upstream_url": "https://raw.githubusercontent.com/aws/aws-sdk-js-v3/8893344796b14a92844d9a08973bcdc2da89a3eb/LICENSE",
+      "notice_relationship": "repository_license; not proof of published package source commit"
+    },
+    "node_modules/@earendil-works/pi-agent-core": {
+      "name": "@earendil-works/pi-agent-core",
+      "version": "1.0.4",
+      "license": "MIT",
+      "integrity": "sha512-/xGICE+N/+G9N7KfYFSxlE8G8fQcBlLHKiY+j1Ehz9vvb1zhvGneWosFK56d2qmA5oteafeG7yKr2nqU4ed9ig==",
+      "notice_path": "macos/OpenMathNative/Resources/Licenses/Agent/earendil-works__pi-7c10bd433749.txt",
+      "sha256": "0457f5bcec3b3b211605dfb5d1a49042fd638f3686a410fe099c24a25af13c48",
+      "upstream_url": "https://raw.githubusercontent.com/earendil-works/pi/7c10bd4337495ee613f2224843ecdf349b80d1df/LICENSE",
+      "notice_relationship": "repository_license; not proof of published package source commit"
+    },
+    "node_modules/@earendil-works/pi-ai": {
+      "name": "@earendil-works/pi-ai",
+      "version": "1.0.4",
+      "license": "MIT",
+      "integrity": "sha512-/Eu5R0gfor6wcmRcVyOmulUiZmsHJ0bKu5wXXnpCoSHF3y4FnW4fgnjRlLjNza8NJWXdvW5Uew90Zukx7Sh2rw==",
+      "notice_path": "macos/OpenMathNative/Resources/Licenses/Agent/earendil-works__pi-7c10bd433749.txt",
+      "sha256": "0457f5bcec3b3b211605dfb5d1a49042fd638f3686a410fe099c24a25af13c48",
+      "upstream_url": "https://raw.githubusercontent.com/earendil-works/pi/7c10bd4337495ee613f2224843ecdf349b80d1df/LICENSE",
+      "notice_relationship": "repository_license; not proof of published package source commit"
+    },
+    "node_modules/@earendil-works/pi-telemetry": {
+      "name": "@earendil-works/pi-telemetry",
+      "version": "1.1.0",
+      "license": "MIT",
+      "integrity": "sha512-8gAK05/2pPozZZz6hCLOi8x2vsqzvsmO9gG92kbvuvTPm0qMHaFlaXX98ndXsrOi5pmzha7vNLguuG4+0Rgxjw==",
+      "notice_path": "macos/OpenMathNative/Resources/Licenses/Agent/earendil-works__pi-7c10bd433749.txt",
+      "sha256": "0457f5bcec3b3b211605dfb5d1a49042fd638f3686a410fe099c24a25af13c48",
+      "upstream_url": "https://raw.githubusercontent.com/earendil-works/pi/7c10bd4337495ee613f2224843ecdf349b80d1df/LICENSE",
+      "notice_relationship": "repository_license; not proof of published package source commit"
+    },
+    "node_modules/proxy-agent-negotiate": {
+      "name": "proxy-agent-negotiate",
+      "version": "1.1.0",
+      "license": "MIT",
+      "integrity": "sha512-N8IBcM3UgCVzz2L2Lqv8DVntDnnC8/hiV4nEDUPkqq72TPUgYWjQc+bdZlBPZK9LzPAvOY//gAt0S0DApoOXWQ==",
+      "notice_path": "macos/OpenMathNative/Resources/Licenses/Agent/TooTallNate__proxy-agents-b7e5f7ccce1a.txt",
+      "sha256": "71368fd0f5b4129191e9afcd1e1ef2dc89a9090d3e4d80bbab92dafd032b3bef",
+      "upstream_url": "https://raw.githubusercontent.com/TooTallNate/proxy-agents/b7e5f7ccce1a3ac5b339cc4c587974e8989cbc16/packages/http-proxy-agent/LICENSE",
+      "notice_relationship": "shared publisher MIT attribution; published package declares MIT/Nathan Rajlich and omits its own notice; not source-build proof"
+    },
+    "node_modules/standardwebhooks": {
+      "name": "standardwebhooks",
+      "version": "1.1.1",
+      "license": "MIT",
+      "integrity": "sha512-bCbX9ZEyFkWPsRz7Bl3NuQUJohmwGSev/yhr7vhaGPlc4AfIrspIRa6cPTBuI1ItmrTDJ4d/S2hCsfe4+vQGnQ==",
+      "notice_path": "macos/OpenMathNative/Resources/Licenses/Agent/standard-webhooks__standard-webhooks-b4d2c14fc5b4.txt",
+      "sha256": "5ec8c7b26b64d881a6706617bed25c049f97f2f35de034c756de8546fd6dbe27",
+      "upstream_url": "https://raw.githubusercontent.com/standard-webhooks/standard-webhooks/b4d2c14fc5b4ccff3ff271e3b087dff812254c59/libraries/LICENSE",
+      "notice_relationship": "repository_license; not proof of published package source commit"
+    }
+  }
+}

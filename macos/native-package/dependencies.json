@@ -1,0 +1,1467 @@
+{
+  "schema_version": 1,
+  "kind": "development_dependencies",
+  "is_production_runtime_manifest": false,
+  "rust": "1.94.0",
+  "architecture": "arm64",
+  "minimum_macos": "27.0",
+  "xcode": "27.0",
+  "node": {
+    "version": "26.11.1",
+    "archive": "node-v26.11.1-darwin-arm64.tar.xz",
+    "url": "https://nodejs.org/download/release/v26.11.1/node-v26.11.1-darwin-arm64.tar.xz",
+    "archive_sha256": "0ef9b443000681bffc062ec126d53f97933ea9b086ea73dcba0480d87e639b39",
+    "binary_sha256_before_resigning": "72661776a737f5bbd7bc66af9dc5a5ef324819a53df518fdc7143127927c1378",
+    "upstream_binary_strict_codesign_verified": true,
+    "openpgp_archive_signature_verified": false,
+    "notice": "macos/OpenMathNative/Resources/Licenses/Node-LICENSE.txt",
+    "notice_sha256": "6b85ee1983d01fa2cdcdd5d1a3053c6221fae41d6a54e43b416bf35969fc4128",
+    "system_node_fallback": false,
+    "bundled_with_app": false
+  },
+  "pi": {
+    "core": "1.0.4",
+    "ai": "1.0.4",
+    "reference_source_sha": "503c605528f9af993c0e37ede468cf884fb0ff5b",
+    "published_package_git_head": "7c10bd4337495ee613f2224843ecdf349b80d1df",
+    "published_package_integrity": {
+      "@earendil-works/pi-agent-core": "sha512-/xGICE+N/+G9N7KfYFSxlE8G8fQcBlLHKiY+j1Ehz9vvb1zhvGneWosFK56d2qmA5oteafeG7yKr2nqU4ed9ig==",
+      "@earendil-works/pi-ai": "sha512-/Eu5R0gfor6wcmRcVyOmulUiZmsHJ0bKu5wXXnpCoSHF3y4FnW4fgnjRlLjNza8NJWXdvW5Uew90Zukx7Sh2rw=="
+    },
+    "actual_api_audited": [
+      "Agent constructor",
+      "streamFn",
+      "toolExecution=sequential",
+      "prepareRequest",
+      "beforeToolCall",
+      "afterToolCall",
+      "abort/steer/followUp/prompt",
+      "structuredContent is not automatically model-visible"
+    ],
+    "model_requests_executed": 0,
+    "production_lock_sha256": "2ad7e038a3bdb98585d1c9ba1e990ab1561ffe7c2f63395dbef9f78e3db1d680",
+    "production_package_count": 86,
+    "native_addons_installed": [],
+    "optional_kerberos_not_installed": true,
+    "stock_provider_transports_used": false
+  },
+  "swift_packages": [
+    {
+      "name": "SwiftMath",
+      "version": "1.7.3",
+      "revision": "fa8244ed032f4a1ade4cb0571bf87d2f1a9fd2d7",
+      "package_sha256": "9a4e509ee61c9782941e44ac27090ea42e745e4feae0ee34e83ce44071884c93",
+      "license": "MIT",
+      "notice": "macos/OpenMathNative/Resources/Licenses/SwiftMath-LICENSE.txt",
+      "notice_sha256": "75c39d3db0d038a4966dfb86e4703748ee56434e188959e4423cfc91a54a93af"
+    },
+    {
+      "name": "swift-markdown",
+      "version": "0.9.0",
+      "revision": "25cb61d3482054b09ae76ca4f281b1bfe7fe5a43",
+      "package_sha256": "8dd8e12eee0938fd6d3627ca83bb8ad395f6a73375e51f6169b0a12a59b9cc3c",
+      "license": "Apache-2.0",
+      "notice": "macos/OpenMathNative/Resources/Licenses/swift-markdown-LICENSE.txt",
+      "notice_sha256": "167beb36f181bd163c93c6feb45c68e5f9462fe1af55b278f7bfd1df20e673a3"
+    },
+    {
+      "name": "swift-cmark",
+      "version": "0.9.0",
+      "revision": "08ddb528923cc1a6527e02b7a1aee9e516ca749a",
+      "package_sha256": "60c2250cbae9160395168d8eb3a11aa8b49177b8fd12d8f69bc0b71a83665ee4",
+      "license": "BSD-2-Clause and included contributor terms",
+      "notice": "macos/OpenMathNative/Resources/Licenses/swift-cmark-LICENSE.txt",
+      "notice_sha256": "c22e885f33b821bddb24cf007145e5540655b6c0f403e49e6c76a93c28e6d9a9"
+    }
+  ],
+  "math_font_resources": {
+    "bundle": "mathFonts.bundle",
+    "files": [
+      {
+        "name": "Asana-Math.otf",
+        "sha256": "b0d9e681c08ff1f4dc6ebf085cc962585ec12cdbd25dc6225890b9f8fd12d568",
+        "bytes": 433528
+      },
+      {
+        "name": "Asana-Math.plist",
+        "sha256": "97ebe044f4c5bdc91ff522bdfb0425f1f88013e8b40bdecdbc9ba6c574e141fb",
+        "bytes": 99277
+      },
+      {
+        "name": "Euler-Math.otf",
+        "sha256": "bd07fef1faecea7fa4a89256e4e06ef94b19e23b1785db6e420229fda37c2efb",
+        "bytes": 428792
+      },
+      {
+        "name": "Euler-Math.plist",
+        "sha256": "7b8f745068f1583ea83a18da079bdecb94e2b7c73ba72a0e89f4edbb2c3a9f9e",
+        "bytes": 50321
+      },
+      {
+        "name": "FiraMath-Regular.otf",
+        "sha256": "2028cbd3dd4d8c0cf1608520eb4759956a83a67931d7b6d8e7c313520186e35b",
+        "bytes": 179840
+      },
+      {
+        "name": "FiraMath-Regular.plist",
+        "sha256": "b32d6388ee5769b6e68ffcc6f660dc73818ef6686ee846f041c2afd4ba6a0305",
+        "bytes": 74123
+      },
+      {
+        "name": "GUST-FONT-LICENSE.txt",
+        "sha256": "2bd69affc3da00715116f713f57eab9707e96daf3562ad0215987b15b9c16f73",
+        "bytes": 1456
+      },
+      {
+        "name": "Garamond-Math.otf",
+        "sha256": "c6161377e97084152b948f62abe874cbe27405938956346b54a4c6488a5009f1",
+        "bytes": 823988
+      },
+      {
+        "name": "Garamond-Math.plist",
+        "sha256": "2fe6c519cbf876e42ec601a14ca615e9bf38f51be6b92ef0bba26cf9ee45f780",
+        "bytes": 192517
+      },
+      {
+        "name": "KpMath-Light.otf",
+        "sha256": "aa6713ae76838a7db9eefe4f503b963dad50df77555ff67a50b72eb832221660",
+        "bytes": 451008
+      },
+      {
+        "name": "KpMath-Light.plist",
+        "sha256": "aaca68ecef79f005f41568df36ac467ec24a2b6732336ec8c357a156e3f4e114",
+        "bytes": 153377
+      },
+      {
+        "name": "KpMath-Sans.otf",
+        "sha256": "a9e82575a514f10ceed193d393bf2ea6ac82980ce7eb8c81be085df159a8c253",
+        "bytes": 293084
+      },
+      {
+        "name": "KpMath-Sans.plist",
+        "sha256": "3db5772fa9fbf71c96ca37eccaf38d8c2d32406c9bda8343d23a3cc0c9de348e",
+        "bytes": 105024
+      },
+      {
+        "name": "LICENSE",
+        "sha256": "431b2cb82b8a55977323598231f1baa44f32accac1231b4781a9a393d0bc29ed",
+        "bytes": 1075
+      },
+      {
+        "name": "LeteSansMath.otf",
+        "sha256": "b9242115e4d41b9ccbe179340d4ddaf5598863389a23677eefb87e8950781313",
+        "bytes": 440268
+      },
+      {
+        "name": "LeteSansMath.plist",
+        "sha256": "b00eeb445c4f525ec53391841d8b6e75c9ede23bbfa77a34c8a720ac8b7bc408",
+        "bytes": 131044
+      },
+      {
+        "name": "LibertinusMath-Regular.otf",
+        "sha256": "e81bd44acbb7119c8f00128b36fecc5d980e10d2450a226ba52402ccf4da9d32",
+        "bytes": 588848
+      },
+      {
+        "name": "LibertinusMath-Regular.plist",
+        "sha256": "35701c3b94bea93016a9161d017bacebd0954025644456aa8b47d0145fede503",
+        "bytes": 99401
+      },
+      {
+        "name": "NotoSansMath-Regular.otf",
+        "sha256": "9dda7e17fa67b7e34083798f56faf5e53ac524456e730ead35c2957e4397ca28",
+        "bytes": 498408
+      },
+      {
+        "name": "NotoSansMath-Regular.plist",
+        "sha256": "232aced02fe2d81553a1545c551d8d5fe824aae0c8c860f18bb10af3f4145c03",
+        "bytes": 225479
+      },
+      {
+        "name": "OFL.txt",
+        "sha256": "a96bed88f867f6a5bbe78ced4ca52a3ce6e002475363d86edd9097b2f8206d8d",
+        "bytes": 5104
+      },
+      {
+        "name": "latinmodern-math.otf",
+        "sha256": "6075562b771f8b82f0c179e363389684f2dd09de30038269e2628e504bd7be0f",
+        "bytes": 733736
+      },
+      {
+        "name": "latinmodern-math.plist",
+        "sha256": "201e6a483783415f335328f2d02b356fe55cd478eb0cd052898236589c8cb946",
+        "bytes": 65067
+      },
+      {
+        "name": "math_table_to_plist.py",
+        "sha256": "62a8e69ae5230b0420a34e28d9b6a44bd1127127e2d1c6ac0f06566583dafb3e",
+        "bytes": 7145
+      },
+      {
+        "name": "texgyretermes-math.otf",
+        "sha256": "e5ce42b4fe826b7ea4c0874359decf0b294439355c511a4794107a9924e2cd5a",
+        "bytes": 532404
+      },
+      {
+        "name": "texgyretermes-math.plist",
+        "sha256": "57ddeac7c51e1342aeb30fb72f6beb4d2f3ee7d51bfb1e07ab9150c06f7ec3c8",
+        "bytes": 58011
+      },
+      {
+        "name": "xits-math.otf",
+        "sha256": "d76666cb2dc222b4a811db96c41cc1853988b91008ec44a194126b4e010a5c6c",
+        "bytes": 538696
+      },
+      {
+        "name": "xits-math.plist",
+        "sha256": "e64b5302d65885a302b34eb2eb1e14c6a66f4c652fcbcd4893411361baae0363",
+        "bytes": 152248
+      }
+    ],
+    "licenses": [
+      "MIT",
+      "OFL-1.1",
+      "GUST Font License"
+    ],
+    "retain_original_resources_and_notices": true
+  },
+  "sqlite": {
+    "selection": "SDK system library",
+    "runtime_version": "3.54.0",
+    "vfs_name": "unix",
+    "vfs_version": 3,
+    "meets_minimum_fixed_version": true,
+    "wal_full_fullfsync_durability_tested": false
+  },
+  "unverified_release_requirements": [
+    "production_helper_closure",
+    "runtime app bundle",
+    "final nested signing/notarization",
+    "fullfsync crash recovery"
+  ],
+  "audit": {
+    "schema_version": 1,
+    "kind": "development_dependency_audit",
+    "release_gate_evidence": false,
+    "production_packages": 86,
+    "lock_sha256": "2ad7e038a3bdb98585d1c9ba1e990ab1561ffe7c2f63395dbef9f78e3db1d680",
+    "packages": [
+      {
+        "path": "node_modules/@anthropic-ai/sdk",
+        "name": "@anthropic-ai/sdk",
+        "version": "0.129.0",
+        "license": "MIT",
+        "integrity": "sha512-MH7LB20kNpGLUpPTe2OG5XvL/KhX8HUO9XyBaFjgFk6TLS4Xjt0VPIuMKywe7POKKPslX+QxSlVok9e+8kG5Nw==",
+        "notices": [
+          {
+            "name": "LICENSE",
+            "sha256": "8bf96984ff8bcfae7e48cae76a529e8a25317ba9e02abf7fd3cc64fdf95657a6"
+          }
+        ],
+        "skipped_lifecycle_scripts": {}
+      },
+      {
+        "path": "node_modules/@aws-sdk/client-bedrock-runtime",
+        "name": "@aws-sdk/client-bedrock-runtime",
+        "version": "3.1127.0",
+        "license": "Apache-2.0",
+        "integrity": "sha512-IDl/lrPb90aH+pZFHGNDmgH9nAUQj5PlZH1sJ3w7RikctyjHSnY3oNjZhrLoaBoQn/rNK0zsP6OHEqEhj2tdLA==",
+        "notices": [
+          {
+            "name": "LICENSE",
+            "sha256": "18c295fdd68d4f68418b0209829f241481e93549d9e7b9fcd4b4c029322c8a45"
+          }
+        ],
+        "skipped_lifecycle_scripts": {}
+      },
+      {
+        "path": "node_modules/@aws-sdk/core",
+        "name": "@aws-sdk/core",
+        "version": "3.978.1",
+        "license": "Apache-2.0",
+        "integrity": "sha512-LbY9aGsEiznDWmUc30Nwv3aIX/+dbwTx8KfS0yOC3NPYMO+O91e6jkT1azf34FwjOndq8/Q+RcVVZz5xnerwdg==",
+        "notices": [
+          {
+            "name": "LICENSE",
+            "sha256": "edea91454b811f127fbdea3d86f378f6719bd372ed440abf82b232f6fca06c3d"
+          }
+        ],
+        "skipped_lifecycle_scripts": {}
+      },
+      {
+        "path": "node_modules/@aws-sdk/credential-provider-env",
+        "name": "@aws-sdk/credential-provider-env",
+        "version": "3.972.72",
+        "license": "Apache-2.0",
+        "integrity": "sha512-xTKO/FWJPozTIXbozVnVGoNBhaGba8TBcx+KyUjRVeOlXE+dUc7GTR1cLvu0uTdIdmemzaFbqqCshXeZA1fZew==",
+        "notices": [
+          {
+            "name": "LICENSE",
+            "sha256": "d82ceb8cbd004a2d4834085c557d55459f528e30268d95159ee1e4030a693a6e"
+          }
+        ],
+        "skipped_lifecycle_scripts": {}
+      },
+      {
+        "path": "node_modules/@aws-sdk/credential-provider-http",
+        "name": "@aws-sdk/credential-provider-http",
+        "version": "3.972.74",
+        "license": "Apache-2.0",
+        "integrity": "sha512-u91E/hT8f4d1xy0Jl7VG4nVKJ3lxbrZkoBTeSVoJdWBiSEUMwMS/9+e0H/aJVQV//Lt5wuzP+E69v4aRSsNTmw==",
+        "notices": [
+          {
+            "name": "macos/OpenMathNative/Resources/Licenses/Agent/aws__aws-sdk-js-v3-8893344796b1.txt",
+            "sha256": "edea91454b811f127fbdea3d86f378f6719bd372ed440abf82b232f6fca06c3d",
+            "source": "https://raw.githubusercontent.com/aws/aws-sdk-js-v3/8893344796b14a92844d9a08973bcdc2da89a3eb/LICENSE"
+          }
+        ],
+        "skipped_lifecycle_scripts": {}
+      },
+      {
+        "path": "node_modules/@aws-sdk/credential-provider-ini",
+        "name": "@aws-sdk/credential-provider-ini",
+        "version": "3.973.17",
+        "license": "Apache-2.0",
+        "integrity": "sha512-ged4KXdBkvIC81bLvNHHuQKdKak/VXhQTR1NWYTTqW0474nlmsxy9O/vlgTIohDDWH3xpBdtVMZRyjb+DnocDA==",
+        "notices": [
+          {
+            "name": "LICENSE",
+            "sha256": "d82ceb8cbd004a2d4834085c557d55459f528e30268d95159ee1e4030a693a6e"
+          }
+        ],
+        "skipped_lifecycle_scripts": {}
+      },
+      {
+        "path": "node_modules/@aws-sdk/credential-provider-login",
+        "name": "@aws-sdk/credential-provider-login",
+        "version": "3.972.79",
+        "license": "Apache-2.0",
+        "integrity": "sha512-L+Z85anONJd8MaiuraO4wRxATCdEejBZ3K3eymzWI5JPXa9sOS9CkIm72PBKqXKX+Z9p9NGMX5AIMXm0LEflgw==",
+        "notices": [
+          {
+            "name": "macos/OpenMathNative/Resources/Licenses/Agent/aws__aws-sdk-js-v3-8893344796b1.txt",
+            "sha256": "edea91454b811f127fbdea3d86f378f6719bd372ed440abf82b232f6fca06c3d",
+            "source": "https://raw.githubusercontent.com/aws/aws-sdk-js-v3/8893344796b14a92844d9a08973bcdc2da89a3eb/LICENSE"
+          }
+        ],
+        "skipped_lifecycle_scripts": {}
+      },
+      {
+        "path": "node_modules/@aws-sdk/credential-provider-node",
+        "name": "@aws-sdk/credential-provider-node",
+        "version": "3.972.84",
+        "license": "Apache-2.0",
+        "integrity": "sha512-oHt854odINVwzwsh+c5x69j0ajm4DbqqqVJ+O1ECsCIZeMDAbzFpXItaqP7UZstJj/ATdTk/KFSH0LaNAgV+kA==",
+        "notices": [
+          {
+            "name": "LICENSE",
+            "sha256": "d82ceb8cbd004a2d4834085c557d55459f528e30268d95159ee1e4030a693a6e"
+          }
+        ],
+        "skipped_lifecycle_scripts": {}
+      },
+      {
+        "path": "node_modules/@aws-sdk/credential-provider-process",
+        "name": "@aws-sdk/credential-provider-process",
+        "version": "3.972.72",
+        "license": "Apache-2.0",
+        "integrity": "sha512-rLIp2xbMjX/k9/od7APpqq1ZgXXnV0pOL1Th3ZsL8Wu0TRtBsDTVS8iPqcfRFcHakFxPvR04OSTv2ka2qOb/2A==",
+        "notices": [
+          {
+            "name": "LICENSE",
+            "sha256": "2ef1e48ea743d9c82313e6887858f7c1feaddd636f5a3f43926aab0143e67ebd"
+          }
+        ],
+        "skipped_lifecycle_scripts": {}
+      },
+      {
+        "path": "node_modules/@aws-sdk/credential-provider-sso",
+        "name": "@aws-sdk/credential-provider-sso",
+        "version": "3.973.16",
+        "license": "Apache-2.0",
+        "integrity": "sha512-IGihaJfFZYacJJr/odqILCoK7W/mvrZ7cuK7ECn3sAu4vLC6u0V8bS7mCGbdugJ8Aum2tnvqmx0F2MRFp2rn9g==",
+        "notices": [
+          {
+            "name": "LICENSE",
+            "sha256": "2ef1e48ea743d9c82313e6887858f7c1feaddd636f5a3f43926aab0143e67ebd"
+          }
+        ],
+        "skipped_lifecycle_scripts": {}
+      },
+      {
+        "path": "node_modules/@aws-sdk/credential-provider-sso/node_modules/@aws-sdk/token-providers",
+        "name": "@aws-sdk/token-providers",
+        "version": "3.1138.0",
+        "license": "Apache-2.0",
+        "integrity": "sha512-GpyAr0DD63YOEmYFM6Df+gJuIgC92MMTiBK4FTKfxii5MJ9ge20epR7LyroulscYlG89J+ZB2ivFDPjvfQhzdw==",
+        "notices": [
+          {
+            "name": "LICENSE",
+            "sha256": "d82ceb8cbd004a2d4834085c557d55459f528e30268d95159ee1e4030a693a6e"
+          }
+        ],
+        "skipped_lifecycle_scripts": {}
+      },
+      {
+        "path": "node_modules/@aws-sdk/credential-provider-web-identity",
+        "name": "@aws-sdk/credential-provider-web-identity",
+        "version": "3.972.78",
+        "license": "Apache-2.0",
+        "integrity": "sha512-/y9WvNtlcPBGLR0qc1a+9J/xtYZfVczvLUOuXaVWylzttH7ewsxwHtjmiJSolNrVSDorIxHGHMU61CbonRkmwA==",
+        "notices": [
+          {
+            "name": "LICENSE",
+            "sha256": "2ef1e48ea743d9c82313e6887858f7c1feaddd636f5a3f43926aab0143e67ebd"
+          }
+        ],
+        "skipped_lifecycle_scripts": {}
+      },
+      {
+        "path": "node_modules/@aws-sdk/eventstream-handler-node",
+        "name": "@aws-sdk/eventstream-handler-node",
+        "version": "3.972.35",
+        "license": "Apache-2.0",
+        "integrity": "sha512-a8xilRoRaalvSPZdfrs0VY3/BPc0uYhXW56Z/k6nmZ5Vk430LHeowf9APIPq8utM3tMJSNGSSuJMlB9YrPsN+A==",
+        "notices": [
+          {
+            "name": "LICENSE",
+            "sha256": "07364a5f7d0177a59a05a0002187431f8f899320983c0dc049d72df015e8064c"
+          }
+        ],
+        "skipped_lifecycle_scripts": {}
+      },
+      {
+        "path": "node_modules/@aws-sdk/middleware-eventstream",
+        "name": "@aws-sdk/middleware-eventstream",
+        "version": "3.972.30",
+        "license": "Apache-2.0",
+        "integrity": "sha512-B6gvZlcnRBNWraKgyEjKsbhv+VjtbyHmpU7hmtTHzXpDSxHPpCJnYLpglEOOsF+SFne20DbZC5IVC1aNr2Pb4A==",
+        "notices": [
+          {
+            "name": "LICENSE",
+            "sha256": "e345c2ee7df4446e739de7b91535f0c10ddcd909b9753889e943ee637b05db8c"
+          }
+        ],
+        "skipped_lifecycle_scripts": {}
+      },
+      {
+        "path": "node_modules/@aws-sdk/middleware-websocket",
+        "name": "@aws-sdk/middleware-websocket",
+        "version": "3.972.54",
+        "license": "Apache-2.0",
+        "integrity": "sha512-bhESdru8u8KosziH8jcVta/NM/dNreeRz2+2aU86si5bfBYOiJ6IiqD+9U4URUcU5WJO3Yw+jO3GLDIHlscXMQ==",
+        "notices": [
+          {
+            "name": "LICENSE",
+            "sha256": "07364a5f7d0177a59a05a0002187431f8f899320983c0dc049d72df015e8064c"
+          }
+        ],
+        "skipped_lifecycle_scripts": {}
+      },
+      {
+        "path": "node_modules/@aws-sdk/nested-clients",
+        "name": "@aws-sdk/nested-clients",
+        "version": "3.997.46",
+        "license": "Apache-2.0",
+        "integrity": "sha512-oRxtBcka/JGHGs9l9p9IVajGoTP8vTPmoAzdHGy4Qcy9P5vPnDf6nhIeM/COQNY9k/OahImTRaLkHftoXvfcmQ==",
+        "notices": [
+          {
+            "name": "macos/OpenMathNative/Resources/Licenses/Agent/aws__aws-sdk-js-v3-8893344796b1.txt",
+            "sha256": "edea91454b811f127fbdea3d86f378f6719bd372ed440abf82b232f6fca06c3d",
+            "source": "https://raw.githubusercontent.com/aws/aws-sdk-js-v3/8893344796b14a92844d9a08973bcdc2da89a3eb/LICENSE"
+          }
+        ],
+        "skipped_lifecycle_scripts": {}
+      },
+      {
+        "path": "node_modules/@aws-sdk/signature-v4-multi-region",
+        "name": "@aws-sdk/signature-v4-multi-region",
+        "version": "3.996.47",
+        "license": "Apache-2.0",
+        "integrity": "sha512-Zk08macMvQTHzQJCLJVkOlviVoqwYMrpXv4lmLN7b7sAbiMoOK7Go0NYdR5UeF+MW8LIbRmwrNy9u/5VvX1U5g==",
+        "notices": [
+          {
+            "name": "LICENSE",
+            "sha256": "07364a5f7d0177a59a05a0002187431f8f899320983c0dc049d72df015e8064c"
+          }
+        ],
+        "skipped_lifecycle_scripts": {}
+      },
+      {
+        "path": "node_modules/@aws-sdk/token-providers",
+        "name": "@aws-sdk/token-providers",
+        "version": "3.1127.0",
+        "license": "Apache-2.0",
+        "integrity": "sha512-Dv2TMWBshJ+tF6ahs2Sy5bh4Iabsd4GAQqVvE9XZmYmnoaVbpS2QKIKE/HRacc7bTtbjEEvP+laGzHvHlf1CiQ==",
+        "notices": [
+          {
+            "name": "LICENSE",
+            "sha256": "d82ceb8cbd004a2d4834085c557d55459f528e30268d95159ee1e4030a693a6e"
+          }
+        ],
+        "skipped_lifecycle_scripts": {}
+      },
+      {
+        "path": "node_modules/@aws-sdk/types",
+        "name": "@aws-sdk/types",
+        "version": "3.974.6",
+        "license": "Apache-2.0",
+        "integrity": "sha512-v/clNZzZnDxGyvpHMOGpJKVXFAExJzUNAAjaWGdcx8QAcXLGwTaOkw33p5SHAi0YAioK32xB3hWwOekRVfmfKg==",
+        "notices": [
+          {
+            "name": "LICENSE",
+            "sha256": "d82ceb8cbd004a2d4834085c557d55459f528e30268d95159ee1e4030a693a6e"
+          }
+        ],
+        "skipped_lifecycle_scripts": {}
+      },
+      {
+        "path": "node_modules/@aws-sdk/xml-builder",
+        "name": "@aws-sdk/xml-builder",
+        "version": "3.972.41",
+        "license": "Apache-2.0",
+        "integrity": "sha512-ctjVSyCMegrWfXlx6VqzSBFI6UqmQ5ZlnfMhdLIiWmhoH8UAQxSCP5N3OpG7X3k4LnS7ou74C4mt20+bfTW2aQ==",
+        "notices": [
+          {
+            "name": "LICENSE",
+            "sha256": "d82ceb8cbd004a2d4834085c557d55459f528e30268d95159ee1e4030a693a6e"
+          }
+        ],
+        "skipped_lifecycle_scripts": {}
+      },
+      {
+        "path": "node_modules/@aws/lambda-invoke-store",
+        "name": "@aws/lambda-invoke-store",
+        "version": "0.3.0",
+        "license": "Apache-2.0",
+        "integrity": "sha512-sl4Bm6yiMNYrZKkqqDFWN0UfnWhlS8ivKxrYl+6t0gCLrqr8y3B2IqZZbFRkfaVVp7C/baApyh71P+LeE1A2sQ==",
+        "notices": [
+          {
+            "name": "LICENSE",
+            "sha256": "09e8a9bcec8067104652c168685ab0931e7868f9c8284b66f5ae6edae5f1130b"
+          }
+        ],
+        "skipped_lifecycle_scripts": {}
+      },
+      {
+        "path": "node_modules/@babel/runtime",
+        "name": "@babel/runtime",
+        "version": "7.29.10",
+        "license": "MIT",
+        "integrity": "sha512-NpugTzbKgGrNe45Ui32cN8vCFFMxVtP/9rtfwv0nP5FRDAjvYBxJcLVpYA9mr1jxP6cnIT7x9LUzuDTbWYYNRA==",
+        "notices": [
+          {
+            "name": "LICENSE",
+            "sha256": "117da2af0d4ce0fe1c8e19b5cff9dcd806adf973d328d27b11d4448c4ff24f76"
+          }
+        ],
+        "skipped_lifecycle_scripts": {}
+      },
+      {
+        "path": "node_modules/@earendil-works/pi-agent-core",
+        "name": "@earendil-works/pi-agent-core",
+        "version": "1.0.4",
+        "license": "MIT",
+        "integrity": "sha512-/xGICE+N/+G9N7KfYFSxlE8G8fQcBlLHKiY+j1Ehz9vvb1zhvGneWosFK56d2qmA5oteafeG7yKr2nqU4ed9ig==",
+        "notices": [
+          {
+            "name": "macos/OpenMathNative/Resources/Licenses/Agent/earendil-works__pi-7c10bd433749.txt",
+            "sha256": "0457f5bcec3b3b211605dfb5d1a49042fd638f3686a410fe099c24a25af13c48",
+            "source": "https://raw.githubusercontent.com/earendil-works/pi/7c10bd4337495ee613f2224843ecdf349b80d1df/LICENSE"
+          }
+        ],
+        "skipped_lifecycle_scripts": {}
+      },
+      {
+        "path": "node_modules/@earendil-works/pi-ai",
+        "name": "@earendil-works/pi-ai",
+        "version": "1.0.4",
+        "license": "MIT",
+        "integrity": "sha512-/Eu5R0gfor6wcmRcVyOmulUiZmsHJ0bKu5wXXnpCoSHF3y4FnW4fgnjRlLjNza8NJWXdvW5Uew90Zukx7Sh2rw==",
+        "notices": [
+          {
+            "name": "macos/OpenMathNative/Resources/Licenses/Agent/earendil-works__pi-7c10bd433749.txt",
+            "sha256": "0457f5bcec3b3b211605dfb5d1a49042fd638f3686a410fe099c24a25af13c48",
+            "source": "https://raw.githubusercontent.com/earendil-works/pi/7c10bd4337495ee613f2224843ecdf349b80d1df/LICENSE"
+          }
+        ],
+        "skipped_lifecycle_scripts": {}
+      },
+      {
+        "path": "node_modules/@earendil-works/pi-telemetry",
+        "name": "@earendil-works/pi-telemetry",
+        "version": "1.1.0",
+        "license": "MIT",
+        "integrity": "sha512-8gAK05/2pPozZZz6hCLOi8x2vsqzvsmO9gG92kbvuvTPm0qMHaFlaXX98ndXsrOi5pmzha7vNLguuG4+0Rgxjw==",
+        "notices": [
+          {
+            "name": "macos/OpenMathNative/Resources/Licenses/Agent/earendil-works__pi-7c10bd433749.txt",
+            "sha256": "0457f5bcec3b3b211605dfb5d1a49042fd638f3686a410fe099c24a25af13c48",
+            "source": "https://raw.githubusercontent.com/earendil-works/pi/7c10bd4337495ee613f2224843ecdf349b80d1df/LICENSE"
+          }
+        ],
+        "skipped_lifecycle_scripts": {}
+      },
+      {
+        "path": "node_modules/@google/genai",
+        "name": "@google/genai",
+        "version": "2.21.0",
+        "license": "Apache-2.0",
+        "integrity": "sha512-+PDtco2/Z0ONdzCGekCoCT+O1VJS9xJQNN4XzQpXG/t3El/SWWMkCWlFRO1KmivOHPa4Q0VjUYu1HBKCZ/v33Q==",
+        "notices": [
+          {
+            "name": "LICENSE",
+            "sha256": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30"
+          }
+        ],
+        "skipped_lifecycle_scripts": {
+          "preinstall": "echo 'preinstall: no-op'"
+        }
+      },
+      {
+        "path": "node_modules/@protobufjs/aspromise",
+        "name": "@protobufjs/aspromise",
+        "version": "1.1.2",
+        "license": "BSD-3-Clause",
+        "integrity": "sha512-j+gKExEuLmKwvz3OgROXtrJ2UG2x8Ch2YZUxahh+s1F2HZ+wAceUNLkvy6zKCPVRkU++ZWQrdxsUeQXmcg4uoQ==",
+        "notices": [
+          {
+            "name": "LICENSE",
+            "sha256": "a67b34a24a5daddcce46aea68c5004e4442bbfb63690329fa607bf4de4269794"
+          }
+        ],
+        "skipped_lifecycle_scripts": {}
+      },
+      {
+        "path": "node_modules/@protobufjs/base64",
+        "name": "@protobufjs/base64",
+        "version": "1.1.2",
+        "license": "BSD-3-Clause",
+        "integrity": "sha512-AZkcAA5vnN/v4PDqKyMR5lx7hZttPDgClv83E//FMNhR2TMcLUhfRUBHCmSl0oi9zMgDDqRUJkSxO3wm85+XLg==",
+        "notices": [
+          {
+            "name": "LICENSE",
+            "sha256": "a67b34a24a5daddcce46aea68c5004e4442bbfb63690329fa607bf4de4269794"
+          }
+        ],
+        "skipped_lifecycle_scripts": {}
+      },
+      {
+        "path": "node_modules/@protobufjs/codegen",
+        "name": "@protobufjs/codegen",
+        "version": "2.0.5",
+        "license": "BSD-3-Clause",
+        "integrity": "sha512-zgXFLzW3Ap33e6d0Wlj4MGIm6Ce8O89n/apUaGNB/jx+hw+ruWEp7EwGUshdLKVRCxZW12fp9r40E1mQrf/34g==",
+        "notices": [
+          {
+            "name": "LICENSE",
+            "sha256": "a67b34a24a5daddcce46aea68c5004e4442bbfb63690329fa607bf4de4269794"
+          }
+        ],
+        "skipped_lifecycle_scripts": {}
+      },
+      {
+        "path": "node_modules/@protobufjs/eventemitter",
+        "name": "@protobufjs/eventemitter",
+        "version": "1.1.1",
+        "license": "BSD-3-Clause",
+        "integrity": "sha512-vW1GmwMZNnL+gMRaovlh9yZX74kc+TTU3FObkkurpMaRtBfLP3ldjS9KQWlwZgraRE0+dheEEoAxdzcJQ8eXZg==",
+        "notices": [
+          {
+            "name": "LICENSE",
+            "sha256": "a67b34a24a5daddcce46aea68c5004e4442bbfb63690329fa607bf4de4269794"
+          }
+        ],
+        "skipped_lifecycle_scripts": {}
+      },
+      {
+        "path": "node_modules/@protobufjs/fetch",
+        "name": "@protobufjs/fetch",
+        "version": "1.1.1",
+        "license": "BSD-3-Clause",
+        "integrity": "sha512-GpptLrs57adMSuHi3VNj0mAF8dwh36LMaYF6XyJ6JMWlVsc+t42tm1HSEDmOs3A8fC9yyeisgLhsTVQokOZ0zw==",
+        "notices": [
+          {
+            "name": "LICENSE",
+            "sha256": "a67b34a24a5daddcce46aea68c5004e4442bbfb63690329fa607bf4de4269794"
+          }
+        ],
+        "skipped_lifecycle_scripts": {}
+      },
+      {
+        "path": "node_modules/@protobufjs/float",
+        "name": "@protobufjs/float",
+        "version": "1.0.2",
+        "license": "BSD-3-Clause",
+        "integrity": "sha512-Ddb+kVXlXst9d+R9PfTIxh1EdNkgoRe5tOX6t01f1lYWOvJnSPDBlG241QLzcyPdoNTsblLUdujGSE4RzrTZGQ==",
+        "notices": [
+          {
+            "name": "LICENSE",
+            "sha256": "a67b34a24a5daddcce46aea68c5004e4442bbfb63690329fa607bf4de4269794"
+          }
+        ],
+        "skipped_lifecycle_scripts": {}
+      },
+      {
+        "path": "node_modules/@protobufjs/path",
+        "name": "@protobufjs/path",
+        "version": "1.1.2",
+        "license": "BSD-3-Clause",
+        "integrity": "sha512-6JOcJ5Tm08dOHAbdR3GrvP+yUUfkjG5ePsHYczMFLq3ZmMkAD98cDgcT2iA1lJ9NVwFd4tH/iSSoe44YWkltEA==",
+        "notices": [
+          {
+            "name": "LICENSE",
+            "sha256": "a67b34a24a5daddcce46aea68c5004e4442bbfb63690329fa607bf4de4269794"
+          }
+        ],
+        "skipped_lifecycle_scripts": {}
+      },
+      {
+        "path": "node_modules/@protobufjs/pool",
+        "name": "@protobufjs/pool",
+        "version": "1.1.0",
+        "license": "BSD-3-Clause",
+        "integrity": "sha512-0kELaGSIDBKvcgS4zkjz1PeddatrjYcmMWOlAuAPwAeccUrPHdUqo/J6LiymHHEiJT5NrF1UVwxY14f+fy4WQw==",
+        "notices": [
+          {
+            "name": "LICENSE",
+            "sha256": "a67b34a24a5daddcce46aea68c5004e4442bbfb63690329fa607bf4de4269794"
+          }
+        ],
+        "skipped_lifecycle_scripts": {}
+      },
+      {
+        "path": "node_modules/@protobufjs/utf8",
+        "name": "@protobufjs/utf8",
+        "version": "1.1.2",
+        "license": "BSD-3-Clause",
+        "integrity": "sha512-b1UQwcEZ4yCnMCD8DAL1VlbvBJE9/IX4FTIp7BG1xYpf29SLazLSrqUkj4w7Y5y7cCVP6E5tcqqcI0xemPkHug==",
+        "notices": [
+          {
+            "name": "LICENSE",
+            "sha256": "a67b34a24a5daddcce46aea68c5004e4442bbfb63690329fa607bf4de4269794"
+          }
+        ],
+        "skipped_lifecycle_scripts": {}
+      },
+      {
+        "path": "node_modules/@smithy/core",
+        "name": "@smithy/core",
+        "version": "3.35.2",
+        "license": "Apache-2.0",
+        "integrity": "sha512-ejTukBuP/Pg3t9N8Ux+0zKsXeHWm7p6W3HbXFOyltKasSxZwCFmvTut7kBdZSCF3m9y1bXXyVu6p2xuMFcsTyQ==",
+        "notices": [
+          {
+            "name": "LICENSE",
+            "sha256": "07364a5f7d0177a59a05a0002187431f8f899320983c0dc049d72df015e8064c"
+          }
+        ],
+        "skipped_lifecycle_scripts": {}
+      },
+      {
+        "path": "node_modules/@smithy/credential-provider-imds",
+        "name": "@smithy/credential-provider-imds",
+        "version": "4.5.2",
+        "license": "Apache-2.0",
+        "integrity": "sha512-A9uSdn72ozbRUSit0eib0TW7nXuNPlaeM0zcGkJ+nE6tFcSDbnmtwoxbTCFBukVQcszDAyvsd7+rTduPTXpygg==",
+        "notices": [
+          {
+            "name": "LICENSE",
+            "sha256": "d82ceb8cbd004a2d4834085c557d55459f528e30268d95159ee1e4030a693a6e"
+          }
+        ],
+        "skipped_lifecycle_scripts": {}
+      },
+      {
+        "path": "node_modules/@smithy/fetch-http-handler",
+        "name": "@smithy/fetch-http-handler",
+        "version": "5.8.0",
+        "license": "Apache-2.0",
+        "integrity": "sha512-ycSJu3tFAQ4v04CBB0agqFMVsSQ1iG3yw+SpgxRqKfaURpQD4CZ8Wn0zPMmSnOuTpTh65Vz+EA0rMrw089wvkA==",
+        "notices": [
+          {
+            "name": "LICENSE",
+            "sha256": "d82ceb8cbd004a2d4834085c557d55459f528e30268d95159ee1e4030a693a6e"
+          }
+        ],
+        "skipped_lifecycle_scripts": {}
+      },
+      {
+        "path": "node_modules/@smithy/node-http-handler",
+        "name": "@smithy/node-http-handler",
+        "version": "4.12.1",
+        "license": "Apache-2.0",
+        "integrity": "sha512-ThMkboGeONWXAelq9FvGsuJC4rOi+qyC4/zhUF58xYpxUg5sQKx2VXZYJmtNjr4dSuBJ1HeJXETQILCz3wOHvw==",
+        "notices": [
+          {
+            "name": "LICENSE",
+            "sha256": "d82ceb8cbd004a2d4834085c557d55459f528e30268d95159ee1e4030a693a6e"
+          }
+        ],
+        "skipped_lifecycle_scripts": {}
+      },
+      {
+        "path": "node_modules/@smithy/signature-v4",
+        "name": "@smithy/signature-v4",
+        "version": "5.7.4",
+        "license": "Apache-2.0",
+        "integrity": "sha512-tHy0K0VtqNd5Y7Y41h0a0Lhh0L1GzC08dTWg0F7vRJWFtTENg7IZikf3wQkanYIRdb7ngoIPMTmqgUi401fEeQ==",
+        "notices": [
+          {
+            "name": "LICENSE",
+            "sha256": "d82ceb8cbd004a2d4834085c557d55459f528e30268d95159ee1e4030a693a6e"
+          }
+        ],
+        "skipped_lifecycle_scripts": {}
+      },
+      {
+        "path": "node_modules/@smithy/types",
+        "name": "@smithy/types",
+        "version": "4.19.0",
+        "license": "Apache-2.0",
+        "integrity": "sha512-r7jh49VJxGerfAcTQA6gXcKc+98zOp/tqRwzYjgOE+iSQsP6cEU1hq2QzbuipmP68QtYdY9wKEhiCQZIzHgZ4Q==",
+        "notices": [
+          {
+            "name": "LICENSE",
+            "sha256": "07364a5f7d0177a59a05a0002187431f8f899320983c0dc049d72df015e8064c"
+          }
+        ],
+        "skipped_lifecycle_scripts": {}
+      },
+      {
+        "path": "node_modules/@stablelib/base64",
+        "name": "@stablelib/base64",
+        "version": "1.0.1",
+        "license": "MIT",
+        "integrity": "sha512-1bnPQqSxSuc3Ii6MhBysoWCg58j97aUjuCSZrGSmDxNqtytIi0k8utUenAwTZN4V5mXXYGsVUI9zeBqy+jBOSQ==",
+        "notices": [
+          {
+            "name": "LICENSE",
+            "sha256": "1605b77bebe018db1fc27bd22fbcdeed1335c617937a124299a8b042b42b0fb6"
+          }
+        ],
+        "skipped_lifecycle_scripts": {}
+      },
+      {
+        "path": "node_modules/@types/node",
+        "name": "@types/node",
+        "version": "26.6.4",
+        "license": "MIT",
+        "integrity": "sha512-ldVPDCzj7fsaGZrLB0NuHuTvJcsNasysBAqMolr/cgxrLd1xbqxIr3XJiPnHHJUCxj5sNF1vnRj9aWnrVh5Jcg==",
+        "notices": [
+          {
+            "name": "LICENSE",
+            "sha256": "c2cfccb812fe482101a8f04597dfc5a9991a6b2748266c47ac91b6a5aae15383"
+          }
+        ],
+        "skipped_lifecycle_scripts": {}
+      },
+      {
+        "path": "node_modules/@types/retry",
+        "name": "@types/retry",
+        "version": "0.12.0",
+        "license": "MIT",
+        "integrity": "sha512-wWKOClTTiizcZhXnPY4wikVAwmdYHp8q6DmC+EJUzAMsycb7HB32Kh9RN4+0gExjmPmZSAQjgURXIGATPegAvA==",
+        "notices": [
+          {
+            "name": "LICENSE",
+            "sha256": "dea9265341829002e2c23a7372393eb2ed6e26085fb623f38a4ba0af833f30a6"
+          }
+        ],
+        "skipped_lifecycle_scripts": {}
+      },
+      {
+        "path": "node_modules/agent-base",
+        "name": "agent-base",
+        "version": "9.0.0",
+        "license": "MIT",
+        "integrity": "sha512-TQf59BsZnytt8GdJKLPfUZ54g/iaUL2OWDSFCCvMOhsHduDQxO8xC4PNeyIkVcA5KwL2phPSv0douC0fgWzmnA==",
+        "notices": [
+          {
+            "name": "LICENSE",
+            "sha256": "8d8c55319c7729d57be811c747452636688d54f19701ee0752b6b15ad3771d9a"
+          }
+        ],
+        "skipped_lifecycle_scripts": {}
+      },
+      {
+        "path": "node_modules/base64-js",
+        "name": "base64-js",
+        "version": "1.5.1",
+        "license": "MIT",
+        "integrity": "sha512-AKpaYlHn8t4SVbOHCy+b5+KKgvR4vrsD8vbvrbiQJps7fKDTkjkDry6ji0rUJjC0kzbNePLwzxq8iypo41qeWA==",
+        "notices": [
+          {
+            "name": "LICENSE",
+            "sha256": "5b37224c080cdcc97c871ada971c224e9926370fe74f11b539aa1cf9f3b1aca1"
+          }
+        ],
+        "skipped_lifecycle_scripts": {}
+      },
+      {
+        "path": "node_modules/bignumber.js",
+        "name": "bignumber.js",
+        "version": "9.3.1",
+        "license": "MIT",
+        "integrity": "sha512-Ko0uX15oIUS7wJ3Rb30Fs6SkVbLmPBAKdlm7q9+ak9bbIeFf0MwuBsQV6z7+X768/cHsfg+WlysDWJcmthjsjQ==",
+        "notices": [
+          {
+            "name": "LICENCE.md",
+            "sha256": "def75ba75d6426f1c3f02addf8e175fbe6e0d8a82e541cbdffc16d2bd8fd7d6a"
+          }
+        ],
+        "skipped_lifecycle_scripts": {}
+      },
+      {
+        "path": "node_modules/bowser",
+        "name": "bowser",
+        "version": "2.14.1",
+        "license": "MIT",
+        "integrity": "sha512-tzPjzCxygAKWFOJP011oxFHs57HzIhOEracIgAePE4pqB3LikALKnSzUyU4MGs9/iCEUuHlAJTjTc5M+u7YEGg==",
+        "notices": [
+          {
+            "name": "LICENSE",
+            "sha256": "dfde54fedc270c2a305d9a9f993d93f706d34624455a2fd2d2a05ca34d8ae8c3"
+          }
+        ],
+        "skipped_lifecycle_scripts": {}
+      },
+      {
+        "path": "node_modules/buffer-equal-constant-time",
+        "name": "buffer-equal-constant-time",
+        "version": "1.0.1",
+        "license": "BSD-3-Clause",
+        "integrity": "sha512-zRpUiDwd/xk6ADqPMATG8vc9VPrkck7T07OIx0gnjmJAnHnTVXNQG3vfvWNuiZIkwu9KrKdA1iJKfsfTVxE6NA==",
+        "notices": [
+          {
+            "name": "LICENSE.txt",
+            "sha256": "751d0e80fb5c828f8c3de198cc760e1e05377e47c8263ab6ee2f10cdc19ba658"
+          }
+        ],
+        "skipped_lifecycle_scripts": {}
+      },
+      {
+        "path": "node_modules/data-uri-to-buffer",
+        "name": "data-uri-to-buffer",
+        "version": "4.0.1",
+        "license": "MIT",
+        "integrity": "sha512-0R9ikRb668HB7QDxT1vkpuUBtqc53YyAwMwGeUFKRojY/NWKvdZ+9UYtRfGmhqNbRkTSVpMbmyhXipFFv2cb/A==",
+        "notices": [
+          {
+            "name": "README.md",
+            "sha256": "a7cc4332acfa1f9b6530e01aac77fefe74f2efa32579215fddaa473013f9a25c"
+          }
+        ],
+        "skipped_lifecycle_scripts": {}
+      },
+      {
+        "path": "node_modules/debug",
+        "name": "debug",
+        "version": "4.4.3",
+        "license": "MIT",
+        "integrity": "sha512-RGwwWnwQvkVfavKVt22FGLw+xYSdzARwm0ru6DhTVA3umU5hZc28V3kO4stgYryrTlLpuvgI9GiijltAjNbcqA==",
+        "notices": [
+          {
+            "name": "LICENSE",
+            "sha256": "3a61c6c96caf5c1d9b623fb9b04c822b783dfcb78aa7e49c76a3f643e6ed7f95"
+          }
+        ],
+        "skipped_lifecycle_scripts": {}
+      },
+      {
+        "path": "node_modules/ecdsa-sig-formatter",
+        "name": "ecdsa-sig-formatter",
+        "version": "1.0.11",
+        "license": "Apache-2.0",
+        "integrity": "sha512-nagl3RYrbNv6kQkeJIpt6NJZy8twLB/2vtz6yN9Z4vRKHN4/QZJIEbqohALSgwKdnksuY3k5Addp5lg8sVoVcQ==",
+        "notices": [
+          {
+            "name": "LICENSE",
+            "sha256": "50a6b24f8defc31a078aa9799a91d776f83948071574854f12473362aee74d0d"
+          }
+        ],
+        "skipped_lifecycle_scripts": {}
+      },
+      {
+        "path": "node_modules/extend",
+        "name": "extend",
+        "version": "3.0.2",
+        "license": "MIT",
+        "integrity": "sha512-fjquC59cD7CyW6urNXK0FBufkZcoiGG80wTuPujX590cB5Ttln20E2UB4S/WARVqhXffZl2LNgS+gQdPIIim/g==",
+        "notices": [
+          {
+            "name": "LICENSE",
+            "sha256": "97af7428f93afbab9bf79cd09254da1357161794f4255eb1b4599f04dd2d2e7c"
+          }
+        ],
+        "skipped_lifecycle_scripts": {}
+      },
+      {
+        "path": "node_modules/fast-sha256",
+        "name": "fast-sha256",
+        "version": "1.3.0",
+        "license": "Unlicense",
+        "integrity": "sha512-n11RGP/lrWEFI/bWdygLxhI+pVeo1ZYIVwvvPkW7azl/rOy+F3HYRZ2K5zeE9mmkhQppyv9sQFx0JM9UabnpPQ==",
+        "notices": [
+          {
+            "name": "LICENSE",
+            "sha256": "88d9b4eb60579c191ec391ca04c16130572d7eedc4a86daa58bf28c6e14c9bcd"
+          }
+        ],
+        "skipped_lifecycle_scripts": {}
+      },
+      {
+        "path": "node_modules/fetch-blob",
+        "name": "fetch-blob",
+        "version": "3.2.0",
+        "license": "MIT",
+        "integrity": "sha512-7yAQpD2UMJzLi1Dqv7qFYnPbaPx7ZfFK6PiIxQ4PfkGPyNyl2Ugx+a/umUonmKqjhM4DnfbMvdX6otXq83soQQ==",
+        "notices": [
+          {
+            "name": "LICENSE",
+            "sha256": "a5edccac92c3aa845694dcfaa72a0c098c1ae40d5ca6a37e4e59d778cf8e29bd"
+          }
+        ],
+        "skipped_lifecycle_scripts": {}
+      },
+      {
+        "path": "node_modules/formdata-polyfill",
+        "name": "formdata-polyfill",
+        "version": "4.0.10",
+        "license": "MIT",
+        "integrity": "sha512-buewHzMvYL29jdeQTVILecSaZKnt/RJWjoZCF5OW60Z67/GmSLBkOFM7qh1PI3zFNtJbaZL5eQu1vLfazOwj4g==",
+        "notices": [
+          {
+            "name": "LICENSE",
+            "sha256": "435a6437e47e5e479942255680e7fbe5f333d55234ada1c35f6115ca641d5bb4"
+          }
+        ],
+        "skipped_lifecycle_scripts": {}
+      },
+      {
+        "path": "node_modules/gaxios",
+        "name": "gaxios",
+        "version": "7.3.1",
+        "license": "Apache-2.0",
+        "integrity": "sha512-kB3rzJV7d9juLZh8/56QTXCwQfxyhdOMdyYk1HdQKFtF8TJTDTZQJtixWIwXdE9Jji91mC41DUNpjleo4L4eAQ==",
+        "notices": [
+          {
+            "name": "LICENSE",
+            "sha256": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30"
+          }
+        ],
+        "skipped_lifecycle_scripts": {}
+      },
+      {
+        "path": "node_modules/gaxios/node_modules/agent-base",
+        "name": "agent-base",
+        "version": "7.1.4",
+        "license": "MIT",
+        "integrity": "sha512-MnA+YT8fwfJPgBx3m60MNqakm30XOkyIoH1y6huTQvC0PwZG7ki8NacLBcrPbNoo8vEZy7Jpuk7+jMO+CUovTQ==",
+        "notices": [
+          {
+            "name": "LICENSE",
+            "sha256": "8d8c55319c7729d57be811c747452636688d54f19701ee0752b6b15ad3771d9a"
+          }
+        ],
+        "skipped_lifecycle_scripts": {}
+      },
+      {
+        "path": "node_modules/gaxios/node_modules/https-proxy-agent",
+        "name": "https-proxy-agent",
+        "version": "7.0.6",
+        "license": "MIT",
+        "integrity": "sha512-vK9P5/iUfdl95AI+JVyUuIcVtd4ofvtrOr3HNtM2yxC9bnMbEdp3x01OhQNnjb8IJYi38VlTE3mBXwcfvywuSw==",
+        "notices": [
+          {
+            "name": "LICENSE",
+            "sha256": "8d8c55319c7729d57be811c747452636688d54f19701ee0752b6b15ad3771d9a"
+          }
+        ],
+        "skipped_lifecycle_scripts": {}
+      },
+      {
+        "path": "node_modules/gcp-metadata",
+        "name": "gcp-metadata",
+        "version": "8.1.2",
+        "license": "Apache-2.0",
+        "integrity": "sha512-zV/5HKTfCeKWnxG0Dmrw51hEWFGfcF2xiXqcA3+J90WDuP0SvoiSO5ORvcBsifmx/FoIjgQN3oNOGaQ5PhLFkg==",
+        "notices": [
+          {
+            "name": "LICENSE",
+            "sha256": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30"
+          }
+        ],
+        "skipped_lifecycle_scripts": {}
+      },
+      {
+        "path": "node_modules/google-auth-library",
+        "name": "google-auth-library",
+        "version": "10.9.1",
+        "license": "Apache-2.0",
+        "integrity": "sha512-i1ydyHrqcIxXkWh/uBmVkzCvIuq5yiK2ATndIe5XxKholrG/MTYP9xGYka4sQhrbIAgGjL2B6NOE7rFaiF3fXw==",
+        "notices": [
+          {
+            "name": "LICENSE",
+            "sha256": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30"
+          }
+        ],
+        "skipped_lifecycle_scripts": {}
+      },
+      {
+        "path": "node_modules/google-logging-utils",
+        "name": "google-logging-utils",
+        "version": "1.1.3",
+        "license": "Apache-2.0",
+        "integrity": "sha512-eAmLkjDjAFCVXg7A1unxHsLf961m6y17QFqXqAXGj/gVkKFrEICfStRfwUlGNfeCEjNRa32JEWOUTlYXPyyKvA==",
+        "notices": [
+          {
+            "name": "LICENSE",
+            "sha256": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30"
+          }
+        ],
+        "skipped_lifecycle_scripts": {}
+      },
+      {
+        "path": "node_modules/http-proxy-agent",
+        "name": "http-proxy-agent",
+        "version": "9.1.0",
+        "license": "MIT",
+        "integrity": "sha512-2NxoveTT58mjYT4n3RPTEfCZGLMbidoO8XEieXfpSYxu+PQJ1qpx4ypwH6N+uF9twBPIvRRgvkvW5HUTYWENig==",
+        "notices": [
+          {
+            "name": "LICENSE",
+            "sha256": "71368fd0f5b4129191e9afcd1e1ef2dc89a9090d3e4d80bbab92dafd032b3bef"
+          }
+        ],
+        "skipped_lifecycle_scripts": {}
+      },
+      {
+        "path": "node_modules/https-proxy-agent",
+        "name": "https-proxy-agent",
+        "version": "9.1.0",
+        "license": "MIT",
+        "integrity": "sha512-ag87y7cJJ9/3+GxFr8Oy4O5faDsGRGnBGsJj/YjOSsSx/5eadKLYTMPlzuR6obgoCDDm0abAAZitXXQkMOPSpA==",
+        "notices": [
+          {
+            "name": "LICENSE",
+            "sha256": "8d8c55319c7729d57be811c747452636688d54f19701ee0752b6b15ad3771d9a"
+          }
+        ],
+        "skipped_lifecycle_scripts": {}
+      },
+      {
+        "path": "node_modules/json-bigint",
+        "name": "json-bigint",
+        "version": "1.0.0",
+        "license": "MIT",
+        "integrity": "sha512-SiPv/8VpZuWbvLSMtTDU8hEfrZWg/mH/nV/b4o0CYbSxu1UIQPLdwKOCIyLQX+VIPO5vrLX3i8qtqFyhdPSUSQ==",
+        "notices": [
+          {
+            "name": "LICENSE",
+            "sha256": "def82c085d05e795fe6a9cb5b70c48e022212355afc0e91d4de047cade28df06"
+          }
+        ],
+        "skipped_lifecycle_scripts": {}
+      },
+      {
+        "path": "node_modules/json-schema-to-ts",
+        "name": "json-schema-to-ts",
+        "version": "3.1.1",
+        "license": "MIT",
+        "integrity": "sha512-+DWg8jCJG2TEnpy7kOm/7/AxaYoaRbjVB4LFZLySZlWn8exGs3A4OLJR966cVvU26N7X9TWxl+Jsw7dzAqKT6g==",
+        "notices": [
+          {
+            "name": "LICENSE",
+            "sha256": "18a2bfd070b08bd1cc538c90f59989a9523e070e72fe9a9068593c3e82f44fa7"
+          }
+        ],
+        "skipped_lifecycle_scripts": {}
+      },
+      {
+        "path": "node_modules/jwa",
+        "name": "jwa",
+        "version": "2.0.1",
+        "license": "MIT",
+        "integrity": "sha512-hRF04fqJIP8Abbkq5NKGN0Bbr3JxlQ+qhZufXVr0DvujKy93ZCbXZMHDL4EOtodSbCWxOqR8MS1tXA5hwqCXDg==",
+        "notices": [
+          {
+            "name": "LICENSE",
+            "sha256": "3320319f8a5f42bc4254e65471eca7a5ea4dc8c883c4c24b4868e36b14890bcf"
+          }
+        ],
+        "skipped_lifecycle_scripts": {}
+      },
+      {
+        "path": "node_modules/jws",
+        "name": "jws",
+        "version": "4.0.1",
+        "license": "MIT",
+        "integrity": "sha512-EKI/M/yqPncGUUh44xz0PxSidXFr/+r0pA70+gIYhjv+et7yxM+s29Y+VGDkovRofQem0fs7Uvf4+YmAdyRduA==",
+        "notices": [
+          {
+            "name": "LICENSE",
+            "sha256": "3320319f8a5f42bc4254e65471eca7a5ea4dc8c883c4c24b4868e36b14890bcf"
+          }
+        ],
+        "skipped_lifecycle_scripts": {}
+      },
+      {
+        "path": "node_modules/long",
+        "name": "long",
+        "version": "5.3.2",
+        "license": "Apache-2.0",
+        "integrity": "sha512-mNAgZ1GmyNhD7AuqnTG3/VQ26o760+ZYBPKjPvugO8+nLbYfX6TVpJPseBvopbdY+qpZ/lKUnmEc1LeZYS3QAA==",
+        "notices": [
+          {
+            "name": "LICENSE",
+            "sha256": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30"
+          }
+        ],
+        "skipped_lifecycle_scripts": {}
+      },
+      {
+        "path": "node_modules/ms",
+        "name": "ms",
+        "version": "2.1.3",
+        "license": "MIT",
+        "integrity": "sha512-6FlzubTLZG3J2a/NVCAleEhjzq5oxgHyaCU9yYXvcLsvoVaHJq/s5xXI6/XXP6tz7R9xAOtHnSO/tXtF3WRTlA==",
+        "notices": [
+          {
+            "name": "license.md",
+            "sha256": "1662fae9b5314d11cf51284e2dcd1f006a354f7343f08712a730fcff9a359801"
+          }
+        ],
+        "skipped_lifecycle_scripts": {}
+      },
+      {
+        "path": "node_modules/node-domexception",
+        "name": "node-domexception",
+        "version": "1.0.0",
+        "license": "MIT",
+        "integrity": "sha512-/jKZoMpw0F8GRwl4/eLROPA3cfcXtLApP0QzLmUT/HuPCZWyB7IY9ZrMeKw2O/nFIqPQB3PVM9aYm0F312AXDQ==",
+        "notices": [
+          {
+            "name": "LICENSE",
+            "sha256": "8ec1386f7f078b0c7cd25341cd80f332df902371cda9f40c10ec2b4007b420b7"
+          }
+        ],
+        "skipped_lifecycle_scripts": {}
+      },
+      {
+        "path": "node_modules/node-fetch",
+        "name": "node-fetch",
+        "version": "3.3.2",
+        "license": "MIT",
+        "integrity": "sha512-dRB78srN/l6gqWulah9SrxeYnxeddIG30+GOqK/9OlLVyLg3HPnr6SqOWTWOXKRwC2eGYCkZ59NNuSgvSrpgOA==",
+        "notices": [
+          {
+            "name": "LICENSE.md",
+            "sha256": "3e2c11dcf3f17ab585baab8faba54772d7872f1c6e026022acd4b4006665efb0"
+          }
+        ],
+        "skipped_lifecycle_scripts": {}
+      },
+      {
+        "path": "node_modules/openai",
+        "name": "openai",
+        "version": "7.19.0",
+        "license": "Apache-2.0",
+        "integrity": "sha512-MX2s3u2L5racTO0CC/SWpCOasJQBCJrqLKXK+l82cAhdeF8mPMBEe/gxMm0ZFa2xpKpOFLRjxv5afYEZbBXmbQ==",
+        "notices": [
+          {
+            "name": "LICENSE",
+            "sha256": "636eb7d79da9bb6d515a4b3fd417aa26679eb3cf16396ddab4bc55fa74e616e4"
+          }
+        ],
+        "skipped_lifecycle_scripts": {}
+      },
+      {
+        "path": "node_modules/p-retry",
+        "name": "p-retry",
+        "version": "4.6.2",
+        "license": "MIT",
+        "integrity": "sha512-312Id396EbJdvRONlngUx0NydfrIQ5lsYu0znKVUzVvArzEIt08V1qhtyESbGVd1FGX7UKtiFp5uwKZdM8wIuQ==",
+        "notices": [
+          {
+            "name": "license",
+            "sha256": "48da2f39e100d4085767e94966b43f4fa95ff6a0698fba57ed460914e35f94a0"
+          }
+        ],
+        "skipped_lifecycle_scripts": {}
+      },
+      {
+        "path": "node_modules/partial-json",
+        "name": "partial-json",
+        "version": "0.1.7",
+        "license": "MIT",
+        "integrity": "sha512-Njv/59hHaokb/hRUjce3Hdv12wd60MtM9Z5Olmn+nehe0QDAsRtRbJPvJ0Z91TusF0SuZRIvnM+S4l6EIP8leA==",
+        "notices": [
+          {
+            "name": "LICENSE",
+            "sha256": "cd519ad3d7e012427f978dfb2e3b92ee403d189d7b859ba6bf68fd7e12ca456f"
+          }
+        ],
+        "skipped_lifecycle_scripts": {}
+      },
+      {
+        "path": "node_modules/protobufjs",
+        "name": "protobufjs",
+        "version": "7.6.6",
+        "license": "BSD-3-Clause",
+        "integrity": "sha512-dYDWdjSl5RNb7SgPxGQcRU+GtvP7s2fpkrY0r432PcOIaZ0/rBcxEZnQN67iJhFuQiVw754JDoPruPCNdGsbjg==",
+        "notices": [
+          {
+            "name": "LICENSE",
+            "sha256": "49d6a1c9a623784c61c6cb70f773f3457faceb1914a13c8560a9823b7631950c"
+          }
+        ],
+        "skipped_lifecycle_scripts": {
+          "postinstall": "node scripts/postinstall"
+        }
+      },
+      {
+        "path": "node_modules/proxy-agent-negotiate",
+        "name": "proxy-agent-negotiate",
+        "version": "1.1.0",
+        "license": "MIT",
+        "integrity": "sha512-N8IBcM3UgCVzz2L2Lqv8DVntDnnC8/hiV4nEDUPkqq72TPUgYWjQc+bdZlBPZK9LzPAvOY//gAt0S0DApoOXWQ==",
+        "notices": [
+          {
+            "name": "macos/OpenMathNative/Resources/Licenses/Agent/TooTallNate__proxy-agents-b7e5f7ccce1a.txt",
+            "sha256": "71368fd0f5b4129191e9afcd1e1ef2dc89a9090d3e4d80bbab92dafd032b3bef",
+            "source": "https://raw.githubusercontent.com/TooTallNate/proxy-agents/b7e5f7ccce1a3ac5b339cc4c587974e8989cbc16/packages/http-proxy-agent/LICENSE"
+          }
+        ],
+        "skipped_lifecycle_scripts": {}
+      },
+      {
+        "path": "node_modules/retry",
+        "name": "retry",
+        "version": "0.13.1",
+        "license": "MIT",
+        "integrity": "sha512-XQBQ3I8W1Cge0Seh+6gjj03LbmRFWuoszgK9ooCpwYIrhhoO80pfq4cUkU5DkknwfOfFteRwlZ56PYOGYyFWdg==",
+        "notices": [
+          {
+            "name": "License",
+            "sha256": "01ad164273e8e095abc9dbd1c21e194594a671af7d528cb43ee7b4c903ba7da3"
+          }
+        ],
+        "skipped_lifecycle_scripts": {}
+      },
+      {
+        "path": "node_modules/safe-buffer",
+        "name": "safe-buffer",
+        "version": "5.2.1",
+        "license": "MIT",
+        "integrity": "sha512-rp3So07KcdmmKbGvgaNxQSJr7bGVSVk5S9Eq1F+ppbRo70+YeaDxkw5Dd8NPN+GD6bjnYm2VuPuCXmpuYvmCXQ==",
+        "notices": [
+          {
+            "name": "LICENSE",
+            "sha256": "c7cc929b57080f4b9d0c6cf57669f0463fc5b39906344dfc8d3bc43426b30eac"
+          }
+        ],
+        "skipped_lifecycle_scripts": {}
+      },
+      {
+        "path": "node_modules/standardwebhooks",
+        "name": "standardwebhooks",
+        "version": "1.1.1",
+        "license": "MIT",
+        "integrity": "sha512-bCbX9ZEyFkWPsRz7Bl3NuQUJohmwGSev/yhr7vhaGPlc4AfIrspIRa6cPTBuI1ItmrTDJ4d/S2hCsfe4+vQGnQ==",
+        "notices": [
+          {
+            "name": "macos/OpenMathNative/Resources/Licenses/Agent/standard-webhooks__standard-webhooks-b4d2c14fc5b4.txt",
+            "sha256": "5ec8c7b26b64d881a6706617bed25c049f97f2f35de034c756de8546fd6dbe27",
+            "source": "https://raw.githubusercontent.com/standard-webhooks/standard-webhooks/b4d2c14fc5b4ccff3ff271e3b087dff812254c59/libraries/LICENSE"
+          }
+        ],
+        "skipped_lifecycle_scripts": {}
+      },
+      {
+        "path": "node_modules/ts-algebra",
+        "name": "ts-algebra",
+        "version": "2.0.0",
+        "license": "MIT",
+        "integrity": "sha512-FPAhNPFMrkwz76P7cdjdmiShwMynZYN6SgOujD1urY4oNm80Ou9oMdmbR45LotcKOXoy7wSmHkRFE6Mxbrhefw==",
+        "notices": [
+          {
+            "name": "LICENSE",
+            "sha256": "18a2bfd070b08bd1cc538c90f59989a9523e070e72fe9a9068593c3e82f44fa7"
+          }
+        ],
+        "skipped_lifecycle_scripts": {}
+      },
+      {
+        "path": "node_modules/tslib",
+        "name": "tslib",
+        "version": "2.8.1",
+        "license": "0BSD",
+        "integrity": "sha512-oJFu94HQb+KVduSUQL7wnpmqnfmLsOA/nAh6b6EH0wCEoK0/mPeXU6c3wKDV83MkOuHPRHtSXKKU99IBazS/2w==",
+        "notices": [
+          {
+            "name": "LICENSE.txt",
+            "sha256": "210b19e543130388c68654b7497e967119ce17145f66ab7d85688fbd70f08751"
+          }
+        ],
+        "skipped_lifecycle_scripts": {}
+      },
+      {
+        "path": "node_modules/typebox",
+        "name": "typebox",
+        "version": "1.3.27",
+        "license": "MIT",
+        "integrity": "sha512-zu+jc1pcy4UiNThxikUr36f0Rybk9PEeCg/NE6adeWr/SKsdNO4EzZHYRDlv2YCVAfj3Odq3dESSo/jNyoBXzA==",
+        "notices": [
+          {
+            "name": "license",
+            "sha256": "e8a7cc256941a26ba8234f04390165243a4d42f74fd6491934140605bf7eae2d"
+          }
+        ],
+        "skipped_lifecycle_scripts": {}
+      },
+      {
+        "path": "node_modules/undici-types",
+        "name": "undici-types",
+        "version": "8.9.0",
+        "license": "MIT",
+        "integrity": "sha512-KTDyRTYX8sWmKXAikPHHSyc63CRPETMctyjKFupcC6OBLXT3xsN0e9aF7m+mIXutFWpUXuedtowG7iLOzp0kQg==",
+        "notices": [
+          {
+            "name": "LICENSE",
+            "sha256": "a6db8096b2707bc0102d256917d4d33f298ba36d8c3f25de067a2b5bb379db27"
+          }
+        ],
+        "skipped_lifecycle_scripts": {}
+      },
+      {
+        "path": "node_modules/web-streams-polyfill",
+        "name": "web-streams-polyfill",
+        "version": "3.3.3",
+        "license": "MIT",
+        "integrity": "sha512-d2JWLCivmZYTSIoge9MsgFCZrt571BikcWGYkjC1khllbTeDlGqZ2D8vD8E/lJa8WGWbb7Plm8/XJYV7IJHZZw==",
+        "notices": [
+          {
+            "name": "LICENSE",
+            "sha256": "81008a3fb78f69f3c4a72a9e005c8582342ab62864371b3ab8e1b6af9041e080"
+          }
+        ],
+        "skipped_lifecycle_scripts": {}
+      },
+      {
+        "path": "node_modules/ws",
+        "name": "ws",
+        "version": "8.22.0",
+        "license": "MIT",
+        "integrity": "sha512-Ydggc987+RO0AnWtZ/7Wq9FtNvcrL1b/RO0ud9mWjUPgDrsAAwQSF51sm2hm1XofbU/4jkpGEsLFsZZxU+1DOg==",
+        "notices": [
+          {
+            "name": "LICENSE",
+            "sha256": "2b29dcfe0d6471f7e8c92c5fb38c9f93edee10330937055440192f1832b1ecef"
+          }
+        ],
+        "skipped_lifecycle_scripts": {}
+      }
+    ]
+  }
+}

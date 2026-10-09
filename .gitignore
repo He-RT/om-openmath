@@ -17,3 +17,7 @@ ios/Local.xcconfig
 ios/**/xcuserdata/
 ios/TestResults/
 ios/OpenMath/Resources/RustNotices/
+
+macos/Local.xcconfig
+macos/**/xcuserdata/
+macos/TestResults/

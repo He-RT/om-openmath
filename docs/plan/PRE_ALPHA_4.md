@@ -2772,7 +2772,7 @@ UpdateService只读受控官方GitHub Releases/发行清单（预发行不可用
 
 #### R4.0.02 依赖与许可闭包核对
 
-- [ ] **R4.0.02 完成**（仅在以下Done和验证满足后勾选）
+- [x] **R4.0.02 完成**（仅在以下Done和验证满足后勾选）
 
 **Files：**
 
@@ -2787,10 +2787,10 @@ UpdateService只读受控官方GitHub Releases/发行清单（预发行不可用
 
 **Steps：**
 
-- [ ] 1. 逐项核对固定候选的真实API/系统/版本。
-- [ ] 2. 为agent创建精确lock并清点生产资源/native addon。
-- [ ] 3. 记录字体及Node内置第三方许可和依赖调整。
-- [ ] 4. 执行下面Tests，核对真实输出/失败，更新任务账本与证据后提交本批次。
+- [x] 1. 逐项核对固定候选的真实API/系统/版本。
+- [x] 2. 为agent创建精确lock并清点生产资源/native addon。
+- [x] 3. 记录字体及Node内置第三方许可和依赖调整。
+- [x] 4. 执行下面Tests，核对真实输出/失败，更新任务账本与证据后提交本批次。
 
 **Tests：** 锁文件可重装同版本，cargo-deny无笼统ignore，禁止核心依赖nativeIO。测试位置以Files和第15节影响范围为准，证据保存完整输入/命令/输出，不仅记录“通过”。
 
@@ -2802,7 +2802,7 @@ UpdateService只读受控官方GitHub Releases/发行清单（预发行不可用
 
 #### R4.0.03 原生Mac工程和数学链接骨架
 
-- [ ] **R4.0.03 完成**（仅在以下Done和验证满足后勾选）
+- [x] **R4.0.03 完成**（仅在以下Done和验证满足后勾选）
 
 **Files：**
 
@@ -2816,10 +2816,10 @@ UpdateService只读受控官方GitHub Releases/发行清单（预发行不可用
 
 **Steps：**
 
-- [ ] 1. 创建可复现工程/scheme与资源规则。
-- [ ] 2. 链接ARM64 Rust库并形成原生Preview窗口。
-- [ ] 3. 固定HostPlatform::Desktop的契约要求，实际新宿主求值在R4.0.07验收。
-- [ ] 4. 执行下面Tests，核对真实输出/失败，更新任务账本与证据后提交本批次。
+- [x] 1. 创建可复现工程/scheme与资源规则。
+- [x] 2. 链接ARM64 Rust库并形成原生Preview窗口。
+- [x] 3. 固定HostPlatform::Desktop的契约要求，实际新宿主求值在R4.0.07验收。
+- [x] 4. 执行下面Tests，核对真实输出/失败，更新任务账本与证据后提交本批次。
 
 **Tests：** 项目生成无漂移，Release arm64窗口启动和链接符号可查，缺SDK失败。测试位置以Files和第15节影响范围为准，证据保存完整输入/命令/输出，不仅记录“通过”。
 
@@ -4951,6 +4951,8 @@ UpdateService只读受控官方GitHub Releases/发行清单（预发行不可用
 
 - `Cargo.toml`
 - `Cargo.lock`
+- `agent/package.json`
+- `agent/package-lock.json`
 - `app/package.json`
 - `app/package-lock.json`
 - `app/src-tauri/tauri*.json`

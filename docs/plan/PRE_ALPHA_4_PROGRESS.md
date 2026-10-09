@@ -4,13 +4,13 @@
 
 2026-10-09。目标`0.1.0-pre-alpha.4`，当前运行/公开版本`.3`；开发`dev`，不合main、不改旧标签、本机不启动iOS模拟器。本文只记录结果，规格及完成标准唯一见主计划；计划编写本身不计实施完成。
 
-**当前状态：** 2任务完成（R4.0.01/11）；其余96任务尚未完成；32最终运行/发行gate全部not_run；candidate未分配，ready_to_publish=false，released_verified=false。设计/HTML/Schema通过不填运行时pass。
+**当前状态：** 4任务完成（R4.0.01/02/03/11）；其余94任务尚未完成；32最终运行/发行gate全部not_run；candidate未分配，ready_to_publish=false，released_verified=false。设计/HTML/Schema通过不填运行时pass。
 
-**下一任务：** R4.0.08续行修复正在实施和验证；随后推进R4.0.02依赖/许可闭包与原生工程。基线和环境预检已完成。先读完整计划第0节。按DAG推进，R4.5.07必须在R4.5.05候选冻结前完成，不机械按编号。
+**下一任务：** R4.0.03原生工程Release链接/实际窗口/版本读回已验证；共享续行R4.0.08/09等待手机/平板CI。接着冻结R4.0.04 DTO与ABI，再接安全宿主服务。先读完整计划第0节。按DAG推进，R4.5.07必须在R4.5.05候选冻结前完成，不机械按编号。
 
 ## 已知外部前置
 
-- 原生工程/宿主/Agent均尚未实现，Rust/程序版本仍`.3`。
+- 原生工程与真实Rust元数据链接已经实现；完整宿主、存储及Agent尚未接通，运行源码版本仍`.3`。
 - 上轮只读预检没有Developer ID Application材料；执行阶段复核并按R4.0.11准备接口，真实公开签名门禁不能降级。
 - 现场模型只使用新Registry中的授权测试配置；不自动读取旧Key/环境/profile。当前live gate未运行。
 
@@ -20,17 +20,17 @@
 
 | 任务 | 目标 | 状态 | 验证/证据 | 提交 |
 |---|---|---|---|---|
-| [x] [R4.0.01](PRE_ALPHA_4.md#task-r4.0.01) | 建立基线、任务账本和恢复入口 | completed | [基线](../acceptance/pre-alpha.4/baseline/index.json) | 下次补记 |
-| [ ] [R4.0.02](PRE_ALPHA_4.md#task-r4.0.02) | 依赖与许可闭包核对 | planned | — | — |
-| [ ] [R4.0.03](PRE_ALPHA_4.md#task-r4.0.03) | 原生Mac工程和数学链接骨架 | planned | — | — |
+| [x] [R4.0.01](PRE_ALPHA_4.md#task-r4.0.01) | 建立基线、任务账本和恢复入口 | completed | [基线](../acceptance/pre-alpha.4/baseline/index.json) | e876c16 |
+| [x] [R4.0.02](PRE_ALPHA_4.md#task-r4.0.02) | 依赖与许可闭包核对 | completed | dependencies.json / clean npm ci + audit | 下次补记 |
+| [x] [R4.0.03](PRE_ALPHA_4.md#task-r4.0.03) | 原生Mac工程和数学链接骨架 | completed | Release build / native AX /真实C ABI读回 | 下次补记 |
 | [ ] [R4.0.04](PRE_ALPHA_4.md#task-r4.0.04) | 冻结框架无关DTO与新MacABI契约 | planned | — | — |
 | [ ] [R4.0.05](PRE_ALPHA_4.md#task-r4.0.05) | 安全host-service所有者与调度骨架 | planned | — | — |
 | [ ] [R4.0.06](PRE_ALPHA_4.md#task-r4.0.06) | 新CABI句柄、缓冲与直接取消 | planned | — | — |
 | [ ] [R4.0.07](PRE_ALPHA_4.md#task-r4.0.07) | Swift客户端、事件泵和权威投影 | planned | — | — |
 | [ ] [R4.0.08](PRE_ALPHA_4.md#task-r4.0.08) | 共享Modern自动续行与根因诊断 | in_progress | — | — |
-| [ ] [R4.0.09](PRE_ALPHA_4.md#task-r4.0.09) | 原语言和数学基线持续兼容 | planned | — | — |
+| [ ] [R4.0.09](PRE_ALPHA_4.md#task-r4.0.09) | 原语言和数学基线持续兼容 | in_progress | — | — |
 | [ ] [R4.0.10](PRE_ALPHA_4.md#task-r4.0.10) | fixture与真实故障注入基础设施 | planned | — | — |
-| [x] [R4.0.11](PRE_ALPHA_4.md#task-r4.0.11) | 发行前置、签名和现场环境预检 | completed | [环境](../acceptance/pre-alpha.4/baseline/environment.json) / verify-env.sh | 下次补记 |
+| [x] [R4.0.11](PRE_ALPHA_4.md#task-r4.0.11) | 发行前置、签名和现场环境预检 | completed | [环境](../acceptance/pre-alpha.4/baseline/environment.json) / verify-env.sh | e876c16 |
 | [ ] [R4.1.01](PRE_ALPHA_4.md#task-r4.1.01) | SQLite单写者与新通道初始化 | planned | — | — |
 | [ ] [R4.1.02](PRE_ALPHA_4.md#task-r4.1.02) | 权威源码、事务和幂等表 | planned | — | — |
 | [ ] [R4.1.03](PRE_ALPHA_4.md#task-r4.1.03) | 不可变Blob和资源引用发布 | planned | — | — |
@@ -145,3 +145,30 @@ Done依据与覆盖case/proof:
 - R4.0.11：实际macOS27.0/26A428、Xcode27.0/27A266a、ARM64、Rust1.94及四targets就绪；host Node25.9与拟随包Node26.11.1区分。`bash macos/Scripts/verify-env.sh`通过；`--require-distribution-signing`按预期拒绝，仅developer_id_application_missing。Developer ID身份0、Apple Development1，没有导出个人身份/凭据。
 - 签名CI秘密接口/临时Keychain/finally清理与新Registry现场测试范围见macos/native-package/signing.example.json；它不是已签名配置或真实live通过。最终R4G21/live仍not_run，缺材料不阻挡独立开发。
 - 证据：[baseline/index.json](../acceptance/pre-alpha.4/baseline/index.json)、[环境摘要](../acceptance/pre-alpha.4/baseline/environment.json)；原命令输出在target/acceptance/pre-alpha.4/development/r40/。结构、版本、tag和任务状态核对，不改`.3`源码版本或资产。
+
+## R4开发记录 D002 — 共享续行（代码完成，跨端验证进行中）
+
+- R4.0.08：只在需要右操作数时跳过现代方言换行；分号/EOF/下一条let留在恢复边界，缺失右值只指向对应操作符。非法声明的参数/函数环境按语句恢复，保留独立未知函数提示和之前合法绑定。Wolfram/InputForm/已完整语句不改变；不在UI删除换行。
+- 新增6个解析器回归（等价AST/边界/Unicode/恢复）及3个真实内核回归（Preview无执行/实际结果/3→6/721网格草方块）。原53语料整体/逐条散列不变。完整Rust工作区1094通过、2个原ignored保留；Clippy通过。生产WASM重建后78前端单元通过，新增真实WASM源码保存/执行用例；TypeScript严格检查修正新用例的tuple/空格索引边界。17 Python通过，函数目录829项/22页无漂移。
+- 移动新增testModernContinuationUsesIdenticalSourceForPreviewAndExecution，明确检查真实Preview类型和字段；仅交GitHub CI执行，不在本机开模拟器。未取得同提交CI前R4.0.08/09保留in_progress，最终32candidate gate仍not_run。
+- 原始日志在target/acceptance/pre-alpha.4/development/r40/，保留初始失败和修复后的attempt；开发证据不是`.4`公开候选或已发布声明。下一步取得手机/平板CI，继续依赖闭包和新Mac工程。
+
+## R4开发记录 D003 — 依赖闭包完成
+
+- R4.0.02：Pi Core/AI1.0.4精确SRI/版本、86项生产依赖/实际API/安装钩子与可选Kerberos区分，纯Node原生addon数0。忽略安装钩子后真实Agent构造且sequential/空工具列表符合实际API，无模型请求。干净npm ci后依赖及许可散列完全相同。
+- Node26.11.1官方darwin-arm64归档与固定SHA一致、原二进制strict代码签名成功；记录OpenPGP未测和helper/app重签名未做。SwiftMath1.7.3/Markdown及cmark0.9.0实际checkout提交核对，28项字体bundle资源及原MIT/OFL/GUST许可登记；SQLite系统版本3.54.0/unix VFS选择及未测耐久明确。
+- [依赖清单](../../macos/native-package/dependencies.json)是真实开发审计，不是生产RuntimeManifest；声明/上游正文来源、npm发布gitHead与参考Git SHA差异见R4-D001和第三方许可。已补全缺正文的实际库许可，未给GPL/未知许可做全局豁免。
+- 共享续行的所有本地Rust/WASM/前端检查已通过；原CLI Release53/200ms正在独立执行，新增Swift用例尚待CI。接着R4.0.03可复现Mac工程/真实Rust链接，之后冻结DTO/宿主服务。
+
+## R4开发记录 D004 — 原生链接与性能原件
+
+- 原生Xcode工程/scheme已生成，generate-project.py --check无漂移。ARM64/macOS27 Release通过，独立Preview Bundle ID，ad-hoc strict签名校验与实际原生窗口启动通过；C ABI metadata读回26、ABI1。UIView无WebView/Tauri，不将链接窗口标完整宿主或可发布UI。当前版本由真实Rust静态字符串/Bundle目标取得，避免冻结时漏改硬编码。
+- 首轮CLI Release53正确性均通过，case12/17/41整次kernel timing分别292.349/236.792/245.627ms超过原200ms；保存原失败，不删断言。三个有界公开.3/开发构建A/B回合数学InputForm一致、12约80..92ms/17约61..63ms/41约51..55ms，未见稳定新代码回归，首轮波动根因尚未完全确定。
+- 编译全部结束后的独立第二次完整53原200ms门禁通过，未改语料/阈值。保留首次失败和A/B原件；此开发复核不是最终同candidate的R4G22/全平台通过。
+- 原件native-app-build.log、native-authority-performance.log、performance-ab.json、native-authority-independent-2.log在target/acceptance/pre-alpha.4/development/r40/。采用telegram-ui-reference的实际空间/状态反馈基础路径，缺业务能力明确显示；没有本地iOS模拟器。
+
+## R4开发记录 D005 — 原生工程任务完成
+
+- R4.0.03完成：工程生成/校验、Rust ARM64静态库及Swift Release链接成功；新C ABI真实查询metadata26/ABI1/Rust实际版本字符串，Xcode原生包Mach-O ARM64、macOS27、Preview身份经回读。旧进程正常退出后用CUA启动最终构建，真实AX窗口/截图可见相同元数据；nm确认三条桥接符号位于实际exe。
+- om-apple-ffi定向测试与Clippy通过；核心仍forbid unsafe，独立ffi仅no_mangle边界和静态版本指针，没有修改iOS ABI。未实现create/submit等不注册，也不把此窗口称完整CAS/Agent客户端。
+- 构建和当前开发边界见[macos/README.md](../../macos/README.md)，后续R4.0.04冻结生成DTO/错误接口，R4.0.05/06/07补安全服务、生命周期和实际求值。

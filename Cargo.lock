@@ -3075,6 +3075,13 @@ dependencies = [
 ]
 
 [[package]]
+name = "om-apple-ffi"
+version = "0.1.0-pre-alpha.3"
+dependencies = [
+ "om-kernel",
+]
+
+[[package]]
 name = "om-cli"
 version = "0.1.0-pre-alpha.3"
 dependencies = [

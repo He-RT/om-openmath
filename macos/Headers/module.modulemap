@@ -1,0 +1,4 @@
+module OpenMathHost {
+  header "OpenMathHost.h"
+  export *
+}

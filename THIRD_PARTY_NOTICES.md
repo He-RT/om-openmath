@@ -52,3 +52,13 @@ SwiftMath 随附 `mathFonts.bundle` 作为未经修改的字体资源分发。�
 `.3` dev 的共享 PNG 导出使用固定 `Swash 0.2.10`（Apache-2.0 OR MIT，仅std/scale/render）及其真实锁文件传递依赖，许可由现有包装脚本保留。它只解析/光栅化字体，不执行数学或提供三维框架。
 
 字体 `OpenMathPlotLabels-Regular.otf` 是固定 Noto Sans SC Regular 的子集与重命名版本，OFL-1.1；版权/作者字段保留，文本许可、上游/产物 SHA256 与可复现生成方式见 [字体清单](licenses/plot-font/README.md)。正常运行使用内嵌资源，不下载字体或读取宿主系统字体路径。
+
+## 原生 Mac 开发依赖（`.4` 实施中）
+
+`agent/package-lock.json` 精确固定 `@earendil-works/pi-agent-core` / `pi-ai` **1.0.4** 及86项生产传递依赖；本次未安装Pi Coding Agent或第二个Harness。实际npm发布元数据的gitHead为`7c10bd4337495ee613f2224843ecdf349b80d1df`，与此前参考源码`503c605...`分别记录；不把参考源码当发布归档字节的证明。实际包的SRI、API与许可证正文/来源见`macos/native-package/dependencies.json`和`agent/notice-overrides.json`。
+
+缺正文的发布包保留固定上游正文或包内完整README许可，记录其来源关系；standardwebhooks的库许可来自`libraries/LICENSE`，不混用仓库标准文档的Apache许可。proxy-agent-negotiate声明MIT/Nathan Rajlich，但归档/对应tag未附独立正文，保留同发布者同仓库的MIT版权/许可并明确来源；它的可选Kerberos原生依赖未安装，OpenMath不使用Pi自带供应商HTTP路径。所有实际依赖的分发正文仍须在生产闭包阶段逐项保留，不把此开发清单当已经签名的用户包。
+
+候选Node **26.11.1 darwin-arm64**的官方归档SHA256已与计划/官方清单核对，原执行文件严格签名校验通过；原始Node及内置第三方完整LICENSE保存于`macos/OpenMathNative/Resources/Licenses/Node-LICENSE.txt`。尚未验证OpenPGP发布签名、随包嵌入/重新签名或公证，不声称公开分发门禁已通过。最终用户包不包含npm/开发编译器，也不依赖系统Node。
+
+Mac复用SwiftMath1.7.3、swift-markdown/swift-cmark0.9.0精确提交；正文与数学字体MIT/OFL/GUST许可副本保存在同一Mac资源目录。完整mathFonts.bundle逐文件散列已登记，未修改字体资源。SDK实际SQLite为3.54.0、unix VFS；属于Apple系统库，不进入Rust核心或WASM图，FULL/fullfsync与崩溃耐久测试留待存储任务。

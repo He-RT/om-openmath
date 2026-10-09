@@ -1,0 +1,749 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:openmath:native-host-wire:v1",
+  "title": "Native host wire contract v1",
+  "description": "Structural DTO contract. Admission/identity/grants and actual IO facts remain owner-validated; declaring a body does not register a handler.",
+  "$defs": {
+    "Identity": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 256,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "Serial": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991,
+      "description": "共同可精确表示的单调计数；不能静默回绕。"
+    },
+    "Sha256": {
+      "type": "string",
+      "minLength": 64,
+      "maxLength": 64,
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "DocumentBinding": {
+      "type": "object",
+      "properties": {
+        "document_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "generation": {
+          "$ref": "#/$defs/Serial"
+        },
+        "document_revision": {
+          "$ref": "#/$defs/Serial"
+        },
+        "execution_epoch": {
+          "$ref": "#/$defs/Serial"
+        }
+      },
+      "required": [
+        "document_id",
+        "generation",
+        "document_revision",
+        "execution_epoch"
+      ],
+      "additionalProperties": false
+    },
+    "ByteOffset": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 4294967295
+    },
+    "Dialect": {
+      "type": "string",
+      "enum": [
+        "Modern",
+        "Wolfram",
+        "Auto"
+      ]
+    },
+    "NativeRange": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "location": {
+          "$ref": "#/$defs/Serial"
+        },
+        "length": {
+          "$ref": "#/$defs/Serial"
+        }
+      },
+      "required": [
+        "location",
+        "length"
+      ],
+      "description": "原生 UTF-16 单位，不能 clamp 越界/半代理对以便执行编辑。"
+    },
+    "EditorKey": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "runtime_instance_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "document_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "document_generation": {
+          "$ref": "#/$defs/Serial"
+        },
+        "cell_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "editor_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "editor_generation": {
+          "$ref": "#/$defs/Serial"
+        },
+        "draft_sequence": {
+          "$ref": "#/$defs/Serial"
+        },
+        "source_hash": {
+          "$ref": "#/$defs/Sha256"
+        },
+        "requested_dialect": {
+          "$ref": "#/$defs/Dialect"
+        },
+        "effective_dialect": {
+          "$ref": "#/$defs/Dialect"
+        },
+        "analysis_generation": {
+          "$ref": "#/$defs/Serial"
+        },
+        "metadata_version": {
+          "$ref": "#/$defs/Serial"
+        },
+        "definition_snapshot_revision": {
+          "$ref": "#/$defs/Serial"
+        },
+        "config_revision": {
+          "$ref": "#/$defs/Serial"
+        },
+        "cursor_utf8": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ByteOffset"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "selection_utf16": {
+          "$ref": "#/$defs/NativeRange"
+        }
+      },
+      "required": [
+        "runtime_instance_id",
+        "document_id",
+        "document_generation",
+        "cell_id",
+        "editor_id",
+        "editor_generation",
+        "draft_sequence",
+        "source_hash",
+        "requested_dialect",
+        "effective_dialect",
+        "analysis_generation",
+        "metadata_version",
+        "definition_snapshot_revision",
+        "config_revision",
+        "cursor_utf8",
+        "selection_utf16"
+      ],
+      "description": "宿主绑定值，不允许模型/异步 renderer 自行升代次；回执匹配源码/光标/定义 provenance。"
+    },
+    "HostError": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "string",
+          "enum": [
+            "INVALID_ARGUMENT",
+            "INVALID_SOURCE",
+            "INVALID_REFERENCE",
+            "PERMISSION_DENIED",
+            "STALE_DOCUMENT",
+            "EDITING_BUSY",
+            "NOT_AVAILABLE",
+            "BUDGET_EXCEEDED",
+            "CANCELLED",
+            "UNKNOWN_OUTCOME",
+            "ABI_MISMATCH",
+            "IO_FAILED",
+            "INTERNAL_ERROR"
+          ]
+        },
+        "message": {
+          "type": "string",
+          "maxLength": 4096
+        },
+        "field_path": {
+          "anyOf": [
+            {
+              "type": "string",
+              "maxLength": 256
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "operation_ref": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Identity"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "outcome_known": {
+          "type": "boolean"
+        },
+        "retryable": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "code",
+        "message",
+        "field_path",
+        "operation_ref",
+        "outcome_known",
+        "retryable"
+      ],
+      "additionalProperties": false
+    },
+    "HostInit": {
+      "type": "object",
+      "properties": {
+        "protocol_version": {
+          "const": 1
+        },
+        "runtime_instance_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "max_pending_operations": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 64
+        },
+        "event_capacity": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 128
+        }
+      },
+      "required": [
+        "protocol_version",
+        "runtime_instance_id",
+        "max_pending_operations",
+        "event_capacity"
+      ],
+      "additionalProperties": false
+    },
+    "InvocationBinding": {
+      "type": "object",
+      "properties": {
+        "task_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "task_generation": {
+          "$ref": "#/$defs/Serial"
+        },
+        "grant_ref": {
+          "$ref": "#/$defs/Identity"
+        }
+      },
+      "required": [
+        "task_id",
+        "task_generation",
+        "grant_ref"
+      ],
+      "additionalProperties": false
+    },
+    "IOAck": {
+      "type": "object",
+      "properties": {
+        "runtime_instance_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "document_binding": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/DocumentBinding"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "operation_ref": {
+          "$ref": "#/$defs/Identity"
+        },
+        "io_request_ref": {
+          "$ref": "#/$defs/Identity"
+        },
+        "outcome": {
+          "type": "string",
+          "enum": [
+            "durable",
+            "rejected",
+            "unknown"
+          ]
+        },
+        "receipt_ref": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Identity"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "receipt_hash": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Sha256"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "error": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/HostError"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "runtime_instance_id",
+        "document_binding",
+        "operation_ref",
+        "io_request_ref",
+        "outcome",
+        "receipt_ref",
+        "receipt_hash",
+        "error"
+      ],
+      "additionalProperties": false,
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "outcome": {
+                "const": "durable"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "receipt_ref": {
+                "$ref": "#/$defs/Identity"
+              },
+              "receipt_hash": {
+                "$ref": "#/$defs/Sha256"
+              },
+              "error": {
+                "type": "null"
+              }
+            }
+          }
+        }
+      ]
+    },
+    "ReadHostState": {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "const": "get_state"
+        }
+      },
+      "required": [
+        "kind"
+      ],
+      "additionalProperties": false
+    },
+    "ReadHostCapabilities": {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "const": "get_capabilities"
+        }
+      },
+      "required": [
+        "kind"
+      ],
+      "additionalProperties": false
+    },
+    "ReadFunctionCatalog": {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "const": "get_function_catalog"
+        }
+      },
+      "required": [
+        "kind"
+      ],
+      "additionalProperties": false
+    },
+    "AnalyzeEditor": {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "const": "analyze_editor"
+        },
+        "key": {
+          "$ref": "#/$defs/EditorKey"
+        },
+        "source": {
+          "type": "string",
+          "maxLength": 2097152
+        },
+        "analysis_kind": {
+          "type": "string",
+          "enum": [
+            "preview",
+            "complete",
+            "hover"
+          ]
+        },
+        "non_evaluating": {
+          "const": true
+        }
+      },
+      "required": [
+        "kind",
+        "key",
+        "source",
+        "analysis_kind",
+        "non_evaluating"
+      ],
+      "additionalProperties": false
+    },
+    "EvaluateScratch": {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "const": "evaluate_scratch"
+        },
+        "source": {
+          "type": "string",
+          "maxLength": 2097152
+        },
+        "dialect": {
+          "$ref": "#/$defs/Dialect"
+        },
+        "definition_snapshot_ref": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Identity"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "use_notebook_definitions": {
+          "type": "boolean"
+        },
+        "timeout_ms": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 600000
+        }
+      },
+      "required": [
+        "kind",
+        "source",
+        "dialect",
+        "definition_snapshot_ref",
+        "use_notebook_definitions",
+        "timeout_ms"
+      ],
+      "additionalProperties": false
+    },
+    "AcknowledgeIO": {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "const": "io_ack"
+        },
+        "ack": {
+          "$ref": "#/$defs/IOAck"
+        }
+      },
+      "required": [
+        "kind",
+        "ack"
+      ],
+      "additionalProperties": false
+    },
+    "ReadOperationStatus": {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "const": "get_operation_status"
+        },
+        "operation_ref": {
+          "$ref": "#/$defs/Identity"
+        }
+      },
+      "required": [
+        "kind",
+        "operation_ref"
+      ],
+      "additionalProperties": false
+    },
+    "HostRequestBody": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/ReadHostState"
+        },
+        {
+          "$ref": "#/$defs/ReadHostCapabilities"
+        },
+        {
+          "$ref": "#/$defs/ReadFunctionCatalog"
+        },
+        {
+          "$ref": "#/$defs/AnalyzeEditor"
+        },
+        {
+          "$ref": "#/$defs/EvaluateScratch"
+        },
+        {
+          "$ref": "#/$defs/AcknowledgeIO"
+        },
+        {
+          "$ref": "#/$defs/ReadOperationStatus"
+        }
+      ]
+    },
+    "RequestEnvelope": {
+      "type": "object",
+      "properties": {
+        "protocol_version": {
+          "const": 1
+        },
+        "runtime_instance_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "request_ref": {
+          "$ref": "#/$defs/Identity"
+        },
+        "operation_id": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Identity"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "document_binding": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/DocumentBinding"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "task_binding": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/InvocationBinding"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "body": {
+          "$ref": "#/$defs/HostRequestBody"
+        }
+      },
+      "required": [
+        "protocol_version",
+        "runtime_instance_id",
+        "request_ref",
+        "operation_id",
+        "document_binding",
+        "task_binding",
+        "body"
+      ],
+      "additionalProperties": false
+    },
+    "AdmissionReceipt": {
+      "type": "object",
+      "properties": {
+        "protocol_version": {
+          "const": 1
+        },
+        "request_ref": {
+          "$ref": "#/$defs/Identity"
+        },
+        "operation_ref": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Identity"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "accepted": {
+          "type": "boolean"
+        },
+        "error": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/HostError"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "protocol_version",
+        "request_ref",
+        "operation_ref",
+        "accepted",
+        "error"
+      ],
+      "additionalProperties": false
+    },
+    "EventEnvelope": {
+      "type": "object",
+      "properties": {
+        "protocol_version": {
+          "const": 1
+        },
+        "runtime_instance_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "rust_event_sequence": {
+          "$ref": "#/$defs/Serial"
+        },
+        "request_ref": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Identity"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "operation_ref": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Identity"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "document_binding": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/DocumentBinding"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "event_kind": {
+          "type": "string",
+          "enum": [
+            "host_ready",
+            "host_failed",
+            "host_snapshot",
+            "operation_progress",
+            "operation_finished",
+            "editor_result",
+            "io_request",
+            "result_accepted",
+            "result_discarded"
+          ]
+        },
+        "payload": {
+          "type": "object"
+        }
+      },
+      "required": [
+        "protocol_version",
+        "runtime_instance_id",
+        "rust_event_sequence",
+        "request_ref",
+        "operation_ref",
+        "document_binding",
+        "event_kind",
+        "payload"
+      ],
+      "additionalProperties": false
+    },
+    "EventBatch": {
+      "type": "object",
+      "properties": {
+        "protocol_version": {
+          "const": 1
+        },
+        "events": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/EventEnvelope"
+          },
+          "maxItems": 128
+        },
+        "needs_resync": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "protocol_version",
+        "events",
+        "needs_resync"
+      ],
+      "additionalProperties": false
+    }
+  },
+  "oneOf": [
+    {
+      "$ref": "#/$defs/HostInit"
+    },
+    {
+      "$ref": "#/$defs/RequestEnvelope"
+    },
+    {
+      "$ref": "#/$defs/AdmissionReceipt"
+    },
+    {
+      "$ref": "#/$defs/IOAck"
+    },
+    {
+      "$ref": "#/$defs/EventBatch"
+    }
+  ]
+}

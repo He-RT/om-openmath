@@ -1,0 +1,18 @@
+{
+  "schema_version": 1,
+  "inputs": [
+    {
+      "path": "docs/design/macos-host-state.schema.json",
+      "sha256": "6f68bf0ad46c3f0a7eff1c9f7277b97d1cb735cac314ca8d1bc588a6220e7288"
+    },
+    {
+      "path": "docs/design/macos-editor-rendering.schema.json",
+      "sha256": "091c8620ec14fc5901dd19ae6c6f6e553b6b147949938f593fbb1dcd32626b4d"
+    },
+    {
+      "path": "docs/design/native-host-wire.schema.json",
+      "sha256": "3e9254564dafc10aad8197f06bb8b466bf816199c441a8c0aa1d85f439352ae0"
+    }
+  ],
+  "generated_dto_count": 91
+}

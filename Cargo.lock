@@ -3165,6 +3165,14 @@ dependencies = [
 ]
 
 [[package]]
+name = "om-host-service"
+version = "0.1.0-pre-alpha.3"
+dependencies = [
+ "serde",
+ "serde_json",
+]
+
+[[package]]
 name = "om-ios-ffi"
 version = "0.1.0-pre-alpha.3"
 dependencies = [

@@ -381,3 +381,9 @@ L2使用精确标称GM分数、50位FindRoot/1000迭代和真实残差，报告�
 - Pi Core/AI保留已选npm1.0.4，实际SRI固定在专用lock。npm发布gitHead为7c10bd4337495ee613f2224843ecdf349b80d1df，与设计调研的503c605...不相同；实现采用真实发布API并记录二者来源，不偷偷声称由参考提交构建。传递pi-telemetry实际解析为1.1.0，同样锁定；后续helper只使用宿主流函数，遥测为默认空实现，不继承凭据/遥测环境。
 - Node候选26.11.1归档与固定SHA一致，原二进制strict签名通过；实际hostNode25.9不作为随包运行时。系统SDK实际SQLite3.54.0满足最低已修复版本，选择系统库以避免重复原生依赖；VFS同步/耐久仍须R4.1.01实测。
 - npm归档缺许可正文的条目补固定上游或完整README正文，来源/适用范围透明记录。没有全局忽略许可检查，没有安装可选Kerberos/native addon，也没有运行依赖安装钩子或请求真实模型。
+
+### R4-D002：原生wire生成与create错误所有权（2026-10-09）
+
+- native-host-wire.schema.json补齐低层init/envelope/IOAck/事件框架，状态和EditorKey等字段继续复用原机器定义。Rust/Swift字段由同一生成器产生；常量kind用单值enum防止untagged union误分派。required+nullable采用专用包装，不能把缺字段当null。结构通过不授予scope；实际runtime/document/grant和IO事实仍由owner接纳。
+- create采用返回om_host_create_result(handle,error)，明确失败原因的独立Rust buffer，避免NULL无诊断；静态版本字符串保持整个进程存活且不释放。Header由native-host-abi.json生成，iOS原ABI不改，生命周期实现仍在R4.0.06，未实现符号不注册。
+- 首批native wire只声明读取/Editor/隔离试算/IOAck/操作核对；文档事务/运行等body在对应实现批次扩展并冻结参数，不靠一个不校验的任意payload提前开放写入。所有原12工具仍是完整版本目标，不能据此缩减范围。

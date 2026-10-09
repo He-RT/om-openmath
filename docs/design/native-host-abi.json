@@ -1,0 +1,24 @@
+{
+  "abi_version": 1,
+  "protocol_version": 1,
+  "ipc_version": 1,
+  "language_feature_version": 1,
+  "create_returns": "om_host_create_result",
+  "create_error_ownership": "error buffer is Rust-owned; free even when handle is NULL; successful create has empty error",
+  "buffer_ownership": "Rust-owned buffer; free exactly once; Swift input is borrowed only during the call and copied before enqueue",
+  "close_finish": "background only; consumes handle after owner and event pump are settled; not MainActor join",
+  "symbols": [
+    ["uint32_t", "om_host_abi_version", "void"],
+    ["const char *", "om_host_kernel_release_version", "void"],
+    ["uint32_t", "om_host_metadata_version", "void"],
+    ["om_host_create_result", "om_host_create", "const unsigned char *json, size_t len"],
+    ["om_host_buffer", "om_host_submit", "om_host_handle *host, const unsigned char *json, size_t len"],
+    ["om_host_buffer", "om_host_next_events", "om_host_handle *host, uint32_t wait_ms, size_t max_bytes"],
+    ["int32_t", "om_host_cancel", "om_host_handle *host, const unsigned char *operation_id, size_t len"],
+    ["om_host_buffer", "om_host_close_begin", "om_host_handle *host"],
+    ["int32_t", "om_host_close_finish", "om_host_handle *host"],
+    ["void", "om_host_buffer_free", "om_host_buffer buffer"]
+  ],
+  "lifecycle_implementation_task": "R4.0.06",
+  "declaring_symbols_is_not_handler_registration": true
+}

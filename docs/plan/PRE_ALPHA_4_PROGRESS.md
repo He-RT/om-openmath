@@ -4,9 +4,9 @@
 
 2026-10-09。目标`0.1.0-pre-alpha.4`，当前运行/公开版本`.3`；开发`dev`，不合main、不改旧标签、本机不启动iOS模拟器。本文只记录结果，规格及完成标准唯一见主计划；计划编写本身不计实施完成。
 
-**当前状态：** 4任务完成（R4.0.01/02/03/11）；其余94任务尚未完成；32最终运行/发行gate全部not_run；candidate未分配，ready_to_publish=false，released_verified=false。设计/HTML/Schema通过不填运行时pass。
+**当前状态：** 7任务完成（R4.0.01/02/03/04/08/09/11）；其余91任务尚未完成；32最终运行/发行gate全部not_run；candidate未分配，ready_to_publish=false，released_verified=false。设计/HTML/Schema通过不填运行时pass。
 
-**下一任务：** R4.0.03原生工程Release链接/实际窗口/版本读回已验证；共享续行R4.0.08/09等待手机/平板CI。接着冻结R4.0.04 DTO与ABI，再接安全宿主服务。先读完整计划第0节。按DAG推进，R4.5.07必须在R4.5.05候选冻结前完成，不机械按编号。
+**下一任务：** R4.0.05安全宿主所有者/调度，随后R4.0.06真实C ABI生命周期与R4.0.07事件泵/求值；R4.0.10故障fixture可按接口前置开始。R4.0.08/09同提交全部CI已通过。按DAG推进，R4.5.07必须在R4.5.05冻结前完成。
 
 ## 已知外部前置
 
@@ -23,12 +23,12 @@
 | [x] [R4.0.01](PRE_ALPHA_4.md#task-r4.0.01) | 建立基线、任务账本和恢复入口 | completed | [基线](../acceptance/pre-alpha.4/baseline/index.json) | e876c16 |
 | [x] [R4.0.02](PRE_ALPHA_4.md#task-r4.0.02) | 依赖与许可闭包核对 | completed | dependencies.json / clean npm ci + audit | 75b4e5c |
 | [x] [R4.0.03](PRE_ALPHA_4.md#task-r4.0.03) | 原生Mac工程和数学链接骨架 | completed | Release build / native AX /真实C ABI读回 | 75b4e5c |
-| [ ] [R4.0.04](PRE_ALPHA_4.md#task-r4.0.04) | 冻结框架无关DTO与新MacABI契约 | planned | — | — |
+| [x] [R4.0.04](PRE_ALPHA_4.md#task-r4.0.04) | 冻结框架无关DTO与新MacABI契约 | completed | 91 DTO / Rust+Swift / CI37880165376 | 下次补记 |
 | [ ] [R4.0.05](PRE_ALPHA_4.md#task-r4.0.05) | 安全host-service所有者与调度骨架 | planned | — | — |
 | [ ] [R4.0.06](PRE_ALPHA_4.md#task-r4.0.06) | 新CABI句柄、缓冲与直接取消 | planned | — | — |
 | [ ] [R4.0.07](PRE_ALPHA_4.md#task-r4.0.07) | Swift客户端、事件泵和权威投影 | planned | — | — |
-| [ ] [R4.0.08](PRE_ALPHA_4.md#task-r4.0.08) | 共享Modern自动续行与根因诊断 | in_progress | — | — |
-| [ ] [R4.0.09](PRE_ALPHA_4.md#task-r4.0.09) | 原语言和数学基线持续兼容 | in_progress | — | — |
+| [x] [R4.0.08](PRE_ALPHA_4.md#task-r4.0.08) | 共享Modern自动续行与根因诊断 | completed | 91 DTO / Rust+Swift / CI37880165376 | 下次补记 |
+| [x] [R4.0.09](PRE_ALPHA_4.md#task-r4.0.09) | 原语言和数学基线持续兼容 | completed | 91 DTO / Rust+Swift / CI37880165376 | 下次补记 |
 | [ ] [R4.0.10](PRE_ALPHA_4.md#task-r4.0.10) | fixture与真实故障注入基础设施 | planned | — | — |
 | [x] [R4.0.11](PRE_ALPHA_4.md#task-r4.0.11) | 发行前置、签名和现场环境预检 | completed | [环境](../acceptance/pre-alpha.4/baseline/environment.json) / verify-env.sh | e876c16 |
 | [ ] [R4.1.01](PRE_ALPHA_4.md#task-r4.1.01) | SQLite单写者与新通道初始化 | planned | — | — |
@@ -172,3 +172,11 @@ Done依据与覆盖case/proof:
 - R4.0.03完成：工程生成/校验、Rust ARM64静态库及Swift Release链接成功；新C ABI真实查询metadata26/ABI1/Rust实际版本字符串，Xcode原生包Mach-O ARM64、macOS27、Preview身份经回读。旧进程正常退出后用CUA启动最终构建，真实AX窗口/截图可见相同元数据；nm确认三条桥接符号位于实际exe。
 - om-apple-ffi定向测试与Clippy通过；核心仍forbid unsafe，独立ffi仅no_mangle边界和静态版本指针，没有修改iOS ABI。未实现create/submit等不注册，也不把此窗口称完整CAS/Agent客户端。
 - 构建和当前开发边界见[macos/README.md](../../macos/README.md)，后续R4.0.04冻结生成DTO/错误接口，R4.0.05/06/07补安全服务、生命周期和实际求值。
+
+## R4开发记录 D006 — DTO/ABI与跨端续行阶段验收
+
+- R4.0.04完成：native_contracts.py从3份机器Schema生成91个Rust/Swift DTO，单值kind枚举确保union正确分派，必填nullable包装拒绝遗漏，结构/原计数/字节预算/状态条件和owner代次拒绝已有9项Rust实际验收。Swift4负例、常量kind路由及实际Rust→Swift→Rust最高精确计数字节往返通过。生成漂移检查、完整Mac Release重建和host-service Clippy通过；旧iOS ABI未改。
+- C头与create_result(handle,error)所有权由native-host-abi.json统一生成。当前只是冻结声明；R4.0.06仍需真正实现、销毁/取消/缓冲竞争测试。声明与JSON形状不授予权限，不开放未注册handler，不把回执载荷当持久化成功证据。
+- R4.0.08/09完成：525ce5629908a010ece9ec42283d57f5c437664d的CI37880165376全部job成功；新增移动续行用例iPhone/iPad实跑通过，各30单元+5UI。原53整次最大phone306.521ms/pad337.052ms，unsupported_latex=[]；纯WASM/生产53独立数学回读/前端/依赖全部成功。原CLI本地完整53/200ms第二attempt通过，首次波动失败和A/B保持。没有改原数学期望/时限或启动本机模拟器。
+- [开发摘要](../acceptance/pre-alpha.4/development/r40/summary.json)保存实际source/CI/附件散列与范围。新DTO提交尚不等于该旧SHA的全CI证据；本版完整native/live/签名/最终candidate仍未完成，32最终门禁不填旧成功。
+- 下一步直接安全DocumentCoordinator控制通道与独立Kernel/Editor/Aux worker、每操作取消及实际服务事件；存储/事务/checkpoint/完整UI/Agent仍按完整计划继续，不收窄发布范围。

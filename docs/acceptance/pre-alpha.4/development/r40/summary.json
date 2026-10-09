@@ -1,0 +1,54 @@
+{
+  "kind": "development_batch_evidence",
+  "is_final_release_gate_report": false,
+  "source_sha": "525ce5629908a010ece9ec42283d57f5c437664d",
+  "ci_run_id": 37880165376,
+  "ci_url": "https://github.com/He-RT/om-openmath/actions/runs/37880165376",
+  "all_jobs": "success",
+  "mobile_new_continuation_case": "passed on iPhone and iPad",
+  "mobile_unit_tests_each": 30,
+  "mobile_ui_tests_each": 5,
+  "mobile_corpus": [
+    {
+      "device": "iPhone",
+      "os": "27.0",
+      "original_rows": 53,
+      "max_full_request_ms": 306.520833,
+      "unsupported_latex": [],
+      "corpus_attachment_sha256": "0638b9216522bec0e2a79795db3bd922d263ac19a306f67f5fbf76bd4900f2f3",
+      "development_artifact_path": "target/ci-evidence/r40-525ce56/ios/ios-phone-20261009T034417Z-11592-attachments/F0BE1066-13BF-46DF-9DF4-5119A3D638CE.json"
+    },
+    {
+      "device": "iPad",
+      "os": "27.0",
+      "original_rows": 53,
+      "max_full_request_ms": 337.051708,
+      "unsupported_latex": [],
+      "corpus_attachment_sha256": "b3e7999a8a7c6f1e38d393b4a3bfd424a8968eea4b4bf2d4648f54c268887262",
+      "development_artifact_path": "target/ci-evidence/r40-525ce56/ios/ios-pad-20261009T035401Z-29792-attachments/99B65FC5-7A4D-46C2-94D5-B0F650F14454.json"
+    }
+  ],
+  "local_parser_and_kernel_new_tests": 9,
+  "local_rust_workspace_before_dto": 1094,
+  "local_native_ffi_new_tests": 1,
+  "local_frontend_unit_tests": 78,
+  "python_contract_tests": 17,
+  "native_release_original_53_second_attempt": "passed unchanged 200ms",
+  "native_release_first_failure": {
+    "case_ids": [
+      "12",
+      "17",
+      "41"
+    ],
+    "timing_ms": [
+      292.348708,
+      236.792333,
+      245.627458
+    ],
+    "discarded": false
+  },
+  "bounded_ab_rounds": 3,
+  "final_candidate_sha": null,
+  "ready_to_publish": false,
+  "released_verified": false
+}

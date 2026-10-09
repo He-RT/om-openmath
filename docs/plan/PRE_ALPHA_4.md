@@ -235,8 +235,11 @@ DTO的精确shape以现有六份设计Schema和Agent工具Schema为准。跨语�
 ```c
 typedef struct om_host_handle om_host_handle;
 typedef struct { unsigned char *ptr; size_t len; } om_host_buffer;
+typedef struct { om_host_handle *handle; om_host_buffer error; } om_host_create_result;
 uint32_t om_host_abi_version(void);
-om_host_handle *om_host_create(const unsigned char *json, size_t len);
+const char *om_host_kernel_release_version(void);
+uint32_t om_host_metadata_version(void);
+om_host_create_result om_host_create(const unsigned char *json, size_t len);
 om_host_buffer om_host_submit(om_host_handle *, const unsigned char *json, size_t len);
 om_host_buffer om_host_next_events(om_host_handle *, uint32_t wait_ms, size_t max_bytes);
 int32_t om_host_cancel(om_host_handle *, const unsigned char *operation_id, size_t len);
@@ -247,7 +250,7 @@ void om_host_buffer_free(om_host_buffer);
 
 create只copy校验初始化后启动owner，submit有界入队返回request/operation接受或拒绝，不等待CAS；next_events在后台泵使用，缓冲可包含版本化错误；cancel直接触达该op生命周期。close_begin撤销admission/generation并取消；close_finish后台等owner停再释放稳定handle，MainActor不join。调用者buffer仅调用内读，Rust返回buffer由Swift decode后恰好一次free，Rust不得保存Swift临时指针/回调View或跨ABI unwind。
 
-这组签名是新Mac边界的实施起点，正式header/abi版本/错误返回与create失败详细诊断在R4.0任务固定；如实际平台更适合给create输出error buffer，必须在同一契约记录调整，不用NULL无原因假成功。现有iOS header/函数前缀不改名或偷改含义。
+R4.0.04冻结create返回handle+独立error buffer：失败handle为NULL且错误缓冲必须释放，成功error为空；静态内核版本字符串不释放。C头由native-host-abi.json生成，声明不表示生命周期函数已实现或注册。正式JSON DTO由native-host-wire及状态/编辑Schema生成；如实际平台更适合给create输出error buffer，必须在同一契约记录调整，不用NULL无原因假成功。现有iOS header/函数前缀不改名或偷改含义。
 
 ### 5.3 DocCommitPort 与非阻塞物理IO
 
@@ -2831,7 +2834,7 @@ UpdateService只读受控官方GitHub Releases/发行清单（预发行不可用
 
 #### R4.0.04 冻结框架无关DTO与新MacABI契约
 
-- [ ] **R4.0.04 完成**（仅在以下Done和验证满足后勾选）
+- [x] **R4.0.04 完成**（仅在以下Done和验证满足后勾选）
 
 **Files：**
 
@@ -2845,10 +2848,10 @@ UpdateService只读受控官方GitHub Releases/发行清单（预发行不可用
 
 **Steps：**
 
-- [ ] 1. 从机器契约生成Rust/Swift/C字段。
-- [ ] 2. 明确scope由宿主注入和nullable/optional/default。
-- [ ] 3. 定义ABI/IPC/元数据/语言feature独立版本及create错误返回。
-- [ ] 4. 执行下面Tests，核对真实输出/失败，更新任务账本与证据后提交本批次。
+- [x] 1. 从机器契约生成Rust/Swift/C字段。
+- [x] 2. 明确scope由宿主注入和nullable/optional/default。
+- [x] 3. 定义ABI/IPC/元数据/语言feature独立版本及create错误返回。
+- [x] 4. 执行下面Tests，核对真实输出/失败，更新任务账本与证据后提交本批次。
 
 **Tests：** 正反例/跨语言roundtrip、错字段/代次/预算拒绝，原iOSABI不漂移。测试位置以Files和第15节影响范围为准，证据保存完整输入/命令/输出，不仅记录“通过”。
 
@@ -2946,7 +2949,7 @@ UpdateService只读受控官方GitHub Releases/发行清单（预发行不可用
 
 #### R4.0.08 共享Modern自动续行与根因诊断
 
-- [ ] **R4.0.08 完成**（仅在以下Done和验证满足后勾选）
+- [x] **R4.0.08 完成**（仅在以下Done和验证满足后勾选）
 
 **Files：**
 
@@ -2962,10 +2965,10 @@ UpdateService只读受控官方GitHub Releases/发行清单（预发行不可用
 
 **Steps：**
 
-- [ ] 1. 在共享parser需要操作数处允许换行/注释，不用UI删换行。
-- [ ] 2. 保留完整语句/分号/新let边界与Wolfram规则。
-- [ ] 3. 降低同根因连锁提示但失败定义不登记。
-- [ ] 4. 执行下面Tests，核对真实输出/失败，更新任务账本与证据后提交本批次。
+- [x] 1. 在共享parser需要操作数处允许换行/注释，不用UI删换行。
+- [x] 2. 保留完整语句/分号/新let边界与Wolfram规则。
+- [x] 3. 降低同根因连锁提示但失败定义不登记。
+- [x] 4. 执行下面Tests，核对真实输出/失败，更新任务账本与证据后提交本批次。
 
 **Tests：** L01–04所有AST/结果/LFCRLF/中文/真正缺右值负例，草方块保留=后换行。测试位置以Files和第15节影响范围为准，证据保存完整输入/命令/输出，不仅记录“通过”。
 
@@ -2977,7 +2980,7 @@ UpdateService只读受控官方GitHub Releases/发行清单（预发行不可用
 
 #### R4.0.09 原语言和数学基线持续兼容
 
-- [ ] **R4.0.09 完成**（仅在以下Done和验证满足后勾选）
+- [x] **R4.0.09 完成**（仅在以下Done和验证满足后勾选）
 
 **Files：**
 
@@ -2992,10 +2995,10 @@ UpdateService只读受控官方GitHub Releases/发行清单（预发行不可用
 
 **Steps：**
 
-- [ ] 1. 运行原正确性/语言/源码往返并核对实际注册目录。
-- [ ] 2. 为真正变合法的续行补正反例来源。
-- [ ] 3. 保存旧失败和性能定义，不提前加新平台成功。
-- [ ] 4. 执行下面Tests，核对真实输出/失败，更新任务账本与证据后提交本批次。
+- [x] 1. 运行原正确性/语言/源码往返并核对实际注册目录。
+- [x] 2. 为真正变合法的续行补正反例来源。
+- [x] 3. 保存旧失败和性能定义，不提前加新平台成功。
+- [x] 4. 执行下面Tests，核对真实输出/失败，更新任务账本与证据后提交本批次。
 
 **Tests：** 原数学期望未变，纯WASM/协议生成/已有CLI与UI检查保持，原负例不被误吞。测试位置以Files和第15节影响范围为准，证据保存完整输入/命令/输出，不仅记录“通过”。
 

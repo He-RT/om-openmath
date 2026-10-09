@@ -1463,5 +1463,18 @@
         "skipped_lifecycle_scripts": {}
       }
     ]
+  },
+  "sqlite_bootstrap_runtime": {
+    "version": "3.54.0",
+    "vfs": "unix",
+    "vfs_version": 3,
+    "library": "/usr/lib/libsqlite3.dylib",
+    "actual_wal_full_foreign_keys_readback": true,
+    "fullfsync_pragma": true,
+    "system_vfs_sync_observed": "F_BARRIERFSYNC",
+    "host_post_commit_sync": "F_FULLFSYNC actual WAL before acknowledgement",
+    "post_commit_sync_failure": "unknownCommit",
+    "test_interposer_in_app": false,
+    "is_final_candidate_evidence": false
   }
 }

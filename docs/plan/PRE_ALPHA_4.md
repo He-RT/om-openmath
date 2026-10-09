@@ -3073,7 +3073,7 @@ UpdateService只读受控官方GitHub Releases/发行清单（预发行不可用
 
 #### R4.1.01 SQLite单写者与新通道初始化
 
-- [ ] **R4.1.01 完成**（仅在以下Done和验证满足后勾选）
+- [x] **R4.1.01 完成**（仅在以下Done和验证满足后勾选）
 
 **Files：**
 
@@ -3086,10 +3086,10 @@ UpdateService只读受控官方GitHub Releases/发行清单（预发行不可用
 
 **Steps：**
 
-- [ ] 1. 核对实际嵌入SQLite版本/VFS，必要时固定随包组件。
-- [ ] 2. 建立public/Preview新根和每库单writer。
-- [ ] 3. 实现未知格式/目录不可写/双实例拒写，不读旧TOML/keyring。
-- [ ] 4. 执行下面Tests，核对真实输出/失败，更新任务账本与证据后提交本批次。
+- [x] 1. 核对实际嵌入SQLite版本/VFS，必要时固定随包组件。
+- [x] 2. 建立public/Preview新根和每库单writer。
+- [x] 3. 实现未知格式/目录不可写/双实例拒写，不读旧TOML/keyring。
+- [x] 4. 执行下面Tests，核对真实输出/失败，更新任务账本与证据后提交本批次。
 
 **Tests：** 初始化中断/锁/ENOSPC/未知version/旧目录sentinel与keyring访问隔离。测试位置以Files和第15节影响范围为准，证据保存完整输入/命令/输出，不仅记录“通过”。
 

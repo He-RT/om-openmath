@@ -40,3 +40,7 @@ bash macos/Scripts/test-native-contracts.sh
 原生窗口现已接通“试算”，支持运行/停止与⌘↩；结果、错误和取消均来自实际CAS及宿主回执。编辑后保留旧结果并标记源码已改，隔离试算的定义不进入下一操作。这个阶段只实现宿主确认投影和本地草稿，完整笔记本/文件仍未开放。
 
 `om_host_read_snapshot`直接读取带序列的真实状态，不经操作/事件队列；普通事件批携带`last_rust_event_sequence`。消费者检测缺口后取得足够新的快照，再恢复增量。Swift脚本新增reducer与真实session验收，将事件预算设为128字节以强制所有终止帧丢弃，确认结果通过原ID读回。旧/重复回执不能二次应用；UI订阅缓冲保存最新完整投影，操作终止交付独立。
+
+SQLite首代存储已实现，可运行 `bash macos/Scripts/test-storage.sh`。应用支持目录由系统API取得，Preview写入独立NativeMacPreview通道；生产NativeMac通道未来随最终App启用。每库只有串行writer，root由OS锁保护；已有库但selector无效时要求恢复，不重建空库。该阶段只初始化物理库与header，完整笔记本事务/恢复与`.omnb`保存按后续任务接通。
+
+实际SQLite3.54.0/unix VFS3使用WAL/FULL/foreign_keys/fullfsync。系统VFS的实际barrier刷新与宿主COMMIT之后等待的F_FULLFSYNC分别验收，后者失败表示提交确认未知。测试dyld/VFS探针仅在独立fixture helper，未链接进App。SIGKILL用例保存原残留，不以进程中断冒充断电实测。

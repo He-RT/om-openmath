@@ -404,3 +404,9 @@ L2使用精确标称GM分数、50位FindRoot/1000迭代和真实残差，报告�
 - 新Mac ABI1增加om_host_read_snapshot，仅供可信宿主恢复，不是Pi可调用工具；最多4原操作详情、100摘要。返回实际HostSnapshot、未知引用清单与Rust序列，不通过submit接纳一个会被拥堵事件队列再次丢失的查询，也不重放计算。旧公开iOS接口不变，尚未公开的Mac静态库/Header/客户端/CI同步更新；声明符号现为11项。
 - EventBatch补last_rust_event_sequence：空溢出批次也报告真实恢复位置；快照必须覆盖此位置。恢复revision处理在途读回期间新缺口，旧snapshot不能把新resync清掉。恢复请求不计操作，所有原待完成ID保持；UI只接完整确认投影，终止交付与UI缓冲独立。当前源码/DocCommit功能仍未开放。
 - CI查出内部path wildcard，改为root workspace固定同版依赖，未忽略bans。主线程验证改为全部真实后台操作的线程硬检查与实际state/cancel/调度进展，删除没有产品规格依据的300ms十次心跳假设；原数学/移动1s标准不变。iPhone18约994ms在恢复阶段的失败原件保留，不宣称已解决或把kernel时间替代整次。
+
+### R4-D006：系统VFS的barrier与明确COMMIT确认（2026-10-09）
+
+- 实际系统SQLite3.54.0的fullfsync PRAGMA回读为ON，但隔离测试调用追踪显示同步使用F_BARRIERFSYNC。为了满足耐久确认等待语义，COMMIT完成后宿主对实际SQLite WAL文件F_FULLFSYNC，PASSIVE checkpoint后对DB全刷新；header/selector单独使用相邻临时文件+F_FULLFSYNC+rename+父目录fsync。同步失败在COMMIT后为unknownCommit，不伪称整笔未写或安全重试。
+- 测试采用自有dylib仅在disposable helper中转发并计数SDK fcntl；VFS公开syscall hook用于真实write/pwrite ENOSPC。没有把测试探针/private命令放进App。SDK系统SQLite调用95的传递类型按[Apple原始fcntl包装器](https://github.com/apple-oss-distributions/xnu/blob/main/libsyscall/wrappers/cancelable/fcntl-base.c)核对，代码为自有测试adapter，没有复制APSL实现。
+- 首代物理格式定为store/selector/user_version/header codec1，严查未知版本和唯一writer，Preview使用NativeMacPreview而production使用NativeMac。没有创建旧版迁移路径，没有Pi/模型SQL或私有文件输入。新存储仅首代初始化，源码事务/Agent持久化继续原计划，不缩减完整发行。

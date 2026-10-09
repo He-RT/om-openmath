@@ -41,6 +41,7 @@ private struct HostScratchView:View {
           .font(.system(.body,design:.monospaced)).textSelection(.enabled)
           .frame(maxWidth:.infinity,alignment:.leading).accessibilityIdentifier("scratch-output")
       }.frame(maxWidth:.infinity,maxHeight:.infinity)
+      Text(model.storageMessage).font(.footnote).foregroundStyle(.secondary)
       Text("此处为隔离试算。笔记本工作台与文件保存正在接入。").font(.footnote).foregroundStyle(.secondary)
     }.padding(24).tint(.green)
       .task { await model.start() }

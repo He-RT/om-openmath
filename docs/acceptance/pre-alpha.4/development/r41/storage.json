@@ -1,0 +1,78 @@
+{
+  "task": "R4.1.01",
+  "development_only": true,
+  "version": "0.1.0-pre-alpha.3",
+  "actual_runtime": {
+    "journalMode": "wal",
+    "version": "3.54.0",
+    "synchronous": 2,
+    "fullfsync": 1,
+    "sourceID": "2026-04-09 12:25:13 8fa8248e303219400c646a885e36dfc52eae33d83f4412e3f369b2be5373aapl",
+    "vfs": "unix",
+    "vfsVersion": 3,
+    "foreignKeys": 1,
+    "checkpointFullfsync": 1
+  },
+  "OS_root_lease": "flock, held until final connections close",
+  "observed_final_sync": {
+    "fullfsync_calls": 9,
+    "successes": 9,
+    "barrier_calls": 15,
+    "probe_unknown_commands": 0
+  },
+  "actual_interruption_points": 6,
+  "post_commit_sync_failure": "unknownCommit; selector not published",
+  "unselected_database": "recovery_required",
+  "native_UI_CUA": "local storage ready, exact 2+2 -> 4",
+  "logs": [
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r41/storage-all-verified.log",
+      "sha256": "6feeb5860f63244519ad5d2e6095fb7fcd2d2dc0882ad64dd04df990d5545bc8"
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r41/storage-all-final2.log",
+      "sha256": "6feeb5860f63244519ad5d2e6095fb7fcd2d2dc0882ad64dd04df990d5545bc8"
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r41/storage-native-build-final.log",
+      "sha256": "7245c59c3535667c1dd768d7119754e2b7d6e9bcf4b8c8e9a8264a321172f3a1"
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r41/storage-python.log",
+      "sha256": "58fe4e3e0af2adb8064285e0aedf0abc28e6d4226b710d9c7df5b36798d0992c"
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r41/sqlite-runtime-info.json",
+      "sha256": "b392d46bb69d1f88cdac40829f65d66656fd7c232711352a5e95af4bd05b6f52"
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r41/native-linked-libraries.txt",
+      "sha256": "4daadc7c0df6b99618c38880b9944df53141ccda1f855e86d47b23e820841b24"
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r41/627-frontend-ci.log",
+      "sha256": "814800db96d3927a75531c17dfeb48e1d9eda18ec22751392a9c1f6d90bfed40"
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r41/storage-all-final.log",
+      "sha256": "d78816e2018b3b1070070875568ed8f206445caf607514b0905871593b451110"
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r41/storage-fixture-initial.log",
+      "sha256": "f03876b681177ebf0644cc7cc04130082526f4b3eee5eba99a8eaac1cfbf9764"
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r41/storage-fixture-fifth.log",
+      "sha256": "cd187f3876b0110d03ce6b5f1a430369d7465ff642ac9224ea46747f30c5b6f1"
+    },
+    {
+      "path": "target/macos-storage-tests/interruption-attempt.json",
+      "sha256": "0c414d431f99577dc3b834c22effa4a103dbe736fae635e30766419a46f90b22"
+    }
+  ],
+  "user_legacy_migration": false,
+  "test_probe_in_app": false,
+  "power_loss_tested": false,
+  "source_transactions": "not yet implemented",
+  "final_candidate_gate": false
+}

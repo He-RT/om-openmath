@@ -4,9 +4,9 @@
 
 2026-10-09。目标`0.1.0-pre-alpha.4`，当前运行/公开版本`.3`；开发`dev`，不合main、不改旧标签、本机不启动iOS模拟器。本文只记录结果，规格及完成标准唯一见主计划；计划编写本身不计实施完成。
 
-**当前状态：** 11任务完成（R4.0.01/02/03/04/05/06/07/08/09/10/11）；其余87任务尚未完成；32最终运行/发行gate全部not_run；candidate未分配，ready_to_publish=false，released_verified=false。设计/HTML/Schema通过不填运行时pass。
+**当前状态：** 12任务完成（全部R4.0与R4.1.01）；其余86任务尚未完成；32最终运行/发行gate全部not_run；candidate未分配，ready_to_publish=false，released_verified=false。设计/HTML/Schema通过不填运行时pass。
 
-**下一任务：** R4.1.01 SQLite单写者与新通道初始化，接着真实文档事务/耐久回执。原生宿主与故障fixture已接通。；R4.0.10故障fixture可按接口前置开始。R4.0.08/09同提交全部CI已通过。按DAG推进，R4.5.07必须在R4.5.05冻结前完成。
+**下一任务：** R4.1.02权威文档源码、事务与幂等表，接着Blob和DocCommitPort。当前存储仅完成首代库/bootstrap，笔记本事务尚未开放。按DAG推进，R4.5.07必须在R4.5.05冻结前完成。
 
 ## 已知外部前置
 
@@ -29,9 +29,9 @@
 | [x] [R4.0.07](PRE_ALPHA_4.md#task-r4.0.07) | Swift客户端、事件泵和权威投影 | completed | 纯reducer / 真实ABI丢帧恢复 / 原生AX运行与停止 | ece80a1 |
 | [x] [R4.0.08](PRE_ALPHA_4.md#task-r4.0.08) | 共享Modern自动续行与根因诊断 | completed | 91 DTO / Rust+Swift / CI37880165376 | 21c9254 |
 | [x] [R4.0.09](PRE_ALPHA_4.md#task-r4.0.09) | 原语言和数学基线持续兼容 | completed | 91 DTO / Rust+Swift / CI37880165376 | 21c9254 |
-| [x] [R4.0.10](PRE_ALPHA_4.md#task-r4.0.10) | fixture与真实故障注入基础设施 | completed | 自有媒体封存/真实解码、回环HTTP、SIGKILL/ENOSPC、实际budget/stream codec | 下次补记 |
+| [x] [R4.0.10](PRE_ALPHA_4.md#task-r4.0.10) | fixture与真实故障注入基础设施 | completed | 自有媒体封存/真实解码、回环HTTP、SIGKILL/ENOSPC、实际budget/stream codec | 627c978 |
 | [x] [R4.0.11](PRE_ALPHA_4.md#task-r4.0.11) | 发行前置、签名和现场环境预检 | completed | [环境](../acceptance/pre-alpha.4/baseline/environment.json) / verify-env.sh | e876c16 |
-| [ ] [R4.1.01](PRE_ALPHA_4.md#task-r4.1.01) | SQLite单写者与新通道初始化 | planned | — | — |
+| [x] [R4.1.01](PRE_ALPHA_4.md#task-r4.1.01) | SQLite单写者与新通道初始化 | completed | SQLite3.54/WAL/FULL / 实际F_FULLFSYNC / 根锁 / SIGKILL/ENOSPC | 下次补记 |
 | [ ] [R4.1.02](PRE_ALPHA_4.md#task-r4.1.02) | 权威源码、事务和幂等表 | planned | — | — |
 | [ ] [R4.1.03](PRE_ALPHA_4.md#task-r4.1.03) | 不可变Blob和资源引用发布 | planned | — | — |
 | [ ] [R4.1.04](PRE_ALPHA_4.md#task-r4.1.04) | 文档操作与非执行失效计划 | planned | — | — |
@@ -217,3 +217,14 @@ Done依据与覆盖case/proof:
 - 命令test-fixtures.sh（固定Node26运行）和2项Rust真实codec/budget测试通过，Clippy/deny/17Python通过。初始生成器旧API警告、SDK27sending像素所有权错误与修复、新Rust用错Vec返回签名及文档lint原件保留，最终采用新SDK唯一像素所有权API；没有删除检查或改数学期望。
 - manifest、生成器、实际解码测试、agent分片工具和Rust support已入库；原件/残留/attempt保存在target/native-fixture-attempts/及target/acceptance/pre-alpha.4/development/r40/，[fixtures.json](../acceptance/pre-alpha.4/development/r40/fixtures.json)记录散列。macos-native CI新增封存媒体/网络/中断检查。
 - ece80a1的CI37916235119读取时native_macos/rust/frontend/dependencies全部success、iOS仍in_progress；此前c9的原18恢复994ms失败继续保留。新fixture提交需用自己的SHA检查，最终candidate gates仍not_run。下一步R4.1.01实际SQLite单写者、根锁、selector和同步证据。
+
+## R4开发记录 D011 — SQLite单写者、库代次与真正同步
+
+- R4.1.01完成：Swift StorageService使用系统目录API，production NativeMac与Preview NativeMacPreview分区；OS flock持有store.lock，不通过删文件抢锁，每库唯一StoreWriter串行utility队列。SQLite指针/stmt不跨API，编码与SQLite/系统sync均后台；关闭队列结束前保留RootLease，forgotten-close final owner也保留lease。Native Preview实际启动新分区并显示“本地存储已就绪”，同窗口2+2返回4；文档事务/文件保存仍未开放，Rust document_storage_ready继续false。
+- store.json/active.json严格字段集合及格式/身份检查；SQLite user_version/header/store/minimum_reader/codec与selector header_hash均校验。先readonly检查再配置writer；未来格式拒写，不把已有但未选择的库当空库，不扫描最大代次猜活动库。身份散列排除可变last_clean_shutdown。自有根/Generations目录700、JSON/DB/锁600，相邻临时全同步+rename+目录sync；symlink祖先/根拒绝，仅允许实际本地卷。旧TOML/keyring没有入口，测试不可读旧配置sentinel保持字节。
+- 实际链接/usr/lib/libsqlite3.dylib，运行版本3.54.0/unix VFS3，查询回读WAL、synchronous2/FULL、foreign_keys1、fullfsync1、checkpoint_fullfsync1。测试探针最初只监控VFS槽，没有捕获同步；后续隔离fixture dylib转发SDK public fcntl实际调用，区分出系统SQLite用F_BARRIERFSYNC，不能把最初合计15写成15次F_FULLFSYNC。生产SQLiteDatabase已在COMMIT之后对实际WAL执行F_FULLFSYNC，checkpoint对DB执行全刷新；最终记录9次F_FULLFSYNC/9成功及15 barrier（其他header/selector原JSON同步不计为SQLite）。探针只在测试进程，不进入App，不伪造成功。
+- COMMIT后同步失败返回unknownCommit，不能宣传回滚或耐久成功。真实SQLite write/pwrite注入ENOSPC明确失败、不发布selector；postcommit F_FULLFSYNC EIO也保持无selector及显式恢复。duplicate root writer/同文档writer、目录只读/符号链接、未知root/user_version、selector缺失、独立重新打开相同identity均通过；主App不接任意模型SQL/路径。
+- 实际bootstrap在root_published/before_commit/committed/before_selector/selector_renamed/published六边界SIGSTOP/SIGKILL后重新打开：前四中的已有未选择DB保持recovery_required，新库尚不存在的root-only阶段可正常创建；有效selector后保持同storeID/代次。跨进程第二实例拒绝，原进程死亡后OS释放锁，锁文件未删除。仅证明进程中断及实际同步调用，不冒称实验测过断电。
+- test-storage.sh最新完整通过，Swift6严格构建、原生ARM64/SDK27 Release与ad-hoc strict签名、17Python/生成协议/工程/结构检查通过。初始Swiftgetter错误、C探针OFD/系统fcntl参数覆盖不足、漏捕获同步与修复全部原件保留；不删除断言或把PRAGMA成功当耐久结果。SQLite官方WAL/fullfsync文档和本机SDK header核对，SDK内部95只由test转发SQLite已发的调用，生产代码不增加私有API。
+- [storage.json](../acceptance/pre-alpha.4/development/r41/storage.json)记录命令、runtime/sourceID、原日志/断点残留与散列。新CI加入实际SQLite/故障测试。627c978的CI37918801398查时Rust/dependencies/native_macos成功、frontend生产34项中33通过，extended plot在log_log最后一次未出现.plot-view，原件保存待定向复现；iOS仍进行。不能把部分成功写最终全平台绿色。
+- 下一任务R4.1.02（权威source/revisions/操作唯一键/幂等/回执），其余86任务与所有最终candidate gates保持未完成，运行版本仍.3。

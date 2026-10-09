@@ -29,6 +29,8 @@ jobs:
           node-version: 26.11.1
       - name: 自有媒体、回环 HTTP 与实际 I/O 中断
         run: bash macos/Scripts/test-fixtures.sh > target/macos-ci-evidence/fixtures.log 2>&1
+      - name: SQLite 实际同步、根锁和初始化中断
+        run: bash macos/Scripts/test-storage.sh > target/macos-ci-evidence/storage.log 2>&1
       - name: 校验开发包签名和实际 ABI 符号
         run: |
           codesign --verify --deep --strict 'target/macos-native/Build/Products/Release/OpenMath Preview.app'

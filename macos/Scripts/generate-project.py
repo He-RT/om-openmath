@@ -43,7 +43,7 @@ settings = {
     'GENERATE_INFOPLIST_FILE': 'NO', 'INFOPLIST_FILE': 'OpenMathNative/Info.plist',
     'SWIFT_INCLUDE_PATHS': '$(inherited) $(PROJECT_DIR)/Headers',
     'LIBRARY_SEARCH_PATHS': '$(inherited) $(PROJECT_DIR)/../target/release',
-    'OTHER_LDFLAGS': '$(inherited) -lom_apple_ffi', 'ENABLE_TESTABILITY': 'YES',
+    'OTHER_LDFLAGS': '$(inherited) -lom_apple_ffi -lsqlite3', 'ENABLE_TESTABILITY': 'YES',
 }
 config_ids = []
 for name in ['Debug', 'Release']:

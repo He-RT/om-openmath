@@ -36,8 +36,8 @@
 | [x] [R4.1.03](PRE_ALPHA_4.md#task-r4.1.03) | 不可变Blob和资源引用发布 | completed | 分块实际字节/同库refs/临时pin/恢复读取/六SIGKILL点 | 26078d0 |
 | [x] [R4.1.04](PRE_ALPHA_4.md#task-r4.1.04) | 文档操作与非执行失效计划 | completed | 真实parser/owners清理/无cascade / 批量操作 / title/Text epoch / 设置同库 | c72ce17 |
 | [x] [R4.1.05](PRE_ALPHA_4.md#task-r4.1.05) | 冻结Preview与新格身份分配 | completed | 10preview+3ref / 原计划→SQLite→原authority实际回执 / 期限/scope完整性 | 22fc708 |
-| [x] [R4.1.06](PRE_ALPHA_4.md#task-r4.1.06) | DocCommitPort、编辑屏障与未知提交 | completed | [实际提交](../acceptance/pre-alpha.4/development/r41/commit.json) / NSTextView+SQLite / 63Rust / Release | 下次补记 |
-| [ ] [R4.1.07](PRE_ALPHA_4.md#task-r4.1.07) | 统一源码撤销和后续编辑冲突 | planned | — | — |
+| [x] [R4.1.06](PRE_ALPHA_4.md#task-r4.1.06) | DocCommitPort、编辑屏障与未知提交 | completed | [实际提交](../acceptance/pre-alpha.4/development/r41/commit.json) / NSTextView+SQLite / 63Rust / Release | 21b01e7 |
+| [ ] [R4.1.07](PRE_ALPHA_4.md#task-r4.1.07) | 统一源码撤销和后续编辑冲突 | in_progress | [逆向合并](../acceptance/pre-alpha.4/development/r41/undo-source.json) / 12纯Rust＋4225组合；耐久与原生分组待接 | — |
 | [ ] [R4.1.08](PRE_ALPHA_4.md#task-r4.1.08) | 完整可写计算状态与无损codec | planned | — | — |
 | [ ] [R4.1.09](PRE_ALPHA_4.md#task-r4.1.09) | 主KernelWorker、候选接纳和直接取消 | planned | — | — |
 | [ ] [R4.1.10](PRE_ALPHA_4.md#task-r4.1.10) | 不可变结果库和只读检查通道 | planned | — | — |
@@ -284,3 +284,11 @@ Done依据与覆盖case/proof:
 - 63 Rust host/ABI测试、相关全target Clippy/fmt、Swift实际ABI/DTO/reducer/session和提交fixture、SQLite六崩溃/ENOSPC/fullsync失联、Blob六发布中断、原source与preview回归、17Python、纯WASM/deny通过；SDK27 ARM64 Release链接/strict ad-hoc签名和全部12符号实际回读通过。本机未启动iOS模拟器，也未接真实模型/签名公证或宣称最终gate已过。
 - [commit.json](../acceptance/pre-alpha.4/development/r41/commit.json)索引实际fixture DB/回执计数、源码及原日志hash。上一文档提交9cae3bc的CI37964563531全部五jobs成功，仅作该SHA证据；本批新提交的CI与最终candidate仍须独立验证。原有数学和公开`.1/.2/.3`均保留，运行版本仍`.3`，32最终门禁not_run。
 - 接下来R4.1.07统一逆事务/UndoManager/近期200历史与后续编辑冲突；再R4.1.08无损完整计算checkpoint。剩余81项继续完整计划，未缩减原生UI、Agent、模型媒体、现场和发行范围。
+
+## R4开发记录 D017 — 逆向source合并基础（R4.1.07尚未完成）
+
+- 已实现纯Rust `undo::merge_inverse`，不恢复整本旧快照。校验原transaction/current snapshot hashes与文档/revision；原操作真正修改的内容和原cell revision须仍吻合，后来的相关修改及改后又改回相同字节拒绝。标题只在原操作改过且当前仍一致时恢复；未变邻格/后来的新增和删除保持当前内容。
+- 插入/删除/移动逆向通过O(n log n)稳定顺序锚点区分每个原变化间隙。各变化间隙必须匹配原after次序；间隙内后来插入/移动及身份重用为conflict，未改间隙的后来新格和编辑保留，未被原source写入的内容仍用当前值。原最小连续区域法被有效反例证明会误拒绝两个独立变更之间的新格，已按分段合并修复。不部分应用，不反转revision或执行CAS，不产生durable receipt。
+- 初始整本before恢复在6个有效用例均失败（确实丢掉后来源码/标题/新格或错误接受冲突），原件保留；12项真实source-level案例和相关全target Clippy/fmt通过，其中4个不同ID的65种顺序/成员集合两两组合4225项逆向均与原before全部字段一致，包含Unicode、ABA、插入/删除/移位、非法记录和错误文档。证据[undo-source.json](../acceptance/pre-alpha.4/development/r41/undo-source.json)。
+- R4.1.07仍unchecked/in_progress：真实SQLite原transaction读取与逆向提交、原ID核对、UndoManager分组/echo、1..32 group整体操作、200完整事务保留/pin/tombstone及重启/原生/权限验收尚未接入。此纯函数不注册为Pi工具或执行writer，不把部分通过称统一撤销完成。
+- R4.1.06的21b01e7已推送；同SHA CI37968923767的native_macos与dependencies实际success，其他jobs当时仍运行，不填全部CI或最终gate。继续完整81项剩余范围，无本机iOS模拟器，运行版本仍`.3`。

@@ -9,5 +9,7 @@ mod hashes;
 /// Frozen source/patch previews; not a tool registration or durable write.
 pub mod preview;
 mod source;
+/// Checked inverse-source merge; durable undo/permissions remain separate host responsibilities.
+pub mod undo;
 pub use hashes::{request_hash, snapshot_hash};
 pub use source::{SourceDocument, validate_commit, validate_snapshot};

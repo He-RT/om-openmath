@@ -442,3 +442,10 @@ L2使用精确标称GM分数、50位FindRoot/1000迭代和真实残差，报告�
 - DraftStore以UTF8身份管理MainActor草稿和原序列。实际NSTextView marked-text生命周期同步报告，即使文本字节未变也不能绕过合成保护；fence只冻结目标编辑代次/序列/基线和短期限。Swift短锁检查新输入/停止，再调用Rust短owner屏障；source owner繁忙时try_lock拒绝，绝不持有编辑锁等待解析、SQL或同步。物理COMMIT完成后确认才能推进权威revision，较新输入和marked overlay不被覆盖。
 - admission或COMMIT确认丢失均保留原ID，`unresolvedOperation/reconcile`读取实际健康存储；仅live port有“source IO从未开始”的明确事实时才可核对admission后结束该原操作。重启核对由R4.1.12完成，不凭内存阶段推测上个进程效果。COMMIT后stop只停止后续，close先结算实际在途IO，再消费host/storage。已终止操作释放完整source计划，保留有界轻量事实（4096）；临时scope改变释放不可用ref，不重置签发计数。
 - 本批不注册Pi文档写入工具、不开放完整笔记本工作台或文件保存，不把内部端口/fixture通过算成最终候选gate。实际回归、失败原件和task Done证据见任务进度及R4.1.06索引。
+
+### R4-D012：按原变化间隙校验逆向source（2026-10-10，R4.1.07进行中）
+
+- 新增纯Rust `undo::merge_inverse(original,current)`：先验证已保存计划/当前快照的hash、文档和revision，返回待提交的源码文件，不产生新revision、权限或耐久回执。当前实际写入仍须经过DocCommitPort；尚未注册UndoManager或Agent undo handler。
+- 源码实际被原操作修改/插入的单元格须内容、kind/dialect及原cell revision仍匹配；后来改后又改回相同字节也拒绝。原操作没有改动的单元格使用当前内容，后来删除不复活；标题只有原修改项仍匹配才反转，不恢复整本旧快照。
+- 顺序以不同UTF8 cell IDs的O(n log n)稳定锚点划分独立变化间隙；先一次检查全部当前间隙，再从后向前修改临时结果，期间不发布中间态。后来插入原变化间隙/相关移位/身份重用返回冲突，未改间隙及之外的新内容保留。初始连续区域算法被实际反例证明会误拒绝两个独立改动之间的新格，已替换；不是放宽内容或原计数校验。
+- 当前12项source级测试含4225组合性质校验通过，R4.1.07仍未完成。1..32事务组、实际原transaction读取/新inverse commit/重复回执、UndoManager group/echo、跨重启200完整事务与pin/tombstone另按原任务实现，不把纯函数或单位测试当真实撤销已交付。

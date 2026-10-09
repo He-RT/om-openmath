@@ -1,0 +1,54 @@
+{
+  "task": "R4.1.07",
+  "status": "in_progress",
+  "development_only": true,
+  "working_tree_base": "21b01e703fc59d530f4ec02aeba257770c143b07",
+  "scope": "Pure checked inverse-source merge only. No durable undo, NSUndoManager or agent handler is registered.",
+  "cases_passed": 12,
+  "preserves_later_unrelated_source": true,
+  "restores_entire_old_snapshot": false,
+  "related_edit_revision_ABA_rejected": true,
+  "structural_policy": "O(n log n) stable order anchors define disjoint changed gaps; unchanged gaps preserve later edits and new cells. All changed gaps are validated before applying any inverse.",
+  "remaining": [
+    "Read original durable transactions from healthy SQLite and retained transaction refs",
+    "New inverse commit and original-ID duplicate recovery through DocCommitPort",
+    "Native UndoManager grouping/echo protection and 1..32 transaction groups",
+    "200 complete transactions, pins and tombstones across restart",
+    "Actual SQLite/restart/UI/agent permission validation"
+  ],
+  "logs_and_code": [
+    {
+      "path": "crates/om-host-service/src/document/undo.rs",
+      "bytes": 7795,
+      "sha256": "4f617b1ae4d20de296e9a00b147ddf62d7067b97a950b22dcb45d46c15b9b865"
+    },
+    {
+      "path": "crates/om-host-service/tests/undo_source.rs",
+      "bytes": 9951,
+      "sha256": "a58e2507bf15db01522010255f54ac988a1638e7b0778bdc1c62c269444d6cd6"
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r41/undo-source-before-fix.log",
+      "bytes": 3478,
+      "sha256": "ea9daea9e304f5b0e9584c46a68435a2bcaf07942f3d5446c5c63ff9235e5dfc"
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r41/undo-disjoint-before-fix.log",
+      "bytes": 1870,
+      "sha256": "14d247a6e9d68cd3a12f4adaa476e1243a849e57080ac59a643ec9fcc8b1ff38"
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r41/undo-source-complete-core.log",
+      "bytes": 1375,
+      "sha256": "69bdd3810bbb7ed4a68f50916ae68e17025742c33d0e1ad9d894d18ea365bdfb"
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r41/undo-source-complete-clippy.log",
+      "bytes": 176,
+      "sha256": "b6d7698a28d5e150612c079a209cdf872a6fc323782f34f08a5a839a6c620ba4"
+    }
+  ],
+  "task_done": false,
+  "final_candidate_gate": false,
+  "exhaustive_order_membership_pairs": 4225
+}

@@ -10,7 +10,7 @@
 | 在计算环境查询函数、选项和能力 | [帮助与能力查询](design/function-queries.md) |
 | 理解现代语法与统一接口设计 | [现代语言设计](design/modern-language.md) |
 | 查看下一版科研功能与Agent预留 | [下一版计划](plan/NEXT_RELEASE.md) |
-| 执行 `.4` 原生 Mac、Agent 与完整发行，查看下一任务 | [完整实施计划（98任务）](plan/PRE_ALPHA_4.md)、[任务进度](plan/PRE_ALPHA_4_PROGRESS.md)、[验收入口](acceptance/pre-alpha.4/README.md)、[32项机器账本](acceptance/pre-alpha.4/gates.toml) |
+| 执行 `.4` 原生 Mac、Agent 与完整发行，查看需求覆盖及下一任务 | [完整实施计划（98任务）](plan/PRE_ALPHA_4.md)、[需求覆盖总表](plan/PRE_ALPHA_4.md#15-既有设计到实施任务的覆盖总表)、[任务进度](plan/PRE_ALPHA_4_PROGRESS.md)、[验收入口](acceptance/pre-alpha.4/README.md)、[32项机器账本](acceptance/pre-alpha.4/gates.toml) |
 | 设计 Mac 右侧助手与可操作笔记本的 Pi Agent | [Notebook Agent 草案](design/notebook-agent.md) |
 | 将 Mac UI 完全原生化并与 Agent 整合 | [原生 Mac 客户端方案](design/macos-native-ui.md) |
 | 实施原生 Mac 宿主并统一 Swift Rust Pi 状态 | [宿主与状态契约](design/macos-host-state.md)、[状态 Schema](design/macos-host-state.schema.json) |

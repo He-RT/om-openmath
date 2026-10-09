@@ -4,9 +4,9 @@
 
 `.3` 已按原完整范围发布。发行源码 `0889d34e4fce9926054025ca71ea328f6cc65b39` 的 [CI](https://github.com/He-RT/om-openmath/actions/runs/37654889786) 与 [四平台发行门禁](https://github.com/He-RT/om-openmath/actions/runs/37655070652) 全部通过，九类公开附件和清单已逐文件下载核验。保留 `.1/.2`，继续 `dev`，未合并 `main`。详见[实际发行验收](../acceptance/r3-release/README.md)。
 
-## 下一版目标：0.1.0-pre-alpha.4（设计，尚未实现）
+## 下一版目标：0.1.0-pre-alpha.4（正在实施，尚未发行）
 
-2026-10-09，全部既定设计已按旧 [PLAN.md](PLAN.md) 的规格＋实施格式合并为 [`.4` 完整实施计划](PRE_ALPHA_4.md)：13 篇专题正文、R4.0–R4.7 共 98 个任务，每项包含 Files / Interfaces / Depends / Steps / Tests / Done / Gates，终点为原生 Mac 签名公证安装包公开发布并完成下载回读。[独立进度账本](PRE_ALPHA_4_PROGRESS.md)用于接续执行，当前全部任务仍为 planned；以下专题条目保留作设计来源，不是另一套实施顺序。
+全部既定设计已按旧 [PLAN.md](PLAN.md) 的规格＋实施格式合并为 [`.4` 完整实施计划](PRE_ALPHA_4.md)：13 篇专题正文、R4.0–R4.7 共 98 个任务，每项包含 Files / Interfaces / Depends / Steps / Tests / Done / Gates，终点为原生 Mac 签名公证安装包公开发布并完成下载回读。主计划第1.4–1.5节列出最终用户体验与需求到任务/门禁的覆盖总表；[独立进度账本](PRE_ALPHA_4_PROGRESS.md)记录已有完成项、实际证据及下一任务。以下带日期的专题条目保留设计时的历史状态，不是当前实现账本或另一套实施顺序。
 
 2026-10-09，用户要求设计“版本与验收门禁”，目标版号及完整范围已收敛为[`.4`统一规格](PRE_ALPHA_4.md)。[32个机器门禁](../acceptance/pre-alpha.4/gates.toml)覆盖133个稳定验收条目，31项公开前必过、1项公开后下载回读；[报告Schema](../acceptance/pre-alpha.4/report.schema.json)与[证据入口](../acceptance/pre-alpha.4/README.md)区分设计/真实代码/native/最终包。当前全部运行gate为not_run，未分配public candidate SHA，不能因Schema/HTML绿色宣称可发布。
 

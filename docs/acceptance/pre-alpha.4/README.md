@@ -4,7 +4,7 @@
 
 完整实施入口已合并为 [PRE_ALPHA_4.md](../../plan/PRE_ALPHA_4.md)，包含全部专题行为规格及98项任务；[任务进度](../../plan/PRE_ALPHA_4_PROGRESS.md)只记执行结果。主计划第16.12节逐项列出全部 gate/case 的贡献任务；[计划整合检查](planning-review.json)只证明结构、依赖和覆盖，不改变运行时门禁。
 
-2026-10-09。本目录仅建立 **planned设计账本**。目标版本`0.1.0-pre-alpha.4`，公开candidate SHA尚未分配；当前程序和公开资产仍`.3`。32个运行/发行gate全部`not_run`，`ready_to_publish=false`、`released_verified=false`；本次结构/文档检查不能改变这两个状态。
+本目录维护`.4`的门禁定义及证据索引；实施中的开发验证见[任务进度](../../plan/PRE_ALPHA_4_PROGRESS.md)与`development/`，最终候选验证另行记录。目标版本`0.1.0-pre-alpha.4`，公开candidate SHA尚未分配；当前运行版本和公开资产仍`.3`。32个最终候选运行/发行gate全部`not_run`，`ready_to_publish=false`、`released_verified=false`；结构/文档检查和早期任务通过不能改变这两个状态。
 
 ## 如何使用账本
 
@@ -76,6 +76,6 @@ if postpublish pass: released_verified = true
 else: published_unverified, preserve failures and stop claiming completed release
 ```
 
-JSON Schema只是上述数据形状。真实aggregator、CI新lane、`.4`运行版本、所有案例与签名/live credentials均待实施；当前只通过设计检查。本目录绝不导入`.3`旧绿色结果填新gate。
+JSON Schema只是上述数据形状。真实发行aggregator、`.4`版本冻结、最终签名包与同候选live门禁仍待完成；开发中的实际原生服务、CI和测试状态以任务进度为准。本目录绝不导入`.3`旧绿色结果或早期开发结果填新候选gate。
 
 本轮[实际设计检查](design-review.json)：32个稳定gate的前置DAG/133条目、SR12/ER12/MM15/IN12来源覆盖、31前置+1后置、九准确资产名、11个报告Schema正例与27反例均核对。已有6份设计Schema保持有效；设计checker找出的ER11/12性能gate原文来源遗漏已补齐。这些只是目录/形状/链接检查，`runtime_gate_checks_executed=0`、公开就绪为false。

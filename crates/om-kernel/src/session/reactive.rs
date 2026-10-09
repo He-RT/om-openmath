@@ -2,7 +2,7 @@
 use super::Session;
 use crate::{Cell, protocol::*};
 use om_core::Symbol;
-use std::{collections::BTreeSet, sync::atomic::Ordering};
+use std::collections::BTreeSet;
 
 impl Session {
     pub(super) fn release_owned(&mut self, id: &str) -> BTreeSet<Symbol> {
@@ -197,7 +197,7 @@ impl Session {
         };
         self.notebook.cells[index].source = source;
         self.notebook.cells[index].dialect = dialect;
-        self.interrupt.store(false, Ordering::Relaxed);
+        self.reset_interrupt();
         let run = self.run_cell(index);
         let allow_run = self.notebook.cells[index].status == CellStatus::Done;
         let mut events = vec![];
@@ -221,7 +221,7 @@ impl Session {
     }
 
     pub(super) fn run_all(&mut self) -> (Response, Vec<Event>) {
-        self.interrupt.store(false, Ordering::Relaxed);
+        self.reset_interrupt();
         for i in 0..self.notebook.cells.len() {
             self.analyze_cell(i);
         }

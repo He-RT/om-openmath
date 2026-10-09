@@ -2,7 +2,7 @@
 use super::Session;
 use crate::{notebook::StatementRecord, protocol::*};
 use om_core::Interrupt;
-use std::{collections::BTreeMap, sync::atomic::Ordering};
+use std::collections::BTreeMap;
 impl Session {
     fn explore_record(&self, q: &ExploreQuery) -> Option<&StatementRecord> {
         self.notebook
@@ -16,7 +16,7 @@ impl Session {
             })
     }
     fn explore_budget(&self) -> Interrupt {
-        self.interrupt.store(false, Ordering::Relaxed);
+        self.reset_interrupt();
         let now = self.clock.as_ref().map(|c| c.now_ms());
         Interrupt {
             flag: self.interrupt.clone(),

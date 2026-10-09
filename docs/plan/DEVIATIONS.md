@@ -387,3 +387,8 @@ L2使用精确标称GM分数、50位FindRoot/1000迭代和真实残差，报告�
 - native-host-wire.schema.json补齐低层init/envelope/IOAck/事件框架，状态和EditorKey等字段继续复用原机器定义。Rust/Swift字段由同一生成器产生；常量kind用单值enum防止untagged union误分派。required+nullable采用专用包装，不能把缺字段当null。结构通过不授予scope；实际runtime/document/grant和IO事实仍由owner接纳。
 - create采用返回om_host_create_result(handle,error)，明确失败原因的独立Rust buffer，避免NULL无诊断；静态版本字符串保持整个进程存活且不释放。Header由native-host-abi.json生成，iOS原ABI不改，生命周期实现仍在R4.0.06，未实现符号不注册。
 - 首批native wire只声明读取/Editor/隔离试算/IOAck/操作核对；文档事务/运行等body在对应实现批次扩展并冻结参数，不靠一个不校验的任意payload提前开放写入。所有原12工具仍是完整版本目标，不能据此缩减范围。
+
+### R4-D003：有界目录与独立token（2026-10-09）
+
+- 低层get_function_catalog采用offset默认0/limit默认32（最大32）分页，返回total/next_offset；逐页覆盖真实全部callback，不裁掉条目来满足帧上限。目录构造/编码在KernelWorker，不阻塞文档控制。get_state只含活动+最近32终止摘要，历史详情以原operation ID查询，显式operation_history_complete=false。
+- 新原生host-service仅新增直接sha2=0.10.9（Cargo.lock已存在、MIT/Apache-2.0），用于核对EditorKey真实源码SHA256；不引入核心/WASM依赖或数学运行时。Kernel外部每操作取消token保留，不由下一次内部reset清零；默认Session复位行为未改。

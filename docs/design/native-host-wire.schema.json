@@ -393,12 +393,23 @@
       "properties": {
         "kind": {
           "const": "get_function_catalog"
+        },
+        "offset": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 4096
+        },
+        "limit": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 32
         }
       },
       "required": [
         "kind"
       ],
-      "additionalProperties": false
+      "additionalProperties": false,
+      "description": "真实回调目录分页；offset默认0、limit默认32，next_offset为null表示结束。"
     },
     "AnalyzeEditor": {
       "type": "object",

@@ -55,8 +55,7 @@ impl Session {
         self.eval = om_eval::Evaluator::new();
         self.owners.clear();
         self.apply_settings();
-        self.interrupt
-            .store(false, std::sync::atomic::Ordering::Relaxed);
+        self.reset_interrupt();
         for c in &mut self.notebook.cells {
             c.records.clear();
             c.output = None;

@@ -7,8 +7,11 @@ license.workspace = true
 description = "Safe authoritative document coordinator and native host protocol"
 
 [dependencies]
+om-kernel = { workspace = true, features = ["external-host"] }
+om-num.workspace = true
 serde.workspace = true
 serde_json.workspace = true
+sha2 = "=0.10.9"
 
 [lints]
 workspace = true

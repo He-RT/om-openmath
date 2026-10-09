@@ -6,6 +6,12 @@ use super::*;
 pub struct ReadFunctionCatalog {
     /// Contract field `kind`.
     pub kind: ReadFunctionCatalogKind,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    /// Contract field `offset`.
+    pub offset: Option<u32>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    /// Contract field `limit`.
+    pub limit: Option<u32>,
 }
 impl std::fmt::Debug for ReadFunctionCatalog {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {

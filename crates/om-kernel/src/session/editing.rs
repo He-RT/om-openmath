@@ -68,8 +68,7 @@ impl Session {
         changed.extend(self.release_owned(&id));
         self.notebook.cells.remove(i);
         if self.config.general.reactive && self.config.general.auto_run_dependents {
-            self.interrupt
-                .store(false, std::sync::atomic::Ordering::Relaxed);
+            self.reset_interrupt();
         }
         let mut events = vec![];
         self.cascade(changed, None, true, &mut events);

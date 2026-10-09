@@ -1,0 +1,45 @@
+{
+  "task": "R4.0.05",
+  "development_only": true,
+  "runtime_version": "0.1.0-pre-alpha.3",
+  "scheduler_tests": 10,
+  "contract_tests": 9,
+  "prior_ci": {
+    "sha": "21c92540189a256578b8a6790a65357d9ab6c12b",
+    "run": 37883006504,
+    "conclusion": "success"
+  },
+  "logs": [
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r40/scheduler-tests-final3.log",
+      "sha256": "ae15d9af80840bda9d9732cfe2dd8d605c86161309b25e9b6aa6d51ad4bdf2df"
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r40/scheduler-clippy-final3.log",
+      "sha256": "2f3fea8f2e38ca6f7318913ba87082ee5e09fcf1e34f0aab37eda1446c4c4f72"
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r40/scheduler-deny.log",
+      "sha256": "72da0f2105d8c98d2a7b601888f82e9ed8e08a25b1b26486bbcbbd669a26a514"
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r40/kernel-operation-cancel.log",
+      "sha256": "33a45dba5cdbbcdad158b74a693981cc38727fc3677e368ead5c0325acf0c93e"
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r40/kernel-cancel-compatibility-final.log",
+      "sha256": "e5511139da72fa95c24365d4bffaf302eece137d6360af90b2b14d2c5d548af6"
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r40/kernel-cancel-wasm.log",
+      "sha256": "471b114470766e870f13cc44d15c23554f01b8a32879950ab867eea10eaeb6de"
+    }
+  ],
+  "remaining": [
+    "C ABI lifecycle",
+    "Swift event pump",
+    "document storage/transactions/checkpoint",
+    "complete UI/Agent",
+    "final candidate gates"
+  ]
+}

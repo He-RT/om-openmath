@@ -11,7 +11,7 @@
     },
     {
       "path": "docs/design/native-host-wire.schema.json",
-      "sha256": "3e9254564dafc10aad8197f06bb8b466bf816199c441a8c0aa1d85f439352ae0"
+      "sha256": "8f2859bb88407d04414d6d7a28bf096e659027c5d454de31c1bcb4c8c5e66451"
     }
   ],
   "generated_dto_count": 91

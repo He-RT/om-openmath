@@ -4,9 +4,9 @@
 
 2026-10-09。目标`0.1.0-pre-alpha.4`，当前运行/公开版本`.3`；开发`dev`，不合main、不改旧标签、本机不启动iOS模拟器。本文只记录结果，规格及完成标准唯一见主计划；计划编写本身不计实施完成。
 
-**当前状态：** 7任务完成（R4.0.01/02/03/04/08/09/11）；其余91任务尚未完成；32最终运行/发行gate全部not_run；candidate未分配，ready_to_publish=false，released_verified=false。设计/HTML/Schema通过不填运行时pass。
+**当前状态：** 8任务完成（R4.0.01/02/03/04/05/08/09/11）；其余90任务尚未完成；32最终运行/发行gate全部not_run；candidate未分配，ready_to_publish=false，released_verified=false。设计/HTML/Schema通过不填运行时pass。
 
-**下一任务：** R4.0.05安全宿主所有者/调度，随后R4.0.06真实C ABI生命周期与R4.0.07事件泵/求值；R4.0.10故障fixture可按接口前置开始。R4.0.08/09同提交全部CI已通过。按DAG推进，R4.5.07必须在R4.5.05冻结前完成。
+**下一任务：** R4.0.06真实C ABI生命周期，随后R4.0.07事件泵/求值；R4.0.10故障fixture可按接口前置开始。R4.0.08/09同提交全部CI已通过。按DAG推进，R4.5.07必须在R4.5.05冻结前完成。
 
 ## 已知外部前置
 
@@ -23,12 +23,12 @@
 | [x] [R4.0.01](PRE_ALPHA_4.md#task-r4.0.01) | 建立基线、任务账本和恢复入口 | completed | [基线](../acceptance/pre-alpha.4/baseline/index.json) | e876c16 |
 | [x] [R4.0.02](PRE_ALPHA_4.md#task-r4.0.02) | 依赖与许可闭包核对 | completed | dependencies.json / clean npm ci + audit | 75b4e5c |
 | [x] [R4.0.03](PRE_ALPHA_4.md#task-r4.0.03) | 原生Mac工程和数学链接骨架 | completed | Release build / native AX /真实C ABI读回 | 75b4e5c |
-| [x] [R4.0.04](PRE_ALPHA_4.md#task-r4.0.04) | 冻结框架无关DTO与新MacABI契约 | completed | 91 DTO / Rust+Swift / CI37880165376 | 下次补记 |
-| [ ] [R4.0.05](PRE_ALPHA_4.md#task-r4.0.05) | 安全host-service所有者与调度骨架 | planned | — | — |
+| [x] [R4.0.04](PRE_ALPHA_4.md#task-r4.0.04) | 冻结框架无关DTO与新MacABI契约 | completed | 91 DTO / Rust+Swift / CI37880165376 | 21c9254 |
+| [x] [R4.0.05](PRE_ALPHA_4.md#task-r4.0.05) | 安全host-service所有者与调度骨架 | completed | 10调度+9契约 / 真实CAS / 独立取消 / Clippy | 下次补记 |
 | [ ] [R4.0.06](PRE_ALPHA_4.md#task-r4.0.06) | 新CABI句柄、缓冲与直接取消 | planned | — | — |
 | [ ] [R4.0.07](PRE_ALPHA_4.md#task-r4.0.07) | Swift客户端、事件泵和权威投影 | planned | — | — |
-| [x] [R4.0.08](PRE_ALPHA_4.md#task-r4.0.08) | 共享Modern自动续行与根因诊断 | completed | 91 DTO / Rust+Swift / CI37880165376 | 下次补记 |
-| [x] [R4.0.09](PRE_ALPHA_4.md#task-r4.0.09) | 原语言和数学基线持续兼容 | completed | 91 DTO / Rust+Swift / CI37880165376 | 下次补记 |
+| [x] [R4.0.08](PRE_ALPHA_4.md#task-r4.0.08) | 共享Modern自动续行与根因诊断 | completed | 91 DTO / Rust+Swift / CI37880165376 | 21c9254 |
+| [x] [R4.0.09](PRE_ALPHA_4.md#task-r4.0.09) | 原语言和数学基线持续兼容 | completed | 91 DTO / Rust+Swift / CI37880165376 | 21c9254 |
 | [ ] [R4.0.10](PRE_ALPHA_4.md#task-r4.0.10) | fixture与真实故障注入基础设施 | planned | — | — |
 | [x] [R4.0.11](PRE_ALPHA_4.md#task-r4.0.11) | 发行前置、签名和现场环境预检 | completed | [环境](../acceptance/pre-alpha.4/baseline/environment.json) / verify-env.sh | e876c16 |
 | [ ] [R4.1.01](PRE_ALPHA_4.md#task-r4.1.01) | SQLite单写者与新通道初始化 | planned | — | — |
@@ -180,3 +180,11 @@ Done依据与覆盖case/proof:
 - R4.0.08/09完成：525ce5629908a010ece9ec42283d57f5c437664d的CI37880165376全部job成功；新增移动续行用例iPhone/iPad实跑通过，各30单元+5UI。原53整次最大phone306.521ms/pad337.052ms，unsupported_latex=[]；纯WASM/生产53独立数学回读/前端/依赖全部成功。原CLI本地完整53/200ms第二attempt通过，首次波动失败和A/B保持。没有改原数学期望/时限或启动本机模拟器。
 - [开发摘要](../acceptance/pre-alpha.4/development/r40/summary.json)保存实际source/CI/附件散列与范围。新DTO提交尚不等于该旧SHA的全CI证据；本版完整native/live/签名/最终candidate仍未完成，32最终门禁不填旧成功。
 - 下一步直接安全DocumentCoordinator控制通道与独立Kernel/Editor/Aux worker、每操作取消及实际服务事件；存储/事务/checkpoint/完整UI/Agent仍按完整计划继续，不收窄发布范围。
+
+## R4开发记录 D007 — 安全调度与独立操作取消
+
+- R4.0.05完成：安全host-service实际创建DocumentCoordinator短控制通道与Kernel/Editor/Aux独立有界worker；Preview与隔离scratch都由真实Session处理。状态读取不排在长CAS后，直接取消为每操作独立token；外部token不会被Session内部重置，旧默认Session语义保持。取消排队任务不会执行，关闭先停admission并signal，后台finish才join，后续工作不清零旧取消。
+- 10调度+9契约测试通过，实际let a=5返回6且下一scratch不继承a；长map运行期间状态读取/独立Preview可用、过载拒绝、排队取消/终止状态/背压resync/保留结果/旧runtime/source拒绝均验证。catalog真实全量逐页回读与已注册callback一致；状态只返回活动与最近32终止摘要，按完成顺序回收大详情，旧操作ID仍可核对。数学错误另有run_outcome=failed，不把传输完成当数学成功。
+- new直接构造也重新校验init边界；catalog在独立worker分页，不把大序列化塞控制步骤。当前没有文档持久化/写入/definition snapshot接纳，相关入口显式不开放；native_renderers_ready=false与内核Desktop数学能力区分。框架禁unsafe与iOS原ABI保持。
+- host-service Clippy通过；kernel reactive/editor/artifacts/explore/operation_cancel定向兼容与纯WASM构建已通过。初始字段名/类型编译错误原件保留，最终以scheduler-tests-final3.log、scheduler-clippy-final3.log为准。提交21c9254的CI37883006504实际全部success；新scheduler尚待自己SHA的CI。
+- 原始命令/日志保存在target/acceptance/pre-alpha.4/development/r40/，[scheduler.json](../acceptance/pre-alpha.4/development/r40/scheduler.json)登记散列与范围。这不是最终candidate gate，完整native UI/存储/Agent/签名仍待后续。下一步R4.0.06真实CABI句柄、owned bytes与关闭竞争。

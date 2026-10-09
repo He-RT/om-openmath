@@ -2,10 +2,9 @@
 use super::Session;
 use crate::{plot::PlotError, protocol::*};
 use om_core::Interrupt;
-use std::sync::atomic::Ordering;
 impl Session {
     pub(super) fn sample_plot(&mut self, request: PlotRequest) -> Response {
-        self.interrupt.store(false, Ordering::Relaxed);
+        self.reset_interrupt();
         let start = self.clock.as_ref().map(|clock| clock.now_ms());
         let ctx = Interrupt {
             flag: self.interrupt.clone(),

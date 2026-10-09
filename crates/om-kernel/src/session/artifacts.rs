@@ -2,10 +2,10 @@
 use super::Session;
 use crate::protocol::*;
 use om_core::Interrupt;
-use std::{cell::Cell, sync::atomic::Ordering};
+use std::cell::Cell;
 impl Session {
     fn artifact_budget(&self) -> Interrupt {
-        self.interrupt.store(false, Ordering::Relaxed);
+        self.reset_interrupt();
         let now = self.clock.as_ref().map(|clock| clock.now_ms());
         Interrupt {
             flag: self.interrupt.clone(),

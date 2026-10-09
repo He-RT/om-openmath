@@ -2,17 +2,25 @@
 import Foundation
 public struct ReadFunctionCatalog: Codable, Sendable {
   public var kind: ReadFunctionCatalogKind
+  public var offset: UInt32?
+  public var limit: UInt32?
   private enum CodingKeys: String, CodingKey {
     case kind
+    case offset
+    case limit
   }
   public init(from decoder: Decoder) throws {
     let all = try decoder.container(keyedBy: HostCodingKey.self)
-    let allowed: Set<String> = ["kind"]
+    let allowed: Set<String> = ["kind","offset","limit"]
     guard all.allKeys.allSatisfy({ allowed.contains($0.stringValue) }) else { throw DecodingError.dataCorrupted(.init(codingPath: decoder.codingPath, debugDescription: "Unknown native contract field")) }
     let c = try decoder.container(keyedBy: CodingKeys.self)
     self.kind = try c.decode(ReadFunctionCatalogKind.self, forKey: .kind)
+    self.offset = try c.decodeIfPresent(UInt32.self, forKey: .offset)
+    self.limit = try c.decodeIfPresent(UInt32.self, forKey: .limit)
   }
-  public init(kind: ReadFunctionCatalogKind) {
+  public init(kind: ReadFunctionCatalogKind, offset: UInt32?, limit: UInt32?) {
     self.kind = kind
+    self.offset = offset
+    self.limit = limit
   }
 }

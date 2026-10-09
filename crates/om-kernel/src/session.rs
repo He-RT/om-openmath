@@ -32,6 +32,7 @@ pub struct Session {
     /// Current configuration; frontend serialization masks API keys.
     pub config: KernelConfig,
     interrupt: Arc<AtomicBool>,
+    preserve_external_cancel: bool,
     clock: Option<Arc<dyn Clock>>,
     system_language: Language,
     owners: std::collections::BTreeMap<om_core::Symbol, CellId>,
@@ -50,6 +51,7 @@ impl Session {
             notebook: Notebook::default(),
             config,
             interrupt: Arc::new(AtomicBool::new(false)),
+            preserve_external_cancel: false,
             clock,
             system_language: Language::ZhCn,
             owners: Default::default(),
@@ -61,6 +63,25 @@ impl Session {
         };
         session.apply_settings();
         session
+    }
+
+    /// Create one operation's isolated session with its own cancellation token.
+    /// Existing operations cannot have their cancellation cleared by a later job.
+    pub fn with_cancel_token(
+        config: KernelConfig,
+        clock: Option<Arc<dyn Clock>>,
+        token: Arc<AtomicBool>,
+    ) -> Self {
+        let mut session = Self::new(config, clock);
+        session.interrupt = token;
+        session.preserve_external_cancel = true;
+        session
+    }
+
+    pub(super) fn reset_interrupt(&self) {
+        if !self.preserve_external_cancel {
+            self.interrupt.store(false, Ordering::Relaxed);
+        }
     }
 
     pub(super) fn scene_enabled(&self) -> bool {

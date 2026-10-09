@@ -1,0 +1,112 @@
+{
+  "task": "R4.1.08",
+  "status": "in_progress",
+  "task_done": false,
+  "development_only": true,
+  "working_tree_base": "5bf2a20082c827372d70f9e2a052ad355e3876f8",
+  "codec_versions": {
+    "numeric": "OMNU1",
+    "expression_graph": "OMEX1"
+  },
+  "num_core_regression_passed": 162,
+  "codec_cases": {
+    "numeric": 5,
+    "graph": 6,
+    "seeded_finite_machine_bits": 4096,
+    "seeded_malformed_graphs": 512
+  },
+  "machine_signed_zero_preserved": true,
+  "big_binary_components_preserved": true,
+  "expression_pointers_serialized": false,
+  "shared_tree_expanded": false,
+  "graph_intern_before_full_validation": false,
+  "limits": {
+    "numeric_bytes": 4194304,
+    "numeric_precision_bits": 1048576,
+    "graph_bytes": 67108864,
+    "graph_nodes": 200000,
+    "graph_roots": 100000,
+    "graph_depth": 1024,
+    "graph_edges": 1000000,
+    "graph_symbols": 8192,
+    "text_bytes": 4194304
+  },
+  "whole_evaluator_codec_ready": false,
+  "session_checkpoint_ready": false,
+  "kernel_acceptance_registered": false,
+  "logs_and_code": [
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r41/numeric-codec-before.log",
+      "bytes": 815,
+      "sha256": "e1f910625e9e79cf656caea4491de0964cc7d5d3a04561c26f3070c2253d2a90"
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r41/numeric-codec-current.log",
+      "bytes": 1723,
+      "sha256": "1894ad8c835d12fabd3d1de827ee38e90b0265a4ecafbc0a70cfbe711be026c4"
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r41/numeric-sentinel-before.log",
+      "bytes": 1300,
+      "sha256": "066cf386241e6a1c3e71cfab8810fd8a7b163131c1b574000f07db309918b565"
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r41/codec-core-final.log",
+      "bytes": 14452,
+      "sha256": "15141ba05aace50c414a09d403ba8006c0c15f3c20086a31b697fb6a11e2877c"
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r41/codec-clippy-verified.log",
+      "bytes": 159,
+      "sha256": "8bdd322e7c9f83196798092cf4a632981647ee30890721dc91e560b5bb0e14cd"
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r41/codec-stage-regression.log",
+      "bytes": 1410,
+      "sha256": "22472de0b5d41934b9c82b2f9ec43d2d06bb27dc05b0923bda37207b4db27dd6"
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r41/codec-wasm-verified.log",
+      "bytes": 701,
+      "sha256": "701c208eb7c55ae9a53e2b9cf8173772f570de5ff46da871b972e3d1ed9c882f"
+    },
+    {
+      "path": "crates/om-num/src/checkpoint.rs",
+      "bytes": 9791,
+      "sha256": "f3eca2923d9b7f225f12b6b6cba48c7f9098d43597b164b1c033bf107602f19a"
+    },
+    {
+      "path": "crates/om-num/tests/checkpoint.rs",
+      "bytes": 5472,
+      "sha256": "6c661156308e26ff7a6dd045e8a879f3cdb0fa71918fbee60d80b2fdb5a86785"
+    },
+    {
+      "path": "crates/om-core/src/checkpoint/mod.rs",
+      "bytes": 3562,
+      "sha256": "6a74524cde2f9d17644ec4f0083e26454547cd336cf0a12c01f311481bd05052"
+    },
+    {
+      "path": "crates/om-core/src/checkpoint/encode.rs",
+      "bytes": 4765,
+      "sha256": "e2086bed02c66e36d8948d156da6786f0e7d659e5f08a514235324b205eb22a7"
+    },
+    {
+      "path": "crates/om-core/src/checkpoint/decode.rs",
+      "bytes": 4955,
+      "sha256": "fafefbb54718502b33b10e61b73c49379905f46f89530aec84de5468e48b2a12"
+    },
+    {
+      "path": "crates/om-core/tests/checkpoint.rs",
+      "bytes": 5462,
+      "sha256": "f3ceb5efeec41b9cf6ec29ef8e8291b2893ebe4a5035de95656bdc2a7fcffb0a"
+    }
+  ],
+  "final_candidate_gate": false,
+  "remaining": [
+    "Persistent Evaluator definitions/rules/attributes/history/random/settings codec",
+    "Real builtin stable identities/version/build binding",
+    "Whole Session source/settings/owners/results checkpoint with non-executing writable restore",
+    "Original Root/model/interpolation/high precision runtime acceptance coverage",
+    "Durable blob closure and candidate accept/drop integration"
+  ]
+}

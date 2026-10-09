@@ -1,6 +1,8 @@
 //! Exact and arbitrary-precision arithmetic for OpenMath.
 #![forbid(unsafe_code)]
 
+/// Bounded lossless numeric checkpoint atoms, independent of display and decimal formatting.
+pub mod checkpoint;
 /// Computation budgets, cancellation and injectable clocks.
 pub mod ctx;
 /// Exact and approximate scalar and complex numbers.

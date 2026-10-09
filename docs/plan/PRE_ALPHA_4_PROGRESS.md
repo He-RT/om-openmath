@@ -38,7 +38,7 @@
 | [x] [R4.1.05](PRE_ALPHA_4.md#task-r4.1.05) | 冻结Preview与新格身份分配 | completed | 10preview+3ref / 原计划→SQLite→原authority实际回执 / 期限/scope完整性 | 22fc708 |
 | [x] [R4.1.06](PRE_ALPHA_4.md#task-r4.1.06) | DocCommitPort、编辑屏障与未知提交 | completed | [实际提交](../acceptance/pre-alpha.4/development/r41/commit.json) / NSTextView+SQLite / 63Rust / Release | 21b01e7 |
 | [x] [R4.1.07](PRE_ALPHA_4.md#task-r4.1.07) | 统一源码撤销和后续编辑冲突 | completed | [历史/文本/回执](../acceptance/pre-alpha.4/development/r41/history-and-groups.json) / 200+pin / actual UTF/IME / 80Rust / Release | 3853967 |
-| [ ] [R4.1.08](PRE_ALPHA_4.md#task-r4.1.08) | 完整可写计算状态与无损codec | in_progress | [可写候选基础](../acceptance/pre-alpha.4/development/r41/working-stage.json) / 5 state / 191 om-eval；codec待完 | 本批待补 |
+| [ ] [R4.1.08](PRE_ALPHA_4.md#task-r4.1.08) | 完整可写计算状态与无损codec | in_progress | [可写候选](../acceptance/pre-alpha.4/development/r41/working-stage.json)、[无损原子/图](../acceptance/pre-alpha.4/development/r41/codec-atoms-graph.json)；完整state/checkpoint待完 | 5bf2a20；codec本批待补 |
 | [ ] [R4.1.09](PRE_ALPHA_4.md#task-r4.1.09) | 主KernelWorker、候选接纳和直接取消 | planned | — | — |
 | [ ] [R4.1.10](PRE_ALPHA_4.md#task-r4.1.10) | 不可变结果库和只读检查通道 | planned | — | — |
 | [ ] [R4.1.11](PRE_ALPHA_4.md#task-r4.1.11) | NSDocument打开保存与冻结快照 | planned | — | — |
@@ -318,3 +318,12 @@ Done依据与覆盖case/proof:
 - 5 state测试实际验证用户downvalues/Listable、Out、候选a=5与owner a=2隔离、随机流独立且消费后继续、精确大有理数无机器投影、设置分离与不可提升readonly；非空闲depth/lexical边界拒绝。先缺API失败原件保留。om-eval完整191项（含原求解语料）、相关全target Clippy/fmt和纯WASM通过。
 - R4.1.08仍unchecked/in_progress：Expr/Number无损有界codec、整个Session的source/owners/settings/输出与checkpoint registry、Root/model/interpolation/高精度往返、未知版本/节点/深度/容量/取消验证尚未实现。未序列化指针/闭包，不使用readonly restore假冒主文档可写状态，不靠重跑let恢复；本候选未接入主kernel接纳/持久化。
 - [working-stage.json](../acceptance/pre-alpha.4/development/r41/working-stage.json)记录具体源码与日志hash，下一步按R4.1.08全范围实施。18/98完成、80待完、32最终gate仍not_run，运行`.3`；无本机iOS模拟器或旧公开资产变化。
+
+## R4开发记录 D021 — 有界无损数值原子和表达式图（R4.1.08继续）
+
+- OMNU1二进制存canonical整数/约分有理数、机器u64位型、BigFloat原significand/exponent/bit precision及有限scalar complex。机器signed zero/subnormal/极值和高精度signed zero保留；未知版本/长度/trailing/precision/平台exponent及cancel拒绝。新增实际反例暴露raw zero的特殊指数可变成非有限值，已在构造/归一化前拒绝sentinel与偶数mantissa，原失败保留。4096固定seed机器样本逐位往返。
+- OMEX1保存真实immutable共享图，进程内allocation key只在encoder去重，不序列化pointer，不用数学相等合并+0/-0；任意head/顺序/原UTF8字符串/symbol preserved。整个图的bounds/版本/tags/known builtin/backward references/depth/edges/roots/可达性先校验，随后才intern和构造，不执行CAS。100层共享重复保持线性，无2^100展开；孤立/循环/forward/wrong builtin/坏UTF8和512固定seed恶意短图拒绝，32bit引用计数溢出先检查。
+- 数值5/图6 codec用例，num/core完整回归、相关Clippy/fmt、原working-stage及纯WASM通过；限制和具体日志/源码hash见[codec-atoms-graph.json](../acceptance/pre-alpha.4/development/r41/codec-atoms-graph.json)、[编码契约](../design/checkpoint-codec.md)。旧math53/时限不改，核心继续forbid unsafe，没有新第三方依赖或主文档恢复入口。
+- R4.1.08仍unchecked，完整Evaluator/Session/checkpoint codec、稳定callback/build/catalog绑定、owners/输出与原Root/model/interpolation/高精度的主状态往返及耐久候选接纳待完。不把原子/图codec或owned clone当整个会话可恢复，剩余80任务继续原范围；本机不运行iOS模拟器，版本仍`.3`。
+
+- 本批观察前置5bf2a20的CI37986742459已结束：Rust/native_macos/dependencies成功，frontend与iOS失败。前端是1280设置CRUD保存status5s未找到，下载error-context时真实status已显示AI settings saved，根因尚待定位；iOS是explore旋转用例expression.16未出现（slider存在），原1s/数学标准未改。失败日志及前端原artifact保存target/acceptance/pre-alpha.4/development/r41/codec-prior-ci-failed.log与target/ci-evidence/codec-5bf2a20-frontend，不能将这些job或当前新SHA标全绿。继续codec并独立定位展示/时序问题，不开本机模拟器、不删除断言。

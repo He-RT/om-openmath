@@ -7,6 +7,8 @@ pub mod builtins;
 pub mod canon;
 /// Audited executable metadata shared by parsing and hosts.
 pub mod catalog;
+/// Versioned bounded expression graphs for lossless data-only checkpoint restoration.
+pub mod checkpoint;
 /// Portable computation limits and evaluation messages.
 pub mod ctx;
 /// Immutable expression trees and structural operations.

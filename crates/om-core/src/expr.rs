@@ -43,6 +43,10 @@ pub struct Normal {
 }
 
 impl Expr {
+    // Used solely for in-memory encode deduplication. Never emitted or decoded as a pointer.
+    pub(crate) fn allocation_key(&self) -> usize {
+        Arc::as_ptr(&self.0) as usize
+    }
     fn new(kind: ExprKind) -> Self {
         let mut h = FxHasher::default();
         std::mem::discriminant(&kind).hash(&mut h);

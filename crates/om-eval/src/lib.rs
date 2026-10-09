@@ -23,6 +23,8 @@ mod science;
 mod scientific;
 mod solver;
 mod solver_registry;
+/// Owned writable candidates, separate from readonly tools and confirmed kernel state.
+pub mod state;
 mod structure;
 mod structure_registry;
 mod types;

@@ -37,8 +37,8 @@
 | [x] [R4.1.04](PRE_ALPHA_4.md#task-r4.1.04) | 文档操作与非执行失效计划 | completed | 真实parser/owners清理/无cascade / 批量操作 / title/Text epoch / 设置同库 | c72ce17 |
 | [x] [R4.1.05](PRE_ALPHA_4.md#task-r4.1.05) | 冻结Preview与新格身份分配 | completed | 10preview+3ref / 原计划→SQLite→原authority实际回执 / 期限/scope完整性 | 22fc708 |
 | [x] [R4.1.06](PRE_ALPHA_4.md#task-r4.1.06) | DocCommitPort、编辑屏障与未知提交 | completed | [实际提交](../acceptance/pre-alpha.4/development/r41/commit.json) / NSTextView+SQLite / 63Rust / Release | 21b01e7 |
-| [x] [R4.1.07](PRE_ALPHA_4.md#task-r4.1.07) | 统一源码撤销和后续编辑冲突 | completed | [历史/文本/回执](../acceptance/pre-alpha.4/development/r41/history-and-groups.json) / 200+pin / actual UTF/IME / 80Rust / Release | 本批待补；前置bbdc2b4 |
-| [ ] [R4.1.08](PRE_ALPHA_4.md#task-r4.1.08) | 完整可写计算状态与无损codec | planned | — | — |
+| [x] [R4.1.07](PRE_ALPHA_4.md#task-r4.1.07) | 统一源码撤销和后续编辑冲突 | completed | [历史/文本/回执](../acceptance/pre-alpha.4/development/r41/history-and-groups.json) / 200+pin / actual UTF/IME / 80Rust / Release | 3853967 |
+| [ ] [R4.1.08](PRE_ALPHA_4.md#task-r4.1.08) | 完整可写计算状态与无损codec | in_progress | [可写候选基础](../acceptance/pre-alpha.4/development/r41/working-stage.json) / 5 state / 191 om-eval；codec待完 | 本批待补 |
 | [ ] [R4.1.09](PRE_ALPHA_4.md#task-r4.1.09) | 主KernelWorker、候选接纳和直接取消 | planned | — | — |
 | [ ] [R4.1.10](PRE_ALPHA_4.md#task-r4.1.10) | 不可变结果库和只读检查通道 | planned | — | — |
 | [ ] [R4.1.11](PRE_ALPHA_4.md#task-r4.1.11) | NSDocument打开保存与冻结快照 | planned | — | — |
@@ -311,3 +311,10 @@ Done依据与覆盖case/proof:
 - 同批80 Rust host/ABI/16逆向+4225组合、Clippy/fmt/200生成/工程、Swift actual session/ABI/reducer/source/preview/commit/Blob/SQLite六崩溃、17Python/纯WASM/deny和SDK27 ARM64 Release/strict ad-hoc签名/12符号通过；本机没有iOS模拟器。32最终candidate门禁仍not_run，运行`.3`、公开旧标签/资产均保留。
 - 前置bbdc2b4 CI37979609572实际native session exact-0 unknownOutcome，其余四jobs成功。原附件已下载，根因及确定性先失败后修复见D015：接纳前snapshot在ACK后返回，按dispatch时已接纳集合判定并重读原ID，stale group不丢。真实CABI barriers修复后通过，原12丢所有terminal的结果仍正确，未放宽数学/性能标准或隐藏原失败。
 - R4.1.07的Done已满足，当前18/98；下一任务R4.1.08无损完整可写checkpoint，包括definitions/rules/attrs/Out/history/random/owners/precision与格式/资源验证，再R4.1.09候选接纳。完整80剩余任务及发行范围继续，不把开发任务完成当`.4`可发布。
+
+## R4开发记录 D020 — 可写Evaluator候选基础（R4.1.08未完成）
+
+- 审计真实Evaluator：defs own/down/attrs/changed、history/Out、settings和SplitMix64是持续数学状态；depth/evaluating/scopes为瞬时解释器状态，当前statement messages/solver/science evidence由kernel消费。新WorkingEvaluator在空闲可写边界克隆真实持续状态、拥有独立可写Evaluator，readonly/inflight lexical捕获拒绝；丢弃候选释放全部未接纳定义/history/random，consume本身不授予文档权限或称耐久。
+- 5 state测试实际验证用户downvalues/Listable、Out、候选a=5与owner a=2隔离、随机流独立且消费后继续、精确大有理数无机器投影、设置分离与不可提升readonly；非空闲depth/lexical边界拒绝。先缺API失败原件保留。om-eval完整191项（含原求解语料）、相关全target Clippy/fmt和纯WASM通过。
+- R4.1.08仍unchecked/in_progress：Expr/Number无损有界codec、整个Session的source/owners/settings/输出与checkpoint registry、Root/model/interpolation/高精度往返、未知版本/节点/深度/容量/取消验证尚未实现。未序列化指针/闭包，不使用readonly restore假冒主文档可写状态，不靠重跑let恢复；本候选未接入主kernel接纳/持久化。
+- [working-stage.json](../acceptance/pre-alpha.4/development/r41/working-stage.json)记录具体源码与日志hash，下一步按R4.1.08全范围实施。18/98完成、80待完、32最终gate仍not_run，运行`.3`；无本机iOS模拟器或旧公开资产变化。

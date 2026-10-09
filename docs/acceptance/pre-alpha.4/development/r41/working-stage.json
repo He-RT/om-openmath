@@ -1,0 +1,61 @@
+{
+  "task": "R4.1.08",
+  "status": "in_progress",
+  "task_done": false,
+  "development_only": true,
+  "working_tree_base": "38539675dc212764ab5c3ab5c5003a40ae3ca2f0",
+  "scope": "Owned writable Evaluator candidate only, not persisted Session checkpoint or kernel acceptance",
+  "core_state_tests_passed": 5,
+  "om_eval_regression_passed": 191,
+  "readonly_can_promote": false,
+  "candidate_drop_discards_definition_history_random": true,
+  "exact_atoms_copied_without_machine_projection": true,
+  "settings_and_attributes_retained": true,
+  "inflight_lexical_capture_rejected": true,
+  "durable_codec_implemented": false,
+  "remaining": [
+    "Bounded lossless expression/numeric codec including machine bits and high precision components",
+    "Definitions/rules/attributes/changed symbols and accepted output provenance",
+    "Whole Session/notebook/owners/settings/Out/random checkpoint identity and writable restore",
+    "Builtin stable identity/version and resource/cancel/error validation",
+    "Actual original .3 Root/interpolation/model/high precision roundtrips and rejection tests"
+  ],
+  "logs_and_code": [
+    {
+      "path": "crates/om-eval/src/state/mod.rs",
+      "bytes": 2308,
+      "sha256": "dd9da4f0796994dc464c8186cd26aaa37acf5fdae0e9823d5be083d351184219"
+    },
+    {
+      "path": "crates/om-eval/tests/working_stage.rs",
+      "bytes": 3079,
+      "sha256": "f2e8f13ac72ba77285e0d4d80e746bf905239a2a6a0f503387352907044cc71b"
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r41/working-stage-before.log",
+      "bytes": 2677,
+      "sha256": "609177e43eae1fca17da29e687f7077d7befe545774a0cbffb7c4a3198952515"
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r41/working-stage-current.log",
+      "bytes": 609,
+      "sha256": "c8159959df37f6b9b59696e92b485f95cd442f9cd92922a4c03f1cb09fc93452"
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r41/working-stage-eval-regression.log",
+      "bytes": 22341,
+      "sha256": "1ac81691c09aa5493070137b34522ee113e0bde29539a81425d4a4e63dd0f7df"
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r41/working-stage-clippy-final.log",
+      "bytes": 159,
+      "sha256": "c52b756df6a137cae4884508dbdc2f259639bcef4151289692e72e09f90281e4"
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r41/working-stage-wasm.log",
+      "bytes": 250,
+      "sha256": "046aff47215798c48501c6ab98a8c7f2d68983872c0995e16d5494e4e32e6739"
+    }
+  ],
+  "final_candidate_gate": false
+}

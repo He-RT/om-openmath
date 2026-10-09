@@ -4,6 +4,8 @@ import SQLite3
 
 /// Physical storage consumes only trusted frozen plans. Permissions and editor/CAS fences remain
 /// Rust owner duties. No model-supplied SQL/path, no optimistic document projection on write.
+struct CalculationReceipt:Codable,Sendable {let revision:UInt64;let settings:NativeCalculationSettings}
+
 final class DocumentStore {
   private let db:SQLiteDatabase
   private let url:URL
@@ -47,6 +49,16 @@ final class DocumentStore {
   func readHead() throws ->NativeSourceSnapshot? {
     let read=try SQLiteDatabase(url:url,readonly:true);defer { try? read.close() }
     return try head(read)
+  }
+  func calculationSettings() throws ->CalculationReceipt? {
+    let read=try SQLiteDatabase(url:url,readonly:true);defer {try? read.close()}
+    var current:CalculationReceipt?
+    try read.statement("SELECT r.revision,t.forward_plan FROM transactions t JOIN document_revisions r ON t.document_id=r.document_id AND t.committed_revision=r.revision WHERE t.document_id=? ORDER BY t.committed_revision DESC",[.text(identity.documentID!)]) { row in
+      if current != nil {return}
+      let plan=try JSONDecoder().decode(NativeSourceCommit.self,from:SQLColumn.data(row,1));try SourceValidation.commit(plan)
+      if let setting=plan.calculation_change.value?.after {current=CalculationReceipt(revision:UInt64(sqlite3_column_int64(row,0)),settings:setting)}
+    }
+    return current
   }
   private func receipt(_ operation:String,reader:SQLiteDatabase) throws ->NativeDurableSourceReceipt? {
     var receipt:NativeDurableSourceReceipt?
@@ -106,6 +118,10 @@ final class DocumentStore {
     let receiptBytes=try encoded(result),forward=try encoded(storedPlan),inverse=try encoded(plan.before)
     try db.transaction {
       guard let current=try head(db),current.snapshot_hash==plan.before.snapshot_hash,current.revision.value==record.base_revision.value else { throw StorageError.staleRevision }
+      if let change=plan.calculation_change.value,let current=try calculationSettings() {
+        let comparison=NativeCalculationChange(before:current.settings,after:change.before)
+        guard !SourceHashes.settingsChanged(comparison) else {throw StorageError.staleRevision}
+      }
       try insert(plan.after);try faults.reach("revision_inserted")
       try db.statement("INSERT INTO transactions VALUES(?,?,?,?,?,?,?,?,?)",[.text(record.transaction_id),.text(record.document_id),.text(record.operation_id),.integer(Int64(record.base_revision.value)),.integer(Int64(record.committed_revision.value)),.text(record.request_hash),.blob(forward),.blob(inverse),.text(record.inverse_plan_hash)])
       try db.statement("INSERT INTO operations VALUES(?,?,?,'completed',?,?,?)",[.text(record.document_id),.text(record.operation_id),.text(record.request_hash),.text(record.transaction_id),.integer(Int64(record.committed_revision.value)),.blob(receiptBytes)])

@@ -79,6 +79,7 @@ export class NotebookController {
     this.off = this.kernel.onEvent((event) => this.event(event));
   }
   async initialize() {
+    const epoch = this.epoch;
     try {
       await this.kernel.ready;
       await this.kernel.request({
@@ -88,8 +89,15 @@ export class NotebookController {
       const config = await this.kernel.request({ type: "get_config" });
       if (config.type !== "config")
         throw new Error("Kernel configuration unavailable");
+      if (this.closed || epoch !== this.epoch) return;
       this.store.setState({ config: config.config });
-      await this.refresh();
+      const snapshot = await this.kernel.request({ type: "get_notebook_state" });
+      if (this.closed || epoch !== this.epoch) return;
+      if (snapshot.type === "notebook_state") {
+        // First-load state is authoritative only while the local source is still untouched.
+        // Dirty source may have been edited after this snapshot was captured by the worker.
+        this.metadata(snapshot.state, !this.store.getState().dirty);
+      }
       this.store.setState({ initializing: false });
     } catch (error) {
       this.fail(error);

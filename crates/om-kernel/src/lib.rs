@@ -29,6 +29,8 @@ mod scene3d;
 mod scene_graph;
 mod scene_views;
 mod session;
+/// Non-executing source dependency facts for document transactions.
+pub mod source;
 mod value_views;
 mod views;
 mod wire;

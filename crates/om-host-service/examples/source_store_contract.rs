@@ -55,8 +55,34 @@ fn main() {
             "2026-10-09T00:00:01Z".into(),
         )
         .unwrap();
+    let owner = SourceDocument::restore(second.after.clone(), Serial::new(1).unwrap()).unwrap();
+    let mut title_file = owner.snapshot().file.clone();
+    title_file.title = "只改标题".into();
+    let title = owner
+        .prepare(
+            title_file,
+            "op-title".into(),
+            "tx-title".into(),
+            "event-title".into(),
+            "2026-10-09T00:00:02Z".into(),
+        )
+        .unwrap();
+    let owner = SourceDocument::restore(title.after.clone(), Serial::new(1).unwrap()).unwrap();
+    let before = om_kernel::KernelConfig::default().general;
+    let mut after = before.clone();
+    after.constants = om_kernel::config::Constants::Strict;
+    let settings = owner
+        .prepare_settings(
+            &before,
+            &after,
+            "op-settings".into(),
+            "tx-settings".into(),
+            "event-settings".into(),
+            "2026-10-09T00:00:03Z".into(),
+        )
+        .unwrap();
     println!(
         "{}",
-        serde_json::json!({"initial":first.before,"first":first,"second":second,"preparation_only":true})
+        serde_json::json!({"initial":first.before,"first":first,"second":second,"title":title,"settings":settings,"preparation_only":true})
     );
 }

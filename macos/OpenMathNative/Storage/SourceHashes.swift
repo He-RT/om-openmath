@@ -26,10 +26,28 @@ enum SourceHashes {
     hash.text(plan.commit.document_id);hash.text(plan.commit.operation_id)
     hash.text(plan.before.snapshot_hash);hash.text(plan.after.snapshot_hash);hash.text(plan.commit.actor.rawValue)
     hash.text(plan.commit.task_id.value ?? "");hash.text(plan.commit.undo_of.value ?? "")
+    if let change=plan.calculation_change.value {
+      hash.text("calculation-change-v1")
+      for setting in [change.before,change.after] {
+        hash.text(setting.dialect.rawValue);hash.text(setting.constants.rawValue)
+        for value in [setting.reactive,setting.auto_run_dependents,setting.show_steps,setting.auto_plot] {hash.number(value ? 1 : 0)}
+        hash.number(setting.eval_timeout_ms.value)
+      }
+    }
     return hash.finish()
+  }
+  static func settingsChanged(_ change:NativeCalculationChange)->Bool {
+    let a=change.before,b=change.after
+    return a.dialect != b.dialect || a.constants != b.constants || a.reactive != b.reactive || a.auto_run_dependents != b.auto_run_dependents
+      || a.show_steps != b.show_steps || a.auto_plot != b.auto_plot || a.eval_timeout_ms.value != b.eval_timeout_ms.value
   }
   static func same(_ a:NativeSourceCell,_ b:NativeSourceCell)->Bool {
     a.id.utf8.elementsEqual(b.id.utf8) && a.kind==b.kind && a.dialect==b.dialect && a.source.utf8.elementsEqual(b.source.utf8)
+  }
+  static func mathChanged(_ before:NativeSourceFile,_ after:NativeSourceFile)->Bool {
+    let left=before.cells.filter{$0.kind == .math},right=after.cells.filter{$0.kind == .math}
+    guard left.count==right.count else {return true}
+    return !zip(left,right).allSatisfy{same($0,$1)}
   }
   static func changes(_ a:NativeSourceFile,_ b:NativeSourceFile)->[String] {
     var ids:[Data:String]=[:]
@@ -55,11 +73,13 @@ enum SourceValidation {
   static func commit(_ plan:NativeSourceCommit) throws {
     try snapshot(plan.before);try snapshot(plan.after)
     let commit=plan.commit
+    let mathChange=SourceHashes.mathChanged(plan.before.file,plan.after.file) || plan.calculation_change.value.map(SourceHashes.settingsChanged)==true
     guard plan.protocol_version==1,plan.generation.value>0,identity(commit.operation_id),identity(commit.transaction_id),identity(commit.outbox_event_id),
       commit.document_id==plan.before.document_id,commit.document_id==plan.after.document_id,
       commit.base_revision.value==plan.before.revision.value,commit.committed_revision.value==plan.after.revision.value,
       plan.before.revision.value<HostSerial.maximum,plan.after.revision.value==plan.before.revision.value+1,
-      plan.before.execution_epoch.value<HostSerial.maximum,plan.after.execution_epoch.value==plan.before.execution_epoch.value+1,
+      (!mathChange || plan.before.execution_epoch.value<HostSerial.maximum),
+      plan.after.execution_epoch.value==plan.before.execution_epoch.value+(mathChange ? 1 : 0),
       commit.execution_epoch.value==plan.after.execution_epoch.value,commit.snapshot_hash==plan.after.snapshot_hash,
       commit.inverse_plan_hash==plan.before.snapshot_hash,commit.request_hash==SourceHashes.request(plan),commit.snapshot_blob_hash.value==nil,
       commit.changed_cell_ids==SourceHashes.changes(plan.before.file,plan.after.file) else { throw StorageError.corruptIdentity }

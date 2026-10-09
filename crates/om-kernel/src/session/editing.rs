@@ -107,3 +107,146 @@ impl Session {
         )
     }
 }
+
+impl Session {
+    /// Replace a committed source file in one non-evaluating step. This is a kernel-owner API,
+    /// not a new external request: the native coordinator calls it after durable acceptance.
+    /// Old owned definitions are removed together; no old DeleteCell cascade can run midway.
+    pub fn apply_source_file_without_evaluation(
+        &mut self,
+        file: NotebookFile,
+    ) -> Result<crate::source::SourceInvalidation, String> {
+        let before = self.notebook.to_file();
+        let known = self
+            .eval
+            .defs
+            .known_functions()
+            .into_iter()
+            .map(|s| s.name().to_owned())
+            .collect::<Vec<_>>();
+        let owned = self
+            .owners
+            .iter()
+            .map(|(symbol, cell_id)| crate::source::SourceOwnership {
+                symbol: symbol.name().to_owned(),
+                cell_id: cell_id.clone(),
+            })
+            .collect::<Vec<_>>();
+        let plan = crate::source::assess_source_change(
+            &before,
+            &file,
+            self.config.general.dialect,
+            self.config.general.constants,
+            &known,
+            &owned,
+            false,
+        )?;
+        for owner in &plan.retire_owner_cells {
+            self.release_owned(owner);
+        }
+        let mut previous = std::mem::take(&mut self.notebook.cells)
+            .into_iter()
+            .map(|c| (c.id.clone(), c))
+            .collect::<std::collections::BTreeMap<_, _>>();
+        let affected = plan
+            .affected_cells
+            .iter()
+            .collect::<std::collections::BTreeSet<_>>();
+        let mut cells = Vec::with_capacity(file.cells.len());
+        for input in file.cells {
+            let mut cell = if let Some(mut cell) = previous.remove(&input.id) {
+                if cell.kind != input.kind && input.kind != CellKind::Math {
+                    cell.output = None;
+                    cell.records.clear();
+                    cell.exec_count = None;
+                }
+                cell.kind = input.kind;
+                cell.source = input.source;
+                cell.dialect = input.dialect;
+                cell
+            } else {
+                Cell::from_input(input)
+            };
+            if affected.contains(&cell.id) {
+                cell.status = CellStatus::Stale;
+            }
+            if cell.kind == CellKind::Text {
+                cell.status = CellStatus::Done;
+            }
+            if let Some(facts) = plan.analysis.cells.iter().find(|a| a.cell_id == cell.id) {
+                cell.defines = facts
+                    .defines
+                    .iter()
+                    .map(|n| om_core::Symbol::intern(n))
+                    .collect();
+                cell.uses = facts
+                    .uses
+                    .iter()
+                    .map(|n| om_core::Symbol::intern(n))
+                    .collect();
+            }
+            cells.push(cell);
+        }
+        self.notebook.title = file.title;
+        self.notebook.cells = cells;
+        Ok(plan)
+    }
+}
+
+impl Session {
+    /// Apply already accepted calculation settings without running cells. UI locale is independent;
+    /// semantic settings retire old owned values and mark affected outputs stale.
+    pub fn apply_calculation_settings_without_evaluation(
+        &mut self,
+        settings: crate::config::GeneralConfig,
+    ) -> Result<crate::source::SourceInvalidation, String> {
+        let changed = crate::source::calculation_settings_changed(&self.config.general, &settings);
+        let file = self.notebook.to_file();
+        let known = self
+            .eval
+            .defs
+            .known_functions()
+            .into_iter()
+            .map(|s| s.name().to_owned())
+            .collect::<Vec<_>>();
+        let owned = self
+            .owners
+            .iter()
+            .map(|(s, id)| crate::source::SourceOwnership {
+                symbol: s.name().to_owned(),
+                cell_id: id.clone(),
+            })
+            .collect::<Vec<_>>();
+        let plan = crate::source::assess_source_change(
+            &file,
+            &file,
+            settings.dialect,
+            settings.constants,
+            &known,
+            &owned,
+            changed,
+        )?;
+        for owner in &plan.retire_owner_cells {
+            self.release_owned(owner);
+        }
+        self.config.general = settings;
+        for cell in &mut self.notebook.cells {
+            if plan.affected_cells.contains(&cell.id) {
+                cell.status = CellStatus::Stale;
+            }
+            if let Some(facts) = plan.analysis.cells.iter().find(|f| f.cell_id == cell.id) {
+                cell.defines = facts
+                    .defines
+                    .iter()
+                    .map(|n| om_core::Symbol::intern(n))
+                    .collect();
+                cell.uses = facts
+                    .uses
+                    .iter()
+                    .map(|n| om_core::Symbol::intern(n))
+                    .collect();
+            }
+        }
+        Ok(plan)
+    }
+}

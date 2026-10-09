@@ -65,7 +65,18 @@ pub fn validate_commit(plan: &NativeSourceCommit) -> Result<(), String> {
         || commit.base_revision != plan.before.revision
         || commit.committed_revision != plan.after.revision
         || plan.after.revision != plan.before.revision.checked_next()?
-        || plan.after.execution_epoch != plan.before.execution_epoch.checked_next()?
+        || plan.after.execution_epoch
+            != if super::coordinator::math_changed(&plan.before.file, &plan.after.file)
+                || plan
+                    .calculation_change
+                    .0
+                    .as_ref()
+                    .is_some_and(super::coordinator::settings_differ)
+            {
+                plan.before.execution_epoch.checked_next()?
+            } else {
+                plan.before.execution_epoch
+            }
         || commit.snapshot_hash != plan.after.snapshot_hash
         || commit.inverse_plan_hash != plan.before.snapshot_hash
         || commit.execution_epoch != plan.after.execution_epoch
@@ -211,7 +222,11 @@ impl SourceDocument {
             codec_version: 1,
             document_id: self.snapshot.document_id.clone(),
             revision: self.snapshot.revision.checked_next()?,
-            execution_epoch: self.snapshot.execution_epoch.checked_next()?,
+            execution_epoch: if super::coordinator::math_changed(&self.snapshot.file, &file) {
+                self.snapshot.execution_epoch.checked_next()?
+            } else {
+                self.snapshot.execution_epoch
+            },
             cell_revisions: Vec::new(),
             file,
             snapshot_hash: String::new(),
@@ -260,12 +275,46 @@ impl SourceDocument {
         };
         let mut plan = NativeSourceCommit {
             protocol_version: 1,
+            calculation_change: Nullable(None),
             generation: self.generation,
             commit,
             before: self.snapshot.clone(),
             after,
         };
         plan.commit.request_hash = request_hash(&plan);
+        validate_commit(&plan)?;
+        Ok(plan)
+    }
+    /// Freeze a real trusted before/after calculation settings transition with the same physical
+    /// document transaction; UI language-only changes leave execution epoch untouched.
+    pub fn prepare_settings(
+        &self,
+        before: &om_kernel::config::GeneralConfig,
+        after: &om_kernel::config::GeneralConfig,
+        operation_id: String,
+        transaction_id: String,
+        event_id: String,
+        time: String,
+    ) -> Result<NativeSourceCommit, String> {
+        let mut plan = self.prepare(
+            self.snapshot.file.clone(),
+            operation_id,
+            transaction_id,
+            event_id,
+            time,
+        )?;
+        let change = NativeCalculationChange {
+            before: super::coordinator::calculation_values(before)?,
+            after: super::coordinator::calculation_values(after)?,
+        };
+        if super::coordinator::settings_differ(&change) {
+            plan.after.execution_epoch = self.snapshot.execution_epoch.checked_next()?;
+        }
+        plan.calculation_change = Nullable(Some(change));
+        plan.after.snapshot_hash = super::snapshot_hash(&plan.after);
+        plan.commit.snapshot_hash = plan.after.snapshot_hash.clone();
+        plan.commit.execution_epoch = plan.after.execution_epoch;
+        plan.commit.request_hash = super::request_hash(&plan);
         validate_commit(&plan)?;
         Ok(plan)
     }

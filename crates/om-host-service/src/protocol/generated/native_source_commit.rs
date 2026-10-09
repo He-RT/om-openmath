@@ -14,6 +14,8 @@ pub struct NativeSourceCommit {
     pub before: NativeSourceSnapshot,
     /// Contract field `after`.
     pub after: NativeSourceSnapshot,
+    /// Contract field `calculation_change`.
+    pub calculation_change: Nullable<NativeCalculationChange>,
 }
 impl std::fmt::Debug for NativeSourceCommit {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {

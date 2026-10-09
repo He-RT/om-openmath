@@ -422,3 +422,9 @@ L2使用精确标称GM分数、50位FindRoot/1000迭代和真实残差，报告�
 - Blob采用同本地卷staging文件全同步后hard link原子发布（EEXIST只复核原目标，不覆盖），再同步目标目录并实际hash/length回读；正常失败只清自有staging，crash原件保留。目标路径仅由lowercase SHA256推导。64KiB复制、128MiB单件、1MiB读取页及有界IO队列来自既定预算，不增普通ABI包上限。
 - publication pin/reader ID是Swift物理资源生命周期，不是模型media_ref/result_ref授权。Writer等待时另有private transfer pin；持久引用写所属库，不新建跨库“全局原子”假象。重启后按存储owner ref验证字节再发新的reader，原pin不复活。未打开库的引用未查全则orphan_candidate有allStoresChecked=false，不做删除；全局GC/租约留R4.1.13。
 - BlobDescriptor/BlobPublication/Reader为私有宿主内部值（无新wire或Pi能力），后续暴露的业务DTO继续从机器契约生成并按scope校验；mime/codec在真实媒体准备任务里实测，不因保存原字节就宣称OCR/ASR/模型可发送。
+
+### R4-D009：非执行source改动与独立settings epoch（2026-10-09）
+
+- om-kernel新增source-only分析与kernel-owner一次apply接口，复用真实lexical dependency，不循环旧DeleteCell/触发cascade。runtime成功拥有的symbols与静态声明共同参与失效；受影响owner真正清除，历史保留但stale。配置/epoch/源revision独立；Math相对顺序决定计算变化，prose移位导致view index变化不误清Math。
+- NativeSourceCommit新增required nullable calculation_change，before/after为真实非locale General设置值；同步Rust/Swift canonical hash/epoch校验，同source事务保存并回读。当前Native ABI和新存储通道尚未公开、UI未开放source写入，原.omnb/iOS协议不变，规划记录不授予tool权限。
+- 共享Web startup snapshot确定会覆盖dirty的新源码，已加入先失败后修复的原顺序回归：启动读取只在当前代次活且local source未变时replace。既有后续refresh/open行为保留；未据此声称所有CI Running/主线程恢复故障已解决，最终同candidate门槛保持。

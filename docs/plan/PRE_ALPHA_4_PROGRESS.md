@@ -4,9 +4,9 @@
 
 2026-10-09。目标`0.1.0-pre-alpha.4`，当前运行/公开版本`.3`；开发`dev`，不合main、不改旧标签、本机不启动iOS模拟器。本文只记录结果，规格及完成标准唯一见主计划；计划编写本身不计实施完成。
 
-**当前状态：** 14任务完成（全部R4.0与R4.1.01/02/03）；其余84任务尚未完成；32最终运行/发行gate全部not_run；candidate未分配，ready_to_publish=false，released_verified=false。设计/HTML/Schema通过不填运行时pass。
+**当前状态：** 15任务完成（全部R4.0与R4.1.01–04）；其余83任务尚未完成；32最终运行/发行gate全部not_run；candidate未分配，ready_to_publish=false，released_verified=false。设计/HTML/Schema通过不填运行时pass。
 
-**下一任务：** R4.1.04文档操作/非执行失效，随后R4.1.05/06预览/DocCommitPort；跟进共享前端Running无结果回归。真实source/Blob基础已验收，UI/Agent写入尚未注册。按DAG推进，R4.5.07必须在R4.5.05冻结前完成。
+**下一任务：** R4.1.05冻结预览与新格ID，随后R4.1.06 DocCommitPort/编辑屏障。source批量操作/非执行失效已实现，UI/Agent写入尚未注册。启动旧快照覆盖源码已复现并修复；继续核对CI中的前端和iOS时间波动。按DAG推进，R4.5.07必须在R4.5.05冻结前完成。
 
 ## 已知外部前置
 
@@ -33,8 +33,8 @@
 | [x] [R4.0.11](PRE_ALPHA_4.md#task-r4.0.11) | 发行前置、签名和现场环境预检 | completed | [环境](../acceptance/pre-alpha.4/baseline/environment.json) / verify-env.sh | e876c16 |
 | [x] [R4.1.01](PRE_ALPHA_4.md#task-r4.1.01) | SQLite单写者与新通道初始化 | completed | SQLite3.54/WAL/FULL / 实际F_FULLFSYNC / 根锁 / SIGKILL/ENOSPC | ddbeb88 |
 | [x] [R4.1.02](PRE_ALPHA_4.md#task-r4.1.02) | 权威源码、事务和幂等表 | completed | Rust实际计划→Swift同库事务→Rust实际回执 / 幂等/回滚/失联/UTF8 | c310565 |
-| [x] [R4.1.03](PRE_ALPHA_4.md#task-r4.1.03) | 不可变Blob和资源引用发布 | completed | 分块实际字节/同库refs/临时pin/恢复读取/六SIGKILL点 | 下次补记 |
-| [ ] [R4.1.04](PRE_ALPHA_4.md#task-r4.1.04) | 文档操作与非执行失效计划 | planned | — | — |
+| [x] [R4.1.03](PRE_ALPHA_4.md#task-r4.1.03) | 不可变Blob和资源引用发布 | completed | 分块实际字节/同库refs/临时pin/恢复读取/六SIGKILL点 | 26078d0 |
+| [x] [R4.1.04](PRE_ALPHA_4.md#task-r4.1.04) | 文档操作与非执行失效计划 | completed | 真实parser/owners清理/无cascade / 批量操作 / title/Text epoch / 设置同库 | 下次补记 |
 | [ ] [R4.1.05](PRE_ALPHA_4.md#task-r4.1.05) | 冻结Preview与新格身份分配 | planned | — | — |
 | [ ] [R4.1.06](PRE_ALPHA_4.md#task-r4.1.06) | DocCommitPort、编辑屏障与未知提交 | planned | — | — |
 | [ ] [R4.1.07](PRE_ALPHA_4.md#task-r4.1.07) | 统一源码撤销和后续编辑冲突 | planned | — | — |
@@ -251,3 +251,15 @@ Done依据与覆盖case/proof:
 - test-blobs最新完整通过；bootstrap六崩溃/未知format/根锁/ENOSPC、实际source事务/真实F_FULLFSYNC错误回读、Native ABI/actor/reducer/session回归也通过；SDK27 ARM64 Release/17Python/生成工程/契约检查通过。初次Swift semaphore async属性与语法错误日志保留，修正成fixture后台同步等待，无产品假成功。没有改Rust CAS/原53语料/旧tags/运行版本，未运行本机模拟器。
 - [blobs.json](../acceptance/pre-alpha.4/development/r41/blobs.json)记录日志和实际发布中断attempt/hash；macos-native CI新增该脚本。c310565/CI37927161789结果native_macos/rust/dependencies/iOS成功，frontend失败是dev西瓜.scene-view 30s未出现；实际error-context仍为Running且UI未有结果，原件target/ci-evidence/c310-frontend，不根据间接上下文宣布根因或放宽门槛。此CI不是本批SHA或全平台green。
 - 下一任务文档操作/失效与预览/编辑屏障、完整checkpoint及UI/Agent；Blob字节机制已完成，类型化checkpoint/媒体准备、scoped工具权限、完整GC仍按后续原计划接入，84任务/全部candidate门禁保持未完成。
+
+## R4开发记录 D014 — 源码批量操作、非执行失效与启动快照保护
+
+- R4.1.04完成：SourceCoordinator在临时file一次验证最多64个typed insert/update/delete/move/rename，迟到非法操作整笔拒绝、未改authority。共享om-kernel::source用真实parser/lexical dependency分析，发现跨格function声明、符号 uses/defines、重复定义、真正SCC循环与blocked节点；无Session/Evaluator构造或statement执行。图以symbol owner索引生成，显式200000 edge上限，SCC采用迭代O(V+E)算法，不用递归爆栈或把Kahn全部余项假称cycle。
+- 实际Session新增kernel-owner API apply_source_file_without_evaluation，一次换source/顺序，清除受影响旧owner的真正eval.defs，标stale并保留历史；不调用旧DeleteCell/Upsert cascade。实际kernel测试先得到a=2/b=3，再整批删a，只保留b源码：原a和b旧值已清除，读取b/a都是symbol、没有中间自动计算。真实f调用的value旧owner也纳入依赖闭包；非法ID批次不会改变原定义。旧request/iOS接口与默认reactive行为未改。
+- Math相对序列/内容/kind/dialect及实际计算设置保守增长execution_epoch；title/Text/Ask变更、纯prose插入/移位不误使Math索引变化变成计算变化。源码revision仍增长、cell内容revision只对实际原UTF8变化增长。Locale与execution不同；设置由NativeCalculationChange冻结实际before/after、参与request hash并与source同库保存，writer核对已有settings基线，独立回读重启可恢复实际after。纯标题保持epoch2、strict constants设置使epoch3，数据库五类计数现为5/4/4/4/4；语言-only在kernel/source测试不清数学值。
+- 机器契约126 DTO新增5种SourceOperation及actual calculation change；真实slot字段均typed，None calculation变更的原语义hash保持，settings新值进入canonical长度前缀hash。physical设置信息取同库forward plan，反向数据保留原source与settings before；scope/fence/grants/预览以及完整undo仍由后续任务接入，不提前开放模型handler。
+- 同时复现共享前端启动竞态：initial get_notebook_state在新编辑期间返回，会把新多行f源码恢复成旧1+1。新增受控顺序的state单元回归先实际失败，再以启动代次/liveness和dirty source guard修复；source未触动才whole replace，否则只merge匹配metadata。只证明这项明确的源码覆盖bug，不把c310西瓜Running故障的根因借此断言已查明。
+- 完整Rust工作区1141 passed/2原ignored、全Clippy、纯WASM、前端79单元/lint/TypeScript严格生产build、生产Web定向6项（原extended/log_log、L2真实SVG、切开西瓜真实GPU旋转/OBJ）全部通过。Mac ARM64 SDK27 Release、actual source/settings/ACK失联/fullsync回读、native ABI/actor/reducer/session、bootstrap/Blob故障、17Python通过；原53期望和时限未动，本机没有iOS simulator。最初Rust借用闭包生命周期/unused parens、前端错误调用不存在的check脚本原件保留，最终以工作区/production build/正确脚本为准。
+- [source-operations.json](../acceptance/pre-alpha.4/development/r41/source-operations.json)记录日志与失败/修复attempt/hash、范围；UI/Agent写入仍等待R4.1.05/06真实冻结计划与编辑屏障，后续main CAS checkpoint仍需R4.1.08/09，不将本批当完整native数学工作台。下一步预览/身份分配/期限/原始plan，再DocCommitPort，剩余83任务/最终candidate gates继续。
+
+- D014补记：26078d0/CI37931481338已实际全job success（包括iOS和前端），此前失败原件仍保留；本批新source代码还需自己的SHA。旧SHA success不填最终candidate门禁。

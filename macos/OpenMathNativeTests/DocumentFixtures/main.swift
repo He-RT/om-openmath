@@ -4,6 +4,8 @@ private struct Plans:Decodable {
   let initial:NativeSourceSnapshot
   let first:NativeSourceCommit
   let second:NativeSourceCommit
+  let title:NativeSourceCommit
+  let settings:NativeSourceCommit
   let preparation_only:Bool
 }
 @main struct DocumentFixtures {
@@ -73,12 +75,19 @@ private struct Plans:Decodable {
     precondition(head.revision.value==2 && head.file.cells[0].source=="let a=5; a+1")
     precondition(head.file.cells[1].source.utf8.elementsEqual(plans.initial.file.cells[1].source.utf8))
     precondition(head.file.title.utf8.elementsEqual(plans.initial.file.title.utf8))
+    let title=try await store.commitSource(plans.title)
+    precondition(title.execution_epoch.value==second.execution_epoch.value)
+    let setting=try await store.commitSource(plans.settings)
+    precondition(setting.execution_epoch.value==title.execution_epoch.value+1)
+    let actualSettings=try await store.calculationSettings(document:id)!
+    precondition(actualSettings.settings.constants == .strict && actualSettings.revision==4)
+    let finalHead=try await store.committedSource(id)!
     try await store.close()
     let (reopened,_)=try await StorageService.open(paths:.init(root:root,channel:.preview))
     _ = try await reopened.openDocument(id)
     let restored=try await reopened.committedSource(id)!
     let replay=try await reopened.sourceReceipt(document:id,operation:"op-one")!
-    precondition(restored.snapshot_hash==head.snapshot_hash && replay.receipt.transaction_id.value=="tx-one")
+    precondition(restored.snapshot_hash==finalHead.snapshot_hash && replay.receipt.transaction_id.value=="tx-one")
     try await reopened.close()
     // Count all physical facts with an independent read connection, off MainActor.
     let url=root.appendingPathComponent("Documents/"+id+"/Generations/000001/authority.sqlite")
@@ -91,8 +100,8 @@ private struct Plans:Decodable {
         } catch { continuation.resume(throwing:error) }
       }
     }
-    precondition(counts==[3,2,2,2,2])
+    precondition(counts==[5,4,4,4,4])
     if fullsyncFault { print("Actual source COMMIT then F_FULLFSYNC failure: unknown until original-ID readback reconfirms stable bytes") }
-    print("Actual Rust plans -> Swift SQLite: original UTF8/order/title, 0->1->2 revisions, same-ID one effect, different content conflict, malformed whole-plan rejection, restart receipt/head and five same-DB fact counts passed")
+    print("Actual Rust plans -> Swift SQLite: original UTF8/order/title, 0->1->2 math revisions, title stays at epoch2, actual settings advance to epoch3, same-ID one effect, different content conflict, malformed whole-plan rejection, restart receipt/head and same-DB fact counts 5/4/4/4/4 passed")
   }
 }

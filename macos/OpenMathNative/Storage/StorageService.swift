@@ -108,6 +108,10 @@ actor StorageService {
     guard closeTask==nil,let writer=documents[plan.commit.document_id] else { throw StorageError.closing }
     return try await writer.sourceCall { try $0.commit(plan,faults:faults) }
   }
+  func calculationSettings(document:String) async throws ->CalculationReceipt? {
+    guard closeTask==nil,let writer=documents[document] else {throw StorageError.closing}
+    return try await writer.sourceCall {try $0.calculationSettings()}
+  }
   func sourceReceipt(document:String,operation:String) async throws ->NativeDurableSourceReceipt? {
     guard closeTask==nil,let writer=documents[document] else { throw StorageError.closing }
     return try await writer.sourceCall { try $0.query(operation) }

@@ -499,6 +499,16 @@
         },
         "after": {
           "$ref": "#/$defs/NativeSourceSnapshot"
+        },
+        "calculation_change": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/NativeCalculationChange"
+            },
+            {
+              "type": "null"
+            }
+          ]
         }
       },
       "required": [
@@ -506,7 +516,8 @@
         "generation",
         "commit",
         "before",
-        "after"
+        "after",
+        "calculation_change"
       ],
       "additionalProperties": false
     },
@@ -547,6 +558,201 @@
       "minLength": 1,
       "maxLength": 256,
       "description": "源码单元格ID沿用.omnb v1的非空文本；按原UTF8区分，不作为路径或operation身份。"
+    },
+    "InsertSourceCell": {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "const": "insert_cell"
+        },
+        "cell": {
+          "$ref": "#/$defs/NativeSourceCell"
+        },
+        "after_cell_id": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/CellIdentity"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "kind",
+        "cell",
+        "after_cell_id"
+      ],
+      "additionalProperties": false
+    },
+    "UpdateSourceCell": {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "const": "update_cell"
+        },
+        "cell": {
+          "$ref": "#/$defs/NativeSourceCell"
+        }
+      },
+      "required": [
+        "kind",
+        "cell"
+      ],
+      "additionalProperties": false
+    },
+    "DeleteSourceCells": {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "const": "delete_cells"
+        },
+        "cell_ids": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/CellIdentity"
+          },
+          "minItems": 1,
+          "maxItems": 64,
+          "uniqueItems": true
+        }
+      },
+      "required": [
+        "kind",
+        "cell_ids"
+      ],
+      "additionalProperties": false
+    },
+    "MoveSourceCells": {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "const": "move_cells"
+        },
+        "cell_ids": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/CellIdentity"
+          },
+          "minItems": 1,
+          "maxItems": 64,
+          "uniqueItems": true
+        },
+        "after_cell_id": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/CellIdentity"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "kind",
+        "cell_ids",
+        "after_cell_id"
+      ],
+      "additionalProperties": false
+    },
+    "RenameSourceNotebook": {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "const": "rename_notebook"
+        },
+        "title": {
+          "type": "string",
+          "maxLength": 16384
+        }
+      },
+      "required": [
+        "kind",
+        "title"
+      ],
+      "additionalProperties": false
+    },
+    "NativeSourceOperation": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/InsertSourceCell"
+        },
+        {
+          "$ref": "#/$defs/UpdateSourceCell"
+        },
+        {
+          "$ref": "#/$defs/DeleteSourceCells"
+        },
+        {
+          "$ref": "#/$defs/MoveSourceCells"
+        },
+        {
+          "$ref": "#/$defs/RenameSourceNotebook"
+        }
+      ]
+    },
+    "NativeCalculationSettings": {
+      "type": "object",
+      "properties": {
+        "dialect": {
+          "type": "string",
+          "enum": [
+            "auto",
+            "modern",
+            "wolfram"
+          ]
+        },
+        "constants": {
+          "type": "string",
+          "enum": [
+            "math",
+            "strict"
+          ]
+        },
+        "reactive": {
+          "type": "boolean"
+        },
+        "auto_run_dependents": {
+          "type": "boolean"
+        },
+        "show_steps": {
+          "type": "boolean"
+        },
+        "auto_plot": {
+          "type": "boolean"
+        },
+        "eval_timeout_ms": {
+          "$ref": "#/$defs/Serial"
+        }
+      },
+      "required": [
+        "dialect",
+        "constants",
+        "reactive",
+        "auto_run_dependents",
+        "show_steps",
+        "auto_plot",
+        "eval_timeout_ms"
+      ],
+      "additionalProperties": false
+    },
+    "NativeCalculationChange": {
+      "type": "object",
+      "properties": {
+        "before": {
+          "$ref": "#/$defs/NativeCalculationSettings"
+        },
+        "after": {
+          "$ref": "#/$defs/NativeCalculationSettings"
+        }
+      },
+      "required": [
+        "before",
+        "after"
+      ],
+      "additionalProperties": false
     }
   }
 }

@@ -15,8 +15,8 @@
     },
     {
       "path": "docs/design/native-source-store.schema.json",
-      "sha256": "34e38850af39d1c47262a03effc8757df3a7fb75728fab7065c9ce05b5633f13"
+      "sha256": "e2f21f19bd74621f50e38ca386e6e36e7308944b2339e400cdecef8b90b95c05"
     }
   ],
-  "generated_dto_count": 111
+  "generated_dto_count": 126
 }

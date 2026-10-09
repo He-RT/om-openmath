@@ -1,0 +1,105 @@
+{
+  "task": "R4.1.04",
+  "development_only": true,
+  "runtime_version": "0.1.0-pre-alpha.3",
+  "generated_dtos": 126,
+  "rust_passed": 1141,
+  "rust_original_ignored": 2,
+  "frontend_unit_passed": 79,
+  "production_Web_targeted_passed": 6,
+  "operation_limit": 64,
+  "source_graph_edge_limit": 200000,
+  "actual_invalidation": "real parser graph + accepted runtime owners; no old cascade; actual old a/b/value cleared",
+  "epoch": "relative Math/content/settings; prose/title/locale independent",
+  "actual_setting_source_transaction_counts": [
+    5,
+    4,
+    4,
+    4,
+    4
+  ],
+  "startup_bug": "dirty source overwritten by delayed startup snapshot; deterministic failing test -> fixed; CI scene root cause not claimed",
+  "logs": [
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r41/source-workspace-tests.log",
+      "sha256": "825832d3bc1f8d5c1f9f6650e76a91423a1e6961a98bf3cb5504c65af7555513"
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r41/source-workspace-clippy.log",
+      "sha256": "31ed41a7ffd763e37054832e3f389643f214837c5ae9203014bbd7de0b9b7b5f"
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r41/source-kernel-regression.log",
+      "sha256": "53e08ab88942e22bbd63941d3bb3080e226a7197f79e83d96d1d0627363af8d9"
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r41/source-host-regression.log",
+      "sha256": "a119be7d440275ba16d70a5db071fc7a96b574f71146ad2061ca2551eae8e9eb"
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r41/source-wasm.log",
+      "sha256": "c73ebd05ef9041b3e72ddc52a856d59da364cf7c545b2c4aaa37def95599295e"
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r41/source-settings-port-final.log",
+      "sha256": "27bcffac61158c35dc1c52e4e990b7d161605008f7fafa16406c10a3d2a0df68"
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r41/source-native-contracts.log",
+      "sha256": "3314d0d1c8da6e373d09d84ef7cf8c87a2e852c571750a3d7298a4388e2bdb9d"
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r41/source-native-build.log",
+      "sha256": "a2593edf1dae09203b8ff13f83df562469a0b8653746f5aca184437306ce6c02"
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r41/source-storage-regression.log",
+      "sha256": "508e29b01c0ee1b6fa8f0400d63897f51d76282b090b59be0fed5a3a142c4c35"
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r41/source-blob-regression.log",
+      "sha256": "9a89749898020daddce76fa2ebd45dc5d088c87e619b0efb00988a924946155c"
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r41/source-python.log",
+      "sha256": "07f4e9bbfba14db051ede3d49630642140b20eb4acdc14254e532a2ceabb4a12"
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r41/source-frontend-tests.log",
+      "sha256": "2ef1c4613c65f9eadf3fba5ad36f310fb425d25f06a7c6f79f093fc2bf577f01"
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r41/source-frontend-lint.log",
+      "sha256": "94bbf3f39dcec47f0b2a1e399cf03a70a09aae6ffe88aa7cceecbd25e5e53c1c"
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r41/source-frontend-build.log",
+      "sha256": "c65cfcc7c68ace8419182a746854e708202cf38b46950af573076666d8a818c1"
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r41/source-frontend-production-e2e.log",
+      "sha256": "f23c3d14b009f08ea4efea503f06cfd3b24a550c41d8f6242a60bb4d8e503149"
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r41/startup-snapshot-failure.log",
+      "sha256": "c9890c5c065926b99df81cca0e333e926830d2cd417894fa5b007d074194ad80"
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r41/startup-snapshot-fixed.log",
+      "sha256": "1b84d2e5ce0041176ed8ffd5d1a6f0f69c84d2852c39a2190c6329a5349402b0"
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r41/source-frontend-check.log",
+      "sha256": "42dd401514bd00fd8cef56920cef8f884cff139aadd8511bdbed85e96bfd4313"
+    }
+  ],
+  "registered_agent_doc_writes": false,
+  "main_checkpoint_worker": "pending R4.1.08/09",
+  "final_candidate_gate": false,
+  "prior_CI": {
+    "sha": "26078d0498904330c4143117dd5de7fee5ebd840",
+    "run": 37931481338,
+    "conclusion": "success",
+    "scope": "prior blob commit only; current source commit still needs its own CI"
+  }
+}

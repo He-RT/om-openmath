@@ -200,3 +200,38 @@ test("a computed response is committed only after matching actual current-source
   expect(controller.store.getState().cells[0]?.exec_count).toBe(1);
   controller.dispose();
 });
+
+test("a late startup snapshot cannot replace source edited while initialization is awaiting readback", async () => {
+  let frozen: import("../kernel/generated/NotebookFile").NotebookFile = { version: 1, title: "", cells: [] };
+  let release: ((response: Response) => void) | undefined;
+  let requested!: () => void;
+  const snapshotStarted = new Promise<void>((resolve) => { requested = resolve; });
+  const kernel = new MockKernel((request) => {
+    if (request.type === "get_config") return { type: "config", config };
+    if (request.type === "upsert_cell") {
+      const index = frozen.cells.findIndex((cell) => cell.id === request.cell.id);
+      frozen = { ...frozen, cells: index < 0 ? [...frozen.cells, request.cell] : frozen.cells.map((cell, i) => i === index ? request.cell : cell) };
+      return { type: "ok" };
+    }
+    if (request.type === "get_notebook_state") {
+      const snapshot = structuredClone(frozen);
+      requested();
+      return new Promise<Response>((resolve) => {
+        release = () => resolve({ type: "notebook_state", state: { file: snapshot, cells: snapshot.cells.map((cell) => ({ id: cell.id, status: "Stale", defines: [], uses: [] })), definition_order: [], cycles: [] } });
+      });
+    }
+    return { type: "ok" };
+  });
+  const controller = new NotebookController(kernel);
+  const id = controller.add("Math", "1+1");
+  await controller.flush();
+  const startup = controller.initialize();
+  await snapshotStarted;
+  controller.edit(id, { source: "let f(x)=\n x+1;f(4)" });
+  await controller.flush();
+  release?.({ type: "ok" });
+  await startup;
+  expect(controller.store.getState().cells[0]?.source).toBe("let f(x)=\n x+1;f(4)");
+  expect(controller.store.getState().dirty).toBe(true);
+  controller.dispose();
+});

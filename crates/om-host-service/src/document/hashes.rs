@@ -72,5 +72,28 @@ pub fn request_hash(plan: &NativeSourceCommit) -> String {
     });
     hash.text(plan.commit.task_id.0.as_deref().unwrap_or(""));
     hash.text(plan.commit.undo_of.0.as_deref().unwrap_or(""));
+    if let Some(change) = &plan.calculation_change.0 {
+        hash.text("calculation-change-v1");
+        for setting in [&change.before, &change.after] {
+            hash.text(match setting.dialect {
+                NativeCalculationSettingsDialect::Auto => "auto",
+                NativeCalculationSettingsDialect::Modern => "modern",
+                NativeCalculationSettingsDialect::Wolfram => "wolfram",
+            });
+            hash.text(match setting.constants {
+                NativeCalculationSettingsConstants::Math => "math",
+                NativeCalculationSettingsConstants::Strict => "strict",
+            });
+            for value in [
+                setting.reactive,
+                setting.auto_run_dependents,
+                setting.show_steps,
+                setting.auto_plot,
+            ] {
+                hash.number(u64::from(value));
+            }
+            hash.number(setting.eval_timeout_ms.get());
+        }
+    }
     hash.finish()
 }

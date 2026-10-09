@@ -6,16 +6,18 @@ public struct NativeSourceCommit: Codable, Sendable {
   public var commit: DocumentCommit
   public var before: NativeSourceSnapshot
   public var after: NativeSourceSnapshot
+  public var calculation_change: HostNullable<NativeCalculationChange>
   private enum CodingKeys: String, CodingKey {
     case protocol_version
     case generation
     case commit
     case before
     case after
+    case calculation_change
   }
   public init(from decoder: Decoder) throws {
     let all = try decoder.container(keyedBy: HostCodingKey.self)
-    let allowed: Set<String> = ["protocol_version","generation","commit","before","after"]
+    let allowed: Set<String> = ["protocol_version","generation","commit","before","after","calculation_change"]
     guard all.allKeys.allSatisfy({ allowed.contains($0.stringValue) }) else { throw DecodingError.dataCorrupted(.init(codingPath: decoder.codingPath, debugDescription: "Unknown native contract field")) }
     let c = try decoder.container(keyedBy: CodingKeys.self)
     self.protocol_version = try c.decode(UInt32.self, forKey: .protocol_version)
@@ -23,12 +25,14 @@ public struct NativeSourceCommit: Codable, Sendable {
     self.commit = try c.decode(DocumentCommit.self, forKey: .commit)
     self.before = try c.decode(NativeSourceSnapshot.self, forKey: .before)
     self.after = try c.decode(NativeSourceSnapshot.self, forKey: .after)
+    self.calculation_change = try c.decode(HostNullable<NativeCalculationChange>.self, forKey: .calculation_change)
   }
-  public init(protocol_version: UInt32, generation: HostSerial, commit: DocumentCommit, before: NativeSourceSnapshot, after: NativeSourceSnapshot) {
+  public init(protocol_version: UInt32, generation: HostSerial, commit: DocumentCommit, before: NativeSourceSnapshot, after: NativeSourceSnapshot, calculation_change: HostNullable<NativeCalculationChange>) {
     self.protocol_version = protocol_version
     self.generation = generation
     self.commit = commit
     self.before = before
     self.after = after
+    self.calculation_change = calculation_change
   }
 }

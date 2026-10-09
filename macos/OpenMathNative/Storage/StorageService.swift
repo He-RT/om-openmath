@@ -104,9 +104,21 @@ actor StorageService {
     guard closeTask==nil,let writer=documents[id] else { throw StorageError.closing }
     return try await writer.sourceCall { try $0.readHead() }
   }
-  func commitSource(_ plan:NativeSourceCommit,faults:StorageFaults = .init()) async throws ->NativeDurableSourceReceipt {
+  func admitSource(_ plan:NativeSourceCommit,runtime:String,faults:StorageFaults = .init()) async throws ->NativeSourceAdmission {
+    guard closeTask==nil,let writer=documents[plan.commit.document_id] else {throw StorageError.closing}
+    return try await writer.sourceCall {try $0.admit(plan,runtime:runtime,faults:faults)}
+  }
+  func sourceAdmission(document:String,operation:String) async throws ->NativeSourceAdmission? {
+    guard closeTask==nil,let writer=documents[document] else {throw StorageError.closing}
+    return try await writer.sourceCall {try $0.admission(operation)}
+  }
+  func settleSourceAdmission(document:String,operation:String,cancelled:Bool) async throws ->NativeSourceAdmission {
+    guard closeTask==nil,let writer=documents[document] else {throw StorageError.closing}
+    return try await writer.sourceCall {try $0.settleAdmission(operation,cancelled:cancelled)}
+  }
+  func commitSource(_ plan:NativeSourceCommit,faults:StorageFaults = .init(),controls:SourceCommitControls?=nil) async throws ->NativeDurableSourceReceipt {
     guard closeTask==nil,let writer=documents[plan.commit.document_id] else { throw StorageError.closing }
-    return try await writer.sourceCall { try $0.commit(plan,faults:faults) }
+    return try await writer.sourceCall { try $0.commit(plan,faults:faults,controls:controls) }
   }
   func calculationSettings(document:String) async throws ->CalculationReceipt? {
     guard closeTask==nil,let writer=documents[document] else {throw StorageError.closing}

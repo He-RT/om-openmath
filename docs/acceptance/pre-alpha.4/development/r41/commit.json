@@ -1,0 +1,216 @@
+{
+  "task": "R4.1.06",
+  "development_only": true,
+  "runtime_version": "0.1.0-pre-alpha.3",
+  "working_tree_base": "9cae3bc86857bb3dcb387773ef2a26a5ae610223",
+  "recorded_utc": "2026-10-09T17:47:57.269588+00:00",
+  "generated_dtos": 192,
+  "rust_host_ABI_tests_passed": 63,
+  "c_abi_symbols_verified": 12,
+  "actual_path": "MainActor NSTextView/DraftStore -> Rust source owner/short C ABI barrier -> Swift SQLite admission/COMMIT/readback -> original Rust authority -> sequence-fenced source projection",
+  "fixture_report": {
+    "admission_lost_ack_no_replay": true,
+    "all_admissions": 14,
+    "close_waited_for_io": true,
+    "commit_lost_ack_readback": true,
+    "completed_admissions": 9,
+    "development_only": true,
+    "document_id": "00000000-0000-0000-0000-000000000041",
+    "duplicate_receipt_tamper_rejected": true,
+    "expired_fence_rollback": true,
+    "final_candidate_gate": false,
+    "final_revision": 9,
+    "fixture_root": "/Users/hert/Projects/openmath/target/macos-storage-tests/commit-hOLMZi",
+    "late_marked_overlay_conflict": true,
+    "main_actor_sql": false,
+    "manual_invalid_source": true,
+    "new_input_rollback": true,
+    "operations": 9,
+    "outbox": 9,
+    "own_ack_preserves_newer_draft": true,
+    "post_commit_cancel_keeps_completed": true,
+    "pre_barrier_cancel": true,
+    "pre_fence_cancel": true,
+    "real_marked_text": true,
+    "store_id": "6d8ed2c0-1d02-4916-923c-a41b70388c89",
+    "task": "R4.1.06",
+    "transactions": 9
+  },
+  "test_inputs_and_code": [
+    {
+      "path": "crates/om-host-service/src/document/commit.rs",
+      "bytes": 18916,
+      "sha256": "7744d343f38982995aa288169f93ca89b3f8a7eb8a2e6b089e833cfd59124470"
+    },
+    {
+      "path": "crates/om-host-service/src/document/endpoint.rs",
+      "bytes": 12389,
+      "sha256": "240af0da575c45cbd9d6e548cd520484b6d87d61f8c78af476e49ccab956f712"
+    },
+    {
+      "path": "crates/om-host-service/src/scheduler/source_gate_tests.rs",
+      "bytes": 637,
+      "sha256": "a597749a67b3319e0ba2e5b9e0fa33c87ee974ef182bc947cc72dd85ff5c96f9"
+    },
+    {
+      "path": "macos/OpenMathNative/DraftStore.swift",
+      "bytes": 8454,
+      "sha256": "77900cc0cb6ac0248b2d6b5f7291ada099d576df26429fa606b08d66c236ba99"
+    },
+    {
+      "path": "macos/OpenMathNative/Storage/CommitGate.swift",
+      "bytes": 1626,
+      "sha256": "d70b9a9d22dbb547d8d3819c7ae343288ddb95e8048d36cc31ea6556466a7cbb"
+    },
+    {
+      "path": "macos/OpenMathNative/Storage/CommitPort.swift",
+      "bytes": 14005,
+      "sha256": "2e6e1ad3429360d1aeb1c017b811ba27560cd4bda74f2c6e463534c73b2602c4"
+    },
+    {
+      "path": "macos/OpenMathNative/Storage/SourceAdmissionStore.swift",
+      "bytes": 6070,
+      "sha256": "fea9dbad12abecc52125b45d8dca64bb2bfd957c5623940c3a9d9b64b792a787"
+    },
+    {
+      "path": "macos/OpenMathNative/Editor/DraftTextViewAdapter.swift",
+      "bytes": 2064,
+      "sha256": "4840bc989e088d25243bbfc9ec609d55ac9cf4403c78a07b5972126ecceacd43"
+    },
+    {
+      "path": "macos/OpenMathNativeTests/CommitFixtures/main.swift",
+      "bytes": 14312,
+      "sha256": "4a86e2bce0a7c3112ec8417bb654a2ad5907239ff40b958b103feb44c0ed19ac"
+    },
+    {
+      "path": "macos/Scripts/test-commit-port.sh",
+      "bytes": 1160,
+      "sha256": "5f904cb5f6faac61fb5489ec0fa17356bc62f558457d65e94c77880c916d9f9b"
+    },
+    {
+      "path": "docs/design/native-source-store.schema.json",
+      "bytes": 30522,
+      "sha256": "a53f44a28a513f9dbf23733a6f7d27936109c1c60020de2e43f23b8577e07961"
+    },
+    {
+      "path": "docs/design/native-host-abi.json",
+      "bytes": 3156,
+      "sha256": "f4ad871611586bf4040def6b15289490012c6c7ca5a9273570e5124b617fc260"
+    }
+  ],
+  "logs_and_artifacts": [
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r41/commit-rust-verified.log",
+      "bytes": 8079,
+      "sha256": "5fda663fbf699bd1913ad68af099328122eb441bfab30bdacc307acaacf2ca6a"
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r41/commit-clippy-verified.log",
+      "bytes": 273,
+      "sha256": "f515177a230cae1d25a2540d636d08b69d29f06e3aec775a55a13affa6ff4bad"
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r41/commit-port-report-verified.log",
+      "bytes": 1884,
+      "sha256": "1bc1e580a0cbb24995a03c52888d763128ef27aa97f8f57f4d3496a61a8329b5"
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r41/commit-native-verification.log",
+      "bytes": 2009,
+      "sha256": "5e1a83c480d5a74680793bca38c1a8d21fd21cb329fadca6fb8f4f039cf5d302"
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r41/commit-native-build.log",
+      "bytes": 83377,
+      "sha256": "ac9bd0a5aca5600eab3cf5d6f1ffd37d9e9faf1fc4b48cc6c3fb37a7c79ca501"
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r41/commit-signature-verification.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r41/commit-native-symbols.txt",
+      "bytes": 1489053,
+      "sha256": "9d672a82f98002e957cd1620dbc30eb68950772e41b5ea13aecd1435e6560c3e"
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r41/commit-storage-verification.log",
+      "bytes": 415,
+      "sha256": "b63dff4b39b48f683bbe9f3cc4afe3072e8d9b7fa49e2a7c7352fa817eab4a7f"
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r41/commit-document-verification.log",
+      "bytes": 1348,
+      "sha256": "6ae2f2c76a79a607cb5f892eff8528799ea62b7b762ea06b4516d0eaf5796a5d"
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r41/commit-blob-verification.log",
+      "bytes": 346,
+      "sha256": "9a89749898020daddce76fa2ebd45dc5d088c87e619b0efb00988a924946155c"
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r41/commit-preview-verification.log",
+      "bytes": 2386,
+      "sha256": "ef39083ca61e7eec68608c6112dbb0b6978cda9bdcb68c04109f3a07cad9f6c6"
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r41/commit-python-verification.log",
+      "bytes": 2836,
+      "sha256": "9e00b3394062e343e57b762c9f9a493c52a75d041971c96b9997afdcb6cf07f4"
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r41/commit-wasm-verification.log",
+      "bytes": 234,
+      "sha256": "ebc572be45692596035702d6f8f5a583d51c5404c9b5605cd882b7a469add688"
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r41/commit-deny-verification.log",
+      "bytes": 263032,
+      "sha256": "82052f1205d20b8eda17fb98215c0edf20f9c7edb5df3abcb451c024458fe10f"
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r41/commit-admission-before-fix.log",
+      "bytes": 1665,
+      "sha256": "4308fa4b73ca6c5018ad8fcd1ce46301f4b7e055a0d706c3ee4578cb420227f0"
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r41/commit-restored-settings-test.log",
+      "bytes": 668,
+      "sha256": "c8f01bd448aa3216166a332a93d21c13245b2b04887064ba9125d04cdf5ea683"
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r41/commit-port-admission-expanded.log",
+      "bytes": 1377,
+      "sha256": "6be5f38571101112ffb65b0233d874252b90ddca9a122f7773ff517f81394a74"
+    },
+    {
+      "path": "target/macos-storage-tests/commit-report.json",
+      "bytes": 940,
+      "sha256": "d1cc61d359fae5ee42ebde46d888e671ca39556b1ba199d5b2209f8af24286a9"
+    },
+    {
+      "path": "target/macos-storage-tests/source-plans.json",
+      "bytes": 7949,
+      "sha256": "d8c1b870b85ee8c3b2b7a6c008c6ae68d3c680c30dd102a2101f3e74b329d222"
+    }
+  ],
+  "limits": {
+    "temporary_refs": 128,
+    "temporary_retained_bytes": 33554432,
+    "operation_facts_per_host": 4096,
+    "fence_ttl_ms": 1000,
+    "maximum_fence_ttl_ms": 2000
+  },
+  "completed_operations_retain_full_source_plans": false,
+  "parser_owner_busy_barrier_waits": false,
+  "new_agent_tool_registered": false,
+  "full_notebook_UI_registered": false,
+  "final_candidate_gate": false,
+  "prior_CI": {
+    "run": 37964563531,
+    "sha": "9cae3bc86857bb3dcb387773ef2a26a5ae610223",
+    "conclusion": "success",
+    "scope": "previous docs commit, not this working tree or final candidate"
+  }
+}

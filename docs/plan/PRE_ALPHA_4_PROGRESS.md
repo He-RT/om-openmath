@@ -4,13 +4,13 @@
 
 2026-10-09。目标`0.1.0-pre-alpha.4`，当前运行/公开版本`.3`；开发`dev`，不合main、不改旧标签、本机不启动iOS模拟器。本文只记录结果，规格及完成标准唯一见主计划；计划编写本身不计实施完成。
 
-**当前状态：** 16任务完成（全部R4.0与R4.1.01–05）；其余82任务尚未完成；32最终运行/发行gate全部not_run；candidate未分配，ready_to_publish=false，released_verified=false。设计/HTML/Schema通过不填运行时pass。
+**当前状态：** 17任务完成（全部R4.0与R4.1.01–06）；其余81任务尚未完成；32最终运行/发行gate全部not_run；candidate未分配，ready_to_publish=false，released_verified=false。设计/HTML/Schema通过不填运行时pass。
 
-**下一任务：** R4.1.06 DocCommitPort/编辑屏障/未知提交，随后统一undo及完整checkpoint。合法patch的原内容/新cell ID/权限/期限已冻结，UI/Agent写入尚未注册。继续保持完整同candidate数学/平台门禁。按DAG推进，R4.5.07必须在R4.5.05冻结前完成。
+**下一任务：** R4.1.07统一源码撤销/原生undo group/后续编辑冲突，随后完整checkpoint。DocCommitPort与实际原生屏障/SQLite admission/原ID核对已验证；完整笔记本UI与Agent写入尚未注册。继续保持完整同candidate数学/平台门禁。按DAG推进，R4.5.07必须在R4.5.05冻结前完成。
 
 ## 已知外部前置
 
-- 原生宿主、事件恢复和首代/source物理存储已运行；完整工作台、DocCommitPort、checkpoint及Agent尚未接通，运行源码版本仍`.3`。
+- 原生宿主、事件恢复和首代/source物理存储已运行；DocCommitPort已通过实际跨语言验证；完整工作台、checkpoint及Agent尚未接通，运行源码版本仍`.3`。
 - 上轮只读预检没有Developer ID Application材料；执行阶段复核并按R4.0.11准备接口，真实公开签名门禁不能降级。
 - 现场模型只使用新Registry中的授权测试配置；不自动读取旧Key/环境/profile。当前live gate未运行。
 
@@ -35,8 +35,8 @@
 | [x] [R4.1.02](PRE_ALPHA_4.md#task-r4.1.02) | 权威源码、事务和幂等表 | completed | Rust实际计划→Swift同库事务→Rust实际回执 / 幂等/回滚/失联/UTF8 | c310565 |
 | [x] [R4.1.03](PRE_ALPHA_4.md#task-r4.1.03) | 不可变Blob和资源引用发布 | completed | 分块实际字节/同库refs/临时pin/恢复读取/六SIGKILL点 | 26078d0 |
 | [x] [R4.1.04](PRE_ALPHA_4.md#task-r4.1.04) | 文档操作与非执行失效计划 | completed | 真实parser/owners清理/无cascade / 批量操作 / title/Text epoch / 设置同库 | c72ce17 |
-| [x] [R4.1.05](PRE_ALPHA_4.md#task-r4.1.05) | 冻结Preview与新格身份分配 | completed | 10preview+3ref / 原计划→SQLite→原authority实际回执 / 期限/scope完整性 | 下次补记 |
-| [ ] [R4.1.06](PRE_ALPHA_4.md#task-r4.1.06) | DocCommitPort、编辑屏障与未知提交 | planned | — | — |
+| [x] [R4.1.05](PRE_ALPHA_4.md#task-r4.1.05) | 冻结Preview与新格身份分配 | completed | 10preview+3ref / 原计划→SQLite→原authority实际回执 / 期限/scope完整性 | 22fc708 |
+| [x] [R4.1.06](PRE_ALPHA_4.md#task-r4.1.06) | DocCommitPort、编辑屏障与未知提交 | completed | [实际提交](../acceptance/pre-alpha.4/development/r41/commit.json) / NSTextView+SQLite / 63Rust / Release | 下次补记 |
 | [ ] [R4.1.07](PRE_ALPHA_4.md#task-r4.1.07) | 统一源码撤销和后续编辑冲突 | planned | — | — |
 | [ ] [R4.1.08](PRE_ALPHA_4.md#task-r4.1.08) | 完整可写计算状态与无损codec | planned | — | — |
 | [ ] [R4.1.09](PRE_ALPHA_4.md#task-r4.1.09) | 主KernelWorker、候选接纳和直接取消 | planned | — | — |
@@ -274,3 +274,13 @@ Done依据与覆盖case/proof:
 - 最新host/ABI共54 Rust通过、Clippy、Swift actual frozen port、source/settings/fullsync失联查询、bootstrap六SIGKILL、Blob六发布点、原native ABI/actor/reducer/session、SDK27 ARM64 Release、17Python、纯WASM/deny/生成检查通过。中途raw type/primitive DTO/Arc serde与large enum错误原件保留并修正，不关闭lint。核心crates仍forbid unsafe，不增加第三方数学或3D框架；hmac0.13/sha2_ref0.11为既有lock包直接host依赖，不传入WASM数学核心，MIT/Apache许可检查通过。
 - [preview.json](../acceptance/pre-alpha.4/development/r41/preview.json)保存日志/实际frozen JSON/回执和hash。原c72ce17的CI37936489563全部jobs实际success，旧失败原件不删除；不能填本批新SHA或最终candidate门禁。
 - 下一任务R4.1.06真正DraftStore/IME/fence/commit admission/IOAck/取消和unknown线性化，之后undo/checkpoint/原生工作台/Agent。没有Native UI或Pi提前获得writer入口、Preview成功不表示持久化/计算/文件保存，剩余82任务全部继续原计划。
+
+## R4开发记录 D016 — 实际原生屏障、持久化提交与原ID恢复
+
+- R4.1.06完成：新Mac C ABI内部source union、实际SourceEndpoint/DocumentCommitController、Swift DocCommitPort和MainActor DraftStore接通真实SQLite。open恢复真实source/calculation/config_revision，预览不使用默认常量覆盖恢复配置。192 DTO及12符号同源，CABI/旧iOS协议边界明确，没有Pi写入工具或完整工作台提前注册。
+- 原ID admission在实际文档库耐久记录；source/inverse/receipt/outbox/completed admission原子COMMIT。新输入/IME/过期/stop在短屏障前拒绝，屏障用try_lock不等待source解析，SQL/F_FULLFSYNC不占MainActor。真实数据库14次admission仅9次source提交，transactions/operations/outbox/completed admissions均9，取消/失败没有源码效果。
+- 实际NSTextView TextKit2 marked-text回调保护中文合成，手工未完成语法可保存为source。own ACK丢失按原ID读回后仅确认原序列，较新draft保留；外部source提交后的晚到marked overlay保留且明确conflict。重复进行中的apply不排在SQL后面，终止原ID不复活；完整重复回执被改hash会拒绝。已终止记录不再持有完整source计划，临时scope资源释放但签发计数不回绕。
+- 验证了admission ACK和COMMIT ACK分别丢失、原ID无重放、屏障前输入/TTL/停止/未到fence时停止、COMMIT后stop保持completed及有序close。首轮新增测试实际复现Writing→AwaitingFence和终止admission误Unknown，修复后通过；早期测试误用不存在字段及编辑编译输入导致编译失败的日志保留，没有删除断言/改数学期望/放宽原时限。
+- 63 Rust host/ABI测试、相关全target Clippy/fmt、Swift实际ABI/DTO/reducer/session和提交fixture、SQLite六崩溃/ENOSPC/fullsync失联、Blob六发布中断、原source与preview回归、17Python、纯WASM/deny通过；SDK27 ARM64 Release链接/strict ad-hoc签名和全部12符号实际回读通过。本机未启动iOS模拟器，也未接真实模型/签名公证或宣称最终gate已过。
+- [commit.json](../acceptance/pre-alpha.4/development/r41/commit.json)索引实际fixture DB/回执计数、源码及原日志hash。上一文档提交9cae3bc的CI37964563531全部五jobs成功，仅作该SHA证据；本批新提交的CI与最终candidate仍须独立验证。原有数学和公开`.1/.2/.3`均保留，运行版本仍`.3`，32最终门禁not_run。
+- 接下来R4.1.07统一逆事务/UndoManager/近期200历史与后续编辑冲突；再R4.1.08无损完整计算checkpoint。剩余81项继续完整计划，未缩减原生UI、Agent、模型媒体、现场和发行范围。

@@ -126,6 +126,29 @@ actor NativeHostClient {
       let _:HostJSONValue=try Self.read(packet)
     }
   }
+  func sourceCommand(_ command:NativeSourceHostCommand) async throws ->NativeSourceHostReply {
+    guard let handle else {throw NativeHostClientError.closing}
+    return try await Self.background(NativeHostQueues.control) {
+      let data=try JSONEncoder().encode(command)
+      guard data.count<=2*1024*1024 else {throw NativeHostClientError.invalidReply}
+      let packet=data.withUnsafeBytes {om_host_source_command(handle.pointer,$0.bindMemory(to:UInt8.self).baseAddress,$0.count)}
+      let reply:NativeSourceHostReply=try Self.read(packet)
+      guard reply.protocol_version==1 else {throw NativeHostClientError.incompatibleVersion}
+      return reply
+    }
+  }
+  /// Prepared off MainActor; execution holds the native fence lock only for this short owner RPC.
+  func sourceBarrier(operation:String,fenceID:String) async throws ->(@Sendable ()throws->Void) {
+    guard let handle else {throw NativeHostClientError.closing}
+    let command=NativeSourceHostCommand.source_barrier(.init(type:.source_barrier,operation_id:operation,fence_id:fenceID))
+    let data=try JSONEncoder().encode(command)
+    return {
+      precondition(!Thread.isMainThread)
+      let packet=data.withUnsafeBytes {om_host_source_command(handle.pointer,$0.bindMemory(to:UInt8.self).baseAddress,$0.count)}
+      let reply:NativeSourceHostReply=try Self.read(packet)
+      guard reply.operation.value?.operation_id==operation,reply.operation.value?.phase == .committing else {throw NativeHostClientError.invalidReply}
+    }
+  }
   /// This queue is independent of event polling and submission, and of the Rust CAS workers.
   func cancel(operation: String) async throws -> Bool {
     guard let handle else { throw NativeHostClientError.closing }

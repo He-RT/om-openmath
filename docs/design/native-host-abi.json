@@ -44,6 +44,11 @@
       "om_host_handle *host, const unsigned char *query_json, size_t len"
     ],
     [
+      "om_host_buffer",
+      "om_host_source_command",
+      "om_host_handle *host, const unsigned char *json, size_t len"
+    ],
+    [
       "int32_t",
       "om_host_cancel",
       "om_host_handle *host, const unsigned char *operation_id, size_t len"
@@ -83,5 +88,6 @@
       "-4": "internal error/panic"
     }
   },
-  "read_snapshot": "Trusted host readback, independent of admission/event queues. Bounded immutable facts and sequence fence; no new operation or CAS/IO. Serialize after short projection lock."
+  "read_snapshot": "Trusted host readback, independent of admission/event queues. Bounded immutable facts and sequence fence; no new operation or CAS/IO. Serialize after short projection lock.",
+  "source_command": "Trusted native physical-store/editor port; closed typed source command union. Model arguments only enter dedicated preview service; no arbitrary IO/SQL/path. Direct final barrier/cancel share source owner lock."
 }

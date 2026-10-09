@@ -258,6 +258,17 @@ impl<T: Serialize> ReferenceRegistry<T> {
         entry.bytes = 0;
         Ok(())
     }
+    /// Release unusable temporary values when trusted scope changes, keeping the issuer counter.
+    /// Durable operation identity and receipt retention belong to the document operation owner.
+    pub fn retain_scope(&mut self, current: &ReferenceScope) {
+        self.entries.retain(|_, entry| {
+            let keep = entry.scope == *current;
+            if !keep {
+                self.bytes -= entry.bytes;
+            }
+            keep
+        });
+    }
     fn verify(&self, token: &str) -> Result<(), ReferenceError> {
         let mut parts = token.split('-');
         let purpose = parts.next().ok_or(ReferenceError::Invalid)?;

@@ -129,6 +129,7 @@ impl PreviewService {
         {
             return Err(PreviewError::StaleSnapshot);
         }
+        self.references.retain_scope(scope);
         Ok(self.references.issue(
             ReferenceKind::Snapshot,
             scope.clone(),

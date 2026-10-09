@@ -37,6 +37,8 @@ jobs:
         run: bash macos/Scripts/test-blobs.sh > target/macos-ci-evidence/blobs.log 2>&1
       - name: 冻结预览、引用与实际 SQLite 回执
         run: bash macos/Scripts/test-preview.sh > target/macos-ci-evidence/preview.log 2>&1
+      - name: 原生编辑屏障、真实源码提交与原 ID 回执恢复
+        run: bash macos/Scripts/test-commit-port.sh > target/macos-ci-evidence/commit-port.log 2>&1
       - name: 校验开发包签名和实际 ABI 符号
         run: |
           codesign --verify --deep --strict 'target/macos-native/Build/Products/Release/OpenMath Preview.app'

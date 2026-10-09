@@ -10,10 +10,12 @@ final class DocumentStore {
   private let db:SQLiteDatabase
   private let url:URL
   private let identity:StoreIdentity
+  private let admissions:SourceAdmissionStore
   init(db:SQLiteDatabase,url:URL,identity:StoreIdentity) throws {
     guard identity.kind=="document",identity.documentID != nil else { throw StorageError.corruptIdentity }
     self.db=db;self.url=url;self.identity=identity
     try DocumentSchema.ensure(db)
+    self.admissions=try SourceAdmissionStore(db:db,identity:identity)
   }
   private func encoded<T:Encodable>(_ value:T) throws ->Data {
     let bytes=try JSONEncoder().encode(value)
@@ -99,13 +101,31 @@ final class DocumentStore {
     if result != nil { try db.confirmCommittedBytes() }
     return result
   }
-  func commit(_ plan:NativeSourceCommit,faults:StorageFaults) throws ->NativeDurableSourceReceipt {
+  func admit(_ plan:NativeSourceCommit,runtime:String,faults:StorageFaults = .init()) throws ->NativeSourceAdmission {
+    try admissions.admit(plan,runtime:runtime,completed:query(plan.commit.operation_id),faults:faults)
+  }
+  func admission(_ operation:String) throws ->NativeSourceAdmission? {
+    if let actual=try query(operation) {
+      return NativeSourceAdmission(protocol_version:1,document_id:identity.documentID!,operation_id:operation,request_hash:actual.receipt.request_hash,phase:.completed,created_by_runtime:(try admissions.query(operation))?.created_by_runtime ?? "recovered",receipt:.init(actual))
+    }
+    let state=try admissions.query(operation)
+    if state != nil {try db.confirmCommittedBytes()}
+    return state
+  }
+  func settleAdmission(_ operation:String,cancelled:Bool) throws ->NativeSourceAdmission {
+    guard try query(operation)==nil else {throw StorageError.idempotencyConflict}
+    return try admissions.settle(operation,cancelled:cancelled)
+  }
+  func commit(_ plan:NativeSourceCommit,faults:StorageFaults,controls:SourceCommitControls?=nil) throws ->NativeDurableSourceReceipt {
     try SourceValidation.commit(plan)
     guard plan.commit.document_id==identity.documentID else { throw StorageError.corruptIdentity }
     if let previous=try query(plan.commit.operation_id) {
       guard previous.receipt.request_hash==plan.commit.request_hash else { throw StorageError.idempotencyConflict }
       return previous
     }
+    let admitted=try admissions.admit(plan,runtime:controls?.runtime ?? "trusted-host-direct",completed:nil)
+    guard admitted.phase == .accepted else {throw StorageError.idempotencyConflict}
+    if let controls {guard admitted.created_by_runtime==controls.runtime else {throw StorageError.idempotencyConflict}}
     var storedPlan=plan
     let clock=ISO8601DateFormatter();clock.formatOptions=[.withInternetDateTime,.withFractionalSeconds]
     storedPlan.commit.committed_at=clock.string(from:Date()) // trusted physical commit time, never model/fixture time
@@ -128,7 +148,9 @@ final class DocumentStore {
       try db.statement("INSERT INTO operation_transitions VALUES(?,?,1,'completed',?)",[.text(record.document_id),.text(record.operation_id),.text(Self.digest(receiptBytes))])
       try db.statement("INSERT INTO outbox VALUES(?,?,?,?,?,0)",[.text(record.outbox_event_id),.text(record.document_id),.text(record.operation_id),.blob(receiptBytes),.text(Self.digest(receiptBytes))])
       try db.statement("UPDATE document_head SET revision=?,execution_epoch=?,snapshot_hash=?,active_checkpoint_ref=NULL WHERE document_id=? AND revision=? AND snapshot_hash=?",[.integer(Int64(record.committed_revision.value)),.integer(Int64(record.execution_epoch.value)),.text(record.snapshot_hash),.text(record.document_id),.integer(Int64(record.base_revision.value)),.text(plan.before.snapshot_hash)])
+      try admissions.transition(record.operation_id,.completed)
       try faults.reach("before_source_commit")
+      if let controls {try controls.gate.enter(controls.ownerBarrier)}
     }
     do {
       try faults.reach("source_committed")

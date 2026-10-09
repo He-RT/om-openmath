@@ -753,6 +753,631 @@
         "after"
       ],
       "additionalProperties": false
+    },
+    "NativeEditorTarget": {
+      "type": "object",
+      "properties": {
+        "cell_id": {
+          "$ref": "#/$defs/CellIdentity"
+        },
+        "editor_generation": {
+          "$ref": "#/$defs/Serial"
+        },
+        "draft_sequence": {
+          "$ref": "#/$defs/Serial"
+        },
+        "base_cell_revision": {
+          "$ref": "#/$defs/Serial"
+        },
+        "source_hash": {
+          "$ref": "#/$defs/Sha256"
+        },
+        "is_composing": {
+          "type": "boolean"
+        },
+        "is_dirty": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "cell_id",
+        "editor_generation",
+        "draft_sequence",
+        "base_cell_revision",
+        "source_hash",
+        "is_composing",
+        "is_dirty"
+      ],
+      "additionalProperties": false
+    },
+    "NativeEditorFence": {
+      "type": "object",
+      "properties": {
+        "protocol_version": {
+          "const": 1
+        },
+        "fence_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "runtime_instance_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "document_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "document_generation": {
+          "$ref": "#/$defs/Serial"
+        },
+        "source_revision": {
+          "$ref": "#/$defs/Serial"
+        },
+        "source_snapshot_hash": {
+          "$ref": "#/$defs/Sha256"
+        },
+        "issued_ms": {
+          "$ref": "#/$defs/Serial"
+        },
+        "expires_ms": {
+          "$ref": "#/$defs/Serial"
+        },
+        "targets": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/NativeEditorTarget"
+          },
+          "maxItems": 1000
+        }
+      },
+      "required": [
+        "protocol_version",
+        "fence_id",
+        "runtime_instance_id",
+        "document_id",
+        "document_generation",
+        "source_revision",
+        "source_snapshot_hash",
+        "issued_ms",
+        "expires_ms",
+        "targets"
+      ],
+      "additionalProperties": false
+    },
+    "NativeSourceAdmission": {
+      "type": "object",
+      "properties": {
+        "protocol_version": {
+          "const": 1
+        },
+        "document_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "operation_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "request_hash": {
+          "$ref": "#/$defs/Sha256"
+        },
+        "phase": {
+          "type": "string",
+          "enum": [
+            "accepted",
+            "completed",
+            "cancelled",
+            "failed",
+            "unknown"
+          ]
+        },
+        "created_by_runtime": {
+          "$ref": "#/$defs/Identity"
+        },
+        "receipt": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/NativeDurableSourceReceipt"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "protocol_version",
+        "document_id",
+        "operation_id",
+        "request_hash",
+        "phase",
+        "created_by_runtime",
+        "receipt"
+      ],
+      "additionalProperties": false
+    },
+    "NativeCommitState": {
+      "type": "object",
+      "properties": {
+        "protocol_version": {
+          "const": 1
+        },
+        "document_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "operation_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "request_hash": {
+          "$ref": "#/$defs/Sha256"
+        },
+        "phase": {
+          "type": "string",
+          "enum": [
+            "awaiting_admission",
+            "awaiting_fence",
+            "writing",
+            "committing",
+            "unknown",
+            "completed",
+            "cancelled",
+            "failed"
+          ]
+        },
+        "cancel_requested": {
+          "type": "boolean"
+        },
+        "receipt": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/NativeDurableSourceReceipt"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "protocol_version",
+        "document_id",
+        "operation_id",
+        "request_hash",
+        "phase",
+        "cancel_requested",
+        "receipt"
+      ],
+      "additionalProperties": false
+    },
+    "NativeEditorState": {
+      "type": "object",
+      "properties": {
+        "runtime_instance_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "document_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "document_generation": {
+          "$ref": "#/$defs/Serial"
+        },
+        "source_revision": {
+          "$ref": "#/$defs/Serial"
+        },
+        "targets": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/NativeEditorTarget"
+          },
+          "maxItems": 1000
+        }
+      },
+      "required": [
+        "runtime_instance_id",
+        "document_id",
+        "document_generation",
+        "source_revision",
+        "targets"
+      ],
+      "additionalProperties": false
+    },
+    "SourceOpen": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "const": "source_open"
+        },
+        "snapshot": {
+          "$ref": "#/$defs/NativeSourceSnapshot"
+        },
+        "store_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "calculation": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/NativeCalculationSettings"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "config_revision": {
+          "$ref": "#/$defs/Serial"
+        }
+      },
+      "required": [
+        "type",
+        "snapshot",
+        "store_id",
+        "calculation",
+        "config_revision"
+      ],
+      "additionalProperties": false
+    },
+    "SourceRead": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "const": "source_read"
+        }
+      },
+      "required": [
+        "type"
+      ],
+      "additionalProperties": false
+    },
+    "SourceSnapshotRef": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "const": "source_snapshot_ref"
+        },
+        "complete_cell_ids": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/CellIdentity"
+          },
+          "maxItems": 10000
+        }
+      },
+      "required": [
+        "type",
+        "complete_cell_ids"
+      ],
+      "additionalProperties": false
+    },
+    "SourcePreview": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "const": "source_preview"
+        },
+        "arguments": {
+          "type": "object"
+        }
+      },
+      "required": [
+        "type",
+        "arguments"
+      ],
+      "additionalProperties": false
+    },
+    "SourceBegin": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "const": "source_begin"
+        },
+        "preview_ref": {
+          "$ref": "#/$defs/Identity"
+        }
+      },
+      "required": [
+        "type",
+        "preview_ref"
+      ],
+      "additionalProperties": false
+    },
+    "SourceAdmitted": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "const": "source_admitted"
+        },
+        "operation_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "admission": {
+          "$ref": "#/$defs/NativeSourceAdmission"
+        }
+      },
+      "required": [
+        "type",
+        "operation_id",
+        "admission"
+      ],
+      "additionalProperties": false
+    },
+    "SourceFenced": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "const": "source_fenced"
+        },
+        "operation_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "fence": {
+          "$ref": "#/$defs/NativeEditorFence"
+        }
+      },
+      "required": [
+        "type",
+        "operation_id",
+        "fence"
+      ],
+      "additionalProperties": false
+    },
+    "SourceBarrier": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "const": "source_barrier"
+        },
+        "operation_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "fence_id": {
+          "$ref": "#/$defs/Identity"
+        }
+      },
+      "required": [
+        "type",
+        "operation_id",
+        "fence_id"
+      ],
+      "additionalProperties": false
+    },
+    "SourceUnknown": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "const": "source_unknown"
+        },
+        "operation_id": {
+          "$ref": "#/$defs/Identity"
+        }
+      },
+      "required": [
+        "type",
+        "operation_id"
+      ],
+      "additionalProperties": false
+    },
+    "SourceCompleted": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "const": "source_completed"
+        },
+        "operation_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "receipt": {
+          "$ref": "#/$defs/NativeDurableSourceReceipt"
+        }
+      },
+      "required": [
+        "type",
+        "operation_id",
+        "receipt"
+      ],
+      "additionalProperties": false
+    },
+    "SourceSettled": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "const": "source_settled"
+        },
+        "operation_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "cancelled": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "type",
+        "operation_id",
+        "cancelled"
+      ],
+      "additionalProperties": false
+    },
+    "SourceStatus": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "const": "source_status"
+        },
+        "operation_id": {
+          "$ref": "#/$defs/Identity"
+        }
+      },
+      "required": [
+        "type",
+        "operation_id"
+      ],
+      "additionalProperties": false
+    },
+    "SourceEditorChanged": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "const": "source_editor_changed"
+        },
+        "state": {
+          "$ref": "#/$defs/NativeEditorState"
+        }
+      },
+      "required": [
+        "type",
+        "state"
+      ],
+      "additionalProperties": false
+    },
+    "NativeSourceHostCommand": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/SourceOpen"
+        },
+        {
+          "$ref": "#/$defs/SourceRead"
+        },
+        {
+          "$ref": "#/$defs/SourceSnapshotRef"
+        },
+        {
+          "$ref": "#/$defs/SourcePreview"
+        },
+        {
+          "$ref": "#/$defs/SourceBegin"
+        },
+        {
+          "$ref": "#/$defs/SourceAdmitted"
+        },
+        {
+          "$ref": "#/$defs/SourceFenced"
+        },
+        {
+          "$ref": "#/$defs/SourceBarrier"
+        },
+        {
+          "$ref": "#/$defs/SourceUnknown"
+        },
+        {
+          "$ref": "#/$defs/SourceCompleted"
+        },
+        {
+          "$ref": "#/$defs/SourceSettled"
+        },
+        {
+          "$ref": "#/$defs/SourceStatus"
+        },
+        {
+          "$ref": "#/$defs/SourceEditorChanged"
+        },
+        {
+          "$ref": "#/$defs/SourcePrepareManual"
+        }
+      ]
+    },
+    "NativeSourceHostReply": {
+      "type": "object",
+      "properties": {
+        "protocol_version": {
+          "const": 1
+        },
+        "kind": {
+          "type": "string",
+          "enum": [
+            "opened",
+            "source",
+            "snapshot_ref",
+            "preview",
+            "commit_plan",
+            "state",
+            "editor_updated"
+          ]
+        },
+        "document_generation": {
+          "$ref": "#/$defs/Serial"
+        },
+        "snapshot": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/NativeSourceSnapshot"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "plan": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/NativeSourceCommit"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "preview": {
+          "anyOf": [
+            {
+              "type": "object"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "reference": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Identity"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "operation": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/NativeCommitState"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "owner_time_ms": {
+          "$ref": "#/$defs/Serial"
+        }
+      },
+      "required": [
+        "protocol_version",
+        "kind",
+        "document_generation",
+        "snapshot",
+        "plan",
+        "preview",
+        "reference",
+        "operation",
+        "owner_time_ms"
+      ],
+      "additionalProperties": false
+    },
+    "SourcePrepareManual": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "const": "source_prepare_manual"
+        },
+        "operations": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/NativeSourceOperation"
+          },
+          "minItems": 1,
+          "maxItems": 64
+        }
+      },
+      "required": [
+        "type",
+        "operations"
+      ],
+      "additionalProperties": false
     }
   }
 }

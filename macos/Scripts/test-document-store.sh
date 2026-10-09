@@ -2,6 +2,10 @@
 set -euo pipefail
 root="$(cd "$(dirname "$0")/../.." && pwd)"
 cd "$root"
+storage_sources=()
+for file in macos/OpenMathNative/Storage/*.swift; do
+  if [[ "$file" != */CommitPort.swift ]]; then storage_sources+=("$file"); fi
+done
 mkdir -p target/macos-storage-tests
 cargo run -p om-host-service --example source_store_contract --locked \
   > target/macos-storage-tests/source-plans.json
@@ -10,7 +14,7 @@ clang -std=c11 -Wall -Wextra -Werror -dynamiclib macos/OpenMathNativeTests/Stora
 swiftc -swift-version 6 -parse-as-library -target arm64-apple-macos27.0 \
   -import-objc-header macos/OpenMathNativeTests/StorageFixtures/SyncProbe.h \
   macos/OpenMathNative/Generated/HostContractSupport.swift macos/OpenMathNative/Generated/Contracts/*.swift \
-  macos/OpenMathNative/Storage/*.swift macos/OpenMathNativeTests/DocumentFixtures/main.swift \
+  "${storage_sources[@]}" macos/OpenMathNativeTests/DocumentFixtures/main.swift \
   -L target/macos-storage-tests -lStorageSyncProbe -Xlinker -rpath -Xlinker "$root/target/macos-storage-tests" \
   -o target/macos-storage-tests/document-fixtures
 attempt_root=$(mktemp -d "$root/target/macos-storage-tests/document-XXXXXX")

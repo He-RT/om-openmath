@@ -42,7 +42,10 @@ fn code(error: &str) -> HostErrorCode {
     match error {
         "INVALID_REFERENCE" | "DUPLICATE_OPERATION" => HostErrorCode::InvalidReference,
         "PERMISSION_DENIED" => HostErrorCode::PermissionDenied,
-        "STALE_DOCUMENT" | "STALE_RUNTIME" | "STALE_SOURCE" => HostErrorCode::StaleDocument,
+        "STALE_DOCUMENT" | "STALE_RUNTIME" | "STALE_SOURCE" | "STALE_SNAPSHOT"
+        | "PREVIEW_MISMATCH" => HostErrorCode::StaleDocument,
+        "EDITING_BUSY" => HostErrorCode::EditingBusy,
+        "OPERATION_IN_PROGRESS" => HostErrorCode::NotAvailable,
         "HOST_CLOSING" | "NOT_AVAILABLE" | "CONTEXT_NOT_READY" => HostErrorCode::NotAvailable,
         "BUDGET_EXCEEDED" => HostErrorCode::BudgetExceeded,
         "CANCELLED" => HostErrorCode::Cancelled,
@@ -65,7 +68,7 @@ fn failure(error: &str) -> OmHostBuffer {
             field_path: Nullable(None),
             operation_ref: Nullable(None),
             outcome_known: true,
-            retryable: false,
+            retryable: matches!(error, "EDITING_BUSY" | "OPERATION_IN_PROGRESS"),
         },
     })
 }
@@ -180,6 +183,23 @@ pub unsafe extern "C" fn om_host_read_snapshot(
         guard
             .host()
             .read_snapshot(&unsafe { copied_input(json, len, protocol::MAX_CONTROL_BYTES) }?)
+    })
+}
+/// Trusted source/editor/physical-store control port; JSON is copied and decoded in safe Rust.
+/// # Safety
+/// `json` must point to len readable bytes for this call; NULL only for zero length.
+#[unsafe(no_mangle)]
+pub unsafe extern "C" fn om_host_source_command(
+    host: *mut OmHostHandle,
+    json: *const u8,
+    len: usize,
+) -> OmHostBuffer {
+    packet(|| {
+        let guard = registry::acquire(host, false).map_err(str::to_owned)?;
+        // SAFETY: exported readable-buffer contract, bounded copy before any deferred use.
+        guard
+            .host()
+            .source_command(&unsafe { copied_input(json, len, protocol::MAX_CONTROL_BYTES) }?)
     })
 }
 /// Signal the operation directly. 1=signalled, 0=terminal; negative codes are in the C header.

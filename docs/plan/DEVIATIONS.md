@@ -434,3 +434,11 @@ L2使用精确标称GM分数、50位FindRoot/1000迭代和真实残差，报告�
 - native-preview.schema.json落实agent-tools的source/patch和六种patch参数，兼容原type/match等字段名。生成器对Rust关键字使用raw identifier（JSON仍原名），动态assigned_cell_ids为BTreeMap/Swift typed map；不是新Pi自定义协议。结构校验不替代scope/grant/actual read completeness/native editor fence。
 - snapshot/preview refs只在host runtime内保存原值，使用host安全entropy提供的key签发HMAC-SHA256 ID及严格TTL/scope；自有测试的固定key不进入产品runtime。直接host依赖hmac=0.13.0/sha2_ref=0.11.0复用已锁版本（MIT/Apache），核心数学/WASM依赖不改变；此前hash使用sha2=0.10.9保持原canonical source算法。
 - source-only检查绝无committable ref。patch原expected_source_hash永远对原UTF8，fragment匹配按操作顺序并处理重叠；full update必须有原完整曝光。冻结plan包含原source/inverse/实际影响/new IDs和完整owner scope，重复提交只解析同原计划，不补最新草稿。active reference与durable operation账本为不同身份，幂等核对仍由DocCommitPort先查实际存储，不能凭过期ref自动重放。
+
+### R4-D011：物理admission、原生提交屏障与原ID核对（2026-10-10）
+
+- 尚未公开的Mac ABI1新增`om_host_source_command`，封闭的宿主内部union同步生成192个Rust/Swift DTO。open携带实际存储回读的source/calculation/config_revision，恢复预览使用真实常量/方言设置；模型仍只经过单独preview参数，不接受SQL、路径、权限或编辑屏障。getrandom=0.4.3是既有lock的直接host依赖，用于生产ref密钥和手工操作ID；核心WASM数学图不引入系统熵。
+- SourceAdmissionStore在同文档库先耐久记录原ID/request_hash/实际runtime/冻结plan，源码/完整inverse/receipt/outbox和completed admission再在单笔SQLite事务内提交。原source completed表不改为混合半完成行，早期状态在source_admissions/source_admission_transitions中；连续转换及最终phase均校验。旧runtime或未知效果禁止重放，已取消/失败不复活；原ID完整回执先查，重复admission不倒退写入/committing/unknown状态。
+- DraftStore以UTF8身份管理MainActor草稿和原序列。实际NSTextView marked-text生命周期同步报告，即使文本字节未变也不能绕过合成保护；fence只冻结目标编辑代次/序列/基线和短期限。Swift短锁检查新输入/停止，再调用Rust短owner屏障；source owner繁忙时try_lock拒绝，绝不持有编辑锁等待解析、SQL或同步。物理COMMIT完成后确认才能推进权威revision，较新输入和marked overlay不被覆盖。
+- admission或COMMIT确认丢失均保留原ID，`unresolvedOperation/reconcile`读取实际健康存储；仅live port有“source IO从未开始”的明确事实时才可核对admission后结束该原操作。重启核对由R4.1.12完成，不凭内存阶段推测上个进程效果。COMMIT后stop只停止后续，close先结算实际在途IO，再消费host/storage。已终止操作释放完整source计划，保留有界轻量事实（4096）；临时scope改变释放不可用ref，不重置签发计数。
+- 本批不注册Pi文档写入工具、不开放完整笔记本工作台或文件保存，不把内部端口/fixture通过算成最终候选gate。实际回归、失败原件和task Done证据见任务进度及R4.1.06索引。

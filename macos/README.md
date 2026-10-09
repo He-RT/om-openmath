@@ -5,7 +5,7 @@
 ## 当前可用
 
 - 可复现的Xcode27/macOS27 ARM64工程和SwiftUI/AppKit开发窗口。
-- 独立`om-apple-ffi`静态库，实际C ABI/内核元数据/版本读回；完整会话、文档事务和事件泵尚待后续任务。
+- 独立`om-apple-ffi`静态库，实际隔离计算、内核元数据、后台事件泵与原 ID 状态读回；原生笔记本工作台和完整计算 checkpoint 继续按计划接入。
 - 固定Pi/Node/Swift依赖及原许可审计；此阶段未将Pi helper接入或嵌入应用。
 
 ## 构建
@@ -47,10 +47,14 @@ SQLite首代存储已实现，可运行 `bash macos/Scripts/test-storage.sh`。�
 
 运行 `bash macos/Scripts/test-document-store.sh` 可验证Rust权威source计划→Swift SQLite原子事务→Rust实际回执的完整数据路径。同库保存源码、反向快照、操作回执与outbox，重复原ID不重复写入；不同内容/旧修订/非法计划拒绝。测试包含中途回滚、提交后失联、真实全刷新失败及原ID恢复，确认UTF8/Unicode cell IDs不被归一化。
 
-这一阶段已有真正source存储端口；笔记本UI/Agent修改仍等待DocCommitPort和编辑屏障，不能直接调用物理writer绕过权限。C ABI可执行body暂未开放写入。较大source需要后续Blob协议，当前超限会明确拒绝。
+这一阶段已有真正source存储端口，以及可信原生内部使用的DocCommitPort与编辑屏障；完整笔记本UI/Agent尚在后续任务接入，不能直接调用物理writer绕过权限。模型可执行body暂未开放写入。较大source需要后续Blob协议，当前超限会明确拒绝。
 
 不可变资源基础可运行 `bash macos/Scripts/test-blobs.sh` 验证。128MiB单件按64KiB复制/散列，完整同步后不覆盖发布；读取每页至多1MiB，并校验真实hash/length。数据库引用、内存publication pin和reader保留是不同事实；重启可从已存引用读回原字节，但不恢复旧pin授权。错误hash、损坏目标、输入变化和缺文件不会当ready，完整GC/媒体解码/工具scope仍按后续任务接入。
 
-源码操作基础已支持在临时文档一次验证 insert/update/delete/move/rename，真实依赖/循环/定义冲突分析不求值。计算worker接纳后可一次应用source并清旧owner，保留历史标stale；title/Text和prose移位不清数学值。actual settings转移与source同库确认，locale不混为execution_epoch。真正可提交preview/grants/editor fence及UI/Agent修改入口仍按R4.1.05/06接入。
+源码操作基础已支持在临时文档一次验证 insert/update/delete/move/rename，真实依赖/循环/定义冲突分析不求值。计算worker接纳后可一次应用source并清旧owner，保留历史标stale；title/Text和prose移位不清数学值。actual settings转移与source同库确认，locale不混为execution_epoch。冻结preview与原生fence已接通可信内部端口，UI/Agent修改入口继续按后续任务注册。
 
-冻结预览基础可运行 `bash macos/Scripts/test-preview.sh`。source只检查，patch用原snapshot完整校验并分配新cell ID；invalid/source-only不会有可提交ref。真ref绑定runtime/source/permission/editor-state和期限，返回原不可变计划；actual SQLite端口回读由原Rust文档核验。这里仅完成preview数据层，原生编辑屏障、durable admission及真正UI/Agent写入留R4.1.06，普通parse成功不表示执行或保存。
+冻结预览基础可运行 `bash macos/Scripts/test-preview.sh`。source只检查，patch用原snapshot完整校验并分配新cell ID；invalid/source-only不会有可提交ref。真ref绑定runtime/source/permission/editor-state和期限，返回原不可变计划；actual SQLite端口回读由原Rust文档核验。普通parse成功不表示执行或文件保存。
+
+运行 `bash macos/Scripts/test-commit-port.sh` 验证实际C ABI、MainActor上的NSTextView与SQLite提交链路。Swift负责原生草稿/合成状态和物理存储，Rust负责当前源、冻结计划、原ID和最终提交屏障；`.source_*`是封闭的宿主内部命令，不是模型可调用工具。手工草稿可以保留未完成语法，marked text不会自动提交。最终屏障只做短状态检查：解析owner忙时拒绝而不等待，SQLite及F_FULLFSYNC期间主线程仍可处理新输入和停止。
+
+确认丢失时通过`unresolvedOperation()`取得原ID并`reconcile`读取实际存储。耐久admission、source COMMIT与文件保存是不同事实；同ID重复或已取消/失败不能恢复为新写入，COMMIT后的停止不伪称撤销。确认只推进对应草稿序列，较新的输入/IME继续保留；关闭须先等待DocCommitPort的在途IO，再关闭host和storage。已结束操作只保留有界小回执，完整原计划在SQLite中，旧临时scope资源及时释放；单host生命周期最多4096项操作，达到上限明确拒绝。完整撤销、重启恢复、计算接纳、文件与原生工作台仍待对应任务完成。

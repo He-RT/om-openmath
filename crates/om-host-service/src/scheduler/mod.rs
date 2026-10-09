@@ -1,6 +1,8 @@
 //! Safe native coordinator with separate bounded control, kernel, editor and auxiliary queues.
 mod events;
 mod operations;
+#[cfg(test)]
+mod source_gate_tests;
 mod workers;
 use crate::protocol::{Nullable, generated::*, wire};
 use events::Events;
@@ -27,6 +29,8 @@ pub(crate) enum Control {
     Stop,
 }
 struct Shared {
+    source: Mutex<Option<crate::document::endpoint::SourceEndpoint>>,
+    source_generation: Mutex<crate::protocol::Serial>,
     admission: Mutex<()>,
     projection: Mutex<HostPhase>,
     closed: AtomicBool,
@@ -46,6 +50,8 @@ impl NativeHost {
         // Public safe callers cannot bypass bounds by constructing a DTO directly.
         wire::decode_init(&serde_json::to_vec(&init).map_err(|_| "INVALID_ARGUMENT")?)?;
         let shared = Arc::new(Shared {
+            source: Mutex::new(None),
+            source_generation: Mutex::new(crate::protocol::Serial::new(0)?),
             admission: Mutex::new(()),
             projection: Mutex::new(HostPhase::Starting),
             closed: AtomicBool::new(false),
@@ -167,6 +173,16 @@ impl NativeHost {
     }
     /// Direct cancellation is independent of control and CAS queues.
     pub fn cancel(&self, operation: &str) -> Result<bool, String> {
+        if let Some(source) = self
+            .shared
+            .source
+            .lock()
+            .map_err(|_| "INTERNAL_ERROR")?
+            .as_mut()
+            && let Some(result) = source.cancel(operation)
+        {
+            return Ok(result);
+        }
         let _projection = self
             .shared
             .projection
@@ -183,6 +199,54 @@ impl NativeHost {
             .events
             .poll(wait_ms, max_bytes)
             .map_err(str::to_owned)
+    }
+    /// Host-internal source port: physical store/editor duties are isolated from model tools.
+    pub fn source_command(&self, bytes: &[u8]) -> Result<NativeSourceHostReply, String> {
+        if self.shared.closed.load(Ordering::Acquire) {
+            return Err("HOST_CLOSING".into());
+        }
+        let command = crate::document::endpoint::decode_source_command(bytes)?;
+        // The physical writer holds the native editor fence lock during this final short call.
+        // Never wait there behind parsing/preview; reject so SQLite rolls back and typing resumes.
+        let mut slot = if matches!(&command, NativeSourceHostCommand::SourceBarrier(_)) {
+            self.shared.source.try_lock().map_err(|error| match error {
+                std::sync::TryLockError::WouldBlock => "EDITING_BUSY",
+                std::sync::TryLockError::Poisoned(_) => "INTERNAL_ERROR",
+            })?
+        } else {
+            self.shared.source.lock().map_err(|_| "INTERNAL_ERROR")?
+        };
+        if let NativeSourceHostCommand::SourceOpen(body) = command {
+            if slot.is_some() {
+                return Err("SOURCE_ALREADY_OPEN".into());
+            }
+            let mut generation = self
+                .shared
+                .source_generation
+                .lock()
+                .map_err(|_| "INTERNAL_ERROR")?;
+            *generation = generation.checked_next()?;
+            *slot = Some(crate::document::endpoint::SourceEndpoint::open(
+                body.snapshot.clone(),
+                body.store_id,
+                self.shared.runtime.clone(),
+                *generation,
+                body.calculation.0,
+                body.config_revision,
+            )?);
+            return Ok(NativeSourceHostReply {
+                protocol_version: 1,
+                kind: NativeSourceHostReplyKind::Opened,
+                owner_time_ms: crate::protocol::Serial::new(0)?,
+                document_generation: *generation,
+                snapshot: Nullable(Some(body.snapshot)),
+                plan: Nullable(None),
+                preview: Nullable(None),
+                reference: Nullable(None),
+                operation: Nullable(None),
+            });
+        }
+        slot.as_mut().ok_or("SOURCE_NOT_OPEN")?.command(command)
     }
     /// Read retained real operation facts; unavailable IDs cannot be inferred to have never run.
     pub fn operation(&self, id: &str) -> Option<OperationStatus> {

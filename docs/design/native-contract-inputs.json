@@ -15,12 +15,12 @@
     },
     {
       "path": "docs/design/native-source-store.schema.json",
-      "sha256": "e2f21f19bd74621f50e38ca386e6e36e7308944b2339e400cdecef8b90b95c05"
+      "sha256": "a53f44a28a513f9dbf23733a6f7d27936109c1c60020de2e43f23b8577e07961"
     },
     {
       "path": "docs/design/native-preview.schema.json",
       "sha256": "d316d0f00a6797be91c9e53de3900c48382ca2386757a9613c70aca9464d639c"
     }
   ],
-  "generated_dto_count": 154
+  "generated_dto_count": 192
 }

@@ -3265,7 +3265,7 @@ UpdateService只读受控官方GitHub Releases/发行清单（预发行不可用
 
 #### R4.1.06 DocCommitPort、编辑屏障与未知提交
 
-- [ ] **R4.1.06 完成**（仅在以下Done和验证满足后勾选）
+- [x] **R4.1.06 完成**（仅在以下Done和验证满足后勾选）
 
 **Files：**
 
@@ -3279,10 +3279,10 @@ UpdateService只读受控官方GitHub Releases/发行清单（预发行不可用
 
 **Steps：**
 
-- [ ] 1. 同步可提交draft并短期取得原生fence。
-- [ ] 2. 后台同库commit/source/receipt/outbox，ack后才发布revision。
-- [ ] 3. stop/关闭/更多输入与COMMIT阶段线性化，unknown先查原ID。
-- [ ] 4. 执行下面Tests，核对真实输出/失败，更新任务账本与证据后提交本批次。
+- [x] 1. 同步可提交draft并短期取得原生fence。
+- [x] 2. 后台同库commit/source/receipt/outbox，ack后才发布revision。
+- [x] 3. stop/关闭/更多输入与COMMIT阶段线性化，unknown先查原ID。
+- [x] 4. 执行下面Tests，核对真实输出/失败，更新任务账本与证据后提交本批次。
 
 **Tests：** fence过期/IME开始/新draft/commit前后取消/ack丢失，不锁键盘、不重复插入。测试位置以Files和第15节影响范围为准，证据保存完整输入/命令/输出，不仅记录“通过”。
 

@@ -14,6 +14,7 @@ private final class StoreWriter:@unchecked Sendable {
   private var db:SQLiteDatabase?
   private var identity:StoreIdentity?
   private var source:DocumentStore?
+  private var references:BlobReferences?
   init(_ name:String,lease:RootLease) { self.lease=lease;queue=DispatchQueue(label:"org.openmath.storage."+name,qos:.utility) }
   nonisolated(nonsending) func perform<T:Sendable>(_ body:@escaping @Sendable (StoreWriter)throws->T) async throws ->T {
     try await withCheckedThrowingContinuation { continuation in
@@ -30,6 +31,8 @@ private final class StoreWriter:@unchecked Sendable {
       let opened=try StorageBootstrap.openStore(folder:folder,kind:kind,document:document,faults:faults)
       writer.db=opened.0;writer.identity=opened.1
       if kind=="document" { writer.source=try DocumentStore(db:opened.0,url:folder.appendingPathComponent("Generations").appendingPathComponent(String(format:"%06lld",opened.1.generation)).appendingPathComponent("authority.sqlite"),identity:opened.1) }
+      let databaseURL=folder.appendingPathComponent("Generations").appendingPathComponent(String(format:"%06lld",opened.1.generation)).appendingPathComponent(kind=="document" ? "authority.sqlite" : "library.sqlite")
+      writer.references=try BlobReferences(db:opened.0,url:databaseURL)
       return StoreOpenInfo(identity:opened.1,runtime:opened.2)
     }
   }
@@ -39,11 +42,14 @@ private final class StoreWriter:@unchecked Sendable {
   nonisolated(nonsending) func sourceCall<T:Sendable>(_ work:@escaping @Sendable (DocumentStore)throws->T) async throws ->T {
     try await perform { writer in guard let source=writer.source else { throw StorageError.closing };return try work(source) }
   }
+  nonisolated(nonsending) func referenceCall<T:Sendable>(_ work:@escaping @Sendable (BlobReferences)throws->T) async throws ->T {
+    try await perform { writer in guard let references=writer.references else {throw StorageError.closing};return try work(references) }
+  }
   nonisolated(nonsending) func close() async throws {
     try await perform { writer in
       if let db=writer.db {
         try db.transaction { try db.statement("UPDATE store_state SET last_clean_shutdown=1 WHERE singleton=1") }
-        try db.checkpoint();try db.close();writer.db=nil;writer.source=nil
+        try db.checkpoint();try db.close();writer.db=nil;writer.source=nil;writer.references=nil
       }
     }
   }
@@ -56,10 +62,11 @@ private final class StoreWriter:@unchecked Sendable {
 actor StorageService {
   private let paths:NativeStoragePaths
   private var lease:RootLease?
+  private var blobs:BlobStore?
   private var library:StoreWriter?
   private var documents:[String:StoreWriter]=[:]
   private var closeTask:Task<Void,any Error>?
-  private init(paths:NativeStoragePaths,lease:RootLease) { self.paths=paths;self.lease=lease }
+  private init(paths:NativeStoragePaths,lease:RootLease) { self.paths=paths;self.lease=lease;self.blobs=BlobStore(root:paths.root,lease:lease) }
   static func open(paths:NativeStoragePaths,faults:StorageFaults = .init()) async throws ->(StorageService,StoreOpenInfo) {
     let queue=DispatchQueue(label:"org.openmath.storage.bootstrap",qos:.utility)
     let lease:RootLease=try await withCheckedThrowingContinuation { continuation in
@@ -105,14 +112,70 @@ actor StorageService {
     guard closeTask==nil,let writer=documents[document] else { throw StorageError.closing }
     return try await writer.sourceCall { try $0.query(operation) }
   }
+  func publishBlob(data:Data,expectedHash:String?=nil,faults:StorageFaults = .init()) async throws ->BlobPublication {
+    guard closeTask==nil,let blobs else {throw StorageError.closing}
+    return try await blobs.publish(data:data,expectedHash:expectedHash,faults:faults)
+  }
+  func publishBlob(file:URL,expectedHash:String?=nil,faults:StorageFaults = .init()) async throws ->BlobPublication {
+    guard closeTask==nil,let blobs else {throw StorageError.closing}
+    return try await blobs.publish(file:file,expectedHash:expectedHash,faults:faults)
+  }
+  func releaseBlob(_ publication:BlobPublication) async throws {
+    guard closeTask==nil,let blobs else {throw StorageError.closing};try await blobs.release(publication)
+  }
+  func attachBlob(_ publication:BlobPublication,owner:BlobOwner,mediaType:String,codec:String,document:String?=nil,faults:StorageFaults = .init()) async throws ->BlobReference {
+    guard closeTask==nil,let blobs,let writer=document.flatMap({documents[$0]}) ?? (document==nil ? library : nil) else {throw StorageError.closing}
+    let transfer=try await blobs.retain(publication)
+    do {
+      // Incoming pin may be removed while IO is running. The transfer pin is private and independent.
+      let reference=BlobReference(owner:owner,descriptor:transfer.descriptor,mediaType:mediaType,codecVersion:codec)
+      let stored=try await writer.referenceCall {try $0.attach(reference,faults:faults)}
+      try await blobs.release(transfer);return stored
+    } catch {try? await blobs.release(transfer);throw error}
+  }
+  func blobReference(owner:BlobOwner,hash:String,document:String?=nil) async throws ->BlobReference? {
+    guard closeTask==nil,let writer=document.flatMap({documents[$0]}) ?? (document==nil ? library : nil) else {throw StorageError.closing}
+    return try await writer.referenceCall {try $0.reference(owner,hash:hash)}
+  }
+  func openBlob(_ publication:BlobPublication) async throws ->BlobReadLease {
+    guard closeTask==nil,let blobs else {throw StorageError.closing};return try await blobs.openReader(publication)
+  }
+  func openReferencedBlob(owner:BlobOwner,hash:String,document:String?=nil) async throws ->BlobReadLease {
+    guard closeTask==nil,let blobs else {throw StorageError.closing}
+    guard let record=try await blobReference(owner:owner,hash:hash,document:document) else {throw BlobError.missing}
+    return try await blobs.openReference(record.descriptor)
+  }
+  func readBlob(_ lease:BlobReadLease,offset:UInt64,count:Int) async throws ->Data {
+    guard closeTask==nil,let blobs else {throw StorageError.closing};return try await blobs.read(lease,offset:offset,count:count)
+  }
+  func closeBlob(_ lease:BlobReadLease) async throws {
+    guard closeTask==nil,let blobs else {throw StorageError.closing};try await blobs.closeReader(lease)
+  }
+  func inspectBlob(_ descriptor:BlobDescriptor) async throws ->BlobInspection {
+    guard closeTask==nil,let blobs,let library else {throw StorageError.closing}
+    var count=try await library.referenceCall {try $0.count(descriptor.hash)}
+    let checked=documents
+    for writer in checked.values {count+=try await writer.referenceCall {try $0.count(descriptor.hash)}}
+    let root=paths.root
+    let known=Set(checked.keys)
+    let complete=try await Task.detached { () throws ->Bool in
+      let folder=root.appendingPathComponent("Documents")
+      guard try ManagedFiles.check(folder,directory:true) else {return true}
+      let entries=try FileManager.default.contentsOfDirectory(atPath:folder.path)
+      return entries.count<=10000 && Set(entries)==known
+    }.value
+    return try await blobs.inspect(descriptor,references:count,allStoresChecked:complete)
+  }
   func close() async throws {
     if let closeTask { return try await closeTask.value }
     let task=Task { try await self.finishClosing() };closeTask=task
     try await task.value
   }
   private func finishClosing() async throws {
+    blobs?.beginClose() // stop blob admission/copy immediately, independent of SQLite shutdown
     for writer in documents.values { try await writer.close() }
     if let library { try await library.close() }
+    if let blobs {await blobs.close()};blobs=nil
     documents.removeAll();library=nil;lease=nil
   }
 }

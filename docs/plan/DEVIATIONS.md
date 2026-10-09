@@ -416,3 +416,9 @@ L2使用精确标称GM分数、50位FindRoot/1000迭代和真实残差，报告�
 - 实际source端口独立native-source-store.schema.json，复用DocumentCommit/OperationReceipt的逻辑字段；元数据111个Rust/Swift DTO同源。source摘要采用固定长度前缀UTF8/大端整数，而不是平台各自的JSON键/数字格式；request hash不含传输generation/提交时间/回执临时ID，含原baseline/冻结source和actor。真正提交记录由writer填当前UTC时间。权限/fence和handler注册仍属对应任务，不靠typed DTO批准修改。
 - .omnb v1源cell ID是非空文本。只给cell定义CellIdentity并按原字节对待，其他Identity仍ASCII受控、文档路径仍宿主UUID。Swift Data集合/byte排序防止规范等价字符串把两个原ID或源码合并；同步更新source/state/editor/wire/storage契约。不会自动改写旧源码/ID。
 - source物理表只开放已接通source事务，其他operation族/durable admission按后续任务扩展；完整inverse在同事务，重复已终止ID永远返回原事实。失联/F_FULLFSYNC失败后的query也重新确认稳定字节，不把缓存row存在当耐久证据。大source当前明确Blob所需，不截断伪存；R4.1.03接不可变资源、R4.1.06接scope/fence/取消。
+
+### R4-D008：不可覆盖发布与pin边界（2026-10-09）
+
+- Blob采用同本地卷staging文件全同步后hard link原子发布（EEXIST只复核原目标，不覆盖），再同步目标目录并实际hash/length回读；正常失败只清自有staging，crash原件保留。目标路径仅由lowercase SHA256推导。64KiB复制、128MiB单件、1MiB读取页及有界IO队列来自既定预算，不增普通ABI包上限。
+- publication pin/reader ID是Swift物理资源生命周期，不是模型media_ref/result_ref授权。Writer等待时另有private transfer pin；持久引用写所属库，不新建跨库“全局原子”假象。重启后按存储owner ref验证字节再发新的reader，原pin不复活。未打开库的引用未查全则orphan_candidate有allStoresChecked=false，不做删除；全局GC/租约留R4.1.13。
+- BlobDescriptor/BlobPublication/Reader为私有宿主内部值（无新wire或Pi能力），后续暴露的业务DTO继续从机器契约生成并按scope校验；mime/codec在真实媒体准备任务里实测，不因保存原字节就宣称OCR/ASR/模型可发送。

@@ -1,0 +1,87 @@
+{
+  "task": "R4.1.03",
+  "development_only": true,
+  "version": "0.1.0-pre-alpha.3",
+  "copy_chunk_bytes": 65536,
+  "maximum_blob_bytes": 134217728,
+  "maximum_read_bytes": 1048576,
+  "immutable_publication": "actual fsync -> hard-link no-overwrite -> parent sync -> actual hash/length readback",
+  "active_pins": "process-local; private transfer pin covers DB wait",
+  "restore": "stored-owner reference -> actual verified file -> new read handle; no resurrected old pin",
+  "publication_crash_points": 6,
+  "actual_tests": [
+    "PDF exact bytes",
+    "3MiB+17 exact paged bytes",
+    "empty file",
+    "same-size wrong content preserved/rejected",
+    "missing and forged pin rejected",
+    "source changed and FIFO rejected",
+    "128MiB+1 sparse overlimit rejected",
+    "DB rollback leaves orphan",
+    "post-COMMIT lost ACK reconciled",
+    "direct cancellation prevents publication",
+    "six actual SIGKILL publication boundaries"
+  ],
+  "logs": [
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r41/blob-final-lifecycle.log",
+      "sha256": "9a89749898020daddce76fa2ebd45dc5d088c87e619b0efb00988a924946155c"
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r41/blob-final-app.log",
+      "sha256": "b936efd54a6e92c7444e6d0509d4493742afe521cae1a38d0ba1cd470bee85f8"
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r41/blob-final-python.log",
+      "sha256": "755c2bf9525051c8d2eaf86c0b8987d5cf6629b1d76618c5ea010f2105368d1f"
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r41/blob-native-contracts.log",
+      "sha256": "570ffccd9d78ac6188be53a726284891c50b30fdac91fbd5e73b57ec392a1bb6"
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r41/blob-bootstrap-regression.log",
+      "sha256": "508e29b01c0ee1b6fa8f0400d63897f51d76282b090b59be0fed5a3a142c4c35"
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r41/blob-document-regression.log",
+      "sha256": "48f8750ca5bf5fae9becef0559e4a8b45421c2734af981feb0132d59396e5253"
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r41/blob-fixtures-lifecycle.log",
+      "sha256": "5356c9273c8a43f88aedd3419a785ddbc7d408e7afa74d46d3088a7a61d31a5d"
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r41/blob-fixtures-lifecycle-second.log",
+      "sha256": "2f3b3c2636c4a38803192adc830cab1384042f515bfad6a45ea2145090571cdb"
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r41/c310-frontend-job.log",
+      "sha256": "491f1860ac6cab86c5ce898fa031b9e0eff7e325a3d8ad555f4eecd6c65b8397"
+    },
+    {
+      "path": "target/macos-storage-tests/blob-interruption-attempt.json",
+      "sha256": "eaa4871c7ea162223d2c2e31ea8a6b76cc898db73b752d75e6b4e4fba184bc87"
+    },
+    {
+      "path": "target/ci-evidence/c310-frontend/science-scenarios-complete-fa5b5-U-rotation-and-OBJ-readback/error-context.md",
+      "sha256": "ca5380f248f081f67ea1d74d5a0801215c524654469bf87716f68aac9660e0e9"
+    }
+  ],
+  "all_store_reference_scanning": "bounded known scope; explicit incomplete when unopened document stores exist",
+  "automatic_GC_executed": false,
+  "new_agent_tool_registered": false,
+  "prior_CI": {
+    "sha": "c31056512cbc532ed53fd60772d62c26ca6c55c8",
+    "run": 37927161789,
+    "conclusion": "failure",
+    "success": [
+      "native_macos",
+      "rust",
+      "dependencies",
+      "ios"
+    ],
+    "failure": "frontend development watermelon .scene-view absent while actual UI was Running"
+  },
+  "final_candidate_gate": false
+}

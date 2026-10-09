@@ -4,9 +4,9 @@
 
 2026-10-09。目标`0.1.0-pre-alpha.4`，当前运行/公开版本`.3`；开发`dev`，不合main、不改旧标签、本机不启动iOS模拟器。本文只记录结果，规格及完成标准唯一见主计划；计划编写本身不计实施完成。
 
-**当前状态：** 13任务完成（全部R4.0与R4.1.01/02）；其余85任务尚未完成；32最终运行/发行gate全部not_run；candidate未分配，ready_to_publish=false，released_verified=false。设计/HTML/Schema通过不填运行时pass。
+**当前状态：** 14任务完成（全部R4.0与R4.1.01/02/03）；其余84任务尚未完成；32最终运行/发行gate全部not_run；candidate未分配，ready_to_publish=false，released_verified=false。设计/HTML/Schema通过不填运行时pass。
 
-**下一任务：** R4.1.03不可变Blob与引用，随后R4.1.04文档操作/失效和R4.1.05/06预览/DocCommitPort。真实source事务已验收，UI/Agent写入尚未注册。按DAG推进，R4.5.07必须在R4.5.05冻结前完成。
+**下一任务：** R4.1.04文档操作/非执行失效，随后R4.1.05/06预览/DocCommitPort；跟进共享前端Running无结果回归。真实source/Blob基础已验收，UI/Agent写入尚未注册。按DAG推进，R4.5.07必须在R4.5.05冻结前完成。
 
 ## 已知外部前置
 
@@ -32,8 +32,8 @@
 | [x] [R4.0.10](PRE_ALPHA_4.md#task-r4.0.10) | fixture与真实故障注入基础设施 | completed | 自有媒体封存/真实解码、回环HTTP、SIGKILL/ENOSPC、实际budget/stream codec | 627c978 |
 | [x] [R4.0.11](PRE_ALPHA_4.md#task-r4.0.11) | 发行前置、签名和现场环境预检 | completed | [环境](../acceptance/pre-alpha.4/baseline/environment.json) / verify-env.sh | e876c16 |
 | [x] [R4.1.01](PRE_ALPHA_4.md#task-r4.1.01) | SQLite单写者与新通道初始化 | completed | SQLite3.54/WAL/FULL / 实际F_FULLFSYNC / 根锁 / SIGKILL/ENOSPC | ddbeb88 |
-| [x] [R4.1.02](PRE_ALPHA_4.md#task-r4.1.02) | 权威源码、事务和幂等表 | completed | Rust实际计划→Swift同库事务→Rust实际回执 / 幂等/回滚/失联/UTF8 | 下次补记 |
-| [ ] [R4.1.03](PRE_ALPHA_4.md#task-r4.1.03) | 不可变Blob和资源引用发布 | planned | — | — |
+| [x] [R4.1.02](PRE_ALPHA_4.md#task-r4.1.02) | 权威源码、事务和幂等表 | completed | Rust实际计划→Swift同库事务→Rust实际回执 / 幂等/回滚/失联/UTF8 | c310565 |
+| [x] [R4.1.03](PRE_ALPHA_4.md#task-r4.1.03) | 不可变Blob和资源引用发布 | completed | 分块实际字节/同库refs/临时pin/恢复读取/六SIGKILL点 | 下次补记 |
 | [ ] [R4.1.04](PRE_ALPHA_4.md#task-r4.1.04) | 文档操作与非执行失效计划 | planned | — | — |
 | [ ] [R4.1.05](PRE_ALPHA_4.md#task-r4.1.05) | 冻结Preview与新格身份分配 | planned | — | — |
 | [ ] [R4.1.06](PRE_ALPHA_4.md#task-r4.1.06) | DocCommitPort、编辑屏障与未知提交 | planned | — | — |
@@ -240,3 +240,14 @@ Done依据与覆盖case/proof:
 - 最新host/ABI 36 Rust通过（9 ABI/9协议/5source/2fixture/11scheduler）、Clippy、Swift真正port/ABI/actor/reducer/session全部通过，bootstrap同步/六SIGKILL点回归、ARM64 SDK27原生Release、17Python、纯WASM/deny/版本/生成检查通过。中间getter/capture/Vec签名和一次修改编译中Swift源造成编译拒绝均保留，后续固定源码的完整attempt通过，不复用旧失败或删断言。
 - [document.json](../acceptance/pre-alpha.4/development/r41/document.json)保存日志/真实计划与receipt/散列。UI/Agent patch、editor fence、durable admission、完整undo和checkpoint不在本任务冒称实现，继续R4.1.04–09；当前新写入body仍不注册可调用能力。inline source受2MiB预算，超限明确SOURCE_BLOB_REQUIRED，Blob扩展为下一任务。
 - ddbeb88的CI37923343056已结束：native_macos/rust/frontend/dependencies全部成功（原frontend log_log场景在此SHA通过），iOS失败为原17/18整次1330.407/1026.974ms超1s，原门槛及数学期望不改，本次保留job原件但未取得新的分段附件前不推测原因。不是完整同SHA平台绿色，也不填写最终candidate门禁。下一步不可变Blob与引用，完整85项继续。
+
+## R4开发记录 D013 — 不可变Blob与同库资源引用
+
+- R4.1.03完成：独立BlobStore utility有界队列（最多32任务、128 publication pins、64 reader handles），只用SHA256推导Blobs/sha256/<prefix>/<hash>目标。64KiB流式复制/散列、真实F_FULLFSYNC、同本地卷hard link不覆盖发布、父目录sync、实际整文件hash/length复核完成后才发ready/pin。单件128MiB与读取页1MiB预算明确；输入源fd前后stamp核对，非regular输入用O_NONBLOCK打开后拒绝，避免FIFO挂死。临时路径/媒体类型不由模型决定；新可调用工具仍未注册。
+- BlobReferences在所属Library/文档writer的同一库事务写blob_objects+blob_refs，Owner/codec/mime/hash/length全部核对，同owner/hash不同metadata冲突不覆盖。StorageService先验证incoming pin并建立独立transfer pin，覆盖数据库等待期间；失败最多留下孤儿，不能让未发布字节进入DB。提交后回执失联为unknown，原owner/hash独立读取可核对；broken join是损坏，不作不存在。后续source/checkpoint/会话的同业务事务引用接对应写入任务，跨库整体原子/GC不在此冒称完成。
+- 分块读取持实际已验证fd+stamp，reader本身pin资源；原publication释放后reader仍可读取。重启临时pins/reader IDs失效，但通过持久owner ref重新核验真实字节并建立新reader，无须再次附加原文件。检查返回missing/corrupt/pinned/referenced/orphan_candidate及allStoresChecked；未打开的文档存在则明确检查范围不完整，不删除候选孤儿。完整租约/保留/GC仍属R4.1.13。
+- 实测原PDF逐字节、3MiB+17自有数据按1MiB页整合、空文件、同hash不同长度及同长度错内容、不覆盖损坏目标、错hash/伪pin/缺文件、源输入变化、FIFO与128MiB+1 sparse拒绝均通过。数据库插入后ENOSPC回滚留下unreferenced orphan；提交后ACK失联查询成功；取消在复制后的真实per-job信号阻止发布。close_begin先撤销Blob admission/signal独立token，不等SQLite结束才取消；background close才settle/readers清理，root lease在所有owner停前保留。
+- 自有helper实际在stage_opened/copied/file_synced/before_publish/linked/directory_synced六位置SIGSTOP后SIGKILL：前四无ready目标，后两只能有完整未引用字节，重启零reference/pin。原残留在target/macos-storage-tests/，不把测试进程中断等同断电实测。临时正常失败清理仅app-owned staging，不删来源或损坏目标。
+- test-blobs最新完整通过；bootstrap六崩溃/未知format/根锁/ENOSPC、实际source事务/真实F_FULLFSYNC错误回读、Native ABI/actor/reducer/session回归也通过；SDK27 ARM64 Release/17Python/生成工程/契约检查通过。初次Swift semaphore async属性与语法错误日志保留，修正成fixture后台同步等待，无产品假成功。没有改Rust CAS/原53语料/旧tags/运行版本，未运行本机模拟器。
+- [blobs.json](../acceptance/pre-alpha.4/development/r41/blobs.json)记录日志和实际发布中断attempt/hash；macos-native CI新增该脚本。c310565/CI37927161789结果native_macos/rust/dependencies/iOS成功，frontend失败是dev西瓜.scene-view 30s未出现；实际error-context仍为Running且UI未有结果，原件target/ci-evidence/c310-frontend，不根据间接上下文宣布根因或放宽门槛。此CI不是本批SHA或全平台green。
+- 下一任务文档操作/失效与预览/编辑屏障、完整checkpoint及UI/Agent；Blob字节机制已完成，类型化checkpoint/媒体准备、scoped工具权限、完整GC仍按后续原计划接入，84任务/全部candidate门禁保持未完成。

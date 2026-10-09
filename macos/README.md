@@ -48,3 +48,5 @@ SQLite首代存储已实现，可运行 `bash macos/Scripts/test-storage.sh`。�
 运行 `bash macos/Scripts/test-document-store.sh` 可验证Rust权威source计划→Swift SQLite原子事务→Rust实际回执的完整数据路径。同库保存源码、反向快照、操作回执与outbox，重复原ID不重复写入；不同内容/旧修订/非法计划拒绝。测试包含中途回滚、提交后失联、真实全刷新失败及原ID恢复，确认UTF8/Unicode cell IDs不被归一化。
 
 这一阶段已有真正source存储端口；笔记本UI/Agent修改仍等待DocCommitPort和编辑屏障，不能直接调用物理writer绕过权限。C ABI可执行body暂未开放写入。较大source需要后续Blob协议，当前超限会明确拒绝。
+
+不可变资源基础可运行 `bash macos/Scripts/test-blobs.sh` 验证。128MiB单件按64KiB复制/散列，完整同步后不覆盖发布；读取每页至多1MiB，并校验真实hash/length。数据库引用、内存publication pin和reader保留是不同事实；重启可从已存引用读回原字节，但不恢复旧pin授权。错误hash、损坏目标、输入变化和缺文件不会当ready，完整GC/媒体解码/工具scope仍按后续任务接入。

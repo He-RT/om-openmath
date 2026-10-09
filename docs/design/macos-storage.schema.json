@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "urn:openmath:mac-storage:planned:v1",
   "title": "OpenMath native Mac storage and recovery design",
-  "description": "下一版 planned 设计，未实现存储服务。校验逻辑记录形状；事务耐久性、跨字段散列/版本、权限、状态转移和恢复需运行时验证。示例为合成数据。",
+  "description": "设计与实际实现账本分开：首代SQLite和source事务服务已实现，实际端口见native-source-store.schema.json；会话/媒体/checkpoint等其他记录仍planned。形状校验不证明耐久、权限或业务完成。",
   "oneOf": [
     {
       "$ref": "#/$defs/StoreHeader"
@@ -295,7 +295,7 @@
         "changed_cell_ids": {
           "type": "array",
           "items": {
-            "$ref": "#/$defs/Identity"
+            "$ref": "#/$defs/CellIdentity"
           },
           "uniqueItems": true
         },
@@ -360,7 +360,7 @@
           }
         }
       ],
-      "x-implementation-status": "planned"
+      "x-implementation-status": "partial: source storage; full handlers and remaining operation families planned"
     },
     "OperationReceipt": {
       "type": "object",
@@ -534,7 +534,7 @@
           }
         }
       ],
-      "x-implementation-status": "planned"
+      "x-implementation-status": "partial: source storage; full handlers and remaining operation families planned"
     },
     "SessionEvent": {
       "type": "object",
@@ -1655,6 +1655,12 @@
       ],
       "description": "active.json 只选择已验证 generation；header hash 只覆盖不可变身份/格式。原子发布、路径推导和完整性由 StorageService 校验。",
       "x-implementation-status": "planned"
+    },
+    "CellIdentity": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 256,
+      "description": "源码单元格ID沿用.omnb v1的非空文本；按原UTF8区分，不作为路径或operation身份。"
     }
   },
   "examples": [

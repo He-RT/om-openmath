@@ -94,6 +94,10 @@ final class SQLiteDatabase {
     catch { throw StorageError.unknownCommit(EIO) }
     return value
   }
+  func confirmCommittedBytes() throws {
+    do { try synchronizeCommittedBytes() }
+    catch { throw StorageError.unknownCommit(EIO) }
+  }
   private func synchronizeCommittedBytes() throws {
     let wal=URL(fileURLWithPath:url.path+"-wal")
     let target=try ManagedFiles.check(wal,directory:false) ? wal : url

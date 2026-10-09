@@ -8,6 +8,7 @@ clang -std=c11 -Wall -Wextra -Werror -dynamiclib \
   -install_name @rpath/libStorageSyncProbe.dylib -o target/macos-storage-tests/libStorageSyncProbe.dylib
 swiftc -swift-version 6 -parse-as-library -target arm64-apple-macos27.0 \
   -import-objc-header macos/OpenMathNativeTests/StorageFixtures/SyncProbe.h \
+  macos/OpenMathNative/Generated/HostContractSupport.swift macos/OpenMathNative/Generated/Contracts/*.swift \
   macos/OpenMathNative/Storage/*.swift macos/OpenMathNativeTests/StorageFixtures/main.swift \
   -L target/macos-storage-tests -lStorageSyncProbe -Xlinker -rpath -Xlinker "$root/target/macos-storage-tests" \
   -o target/macos-storage-tests/storage-fixtures

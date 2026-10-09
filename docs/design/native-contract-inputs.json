@@ -3,16 +3,20 @@
   "inputs": [
     {
       "path": "docs/design/macos-host-state.schema.json",
-      "sha256": "6f68bf0ad46c3f0a7eff1c9f7277b97d1cb735cac314ca8d1bc588a6220e7288"
+      "sha256": "c85326ab2ee5e9589162d59930cc53908c64764dbdfe86feaaf97038b1a2e720"
     },
     {
       "path": "docs/design/macos-editor-rendering.schema.json",
-      "sha256": "091c8620ec14fc5901dd19ae6c6f6e553b6b147949938f593fbb1dcd32626b4d"
+      "sha256": "431d5e481450c773a1ecc735dad83285fbe604d97de41f34139cecf9cac5bda1"
     },
     {
       "path": "docs/design/native-host-wire.schema.json",
-      "sha256": "00dd07dff2eac796fe66cb4e565936f52c3afe29694d8c30c46895469bf1da2b"
+      "sha256": "400c34d1a93c5b41ff740978b17f2397c177dadbe47b520bb8a3128719a06330"
+    },
+    {
+      "path": "docs/design/native-source-store.schema.json",
+      "sha256": "34e38850af39d1c47262a03effc8757df3a7fb75728fab7065c9ce05b5633f13"
     }
   ],
-  "generated_dto_count": 96
+  "generated_dto_count": 111
 }

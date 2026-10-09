@@ -410,3 +410,9 @@ L2使用精确标称GM分数、50位FindRoot/1000迭代和真实残差，报告�
 - 实际系统SQLite3.54.0的fullfsync PRAGMA回读为ON，但隔离测试调用追踪显示同步使用F_BARRIERFSYNC。为了满足耐久确认等待语义，COMMIT完成后宿主对实际SQLite WAL文件F_FULLFSYNC，PASSIVE checkpoint后对DB全刷新；header/selector单独使用相邻临时文件+F_FULLFSYNC+rename+父目录fsync。同步失败在COMMIT后为unknownCommit，不伪称整笔未写或安全重试。
 - 测试采用自有dylib仅在disposable helper中转发并计数SDK fcntl；VFS公开syscall hook用于真实write/pwrite ENOSPC。没有把测试探针/private命令放进App。SDK系统SQLite调用95的传递类型按[Apple原始fcntl包装器](https://github.com/apple-oss-distributions/xnu/blob/main/libsyscall/wrappers/cancelable/fcntl-base.c)核对，代码为自有测试adapter，没有复制APSL实现。
 - 首代物理格式定为store/selector/user_version/header codec1，严查未知版本和唯一writer，Preview使用NativeMacPreview而production使用NativeMac。没有创建旧版迁移路径，没有Pi/模型SQL或私有文件输入。新存储仅首代初始化，源码事务/Agent持久化继续原计划，不缩减完整发行。
+
+### R4-D007：source固定计划与原UTF8身份（2026-10-09）
+
+- 实际source端口独立native-source-store.schema.json，复用DocumentCommit/OperationReceipt的逻辑字段；元数据111个Rust/Swift DTO同源。source摘要采用固定长度前缀UTF8/大端整数，而不是平台各自的JSON键/数字格式；request hash不含传输generation/提交时间/回执临时ID，含原baseline/冻结source和actor。真正提交记录由writer填当前UTC时间。权限/fence和handler注册仍属对应任务，不靠typed DTO批准修改。
+- .omnb v1源cell ID是非空文本。只给cell定义CellIdentity并按原字节对待，其他Identity仍ASCII受控、文档路径仍宿主UUID。Swift Data集合/byte排序防止规范等价字符串把两个原ID或源码合并；同步更新source/state/editor/wire/storage契约。不会自动改写旧源码/ID。
+- source物理表只开放已接通source事务，其他operation族/durable admission按后续任务扩展；完整inverse在同事务，重复已终止ID永远返回原事实。失联/F_FULLFSYNC失败后的query也重新确认稳定字节，不把缓存row存在当耐久证据。大source当前明确Blob所需，不截断伪存；R4.1.03接不可变资源、R4.1.06接scope/fence/取消。

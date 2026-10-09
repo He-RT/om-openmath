@@ -115,7 +115,7 @@
           "$ref": "#/$defs/Serial"
         },
         "cell_id": {
-          "$ref": "#/$defs/Identity"
+          "$ref": "#/$defs/CellIdentity"
         },
         "editor_id": {
           "$ref": "#/$defs/Identity"
@@ -557,7 +557,7 @@
           "$ref": "#/$defs/Serial"
         },
         "cell_id": {
-          "$ref": "#/$defs/Identity"
+          "$ref": "#/$defs/CellIdentity"
         },
         "operation_id": {
           "$ref": "#/$defs/Identity"
@@ -892,7 +892,7 @@
           "const": "scroll_anchor"
         },
         "cell_id": {
-          "$ref": "#/$defs/Identity"
+          "$ref": "#/$defs/CellIdentity"
         },
         "block_or_result_id": {
           "anyOf": [
@@ -1114,6 +1114,12 @@
       ],
       "description": "命令完成不等于用户已见；drawable present证据/截图真实内容、result/camera/liveness仍需renderer验收。",
       "x-implementation-status": "planned"
+    },
+    "CellIdentity": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 256,
+      "description": "源码单元格ID沿用.omnb v1的非空文本；按原UTF8区分，不作为路径或operation身份。"
     }
   },
   "examples": [

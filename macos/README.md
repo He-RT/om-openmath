@@ -44,3 +44,7 @@ bash macos/Scripts/test-native-contracts.sh
 SQLite首代存储已实现，可运行 `bash macos/Scripts/test-storage.sh`。应用支持目录由系统API取得，Preview写入独立NativeMacPreview通道；生产NativeMac通道未来随最终App启用。每库只有串行writer，root由OS锁保护；已有库但selector无效时要求恢复，不重建空库。该阶段只初始化物理库与header，完整笔记本事务/恢复与`.omnb`保存按后续任务接通。
 
 实际SQLite3.54.0/unix VFS3使用WAL/FULL/foreign_keys/fullfsync。系统VFS的实际barrier刷新与宿主COMMIT之后等待的F_FULLFSYNC分别验收，后者失败表示提交确认未知。测试dyld/VFS探针仅在独立fixture helper，未链接进App。SIGKILL用例保存原残留，不以进程中断冒充断电实测。
+
+运行 `bash macos/Scripts/test-document-store.sh` 可验证Rust权威source计划→Swift SQLite原子事务→Rust实际回执的完整数据路径。同库保存源码、反向快照、操作回执与outbox，重复原ID不重复写入；不同内容/旧修订/非法计划拒绝。测试包含中途回滚、提交后失联、真实全刷新失败及原ID恢复，确认UTF8/Unicode cell IDs不被归一化。
+
+这一阶段已有真正source存储端口；笔记本UI/Agent修改仍等待DocCommitPort和编辑屏障，不能直接调用物理writer绕过权限。C ABI可执行body暂未开放写入。较大source需要后续Blob协议，当前超限会明确拒绝。

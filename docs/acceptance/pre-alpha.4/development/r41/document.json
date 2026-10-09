@@ -1,0 +1,110 @@
+{
+  "task": "R4.1.02",
+  "development_only": true,
+  "version": "0.1.0-pre-alpha.3",
+  "generated_dtos": 111,
+  "rust_tests_passed": 36,
+  "source_tests_passed": 5,
+  "actual_path": "Rust frozen plans -> Swift SQLite -> original Rust accepts actual receipt",
+  "physical_fact_counts": {
+    "source_revisions": 3,
+    "transactions": 2,
+    "operations": 2,
+    "transitions": 2,
+    "outbox": 2
+  },
+  "faults": [
+    "invalid whole plan rejected",
+    "same ID different content conflict",
+    "old base under new ID rejected",
+    "midtransaction rollback",
+    "post-COMMIT lost ACK unknown",
+    "actual F_FULLFSYNC failure stays unknown until query synchronizes",
+    "restart preserves head/receipts"
+  ],
+  "Unicode_cell_ids": "original UTF8 retained; NFC/NFD distinct",
+  "logs": [
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r41/document-rust-verified.log",
+      "sha256": "397aaea0b4b540990038f26f6c665839e86a4a0db262305e8774c9ca9955280e"
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r41/document-clippy-verified.log",
+      "sha256": "383bc15215227c6083ed318e23e37e1aa144f5d39736102ed1bc0e16dd6362f6"
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r41/document-port-verified.log",
+      "sha256": "48df50943e3068c52d5636f2a678e5a962480d1a29a8a05c01989f0011570967"
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r41/document-fullsync-verified.log",
+      "sha256": "0c36158d8bc9977e20823ee4ba529f4141d3388bcded4e13c363615cc726b080"
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r41/document-bootstrap-verified.log",
+      "sha256": "a13493120198e21e207ef040ea0769b2f16c3570493b49e070ffcdd62860a4f1"
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r41/document-abi-verified.log",
+      "sha256": "c917656f3dadcc791f501c6b32d1f4484d6c6ab80b5ab0f03a4cbbea917257c6"
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r41/document-app-verified.log",
+      "sha256": "22ea5f78c0d04120026ad1fdaa2f862116cabf4da94042d1342120c3cb91658e"
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r41/document-python-verified.log",
+      "sha256": "45c061367c56fb827baf5ade7d55a03996527fc790228d4d7909ff04794ada7f"
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r41/document-schema-python-final.log",
+      "sha256": "f186706ee932f66f7e1b511fb9880f7afd954dd1a85b124ca3013129a0949d1f"
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r41/document-wasm.log",
+      "sha256": "4cf86278c1e6d659943a46a3d7e3da429ac15be90f0f17742e24ef85228e7d3e"
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r41/document-deny.log",
+      "sha256": "ddff697b583d02a0fa0105933dfd8026a7eda942f00585568ecd4342fa78eb02"
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r41/document-bootstrap-final.log",
+      "sha256": "499495035a08b1d0ddb4e5e4aaf602ee4fb52e38a42b22d5f8922b385f4e48ce"
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r41/ddb-ci-failures.log",
+      "sha256": "5ab6544e166388be34528771645033ca77d2e7a1ebef78f9c3d9d68fbe6810f4"
+    },
+    {
+      "path": "target/macos-storage-tests/source-plans.json",
+      "sha256": "3f18a6f9650643dd4c76e148c3ad25152b42f9ce37e325117d361f011dffaf35"
+    },
+    {
+      "path": "target/macos-storage-tests/actual-source-receipt.json",
+      "sha256": "6e549be1b7af94c95509ee62f00942fc13dc8590afd9beea5c1e6b9663a8779b"
+    },
+    {
+      "path": "target/macos-storage-tests/actual-source-fullsync-receipt.json",
+      "sha256": "ef77d098b91fbe77474da2c5e06211759302cc1fd096f355132257f6f8dbb5ad"
+    }
+  ],
+  "prior_ci": {
+    "run": 37923343056,
+    "sha": "ddbeb888f6d4c9a5d490abd5e0510c48a5224ae1",
+    "conclusion": "failure",
+    "successful_jobs": [
+      "native_macos",
+      "rust",
+      "frontend",
+      "dependencies"
+    ],
+    "ios_original_row_17_ms": 1330.4065,
+    "ios_original_row_18_ms": 1026.974417,
+    "original_1s_limit_unchanged": true
+  },
+  "registered_agent_document_writes": false,
+  "editor_fence_and_full_admission": "pending R4.1.06",
+  "large_source_blob": "next task; explicit current budget rejection",
+  "final_candidate_gate": false
+}

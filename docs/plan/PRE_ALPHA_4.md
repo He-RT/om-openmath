@@ -3101,7 +3101,7 @@ UpdateService只读受控官方GitHub Releases/发行清单（预发行不可用
 
 #### R4.1.02 权威源码、事务和幂等表
 
-- [ ] **R4.1.02 完成**（仅在以下Done和验证满足后勾选）
+- [x] **R4.1.02 完成**（仅在以下Done和验证满足后勾选）
 
 **Files：**
 
@@ -3114,10 +3114,10 @@ UpdateService只读受控官方GitHub Releases/发行清单（预发行不可用
 
 **Steps：**
 
-- [ ] 1. 按稳定ID建立文档库并保存原UTF8/顺序/标题。
-- [ ] 2. 唯一operation键及请求hash/逆向计划与source同库。
-- [ ] 3. 实现短revision/head校验与只读receipt query。
-- [ ] 4. 执行下面Tests，核对真实输出/失败，更新任务账本与证据后提交本批次。
+- [x] 1. 按稳定ID建立文档库并保存原UTF8/顺序/标题。
+- [x] 2. 唯一operation键及请求hash/逆向计划与source同库。
+- [x] 3. 实现短revision/head校验与只读receipt query。
+- [x] 4. 执行下面Tests，核对真实输出/失败，更新任务账本与证据后提交本批次。
 
 **Tests：** 同ID同内容一次效果/不同内容冲突、非法整笔不提交、revision单调。测试位置以Files和第15节影响范围为准，证据保存完整输入/命令/输出，不仅记录“通过”。
 

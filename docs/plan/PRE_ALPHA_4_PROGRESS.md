@@ -4,13 +4,13 @@
 
 2026-10-09。目标`0.1.0-pre-alpha.4`，当前运行/公开版本`.3`；开发`dev`，不合main、不改旧标签、本机不启动iOS模拟器。本文只记录结果，规格及完成标准唯一见主计划；计划编写本身不计实施完成。
 
-**当前状态：** 12任务完成（全部R4.0与R4.1.01）；其余86任务尚未完成；32最终运行/发行gate全部not_run；candidate未分配，ready_to_publish=false，released_verified=false。设计/HTML/Schema通过不填运行时pass。
+**当前状态：** 13任务完成（全部R4.0与R4.1.01/02）；其余85任务尚未完成；32最终运行/发行gate全部not_run；candidate未分配，ready_to_publish=false，released_verified=false。设计/HTML/Schema通过不填运行时pass。
 
-**下一任务：** R4.1.02权威文档源码、事务与幂等表，接着Blob和DocCommitPort。当前存储仅完成首代库/bootstrap，笔记本事务尚未开放。按DAG推进，R4.5.07必须在R4.5.05冻结前完成。
+**下一任务：** R4.1.03不可变Blob与引用，随后R4.1.04文档操作/失效和R4.1.05/06预览/DocCommitPort。真实source事务已验收，UI/Agent写入尚未注册。按DAG推进，R4.5.07必须在R4.5.05冻结前完成。
 
 ## 已知外部前置
 
-- 原生工程与真实Rust元数据链接已经实现；完整宿主、存储及Agent尚未接通，运行源码版本仍`.3`。
+- 原生宿主、事件恢复和首代/source物理存储已运行；完整工作台、DocCommitPort、checkpoint及Agent尚未接通，运行源码版本仍`.3`。
 - 上轮只读预检没有Developer ID Application材料；执行阶段复核并按R4.0.11准备接口，真实公开签名门禁不能降级。
 - 现场模型只使用新Registry中的授权测试配置；不自动读取旧Key/环境/profile。当前live gate未运行。
 
@@ -31,8 +31,8 @@
 | [x] [R4.0.09](PRE_ALPHA_4.md#task-r4.0.09) | 原语言和数学基线持续兼容 | completed | 91 DTO / Rust+Swift / CI37880165376 | 21c9254 |
 | [x] [R4.0.10](PRE_ALPHA_4.md#task-r4.0.10) | fixture与真实故障注入基础设施 | completed | 自有媒体封存/真实解码、回环HTTP、SIGKILL/ENOSPC、实际budget/stream codec | 627c978 |
 | [x] [R4.0.11](PRE_ALPHA_4.md#task-r4.0.11) | 发行前置、签名和现场环境预检 | completed | [环境](../acceptance/pre-alpha.4/baseline/environment.json) / verify-env.sh | e876c16 |
-| [x] [R4.1.01](PRE_ALPHA_4.md#task-r4.1.01) | SQLite单写者与新通道初始化 | completed | SQLite3.54/WAL/FULL / 实际F_FULLFSYNC / 根锁 / SIGKILL/ENOSPC | 下次补记 |
-| [ ] [R4.1.02](PRE_ALPHA_4.md#task-r4.1.02) | 权威源码、事务和幂等表 | planned | — | — |
+| [x] [R4.1.01](PRE_ALPHA_4.md#task-r4.1.01) | SQLite单写者与新通道初始化 | completed | SQLite3.54/WAL/FULL / 实际F_FULLFSYNC / 根锁 / SIGKILL/ENOSPC | ddbeb88 |
+| [x] [R4.1.02](PRE_ALPHA_4.md#task-r4.1.02) | 权威源码、事务和幂等表 | completed | Rust实际计划→Swift同库事务→Rust实际回执 / 幂等/回滚/失联/UTF8 | 下次补记 |
 | [ ] [R4.1.03](PRE_ALPHA_4.md#task-r4.1.03) | 不可变Blob和资源引用发布 | planned | — | — |
 | [ ] [R4.1.04](PRE_ALPHA_4.md#task-r4.1.04) | 文档操作与非执行失效计划 | planned | — | — |
 | [ ] [R4.1.05](PRE_ALPHA_4.md#task-r4.1.05) | 冻结Preview与新格身份分配 | planned | — | — |
@@ -228,3 +228,15 @@ Done依据与覆盖case/proof:
 - test-storage.sh最新完整通过，Swift6严格构建、原生ARM64/SDK27 Release与ad-hoc strict签名、17Python/生成协议/工程/结构检查通过。初始Swiftgetter错误、C探针OFD/系统fcntl参数覆盖不足、漏捕获同步与修复全部原件保留；不删除断言或把PRAGMA成功当耐久结果。SQLite官方WAL/fullfsync文档和本机SDK header核对，SDK内部95只由test转发SQLite已发的调用，生产代码不增加私有API。
 - [storage.json](../acceptance/pre-alpha.4/development/r41/storage.json)记录命令、runtime/sourceID、原日志/断点残留与散列。新CI加入实际SQLite/故障测试。627c978的CI37918801398查时Rust/dependencies/native_macos成功、frontend生产34项中33通过，extended plot在log_log最后一次未出现.plot-view，原件保存待定向复现；iOS仍进行。不能把部分成功写最终全平台绿色。
 - 下一任务R4.1.02（权威source/revisions/操作唯一键/幂等/回执），其余86任务与所有最终candidate gates保持未完成，运行版本仍.3。
+
+## R4开发记录 D012 — 权威source与同库幂等事务
+
+- R4.1.02完成：安全Rust document模块持已确认NativeSourceSnapshot，单独prepare冻结before/after/完整逆向快照与变更ID，不构造Session或执行定义。正确trusted durable receipt才能推进；旧/unknown回执、不同generation和重复接受不能改authority。源码修订、cell revision与execution epoch独立，暂对whole-source提交保守增长epoch；更细的数学/纯文本失效策略留R4.1.04。语法错误仍可编辑保存。
+- native-source-store机器契约与现有DocumentCommit/OperationReceipt记录生成111个跨端DTO；字段/未知字段/nullable/counter保持一致。source/request采用同一长度前缀UTF8+大端整数hash，含原baseline/冻结源码/actor，不含重连传输、generation、回执新ID及提交时钟。源码/顺序/标题不归一化，Swift不使用规范等价String相等来认定source未改；实际提交时钟由可信writer产生。
+- DocumentStore通过每库原StoreWriter消费真正Rust冻结计划，在一个SQLite事务写document_revisions/head、transactions（forward与完整inverse）、operations唯一键、operation_transitions和outbox；外键一致，读回校验整个immutable graph与每项原散列。相同operation/内容读原回执，不要求旧base仍是head、不重放后来的head；不同内容IDEMPOTENCY_CONFLICT，新ID/旧base拒绝。没有三个文件假原子、前端第二份authority或原DeleteCell循环。
+- 实际Rust计划→Swift物理store测试source0→1→2，原title/Unicode emoji/分解组合字符/NUL源码和cell顺序保留；多次原ID只有一个效果，后续修订后仍返回原回执。故意新增重复cell/错误hash整笔拒绝、插入revision中途ENOSPC整笔回滚、COMMIT后ACK失联unknown与原ID查询、重启head/receipt保持、五类表真实计数3/2/2/2/2均通过。实际Swift回执再次由原Rustauthority核验接纳，不用synthetic receipt宣称成功；example第二计划只从候选数据prepare，明确preparation_only。
+- 源码COMMIT后真实F_FULLFSYNC注入EIO：write返回unknown；失败仍生效时receipt query也不能报durable，恢复真实同步后原ID读回才确定完成。receipt query在实际readonly连接校验后再确认已提交字节，既不重放source，也不把旧已完成记录作为未提交。丢失关联记录/断开join是损坏，不当操作不存在。探针仅测试helper。
+- 发现旧.omnb v1允许非空Unicode cell ID，原通用Identity ASCII约束会破坏兼容。新增CellIdentity仅用于cell引用，路径/operation/runtime身份仍受控；按原UTF8区分é与e+组合字符，Swift用Data键和字节排序，Rust稳定ID不重分配。source、状态、editor/wire/storage机器定义同步，5项Rust source测试覆盖Unicode ID/源码、独立epoch、generation/overflow等。
+- 最新host/ABI 36 Rust通过（9 ABI/9协议/5source/2fixture/11scheduler）、Clippy、Swift真正port/ABI/actor/reducer/session全部通过，bootstrap同步/六SIGKILL点回归、ARM64 SDK27原生Release、17Python、纯WASM/deny/版本/生成检查通过。中间getter/capture/Vec签名和一次修改编译中Swift源造成编译拒绝均保留，后续固定源码的完整attempt通过，不复用旧失败或删断言。
+- [document.json](../acceptance/pre-alpha.4/development/r41/document.json)保存日志/真实计划与receipt/散列。UI/Agent patch、editor fence、durable admission、完整undo和checkpoint不在本任务冒称实现，继续R4.1.04–09；当前新写入body仍不注册可调用能力。inline source受2MiB预算，超限明确SOURCE_BLOB_REQUIRED，Blob扩展为下一任务。
+- ddbeb88的CI37923343056已结束：native_macos/rust/frontend/dependencies全部成功（原frontend log_log场景在此SHA通过），iOS失败为原17/18整次1330.407/1026.974ms超1s，原门槛及数学期望不改，本次保留job原件但未取得新的分段附件前不推测原因。不是完整同SHA平台绿色，也不填写最终candidate门禁。下一步不可变Blob与引用，完整85项继续。

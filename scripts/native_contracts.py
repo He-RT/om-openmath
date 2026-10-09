@@ -9,9 +9,9 @@ import subprocess
 import tempfile
 
 ROOT = Path(__file__).resolve().parents[1]
-SOURCES = ['macos-host-state.schema.json', 'macos-editor-rendering.schema.json', 'native-host-wire.schema.json']
-PRIMITIVES = {'Identity': ('String', 'String'), 'Sha256': ('String', 'String'),
-              'Serial': ('Serial', 'HostSerial'), 'ByteOffset': ('u32', 'UInt32')}
+SOURCES = ['macos-host-state.schema.json', 'macos-editor-rendering.schema.json', 'native-host-wire.schema.json', 'native-source-store.schema.json']
+PRIMITIVES = {'CellIdentity': ('String', 'String'), 'Identity': ('String', 'String'), 'Sha256': ('String', 'String'),
+              'Serial': ('Serial', 'HostSerial'), 'BlobHash': ('String', 'String'), 'Timestamp': ('String', 'String'), 'ByteOffset': ('u32', 'UInt32')}
 models = {}
 inputs = []
 for name in SOURCES:

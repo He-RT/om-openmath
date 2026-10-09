@@ -31,6 +31,8 @@ jobs:
         run: bash macos/Scripts/test-fixtures.sh > target/macos-ci-evidence/fixtures.log 2>&1
       - name: SQLite 实际同步、根锁和初始化中断
         run: bash macos/Scripts/test-storage.sh > target/macos-ci-evidence/storage.log 2>&1
+      - name: Rust 原计划与 SQLite 幂等事务/独立回读
+        run: bash macos/Scripts/test-document-store.sh > target/macos-ci-evidence/document-store.log 2>&1
       - name: 校验开发包签名和实际 ABI 符号
         run: |
           codesign --verify --deep --strict 'target/macos-native/Build/Products/Release/OpenMath Preview.app'

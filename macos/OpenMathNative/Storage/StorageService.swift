@@ -13,6 +13,7 @@ private final class StoreWriter:@unchecked Sendable {
   private let lease:RootLease
   private var db:SQLiteDatabase?
   private var identity:StoreIdentity?
+  private var source:DocumentStore?
   init(_ name:String,lease:RootLease) { self.lease=lease;queue=DispatchQueue(label:"org.openmath.storage."+name,qos:.utility) }
   nonisolated(nonsending) func perform<T:Sendable>(_ body:@escaping @Sendable (StoreWriter)throws->T) async throws ->T {
     try await withCheckedThrowingContinuation { continuation in
@@ -28,17 +29,21 @@ private final class StoreWriter:@unchecked Sendable {
       dispatchPrecondition(condition:.onQueue(writer.queue))
       let opened=try StorageBootstrap.openStore(folder:folder,kind:kind,document:document,faults:faults)
       writer.db=opened.0;writer.identity=opened.1
+      if kind=="document" { writer.source=try DocumentStore(db:opened.0,url:folder.appendingPathComponent("Generations").appendingPathComponent(String(format:"%06lld",opened.1.generation)).appendingPathComponent("authority.sqlite"),identity:opened.1) }
       return StoreOpenInfo(identity:opened.1,runtime:opened.2)
     }
   }
   nonisolated(nonsending) func header() async throws ->StoreIdentity {
     try await perform { writer in guard let db=writer.db else { throw StorageError.closing };return try StorageBootstrap.readHeader(db) }
   }
+  nonisolated(nonsending) func sourceCall<T:Sendable>(_ work:@escaping @Sendable (DocumentStore)throws->T) async throws ->T {
+    try await perform { writer in guard let source=writer.source else { throw StorageError.closing };return try work(source) }
+  }
   nonisolated(nonsending) func close() async throws {
     try await perform { writer in
       if let db=writer.db {
         try db.transaction { try db.statement("UPDATE store_state SET last_clean_shutdown=1 WHERE singleton=1") }
-        try db.checkpoint();try db.close();writer.db=nil
+        try db.checkpoint();try db.close();writer.db=nil;writer.source=nil
       }
     }
   }
@@ -83,6 +88,22 @@ actor StorageService {
     documents[id]=writer // reserve before suspension; never create a second writer
     do { return try await writer.open(folder:paths.root.appendingPathComponent("Documents",isDirectory:true).appendingPathComponent(id,isDirectory:true),kind:"document",document:id,faults:faults) }
     catch { documents.removeValue(forKey:id);throw error }
+  }
+  func initializeSource(_ source:NativeSourceSnapshot) async throws ->NativeSourceSnapshot {
+    guard closeTask==nil,let writer=documents[source.document_id] else { throw StorageError.closing }
+    return try await writer.sourceCall { try $0.initialize(source) }
+  }
+  func committedSource(_ id:String) async throws ->NativeSourceSnapshot? {
+    guard closeTask==nil,let writer=documents[id] else { throw StorageError.closing }
+    return try await writer.sourceCall { try $0.readHead() }
+  }
+  func commitSource(_ plan:NativeSourceCommit,faults:StorageFaults = .init()) async throws ->NativeDurableSourceReceipt {
+    guard closeTask==nil,let writer=documents[plan.commit.document_id] else { throw StorageError.closing }
+    return try await writer.sourceCall { try $0.commit(plan,faults:faults) }
+  }
+  func sourceReceipt(document:String,operation:String) async throws ->NativeDurableSourceReceipt? {
+    guard closeTask==nil,let writer=documents[document] else { throw StorageError.closing }
+    return try await writer.sourceCall { try $0.query(operation) }
   }
   func close() async throws {
     if let closeTask { return try await closeTask.value }

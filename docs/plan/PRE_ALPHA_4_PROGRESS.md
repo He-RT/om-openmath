@@ -4,9 +4,9 @@
 
 2026-10-09。目标`0.1.0-pre-alpha.4`，当前运行/公开版本`.3`；开发`dev`，不合main、不改旧标签、本机不启动iOS模拟器。本文只记录结果，规格及完成标准唯一见主计划；计划编写本身不计实施完成。
 
-**当前状态：** 8任务完成（R4.0.01/02/03/04/05/08/09/11）；其余90任务尚未完成；32最终运行/发行gate全部not_run；candidate未分配，ready_to_publish=false，released_verified=false。设计/HTML/Schema通过不填运行时pass。
+**当前状态：** 9任务完成（R4.0.01/02/03/04/05/06/08/09/11）；其余89任务尚未完成；32最终运行/发行gate全部not_run；candidate未分配，ready_to_publish=false，released_verified=false。设计/HTML/Schema通过不填运行时pass。
 
-**下一任务：** R4.0.06真实C ABI生命周期，随后R4.0.07事件泵/求值；R4.0.10故障fixture可按接口前置开始。R4.0.08/09同提交全部CI已通过。按DAG推进，R4.5.07必须在R4.5.05冻结前完成。
+**下一任务：** R4.0.07事件路由/去重/缺口恢复与权威投影（后台客户端已接通实际ABI）；R4.0.10故障fixture可按接口前置开始。R4.0.08/09同提交全部CI已通过。按DAG推进，R4.5.07必须在R4.5.05冻结前完成。
 
 ## 已知外部前置
 
@@ -24,9 +24,9 @@
 | [x] [R4.0.02](PRE_ALPHA_4.md#task-r4.0.02) | 依赖与许可闭包核对 | completed | dependencies.json / clean npm ci + audit | 75b4e5c |
 | [x] [R4.0.03](PRE_ALPHA_4.md#task-r4.0.03) | 原生Mac工程和数学链接骨架 | completed | Release build / native AX /真实C ABI读回 | 75b4e5c |
 | [x] [R4.0.04](PRE_ALPHA_4.md#task-r4.0.04) | 冻结框架无关DTO与新MacABI契约 | completed | 91 DTO / Rust+Swift / CI37880165376 | 21c9254 |
-| [x] [R4.0.05](PRE_ALPHA_4.md#task-r4.0.05) | 安全host-service所有者与调度骨架 | completed | 10调度+9契约 / 真实CAS / 独立取消 / Clippy | 下次补记 |
-| [ ] [R4.0.06](PRE_ALPHA_4.md#task-r4.0.06) | 新CABI句柄、缓冲与直接取消 | planned | — | — |
-| [ ] [R4.0.07](PRE_ALPHA_4.md#task-r4.0.07) | Swift客户端、事件泵和权威投影 | planned | — | — |
+| [x] [R4.0.05](PRE_ALPHA_4.md#task-r4.0.05) | 安全host-service所有者与调度骨架 | completed | 10调度+9契约 / 真实CAS / 独立取消 / Clippy | daecc3f |
+| [x] [R4.0.06](PRE_ALPHA_4.md#task-r4.0.06) | 新CABI句柄、缓冲与直接取消 | completed | 9 Rust ABI / 真实 Swift 调用 / Release 链接 | 下次补记 |
+| [ ] [R4.0.07](PRE_ALPHA_4.md#task-r4.0.07) | Swift客户端、事件泵和权威投影 | in_progress | 后台客户端/轮询/取消已接通；路由与权威投影待实现 | — |
 | [x] [R4.0.08](PRE_ALPHA_4.md#task-r4.0.08) | 共享Modern自动续行与根因诊断 | completed | 91 DTO / Rust+Swift / CI37880165376 | 21c9254 |
 | [x] [R4.0.09](PRE_ALPHA_4.md#task-r4.0.09) | 原语言和数学基线持续兼容 | completed | 91 DTO / Rust+Swift / CI37880165376 | 21c9254 |
 | [ ] [R4.0.10](PRE_ALPHA_4.md#task-r4.0.10) | fixture与真实故障注入基础设施 | planned | — | — |
@@ -188,3 +188,12 @@ Done依据与覆盖case/proof:
 - new直接构造也重新校验init边界；catalog在独立worker分页，不把大序列化塞控制步骤。当前没有文档持久化/写入/definition snapshot接纳，相关入口显式不开放；native_renderers_ready=false与内核Desktop数学能力区分。框架禁unsafe与iOS原ABI保持。
 - host-service Clippy通过；kernel reactive/editor/artifacts/explore/operation_cancel定向兼容与纯WASM构建已通过。初始字段名/类型编译错误原件保留，最终以scheduler-tests-final3.log、scheduler-clippy-final3.log为准。提交21c9254的CI37883006504实际全部success；新scheduler尚待自己SHA的CI。
 - 原始命令/日志保存在target/acceptance/pre-alpha.4/development/r40/，[scheduler.json](../acceptance/pre-alpha.4/development/r40/scheduler.json)登记散列与范围。这不是最终candidate gate，完整native UI/存储/Agent/签名仍待后续。下一步R4.0.06真实CABI句柄、owned bytes与关闭竞争。
+
+## R4开发记录 D008 — 真正C ABI生命周期与Swift后台客户端
+
+- R4.0.06完成：create/submit/next_events/cancel/close_begin/close_finish/buffer_free与三项probe共10符号均位于实际Release静态库。只在独立ffi输入边界使用from_raw_parts且立即复制；安全registry不解引用C句柄。guard计数与registry admission同一短锁顺序，finish先撤销新调用、等待活动guard与owner停止再释放完整服务。稳定token小tombstone保持进程期且有界，避免旧句柄ABA复用；buffer只按注册分配及长度释放，不能从外部pointer重构Box。
+- 最新9项Rust ABI验收通过：null/空/非法UTF-8/未知字段/超限、真实4与数学失败、借用输入在返回后被销毁、长度错误/重复/伪buffer、旧句柄/重复取消、实际活动guard阻挡关闭及并发poll/submit/cancel/close均覆盖；每测试核对live host和owned buffer数/字节恢复。panic/整数路径在边界捕获；iOS旧ABI没有改动。
+- Swift直接调用Release库通过：精确4、真实parse错误run_outcome、Desktop能力、直接取消、decode/free与消费旧句柄。DTO回读/四负例/constant kind也通过；NativeHostClient独立control/events/cancel/shutdown后台队列通过Swift6严格检查与实际Release链接。客户端现场fixture核对状态读取/直接取消、MainActor事件轮询期间26次调度和后台finish。首轮等待300ms后任务已终止，取消正确返回false但fixture原precondition失败；保留原件，并把运行中取消提前、主线程轮询验证独立进行，不改产品取消含义或运行预算。
+- 工作区完整Rust1122通过/2原ignored、全Clippy、纯WASM、17Python、生成协议/工程/函数文档与结构检查通过；完整回归之后的新ABI负例单独再验收为9通过。Mac ARM64/SDK27 Release build及strict ad-hoc签名通过。新的macos-native.yml在Xcode27镜像持续构建/执行Swift实际ABI与客户端fixture；它不代替最终签名公证/真实UI/candidate gate。
+- R4.0.07继续in_progress：后台transport与实际计算已实现；App窗口仍是链接预览，NotebookViewModel、producer独立计数、重复/缺口/旧scope reducer与resync尚待接通，不能标完整工作台或此任务完成。
+- [ffi.json](../acceptance/pre-alpha.4/development/r40/ffi.json)记录原始日志/散列；原件在target/acceptance/pre-alpha.4/development/r40/。前一scheduler提交daecc3f的CI37895404872查询时Rust/frontend/dependencies成功、iOS仍进行，不能写同SHA全绿或用它证明本次ABI。下一步直接R4.0.07，随后fixture基础/SQLite持久化与完整原生/Agent。

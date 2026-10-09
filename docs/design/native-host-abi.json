@@ -5,20 +5,77 @@
   "language_feature_version": 1,
   "create_returns": "om_host_create_result",
   "create_error_ownership": "error buffer is Rust-owned; free even when handle is NULL; successful create has empty error",
-  "buffer_ownership": "Rust-owned buffer; free exactly once; Swift input is borrowed only during the call and copied before enqueue",
+  "buffer_ownership": "Rust-owned buffer; free exactly once (NULL/0 is empty); length mismatch does not consume it; Swift input is borrowed only during the call and copied before enqueue; outstanding bytes limited to 64 MiB/1024 buffers",
   "close_finish": "background only; consumes handle after owner and event pump are settled; not MainActor join",
   "symbols": [
-    ["uint32_t", "om_host_abi_version", "void"],
-    ["const char *", "om_host_kernel_release_version", "void"],
-    ["uint32_t", "om_host_metadata_version", "void"],
-    ["om_host_create_result", "om_host_create", "const unsigned char *json, size_t len"],
-    ["om_host_buffer", "om_host_submit", "om_host_handle *host, const unsigned char *json, size_t len"],
-    ["om_host_buffer", "om_host_next_events", "om_host_handle *host, uint32_t wait_ms, size_t max_bytes"],
-    ["int32_t", "om_host_cancel", "om_host_handle *host, const unsigned char *operation_id, size_t len"],
-    ["om_host_buffer", "om_host_close_begin", "om_host_handle *host"],
-    ["int32_t", "om_host_close_finish", "om_host_handle *host"],
-    ["void", "om_host_buffer_free", "om_host_buffer buffer"]
+    [
+      "uint32_t",
+      "om_host_abi_version",
+      "void"
+    ],
+    [
+      "const char *",
+      "om_host_kernel_release_version",
+      "void"
+    ],
+    [
+      "uint32_t",
+      "om_host_metadata_version",
+      "void"
+    ],
+    [
+      "om_host_create_result",
+      "om_host_create",
+      "const unsigned char *json, size_t len"
+    ],
+    [
+      "om_host_buffer",
+      "om_host_submit",
+      "om_host_handle *host, const unsigned char *json, size_t len"
+    ],
+    [
+      "om_host_buffer",
+      "om_host_next_events",
+      "om_host_handle *host, uint32_t wait_ms, size_t max_bytes"
+    ],
+    [
+      "int32_t",
+      "om_host_cancel",
+      "om_host_handle *host, const unsigned char *operation_id, size_t len"
+    ],
+    [
+      "om_host_buffer",
+      "om_host_close_begin",
+      "om_host_handle *host"
+    ],
+    [
+      "int32_t",
+      "om_host_close_finish",
+      "om_host_handle *host"
+    ],
+    [
+      "void",
+      "om_host_buffer_free",
+      "om_host_buffer buffer"
+    ]
   ],
   "lifecycle_implementation_task": "R4.0.06",
-  "declaring_symbols_is_not_handler_registration": true
+  "declaring_symbols_is_not_handler_registration": true,
+  "handle_ownership": "Opaque registry key; callers never dereference or free it. close_finish removes live entry after active calls/owners settle; small allocation tombstones remain to prevent address reuse (4096 lifetime creations, 128 simultaneous hosts).",
+  "integer_status": {
+    "cancel": {
+      "1": "stop signalled",
+      "0": "already terminal",
+      "-1": "invalid argument",
+      "-2": "invalid or consumed handle/operation",
+      "-3": "closing",
+      "-4": "internal error/panic",
+      "-5": "budget exceeded"
+    },
+    "close_finish": {
+      "0": "closed and consumed",
+      "-2": "invalid or already consumed handle",
+      "-4": "internal error/panic"
+    }
+  }
 }

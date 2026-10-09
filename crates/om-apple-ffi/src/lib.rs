@@ -1,5 +1,10 @@
-//! Native Mac ABI boundary. Session/control operations are added after their DTOs are frozen.
+//! Native Mac ABI boundary. Owned buffers and stable guarded handles isolate all unsafe input.
 #![deny(unsafe_op_in_unsafe_fn)]
+mod ffi;
+mod registry;
+pub use ffi::*;
+#[cfg(test)]
+mod lifecycle_tests;
 
 /// Version of the native Mac C ABI, independent of the application SemVer.
 #[unsafe(no_mangle)]

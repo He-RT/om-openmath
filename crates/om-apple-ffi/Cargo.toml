@@ -11,6 +11,9 @@ crate-type = ["staticlib", "rlib"]
 
 [dependencies]
 om-kernel = { workspace = true, features = ["external-host"] }
+om-host-service = { path = "../om-host-service" }
+serde.workspace = true
+serde_json.workspace = true
 
 [lints.rust]
 unsafe_op_in_unsafe_fn = "deny"

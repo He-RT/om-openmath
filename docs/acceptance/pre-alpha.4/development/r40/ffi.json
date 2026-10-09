@@ -1,0 +1,74 @@
+{
+  "task": "R4.0.06",
+  "development_only": true,
+  "version": "0.1.0-pre-alpha.3",
+  "rust_workspace_passed": 1122,
+  "rust_workspace_ignored": 2,
+  "latest_rust_abi_tests_passed": 9,
+  "python_tests_passed": 17,
+  "declared_actual_release_symbols": 10,
+  "swift_client_mainactor_pulses": 26,
+  "macos_release_build": "passed",
+  "code_signing": "ad-hoc development only",
+  "logs": [
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r40/ffi-tests-final.log",
+      "sha256": "bdd5fad85bcca38d1fa405f94202a2451e85667b3227747898ac5f332a6afc98"
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r40/ffi-clippy-final.log",
+      "sha256": "b146759144a6db7805035ee1aa073deedf3a1e47a7640ac6a8854b78fbd47cb5"
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r40/ffi-workspace-tests.log",
+      "sha256": "c15ad519eb09be988a04ace43232321e0a08343bacae38ccfdf34941a976d53b"
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r40/ffi-workspace-clippy.log",
+      "sha256": "be648e1bfee86dee1ab659c86f475db747c6de772235565fe2661cb46f438917"
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r40/ffi-wasm.log",
+      "sha256": "c2ccae29be8ebbd8973f3201e5f6646ec32bdad22fe9c3866ff8d1618ed74896"
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r40/ffi-native-build.log",
+      "sha256": "0a84b92098a765567eaa76bfb465f267553f48d701fe9dad2f8d0b54a5c3c692"
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r40/ffi-python.log",
+      "sha256": "b53630add7ac3b4cf83125bf13ea7a2c90b4e0d5c2c5ce56241dc3ea898eebbd"
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r40/ffi-swift-fixtures.log",
+      "sha256": "8d066ca0ca444f076a55fff3107d291d6cb145ca6b14a3d88aac9140dc2610f9"
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r40/ffi-library-symbols.log",
+      "sha256": "a74a295cd5280a30807340c3a37e6db59003cbd749fd1de0a45707da2e85e6b1"
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r40/swift-host-typecheck.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r40/swift-client-run.log",
+      "sha256": "b604681810a61e961b27a1dfb8916249641bc4bd87fbd3b1b4edae38a1db49c1"
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r40/swift-client-fixtures-second.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r40/swift-client-run-second.log",
+      "sha256": "95d4d2cfd10b225d3a5b682062148d4900d9da21b56a27ae8531ce7d530bff0a"
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r40/ffi-swift-fixtures-final.log",
+      "sha256": "618ff2723eb2e08bb9102ca536b451a1b99be3d0e37bcaa72caa90fff1a50d99"
+    }
+  ],
+  "R4.0.07": "in_progress: transport real; scope reducer/resync/projection pending",
+  "final_candidate_gates_executed": false,
+  "swift_client_final_mainactor_pulses": 25
+}

@@ -738,6 +738,22 @@
         "needs_resync"
       ],
       "additionalProperties": false
+    },
+    "HostFailure": {
+      "type": "object",
+      "properties": {
+        "protocol_version": {
+          "const": 1
+        },
+        "error": {
+          "$ref": "#/$defs/HostError"
+        }
+      },
+      "required": [
+        "protocol_version",
+        "error"
+      ],
+      "additionalProperties": false
     }
   },
   "oneOf": [
@@ -755,6 +771,9 @@
     },
     {
       "$ref": "#/$defs/EventBatch"
+    },
+    {
+      "$ref": "#/$defs/HostFailure"
     }
   ]
 }

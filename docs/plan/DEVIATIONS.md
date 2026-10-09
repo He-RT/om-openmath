@@ -392,3 +392,9 @@ L2使用精确标称GM分数、50位FindRoot/1000迭代和真实残差，报告�
 
 - 低层get_function_catalog采用offset默认0/limit默认32（最大32）分页，返回total/next_offset；逐页覆盖真实全部callback，不裁掉条目来满足帧上限。目录构造/编码在KernelWorker，不阻塞文档控制。get_state只含活动+最近32终止摘要，历史详情以原operation ID查询，显式operation_history_complete=false。
 - 新原生host-service仅新增直接sha2=0.10.9（Cargo.lock已存在、MIT/Apache-2.0），用于核对EditorKey真实源码SHA256；不引入核心/WASM依赖或数学运行时。Kernel外部每操作取消token保留，不由下一次内部reset清零；默认Session复位行为未改。
+
+### R4-D004：稳定handle和后台Swift ABI所有权（2026-10-09）
+
+- C opaque pointer只作安全registry key，不解引用；registry admission和活动guard加一原子排序，finish消费live entry、等待已有调用和各owner。为避免内存地址复用造成旧指针ABA，8字节token及小索引保留到进程结束（4096次生命周期创建/128同时宿主）；完整host/results及时释放。此边界上限公开，不声称释放token后任意旧pointer仍可安全识别。
+- buffer有64MiB/1024 outstanding上限，NULL/0明确为空；调用者必须恰好释放一次，不把重复buffer副本当独立所有权。长度不匹配不消费分配，free不构造外部pointer的Box。HostFailure作为版本化typed错误回复加入机器schema；生成枚举名改为正常Rust PascalCase/Swift snake_case，wire字符串保持原样。
+- Swift NativeHostClient拥有ABI生命周期，提交/事件/直接取消/关闭采用独立后台队列。Close等待在utility队列，不在actor或MainActor join。未完成路由/权威笔记本时只交付transport并保留R4.0.07 unchecked；新CI明确是开发桥接验证，不带个人签名或模型秘密。

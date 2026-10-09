@@ -1,0 +1,134 @@
+import Foundation
+import OpenMathHost
+
+/// The wrapper never dereferences the opaque pointer; Rust guards every live call.
+/// Its immutable pointer may cross background queues. Closing/freeing remain Rust operations.
+private final class NativeHostHandle: @unchecked Sendable {
+  let pointer: OpaquePointer
+  private let lock = NSLock()
+  private var consumed = false
+  init(_ pointer: OpaquePointer) { self.pointer = pointer }
+  func claimFinish() -> Bool { lock.withLock { if consumed { return false }; consumed = true; return true } }
+  deinit {
+    if !consumed {
+      let address = UInt(bitPattern: pointer)
+      NativeHostQueues.shutdown.async {
+        guard let pointer = OpaquePointer(bitPattern: address) else { return }
+        om_host_buffer_free(om_host_close_begin(pointer))
+        _ = om_host_close_finish(pointer)
+      }
+    }
+  }
+}
+private enum NativeHostQueues {
+  static let control = DispatchQueue(label: "org.openmath.native.control", qos: .userInitiated)
+  static let events = DispatchQueue(label: "org.openmath.native.events", qos: .userInitiated)
+  static let cancel = DispatchQueue(label: "org.openmath.native.cancel", qos: .userInitiated)
+  static let shutdown = DispatchQueue(label: "org.openmath.native.shutdown", qos: .utility)
+}
+
+enum NativeHostClientError: Error, Sendable {
+  case rejected(HostError), closing, emptyBuffer, incompatibleVersion, invalidReply, status(Int32)
+}
+
+/// Transport only: it owns ABI lifetime, not a second document or a synthesized success state.
+/// All encoding, bounded polling, decoding/freeing and owner joins execute off the caller actor.
+actor NativeHostClient {
+  let runtimeInstanceID: String
+  private var handle: NativeHostHandle?
+  private init(runtime: String, handle: NativeHostHandle) {
+    runtimeInstanceID = runtime
+    self.handle = handle
+  }
+  static func open(runtime: String = UUID().uuidString.lowercased(), eventCapacity: UInt32 = 128) async throws -> NativeHostClient {
+    let handle: NativeHostHandle = try await background(NativeHostQueues.control) {
+      guard om_host_abi_version() == 1 else { throw NativeHostClientError.incompatibleVersion }
+      let frame = HostInit(protocol_version: 1, runtime_instance_id: runtime,
+        max_pending_operations: 32, event_capacity: eventCapacity)
+      let data = try JSONEncoder().encode(frame)
+      let result = data.withUnsafeBytes { raw in
+        om_host_create(raw.bindMemory(to: UInt8.self).baseAddress, raw.count)
+      }
+      guard let pointer = result.handle else {
+        let failure: HostFailure = try read(result.error)
+        throw NativeHostClientError.rejected(failure.error)
+      }
+      guard result.error.ptr == nil && result.error.len == 0 else {
+        om_host_buffer_free(result.error)
+        om_host_buffer_free(om_host_close_begin(pointer))
+        _ = om_host_close_finish(pointer)
+        throw NativeHostClientError.invalidReply
+      }
+      return NativeHostHandle(pointer)
+    }
+    return NativeHostClient(runtime: runtime, handle: handle)
+  }
+  func submit(_ request: RequestEnvelope) async throws -> AdmissionReceipt {
+    guard let handle else { throw NativeHostClientError.closing }
+    guard request.runtime_instance_id == runtimeInstanceID else { throw NativeHostClientError.invalidReply }
+    return try await Self.background(NativeHostQueues.control) {
+      let data = try JSONEncoder().encode(request)
+      guard data.count <= 2 * 1024 * 1024 else { throw NativeHostClientError.invalidReply }
+      let buffer = data.withUnsafeBytes { raw in
+        om_host_submit(handle.pointer, raw.bindMemory(to: UInt8.self).baseAddress, raw.count)
+      }
+      let receipt: AdmissionReceipt = try Self.read(buffer)
+      guard receipt.protocol_version == 1, receipt.request_ref == request.request_ref,
+        receipt.operation_ref.value == (request.operation_id.value ?? request.request_ref),
+        receipt.accepted, receipt.error.value == nil else { throw NativeHostClientError.invalidReply }
+      return receipt
+    }
+  }
+  func nextEvents() async throws -> EventBatch {
+    guard let handle else { throw NativeHostClientError.closing }
+    return try await Self.background(NativeHostQueues.events) {
+      let batch: EventBatch = try Self.read(om_host_next_events(handle.pointer, 100, 512 * 1024))
+      guard batch.protocol_version == 1 else { throw NativeHostClientError.incompatibleVersion }
+      return batch
+    }
+  }
+  /// This queue is independent of event polling and submission, and of the Rust CAS workers.
+  func cancel(operation: String) async throws -> Bool {
+    guard let handle else { throw NativeHostClientError.closing }
+    return try await Self.background(NativeHostQueues.cancel) {
+      let data = Data(operation.utf8)
+      let status = data.withUnsafeBytes { raw in
+        om_host_cancel(handle.pointer, raw.bindMemory(to: UInt8.self).baseAddress, raw.count)
+      }
+      guard status >= 0 else { throw NativeHostClientError.status(status) }
+      return status == 1
+    }
+  }
+  /// Callers stop their event consumer first. Outstanding C calls are guarded and settled in Rust.
+  func close() async throws {
+    guard let handle else { return }
+    self.handle = nil
+    guard handle.claimFinish() else { return }
+    try await Self.background(NativeHostQueues.shutdown) {
+      let begin = om_host_close_begin(handle.pointer)
+      defer { om_host_buffer_free(begin) }
+      let status = om_host_close_finish(handle.pointer)
+      guard status == 0 else { throw NativeHostClientError.status(status) }
+    }
+  }
+  private static func read<T: Decodable>(_ buffer: om_host_buffer) throws -> T {
+    defer { om_host_buffer_free(buffer) }
+    guard let pointer = buffer.ptr, buffer.len > 0 else { throw NativeHostClientError.emptyBuffer }
+    let data = Data(bytes: pointer, count: buffer.len)
+    let decoder = JSONDecoder()
+    if let failure = try? decoder.decode(HostFailure.self, from: data) {
+      guard failure.protocol_version == 1 else { throw NativeHostClientError.incompatibleVersion }
+      throw NativeHostClientError.rejected(failure.error)
+    }
+    return try decoder.decode(T.self, from: data)
+  }
+  private static func background<T: Sendable>(_ queue: DispatchQueue,
+    _ work: @escaping @Sendable () throws -> T) async throws -> T {
+    try await withCheckedThrowingContinuation { continuation in
+      queue.async {
+        do { continuation.resume(returning: try work()) }
+        catch { continuation.resume(throwing: error) }
+      }
+    }
+  }
+}

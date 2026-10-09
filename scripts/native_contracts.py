@@ -24,9 +24,13 @@ for name in SOURCES:
         models[key] = value
 
 def snake(name):
+    if name == name.upper():
+        return name.lower()
     return re.sub(r'(?<!^)(?=[A-Z])', '_', name).lower()
 
 def pascal(name):
+    if name == name.upper():
+        name = name.lower()
     return ''.join(x[:1].upper() + x[1:] for x in re.split(r'[^A-Za-z0-9]+', name))
 
 def type_pair(schema, name):
@@ -166,7 +170,10 @@ extern "C" {
 typedef struct om_host_handle om_host_handle;
 typedef struct { unsigned char *ptr; size_t len; } om_host_buffer;
 typedef struct { om_host_handle *handle; om_host_buffer error; } om_host_create_result;
-/* Returned buffers are Rust-owned; free once. Version C string is immutable/static and never freed. */
+/* Returned buffers are Rust-owned; free once (NULL/0 is empty). Version C string is static.
+ * Handles are opaque registry keys: never dereference/free. close_finish is background-only.
+ * cancel: 1 stop signalled, 0 terminal, -1 argument, -2 reference, -3 closing, -4 internal, -5 budget.
+ * close_finish: 0 consumed, -2 invalid/consumed, -4 internal. No function unwinds across C. */
 '''
 for returned, name, args in abi['symbols']:
     header += f'{returned} {name}({args});\n'

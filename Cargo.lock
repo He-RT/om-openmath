@@ -3078,7 +3078,10 @@ dependencies = [
 name = "om-apple-ffi"
 version = "0.1.0-pre-alpha.3"
 dependencies = [
+ "om-host-service",
  "om-kernel",
+ "serde",
+ "serde_json",
 ]
 
 [[package]]

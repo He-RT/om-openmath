@@ -2891,7 +2891,7 @@ UpdateService只读受控官方GitHub Releases/发行清单（预发行不可用
 
 #### R4.0.06 新CABI句柄、缓冲与直接取消
 
-- [ ] **R4.0.06 完成**（仅在以下Done和验证满足后勾选）
+- [x] **R4.0.06 完成**（仅在以下Done和验证满足后勾选）
 
 **Files：**
 
@@ -2905,10 +2905,10 @@ UpdateService只读受控官方GitHub Releases/发行清单（预发行不可用
 
 **Steps：**
 
-- [ ] 1. 只在独立边界使用必要unsafe并复制输入。
-- [ ] 2. 实现稳定句柄guard/活动调用/关闭两阶段。
-- [ ] 3. 将取消直接接入操作registry，返回owned bytes恰好释放。
-- [ ] 4. 执行下面Tests，核对真实输出/失败，更新任务账本与证据后提交本批次。
+- [x] 1. 只在独立边界使用必要unsafe并复制输入。
+- [x] 2. 实现稳定句柄guard/活动调用/关闭两阶段。
+- [x] 3. 将取消直接接入操作registry，返回owned bytes恰好释放。
+- [x] 4. 执行下面Tests，核对真实输出/失败，更新任务账本与证据后提交本批次。
 
 **Tests：** 非法输入/null/超限/free/关闭并发/重复取消/无跨ABIunwind，实际求值后释放。测试位置以Files和第15节影响范围为准，证据保存完整输入/命令/输出，不仅记录“通过”。
 
@@ -2936,7 +2936,7 @@ UpdateService只读受控官方GitHub Releases/发行清单（预发行不可用
 - [ ] 1. 后台submit/event pump解码并释放buffer。
 - [ ] 2. 用scope/liveness/sequence reducer投影。
 - [ ] 3. 实现重复/缺口/resync与终止回执背压，不混不同producer计数。
-- [ ] 4. 经新ABI运行真实2+2及错误输入，验证Desktop平台能力。
+- [x] 4. 经新ABI运行真实2+2及错误输入，验证Desktop平台能力。
 - [ ] 5. 执行下面Tests，核对真实输出/失败，更新任务账本与证据后提交本批次。
 
 **Tests：** 重复事件不双应用，旧runtime不进当前视图，队列满不丢提交/终止，长CAS仍可操作，真实2+2返回精确4。测试位置以Files和第15节影响范围为准，证据保存完整输入/命令/输出，不仅记录“通过”。

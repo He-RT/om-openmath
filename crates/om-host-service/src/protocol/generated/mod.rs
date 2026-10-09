@@ -87,6 +87,8 @@ mod host_error;
 pub use host_error::*;
 mod host_error_code;
 pub use host_error_code::*;
+mod host_failure;
+pub use host_failure::*;
 mod host_init;
 pub use host_init::*;
 mod host_phase;

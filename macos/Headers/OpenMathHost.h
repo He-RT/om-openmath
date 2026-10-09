@@ -9,7 +9,10 @@ extern "C" {
 typedef struct om_host_handle om_host_handle;
 typedef struct { unsigned char *ptr; size_t len; } om_host_buffer;
 typedef struct { om_host_handle *handle; om_host_buffer error; } om_host_create_result;
-/* Returned buffers are Rust-owned; free once. Version C string is immutable/static and never freed. */
+/* Returned buffers are Rust-owned; free once (NULL/0 is empty). Version C string is static.
+ * Handles are opaque registry keys: never dereference/free. close_finish is background-only.
+ * cancel: 1 stop signalled, 0 terminal, -1 argument, -2 reference, -3 closing, -4 internal, -5 budget.
+ * close_finish: 0 consumed, -2 invalid/consumed, -4 internal. No function unwinds across C. */
 uint32_t om_host_abi_version(void);
 const char * om_host_kernel_release_version(void);
 uint32_t om_host_metadata_version(void);

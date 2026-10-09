@@ -5,41 +5,41 @@ use super::*;
 pub enum HostErrorCode {
     /// Contract value `INVALID_ARGUMENT`.
     #[serde(rename = "INVALID_ARGUMENT")]
-    INVALIDARGUMENT,
+    InvalidArgument,
     /// Contract value `INVALID_SOURCE`.
     #[serde(rename = "INVALID_SOURCE")]
-    INVALIDSOURCE,
+    InvalidSource,
     /// Contract value `INVALID_REFERENCE`.
     #[serde(rename = "INVALID_REFERENCE")]
-    INVALIDREFERENCE,
+    InvalidReference,
     /// Contract value `PERMISSION_DENIED`.
     #[serde(rename = "PERMISSION_DENIED")]
-    PERMISSIONDENIED,
+    PermissionDenied,
     /// Contract value `STALE_DOCUMENT`.
     #[serde(rename = "STALE_DOCUMENT")]
-    STALEDOCUMENT,
+    StaleDocument,
     /// Contract value `EDITING_BUSY`.
     #[serde(rename = "EDITING_BUSY")]
-    EDITINGBUSY,
+    EditingBusy,
     /// Contract value `NOT_AVAILABLE`.
     #[serde(rename = "NOT_AVAILABLE")]
-    NOTAVAILABLE,
+    NotAvailable,
     /// Contract value `BUDGET_EXCEEDED`.
     #[serde(rename = "BUDGET_EXCEEDED")]
-    BUDGETEXCEEDED,
+    BudgetExceeded,
     /// Contract value `CANCELLED`.
     #[serde(rename = "CANCELLED")]
-    CANCELLED,
+    Cancelled,
     /// Contract value `UNKNOWN_OUTCOME`.
     #[serde(rename = "UNKNOWN_OUTCOME")]
-    UNKNOWNOUTCOME,
+    UnknownOutcome,
     /// Contract value `ABI_MISMATCH`.
     #[serde(rename = "ABI_MISMATCH")]
-    ABIMISMATCH,
+    AbiMismatch,
     /// Contract value `IO_FAILED`.
     #[serde(rename = "IO_FAILED")]
-    IOFAILED,
+    IoFailed,
     /// Contract value `INTERNAL_ERROR`.
     #[serde(rename = "INTERNAL_ERROR")]
-    INTERNALERROR,
+    InternalError,
 }

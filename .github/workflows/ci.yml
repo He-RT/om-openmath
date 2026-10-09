@@ -13,6 +13,9 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  native_macos:
+    uses: ./.github/workflows/macos-native.yml
+
   ios:
     uses: ./.github/workflows/ios.yml
 

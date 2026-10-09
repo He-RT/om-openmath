@@ -449,3 +449,11 @@ L2使用精确标称GM分数、50位FindRoot/1000迭代和真实残差，报告�
 - 源码实际被原操作修改/插入的单元格须内容、kind/dialect及原cell revision仍匹配；后来改后又改回相同字节也拒绝。原操作没有改动的单元格使用当前内容，后来删除不复活；标题只有原修改项仍匹配才反转，不恢复整本旧快照。
 - 顺序以不同UTF8 cell IDs的O(n log n)稳定锚点划分独立变化间隙；先一次检查全部当前间隙，再从后向前修改临时结果，期间不发布中间态。后来插入原变化间隙/相关移位/身份重用返回冲突，未改间隙及之外的新内容保留。初始连续区域算法被实际反例证明会误拒绝两个独立改动之间的新格，已替换；不是放宽内容或原计数校验。
 - 当前12项source级测试含4225组合性质校验通过，R4.1.07仍未完成。1..32事务组、实际原transaction读取/新inverse commit/重复回执、UndoManager group/echo、跨重启200完整事务与pin/tombstone另按原任务实现，不把纯函数或单位测试当真实撤销已交付。
+
+### R4-D013：事务组逆向比较与确认后原生UndoManager出栈（2026-10-10，R4.1.07进行中）
+
+- `NativeSourceCommit.undo_group`为可选内部扩展，绑定group_id和1..32个原transaction IDs到同源Rust/Swift request hash；没有该字段的旧原生source计划散列保持不变，`.omnb`不新增字段。source_prepare_undo仅接受可信物理端口已读取/核验的完整记录；模型参数没有store/plan/receipt。source_recover_undo导入健康库回读的旧回执，只确认已发生效果，不改变当前源码或执行CAS。
+- 原事务按提交修订从新到旧，在临时比较视图逐笔逆向。刚被组内逆操作恢复的cell comparison revision可回到原before版本，用于验证下一条；真正owner revision/epoch不倒退，最终只有一个new commit。顺序错误、重复身份、相关后续编辑和组超限整体拒绝；actual settings变更不伪装成源码撤销。
+- Swift从实际SQLite不可变图读取transaction/plan/receipt，原ID重复先核对实际undo及原组，不以最新源码重拼。不同组同ID为idempotency conflict，未知确认按原ID恢复；新runtime必须先打开实际head，再确认旧已完成undo事实。已有源码COMMIT/回执/outbox边界复用，不新增模型直接writer。
+- UndoCoordinator使用实际NSUndoManager，异步业务成功前不消费命令；成功才通过原生undo/redo栈登记实际逆事务。初始真实用例发现closed group不能调用setActionName，已改为后续同组回执只扩展事务列表，动作名称在首次group中设置。相同回显不重复登记，不同hash回显拒绝；失败保留原命令，unknown禁用undo/redo且核对保留原ID。
+- 当前实际CABI/SQLite/重开runtime/UndoManager基础已接通。完整编辑器自动文本group与跨重启200完整事务、保留pin和裁减tombstone尚未完成，R4.1.07保持unchecked，后续继续原范围；本批不注册Agent undo handler、不改公开`.3`或发行门禁。

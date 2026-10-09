@@ -104,6 +104,24 @@ final class DocumentStore {
   func admit(_ plan:NativeSourceCommit,runtime:String,faults:StorageFaults = .init()) throws ->NativeSourceAdmission {
     try admissions.admit(plan,runtime:runtime,completed:query(plan.commit.operation_id),faults:faults)
   }
+  /// Real stored plans verified against the immutable source/receipt graph, newest first.
+  func transactions(_ ids:[String]) throws ->[NativeStoredSourceTransaction] {
+    guard !ids.isEmpty,ids.count<=32,Set(ids).count==ids.count,ids.allSatisfy(SourceValidation.identity) else {throw StorageError.corruptIdentity}
+    let read=try SQLiteDatabase(url:url,readonly:true);defer {try? read.close()}
+    var records:[NativeStoredSourceTransaction]=[]
+    for id in ids {
+      var plan:NativeSourceCommit?
+      try read.statement("SELECT forward_plan FROM transactions WHERE document_id=? AND transaction_id=?",[.text(identity.documentID!),.text(id)]) {
+        plan=try JSONDecoder().decode(NativeSourceCommit.self,from:SQLColumn.data($0,0))
+      }
+      guard let plan,plan.commit.transaction_id==id else {throw StorageError.transactionUnavailable}
+      try SourceValidation.commit(plan)
+      guard let actual=try receipt(plan.commit.operation_id,reader:read) else {throw StorageError.corruptIdentity}
+      records.append(.init(store_id:identity.storeID,transaction_id:id,plan:plan,receipt:actual))
+    }
+    try db.confirmCommittedBytes()
+    return records.sorted{$0.plan.after.revision.value>$1.plan.after.revision.value}
+  }
   func admission(_ operation:String) throws ->NativeSourceAdmission? {
     if let actual=try query(operation) {
       return NativeSourceAdmission(protocol_version:1,document_id:identity.documentID!,operation_id:operation,request_hash:actual.receipt.request_hash,phase:.completed,created_by_runtime:(try admissions.query(operation))?.created_by_runtime ?? "recovered",receipt:.init(actual))

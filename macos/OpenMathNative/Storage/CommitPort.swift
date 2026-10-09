@@ -34,7 +34,8 @@ actor DocCommitPort {
     let operations=pending.map { NativeSourceOperation.update_source_cell(.init(kind:.update_cell,cell:$0.0)) }
     let reply=try await client.sourceCommand(.source_prepare_manual(.init(type:.source_prepare_manual,operations:operations)))
     guard let plan=reply.plan.value else {throw NativeHostClientError.invalidReply}
-    _ = try await execute(plan,acknowledgements:pending.map(\.1),manual:true,faults:faults)
+    let committed=try await execute(plan,acknowledgements:pending.map(\.1),manual:true,faults:faults)
+    guard committed.phase == .completed else {throw committed.phase == .cancelled ? CommitPortError.cancelled : CommitPortError.sourceConflict}
   }
   func preview(_ input:NativePreviewInput) async throws ->NativePreviewData {
     try await synchronizeDrafts()
@@ -48,6 +49,33 @@ actor DocCommitPort {
     let reply=try await client.sourceCommand(.source_preview(.init(type:.source_preview,arguments:json)))
     guard let value=reply.preview.value else {throw NativeHostClientError.invalidReply}
     return try await Task.detached {try JSONDecoder().decode(NativePreviewData.self,from:JSONEncoder().encode(value))}.value
+  }
+  /// Duplicate/ref stale reconciliation precedes any new permission to write; actual authority
+  func undo(transactions:[String],group:String,operation:String,faults:StorageFaults = .init()) async throws ->NativeCommitState {
+    guard !closing else {throw StorageError.closing}
+    guard !inFlight.contains(operation) else {throw CommitPortError.operationInProgress}
+    let source=await drafts.confirmed
+    if let actual=try await storage.sourceReceipt(document:source.document_id,operation:operation) {
+      guard actual.receipt.operation_kind == .undo,let transaction=actual.receipt.transaction_id.value else {throw StorageError.idempotencyConflict}
+      let old=try await storage.sourceTransactions(document:source.document_id,ids:[transaction])
+      guard let metadata=old.first?.plan.undo_group,metadata.group_id==group,
+        Set(metadata.transaction_ids)==Set(transactions),metadata.transaction_ids.count==transactions.count else {throw StorageError.idempotencyConflict}
+      let reply=try await client.sourceCommand(.source_recover_undo(.init(type:.source_recover_undo,receipt:actual)))
+      guard let state=reply.operation.value else {throw NativeHostClientError.invalidReply}
+      if let snapshot=reply.snapshot.value {try await drafts.acknowledge(snapshot)}
+      if blockedUnknown==operation {blockedUnknown=nil}
+      acknowledgements.removeValue(forKey:operation);admissionOnlyUnknown.remove(operation);cancelRequests.remove(operation)
+      return state
+    }
+    try await synchronizeDrafts()
+    let records=try await storage.sourceTransactions(document:source.document_id,ids:transactions)
+    let reply=try await client.sourceCommand(.source_prepare_undo(.init(type:.source_prepare_undo,operation_id:operation,group_id:group,records:records)))
+    guard let plan=reply.plan.value else {
+      if let state=reply.operation.value {return state}
+      throw NativeHostClientError.invalidReply
+    }
+    guard !inFlight.contains(operation) else {throw CommitPortError.operationInProgress}
+    return try await execute(plan,acknowledgements:[],manual:false,faults:faults)
   }
   /// Duplicate/ref stale reconciliation precedes any new permission to write; actual authority
   /// keeps the original operation mapping. No source is reassembled from current drafts here.
@@ -73,6 +101,7 @@ actor DocCommitPort {
     return try await execute(plan,acknowledgements:[],manual:false,faults:faults)
   }
   private func execute(_ plan:NativeSourceCommit,acknowledgements:[DraftAcknowledgement],manual:Bool,faults:StorageFaults) async throws ->NativeCommitState {
+    guard !closing else {throw StorageError.closing}
     let operation=plan.commit.operation_id
     guard !inFlight.contains(operation) else {throw CommitPortError.operationInProgress}
     inFlight.insert(operation);self.acknowledgements[operation]=acknowledgements

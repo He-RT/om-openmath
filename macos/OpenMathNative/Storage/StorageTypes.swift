@@ -5,6 +5,7 @@ enum StorageError:Error,Sendable,Equatable {
   case closing, inUse, unsupportedVersion, corruptIdentity, recoveryRequired, nonlocalVolume
   case unsafePath, inaccessible, system(Int32,String), sqlite(Int32,String), unsupportedSync
   case unknownCommit(Int32),idempotencyConflict,staleRevision
+  case transactionUnavailable
 }
 enum StorageChannel:String,Codable,Sendable { case preview, production }
 struct NativeStoragePaths:Sendable {

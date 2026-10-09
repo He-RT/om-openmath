@@ -1,4 +1,5 @@
 //! Original-ID admission, source gate and receipt reconciliation. No SQLite or UI waiting here.
+mod trusted;
 use super::{
     SourceDocument,
     preview::{FrozenPreviewPlan, PreviewError, PreviewService},
@@ -18,6 +19,8 @@ pub enum CommitError {
     Invalid,
     /// Requested cancellation won before the commit barrier.
     Cancelled,
+    /// Current source does not match the original related inverse content/order.
+    UndoConflict,
     /// Actual preview/grant/epoch/expiry failure.
     Preview(PreviewError),
 }
@@ -35,6 +38,7 @@ pub struct DocumentCommitController {
     previews: PreviewService,
     pending: BTreeMap<String, Pending>,
     preview_operations: BTreeMap<String, String>,
+    undo_requests: BTreeMap<String, (String, Vec<String>)>,
     gate: Option<String>,
     runtime: String,
 }
@@ -46,6 +50,7 @@ impl DocumentCommitController {
             previews: PreviewService::new(key),
             pending: BTreeMap::new(),
             preview_operations: BTreeMap::new(),
+            undo_requests: BTreeMap::new(),
             gate: None,
             runtime,
         }

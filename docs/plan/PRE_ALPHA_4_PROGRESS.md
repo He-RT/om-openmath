@@ -6,7 +6,7 @@
 
 **当前状态：** 17任务完成（全部R4.0与R4.1.01–06）；其余81任务尚未完成；32最终运行/发行gate全部not_run；candidate未分配，ready_to_publish=false，released_verified=false。设计/HTML/Schema通过不填运行时pass。
 
-**下一任务：** R4.1.07统一源码撤销/原生undo group/后续编辑冲突，随后完整checkpoint。DocCommitPort与实际原生屏障/SQLite admission/原ID核对已验证；完整笔记本UI与Agent写入尚未注册。继续保持完整同candidate数学/平台门禁。按DAG推进，R4.5.07必须在R4.5.05冻结前完成。
+**下一任务：** R4.1.07继续完整编辑器自动文本分组、跨重启200条历史/pin/裁减tombstone及生命周期验收；实际逆事务、原ID核对和UndoManager基础已通过，随后完整checkpoint。DocCommitPort与实际原生屏障/SQLite admission/原ID核对已验证；完整笔记本UI与Agent写入尚未注册。继续保持完整同candidate数学/平台门禁。按DAG推进，R4.5.07必须在R4.5.05冻结前完成。
 
 ## 已知外部前置
 
@@ -37,7 +37,7 @@
 | [x] [R4.1.04](PRE_ALPHA_4.md#task-r4.1.04) | 文档操作与非执行失效计划 | completed | 真实parser/owners清理/无cascade / 批量操作 / title/Text epoch / 设置同库 | c72ce17 |
 | [x] [R4.1.05](PRE_ALPHA_4.md#task-r4.1.05) | 冻结Preview与新格身份分配 | completed | 10preview+3ref / 原计划→SQLite→原authority实际回执 / 期限/scope完整性 | 22fc708 |
 | [x] [R4.1.06](PRE_ALPHA_4.md#task-r4.1.06) | DocCommitPort、编辑屏障与未知提交 | completed | [实际提交](../acceptance/pre-alpha.4/development/r41/commit.json) / NSTextView+SQLite / 63Rust / Release | 21b01e7 |
-| [ ] [R4.1.07](PRE_ALPHA_4.md#task-r4.1.07) | 统一源码撤销和后续编辑冲突 | in_progress | [逆向合并](../acceptance/pre-alpha.4/development/r41/undo-source.json) / 12纯Rust＋4225组合；耐久与原生分组待接 | — |
+| [ ] [R4.1.07](PRE_ALPHA_4.md#task-r4.1.07) | 统一源码撤销和后续编辑冲突 | in_progress | [实际逆事务/UndoManager](../acceptance/pre-alpha.4/development/r41/undo-native.json) / 16逆向＋79host/ABI；历史保留与自动分组待完 | 3f8f28f（纯合并）；本批待补 |
 | [ ] [R4.1.08](PRE_ALPHA_4.md#task-r4.1.08) | 完整可写计算状态与无损codec | planned | — | — |
 | [ ] [R4.1.09](PRE_ALPHA_4.md#task-r4.1.09) | 主KernelWorker、候选接纳和直接取消 | planned | — | — |
 | [ ] [R4.1.10](PRE_ALPHA_4.md#task-r4.1.10) | 不可变结果库和只读检查通道 | planned | — | — |
@@ -292,3 +292,12 @@ Done依据与覆盖case/proof:
 - 初始整本before恢复在6个有效用例均失败（确实丢掉后来源码/标题/新格或错误接受冲突），原件保留；12项真实source-level案例和相关全target Clippy/fmt通过，其中4个不同ID的65种顺序/成员集合两两组合4225项逆向均与原before全部字段一致，包含Unicode、ABA、插入/删除/移位、非法记录和错误文档。证据[undo-source.json](../acceptance/pre-alpha.4/development/r41/undo-source.json)。
 - R4.1.07仍unchecked/in_progress：真实SQLite原transaction读取与逆向提交、原ID核对、UndoManager分组/echo、1..32 group整体操作、200完整事务保留/pin/tombstone及重启/原生/权限验收尚未接入。此纯函数不注册为Pi工具或执行writer，不把部分通过称统一撤销完成。
 - R4.1.06的21b01e7已推送；同SHA CI37968923767的native_macos与dependencies实际success，其他jobs当时仍运行，不填全部CI或最终gate。继续完整81项剩余范围，无本机iOS模拟器，运行版本仍`.3`。
+
+## R4开发记录 D018 — 实际逆事务与原生UndoManager（R4.1.07继续）
+
+- 实际SQLite返回原plan/receipt，Rust整体校验/按新到旧逆向1..32个原事务，DocCommitPort一次source COMMIT产生undo_of和新revision。可选undo_group绑定原组/transaction IDs到同源hash，老无字段计划hash不改，不进.omnb。组内刚恢复的comparison revision只用于临时校验，owner计数不倒退；顺序/重复/后期相关修改/超限整笔拒绝。16项逆向测试含4225顺序组合、两笔同cell/插入后编辑及32上限均通过。
+- 实际C ABI/SQLite验证两笔→一逆事务、重复原ID无新效果、错组同ID拒绝、redo以实际逆事务运行、later manual conflict不覆盖、lost ACK按原ID核对，以及重开host/storage后原ID读取而不重放。测试DB最终14修订/transactions/operations/outbox/completed admissions均14；原fixture_root和各输入/原件hash见[undo-native.json](../acceptance/pre-alpha.4/development/r41/undo-native.json)。
+- 原生NSUndoManager等真实事务成功后才消费命令和登记redo。实际同组回执合并、相同echo去重/不同hash拒绝、pending禁用、undo/redo以及conflict后保留原命令通过。unknown禁用两方向，界面核对仍用original operation，取得实际回执后才更新native栈。首轮真实closed-group setActionName触发Cocoa exception，已修为只在初次group内设置名称，后续仅扩展事务列表；失败原件不删除。
+- 79host/ABI Rust、相关Clippy/fmt、198 DTO/工程漂移、真实source/preview/commit/Swift ABI/actor/reducer/session、17Python/纯WASM/deny、SDK27 ARM64 Release与12符号/strict ad-hoc签名通过；新增CI实际undo脚本。本机没有运行iOS模拟器、旧公开资产和运行`.3`不改；本机Release仍是Preview完整工作台尚未开放。
+- R4.1.07保持unchecked：完整编辑器实际文本/IME group自动映射、跨重启200完整事务/pin与裁减tombstone、早准备/close和保留故障验收尚待完成。不能把基础NSUndoManager fixture/普通回读当这些条目通过，没有Pi undo handler，也不填32最终candidate门禁。
+- 上一纯合并3f8f28f的CI37971347764全部五jobs实际success；21b01e7的CI除iOS取消外各job成功，取消由后续push中断，不能称全过。当前新工作区/候选仍需同SHA验证。继续完整81项剩余，不缩减原UI、Agent、媒体与发行范围。

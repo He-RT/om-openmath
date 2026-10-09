@@ -117,6 +117,18 @@ pub fn validate_commit(plan: &NativeSourceCommit) -> Result<(), String> {
             return Err("INVALID_CELL_REVISION".into());
         }
     }
+    if let Some(group) = &plan.undo_group
+        && (commit.actor != DocumentCommitActor::Undo
+            || !identity(&group.group_id)
+            || group.transaction_ids.is_empty()
+            || group.transaction_ids.len() > 32
+            || group.transaction_ids.iter().any(|id| !identity(id))
+            || group.transaction_ids.iter().collect::<BTreeSet<_>>().len()
+                != group.transaction_ids.len()
+            || commit.undo_of.0.as_ref() != group.transaction_ids.first())
+    {
+        return Err("INVALID_UNDO_GROUP".into());
+    }
     match commit.actor {
         DocumentCommitActor::Agent
             if commit.task_id.0.as_deref().is_none_or(|id| !identity(id)) =>
@@ -279,6 +291,7 @@ impl SourceDocument {
         };
         let mut plan = NativeSourceCommit {
             protocol_version: 1,
+            undo_group: None,
             calculation_change: Nullable(None),
             generation: self.generation,
             commit,

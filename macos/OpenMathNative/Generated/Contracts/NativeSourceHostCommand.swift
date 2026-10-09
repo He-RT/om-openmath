@@ -15,6 +15,8 @@ public enum NativeSourceHostCommand: Codable, Sendable {
   case source_status(SourceStatus)
   case source_editor_changed(SourceEditorChanged)
   case source_prepare_manual(SourcePrepareManual)
+  case source_prepare_undo(SourcePrepareUndo)
+  case source_recover_undo(SourceRecoverUndo)
   public init(from decoder: Decoder) throws {
     let c = try decoder.singleValueContainer()
     if let v = try? c.decode(SourceOpen.self) { self = .source_open(v); return }
@@ -31,6 +33,8 @@ public enum NativeSourceHostCommand: Codable, Sendable {
     if let v = try? c.decode(SourceStatus.self) { self = .source_status(v); return }
     if let v = try? c.decode(SourceEditorChanged.self) { self = .source_editor_changed(v); return }
     if let v = try? c.decode(SourcePrepareManual.self) { self = .source_prepare_manual(v); return }
+    if let v = try? c.decode(SourcePrepareUndo.self) { self = .source_prepare_undo(v); return }
+    if let v = try? c.decode(SourceRecoverUndo.self) { self = .source_recover_undo(v); return }
     throw DecodingError.dataCorrupted(.init(codingPath: decoder.codingPath, debugDescription: "Unknown native union variant"))
   }
   public func encode(to encoder: Encoder) throws {
@@ -49,6 +53,8 @@ public enum NativeSourceHostCommand: Codable, Sendable {
     case .source_status(let v): try v.encode(to: encoder)
     case .source_editor_changed(let v): try v.encode(to: encoder)
     case .source_prepare_manual(let v): try v.encode(to: encoder)
+    case .source_prepare_undo(let v): try v.encode(to: encoder)
+    case .source_recover_undo(let v): try v.encode(to: encoder)
     }
   }
 }

@@ -509,6 +509,9 @@
               "type": "null"
             }
           ]
+        },
+        "undo_group": {
+          "$ref": "#/$defs/NativeUndoGroup"
         }
       },
       "required": [
@@ -1267,6 +1270,12 @@
         },
         {
           "$ref": "#/$defs/SourcePrepareManual"
+        },
+        {
+          "$ref": "#/$defs/SourcePrepareUndo"
+        },
+        {
+          "$ref": "#/$defs/SourceRecoverUndo"
         }
       ]
     },
@@ -1378,6 +1387,97 @@
         "operations"
       ],
       "additionalProperties": false
+    },
+    "NativeUndoGroup": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "group_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "transaction_ids": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Identity"
+          },
+          "minItems": 1,
+          "maxItems": 32,
+          "uniqueItems": true
+        }
+      },
+      "required": [
+        "group_id",
+        "transaction_ids"
+      ]
+    },
+    "NativeStoredSourceTransaction": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "store_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "transaction_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "plan": {
+          "$ref": "#/$defs/NativeSourceCommit"
+        },
+        "receipt": {
+          "$ref": "#/$defs/NativeDurableSourceReceipt"
+        }
+      },
+      "required": [
+        "store_id",
+        "transaction_id",
+        "plan",
+        "receipt"
+      ]
+    },
+    "SourcePrepareUndo": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "type": {
+          "const": "source_prepare_undo"
+        },
+        "operation_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "group_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "records": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/NativeStoredSourceTransaction"
+          },
+          "minItems": 1,
+          "maxItems": 32
+        }
+      },
+      "required": [
+        "type",
+        "operation_id",
+        "group_id",
+        "records"
+      ]
+    },
+    "SourceRecoverUndo": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "type": {
+          "const": "source_recover_undo"
+        },
+        "receipt": {
+          "$ref": "#/$defs/NativeDurableSourceReceipt"
+        }
+      },
+      "required": [
+        "type",
+        "receipt"
+      ]
     }
   }
 }

@@ -16,6 +16,9 @@ pub struct NativeSourceCommit {
     pub after: NativeSourceSnapshot,
     /// Contract field `calculation_change`.
     pub calculation_change: Nullable<NativeCalculationChange>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    /// Contract field `undo_group`.
+    pub undo_group: Option<NativeUndoGroup>,
 }
 impl std::fmt::Debug for NativeSourceCommit {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {

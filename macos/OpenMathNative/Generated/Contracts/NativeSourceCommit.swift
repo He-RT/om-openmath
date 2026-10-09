@@ -7,6 +7,7 @@ public struct NativeSourceCommit: Codable, Sendable {
   public var before: NativeSourceSnapshot
   public var after: NativeSourceSnapshot
   public var calculation_change: HostNullable<NativeCalculationChange>
+  public var undo_group: NativeUndoGroup?
   private enum CodingKeys: String, CodingKey {
     case protocol_version
     case generation
@@ -14,10 +15,11 @@ public struct NativeSourceCommit: Codable, Sendable {
     case before
     case after
     case calculation_change
+    case undo_group
   }
   public init(from decoder: Decoder) throws {
     let all = try decoder.container(keyedBy: HostCodingKey.self)
-    let allowed: Set<String> = ["protocol_version","generation","commit","before","after","calculation_change"]
+    let allowed: Set<String> = ["protocol_version","generation","commit","before","after","calculation_change","undo_group"]
     guard all.allKeys.allSatisfy({ allowed.contains($0.stringValue) }) else { throw DecodingError.dataCorrupted(.init(codingPath: decoder.codingPath, debugDescription: "Unknown native contract field")) }
     let c = try decoder.container(keyedBy: CodingKeys.self)
     self.protocol_version = try c.decode(UInt32.self, forKey: .protocol_version)
@@ -26,13 +28,15 @@ public struct NativeSourceCommit: Codable, Sendable {
     self.before = try c.decode(NativeSourceSnapshot.self, forKey: .before)
     self.after = try c.decode(NativeSourceSnapshot.self, forKey: .after)
     self.calculation_change = try c.decode(HostNullable<NativeCalculationChange>.self, forKey: .calculation_change)
+    self.undo_group = try c.decodeIfPresent(NativeUndoGroup.self, forKey: .undo_group)
   }
-  public init(protocol_version: UInt32, generation: HostSerial, commit: DocumentCommit, before: NativeSourceSnapshot, after: NativeSourceSnapshot, calculation_change: HostNullable<NativeCalculationChange>) {
+  public init(protocol_version: UInt32, generation: HostSerial, commit: DocumentCommit, before: NativeSourceSnapshot, after: NativeSourceSnapshot, calculation_change: HostNullable<NativeCalculationChange>, undo_group: NativeUndoGroup?) {
     self.protocol_version = protocol_version
     self.generation = generation
     self.commit = commit
     self.before = before
     self.after = after
     self.calculation_change = calculation_change
+    self.undo_group = undo_group
   }
 }

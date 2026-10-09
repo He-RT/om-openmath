@@ -32,4 +32,8 @@ pub enum NativeSourceHostCommand {
     SourceEditorChanged(SourceEditorChanged),
     /// Variant `SourcePrepareManual`.
     SourcePrepareManual(SourcePrepareManual),
+    /// Variant `SourcePrepareUndo`.
+    SourcePrepareUndo(SourcePrepareUndo),
+    /// Variant `SourceRecoverUndo`.
+    SourceRecoverUndo(SourceRecoverUndo),
 }

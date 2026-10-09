@@ -113,9 +113,70 @@ impl SourceEndpoint {
             super::commit::CommitError::Busy => "OPERATION_IN_PROGRESS".to_owned(),
             super::commit::CommitError::Invalid => "PREVIEW_MISMATCH".to_owned(),
             super::commit::CommitError::Cancelled => "CANCELLED".to_owned(),
+            super::commit::CommitError::UndoConflict => "UNDO_CONFLICT".to_owned(),
             super::commit::CommitError::Preview(_) => "STALE_SNAPSHOT".to_owned(),
         };
         match command {
+            NativeSourceHostCommand::SourceRecoverUndo(body) => {
+                if body.receipt.receipt.store_id != self.store {
+                    return Err("INVALID_RECEIPT".into());
+                }
+                reply.operation = Nullable(Some(
+                    self.controller.recover_undo(&body.receipt).map_err(error)?,
+                ));
+            }
+            NativeSourceHostCommand::SourcePrepareUndo(body) => {
+                for record in &body.records {
+                    let receipt = &record.receipt;
+                    let plan = &record.plan;
+                    super::validate_commit(plan).map_err(|_| "INVALID_UNDO_RECORD")?;
+                    if record.store_id != self.store
+                        || record.transaction_id != plan.commit.transaction_id
+                        || plan.commit.document_id != self.scope.document
+                        || plan.calculation_change.0.is_some()
+                        || receipt.protocol_version != 1
+                        || receipt.receipt.store_id != self.store
+                        || receipt.receipt.document_id.0.as_ref() != Some(&self.scope.document)
+                        || receipt.receipt.transaction_id.0.as_ref() != Some(&record.transaction_id)
+                        || receipt.receipt.operation_id != plan.commit.operation_id
+                        || receipt.receipt.request_hash != plan.commit.request_hash
+                        || receipt.receipt.phase != OperationReceiptPhase::Completed
+                        || receipt.receipt.committed_revision.0 != Some(plan.after.revision)
+                        || receipt.receipt.error_code.0.is_some()
+                        || !receipt.receipt.accepted_result_ids.is_empty()
+                        || receipt.receipt.operation_kind
+                            != if plan.commit.actor == DocumentCommitActor::Undo {
+                                OperationReceiptOperationKind::Undo
+                            } else {
+                                OperationReceiptOperationKind::SourceEdit
+                            }
+                        || receipt.snapshot_hash != plan.after.snapshot_hash
+                        || receipt.inverse_plan_hash != plan.before.snapshot_hash
+                        || receipt.execution_epoch != plan.after.execution_epoch
+                        || receipt.outbox_event_id != plan.commit.outbox_event_id
+                    {
+                        return Err("INVALID_UNDO_RECORD".into());
+                    }
+                }
+                let operation = body.operation_id.clone();
+                reply.plan = Nullable(
+                    self.controller
+                        .undo(
+                            &body.records,
+                            body.operation_id,
+                            body.group_id,
+                            &self.scope,
+                            &self.coordinator,
+                        )
+                        .map_err(error)?,
+                );
+                reply.operation = Nullable(self.controller.operation(&operation));
+                reply.kind = if reply.plan.0.is_some() {
+                    NativeSourceHostReplyKind::CommitPlan
+                } else {
+                    NativeSourceHostReplyKind::State
+                };
+            }
             NativeSourceHostCommand::SourcePrepareManual(body) => {
                 reply.kind = NativeSourceHostReplyKind::CommitPlan;
                 reply.plan = Nullable(Some(

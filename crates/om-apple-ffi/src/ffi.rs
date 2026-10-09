@@ -44,7 +44,7 @@ fn code(error: &str) -> HostErrorCode {
         "PERMISSION_DENIED" => HostErrorCode::PermissionDenied,
         "STALE_DOCUMENT" | "STALE_RUNTIME" | "STALE_SOURCE" | "STALE_SNAPSHOT"
         | "PREVIEW_MISMATCH" => HostErrorCode::StaleDocument,
-        "EDITING_BUSY" => HostErrorCode::EditingBusy,
+        "EDITING_BUSY" | "UNDO_CONFLICT" => HostErrorCode::EditingBusy,
         "OPERATION_IN_PROGRESS" => HostErrorCode::NotAvailable,
         "HOST_CLOSING" | "NOT_AVAILABLE" | "CONTEXT_NOT_READY" => HostErrorCode::NotAvailable,
         "BUDGET_EXCEEDED" => HostErrorCode::BudgetExceeded,

@@ -72,6 +72,14 @@ pub fn request_hash(plan: &NativeSourceCommit) -> String {
     });
     hash.text(plan.commit.task_id.0.as_deref().unwrap_or(""));
     hash.text(plan.commit.undo_of.0.as_deref().unwrap_or(""));
+    if let Some(group) = &plan.undo_group {
+        hash.text("undo-group-v1");
+        hash.text(&group.group_id);
+        hash.number(group.transaction_ids.len() as u64);
+        for id in &group.transaction_ids {
+            hash.text(id);
+        }
+    }
     if let Some(change) = &plan.calculation_change.0 {
         hash.text("calculation-change-v1");
         for setting in [&change.before, &change.after] {

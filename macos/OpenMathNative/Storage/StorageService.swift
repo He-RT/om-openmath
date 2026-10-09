@@ -132,6 +132,10 @@ actor StorageService {
     guard closeTask==nil,let blobs else {throw StorageError.closing}
     return try await blobs.publish(data:data,expectedHash:expectedHash,faults:faults)
   }
+  func sourceTransactions(document:String,ids:[String]) async throws ->[NativeStoredSourceTransaction] {
+    guard closeTask==nil,let writer=documents[document] else {throw StorageError.closing}
+    return try await writer.sourceCall {try $0.transactions(ids)}
+  }
   func publishBlob(file:URL,expectedHash:String?=nil,faults:StorageFaults = .init()) async throws ->BlobPublication {
     guard closeTask==nil,let blobs else {throw StorageError.closing}
     return try await blobs.publish(file:file,expectedHash:expectedHash,faults:faults)

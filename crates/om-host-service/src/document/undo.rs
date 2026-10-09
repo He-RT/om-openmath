@@ -12,6 +12,57 @@ pub enum UndoError {
     /// Later related content or order cannot be merged safely.
     Conflict,
 }
+/// Merge a whole undo group without publishing intermediate source or rolling back owner counters.
+/// Originals are trusted durable records in newest-first order; final commit remains separate.
+pub fn merge_group(
+    originals: &[NativeSourceCommit],
+    current: &NativeSourceSnapshot,
+) -> Result<NativeSourceFile, UndoError> {
+    if originals.is_empty() || originals.len() > 32 {
+        return Err(UndoError::InvalidRecord);
+    }
+    let mut projection = current.clone();
+    let mut seen = std::collections::BTreeSet::new();
+    let mut previous_revision = None;
+    for original in originals {
+        if !seen.insert(&original.commit.transaction_id)
+            || previous_revision.is_some_and(|r| original.after.revision >= r)
+        {
+            return Err(UndoError::InvalidRecord);
+        }
+        previous_revision = Some(original.after.revision);
+        projection.file = merge_inverse(original, &projection)?;
+        // This temporary comparison view exposes the previous version of cells just inverted.
+        // Owner revision/epoch never move backward; the actual undo later creates one new commit.
+        projection.cell_revisions = projection
+            .file
+            .cells
+            .iter()
+            .map(|cell| {
+                let old = original.before.file.cells.iter().find(|c| c.id == cell.id);
+                let after = original.after.file.cells.iter().find(|c| c.id == cell.id);
+                let restores =
+                    old.is_some_and(|old| after.is_none_or(|after| !same_cell(old, after)));
+                let revision = if restores {
+                    original
+                        .before
+                        .cell_revisions
+                        .iter()
+                        .find(|r| r.cell_id == cell.id)
+                } else {
+                    projection
+                        .cell_revisions
+                        .iter()
+                        .find(|r| r.cell_id == cell.id)
+                }
+                .ok_or(UndoError::InvalidRecord)?;
+                Ok(revision.clone())
+            })
+            .collect::<Result<Vec<_>, UndoError>>()?;
+        projection.snapshot_hash = super::snapshot_hash(&projection);
+    }
+    Ok(projection.file)
+}
 /// Merge one original inverse against current confirmed source. The caller still has to obtain
 /// the original durable transaction and apply the result through the native commit port.
 pub fn merge_inverse(

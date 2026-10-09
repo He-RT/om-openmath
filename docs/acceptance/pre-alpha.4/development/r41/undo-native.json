@@ -1,0 +1,204 @@
+{
+  "task": "R4.1.07",
+  "status": "in_progress",
+  "task_done": false,
+  "development_only": true,
+  "runtime_version": "0.1.0-pre-alpha.3",
+  "working_tree_base": "3f8f28fab64d73d9d63359761d184d464b7d94e8",
+  "rust_host_ABI_passed": 79,
+  "inverse_cases_passed": 16,
+  "exhaustive_order_pairs": 4225,
+  "maximum_group_tested": 32,
+  "generated_dtos": 198,
+  "actual_fixture": {
+    "actual_redo_inverse": true,
+    "closed_group_name_fault_fixed": true,
+    "completed_admissions": 14,
+    "development_only": true,
+    "different_hash_echo_rejected": true,
+    "document_id": "00000000-0000-0000-0000-000000000041",
+    "echo_deduplicated": true,
+    "editor_auto_text_groups_complete": false,
+    "failed_command_retained": true,
+    "final_candidate_gate": false,
+    "final_revision": 14,
+    "fixture_root": "/Users/hert/Projects/openmath/target/macos-storage-tests/undo-htf6br",
+    "fresh_runtime_original_id_readback": true,
+    "later_manual_conflict_no_effect": true,
+    "operations": 14,
+    "outbox": 14,
+    "pending_command_not_consumed": true,
+    "persistent_200_retention_complete": false,
+    "real_undo_manager": true,
+    "same_group_coalesced": true,
+    "source_duplicate_id_one_effect": true,
+    "source_group_inverse_one_commit": true,
+    "store_id": "62d06c05-58d0-408b-9466-9577901e64c9",
+    "task": "R4.1.07",
+    "task_done": false,
+    "transactions": 14,
+    "undo_ack_lost_reconciled": true,
+    "unknown_command_fenced": true,
+    "unknown_ui_operation": "d98f8a84-1a6b-4016-a8a7-c9c32b608b49",
+    "unknown_ui_reconciles_original_id": true,
+    "wrong_group_same_id_rejected": true
+  },
+  "native_ui_reference": [
+    "/Users/hert/Documents/ChatGPT/ui-learning/06-state-and-feedback/confirmation-and-undo.md",
+    "/Users/hert/Documents/ChatGPT/ui-learning/05-input-and-actions/text-selection-and-editing.md"
+  ],
+  "public_agent_undo_handler_registered": false,
+  "remaining": [
+    "Full editor automatically maps actual text input/IME native groups to committed transaction groups",
+    "Cross-restart latest 200 complete transactions with live-task/user pins",
+    "Physical payload pruning preserves compact original-ID tombstones and recovery facts",
+    "Additional close/early preparation lifecycle and retention fault injection acceptance"
+  ],
+  "logs": [
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r41/undo-rust-final.log",
+      "bytes": 9368,
+      "sha256": "87ed4fe08b686a263410d21efb135a7337e2b5bae3c9aafe496174f8d86c63be"
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r41/undo-clippy-final.log",
+      "bytes": 175,
+      "sha256": "85ef5a79d1a4c9a9a1f10606b674809a7282bb9638246b0f25b77211700b6ac2"
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r41/undo-native-report-final.log",
+      "bytes": 2060,
+      "sha256": "42ac7853d013402c6642c0232a7d5d37f7ef2c2d4816f57f589edc4e7bc41f02"
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r41/undo-native-build-final.log",
+      "bytes": 78647,
+      "sha256": "ab693de988a38dd030a24b96f84f3604a1aa2604a4e9cda39949a18c549ccc55"
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r41/undo-native-signature.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r41/undo-native-symbols.txt",
+      "bytes": 1511589,
+      "sha256": "0cef59d8285652dd0b2582dc416c0e49e30a1bdbf980633f4aa33e0c1f1fd93a"
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r41/undo-document-regression.log",
+      "bytes": 1348,
+      "sha256": "ede245e35a73bc2aff5e513ca764dc809323a360627ffc6695f3131835c37e78"
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r41/undo-preview-regression.log",
+      "bytes": 2168,
+      "sha256": "4e6a665beb0c29783a77cfd6a06e291806134eea8d9cff8345bff2802a609e78"
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r41/undo-commit-final.log",
+      "bytes": 1884,
+      "sha256": "b93db171e3368b39bdd10dd3152428a7341160204af37fb78543c8894e4fc9d1"
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r41/undo-abi-regression.log",
+      "bytes": 2009,
+      "sha256": "868d073de30aef7e598f9a20710e9f24d512dc47e76ee68e57976fae9c085f18"
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r41/undo-python.log",
+      "bytes": 2835,
+      "sha256": "1d86c0cda55b313518961347eb53a6ca9c730937329309f0c1ede0a8f63e042f"
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r41/undo-wasm.log",
+      "bytes": 72,
+      "sha256": "977d1035a89eecd487d8bf13b15d96a17b9fb16cb08702917316f196fab60cda"
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r41/undo-deny.log",
+      "bytes": 263032,
+      "sha256": "82052f1205d20b8eda17fb98215c0edf20f9c7edb5df3abcb451c024458fe10f"
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r41/undo-group-before-fix.log",
+      "bytes": 2584,
+      "sha256": "f132254127375e75121698b16c89471ae0a09c0aedf55d54dc8ce1345d601a7a"
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r41/undo-physical-port-initial.log",
+      "bytes": 4504,
+      "sha256": "a5762265d02cec2302d4a27bd9c28c9a8de81162a2026c43623055f22f055724"
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r41/undo-native-manager-initial.log",
+      "bytes": 3291,
+      "sha256": "934452fa883525735493fc16754913e8fc395572f6efa189cf46a8795a4a92f0"
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r41/undo-base-ci-verified.json",
+      "bytes": 13401,
+      "sha256": "04b2b59b7245547cec8eae20c8a13759424e22e6a62cf026f5e18315e0d9b9a6"
+    },
+    {
+      "path": "target/macos-storage-tests/undo-report.json",
+      "bytes": 1220,
+      "sha256": "5c7cf4d21880ccd6f59b459f618ca629665430be60a3846333b804c9e6d5e3af"
+    }
+  ],
+  "code": [
+    {
+      "path": "crates/om-host-service/src/document/undo.rs",
+      "bytes": 10048,
+      "sha256": "a50a9a9c2456947871284b24712a5b013807cad50f050ade02bc70c254cc873f"
+    },
+    {
+      "path": "crates/om-host-service/src/document/commit/trusted.rs",
+      "bytes": 5687,
+      "sha256": "11a93dec4111996a89e02b9ad91c1f84ef1018c1eb59a041aca11fb5d48b1096"
+    },
+    {
+      "path": "crates/om-host-service/src/document/endpoint.rs",
+      "bytes": 15796,
+      "sha256": "06f34e32c8639c7ce79eaa7291a1e12bbfcf7cec00eb7951e173d1d0a9829b01"
+    },
+    {
+      "path": "macos/OpenMathNative/Editor/UndoCoordinator.swift",
+      "bytes": 6558,
+      "sha256": "279675515a722b1920ff0c2462a6ef64ea25468080d73f5bb7234667b97fa66f"
+    },
+    {
+      "path": "macos/OpenMathNative/Storage/CommitPort.swift",
+      "bytes": 16314,
+      "sha256": "c92741e44aaf809eb73df061d6e742b23ea2f75c1cb13f3f13bdfe181f1c10b9"
+    },
+    {
+      "path": "macos/OpenMathNative/Storage/DocumentStore.swift",
+      "bytes": 14647,
+      "sha256": "3de755e7ff79df9039f6a01320aa626c02929abb6a1f01653b513ff9b372e8e2"
+    },
+    {
+      "path": "macos/OpenMathNativeTests/UndoFixtures/main.swift",
+      "bytes": 12203,
+      "sha256": "1d42a5f4331a6309e7cf6aae289cbc976d44231435011e3dd7e9772227001e78"
+    },
+    {
+      "path": "docs/design/native-source-store.schema.json",
+      "bytes": 32769,
+      "sha256": "4010dbde2872f07bc400e87bfe4aa0b2a9110129fed2a3ac3f401da099bcb68f"
+    },
+    {
+      "path": "macos/Scripts/test-undo.sh",
+      "bytes": 1184,
+      "sha256": "8b86c76b054c60a5f1c882dd559f26e37a889dccc87613feac66d949d4d67be5"
+    }
+  ],
+  "final_candidate_gate": false,
+  "prior_ci": {
+    "run": 37971347764,
+    "sha": "3f8f28fab64d73d9d63359761d184d464b7d94e8",
+    "status": "completed",
+    "conclusion": "success",
+    "scope": "previous pure inverse commit, not current working tree or final candidate"
+  }
+}

@@ -58,3 +58,7 @@ SQLite首代存储已实现，可运行 `bash macos/Scripts/test-storage.sh`。�
 运行 `bash macos/Scripts/test-commit-port.sh` 验证实际C ABI、MainActor上的NSTextView与SQLite提交链路。Swift负责原生草稿/合成状态和物理存储，Rust负责当前源、冻结计划、原ID和最终提交屏障；`.source_*`是封闭的宿主内部命令，不是模型可调用工具。手工草稿可以保留未完成语法，marked text不会自动提交。最终屏障只做短状态检查：解析owner忙时拒绝而不等待，SQLite及F_FULLFSYNC期间主线程仍可处理新输入和停止。
 
 确认丢失时通过`unresolvedOperation()`取得原ID并`reconcile`读取实际存储。耐久admission、source COMMIT与文件保存是不同事实；同ID重复或已取消/失败不能恢复为新写入，COMMIT后的停止不伪称撤销。确认只推进对应草稿序列，较新的输入/IME继续保留；关闭须先等待DocCommitPort的在途IO，再关闭host和storage。已结束操作只保留有界小回执，完整原计划在SQLite中，旧临时scope资源及时释放；单host生命周期最多4096项操作，达到上限明确拒绝。完整撤销、重启恢复、计算接纳、文件与原生工作台仍待对应任务完成。
+
+`bash macos/Scripts/test-undo.sh`使用实际C ABI与SQLite验证逆事务及原生UndoManager。`DocCommitPort.undo`先读并校验原事务，再在临时比较视图按最新到最旧合并1..32条逆操作，整体产生一个新修订；不倒退权威计数。相关内容/顺序被后来修改时整笔拒绝，无关后来源码保留。`undo_group`是原生内部source计划的可选扩展，绑定group_id与原事务集合到request hash；原无该字段的记录与`.omnb` v1保持兼容。
+
+重复的undo operation ID先读回原回执，错误组或不同内容拒绝；重开runtime从实际head恢复后可核对旧undo，不重新执行。UndoCoordinator只有真实提交成功才消费原生undo命令并注册实际逆事务用于redo；同组回执合并、相同回显不重复登记，失败保留命令，未知结果锁住命令并按原ID核对。当前尚未将完整笔记本编辑器接入自动文本分组，也未交付跨重启200条历史保留/裁减/pin/tombstone，因此R4.1.07仍进行中；没有注册Pi undo工具。

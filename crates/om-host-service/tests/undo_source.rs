@@ -2,7 +2,7 @@
 use om_host_service::{
     document::{
         SourceDocument,
-        undo::{UndoError, merge_inverse},
+        undo::{UndoError, merge_group, merge_inverse},
     },
     protocol::{Serial, generated::*},
 };
@@ -315,4 +315,112 @@ fn all_small_distinct_identity_orders_and_memberships_have_exact_inverse() {
             );
         }
     }
+}
+
+#[test]
+fn a_whole_group_can_reverse_its_own_versions_while_preserving_unrelated_later_input() {
+    let first = stage(
+        file(&[("a", "2"), ("b", "unrelated")]),
+        file(&[("a", "3"), ("b", "unrelated")]),
+    );
+    let second = SourceDocument::restore(first.after.clone(), Serial::new(2).unwrap())
+        .unwrap()
+        .prepare(
+            file(&[("a", "5"), ("b", "unrelated")]),
+            "second-op".into(),
+            "second-tx".into(),
+            "second-event".into(),
+            "second".into(),
+        )
+        .unwrap();
+    let newer = current(&second, file(&[("a", "5"), ("b", "later input")]));
+    let merged = merge_group(&[second, first], &newer).unwrap();
+    assert_eq!(merged.cells[0].source, "2");
+    assert_eq!(merged.cells[1].source, "later input");
+}
+
+#[test]
+fn a_group_insert_then_edit_is_atomic_and_can_be_removed_without_an_intermediate_snapshot() {
+    let first = stage(file(&[("a", "2")]), file(&[("a", "2"), ("new", "3")]));
+    let second = SourceDocument::restore(first.after.clone(), Serial::new(2).unwrap())
+        .unwrap()
+        .prepare(
+            file(&[("a", "2"), ("new", "5")]),
+            "second-op".into(),
+            "second-tx".into(),
+            "second-event".into(),
+            "second".into(),
+        )
+        .unwrap();
+    let merged = merge_group(&[second.clone(), first], &second.after).unwrap();
+    assert_eq!(merged.cells.len(), 1);
+    assert_eq!(merged.cells[0].id, "a");
+}
+
+#[test]
+fn group_order_identity_and_late_conflict_cannot_publish_partial_inverse() {
+    let first = stage(
+        file(&[("a", "2"), ("b", "3")]),
+        file(&[("a", "5"), ("b", "3")]),
+    );
+    let second = SourceDocument::restore(first.after.clone(), Serial::new(2).unwrap())
+        .unwrap()
+        .prepare(
+            file(&[("a", "5"), ("b", "6")]),
+            "second-op".into(),
+            "second-tx".into(),
+            "second-event".into(),
+            "second".into(),
+        )
+        .unwrap();
+    assert!(matches!(
+        merge_group(&[first.clone(), second.clone()], &second.after),
+        Err(UndoError::InvalidRecord)
+    ));
+    assert!(matches!(
+        merge_group(&[second.clone(), second.clone()], &second.after),
+        Err(UndoError::InvalidRecord)
+    ));
+    let later = current(&second, file(&[("a", "later user input"), ("b", "6")]));
+    assert!(matches!(
+        merge_group(&[second.clone(), first], &later),
+        Err(UndoError::Conflict)
+    ));
+    assert_eq!(later.file.cells[1].source, "6");
+    assert!(matches!(
+        merge_group(&[], &second.after),
+        Err(UndoError::InvalidRecord)
+    ));
+    assert!(matches!(
+        merge_group(&vec![second.clone(); 33], &second.after),
+        Err(UndoError::InvalidRecord)
+    ));
+}
+
+#[test]
+fn maximum_32_transaction_group_reconstructs_the_original_source() {
+    let mut owner = SourceDocument::new(
+        "document".into(),
+        Serial::new(1).unwrap(),
+        file(&[("a", "0")]),
+    )
+    .unwrap();
+    let mut plans = Vec::new();
+    for n in 1..=32 {
+        let plan = owner
+            .prepare(
+                file(&[("a", &n.to_string())]),
+                format!("op-{n}"),
+                format!("tx-{n}"),
+                format!("event-{n}"),
+                "time".into(),
+            )
+            .unwrap();
+        owner = SourceDocument::restore(plan.after.clone(), Serial::new(1).unwrap()).unwrap();
+        plans.push(plan);
+    }
+    plans.reverse();
+    let merged = merge_group(&plans, owner.snapshot()).unwrap();
+    assert_eq!(merged.cells[0].source, "0");
+    assert_eq!(owner.snapshot().revision.get(), 32);
 }

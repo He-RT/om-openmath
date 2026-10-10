@@ -1,6 +1,6 @@
 # 无损数学 checkpoint 编码基础
 
-R4.1.08正在实施。当前已接通数值原子与表达式图codec；Evaluator定义/属性/history、整个Session/owners/输出及耐久checkpoint尚未完整编码，不作为可恢复主会话发布。
+R4.1.08正在实施。当前已接通数值原子、表达式图及Evaluator持续数学codec；整个Session/owners/输出及耐久checkpoint尚未完整编码，不作为可恢复主会话发布。
 
 ## 数值原子 OMNU v1
 
@@ -23,8 +23,16 @@ decoder先验证全部长度/节点、UTF8、builtin与user分类、backward ref
 
 默认64MiB、200000 nodes、100000 roots、1000000 edges、depth1024、8192独立symbols、单text4MiB。多个root共享同一图，100层每层重复两次的实际共享子树保持线性大小，不展开为2^100树；budget/cancel由宿主Interrupt驱动，32bit长度加法也检查overflow。
 
+## Evaluator 持续数学 OMES v1
+
+`Evaluator::encode_persistent/decode_persistent`使用`OMES`+版本byte1、明确metadata/graph小端u32长度、封闭JSON元数据及一个共享OMEX图。ownvalues、原downvalue顺序和delayed标志、全部9位user attributes、changed symbols、successful history input/output、EvalSettings及SplitMix64原stream均保留；恢复不执行Set、延迟RHS、随机请求或历史源码。messages/当前statement solver/science证据属于暂态，真实已产出记录由Session层保存。
+
+元数据绑定调用者精确build、crate版本、目录metadata_version和实际BuiltinTable的稳定ID/name/attribute/arity闭包。恢复只连接当前已注册的真实callbacks，不读回函数指针或闭包；build/目录/registry不符明确拒绝。各表按原UTF8 symbol name排序；未知字段/重复身份/坏索引、未使用root、未知attribute bits、packet trailing/length和已取消状态拒绝。readonly或in-flight lexical/frame状态不可捕获为writable owner。
+
+默认packet64MiB/metadata4MiB、每表8192项、32768规则、10000历史对，数学图另满足OMEX预算。metadata先校验，再解码图并构造独立可写Evaluator；没有改动active Session/文档，也没有生成耐久receipt。已验证Root、高精度、插值、拟合/ODE实际存储值与后续可调用行为；重编码保持原bytes。OneIdentity bit8是既有合法属性，旧from_bits漏接纳的mask已修为9位，bit9仍拒绝。
+
 ## 后续接入和验收
 
-下一步编码真实Evaluator持续状态和稳定callback目录，然后与source/settings/build/catalog/owners绑定完整Session checkpoint；暂态解释器frame不可捕获，只读fork不能提升，候选写入和真实耐久接纳继续有独立回执。codec本身不授予主文档权限。
+下一步与source/settings/build/catalog/owners/实际record evidence绑定完整Session checkpoint；暂态解释器frame不可捕获，只读fork不能提升，候选写入和真实耐久接纳继续有独立回执。`Session::fork_working_session`已克隆真实文档/结果/owners及read-only Explore snapshot，新取消token与parent必须独立，LLM/config-store/credential IO不随candidate复制；这只是owned work基础，不是完整byte checkpoint。codec本身不授予主文档权限。
 
 本批新增 `om-num/tests/checkpoint.rs`、`om-core/tests/checkpoint.rs`；原num/core/working-stage与纯WASM/Clippy回归保留。数学53期望和原时限不变，本机不启动iOS模拟器，也不把这层往返当完整checkpoint完成。

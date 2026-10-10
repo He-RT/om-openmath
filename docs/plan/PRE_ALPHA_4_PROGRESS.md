@@ -38,7 +38,7 @@
 | [x] [R4.1.05](PRE_ALPHA_4.md#task-r4.1.05) | 冻结Preview与新格身份分配 | completed | 10preview+3ref / 原计划→SQLite→原authority实际回执 / 期限/scope完整性 | 22fc708 |
 | [x] [R4.1.06](PRE_ALPHA_4.md#task-r4.1.06) | DocCommitPort、编辑屏障与未知提交 | completed | [实际提交](../acceptance/pre-alpha.4/development/r41/commit.json) / NSTextView+SQLite / 63Rust / Release | 21b01e7 |
 | [x] [R4.1.07](PRE_ALPHA_4.md#task-r4.1.07) | 统一源码撤销和后续编辑冲突 | completed | [历史/文本/回执](../acceptance/pre-alpha.4/development/r41/history-and-groups.json) / 200+pin / actual UTF/IME / 80Rust / Release | 3853967 |
-| [ ] [R4.1.08](PRE_ALPHA_4.md#task-r4.1.08) | 完整可写计算状态与无损codec | in_progress | [可写候选](../acceptance/pre-alpha.4/development/r41/working-stage.json)、[无损原子/图](../acceptance/pre-alpha.4/development/r41/codec-atoms-graph.json)；完整state/checkpoint待完 | 5bf2a20；codec本批待补 |
+| [ ] [R4.1.08](PRE_ALPHA_4.md#task-r4.1.08) | 完整可写计算状态与无损codec | in_progress | [Evaluator state/owned Session](../acceptance/pre-alpha.4/development/r41/evaluator-state-codec.json) / 201eval＋204kernel；整会话bytes/接纳待完 | 5bf2a20、6315272；本批待补 |
 | [ ] [R4.1.09](PRE_ALPHA_4.md#task-r4.1.09) | 主KernelWorker、候选接纳和直接取消 | planned | — | — |
 | [ ] [R4.1.10](PRE_ALPHA_4.md#task-r4.1.10) | 不可变结果库和只读检查通道 | planned | — | — |
 | [ ] [R4.1.11](PRE_ALPHA_4.md#task-r4.1.11) | NSDocument打开保存与冻结快照 | planned | — | — |
@@ -327,3 +327,12 @@ Done依据与覆盖case/proof:
 - R4.1.08仍unchecked，完整Evaluator/Session/checkpoint codec、稳定callback/build/catalog绑定、owners/输出与原Root/model/interpolation/高精度的主状态往返及耐久候选接纳待完。不把原子/图codec或owned clone当整个会话可恢复，剩余80任务继续原范围；本机不运行iOS模拟器，版本仍`.3`。
 
 - 本批观察前置5bf2a20的CI37986742459已结束：Rust/native_macos/dependencies成功，frontend与iOS失败。前端是1280设置CRUD保存status5s未找到，下载error-context时真实status已显示AI settings saved，根因尚待定位；iOS是explore旋转用例expression.16未出现（slider存在），原1s/数学标准未改。失败日志及前端原artifact保存target/acceptance/pre-alpha.4/development/r41/codec-prior-ci-failed.log与target/ci-evidence/codec-5bf2a20-frontend，不能将这些job或当前新SHA标全绿。继续codec并独立定位展示/时序问题，不开本机模拟器、不删除断言。
+
+## R4开发记录 D022 — 实际Evaluator数据恢复与owned Session工作副本（R4.1.08继续）
+
+- OMES1持续math codec真实编码own/down/ordered delayed rules/attrs/changed/history/Out/settings/SplitMix64，shared raw OMEX图保留exact/high precision/机器位型，build/crate/metadata_version/actual callback registry匹配后才构造新可写Evaluator。unknown字段/重复身份/root引用/顺序/packet length、readonly/非空闲与cancel拒绝；延迟RHS counter不执行，history不是重跑文本，recapture byte-stable。
+- 实际Root、80位decimal、interpolation、fit和ODE存储值及后续调用对照原Evaluator通过。内部真实attrs表先复现OneIdentity bit8被旧mask255拒绝，再修到511；bit9仍拒绝，机器负零与非默认设置逐项保留。早期SetAttributes held调用不能证明user attrs，已移除该无效验证并补真实HOLD_FIRST行为克隆/候选改动隔离；属性不是新增数学API别名。
+- owned WorkingSession克隆真Notebook/Cell/StatementRecord/steps/owners与readonly Explore snapshot，主definition a=2依赖3，candidate a=5依赖6且主投影不变；candidate消费后真实定义保持。新token必须不同于parent Arc，parent已cancel仍不影响新candidate，运行后的token不会内部reset；profiles/API key/routes/LLM jobs/config_store不复制。原solver输出为Solutions/取消为实际Error+interrupted message，初始新测试误认Expr/空items，已按原协议校准并保留失败，无原数学期望或阈值变化。
+- om-eval完整201项、portable kernel204项（含原scene/solve/探索语料）、7codec/3working Session、实际attribute/machine内部用例、Clippy/fmt/纯WASM及native feature build通过；源码/原件hash见[evaluator-state-codec.json](../acceptance/pre-alpha.4/development/r41/evaluator-state-codec.json)。核心仍forbid unsafe，无新依赖，无本机模拟器/真实模型或新公开包。
+- 6315272的CI38006779929五jobs全部success，仅属于前置原子/图SHA；之前5bf2a20 frontend/iOS失败原件仍保留，不将这些数据替代当前新SHA或final candidate。
+- R4.1.08保持unchecked/in_progress：完整Session checkpoint bytes、source/config/owner/result/record provenance/build binding、结构化solver/steps/explore持久化及host checkpoint identity/Blob与接纳验证继续全原范围。当前18/98、80待完、32final gate not_run；不把Evaluator恢复或memory clone称整个会话可恢复。

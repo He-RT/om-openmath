@@ -37,4 +37,4 @@ mod wire;
 
 pub use config::KernelConfig;
 pub use notebook::{Cell, Notebook};
-pub use session::{LlmCancellation, Session};
+pub use session::{LlmCancellation, Session, WorkingSession};

@@ -44,13 +44,13 @@ impl Attributes {
     pub const FLAT: Self = Self(1 << 7);
     /// A sole argument can stand for the whole expression.
     pub const ONE_IDENTITY: Self = Self(1 << 8);
-    /// Raw audited attribute flags for a readonly snapshot.
+    /// Raw audited attribute flags for portable persistent and readonly states.
     pub fn bits(self) -> u16 {
         self.0
     }
     /// Decode only the current documented flag set.
     pub fn from_bits(bits: u16) -> Option<Self> {
-        (bits & !255 == 0).then_some(Self(bits))
+        (bits & !511 == 0).then_some(Self(bits))
     }
     /// Whether all requested flags are present.
     pub const fn contains(self, other: Self) -> bool {

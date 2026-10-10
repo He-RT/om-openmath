@@ -470,3 +470,9 @@ L2使用精确标称GM分数、50位FindRoot/1000迭代和真实残差，报告�
 - bbdc2b4的CI37979609572在真实session ABI fixture的exact-0出现unknownOutcome，其他四jobs成功；原件已下载。根因是snapshot在操作接纳前生成unavailable，返回actor前submit ACK先更新admitted，旧读回便被当成“已接纳但丢失”。不是数学错误或要放宽计时。
 - 每组snapshot固定admittedAtDispatch；只有这个集合中的ID才能用同次unavailable判unknown。其间新接纳的ID保留原identity再读一遍，stale snapshot的group重新入查询队列；不会新ID重放或无限容忍真正丢失。新增可信UI refreshProjection只读，不接纳计算。
 - NativeSessionProbes只用于宿主fixture，没有模型/请求配置入口。真实C ABI的admission/readback barriers使旧代码确定性失败；修复后同序通过，随后12个丢弃全部terminal frames的原用例和取消/并发close仍通过。原失败与后续attempt均保留，最终同候选仍需完整CI。
+
+### R4-D016：Evaluator持续数学codec与owned Session副本（2026-10-10，R4.1.08继续）
+
+- OMES1由封闭metadata+共享OMEX图编码真实own/down/attrs/changed/history/settings/SplitMix64状态，表按symbol UTF8名字排序、downvalues保持原优先顺序。metadata绑定可信精确build/crate/目录及actual BuiltinTable稳定ID/name/attribute/arity，未知字段/身份/坏索引/root遗漏/非空闲与readonly均拒绝；恢复构造独立可写Evaluator，不运行延迟定义/历史文本，不存pointer/callback closure。
+- OneIdentity原bit8已有定义，旧Attributes.from_bits仅mask255导致真实属性表不能恢复；用内部真实attrs先复现Invalid再修到mask511，bit9仍拒绝。原SetAttributes并无真实callback，新的codec测试不把这个held调用当属性写入。持久化message/steps/provenance归Session记录层，暂态Evaluator不虚构这些已消费事实。
+- WorkingSession克隆真实Notebook/Cell/StatementRecord、definitions/history/random/owners/source及readonly Explore snapshot，纯借用返回owned可写候选；preserve独立cancel且不复制LLM jobs/profiles/API key/config_store IO。候选修改得到6、parent保持3，现有steps/Explore实际结果保留；consume本身不是耐久接纳或权限提升，readonly contexts仍不可写。整个Session byte codec及host candidate接纳继续原后续任务。

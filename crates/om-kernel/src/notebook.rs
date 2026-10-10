@@ -5,7 +5,7 @@ use om_solve::Steps;
 use std::collections::BTreeSet;
 
 /// Source cells and title in document order.
-#[derive(Default)]
+#[derive(Clone, Default)]
 pub struct Notebook {
     /// Ordered editable cells.
     pub cells: Vec<Cell>,
@@ -14,6 +14,7 @@ pub struct Notebook {
 }
 
 /// A source cell and its current execution state.
+#[derive(Clone)]
 pub struct Cell {
     /// Frontend-generated identifier.
     pub id: CellId,
@@ -36,6 +37,7 @@ pub struct Cell {
     pub(crate) records: Vec<StatementRecord>,
 }
 
+#[derive(Clone)]
 pub(crate) struct StatementRecord {
     pub input: Expr,
     pub value: Expr,

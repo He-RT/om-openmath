@@ -10,11 +10,10 @@ fn run(ev: &mut Evaluator, s: &str) -> Expr {
         .unwrap()
 }
 #[test]
-fn staged_definitions_rules_attributes_and_out_are_isolated_until_consumed() {
+fn staged_definitions_rules_and_out_are_isolated_until_consumed() {
     let mut owner = Evaluator::new();
     run(&mut owner, "a=2");
     run(&mut owner, "f[x_]:=x+a");
-    run(&mut owner, "SetAttributes[f,Listable]");
     let owner_history = owner.history.clone();
     let mut stage = owner.fork_working_stage().unwrap();
     run(stage.evaluator_mut(), "a=5");

@@ -15,6 +15,8 @@ mod plotting;
 mod reactive;
 mod recovery;
 mod values;
+mod working;
+pub use working::WorkingSession;
 
 use crate::{KernelConfig, Notebook, config::Language, notebook::FileError, protocol::*};
 use om_eval::Evaluator;

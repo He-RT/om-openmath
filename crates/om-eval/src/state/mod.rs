@@ -1,5 +1,7 @@
 //! Owned staged mathematics. Durable acceptance and document identity are kernel/host duties.
 use crate::{EvalError, Evaluator};
+mod codec;
+pub use codec::{EvalStateError, EvalStateLimits};
 
 /// An unaccepted writable evaluator. Dropping it discards definitions/history/random together.
 /// It is not a checkpoint codec and cannot turn a readonly projection into a writable owner.
@@ -52,5 +54,41 @@ mod tests {
         assert!(owner.fork_working_stage().is_err());
         owner.scopes.clear();
         assert!(owner.fork_working_stage().is_ok());
+    }
+    #[test]
+    fn real_user_holding_attributes_are_cloned_and_stage_changes_remain_local() {
+        let mut owner = Evaluator::new();
+        let head = om_core::Symbol::intern("HeldUser");
+        owner.defs.attrs.insert(head, crate::Attributes::HOLD_FIRST);
+        let mut stage = owner.fork_working_stage().unwrap();
+        let input = om_parse::parse_expr("HeldUser[a=5]", om_parse::Dialect::Wolfram).unwrap();
+        stage
+            .evaluator_mut()
+            .evaluate(&input, &om_core::Interrupt::default())
+            .unwrap();
+        assert!(
+            stage
+                .evaluator_mut()
+                .defs
+                .own_value(om_core::Symbol::intern("a"))
+                .is_none()
+        );
+        stage.evaluator_mut().defs.attrs.remove(&head);
+        stage
+            .evaluator_mut()
+            .evaluate(&input, &om_core::Interrupt::default())
+            .unwrap();
+        assert_eq!(
+            stage
+                .evaluator_mut()
+                .defs
+                .own_value(om_core::Symbol::intern("a")),
+            Some(&om_core::Expr::int(5))
+        );
+        assert_eq!(
+            owner.defs.attrs.get(&head),
+            Some(&crate::Attributes::HOLD_FIRST)
+        );
+        assert!(owner.defs.own_value(om_core::Symbol::intern("a")).is_none());
     }
 }

@@ -1,0 +1,160 @@
+{
+  "task": "R4.1.08",
+  "status": "in_progress",
+  "task_done": false,
+  "development_only": true,
+  "runtime_version": "0.1.0-pre-alpha.3",
+  "working_tree_base": "63152722d216367201c2b84c9ba0439841d6e901",
+  "codec": "OMES1 metadata + shared OMEX1 graph",
+  "om_eval_regression_passed": 201,
+  "portable_kernel_regression_passed": 204,
+  "evaluator_codec_cases_passed": 7,
+  "actual_internal_attribute_machine_cases_passed": 2,
+  "working_session_cases_passed": 3,
+  "persistent_fields": [
+    "ownvalues",
+    "ordered downvalues/lhs/rhs/delayed",
+    "user attrs 9 known bits",
+    "changed symbols",
+    "input/output history",
+    "EvalSettings",
+    "SplitMix64 raw state"
+  ],
+  "binds": [
+    "trusted exact build",
+    "crate release",
+    "catalog metadata version",
+    "actual builtin stable-ID/name/attrs/arity closure"
+  ],
+  "delayed_rhs_or_history_replayed": false,
+  "root_precision_interpolation_fit_ode_values_and_behavior_verified": true,
+  "recapture_byte_stable": true,
+  "working_session_copies_credential_or_IO_owner": false,
+  "working_session_accepts_parent_cancel_token": false,
+  "limits": {
+    "packet_bytes": 67108864,
+    "metadata_bytes": 4194304,
+    "bindings_per_table": 8192,
+    "total_rules": 32768,
+    "history_pairs": 10000
+  },
+  "whole_session_byte_codec_ready": false,
+  "durable_checkpoint_accepted": false,
+  "remaining": [
+    "Complete Session source/settings/build/owners/output-serial and retained-record byte codec",
+    "Structured solver/steps/scientific/explore evidence persistence",
+    "Kernel/host checkpoint identity and actual original-type validation",
+    "Immutable blob closure and candidate durable acceptance integration"
+  ],
+  "code": [
+    {
+      "path": "crates/om-eval/src/state/codec.rs",
+      "bytes": 13894,
+      "sha256": "87975265224ca08462d16bf6edea84c541605f9830a3b0bf2dee291ebfc47f9d"
+    },
+    {
+      "path": "crates/om-eval/src/state/codec/wire.rs",
+      "bytes": 4561,
+      "sha256": "4b0c7114ca94fa7b65706293c901cc57498a526afa767dfeb737af2ed5ebbd45"
+    },
+    {
+      "path": "crates/om-eval/tests/state_codec.rs",
+      "bytes": 10628,
+      "sha256": "24726aefd1b531adffa6f14716a5e0653e73d8cd4ca0d8351bda93695a0a1129"
+    },
+    {
+      "path": "crates/om-eval/src/state/mod.rs",
+      "bytes": 3694,
+      "sha256": "a50bf537854eb650e333da2eeebb312de70588f23ec5a22f917fb42929df63d4"
+    },
+    {
+      "path": "crates/om-eval/src/types.rs",
+      "bytes": 4533,
+      "sha256": "cdd17e2a750b23862a5dad825e10baf56b3739c0feeac6b375ac9398bd231771"
+    },
+    {
+      "path": "crates/om-kernel/src/session/working.rs",
+      "bytes": 2541,
+      "sha256": "36b7e7793743d20f78d60c876c1319e7727eddaee7dcd470eeccbeb12c1debfc"
+    },
+    {
+      "path": "crates/om-kernel/tests/working_session.rs",
+      "bytes": 5336,
+      "sha256": "d5e26bb023c453c0564ce5d95c0807ae2b41fa590e499ecea119b742189cd7d4"
+    }
+  ],
+  "logs": [
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r41/evaluator-codec-before.log",
+      "bytes": 6589,
+      "sha256": "7a376f994adc15dc998c083fd68f8bff8b2a9f952417d22e4385ef9875993c4a"
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r41/evaluator-attribute-before.log",
+      "bytes": 1015,
+      "sha256": "3ee9978778cf071027139a4a484a91a15f895969c0ff0d8afa73e9a17a4597f9"
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r41/evaluator-codec-expanded-fixed.log",
+      "bytes": 1308,
+      "sha256": "00f991743ddf8658c4063c9f052ce3c2e73cb00f711d358d2b3bdfffda43ff8b"
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r41/evaluator-codec-stable.log",
+      "bytes": 1095,
+      "sha256": "da32288317d5d11052ce675f0d35751092f0774ac592909654b4a04c3b4f13cb"
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r41/evaluator-owned-attribute-verified.log",
+      "bytes": 2213,
+      "sha256": "1fa921a7e0909648a2beb3b0b3cf31cbe76d364a67425eaf6248acfdb29466a4"
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r41/evaluator-codec-eval-final.log",
+      "bytes": 23464,
+      "sha256": "488ad4ad3e39488075d7d2ab1bb72c3deee2040cedc091bad71dcfd8c87b09e2"
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r41/working-session-tests.log",
+      "bytes": 6384,
+      "sha256": "b316d4b381fa5864e2c9b1f3fd9e8025434c64943e7c0a2b158fb9874bd20cd7"
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r41/working-session-final.log",
+      "bytes": 628,
+      "sha256": "8093b3663e7db586576320b081c39939269c57932daf90215133b1c73f92cd8e"
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r41/working-session-kernel-regression.log",
+      "bytes": 26762,
+      "sha256": "f29ede43e176d03a1cc2f63844a09e7298e93c1c9313712900dbf32001fb27e4"
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r41/evaluator-session-clippy-verified.log",
+      "bytes": 305,
+      "sha256": "3f4b5b3821fc88acda83dffbb6d547701591a9936466284d7d102119e51cfa53"
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r41/evaluator-session-wasm-verified.log",
+      "bytes": 307,
+      "sha256": "d1f8a3aad598472128a7decfe225f3a1df1751d624455a096f5251439b5a790f"
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r41/evaluator-session-native-feature.log",
+      "bytes": 250,
+      "sha256": "786ee4230dd556041bfdd9e4c28cbd16f985f8d601d17bf1df2ab4e5778d60a9"
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r41/evaluator-codec-ci-observation.json",
+      "bytes": 13786,
+      "sha256": "a35028cd73609e9d012e5c8072f0868ab24a71904728b5adae4ed5070861a177"
+    }
+  ],
+  "prior_CI": {
+    "run": 38006779929,
+    "sha": "63152722d216367201c2b84c9ba0439841d6e901",
+    "conclusion": "success",
+    "scope": "previous atoms/graph commit; not this working tree or final candidate"
+  },
+  "final_candidate_gate": false
+}

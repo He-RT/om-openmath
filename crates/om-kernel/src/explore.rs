@@ -15,6 +15,14 @@ pub(crate) struct Snapshot {
     pub eval: Evaluator,
     pub plan: ExplorePlan,
 }
+impl Clone for Snapshot {
+    fn clone(&self) -> Self {
+        Self {
+            eval: self.eval.fork_readonly(),
+            plan: self.plan.clone(),
+        }
+    }
+}
 pub(crate) fn capture(
     value: &Expr,
     ev: &Evaluator,

@@ -7,6 +7,8 @@ pub mod scheduler;
 
 /// Authoritative source snapshots and typed frozen persistence plans.
 pub mod document;
+/// Temporary actual kernel checkpoints and scoped owned restore, independent of document IO.
+pub mod kernel;
 
 /// Host-owned scoped immutable references and deadlines.
 pub mod references;

@@ -1,6 +1,6 @@
 # 无损数学 checkpoint 编码基础
 
-R4.1.08正在实施。当前已接通数值原子、表达式图及Evaluator持续数学codec；整个Session/owners/输出及耐久checkpoint尚未完整编码，不作为可恢复主会话发布。
+R4.1.08的无损基础包括数值原子、表达式图、Evaluator数学和整个Session/owners/实际输出记录codec。解码结果是owned候选；主KernelWorker接纳、Blob耐久发布和活动指针恢复仍由R4.1.09及后续任务完成，不能以codec往返宣称已接通公开主会话恢复。
 
 ## 数值原子 OMNU v1
 
@@ -31,8 +31,22 @@ decoder先验证全部长度/节点、UTF8、builtin与user分类、backward ref
 
 默认packet64MiB/metadata4MiB、每表8192项、32768规则、10000历史对，数学图另满足OMEX预算。metadata先校验，再解码图并构造独立可写Evaluator；没有改动active Session/文档，也没有生成耐久receipt。已验证Root、高精度、插值、拟合/ODE实际存储值与后续可调用行为；重编码保持原bytes。OneIdentity bit8是既有合法属性，旧from_bits漏接纳的mask已修为9位，bit9仍拒绝。
 
+## Session OMKS v1 与原始求解证据
+
+`Session::encode_checkpoint/decode_checkpoint`保存真实Notebook source/status/defines/uses/exec_count、原CellOutput、StatementRecord的input/value/steps/solver/scientific/readonly Explore snapshot、Evaluator数学、owners、GeneralConfig、output serial/平台/系统语言。`OMKS`+版本byte1及4个小端u32长度界定metadata/evaluator/statement graph/readonly contexts；整个packet默认64MiB、metadata16MiB、source2MiB、10000 cells/records，context单件4MiB，所有子codec另满足各自预算。
+
+CheckpointBinding来自可信producer及已核验的记录：document ID、原producer generation、source revision/epoch、kernel-state revision、source snapshot hash和精确build。CheckpointRestore输入该原记录和当前核验source/general，以及新clock/cancel；byte身份和实际当前source/config分别检查。原producer generation是历史生产事实，新的文档lifetime/允许主状态接纳由Host当前scope另行检查。token/文件store/LLM job/API key/模型连接不序列化。
+
+步骤以扁平postorder节点保存27种原StepKind及所有真实表达式字段，保留rule ID、id、Level、children顺序；坏rule/kind组合、forward/cycle、复用/孤立step或层级ID不符拒绝。SolutionSet保留finite/all/region/unevaluated、条件、生成参数域、重数、原Verification、间隔端点及数值projection的原u64位型；不从LaTeX/截图或字段名推测精确验证。codec数据不创建数学证明，接纳依据真实原producer与实际byte/hash。
+
+恢复后record与对应Evaluator历史对进行有界raw表示核对，solver/science尾值也核对；跨图比较memoize allocation-pairs，不能展开shared DAG，也不把±0或precision差异误为相同。unknown嵌套输入/配置/输出字段、坏owner/record/view/out reference、active Running状态、来源或预算/cancel不符均失败，不返回partial writable session。
+
+只读Explore使用独立`OMRS1` role header及metadata readonly角色，单改magic不能提升为OMES；解码后仍readonly，不能fork working owner。表达式/controls/ranges/当前locale输出保留，后续slider按原只读context重新采样，不污染主定义/random。
+
+Host KernelStatePool临时保留actual encoded bytes、SHA256、原binding/source/general。默认最多32/64MiB，计入revoked但被调用者Arc pin的reservation；撤销lookup不提前释放在途reader/候选内存预算。ID由host熵生成，猜测/错scope/错source/config/hash不授权恢复。临时pool不是已发布Blob/accepted checkpoint，future main owner须等真实IOAck才接纳。
+
 ## 后续接入和验收
 
-下一步与source/settings/build/catalog/owners/实际record evidence绑定完整Session checkpoint；暂态解释器frame不可捕获，只读fork不能提升，候选写入和真实耐久接纳继续有独立回执。`Session::fork_working_session`已克隆真实文档/结果/owners及read-only Explore snapshot，新取消token与parent必须独立，LLM/config-store/credential IO不随candidate复制；这只是owned work基础，不是完整byte checkpoint。codec本身不授予主文档权限。
+暂态解释器frame不可捕获，只读fork不能提升，候选写入和真实耐久接纳继续有独立回执。`Session::fork_working_session`克隆实际文档/结果/owners及read-only Explore snapshot，新取消token与parent独立，LLM/config-store/credential IO不随candidate复制。codec本身不授予主文档权限；接下来主worker/candidate/Blob/accepted record与active state引用按R4.1.09–13接通。
 
-本批新增 `om-num/tests/checkpoint.rs`、`om-core/tests/checkpoint.rs`；原num/core/working-stage与纯WASM/Clippy回归保留。数学53期望和原时限不变，本机不启动iOS模拟器，也不把这层往返当完整checkpoint完成。
+新增 `om-num/tests/checkpoint.rs`、`om-core/tests/checkpoint.rs`、`om-eval/tests/state_codec.rs`、`om-solve/tests/evidence_codec.rs`、`om-kernel/tests/checkpoint.rs/checkpoint_corpus.rs`与Host pool测试。原53通过actual kernel计算→Session bytes→数据恢复→原结果/证据核对→byte recapture；原数学/200-digit参考残差不变。实际Root/80位decimal、fit/ODE/interpolation后续可调用、steps/readonly Explore、random/Out和延迟RHS不重跑均覆盖。默认开发用例不测原Release200ms/1s门禁，不将它们写成final candidate pass；本机不启动iOS模拟器。

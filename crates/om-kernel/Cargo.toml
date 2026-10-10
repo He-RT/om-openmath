@@ -34,6 +34,7 @@ tokio-util = {workspace=true,optional=true}
 workspace = true
 
 [dev-dependencies]
+toml.workspace = true
 reqwest.workspace = true
 tokio.workspace = true
 wiremock.workspace = true

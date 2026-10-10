@@ -56,6 +56,25 @@ pub enum EvalStateError {
     Abort(#[from] om_core::Abort),
 }
 impl Evaluator {
+    /// Save an actual readonly projection under a distinct role header. It cannot be decoded
+    /// through the writable entry point, and no public writable clone is produced here.
+    pub fn encode_readonly_persistent(
+        &self,
+        build: &str,
+        limits: EvalStateLimits,
+        ctx: &Interrupt,
+    ) -> Result<Vec<u8>, EvalStateError> {
+        self.encode_role(build, StateRole::Readonly, limits, ctx)
+    }
+    /// Restore an immutable projection whose header and metadata both declare the readonly role.
+    pub fn decode_readonly_persistent(
+        bytes: &[u8],
+        build: &str,
+        limits: EvalStateLimits,
+        ctx: &Interrupt,
+    ) -> Result<Self, EvalStateError> {
+        Self::decode_role(bytes, build, StateRole::Readonly, limits, ctx)
+    }
     /// Freeze current persistent mathematics without evaluating a source string or delayed RHS.
     pub fn encode_persistent(
         &self,
@@ -63,8 +82,21 @@ impl Evaluator {
         limits: EvalStateLimits,
         ctx: &Interrupt,
     ) -> Result<Vec<u8>, EvalStateError> {
+        self.encode_role(build, StateRole::Writable, limits, ctx)
+    }
+    fn encode_role(
+        &self,
+        build: &str,
+        role: StateRole,
+        limits: EvalStateLimits,
+        ctx: &Interrupt,
+    ) -> Result<Vec<u8>, EvalStateError> {
         ctx.tick()?;
-        if self.readonly || self.depth != 0 || self.evaluating != 0 || !self.scopes.is_empty() {
+        if self.readonly != (role == StateRole::Readonly)
+            || self.depth != 0
+            || self.evaluating != 0
+            || !self.scopes.is_empty()
+        {
             return Err(EvalStateError::NotIdle);
         }
         if build.is_empty() || build.len() > 128 {
@@ -153,6 +185,7 @@ impl Evaluator {
         }
         let meta = Metadata {
             version: 1,
+            role,
             build: build.into(),
             package: env!("CARGO_PKG_VERSION").into(),
             metadata_version: om_core::catalog::METADATA_VERSION,
@@ -181,7 +214,11 @@ impl Evaluator {
             .filter(|&n| n <= limits.max_bytes)
             .ok_or(EvalStateError::Limit)?;
         let mut out = Vec::with_capacity(total);
-        out.extend(b"OMES\x01");
+        out.extend(if role == StateRole::Writable {
+            b"OMES\x01"
+        } else {
+            b"OMRS\x01"
+        });
         out.extend(
             u32::try_from(metadata.len())
                 .map_err(|_| EvalStateError::Limit)?
@@ -204,11 +241,27 @@ impl Evaluator {
         limits: EvalStateLimits,
         ctx: &Interrupt,
     ) -> Result<Self, EvalStateError> {
+        Self::decode_role(bytes, build, StateRole::Writable, limits, ctx)
+    }
+    fn decode_role(
+        bytes: &[u8],
+        build: &str,
+        role: StateRole,
+        limits: EvalStateLimits,
+        ctx: &Interrupt,
+    ) -> Result<Self, EvalStateError> {
         ctx.tick()?;
         if bytes.len() > limits.max_bytes {
             return Err(EvalStateError::Limit);
         }
-        if bytes.len() < 13 || &bytes[..5] != b"OMES\x01" {
+        if bytes.len() < 13
+            || &bytes[..5]
+                != if role == StateRole::Writable {
+                    b"OMES\x01"
+                } else {
+                    b"OMRS\x01"
+                }
+        {
             return Err(EvalStateError::Invalid);
         }
         let metadata_size = u32::from_le_bytes(
@@ -232,7 +285,8 @@ impl Evaluator {
         }
         let meta: Metadata =
             serde_json::from_slice(&bytes[13..split]).map_err(|_| EvalStateError::Invalid)?;
-        if meta.build != build
+        if meta.role != role
+            || meta.build != build
             || meta.version != 1
             || meta.package != env!("CARGO_PKG_VERSION")
             || meta.metadata_version != om_core::catalog::METADATA_VERSION
@@ -309,6 +363,7 @@ impl Evaluator {
         evaluator.settings.recursion_limit = meta.settings.recursion_limit;
         evaluator.settings.record_steps = meta.settings.record_steps;
         evaluator.random = om_num::rng::SplitMix64::new(meta.random);
+        evaluator.readonly = role == StateRole::Readonly;
         Ok(evaluator)
     }
 }

@@ -1,0 +1,245 @@
+{
+  "task": "R4.1.08",
+  "status": "completed",
+  "task_done": true,
+  "development_only": true,
+  "runtime_version": "0.1.0-pre-alpha.3",
+  "working_tree_base": "de0ec9e19d09c5e87ab12f249530a5e77ef1b2d6",
+  "codec": "OMKS1 / OMES1 writable / OMRS1 readonly / OMEX1 / OMNU1",
+  "full_related_regression": {
+    "passed": 723,
+    "failed": 0,
+    "original_ignored": 1,
+    "session_cases_compiled_in_full_run": 4,
+    "later_targeted_session_cases": 5
+  },
+  "original_math_corpus": {
+    "cases": 53,
+    "input_or_expectation_changed": false,
+    "actual_kernel_then_data_restore": true,
+    "outputs_and_structured_evidence_equal": true,
+    "byte_recapture_stable": true,
+    "release_performance_gate_executed": false
+  },
+  "structured_steps_cases": 4,
+  "readonly_role_cases": 8,
+  "kernel_state_pool_cases": 2,
+  "whole_session_byte_codec_ready": true,
+  "delayed_rhs_or_history_replayed": false,
+  "credential_or_IO_owner_serialized": false,
+  "durable_checkpoint_accepted": false,
+  "temporary_pool": {
+    "max_states": 32,
+    "max_bytes": 67108864,
+    "lifetime_capture_limit": 4096,
+    "revoked_external_pins_charged": true
+  },
+  "commands": [
+    "cargo test -p om-core -p om-solve -p om-eval -p om-kernel -p om-host-service -p om-apple-ffi --no-default-features --locked",
+    "cargo test -p om-kernel --no-default-features --locked --test checkpoint",
+    "cargo clippy -p om-core -p om-solve -p om-eval -p om-kernel -p om-host-service -p om-apple-ffi --no-default-features --all-targets --locked -- -D warnings",
+    "cargo check -p om-kernel --no-default-features --target wasm32-unknown-unknown --locked",
+    "cargo deny check",
+    "python3 -m unittest discover -s scripts -p test_*.py",
+    "python3 scripts/check_pre_alpha_4_plan.py --check --self-test",
+    "python3 scripts/native_contracts.py --check",
+    "cargo fmt --all --check",
+    "git diff --check"
+  ],
+  "code": [
+    {
+      "path": "Cargo.lock",
+      "bytes": 158009,
+      "sha256": "2534358f22eaf482a313d5a02951abd679cb9bfdd79d067a0b1218ad7f745eee"
+    },
+    {
+      "path": "crates/om-core/src/checkpoint/mod.rs",
+      "bytes": 5618,
+      "sha256": "bbea5c7756fb9dc09c2eb9093d34edf18c8647d2fde64ba6fd96adc8c786f21e"
+    },
+    {
+      "path": "crates/om-core/tests/checkpoint.rs",
+      "bytes": 6180,
+      "sha256": "303acf78f621b0d30b8983c76802ceb4209c3c06ee2e245036be2d6fa08fcd0d"
+    },
+    {
+      "path": "crates/om-eval/src/state/codec/wire.rs",
+      "bytes": 4742,
+      "sha256": "5e0b9243fbc068b0f731e92b2cf74e3c5ad0f6cb0154950ab25dcd88f5a15346"
+    },
+    {
+      "path": "crates/om-eval/src/state/codec.rs",
+      "bytes": 15649,
+      "sha256": "9455866a00771eac1dc07722bfda27d780a75b2903970e012e9b203872369fd0"
+    },
+    {
+      "path": "crates/om-eval/tests/state_codec.rs",
+      "bytes": 11924,
+      "sha256": "89e52993c4429d8b6af612f661378b872a2fc7225546a7f49ccccd72d6f8c02c"
+    },
+    {
+      "path": "crates/om-host-service/src/kernel/mod.rs",
+      "bytes": 7424,
+      "sha256": "5a265df503754f41264ddee65bc938468667b12ff0564fd8c41391e8ec37e6dd"
+    },
+    {
+      "path": "crates/om-host-service/tests/kernel_states.rs",
+      "bytes": 4179,
+      "sha256": "7d60e56b4cd800a024c706b2e558c4de4f2fe0c32eafb729a24343320a02c62f"
+    },
+    {
+      "path": "crates/om-kernel/Cargo.toml",
+      "bytes": 1080,
+      "sha256": "621392035b1ee6e5f7a757d1058a3504e0016c4bc5bf78844b98ac6ae61b4f9e"
+    },
+    {
+      "path": "crates/om-kernel/src/checkpoint/codec.rs",
+      "bytes": 17322,
+      "sha256": "5e4d853cf9144c69bacbc5b0a419d19ebd7cfbcd11ec1728e908b7dd144c17f9"
+    },
+    {
+      "path": "crates/om-kernel/src/checkpoint/mod.rs",
+      "bytes": 5049,
+      "sha256": "44e9ed244a604a6f42af91efa4bd1e19c1784219a2784ac178cda7a7b5a9f23a"
+    },
+    {
+      "path": "crates/om-kernel/src/checkpoint/records.rs",
+      "bytes": 8693,
+      "sha256": "021beaa7ab40465324d33373e53f3ae7cc480f1ebf0c754db7aaa21f92788514"
+    },
+    {
+      "path": "crates/om-kernel/src/checkpoint/wire.rs",
+      "bytes": 3241,
+      "sha256": "86a452f23448f0be716ba0124b63677c1dbcf229064e689dbecd9cae98e20d5b"
+    },
+    {
+      "path": "crates/om-kernel/tests/checkpoint.rs",
+      "bytes": 13475,
+      "sha256": "f38fc281b960d0b70e1af109eeff169daf6a32a9a3f4b292b1757ee8a57728fc"
+    },
+    {
+      "path": "crates/om-kernel/tests/checkpoint_corpus.rs",
+      "bytes": 3490,
+      "sha256": "a592fc4cf85fcfb527b482a5d2c5bceec423e9e60bad2dff4960cf4a8266778a"
+    },
+    {
+      "path": "crates/om-solve/Cargo.toml",
+      "bytes": 566,
+      "sha256": "10d774f8b8ace6f3ff59f86a99d6641ac13639017d2990f59235af7f5d63aa46"
+    },
+    {
+      "path": "crates/om-solve/src/checkpoint/atoms.rs",
+      "bytes": 4730,
+      "sha256": "069d5cc885fca21cf6c85fc7f3322228d83fe611d8ed6eee939e33178570e685"
+    },
+    {
+      "path": "crates/om-solve/src/checkpoint/kinds.rs",
+      "bytes": 14536,
+      "sha256": "4a1a2c942fc7af954f2b9bde854a2f52f443760786e8797b1938890ed2fbfc81"
+    },
+    {
+      "path": "crates/om-solve/src/checkpoint/mod.rs",
+      "bytes": 2678,
+      "sha256": "dc37530edb84f285e601651640dc83b08e162c6417649a08ebeb1a08391bec35"
+    },
+    {
+      "path": "crates/om-solve/src/checkpoint/solutions.rs",
+      "bytes": 9591,
+      "sha256": "239b4591b4608b67044a8ece79f035b011967e5feabf6a58fc0e1eea7673bb99"
+    },
+    {
+      "path": "crates/om-solve/src/checkpoint/steps.rs",
+      "bytes": 5911,
+      "sha256": "78eb09f94b6e85cdf02e945f85ddae4c1e455113022d166025ea43178f9479fc"
+    },
+    {
+      "path": "crates/om-solve/tests/evidence_codec.rs",
+      "bytes": 5847,
+      "sha256": "89ace00300d98915631435dfb3af7262020668585328c50b811a9f1a803b6549"
+    }
+  ],
+  "logs": [
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r41/solver-evidence-expanded-fixed.log",
+      "bytes": 672,
+      "sha256": "379c7fe4a924488b634bd589843cf60aa02b4d77f56f3975706de2696ec44441"
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r41/readonly-role-marker-before.log",
+      "bytes": 1040,
+      "sha256": "8f98a0703103bbaf95fcb00c4d8a72769d8891e497d0f2d338bfd8613f9e725d"
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r41/readonly-role-bound.log",
+      "bytes": 1776,
+      "sha256": "3d0fdaebd8a108f15aa649d3d041af547fc0ad2f2c4b4f188a4a06e454b62cfa"
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r41/session-codec-no-replay.log",
+      "bytes": 909,
+      "sha256": "63452361edc60311368f39563a9811148328230e660e6604524870ba01cb7e6d"
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r41/session-codec-api-grouped.log",
+      "bytes": 935,
+      "sha256": "63b11f9523c8276879da7ecfec728b56cf9d337a3648a5de9fe7980e0ad7a327"
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r41/session-codec-role-clippy.log",
+      "bytes": 354,
+      "sha256": "a8161ed67728fe9576b882cdbe50888e12f2bc30b0b28c545097734542d3e739"
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r41/kernel-state-pool-tests.log",
+      "bytes": 1525,
+      "sha256": "d78744a82a17bbea88036fce5f706f69953abaa62efacad1e2c93e640845ae4b"
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r41/session-checkpoint-full-regression.log",
+      "bytes": 85588,
+      "sha256": "ccd7b9f0e49d77c7fa639d72f50792d00df0c11b4b85687317d64268c9a4aee7"
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r41/session-checkpoint-wasm.log",
+      "bytes": 857,
+      "sha256": "d7878665e333aea1f55425b661ba631451db7a440ccdb766af149accf9bb20f9"
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r41/session-checkpoint-deny.log",
+      "bytes": 263032,
+      "sha256": "82052f1205d20b8eda17fb98215c0edf20f9c7edb5df3abcb451c024458fe10f"
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r41/session-checkpoint-python.log",
+      "bytes": 2835,
+      "sha256": "53be8a3ffdf167e93490d920ccb17a94284ef705124af751d7ff31e402586e3a"
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r41/session-checkpoint-plan-verified.log",
+      "bytes": 754,
+      "sha256": "42ab92b4b363d12bfa6b2a64dc0ab80b69993314fd4626e92cd4b45d8f80bb25"
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r41/session-codec-prior-ci-final.json",
+      "bytes": 13786,
+      "sha256": "1f8b1e5586be5cf40a42ac95a6add1cccd2260abb6fd3529fc0e8ed90967ab8b"
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r41/session-checkpoint-plan-final.log",
+      "bytes": 754,
+      "sha256": "50464bc9416f4578e47e7b27a99c3d19a0bf22585134da34321388d98e88928d"
+    }
+  ],
+  "prior_CI": {
+    "run": 38057397556,
+    "sha": "de0ec9e19d09c5e87ab12f249530a5e77ef1b2d6",
+    "conclusion": "success",
+    "scope": "prior Evaluator/owned Session commit; not this worktree or final candidate"
+  },
+  "remaining_next_tasks": [
+    "R4.1.09 actual main worker/non-evaluating source reconcile/durable candidate acceptance",
+    "R4.1.10 result store",
+    "R4.1.11-13 document files/startup recovery/reference quotas"
+  ],
+  "final_candidate_gate": false
+}

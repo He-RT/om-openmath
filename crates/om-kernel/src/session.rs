@@ -7,6 +7,8 @@ mod evaluation;
 mod graph;
 mod llm;
 pub use llm::LlmCancellation;
+#[path = "checkpoint/codec.rs"]
+mod checkpoint_codec;
 mod exploration;
 mod inspection;
 #[cfg(feature = "native")]

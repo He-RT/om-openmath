@@ -476,3 +476,11 @@ L2使用精确标称GM分数、50位FindRoot/1000迭代和真实残差，报告�
 - OMES1由封闭metadata+共享OMEX图编码真实own/down/attrs/changed/history/settings/SplitMix64状态，表按symbol UTF8名字排序、downvalues保持原优先顺序。metadata绑定可信精确build/crate/目录及actual BuiltinTable稳定ID/name/attribute/arity，未知字段/身份/坏索引/root遗漏/非空闲与readonly均拒绝；恢复构造独立可写Evaluator，不运行延迟定义/历史文本，不存pointer/callback closure。
 - OneIdentity原bit8已有定义，旧Attributes.from_bits仅mask255导致真实属性表不能恢复；用内部真实attrs先复现Invalid再修到mask511，bit9仍拒绝。原SetAttributes并无真实callback，新的codec测试不把这个held调用当属性写入。持久化message/steps/provenance归Session记录层，暂态Evaluator不虚构这些已消费事实。
 - WorkingSession克隆真实Notebook/Cell/StatementRecord、definitions/history/random/owners/source及readonly Explore snapshot，纯借用返回owned可写候选；preserve独立cancel且不复制LLM jobs/profiles/API key/config_store IO。候选修改得到6、parent保持3，现有steps/Explore实际结果保留；consume本身不是耐久接纳或权限提升，readonly contexts仍不可写。整个Session byte codec及host candidate接纳继续原后续任务。
+
+### R4-D017：完整Session数据、原步骤与temporary kernel state池（2026-10-10）
+
+- OMKS1用4段长packet保存source/cell/output/actual records、OMES数学、共享OMEX语句图及OMRS readonly contexts，General/owners/out serial/platform/language与原producer binding同存；当前source/general及精确build另输入核对，不从旧source重跑let。原producer generation是历史descriptor身份，新的文档lifetime/权限由host当前scope接纳时核对，不从byte token恢复操作取消/clock/IO/秘密。
+- om-solve checkpoint是27个闭合StepKind的flat postorder metadata，所有Expr/Symbol字段映射shared graph root refs；原hierarchy/rule/children/Level与Actual SolutionSet的域/条件/重数/Verification/数值位型保留。孤立/复用/cycle/forward/未知规则或层级错拒绝，不用渲染图/LaTeX猜数学步骤。serde_json（om-solve）和toml（om-kernel）只增既有workspace锁版本的dev依赖用于原JSON/53 corpus验证，不新增math runtime。
+- 从分别解码的图检查history/record和solver/science尾值采用bounded exact representation pair memo，避免shared DAG的指数级Eq展开和±0/precision误同。只读角色在OMRS header及metadata两处绑定，确定性测试先证明仅改magic会被旧实现提升，再修为独立role encode/decode；未暴露readonly→writable克隆。
+- Host KernelStatePool保存实际byte/hash/binding/source/general，host熵ID、32状态/64MiB及4096创建上限，revoked但被caller pin的payload继续占reservation到实际release/reap。只管理临时数据，不发durable IOAck/active state，不开放模型写入口；next R4.1.09才接main worker与真实Blob/accepted transaction。
+- 原53输入/数学期望/独立200digit校验不改，实际Kernel source→packet→owned restore后output/evidence及再编码bytes逐项一致；Root/80digit/fit/ODE/interpolation、真实steps/explore、random/Out和延迟RHS未执行均测试。工程/CPP header/旧iOS ABI不变，无本机模拟器。完整checkpoint acceptance、结果库/文件/启动恢复仍按后续tasks，不因为code codec通过填最终candidate gate。

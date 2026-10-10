@@ -3,6 +3,7 @@ use super::*;
 #[serde(deny_unknown_fields)]
 pub(super) struct Metadata {
     pub version: u32,
+    pub role: StateRole,
     pub build: String,
     pub package: String,
     pub metadata_version: u32,
@@ -14,6 +15,12 @@ pub(super) struct Metadata {
     pub attrs: Vec<Attr>,
     pub changed: Vec<u32>,
     pub history: Vec<History>,
+}
+#[derive(Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
+pub(super) enum StateRole {
+    Writable,
+    Readonly,
 }
 #[derive(Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]

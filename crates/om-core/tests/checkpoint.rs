@@ -145,3 +145,19 @@ fn seeded_malformed_graphs_fail_without_panicking_or_unbounded_node_allocation()
         assert!(result.unwrap().is_err());
     }
 }
+
+#[test]
+fn cross_graph_raw_comparison_keeps_bits_and_memoizes_shared_pairs() {
+    let limits = ExprLimits::default();
+    let ctx = Interrupt::default();
+    let positive = Expr::real(0.0);
+    let negative = Expr::real(-0.0);
+    assert!(!om_core::checkpoint::same_representation(&positive, &negative, limits, &ctx).unwrap());
+    let mut root = Expr::int(1);
+    for _ in 0..80 {
+        root = Expr::call(Symbol::intern("shared"), [root.clone(), root.clone()]);
+    }
+    let bytes = encode_expressions(&[root.clone()], limits, &ctx).unwrap();
+    let decoded = decode_expressions(&bytes, limits, &ctx).unwrap();
+    assert!(om_core::checkpoint::same_representation(&root, &decoded[0], limits, &ctx).unwrap());
+}

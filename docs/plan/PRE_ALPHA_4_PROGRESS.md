@@ -2,11 +2,11 @@
 
 [完整实施计划](PRE_ALPHA_4.md) · [机器门禁](../acceptance/pre-alpha.4/gates.toml) · [裁决](DEVIATIONS.md) · [问题](QUESTIONS.md)
 
-2026-10-09。目标`0.1.0-pre-alpha.4`，当前运行/公开版本`.3`；开发`dev`，不合main、不改旧标签、本机不启动iOS模拟器。本文只记录结果，规格及完成标准唯一见主计划；计划编写本身不计实施完成。
+2026-10-10。目标`0.1.0-pre-alpha.4`，当前运行/公开版本`.3`；开发`dev`，不合main、不改旧标签、本机不启动iOS模拟器。本文只记录结果，规格及完成标准唯一见主计划；计划编写本身不计实施完成。
 
-**当前状态：** 18任务完成（全部R4.0与R4.1.01–07）；其余80任务尚未完成；32最终运行/发行gate全部not_run；candidate未分配，ready_to_publish=false，released_verified=false。设计/HTML/Schema通过不填运行时pass。
+**当前状态：** 19任务完成（全部R4.0与R4.1.01–08）；其余79任务尚未完成；32最终运行/发行gate全部not_run；candidate未分配，ready_to_publish=false，released_verified=false。设计/HTML/Schema通过不填运行时pass。
 
-**下一任务：** R4.1.08完整可写计算状态/无损checkpoint codec，随后主KernelWorker接纳。真实逆事务、原生文本/IME group、200+pin及物理裁减回执已通过；完整工作台与Agent仍继续后续任务。保持同candidate完整门禁，R4.5.07在R4.5.05冻结前完成。
+**下一任务：** R4.1.09主KernelWorker、非执行source reconcile与真实耐久候选接纳。真实逆事务、原生文本/IME group、200+pin及物理裁减回执已通过；完整工作台与Agent仍继续后续任务。保持同candidate完整门禁，R4.5.07在R4.5.05冻结前完成。
 
 ## 已知外部前置
 
@@ -38,7 +38,7 @@
 | [x] [R4.1.05](PRE_ALPHA_4.md#task-r4.1.05) | 冻结Preview与新格身份分配 | completed | 10preview+3ref / 原计划→SQLite→原authority实际回执 / 期限/scope完整性 | 22fc708 |
 | [x] [R4.1.06](PRE_ALPHA_4.md#task-r4.1.06) | DocCommitPort、编辑屏障与未知提交 | completed | [实际提交](../acceptance/pre-alpha.4/development/r41/commit.json) / NSTextView+SQLite / 63Rust / Release | 21b01e7 |
 | [x] [R4.1.07](PRE_ALPHA_4.md#task-r4.1.07) | 统一源码撤销和后续编辑冲突 | completed | [历史/文本/回执](../acceptance/pre-alpha.4/development/r41/history-and-groups.json) / 200+pin / actual UTF/IME / 80Rust / Release | 3853967 |
-| [ ] [R4.1.08](PRE_ALPHA_4.md#task-r4.1.08) | 完整可写计算状态与无损codec | in_progress | [Evaluator state/owned Session](../acceptance/pre-alpha.4/development/r41/evaluator-state-codec.json) / 201eval＋204kernel；整会话bytes/接纳待完 | 5bf2a20、6315272；本批待补 |
+| [x] [R4.1.08](PRE_ALPHA_4.md#task-r4.1.08) | 完整可写计算状态与无损codec | completed | [整个Session/原证据](../acceptance/pre-alpha.4/development/r41/session-checkpoint.json) / 723相关Rust＋原53＋data-only/角色/预算 | de0ec9e及前置；本批待补 |
 | [ ] [R4.1.09](PRE_ALPHA_4.md#task-r4.1.09) | 主KernelWorker、候选接纳和直接取消 | planned | — | — |
 | [ ] [R4.1.10](PRE_ALPHA_4.md#task-r4.1.10) | 不可变结果库和只读检查通道 | planned | — | — |
 | [ ] [R4.1.11](PRE_ALPHA_4.md#task-r4.1.11) | NSDocument打开保存与冻结快照 | planned | — | — |
@@ -336,3 +336,12 @@ Done依据与覆盖case/proof:
 - om-eval完整201项、portable kernel204项（含原scene/solve/探索语料）、7codec/3working Session、实际attribute/machine内部用例、Clippy/fmt/纯WASM及native feature build通过；源码/原件hash见[evaluator-state-codec.json](../acceptance/pre-alpha.4/development/r41/evaluator-state-codec.json)。核心仍forbid unsafe，无新依赖，无本机模拟器/真实模型或新公开包。
 - 6315272的CI38006779929五jobs全部success，仅属于前置原子/图SHA；之前5bf2a20 frontend/iOS失败原件仍保留，不将这些数据替代当前新SHA或final candidate。
 - R4.1.08保持unchecked/in_progress：完整Session checkpoint bytes、source/config/owner/result/record provenance/build binding、结构化solver/steps/explore持久化及host checkpoint identity/Blob与接纳验证继续全原范围。当前18/98、80待完、32final gate not_run；不把Evaluator恢复或memory clone称整个会话可恢复。
+
+## R4开发记录 D023 — 整个Session、真实步骤与有界临时kernel状态（R4.1.08完成）
+
+- OMKS1保存实际source/status/defines/uses/exec_count/output、owner/general/serial与全部StatementRecord；OMES完整数学与OMRS只读Explore另分段。构造owned writable候选不执行源式，原producer descriptor与当前已核验source/general分别比对；新操作token/clock由host提供，不持有旧AI/credential/config-store IO。
+- om-solve保存全部27种StepKind与原SolutionSet的条件/参数域/重数/Verification/numeric位型，steps树引用及rule/ID/层级逐项验证。跨graph exact comparison保留数值类别/precision/±0并memoize实际节点对；不展开共享DAG。OMRS header+metadata role拒绝仅改magic的提升，原确定性失败log保留。
+- KernelStatePool保留真实byte/hash/source/binding，32/64MiB、4096 lifetime；撤销lookup后被caller pin的字节继续计费，实际release才reap。不发耐久回执、不创建active指针或Agent权限；真实Blob/accepted记录属于R4.1.09。
+- 原53实际Kernel输入→bytes→owned恢复→原输出/步骤/数值残差→byte recapture通过；原期待未改。实际Root/80位decimal/fit/ODE/interpolation后续调用、随机/Out、readonly Explore、延迟RHS不重跑通过。未知版本/角色/嵌套字段/owner/history/provenance/引用、trailing/容量/深度/取消拒绝，不返回partial success。
+- 最终相关六crate回归723passed/1原ignored/0failed（整次含4Session用例），随后新增不重跑延迟RHS用例的5Session目标测试通过。原steps4、readonly8、host pool2通过；Clippy/fmt/纯WASM/deny、Python17及计划/200DTO/drift验证通过。原Release200ms/1s和32final gate本批未执行，不把debug 53往返写成性能pass。
+- 全部源码/log hash、完整命令与范围见[session-checkpoint.json](../acceptance/pre-alpha.4/development/r41/session-checkpoint.json)。上一de0ec9e的CI38057397556五jobs全success，只证明前置SHA。R4.1.08 Done满足，当前19/98；下一任务R4.1.09真实主worker/非执行对齐/存储接纳，余79任务继续完整范围。版本仍`.3`、final candidate未分配，无本机iOS模拟器/旧公开资产变化。

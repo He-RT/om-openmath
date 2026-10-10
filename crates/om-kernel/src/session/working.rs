@@ -4,7 +4,7 @@ use crate::{KernelConfig, protocol::CellStatus};
 use std::sync::{Arc, atomic::AtomicBool};
 /// Unaccepted independent session. Its private evaluator is writable; stored Explore forks stay readonly.
 pub struct WorkingSession {
-    candidate: Session,
+    pub(super) candidate: Session,
 }
 impl WorkingSession {
     /// Execute against the candidate; none of its definition/result mutations affect the parent.

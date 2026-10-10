@@ -315,3 +315,39 @@ fn capture_restore_recapture_is_byte_stable_and_keeps_shared_history_values() {
         bytes
     );
 }
+
+#[test]
+fn persisted_readonly_projection_remains_distinct_from_writable_checkpoint() {
+    let mut original = Evaluator::new();
+    run(&mut original, "a=2");
+    let readonly = original.fork_readonly();
+    let limits = EvalStateLimits::default();
+    let ctx = Interrupt::default();
+    let bytes = readonly
+        .encode_readonly_persistent("fixture-build-1", limits, &ctx)
+        .unwrap();
+    assert!(Evaluator::decode_persistent(&bytes, "fixture-build-1", limits, &ctx).is_err());
+    let mut changed_role = bytes.clone();
+    changed_role[..5].copy_from_slice(b"OMES\x01");
+    assert!(Evaluator::decode_persistent(&changed_role, "fixture-build-1", limits, &ctx).is_err());
+    let mut restored =
+        Evaluator::decode_readonly_persistent(&bytes, "fixture-build-1", limits, &ctx).unwrap();
+    assert!(restored.fork_working_stage().is_err());
+    assert!(
+        restored
+            .encode_persistent("fixture-build-1", limits, &ctx)
+            .is_err()
+    );
+    assert!(
+        restored
+            .evaluate_statement(
+                &parse_expr("a=5", Dialect::Wolfram).unwrap(),
+                &Interrupt::default()
+            )
+            .is_err()
+    );
+    assert_eq!(
+        restored.defs.own_value(Symbol::intern("a")),
+        Some(&Expr::int(2))
+    );
+}

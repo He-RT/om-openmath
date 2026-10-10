@@ -17,6 +17,8 @@ pub mod protocol;
 /// Pure vector/raster and structured data artifact generation.
 pub mod artifact;
 mod artifact_views;
+/// Bounded data-only snapshots of actual writable session mathematics and retained evidence.
+pub mod checkpoint;
 mod dependency;
 mod editor;
 mod explore;

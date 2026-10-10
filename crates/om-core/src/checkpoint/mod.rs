@@ -2,9 +2,68 @@
 mod decode;
 mod encode;
 use crate::Abort;
+use crate::{Expr, ExprKind, Interrupt};
 pub use decode::decode_expressions;
 pub use encode::encode_expressions;
 use om_num::checkpoint::{NumberCodecError, NumberLimits};
+use std::collections::BTreeSet;
+
+/// Bounded raw equality across separately decoded graphs, including numeric category/precision/bits.
+/// Pair memoization prevents shared DAGs from expanding into exponentially many comparison paths.
+pub fn same_representation(
+    left: &Expr,
+    right: &Expr,
+    limits: ExprLimits,
+    ctx: &Interrupt,
+) -> Result<bool, ExprCodecError> {
+    let mut work = vec![(left, right)];
+    let mut seen = BTreeSet::new();
+    while let Some((a, b)) = work.pop() {
+        ctx.tick()?;
+        let key = (a.allocation_key(), b.allocation_key());
+        if !seen.insert(key) {
+            continue;
+        }
+        if seen.len() > limits.max_nodes {
+            return Err(ExprCodecError::Limit);
+        }
+        match (a.kind(), b.kind()) {
+            (ExprKind::Number(a), ExprKind::Number(b)) => {
+                if om_num::checkpoint::encode_number(a, limits.numbers, ctx)?
+                    != om_num::checkpoint::encode_number(b, limits.numbers, ctx)?
+                {
+                    return Ok(false);
+                }
+            }
+            (ExprKind::Symbol(a), ExprKind::Symbol(b)) => {
+                if a.name() != b.name() {
+                    return Ok(false);
+                }
+            }
+            (ExprKind::String(a), ExprKind::String(b)) => {
+                if a != b {
+                    return Ok(false);
+                }
+            }
+            (ExprKind::Normal(a), ExprKind::Normal(b)) => {
+                if a.args.len() != b.args.len() {
+                    return Ok(false);
+                }
+                if work
+                    .len()
+                    .checked_add(a.args.len() + 1)
+                    .is_none_or(|n| n > limits.max_edges)
+                {
+                    return Err(ExprCodecError::Limit);
+                }
+                work.push((&a.head, &b.head));
+                work.extend(a.args.iter().zip(&b.args));
+            }
+            _ => return Ok(false),
+        }
+    }
+    Ok(true)
+}
 
 /// Explicit encode/decode budgets; exceeding one fails rather than truncating saved state.
 #[derive(Clone, Copy, Debug)]

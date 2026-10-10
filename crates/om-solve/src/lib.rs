@@ -23,6 +23,8 @@ pub use types::{
     Bound, Domain, FindRootOptions, Interval, MaxExtra, Solution, SolutionSet, SolveError,
     SolveOptions, SolveOutcome, Verification, VerifyMode,
 };
+/// Lossless structured result/step data, referencing a shared checkpoint expression graph.
+pub mod checkpoint;
 mod linear;
 /// Original-input normalization with preserved domain exclusions.
 pub mod normalize;

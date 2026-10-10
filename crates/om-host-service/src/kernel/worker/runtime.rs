@@ -109,6 +109,12 @@ impl KernelWorker {
             .map_err(|_| KernelWorkerError::Internal)?
             .state(id)?)
     }
+    /// Actual pool reservation after reclaiming genuinely unpinned retired state envelopes.
+    pub fn reserved_bytes(&self) -> Result<usize, KernelWorkerError> {
+        let mut pool = self.pool.lock().map_err(|_| KernelWorkerError::Internal)?;
+        pool.reap();
+        Ok(pool.reserved_bytes())
+    }
     /// Revoke unaccepted/obsolete lookup. Queued/running/reader pins keep their reservations.
     pub fn discard(&self, id: &str) -> Result<(), KernelWorkerError> {
         Ok(self

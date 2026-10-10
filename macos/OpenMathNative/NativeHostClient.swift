@@ -25,6 +25,7 @@ private enum NativeHostQueues {
   static let events = DispatchQueue(label: "org.openmath.native.events", qos: .userInitiated)
   static let recovery = DispatchQueue(label: "org.openmath.native.recovery", qos: .userInitiated)
   static let kernel = DispatchQueue(label: "org.openmath.native.kernel.control", qos: .userInitiated)
+  static let results = DispatchQueue(label: "org.openmath.native.results.control", qos: .userInitiated)
   static let cancel = DispatchQueue(label: "org.openmath.native.cancel", qos: .userInitiated)
   static let shutdown = DispatchQueue(label: "org.openmath.native.shutdown", qos: .utility)
 }
@@ -148,6 +149,22 @@ actor NativeHostClient {
       let reply:NativeKernelHostReply=try Self.read(packet)
       guard reply.protocol_version==1,reply.document_generation.value>0,reply.kernel_build.utf8.count==64,
         reply.kernel_build.utf8.allSatisfy({($0>=48 && $0<=57)||($0>=97 && $0<=102)}),reply.blob_bytes.allSatisfy({$0<=255}) else {throw NativeHostClientError.invalidReply}
+      return reply
+    }
+  }
+  /// Immutable result admission/status. Source/CAS/physical IO owners remain independent.
+  func resultCommand(_ command:NativeResultHostCommand) async throws ->NativeResultHostReply {
+    guard let handle else {throw NativeHostClientError.closing}
+    let runtime=runtimeInstanceID
+    return try await Self.background(NativeHostQueues.results) {
+      let data=try JSONEncoder().encode(command)
+      guard data.count<=2*1024*1024 else {throw NativeHostClientError.invalidReply}
+      let packet=data.withUnsafeBytes {om_host_result_command(handle.pointer,$0.bindMemory(to:UInt8.self).baseAddress,$0.count)}
+      let reply:NativeResultHostReply=try Self.read(packet)
+      guard reply.protocol_version==1,reply.runtime_instance_id==runtime,reply.document_generation.value>0 else {throw NativeHostClientError.invalidReply}
+      if let binding=reply.binding.value {
+        guard binding.runtime_instance_id==runtime,binding.document_id==reply.document_id,binding.document_generation.value==reply.document_generation.value else {throw NativeHostClientError.invalidReply}
+      }
       return reply
     }
   }

@@ -26,6 +26,19 @@ pub struct KernelState {
     context: om_kernel::source::SourceExecutionContext,
 }
 impl KernelState {
+    /// Immutable payload retention by another bounded owner, without pinning this pool's envelope.
+    /// Bytes remain shared/unchanged; the recipient accounts its own retained source/payload budget.
+    pub fn detached(&self) -> Self {
+        Self {
+            binding: self.binding.clone(),
+            source: self.source.clone(),
+            general: self.general.clone(),
+            bytes: self.bytes.clone(),
+            hash: self.hash.clone(),
+            reserved: self.reserved,
+            context: self.context.clone(),
+        }
+    }
     /// Import verified original bytes without executing source. Full codec validation occurs before
     /// any state is returned; trusted caller must additionally verify durable receipt/current scope.
     pub fn import(

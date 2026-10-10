@@ -173,6 +173,10 @@ impl RetainedResult {
             .as_ref()
             .map_or_else(Vec::new, |o| o.messages.clone())
     }
+    /// Actual zero-success failure output, including original parser/evaluator byte spans.
+    pub fn failure_presentation(&self) -> serde_json::Value {
+        serde_json::json!({"kind":"error","status":self.cell.status,"items":self.cell.output.as_ref().map(|o|&o.items),"messages":self.messages()})
+    }
     fn record(
         &self,
         out_index: u32,

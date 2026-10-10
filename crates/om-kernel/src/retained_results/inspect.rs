@@ -44,6 +44,76 @@ pub struct RetainedStepPage {
     pub entries: Vec<RetainedStepEntry>,
 }
 impl RetainedResult {
+    /// Original typed output presentation. Solver conditions/verification/roots come from the
+    /// recorded SolutionSetView, never from strings or a second solve at inspection time.
+    pub fn presentation_page(
+        &self,
+        out_index: u32,
+        view_id: &str,
+        offset: u32,
+        limit: u32,
+        ctx: &Interrupt,
+    ) -> Result<serde_json::Value, String> {
+        use serde_json::json;
+        if limit == 0 || limit > 32 {
+            return Err("INVALID_PRESENTATION_PAGE".into());
+        }
+        ctx.tick().map_err(|e| e.to_string())?;
+        let mut output = self.output(out_index, view_id)?;
+        let mut controls = None;
+        let mut values = None;
+        if let Some(OutputItem::Explore {
+            controls: c,
+            result,
+            ..
+        }) = output
+        {
+            controls = Some(c);
+            values = Some(&result.values);
+            output = Some(result.item.as_ref());
+        }
+        let view = match output {
+            Some(OutputItem::Solutions { view, .. }) => {
+                let max = view.solutions.len().max(view.intervals.len());
+                if offset as usize > max {
+                    return Err("INVALID_PRESENTATION_PAGE".into());
+                }
+                let solutions = view
+                    .solutions
+                    .iter()
+                    .skip(offset as usize)
+                    .take(limit as usize)
+                    .collect::<Vec<_>>();
+                let intervals = view
+                    .intervals
+                    .iter()
+                    .skip(offset as usize)
+                    .take(limit as usize)
+                    .collect::<Vec<_>>();
+                json!({"kind":"solutions","solution_kind":view.kind,"vars":view.vars,"region_latex":view.region_latex,"total_solutions":view.solutions.len(),"total_intervals":view.intervals.len(),"offset":offset,"solutions":solutions,"intervals":intervals})
+            }
+            Some(OutputItem::Expr { .. }) => {
+                if offset != 0 {
+                    return Err("INVALID_PRESENTATION_PAGE".into());
+                }
+                json!({"kind":"expression","value_kind":crate::output::values::kind(&self.record(out_index,view_id)?.value)})
+            }
+            Some(OutputItem::Plot { .. }) | Some(OutputItem::Scene3D { .. }) => {
+                if offset != 0 {
+                    return Err("INVALID_PRESENTATION_PAGE".into());
+                }
+                json!({"kind":"geometry","geometry":self.geometry_summary(out_index,view_id,ctx)?})
+            }
+            Some(OutputItem::Error { message, span }) => {
+                json!({"kind":"error","message":message,"span":span})
+            }
+            None => json!({"kind":"suppressed"}),
+            _ => return Err("UNAVAILABLE_PRESENTATION".into()),
+        };
+        Ok(
+            json!({"view_id":view_id,"presentation":view,"explore_controls":controls,"explore_values":values}),
+        )
+    }
     /// Project exact structural data without evaluating any source or changing original history.
     pub fn value_page(&self, query: &ValueQuery, ctx: &Interrupt) -> Result<ValuePage, String> {
         if query.cell_id != self.cell.id {

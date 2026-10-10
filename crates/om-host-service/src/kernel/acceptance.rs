@@ -54,6 +54,7 @@ pub struct KernelRecovery<'a> {
     pub expected_build: &'a str,
 }
 /// A live registry state paired with its actual matching durable receipt. Constructor is private.
+#[derive(Clone)]
 pub struct AcceptedKernelState {
     registry_ref: String,
     state: Arc<KernelState>,

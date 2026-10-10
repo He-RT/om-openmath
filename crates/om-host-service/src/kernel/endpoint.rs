@@ -71,6 +71,10 @@ fn error(error: KernelWorkerError) -> String {
     }
 }
 impl KernelEndpoint {
+    /// Known main operation identity; a readonly request cannot shadow its direct cancel token.
+    pub fn has_operation(&self, id: &str) -> bool {
+        self.operations.contains_key(id)
+    }
     /// Create bounded worker ownership without evaluating any source or doing physical IO.
     pub fn new() -> Result<Self, String> {
         Ok(Self {
@@ -242,6 +246,10 @@ impl KernelEndpoint {
     /// Actual accepted context for parser/write ownership. Old epochs are not current definitions.
     pub fn accepted_context(&self) -> Option<&om_kernel::source::SourceExecutionContext> {
         self.active.as_ref().map(|a| a.state().execution_context())
+    }
+    /// Immutable genuinely accepted state for background result retention; no source/math writer.
+    pub fn accepted_state(&self) -> Option<AcceptedKernelState> {
+        self.active.clone()
     }
     /// Original terminal fact, so repeated receipt reconciliation does not publish a second event.
     pub fn operation_completed(&self, operation: &str) -> bool {

@@ -148,6 +148,16 @@ impl NativeHost {
             .0
             .clone()
             .unwrap_or_else(|| request.request_ref.clone());
+        if self
+            .shared
+            .source
+            .lock()
+            .map_err(|_| "INTERNAL_ERROR")?
+            .as_ref()
+            .is_some_and(|source| source.has_native_operation(&operation))
+        {
+            return Err("DUPLICATE_OPERATION".into());
+        }
         self.shared
             .operations
             .admit(&operation)
@@ -251,6 +261,14 @@ impl NativeHost {
     /// Trusted main-kernel control port. It uses the same source owner/gate; never CAS or disk IO.
     pub fn kernel_command(&self, bytes: &[u8]) -> Result<NativeKernelHostReply, String> {
         let command = crate::kernel::endpoint::decode_command(bytes)?;
+        let id = match &command {
+            NativeKernelHostCommand::KernelBootstrap(b) => Some(&b.operation_id),
+            NativeKernelHostCommand::KernelRunCell(b) => Some(&b.operation_id),
+            _ => None,
+        };
+        if id.is_some_and(|id| self.shared.operations.status(id).is_some()) {
+            return Err("DUPLICATE_OPERATION".into());
+        }
         if self.shared.closed.load(Ordering::Acquire)
             && matches!(
                 &command,
@@ -282,9 +300,34 @@ impl NativeHost {
                 .as_ref()
                 .is_some_and(|receipt| receipt.result_id.0.is_some())
         {
-            self.shared.events.emit(EventEnvelopeEventKind::ResultAccepted,None,reply.operation_id.0.clone(),json!({"origin":"main","document_id":reply.document_id,"kernel_state_revision":reply.kernel_state_revision,"checkpoint_id":reply.active_checkpoint_id,"receipt":reply.receipt}));
+            self.shared.events.emit(EventEnvelopeEventKind::ResultAccepted,None,reply.operation_id.0.clone(),json!({"origin":"main","document_id":reply.document_id,"kernel_state_revision":reply.kernel_state_revision,"checkpoint_id":reply.active_checkpoint_id,"result_id":reply.receipt.0.as_ref().and_then(|r|r.result_id.0.clone()),"result_availability":"pending_projection","receipt":reply.receipt}));
         }
         Ok(reply)
+    }
+    /// Bounded trusted result reads/status, independent from main CAS and physical storage waits.
+    pub fn result_command(&self, bytes: &[u8]) -> Result<NativeResultHostReply, String> {
+        let command = crate::results::runtime::decode_command(bytes)?;
+        let id = match &command {
+            NativeResultHostCommand::ResultManifest(b) => Some(&b.request_id),
+            NativeResultHostCommand::ResultInspect(b) => Some(&b.request_id),
+            NativeResultHostCommand::ResultRevoke(b) => Some(&b.request_id),
+            _ => None,
+        };
+        if id.is_some_and(|id| self.shared.operations.status(id).is_some()) {
+            return Err("DUPLICATE_OPERATION".into());
+        }
+        if self.shared.closed.load(Ordering::Acquire)
+            && !matches!(command, NativeResultHostCommand::ResultStatus(_))
+        {
+            return Err("HOST_CLOSING".into());
+        }
+        self.shared
+            .source
+            .lock()
+            .map_err(|_| "INTERNAL_ERROR")?
+            .as_mut()
+            .ok_or("SOURCE_NOT_OPEN")?
+            .result_command(command)
     }
     /// Read retained real operation facts; unavailable IDs cannot be inferred to have never run.
     pub fn operation(&self, id: &str) -> Option<OperationStatus> {

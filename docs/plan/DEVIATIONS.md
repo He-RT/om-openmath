@@ -517,3 +517,12 @@ L2使用精确标称GM分数、50位FindRoot/1000迭代和真实残差，报告�
 - 实际发现原owned单格run重执行definition后仍保留依赖Done/owned值；补affected原graph遍历、标stale/退还依赖owner，不自动cascade、不改public Evaluate原语义。测试原b3仍可history查看，但新工作副本的b已held；不把静态依赖当任意动态规则证明。
 - formatter前检查200000实际展开节点，shared DAG不能仅计distinct Arc而展开2^n；steps选中node只clone原data字段不clone全部children。实际geometry pages保持global原indices/colors/coordinates，不重采样，Explore原initial geometry照读；table/数值叶子沿现有actual分页类型。
 - 当前纯Rust基础已验证5Kernel+4Host例，真实NativeHost结果端口/Swift ResultClient/按frame分块与late reply隔离仍待接通，R4.1.10 unchecked，不把unit合成receipt当physical成功。无新依赖/unsafe/平台ABI变动，本机不启动iOS模拟器，完整后续范围继续。
+
+### R4-D022：实际结果后台通道与严格原生交付（2026-10-11）
+
+- 新native-result-store闭合schema生成manifest/status/revoke及10实际query，总263DTO；Mac新增14号om_host_result_command，旧iOS ABI不变。SourceEndpoint只冻实际scope/当前producer，独立ResultRuntime做actual accepted decode/readonly capture/原data projection，主事件只存result ID/接受摘要/pending_projection。没有frontend重算geometry、再次solve或从text status推保证。
+- KernelState.detached共享immutable原bytes并由ResultStore另计reservation，不pin obsolete main pool envelope；真实测试证明drop原accepted envelope后main reservation减少而retained result仍有效。cache驱逐older unpinned data以保证新result能缓存，旧refs明确expired/unavailable、actual Blob/SQLite不删/不重播source；完整quota/恢复/GC仍后续任务。
+- result worker4waiting/32pending/4096原request IDs与32terminal payload、5s/4M tick、ordinary256KiB有硬限制；status核对原runtime/doc/gen/task/grants，cancel不排在worker后面。request身份跨source/main/scratch/read检查，不能shadow共享cancel路由。read-only错误/超量/timeout无假success。
+- Complete source保持UTF8 byte边界，fragment返回同一原total/SHA256，Swift每片16KiB且最后整bytes/hash核对，selection/doc lifetime/stale/expired时不返partial success。presentation分页复制actual SolutionSetView的条件/verified/Root/intervals；zero-success error保留actual messages/spans，out0/viewnull不是空成功值。
+- Swift ResultClient仅管MainActor selection generation；source/kernel确认状态或selection变化后实际decoded迟到reply拒绝。ResultTransportProbes只为trusted fixture，serialized/model请求不能设置callback。actual CABI/SQLite/worker/Swift fixture验证exact/80digit/Unicode/steps/solution/2D3D/readonly/scratch/history/partial/late/event/revoke，不以unit synthetic receipts替代physical证据。
+- 14符号及新schema/ResultClient保持工程可生成与同SDK27 Release链接，core forbid unsafe无新dependency；新unsafe只在原独立C ABI bounded copied-input wrapper。第一轮Swift fixture把throwing decode写入precondition autoclosure的compile失败、private worker大enum的Clippy失败均保留，修真实代码/fixture后再验，不放宽数学/计时。

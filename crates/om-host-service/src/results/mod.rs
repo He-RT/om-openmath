@@ -1,5 +1,7 @@
 //! Result retention is independent from the active kernel pointer and never reexecutes source.
 mod inspect;
+/// Dedicated native result worker and bounded request readback, independent from main CAS.
+pub mod runtime;
 use crate::{
     kernel::{KernelState, acceptance::AcceptedKernelState},
     protocol::{Nullable, Serial, generated::*},
@@ -79,7 +81,7 @@ impl StoredResult {
             .ok_or(ResultError::Budget)?;
         Ok(Self {
             receipt,
-            kernel: state.clone(),
+            kernel: Arc::new(state.detached()),
             value,
             reserved,
         })
@@ -148,6 +150,10 @@ impl ResolvedResult {
     pub fn summary(&self) -> RetainedResultSummary {
         self.record.summary()
     }
+    /// Actual original terminal diagnostic messages.
+    pub fn messages(&self) -> Vec<om_kernel::protocol::Message> {
+        self.record.value.messages()
+    }
 }
 /// Bounded immutable result registry. Public refs are read-only and bound to current trusted grants.
 pub struct ResultStore {
@@ -167,6 +173,47 @@ struct CurrentFacts {
     cells: Vec<om_kernel::retained_results::CurrentResultCell>,
 }
 impl ResultStore {
+    /// Small original occurrence metadata with scoped refs, paged independently from value data.
+    pub fn manifest(
+        &mut self,
+        id: &str,
+        scope: &ReferenceScope,
+        offset: u32,
+        limit: u32,
+        now: u64,
+        ctx: &Interrupt,
+    ) -> Result<serde_json::Value, ResultError> {
+        if limit == 0 || limit > 32 {
+            return Err(ResultError::Budget);
+        }
+        let record = self.records.get(id).cloned().ok_or(ResultError::Invalid)?;
+        if record.receipt.document_id != scope.document || !scope.can_read {
+            return Err(ResultError::Reference(ReferenceError::PermissionDenied));
+        }
+        let summary = record.summary();
+        let total = summary.statements.len().max(1);
+        if offset as usize > total {
+            return Err(ResultError::Invalid);
+        }
+        let mut entries = Vec::new();
+        for index in offset as usize..(offset as usize + limit as usize).min(total) {
+            ctx.tick()
+                .map_err(|e| ResultError::Projection(e.to_string()))?;
+            let statement = summary.statements.get(index);
+            let reference = self.issue(
+                id,
+                statement.map_or(0, |s| s.out_index),
+                statement.map(|s| s.view_id.as_str()),
+                scope.clone(),
+                now,
+            )?;
+            let resolved = self.resolve(&reference, scope, now)?;
+            entries.push(serde_json::json!({"statement":statement,"binding":resolved.binding()}));
+        }
+        Ok(
+            serde_json::json!({"root_result_id":id,"cell_id":summary.cell_id,"cell_kind":summary.cell_kind,"status":summary.status,"source_byte_length":summary.source_byte_length,"statement_count":summary.statements.len(),"message_count":summary.message_count,"total":total,"offset":offset,"entries":entries}),
+        )
+    }
     /// Host entropy is mandatory outside fixtures. Normal hard limits are 64MiB/32 cached results.
     pub fn new(key: [u8; 32], max_bytes: usize, max_results: usize) -> Result<Self, ResultError> {
         if max_bytes == 0 || max_bytes > 64 * 1024 * 1024 || max_results == 0 || max_results > 32 {
@@ -207,6 +254,33 @@ impl ResultStore {
         self.created += 1;
         self.records.insert(record.id().into(), Arc::new(record));
         Ok(())
+    }
+    /// Cache the newest real result, evicting only older unpinned cached data when needed. Durable
+    /// Blob/receipt facts are retained separately; old refs then report expired, never replay source.
+    pub fn register_recent(&mut self, record: StoredResult) -> Result<(), ResultError> {
+        if self.records.contains_key(record.id()) {
+            return self.register(record);
+        }
+        if record.reserved > self.max_bytes {
+            return Err(ResultError::Budget);
+        }
+        self.reap();
+        while self.records.len() + self.retired.len() >= self.max_results
+            || self
+                .bytes
+                .checked_add(record.reserved)
+                .is_none_or(|n| n > self.max_bytes)
+        {
+            let oldest = self
+                .records
+                .iter()
+                .filter(|(_, record)| Arc::strong_count(record) == 1)
+                .min_by_key(|(_, record)| record.receipt.kernel_state_revision.get())
+                .map(|(id, _)| id.clone())
+                .ok_or(ResultError::Budget)?;
+            self.evict(&oldest)?;
+        }
+        self.register(record)
     }
     /// Refresh current cell/occurrence facts from an actual accepted checkpoint, off control/UI.
     pub fn set_current(

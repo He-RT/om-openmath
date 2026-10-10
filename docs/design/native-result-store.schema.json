@@ -1,0 +1,665 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:openmath:native-result-store:v1",
+  "title": "不可变结果读取的原生宿主契约",
+  "description": "只读数据按真实producer、scope、occurrence和有界分页读取；scratch只能改变未接纳隔离副本。",
+  "oneOf": [
+    {
+      "$ref": "#/$defs/NativeResultHostCommand"
+    },
+    {
+      "$ref": "#/$defs/NativeResultHostReply"
+    }
+  ],
+  "$defs": {
+    "ResultBinding": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "record_type": {
+          "const": "result_binding"
+        },
+        "result_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "result_ref": {
+          "$ref": "#/$defs/Identity"
+        },
+        "runtime_instance_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "document_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "document_generation": {
+          "$ref": "#/$defs/Serial"
+        },
+        "cell_id": {
+          "$ref": "#/$defs/CellIdentity"
+        },
+        "operation_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "source_hash": {
+          "$ref": "#/$defs/Sha256"
+        },
+        "source_revision": {
+          "$ref": "#/$defs/Serial"
+        },
+        "execution_epoch": {
+          "$ref": "#/$defs/Serial"
+        },
+        "kernel_state_revision": {
+          "$ref": "#/$defs/Serial"
+        },
+        "out_index": {
+          "$ref": "#/$defs/Serial"
+        },
+        "view_id": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Identity"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "acceptance": {
+          "type": "string",
+          "enum": [
+            "accepted",
+            "history_only"
+          ]
+        },
+        "freshness": {
+          "type": "string",
+          "enum": [
+            "current",
+            "stale",
+            "refreshing",
+            "partial"
+          ]
+        },
+        "source_fully_available": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "record_type",
+        "result_id",
+        "result_ref",
+        "runtime_instance_id",
+        "document_id",
+        "document_generation",
+        "cell_id",
+        "operation_id",
+        "source_hash",
+        "source_revision",
+        "execution_epoch",
+        "kernel_state_revision",
+        "out_index",
+        "view_id",
+        "acceptance",
+        "freshness",
+        "source_fully_available"
+      ],
+      "description": "render出现不能给 candidate acceptance；当前性和partial依据真实 source/epoch/操作回执，不依据schema文字。",
+      "x-implementation-status": "planned"
+    },
+    "Identity": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 256,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "Serial": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991,
+      "description": "共同可精确表示的单调计数；不能静默回绕。"
+    },
+    "CellIdentity": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 256,
+      "description": "源码单元格ID沿用.omnb v1的非空文本；按原UTF8区分，不作为路径或operation身份。"
+    },
+    "Sha256": {
+      "type": "string",
+      "minLength": 64,
+      "maxLength": 64,
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "Dialect": {
+      "type": "string",
+      "enum": [
+        "Modern",
+        "Wolfram",
+        "Auto"
+      ]
+    },
+    "InspectResultSummary": {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "const": "summary"
+        }
+      },
+      "required": [
+        "kind"
+      ],
+      "additionalProperties": false
+    },
+    "InspectResultPage": {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "const": "page"
+        },
+        "path": {
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 4294967295
+          },
+          "maxItems": 32
+        },
+        "offset": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 4294967295
+        },
+        "limit": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 100
+        },
+        "column_offset": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 4294967295
+        },
+        "column_limit": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 32
+        }
+      },
+      "required": [
+        "kind",
+        "path",
+        "offset",
+        "limit",
+        "column_offset",
+        "column_limit"
+      ],
+      "additionalProperties": false
+    },
+    "InspectResultSource": {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "const": "source"
+        },
+        "path": {
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 4294967295
+          },
+          "maxItems": 32
+        },
+        "format": {
+          "type": "string",
+          "enum": [
+            "input_form",
+            "modern",
+            "latex",
+            "cell_source",
+            "statement_input"
+          ]
+        },
+        "byte_offset": {
+          "$ref": "#/$defs/Serial"
+        },
+        "byte_limit": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 65536
+        }
+      },
+      "required": [
+        "kind",
+        "path",
+        "format",
+        "byte_offset",
+        "byte_limit"
+      ],
+      "additionalProperties": false
+    },
+    "InspectResultNumeric": {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "const": "numeric"
+        },
+        "path": {
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 4294967295
+          },
+          "maxItems": 32
+        },
+        "digits": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 1000
+        }
+      },
+      "required": [
+        "kind",
+        "path",
+        "digits"
+      ],
+      "additionalProperties": false
+    },
+    "InspectResultSteps": {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "const": "steps"
+        },
+        "parent_path": {
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 4294967295
+          },
+          "maxItems": 128
+        },
+        "offset": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 4294967295
+        },
+        "limit": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 100
+        }
+      },
+      "required": [
+        "kind",
+        "parent_path",
+        "offset",
+        "limit"
+      ],
+      "additionalProperties": false
+    },
+    "InspectResultGeometry": {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "const": "geometry"
+        }
+      },
+      "required": [
+        "kind"
+      ],
+      "additionalProperties": false
+    },
+    "InspectResultGeometryPage": {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "const": "geometry_page"
+        },
+        "channel": {
+          "type": "string",
+          "enum": [
+            "mesh_positions",
+            "mesh_normals",
+            "mesh_colors",
+            "mesh_triangles",
+            "line_positions",
+            "line_colors",
+            "scene_points",
+            "scene_labels",
+            "curve_points",
+            "plot_tiles",
+            "plot_arrows",
+            "plot_points",
+            "path_points",
+            "polygon_points",
+            "plot_markers",
+            "plot_labels"
+          ]
+        },
+        "object_index": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 4294967295
+        },
+        "segment_index": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 4294967295
+        },
+        "offset": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 4294967295
+        },
+        "limit": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 1024
+        }
+      },
+      "required": [
+        "kind",
+        "channel",
+        "object_index",
+        "segment_index",
+        "offset",
+        "limit"
+      ],
+      "additionalProperties": false
+    },
+    "InspectResultExpression": {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "const": "readonly_expression"
+        },
+        "source": {
+          "type": "string",
+          "maxLength": 65536
+        },
+        "numeric": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "kind",
+        "source",
+        "numeric"
+      ],
+      "additionalProperties": false
+    },
+    "InspectResultScratch": {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "const": "scratch"
+        },
+        "source": {
+          "type": "string",
+          "maxLength": 65536
+        },
+        "dialect": {
+          "$ref": "#/$defs/Dialect"
+        }
+      },
+      "required": [
+        "kind",
+        "source",
+        "dialect"
+      ],
+      "additionalProperties": false
+    },
+    "NativeResultQuery": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/InspectResultSummary"
+        },
+        {
+          "$ref": "#/$defs/InspectResultPage"
+        },
+        {
+          "$ref": "#/$defs/InspectResultSource"
+        },
+        {
+          "$ref": "#/$defs/InspectResultNumeric"
+        },
+        {
+          "$ref": "#/$defs/InspectResultSteps"
+        },
+        {
+          "$ref": "#/$defs/InspectResultGeometry"
+        },
+        {
+          "$ref": "#/$defs/InspectResultGeometryPage"
+        },
+        {
+          "$ref": "#/$defs/InspectResultExpression"
+        },
+        {
+          "$ref": "#/$defs/InspectResultScratch"
+        },
+        {
+          "$ref": "#/$defs/InspectResultPresentation"
+        }
+      ]
+    },
+    "ResultManifest": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "const": "result_manifest"
+        },
+        "request_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "root_result_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "offset": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 4294967295
+        },
+        "limit": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 32
+        }
+      },
+      "required": [
+        "type",
+        "request_id",
+        "root_result_id",
+        "offset",
+        "limit"
+      ],
+      "additionalProperties": false
+    },
+    "ResultInspect": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "const": "result_inspect"
+        },
+        "request_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "result_ref": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 256
+        },
+        "query": {
+          "$ref": "#/$defs/NativeResultQuery"
+        }
+      },
+      "required": [
+        "type",
+        "request_id",
+        "result_ref",
+        "query"
+      ],
+      "additionalProperties": false
+    },
+    "ResultStatus": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "const": "result_status"
+        },
+        "request_id": {
+          "$ref": "#/$defs/Identity"
+        }
+      },
+      "required": [
+        "type",
+        "request_id"
+      ],
+      "additionalProperties": false
+    },
+    "ResultRevoke": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "const": "result_revoke"
+        },
+        "request_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "result_ref": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 256
+        }
+      },
+      "required": [
+        "type",
+        "request_id",
+        "result_ref"
+      ],
+      "additionalProperties": false
+    },
+    "NativeResultHostCommand": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/ResultManifest"
+        },
+        {
+          "$ref": "#/$defs/ResultInspect"
+        },
+        {
+          "$ref": "#/$defs/ResultStatus"
+        },
+        {
+          "$ref": "#/$defs/ResultRevoke"
+        }
+      ]
+    },
+    "NativeResultHostReplyPhase": {
+      "type": "string",
+      "enum": [
+        "queued",
+        "running",
+        "completed",
+        "cancelled",
+        "failed"
+      ]
+    },
+    "NativeResultHostReply": {
+      "type": "object",
+      "properties": {
+        "protocol_version": {
+          "const": 1
+        },
+        "request_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "runtime_instance_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "document_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "document_generation": {
+          "$ref": "#/$defs/Serial"
+        },
+        "document_revision": {
+          "$ref": "#/$defs/Serial"
+        },
+        "execution_epoch": {
+          "$ref": "#/$defs/Serial"
+        },
+        "kernel_state_revision": {
+          "$ref": "#/$defs/Serial"
+        },
+        "phase": {
+          "$ref": "#/$defs/NativeResultHostReplyPhase"
+        },
+        "binding": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ResultBinding"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "payload": {
+          "type": "object"
+        },
+        "error_code": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 256
+        }
+      },
+      "required": [
+        "protocol_version",
+        "request_id",
+        "runtime_instance_id",
+        "document_id",
+        "document_generation",
+        "document_revision",
+        "execution_epoch",
+        "kernel_state_revision",
+        "phase",
+        "binding",
+        "payload",
+        "error_code"
+      ],
+      "additionalProperties": false
+    },
+    "InspectResultPresentation": {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "const": "presentation"
+        },
+        "offset": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 4294967295
+        },
+        "limit": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 32
+        }
+      },
+      "required": [
+        "kind",
+        "offset",
+        "limit"
+      ],
+      "additionalProperties": false
+    }
+  }
+}

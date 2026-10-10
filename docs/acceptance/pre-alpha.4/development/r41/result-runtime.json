@@ -1,0 +1,374 @@
+{
+  "task": "R4.1.10",
+  "status": "completed",
+  "task_done": true,
+  "development_only": true,
+  "runtime_version": "0.1.0-pre-alpha.3",
+  "working_tree_base": "6d53f176b4413b017d39073ff0b8097a13100a24",
+  "related_rust": {
+    "passed": 324,
+    "failed": 0,
+    "original_ignored": 1,
+    "actual_result_control_tests": 4,
+    "UTF8_fragment_unit_cases": 1
+  },
+  "native_dto_count": 263,
+  "mac_abi_symbols": 14,
+  "old_ios_abi_changed": false,
+  "math_expectations_or_original_performance_thresholds_changed": false,
+  "actual_cross_language": {
+    "real_CABI_main_receipt_then_result_worker": true,
+    "Swift_ResultClient_registered_and_checked": true,
+    "exact_and80digit_pages": true,
+    "NFD_emoji_complete_source_fragments_hash_total_verified": true,
+    "no_partial_source_called_complete": true,
+    "original_solution_verification_conditions_Root_presentation": true,
+    "real_recorded_steps_and_original2D3D_buffers": true,
+    "readonly_Set_Seed_Random_Out_and_owned_scratch_isolated": true,
+    "historical_result_keeps_old_a2_after_main_a5": true,
+    "zero_success_error_out0_viewnull_with_real_span": true,
+    "actual_decoded_reply_after_selection_change_rejected": true,
+    "actual_decoded_reply_after_main_revision_change_rejected": true,
+    "ordinary_main_events_under32KiB_without_long_source": true,
+    "original_request_readback_and_reference_revocation": true,
+    "request_identity_collision_with_main_rejected": true,
+    "obsolete_main_pool_envelope_not_pinned_by_result_retention": true
+  },
+  "resources": {
+    "worker_waiting_messages": 4,
+    "pending_requests": 32,
+    "lifetime_requests": 4096,
+    "terminal_details": 32,
+    "ordinary_payload_bytes": 262144,
+    "source_max_bytes": 8388608,
+    "source_fragment_hard_max_bytes": 65536,
+    "swift_default_source_fragment_bytes": 16384,
+    "deadline_ms": 5000,
+    "tick_budget": 4194304,
+    "cache_results": 32,
+    "cache_reserved_bytes": 67108864,
+    "is_process_RSS_guarantee": false
+  },
+  "cache_behavior": "old unpinned cached results may be evicted, existing refs return expired/unavailable; actual durable Blob/receipts are retained and never source-replayed",
+  "model_tool_or_complete_workbench_ready": false,
+  "commands": [
+    "bash macos/Scripts/test-results.sh",
+    "cargo test -p om-kernel -p om-host-service -p om-apple-ffi --no-default-features --locked",
+    "cargo clippy -p om-kernel -p om-host-service -p om-apple-ffi --all-targets --no-default-features --locked -- -D warnings",
+    "cargo check -p om-kernel --no-default-features --target wasm32-unknown-unknown --locked",
+    "python3 -X warn_default_encoding -W error::EncodingWarning -m unittest discover -s tests -v",
+    "cargo deny check",
+    "bash macos/Scripts/test-kernel-runtime.sh",
+    "bash macos/Scripts/test-kernel-store.sh",
+    "bash macos/Scripts/build-native.sh",
+    "python3 scripts/native_contracts.py --check",
+    "python3 macos/Scripts/generate-project.py --check",
+    "python3 scripts/check_pre_alpha_4_plan.py --check --self-test",
+    "cargo fmt --all --check",
+    "git diff --check"
+  ],
+  "code": [
+    {
+      "path": "crates/om-host-service/src/results/runtime.rs",
+      "bytes": 14313,
+      "sha256": "8a4aec4053bb2a283f6a89b9f0b1887c37ed60314949f952ebc7c652a7c99999"
+    },
+    {
+      "path": "crates/om-host-service/src/results/runtime/queries.rs",
+      "bytes": 10649,
+      "sha256": "0e8b651a167e4255288b8a735ce31a5bd10ca6a716011a924abe8f8847bd820d"
+    },
+    {
+      "path": "crates/om-host-service/src/results/mod.rs",
+      "bytes": 18100,
+      "sha256": "6e7455d1679858faaa5bd51876af006cba5472c9f32e23eb4cd7d5a5a2f77e83"
+    },
+    {
+      "path": "crates/om-host-service/src/results/inspect.rs",
+      "bytes": 6562,
+      "sha256": "2aee02b51dad42311f41582d588abb1b596744e3e262953530f95ca280e717d8"
+    },
+    {
+      "path": "crates/om-host-service/tests/result_runtime.rs",
+      "bytes": 12418,
+      "sha256": "2af8cd9a1c9df0595e82a1c9119b2aa8eb2706880cd8367b9fdd93b46abf8e79"
+    },
+    {
+      "path": "crates/om-host-service/src/kernel/mod.rs",
+      "bytes": 11555,
+      "sha256": "4c57473ede169863aa5e1350c6b2cda046cfdb628b6b950ecd978bf932ff3345"
+    },
+    {
+      "path": "crates/om-host-service/src/kernel/acceptance.rs",
+      "bytes": 19442,
+      "sha256": "8aafb73dc4d3c7544453dbdf2190d98387abe5aa6e4d9b049a09eb03c6ad7977"
+    },
+    {
+      "path": "crates/om-host-service/src/kernel/endpoint.rs",
+      "bytes": 12181,
+      "sha256": "2f191e6473b4767acacc01c37495a1926fd8f52c9b3d33a21d4907c2958c4ef6"
+    },
+    {
+      "path": "crates/om-host-service/src/kernel/worker/runtime.rs",
+      "bytes": 8727,
+      "sha256": "8fff11867d6f66559f29710363d030a0808dc4392316ab5ed427eaec0fa954c8"
+    },
+    {
+      "path": "crates/om-host-service/src/document/endpoint.rs",
+      "bytes": 24530,
+      "sha256": "5ac3bed1ab202814f39d9b77e8942926401398ee2a4544e542464b8966bad93f"
+    },
+    {
+      "path": "crates/om-host-service/src/scheduler/mod.rs",
+      "bytes": 21523,
+      "sha256": "61b833b181a71896331bddcd7413ac4fa5afaf7ed74488dedf44e53dde242265"
+    },
+    {
+      "path": "crates/om-apple-ffi/src/ffi.rs",
+      "bytes": 12128,
+      "sha256": "a6efc7c9e230d28baf0cd0b6d7c4bd45957e561443549fa066dc146dc90c4767"
+    },
+    {
+      "path": "crates/om-kernel/src/retained_results.rs",
+      "bytes": 8666,
+      "sha256": "446a280f8be8457196a68e4b826def8f128c73eb7eb5f0d4cff459aa79d2933a"
+    },
+    {
+      "path": "crates/om-kernel/src/retained_results/inspect.rs",
+      "bytes": 13281,
+      "sha256": "abb7d8e69b013034df4efb3c430221bb76a182d8cfb7cd10c4446a55968e892f"
+    },
+    {
+      "path": "docs/design/native-result-store.schema.json",
+      "bytes": 14788,
+      "sha256": "89569d4ca0fda51b379f2a7b8626f9ff9ca06fb581b987b9e44462ae1ea99cd1"
+    },
+    {
+      "path": "docs/design/native-host-abi.json",
+      "bytes": 3430,
+      "sha256": "ac74ddad918106db01c6d993863560fcfc5e994bdff9b004f8885bc9e40bfaf1"
+    },
+    {
+      "path": "scripts/native_contracts.py",
+      "bytes": 12107,
+      "sha256": "250f429f7d5f0aedce1dc273ca3935c7eab71f7074c932ef64353ed83936918c"
+    },
+    {
+      "path": "macos/OpenMathNative/NativeHostClient.swift",
+      "bytes": 13382,
+      "sha256": "cbf1271bd5f066d2d04c001d034c145a057ff899640c80bbec6e46d1e2cf80ce"
+    },
+    {
+      "path": "macos/OpenMathNative/Rendering/ResultClient.swift",
+      "bytes": 9538,
+      "sha256": "9f1d86a12b690032a6a692c3ec905141aed8a4a7557e8c6825e29d6f53835ff5"
+    },
+    {
+      "path": "macos/OpenMathNativeTests/ResultFixtures/main.swift",
+      "bytes": 11929,
+      "sha256": "1047879d27dc5dcf04d6d0cc19700e39f6272708f88867d8324621040353e4d7"
+    },
+    {
+      "path": "macos/Scripts/test-results.sh",
+      "bytes": 896,
+      "sha256": "c83924b75fcdf056b3bd90078f0985c36ac817280888c001dfa471b3d85cbd52"
+    },
+    {
+      "path": ".github/workflows/macos-native.yml",
+      "bytes": 3384,
+      "sha256": "3555d0baceabac0bd1eb0a132983339b20fa5249db5365a1cc5714f95a5f5fb3"
+    }
+  ],
+  "logs": [
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r41/result-runtime-first-check.log",
+      "bytes": 628,
+      "sha256": "12209de863274a0cb0d4c0a04f183adff99d290a64a2f8aaddf77be29b4e6e44"
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r41/result-runtime-native-check.log",
+      "bytes": 634,
+      "sha256": "da4aaa080fcc173e03f355ab1be35764646048e623a4c90babe3fa116575eac6"
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r41/result-runtime-initial-tests.log",
+      "bytes": 1790,
+      "sha256": "ef816bc3a2c5c9f7e0863477c7db7b77a314c0906eb3b138f65d4b0985953036"
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r41/result-runtime-control-tests.log",
+      "bytes": 1090,
+      "sha256": "194479d68811fb6b65bace755686f550ddfef6e25ed81116b04106af2af3f86b"
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r41/result-runtime-control-fixed.log",
+      "bytes": 1090,
+      "sha256": "bd63c093dc11e93d5174960131f23c4c7a3592bcf7e0493b4cfa05c3fae2a5e9"
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r41/result-runtime-hardening-tests.log",
+      "bytes": 2973,
+      "sha256": "193a146b4d0f72e38d791b4d135709d000011e5aded36f58e6270e1b2235ae77"
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r41/result-runtime-final-control-tests.log",
+      "bytes": 858,
+      "sha256": "a9272186e6a72426f6249ee27dbfabed0034e9d745ca7a8dac06c410d28f146d"
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r41/result-runtime-clippy-first.log",
+      "bytes": 1365,
+      "sha256": "d4c891ac6323399c639d34400ad3bc4888b09b8d0813989b230fccc2d310640a"
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r41/result-runtime-clippy-boxed.log",
+      "bytes": 327,
+      "sha256": "ceb0c8ba7b43f7a3ff14d5baf6c933d4d7773240e6d1ebd3a72583c758ef1c51"
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r41/result-runtime-clippy-hardening.log",
+      "bytes": 364,
+      "sha256": "1d1ec9062ae7bc6a0e394a6bc4c62ae765877626426768decdac92960e7ba446"
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r41/result-runtime-clippy-final.log",
+      "bytes": 911,
+      "sha256": "6a75d6107706a1d24e113bcd9da04db48a223c69e926b3bdb7985dd3d5409cef"
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r41/result-runtime-clippy-verified.log",
+      "bytes": 376,
+      "sha256": "cd7df88563d15d0106abef81394a3d731f2c68c00af38922b3b3590f14e5e544"
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r41/result-runtime-related-regression.log",
+      "bytes": 41841,
+      "sha256": "aa0b6a2e048cc9c210bbc5a871a1583631e8022dd8baef9e7e2fa8b06e7dcf51"
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r41/result-client-first-check.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r41/result-runtime-actual-first.log",
+      "bytes": 13782,
+      "sha256": "14cd80cb9208ca6d63f16c433a1334e1e6584a7a7d346b8b4d86f129a65f3dad"
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r41/result-runtime-actual-fixed.log",
+      "bytes": 340,
+      "sha256": "0f5bf99496ebbc866e47d2a433a6cff11adf686ba71578bbcf6d51408d329ce2"
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r41/result-runtime-actual-presentation.log",
+      "bytes": 632,
+      "sha256": "b81950a514183d98671cf7b0a677d40b6e8f95b0a70e7edc8218ac26222c7d90"
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r41/result-runtime-actual-hardening.log",
+      "bytes": 736,
+      "sha256": "03465e70f1aa00aa1d7e9166ebd39b6efeb069d37865111cb9ff0abb7d247793"
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r41/result-runtime-actual-complete.log",
+      "bytes": 340,
+      "sha256": "cfb92d2646c5630714a0b85a355843b3db7c49de38c4a7b568c1cc1cfcd37be2"
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r41/result-runtime-actual-late-scope.log",
+      "bytes": 541,
+      "sha256": "7935c85c73d9b8edf313a12cd289770c9a4c8cee762f4d1f44b7da03e0087f84"
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r41/result-runtime-main-regression.log",
+      "bytes": 1084,
+      "sha256": "5be121c2ac4afffda64fc35a9896b864574fb15808604c569231e51249a8ea56"
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r41/result-runtime-storage-regression.log",
+      "bytes": 2207,
+      "sha256": "32ccc439d5921d78628edd814f192a1491550f1b2d14dfb6c2379d15077dac7d"
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r41/result-runtime-release-build.log",
+      "bytes": 94668,
+      "sha256": "ac6c12b2b039d35af6feb8ab4f9a09379908e8d5813380ecadc1e72999d02367"
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r41/result-runtime-wasm.log",
+      "bytes": 322,
+      "sha256": "03ceec046d65a8112de98dfa3288a4d79ee0267f8ded365379736d3d0186f0c0"
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r41/result-runtime-python.log",
+      "bytes": 2835,
+      "sha256": "0488199e5ce7a8d8038716acb1854de168673404bdf8773decbd60a982af5a9d"
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r41/result-runtime-plan-check.log",
+      "bytes": 754,
+      "sha256": "27279ae4bbb99c8ccba875fb792e574122a588dfebd6edec0c780682207fa01f"
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r41/result-runtime-dependency-check.log",
+      "bytes": 263072,
+      "sha256": "7fec077d78570125b9ae412feb60af814261f5b6bb7050a796ded801d5c5a972"
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r41/result-foundation-ci-current.json",
+      "bytes": 14182,
+      "sha256": "bc83baedfdc989dd79918d077a992a9430c9b30bdb25a83cd3c6ed34f7d32991"
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r41/result-foundation-ci-failed.log",
+      "bytes": 1300065,
+      "sha256": "fa0e6eace40a91b7526e07f2ed14b1a31c2c0abb683fd5dad20e0df0cd28a7b5"
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r41/result-runtime-ledger-verified.log",
+      "bytes": 754,
+      "sha256": "6bfc0d09447511a25d6289a3a37ac4a38c4274ff071eadcc817e68d6737a20b8"
+    }
+  ],
+  "previous_CI": {
+    "run": 38092397694,
+    "sha": "6d53f176b4413b017d39073ff0b8097a13100a24",
+    "conclusion": "failure",
+    "jobs": [
+      [
+        "frontend",
+        "failure"
+      ],
+      [
+        "native_macos / native",
+        "success"
+      ],
+      [
+        "ios / native",
+        "failure"
+      ],
+      [
+        "rust",
+        "success"
+      ],
+      [
+        "dependencies",
+        "success"
+      ]
+    ],
+    "failure_details": [
+      "Web watermelon .scene-view not visible within original30s",
+      "iPhone original row17 1056.760708ms >=1000ms"
+    ],
+    "scope": "previous result foundation SHA, not this native result runtime or final candidate"
+  },
+  "next": [
+    "R4.1.11 NSDocument open/save/frozen file snapshot",
+    "R4.1.12 full original-admission recovery and startup bindings",
+    "R4.1.13 quotas/leases/backup/GC",
+    "R4.2 complete native workbench/rendering and remaining full plan"
+  ],
+  "final_candidate_gate": false,
+  "local_ios_simulator_started": false
+}

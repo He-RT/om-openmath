@@ -8,6 +8,25 @@ use om_kernel::{
 };
 use om_num::ctx::Interrupt;
 impl ResolvedResult {
+    /// Read the original real output type/solution conditions/verification without computing again.
+    pub fn presentation(
+        &self,
+        offset: u32,
+        limit: u32,
+        ctx: &Interrupt,
+    ) -> Result<serde_json::Value, ResultError> {
+        if self.occurrence.out_index == 0 && self.occurrence.view_id.is_none() {
+            if offset != 0 || limit == 0 || limit > 32 {
+                return Err(ResultError::Invalid);
+            }
+            return Ok(self.record.value.failure_presentation());
+        }
+        let (out, view) = self.occurrence()?;
+        self.record
+            .value
+            .presentation_page(out, view, offset, limit, ctx)
+            .map_err(ResultError::Projection)
+    }
     fn occurrence(&self) -> Result<(u32, &str), ResultError> {
         Ok((
             self.occurrence.out_index,
@@ -46,6 +65,18 @@ impl ResolvedResult {
         self.record
             .value
             .value_source(out, view, path, format, ctx)
+            .map_err(ResultError::Projection)
+    }
+    /// Complete original held statement input; never parse an ellipsized display string.
+    pub fn statement_input(
+        &self,
+        format: ResultSourceFormat,
+        ctx: &Interrupt,
+    ) -> Result<String, ResultError> {
+        let (out, view) = self.occurrence()?;
+        self.record
+            .value
+            .statement_input(out, view, format, ctx)
             .map_err(ResultError::Projection)
     }
     /// Numeric projection against the original readonly context/value, never formatted-source replay.

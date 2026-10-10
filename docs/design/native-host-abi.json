@@ -54,6 +54,11 @@
       "om_host_handle *host, const unsigned char *json, size_t len"
     ],
     [
+      "om_host_buffer",
+      "om_host_result_command",
+      "om_host_handle *host, const unsigned char *json, size_t len"
+    ],
+    [
       "int32_t",
       "om_host_cancel",
       "om_host_handle *host, const unsigned char *operation_id, size_t len"

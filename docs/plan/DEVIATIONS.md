@@ -509,3 +509,11 @@ L2使用精确标称GM分数、50位FindRoot/1000迭代和真实残差，报告�
 - native source build fingerprint由build.rs计算实际Rust workspace source/manifests/lock/固定toolchain/Schema/catalog/ABI及TARGET/PROFILE，源码archive也可复现，不把`.3`显示版本当精确build。仅新增同锁sha2=0.10.9 build-dependency，无新数学runtime，core仍forbid unsafe；CABI unsafe只在原独立边界新增bounded copied-input wrapper。
 - generated large receipt variant使用已有x-openmath-contract里的rust_boxed_variants annotation，JSON/Swift形状不改。最初新x-rust-boxed-variants被原严格validator拒绝，真实state RPC确定性失败；保留失败并移到既有annotation，而非放宽instance字段/unknown keywords。新Swift fixture初始API签名/async lock与编译期间输入修改失败原件也保留，最终输入冻结再运行。
 - native实际验证a2→3/a5→6/a9→10、缺依赖拒绝、original producer title变更、原receipt重复event单次、UI draft while physical IO/早停rollback/晚停actual prefix/lostACK、actual F_FULLFSYNC failure unknown blocking/原ID恢复、长CAS期间source read/edit<1s、废弃ephemeral定义不污染新job及运行中close；完整workspace/平台与final同candidate gates仍独立执行，运行版本仍`.3`。
+
+### R4-D021：不可变实际结果与历史引用（2026-10-11，R4.1.10继续）
+
+- 新RetainedResult只拷贝原Cell/StatementRecord/actual output及readonly数学，不运行producer source。真实kind/nature/callback origin、精确/高精度/Out/steps/geometry/Explore输出独立保留；source/N/readonly/scratch分别有显式路径，N直接原值，scratch只有owned未接纳副本且无main发布入口。原readonly SeedRandom会实际warning并保留held式，新inspect把真实warning/error反馈为失败，不当成功；random draw允许独立本地fork，不推进原随机流/history。
+- ReferenceKind::Result增加history-only只读解引用，保持runtime/document/lifetime/task/grants/metadata及read权限，只有source/epoch/definition等生产修订可变；Snapshot/Preview原strict scope完全保持。freshness另核对actual current occurrence/status，不凭global Out增长或record文本状态。ResultStore encoded+projection cache预留32/64MiB/4096，revoked caller pin继续占预算至真实释放，不冒称RSS上限。
+- 实际发现原owned单格run重执行definition后仍保留依赖Done/owned值；补affected原graph遍历、标stale/退还依赖owner，不自动cascade、不改public Evaluate原语义。测试原b3仍可history查看，但新工作副本的b已held；不把静态依赖当任意动态规则证明。
+- formatter前检查200000实际展开节点，shared DAG不能仅计distinct Arc而展开2^n；steps选中node只clone原data字段不clone全部children。实际geometry pages保持global原indices/colors/coordinates，不重采样，Explore原initial geometry照读；table/数值叶子沿现有actual分页类型。
+- 当前纯Rust基础已验证5Kernel+4Host例，真实NativeHost结果端口/Swift ResultClient/按frame分块与late reply隔离仍待接通，R4.1.10 unchecked，不把unit合成receipt当physical成功。无新依赖/unsafe/平台ABI变动，本机不启动iOS模拟器，完整后续范围继续。

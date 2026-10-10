@@ -1,0 +1,290 @@
+{
+  "task": "R4.1.10",
+  "status": "in_progress",
+  "task_done": false,
+  "development_only": true,
+  "runtime_version": "0.1.0-pre-alpha.3",
+  "working_tree_base": "54690913cc54d3b1f3d4c11d0a43bc8e6d8c3897",
+  "kernel_cases": 5,
+  "host_cases": 4,
+  "related_regression": {
+    "passed": 319,
+    "failed": 0,
+    "original_ignored": 1
+  },
+  "later_document_identity_targeted_cases": 4,
+  "original_math_expectations_changed": false,
+  "actual_readonly": {
+    "Set_SeedRandom_hidden_write_rejected": true,
+    "actual_warning_or_error_not_fake_success": true,
+    "random_fork_out_do_not_advance_original": true,
+    "scratch_from_original_accepted_bytes_no_main_acceptance": true,
+    "numeric_from_original_value_not_formatted_source_replay": true
+  },
+  "result_identity": {
+    "actual_cell_out_view_scope": true,
+    "current_occurrence_source_epoch_config_and_document_checked": true,
+    "history_keeps_original_values_and_context": true,
+    "generation_grants_task_ttl_revoke_checked": true,
+    "only_result_purpose_can_use_history_scope": true,
+    "retired_pins_keep_cache_reservations": true
+  },
+  "geometry_and_steps": {
+    "actual_recorded_steps_paged": true,
+    "geometry_pages_equal_original_2d_3d_and_explore_samples": true,
+    "no_source_resampling": true,
+    "missing_geometry_explicit": true
+  },
+  "main_single_cell_dependents": {
+    "real_old_dependent_owned_definition_retired": true,
+    "old_b3_still_readable_as_history": true,
+    "new_main_b_is_held_after_a_reexecution": true,
+    "no_automatic_cascade": true
+  },
+  "actual_physical_evidence": {
+    "command": "bash macos/Scripts/test-kernel-store.sh",
+    "from_original_actual_Swift_receipt_and_Blob_only": true,
+    "readonly_a": "2",
+    "readonly_a_plus_1": "3",
+    "readonly_partial_after_error": "7",
+    "same_db_and5_SIGKILL_regression_passed": true,
+    "actual_CABI_main_runtime_regression_passed": true
+  },
+  "new_math_runtime_dependencies": false,
+  "new_unsafe": false,
+  "native_result_endpoint_or_Swift_ResultClient_ready": false,
+  "source_fragment_transport_ready": false,
+  "resource": {
+    "max_cached_results": 32,
+    "max_reserved_encoded_projection_bytes": 67108864,
+    "lifetime_results": 4096,
+    "max_refs": 128,
+    "max_ref_ttl_ms": 600000,
+    "formatter_expanded_node_budget": 200000,
+    "is_process_RSS_claim": false
+  },
+  "commands": [
+    "cargo test -p om-kernel -p om-host-service -p om-apple-ffi --no-default-features --locked",
+    "cargo test -p om-host-service --test results --locked",
+    "cargo clippy -p om-kernel -p om-host-service -p om-apple-ffi --all-targets --no-default-features --locked -- -D warnings",
+    "cargo clippy -p om-host-service --all-targets --no-default-features --locked -- -D warnings",
+    "cargo check -p om-kernel --no-default-features --target wasm32-unknown-unknown --locked",
+    "python3 -X warn_default_encoding -W error::EncodingWarning -m unittest discover -s tests -v",
+    "bash macos/Scripts/test-kernel-store.sh",
+    "bash macos/Scripts/test-kernel-runtime.sh",
+    "python3 scripts/check_pre_alpha_4_plan.py --check --self-test --write-report",
+    "cargo fmt --all --check",
+    "git diff --check"
+  ],
+  "code": [
+    {
+      "path": "crates/om-kernel/src/retained_results.rs",
+      "bytes": 8358,
+      "sha256": "771be32d21d9fa49c6a250978b1bd49e7eeb012894cdfc2bf7da3cf6ce0c5590"
+    },
+    {
+      "path": "crates/om-kernel/src/retained_results/inspect.rs",
+      "bytes": 10275,
+      "sha256": "b33a76f1faaefae939d6244c1de81a7497bbd9a8efac40a35801181bc3fa3faf"
+    },
+    {
+      "path": "crates/om-kernel/src/retained_results/geometry.rs",
+      "bytes": 13348,
+      "sha256": "3cdf842567e03910595f00dc095c6a82e0c8e05f362b85247db829dd798f2b2e"
+    },
+    {
+      "path": "crates/om-kernel/tests/retained_results.rs",
+      "bytes": 11861,
+      "sha256": "bd2f401345f4abd65c3726e04b0425b38cf9b3113f913473791b3797f4c90cb0"
+    },
+    {
+      "path": "crates/om-kernel/src/session/working.rs",
+      "bytes": 8618,
+      "sha256": "a6ddfc0c20d1b7ec16d847e9bb2521975c95fb8af99c1270099f705ba0846b19"
+    },
+    {
+      "path": "crates/om-kernel/src/output/values.rs",
+      "bytes": 9034,
+      "sha256": "6ec8b521e9f79599faaa9ec25c2eb044ee46ff2dc19b89996242eb55e8469bca"
+    },
+    {
+      "path": "crates/om-host-service/src/references.rs",
+      "bytes": 12823,
+      "sha256": "b0c818114c5672ba309a72fc03a072af298aca93f92c4e8b9fbc2aeb033befd1"
+    },
+    {
+      "path": "crates/om-host-service/src/results/mod.rs",
+      "bytes": 14789,
+      "sha256": "b24147c678a1eebbc987d986082a7c9b9314770fbe77fc6f353e2c42ac4ba4f4"
+    },
+    {
+      "path": "crates/om-host-service/src/results/inspect.rs",
+      "bytes": 5406,
+      "sha256": "7bad51f640d71b7a7d0cbe03af23ad880679d10c222162aed35815a372ff80a4"
+    },
+    {
+      "path": "crates/om-host-service/tests/results.rs",
+      "bytes": 15622,
+      "sha256": "7dd9d1fc5dfcdc8763398d143aaf30251d67aef14baff42dc5b740f9065d9a67"
+    },
+    {
+      "path": "crates/om-host-service/examples/kernel_store_contract.rs",
+      "bytes": 10241,
+      "sha256": "ea32d47a49c2a9fdd8b5983bf69edc1093860a3d629300988a31aeef112a71e5"
+    }
+  ],
+  "logs": [
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r41/result-retained-initial-check.log",
+      "bytes": 163,
+      "sha256": "e83f5af80b105ffd0c20019347301b5527b142da32953d024194bb79c99a1013"
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r41/result-retained-first-tests.log",
+      "bytes": 1682,
+      "sha256": "0d5544651f73253cfdd2f2f3f29d81b1361eaa77513ee530cbf7ee574bd9a715"
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r41/result-retained-fixed-tests.log",
+      "bytes": 715,
+      "sha256": "025c5ae3c2624723368b680b072f749ae207f02e87d996fea41ff70f36e6fc64"
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r41/result-retained-expanded.log",
+      "bytes": 801,
+      "sha256": "0fb2fcb20fb10e0a63e4f8f6dbc130e854c7f56e6140fdd810e3d404149fc350"
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r41/result-store-initial-check.log",
+      "bytes": 266,
+      "sha256": "a64bfeace2da210f735ae16bf9f9a5cd1c0ba953a3ba2810146ba54e92a14634"
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r41/result-store-first-tests.log",
+      "bytes": 2114,
+      "sha256": "ff27cd9266336ce2635b61c090b7f01336adee570383329d26a182f90b212e27"
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r41/result-store-clippy-first.log",
+      "bytes": 1063,
+      "sha256": "c036aadf2766d9f199fba88fc73b92b07e9410e89c76bdecac7c6814fd92b768"
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r41/result-store-clippy-query.log",
+      "bytes": 1450,
+      "sha256": "217248772d94cec84ffd70d757df288076a7a7fc5d5f37dae2a1134782d2a8f4"
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r41/result-store-clippy-fixed.log",
+      "bytes": 572,
+      "sha256": "3ed912670d5e9d9950506cdff89d1057fe78a4a5dd1c95890ca129ef243d936c"
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r41/result-store-clippy-verified.log",
+      "bytes": 267,
+      "sha256": "8b7100fc07b125d6b4b0fd051d7d5e1201507b2b4f9aabddf10dbddc0a734795"
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r41/result-store-clippy-final.log",
+      "bytes": 574,
+      "sha256": "4a9ea95be1ad53c75c47a13a093b6ec37ace5baab0e19d9640fda1c1ecbb0fb0"
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r41/result-store-clippy-with-physical.log",
+      "bytes": 273,
+      "sha256": "95a3a6784d12455f467782754917fbd0f71db017bac67f2e299efec8e0d2b265"
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r41/result-store-document-bound.log",
+      "bytes": 1631,
+      "sha256": "44b755bb8916d9e97950651d89980d791b7db0626872f005bc61ee619ac37c81"
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r41/result-store-document-clippy.log",
+      "bytes": 321,
+      "sha256": "75a543b34e8a9c822db98d963087414dbcc16044909a94bc6617be4eb3bde8d2"
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r41/result-store-current-document-verified.log",
+      "bytes": 717,
+      "sha256": "b75f9390bec97c285f92c4568087e6e6b954adbb76006eb36b234304342823a8"
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r41/result-store-related-regression.log",
+      "bytes": 41375,
+      "sha256": "bffe0d6730bbeb8caddfd306c0dd0edad017bb602eb9d1160a7773918f82b2fe"
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r41/result-store-actual-receipts.log",
+      "bytes": 2188,
+      "sha256": "8df4fa150eb6eb8033f1aed5b664f279f46aab41fd433078328dfdbcba39ad18"
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r41/result-store-main-runtime-regression.log",
+      "bytes": 1007,
+      "sha256": "8798cf82fa568f8102a045d36e2d04835c499f6ec02d0319a526cc2bb210ddbe"
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r41/result-store-wasm.log",
+      "bytes": 426,
+      "sha256": "9514289c25eb190bd93e36fbb2a8996c5902685c275b691a842f60a060d89f55"
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r41/result-store-python.log",
+      "bytes": 2835,
+      "sha256": "486e3c85f078e188c56b14a364b820a35fc2ebadbcdf691c3acee1e048bfbed1"
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r41/result-store-plan-final.log",
+      "bytes": 754,
+      "sha256": "ec7b800c063f723403f2b322db023549a46241afee3df0d0921e338699be0659"
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r41/kernel-runtime-ci-latest-recheck.json",
+      "bytes": 14182,
+      "sha256": "527b93db9f6899f5400b9211c83ada1aeae7185a84dc1ab155831f2449fd6f9a"
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r41/result-store-ledger-verified.log",
+      "bytes": 754,
+      "sha256": "27279ae4bbb99c8ccba875fb792e574122a588dfebd6edec0c780682207fa01f"
+    }
+  ],
+  "previous_CI": {
+    "run": 38089837352,
+    "sha": "54690913cc54d3b1f3d4c11d0a43bc8e6d8c3897",
+    "conclusion": "success",
+    "jobs": [
+      [
+        "dependencies",
+        "success"
+      ],
+      [
+        "frontend",
+        "success"
+      ],
+      [
+        "native_macos / native",
+        "success"
+      ],
+      [
+        "ios / native",
+        "success"
+      ],
+      [
+        "rust",
+        "success"
+      ]
+    ],
+    "scope": "prior main-runtime SHA, not current result worktree or final candidate"
+  },
+  "remaining": [
+    "actual result worker/control registration and scoped native result read contract",
+    "ordinary events carry summary/result refs only",
+    "full source byte fragment transport and late reply isolation",
+    "Swift ResultClient",
+    "final full task actual cross-language inspections"
+  ],
+  "final_candidate_gate": false,
+  "local_ios_simulator_started": false
+}

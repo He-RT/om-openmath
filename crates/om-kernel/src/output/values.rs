@@ -54,7 +54,7 @@ pub(crate) fn kind(e: &Expr) -> ValueKind {
         ValueKind::Scalar
     }
 }
-fn nature(e: &Expr) -> ValueNature {
+pub(crate) fn nature(e: &Expr) -> ValueNature {
     match e.kind() {
         ExprKind::Number(n) => match n.precision() {
             Precision::Exact => ValueNature::Exact,

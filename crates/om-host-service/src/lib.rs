@@ -12,3 +12,5 @@ pub mod kernel;
 
 /// Host-owned scoped immutable references and deadlines.
 pub mod references;
+/// Immutable actual result ownership, scope-checked references and read-only projections.
+pub mod results;

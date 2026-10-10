@@ -95,7 +95,15 @@ impl WorkingSession {
             return Err("DEPENDENCY_NOT_READY".into());
         }
         self.candidate.notebook.cells[index].status = CellStatus::Running;
-        self.candidate.run_cell(index);
+        let run = self.candidate.run_cell(index);
+        if self.candidate.config.general.reactive && !run.rejected {
+            let affected = self.candidate.affected(run.changed);
+            for target in affected.into_iter().filter(|&target| target != index) {
+                let owner = self.candidate.notebook.cells[target].id.clone();
+                self.candidate.release_owned(&owner);
+                self.candidate.notebook.cells[target].status = CellStatus::Stale;
+            }
+        }
         let cell = &self.candidate.notebook.cells[index];
         Ok(CellBoundary {
             cell_id: cell.id.clone(),
@@ -115,6 +123,35 @@ impl WorkingSession {
     }
 }
 impl Session {
+    /// Read actual current result identities/statuses without evaluation or duplicating values.
+    pub fn current_result_cells(&self) -> Vec<crate::retained_results::CurrentResultCell> {
+        self.notebook
+            .cells
+            .iter()
+            .map(|cell| crate::retained_results::CurrentResultCell {
+                cell_id: cell.id.clone(),
+                status: cell.status,
+                occurrences: cell
+                    .records
+                    .iter()
+                    .map(|r| (r.out_index, r.view_id.clone()))
+                    .collect(),
+            })
+            .collect()
+    }
+    /// Freeze actual retained statements and a readonly math context; never run notebook source.
+    pub fn retain_result(
+        &self,
+        cell_id: &str,
+    ) -> Result<crate::retained_results::RetainedResult, String> {
+        let cell = self
+            .notebook
+            .cells
+            .iter()
+            .find(|c| c.id == cell_id)
+            .ok_or("INVALID_CELL_REFERENCE")?;
+        crate::retained_results::RetainedResult::capture(cell, &self.eval)
+    }
     /// Read actual definition ownership for trusted non-evaluating source coordination.
     pub fn execution_context(&self) -> crate::source::SourceExecutionContext {
         let mut known_functions = self

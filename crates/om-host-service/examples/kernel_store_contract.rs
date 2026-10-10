@@ -10,6 +10,8 @@ use om_host_service::{
         worker::{KernelJob, KernelWorker},
     },
     protocol::{Serial, generated::*},
+    references::ReferenceScope,
+    results::{ResultStore, StoredResult},
 };
 use om_kernel::{
     checkpoint::{CheckpointLimits, CheckpointRestore},
@@ -160,6 +162,66 @@ fn main() {
             };
             assert_eq!(scalar(&parent, expected.0), expected.1);
             assert_eq!(parent.receipt().operation_id, plan.operation_id);
+            if receipt.result_id.0.is_some() {
+                let record = StoredResult::capture(
+                    &parent,
+                    CheckpointLimits::default(),
+                    &Interrupt::default(),
+                )
+                .unwrap();
+                let id = record.id().to_owned();
+                let summary = record.summary();
+                let last = summary.statements.last();
+                let scope = ReferenceScope {
+                    runtime: context.runtime_instance_id.clone(),
+                    document: context.source.document_id.clone(),
+                    generation: context.document_generation.get(),
+                    revision: context.source.revision.get(),
+                    execution_epoch: context.source.execution_epoch.get(),
+                    snapshot_hash: context.source.snapshot_hash.clone(),
+                    task: None,
+                    task_generation: 0,
+                    grant_revision: 1,
+                    config_revision: context.config_revision.get(),
+                    definition_revision: receipt.kernel_state_revision.get(),
+                    metadata_revision: u64::from(
+                        om_kernel::capabilities::function_catalog().metadata_version,
+                    ),
+                    editor_state_hash: String::new(),
+                    execution_mode: true,
+                    can_read: true,
+                    can_preview: false,
+                    can_write: false,
+                };
+                let mut results = ResultStore::new([5; 32], 64 * 1024 * 1024, 4).unwrap();
+                results.register(record).unwrap();
+                results.set_current(&parent, &Interrupt::default()).unwrap();
+                let reference = results
+                    .issue(
+                        &id,
+                        last.map_or(0, |r| r.out_index),
+                        last.map(|r| r.view_id.as_str()),
+                        scope.clone(),
+                        0,
+                    )
+                    .unwrap();
+                let result = results.resolve(&reference, &scope, 1).unwrap();
+                assert_eq!(
+                    result
+                        .readonly_expression(expected.0, false, &Interrupt::default())
+                        .unwrap()
+                        .input_form,
+                    expected.1
+                );
+                assert_eq!(
+                    result.binding().acceptance,
+                    ResultBindingAcceptance::Accepted
+                );
+                println!(
+                    "Actual immutable ResultStore captured only from original Swift receipt/Blob: {stage}, readonly {}={}",
+                    expected.0, expected.1
+                );
+            }
             println!(
                 "Actual Swift same-DB receipt and original OMKS bytes restored by Rust: {stage}, {}={}, revision {}",
                 expected.0,

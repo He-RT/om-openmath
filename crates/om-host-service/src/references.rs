@@ -88,18 +88,22 @@ pub enum ReferenceKind {
     Snapshot,
     /// Frozen patch, up to 5 minutes.
     Preview,
+    /// Immutable retained result, up to 10 minutes; explicit readonly history resolution.
+    Result,
 }
 impl ReferenceKind {
     fn prefix(self) -> &'static str {
         match self {
             Self::Snapshot => "snapshot",
             Self::Preview => "preview",
+            Self::Result => "result",
         }
     }
     fn maximum_ms(self) -> u64 {
         match self {
             Self::Snapshot => 600_000,
             Self::Preview => 300_000,
+            Self::Result => 600_000,
         }
     }
 }
@@ -244,6 +248,45 @@ impl<T: Serialize> ReferenceRegistry<T> {
             return Err(ReferenceError::Expired);
         }
         if entry.scope != *current {
+            return Err(ReferenceError::StaleScope);
+        }
+        entry.value.clone().ok_or(ReferenceError::Expired)
+    }
+    /// Retained results may be read as history after source/definition revisions change. This
+    /// never applies to previews/snapshots or grants writes; runtime/document/task/grants stay exact.
+    pub fn resolve_result_history(
+        &self,
+        token: &str,
+        current: &ReferenceScope,
+        now_ms: u64,
+    ) -> Result<Arc<T>, ReferenceError> {
+        current.validate()?;
+        self.verify(token)?;
+        let entry = self.entries.get(token).ok_or(ReferenceError::Invalid)?;
+        if entry.kind != ReferenceKind::Result {
+            return Err(ReferenceError::WrongKind);
+        }
+        if entry.revoked {
+            return Err(ReferenceError::Revoked);
+        }
+        if now_ms < entry.issued || now_ms > crate::protocol::MAX_SERIAL {
+            return Err(ReferenceError::Invalid);
+        }
+        if now_ms >= entry.expires {
+            return Err(ReferenceError::Expired);
+        }
+        let old = &entry.scope;
+        if !old.can_read || !current.can_read {
+            return Err(ReferenceError::PermissionDenied);
+        }
+        if old.runtime != current.runtime
+            || old.document != current.document
+            || old.generation != current.generation
+            || old.task != current.task
+            || old.task_generation != current.task_generation
+            || old.grant_revision != current.grant_revision
+            || old.metadata_revision != current.metadata_revision
+        {
             return Err(ReferenceError::StaleScope);
         }
         entry.value.clone().ok_or(ReferenceError::Expired)

@@ -39,8 +39,8 @@
 | [x] [R4.1.06](PRE_ALPHA_4.md#task-r4.1.06) | DocCommitPort、编辑屏障与未知提交 | completed | [实际提交](../acceptance/pre-alpha.4/development/r41/commit.json) / NSTextView+SQLite / 63Rust / Release | 21b01e7 |
 | [x] [R4.1.07](PRE_ALPHA_4.md#task-r4.1.07) | 统一源码撤销和后续编辑冲突 | completed | [历史/文本/回执](../acceptance/pre-alpha.4/development/r41/history-and-groups.json) / 200+pin / actual UTF/IME / 80Rust / Release | 3853967 |
 | [x] [R4.1.08](PRE_ALPHA_4.md#task-r4.1.08) | 完整可写计算状态与无损codec | completed | [整个Session/原证据](../acceptance/pre-alpha.4/development/r41/session-checkpoint.json) / 723相关Rust＋原53＋data-only/角色/预算 | 55d11b8；de0ec9e及前置 |
-| [x] [R4.1.09](PRE_ALPHA_4.md#task-r4.1.09) | 主KernelWorker、候选接纳和直接取消 | completed | [实际主运行](../acceptance/pre-alpha.4/development/r41/kernel-runtime.json) / CABI+Swift+SQLite / 310相关Rust+实际IO/长CAS/close | 3ce0320、b309baf；本批待补 |
-| [ ] [R4.1.10](PRE_ALPHA_4.md#task-r4.1.10) | 不可变结果库和只读检查通道 | planned | — | — |
+| [x] [R4.1.09](PRE_ALPHA_4.md#task-r4.1.09) | 主KernelWorker、候选接纳和直接取消 | completed | [实际主运行](../acceptance/pre-alpha.4/development/r41/kernel-runtime.json) / CABI+Swift+SQLite / 310相关Rust+实际IO/长CAS/close | 5469091；3ce0320、b309baf |
+| [ ] [R4.1.10](PRE_ALPHA_4.md#task-r4.1.10) | 不可变结果库和只读检查通道 | in_progress | [真实结果基础](../acceptance/pre-alpha.4/development/r41/result-store-foundation.json) / 319相关Rust＋actual receipts；Native端口/Swift待完 | 本批待补 |
 | [ ] [R4.1.11](PRE_ALPHA_4.md#task-r4.1.11) | NSDocument打开保存与冻结快照 | planned | — | — |
 | [ ] [R4.1.12](PRE_ALPHA_4.md#task-r4.1.12) | 会话outbox、草稿与启动恢复 | planned | — | — |
 | [ ] [R4.1.13](PRE_ALPHA_4.md#task-r4.1.13) | 引用租约、备份、quota与GC | planned | — | — |
@@ -372,3 +372,12 @@ Done依据与覆盖case/proof:
 - 最初generator annotation x-rust-boxed-variants被原strict schema validator拒绝，state RPC确定性失败后改为既有x-openmath-contract annotation，JSON/Swift形状及unknown拒绝保持。fixture初始签名/async lock、编译中修改输入失败均保留，最终冻结编译后完整runtime通过，不算失败attempt为pass。
 - b309baf的CI38085995468 Rust/dependencies/frontend/nativeMac成功，仅iPhone原row34整次1116.914625ms超原1000ms失败，原log保留；上一3ce row17已离线解析kernel205ms/decode2ms/resume933ms，仍需mainActor占用根因，未放宽阈值/本机不跑iOS模拟器。不以这些前置CI替新SHA或final同candidate门禁。
 - R4.1.09 Done/Tests满足，当前20/98、78待完；下一R4.1.10 immutable result store/readonly inspections，再NSDocument/完整启动恢复/工作台/Agent/模型媒体/现场和发行全部范围。当前仍`.3`、32final gate not_run/candidate未分配，不把main backend完成当`.4`可发布。
+
+## R4开发记录 D027 — 原值/步骤/几何与只读历史基础（R4.1.10继续）
+
+- 原Session实际retained cell/statement/value/steps/science/solver/Explore/已采样output和readonly context独立冻结，原input/out/view/suppression/type/nature/producer保持，不重播source。值/步骤/几何按原route分页，numeric直接原Expr；完整source显式读取，formatter先检查200000expanded节点。原2D/3D/Explore buffer分页逐值相同，无重采样/前端triangulation。
+- Host ResultStore只从AcceptedKernelState/匹配receipt读取原OMKS data；HMAC result refs可跨producer source/definition修订以history readonly访问，但runtime/document/generation/task/grants/metadata/read permission/10min严格保持。freshness要求actual current文档/occurrence/status/epoch/config，不能把同ordinal或别的文档当current；retired pins继续占32/64MiB cache reservation到actual释放，不冒称RSS限额。
+- Set/SeedRandom/hidden delayed function write被真实readonly拒绝，held warning/error不是成功；random draw在fresh本地fork保持可复现、不推进原random/Out/history。scratch从原accepted bytes恢复owned未接纳临时副本，reactive=false且不超5000ms，无主发布路径。原owned单格definition重执行补actual affected依赖stale/owned退还，旧b3能history查看，但新main b不沿用；原public Evaluate语义不变。
+- Kernel5/Host4case、完整相关三crate319passed/0failed/1原ignored，最后文档身份修订目标4case与Clippy再通过；纯WASM/Clippy/fmt/Python17/计划检查、actual kernel CABI/main/IO/关闭回归通过。Rust ResultStore额外从actual Swift SQLite receipt+original Blob恢复a2/b3/failed partial7，actual同库/5SIGKILL回归保持，不拿unit synthetic receipt充physical证明。原输入/数学期望/阈值未动。全部source/log/命令hash见[result-store-foundation.json](../acceptance/pre-alpha.4/development/r41/result-store-foundation.json)，设计见[result-store.md](../design/result-store.md)。
+- 5469091的CI38089837352五jobs全部success，先前两个手机timing/Web失败原件保留；只证明上一main runtime SHA，非本批或final candidate。
+- R4.1.10仍unchecked/in_progress：NativeHost结果后台/只读注册通道、普通事件summary/ref、显式完整source分块与late reply隔离、Swift ResultClient和跨语言inspection待完。当前20/98、78任务剩余、运行`.3`，32final gate未跑，不启动本机iOS模拟器，无新依赖/unsafe。

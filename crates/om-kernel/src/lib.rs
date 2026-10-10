@@ -27,6 +27,8 @@ mod notebook;
 mod output;
 mod plot;
 mod plot_views;
+/// Immutable result metadata, typed projections and readonly numerical inspection.
+pub mod retained_results;
 mod scene3d;
 mod scene_graph;
 mod scene_views;

@@ -19,5 +19,8 @@ sha2_ref = { package = "sha2", version = "=0.11.0" }
 [dev-dependencies]
 om-llm.workspace = true
 
+[build-dependencies]
+sha2 = "=0.10.9"
+
 [lints]
 workspace = true

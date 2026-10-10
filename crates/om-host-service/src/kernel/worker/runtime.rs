@@ -61,6 +61,7 @@ impl KernelWorker {
             .spawn(move || {
                 while let Ok(message) = receiver.recv() {
                     let outcome = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
+                        message.lifecycle.start();
                         execute(
                             message.job,
                             message.lifecycle,
@@ -187,6 +188,18 @@ impl KernelWorker {
         } else {
             Ok(false)
         }
+    }
+    /// Actual worker start fact, independent from admission and from control polling times.
+    pub fn started(&self, operation: &str) -> bool {
+        self.admissions
+            .lock()
+            .ok()
+            .and_then(|entries| {
+                entries
+                    .get(operation)
+                    .and_then(|entry| entry.lifecycle.upgrade())
+            })
+            .is_some_and(|life| life.started())
     }
     /// Close admission/signal tokens/drop queue sender now; caller joins returned thread off UI.
     pub fn begin_close(&self) -> Result<Option<JoinHandle<()>>, KernelWorkerError> {

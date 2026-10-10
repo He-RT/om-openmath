@@ -20,9 +20,10 @@ use om_kernel::{
 };
 use om_num::ctx::Interrupt;
 use sha2::{Digest, Sha256};
-use std::sync::{Arc, atomic::AtomicBool};
+use std::sync::Arc;
 
 /// Current trusted coordinator facts. Passing DTOs does not grant model/file write authority.
+#[derive(Clone)]
 pub struct AcceptanceContext {
     /// Actual runtime which owns the currently open document.
     pub runtime_instance_id: String,
@@ -186,7 +187,7 @@ impl FrozenKernelPlan {
         let state = KernelState::capture(&mut session, binding, limits, ctx)?;
         let reference = worker.register(state)?;
         let state = worker.state(&reference)?;
-        let lifecycle = Arc::new(Lifecycle::new(Arc::new(AtomicBool::new(false))));
+        let lifecycle = Arc::new(Lifecycle::new(ctx.flag.clone()));
         lifecycle.prepared()?;
         let result = Self::prepare(
             FrozenInput {
@@ -439,6 +440,29 @@ impl FrozenKernelPlan {
     /// Safe before a commit barrier. An unknown/committing state cannot be discarded as rollback.
     pub fn discard(&self, worker: &KernelWorker) -> Result<(), KernelWorkerError> {
         self.lifecycle.discard()?;
+        worker.discard(&self.registry_ref)
+    }
+    /// Trusted same-writer readback has settled actual IO and proved the original plan absent.
+    /// Never infer this from a timeout, a lost network reply, or a different operation ID.
+    pub fn confirmed_no_commit(
+        &self,
+        proof: &NativeKernelNoCommit,
+        worker: &KernelWorker,
+    ) -> Result<(), KernelWorkerError> {
+        let p = &self.plan;
+        if proof.protocol_version != 1
+            || proof.store_id != p.store_id
+            || proof.document_id != p.producer.document_id
+            || proof.operation_id != p.operation_id
+            || proof.request_hash != p.request_hash
+            || proof.accepted_source_revision != p.acceptance_source.revision
+            || proof.accepted_snapshot_hash != p.acceptance_source.snapshot_hash
+            || proof.expected_parent_checkpoint_id != p.expected_parent_checkpoint_id
+            || proof.expected_kernel_state_revision != p.expected_kernel_state_revision
+        {
+            return Err(KernelWorkerError::Invalid);
+        }
+        self.lifecycle.confirmed_no_commit()?;
         worker.discard(&self.registry_ref)
     }
 }

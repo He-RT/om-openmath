@@ -293,6 +293,14 @@ pub struct SourceOwnership {
     /// The cell that actually executed the write.
     pub cell_id: String,
 }
+/// Actual current live definition context, never inferred by executing or parsing notebook text.
+#[derive(Clone, Debug)]
+pub struct SourceExecutionContext {
+    /// Actual current user function names.
+    pub known_functions: Vec<String>,
+    /// Actual successful write owners, including partial effects.
+    pub owned: Vec<SourceOwnership>,
+}
 /// Non-executing effect plan. A computation worker applies it only after source commit acceptance.
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct SourceInvalidation {

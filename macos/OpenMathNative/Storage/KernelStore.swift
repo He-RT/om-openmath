@@ -83,6 +83,22 @@ final class KernelStore {
     let read=try SQLiteDatabase(url:url,readonly:true);defer {try? read.close()}
     let result=try head(read);if result != nil {try db.confirmCommittedBytes()};return result
   }
+  /// Called only after the actual writer task settled; stable source/parent and original absence
+  /// are checked together. A broken join, sync error or changed head cannot certify no COMMIT.
+  func confirmedNoCommit(_ plan:NativeKernelCommit)throws->NativeKernelNoCommit {
+    try KernelValidation.plan(plan)
+    let read=try SQLiteDatabase(url:url,readonly:true);defer {try? read.close()}
+    guard try receipt(plan.operation_id,reader:read)==nil else {throw StorageError.idempotencyConflict}
+    let parent=try head(read)
+    guard parent?.checkpoint_id==plan.expected_parent_checkpoint_id.value,(parent?.kernel_state_revision.value ?? 0)==plan.expected_kernel_state_revision.value else {throw StorageError.staleRevision}
+    var snapshot:String?,revision:Int64?
+    try read.statement("SELECT revision,snapshot_hash FROM document_head WHERE document_id=?",[.text(identity.documentID!)]) {revision=sqlite3_column_int64($0,0);snapshot=try SQLColumn.text($0,1)}
+    guard plan.store_id==identity.storeID,plan.producer.document_id==identity.documentID,revision==Int64(plan.acceptance_source.revision.value),snapshot==plan.acceptance_source.snapshot_hash else {throw StorageError.staleRevision}
+    try db.confirmCommittedBytes()
+    return .init(protocol_version:1,store_id:identity.storeID,document_id:identity.documentID!,operation_id:plan.operation_id,request_hash:plan.request_hash,
+      accepted_source_revision:plan.acceptance_source.revision,accepted_snapshot_hash:plan.acceptance_source.snapshot_hash,
+      expected_parent_checkpoint_id:plan.expected_parent_checkpoint_id,expected_kernel_state_revision:plan.expected_kernel_state_revision)
+  }
   /// Caller retains a verified BlobStore transfer pin until the same-DB references settle.
   func commit(_ plan:NativeKernelCommit,descriptor:BlobDescriptor,faults:StorageFaults,controls:KernelCommitControls)throws->NativeKernelReceipt {
     try KernelValidation.plan(plan)

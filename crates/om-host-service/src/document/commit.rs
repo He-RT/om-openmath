@@ -40,6 +40,7 @@ pub struct DocumentCommitController {
     preview_operations: BTreeMap<String, String>,
     undo_requests: BTreeMap<String, (String, Vec<String>)>,
     gate: Option<String>,
+    kernel_gate: Option<String>,
     runtime: String,
 }
 impl DocumentCommitController {
@@ -52,12 +53,57 @@ impl DocumentCommitController {
             preview_operations: BTreeMap::new(),
             undo_requests: BTreeMap::new(),
             gate: None,
+            kernel_gate: None,
             runtime,
         }
     }
     /// Read only confirmed source; an in-flight IO task cannot update it speculatively.
     pub fn owner(&self) -> &SourceDocument {
         &self.owner
+    }
+    /// Source and mathematical acceptance share a logical document gate, never a CAS/IO lock.
+    /// Reads, previews, draft updates and direct stop remain available while this gate is held.
+    pub fn hold_kernel_gate(&mut self, operation: &str) -> Result<(), CommitError> {
+        if self.gate.is_some()
+            || self
+                .kernel_gate
+                .as_deref()
+                .is_some_and(|id| id != operation)
+        {
+            return Err(CommitError::Busy);
+        }
+        if operation.is_empty() || operation.len() > 256 {
+            return Err(CommitError::Invalid);
+        }
+        self.kernel_gate = Some(operation.into());
+        Ok(())
+    }
+    /// Only the original acceptance owner may release a settled gate; unknown IO keeps it held.
+    pub fn release_kernel_gate(&mut self, operation: &str) -> Result<(), CommitError> {
+        if self.kernel_gate.as_deref() != Some(operation) {
+            return Err(CommitError::Invalid);
+        }
+        self.kernel_gate = None;
+        Ok(())
+    }
+    /// Short trusted owner check used before committing math or admitting another write.
+    pub fn kernel_gate(&self) -> Option<&str> {
+        self.kernel_gate.as_deref()
+    }
+    /// Current source/unknown write prevents math admission/acceptance; it never blocks a read.
+    pub fn source_gate_busy(&self) -> bool {
+        self.gate.is_some()
+    }
+    /// Actual frozen settings change, read before accepting/compacting its original source plan.
+    pub fn pending_calculation_change(&self, operation: &str) -> Option<&NativeCalculationChange> {
+        self.pending
+            .get(operation)?
+            .plan
+            .as_ref()?
+            .commit
+            .calculation_change
+            .0
+            .as_ref()
     }
     /// Inspect temporary source with current trusted host bindings.
     pub fn snapshot(
@@ -103,7 +149,7 @@ impl DocumentCommitController {
             }
             return Ok(pending.plan.clone());
         }
-        if self.gate.is_some() || self.pending.len() >= 4096 {
+        if self.gate.is_some() || self.kernel_gate.is_some() || self.pending.len() >= 4096 {
             return Err(CommitError::Busy);
         }
         let plan = self
@@ -145,7 +191,7 @@ impl DocumentCommitController {
         input_group: Option<String>,
         time: String,
     ) -> Result<NativeSourceCommit, CommitError> {
-        if self.gate.is_some() || self.pending.len() >= 4096 {
+        if self.gate.is_some() || self.kernel_gate.is_some() || self.pending.len() >= 4096 {
             return Err(CommitError::Busy);
         }
         let operation = format!("manual-{}", uuid_like_id()?);

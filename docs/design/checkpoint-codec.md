@@ -70,3 +70,13 @@ Host KernelStatePool临时保留actual encoded bytes、SHA256、原binding/sourc
 `StorageService.commitKernel`后台执行IO，Rust只在最终短barrier校验scope/lifecycle；当前physical fixture通过真实Rust bootstrap→Swift Blob/SQLite→原receipt/OMKS恢复→真实a/b/error的连续链。source Math变化可使document_head的当前active ref失效，而kernel_head仍保留最后已接纳基线，下一job必须非执行reconcile后使用；标题变化保留当前active ref。accepted_results目前仅保存checkpoint内真实cell输出的来源索引，完整ResultStore/分页/检查通道继续R4.1.10。
 
 实际验证包含original-ID单效果、旧parent拒绝、rollback/owner barrier拒绝、postcommit lost ACK、真实F_FULLFSYNC失败后unknown及重新确认、实际Blob/outbox损坏拒绝、重开后exact bytes。5个真实SIGKILL点在同库事务中断时仅留下旧parent或完整accepted candidate，未发布的candidate不会成为head；unit的64次accept/cancel race仅证明短lifecycle线性化。NativeHost/CABI main计算注册、真实同文档共享逻辑门、UI/Agent结果事件和完整启动恢复仍待实施，不能将这些独立physical fixtures算整个R4.1.09 Done或final gate。
+
+## 实际宿主主运行端口
+
+NativeKernelEndpoint已进入SourceEndpoint同一owner和逻辑提交门；Math CAS线程独立，draft编辑/已确认source读取/direct stop可继续，frozen candidate与source commit不能绕过彼此的未知结果。KernelCommitPort/13号Mac ABI读回真实chunk bytes并发布Blob，只在matching durable receipt后推进AcceptedKernelState，完整IO由StorageService原writer处理。原producer title/source revision与接受时head分别保留，actual defs/owners上下文给source preview，不从source重建数学。
+
+每个kernel job使用唯一operation/token，重复原请求返回原事实；副作用/Out/random被拒绝时连同未接纳state释放。多格执行每格耐久接纳，首个error/stop/stale保留actual accepted prefix。no-COMMIT确认仅在actual writer已settled且原receipt健康缺失/源与parent未变/稳定sync成功后出具，unknown不通过新ID计算。已关闭lifetime不再新admit或enter，线程提取后在后台join；新的runtime不会使用旧token。
+
+build.rs读取实际Rust源码/manifest/lock/toolchain/Schema/catalog/ABI及target/profile生成编译指纹，作为可信producer build；测试源码变化也保守变化，不读取Git或用户配置，跨未知build不能恢复。这是host build时已锁sha2构建依赖，纯kernel WASM没有新增runtime依赖。旧iOS ABI保持，Mac追加kernel command additive symbol。
+
+实际main runtime fixture经真实C ABI、MainActor DraftStore/原DocCommitPort、Blob和SQLite完成数学/来源/取消/未知/close验收；这里只证明R4.1.09任务范围，完整工作台/ResultStore/文件恢复/Agent与最终发行仍按后续任务。

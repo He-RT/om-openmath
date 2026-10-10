@@ -92,7 +92,8 @@ while True:
             rust.append(f'/// Typed native union `{name}`.\n#[derive(Clone, Debug, Serialize, Deserialize)]\n#[serde(untagged)]\npub enum {name} {{\n')
             swift.append(f'public enum {name}: Codable, Sendable {{\n')
             for variant in variants:
-                rust.append(f'    /// Variant `{variant}`.\n    {variant}({variant}),\n')
+                payload=f'Box<{variant}>' if variant in schema.get('x-openmath-contract',{}).get('rust_boxed_variants',[]) else variant
+                rust.append(f'    /// Variant `{variant}`.\n    {variant}({payload}),\n')
                 swift.append(f'  case {snake(variant)}({variant})\n')
             rust.append('}\n')
             swift.append('  public init(from decoder: Decoder) throws {\n    let c = try decoder.singleValueContainer()\n')

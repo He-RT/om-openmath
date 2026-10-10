@@ -65,7 +65,7 @@ impl DocumentCommitController {
             }
             return Ok(pending.plan.as_ref().map(|p| p.commit.clone()));
         }
-        if self.gate.is_some() || self.pending.len() >= 4096 {
+        if self.gate.is_some() || self.kernel_gate.is_some() || self.pending.len() >= 4096 {
             return Err(CommitError::Busy);
         }
         let originals = records.iter().map(|r| r.plan.clone()).collect::<Vec<_>>();

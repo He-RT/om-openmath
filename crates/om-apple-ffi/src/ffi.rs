@@ -202,6 +202,23 @@ pub unsafe extern "C" fn om_host_source_command(
             .source_command(&unsafe { copied_input(json, len, protocol::MAX_CONTROL_BYTES) }?)
     })
 }
+/// Trusted kernel/source/physical-store port; bounded input is copied before safe Rust handles it.
+/// # Safety
+/// `json` must point to len readable bytes during this call; NULL only for zero length.
+#[unsafe(no_mangle)]
+pub unsafe extern "C" fn om_host_kernel_command(
+    host: *mut OmHostHandle,
+    json: *const u8,
+    len: usize,
+) -> OmHostBuffer {
+    packet(|| {
+        let guard = registry::acquire(host, true).map_err(str::to_owned)?;
+        // SAFETY: exported readable-buffer contract, bounded copy before any deferred use.
+        guard
+            .host()
+            .kernel_command(&unsafe { copied_input(json, len, protocol::MAX_CONTROL_BYTES) }?)
+    })
+}
 /// Signal the operation directly. 1=signalled, 0=terminal; negative codes are in the C header.
 /// # Safety
 /// `operation_id` must be readable for len bytes during this call; NULL only for len=0.

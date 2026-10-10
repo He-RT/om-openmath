@@ -23,8 +23,8 @@
     },
     {
       "path": "docs/design/native-kernel-store.schema.json",
-      "sha256": "f4003e8dd571bb8a642121db6da033951b42f56ff31a26716e053f2d59cca232"
+      "sha256": "272b993a3c69477b2bca2833195381a84017ec22e8533e0a92939cc38016d9b3"
     }
   ],
-  "generated_dto_count": 205
+  "generated_dto_count": 229
 }

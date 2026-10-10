@@ -115,6 +115,30 @@ impl WorkingSession {
     }
 }
 impl Session {
+    /// Read actual definition ownership for trusted non-evaluating source coordination.
+    pub fn execution_context(&self) -> crate::source::SourceExecutionContext {
+        let mut known_functions = self
+            .eval
+            .defs
+            .known_functions()
+            .iter()
+            .map(|s| s.name().to_owned())
+            .collect::<Vec<_>>();
+        known_functions.sort();
+        let mut owned = self
+            .owners
+            .iter()
+            .map(|(symbol, cell_id)| crate::source::SourceOwnership {
+                symbol: symbol.name().to_owned(),
+                cell_id: cell_id.clone(),
+            })
+            .collect::<Vec<_>>();
+        owned.sort_by(|a, b| a.symbol.cmp(&b.symbol));
+        crate::source::SourceExecutionContext {
+            known_functions,
+            owned,
+        }
+    }
     /// Fork the actual idle working state with a fresh operation cancel token and no IO/AI owner.
     /// Definitions are cloned, never reexecuted from notebook text; record provenance is retained.
     pub fn fork_working_session(

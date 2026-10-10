@@ -1,0 +1,355 @@
+{
+  "task": "R4.1.09",
+  "status": "completed",
+  "task_done": true,
+  "development_only": true,
+  "runtime_version": "0.1.0-pre-alpha.3",
+  "working_tree_base": "b309baf5a86048fe03e6c8a74f2cd5518a66b7aa",
+  "native_dto_count": 229,
+  "mac_abi_symbols": 13,
+  "old_ios_abi_changed": false,
+  "related_rust": {
+    "passed": 310,
+    "failed": 0,
+    "original_ignored": 1
+  },
+  "actual_main_runtime_cases": {
+    "only_from_accepted_parent": true,
+    "nonexecuting_source_owner_reconcile": true,
+    "a2_b3_then_a5_b6_then_a9_b10": true,
+    "dependency_not_ready_without_old_definition": true,
+    "producer_title_kept_and_new_acceptance_source": true,
+    "one_result_accepted_event_per_original_id": true,
+    "actual_main_cas_does_not_block_source_read_edit_under1s": true,
+    "abandoned_ephemeral_definition_does_not_leak": true,
+    "typing_draft_kept_while_source_gate_busy": true,
+    "early_stop_no_commit_late_stop_retains_actual_receipt": true,
+    "lost_ack_same_id_readback": true,
+    "actual_fullfsync_failure_unknown_blocks_dependent_work": true,
+    "stable_original_readback_then_next_work": true,
+    "error_actual_prefix_retained": true,
+    "close_stops_running_main_and_joins_outside_source_ui_lock": true
+  },
+  "shared_document_gate_is_actual_source_controller": true,
+  "physical_writer_is_existing_StorageService": true,
+  "worker_private_active_pointer": false,
+  "source_replay_or_math_expectations_changed": false,
+  "build_identity": "actual Rust sources/manifests/lock/fixed toolchain/Schema/catalog/ABI plus target/profile SHA256 at build time",
+  "new_dependencies": [
+    "sha2=0.10.9 build-only, already locked runtime dependency; no new package or math runtime"
+  ],
+  "commands": [
+    "bash macos/Scripts/test-kernel-runtime.sh",
+    "cargo test -p om-kernel -p om-host-service -p om-apple-ffi --no-default-features --locked",
+    "cargo clippy -p om-kernel -p om-host-service -p om-apple-ffi --all-targets --no-default-features --locked -- -D warnings",
+    "cargo check -p om-kernel --no-default-features --target wasm32-unknown-unknown --locked",
+    "cargo deny check",
+    "python3 -X warn_default_encoding -W error::EncodingWarning -m unittest discover -s tests -v",
+    "bash macos/Scripts/test-kernel-store.sh",
+    "bash macos/Scripts/test-commit-port.sh",
+    "bash macos/Scripts/test-undo.sh",
+    "bash macos/Scripts/build-native.sh",
+    "python3 scripts/native_contracts.py --check",
+    "python3 macos/Scripts/generate-project.py --check",
+    "python3 scripts/check_pre_alpha_4_plan.py --check --self-test --write-report",
+    "cargo fmt --all --check",
+    "git diff --check"
+  ],
+  "code": [
+    {
+      "path": "crates/om-host-service/build.rs",
+      "bytes": 2777,
+      "sha256": "a860fa340164854a5056de6894a5eba0c7bb4a20f658781a8566379f76ffa867"
+    },
+    {
+      "path": "crates/om-host-service/Cargo.toml",
+      "bytes": 592,
+      "sha256": "2f957b04fafa47d4281e2a4dc2f117e53e33cb73a2d0a3baaf6b2d0bcf3a665f"
+    },
+    {
+      "path": "crates/om-host-service/src/kernel/endpoint.rs",
+      "bytes": 11786,
+      "sha256": "ef9b93cae1ceb61937cdf3cb32eacafad13048073e2117f1399b96c9a28df718"
+    },
+    {
+      "path": "crates/om-host-service/src/kernel/endpoint/commands.rs",
+      "bytes": 12909,
+      "sha256": "5caf0cc5f62c3a091aa44f2f5e7f211a6bddc759a0cbec065b1ff5889d085b88"
+    },
+    {
+      "path": "crates/om-host-service/src/kernel/mod.rs",
+      "bytes": 11002,
+      "sha256": "98a7bcfe8c46d3d18dd011c4d8f700044da227d9a488c06a5943380f84c7cedf"
+    },
+    {
+      "path": "crates/om-host-service/src/kernel/acceptance.rs",
+      "bytes": 19425,
+      "sha256": "68c1bcafef3cd19f88b65643be4d70ac332a90878be99ea3a06246c10f2a1c44"
+    },
+    {
+      "path": "crates/om-host-service/src/document/commit.rs",
+      "bytes": 21303,
+      "sha256": "e4bb4e33a8e1b9eecd15986793f97e905380c4e24bb25650f06bd2a312681e92"
+    },
+    {
+      "path": "crates/om-host-service/src/document/commit/trusted.rs",
+      "bytes": 5717,
+      "sha256": "2da01534499d489cb188d293cb0b02c21d24a7ee4fc3cf2365efadda1bf9f567"
+    },
+    {
+      "path": "crates/om-host-service/src/document/endpoint.rs",
+      "bytes": 20600,
+      "sha256": "dce91b6a9940bfbced77860649809a88716235f8c1893caa06a5384781eb1815"
+    },
+    {
+      "path": "crates/om-host-service/src/scheduler/mod.rs",
+      "bytes": 19636,
+      "sha256": "29a8402dafecbf2b4c1b63f18d013501e318df3f81eed1949929b498dd259e36"
+    },
+    {
+      "path": "crates/om-host-service/tests/kernel_endpoint.rs",
+      "bytes": 399,
+      "sha256": "7eaa1a792575c12577f73e46e4e2c3abc76f6429e8d7797a00432e7380e56570"
+    },
+    {
+      "path": "crates/om-host-service/tests/commit_owner.rs",
+      "bytes": 9580,
+      "sha256": "211c4e8d5bc5b5f34376af8b5f028475542467a71f5519406752c06b35e2a2c6"
+    },
+    {
+      "path": "crates/om-kernel/src/source.rs",
+      "bytes": 15074,
+      "sha256": "e17fa7013cf7f1c796ca484404a4e7f8080121c323e20707ae20745f7fd8662a"
+    },
+    {
+      "path": "crates/om-kernel/src/session/working.rs",
+      "bytes": 7044,
+      "sha256": "9bc01d58302937f0fc7b9c4193a4f269e69b0d6fb710b836dd8d767df3e6bc08"
+    },
+    {
+      "path": "crates/om-apple-ffi/src/ffi.rs",
+      "bytes": 11450,
+      "sha256": "76c5e620cb7c711c4ae1c8ea640833bbbd22b22b0e6dc66d449338d01834701e"
+    },
+    {
+      "path": "docs/design/native-kernel-store.schema.json",
+      "bytes": 20815,
+      "sha256": "272b993a3c69477b2bca2833195381a84017ec22e8533e0a92939cc38016d9b3"
+    },
+    {
+      "path": "docs/design/native-host-abi.json",
+      "bytes": 3293,
+      "sha256": "af2850ad8e41dfd70c84dc51e4b43acb081a686f8607366e985790d5997a7131"
+    },
+    {
+      "path": "scripts/native_contracts.py",
+      "bytes": 12072,
+      "sha256": "9c7b054eb4042838ab074f082dde68da0aaa57d9192b910888793a20645068fa"
+    },
+    {
+      "path": "macos/OpenMathNative/NativeHostClient.swift",
+      "bytes": 12167,
+      "sha256": "ef5c6e947ce3e4f1a022131f65b6a6e1d16c04d63403d75e69ef53b69ef0a86d"
+    },
+    {
+      "path": "macos/OpenMathNative/Kernel/KernelCommitPort.swift",
+      "bytes": 11481,
+      "sha256": "67c4795ed34bc542b3c62ff0734bdd75078879930090fc1cb0eab35f20a3ef2e"
+    },
+    {
+      "path": "macos/OpenMathNative/Storage/KernelStore.swift",
+      "bytes": 14616,
+      "sha256": "c82bcf81908f28311ce0cc9c2cb48018ad8a2e224e4bebd7cd2f3979fd14dd53"
+    },
+    {
+      "path": "macos/OpenMathNativeTests/KernelRuntimeFixtures/main.swift",
+      "bytes": 12363,
+      "sha256": "81dd593b8749215a4dbb02261f3bb480a4387e16569177b06e0e49e989e91331"
+    },
+    {
+      "path": "macos/Scripts/test-kernel-runtime.sh",
+      "bytes": 1590,
+      "sha256": "baff826aa654d1959ce98b2999973b5c8fb81762c22da1a5c71489a2877eda4c"
+    },
+    {
+      "path": ".github/workflows/macos-native.yml",
+      "bytes": 3220,
+      "sha256": "d5409dd85efa5246e75c07cd649c58432592f37c522c6b6e0f708c77d4738b83"
+    }
+  ],
+  "logs": [
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r41/kernel-endpoint-first-check.log",
+      "bytes": 363,
+      "sha256": "0240f3f83e9150660ba811b7e0c451d4b5383c9b39dab6d6de301e228bd5a5ac"
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r41/kernel-endpoint-swift-check.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r41/kernel-endpoint-clippy-first.log",
+      "bytes": 1627,
+      "sha256": "5ed73e3583890c149da71cdf7743172ba4d4bdc8ef2d6c057eda0215590fd8ff"
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r41/kernel-endpoint-clippy-boxed.log",
+      "bytes": 272,
+      "sha256": "fd1769a9f832b52dc82c55ed37cd6ce7ac9481173fd9761202a90c391d853af5"
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r41/kernel-endpoint-decode-before.log",
+      "bytes": 943,
+      "sha256": "afab1899a203bf734b3575282dfd3b108274320633ea33aed1af7ec11477a1ba"
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r41/kernel-endpoint-decode-fixed.log",
+      "bytes": 449,
+      "sha256": "96dfd5704f3336211972d1340a92b8d57068f22cbc4a036d2c4a206527a50b07"
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r41/kernel-endpoint-runtime-first.log",
+      "bytes": 11647,
+      "sha256": "08f83871bfaedb95e3a4c13742e8374f8c919f5d10c132ba21ff44347534a6dd"
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r41/kernel-endpoint-runtime-fixed.log",
+      "bytes": 1900,
+      "sha256": "5688ac80a7b2a2f140da6e5ae08498b5efd2227c2671a03c1731d166bab1b060"
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r41/kernel-endpoint-runtime-diagnostic.log",
+      "bytes": 1637,
+      "sha256": "e2ff272804877f6776bc840529bc70145a294775cd7f24f141092d60e450a7dc"
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r41/kernel-endpoint-runtime-schema-fixed.log",
+      "bytes": 1653,
+      "sha256": "c99780d759adc286ac61d02225a0bdef011c8909c3907ace13f8e1f94ddbaf97"
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r41/kernel-endpoint-runtime-long.log",
+      "bytes": 614,
+      "sha256": "c9ef0b629796f60f32a404ffc07028f9896c343bf9d02e5b30c7f52e3ce36034"
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r41/kernel-endpoint-runtime-unknown.log",
+      "bytes": 974,
+      "sha256": "3d18c3473e446bcaa1f89603d5669ad34a3d010265f8ae7e6204dcf3d07818ff"
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r41/kernel-endpoint-runtime-title.log",
+      "bytes": 769,
+      "sha256": "3ad7edc0b3a2deeb457ea17f5e2884be8c63fe5c4b9cff4a8161226f0d8bcd6d"
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r41/kernel-endpoint-runtime-title-close-frozen.log",
+      "bytes": 773,
+      "sha256": "5fd891053c13ac62acc5aa0421001beeb08a068e3fdcd7ec4568ff6667467c29"
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r41/kernel-endpoint-related-regression.log",
+      "bytes": 40120,
+      "sha256": "9582ba837556b67707b9f22b291d2bcb9e1a5ef3de3af4c13182d6098c93c91c"
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r41/kernel-endpoint-clippy-final.log",
+      "bytes": 529,
+      "sha256": "20fe6150c4a231e031d1cbbb68dc5f673d3cd337b58114e417f52dce6a0985ee"
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r41/kernel-endpoint-wasm.log",
+      "bytes": 322,
+      "sha256": "9a59c7a11d5cf9cca495d7c7de6ba18d38903cdc890e4aa3c64745948b2ad767"
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r41/kernel-endpoint-python.log",
+      "bytes": 2835,
+      "sha256": "ef8cc5de60d1e43229523b0f3e679a9678ab250a1a5290e40c5fe74635157014"
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r41/kernel-endpoint-storage-regression.log",
+      "bytes": 1770,
+      "sha256": "79787ad98d1f37ad59697b40b6296fe7cf28c5cb804e9f829aa1e4b32f39d321"
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r41/kernel-endpoint-source-commit-regression.log",
+      "bytes": 2471,
+      "sha256": "0edd2c4cc9981b330249919067dc1c12c0bc69f3e07220b2f35497090a7ff53d"
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r41/kernel-endpoint-undo-regression.log",
+      "bytes": 2532,
+      "sha256": "89bd1d48e5caa4dbce80c840dd011fee3d2d77cc9f66ccff30c95cbf557baeb7"
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r41/kernel-endpoint-release-build.log",
+      "bytes": 89157,
+      "sha256": "e826704a0704d2b2229e22d5491b2d3331e81dd0b078d97b2d529ce3f0bb27df"
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r41/kernel-endpoint-dependencies.log",
+      "bytes": 263072,
+      "sha256": "7fec077d78570125b9ae412feb60af814261f5b6bb7050a796ded801d5c5a972"
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r41/kernel-endpoint-plan-final.log",
+      "bytes": 754,
+      "sha256": "fc3f7811c5847400a5e5a4b7138b6ca631a626739a2276be7d5ed4a629651e60"
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r41/kernel-acceptance-ci-final-observation.json",
+      "bytes": 13985,
+      "sha256": "f96ea9af395f40b08892afd798938571e71b104a65ba5821eaf56ac3e0a87c4a"
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r41/kernel-acceptance-ci-failed.log",
+      "bytes": 1399344,
+      "sha256": "b236c8ebadee9418e3feb8df13a67088ac96c464ef55025db044387ee03713a1"
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r41/kernel-endpoint-ledger-verified.log",
+      "bytes": 754,
+      "sha256": "fc3f7811c5847400a5e5a4b7138b6ca631a626739a2276be7d5ed4a629651e60"
+    }
+  ],
+  "prior_CI": {
+    "run": 38085995468,
+    "sha": "b309baf5a86048fe03e6c8a74f2cd5518a66b7aa",
+    "conclusion": "failure",
+    "jobs": [
+      [
+        "dependencies",
+        "success"
+      ],
+      [
+        "rust",
+        "success"
+      ],
+      [
+        "frontend",
+        "success"
+      ],
+      [
+        "native_macos / native",
+        "success"
+      ],
+      [
+        "ios / native",
+        "failure"
+      ]
+    ],
+    "failure": "iPhone original row34 1116.914625ms >=1000ms, original raw log retained",
+    "scope": "previous independent frozen/store commit, not this main runtime or final candidate"
+  },
+  "platform_release_rendering_resultstore_and_restart_workbench_complete": false,
+  "next": [
+    "R4.1.10 immutable ResultStore / actual value inspections",
+    "R4.1.11 files / R4.1.12 full startup and admission recovery",
+    "R4.2 complete native workbench and rendering",
+    "rest of full98-task plan and same-candidate32 final gates"
+  ],
+  "final_candidate_gate": false,
+  "local_ios_simulator_started": false
+}

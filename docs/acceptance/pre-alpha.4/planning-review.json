@@ -32,11 +32,11 @@
   "inputs": [
     {
       "path": "docs/plan/PRE_ALPHA_4.md",
-      "sha256": "d47536251fe2832fc1e639a1194381c440176e8dab685758b7cbbd7f72154b0e"
+      "sha256": "884f1c52c140f3c1b09b57e8921f2c81d3287ab71f75780f74c8097304abe04a"
     },
     {
       "path": "docs/plan/PRE_ALPHA_4_PROGRESS.md",
-      "sha256": "c3694af13d432287358ee16091e26f76d4762b7942d8942fbe8011f9c9dec5b2"
+      "sha256": "06a15eba97b25918326ca34fd44a426a154ae26affc1088f533b34363e989269"
     },
     {
       "path": "docs/plan/NEXT_RELEASE.md",

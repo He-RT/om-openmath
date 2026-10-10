@@ -248,6 +248,44 @@ impl NativeHost {
         }
         slot.as_mut().ok_or("SOURCE_NOT_OPEN")?.command(command)
     }
+    /// Trusted main-kernel control port. It uses the same source owner/gate; never CAS or disk IO.
+    pub fn kernel_command(&self, bytes: &[u8]) -> Result<NativeKernelHostReply, String> {
+        let command = crate::kernel::endpoint::decode_command(bytes)?;
+        if self.shared.closed.load(Ordering::Acquire)
+            && matches!(
+                &command,
+                NativeKernelHostCommand::KernelBootstrap(_)
+                    | NativeKernelHostCommand::KernelRunCell(_)
+                    | NativeKernelHostCommand::KernelBarrier(_)
+            )
+        {
+            return Err("HOST_CLOSING".into());
+        }
+        let mut source = if matches!(&command, NativeKernelHostCommand::KernelBarrier(_)) {
+            self.shared.source.try_lock().map_err(|e| match e {
+                std::sync::TryLockError::WouldBlock => "EDITING_BUSY",
+                std::sync::TryLockError::Poisoned(_) => "INTERNAL_ERROR",
+            })?
+        } else {
+            self.shared.source.lock().map_err(|_| "INTERNAL_ERROR")?
+        };
+        let completed = matches!(&command, NativeKernelHostCommand::KernelCompleted(body) if !source.as_ref().is_some_and(|source|source.kernel_operation_completed(&body.operation_id)));
+        let reply = source
+            .as_mut()
+            .ok_or("SOURCE_NOT_OPEN")?
+            .kernel_command(command)?;
+        if completed
+            && reply.phase == NativeKernelHostReplyPhase::Completed
+            && reply
+                .receipt
+                .0
+                .as_ref()
+                .is_some_and(|receipt| receipt.result_id.0.is_some())
+        {
+            self.shared.events.emit(EventEnvelopeEventKind::ResultAccepted,None,reply.operation_id.0.clone(),json!({"origin":"main","document_id":reply.document_id,"kernel_state_revision":reply.kernel_state_revision,"checkpoint_id":reply.active_checkpoint_id,"receipt":reply.receipt}));
+        }
+        Ok(reply)
+    }
     /// Read retained real operation facts; unavailable IDs cannot be inferred to have never run.
     pub fn operation(&self, id: &str) -> Option<OperationStatus> {
         self.shared.operations.status(id)
@@ -317,6 +355,11 @@ impl NativeHost {
                 *phase = HostPhase::Closing;
             }
             self.shared.operations.stop_all();
+            if let Ok(mut source) = self.shared.source.lock()
+                && let Some(source) = source.as_mut()
+            {
+                source.close_kernel_begin();
+            }
             let _ = self.sender.try_send(Control::Stop);
         }
     }
@@ -325,6 +368,16 @@ impl NativeHost {
         self.close_begin();
         if let Some(owner) = self.owner.lock().map_err(|_| "INTERNAL_ERROR")?.take() {
             owner.join().map_err(|_| "OWNER_PANIC")?;
+        }
+        let handles = self
+            .shared
+            .source
+            .lock()
+            .map_err(|_| "INTERNAL_ERROR")?
+            .as_mut()
+            .map_or_else(Vec::new, |source| source.take_kernel_threads());
+        for handle in handles {
+            handle.join().map_err(|_| "OWNER_PANIC")?;
         }
         Ok(())
     }

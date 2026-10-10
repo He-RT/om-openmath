@@ -45,6 +45,8 @@ jobs:
         run: bash macos/Scripts/test-history.sh > target/macos-ci-evidence/history.log 2>&1
       - name: 实际 CAS 检查点、同库 Blob 接纳与原回执恢复
         run: bash macos/Scripts/test-kernel-store.sh > target/macos-ci-evidence/kernel-store.log 2>&1
+      - name: 主运行 C ABI、共享文档门与实际取消和接纳
+        run: bash macos/Scripts/test-kernel-runtime.sh > target/macos-ci-evidence/kernel-runtime.log 2>&1
       - name: 校验开发包签名和实际 ABI 符号
         run: |
           codesign --verify --deep --strict 'target/macos-native/Build/Products/Release/OpenMath Preview.app'

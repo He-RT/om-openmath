@@ -1,6 +1,8 @@
 //! Kernel state capture/read/restore. Registering temporary bytes never certifies durable acceptance.
 /// Frozen actual candidates, final cancellation barrier and trusted physical receipt verification.
 pub mod acceptance;
+/// Trusted single-document main runtime; it shares the source controller's logical gate.
+pub mod endpoint;
 /// Main mathematics worker; it freezes candidates but never decides durable acceptance.
 pub mod worker;
 use om_kernel::{
@@ -21,6 +23,7 @@ pub struct KernelState {
     bytes: Arc<[u8]>,
     hash: String,
     reserved: usize,
+    context: om_kernel::source::SourceExecutionContext,
 }
 impl KernelState {
     /// Import verified original bytes without executing source. Full codec validation occurs before
@@ -33,7 +36,7 @@ impl KernelState {
         limits: CheckpointLimits,
         ctx: &Interrupt,
     ) -> Result<Self, KernelStateError> {
-        let _validated = Session::decode_checkpoint(
+        let validated = Session::decode_checkpoint(
             &bytes,
             CheckpointRestore {
                 binding: &binding,
@@ -45,6 +48,7 @@ impl KernelState {
             limits,
             ctx,
         )?;
+        let context = validated.into_session().execution_context();
         let reserved = bytes
             .len()
             .checked_add(source.title.len())
@@ -54,7 +58,7 @@ impl KernelState {
                         .and_then(|n| n.checked_add(c.source.len()))
                 })
             })
-            .and_then(|n| n.checked_add(1024))
+            .and_then(|n| context_size(n, &context))
             .ok_or(KernelStateError::Limit)?;
         Ok(Self {
             binding,
@@ -63,6 +67,7 @@ impl KernelState {
             hash: digest(&bytes),
             bytes: bytes.into(),
             reserved,
+            context,
         })
     }
     /// Freeze an actual idle session off the registry lock. This alone grants no active status.
@@ -77,6 +82,7 @@ impl KernelState {
             return Err(KernelStateError::Invalid);
         };
         let bytes = session.encode_checkpoint(&binding, limits, ctx)?;
+        let context = session.execution_context();
         let reserved = bytes
             .len()
             .checked_add(state.file.title.len())
@@ -86,7 +92,7 @@ impl KernelState {
                         .and_then(|n| n.checked_add(c.source.len()))
                 })
             })
-            .and_then(|n| n.checked_add(1024))
+            .and_then(|n| context_size(n, &context))
             .ok_or(KernelStateError::Limit)?;
         Ok(Self {
             binding,
@@ -95,6 +101,7 @@ impl KernelState {
             hash: digest(&bytes),
             bytes: bytes.into(),
             reserved,
+            context,
         })
     }
     /// Actual captured source; it may precede the current committed document revision.
@@ -104,6 +111,10 @@ impl KernelState {
     /// Actual captured calculation/display configuration, with no credential profiles.
     pub fn general(&self) -> &GeneralConfig {
         &self.general
+    }
+    /// Actual live context for the source owner after accepted IO, not syntactic declarations.
+    pub fn execution_context(&self) -> &om_kernel::source::SourceExecutionContext {
+        &self.context
     }
     /// Actual producer/source/math state binding, not a model request.
     pub fn binding(&self) -> &CheckpointBinding {
@@ -269,4 +280,17 @@ impl KernelStatePool {
 }
 fn digest(bytes: &[u8]) -> String {
     format!("{:x}", Sha256::digest(bytes))
+}
+fn context_size(base: usize, context: &om_kernel::source::SourceExecutionContext) -> Option<usize> {
+    let n = context
+        .known_functions
+        .iter()
+        .try_fold(base, |n, name| n.checked_add(name.len()))?;
+    context
+        .owned
+        .iter()
+        .try_fold(n, |n, o| {
+            n.checked_add(o.symbol.len())?.checked_add(o.cell_id.len())
+        })?
+        .checked_add(1024)
 }

@@ -3351,7 +3351,7 @@ UpdateService只读受控官方GitHub Releases/发行清单（预发行不可用
 
 #### R4.1.09 主KernelWorker、候选接纳和直接取消
 
-- [ ] **R4.1.09 完成**（仅在以下Done和验证满足后勾选）
+- [x] **R4.1.09 完成**（仅在以下Done和验证满足后勾选）
 
 **Files：**
 
@@ -3364,10 +3364,10 @@ UpdateService只读受控官方GitHub Releases/发行清单（预发行不可用
 
 **Steps：**
 
-- [ ] 1. 每job显式从已接纳checkpoint建立work。
-- [ ] 2. 非执行reconcile当前source/定义拥有者后真CAS运行。
-- [ ] 3. 冻结candidate/持久化accepted再发布，拒绝连同defs/history/random释放。
-- [ ] 4. 执行下面Tests，核对真实输出/失败，更新任务账本与证据后提交本批次。
+- [x] 1. 每job显式从已接纳checkpoint建立work。
+- [x] 2. 非执行reconcile当前source/定义拥有者后真CAS运行。
+- [x] 3. 冻结candidate/持久化accepted再发布，拒绝连同defs/history/random释放。
+- [x] 4. 执行下面Tests，核对真实输出/失败，更新任务账本与证据后提交本批次。
 
 **Tests：** a2任务遇a5变更、部分错误/取消、副作用、标题变化、独立token与accept/cancel竞态。测试位置以Files和第15节影响范围为准，证据保存完整输入/命令/输出，不仅记录“通过”。
 

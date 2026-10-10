@@ -141,6 +141,10 @@ actor StorageService {
     guard closeTask==nil,let writer=documents[document] else {throw StorageError.closing}
     return try await writer.kernelCall {try $0.readHead()}
   }
+  func confirmedNoKernelCommit(_ plan:NativeKernelCommit) async throws ->NativeKernelNoCommit {
+    guard closeTask==nil,let writer=documents[plan.producer.document_id] else {throw StorageError.closing}
+    return try await writer.kernelCall {try $0.confirmedNoCommit(plan)}
+  }
   /// Verify real immutable publication, retain it, then reference/accept in the same document DB.
   func commitKernel(_ plan:NativeKernelCommit,publication:BlobPublication,controls:KernelCommitControls,faults:StorageFaults = .init()) async throws ->NativeKernelReceipt {
     guard closeTask==nil,let blobs,let writer=documents[plan.producer.document_id] else {throw StorageError.closing}

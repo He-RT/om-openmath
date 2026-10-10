@@ -14,6 +14,8 @@ pub struct SourceEndpoint {
     store: String,
     clock: Instant,
     coordinator: SourceCoordinator,
+    general: om_kernel::config::GeneralConfig,
+    kernel: Option<crate::kernel::endpoint::KernelEndpoint>,
 }
 impl SourceEndpoint {
     /// Restore an actually read source head; host generates a fresh reference key, never the model.
@@ -54,6 +56,7 @@ impl SourceEndpoint {
             can_write: true,
         };
         let mut coordinator = SourceCoordinator::default();
+        let mut general = om_kernel::config::GeneralConfig::default();
         if let Some(setting) = calculation {
             coordinator.dialect = match setting.dialect {
                 NativeCalculationSettingsDialect::Auto => om_kernel::config::ConfigDialect::Auto,
@@ -68,6 +71,13 @@ impl SourceEndpoint {
                 NativeCalculationSettingsConstants::Math => om_kernel::config::Constants::Math,
                 NativeCalculationSettingsConstants::Strict => om_kernel::config::Constants::Strict,
             };
+            general.dialect = coordinator.dialect;
+            general.constants = coordinator.constants;
+            general.reactive = setting.reactive;
+            general.auto_run_dependents = setting.auto_run_dependents;
+            general.show_steps = setting.show_steps;
+            general.auto_plot = setting.auto_plot;
+            general.eval_timeout_ms = setting.eval_timeout_ms.get();
         }
         Ok(Self {
             controller: DocumentCommitController::new(owner, runtime, key),
@@ -75,6 +85,8 @@ impl SourceEndpoint {
             store,
             clock: Instant::now(),
             coordinator,
+            general,
+            kernel: None,
         })
     }
     /// Actual runtime/document binding for host readback and stale request checks.
@@ -88,9 +100,60 @@ impl SourceEndpoint {
     }
     /// Direct cancellation does not queue behind SQLite, CAS or SourcePreview's physical IO.
     pub fn cancel(&mut self, operation: &str) -> Option<bool> {
+        if let Some(result) = self
+            .kernel
+            .as_mut()
+            .and_then(|kernel| kernel.cancel(operation))
+        {
+            return Some(result);
+        }
         let previous = self.controller.operation(operation)?;
         let current = self.controller.cancel(operation).ok()?;
         Some(previous.phase != NativeCommitStatePhase::Completed && current.cancel_requested)
+    }
+    /// Trusted math port shares this exact source controller, confirmed head and lifetime.
+    pub fn kernel_command(
+        &mut self,
+        command: NativeKernelHostCommand,
+    ) -> Result<NativeKernelHostReply, String> {
+        if self.kernel.is_none() {
+            self.kernel = Some(crate::kernel::endpoint::KernelEndpoint::new()?);
+        }
+        let context = crate::kernel::acceptance::AcceptanceContext {
+            runtime_instance_id: self.scope.runtime.clone(),
+            store_id: self.store.clone(),
+            document_generation: Serial::new(self.scope.generation)?,
+            source: self.controller.owner().snapshot().clone(),
+            general: self.general.clone(),
+            config_revision: Serial::new(self.scope.config_revision)?,
+            build: crate::kernel::endpoint::KERNEL_BUILD_ID.into(),
+        };
+        let kernel = self.kernel.as_mut().expect("created");
+        let reply = kernel.command(command, &context, &mut self.controller)?;
+        self.scope.definition_revision = reply.kernel_state_revision.get();
+        if let Some(facts) = kernel.accepted_context() {
+            self.coordinator.known_functions = facts.known_functions.clone();
+            self.coordinator.owned = facts.owned.clone();
+        }
+        Ok(reply)
+    }
+    /// Short confirmed terminal lookup; no operation or disk access occurs.
+    pub fn kernel_operation_completed(&self, operation: &str) -> bool {
+        self.kernel
+            .as_ref()
+            .is_some_and(|kernel| kernel.operation_completed(operation))
+    }
+    /// Revoke work without joining mathematical threads while holding the source owner lock.
+    pub fn close_kernel_begin(&mut self) {
+        if let Some(kernel) = self.kernel.as_mut() {
+            kernel.begin_close();
+        }
+    }
+    /// Extract only; background host close performs joins after dropping the source owner lock.
+    pub fn take_kernel_threads(&mut self) -> Vec<std::thread::JoinHandle<()>> {
+        self.kernel
+            .as_mut()
+            .map_or_else(Vec::new, |kernel| kernel.take_join_handles())
     }
     /// Reads/source/draft binding stay available while another operation waits for physical commit.
     pub fn command(
@@ -271,6 +334,10 @@ impl SourceEndpoint {
                 if body.receipt.receipt.store_id != self.store {
                     return Err("INVALID_RECEIPT".into());
                 }
+                let settings = self
+                    .controller
+                    .pending_calculation_change(&body.operation_id)
+                    .map(|change| change.after.clone());
                 reply.operation = Nullable(Some(
                     self.controller
                         .accept_receipt(&body.operation_id, &body.receipt)
@@ -280,6 +347,35 @@ impl SourceEndpoint {
                 self.scope.revision = source.revision.get();
                 self.scope.execution_epoch = source.execution_epoch.get();
                 self.scope.snapshot_hash = source.snapshot_hash.clone();
+                if let Some(settings) = settings {
+                    self.general.dialect = match settings.dialect {
+                        NativeCalculationSettingsDialect::Auto => {
+                            om_kernel::config::ConfigDialect::Auto
+                        }
+                        NativeCalculationSettingsDialect::Modern => {
+                            om_kernel::config::ConfigDialect::Modern
+                        }
+                        NativeCalculationSettingsDialect::Wolfram => {
+                            om_kernel::config::ConfigDialect::Wolfram
+                        }
+                    };
+                    self.general.constants = match settings.constants {
+                        NativeCalculationSettingsConstants::Math => {
+                            om_kernel::config::Constants::Math
+                        }
+                        NativeCalculationSettingsConstants::Strict => {
+                            om_kernel::config::Constants::Strict
+                        }
+                    };
+                    self.general.reactive = settings.reactive;
+                    self.general.auto_run_dependents = settings.auto_run_dependents;
+                    self.general.show_steps = settings.show_steps;
+                    self.general.auto_plot = settings.auto_plot;
+                    self.general.eval_timeout_ms = settings.eval_timeout_ms.get();
+                    self.coordinator.dialect = self.general.dialect;
+                    self.coordinator.constants = self.general.constants;
+                    self.scope.config_revision = source.revision.get();
+                }
                 reply.snapshot = Nullable(Some(source.clone()));
             }
             NativeSourceHostCommand::SourceSettled(body) => {

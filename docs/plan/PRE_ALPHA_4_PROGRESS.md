@@ -4,9 +4,9 @@
 
 2026-10-11。目标`0.1.0-pre-alpha.4`，当前运行/公开版本`.3`；开发`dev`，不合main、不改旧标签、本机不启动iOS模拟器。本文只记录结果，规格及完成标准唯一见主计划；计划编写本身不计实施完成。
 
-**当前状态：** 19任务完成（全部R4.0与R4.1.01–08）；其余79任务尚未完成；32最终运行/发行gate全部not_run；candidate未分配，ready_to_publish=false，released_verified=false。设计/HTML/Schema通过不填运行时pass。
+**当前状态：** 20任务完成（全部R4.0与R4.1.01–09）；其余78任务尚未完成；32最终运行/发行gate全部not_run；candidate未分配，ready_to_publish=false，released_verified=false。设计/HTML/Schema通过不填运行时pass。
 
-**下一任务：** R4.1.09继续：已有真实worker和独立Blob/SQLite耐久接纳，接通NativeHost/CABI/Swift运行入口、共享source逻辑门与接纳事件。真实逆事务、原生文本/IME group、200+pin及物理裁减回执已通过；完整工作台与Agent仍继续后续任务。保持同candidate完整门禁，R4.5.07在R4.5.05冻结前完成。
+**下一任务：** R4.1.10真实不可变结果库/只读检查，然后文件、完整启动恢复与原生工作台。主运行/CABI/同库接纳及source共享逻辑门已完成。真实逆事务、原生文本/IME group、200+pin及物理裁减回执已通过；完整工作台与Agent仍继续后续任务。保持同candidate完整门禁，R4.5.07在R4.5.05冻结前完成。
 
 ## 已知外部前置
 
@@ -39,7 +39,7 @@
 | [x] [R4.1.06](PRE_ALPHA_4.md#task-r4.1.06) | DocCommitPort、编辑屏障与未知提交 | completed | [实际提交](../acceptance/pre-alpha.4/development/r41/commit.json) / NSTextView+SQLite / 63Rust / Release | 21b01e7 |
 | [x] [R4.1.07](PRE_ALPHA_4.md#task-r4.1.07) | 统一源码撤销和后续编辑冲突 | completed | [历史/文本/回执](../acceptance/pre-alpha.4/development/r41/history-and-groups.json) / 200+pin / actual UTF/IME / 80Rust / Release | 3853967 |
 | [x] [R4.1.08](PRE_ALPHA_4.md#task-r4.1.08) | 完整可写计算状态与无损codec | completed | [整个Session/原证据](../acceptance/pre-alpha.4/development/r41/session-checkpoint.json) / 723相关Rust＋原53＋data-only/角色/预算 | 55d11b8；de0ec9e及前置 |
-| [ ] [R4.1.09](PRE_ALPHA_4.md#task-r4.1.09) | 主KernelWorker、候选接纳和直接取消 | in_progress | [worker](../acceptance/pre-alpha.4/development/r41/main-worker.json) / [同库接纳](../acceptance/pre-alpha.4/development/r41/kernel-acceptance.json)；实际Host/共享逻辑门待完 | 3ce0320；本批待补 |
+| [x] [R4.1.09](PRE_ALPHA_4.md#task-r4.1.09) | 主KernelWorker、候选接纳和直接取消 | completed | [实际主运行](../acceptance/pre-alpha.4/development/r41/kernel-runtime.json) / CABI+Swift+SQLite / 310相关Rust+实际IO/长CAS/close | 3ce0320、b309baf；本批待补 |
 | [ ] [R4.1.10](PRE_ALPHA_4.md#task-r4.1.10) | 不可变结果库和只读检查通道 | planned | — | — |
 | [ ] [R4.1.11](PRE_ALPHA_4.md#task-r4.1.11) | NSDocument打开保存与冻结快照 | planned | — | — |
 | [ ] [R4.1.12](PRE_ALPHA_4.md#task-r4.1.12) | 会话outbox、草稿与启动恢复 | planned | — | — |
@@ -362,3 +362,13 @@ Done依据与覆盖case/proof:
 - 本地host+ABI97Rust/0fail、Python17、Clippy/fmt/205DTO/工程与计划检查、Release actual app链接成功。原physical source+fullsync、206history/200+pin、Blob6SIGKILL、actual native UndoManager及CABI/MainActor/SQLite CommitPort回归通过，完整输入/命令/log/hash见[kernel-acceptance.json](../acceptance/pre-alpha.4/development/r41/kernel-acceptance.json)。无本机iOS模拟器；final候选未分配/32gate未跑。
 - 3ce0320的CI38067733784：Rust/dependencies/native Mac success，frontend settings.spec.ts117 save status缺失（afterEach有真实已存配置/状态），iPhone原row17整次1139.849ms超原1000ms导致failure；原日志/xcresult/Web截图已下载target/ci-evidence/r4-worker-38067733784。不改期望/计时、不算全CI通过；先确认实际transport分段/保存响应时序再修，旧失败保留。
 - R4.1.09仍unchecked/in_progress：NativeHost/CABI/Swift main运行endpoint、真实同文档shared logical gate/最终scope屏障、UI/Agent accepted结果事件及部分已接纳前缀路由待完；physical fixture不代表完整工作台。当前19/98、79剩余、运行`.3`，继续全部原计划。
+
+## R4开发记录 D026 — 实际主运行/CABI/共享source门（R4.1.09完成）
+
+- 13号Mac ABI及NativeKernelEndpoint进入SourceEndpoint同一确认owner；每job从实际AcceptedKernelState parent选择、source/定义拥有者非执行对齐、真实CAS后台执行。已冻结candidate才保留共享source逻辑门，idle/control/draft/direct stop不等CAS；原physical写/unknown不可被另一source或kernel写绕过。新增actual execution_context读取defs/owners给source parser，额外bytes计入有界pool。
+- Swift KernelCommitPort完成实际source同步、admit、chunk byte/hash→Blob→同库COMMIT/actual stable receipt→Rust active revision/单次result event；no-COMMIT须actual writer已settled、healthy original absence及source/parent不变且sync成功。error/stop/stale保留逐格actual accepted prefix，未接纳defs/history/random不进入next job；closing停止新admit，cancel/token与final barrier共短锁，join脱离source/UI锁。
+- actual main fixture a2→3/a5→6/a9→10、prerequisite拒绝、production后title与source revisions分别保存、重复原ID不重播event、physical IO时输入draft保留、early stop rollback/late stop committed prefix/lostACK、actual F_FULLFSYNC unknown挡新任务及原ID稳定回读、长CAS期间source read/edit<1s/ephemeral未接纳definition no-leak及运行中close全部通过。Kernel/host/ABI完整相关310passed/0failed/1原ignored，原53 checkpoint/math expectations不改。
+- Native229DTO/13symbols、Clippy/fmt/纯WASM/deny/Python17、actual storage5SIGKILL与原SourceCommitPort/MainActor/NSTextView/UndoManager回归及Release完整链接通过。[kernel-runtime.json](../acceptance/pre-alpha.4/development/r41/kernel-runtime.json)保存全部命令/源/log/hash。新build.rs只加同锁sha2构建依赖，实际source/schema/catalog/ABI/target/profile编译指纹；没有新math runtime/core unsafe/旧iOS ABI变化。
+- 最初generator annotation x-rust-boxed-variants被原strict schema validator拒绝，state RPC确定性失败后改为既有x-openmath-contract annotation，JSON/Swift形状及unknown拒绝保持。fixture初始签名/async lock、编译中修改输入失败均保留，最终冻结编译后完整runtime通过，不算失败attempt为pass。
+- b309baf的CI38085995468 Rust/dependencies/frontend/nativeMac成功，仅iPhone原row34整次1116.914625ms超原1000ms失败，原log保留；上一3ce row17已离线解析kernel205ms/decode2ms/resume933ms，仍需mainActor占用根因，未放宽阈值/本机不跑iOS模拟器。不以这些前置CI替新SHA或final同candidate门禁。
+- R4.1.09 Done/Tests满足，当前20/98、78待完；下一R4.1.10 immutable result store/readonly inspections，再NSDocument/完整启动恢复/工作台/Agent/模型媒体/现场和发行全部范围。当前仍`.3`、32final gate not_run/candidate未分配，不把main backend完成当`.4`可发布。

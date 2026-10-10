@@ -24,6 +24,7 @@ private enum NativeHostQueues {
   static let control = DispatchQueue(label: "org.openmath.native.control", qos: .userInitiated)
   static let events = DispatchQueue(label: "org.openmath.native.events", qos: .userInitiated)
   static let recovery = DispatchQueue(label: "org.openmath.native.recovery", qos: .userInitiated)
+  static let kernel = DispatchQueue(label: "org.openmath.native.kernel.control", qos: .userInitiated)
   static let cancel = DispatchQueue(label: "org.openmath.native.cancel", qos: .userInitiated)
   static let shutdown = DispatchQueue(label: "org.openmath.native.shutdown", qos: .utility)
 }
@@ -135,6 +136,30 @@ actor NativeHostClient {
       let reply:NativeSourceHostReply=try Self.read(packet)
       guard reply.protocol_version==1 else {throw NativeHostClientError.incompatibleVersion}
       return reply
+    }
+  }
+  /// Main mathematics uses a separate control queue; Rust still owns every source/acceptance fact.
+  func kernelCommand(_ command:NativeKernelHostCommand) async throws ->NativeKernelHostReply {
+    guard let handle else {throw NativeHostClientError.closing}
+    return try await Self.background(NativeHostQueues.kernel) {
+      let data=try JSONEncoder().encode(command)
+      guard data.count<=2*1024*1024 else {throw NativeHostClientError.invalidReply}
+      let packet=data.withUnsafeBytes {om_host_kernel_command(handle.pointer,$0.bindMemory(to:UInt8.self).baseAddress,$0.count)}
+      let reply:NativeKernelHostReply=try Self.read(packet)
+      guard reply.protocol_version==1,reply.document_generation.value>0,reply.kernel_build.utf8.count==64,
+        reply.kernel_build.utf8.allSatisfy({($0>=48 && $0<=57)||($0>=97 && $0<=102)}),reply.blob_bytes.allSatisfy({$0<=255}) else {throw NativeHostClientError.invalidReply}
+      return reply
+    }
+  }
+  /// Short final Rust owner check; prepared off MainActor and called by the physical SQL writer.
+  func kernelBarrier(operation:String) async throws ->(@Sendable ()throws->Void) {
+    guard let handle else {throw NativeHostClientError.closing}
+    let data=try JSONEncoder().encode(NativeKernelHostCommand.kernel_barrier(.init(type:.kernel_barrier,operation_id:operation)))
+    return {
+      precondition(!Thread.isMainThread)
+      let packet=data.withUnsafeBytes {om_host_kernel_command(handle.pointer,$0.bindMemory(to:UInt8.self).baseAddress,$0.count)}
+      let reply:NativeKernelHostReply=try Self.read(packet)
+      guard reply.operation_id.value==operation,reply.phase == .committing else {throw NativeHostClientError.invalidReply}
     }
   }
   /// Prepared off MainActor; execution holds the native fence lock only for this short owner RPC.

@@ -108,6 +108,50 @@ fn stop_before_barrier_never_enters_commit_and_does_not_change_confirmed_source(
     assert_eq!(c.owner().snapshot().revision.get(), 0);
 }
 #[test]
+fn actual_kernel_gate_blocks_source_writes_but_keeps_frozen_preview_and_reads_available() {
+    let (mut c, scope, reference) = setup();
+    c.hold_kernel_gate("kernel-one").unwrap();
+    assert_eq!(c.kernel_gate(), Some("kernel-one"));
+    assert!(matches!(
+        c.begin(&reference, &scope, 2),
+        Err(CommitError::Busy)
+    ));
+    let update = NativeSourceOperation::UpdateSourceCell(UpdateSourceCell {
+        kind: UpdateSourceCellKind::UpdateCell,
+        cell: NativeSourceCell {
+            id: "cell".into(),
+            kind: NativeCellKind::Math,
+            source: "let a=5".into(),
+            dialect: Dialect::Modern,
+        },
+    });
+    assert!(matches!(
+        c.manual(
+            &[update],
+            &scope,
+            &SourceCoordinator::default(),
+            None,
+            "time".into()
+        ),
+        Err(CommitError::Busy)
+    ));
+    assert_eq!(c.owner().snapshot().revision.get(), 0);
+    assert!(
+        c.snapshot(
+            SourceCoordinator::default(),
+            ["cell".to_owned()].into_iter().collect(),
+            &scope,
+            3
+        )
+        .is_ok()
+    );
+    assert!(c.release_kernel_gate("different").is_err());
+    assert!(c.hold_kernel_gate("kernel-two").is_err());
+    c.release_kernel_gate("kernel-one").unwrap();
+    assert!(c.begin(&reference, &scope, 4).is_ok());
+    assert!(c.hold_kernel_gate("kernel-two").is_err());
+}
+#[test]
 fn stop_after_barrier_is_pending_not_undo_and_unknown_holds_the_original_gate() {
     let (mut c, scope, reference) = setup();
     let plan = c.begin(&reference, &scope, 2).unwrap().unwrap();

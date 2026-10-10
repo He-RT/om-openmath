@@ -13,13 +13,21 @@ pub(crate) enum AcceptancePhase {
 pub(crate) struct Lifecycle {
     pub(crate) token: Arc<AtomicBool>,
     phase: Mutex<AcceptancePhase>,
+    started: AtomicBool,
 }
 impl Lifecycle {
     pub(crate) fn new(token: Arc<AtomicBool>) -> Self {
         Self {
             token,
             phase: Mutex::new(AcceptancePhase::Working),
+            started: AtomicBool::new(false),
         }
+    }
+    pub(crate) fn start(&self) {
+        self.started.store(true, Ordering::Release);
+    }
+    pub(crate) fn started(&self) -> bool {
+        self.started.load(Ordering::Acquire)
     }
     pub(crate) fn prepared(&self) -> Result<(), KernelWorkerError> {
         let mut phase = self.phase.lock().map_err(|_| KernelWorkerError::Internal)?;
@@ -82,6 +90,15 @@ impl Lifecycle {
         ) {
             return Err(KernelWorkerError::Invalid);
         }
+        *phase = AcceptancePhase::Discarded;
+        Ok(())
+    }
+    pub(crate) fn confirmed_no_commit(&self) -> Result<(), KernelWorkerError> {
+        let mut phase = self.phase.lock().map_err(|_| KernelWorkerError::Internal)?;
+        if *phase == AcceptancePhase::Accepted {
+            return Err(KernelWorkerError::Invalid);
+        }
+        self.token.store(true, Ordering::Release);
         *phase = AcceptancePhase::Discarded;
         Ok(())
     }

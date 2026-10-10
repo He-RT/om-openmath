@@ -9,6 +9,15 @@
     },
     {
       "$ref": "#/$defs/NativeKernelReceipt"
+    },
+    {
+      "$ref": "#/$defs/NativeKernelNoCommit"
+    },
+    {
+      "$ref": "#/$defs/NativeKernelHostCommand"
+    },
+    {
+      "$ref": "#/$defs/NativeKernelHostReply"
     }
   ],
   "$defs": {
@@ -483,6 +492,437 @@
         "result_id",
         "outbox_event_id",
         "committed_at"
+      ],
+      "additionalProperties": false
+    },
+    "KernelBootstrap": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "const": "kernel_bootstrap"
+        },
+        "operation_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "expected_source_hash": {
+          "$ref": "#/$defs/Sha256"
+        }
+      },
+      "required": [
+        "type",
+        "operation_id",
+        "expected_source_hash"
+      ],
+      "additionalProperties": false
+    },
+    "KernelRunCell": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "const": "kernel_run_cell"
+        },
+        "operation_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "cell_id": {
+          "$ref": "#/$defs/CellIdentity"
+        },
+        "expected_source_hash": {
+          "$ref": "#/$defs/Sha256"
+        }
+      },
+      "required": [
+        "type",
+        "operation_id",
+        "cell_id",
+        "expected_source_hash"
+      ],
+      "additionalProperties": false
+    },
+    "KernelStatus": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "const": "kernel_status"
+        },
+        "operation_id": {
+          "$ref": "#/$defs/Identity"
+        }
+      },
+      "required": [
+        "type",
+        "operation_id"
+      ],
+      "additionalProperties": false
+    },
+    "KernelReadBlob": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "const": "kernel_read_blob"
+        },
+        "operation_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "offset": {
+          "$ref": "#/$defs/Serial"
+        },
+        "count": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 65536
+        }
+      },
+      "required": [
+        "type",
+        "operation_id",
+        "offset",
+        "count"
+      ],
+      "additionalProperties": false
+    },
+    "KernelBarrier": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "const": "kernel_barrier"
+        },
+        "operation_id": {
+          "$ref": "#/$defs/Identity"
+        }
+      },
+      "required": [
+        "type",
+        "operation_id"
+      ],
+      "additionalProperties": false
+    },
+    "KernelCompleted": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "const": "kernel_completed"
+        },
+        "operation_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "receipt": {
+          "$ref": "#/$defs/NativeKernelReceipt"
+        }
+      },
+      "required": [
+        "type",
+        "operation_id",
+        "receipt"
+      ],
+      "additionalProperties": false
+    },
+    "KernelUnknown": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "const": "kernel_unknown"
+        },
+        "operation_id": {
+          "$ref": "#/$defs/Identity"
+        }
+      },
+      "required": [
+        "type",
+        "operation_id"
+      ],
+      "additionalProperties": false
+    },
+    "KernelDiscard": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "const": "kernel_discard"
+        },
+        "operation_id": {
+          "$ref": "#/$defs/Identity"
+        }
+      },
+      "required": [
+        "type",
+        "operation_id"
+      ],
+      "additionalProperties": false
+    },
+    "KernelSettled": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "const": "kernel_settled"
+        },
+        "operation_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "proof": {
+          "$ref": "#/$defs/NativeKernelNoCommit"
+        }
+      },
+      "required": [
+        "type",
+        "operation_id",
+        "proof"
+      ],
+      "additionalProperties": false
+    },
+    "NativeKernelNoCommit": {
+      "type": "object",
+      "properties": {
+        "protocol_version": {
+          "const": 1
+        },
+        "store_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "document_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "operation_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "request_hash": {
+          "$ref": "#/$defs/Sha256"
+        },
+        "accepted_source_revision": {
+          "$ref": "#/$defs/Serial"
+        },
+        "accepted_snapshot_hash": {
+          "$ref": "#/$defs/Sha256"
+        },
+        "expected_parent_checkpoint_id": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Identity"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "expected_kernel_state_revision": {
+          "$ref": "#/$defs/Serial"
+        }
+      },
+      "required": [
+        "protocol_version",
+        "store_id",
+        "document_id",
+        "operation_id",
+        "request_hash",
+        "accepted_source_revision",
+        "accepted_snapshot_hash",
+        "expected_parent_checkpoint_id",
+        "expected_kernel_state_revision"
+      ],
+      "additionalProperties": false
+    },
+    "KernelState": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "const": "kernel_state"
+        }
+      },
+      "required": [
+        "type"
+      ],
+      "additionalProperties": false
+    },
+    "NativeKernelHostCommand": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/KernelBootstrap"
+        },
+        {
+          "$ref": "#/$defs/KernelRunCell"
+        },
+        {
+          "$ref": "#/$defs/KernelStatus"
+        },
+        {
+          "$ref": "#/$defs/KernelReadBlob"
+        },
+        {
+          "$ref": "#/$defs/KernelBarrier"
+        },
+        {
+          "$ref": "#/$defs/KernelCompleted"
+        },
+        {
+          "$ref": "#/$defs/KernelUnknown"
+        },
+        {
+          "$ref": "#/$defs/KernelDiscard"
+        },
+        {
+          "$ref": "#/$defs/KernelSettled"
+        },
+        {
+          "$ref": "#/$defs/KernelState"
+        }
+      ],
+      "x-openmath-contract": {
+        "rust_boxed_variants": [
+          "KernelCompleted"
+        ]
+      }
+    },
+    "NativeKernelHostReplyPhase": {
+      "type": "string",
+      "enum": [
+        "state",
+        "queued",
+        "running",
+        "waiting_source",
+        "candidate",
+        "committing",
+        "unknown",
+        "completed",
+        "discarded",
+        "failed",
+        "blob"
+      ]
+    },
+    "NativeKernelHostReply": {
+      "type": "object",
+      "properties": {
+        "protocol_version": {
+          "const": 1
+        },
+        "phase": {
+          "$ref": "#/$defs/NativeKernelHostReplyPhase"
+        },
+        "operation_id": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Identity"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "document_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "document_generation": {
+          "$ref": "#/$defs/Serial"
+        },
+        "source_revision": {
+          "$ref": "#/$defs/Serial"
+        },
+        "execution_epoch": {
+          "$ref": "#/$defs/Serial"
+        },
+        "kernel_build": {
+          "type": "string",
+          "minLength": 64,
+          "maxLength": 64
+        },
+        "active_checkpoint_id": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Identity"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "kernel_state_revision": {
+          "$ref": "#/$defs/Serial"
+        },
+        "kernel_projection_revision": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Serial"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "definitions_current": {
+          "type": "boolean"
+        },
+        "pending_document_write": {
+          "type": "boolean"
+        },
+        "plan": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/NativeKernelCommit"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "receipt": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/NativeKernelReceipt"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "error_code": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 256
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "blob_offset": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Serial"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "blob_bytes": {
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 255
+          },
+          "maxItems": 65536
+        }
+      },
+      "required": [
+        "protocol_version",
+        "phase",
+        "operation_id",
+        "document_id",
+        "document_generation",
+        "source_revision",
+        "execution_epoch",
+        "kernel_build",
+        "active_checkpoint_id",
+        "kernel_state_revision",
+        "kernel_projection_revision",
+        "definitions_current",
+        "pending_document_write",
+        "plan",
+        "receipt",
+        "error_code",
+        "blob_offset",
+        "blob_bytes"
       ],
       "additionalProperties": false
     }

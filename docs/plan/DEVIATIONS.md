@@ -484,3 +484,11 @@ L2使用精确标称GM分数、50位FindRoot/1000迭代和真实残差，报告�
 - 从分别解码的图检查history/record和solver/science尾值采用bounded exact representation pair memo，避免shared DAG的指数级Eq展开和±0/precision误同。只读角色在OMRS header及metadata两处绑定，确定性测试先证明仅改magic会被旧实现提升，再修为独立role encode/decode；未暴露readonly→writable克隆。
 - Host KernelStatePool保存实际byte/hash/binding/source/general，host熵ID、32状态/64MiB及4096创建上限，revoked但被caller pin的payload继续占reservation到实际release/reap。只管理临时数据，不发durable IOAck/active state，不开放模型写入口；next R4.1.09才接main worker与真实Blob/accepted transaction。
 - 原53输入/数学期望/独立200digit校验不改，实际Kernel source→packet→owned restore后output/evidence及再编码bytes逐项一致；Root/80digit/fit/ODE/interpolation、真实steps/explore、random/Out和延迟RHS未执行均测试。工程/CPP header/旧iOS ABI不变，无本机模拟器。完整checkpoint acceptance、结果库/文件/启动恢复仍按后续tasks，不因为code codec通过填最终candidate gate。
+
+### R4-D018：主CAS工作通道与单格边界（2026-10-11，R4.1.09继续）
+
+- `kernel/worker.rs`及小型runtime模块实现独立main CAS线程，等待队列2、admission lifetime4096、每job真实独立token，显式pin指定parent checkpoint；没有worker内active指针。KernelState编码/capture移到pool锁外，仅短锁注册不可变byte；lookup/stop不等实际CAS。
+- WorkingSession非执行同步原committed source/settings，实际退还失效owner；跳过多个math epoch或修改后又恢复相同源码时保守退还全部owned definitions并标Math stale，history/random不重播。只有明确单格run进入原run_cell，不走Evaluate的自动cascade；reactive模式检查真实依赖/cycle/conflict，显式nonreactive保持旧多格赋值语义。
+- 终止返回实际CellBoundary及冻结candidate。现代多语句cancel前的真实成功语句会有history；Wolfram semicolon为单CompoundExpression，其失败前可以已修改defs但无成功history。不得根据error或successful_statements=0伪造回滚。冻结这些实际事实使用新codec预算、原operation cancel仍标candidate不可接纳；容量不足不覆盖parent。
+- 只改标题/Text而epoch不变保留实际数学；真实a2→5同步清理old a/b，先执行b拒绝DEPENDENCY_NOT_READY，运行a后才由显式parent选择得到b6；拒绝/释放candidate的Out/random不成为下一job状态。错source hash/doc/epoch、重用token、重复ID、超queue/pool和close明确拒绝。
+- 本批只实施worker与候选的真实底层路径，尚未注册NativeHost run_cells/Swift桥接入口或改活动source owner。协调器接纳、同库accepted checkpoint/result/active指针/operation/outbox、真实Blob/SQLite IOAck及accept/cancel线性化继续R4.1.09；task不勾Done，不把内部candidate或临时ref当持久化成功。原ABI/200DTO/旧iOS保持，无新dependency/unsafe或本机模拟器。

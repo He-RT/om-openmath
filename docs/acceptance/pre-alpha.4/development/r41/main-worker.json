@@ -1,0 +1,174 @@
+{
+  "task": "R4.1.09",
+  "status": "in_progress",
+  "task_done": false,
+  "development_only": true,
+  "runtime_version": "0.1.0-pre-alpha.3",
+  "working_tree_base": "55d11b88e24cb9b215811325359f2be0eff7da50",
+  "actual_worker_cases_passed": 8,
+  "related_regression": {
+    "passed": 301,
+    "failed": 0,
+    "original_ignored": 1
+  },
+  "main_worker_native_host_registered": false,
+  "durable_checkpoint_accepted": false,
+  "source_owner_active_checkpoint_updated": false,
+  "worker_private_active_pointer": false,
+  "source_replay": false,
+  "math_expectations_changed": false,
+  "scope": [
+    "independent main CAS thread; explicit caller-selected parent",
+    "owned source/settings reconcile, actual owner invalidation, skipped/reverted epoch conservative retirement",
+    "one real current Math cell, no automatic Evaluate cascade",
+    "reactive dependency readiness and original nonreactive reassignments",
+    "real partial error/cancel definition and history facts",
+    "random/Out rejected candidate independence",
+    "bounded queue2/registry32+64MiB/lifetime4096/direct token/short lookup/two-phase close"
+  ],
+  "development_fixture_failures": [
+    {
+      "log": "main-worker-real-tests.log",
+      "cause": "new test incorrectly assumed singular inverse was a thrown evaluator error; actual held result Done retained"
+    },
+    {
+      "log": "main-worker-real-verified.log",
+      "cause": "new test incorrectly counted Wolfram semicolon subexpressions as successful history statements; actual failed CompoundExpression had zero history but earlier assignments"
+    },
+    {
+      "log": "main-worker-partial-diagnostic.log",
+      "cause": "actual recursion error output and zero-history compound evidence; fixture assertions corrected, existing mathematical tests unchanged"
+    }
+  ],
+  "commands": [
+    "cargo test -p om-kernel -p om-host-service -p om-apple-ffi --no-default-features --locked",
+    "cargo clippy -p om-kernel -p om-host-service -p om-apple-ffi --no-default-features --all-targets --locked -- -D warnings",
+    "cargo check -p om-kernel --no-default-features --target wasm32-unknown-unknown --locked",
+    "python3 scripts/native_contracts.py --check",
+    "python3 scripts/check_pre_alpha_4_plan.py --check --self-test --write-report",
+    "cargo fmt --all --check",
+    "git diff --check"
+  ],
+  "code": [
+    {
+      "path": "crates/om-host-service/src/kernel/mod.rs",
+      "bytes": 8498,
+      "sha256": "b9ac7e2aa2665e386cdad0ac7e7f9ac38074ca812b2007babdff078c46836dda"
+    },
+    {
+      "path": "crates/om-host-service/src/kernel/worker.rs",
+      "bytes": 9742,
+      "sha256": "209df22d527e595323741cacc7b683c859a0fbd55bc4a0c5c617faae4517c51f"
+    },
+    {
+      "path": "crates/om-host-service/src/kernel/worker/runtime.rs",
+      "bytes": 7441,
+      "sha256": "f20307d47d4fcca4f283fe3a8df199c65f93c49ba16e13765e28cfb90937ede9"
+    },
+    {
+      "path": "crates/om-host-service/tests/kernel_worker.rs",
+      "bytes": 17582,
+      "sha256": "484445beb3acfd48a0a90df432fbcd3a89036e20cce49e9c836ddf5e30fca3c6"
+    },
+    {
+      "path": "crates/om-kernel/src/session/working.rs",
+      "bytes": 6195,
+      "sha256": "15c7ec591b4b256670bbe1af20376228cd3555fd2f352482bfe712d2270f7c30"
+    },
+    {
+      "path": "crates/om-kernel/src/session/reactive.rs",
+      "bytes": 9133,
+      "sha256": "13bc099ed2997679e14067dc3580c6afa01718f683f8a5dba3aba64356d81e9b"
+    },
+    {
+      "path": "crates/om-kernel/src/session.rs",
+      "bytes": 12260,
+      "sha256": "8483cc198879f9e3a636a04f3538965ad0dcba4711e47a6627286e2c5224e7e2"
+    },
+    {
+      "path": "crates/om-kernel/src/lib.rs",
+      "bytes": 1141,
+      "sha256": "90a24cae9f7533d77a86a876a41bffd182bf1fda3413e4ef7cf9825000732337"
+    }
+  ],
+  "logs": [
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r41/main-worker-initial-check.log",
+      "bytes": 924,
+      "sha256": "8debae247ba45a171e7e48714efc04f55e350e90f8ea6ce1bc85eb02672f2337"
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r41/main-worker-fixed-check.log",
+      "bytes": 175,
+      "sha256": "2d3587c990ea0b8b37ffaccbc96646d0bf61cf4773dcd506e492c55949341123"
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r41/main-worker-real-tests.log",
+      "bytes": 1975,
+      "sha256": "cb0b1d74180545d789f9d26384ebd68307b8fdc7cba9c3c8651826f46b3ef503"
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r41/main-worker-real-verified.log",
+      "bytes": 1790,
+      "sha256": "db6f073e6481112ddbf344d090f1a081bee179515f26002f48ade637ec03cf8e"
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r41/main-worker-partial-diagnostic.log",
+      "bytes": 1212,
+      "sha256": "00ab013b1c8362b6107227159e4ac09225d1019ac29b84d04915f5db3fa78404"
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r41/main-worker-effects-verified.log",
+      "bytes": 1213,
+      "sha256": "22ecea61b9d4491c8964aaa0266166ef0542782aa876604a87919b431891c8cf"
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r41/main-worker-random-capacity.log",
+      "bytes": 1381,
+      "sha256": "113967f6bea1a349891d175a972c9bc1c35ac1308f33b487ff735056e39e09cc"
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r41/main-worker-clippy.log",
+      "bytes": 902,
+      "sha256": "007354c7ba05a672c10a82f711204cb26d586ad5f303d918f72a92a166ad3253"
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r41/main-worker-related-regression.log",
+      "bytes": 38759,
+      "sha256": "bf7cc00767adc3638b2d8f2cd531f8b21ae03e6bf9efbbb88bf0904d38453720"
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r41/main-worker-wasm.log",
+      "bytes": 2046,
+      "sha256": "58c142b375fcdc9015350540602509da581b059f917bf1308f11a54b0f34fbc4"
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r41/main-worker-plan-final.log",
+      "bytes": 754,
+      "sha256": "50464bc9416f4578e47e7b27a99c3d19a0bf22585134da34321388d98e88928d"
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r41/session-checkpoint-ci-final.json",
+      "bytes": 13811,
+      "sha256": "f84585ab766c185bc9d0916d224456fc78c4c8abd3fa1bfe832fb77d61f81745"
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r41/main-worker-ledger-verified.log",
+      "bytes": 754,
+      "sha256": "deb70d72045511c62abcc35543915eaa52861ebac0fe7b02ddf2951881d36ef4"
+    }
+  ],
+  "previous_CI": {
+    "run": 38061268087,
+    "sha": "55d11b88e24cb9b215811325359f2be0eff7da50",
+    "conclusion": "success",
+    "scope": "whole Session/evidence codec prior commit; not this worker working tree or final candidate"
+  },
+  "remaining": [
+    "actual NativeHost/source coordinator and Swift main calculation ports",
+    "shared source logical gate/cancel-accept linearization",
+    "real Blob publication and same-DB accepted checkpoint/result/active head/kernel revision/operation/outbox",
+    "original-ID IOAck/readback and partial accepted-prefix recovery"
+  ],
+  "final_candidate_gate": false
+}

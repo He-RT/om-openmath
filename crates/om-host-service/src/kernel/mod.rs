@@ -1,4 +1,6 @@
 //! Kernel state capture/read/restore. Registering temporary bytes never certifies durable acceptance.
+/// Main mathematics worker; it freezes candidates but never decides durable acceptance.
+pub mod worker;
 use om_kernel::{
     Session, WorkingSession,
     checkpoint::{CheckpointBinding, CheckpointError, CheckpointLimits, CheckpointRestore},
@@ -19,6 +21,46 @@ pub struct KernelState {
     reserved: usize,
 }
 impl KernelState {
+    /// Freeze an actual idle session off the registry lock. This alone grants no active status.
+    pub fn capture(
+        session: &mut Session,
+        binding: CheckpointBinding,
+        limits: CheckpointLimits,
+        ctx: &Interrupt,
+    ) -> Result<Self, KernelStateError> {
+        ctx.tick()?;
+        let Response::NotebookState { state } = session.handle(Request::GetNotebookState).0 else {
+            return Err(KernelStateError::Invalid);
+        };
+        let bytes = session.encode_checkpoint(&binding, limits, ctx)?;
+        let reserved = bytes
+            .len()
+            .checked_add(state.file.title.len())
+            .and_then(|n| {
+                state.file.cells.iter().try_fold(n, |n, c| {
+                    n.checked_add(c.id.len())
+                        .and_then(|n| n.checked_add(c.source.len()))
+                })
+            })
+            .and_then(|n| n.checked_add(1024))
+            .ok_or(KernelStateError::Limit)?;
+        Ok(Self {
+            binding,
+            source: state.file,
+            general: session.config.general.clone(),
+            hash: digest(&bytes),
+            bytes: bytes.into(),
+            reserved,
+        })
+    }
+    /// Actual captured source; it may precede the current committed document revision.
+    pub fn source(&self) -> &NotebookFile {
+        &self.source
+    }
+    /// Actual captured calculation/display configuration, with no credential profiles.
+    pub fn general(&self) -> &GeneralConfig {
+        &self.general
+    }
     /// Actual producer/source/math state binding, not a model request.
     pub fn binding(&self) -> &CheckpointBinding {
         &self.binding
@@ -121,28 +163,19 @@ impl KernelStatePool {
         ctx: &Interrupt,
     ) -> Result<String, KernelStateError> {
         ctx.tick()?;
+        let state = KernelState::capture(session, binding, limits, ctx)?;
+        self.register(state)
+    }
+    /// Insert already frozen bytes. Encoding/math never takes place while a shared pool is locked.
+    /// The ID denotes a temporary state; coordinator/physical persistence must still accept it.
+    pub fn register(&mut self, state: KernelState) -> Result<String, KernelStateError> {
         self.reap();
         if self.entries.len() + self.retired.len() >= self.max_states || self.created >= 4096 {
             return Err(KernelStateError::Limit);
         }
-        let Response::NotebookState { state } = session.handle(Request::GetNotebookState).0 else {
-            return Err(KernelStateError::Invalid);
-        };
-        let bytes = session.encode_checkpoint(&binding, limits, ctx)?;
-        let reserved = bytes
-            .len()
-            .checked_add(state.file.title.len())
-            .and_then(|n| {
-                state.file.cells.iter().try_fold(n, |n, c| {
-                    n.checked_add(c.id.len())
-                        .and_then(|n| n.checked_add(c.source.len()))
-                })
-            })
-            .and_then(|n| n.checked_add(1024))
-            .ok_or(KernelStateError::Limit)?;
         if self
             .bytes
-            .checked_add(reserved)
+            .checked_add(state.reserved)
             .is_none_or(|n| n > self.max_bytes)
         {
             return Err(KernelStateError::Limit);
@@ -156,20 +189,9 @@ impl KernelStatePool {
         if self.entries.contains_key(&id) {
             return Err(KernelStateError::Invalid);
         }
-        let hash = digest(&bytes);
-        self.bytes += reserved;
+        self.bytes += state.reserved;
         self.created += 1;
-        self.entries.insert(
-            id.clone(),
-            Arc::new(KernelState {
-                binding,
-                source: state.file,
-                general: session.config.general.clone(),
-                bytes: bytes.into(),
-                hash,
-                reserved,
-            }),
-        );
+        self.entries.insert(id.clone(), Arc::new(state));
         Ok(id)
     }
     /// Read original trusted bytes; a guessed ID cannot resolve a new object or create a write grant.

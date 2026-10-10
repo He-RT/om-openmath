@@ -50,3 +50,11 @@ Host KernelStatePool临时保留actual encoded bytes、SHA256、原binding/sourc
 暂态解释器frame不可捕获，只读fork不能提升，候选写入和真实耐久接纳继续有独立回执。`Session::fork_working_session`克隆实际文档/结果/owners及read-only Explore snapshot，新取消token与parent独立，LLM/config-store/credential IO不随candidate复制。codec本身不授予主文档权限；接下来主worker/candidate/Blob/accepted record与active state引用按R4.1.09–13接通。
 
 新增 `om-num/tests/checkpoint.rs`、`om-core/tests/checkpoint.rs`、`om-eval/tests/state_codec.rs`、`om-solve/tests/evidence_codec.rs`、`om-kernel/tests/checkpoint.rs/checkpoint_corpus.rs`与Host pool测试。原53通过actual kernel计算→Session bytes→数据恢复→原结果/证据核对→byte recapture；原数学/200-digit参考残差不变。实际Root/80位decimal、fit/ODE/interpolation后续可调用、steps/readonly Explore、random/Out和延迟RHS不重跑均覆盖。默认开发用例不测原Release200ms/1s门禁，不将它们写成final candidate pass；本机不启动iOS模拟器。
+
+## 主计算工作通道（R4.1.09，部分已实施）
+
+`om-host-service::kernel::worker::KernelWorker`现在有独立CAS线程和2个等待job。每job显式pin指定parent，不保存自己的active指针；恢复用新的operation token/clock，实际source/settings非执行对齐后调用owned stage的单Math格入口，不隐式调用旧Evaluate cascade。注册表只在真实freeze后短锁插入immutable bytes，读/直接cancel不排在CAS后面。
+
+跨越多个math epoch及同源码的修改/回退无法证明旧定义仍有效，因此保守清除全部原owned definitions；不重跑source或随机/history。实际错误与取消前的副作用保留在未接纳candidate中，CellBoundary的successful_statements不是definition effect count：Wolfram CompoundExpression可以0成功history但已有赋值。非reactive模式保持原重赋值行为，reactive依赖未就绪明确拒绝。
+
+每candidate保留原runtime/generation/operation/selected parent/source/config/hash及真实terminal facts，取消也能到达已freeze且待接纳的token；池满只失败，不覆盖parent。close停止admission/token，join返回后台caller处理。后续实际NativeHost/Swift端口、document逻辑门、Blob+accepted SQLite同库持久化、active指针与接受事件仍待实施；此worker API仅产生临时candidate，不证明耐久接纳或完整工作台可用。

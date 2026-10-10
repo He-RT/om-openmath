@@ -1,12 +1,109 @@
 //! Owned session work candidates preserve real math/source/results, never host IO or model jobs.
 use super::Session;
-use crate::{KernelConfig, protocol::CellStatus};
+use crate::{
+    KernelConfig,
+    config::GeneralConfig,
+    protocol::{CellKind, CellStatus, NotebookFile},
+};
 use std::sync::{Arc, atomic::AtomicBool};
 /// Unaccepted independent session. Its private evaluator is writable; stored Explore forks stay readonly.
 pub struct WorkingSession {
     pub(super) candidate: Session,
 }
+/// Actual end-of-cell facts; output/evidence remain in the candidate, pending host acceptance.
+#[derive(Clone, Debug)]
+pub struct CellBoundary {
+    /// Stable selected cell ID.
+    pub cell_id: String,
+    /// Real status after the original parser/evaluator, including errors after partial effects.
+    pub status: CellStatus,
+    /// Successful statements retained before a terminal error/cancellation, not an effect count.
+    pub successful_statements: usize,
+    /// Last actual history index if a statement succeeded.
+    pub out_index: Option<u32>,
+}
 impl WorkingSession {
+    /// Apply current committed source/settings without calling Evaluate/RunAll/DeleteCell cascade.
+    /// A skipped/reverted mathematical epoch retires all owned definitions conservatively.
+    pub fn reconcile(
+        &mut self,
+        source: NotebookFile,
+        general: GeneralConfig,
+        retire_all: bool,
+    ) -> Result<(), String> {
+        self.candidate
+            .apply_source_file_without_evaluation(source)?;
+        self.candidate
+            .apply_calculation_settings_without_evaluation(general)?;
+        if retire_all {
+            let owners = self
+                .candidate
+                .owners
+                .values()
+                .cloned()
+                .collect::<std::collections::BTreeSet<_>>();
+            for owner in owners {
+                self.candidate.release_owned(&owner);
+            }
+            for cell in &mut self.candidate.notebook.cells {
+                if cell.kind == CellKind::Math {
+                    cell.status = CellStatus::Stale;
+                }
+            }
+        }
+        Ok(())
+    }
+    /// Execute exactly one current Math cell. Prerequisites must already be ready; no auto cascade.
+    /// Errors keep actual statement/definition effects in this unaccepted working state.
+    pub fn run_current_cell(&mut self, cell_id: &str) -> Result<CellBoundary, String> {
+        let index = self
+            .candidate
+            .notebook
+            .cells
+            .iter()
+            .position(|c| c.id == cell_id)
+            .ok_or("INVALID_CELL_REFERENCE")?;
+        if self.candidate.notebook.cells[index].kind != CellKind::Math {
+            return Err("INVALID_CELL_KIND".into());
+        }
+        let names = self
+            .candidate
+            .eval
+            .defs
+            .known_functions()
+            .iter()
+            .map(|s| s.name().to_owned())
+            .collect::<Vec<_>>();
+        let analysis = crate::source::analyze_source(
+            &self.candidate.notebook.to_file(),
+            self.candidate.config.general.dialect,
+            self.candidate.config.general.constants,
+            &names,
+        )?;
+        if self.candidate.config.general.reactive
+            && (analysis
+                .cycles
+                .iter()
+                .chain(&analysis.blocked)
+                .any(|id| id == cell_id)
+                || analysis
+                    .conflicts
+                    .iter()
+                    .any(|c| c.cell_ids.iter().any(|id| id == cell_id))
+                || !self.candidate.prerequisites_ready(index))
+        {
+            return Err("DEPENDENCY_NOT_READY".into());
+        }
+        self.candidate.notebook.cells[index].status = CellStatus::Running;
+        self.candidate.run_cell(index);
+        let cell = &self.candidate.notebook.cells[index];
+        Ok(CellBoundary {
+            cell_id: cell.id.clone(),
+            status: cell.status,
+            successful_statements: cell.records.len(),
+            out_index: cell.exec_count,
+        })
+    }
     /// Execute against the candidate; none of its definition/result mutations affect the parent.
     pub fn session_mut(&mut self) -> &mut Session {
         &mut self.candidate

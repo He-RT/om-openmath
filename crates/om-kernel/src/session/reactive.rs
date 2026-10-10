@@ -139,7 +139,7 @@ impl Session {
         reran
     }
 
-    fn prerequisites_ready(&self, index: usize) -> bool {
+    pub(super) fn prerequisites_ready(&self, index: usize) -> bool {
         self.notebook.cells[index].uses.iter().all(|symbol| {
             if let Some(owner) = self.owners.get(symbol) {
                 self.notebook

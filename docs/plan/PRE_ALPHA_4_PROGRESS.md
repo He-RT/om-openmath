@@ -2,11 +2,11 @@
 
 [完整实施计划](PRE_ALPHA_4.md) · [机器门禁](../acceptance/pre-alpha.4/gates.toml) · [裁决](DEVIATIONS.md) · [问题](QUESTIONS.md)
 
-2026-10-10。目标`0.1.0-pre-alpha.4`，当前运行/公开版本`.3`；开发`dev`，不合main、不改旧标签、本机不启动iOS模拟器。本文只记录结果，规格及完成标准唯一见主计划；计划编写本身不计实施完成。
+2026-10-11。目标`0.1.0-pre-alpha.4`，当前运行/公开版本`.3`；开发`dev`，不合main、不改旧标签、本机不启动iOS模拟器。本文只记录结果，规格及完成标准唯一见主计划；计划编写本身不计实施完成。
 
 **当前状态：** 19任务完成（全部R4.0与R4.1.01–08）；其余79任务尚未完成；32最终运行/发行gate全部not_run；candidate未分配，ready_to_publish=false，released_verified=false。设计/HTML/Schema通过不填运行时pass。
 
-**下一任务：** R4.1.09主KernelWorker、非执行source reconcile与真实耐久候选接纳。真实逆事务、原生文本/IME group、200+pin及物理裁减回执已通过；完整工作台与Agent仍继续后续任务。保持同candidate完整门禁，R4.5.07在R4.5.05冻结前完成。
+**下一任务：** R4.1.09继续：已有真实独立worker/candidate，接通协调器与Blob/SQLite耐久候选接纳。真实逆事务、原生文本/IME group、200+pin及物理裁减回执已通过；完整工作台与Agent仍继续后续任务。保持同candidate完整门禁，R4.5.07在R4.5.05冻结前完成。
 
 ## 已知外部前置
 
@@ -38,8 +38,8 @@
 | [x] [R4.1.05](PRE_ALPHA_4.md#task-r4.1.05) | 冻结Preview与新格身份分配 | completed | 10preview+3ref / 原计划→SQLite→原authority实际回执 / 期限/scope完整性 | 22fc708 |
 | [x] [R4.1.06](PRE_ALPHA_4.md#task-r4.1.06) | DocCommitPort、编辑屏障与未知提交 | completed | [实际提交](../acceptance/pre-alpha.4/development/r41/commit.json) / NSTextView+SQLite / 63Rust / Release | 21b01e7 |
 | [x] [R4.1.07](PRE_ALPHA_4.md#task-r4.1.07) | 统一源码撤销和后续编辑冲突 | completed | [历史/文本/回执](../acceptance/pre-alpha.4/development/r41/history-and-groups.json) / 200+pin / actual UTF/IME / 80Rust / Release | 3853967 |
-| [x] [R4.1.08](PRE_ALPHA_4.md#task-r4.1.08) | 完整可写计算状态与无损codec | completed | [整个Session/原证据](../acceptance/pre-alpha.4/development/r41/session-checkpoint.json) / 723相关Rust＋原53＋data-only/角色/预算 | de0ec9e及前置；本批待补 |
-| [ ] [R4.1.09](PRE_ALPHA_4.md#task-r4.1.09) | 主KernelWorker、候选接纳和直接取消 | planned | — | — |
+| [x] [R4.1.08](PRE_ALPHA_4.md#task-r4.1.08) | 完整可写计算状态与无损codec | completed | [整个Session/原证据](../acceptance/pre-alpha.4/development/r41/session-checkpoint.json) / 723相关Rust＋原53＋data-only/角色/预算 | 55d11b8；de0ec9e及前置 |
+| [ ] [R4.1.09](PRE_ALPHA_4.md#task-r4.1.09) | 主KernelWorker、候选接纳和直接取消 | in_progress | [真实worker/候选](../acceptance/pre-alpha.4/development/r41/main-worker.json) / 8新case＋301相关Rust；耐久接纳/Host待完 | 本批待补 |
 | [ ] [R4.1.10](PRE_ALPHA_4.md#task-r4.1.10) | 不可变结果库和只读检查通道 | planned | — | — |
 | [ ] [R4.1.11](PRE_ALPHA_4.md#task-r4.1.11) | NSDocument打开保存与冻结快照 | planned | — | — |
 | [ ] [R4.1.12](PRE_ALPHA_4.md#task-r4.1.12) | 会话outbox、草稿与启动恢复 | planned | — | — |
@@ -345,3 +345,11 @@ Done依据与覆盖case/proof:
 - 原53实际Kernel输入→bytes→owned恢复→原输出/步骤/数值残差→byte recapture通过；原期待未改。实际Root/80位decimal/fit/ODE/interpolation后续调用、随机/Out、readonly Explore、延迟RHS不重跑通过。未知版本/角色/嵌套字段/owner/history/provenance/引用、trailing/容量/深度/取消拒绝，不返回partial success。
 - 最终相关六crate回归723passed/1原ignored/0failed（整次含4Session用例），随后新增不重跑延迟RHS用例的5Session目标测试通过。原steps4、readonly8、host pool2通过；Clippy/fmt/纯WASM/deny、Python17及计划/200DTO/drift验证通过。原Release200ms/1s和32final gate本批未执行，不把debug 53往返写成性能pass。
 - 全部源码/log hash、完整命令与范围见[session-checkpoint.json](../acceptance/pre-alpha.4/development/r41/session-checkpoint.json)。上一de0ec9e的CI38057397556五jobs全success，只证明前置SHA。R4.1.08 Done满足，当前19/98；下一任务R4.1.09真实主worker/非执行对齐/存储接纳，余79任务继续完整范围。版本仍`.3`、final candidate未分配，无本机iOS模拟器/旧公开资产变化。
+
+## R4开发记录 D024 — 主CAS线程、非执行对齐与真实候选（R4.1.09继续）
+
+- 独立KernelWorker每job pin显式parent、以新clock/token恢复owned Session，先非执行同步current source/settings/owner失效再原run_cell单格真实CAS；注册池的编码移到短锁外，worker没有自己的active指针。等待队列2、lifetime admission4096、fresh token/duplicate identity、direct stop、后台join与丢失receiver的candidate回收有明确边界。
+- a2→5对齐清理旧a/b，不自动cascade；未运行a前b拒绝DEPENDENCY_NOT_READY，显式新parent后得到b6。标题改动不退还定义，跳过多个math epoch或改后恢复相同source则保守退还所有owned Math定义，history/random不重跑。非reactive重新赋值按原语义，reactive真实依赖/cycle/conflict检查。
+- 实际现代多语句cancel前成功history1与赋值7仅在candidate；Wolfram失败CompoundExpression有先前赋值7而无成功history。新的测试最初把held singular inverse误当throw，再误把semicolon子式计为history，保留全部诊断与失败logs，按真实原Session语义纠正新fixture，不改既有数学期望。错scope/epoch/hash、cancel-after-freeze、queue/pool满、token复用、close以及拒绝candidate的Out/random隔离均实测。
+- 最终8新worker case＋2池case在相关三crate完整回归中全部通过：301passed/0failed/1原ignored。Clippy/fmt/纯WASM/200DTO与计划检查通过；源码与日志hash/实际命令见[main-worker.json](../acceptance/pre-alpha.4/development/r41/main-worker.json)。55d11b8整Session提交的CI38061268087五jobs全success，只证明前置SHA，非本worker或final候选。
+- R4.1.09保持unchecked/in_progress，actual NativeHost/Swift main calculation注册、同一source逻辑门与accept/cancel屏障、真实Blob/accepted SQLite/active head/operation/outbox及原ID耐久回读尚待接通；临时candidate不是已接纳主状态，也不是可用工作台。当前19/98、79任务待完、32final gate not_run，运行`.3`，无本机模拟器/旧公开资产/第三方新依赖/unsafe变化。

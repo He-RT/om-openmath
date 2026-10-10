@@ -22,7 +22,7 @@
   "schema_version": 1,
   "check_kind": "design_plan_structure",
   "status": "passed",
-  "markdown_local_links_checked": 1025,
+  "markdown_local_links_checked": 1027,
   "optional_local_reference_links": 36,
   "runtime_gate_checks_executed": 0,
   "ready_to_publish": false,
@@ -36,7 +36,7 @@
     },
     {
       "path": "docs/plan/PRE_ALPHA_4_PROGRESS.md",
-      "sha256": "9f251d991a693e967641d385d075846e65306ffb1d47d9be80c6fd8c4c6ae689"
+      "sha256": "c3694af13d432287358ee16091e26f76d4762b7942d8942fbe8011f9c9dec5b2"
     },
     {
       "path": "docs/plan/NEXT_RELEASE.md",

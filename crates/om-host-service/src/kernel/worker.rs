@@ -1,10 +1,12 @@
 //! Real main CAS work is restored from an explicit immutable state. No worker-owned active pointer.
+mod lifecycle;
 mod runtime;
 use super::{KernelState, KernelStateError, KernelStatePool};
 use crate::{
     document::{coordinator::kernel_file, validate_snapshot},
     protocol::{Serial, generated::NativeSourceSnapshot},
 };
+pub(crate) use lifecycle::Lifecycle;
 use om_kernel::{
     CellBoundary,
     checkpoint::{CheckpointBinding, CheckpointLimits, CheckpointRestore},
@@ -46,6 +48,7 @@ pub struct KernelCandidate {
     pub(super) provenance: CandidateProvenance,
     pub(super) boundary: CellBoundary,
     pub(super) cancel: Arc<AtomicBool>,
+    pub(super) lifecycle: Arc<Lifecycle>,
 }
 /// Producer scope for the future final source/config/active-parent acceptance barrier.
 #[derive(Clone, Debug)]
@@ -136,6 +139,7 @@ fn identity(id: &str) -> bool {
 }
 fn execute(
     job: KernelJob,
+    lifecycle: Arc<Lifecycle>,
     parent: Arc<KernelState>,
     pool: &Mutex<KernelStatePool>,
     limits: CheckpointLimits,
@@ -232,11 +236,13 @@ fn execute(
         let state = pool.state(&id)?;
         (id, state)
     };
+    lifecycle.prepared()?;
     Ok(KernelCandidate {
         checkpoint_ref,
         state,
         boundary,
         cancel: job.cancel,
+        lifecycle,
         provenance: CandidateProvenance {
             runtime_instance_id: job.runtime_instance_id,
             document_generation: job.document_generation,

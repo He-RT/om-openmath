@@ -43,6 +43,8 @@ jobs:
         run: bash macos/Scripts/test-undo.sh > target/macos-ci-evidence/undo.log 2>&1
       - name: 最近200源码历史、固定项与实际载荷裁减
         run: bash macos/Scripts/test-history.sh > target/macos-ci-evidence/history.log 2>&1
+      - name: 实际 CAS 检查点、同库 Blob 接纳与原回执恢复
+        run: bash macos/Scripts/test-kernel-store.sh > target/macos-ci-evidence/kernel-store.log 2>&1
       - name: 校验开发包签名和实际 ABI 符号
         run: |
           codesign --verify --deep --strict 'target/macos-native/Build/Products/Release/OpenMath Preview.app'

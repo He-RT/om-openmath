@@ -9,7 +9,7 @@ import subprocess
 import tempfile
 
 ROOT = Path(__file__).resolve().parents[1]
-SOURCES = ['macos-host-state.schema.json', 'macos-editor-rendering.schema.json', 'native-host-wire.schema.json', 'native-source-store.schema.json', 'native-preview.schema.json']
+SOURCES = ['macos-host-state.schema.json', 'macos-editor-rendering.schema.json', 'native-host-wire.schema.json', 'native-source-store.schema.json', 'native-preview.schema.json', 'native-kernel-store.schema.json']
 PRIMITIVES = {'PreviewSource': ('String', 'String'), 'CellIdentity': ('String', 'String'), 'Identity': ('String', 'String'), 'Sha256': ('String', 'String'),
               'Serial': ('Serial', 'HostSerial'), 'BlobHash': ('String', 'String'), 'Timestamp': ('String', 'String'), 'ByteOffset': ('u32', 'UInt32')}
 models = {}

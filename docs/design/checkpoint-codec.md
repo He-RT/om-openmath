@@ -1,6 +1,6 @@
 # 无损数学 checkpoint 编码基础
 
-R4.1.08的无损基础包括数值原子、表达式图、Evaluator数学和整个Session/owners/实际输出记录codec。解码结果是owned候选；主KernelWorker接纳、Blob耐久发布和活动指针恢复仍由R4.1.09及后续任务完成，不能以codec往返宣称已接通公开主会话恢复。
+R4.1.08的无损基础包括数值原子、表达式图、Evaluator数学和整个Session/owners/实际输出记录codec。解码结果是owned候选；R4.1.09已有冻结接纳计划和真实Blob/SQLite同库接纳；实际NativeHost运行入口、共享逻辑门和活动指针恢复仍继续，不能以codec往返宣称已接通公开主会话恢复。
 
 ## 数值原子 OMNU v1
 
@@ -58,3 +58,15 @@ Host KernelStatePool临时保留actual encoded bytes、SHA256、原binding/sourc
 跨越多个math epoch及同源码的修改/回退无法证明旧定义仍有效，因此保守清除全部原owned definitions；不重跑source或随机/history。实际错误与取消前的副作用保留在未接纳candidate中，CellBoundary的successful_statements不是definition effect count：Wolfram CompoundExpression可以0成功history但已有赋值。非reactive模式保持原重赋值行为，reactive依赖未就绪明确拒绝。
 
 每candidate保留原runtime/generation/operation/selected parent/source/config/hash及真实terminal facts，取消也能到达已freeze且待接纳的token；池满只失败，不覆盖parent。close停止admission/token，join返回后台caller处理。后续实际NativeHost/Swift端口、document逻辑门、Blob+accepted SQLite同库持久化、active指针与接受事件仍待实施；此worker API仅产生临时candidate，不证明耐久接纳或完整工作台可用。
+
+## 冻结接纳与同库记录（R4.1.09，部分已实施）
+
+`FrozenKernelPlan`仅从真实空数学bootstrap或真实worker candidate构造；candidate明确关联已接纳parent类型，保留原producer source/cell revisions，当前acceptance_source另冻结。相同epoch下标题/非Math变化可以在生产后接受，math epoch/config/runtime/generation/parent不符拒绝且撤销临时lookup。不会从当前source重建历史cell revisions；迟到title也不改原producer packet。
+
+新 `native-kernel-store.schema.json`生成Rust/Swift5 DTO（共205），有长度界定request hash、producer/Blob/byte length/source/acceptance revisions/parent/state revision/实际terminal status与history counts。无原request改变或receipt/hash/provenance不符能提升为accepted parent。独立KernelLifecycle让worker direct cancel和最终enter使用同一短锁；enter前cancel拒绝，enter后stop不伪造SQLite回滚，unknown保留原plan/state，matching trusted receipt才有AcceptedKernelState。普通unit里的合成receipt仅证明契约/lifecycle，不是physical durable证据。
+
+新document store3/min reader3/codec3/user_version3支持accepted_checkpoints/kernel_head/accepted_results/kernel_operations/kernel_transitions/kernel_outbox；root/Library仍1、source/history records仍原codec。旧native v1/v2不自动upgrade，继续原source-only/full或history能力，kernel API明确unsupported；旧v2 reader拒绝3。Blob真实hash/length校验且transfer pin存活后，checkpoint blob_refs、原plan/sourceFK、result producer、head/state revision、receipt/transition/outbox在同库单transaction提交，实际WAL F_FULLFSYNC与独立原ID回读后才返成功。旧source revision裁减必须保留kernel producer/acceptance引用。
+
+`StorageService.commitKernel`后台执行IO，Rust只在最终短barrier校验scope/lifecycle；当前physical fixture通过真实Rust bootstrap→Swift Blob/SQLite→原receipt/OMKS恢复→真实a/b/error的连续链。source Math变化可使document_head的当前active ref失效，而kernel_head仍保留最后已接纳基线，下一job必须非执行reconcile后使用；标题变化保留当前active ref。accepted_results目前仅保存checkpoint内真实cell输出的来源索引，完整ResultStore/分页/检查通道继续R4.1.10。
+
+实际验证包含original-ID单效果、旧parent拒绝、rollback/owner barrier拒绝、postcommit lost ACK、真实F_FULLFSYNC失败后unknown及重新确认、实际Blob/outbox损坏拒绝、重开后exact bytes。5个真实SIGKILL点在同库事务中断时仅留下旧parent或完整accepted candidate，未发布的candidate不会成为head；unit的64次accept/cancel race仅证明短lifecycle线性化。NativeHost/CABI main计算注册、真实同文档共享逻辑门、UI/Agent结果事件和完整启动恢复仍待实施，不能将这些独立physical fixtures算整个R4.1.09 Done或final gate。

@@ -1,4 +1,6 @@
 //! Kernel state capture/read/restore. Registering temporary bytes never certifies durable acceptance.
+/// Frozen actual candidates, final cancellation barrier and trusted physical receipt verification.
+pub mod acceptance;
 /// Main mathematics worker; it freezes candidates but never decides durable acceptance.
 pub mod worker;
 use om_kernel::{
@@ -21,6 +23,48 @@ pub struct KernelState {
     reserved: usize,
 }
 impl KernelState {
+    /// Import verified original bytes without executing source. Full codec validation occurs before
+    /// any state is returned; trusted caller must additionally verify durable receipt/current scope.
+    pub fn import(
+        bytes: Vec<u8>,
+        binding: CheckpointBinding,
+        source: NotebookFile,
+        general: GeneralConfig,
+        limits: CheckpointLimits,
+        ctx: &Interrupt,
+    ) -> Result<Self, KernelStateError> {
+        let _validated = Session::decode_checkpoint(
+            &bytes,
+            CheckpointRestore {
+                binding: &binding,
+                source: &source,
+                general: &general,
+                clock: None,
+                cancel: Arc::new(std::sync::atomic::AtomicBool::new(false)),
+            },
+            limits,
+            ctx,
+        )?;
+        let reserved = bytes
+            .len()
+            .checked_add(source.title.len())
+            .and_then(|n| {
+                source.cells.iter().try_fold(n, |n, c| {
+                    n.checked_add(c.id.len())
+                        .and_then(|n| n.checked_add(c.source.len()))
+                })
+            })
+            .and_then(|n| n.checked_add(1024))
+            .ok_or(KernelStateError::Limit)?;
+        Ok(Self {
+            binding,
+            source,
+            general,
+            hash: digest(&bytes),
+            bytes: bytes.into(),
+            reserved,
+        })
+    }
     /// Freeze an actual idle session off the registry lock. This alone grants no active status.
     pub fn capture(
         session: &mut Session,

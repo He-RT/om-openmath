@@ -1,0 +1,391 @@
+{
+  "task": "R4.1.09",
+  "status": "in_progress",
+  "task_done": false,
+  "development_only": true,
+  "runtime_version": "0.1.0-pre-alpha.3",
+  "working_tree_base": "3ce0320f81d3d2437284e76fe1a3a51b9bdd0b85",
+  "native_dto_count": 205,
+  "native_abi_symbols_changed": false,
+  "format": {
+    "document": 3,
+    "minimum_reader": 3,
+    "document_codec": 3,
+    "root": 1,
+    "library": 1,
+    "old_native_v1_v2_automatic_upgrade": false,
+    "legacy_tauri_touched": false
+  },
+  "related_rust": {
+    "passed": 97,
+    "failed": 0,
+    "ignored": 0,
+    "acceptance_contract_cases": 5,
+    "lifecycle_cases": 2,
+    "actual_cancel_enter_races": 64,
+    "synthetic_unit_receipts_are_durability_evidence": false
+  },
+  "python_tests_passed": 17,
+  "actual_rust_swift_sqlite_blob_chain": {
+    "bootstrap_no_source_evaluation": true,
+    "from_previous_actual_receipt_only": true,
+    "a": "2",
+    "a+1": "3",
+    "error_before_compound_end_partial": "7",
+    "exact_bytes_after_reopen": true,
+    "original_id_effect_once": true,
+    "head_result_ref_operation_transition_outbox_one_db_commit": true,
+    "rollback_early_barrier_old_parent_and_changed_request_rejected": true,
+    "lost_ack_original_id_reconciled": true,
+    "actual_fullfsync_failure_is_unknown_until_reconfirmed": true,
+    "damaged_blob_and_outbox_graph_rejected": true
+  },
+  "actual_SIGKILL_boundaries": [
+    {
+      "stage": "kernel_blob_referenced",
+      "root": "/Users/hert/Projects/openmath/target/macos-storage-tests/kernel-crash-jo9c27mi",
+      "exit": -9,
+      "actual_restart": "previous-accepted-parent"
+    },
+    {
+      "stage": "kernel_checkpoint_inserted",
+      "root": "/Users/hert/Projects/openmath/target/macos-storage-tests/kernel-crash-xyx1fwh6",
+      "exit": -9,
+      "actual_restart": "previous-accepted-parent"
+    },
+    {
+      "stage": "before_kernel_commit",
+      "root": "/Users/hert/Projects/openmath/target/macos-storage-tests/kernel-crash-x6yew7o3",
+      "exit": -9,
+      "actual_restart": "previous-accepted-parent"
+    },
+    {
+      "stage": "kernel_committed",
+      "root": "/Users/hert/Projects/openmath/target/macos-storage-tests/kernel-crash-9bodmxfc",
+      "exit": -9,
+      "actual_restart": "same-accepted-candidate"
+    },
+    {
+      "stage": "kernel_receipt_readback",
+      "root": "/Users/hert/Projects/openmath/target/macos-storage-tests/kernel-crash-p_1we0ib",
+      "exit": -9,
+      "actual_restart": "same-accepted-candidate"
+    }
+  ],
+  "clippy_fmt_release_link_and_generated_contracts_passed": true,
+  "native_source_history_blob_undo_and_commit_regressions_passed": true,
+  "source_history_commit_count": 206,
+  "local_ios_simulator_started": false,
+  "math_expectations_or_thresholds_changed": false,
+  "commands": [
+    "bash macos/Scripts/test-kernel-store.sh",
+    "cargo test -p om-host-service -p om-apple-ffi --locked",
+    "cargo clippy -p om-host-service --all-targets --locked -- -D warnings",
+    "python3 -X warn_default_encoding -W error::EncodingWarning -m unittest discover -s tests -v",
+    "bash macos/Scripts/test-document-store.sh",
+    "bash macos/Scripts/test-history.sh",
+    "bash macos/Scripts/test-blobs.sh",
+    "bash macos/Scripts/test-undo.sh",
+    "bash macos/Scripts/test-commit-port.sh",
+    "bash macos/Scripts/build-native.sh",
+    "python3 scripts/native_contracts.py --check",
+    "python3 macos/Scripts/generate-project.py --check",
+    "python3 scripts/check_pre_alpha_4_plan.py --check --self-test --write-report",
+    "cargo fmt --all --check",
+    "git diff --check"
+  ],
+  "code": [
+    {
+      "path": "crates/om-host-service/src/kernel/acceptance.rs",
+      "bytes": 18326,
+      "sha256": "91dca44451c1fb3f06fdb34767cf31b71fc625dbe6fda70d6ded13a37ae2b36f"
+    },
+    {
+      "path": "crates/om-host-service/src/kernel/acceptance/contract.rs",
+      "bytes": 9371,
+      "sha256": "edafc1b6e9e30e6ae1824a298bcaf15a100f6f321afd2071d5e8efffdfb77640"
+    },
+    {
+      "path": "crates/om-host-service/src/kernel/mod.rs",
+      "bytes": 10047,
+      "sha256": "fc453d0dcf587d44acb55511a1366341aa05a8e73512325636a7b9986f977b12"
+    },
+    {
+      "path": "crates/om-host-service/src/kernel/worker.rs",
+      "bytes": 9913,
+      "sha256": "e80c038ee457cfb848de2b98c9fd0dca693c8851a688257f3c6c7954a27248ba"
+    },
+    {
+      "path": "crates/om-host-service/src/kernel/worker/runtime.rs",
+      "bytes": 7932,
+      "sha256": "da8abfe4a2c2609c7b46c1413e81cdb875f2a368867c9e9854a2e2589d0f81d9"
+    },
+    {
+      "path": "crates/om-host-service/src/kernel/worker/lifecycle.rs",
+      "bytes": 5164,
+      "sha256": "3b0f9b4f5ed2dff0e091d7b9aaa461cc3e204d7b5b37813dea0bd78e80624476"
+    },
+    {
+      "path": "crates/om-host-service/tests/kernel_acceptance.rs",
+      "bytes": 11553,
+      "sha256": "df24f83bd4dd0e68b971296dc00597874e87c9f40cdd3a5f187ef62ad8b2099f"
+    },
+    {
+      "path": "crates/om-host-service/examples/kernel_store_contract.rs",
+      "bytes": 7385,
+      "sha256": "dfee55e47f43d2c600d1dfcf408872ecf5f59c41df620040509d9a277e257317"
+    },
+    {
+      "path": "docs/design/native-kernel-store.schema.json",
+      "bytes": 11290,
+      "sha256": "f4003e8dd571bb8a642121db6da033951b42f56ff31a26716e053f2d59cca232"
+    },
+    {
+      "path": "scripts/native_contracts.py",
+      "bytes": 11936,
+      "sha256": "b0fb6ea1d3c4eae08545dc4c2a654a30221252267907b60e60c11cf2d913839f"
+    },
+    {
+      "path": "macos/OpenMathNative/Storage/KernelHashes.swift",
+      "bytes": 5485,
+      "sha256": "3f83bc8a9748abbf4f901f9abb012de087fc186e4f3ea999fcfcd06f354fae30"
+    },
+    {
+      "path": "macos/OpenMathNative/Storage/KernelSchema.swift",
+      "bytes": 3207,
+      "sha256": "42a430504bd512d9f6a3efc5a4bcc9c8c285920ca5fa2e7360781fb8ade64ec6"
+    },
+    {
+      "path": "macos/OpenMathNative/Storage/KernelStore.swift",
+      "bytes": 12960,
+      "sha256": "52fa1a32132ed709d931150a0f3f505f08ad239a803af26f40b79379066be36a"
+    },
+    {
+      "path": "macos/OpenMathNative/Storage/StorageService.swift",
+      "bytes": 15810,
+      "sha256": "d4947acaa088c7ac8a241ebce013c3f5492a1f0fc05bbfd722722075028e7c7b"
+    },
+    {
+      "path": "macos/OpenMathNative/Storage/DocumentStore.swift",
+      "bytes": 18334,
+      "sha256": "8bd75f6dc914330273021d18a9179ab5564f5335dbc84eadd94ea8528584e9ca"
+    },
+    {
+      "path": "macos/OpenMathNative/Storage/SourceHistoryStore.swift",
+      "bytes": 11779,
+      "sha256": "7c57820c30642fd61a586841c8d4cd844b16c23dec2c28c061828bd3acb8424e"
+    },
+    {
+      "path": "macos/OpenMathNative/Storage/StorageTypes.swift",
+      "bytes": 3364,
+      "sha256": "cb6fdb274cf12a081ee370ee49e14f1c9238afd64cb3fdc16b0cac076cbdfbcf"
+    },
+    {
+      "path": "macos/OpenMathNative/Storage/Bootstrap.swift",
+      "bytes": 7470,
+      "sha256": "aaf937286131ad1ba9ecd3c2ab1e880ceb771df561486eed644c7b7121a2146b"
+    },
+    {
+      "path": "macos/OpenMathNativeTests/KernelFixtures/main.swift",
+      "bytes": 11157,
+      "sha256": "1495b20e1447ad3e1d45151d21c017ff78bc58dd737d0560ed3555f804ec2566"
+    },
+    {
+      "path": "macos/OpenMathNativeTests/KernelFixtures/interruption.py",
+      "bytes": 2262,
+      "sha256": "a2553ac238e7cc85bdbb571ae394bbe75ec1dade2ff7ec92f09b732450a7ce0b"
+    },
+    {
+      "path": "macos/Scripts/test-kernel-store.sh",
+      "bytes": 2915,
+      "sha256": "86b4817936ced6f15c9a57bf2d57852d12d751fdacd8f1dda8b945ea5dd5d8a5"
+    },
+    {
+      "path": ".github/workflows/macos-native.yml",
+      "bytes": 3042,
+      "sha256": "2e5e51016f7559cd7e295b3cc90fd9d17d300197078e87dc1b8c915954cdd2c9"
+    }
+  ],
+  "logs": [
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r41/kernel-acceptance-initial-check.log",
+      "bytes": 266,
+      "sha256": "ab071fa27c19988df4cde2417d42cbfe2e611d9a4a31c8f180e69e061dfbbfce"
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r41/kernel-store-swift-initial.log",
+      "bytes": 10684,
+      "sha256": "b862c4cecd5fbfc52fb9df1916874b5f097f1bd2f5668a4f6dda5af0086b5a78"
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r41/kernel-store-swift-fixed.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r41/kernel-store-actual-first.log",
+      "bytes": 900,
+      "sha256": "b9994a89b045d698243b55a164388b77cfda95f07cce5aece1aaab654e962465"
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r41/kernel-store-actual-fixed.log",
+      "bytes": 440,
+      "sha256": "55b78be4f490d4b3ea2147d7023d9e6d9117fb63ad8b7fe63efa3e82a9352df6"
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r41/kernel-store-chain-verified.log",
+      "bytes": 1071,
+      "sha256": "2c7e3f32da83b813bbf1a06e9172ca0691751e486027c0a548026549080f7779"
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r41/kernel-store-chain-crash-verified.log",
+      "bytes": 473,
+      "sha256": "894d081bee69a5cb0ba5b8a2d797a8b7c4ae8bf4438f19899d103073a4dcbd3f"
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r41/kernel-store-chain-crash-fixed.log",
+      "bytes": 1233,
+      "sha256": "f6685421a8a2ddb491d90f498ac0894106e10d7c711d76d59ef86142c2c0cd0a"
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r41/kernel-store-sync-damage-verified.log",
+      "bytes": 1608,
+      "sha256": "75757625b5b80feada666835f0d2e3c374bbd75a31fe9947580aa6f981fc8c6a"
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r41/kernel-acceptance-contracts-first.log",
+      "bytes": 1209,
+      "sha256": "d9cc1409d3d0846b1444d8808e135dd03aac73ca29fcc36d5ff15a9de8db31bd"
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r41/kernel-acceptance-contracts-fixed.log",
+      "bytes": 1742,
+      "sha256": "b5a585de72566df17592ad487142e25fff768978bcd40b884884c8900243aff1"
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r41/kernel-acceptance-clippy-final.log",
+      "bytes": 785,
+      "sha256": "6832457729e8cad4a87509c833f4a51ee8cdcb642f665f96568fbe11b3fb141d"
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r41/kernel-acceptance-clippy-verified.log",
+      "bytes": 1190,
+      "sha256": "d93ee8b7941d5d27d8db97db1e0e13de1b936d278954ac72a7a378cf1609ba66"
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r41/kernel-acceptance-clippy-final-verified.log",
+      "bytes": 227,
+      "sha256": "0ffa524b5c8fdc6d70584ae6f24a24ad69bc19719d9a26d9e4558af726cf4214"
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r41/kernel-acceptance-host-abi-regression.log",
+      "bytes": 11819,
+      "sha256": "180a90fa3ba75bdccc98f776c7dee3cf1fb7a747429c1f4b0bde5284a4c3854b"
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r41/kernel-lifecycle-races.log",
+      "bytes": 695,
+      "sha256": "f91ff09e450dd3cfba0ab8df2b8849ddffd46f7e50a817bda17a023ed3fe301f"
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r41/kernel-v3-source-regression.log",
+      "bytes": 1612,
+      "sha256": "fb1cff08b270625397062ff2f8b75a8b3f147b88c5bff83b390e36e717b26785"
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r41/kernel-v3-history-regression.log",
+      "bytes": 593,
+      "sha256": "3e9ea81173d21ab5a0927b37b32867cbc17df43cf6708af8591697593d4ea5f8"
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r41/kernel-v3-blob-regression.log",
+      "bytes": 346,
+      "sha256": "9a89749898020daddce76fa2ebd45dc5d088c87e619b0efb00988a924946155c"
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r41/kernel-v3-undo-regression.log",
+      "bytes": 3557,
+      "sha256": "fa6d80feec037143d8962c533ecd614a8596578cd1d1267e7630d31976fd8b71"
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r41/kernel-v3-commit-regression.log",
+      "bytes": 2437,
+      "sha256": "a05cb310dead28413e82537cce495a9ddc1bf136a6a59fb46d2494d74e5a9aa1"
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r41/kernel-acceptance-python-regression.log",
+      "bytes": 2835,
+      "sha256": "3eb3e5ce3322cee59a9cd173ffa172dd6c521ea8e493657048a85403199ade1c"
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r41/kernel-acceptance-release-build.log",
+      "bytes": 85466,
+      "sha256": "926106d07f1eb611455a96746ed3c7d731952ec3348bef8a5e5a0600c1f1454a"
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r41/kernel-store-plan-final.log",
+      "bytes": 754,
+      "sha256": "deb70d72045511c62abcc35543915eaa52861ebac0fe7b02ddf2951881d36ef4"
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r41/main-worker-ci-recheck.json",
+      "bytes": 13786,
+      "sha256": "3a7fa9e93d5be88cd676838fc4e6820e95ddc97630fae9fd5437c29e30b54019"
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r41/main-worker-ci-failed.log",
+      "bytes": 1457524,
+      "sha256": "31460741e228406395b918147feb506c369ec4a9a3217461f55113fb424ddc63"
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r41/main-worker-ci-artifacts.jsonl",
+      "bytes": 239,
+      "sha256": "cb11f1995e9b7139a11a3ca935042a190a0a0f7d2f9cbdbdc413c31d3c084ff8"
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r41/kernel-acceptance-ledger-verified.log",
+      "bytes": 754,
+      "sha256": "fc3f7811c5847400a5e5a4b7138b6ca631a626739a2276be7d5ed4a629651e60"
+    }
+  ],
+  "previous_CI": {
+    "run": 38067733784,
+    "sha": "3ce0320f81d3d2437284e76fe1a3a51b9bdd0b85",
+    "conclusion": "failure",
+    "jobs": [
+      [
+        "frontend",
+        "failure"
+      ],
+      [
+        "dependencies",
+        "success"
+      ],
+      [
+        "rust",
+        "success"
+      ],
+      [
+        "native_macos / native",
+        "success"
+      ],
+      [
+        "ios / native",
+        "failure"
+      ]
+    ],
+    "failure_details": [
+      "frontend settings.spec.ts117: saved status locator absent within5000ms, afterEach actual stored metadata/status present",
+      "iPhone original math row17:1139.849333ms >=1000ms"
+    ],
+    "downloaded_original_artifacts": "target/ci-evidence/r4-worker-38067733784",
+    "scope": "previous worker SHA, not current batch or final candidate"
+  },
+  "remaining": [
+    "actual NativeHost/CABI/Swift main kernel endpoint and authoritative active pointer routing",
+    "same-document source+kernel shared logical gate/final scope barrier",
+    "UI/Agent accepted events and partial accepted prefix status",
+    "full ResultStore and startup/unknown operation recovery in subsequent tasks"
+  ],
+  "final_candidate_gate": false
+}

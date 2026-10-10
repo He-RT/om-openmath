@@ -20,7 +20,11 @@
     {
       "path": "docs/design/native-preview.schema.json",
       "sha256": "d316d0f00a6797be91c9e53de3900c48382ca2386757a9613c70aca9464d639c"
+    },
+    {
+      "path": "docs/design/native-kernel-store.schema.json",
+      "sha256": "f4003e8dd571bb8a642121db6da033951b42f56ff31a26716e053f2d59cca232"
     }
   ],
-  "generated_dto_count": 200
+  "generated_dto_count": 205
 }

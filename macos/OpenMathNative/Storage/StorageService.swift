@@ -15,6 +15,7 @@ private final class StoreWriter:@unchecked Sendable {
   private var identity:StoreIdentity?
   private var source:DocumentStore?
   private var references:BlobReferences?
+  private var kernel:KernelStore?
   init(_ name:String,lease:RootLease) { self.lease=lease;queue=DispatchQueue(label:"org.openmath.storage."+name,qos:.utility) }
   nonisolated(nonsending) func perform<T:Sendable>(_ body:@escaping @Sendable (StoreWriter)throws->T) async throws ->T {
     try await withCheckedThrowingContinuation { continuation in
@@ -33,6 +34,7 @@ private final class StoreWriter:@unchecked Sendable {
       if kind=="document" { writer.source=try DocumentStore(db:opened.0,url:folder.appendingPathComponent("Generations").appendingPathComponent(String(format:"%06lld",opened.1.generation)).appendingPathComponent("authority.sqlite"),identity:opened.1) }
       let databaseURL=folder.appendingPathComponent("Generations").appendingPathComponent(String(format:"%06lld",opened.1.generation)).appendingPathComponent(kind=="document" ? "authority.sqlite" : "library.sqlite")
       writer.references=try BlobReferences(db:opened.0,url:databaseURL)
+      if kind=="document",opened.1.storeVersion==3 {writer.kernel=try KernelStore(db:opened.0,url:databaseURL,identity:opened.1)}
       return StoreOpenInfo(identity:opened.1,runtime:opened.2)
     }
   }
@@ -45,11 +47,14 @@ private final class StoreWriter:@unchecked Sendable {
   nonisolated(nonsending) func referenceCall<T:Sendable>(_ work:@escaping @Sendable (BlobReferences)throws->T) async throws ->T {
     try await perform { writer in guard let references=writer.references else {throw StorageError.closing};return try work(references) }
   }
+  nonisolated(nonsending) func kernelCall<T:Sendable>(_ work:@escaping @Sendable (KernelStore)throws->T) async throws ->T {
+    try await perform {writer in guard let kernel=writer.kernel else {throw StorageError.unsupportedVersion};return try work(kernel)}
+  }
   nonisolated(nonsending) func close() async throws {
     try await perform { writer in
       if let db=writer.db {
         try db.transaction { try db.statement("UPDATE store_state SET last_clean_shutdown=1 WHERE singleton=1") }
-        try db.checkpoint();try db.close();writer.db=nil;writer.source=nil;writer.references=nil
+        try db.checkpoint();try db.close();writer.db=nil;writer.source=nil;writer.references=nil;writer.kernel=nil
       }
     }
   }
@@ -127,6 +132,27 @@ actor StorageService {
   func sourceReceipt(document:String,operation:String) async throws ->NativeDurableSourceReceipt? {
     guard closeTask==nil,let writer=documents[document] else { throw StorageError.closing }
     return try await writer.sourceCall { try $0.query(operation) }
+  }
+  func kernelReceipt(document:String,operation:String) async throws ->NativeKernelReceipt? {
+    guard closeTask==nil,let writer=documents[document] else {throw StorageError.closing}
+    return try await writer.kernelCall {try $0.query(operation)}
+  }
+  func acceptedKernelHead(document:String) async throws ->NativeKernelReceipt? {
+    guard closeTask==nil,let writer=documents[document] else {throw StorageError.closing}
+    return try await writer.kernelCall {try $0.readHead()}
+  }
+  /// Verify real immutable publication, retain it, then reference/accept in the same document DB.
+  func commitKernel(_ plan:NativeKernelCommit,publication:BlobPublication,controls:KernelCommitControls,faults:StorageFaults = .init()) async throws ->NativeKernelReceipt {
+    guard closeTask==nil,let blobs,let writer=documents[plan.producer.document_id] else {throw StorageError.closing}
+    try KernelValidation.plan(plan)
+    let transfer=try await blobs.retain(publication)
+    do {
+      guard transfer.descriptor.hash==plan.checkpoint_blob_hash,transfer.descriptor.byteLength==plan.checkpoint_byte_length.value else {throw BlobError.corrupt}
+      // openReader rehashes/checks actual original bytes before any database pointer can reference it.
+      let reader=try await blobs.openReader(transfer);try await blobs.closeReader(reader)
+      let receipt=try await writer.kernelCall {try $0.commit(plan,descriptor:transfer.descriptor,faults:faults,controls:controls)}
+      try await blobs.release(transfer);return receipt
+    } catch {try? await blobs.release(transfer);throw error}
   }
   func publishBlob(data:Data,expectedHash:String?=nil,faults:StorageFaults = .init()) async throws ->BlobPublication {
     guard closeTask==nil,let blobs else {throw StorageError.closing}

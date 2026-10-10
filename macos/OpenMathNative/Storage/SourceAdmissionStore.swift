@@ -22,7 +22,7 @@ final class SourceAdmissionStore {
       if let plan=try? JSONDecoder().decode(NativeSourceCommit.self,from:bytes) {
         try SourceValidation.commit(plan);record=plan.commit
       } else {
-        guard identity.storeVersion==2 else {throw StorageError.corruptIdentity}
+        guard identity.storeVersion>=2 else {throw StorageError.corruptIdentity}
         let summary=try JSONDecoder().decode(NativeSourceTransactionTombstone.self,from:bytes)
         try SourceHistoryStore.validate(summary);record=summary.commit
         guard let (_,retained)=try SourceHistoryStore.read(db,document:identity.documentID!,transaction:record.transaction_id),!retained else {throw StorageError.corruptIdentity}

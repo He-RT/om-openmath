@@ -16,12 +16,17 @@ struct Message {
     job: KernelJob,
     parent: Arc<KernelState>,
     reply: mpsc::SyncSender<Result<KernelCandidate, KernelWorkerError>>,
+    lifecycle: Arc<Lifecycle>,
+}
+struct Admission {
+    token: Weak<AtomicBool>,
+    lifecycle: Weak<Lifecycle>,
 }
 /// A dedicated worker with no active-state decision. Close is two-phase; join off the UI thread.
 pub struct KernelWorker {
     sender: Mutex<Option<mpsc::SyncSender<Message>>>,
     pool: Arc<Mutex<KernelStatePool>>,
-    admissions: Mutex<BTreeMap<String, Weak<AtomicBool>>>,
+    admissions: Mutex<BTreeMap<String, Admission>>,
     closed: Arc<AtomicBool>,
     owner: Mutex<Option<JoinHandle<()>>>,
 }
@@ -58,6 +63,7 @@ impl KernelWorker {
                     let outcome = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
                         execute(
                             message.job,
+                            message.lifecycle,
                             message.parent,
                             &states,
                             limits,
@@ -130,7 +136,7 @@ impl KernelWorker {
         }
         if admissions
             .values()
-            .any(|token| token.ptr_eq(&Arc::downgrade(&job.cancel)))
+            .any(|entry| entry.token.ptr_eq(&Arc::downgrade(&job.cancel)))
         {
             return Err(KernelWorkerError::ReusedToken);
         }
@@ -141,18 +147,30 @@ impl KernelWorker {
         let (reply, receiver) = mpsc::sync_channel(1);
         let id = job.operation_id.clone();
         let token = Arc::downgrade(&job.cancel);
+        let lifecycle = Arc::new(Lifecycle::new(job.cancel.clone()));
         let sender = self
             .sender
             .lock()
             .map_err(|_| KernelWorkerError::Internal)?;
         let sender = sender.as_ref().ok_or(KernelWorkerError::Closing)?;
         sender
-            .try_send(Message { job, parent, reply })
+            .try_send(Message {
+                job,
+                parent,
+                reply,
+                lifecycle: lifecycle.clone(),
+            })
             .map_err(|e| match e {
                 mpsc::TrySendError::Full(_) => KernelWorkerError::QueueFull,
                 mpsc::TrySendError::Disconnected(_) => KernelWorkerError::Closing,
             })?;
-        admissions.insert(id, token);
+        admissions.insert(
+            id,
+            Admission {
+                token,
+                lifecycle: Arc::downgrade(&lifecycle),
+            },
+        );
         Ok(receiver)
     }
     /// Direct stop also reaches a frozen candidate that is awaiting coordinator acceptance.
@@ -161,12 +179,11 @@ impl KernelWorker {
             .admissions
             .lock()
             .map_err(|_| KernelWorkerError::Internal)?;
-        let token = admissions
+        let entry = admissions
             .get(operation)
             .ok_or(KernelWorkerError::Invalid)?;
-        if let Some(token) = token.upgrade() {
-            token.store(true, Ordering::Release);
-            Ok(true)
+        if let Some(lifecycle) = entry.lifecycle.upgrade() {
+            lifecycle.cancel()
         } else {
             Ok(false)
         }
@@ -178,8 +195,11 @@ impl KernelWorker {
             .lock()
             .map_err(|_| KernelWorkerError::Internal)?;
         self.closed.store(true, Ordering::Release);
-        for token in admissions.values().filter_map(Weak::upgrade) {
-            token.store(true, Ordering::Release);
+        for lifecycle in admissions
+            .values()
+            .filter_map(|entry| entry.lifecycle.upgrade())
+        {
+            let _ = lifecycle.cancel();
         }
         self.sender
             .lock()

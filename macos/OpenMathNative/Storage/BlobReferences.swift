@@ -23,6 +23,19 @@ final class BlobReferences {
       SourceValidation.identity(reference.owner.id),!reference.mediaType.isEmpty,reference.mediaType.utf8.count<=256,
       reference.mediaType.utf8.allSatisfy({$0>=32 && $0<127}),SourceValidation.identity(reference.codecVersion) else {throw StorageError.corruptIdentity}
   }
+  /// Called by the same writer inside its existing source/math transaction; no independent COMMIT.
+  static func insertWithinTransaction(_ reference:BlobReference,db:SQLiteDatabase) throws {
+    guard reference.descriptor.byteLength<=128*1024*1024,KernelValidation.hash(reference.descriptor.hash),
+      SourceValidation.identity(reference.owner.id),SourceValidation.identity(reference.codecVersion),!reference.mediaType.isEmpty else {throw StorageError.corruptIdentity}
+    var length:Int64?
+    try db.statement("SELECT byte_length FROM blob_objects WHERE blob_hash=?",[.text(reference.descriptor.hash)]) {length=sqlite3_column_int64($0,0)}
+    if let length {guard length==Int64(reference.descriptor.byteLength) else {throw StorageError.corruptIdentity}}
+    else {try db.statement("INSERT INTO blob_objects VALUES(?,?)",[.text(reference.descriptor.hash),.integer(Int64(reference.descriptor.byteLength))])}
+    var old:(String,String)?
+    try db.statement("SELECT media_type,codec_version FROM blob_refs WHERE owner_kind=? AND owner_id=? AND blob_hash=?",[.text(reference.owner.kind.rawValue),.text(reference.owner.id),.text(reference.descriptor.hash)]) {old=(try SQLColumn.text($0,0),try SQLColumn.text($0,1))}
+    if let old {guard old.0==reference.mediaType,old.1==reference.codecVersion else {throw StorageError.idempotencyConflict}}
+    else {try db.statement("INSERT INTO blob_refs VALUES(?,?,?,?,?)",[.text(reference.owner.kind.rawValue),.text(reference.owner.id),.text(reference.descriptor.hash),.text(reference.mediaType),.text(reference.codecVersion)])}
+  }
   /// Caller keeps an independent verified BlobStore transfer pin until this transaction settles.
   func attach(_ reference:BlobReference,faults:StorageFaults) throws ->BlobReference {
     try validate(reference)

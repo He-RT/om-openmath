@@ -17,7 +17,7 @@ final class DocumentStore {
     self.db=db;self.url=url;self.identity=identity
     try DocumentSchema.ensure(db)
     self.admissions=try SourceAdmissionStore(db:db,identity:identity)
-    self.history=identity.storeVersion==2 ? try SourceHistoryStore(db:db,document:identity.documentID!) : nil
+    self.history=identity.storeVersion>=2 ? try SourceHistoryStore(db:db,document:identity.documentID!) : nil
   }
   private func encoded<T:Encodable>(_ value:T) throws ->Data {
     let bytes=try JSONEncoder().encode(value)
@@ -72,7 +72,7 @@ final class DocumentStore {
       let bytes=try SQLColumn.data(row,3)
       let value=try JSONDecoder().decode(NativeDurableSourceReceipt.self,from:bytes)
       if (try SQLColumn.data(row,4)).isEmpty {
-        guard identity.storeVersion==2,let (summary,retained)=try SourceHistoryStore.read(reader,document:identity.documentID!,transaction:try SQLColumn.text(row,1)),!retained else {throw StorageError.corruptIdentity}
+        guard identity.storeVersion>=2,let (summary,retained)=try SourceHistoryStore.read(reader,document:identity.documentID!,transaction:try SQLColumn.text(row,1)),!retained else {throw StorageError.corruptIdentity}
         let c=summary.commit
         guard receipt==nil,value.protocol_version==1,value.receipt.store_id==identity.storeID,value.receipt.document_id.value==identity.documentID,
           value.receipt.operation_id==operation,value.receipt.phase == .completed,value.receipt.error_code.value==nil,
@@ -147,7 +147,7 @@ final class DocumentStore {
   }
   func undoMetadata(_ operation:String) throws ->NativeUndoGroup? {
     guard let receipt=try query(operation),let transaction=receipt.receipt.transaction_id.value else {throw StorageError.transactionUnavailable}
-    if identity.storeVersion==2 {
+    if identity.storeVersion>=2 {
       let read=try SQLiteDatabase(url:url,readonly:true);defer {try? read.close()}
       guard let (summary,_)=try SourceHistoryStore.read(read,document:identity.documentID!,transaction:transaction),summary.commit.request_hash==receipt.receipt.request_hash else {throw StorageError.corruptIdentity}
       return summary.undo_group
@@ -211,7 +211,7 @@ final class DocumentStore {
       try db.statement("INSERT INTO operations VALUES(?,?,?,'completed',?,?,?)",[.text(record.document_id),.text(record.operation_id),.text(record.request_hash),.text(record.transaction_id),.integer(Int64(record.committed_revision.value)),.blob(receiptBytes)])
       try db.statement("INSERT INTO operation_transitions VALUES(?,?,1,'completed',?)",[.text(record.document_id),.text(record.operation_id),.text(Self.digest(receiptBytes))])
       try db.statement("INSERT INTO outbox VALUES(?,?,?,?,?,0)",[.text(record.outbox_event_id),.text(record.document_id),.text(record.operation_id),.blob(receiptBytes),.text(Self.digest(receiptBytes))])
-      try db.statement("UPDATE document_head SET revision=?,execution_epoch=?,snapshot_hash=?,active_checkpoint_ref=NULL WHERE document_id=? AND revision=? AND snapshot_hash=?",[.integer(Int64(record.committed_revision.value)),.integer(Int64(record.execution_epoch.value)),.text(record.snapshot_hash),.text(record.document_id),.integer(Int64(record.base_revision.value)),.text(plan.before.snapshot_hash)])
+      try db.statement("UPDATE document_head SET revision=?,execution_epoch=?,snapshot_hash=?,active_checkpoint_ref=CASE WHEN execution_epoch=? THEN active_checkpoint_ref ELSE NULL END WHERE document_id=? AND revision=? AND snapshot_hash=?",[.integer(Int64(record.committed_revision.value)),.integer(Int64(record.execution_epoch.value)),.text(record.snapshot_hash),.integer(Int64(record.execution_epoch.value)),.text(record.document_id),.integer(Int64(record.base_revision.value)),.text(plan.before.snapshot_hash)])
       try admissions.transition(record.operation_id,.completed)
       try history?.insert(storedPlan,forward:forward,inverse:inverse)
       try faults.reach("before_source_commit")

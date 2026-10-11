@@ -42,8 +42,8 @@ private final class StoreWriter:@unchecked Sendable {
       if kind=="document",(3...5).contains(opened.1.storeVersion) {writer.kernel=try KernelStore(db:opened.0,url:databaseURL,identity:opened.1)}
       if kind=="document",(4...5).contains(opened.1.storeVersion) {writer.saves=try SaveStore(db:opened.0,url:databaseURL,identity:opened.1)}
       if kind=="document",opened.1.storeVersion==5 {writer.drafts=try DraftBackupStore(db:opened.0,url:databaseURL,identity:opened.1)}
-      if kind=="library",(2...3).contains(opened.1.storeVersion) {writer.effects=try LibraryStore(db:opened.0,url:databaseURL,identity:opened.1)}
-      if kind=="library",opened.1.storeVersion==3 {writer.sessions=try AgentSessionStore(db:opened.0,url:databaseURL,identity:opened.1)}
+      if kind=="library",(2...4).contains(opened.1.storeVersion) {writer.effects=try LibraryStore(db:opened.0,url:databaseURL,identity:opened.1)}
+      if kind=="library",(3...4).contains(opened.1.storeVersion) {writer.sessions=try AgentSessionStore(db:opened.0,url:databaseURL,identity:opened.1)}
       if kind=="document",let source=writer.source {writer.outbox=DocumentOutbox(db:opened.0,url:databaseURL,identity:opened.1,source:source,kernel:writer.kernel,saves:writer.saves)}
       return StoreOpenInfo(identity:opened.1,runtime:opened.2)
     }
@@ -136,7 +136,7 @@ actor StorageService {
     }
     return service
   }
-  private func installLibrary(_ writer:StoreWriter,info:StoreOpenInfo) {library=writer;libraryState=info.identity.storeVersion==3 ? .ready(info) : .legacy(info)}
+  private func installLibrary(_ writer:StoreWriter,info:StoreOpenInfo) {library=writer;libraryState=info.identity.storeVersion==4 ? .ready(info) : .legacy(info)}
   private func unavailableLibrary(_ error:StorageError) {libraryState = .unavailable(error)}
   func libraryAvailability()->NativeLibraryAvailability {libraryState}
   func startupDocuments(after:String?=nil,limit:Int=32) async throws->StartupDocumentPage {
@@ -205,14 +205,37 @@ actor StorageService {
     guard closeTask==nil,let writer=documents[target.documentID] else {throw StorageError.closing}
     return try await writer.outboxCall {try $0.operation(target)}
   }
+  /// Reconciliation may inspect an unopened managed document, never create a guessed target.
+  func reconcileOriginalOperationEffect(_ target:SessionOperationTarget) async throws->DocumentEffect? {
+    try SessionValidation.target(target)
+    if documents[target.documentID] != nil {
+      let effect=try await originalOperationEffect(target)
+      if let effect {_ = try await projectDocumentEffect(effect)}
+      return effect
+    }
+    guard closeTask==nil,let lease else {throw StorageError.closing}
+    let selected=paths.root.appendingPathComponent("Documents/\(target.documentID)/active.json")
+    let exists=try await Task.detached { [lease] in _=lease;return try ManagedFiles.check(selected,directory:false)}.value
+    guard exists else {throw StorageError.recoveryRequired}
+    let opened=try await openDocument(target.documentID)
+    do {
+      guard opened.identity.storeID==target.storeID else {throw SessionLedgerError.wrongSourceEffect}
+      let effect=try await originalOperationEffect(target)
+      if let effect {_ = try await projectDocumentEffect(effect)}
+      try await closeDocument(target.documentID);return effect
+    } catch {try? await closeDocument(target.documentID);throw error}
+  }
   func sessionEvent(_ session:String,event:String) async throws->StoredSessionEvent? {
     guard closeTask==nil,let library else {throw StorageError.closing};return try await library.sessionCall {try $0.query(session,event:event)}
   }
   func sessionEvents(_ session:String,after:UInt64=0,limit:Int=16) async throws->[StoredSessionEvent] {
     guard closeTask==nil,let library else {throw StorageError.closing};return try await library.sessionCall {try $0.page(session,after:after,limit:limit)}
   }
-  func sessionRecovery(_ session:String) async throws->SessionRecoveryPage {
-    guard closeTask==nil,let library else {throw StorageError.closing};return try await library.sessionCall {try $0.recover(session)}
+  func sessionRecovery(_ session:String,cursor:SessionRecoveryCursor?=nil,limit:Int=16) async throws->SessionRecoveryPage {
+    guard closeTask==nil,let library else {throw StorageError.closing};return try await library.sessionCall {try $0.recover(session,cursor:cursor,limit:limit)}
+  }
+  func agentSessions(after:String?=nil,limit:Int=16) async throws->[SessionListRecord] {
+    guard closeTask==nil,let library else {throw StorageError.closing};return try await library.sessionCall {try $0.list(after:after,limit:limit)}
   }
   func readLibraryHeader() async throws ->StoreIdentity {
     guard let library,closeTask==nil else { throw StorageError.closing }
@@ -232,8 +255,9 @@ actor StorageService {
     return try await writer.sourceCall { try $0.initialize(source) }
   }
   func closeDocument(_ id:String) async throws {
-    guard let writer=documents.removeValue(forKey:id) else {return}
+    guard let writer=documents[id] else {return}
     try await writer.close()
+    documents.removeValue(forKey:id)
   }
   func committedSource(_ id:String) async throws ->NativeSourceSnapshot? {
     guard closeTask==nil,let writer=documents[id] else { throw StorageError.closing }

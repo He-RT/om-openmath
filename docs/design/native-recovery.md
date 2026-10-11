@@ -1,6 +1,6 @@
 # 原生 Mac 启动恢复实现
 
-2026-10-12。R4.1.12 正在实施，文档投影、原生草稿、本地启动恢复及规范会话/工具/请求恢复账本已验证。长会话恢复索引和应用会话恢复入口仍未完成；真实Pi/provider绑定由后续Agent任务接入。运行版本继续 `.3`，不代表 `.4` 已就绪。
+2026-10-12。R4.1.12 正在实施，文档投影、原生草稿、本地启动恢复及规范会话/工具/请求恢复账本已验证。长会话恢复索引和原生会话恢复入口已验证；真实Pi/provider绑定由后续Agent任务接入。运行版本继续 `.3`，不代表 `.4` 已就绪。
 
 ## 原文档事实与 Library 投影
 
@@ -75,7 +75,7 @@ Rust导入线程在控制锁外验证整体散列、metadata、原回执、docum
 
 恢复读取至多32个原prepared save intent。已存在原receipt直接核对；无receipt则由已有文件协调读取核对实际字节/身份和被交换原件，补真实recovered receipt，或确认未写入；没有再次replace。权限、离线、冲突或未知保持原operation ID待核对，阻止依赖的新保存，不伪造失败/成功。
 
-六个保存SIGKILL点改由实际NativeDocumentSession恢复工厂验收，源码修订1保持，用户文件只读核对后保存状态与真实回执一致，零计算。Library就绪时恢复工厂每批投影256个原事件，未完保留cursor并提供继续核对；Library失败不毁原文档。Agent工具admission/网络发送的规范账本已见下一节；长会话与应用恢复入口未完成，R4.1.12保持in_progress。
+六个保存SIGKILL点改由实际NativeDocumentSession恢复工厂验收，源码修订1保持，用户文件只读核对后保存状态与真实回执一致，零计算。Library就绪时恢复工厂每批投影256个原事件，未完保留cursor并提供继续核对；Library失败不毁原文档。Agent工具admission/网络发送的规范账本已见下一节；长会话与应用恢复入口见末节；R4.1.12底层恢复Done已满足，完整Agent仍待后续任务。
 
 ## 规范会话、工具接纳与发送恢复
 
@@ -91,6 +91,19 @@ source使用原冻结patch request hash，save使用目标文件散列。Kernel 
 
 13个实际SIGKILL点覆盖admit前/后、execution claim、真实source COMMIT、tool result、request plan、dispatch、HTTP回复及终止ACK。回环服务器实际POST数在两次重启核对后不增加，source操作数也不增加；未开始和unknown状态保持。记录损坏不截尾吞掉，原Library字节和健康文档保留；伪造结果/错误hash/不完整工具参数/序号缺口均被拒绝。真实F_FULLFSYNC失败直到原ID确认才解除unknown。
 
-当前单次语义恢复最多4096事件/16MiB payload，超过时明确incomplete并阻止依赖新admission，原事件不截断。每页可查历史，但用于增量长会话恢复的持久索引/续页还未完成；应用恢复列表目前接本地文档，Agent会话入口、完整prompt/context revisions、压缩和provider适配仍待对应任务。不能把本批短会话/网络fixture当作完整Pi Agent已可使用。
+上述Library3的4096事件/16MiB保护属于先前版本。当前freshLibrary4使用同库持久索引和续页恢复，已解除该接纳上限，原事件不截断。应用同时提供本地文档与会话核对入口；完整prompt/context revisions、压缩和provider/Pi适配仍待对应任务，不能把恢复完成当作完整Agent已可使用。
 
 Canonical Timestamp使用现有date-time contract。本地无第三方日期/regex依赖的结构校验遵循[RFC3339日期时间结构](https://www.rfc-editor.org/rfc/rfc3339#section-5.6)，实际UTC时间、闰年/错误日历/偏移有独立正负例；不引入时区数据库或改写原schema。最终同候选门禁仍须另跑。
+
+
+## 长会话索引与原生会话入口
+
+freshLibrary4增加event links、tool/request索引，索引与原事件在同一事务写入并耐久确认。旧Library1–3不在普通打开中升级。所有查找重新核对原事件hash、身份/sequence/父子关系与resource；事件/索引数量、proposal-call数量和request-plan数量一致性检查防止缺指针伪装“没有操作”。实际删除索引行的测试在只读启动阶段拒绝，原件和健康文档保持。
+
+新admission只取相关proposal/父子事件，不能因历史长而卡在旧4096条全量扫描。恢复的tool和request列表分别分页（最多32项），游标绑定session/store/generation及创建序号上界；已确认结果仍来自原事件，跨页不重复/遗漏，新加入的请求留待下一次刷新。4,374条真实事件、34,897,624字节原文，以及37工具/37请求计划，均在每页5项下完整恢复；首批原始记录与重启后新接纳仍可读取，没有截尾。
+
+NativeSessionRecoveryList使用SwiftUI List/HSplitView，显示实际未接纳/unknown/completed/partial与planned/dispatch unknown/response observed/finished/failed。查看与核对只查原操作，未打开的managed文档仅在active selector存在时临时打开，不创建猜测目标；核对之后保持新请求未发送。历史不自动变成新任务授权，面板没有执行/重发按钮。
+
+独立UI fixture复用该生产组件和NativeFileWorkspace/StorageService，仅把已生成的自有测试根注入fixture实例；正常产品不能通过启动参数切通道/数据根。实际点击显示call-edit“尚未接纳，未执行”和context-crash“尚未发送”，两条原记录及零源码效果保持。既有Preview/public数据不参与fixture。
+
+R4.1.12的恢复账本、草稿/source/checkpoint/save核对和原生查询入口Done已满足；Pi循环/模型适配器/完整上下文、备份/升级/GC和发行门禁均继续各自后续任务。没有把历史页当作已恢复执行授权，也没有将基于真实状态的说明升级为“新请求已发”。

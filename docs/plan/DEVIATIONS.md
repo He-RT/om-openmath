@@ -592,3 +592,10 @@ L2使用精确标称GM分数、50位FindRoot/1000迭代和真实残差，报告�
 - kernel admission的expectedHash取冻结source snapshot，因为candidate request hash依赖尚未产生的计算结果；最终仍核原op receipt和producer source，不预先制造candidate hash。source/undo仍原冻结patch hash，save为原目标文件hash。
 - 请求先存非认证body/refs及planned，再确认dispatch_started才调用transport；实际response/终止不同事实。HTTP503保真实字节和failed；不自动重发outcome unknown，原context重复也拒绝。13真实SIGKILL+原F_FULLFSYNC未知、Library坏完整记录、正/负结构/schema验证通过；仅回环fixture，不称已验证付费提供商或完整Pi/UI。
 - 暂有4096事件/16MiB语义恢复上限；incomplete不截原记录、不准依赖新admission。长会话索引/增量恢复和原生session入口未完成，任务保持in_progress。旧source/math/perf期望不改，原1s CI失败继续留证；下一扩大真实可用恢复路径。
+
+### R4-D031：持久索引、恢复续页与原生查询（2026-10-12）
+
+- 新Library4在selector前建立索引，index links/call/request与事件同库COMMIT，不能由异步cache伪造。查询仍核原immutable事件hash/身份/父子/语义和资源；全局数量及指针验证拒绝删行/失配，旧格式不隐式升级。
+- 关联查询解除Library3的4096事件上限，恢复每次最多32工具/32请求，游标携session/store/generation和创建上界，保留原历史及未读下一页。4374/>16MiB实际数据、37+37完整页/新接纳/重启通过，不用提高旧全量预算来假装分批。
+- NativeSessionRecoveryList原生List/分栏由实际producer状态驱动，无总量不编造百分比，不因视图结束标完成/取消，依据已读skill progress-and-result-feedback portable基本路径。真实fixture复用产品组件，只注入自有测试Root；产品通道仍构建常量、不允许launch args重定向。
+- 原doc不在当前window也能通过已存在selector核对原ID；无locator/不匹配不创造新库、保持unknown。Writer close成功后才注销，失败仍可核对。原source/HTTP不重复，13+5+3+6中断与UI已验证，R4.1.12 Done满足；Pi/模型/prompt/context/压缩等尚未运行不冒称此任务覆盖。

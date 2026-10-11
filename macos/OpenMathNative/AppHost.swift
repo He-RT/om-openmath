@@ -7,6 +7,7 @@ import SwiftUI
   @StateObject private var workspace=NativeFileWorkspace()
   @StateObject private var scratch=NotebookViewModel()
   @State private var showingRecovery=false
+  @State private var showingSessionRecovery=false
   var body:some Scene {
     Window("OpenMath Preview",id:"workspace") {
       VStack(spacing:0) {
@@ -14,6 +15,7 @@ import SwiftUI
           Button("新建笔记本",systemImage:"doc.badge.plus") {Task {await workspace.newDocument()}}.disabled(workspace.busy).accessibilityIdentifier("notebook-new")
           Button("打开笔记本",systemImage:"folder") {Task {await workspace.openPanel()}}.disabled(workspace.busy).accessibilityIdentifier("notebook-open")
           Button("恢复本地记录") {showingRecovery=true;Task {await workspace.refreshRecoverableDocuments()}}.disabled(workspace.busy).accessibilityIdentifier("notebook-recovery-menu")
+          Button("会话恢复") {showingSessionRecovery=true;Task {await workspace.refreshRecoverableSessions()}}.disabled(workspace.busy).accessibilityIdentifier("session-recovery-menu")
           Spacer()
         }.padding(12)
         Divider()
@@ -23,6 +25,7 @@ import SwiftUI
         .background(NativeWindowAttachment(workspace:workspace).frame(width:0,height:0))
         .task {delegate.attach(workspace,scratch:scratch);await scratch.start();await workspace.refreshRecoverableDocuments()}
         .sheet(isPresented:$showingRecovery) {NativeRecoveryList(workspace:workspace,isPresented:$showingRecovery)}
+        .sheet(isPresented:$showingSessionRecovery) {NativeSessionRecoveryList(workspace:workspace,isPresented:$showingSessionRecovery)}
         .onDisappear {Task {await scratch.close()}}
     }.defaultSize(width:1100,height:780).commands {
       CommandGroup(replacing:.newItem) {

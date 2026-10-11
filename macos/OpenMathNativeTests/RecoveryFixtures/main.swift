@@ -27,7 +27,7 @@ private func actualOutput(_ store:StorageService,_ receipt:NativeKernelReceipt,c
     let file=NativeSourceFile(version:1,title:"恢复测试",cells:[.init(id:"a",kind:.math,source:"let a=2",dialect:.modern),.init(id:"b",kind:.math,source:"a+1",dialect:.modern)])
     try NotebookFileCodec.encode(file).write(to:target)
     let (store,info)=try await StorageService.open(paths:.init(root:root.appendingPathComponent("managed"),channel:.preview))
-    precondition(info.identity.storeVersion==3 && info.identity.minimumReaderVersion==3)
+    precondition(info.identity.storeVersion==4 && info.identity.minimumReaderVersion==4)
     let session=try await NativeDocumentSession.open(storage:store,url:target),kernel=KernelCommitPort(client:session.host,storage:store,source:session.source)
     let two=try await kernel.runCell("a",operation:"recovery-a2"),three=try await kernel.runCell("b",operation:"recovery-b3")
     let value2=try await actualOutput(store,two,cell:"a"),value3=try await actualOutput(store,three,cell:"b");precondition(value2=="2" && value3=="3")
@@ -191,7 +191,7 @@ private func actualOutput(_ store:StorageService,_ receipt:NativeKernelReceipt,c
       let guardFile=root.appendingPathComponent("readonly-guard-fixture.sqlite")
       try FileManager.default.copyItem(at:database,to:guardFile)
       let reader=try SQLiteDatabase(url:guardFile,readonly:true)
-      let version=try reader.integer("PRAGMA user_version");precondition(version==3)
+      let version=try reader.integer("PRAGMA user_version");precondition(version==4)
       // Deliberately violate the serialized-reader contract in this disposable fixture.
       // No data bytes change; the reader still must reject a changed underlying file.
       try FileManager.default.setAttributes([.modificationDate:Date(timeIntervalSince1970:1)],ofItemAtPath:guardFile.path)

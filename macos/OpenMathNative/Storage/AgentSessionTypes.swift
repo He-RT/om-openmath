@@ -132,6 +132,21 @@ struct SessionRecoveryPage:Sendable {
   let requests:[RecoveredRequest]
   let lastEventSequence:UInt64
   let complete:Bool
+  var nextCursor:SessionRecoveryCursor?=nil
+}
+struct SessionRecoveryCursor:Sendable {
+  let session:String
+  let storeID:String
+  let generation:Int64
+  let upperSequence:UInt64
+  let afterToolSequence:UInt64
+  let afterToolID:String
+  let afterRequestSequence:UInt64
+}
+struct SessionListRecord:Identifiable,Sendable {
+  let id:String
+  let createdAt:String
+  let eventCount:UInt64
 }
 enum SessionLedgerError:Error,Sendable {case sequenceGap,invalidTransition,wrongSourceEffect,executionAlreadyClaimed,reconciliationRequired}
 enum SessionValidation {

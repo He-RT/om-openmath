@@ -47,7 +47,7 @@ def validate_events(root):
 try:
     normal=Path(tempfile.mkdtemp(prefix='session-ledger-',dir=ROOT/'target/macos-storage-tests'))
     normal_env={**env,'OPENMATH_SESSION_FIXTURE_URL':base+'/normal'}
-    ordinary=subprocess.run([str(BINARY),str(PLANS),str(normal)],capture_output=True,text=True,env=normal_env,timeout=60)
+    ordinary=subprocess.run([str(BINARY),str(PLANS),str(normal)],capture_output=True,text=True,env=normal_env,timeout=240)
     assert ordinary.returncode==0,(ordinary.stdout,ordinary.stderr)
     assert calls.get('/normal',0)==2;print(ordinary.stdout.strip())
     validate_events(normal)
@@ -57,6 +57,13 @@ try:
     db.execute('update session_events set record=? where event_sequence=2',(b'full damaged record',));db.commit();db.close()
     rejected=subprocess.run([str(BINARY),str(PLANS),str(damaged),'damage-check'],capture_output=True,text=True,env=normal_env,timeout=40)
     assert rejected.returncode==0,(rejected.stdout,rejected.stderr);print(rejected.stdout.strip())
+    missing_index=Path(tempfile.mkdtemp(prefix='session-index-corrupt-',dir=ROOT/'target/macos-storage-tests'))
+    shutil.copytree(normal,missing_index,dirs_exist_ok=True)
+    db=sqlite3.connect(missing_index/'Library/Generations/000001/library.sqlite')
+    db.execute('delete from session_tool_index where session_id=? and call_id=?',('session-fixture','call-edit'));db.commit();db.close()
+    rejected_index=subprocess.run([str(BINARY),str(PLANS),str(missing_index),'damage-check'],capture_output=True,text=True,env=normal_env,timeout=40)
+    assert rejected_index.returncode==0,(rejected_index.stdout,rejected_index.stderr)
+    print('Missing transactional recovery pointer rejected rather than hiding an original tool call')
     for stage,(expected,effects) in stages.items():
         root=Path(tempfile.mkdtemp(prefix='session-ledger-kill-',dir=ROOT/'target/macos-storage-tests'))
         request_path='/'+stage;child_env={**env,'OPENMATH_SESSION_FIXTURE_URL':base+request_path}

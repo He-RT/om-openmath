@@ -4,9 +4,9 @@
 
 2026-10-11。目标`0.1.0-pre-alpha.4`，当前运行/公开版本`.3`；开发`dev`，不合main、不改旧标签、本机不启动iOS模拟器。本文只记录结果，规格及完成标准唯一见主计划；计划编写本身不计实施完成。
 
-**当前状态：** 22任务完成（全部R4.0与R4.1.01–11）；其余76任务尚未完成；32最终运行/发行gate全部not_run；candidate未分配，ready_to_publish=false，released_verified=false。设计/HTML/Schema通过不填运行时pass。
+**当前状态：** 23任务完成（全部R4.0与R4.1.01–12）；其余75任务尚未完成；32最终运行/发行gate全部not_run；candidate未分配，ready_to_publish=false，released_verified=false。设计/HTML/Schema通过不填运行时pass。
 
-**下一任务：** R4.1.12 会话outbox、草稿与启动恢复，然后quota/backup/GC与原生工作台。主运行/CABI/同库接纳及source共享逻辑门已完成。真实逆事务、原生文本/IME group、200+pin及物理裁减回执已通过；完整工作台与Agent仍继续后续任务。保持同candidate完整门禁，R4.5.07在R4.5.05冻结前完成。
+**下一任务：** R4.1.13 引用租约、备份、格式升级、quota与GC，然后完整原生工作台。恢复查询不重放效果，长会话/未知状态已通过实际验证；完整Pi/provider/上下文/Agent界面仍继续R4.3–4.4，不能将存储Done当产品完成。保持同candidate完整门禁，R4.5.07在R4.5.05冻结前完成。
 
 ## 已知外部前置
 
@@ -42,7 +42,7 @@
 | [x] [R4.1.09](PRE_ALPHA_4.md#task-r4.1.09) | 主KernelWorker、候选接纳和直接取消 | completed | [实际主运行](../acceptance/pre-alpha.4/development/r41/kernel-runtime.json) / CABI+Swift+SQLite / 310相关Rust+实际IO/长CAS/close | 5469091；3ce0320、b309baf |
 | [x] [R4.1.10](PRE_ALPHA_4.md#task-r4.1.10) | 不可变结果库和只读检查通道 | completed | [实际原生结果](../acceptance/pre-alpha.4/development/r41/result-runtime.json) / CABI＋worker＋Swift / 324Rust＋actual receipts/late reply | 6d53f17；f04474f；后续补验 |
 | [x] [R4.1.11](PRE_ALPHA_4.md#task-r4.1.11) | NSDocument打开保存与冻结快照 | completed | [实际文件/同库回执/本轮Release面板闭环](../acceptance/pre-alpha.4/development/r41/file-saves-completion.json) / 6 SIGKILL+原件冲突 / N+1/IME/身份/取消/重开 / Mac CI38122270416 success | 25df8d8；f04474f、c4eab5a |
-| [ ] [R4.1.12](PRE_ALPHA_4.md#task-r4.1.12) | 会话outbox、草稿与启动恢复 | in_progress | [本地启动](../acceptance/pre-alpha.4/development/r41/startup-recovery.json) / [规范会话/真实HTTP/13 SIGKILL](../acceptance/pre-alpha.4/development/r41/canonical-session-ledger.json)；长会话索引/原生会话入口待完 | 5b96deb；本批待补SHA |
+| [x] [R4.1.12](PRE_ALPHA_4.md#task-r4.1.12) | 会话outbox、草稿与启动恢复 | completed | [indexed长会话/原生恢复入口](../acceptance/pre-alpha.4/development/r41/indexed-session-recovery.json) / 4374事件>16MiB/37+37分页/13+5+3+6SIGKILL/真实UI | a23ef8a、5b96deb、642cfc9；本批待补SHA |
 | [ ] [R4.1.13](PRE_ALPHA_4.md#task-r4.1.13) | 引用租约、备份、quota与GC | planned | — | — |
 | [ ] [R4.2.01](PRE_ALPHA_4.md#task-r4.2.01) | 原生工作台窗口、分栏和投影 | planned | — | — |
 | [ ] [R4.2.02](PRE_ALPHA_4.md#task-r4.2.02) | NSTextView和严格SourceIndexMap | planned | — | — |
@@ -456,3 +456,12 @@ Done依据与覆盖case/proof:
 - 真实F_FULLFSYNC unknown直到原事件读取确认、新事件不能占未确认序号；伪造结果/部分流工具参数/错误hash拒绝。Library完整坏记录只读拒绝，原件和健康source保留。[机器证据](../acceptance/pre-alpha.4/development/r41/canonical-session-ledger.json)。当前单次语义扫描4096/16MiB，超限incomplete并挡新admission；长会话索引/续页与native session恢复入口仍待完成，不勾整个任务。
 - 112 host/ABI Rust、Clippy/fmt、269 DTO、canonical ledger13中断及原19同步/6初始化、投影5中断、draft3、save6+conflict、真实kernel partial、Release实际通过。Swiftshadow/throwing属性、编译中源文件变化与错误statement-count假设修正，日志保留。原schema无改变；现有Rust validator补date-time结构，独立timestamp正负例通过，无第三方Python/runtime依赖。
 - 5b96deb/CI38159289992四jobssuccess，phone原53 row17总1085.738ms失败：FFI290.465ms/encoded0.106/queue0.024/decode2.273/resume792.857；iPad未运行。保持原1秒和数学，artifact已下载，不抹掉失败/不把kernel时间替代整次。下批同SHA CI独立验，no本机模拟器/dev/no main/运行.3/final32gate not_run/no candidate。
+
+## R4开发记录 D036 — 长会话持久索引与原生会话查询入口
+
+- R4.1.12 Done/Tests满足，23/98；下一R4.1.13。freshLibrary4增同事务event links、tool/request索引，旧1–3不隐式升级，Root1/doc5/.omnb v1不变。admission查询相关原事件，旧4096全量扫描不再阻新接纳；索引/事件/调用/plan计数、父子/身份/hash重新检查，缺指针不解释为“未执行”。
+- 实际4374事件/34,897,624字节原文，37工具＋37模型计划，每页5项全部唯一恢复，新admission在4096后仍成功，原prefix与重启后查询保持。[完整证据](../acceptance/pre-alpha.4/development/r41/indexed-session-recovery.json)。游标绑session/store/generation/创建上界，工具与请求独立推进；实际删除索引拒绝，而非隐藏原call。
+- 未打开的原managed文档仅在active selector存在时检查/临时打开，按storeID原op核对且投影先于writer关闭，不创造猜测目标、不执行回调。close失败保留writer注册以便核对。Native原生List/HSplitView显示not-started/unknown/完成/partial及未发送/发送未知/响应中断/完成失败，继续页可操作，不提供执行/重发按钮。
+- 实际production组件+隔离fixture根的UI验收完成：2原事件，点击“查看与核对”显示call-edit“尚未接纳，未执行”和context-crash“尚未发送”，原source/HTTP均0，正常Quit。使用同一NativeFileWorkspace与StorageService，产品根不通过args可切换；测试fixture不读取Preview/public历史。
+- 长session/index损坏/13规范Tool/request/source/HTTP中断＋原5投影、3草稿、6保存+conflict全部通过，Release最终成功、269DTO/工程/fmt/计划结构通过。最初UI文件放Files被backend通配编译拒绝，已移UI目录/再生工程，失败日志保留。
+- a23ef8a CI38163760418五jobs全部success含iPhone/iPad原1s；不抹掉5b96deb row17失败，也不替本批及final candidate。完整Pi/Provider/Prompt/Context/压缩仍R4.3–4.4，重置不兼容数学head仍需工作台动作；当前只有真正另存新文档路径。运行.3/dev/no main/no本机模拟器/无子代理，32final gate not_run/no candidate。

@@ -28,11 +28,11 @@ struct StoreIdentity:Codable,Sendable,Equatable {
     case storeID="store_id",kind,generation,storeVersion="store_version",minimumReaderVersion="minimum_reader_version",codecVersion="codec_version",documentID="document_id"
   }
   static func fresh(kind:String,document:String?=nil)->Self {
-    let version:Int64=kind=="document" ? 5 : 3
+    let version:Int64=kind=="document" ? 5 : 4
     return .init(storeID:UUID().uuidString.lowercased(),kind:kind,generation:1,storeVersion:version,minimumReaderVersion:version,codecVersion:version,documentID:document)
   }
   func validate() throws {
-    guard (storeVersion==1 || kind=="library" && (2...3).contains(storeVersion) || kind=="document" && (2...5).contains(storeVersion)),minimumReaderVersion==storeVersion,codecVersion==storeVersion else { throw StorageError.unsupportedVersion }
+    guard (storeVersion==1 || kind=="library" && (2...4).contains(storeVersion) || kind=="document" && (2...5).contains(storeVersion)),minimumReaderVersion==storeVersion,codecVersion==storeVersion else { throw StorageError.unsupportedVersion }
     guard generation>0,generation<=999999,UUID(uuidString:storeID) != nil,
       (kind=="library" && documentID==nil || kind=="document" && documentID.flatMap(UUID.init(uuidString:)) != nil)
     else { throw StorageError.corruptIdentity }

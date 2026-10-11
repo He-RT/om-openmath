@@ -6,8 +6,9 @@ import SQLite3
 final class AgentSessionStore {
   static let tables:Set<String>=["agent_sessions","session_events","session_producers","session_operation_claims"]
   private let db:SQLiteDatabase,url:URL,identity:StoreIdentity
+  private let index:SessionRecoveryIndex?
   init(db:SQLiteDatabase,url:URL,identity:StoreIdentity,create:Bool=false)throws {
-    guard identity.kind=="library",identity.storeVersion==3 else {throw StorageError.unsupportedVersion}
+    guard identity.kind=="library",(3...4).contains(identity.storeVersion) else {throw StorageError.unsupportedVersion}
     self.db=db;self.url=url;self.identity=identity
     var present=Set<String>();try db.statement("SELECT name FROM sqlite_schema WHERE type='table'"){present.insert(try SQLColumn.text($0,0))}
     if present.intersection(Self.tables) != Self.tables {
@@ -19,6 +20,7 @@ final class AgentSessionStore {
         try db.statement("CREATE TABLE session_operation_claims(store_id TEXT NOT NULL,operation_id TEXT NOT NULL,session_id TEXT NOT NULL,event_id TEXT NOT NULL,PRIMARY KEY(store_id,operation_id),FOREIGN KEY(session_id,event_id) REFERENCES session_events(session_id,event_id))")
       }
     }
+    index=identity.storeVersion==4 ? try SessionRecoveryIndex(db:db,create:create) : nil
     let prefix=try pageGlobal(db,limit:16)
     var previous:[String:[NativeSessionEvent]]=[:]
     for record in prefix {
@@ -59,6 +61,7 @@ final class AgentSessionStore {
     let reconstructed=SessionAppendInput(session:event.agent_session_id,eventID:event.event_id,sourceInstance:event.source_instance_id,sourceSequence:event.source_sequence,
       parentEvent:event.parent_event_id.value,turn:event.agent_turn_id.value,task:event.task_id.value,kind:event.event_kind,payload:Data(event.payload_inline_json.value!.utf8),operation:event.operation_id.value,operationStore:event.operation_store_id.value)
     guard receipt.requestHash==(try SessionValidation.requestHash(reconstructed)) else {throw StorageError.corruptIdentity}
+    try index?.verify(event)
     return .init(event:event,receipt:receipt)
   }
   private static let columns="session_id,event_id,event_sequence,source_instance,source_sequence,request_hash,record,record_hash,receipt,receipt_hash"
@@ -81,11 +84,12 @@ final class AgentSessionStore {
       if let parent=input.parentEvent {guard try read(input.session,event:parent,reader:db) != nil else {throw SessionLedgerError.invalidTransition}}
       var previous:Int64=0;try db.statement("SELECT last_sequence FROM session_producers WHERE source_instance=?",[.text(input.sourceInstance)]) {previous=sqlite3_column_int64($0,0)}
       guard previous>=0,previous<Int64(HostSerial.maximum),Int64(input.sourceSequence)==previous+1 else {throw SessionLedgerError.sequenceGap}
-      let all=try recovery(input.session,reader:db)
-      guard all.complete else {throw StorageError.recoveryRequired}
-      try SessionSemantics.validate(input,events:all.events)
+      let previousEvents:[NativeSessionEvent]
+      if let index {previousEvents=try index.related(input) { [self] id in guard let actual=try read(input.session,event:id,reader:db) else {throw StorageError.corruptIdentity};return actual.event}}
+      else {let all=try recovery(input.session,reader:db);guard all.complete else {throw StorageError.recoveryRequired};previousEvents=all.events}
+      try SessionSemantics.validate(input,events:previousEvents)
       if let resource {try BlobReferences.insertWithinTransaction(resource,db:db)}
-      try verifyResources(input,events:all.events,reader:db)
+      try verifyResources(input,events:previousEvents,reader:db)
       var claim:SessionToolAdmission?
       if input.kind == .tool_admitted {
         let admitted=try JSONDecoder().decode(SessionToolAdmission.self,from:input.payload)
@@ -108,6 +112,7 @@ final class AgentSessionStore {
       guard bytes.count<=4*1024*1024 else {throw StorageError.corruptIdentity}
       let receipt=SessionEventReceipt(storeID:identity.storeID,session:input.session,eventID:input.eventID,eventSequence:event.event_sequence,sourceInstance:input.sourceInstance,sourceSequence:input.sourceSequence,requestHash:requestHash,recordHash:KernelHashes.data(bytes)),receiptBytes=try RecoveryValidation.encode(receipt)
       try db.statement("INSERT INTO session_events VALUES(?,?,?,?,?,?,?,?,?,?)",[.text(input.session),.text(input.eventID),.integer(last+1),.text(input.sourceInstance),.integer(Int64(input.sourceSequence)),.text(requestHash),.blob(bytes),.text(KernelHashes.data(bytes)),.blob(receiptBytes),.text(KernelHashes.data(receiptBytes))])
+      try index?.insert(event)
       if let claim {
         try db.statement("INSERT INTO session_operation_claims VALUES(?,?,?,?)",[.text(claim.target.storeID),.text(claim.target.operationID),.text(input.session),.text(input.eventID)])
       }
@@ -187,9 +192,65 @@ final class AgentSessionStore {
       };guard matched else {throw BlobError.missing}
     }
   }
-  func recover(_ session:String)throws->SessionRecoveryPage {
+  func recover(_ session:String,cursor:SessionRecoveryCursor?=nil,limit:Int=16)throws->SessionRecoveryPage {
     let reader=try SQLiteDatabase(url:url,readonly:true);defer {try? reader.close()}
     guard try self.session(session,reader:reader) != nil else {throw StorageError.corruptIdentity}
+    if index != nil {return try recoverIndexed(session,cursor:cursor,limit:limit,reader:reader)}
     let snapshot=try recovery(session,reader:reader);return try SessionSemantics.recover(session,events:snapshot.events,complete:snapshot.complete)
+  }
+  private func recoverIndexed(_ session:String,cursor:SessionRecoveryCursor?,limit:Int,reader:SQLiteDatabase)throws->SessionRecoveryPage {
+    guard limit>0,limit<=32 else {throw StorageError.corruptIdentity}
+    var latest:Int64=0;try reader.statement("SELECT coalesce(max(event_sequence),0) FROM session_events WHERE session_id=?",[.text(session)]) {latest=sqlite3_column_int64($0,0)}
+    guard latest>=0,latest<=Int64(HostSerial.maximum) else {throw StorageError.corruptIdentity}
+    if let cursor {guard cursor.session==session,cursor.storeID==identity.storeID,cursor.generation==identity.generation,cursor.upperSequence<=UInt64(latest),cursor.afterToolSequence<=cursor.upperSequence,cursor.afterRequestSequence<=cursor.upperSequence else {throw StorageError.corruptIdentity}}
+    let upper=cursor?.upperSequence ?? UInt64(latest)
+    let view=try SessionRecoveryIndex(db:reader,create:false)
+    let fetch:(String)throws->NativeSessionEvent={ [self] id in
+      guard let value=try read(session,event:id,reader:reader) else {throw StorageError.corruptIdentity}
+      let e=value.event,input=SessionAppendInput(session:e.agent_session_id,eventID:e.event_id,sourceInstance:e.source_instance_id,sourceSequence:e.source_sequence,parentEvent:e.parent_event_id.value,turn:e.agent_turn_id.value,task:e.task_id.value,kind:e.event_kind,payload:Data(e.payload_inline_json.value!.utf8),operation:e.operation_id.value,operationStore:e.operation_store_id.value)
+      let related=try view.related(input) { [self] other in guard let actual=try read(session,event:other,reader:reader) else {throw StorageError.corruptIdentity};return actual.event}
+      let earlier=related.filter{$0.event_sequence<e.event_sequence}
+      try SessionSemantics.validate(input,events:earlier);try verifyResources(input,events:earlier,reader:reader,stored:true)
+      return e
+    }
+    let toolRows=try view.tools(session:session,upper:upper,after:cursor?.afterToolSequence ?? 0,afterID:cursor?.afterToolID ?? "",limit:limit+1)
+    let requestRows=try view.requests(session:session,upper:upper,after:cursor?.afterRequestSequence ?? 0,limit:limit+1)
+    var tools:[RecoveredTool]=[],requests:[RecoveredRequest]=[]
+    for row in toolRows.prefix(limit) {
+      let proposal=try fetch(row.proposal),end=try SessionValidation.payload(SessionAssistantEnd.self,proposal)
+      guard proposal.event_sequence==row.sequence,proposal.event_kind == .assistant_end,end.calls.contains(where:{$0.callID==row.call}) else {throw StorageError.corruptIdentity}
+      var target:SessionOperationTarget?,phase=RecoveredToolPhase.tool_not_started,resultID:String?
+      if let admissionID=row.admission {
+        let admission=try fetch(admissionID),payload=try SessionValidation.payload(SessionToolAdmission.self,admission)
+        guard payload.callID==row.call,payload.proposalEvent==row.proposal else {throw StorageError.corruptIdentity};target=payload.target;phase = .tool_outcome_unknown
+        let children=try view.children(session:session,parent:admissionID,fetch:fetch)
+        if let result=children.first(where:{$0.event_kind == .tool_result}) {let value=try SessionValidation.payload(SessionToolResult.self,result);phase=value.outcome == .partial ? .partial : .completed;resultID=result.event_id}
+      }
+      tools.append(.init(session:session,proposalEvent:row.proposal,callID:row.call,admissionEvent:row.admission,phase:phase,target:target,resultEvent:resultID))
+    }
+    for row in requestRows.prefix(limit) {
+      let plan=try fetch(row.plan);guard plan.event_sequence==row.sequence,try SessionValidation.payload(SessionRequestLifecycle.self,plan).plan?.contextID==row.context else {throw StorageError.corruptIdentity}
+      var chain=[plan],last=plan
+      for _ in 0..<4 {
+        let children=try view.children(session:session,parent:last.event_id,fetch:fetch)
+        guard children.count<=1 else {throw StorageError.corruptIdentity}
+        guard let next=children.first else {break};chain.append(next);last=next
+      }
+      guard last.event_id==row.latest else {throw StorageError.corruptIdentity}
+      let recovered=try SessionSemantics.recover(session,events:chain,complete:true)
+      guard recovered.requests.count==1 else {throw StorageError.corruptIdentity};requests+=recovered.requests
+    }
+    let complete=toolRows.count<=limit && requestRows.count<=limit
+    let next=complete ? nil : SessionRecoveryCursor(session:session,storeID:identity.storeID,generation:identity.generation,upperSequence:upper,afterToolSequence:tools.isEmpty ? cursor?.afterToolSequence ?? 0 : toolRows[min(toolRows.count,limit)-1].sequence,afterToolID:tools.last?.callID ?? cursor?.afterToolID ?? "",afterRequestSequence:requests.isEmpty ? cursor?.afterRequestSequence ?? 0 : requestRows[min(requestRows.count,limit)-1].sequence)
+    return .init(tools:tools,requests:requests,lastEventSequence:UInt64(latest),complete:complete,nextCursor:next)
+  }
+  func list(after:String?=nil,limit:Int=16)throws->[SessionListRecord] {
+    guard limit>0,limit<=32 else {throw StorageError.corruptIdentity}
+    let reader=try SQLiteDatabase(url:url,readonly:true);defer {try? reader.close()};var records:[SessionListRecord]=[]
+    try reader.statement("SELECT a.session_id,coalesce(max(e.event_sequence),0) FROM agent_sessions a LEFT JOIN session_events e USING(session_id) WHERE a.session_id>? GROUP BY a.session_id ORDER BY a.session_id LIMIT ?",[.text(after ?? ""),.integer(Int64(limit))]) { [self] row in
+      let id=try SQLColumn.text(row,0),count=sqlite3_column_int64(row,1)
+      guard count>=0,count<=Int64(HostSerial.maximum),let actual=try self.session(id,reader:reader) else {throw StorageError.corruptIdentity}
+      records.append(.init(id:id,createdAt:actual.createdAt,eventCount:UInt64(count)))
+    };return records
   }
 }

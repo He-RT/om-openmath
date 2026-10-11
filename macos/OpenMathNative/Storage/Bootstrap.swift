@@ -39,8 +39,8 @@ enum StorageBootstrap {
       // Inspect every version/header/hash in a read-only connection before enabling any writing.
       let read=try SQLiteDatabase(url:url,readonly:true)
       let header=try readHeader(read)
-      if kind=="library",(2...3).contains(header.storeVersion) {_ = try LibraryStore(db:read,url:url,identity:header)}
-      if kind=="library",header.storeVersion==3 {_ = try AgentSessionStore(db:read,url:url,identity:header)}
+      if kind=="library",(2...4).contains(header.storeVersion) {_ = try LibraryStore(db:read,url:url,identity:header)}
+      if kind=="library",(3...4).contains(header.storeVersion) {_ = try AgentSessionStore(db:read,url:url,identity:header)}
       if kind=="document",header.storeVersion==5 {_ = try DraftBackupStore(db:read,url:url,identity:header)}
       try read.close()
       guard header.storeID==selector.storeID,header.generation==selector.generation,header.kind==kind,

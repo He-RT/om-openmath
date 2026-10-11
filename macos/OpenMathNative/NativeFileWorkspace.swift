@@ -10,7 +10,13 @@ import SwiftUI
   @Published private(set) var libraryWarning:String?
   @Published private(set) var recoverableDocuments:[StartupDocumentRecord]=[]
   private var recoveryCursor:String?
-  private let services=NativeAppStorage()
+  @Published private(set) var recoverableSessions:[SessionListRecord]=[]
+  @Published private(set) var selectedSessionRecovery:SessionRecoveryPage?
+  @Published private(set) var selectedSessionID:String?
+  private var sessionListCursor:String?
+  private var recoveryLedger:SessionLedgerPort?
+  private let services:NativeAppStorage
+  init(storage:NativeAppStorage = NativeAppStorage()) {services=storage;super.init()}
   private weak var window:NSWindow?
   private var controller:NSWindowController?
   private var allowingClose=false
@@ -41,6 +47,28 @@ import SwiftUI
     } catch {errorText="启动恢复检查失败："+error.localizedDescription}
   }
   var hasMoreRecoveryDocuments:Bool {recoveryCursor != nil}
+  func refreshRecoverableSessions(more:Bool=false) async {
+    guard !busy else {return};busy=true;defer {busy=false}
+    do {
+      let storage=try await services.open();libraryWarning=await storage.libraryAvailability().warning
+      guard case .ready=await storage.libraryAvailability() else {recoverableSessions=[];return}
+      let page=try await storage.agentSessions(after:more ? sessionListCursor : nil,limit:16)
+      recoverableSessions=more ? recoverableSessions+page : page;sessionListCursor=page.count==16 ? page.last?.id : nil;errorText=nil
+    } catch {errorText="会话恢复列表无法读取，原记录已保留："+error.localizedDescription}
+  }
+  var hasMoreRecoverySessions:Bool {sessionListCursor != nil}
+  func inspectSessionRecovery(_ id:String,more:Bool=false) async {
+    guard !busy else {return};busy=true;defer {busy=false}
+    do {
+      let storage=try await services.open()
+      if selectedSessionID != id || !more {selectedSessionID=id;selectedSessionRecovery=nil;recoveryLedger=SessionLedgerPort(storage:storage,session:id)}
+      guard let recoveryLedger else {throw StorageError.closing}
+      let page=try await RecoveryService(storage:storage).recoverSession(id,ledger:recoveryLedger,cursor:more ? selectedSessionRecovery?.nextCursor : nil,limit:16)
+      if more,let previous=selectedSessionRecovery {selectedSessionRecovery = .init(tools:previous.tools+page.tools,requests:previous.requests+page.requests,lastEventSequence:page.lastEventSequence,complete:page.complete,nextCursor:page.nextCursor)}
+      else {selectedSessionRecovery=page}
+      errorText=nil
+    } catch {errorText="会话核对未完成，操作与请求未重发："+error.localizedDescription}
+  }
   func recover(_ document:String) async {
     guard !busy,session?.drafts.confirmed.document_id != document else {return};busy=true;defer {busy=false}
     do {

@@ -23,7 +23,7 @@ private final class Once:@unchecked Sendable {
     return .init(bytes:bytes,successful:http.statusCode==200)
   }
   private static func prepare(root:URL,plans:Plans) async throws->(StorageService,SessionLedgerPort,SessionToolAdmission) {
-    let (storage,library)=try await StorageService.open(paths:.init(root:root,channel:.preview));precondition(library.identity.storeVersion==3)
+    let (storage,library)=try await StorageService.open(paths:.init(root:root,channel:.preview));precondition(library.identity.storeVersion==4)
     let info=try await storage.openDocument(plans.initial.document_id);_ = try await storage.initializeSource(plans.initial)
     _ = try await storage.createAgentSession(session)
     let ledger=SessionLedgerPort(storage:storage,session:session,sourceInstance:"host-original")
@@ -140,6 +140,54 @@ private final class Once:@unchecked Sendable {
     let recovered=try await reopened.sessionRecovery(session),source=try await reopened.committedSource(plans.initial.document_id)!
     precondition(recovered.tools[0].phase == .completed && recovered.requests[0].phase == .finished && source.revision.value==1)
     try await reopened.close()
+    // Real long history crosses both former limits. Small indexed reads must still admit
+    // new calls and recover older/later calls without dropping unrelated raw events.
+    let longRoot=root.appendingPathComponent("long-history",isDirectory:true)
+    let (longStore,_)=try await StorageService.open(paths:.init(root:longRoot,channel:.preview))
+    _ = try await longStore.createAgentSession("long-session")
+    let longLedger=SessionLedgerPort(storage:longStore,session:"long-session",sourceInstance:"long-host")
+    let text=Data(String(repeating:"中文🙂 ",count:512).utf8)
+    let longMessage=SessionAssistantEnd(codecVersion:1,messageID:"long-stream",textUTF8:text,calls:[])
+    for index in 0..<4300 {_ = try await longLedger.record(longMessage,id:"history-\(index)",kind:.assistant_batch,turn:turn,task:task)}
+    var proposalIDs:[String]=[]
+    for index in 0..<37 {
+      let eventID="after-limit-proposal-\(index)";proposalIDs.append(eventID)
+      _ = try await longLedger.record(SessionAssistantEnd(codecVersion:1,messageID:eventID,textUTF8:Data(),calls:[.init(callID:"long-call-\(index)",toolName:"read_notebook",arguments:Data("{}".utf8))]),id:eventID,kind:.assistant_end,turn:turn,task:task)
+    }
+    var cursor:SessionRecoveryCursor?,allCalls:[String]=[],finished=false
+    for _ in 0..<10 {
+      let page=try await longStore.sessionRecovery("long-session",cursor:cursor,limit:5)
+      precondition(page.tools.count<=5 && page.tools.allSatisfy{$0.phase == .tool_not_started})
+      allCalls+=page.tools.map(\.callID);cursor=page.nextCursor;finished=page.complete
+      if finished {break}
+    }
+    precondition(finished && allCalls.count==37 && Set(allCalls).count==37)
+    let wire=try await longStore.publishBlob(data:Data("{\"messages\":[]}".utf8))
+    for index in 0..<37 {
+      let context="long-context-\(index)"
+      let plan=SessionRequestPlan(codecVersion:1,contextID:context,wireBlobHash:wire.descriptor.hash,wireByteLength:wire.descriptor.byteLength,adapterVersion:"fixture-v1")
+      _ = try await longLedger.record(SessionRequestLifecycle(kind:.request_planned,plan:plan,transition:nil),id:context+".planned",kind:.task_transition,turn:turn,task:task,resource:wire,resourceOwner:.init(kind:.context,id:"request-long-session-"+context))
+    }
+    try await longStore.releaseBlob(wire)
+    cursor=nil;allCalls=[];var requestIDs:[String]=[];finished=false
+    for _ in 0..<10 {
+      let page=try await longStore.sessionRecovery("long-session",cursor:cursor,limit:5)
+      precondition(page.tools.count<=5 && page.requests.count<=5 && page.requests.allSatisfy{$0.phase == .not_dispatched})
+      allCalls+=page.tools.map(\.callID);requestIDs+=page.requests.map(\.contextID);cursor=page.nextCursor;finished=page.complete
+      if finished {break}
+    }
+    precondition(finished && Set(allCalls).count==37 && Set(requestIDs).count==37)
+    let firstLongPage=try await longStore.sessionEvents("long-session",limit:32)
+    precondition(firstLongPage.count==32 && firstLongPage[0].event.event_sequence==1)
+    let identities=try await longStore.agentSessions();precondition(identities.count==1 && identities[0].eventCount==4374)
+    try await longStore.close()
+    let (longReopen,_)=try await StorageService.open(paths:.init(root:longRoot,channel:.preview))
+    let firstRecovery=try await longReopen.sessionRecovery("long-session",limit:5);precondition(!firstRecovery.complete && firstRecovery.tools.count==5)
+    try await longReopen.close()
+    let longDB=longRoot.appendingPathComponent("Library/Generations/000001/library.sqlite")
+    let actualSizes=try await Task.detached {let db=try SQLiteDatabase(url:longDB,readonly:true);defer {try? db.close()};return (try db.integer("SELECT count(*) FROM session_events"),try db.integer("SELECT sum(length(record)) FROM session_events"))}.value
+    precondition(actualSizes.0==4374 && actualSizes.1>16*1024*1024)
+    print("Actual long session4374 events/>16MiB: new calls admitted beyond4096, all37 calls and37 request plans recovered in bounded5-row pages, original raw prefix retained and restart passed")
     print("Canonical actual SQLite session: proposal/admission/unknown/original document recovered result, no callback replay; sequence/idempotency/gap/stream refusal, original ACK and request planned/dispatch/response/finish byte facts passed")
   }
 }

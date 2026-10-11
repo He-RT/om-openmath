@@ -6,7 +6,7 @@ import SQLite3
 final class LibraryStore {
   private let db:SQLiteDatabase,url:URL,identity:StoreIdentity
   init(db:SQLiteDatabase,url:URL,identity:StoreIdentity,create:Bool=false)throws {
-    guard identity.kind=="library",(2...3).contains(identity.storeVersion) else {throw StorageError.unsupportedVersion}
+    guard identity.kind=="library",(2...4).contains(identity.storeVersion) else {throw StorageError.unsupportedVersion}
     self.db=db;self.url=url;self.identity=identity
     var present=false
     try db.statement("SELECT 1 FROM sqlite_schema WHERE type='table' AND name='document_effect_events'") {_ in present=true}

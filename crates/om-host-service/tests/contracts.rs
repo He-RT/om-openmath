@@ -9,6 +9,36 @@ fn root(name: &str) -> Value {
     };
     serde_json::from_str(text).unwrap()
 }
+#[test]
+fn canonical_timestamp_accepts_actual_iso_dates_and_rejects_bad_calendar_or_offset() {
+    let schema: Value = serde_json::from_str(include_str!(
+        "../../../docs/design/macos-storage.schema.json"
+    ))
+    .unwrap();
+    for good in [
+        "2026-10-12T08:00:01Z",
+        "2024-02-29T23:59:59.123456+08:00",
+        "2026-10-12T00:00:00-00:00",
+    ] {
+        assert!(
+            validation::validate(&json!(good), &schema["$defs"]["Timestamp"], &schema).is_ok(),
+            "{good}"
+        )
+    }
+    for bad in [
+        "2026-02-29T00:00:00Z",
+        "2024-02-30T00:00:00Z",
+        "2026-10-12T24:00:00Z",
+        "2026-10-12T00:00:00+25:00",
+        "2026-10-12T00:00:00.Z",
+        r"\dddd-\dd-\ddT\dd:\dd:\ddZ",
+    ] {
+        assert!(
+            validation::validate(&json!(bad), &schema["$defs"]["Timestamp"], &schema).is_err(),
+            "{bad}"
+        )
+    }
+}
 fn host() -> Value {
     json!({"contract_version":1,"runtime_instance_id":"runtime-1","host_phase":"starting","ui_event_sequence":0,"rust_event_sequence":0,"document":null,"agent_task":null,"pi":{"phase":"stopped","connection_id":null,"connection_generation":0,"protocol_version":1},"operations":[]})
 }

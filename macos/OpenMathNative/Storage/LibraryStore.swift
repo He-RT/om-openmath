@@ -6,7 +6,7 @@ import SQLite3
 final class LibraryStore {
   private let db:SQLiteDatabase,url:URL,identity:StoreIdentity
   init(db:SQLiteDatabase,url:URL,identity:StoreIdentity,create:Bool=false)throws {
-    guard identity.kind=="library",identity.storeVersion==2 else {throw StorageError.unsupportedVersion}
+    guard identity.kind=="library",(2...3).contains(identity.storeVersion) else {throw StorageError.unsupportedVersion}
     self.db=db;self.url=url;self.identity=identity
     var present=false
     try db.statement("SELECT 1 FROM sqlite_schema WHERE type='table' AND name='document_effect_events'") {_ in present=true}
@@ -62,6 +62,9 @@ final class LibraryStore {
     guard after>=0,limit>0,limit<=16 else {throw StorageError.corruptIdentity}
     let reader=try SQLiteDatabase(url:url,readonly:true);defer {try? reader.close()}
     return try readPage(reader,after:after,limit:limit)
+  }
+  func event(store:String,id:String)throws->StoredDocumentEffect? {
+    let reader=try SQLiteDatabase(url:url,readonly:true);defer {try? reader.close()};return try read(reader,store:store,event:id)
   }
   private func readPage(_ reader:SQLiteDatabase,after:Int64,limit:Int)throws->[StoredDocumentEffect] {
     var records:[StoredDocumentEffect]=[],bytes=0,stopped=false

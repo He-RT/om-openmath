@@ -27,7 +27,7 @@ private func actualOutput(_ store:StorageService,_ receipt:NativeKernelReceipt,c
     let file=NativeSourceFile(version:1,title:"恢复测试",cells:[.init(id:"a",kind:.math,source:"let a=2",dialect:.modern),.init(id:"b",kind:.math,source:"a+1",dialect:.modern)])
     try NotebookFileCodec.encode(file).write(to:target)
     let (store,info)=try await StorageService.open(paths:.init(root:root.appendingPathComponent("managed"),channel:.preview))
-    precondition(info.identity.storeVersion==2 && info.identity.minimumReaderVersion==2)
+    precondition(info.identity.storeVersion==3 && info.identity.minimumReaderVersion==3)
     let session=try await NativeDocumentSession.open(storage:store,url:target),kernel=KernelCommitPort(client:session.host,storage:store,source:session.source)
     let two=try await kernel.runCell("a",operation:"recovery-a2"),three=try await kernel.runCell("b",operation:"recovery-b3")
     let value2=try await actualOutput(store,two,cell:"a"),value3=try await actualOutput(store,three,cell:"b");precondition(value2=="2" && value3=="3")
@@ -144,11 +144,45 @@ private func actualOutput(_ store:StorageService,_ receipt:NativeKernelReceipt,c
     let repeated=try await recovery.projectDocument(manifest.documentID);precondition(repeated.insertedEvents==0 && repeated.checkedEvents==7)
     let firstPage=try await store.libraryEffects(limit:1);precondition(firstPage.count==1)
     let secondPage=try await store.libraryEffects(after:firstPage[0].sequence,limit:1);precondition(secondPage.count==1 && secondPage[0].sequence>firstPage[0].sequence)
+    // The kernel's candidate request hash includes actual results and is unavailable before
+    // execution. A tool admission binds its already frozen source hash instead.
+    _ = try await store.createAgentSession("kernel-fact-session")
+    let mathLedger=SessionLedgerPort(storage:store,session:"kernel-fact-session",sourceInstance:"kernel-fact-host")
+    let mathArgs=Data("{\"cells\":[\"b\"]}".utf8)
+    _ = try await mathLedger.record(SessionAssistantEnd(codecVersion:1,messageID:"math-proposal",textUTF8:Data(),calls:[.init(callID:"math-call",toolName:"run_cells",arguments:mathArgs)]),id:"math-proposal",kind:.assistant_end,turn:"math-turn",task:"math-task")
+    let actualMath=try await store.acceptedKernelHead(document:manifest.documentID)!
+    let mathTarget=SessionOperationTarget(documentID:manifest.documentID,storeID:manifest.storeID,operationID:actualMath.operation_id,kind:.kernel,expectedHash:actualMath.producer.source_snapshot_hash)
+    let mathAdmission=SessionToolAdmission(codecVersion:1,callID:"math-call",proposalEvent:"math-proposal",toolName:"run_cells",argumentsHash:KernelHashes.data(mathArgs),target:mathTarget)
+    _ = try await mathLedger.record(mathAdmission,id:"math-admission",kind:.tool_admitted,parent:"math-proposal",turn:"math-turn",task:"math-task",target:mathTarget)
+    let recoveredMath=try await RecoveryService(storage:store).recoverSession("kernel-fact-session",ledger:mathLedger);precondition(recoveredMath.tools[0].phase == .completed)
+    let partialFile=root.appendingPathComponent("user-files/真实部分计算.omnb")
+    let partialSource=NativeSourceFile(version:1,title:"部分计算",cells:[.init(id:"p",kind:.math,source:"partial=7; loop:=loop; loop; never=8",dialect:.wolfram)])
+    try NotebookFileCodec.encode(partialSource).write(to:partialFile)
+    let partialSession=try await NativeDocumentSession.open(storage:store,url:partialFile),partialKernel=KernelCommitPort(client:partialSession.host,storage:store,source:partialSession.source)
+    let partialReceipt=try await partialKernel.runCell("p",operation:"partial-calculation")
+    precondition(partialReceipt.producer.terminal_status == .error)
+    // Wolfram CompoundExpression is one failed statement, yet its earlier binding is real.
+    // Independently inspect the accepted readonly state instead of equating its counter with effects.
+    let partialResults=ResultClient(host:partialSession.host)
+    let partialManifest=try await partialResults.manifest(partialReceipt.result_id.value!)
+    try partialResults.select(partialManifest.bindings.last!)
+    let retainedValue=try await partialResults.inspect(.inspect_result_expression(.init(kind:.readonly_expression,source:"partial",numeric:false)))!
+    let retainedJSON=try JSONSerialization.jsonObject(with:JSONEncoder().encode(retainedValue.payload)) as! [String:Any]
+    precondition(retainedJSON["input_form"] as? String=="7")
+    let partialIdentity=try await store.documentIdentity(partialSession.drafts.confirmed.document_id)
+    let partialTarget=SessionOperationTarget(documentID:partialIdentity.documentID!,storeID:partialIdentity.storeID,operationID:partialReceipt.operation_id,kind:.kernel,expectedHash:partialReceipt.producer.source_snapshot_hash)
+    _ = try await store.createAgentSession("partial-fact-session")
+    let partialLedger=SessionLedgerPort(storage:store,session:"partial-fact-session",sourceInstance:"partial-fact-host")
+    let partialArgs=Data("{\"cells\":[\"p\"]}".utf8)
+    _ = try await partialLedger.record(SessionAssistantEnd(codecVersion:1,messageID:"partial-proposal",textUTF8:Data(),calls:[.init(callID:"partial-call",toolName:"run_cells",arguments:partialArgs)]),id:"partial-proposal",kind:.assistant_end,turn:"partial-turn",task:"partial-task")
+    _ = try await partialLedger.record(SessionToolAdmission(codecVersion:1,callID:"partial-call",proposalEvent:"partial-proposal",toolName:"run_cells",argumentsHash:KernelHashes.data(partialArgs),target:partialTarget),id:"partial-admission",kind:.tool_admitted,parent:"partial-proposal",turn:"partial-turn",task:"partial-task",target:partialTarget)
+    let recoveredPartial=try await RecoveryService(storage:store).recoverSession("partial-fact-session",ledger:partialLedger);precondition(recoveredPartial.tools[0].phase == .partial)
+    await partialResults.close();await partialKernel.close();try await partialSession.close()
     let clone=try await NativeDocumentSession.open(storage:store,url:root.appendingPathComponent("user-files/恢复🙂.omnb"))
     _ = try await clone.document.saveNative(operation:"recovery-save")
     let secondDocument=try await RecoveryService(storage:store).projectDocument(clone.drafts.confirmed.document_id)
     precondition(secondDocument.insertedEvents==1)
-    let all=try await store.libraryEffects();precondition(all.count==8 && all.filter{$0.effect.eventID==save.eventID}.count==2)
+    let all=try await store.libraryEffects();precondition(all.count==9 && all.filter{$0.effect.eventID==save.eventID}.count==2)
     try await clone.close();await kernel.close();try await session.close();try await store.close()
     let database=root.appendingPathComponent("managed/Library/Generations/000001/library.sqlite")
     try await Task.detached {
@@ -157,7 +191,7 @@ private func actualOutput(_ store:StorageService,_ receipt:NativeKernelReceipt,c
       let guardFile=root.appendingPathComponent("readonly-guard-fixture.sqlite")
       try FileManager.default.copyItem(at:database,to:guardFile)
       let reader=try SQLiteDatabase(url:guardFile,readonly:true)
-      let version=try reader.integer("PRAGMA user_version");precondition(version==2)
+      let version=try reader.integer("PRAGMA user_version");precondition(version==3)
       // Deliberately violate the serialized-reader contract in this disposable fixture.
       // No data bytes change; the reader still must reject a changed underlying file.
       try FileManager.default.setAttributes([.modificationDate:Date(timeIntervalSince1970:1)],ofItemAtPath:guardFile.path)

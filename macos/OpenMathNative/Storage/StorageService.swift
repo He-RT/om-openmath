@@ -20,6 +20,7 @@ private final class StoreWriter:@unchecked Sendable {
   private var effects:LibraryStore?
   private var outbox:DocumentOutbox?
   private var drafts:DraftBackupStore?
+  private var sessions:AgentSessionStore?
   init(_ name:String,lease:RootLease) { self.lease=lease;queue=DispatchQueue(label:"org.openmath.storage."+name,qos:.utility) }
   nonisolated(nonsending) func perform<T:Sendable>(_ body:@escaping @Sendable (StoreWriter)throws->T) async throws ->T {
     try await withCheckedThrowingContinuation { continuation in
@@ -41,7 +42,8 @@ private final class StoreWriter:@unchecked Sendable {
       if kind=="document",(3...5).contains(opened.1.storeVersion) {writer.kernel=try KernelStore(db:opened.0,url:databaseURL,identity:opened.1)}
       if kind=="document",(4...5).contains(opened.1.storeVersion) {writer.saves=try SaveStore(db:opened.0,url:databaseURL,identity:opened.1)}
       if kind=="document",opened.1.storeVersion==5 {writer.drafts=try DraftBackupStore(db:opened.0,url:databaseURL,identity:opened.1)}
-      if kind=="library",opened.1.storeVersion==2 {writer.effects=try LibraryStore(db:opened.0,url:databaseURL,identity:opened.1)}
+      if kind=="library",(2...3).contains(opened.1.storeVersion) {writer.effects=try LibraryStore(db:opened.0,url:databaseURL,identity:opened.1)}
+      if kind=="library",opened.1.storeVersion==3 {writer.sessions=try AgentSessionStore(db:opened.0,url:databaseURL,identity:opened.1)}
       if kind=="document",let source=writer.source {writer.outbox=DocumentOutbox(db:opened.0,url:databaseURL,identity:opened.1,source:source,kernel:writer.kernel,saves:writer.saves)}
       return StoreOpenInfo(identity:opened.1,runtime:opened.2)
     }
@@ -70,17 +72,20 @@ private final class StoreWriter:@unchecked Sendable {
   nonisolated(nonsending) func draftCall<T:Sendable>(_ work:@escaping @Sendable (DraftBackupStore)throws->T) async throws ->T {
     try await perform {writer in guard let drafts=writer.drafts else {throw StorageError.unsupportedVersion};return try work(drafts)}
   }
+  nonisolated(nonsending) func sessionCall<T:Sendable>(_ work:@escaping @Sendable (AgentSessionStore)throws->T) async throws->T {
+    try await perform {writer in guard let sessions=writer.sessions else {throw StorageError.unsupportedVersion};return try work(sessions)}
+  }
   /// Failed Library open is not a clean shutdown or a license to replace the original DB.
   nonisolated(nonsending) func abandon() async {
     _ = try? await perform {writer in
-      try writer.db?.close();writer.db=nil;writer.source=nil;writer.references=nil;writer.kernel=nil;writer.saves=nil;writer.effects=nil;writer.outbox=nil;writer.drafts=nil
+      try writer.db?.close();writer.db=nil;writer.source=nil;writer.references=nil;writer.kernel=nil;writer.saves=nil;writer.effects=nil;writer.outbox=nil;writer.drafts=nil;writer.sessions=nil
     }
   }
   nonisolated(nonsending) func close() async throws {
     try await perform { writer in
       if let db=writer.db {
         try db.transaction { try db.statement("UPDATE store_state SET last_clean_shutdown=1 WHERE singleton=1") }
-        try db.checkpoint();try db.close();writer.db=nil;writer.source=nil;writer.references=nil;writer.kernel=nil;writer.saves=nil;writer.effects=nil;writer.outbox=nil;writer.drafts=nil
+        try db.checkpoint();try db.close();writer.db=nil;writer.source=nil;writer.references=nil;writer.kernel=nil;writer.saves=nil;writer.effects=nil;writer.outbox=nil;writer.drafts=nil;writer.sessions=nil
       }
     }
   }
@@ -131,7 +136,7 @@ actor StorageService {
     }
     return service
   }
-  private func installLibrary(_ writer:StoreWriter,info:StoreOpenInfo) {library=writer;libraryState=info.identity.storeVersion==2 ? .ready(info) : .legacy(info)}
+  private func installLibrary(_ writer:StoreWriter,info:StoreOpenInfo) {library=writer;libraryState=info.identity.storeVersion==3 ? .ready(info) : .legacy(info)}
   private func unavailableLibrary(_ error:StorageError) {libraryState = .unavailable(error)}
   func libraryAvailability()->NativeLibraryAvailability {libraryState}
   func startupDocuments(after:String?=nil,limit:Int=32) async throws->StartupDocumentPage {
@@ -179,6 +184,35 @@ actor StorageService {
   func libraryEffects(after:Int64=0,limit:Int=16) async throws->[StoredDocumentEffect] {
     guard closeTask==nil,let library else {throw StorageError.closing}
     return try await library.effectCall {try $0.page(after:after,limit:limit)}
+  }
+  func createAgentSession(_ id:String,faults:StorageFaults = .init()) async throws->AgentSessionIdentity {
+    guard closeTask==nil,let library else {throw StorageError.closing};return try await library.sessionCall {try $0.create(id,faults:faults)}
+  }
+  func appendSessionEvent(_ input:SessionAppendInput,faults:StorageFaults = .init()) async throws->SessionAppendReceipt {
+    guard closeTask==nil,let library else {throw StorageError.closing};return try await library.sessionCall {try $0.append(input,faults:faults)}
+  }
+  func appendSessionResource(_ input:SessionAppendInput,publication:BlobPublication,owner:BlobOwner,faults:StorageFaults = .init()) async throws->SessionAppendReceipt {
+    guard closeTask==nil,let library,let blobs,owner.kind == .context else {throw StorageError.closing}
+    let transfer=try await blobs.retain(publication)
+    do {
+      let reader=try await blobs.openReader(transfer);try await blobs.closeReader(reader)
+      let reference=BlobReference(owner:owner,descriptor:transfer.descriptor,mediaType:"application/octet-stream",codecVersion:"agent-wire-v1")
+      let receipt=try await library.sessionCall {try $0.append(input,resource:reference,faults:faults)}
+      try await blobs.release(transfer);return receipt
+    } catch {try? await blobs.release(transfer);throw error}
+  }
+  func originalOperationEffect(_ target:SessionOperationTarget) async throws->DocumentEffect? {
+    guard closeTask==nil,let writer=documents[target.documentID] else {throw StorageError.closing}
+    return try await writer.outboxCall {try $0.operation(target)}
+  }
+  func sessionEvent(_ session:String,event:String) async throws->StoredSessionEvent? {
+    guard closeTask==nil,let library else {throw StorageError.closing};return try await library.sessionCall {try $0.query(session,event:event)}
+  }
+  func sessionEvents(_ session:String,after:UInt64=0,limit:Int=16) async throws->[StoredSessionEvent] {
+    guard closeTask==nil,let library else {throw StorageError.closing};return try await library.sessionCall {try $0.page(session,after:after,limit:limit)}
+  }
+  func sessionRecovery(_ session:String) async throws->SessionRecoveryPage {
+    guard closeTask==nil,let library else {throw StorageError.closing};return try await library.sessionCall {try $0.recover(session)}
   }
   func readLibraryHeader() async throws ->StoreIdentity {
     guard let library,closeTask==nil else { throw StorageError.closing }

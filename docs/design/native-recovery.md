@@ -1,6 +1,6 @@
 # 原生 Mac 启动恢复实现
 
-2026-10-12。R4.1.12 正在实施，已完成文档事实投影、Library 故障隔离、原生草稿备份与本地文档启动恢复。Agent规范会话/admission/请求恢复仍未完成；运行版本继续 `.3`，不代表 `.4` 已就绪。
+2026-10-12。R4.1.12 正在实施，文档投影、原生草稿、本地启动恢复及规范会话/工具/请求恢复账本已验证。长会话恢复索引和应用会话恢复入口仍未完成；真实Pi/provider绑定由后续Agent任务接入。运行版本继续 `.3`，不代表 `.4` 已就绪。
 
 ## 原文档事实与 Library 投影
 
@@ -75,4 +75,22 @@ Rust导入线程在控制锁外验证整体散列、metadata、原回执、docum
 
 恢复读取至多32个原prepared save intent。已存在原receipt直接核对；无receipt则由已有文件协调读取核对实际字节/身份和被交换原件，补真实recovered receipt，或确认未写入；没有再次replace。权限、离线、冲突或未知保持原operation ID待核对，阻止依赖的新保存，不伪造失败/成功。
 
-六个保存SIGKILL点改由实际NativeDocumentSession恢复工厂验收，源码修订1保持，用户文件只读核对后保存状态与真实回执一致，零计算。Library就绪时恢复工厂每批投影256个原事件，未完保留cursor并提供继续核对；Library失败不毁原文档。完整Agent工具admission/网络发送状态仍须后续规范事件账本，R4.1.12保持in_progress。
+六个保存SIGKILL点改由实际NativeDocumentSession恢复工厂验收，源码修订1保持，用户文件只读核对后保存状态与真实回执一致，零计算。Library就绪时恢复工厂每批投影256个原事件，未完保留cursor并提供继续核对；Library失败不毁原文档。Agent工具admission/网络发送的规范账本已见下一节；长会话与应用恢复入口未完成，R4.1.12保持in_progress。
+
+## 规范会话、工具接纳与发送恢复
+
+新freshLibrary3增加不可变`session_events`、会话身份、来源序号和全库operation claim。既有Library1/2不在普通打开时升级，原document5/.omnb v1不变。NativeSessionEvent严格保留原设计的稳定session/event/turn/task ID、source instance/sequence、required-null、载荷散列及原operation/store；实际60条跨中断事件逐条通过原闭合schema校验，没有为了通过测试重写schema。
+
+同一事件ID/载荷返回原回执，身份相同内容不同拒绝；source序号缺口拒绝，来源序号与事件顺序独立。用户/流式文字、完整assistant结束、tool admitted/started/result和request phase都先在同一Library事务提交，实际同步/独立回读以后才ACK；unknown只按原ID核对，新事件不能抢占未确认的序号。流批次最多32KiB且不含工具参数，工具只来自完整assistant结束。
+
+`SessionToolPort`取得实际document/store身份、耐久admission和唯一execution claim后才调用宿主执行器。丢ACK或已有claim不调用第二次；跨会话引用同一个未核对operation也被挡住。已有原文档效果时只读核对/补结果，不能重做。`RecoveryService.recoverSession`没有执行器/网络callback：未admit显示tool_not_started；admit无真实终止事实保持tool_outcome_unknown；有原source/kernel/save效果则按store/op/frozen hash验证、投影真实recovered result。
+
+source使用原冻结patch request hash，save使用目标文件散列。Kernel candidate request hash包含计算产物，执行前尚不存在，因此kernel admission绑定当时的source snapshot hash；恢复仍读原operation receipt及真实accepted state。实际Wolfram复合表达式报错但前面partial=7保留的例子，经只读内核检查和真实接受回执确认后标partial，不能宣称全部成功或回滚。
+
+请求body作为原Blob保存，凭据/header由后续SecretStore/URLSession适配器另行提供。plan和资源引用同库提交，然后dispatch_started耐久确认，才调用真实传输。response字节作为另一个原Blob保存并记录response_started；终止记录不等于供应商已读完全部输入。恢复保持not_dispatched/dispatch_outcome_unknown/response_observed/finished/failed，不自动发送。HTTP503返回实际错误字节并标failed；丢响应或确认保持unknown，不猜测没有收费。
+
+13个实际SIGKILL点覆盖admit前/后、execution claim、真实source COMMIT、tool result、request plan、dispatch、HTTP回复及终止ACK。回环服务器实际POST数在两次重启核对后不增加，source操作数也不增加；未开始和unknown状态保持。记录损坏不截尾吞掉，原Library字节和健康文档保留；伪造结果/错误hash/不完整工具参数/序号缺口均被拒绝。真实F_FULLFSYNC失败直到原ID确认才解除unknown。
+
+当前单次语义恢复最多4096事件/16MiB payload，超过时明确incomplete并阻止依赖新admission，原事件不截断。每页可查历史，但用于增量长会话恢复的持久索引/续页还未完成；应用恢复列表目前接本地文档，Agent会话入口、完整prompt/context revisions、压缩和provider适配仍待对应任务。不能把本批短会话/网络fixture当作完整Pi Agent已可使用。
+
+Canonical Timestamp使用现有date-time contract。本地无第三方日期/regex依赖的结构校验遵循[RFC3339日期时间结构](https://www.rfc-editor.org/rfc/rfc3339#section-5.6)，实际UTC时间、闰年/错误日历/偏移有独立正负例；不引入时区数据库或改写原schema。最终同候选门禁仍须另跑。

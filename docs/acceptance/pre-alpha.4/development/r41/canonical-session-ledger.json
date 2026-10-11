@@ -1,0 +1,517 @@
+{
+  "schema_version": 1,
+  "record_kind": "development_canonical_session_ledger",
+  "task": "R4.1.12",
+  "task_status": "in_progress",
+  "timestamp_utc": "2026-10-11T18:22:11.378361+00:00",
+  "base_source_sha": "5b96debf4f2692ca9f5df37a980a0e22e726cf82",
+  "runtime_version": "0.1.0-pre-alpha.3",
+  "target_version": "0.1.0-pre-alpha.4",
+  "public_gate_evidence": false,
+  "started_simulators": false,
+  "fresh_library_version": 3,
+  "existing_library_1_2_upgrade": "Not automatic; remains pending R4.1.13",
+  "commands": [
+    {
+      "command": "bash macos/Scripts/test-session-ledger.sh",
+      "exit_code": 0,
+      "log": {
+        "path": "target/acceptance/pre-alpha.4/development/r41/session-ledger-runtime-final10.log",
+        "bytes": 924,
+        "sha256": "c63a6359e898034b8846fc172a8f64e15e301cb36b599061a89a1ec1071eb559"
+      }
+    },
+    {
+      "command": "bash macos/Scripts/test-storage.sh",
+      "exit_code": 0,
+      "log": {
+        "path": "target/acceptance/pre-alpha.4/development/r41/session-ledger-storage-final2.log",
+        "bytes": 415,
+        "sha256": "723b7c95ddcf13445d2136d3ff34157a80b45f5fcea65a9fef9f9fd5eafc7bfd"
+      }
+    },
+    {
+      "command": "bash macos/Scripts/test-recovery.sh",
+      "exit_code": 0,
+      "log": {
+        "path": "target/acceptance/pre-alpha.4/development/r41/session-ledger-projection-regression-final3.log",
+        "bytes": 520,
+        "sha256": "eb10591578edf7e02bc0fbad9154a072363e779b17f490e5b1a8f7cd74104300"
+      }
+    },
+    {
+      "command": "bash macos/Scripts/test-drafts.sh",
+      "exit_code": 0,
+      "log": {
+        "path": "target/acceptance/pre-alpha.4/development/r41/session-ledger-draft-regression-final3.log",
+        "bytes": 403,
+        "sha256": "347503a247dc9b2b5a65e20e866806da959d9198071ef55ff52fbed6ec470451"
+      }
+    },
+    {
+      "command": "bash macos/Scripts/test-saves.sh",
+      "exit_code": 0,
+      "log": {
+        "path": "target/acceptance/pre-alpha.4/development/r41/session-ledger-save-regression-final3.log",
+        "bytes": 884,
+        "sha256": "ad728b5481f2d246f6fffa7731f749875690deae621bde3f8bf138f5328f93e6"
+      }
+    },
+    {
+      "command": "cargo test -p om-host-service -p om-apple-ffi --locked",
+      "exit_code": 0,
+      "log": {
+        "path": "target/acceptance/pre-alpha.4/development/r41/session-ledger-rust-tests.log",
+        "bytes": 13770,
+        "sha256": "a7a69f559ac23b65e563f310a4d5650264f7906b22cdd14c27bd05951dc852a6"
+      }
+    },
+    {
+      "command": "cargo clippy -p om-host-service -p om-apple-ffi --all-targets --locked -- -D warnings",
+      "exit_code": 0,
+      "log": {
+        "path": "target/acceptance/pre-alpha.4/development/r41/session-ledger-clippy.log",
+        "bytes": 273,
+        "sha256": "c84dc7ad7edd99eba7cc065cd13414e853fd55325445d1343d9547cac27dc87e"
+      }
+    },
+    {
+      "command": "bash macos/Scripts/build-native.sh",
+      "exit_code": 0,
+      "log": {
+        "path": "target/acceptance/pre-alpha.4/development/r41/session-ledger-native-build-final.log",
+        "bytes": 94316,
+        "sha256": "c724962a80e1214221e823271b75109abccecb1ab20ecd5fecdccc59241405c7"
+      }
+    }
+  ],
+  "rust_tests_passed": 112,
+  "sources": [
+    {
+      "path": "macos/OpenMathNative/Storage/AgentSessionTypes.swift",
+      "bytes": 7486,
+      "sha256": "434010e41b24295db124cd667ec35a449967fecb16104aedc67ace53279d1198"
+    },
+    {
+      "path": "macos/OpenMathNative/Storage/AgentSessionStore.swift",
+      "bytes": 18431,
+      "sha256": "a31dc43e030a917432392eaccbad7fe80d6334bfc60b1292dd6882d2d758e93e"
+    },
+    {
+      "path": "macos/OpenMathNative/Storage/SessionSemantics.swift",
+      "bytes": 12250,
+      "sha256": "1ac8db3705f7427e39a20dd96a9ce7cf58caa3bff5ab1a0b3c1671ec9bbca0ec"
+    },
+    {
+      "path": "macos/OpenMathNative/Storage/SessionLedgerPort.swift",
+      "bytes": 9537,
+      "sha256": "18802ffd2ff28cb8339f00eb82610e1a22b33f21594425cf6692ebc32e731029"
+    },
+    {
+      "path": "macos/OpenMathNative/Storage/SessionRecovery.swift",
+      "bytes": 1501,
+      "sha256": "d2f523cfcbc66b3c35f9c5ccd83ea938fda22ee25cfa62bc0d3eb1ab5be7a8ea"
+    },
+    {
+      "path": "macos/OpenMathNative/Storage/DocumentOutbox.swift",
+      "bytes": 8058,
+      "sha256": "5d163b0f669da356a707d8e8fed3a95336f058d15841076536c588da76911fd6"
+    },
+    {
+      "path": "macos/OpenMathNative/Storage/StorageService.swift",
+      "bytes": 28462,
+      "sha256": "f41e6a2eabec3df06ab17b6d3a71afd3adca820452a9a745dc28a04502bf6da5"
+    },
+    {
+      "path": "macos/OpenMathNative/Storage/StorageTypes.swift",
+      "bytes": 3411,
+      "sha256": "13b74487c6a768d76b56b0fbe7f80281baf0030173737e807cb205281479abe7"
+    },
+    {
+      "path": "macos/OpenMathNative/Storage/Bootstrap.swift",
+      "bytes": 8246,
+      "sha256": "694aee2bceb8c25cdfa0a95c3c7bdd3daf1f0c77d57f8ab89df00d58aede0377"
+    },
+    {
+      "path": "crates/om-host-service/src/protocol/validation.rs",
+      "bytes": 10993,
+      "sha256": "3f6f7a419a22c2d6fd7c33b4c263a34bfd22ed411e8c5a4e91e693f9e18046c6"
+    },
+    {
+      "path": "crates/om-host-service/tests/contracts.rs",
+      "bytes": 9337,
+      "sha256": "12c09f04a03549d684ae580cd4d7fcf43876f25baa291ea800108a73fbd17f29"
+    },
+    {
+      "path": "crates/om-host-service/examples/validate_session_events.rs",
+      "bytes": 1044,
+      "sha256": "5d348ebc2c61d758309857d422bd6866612bf13fe5751e8e7b5b5ed99fb4dd14"
+    },
+    {
+      "path": "macos/OpenMathNativeTests/SessionLedgerFixtures/main.swift",
+      "bytes": 15792,
+      "sha256": "d6cb6161c4dd94959462feeff541bb7021ab90cda70456dd28aea6cec9ea7cdf"
+    },
+    {
+      "path": "macos/OpenMathNativeTests/SessionLedgerFixtures/interruption.py",
+      "bytes": 7303,
+      "sha256": "4489485c0ebd58d9dbe6e0f0ceccd5bfaa137036092221b09c76fb3e4d4550e2"
+    },
+    {
+      "path": "macos/Scripts/test-session-ledger.sh",
+      "bytes": 1414,
+      "sha256": "582ae01b99cc4c7dfb5178181f1a32a8a5552018c1b7a823f2a80b5c718de553"
+    },
+    {
+      "path": "macos/OpenMathNativeTests/RecoveryFixtures/main.swift",
+      "bytes": 22328,
+      "sha256": "0e687b60058e0d98bde195265768ce4b958e95f727789810517e86e442dae358"
+    }
+  ],
+  "app_executable": {
+    "path": "target/macos-native/Build/Products/Release/OpenMath Preview.app/Contents/MacOS/OpenMathNative",
+    "bytes": 32278224,
+    "sha256": "1cc96db9f9d360050be98ef77909e02691f14b62fc02ecba6f28646b70294e3a"
+  },
+  "canonical_event_count": 60,
+  "original_schema": "docs/design/macos-storage.schema.json / $defs.SessionEvent (unchanged)",
+  "canonical_event_bytes": {
+    "path": "target/acceptance/pre-alpha.4/development/r41/session-ledger-canonical-events.json",
+    "bytes": 53113,
+    "sha256": "d5c55546a188dfb82c0d88f616e8046e536e4d9ef1955c37e8aa6603c6f606d1"
+  },
+  "actual_fault_boundaries": [
+    {
+      "boundary": "session_event_before_commit.tool_admitted",
+      "root": "target/macos-storage-tests/session-ledger-kill-7lu_78qu",
+      "exit_code": -9,
+      "recovery": {
+        "after": "tool_not_started",
+        "before": "tool_not_started",
+        "events": 1,
+        "requests": [],
+        "source_revision": 0
+      },
+      "session_events_after_repeated_recovery": 1,
+      "actual_http_calls_before": 0,
+      "actual_http_calls_after": 0,
+      "wire_sha256": null
+    },
+    {
+      "boundary": "session_event_committed.tool_admitted",
+      "root": "target/macos-storage-tests/session-ledger-kill-ujmg0eh1",
+      "exit_code": -9,
+      "recovery": {
+        "after": "tool_outcome_unknown",
+        "before": "tool_outcome_unknown",
+        "events": 2,
+        "requests": [],
+        "source_revision": 0
+      },
+      "session_events_after_repeated_recovery": 2,
+      "actual_http_calls_before": 0,
+      "actual_http_calls_after": 0,
+      "wire_sha256": null
+    },
+    {
+      "boundary": "tool_admission_acknowledged",
+      "root": "target/macos-storage-tests/session-ledger-kill-crc1lgeh",
+      "exit_code": -9,
+      "recovery": {
+        "after": "tool_outcome_unknown",
+        "before": "tool_outcome_unknown",
+        "events": 2,
+        "requests": [],
+        "source_revision": 0
+      },
+      "session_events_after_repeated_recovery": 2,
+      "actual_http_calls_before": 0,
+      "actual_http_calls_after": 0,
+      "wire_sha256": null
+    },
+    {
+      "boundary": "tool_execution_claimed",
+      "root": "target/macos-storage-tests/session-ledger-kill-g4kgvpqv",
+      "exit_code": -9,
+      "recovery": {
+        "after": "tool_outcome_unknown",
+        "before": "tool_outcome_unknown",
+        "events": 3,
+        "requests": [],
+        "source_revision": 0
+      },
+      "session_events_after_repeated_recovery": 3,
+      "actual_http_calls_before": 0,
+      "actual_http_calls_after": 0,
+      "wire_sha256": null
+    },
+    {
+      "boundary": "source_committed",
+      "root": "target/macos-storage-tests/session-ledger-kill-ch6rjnuk",
+      "exit_code": -9,
+      "recovery": {
+        "after": "completed",
+        "before": "tool_outcome_unknown",
+        "events": 4,
+        "requests": [],
+        "source_revision": 1
+      },
+      "session_events_after_repeated_recovery": 4,
+      "actual_http_calls_before": 0,
+      "actual_http_calls_after": 0,
+      "wire_sha256": null
+    },
+    {
+      "boundary": "tool_effect_returned",
+      "root": "target/macos-storage-tests/session-ledger-kill-x44gj30q",
+      "exit_code": -9,
+      "recovery": {
+        "after": "completed",
+        "before": "tool_outcome_unknown",
+        "events": 4,
+        "requests": [],
+        "source_revision": 1
+      },
+      "session_events_after_repeated_recovery": 4,
+      "actual_http_calls_before": 0,
+      "actual_http_calls_after": 0,
+      "wire_sha256": null
+    },
+    {
+      "boundary": "session_event_before_commit.tool_result",
+      "root": "target/macos-storage-tests/session-ledger-kill-4ivvcs22",
+      "exit_code": -9,
+      "recovery": {
+        "after": "completed",
+        "before": "tool_outcome_unknown",
+        "events": 4,
+        "requests": [],
+        "source_revision": 1
+      },
+      "session_events_after_repeated_recovery": 4,
+      "actual_http_calls_before": 0,
+      "actual_http_calls_after": 0,
+      "wire_sha256": null
+    },
+    {
+      "boundary": "session_event_committed.tool_result",
+      "root": "target/macos-storage-tests/session-ledger-kill-y9xmld3m",
+      "exit_code": -9,
+      "recovery": {
+        "after": "completed",
+        "before": "completed",
+        "events": 4,
+        "requests": [],
+        "source_revision": 1
+      },
+      "session_events_after_repeated_recovery": 4,
+      "actual_http_calls_before": 0,
+      "actual_http_calls_after": 0,
+      "wire_sha256": null
+    },
+    {
+      "boundary": "request_plan_acknowledged",
+      "root": "target/macos-storage-tests/session-ledger-kill-7kohw2_b",
+      "exit_code": -9,
+      "recovery": {
+        "after": "tool_not_started",
+        "before": "tool_not_started",
+        "events": 2,
+        "requests": [
+          {
+            "context": "context-crash",
+            "phase": "not_dispatched"
+          }
+        ],
+        "source_revision": 0
+      },
+      "session_events_after_repeated_recovery": 2,
+      "actual_http_calls_before": 0,
+      "actual_http_calls_after": 0,
+      "wire_sha256": null
+    },
+    {
+      "boundary": "request_dispatch_acknowledged",
+      "root": "target/macos-storage-tests/session-ledger-kill-iul0glc7",
+      "exit_code": -9,
+      "recovery": {
+        "after": "tool_not_started",
+        "before": "tool_not_started",
+        "events": 3,
+        "requests": [
+          {
+            "context": "context-crash",
+            "phase": "dispatch_outcome_unknown"
+          }
+        ],
+        "source_revision": 0
+      },
+      "session_events_after_repeated_recovery": 3,
+      "actual_http_calls_before": 0,
+      "actual_http_calls_after": 0,
+      "wire_sha256": null
+    },
+    {
+      "boundary": "request_response_observed",
+      "root": "target/macos-storage-tests/session-ledger-kill-uk77e37t",
+      "exit_code": -9,
+      "recovery": {
+        "after": "tool_not_started",
+        "before": "tool_not_started",
+        "events": 3,
+        "requests": [
+          {
+            "context": "context-crash",
+            "phase": "dispatch_outcome_unknown"
+          }
+        ],
+        "source_revision": 0
+      },
+      "session_events_after_repeated_recovery": 3,
+      "actual_http_calls_before": 1,
+      "actual_http_calls_after": 1,
+      "wire_sha256": "20f2ed9e19f9d489568edd19ae287bf8dd6b92613889c56f1aa240e6d2910936"
+    },
+    {
+      "boundary": "request_response_acknowledged",
+      "root": "target/macos-storage-tests/session-ledger-kill-gseh2kdw",
+      "exit_code": -9,
+      "recovery": {
+        "after": "tool_not_started",
+        "before": "tool_not_started",
+        "events": 4,
+        "requests": [
+          {
+            "context": "context-crash",
+            "phase": "response_observed"
+          }
+        ],
+        "source_revision": 0
+      },
+      "session_events_after_repeated_recovery": 4,
+      "actual_http_calls_before": 1,
+      "actual_http_calls_after": 1,
+      "wire_sha256": "20f2ed9e19f9d489568edd19ae287bf8dd6b92613889c56f1aa240e6d2910936"
+    },
+    {
+      "boundary": "request_finish_acknowledged",
+      "root": "target/macos-storage-tests/session-ledger-kill-l4zo6ddu",
+      "exit_code": -9,
+      "recovery": {
+        "after": "tool_not_started",
+        "before": "tool_not_started",
+        "events": 5,
+        "requests": [
+          {
+            "context": "context-crash",
+            "phase": "finished"
+          }
+        ],
+        "source_revision": 0
+      },
+      "session_events_after_repeated_recovery": 5,
+      "actual_http_calls_before": 1,
+      "actual_http_calls_after": 1,
+      "wire_sha256": "20f2ed9e19f9d489568edd19ae287bf8dd6b92613889c56f1aa240e6d2910936"
+    }
+  ],
+  "actual_additional_assertions": [
+    "F_FULLFSYNC unknown original event readback, no new sequence takeover",
+    "Cross-session unresolved operation claim rejected; already confirmed operation reconciled without callback",
+    "Actual kernel operation/source snapshot binding (candidate hash unavailable before execution)",
+    "Wolfram failure retains actual partial=7 from readonly accepted state; canonical partial result",
+    "Actual UTF8 URLSession HTTP200/HTTP503 bytes and state",
+    "Malformed/forged result/gap/partial-stream tool rejection",
+    "Complete record corruption rejected before Library writer setup, original bytes and healthy source retained"
+  ],
+  "failed_attempts": [
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r41/session-ledger-storage-check.log",
+      "bytes": 1348,
+      "sha256": "fb13c04b0b6c1e8af092ebaff2bc564937f1d33a01b5c2d0cc792ba5507856d0"
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r41/session-ledger-runtime-initial.log",
+      "bytes": 1262,
+      "sha256": "0b7258b211071806821688c8977eecfb9120841ec0b568f6b5d503b5fbac21a0"
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r41/session-ledger-runtime-final.log",
+      "bytes": 1262,
+      "sha256": "dc4e52caf7e1040ba2b57dfc98870acb21d63444cc1c56097fa16d7f5adfb439"
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r41/session-ledger-runtime-final4.log",
+      "bytes": 1344,
+      "sha256": "0c92bc48a505d4e81ae3b015cf00468803bd006fe459229226f43bf700d3b85d"
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r41/session-ledger-storage-final.log",
+      "bytes": 204,
+      "sha256": "2dab47930c5a049a5a8bbfd7b5375db7f41d64f732f50089d357dafa18c12e44"
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r41/session-ledger-projection-regression-final.log",
+      "bytes": 319,
+      "sha256": "473ca78e0cf631645c55ef3469069c70ef2859590f8bd7100e28df16982c8150"
+    }
+  ],
+  "failure_resolutions": [
+    "Swift throwing property and shadowed pending names corrected",
+    "Existing bounded Rust schema validator lacked format=date-time support; added no-dependency timestamp validation, original schema kept unchanged",
+    "File changed during concurrent compilation; frozen rerun matches authoritative sources",
+    "CompoundExpression error is one failed statement but earlier definition persists; independent readonly partial=7 proof replaces counter assumption"
+  ],
+  "previous_ci": {
+    "run_id": 38159289992,
+    "head_sha": "5b96debf4f2692ca9f5df37a980a0e22e726cf82",
+    "conclusion": "failure",
+    "jobs": [
+      {
+        "name": "rust",
+        "conclusion": "success"
+      },
+      {
+        "name": "frontend",
+        "conclusion": "success"
+      },
+      {
+        "name": "native_macos / native",
+        "conclusion": "success"
+      },
+      {
+        "name": "dependencies",
+        "conclusion": "success"
+      },
+      {
+        "name": "ios / native",
+        "conclusion": "failure"
+      }
+    ],
+    "mobile_row17": [
+      {
+        "artifact": {
+          "path": "target/ci-evidence/5b96deb-ios/ios-phone-20261011T173110Z-16457.corpus/45504CA4-E149-4834-9AF4-B553BE81425A.json",
+          "bytes": 368026,
+          "sha256": "2b7680d07532a188ab81dd191f343c86898e2c1eb02156317ccf4acbc7647fa7"
+        },
+        "id": "17",
+        "ms": 1085.737792,
+        "transport": {
+          "ffi_ms": 290.465166,
+          "encoded_ms": 0.106084,
+          "decode_ms": 2.272666,
+          "queued_ms": 0.023875,
+          "resume_ms": 792.8572089999999
+        }
+      }
+    ],
+    "limitation": "Original1s failed at1085.738ms, FFI290.465ms/resume792.857ms; unchanged mathematics/threshold, failure retained, new same-SHA CI pending"
+  },
+  "remaining_scope": [
+    "Durable indexed long-session semantic recovery (current4096/16MiB guard returns incomplete and rejects dependent admissions)",
+    "Native session recovery selection/status UI",
+    "Full Pi/provider/tool/prompt/context/compaction integrations under R4.3/R4.4",
+    "Library/document upgrades, backup/quota/GC and final .4 delivery"
+  ]
+}

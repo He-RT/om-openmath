@@ -42,7 +42,7 @@
 | [x] [R4.1.09](PRE_ALPHA_4.md#task-r4.1.09) | 主KernelWorker、候选接纳和直接取消 | completed | [实际主运行](../acceptance/pre-alpha.4/development/r41/kernel-runtime.json) / CABI+Swift+SQLite / 310相关Rust+实际IO/长CAS/close | 5469091；3ce0320、b309baf |
 | [x] [R4.1.10](PRE_ALPHA_4.md#task-r4.1.10) | 不可变结果库和只读检查通道 | completed | [实际原生结果](../acceptance/pre-alpha.4/development/r41/result-runtime.json) / CABI＋worker＋Swift / 324Rust＋actual receipts/late reply | 6d53f17；f04474f；后续补验 |
 | [x] [R4.1.11](PRE_ALPHA_4.md#task-r4.1.11) | NSDocument打开保存与冻结快照 | completed | [实际文件/同库回执/本轮Release面板闭环](../acceptance/pre-alpha.4/development/r41/file-saves-completion.json) / 6 SIGKILL+原件冲突 / N+1/IME/身份/取消/重开 / Mac CI38122270416 success | 25df8d8；f04474f、c4eab5a |
-| [ ] [R4.1.12](PRE_ALPHA_4.md#task-r4.1.12) | 会话outbox、草稿与启动恢复 | in_progress | [原生启动/草稿/prefix/save intent与真实界面](../acceptance/pre-alpha.4/development/r41/startup-recovery.json) / 5+3+6 SIGKILL / 269 DTO / 111 Rust；Agent规范恢复待完 | 47ccfb0、642cfc9；本批待补SHA |
+| [ ] [R4.1.12](PRE_ALPHA_4.md#task-r4.1.12) | 会话outbox、草稿与启动恢复 | in_progress | [本地启动](../acceptance/pre-alpha.4/development/r41/startup-recovery.json) / [规范会话/真实HTTP/13 SIGKILL](../acceptance/pre-alpha.4/development/r41/canonical-session-ledger.json)；长会话索引/原生会话入口待完 | 5b96deb；本批待补SHA |
 | [ ] [R4.1.13](PRE_ALPHA_4.md#task-r4.1.13) | 引用租约、备份、quota与GC | planned | — | — |
 | [ ] [R4.2.01](PRE_ALPHA_4.md#task-r4.2.01) | 原生工作台窗口、分栏和投影 | planned | — | — |
 | [ ] [R4.2.02](PRE_ALPHA_4.md#task-r4.2.02) | NSTextView和严格SourceIndexMap | planned | — | — |
@@ -447,3 +447,12 @@ Done依据与覆盖case/proof:
 - 实际SDK27 Release界面完成新建/中文emoji/本地备份→保留修改关闭→Quit/重启→恢复原文→使用草稿→系统Save。恢复时source0/checkpoints0，确认保存后source1/仍zero；实际文件SHA9febeb69…与原SQLite receipt/outbox相同，正常退出clean=1。[完整证据](../acceptance/pre-alpha.4/development/r41/startup-recovery.json)区分观察时UI与末次提示清除/Library接入构建，旧AX菜单失效记录保留，当前原生sheet/List动作已验证。
 - 111 host/ABI Rust、269 DTO、4导入定向负例、Clippy/fmt、native contracts、恢复/草稿/保存/编辑实际回归及Release最终exit0。新UInt32字节转换/Abort映射、Swiftthrowing表达式/Serial.value、原vs新草稿batch计数错误修正，原数学/1秒期望不改；失败日志不删除。
 - 642cfc9 CI38145308816五jobs全部success（含iPad），不抹掉47ccfb0的resume3.52s历史失败，也不替本批或final gate。本机无iOS模拟器。下一规范会话/tool admission/context dispatch的恢复状态与原操作核对，再R4.1.13备份/升级/GC及完整工作台；运行.3/dev/no main/旧公开包保留，32final gate not_run/no candidate。
+
+## R4开发记录 D035 — 规范会话、接纳及发送恢复账本
+
+- R4.1.12仍in_progress、22/98。freshLibrary3建立session/event/source序号和operation claim，旧Library1/2不自动升级。源码、文档5/.omnb v1不变；原schema60个actual event/required-null全部校验。请求/回执Hash、完整记录/序号缺口拒绝、原IDunknown核对、全库跨会话未完成claim保护通过。
+- Tool callback必须在admitted+started实际耐久确认以后；已有原effect只读核对，重复旧claim不执行。Recovery不持有callback，原op/store/frozen参数检查之后补actual result。源码真实Rust计划→SQLite原回执，kernel真实a5/b6与失败CompoundExpression仍partial7，typed partial不伪成功/回滚。
+- Context request正文/实际响应原Blob与事件同库refs，planned→dispatch→response→finished/failed；真实URLSession回环HTTP200/503字节和13SIGKILL（包括source COMMIT、结果ack、HTTP发送/接收）通过，重复恢复source操作数/服务器POST数不增加。没有使用付费供应商或旧凭据，不能将回环请求数声称实测账单。
+- 真实F_FULLFSYNC unknown直到原事件读取确认、新事件不能占未确认序号；伪造结果/部分流工具参数/错误hash拒绝。Library完整坏记录只读拒绝，原件和健康source保留。[机器证据](../acceptance/pre-alpha.4/development/r41/canonical-session-ledger.json)。当前单次语义扫描4096/16MiB，超限incomplete并挡新admission；长会话索引/续页与native session恢复入口仍待完成，不勾整个任务。
+- 112 host/ABI Rust、Clippy/fmt、269 DTO、canonical ledger13中断及原19同步/6初始化、投影5中断、draft3、save6+conflict、真实kernel partial、Release实际通过。Swiftshadow/throwing属性、编译中源文件变化与错误statement-count假设修正，日志保留。原schema无改变；现有Rust validator补date-time结构，独立timestamp正负例通过，无第三方Python/runtime依赖。
+- 5b96deb/CI38159289992四jobssuccess，phone原53 row17总1085.738ms失败：FFI290.465ms/encoded0.106/queue0.024/decode2.273/resume792.857；iPad未运行。保持原1秒和数学，artifact已下载，不抹掉失败/不把kernel时间替代整次。下批同SHA CI独立验，no本机模拟器/dev/no main/运行.3/final32gate not_run/no candidate。

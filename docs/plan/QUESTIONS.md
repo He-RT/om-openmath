@@ -335,3 +335,5 @@ R4.1.12部分验证（2026-10-11）：原文档三类事实投影及Library故�
 642cfc9 CI38145308816后续五jobs全部success，包含原1秒门槛iPhone/iPad。不能据此抹掉前一失败或认定随机主线程延迟已永久解决；本轮未调整计时/数学，所有原始记录保留，新SHA CI及final候选仍独立要求。
 
 本地启动恢复已验证（2026-10-12）：native actual退出/重启/恢复待确认中文emoji草稿/明确保存成功；原source0、checkpoint0只在确认保存后推进source1。真实prefix导入、损坏Blob拒绝、原save intent和5+3+6中断路径通过。无需用户再次操作Save或授予权限。规范Agent恢复仍未完；原文档不兼容head显式重置尚无接口，当前实际入口为另存/新文档，不把此限制伪装为已完成重算。
+
+5b96deb CI38159289992后续：Mac/Rust/Web/依赖成功，phone row17总1085.738ms失败（FFI290.465、resume792.857），iPad未跑。原artifact target/ci-evidence/5b96deb-ios与canonical-session-ledger.json留存，不能降低1s或仅称FFI通过。新规范ledger13 SIGKILL/实际回环HTTP/完整事件腐败拒绝已验证，长会话索引和原生会话恢复入口仍待实现，无用户操作/授权阻塞。

@@ -18,7 +18,7 @@ struct DocumentProjectionRecovery:Sendable {
 /// Only original durable document effects are projected here. No FFI host, evaluator, HTTP
 /// client, provider credential or tool executor is available to this recovery owner.
 actor RecoveryService {
-  private let storage:StorageService
+  let storage:StorageService
   init(storage:StorageService) {self.storage=storage}
   func projectDocument(_ document:String,startingAt:DocumentProjectionCursor?=nil,maximumEvents:Int=256,faults:StorageFaults = .init()) async throws->DocumentProjectionRecovery {
     guard maximumEvents>0,maximumEvents<=4096 else {throw StorageError.corruptIdentity}

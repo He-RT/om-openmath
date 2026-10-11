@@ -39,7 +39,8 @@ enum StorageBootstrap {
       // Inspect every version/header/hash in a read-only connection before enabling any writing.
       let read=try SQLiteDatabase(url:url,readonly:true)
       let header=try readHeader(read)
-      if kind=="library",header.storeVersion==2 {_ = try LibraryStore(db:read,url:url,identity:header)}
+      if kind=="library",(2...3).contains(header.storeVersion) {_ = try LibraryStore(db:read,url:url,identity:header)}
+      if kind=="library",header.storeVersion==3 {_ = try AgentSessionStore(db:read,url:url,identity:header)}
       if kind=="document",header.storeVersion==5 {_ = try DraftBackupStore(db:read,url:url,identity:header)}
       try read.close()
       guard header.storeID==selector.storeID,header.generation==selector.generation,header.kind==kind,
@@ -70,7 +71,7 @@ enum StorageBootstrap {
     try faults.reach("bootstrap_committed")
     // Publish a new Library generation only after its complete projection schema exists.
     // Opening an already selected format-2 DB never recreates a missing event table.
-    if kind=="library" {_ = try LibraryStore(db:db,url:url,identity:header,create:true)}
+    if kind=="library" {_ = try LibraryStore(db:db,url:url,identity:header,create:true);_ = try AgentSessionStore(db:db,url:url,identity:header,create:true)}
     if kind=="document" {
       try DocumentSchema.ensure(db)
       _ = try DraftBackupStore(db:db,url:url,identity:header,create:true)

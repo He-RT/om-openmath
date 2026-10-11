@@ -54,6 +54,17 @@ final class DocumentOutbox {
     guard let actual,try actual.stableHash==effect.stableHash else {throw StorageError.corruptIdentity}
     return actual
   }
+  func operation(_ target:SessionOperationTarget)throws->DocumentEffect? {
+    try SessionValidation.target(target)
+    guard target.documentID==identity.documentID,target.storeID==identity.storeID else {throw StorageError.corruptIdentity}
+    let name=try table(target.kind),reader=try SQLiteDatabase(url:url,readonly:true);defer {try? reader.close()}
+    var effect:DocumentEffect?
+    try reader.statement("SELECT rowid,event_id,document_id,operation_id,payload,payload_hash,projected FROM \(name) WHERE operation_id=? AND document_id=?",[.text(target.operationID),.text(target.documentID)]) { [self] row in
+      guard effect==nil else {throw StorageError.corruptIdentity};effect=try validated(row,kind:target.kind).effect
+    }
+    if let effect {_ = try SessionSemantics.effectOutcome(effect,target:target)}
+    return effect
+  }
   func page(_ kind:DocumentEffectKind,after:Int64,limit:Int)throws->DocumentOutboxPage {
     guard after>=0,limit>0,limit<=16 else {throw StorageError.corruptIdentity}
     let name=try table(kind),reader=try SQLiteDatabase(url:url,readonly:true);defer {try? reader.close()}

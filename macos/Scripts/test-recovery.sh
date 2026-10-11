@@ -11,6 +11,7 @@ swiftc -D OPENMATH_STORAGE_FIXTURE -whole-module-optimization -swift-version 6 -
   -L target/release -lom_apple_ffi macos/OpenMathNative/Generated/HostContractSupport.swift \
   macos/OpenMathNative/Generated/Contracts/*.swift macos/OpenMathNative/Storage/*.swift \
   macos/OpenMathNative/Files/*.swift macos/OpenMathNative/Editor/*.swift macos/OpenMathNative/Kernel/*.swift \
+  macos/OpenMathNative/Rendering/ResultClient.swift \
   macos/OpenMathNative/NativeDocument.swift macos/OpenMathNative/NativeHostClient.swift \
   macos/OpenMathNative/AppEventRouter.swift macos/OpenMathNative/DraftStore.swift \
   macos/OpenMathNativeTests/RecoveryFixtures/main.swift \

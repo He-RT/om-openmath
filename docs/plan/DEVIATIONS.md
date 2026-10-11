@@ -584,3 +584,11 @@ L2使用精确标称GM分数、50位FindRoot/1000迭代和真实残差，报告�
 - 同一原生会话工厂恢复source/settings/draft/file与accepted prefix，按原ID只读核对prepared save，无法确认的保留unknown阻止依赖写入，不自动replace。Library ready时按有界cursor补原事件；完整Agent工具admission/network ledger仍待实现，R4.1.12保持未Done。
 - 当前损坏/不兼容数学head保留原件并提示另存为/新文档重算；原文档显式reset接口未实现，不用假空状态替代恢复。旧Native格式不在普通打开/恢复时迁移，R4.1.13继续升级/备份。
 - native UI实际保留未命名草稿后重启/选择/待确认/明确Save，source0→1只在保存时，数学checkpoint0不变，文件和同库回执一致。原菜单AX ID过期不作数据丢失判定，改为可展示旧格式/损坏原因的系统sheet/List并实际操作成功。5+3+6中断路径、111 Rust/269 DTO/Clippy/native contracts/Release通过；本批证据与最终发行门禁分开。
+
+### R4-D030：规范会话与跨库/网络事实恢复（2026-10-12，仍部分）
+
+- freshLibrary3增加immutable session events/producers/global operation claims，同事件原回执、不同内容拒绝，来源序号缺口不补造。旧Library1/2保留待R4.1.13升级，.omnb/source/kernel事实继续独立。60个实际事件经原SessionEvent schema与required-null校验，schema未改。
+- durable admitted与started ACK先于执行，跨会话未知原op也不能再claim；原effect存在则直接补结果，callback不再调用。恢复没有执行器/HTTP。工具result必须关联原document/store/op及frozen hash和已验证Library effect；partial基于真实accepted state，CompoundExpression虽成功statement数0仍有partial7，独立readonly CAS已证实，不能以counter猜全部回滚。
+- kernel admission的expectedHash取冻结source snapshot，因为candidate request hash依赖尚未产生的计算结果；最终仍核原op receipt和producer source，不预先制造candidate hash。source/undo仍原冻结patch hash，save为原目标文件hash。
+- 请求先存非认证body/refs及planned，再确认dispatch_started才调用transport；实际response/终止不同事实。HTTP503保真实字节和failed；不自动重发outcome unknown，原context重复也拒绝。13真实SIGKILL+原F_FULLFSYNC未知、Library坏完整记录、正/负结构/schema验证通过；仅回环fixture，不称已验证付费提供商或完整Pi/UI。
+- 暂有4096事件/16MiB语义恢复上限；incomplete不截原记录、不准依赖新admission。长会话索引/增量恢复和原生session入口未完成，任务保持in_progress。旧source/math/perf期望不改，原1s CI失败继续留证；下一扩大真实可用恢复路径。

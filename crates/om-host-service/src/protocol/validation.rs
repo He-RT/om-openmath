@@ -48,6 +48,7 @@ fn check(
                     | "minLength"
                     | "maxLength"
                     | "pattern"
+                    | "format"
                     | "minimum"
                     | "maximum"
                     | "minItems"
@@ -168,10 +169,20 @@ fn check(
                             .bytes()
                             .all(|c| c.is_ascii_digit() || (b'a'..=b'f').contains(&c))
                 }
+                r"^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d+)?(?:Z|[+-]\d{2}:\d{2})$" => {
+                    timestamp(text)
+                }
                 _ => return Err(format!("{path}: unsupported contract pattern")),
             };
             if !good {
                 return Err(format!("{path}: malformed identity/hash"));
+            }
+        }
+        if let Some(format) = schema.get("format").and_then(Value::as_str) {
+            match format {
+                "date-time" if timestamp(text) => {}
+                "date-time" => return Err(format!("{path}: invalid date-time")),
+                _ => return Err(format!("{path}: unsupported contract format")),
             }
         }
     }
@@ -194,6 +205,80 @@ fn check(
         }
     }
     Ok(())
+}
+/// RFC3339 calendar/time/offset structure for the closed uppercase Timestamp contract.
+/// No wall-clock comparison, timezone database, regex engine or new runtime dependency.
+fn timestamp(text: &str) -> bool {
+    let bytes = text.as_bytes();
+    if bytes.len() < 20 || bytes.len() > 128 || !bytes.is_ascii() {
+        return false;
+    }
+    let number = |start: usize, end: usize| -> Option<u32> {
+        let part = bytes.get(start..end)?;
+        if !part.iter().all(u8::is_ascii_digit) {
+            return None;
+        };
+        part.iter().try_fold(0u32, |n, b| {
+            n.checked_mul(10)?.checked_add(u32::from(*b - b'0'))
+        })
+    };
+    if bytes[4] != b'-'
+        || bytes[7] != b'-'
+        || bytes[10] != b'T'
+        || bytes[13] != b':'
+        || bytes[16] != b':'
+    {
+        return false;
+    }
+    let Some(year) = number(0, 4) else {
+        return false;
+    };
+    let Some(month) = number(5, 7) else {
+        return false;
+    };
+    let Some(day) = number(8, 10) else {
+        return false;
+    };
+    let Some(hour) = number(11, 13) else {
+        return false;
+    };
+    let Some(minute) = number(14, 16) else {
+        return false;
+    };
+    let Some(second) = number(17, 19) else {
+        return false;
+    };
+    let days = match month {
+        1 | 3 | 5 | 7 | 8 | 10 | 12 => 31,
+        4 | 6 | 9 | 11 => 30,
+        2 if year % 400 == 0 || year % 4 == 0 && year % 100 != 0 => 29,
+        2 => 28,
+        _ => return false,
+    };
+    if day == 0 || day > days || hour > 23 || minute > 59 || second > 60 {
+        return false;
+    }
+    let mut offset = 19;
+    if bytes.get(offset) == Some(&b'.') {
+        offset += 1;
+        let start = offset;
+        while bytes.get(offset).is_some_and(u8::is_ascii_digit) {
+            offset += 1
+        }
+        if offset == start {
+            return false;
+        }
+    }
+    match bytes.get(offset) {
+        Some(b'Z') => offset + 1 == bytes.len(),
+        Some(b'+' | b'-') => {
+            offset + 6 == bytes.len()
+                && bytes.get(offset + 3) == Some(&b':')
+                && number(offset + 1, offset + 3).is_some_and(|n| n <= 23)
+                && number(offset + 4, offset + 6).is_some_and(|n| n <= 59)
+        }
+        _ => false,
+    }
 }
 fn range(value: f64, schema: &Value, min: &str, max: &str, path: &str) -> Result<(), String> {
     if schema

@@ -15,9 +15,9 @@
       "exit_code": 0,
       "completion_marker": "Mismatched displaced external bytes after crash",
       "log": {
-        "path": "target/acceptance/pre-alpha.4/development/r41/save-runtime-displaced-final.log",
+        "path": "target/acceptance/pre-alpha.4/development/r41/save-runtime-unicode-identity.log",
         "bytes": 717,
-        "sha256": "fba6f99216622239aa78f7e881e46d840a50164b6bf71eea475a072f0e33e027"
+        "sha256": "23d15976c5f2095131f4c91b9085560f585a1bf54f4f7a4651368cf0fee487b4"
       }
     },
     {
@@ -114,8 +114,8 @@
     },
     {
       "path": "macos/OpenMathNative/Files/NativeDocumentSession.swift",
-      "bytes": 5477,
-      "sha256": "e09fa86b7289117463217f87493f4b85fc861e052ab1a7ff57920add70d307f9"
+      "bytes": 5512,
+      "sha256": "f9463ed708def8389b512fdde67114491fcaff6f38e4a680a1b9083e898a99d2"
     },
     {
       "path": "macos/OpenMathNative/Files/NativeFilePort.swift",
@@ -289,8 +289,8 @@
     },
     {
       "path": "macos/OpenMathNativeTests/SaveFixtures/main.swift",
-      "bytes": 11305,
-      "sha256": "9af3687e93b77f3982ba82dd224020ee2c16c044131c01819b432486a870177a"
+      "bytes": 11950,
+      "sha256": "e31633dd2638cfdadeed955fd007e17826a0996d3cf46fca458f52256253c55f"
     },
     {
       "path": "macos/Scripts/test-saves.sh",
@@ -396,7 +396,7 @@
     "close_confirmed_local_source": "observed",
     "system_save_panel": "failed_button_disabled",
     "open_save_as_full_flow": "not_verified",
-    "latest_factory_change_ui": "not_run"
+    "latest_factory_change_ui": "failed_button_disabled"
   },
   "previous_ci": {
     "sha": "7b470cc411137925ccaba0417e63b0f507fdaf9b",
@@ -407,5 +407,8 @@
   "final_candidate": null,
   "runtime_release_gates_updated": false,
   "ready_to_publish": false,
-  "released_verified": false
+  "released_verified": false,
+  "additional_verified_behavior": [
+    "canonically equivalent composed/decomposed cell IDs retain separate actual native editors"
+  ]
 }

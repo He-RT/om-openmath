@@ -40,8 +40,8 @@
 | [x] [R4.1.07](PRE_ALPHA_4.md#task-r4.1.07) | 统一源码撤销和后续编辑冲突 | completed | [历史/文本/回执](../acceptance/pre-alpha.4/development/r41/history-and-groups.json) / 200+pin / actual UTF/IME / 80Rust / Release | 3853967 |
 | [x] [R4.1.08](PRE_ALPHA_4.md#task-r4.1.08) | 完整可写计算状态与无损codec | completed | [整个Session/原证据](../acceptance/pre-alpha.4/development/r41/session-checkpoint.json) / 723相关Rust＋原53＋data-only/角色/预算 | 55d11b8；de0ec9e及前置 |
 | [x] [R4.1.09](PRE_ALPHA_4.md#task-r4.1.09) | 主KernelWorker、候选接纳和直接取消 | completed | [实际主运行](../acceptance/pre-alpha.4/development/r41/kernel-runtime.json) / CABI+Swift+SQLite / 310相关Rust+实际IO/长CAS/close | 5469091；3ce0320、b309baf |
-| [x] [R4.1.10](PRE_ALPHA_4.md#task-r4.1.10) | 不可变结果库和只读检查通道 | completed | [实际原生结果](../acceptance/pre-alpha.4/development/r41/result-runtime.json) / CABI＋worker＋Swift / 324Rust＋actual receipts/late reply | 6d53f17；本批待补 |
-| [ ] [R4.1.11](PRE_ALPHA_4.md#task-r4.1.11) | NSDocument打开保存与冻结快照 | in_progress | 实际文件/NSDocument/SQLite与7中断冲突路径通过；系统保存面板待修 | 本批待补 |
+| [x] [R4.1.10](PRE_ALPHA_4.md#task-r4.1.10) | 不可变结果库和只读检查通道 | completed | [实际原生结果](../acceptance/pre-alpha.4/development/r41/result-runtime.json) / CABI＋worker＋Swift / 324Rust＋actual receipts/late reply | 6d53f17；f04474f；后续补验 |
+| [ ] [R4.1.11](PRE_ALPHA_4.md#task-r4.1.11) | NSDocument打开保存与冻结快照 | in_progress | 实际文件/NSDocument/SQLite与7中断冲突路径通过；系统保存面板待修 | f04474f；后续补验 |
 | [ ] [R4.1.12](PRE_ALPHA_4.md#task-r4.1.12) | 会话outbox、草稿与启动恢复 | planned | — | — |
 | [ ] [R4.1.13](PRE_ALPHA_4.md#task-r4.1.13) | 引用租约、备份、quota与GC | planned | — | — |
 | [ ] [R4.2.01](PRE_ALPHA_4.md#task-r4.2.01) | 原生工作台窗口、分栏和投影 | planned | — | — |
@@ -400,3 +400,5 @@ Done依据与覆盖case/proof:
 - 已运行test-storage、test-history、test-kernel-store、test-commit-port回归；原SQLite16次真实fullsync、206历史/200+pin、原OMKS/5kernel SIGKILL与跨语言编辑屏障均通过。Release构建通过，CI新增test-saves；本轮未启动本机iOS模拟器。
 - 初始授权/写入同队列死锁、权限拒绝误作unknown、Swift签名/异步autoclosure错误及测试抢先于receipt判断成功的失败保留并修复。系统保存面板异常禁用仍待修；原生新建/输入/关闭保护不等于全部文件UI验收，R4.1.11未完成，计数仍21/98。
 - 前批7b470cc/CI38094998965五jobs全success；不能代替本批/final候选。运行`.3`、32final gate not_run/candidate未分配，下一步先完成面板闭环，再R4.1.12恢复与R4.1.13资源管理。实现见[native-file-saves.md](../design/native-file-saves.md)。
+
+- D029补验：应用会话editor索引改UTF8 Data，真实NFC/NFD两个cell分别保持独立NSTextView；原save/SIGKILL再次通过。f04474f已推dev，CI38100274832运行中，尚未填success。最终factory配置实际面板仍禁用，问题保持未解决。

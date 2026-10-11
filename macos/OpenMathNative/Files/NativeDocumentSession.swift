@@ -29,7 +29,7 @@ actor NativeAppStorage {
   let drafts:DraftStore
   let undo:UndoCoordinator
   private let storage:StorageService
-  private var editors:[String:DraftTextViewAdapter]=[:]
+  private var editors:[Data:DraftTextViewAdapter]=[:]
   private var closed=false
   private init(document:NativeDocument,host:NativeHostClient,source:DocCommitPort,files:NativeFilePort,drafts:DraftStore,storage:StorageService) {
     self.document=document;self.host=host;self.source=source;self.files=files;self.drafts=drafts;self.storage=storage
@@ -65,17 +65,18 @@ actor NativeAppStorage {
   }
   func editor(_ cell:String)throws->DraftTextViewAdapter {
     guard !closed else {throw SaveError.closing}
-    if let existing=editors[cell] {return existing}
+    let key=Data(cell.utf8)
+    if let existing=editors[key] {return existing}
     let editor=try DraftTextViewAdapter(store:drafts,cell:cell,generation:1)
     editor.bindDocumentUndo(undo.manager);editor.didEdit={ [weak document] in document?.noteEdit() }
-    editors[cell]=editor;return editor
+    editors[key]=editor;return editor
   }
   private func flushSource() async throws {
     let owner=drafts.confirmed.file.cells.first {cell in
       guard let draft=drafts.overlay(cell.id) else {return false}
       return !draft.composing && !draft.source.utf8.elementsEqual(draft.baseSource.utf8)
     }
-    let group=owner.flatMap{editors[$0.id]?.inputGroup} ?? UUID().uuidString.lowercased()
+    let group=owner.flatMap{editors[Data($0.id.utf8)]?.inputGroup} ?? UUID().uuidString.lowercased()
     if let actual=try await source.synchronizeDrafts(inputGroup:group,excludingMarked:true) {try undo.registerCommitted(actual,group:group,name:"编辑笔记本")}
     for editor in editors.values {editor.reflectAcknowledgedSource()}
   }

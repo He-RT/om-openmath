@@ -538,3 +538,13 @@ L2使用精确标称GM分数、50位FindRoot/1000迭代和真实残差，报告�
 - 自有自动保存定时器复用intent端口，禁用AppKit默认opaque autosave-elsewhere调度；宿主管理单活动文档。真实输入撤销关闭决定，错误保留编辑器；未命名草稿及启动恢复继续R4.1.12。
 - 物理保存、N+1、旧binding、unknown、原ID、自动保存和原生撤销，以及6 SIGKILL与额外原件冲突通过。原存储、206笔历史、checkpoint与编辑屏障回归通过。系统保存面板Save/New Folder异常禁用仍未解决，类型声明/激活/菜单实验不能替代实际流程，R4.1.11保持unchecked/in_progress。详见[原生文件保存](../design/native-file-saves.md)。
 - 7b470cc的CI38094998965五jobs全部success，只证明前批SHA；本批和最终candidate独立验收。运行`.3`、dev、不合main、不改旧公开资产、不启动本机iOS模拟器。
+
+
+### R4-D024：文件身份与原生面板证据更正（2026-10-11）
+
+- 已授权目录bookmark仍负责访问范围，文件identity bookmark只定位原对象，不增加目录外授权。新字段为原生私有可选record属性，旧v4记录可读；不修改.omnb/数学/iOS ABI，也不导入旧配置。
+- 实测同目录rename后旧路径若出现新文件，普通URL bookmark可返回旧路径且stale=true；因此必须核对device/inode，必要时仅在已授权目录直接子项最多4096次元数据定位，拒绝歧义/超限，绝不全卷搜索。正常writer不能fallback覆盖身份改变的旧路径，移出原grant须显式新选择；确认后更新实际文件名/路径/身份。
+- swap临时名中的原inode只用于核对，不能当现行用户文件。原件清理后、SQLite receipt之前中断的恢复只读取原bound路径并检查真实desired hash/同步，不重写；六SIGKILL和外部原件冲突保持通过。
+- 新源码文件身份实际测试、旧路径异物保留、授权目录外移动/显式新绑定/缺失不重建、损坏negative saved revision均通过；SQLite故障注入在独立后台任务，失败/日志不抹除。
+- 撤回“系统Save/New Folder故障”结论：用户确认可点击，独立AppKit panel真实OK/字节以及OpenMath实际保存/原同库回执成立。辅助功能瞬时状态不能作为永久故障证据；完整另存为/重新打开流程继续验收，任务仍unchecked。
+- 22d64de同SHA CI38100465269五jobs全success；不充本批或final candidate。所有发行gate保持not_run，运行.3/dev/no main/no本机iOS模拟器。

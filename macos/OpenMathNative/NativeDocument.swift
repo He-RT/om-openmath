@@ -72,6 +72,7 @@ private final class NativeDocumentSnapshot:@unchecked Sendable {
       let receipt=try await port.save(operation:operation,snapshot:snapshot,faults:faults)
       let state=try await port.state()
       if startedBinding==bindingGeneration,receipt.bindingRevision==state.head?.binding.revision {
+        if let binding=state.head?.binding {fileURL=URL(fileURLWithPath:binding.displayPath)}
         edited=state.dirty;updateChangeCount(withToken:countToken,for:.saveOperation)
         edited=edited || super.isDocumentEdited
         if edited {statusText="已保存快照，后续修改尚未保存"} else {statusText="已保存"}
@@ -101,6 +102,9 @@ private final class NativeDocumentSnapshot:@unchecked Sendable {
     guard !dead else {throw SaveError.closing}
     NSApplication.shared.activate()
     let panel=NSSavePanel();panel.allowedContentTypes=[.openMathNotebook];panel.canCreateDirectories=true
+    // The source-only writer does not yet persist Finder tag edits; do not expose a field that
+    // appears accepted and is then silently discarded by the custom durable write path.
+    panel.showsTagField=false
     panel.nameFieldStringValue=fileURL?.lastPathComponent ?? "未命名.omnb"
     let response=await withCheckedContinuation {continuation in
       if let window=windowControllers.first?.window {panel.beginSheetModal(for:window){continuation.resume(returning:$0)}} else {panel.begin{continuation.resume(returning:$0)}}
@@ -132,6 +136,7 @@ private final class NativeDocumentSnapshot:@unchecked Sendable {
   /// Close guard keeps local data/error visible; a failed save never dismisses the document.
   func prepareToClose() async->Bool {
     closeApproved=false
+    let wasSuspended=autosave.isSuspended
     autosave.suspend()
     while saving {try? await Task.sleep(for:.milliseconds(5))}
     guard let port,let state=try? await port.state() else {return false}
@@ -141,7 +146,7 @@ private final class NativeDocumentSnapshot:@unchecked Sendable {
     alert.addButton(withTitle:"保存");alert.addButton(withTitle:"继续编辑");alert.addButton(withTitle:"关闭，保留本地修改")
     if state.hasDrafts {alert.buttons.last?.isEnabled=false}
     let result=alert.runModal()
-    if result == .alertSecondButtonReturn {return false}
+    if result == .alertSecondButtonReturn {autosave.restoreAfterCancelledClose(wasSuspended:wasSuspended);return false}
     if result == .alertThirdButtonReturn {closeApproved=true;return true}
     do {if fileURL==nil {guard try await saveAsWithPanel() != nil else {return false}} else {_ = try await saveNative()};closeApproved = !(try await port.state()).dirty;return closeApproved} catch {presentError(error);return false}
   }

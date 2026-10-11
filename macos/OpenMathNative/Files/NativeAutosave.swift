@@ -13,6 +13,7 @@ import Foundation
   private var paused=false
   private var closed=false
   private(set) var failure:(any Error)?
+  var isSuspended:Bool {paused}
   init(idleDelay:Duration = .seconds(2),maximumDelay:Duration = .seconds(10),save:@escaping @MainActor ()async throws->Bool) {
     self.idleDelay=idleDelay;self.maximumDelay=maximumDelay;self.save=save
   }
@@ -50,5 +51,11 @@ import Foundation
   /// A deliberate successful save/target choice re-enables automation. Failure does not.
   func manualSaved(clean:Bool) {guard !closed else {return};paused=false;failure=nil;dirty = !clean;if dirty {schedule()} else {idle?.cancel();idle=nil;maximum?.cancel();maximum=nil}}
   func suspend() {paused=true;idle?.cancel();idle=nil;maximum?.cancel();maximum=nil}
+  /// Canceling a close dialog restores the prior producer policy, but does not reset a real
+  /// failure/unknown pause or schedule work after final disposal.
+  func restoreAfterCancelledClose(wasSuspended:Bool) {
+    guard !closed,!wasSuspended,failure==nil else {return}
+    paused=false;if dirty {schedule()}
+  }
   func finish() async {closed=true;suspend();await running?.value;running=nil}
 }

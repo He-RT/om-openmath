@@ -44,6 +44,7 @@ struct FileBinding:Codable,Sendable {
   let fileName:String
   let displayPath:String
   let expected:FileStamp?
+  var fileBookmark:Data?=nil
 }
 /// Actual source-only bytes already frozen; writer never reads a mutable ViewModel during saving.
 struct SaveSnapshot:Sendable {
@@ -78,6 +79,9 @@ struct SaveReceipt:Codable,Sendable {
   let updatedBookmark:Data
   let recovered:Bool
   let completedAt:String
+  var updatedFileBookmark:Data?=nil
+  var actualFileName:String?=nil
+  var actualDisplayPath:String?=nil
 }
 struct SavedFileHead:Codable,Sendable {
   let binding:FileBinding
@@ -112,6 +116,7 @@ enum SaveValidation {
     guard b.codecVersion==1,UUID(uuidString:b.documentID) != nil,b.revision>0,b.revision<=HostSerial.maximum,
       !b.bookmark.isEmpty,b.bookmark.count<=1024*1024,!b.fileName.isEmpty,b.fileName.utf8.count<=1024,!b.fileName.contains("/"),!b.fileName.utf8.contains(0),b.fileName != ".",b.fileName != "..",!b.displayPath.isEmpty,b.displayPath.utf8.count<=8192 else {throw StorageError.corruptIdentity}
     if let stamp=b.expected {guard stamp.byteLength<=UInt64(NotebookFileCodec.maximumBytes),KernelValidation.hash(stamp.byteHash),stamp.inode>0 else {throw StorageError.corruptIdentity}}
+    if let bookmark=b.fileBookmark {guard b.expected != nil,!bookmark.isEmpty,bookmark.count<=1024*1024 else {throw StorageError.corruptIdentity}}
   }
   static func intent(_ i:SaveIntent)throws {
     try binding(i.binding)
@@ -125,5 +130,12 @@ enum SaveValidation {
       r.sourceSnapshotHash==i.sourceSnapshotHash,r.bindingRevision==i.binding.revision,r.fileHash==i.fileHash,
       r.actual.byteHash==i.fileHash,r.actual.byteLength==i.fileByteLength,!r.updatedBookmark.isEmpty,r.updatedBookmark.count<=1024*1024,
       r.actual.inode>0,!r.completedAt.isEmpty else {throw StorageError.corruptIdentity}
+    let locationCount=[r.updatedFileBookmark != nil,r.actualFileName != nil,r.actualDisplayPath != nil].filter{$0}.count
+    guard locationCount==0 || locationCount==3 else {throw StorageError.corruptIdentity}
+    if let bookmark=r.updatedFileBookmark,let name=r.actualFileName,let path=r.actualDisplayPath {
+      let next=FileBinding(codecVersion:1,documentID:r.documentID,revision:r.bindingRevision,bookmark:r.updatedBookmark,fileName:name,displayPath:path,expected:r.actual,fileBookmark:bookmark)
+      try binding(next)
+      let url=URL(fileURLWithPath:path);guard url.lastPathComponent.utf8.elementsEqual(name.utf8),url.pathExtension.lowercased()=="omnb" else {throw StorageError.corruptIdentity}
+    }
   }
 }

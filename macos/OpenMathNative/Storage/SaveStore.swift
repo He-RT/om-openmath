@@ -34,8 +34,11 @@ final class SaveStore {
     var value:SavedFileHead?
     try reader.statement("SELECT binding_revision,saved_revision,saved_snapshot_hash,last_save_operation FROM file_head WHERE document_id=?",[.text(identity.documentID!)]) {row in
       let revision=sqlite3_column_int64(row,0);guard revision>0,revision<=Int64(HostSerial.maximum),let binding=try self.binding(UInt64(revision),reader:reader) else {throw StorageError.corruptIdentity}
-      let saved=sqlite3_column_type(row,1)==SQLITE_NULL ? nil : UInt64(sqlite3_column_int64(row,1)),hash=sqlite3_column_type(row,2)==SQLITE_NULL ? nil : try SQLColumn.text(row,2),op=sqlite3_column_type(row,3)==SQLITE_NULL ? nil : try SQLColumn.text(row,3)
+      let rawSaved=sqlite3_column_type(row,1)==SQLITE_NULL ? nil : sqlite3_column_int64(row,1)
+      if let rawSaved {guard rawSaved>=0,rawSaved<=Int64(HostSerial.maximum) else {throw StorageError.corruptIdentity}}
+      let saved=rawSaved.map(UInt64.init),hash=sqlite3_column_type(row,2)==SQLITE_NULL ? nil : try SQLColumn.text(row,2),op=sqlite3_column_type(row,3)==SQLITE_NULL ? nil : try SQLColumn.text(row,3)
       guard (saved==nil)==(hash==nil) else {throw StorageError.corruptIdentity}
+      if let op {guard SourceValidation.identity(op),saved != nil else {throw StorageError.corruptIdentity}}
       if let saved,let hash {
         var found=false;try reader.statement("SELECT snapshot_hash FROM document_revisions WHERE document_id=? AND revision=?",[.text(self.identity.documentID!),.integer(Int64(saved))]) {found=try SQLColumn.text($0,0)==hash}
         guard found else {throw StorageError.corruptIdentity}
@@ -101,7 +104,7 @@ final class SaveStore {
       try db.statement("INSERT INTO save_outbox VALUES(?,?,?,?,?,0)",[.text("save-event-"+actual.operationID),.text(identity.documentID!),.text(actual.operationID),.blob(bytes),.text(KernelHashes.data(bytes))])
       try db.statement("UPDATE save_intents SET phase='completed' WHERE document_id=? AND operation_id=?",[.text(identity.documentID!),.text(actual.operationID)])
       guard let old=try binding(actual.bindingRevision,reader:db) else {throw StorageError.corruptIdentity}
-      let updated=FileBinding(codecVersion:old.codecVersion,documentID:old.documentID,revision:old.revision,bookmark:actual.updatedBookmark,fileName:old.fileName,displayPath:old.displayPath,expected:actual.actual)
+      let updated=FileBinding(codecVersion:old.codecVersion,documentID:old.documentID,revision:old.revision,bookmark:actual.updatedBookmark,fileName:actual.actualFileName ?? old.fileName,displayPath:actual.actualDisplayPath ?? old.displayPath,expected:actual.actual,fileBookmark:actual.updatedFileBookmark)
       let bindingBytes=try encoded(updated)
       try db.statement("UPDATE file_bindings SET record=?,record_hash=? WHERE document_id=? AND binding_revision=?",[.blob(bindingBytes),.text(KernelHashes.data(bindingBytes)),.text(identity.documentID!),.integer(Int64(actual.bindingRevision))])
       try db.statement("UPDATE file_head SET saved_revision=?,saved_snapshot_hash=?,last_save_operation=? WHERE document_id=? AND binding_revision=?",[.integer(Int64(actual.sourceRevision)),.text(actual.sourceSnapshotHash),.text(actual.operationID),.text(identity.documentID!),.integer(Int64(actual.bindingRevision))])

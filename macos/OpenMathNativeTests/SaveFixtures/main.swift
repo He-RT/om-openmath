@@ -123,8 +123,64 @@ private func file(_ url:URL)throws->NativeSourceFile {try NotebookFileCodec.deco
     let composedID=try distinct.editor("é"),decomposedID=try distinct.editor("e\u{301}")
     precondition(composedID !== decomposedID && composedID.textView.string=="1" && decomposedID.textView.string=="2")
     try await distinct.close()
+    let originalURL=user.appendingPathComponent("rename-original.omnb"),renamedURL=user.appendingPathComponent("已改名🙂.omnb")
+    try NotebookFileCodec.encode(notebook).write(to:originalURL)
+    let renameSession=try await NativeDocumentSession.open(storage:one,url:originalURL)
+    let renameEditor=try renameSession.editor("a")
+    try FileManager.default.moveItem(at:originalURL,to:renamedURL)
+    // An unrelated file can appear at the old path. The bookmark follows the original inode,
+    // and the writer must leave this other source untouched.
+    var other=notebook;other.title="旧路径的新文件";try NotebookFileCodec.encode(other).write(to:originalURL)
+    renameEditor.textView.setSelectedRange(NSRange(location:0,length:renameEditor.textView.string.utf16.count))
+    renameEditor.textView.insertText("let a=18",replacementRange:renameEditor.textView.selectedRange())
+    _ = try await renameSession.document.saveNative(operation:"same-directory-rename")
+    let renamedFile=try file(renamedURL),unrelated=try file(originalURL),renameHead=try await renameSession.files.state()
+    precondition(renamedFile.cells[0].source=="let a=18" && unrelated.title=="旧路径的新文件" && renameHead.head?.binding.fileName==renamedURL.lastPathComponent)
+    precondition(renameSession.document.fileURL?.path==renamedURL.path)
+    // Moving beyond the existing directory grant asks for a deliberate new target binding.
+    let movedFolder=user.appendingPathComponent("moved",isDirectory:true);try FileManager.default.createDirectory(at:movedFolder,withIntermediateDirectories:true)
+    let movedURL=movedFolder.appendingPathComponent(renamedURL.lastPathComponent);try FileManager.default.moveItem(at:renamedURL,to:movedURL)
+    do {_ = try await renameSession.files.save(operation:"move-outside-old-grant");fatalError("old directory grant widened")}
+    catch SaveError.bindingChanged { }
+    _ = try await renameSession.document.saveNative(to:movedURL,operation:"explicit-moved-target")
+    precondition(renameSession.document.fileURL?.path==movedURL.path)
+    // Real save producer resumes after a canceled close; a prior failure pause stays paused.
+    let resumed=NativeAutosave(idleDelay:.milliseconds(30),maximumDelay:.milliseconds(80)) {
+      _ = try await renameSession.files.save(operation:"close-cancel-autosave");return true
+    }
+    resumed.edited();let prior=resumed.isSuspended;resumed.suspend();resumed.restoreAfterCancelledClose(wasSuspended:prior)
+    var resumedReceipt:SaveReceipt?
+    for _ in 0..<100 {resumedReceipt=try await one.saveReceipt(document:renameSession.drafts.confirmed.document_id,operation:"close-cancel-autosave");if resumedReceipt != nil {break};try await Task.sleep(for:.milliseconds(10))}
+    precondition(resumedReceipt != nil);await resumed.finish()
+    let pausedAutosave=NativeAutosave(idleDelay:.milliseconds(20),maximumDelay:.milliseconds(50)) {
+      _ = try await renameSession.files.save(operation:"must-not-resume-paused");return true
+    }
+    pausedAutosave.suspend();pausedAutosave.edited();pausedAutosave.restoreAfterCancelledClose(wasSuspended:true)
+    try await Task.sleep(for:.milliseconds(70))
+    let skipped=try await one.saveIntent(document:renameSession.drafts.confirmed.document_id,operation:"must-not-resume-paused");precondition(skipped==nil);await pausedAutosave.finish()
+    try FileManager.default.removeItem(at:movedURL)
+    do {_ = try await renameSession.files.save(operation:"missing-original-target");fatalError("missing existing file recreated")}
+    catch SaveError.bindingChanged { }
+    precondition(!FileManager.default.fileExists(atPath:movedURL.path))
+    try await renameSession.close()
     try await app.close()
+    // Corruption is an explicit read failure, never an integer-conversion trap or empty state.
+    let corruptRoot=root.appendingPathComponent("application")
+    let folders=try FileManager.default.contentsOfDirectory(at:corruptRoot.appendingPathComponent("Documents"),includingPropertiesForKeys:nil)
+    let corruptDocument=folders.first{$0.lastPathComponent==renameSession.drafts.confirmed.document_id}!
+    let corruptDatabase=corruptDocument.appendingPathComponent("Generations/000001/authority.sqlite")
+    try await Task.detached {
+      let corruptWriter=try SQLiteDatabase(url:corruptDatabase,readonly:false)
+      try corruptWriter.statement("PRAGMA foreign_keys=OFF")
+      try corruptWriter.transaction {try corruptWriter.statement("UPDATE file_head SET saved_revision=-1")}
+      try corruptWriter.close()
+    }.value
+    let (corruptStore,_)=try await StorageService.open(paths:.init(root:corruptRoot,channel:.preview));_ = try await corruptStore.openDocument(corruptDocument.lastPathComponent)
+    do {_ = try await corruptStore.fileHead(document:corruptDocument.lastPathComponent);fatalError("negative file revision accepted")}
+    catch StorageError.corruptIdentity { }
+    try await corruptStore.close()
     print("Actual user file/NSDocument/SQLite saves: source-only invalid syntax, N+1 dirty, old-binding ACK historical, Save As, external/read-only refusal, replace lost-ACK original readback, marked input kept, actual F_FULLFSYNC unknown and restart receipt passed")
     print("Application factory: shared root, source-only open, real TextKit input, 2s actual file autosave, native undo and later-input close rejection passed")
+    print("Original file identity: same-directory rename follows inode, unrelated old path untouched, moved directory requires explicit new binding, missing target not recreated")
   }
 }

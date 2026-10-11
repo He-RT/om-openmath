@@ -41,7 +41,7 @@
 | [x] [R4.1.08](PRE_ALPHA_4.md#task-r4.1.08) | 完整可写计算状态与无损codec | completed | [整个Session/原证据](../acceptance/pre-alpha.4/development/r41/session-checkpoint.json) / 723相关Rust＋原53＋data-only/角色/预算 | 55d11b8；de0ec9e及前置 |
 | [x] [R4.1.09](PRE_ALPHA_4.md#task-r4.1.09) | 主KernelWorker、候选接纳和直接取消 | completed | [实际主运行](../acceptance/pre-alpha.4/development/r41/kernel-runtime.json) / CABI+Swift+SQLite / 310相关Rust+实际IO/长CAS/close | 5469091；3ce0320、b309baf |
 | [x] [R4.1.10](PRE_ALPHA_4.md#task-r4.1.10) | 不可变结果库和只读检查通道 | completed | [实际原生结果](../acceptance/pre-alpha.4/development/r41/result-runtime.json) / CABI＋worker＋Swift / 324Rust＋actual receipts/late reply | 6d53f17；f04474f；后续补验 |
-| [ ] [R4.1.11](PRE_ALPHA_4.md#task-r4.1.11) | NSDocument打开保存与冻结快照 | in_progress | 实际文件/NSDocument/SQLite与7中断冲突路径通过；系统保存面板待修 | f04474f；后续补验 |
+| [ ] [R4.1.11](PRE_ALPHA_4.md#task-r4.1.11) | NSDocument打开保存与冻结快照 | in_progress | 实际文件/NSDocument/SQLite与7中断冲突路径通过；实际面板保存通过；另存为/重开待验 | f04474f；后续补验 |
 | [ ] [R4.1.12](PRE_ALPHA_4.md#task-r4.1.12) | 会话outbox、草稿与启动恢复 | planned | — | — |
 | [ ] [R4.1.13](PRE_ALPHA_4.md#task-r4.1.13) | 引用租约、备份、quota与GC | planned | — | — |
 | [ ] [R4.2.01](PRE_ALPHA_4.md#task-r4.2.01) | 原生工作台窗口、分栏和投影 | planned | — | — |
@@ -402,3 +402,13 @@ Done依据与覆盖case/proof:
 - 前批7b470cc/CI38094998965五jobs全success；不能代替本批/final候选。运行`.3`、32final gate not_run/candidate未分配，下一步先完成面板闭环，再R4.1.12恢复与R4.1.13资源管理。实现见[native-file-saves.md](../design/native-file-saves.md)。
 
 - D029补验：应用会话editor索引改UTF8 Data，真实NFC/NFD两个cell分别保持独立NSTextView；原save/SIGKILL再次通过。f04474f已推dev，CI38100274832运行中，尚未填success。最终factory配置实际面板仍禁用，问题保持未解决。
+
+
+## R4开发记录 D030 — 文件身份与面板证据纠正
+
+- 用户确认Save可点击，独立AppKit panel返回OK并写出真实.omnb。实际OpenMath通过系统面板保存与Cmd-S编辑保存，字节/源码仅v1，SHA与原SQLite回执一致。此前瞬时辅助功能禁用误判已纠正，任务还需完整另存为/重新打开，仍21/98，不把人工可用性口述当全部流程pass。
+- 同目录rename旧路径被新文件占用时真实bookmark可返回旧URL，新增原device/inode核验和授权目录内有界定位；更新receipt中的真实URL，不自动扩大移动后的授权。真实旧路径保护/外移新绑定/缺失不重建/negative revision损坏及6SIGKILL+交换原件冲突通过。
+- 原file bookmark.withSecurityScope在非沙盒fixture失败，改为独立身份bookmark并保留目录grant；记录实际失败与DB原件。原件清理后恢复分支修复为只读literal bound核对，正常write仍拒绝错inode。首次SQL故障fixture误跑MainActor的失败已修，守住后台实际数据库规则。
+- 22d64de CI38100465269五jobs已全部success。当前新代码尚待本批CI，运行.3/final gate not_run/no candidate；不启动本机iOS模拟器，不合main，不改旧公开包。
+
+- D030补验：取消关闭恢复正常自动保存，原failure pause不自动复活，两路径经真实SQLite save intent/receipt验证。新完整test-saves与Release构建通过；[文件身份与面板证据](../acceptance/pre-alpha.4/development/r41/file-identity-and-panels.json)记录源码、命令、原件hash与待完成的UI流程。

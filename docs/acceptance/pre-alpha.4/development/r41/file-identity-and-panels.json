@@ -1,0 +1,223 @@
+{
+  "schema_version": 1,
+  "record_kind": "development_file_identity_and_panel_evidence",
+  "task": "R4.1.11",
+  "task_status": "in_progress",
+  "base_source_sha": "22d64de3c9808b25ab67ca55ec955eecf0923e18",
+  "timestamp_utc": "2026-10-11T06:48:13.433651+00:00",
+  "runtime_version": "0.1.0-pre-alpha.3",
+  "target_version": "0.1.0-pre-alpha.4",
+  "commands": [
+    {
+      "command": "bash macos/Scripts/test-saves.sh",
+      "exit_code": 0,
+      "marker": "Mismatched displaced external bytes after crash",
+      "log": {
+        "path": "target/acceptance/pre-alpha.4/development/r41/save-runtime-close-cancel-final.log",
+        "bytes": 884,
+        "sha256": "7448e3ef8bc7d29a4f05b64a32cb196a383a760636935d057720222317ac2180"
+      }
+    },
+    {
+      "command": "bash macos/Scripts/build-native.sh",
+      "exit_code": 0,
+      "marker": "** BUILD SUCCEEDED **",
+      "log": {
+        "path": "target/acceptance/pre-alpha.4/development/r41/file-identity-close-native-build.log",
+        "bytes": 92351,
+        "sha256": "c55c35cbe15ffa2ea26b105e12bfb3b77ac9eeef8e06daba3efea95aaa4bf99c"
+      }
+    },
+    {
+      "command": "bash macos/Scripts/build-file-panel-fixture.sh",
+      "exit_code": 0,
+      "marker": "OpenMath File Panel Fixture.app",
+      "log": {
+        "path": "target/acceptance/pre-alpha.4/development/r41/file-panel-fixture-receipt-build.log",
+        "bytes": 224,
+        "sha256": "3900918fe3ad0bad44e2e7ca9eb9919bb40ca59315a9d45a77e224200eb44cbc"
+      }
+    }
+  ],
+  "sources": [
+    {
+      "path": "macos/OpenMathNative/NativeDocument.swift",
+      "bytes": 10175,
+      "sha256": "e3659988847ee5422dca82bb6d9181bcdcdbcace799902003f5adfb8f800ab12"
+    },
+    {
+      "path": "macos/OpenMathNative/Files/NativeAutosave.swift",
+      "bytes": 2548,
+      "sha256": "e4dd386b4a0c13b7945e54fe30cf64ee7b9024be2c4b884df47a93b3a2605b0a"
+    },
+    {
+      "path": "macos/OpenMathNative/Storage/SaveTypes.swift",
+      "bytes": 7433,
+      "sha256": "62bae32f1c14a1030ea1d5b6925d863bba2ce166c1f479afdfbe182ba92f985a"
+    },
+    {
+      "path": "macos/OpenMathNative/Storage/SaveStore.swift",
+      "bytes": 14117,
+      "sha256": "d7c410cd2d3b72a7e17c74d5ea487a3a2c9dc0d158ce39d0cdcfaca7028d93e5"
+    },
+    {
+      "path": "macos/OpenMathNative/Storage/SaveOperations.swift",
+      "bytes": 16431,
+      "sha256": "b55bd2af300abb6c37dc0953a3898469dcfcb3b628aa4ccf257ca37e848f340c"
+    },
+    {
+      "path": "macos/OpenMathNativeTests/SaveFixtures/main.swift",
+      "bytes": 17039,
+      "sha256": "031cb4cc412f48ea3d9abfd589d5e9323c2f938c236d588ecaac73482bc764b7"
+    },
+    {
+      "path": "macos/OpenMathNativeTests/FilePanelFixtures/main.swift",
+      "bytes": 5264,
+      "sha256": "949d6414cad5e03018cbedd0956a2bf63ec1857c5927c692d91101873277754e"
+    },
+    {
+      "path": "macos/Scripts/build-file-panel-fixture.sh",
+      "bytes": 1136,
+      "sha256": "9786a083487a1555d4e92341b6d377c59dbfd56e0867ffbd928fedf98da9cfc6"
+    }
+  ],
+  "actual_panel_readback": {
+    "file": "target/acceptance/pre-alpha.4/development/r41/native-file-panel/原生面板闭环.omnb",
+    "sha256": "3130d6e4f80abf8293cf8a730054d23a48b9670eb5153994288e1e7da023d9a1",
+    "source_only_keys": [
+      "cells",
+      "title",
+      "version"
+    ],
+    "matching_actual_receipts": [
+      {
+        "document_id": "81af4006-57c3-4005-ad5c-18a937dc3716",
+        "operation_id": "save-dc08f251-0228-4b0f-bfb3-6219b7643ea3",
+        "source_revision": 1,
+        "binding_revision": 1,
+        "file_hash": "3130d6e4f80abf8293cf8a730054d23a48b9670eb5153994288e1e7da023d9a1"
+      }
+    ],
+    "user_reports_fixture_save_clickable": true,
+    "fixture_actual_receipt": {
+      "mode": "org.openmath.notebook",
+      "response": 1,
+      "url": "/Users/hert/Projects/openmath/target/acceptance/pre-alpha.4/development/r41/file-panel-fixture/user-files/fixture.omnb",
+      "window_visible": true
+    },
+    "save_as_full_flow": "pending_actual_receipt"
+  },
+  "interruption_attempts": [
+    {
+      "stage": "save_intent_committed",
+      "root": "/Users/hert/Projects/openmath/target/macos-storage-tests/save-crash-1_z1ymbj",
+      "exit_code": -9,
+      "readback": {
+        "dirty": true,
+        "file_source": "let a=2",
+        "kernel_executed": false,
+        "prior_receipt": false,
+        "saved": false,
+        "source_revision": 1
+      }
+    },
+    {
+      "stage": "save_file_synced",
+      "root": "/Users/hert/Projects/openmath/target/macos-storage-tests/save-crash-h6edfrud",
+      "exit_code": -9,
+      "readback": {
+        "dirty": true,
+        "file_source": "let a=2",
+        "kernel_executed": false,
+        "prior_receipt": false,
+        "saved": false,
+        "source_revision": 1
+      }
+    },
+    {
+      "stage": "save_replaced",
+      "root": "/Users/hert/Projects/openmath/target/macos-storage-tests/save-crash-78wd2lgk",
+      "exit_code": -9,
+      "readback": {
+        "dirty": false,
+        "file_source": "let a=7",
+        "kernel_executed": false,
+        "prior_receipt": false,
+        "saved": true,
+        "source_revision": 1
+      }
+    },
+    {
+      "stage": "save_directory_synced",
+      "root": "/Users/hert/Projects/openmath/target/macos-storage-tests/save-crash-qjc7md48",
+      "exit_code": -9,
+      "readback": {
+        "dirty": false,
+        "file_source": "let a=7",
+        "kernel_executed": false,
+        "prior_receipt": false,
+        "saved": true,
+        "source_revision": 1
+      }
+    },
+    {
+      "stage": "save_receipt_before_commit",
+      "root": "/Users/hert/Projects/openmath/target/macos-storage-tests/save-crash-m0pnq_4o",
+      "exit_code": -9,
+      "readback": {
+        "dirty": false,
+        "file_source": "let a=7",
+        "kernel_executed": false,
+        "prior_receipt": false,
+        "saved": true,
+        "source_revision": 1
+      }
+    },
+    {
+      "stage": "save_receipt_committed",
+      "root": "/Users/hert/Projects/openmath/target/macos-storage-tests/save-crash-56yit3no",
+      "exit_code": -9,
+      "readback": {
+        "dirty": false,
+        "file_source": "let a=7",
+        "kernel_executed": false,
+        "prior_receipt": true,
+        "saved": true,
+        "source_revision": 1
+      }
+    },
+    {
+      "stage": "displaced-original-conflict",
+      "root": "/Users/hert/Projects/openmath/target/macos-storage-tests/save-displaced-conflict-x33yqunx",
+      "exit_code": -9,
+      "readback": {
+        "saved": false,
+        "external_original_preserved": true,
+        "conflict": true
+      }
+    }
+  ],
+  "original_ui_disabled_claim": "withdrawn; transient observation is not authoritative failure",
+  "source_identity_verified": [
+    "same-directory-rename",
+    "new-file-at-old-path-not-overwritten",
+    "outside-directory-requires-explicit-bind",
+    "missing-original-not-recreated",
+    "negative-saved-revision-corrupt-refused",
+    "cancel-close-restores-normal-autosave",
+    "prior-error-pause-not-reset"
+  ],
+  "pending": [
+    "native-full-save-as-and-reopen-flow",
+    "R4.1.12 drafts/recovery",
+    "R4.1.13 quotas/GC"
+  ],
+  "prior_ci": {
+    "sha": "22d64de3c9808b25ab67ca55ec955eecf0923e18",
+    "run_id": 38100465269,
+    "all_five_jobs": "success"
+  },
+  "final_candidate": null,
+  "ready_to_publish": false,
+  "released_verified": false
+}

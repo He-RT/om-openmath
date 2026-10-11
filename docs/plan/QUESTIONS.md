@@ -318,3 +318,6 @@ M13.11 CI repair local verification: unchanged save/probe/remember expectations 
 ### R4.1.11：系统保存面板尚未通过（2026-10-11）
 
 真实开发包的新建、NSTextView编辑、取消面板及中文关闭保护已观察。系统NSSavePanel的Save/New Folder按钮持续禁用，尚不能确认用户菜单保存闭环；目录权限可写、磁盘仍有空间，已有真实文件端口测试不能解释或替代此问题。增加UTI/NSDocument类型声明、前台激活、移除默认controller登记/默认autosave timer与菜单可用性实验均未证明解决，菜单实验已撤回。不猜测权限缺失，不要求用户重授权限，不勾R4.1.11。下一步保留最小原生复现，核对面板实际配置/当前文档响应链，并在同一构建实跑打开、保存、另存为。所有UI输入都是本轮自有合成文本，保存在仓库target验收目录；公开OpenMath进程和旧资产未动。
+
+
+R4.1.11 面板问题更正（2026-10-11）：用户确认Save可点击；独立AppKit复现真实返回OK并写出fixture.omnb（SHA256 763e9c79d1ac2e16e53a9aaa5953a15b4433e7260648afde9f95ebf63ddcb171）。实际OpenMath面板已写出「原生面板闭环.omnb」，编辑后Cmd-S保存，原文件SHA与SQLite receipt一致。先前辅助功能短暂禁用不证明产品故障，不再据此修改权限/菜单或要求重授权。另存为/重新打开仍需完整实际回执，不能仅凭按钮可用勾任务。

@@ -30,13 +30,19 @@
 - 保存目标授权使用独立后台队列，避免原目标 writer 暂停时阻塞另一目标的选择；真正文件写入仍串行。
 - 路径和 security-scoped bookmark 只保存在原生私有存储，不进 `.omnb` 或模型工具参数。
 
+## 文件移动与身份
+
+目录security-scoped bookmark持有原授权，已有文件另存不扩大授权的身份bookmark。解析bookmark后核对原device/inode；本机实测旧路径被新文件占用时bookmark可能返回旧路径，因此不能只信返回URL。仅在已授权目录的直接子项中扫描至多4096项元数据，找到唯一原inode并继续核对内容/hash/mtime。同目录改名允许由rename引起的ctime变化，旧路径的其他文件不覆盖；找不到身份、出现硬链接歧义或移动到授权目录外均要求明确核对/重新选择。
+
+实际receipt包含更新后的文件名、路径及身份bookmark，只有匹配当前binding的回执更新UI。我们的swap会把原inode移到本次临时名，恢复仍核对原目的文件及被交换原件，不追随备份写入。若原件清理后才崩溃，只有只读核对路径可回到原bound目标并验证desired hash，正常writer不能用此fallback覆盖旧路径的新文件。
+
 ## 自动保存和关闭
 
 已绑定文件空闲2秒保存，持续编辑最多10秒触发；保存中合并后续编辑，错误/冲突/未知暂停。只剩 IME 合成时不重复保存同一已确认源码。未命名文件不自动选择用户路径；其完整草稿恢复仍由 R4.1.12 完成。
 
 AppKit 默认的 `scheduleAutosaving` 不再启动另一个 opaque autosave-elsewhere writer。宿主文件动作复用同一端口；后台原生关闭先检查真实 dirty/未知状态。关闭保护不强制结束 IME；确认关闭之后的新输入会撤销该决定，继续保留编辑器。
 
-当前原生工作台为文件编辑基础路径；完整结果展示和交互属于 R4.2。实际测试已验证新建、NSTextView 输入和关闭保护，但系统保存面板的 Save/New Folder 按钮异常禁用尚未解决。增加文档类型声明、前台激活和菜单可用性实验均不足以证明解决；菜单实验已撤回。不能以底层文件测试通过代替面板验收，R4.1.11 仍未勾选。
+当前原生工作台为文件编辑基础路径；完整结果展示和交互属于 R4.2。实际测试已验证新建、NSTextView输入和关闭保护。此前把辅助功能工具报告的Save/New Folder禁用直接解释为产品故障，这一判断已更正：用户确认Save可点击，独立AppKit复现返回OK并写出实际`.omnb`，实际OpenMath面板同样保存成功，文件SHA与SQLite receipt一致。短暂辅助功能状态不能替代最终回执。另存为/重新打开的完整现场流程仍在验收，R4.1.11未勾选。
 
 ## 实际验收
 
@@ -45,6 +51,7 @@ AppKit 默认的 `scheduleAutosaving` 不再启动另一个 opaque autosave-else
 - 非法数学源码保存，Unicode/emoji/NFD 原字节，打开后 kernel 未执行。
 - 保存 N 期间 N+1、另存为旧 binding 回执、外部修改、只读拒绝。
 - 替换后丢失 ACK、真实 F_FULLFSYNC 失败、原 ID 核对及重启回读。
+- 原文件同目录改名、旧路径被其他文件占用、移出授权目录、原文件缺失不重建、负saved revision损坏拒绝。
 - 实际 TextKit 输入、2秒真实文件自动保存、UndoManager、后续输入撤销关闭决定。
 - 六个真实 SIGKILL 位置：intent committed、临时文件已同步、文件已替换、目录已同步、receipt COMMIT 前、receipt COMMIT 后。
 - 额外的交换原件冲突：重启保留不匹配的外部原件，不写假 receipt。

@@ -5,22 +5,74 @@ import CryptoKit
 struct OpenedNotebook:Sendable {let file:NativeSourceFile;let binding:FileBinding;let bytes:Data}
 private final class ScopedFile {
   let url:URL
-  private let active:Bool
-  private let grant:URL
-  init(binding:FileBinding)throws {
+  private let active:[URL]
+  private static func identity(_ url:URL,_ expected:FileStamp)->Bool {
+    var value=stat()
+    return lstat(url.path,&value)==0 && value.st_mode&S_IFMT==S_IFREG && UInt64(UInt32(bitPattern:value.st_dev))==expected.device && UInt64(value.st_ino)==expected.inode
+  }
+  init(binding:FileBinding,operation:String,recovering:Bool=false)throws {
     var stale=false
     let parent:URL
     do {parent=try URL(resolvingBookmarkData:binding.bookmark,options:[.withSecurityScope,.withoutUI],relativeTo:nil,bookmarkDataIsStale:&stale)}
     catch {throw SaveError.permissionDenied}
     guard parent.isFileURL else {throw SaveError.unsafeTarget}
-    grant=parent;active=parent.startAccessingSecurityScopedResource();url=parent.appendingPathComponent(binding.fileName)
+    let access=parent.startAccessingSecurityScopedResource()
+    var completed=false
+    defer {if access && !completed {parent.stopAccessingSecurityScopedResource()}}
+    let literal=parent.appendingPathComponent(binding.fileName)
+    let chosen:URL
+    if let bookmark=binding.fileBookmark,let expected=binding.expected {
+      let original=try? URL(resolvingBookmarkData:bookmark,options:[.withoutUI],relativeTo:nil,bookmarkDataIsStale:&stale)
+      if let original {
+        guard original.isFileURL else {throw SaveError.unsafeTarget}
+        // The identity bookmark is not a new grant. Moving outside the selected directory
+        // requires an explicit native target selection, rather than widening the old grant.
+        guard original.deletingLastPathComponent().standardizedFileURL.path.utf8.elementsEqual(parent.standardizedFileURL.path.utf8) else {throw SaveError.bindingChanged}
+      }
+      let resolved:URL
+      if let original,Self.identity(original,expected) {resolved=original}
+      else if Self.identity(literal,expected) {resolved=literal}
+      else {
+        // macOS can resolve a stale bookmark to a new object at its old path. Verify identity,
+        // then locate only direct children of the already granted directory; never search the
+        // volume or read unrelated contents. Bound metadata work and reject ambiguous links.
+        var enumerationError=false
+        guard let children=FileManager.default.enumerator(at:parent,includingPropertiesForKeys:nil,options:[.skipsSubdirectoryDescendants],errorHandler:{_,_ in enumerationError=true;return false}) else {throw SaveError.fileUnavailable}
+        var matches:[URL]=[],count=0
+        while let value=children.nextObject() {
+          count+=1;guard count<=4096 else {throw SaveError.fileUnavailable}
+          guard let child=value as? URL else {throw SaveError.fileUnavailable}
+          if Self.identity(child,expected) {matches.append(child);guard matches.count<=1 else {throw SaveError.bindingChanged}}
+        }
+        guard !enumerationError else {throw SaveError.fileUnavailable}
+        if let match=matches.first {resolved=match}
+        else if recovering {
+          // After our verified replacement, cleanup may already have removed the old inode
+          // before the SQLite receipt arrived. Recovery only reads/checks the literal bound
+          // target; write() never receives this fallback and cannot overwrite a new old-path file.
+          resolved=literal
+        } else {throw SaveError.bindingChanged}
+      }
+      // Our own swap moves the original inode into this operation's temporary path. Recovery
+      // still verifies the bound destination and displaced bytes, never follows that backup.
+      chosen=resolved.lastPathComponent==".openmath-save-"+operation ? literal : resolved
+    } else {chosen=literal}
+    url=chosen
+    guard url.pathExtension.lowercased()=="omnb" else {throw SaveError.unsafeTarget}
+    active=access ? [parent] : [];completed=true
   }
-  deinit {if active {grant.stopAccessingSecurityScopedResource()}}
+  deinit {for grant in active {grant.stopAccessingSecurityScopedResource()}}
 }
 /// User-granted file IO, never a model-provided path. All callbacks run off MainActor.
 enum SaveOperations {
   static func bookmark(_ url:URL)throws->Data {
     do {return try url.bookmarkData(options:.withSecurityScope,includingResourceValuesForKeys:[.fileResourceIdentifierKey,.volumeIdentifierKey],relativeTo:nil)}
+    catch {throw SaveError.permissionDenied}
+  }
+  private static func identityBookmark(_ url:URL)throws->Data {
+    // This resource identity does not grant new access. The selected directory owns its
+    // security scope, and resolution is constrained to that scope before any writer opens.
+    do {return try url.bookmarkData(options:[],includingResourceValuesForKeys:[.fileResourceIdentifierKey,.volumeIdentifierKey],relativeTo:nil)}
     catch {throw SaveError.permissionDenied}
   }
   private static func statStamp(_ fd:Int32,_ data:Data)throws->FileStamp {
@@ -57,7 +109,7 @@ enum SaveOperations {
     // Authorization is a read-only stable stamp. The write phase later coordinates/rechecks the
     // exact target; selecting a different target must not wait behind another file replacement.
     let expected=try existing(url)?.1
-    return .init(codecVersion:1,documentID:document,revision:revision,bookmark:try bookmark(url.deletingLastPathComponent()),fileName:url.lastPathComponent,displayPath:url.path,expected:expected)
+    return .init(codecVersion:1,documentID:document,revision:revision,bookmark:try bookmark(url.deletingLastPathComponent()),fileName:url.lastPathComponent,displayPath:url.path,expected:expected,fileBookmark:expected==nil ? nil : try identityBookmark(url))
   }
   private static func coordinatedConfirmation<T>(_ url:URL,_ body:(URL)throws->T)throws->T {
     precondition(!Thread.isMainThread)
@@ -70,12 +122,20 @@ enum SaveOperations {
     let active=url.startAccessingSecurityScopedResource();defer {if active {url.stopAccessingSecurityScopedResource()}}
     let (bytes,stamp)=try coordinatedRead(url,read)
     let file=try NotebookFileCodec.decode(bytes)
-    let binding=FileBinding(codecVersion:1,documentID:document,revision:1,bookmark:try bookmark(url.deletingLastPathComponent()),fileName:url.lastPathComponent,displayPath:url.path,expected:stamp)
+    let binding=FileBinding(codecVersion:1,documentID:document,revision:1,bookmark:try bookmark(url.deletingLastPathComponent()),fileName:url.lastPathComponent,displayPath:url.path,expected:stamp,fileBookmark:try identityBookmark(url))
     return .init(file:file,binding:binding,bytes:bytes)
   }
-  private static func requireExpected(_ url:URL,_ expected:FileStamp?)throws {
+  private static func matchesExpected(_ actual:FileStamp?,_ binding:FileBinding,url:URL)->Bool {
+    if actual==binding.expected {return true}
+    guard let actual,let expected=binding.expected,
+      !url.path.utf8.elementsEqual(binding.displayPath.utf8),binding.fileBookmark != nil else {return false}
+    // A same-directory rename can change ctime. All content/identity/mtime fields still match;
+    // editing/restoring bytes, changing the inode or replacing the old path is a real conflict.
+    return actual.device==expected.device && actual.inode==expected.inode && actual.byteLength==expected.byteLength && actual.byteHash==expected.byteHash && actual.modifiedSeconds==expected.modifiedSeconds && actual.modifiedNanoseconds==expected.modifiedNanoseconds
+  }
+  private static func requireExpected(_ url:URL,_ binding:FileBinding)throws {
     let actual=try existing(url)?.1
-    guard actual==expected else {throw SaveError.externalConflict}
+    guard matchesExpected(actual,binding,url:url) else {throw SaveError.externalConflict}
     if actual != nil {var s=stat();guard lstat(url.path,&s)==0,s.st_mode&S_IWUSR != 0 else {throw SaveError.permissionDenied}}
   }
   private static func writeAll(_ data:Data,_ fd:Int32)throws {
@@ -86,17 +146,17 @@ enum SaveOperations {
   static func write(_ snapshot:SaveSnapshot,intent:SaveIntent,faults:StorageFaults = .init())throws->SaveReceipt {
     precondition(!Thread.isMainThread);try SaveValidation.intent(intent)
     guard snapshot.source.document_id==intent.documentID,snapshot.source.revision.value==intent.sourceRevision,snapshot.source.snapshot_hash==intent.sourceSnapshotHash,snapshot.fileHash==intent.fileHash,UInt64(snapshot.bytes.count)==intent.fileByteLength else {throw SaveError.sourceChanged}
-    let scoped=try ScopedFile(binding:intent.binding),coordinator=NSFileCoordinator(filePresenter:nil)
+    let scoped=try ScopedFile(binding:intent.binding,operation:intent.operationID),coordinator=NSFileCoordinator(filePresenter:nil)
     var error:NSError?,result:Result<SaveReceipt,any Error>?
     coordinator.coordinate(writingItemAt:scoped.url,options:.forReplacing,error:&error) {url in result=Result {
-      try requireExpected(url,intent.binding.expected)
+      try requireExpected(url,intent.binding)
       let folder=url.deletingLastPathComponent(),temporary=folder.appendingPathComponent(".openmath-save-"+intent.operationID)
       let fd=Darwin.open(temporary.path,O_WRONLY|O_CREAT|O_EXCL|O_NOFOLLOW|O_CLOEXEC,0o600)
       guard fd>=0 else {throw SaveError.system(errno,"temporary_open")};defer {Darwin.close(fd)}
       var preserve=false
       defer {if !preserve { _ = unlink(temporary.path) }}
       try faults.reach("save_temporary_opened");try writeAll(snapshot.bytes,fd);try ManagedFiles.sync(fd);try faults.reach("save_file_synced")
-      try faults.reach("before_save_replace");try requireExpected(url,intent.binding.expected)
+      try faults.reach("before_save_replace");try requireExpected(url,intent.binding)
       let flags=UInt32(intent.binding.expected==nil ? RENAME_EXCL : RENAME_SWAP)
       guard renameatx_np(AT_FDCWD,temporary.path,AT_FDCWD,url.path,flags)==0 else {if errno==EEXIST {throw SaveError.externalConflict};throw SaveError.atomicReplaceUnavailable}
       preserve=true
@@ -110,7 +170,7 @@ enum SaveOperations {
         let bookmark=try Self.bookmark(url.deletingLastPathComponent())
         preserve=false
         let date=ISO8601DateFormatter();date.formatOptions=[.withInternetDateTime,.withFractionalSeconds]
-        return .init(codecVersion:1,operationID:intent.operationID,documentID:intent.documentID,sourceRevision:intent.sourceRevision,sourceSnapshotHash:intent.sourceSnapshotHash,bindingRevision:intent.binding.revision,fileHash:intent.fileHash,actual:stamp,updatedBookmark:bookmark,recovered:false,completedAt:date.string(from:Date()))
+        return .init(codecVersion:1,operationID:intent.operationID,documentID:intent.documentID,sourceRevision:intent.sourceRevision,sourceSnapshotHash:intent.sourceSnapshotHash,bindingRevision:intent.binding.revision,fileHash:intent.fileHash,actual:stamp,updatedBookmark:bookmark,recovered:false,completedAt:date.string(from:Date()),updatedFileBookmark:try Self.identityBookmark(url),actualFileName:url.lastPathComponent,actualDisplayPath:url.path)
       } catch SaveError.externalConflict {throw SaveError.externalConflict}
       catch {throw SaveError.unknownOutcome}
     }}
@@ -120,7 +180,7 @@ enum SaveOperations {
   /// fallback occurs; absence/offline/third-party bytes remain failure/unknown/conflict.
   static func reconcile(_ intent:SaveIntent)throws->SaveReceipt? {
     precondition(!Thread.isMainThread);try SaveValidation.intent(intent)
-    let scoped=try ScopedFile(binding:intent.binding)
+    let scoped=try ScopedFile(binding:intent.binding,operation:intent.operationID,recovering:true)
     return try coordinatedConfirmation(scoped.url) {url in
       guard let (bytes,stamp)=try existing(url) else {if intent.binding.expected==nil {return nil};throw SaveError.fileUnavailable}
       if KernelHashes.data(bytes)==intent.fileHash {
@@ -132,9 +192,9 @@ enum SaveOperations {
         try ManagedFiles.sync(fd);try ManagedFiles.syncDirectory(url.deletingLastPathComponent())
         let (confirmed,current)=try read(url);guard confirmed==bytes,current==stamp else {throw SaveError.externalConflict}
         let date=ISO8601DateFormatter();date.formatOptions=[.withInternetDateTime,.withFractionalSeconds]
-        return .init(codecVersion:1,operationID:intent.operationID,documentID:intent.documentID,sourceRevision:intent.sourceRevision,sourceSnapshotHash:intent.sourceSnapshotHash,bindingRevision:intent.binding.revision,fileHash:intent.fileHash,actual:stamp,updatedBookmark:try bookmark(url.deletingLastPathComponent()),recovered:true,completedAt:date.string(from:Date()))
+        return .init(codecVersion:1,operationID:intent.operationID,documentID:intent.documentID,sourceRevision:intent.sourceRevision,sourceSnapshotHash:intent.sourceSnapshotHash,bindingRevision:intent.binding.revision,fileHash:intent.fileHash,actual:stamp,updatedBookmark:try bookmark(url.deletingLastPathComponent()),recovered:true,completedAt:date.string(from:Date()),updatedFileBookmark:try identityBookmark(url),actualFileName:url.lastPathComponent,actualDisplayPath:url.path)
       }
-      if stamp==intent.binding.expected {return nil}
+      if matchesExpected(stamp,intent.binding,url:url) {return nil}
       throw SaveError.externalConflict
     }
   }

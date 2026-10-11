@@ -4,25 +4,39 @@ private final class RaceGate:@unchecked Sendable {
   func hold() async {await withCheckedContinuation {continuation in DispatchQueue.global().async {self.reached.signal();self.release.wait();continuation.resume()}}}
   func wait() async ->Bool {await withCheckedContinuation {continuation in DispatchQueue.global().async {continuation.resume(returning:self.reached.wait(timeout:.now()+5) == .success)}}}
 }
+private final class OnceArmed:@unchecked Sendable {
+  private let lock=NSLock()
+  private var armed=false
+  func arm() {lock.withLock {armed=true}}
+  func claim()->Bool {lock.withLock {let result=armed;armed=false;return result}}
+}
 @main struct SessionFixtures {
   static func main() async throws {
-    let admission=RaceGate(),readback=RaceGate(),acknowledged=RaceGate()
+    let admission=RaceGate(),readback=RaceGate(),acknowledged=RaceGate(),emptyReadback=RaceGate(),emptyProbe=OnceArmed()
     let probes=NativeSessionProbes(beforeAdmission:{id in if id=="race-original" {await admission.hold()}},
       afterAdmission:{id in if id=="race-original" {await acknowledged.hold()}},
-      afterSnapshot:{snapshot in if snapshot.unavailable_operation_refs.contains("race-original") {await readback.hold()}})
+      afterSnapshot:{snapshot in
+        if snapshot.operations.isEmpty && snapshot.unavailable_operation_refs.isEmpty && emptyProbe.claim() {await emptyReadback.hold()}
+        if snapshot.unavailable_operation_refs.contains("race-original") {await readback.hold()}
+      })
     let race=try await NativeHostSession.open(runtime:"readback-admission-race",eventCapacity:1,eventByteBudget:128,probes:probes)
+    emptyProbe.arm()
+    let olderRefresh=Task {try await race.refreshProjection()}
+    let emptyHeld=await emptyReadback.wait();precondition(emptyHeld)
     let raceOperation=Task {try await race.perform(.evaluate_scratch(.init(kind:.evaluate_scratch,source:"2+2",dialect:.modern,definition_snapshot_ref:.init(nil),use_notebook_definitions:false,timeout_ms:10000)),operation:"race-original")}
     let admissionHeld=await admission.wait();precondition(admissionHeld)
     let refresh=Task {try await race.refreshProjection()}
+    emptyReadback.release.signal()
     let readbackHeld=await readback.wait();precondition(readbackHeld)
     admission.release.signal()
     let actualAcknowledged=await acknowledged.wait();precondition(actualAcknowledged)
     readback.release.signal();acknowledged.release.signal()
     let originalResult=try await raceOperation.value
     try await refresh.value
+    try await olderRefresh.value
     precondition(originalResult.phase == .completed && originalResult.result.value != nil)
     try await race.close()
-    print("Actual pre-admission snapshot delivered after admission ACK keeps the original ID and reads its real result")
+    print("Explicit refresh waits for occupied readback; pre-admission snapshot delivered after admission ACK keeps the original ID and reads its real result")
     // A 128-byte event budget intentionally cannot fit terminal frames. This exercises the
     // real ABI overflow/resync path: mathematical results can only arrive through readback.
     let session=try await NativeHostSession.open(runtime:"session-fixture",eventCapacity:1,eventByteBudget:128)

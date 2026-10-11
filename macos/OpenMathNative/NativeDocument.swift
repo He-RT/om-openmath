@@ -107,7 +107,7 @@ private final class NativeDocumentSnapshot:@unchecked Sendable {
     panel.showsTagField=false
     panel.nameFieldStringValue=fileURL?.lastPathComponent ?? "未命名.omnb"
     let response=await withCheckedContinuation {continuation in
-      if let window=windowControllers.first?.window {panel.beginSheetModal(for:window){continuation.resume(returning:$0)}} else {panel.begin{continuation.resume(returning:$0)}}
+      if let window=windowControllers.first?.window {panel.beginSheetModal(for:window){response in panel.orderOut(nil);continuation.resume(returning:response)}} else {panel.begin{response in panel.orderOut(nil);continuation.resume(returning:response)}}
     }
     guard response == .OK,let url=panel.url else {return nil}
     return try await saveNative(to:url)
@@ -115,7 +115,7 @@ private final class NativeDocumentSnapshot:@unchecked Sendable {
   static func openWithPanel() async->URL? {
     NSApplication.shared.activate()
     let panel=NSOpenPanel();panel.allowedContentTypes=[.openMathNotebook];panel.allowsMultipleSelection=false;panel.canChooseDirectories=false
-    let response=await withCheckedContinuation {continuation in panel.begin{continuation.resume(returning:$0)}}
+    let response=await withCheckedContinuation {continuation in panel.begin{response in panel.orderOut(nil);continuation.resume(returning:response)}}
     return response == .OK ? panel.url : nil
   }
   override func save(_ sender:Any?) {
@@ -127,7 +127,8 @@ private final class NativeDocumentSnapshot:@unchecked Sendable {
       defer {unblockUserInteraction()}
       do {
         guard saveOperation == .saveOperation || saveOperation == .saveAsOperation || saveOperation == .autosaveInPlaceOperation else {throw SaveError.unsafeTarget}
-        if saveOperation == .autosaveInPlaceOperation, url != fileURL {throw SaveError.bindingChanged}
+        if saveOperation == .autosaveInPlaceOperation,url != fileURL {throw SaveError.bindingChanged}
+        if saveOperation == .saveOperation,let bound=fileURL,url != bound {throw SaveError.bindingChanged}
         _ = try await saveNative(to:saveOperation == .saveAsOperation || fileURL==nil ? url : nil,automatic:saveOperation == .autosaveInPlaceOperation)
         completionHandler(nil)
       } catch {completionHandler(error)}
@@ -148,7 +149,7 @@ private final class NativeDocumentSnapshot:@unchecked Sendable {
     let result=alert.runModal()
     if result == .alertSecondButtonReturn {autosave.restoreAfterCancelledClose(wasSuspended:wasSuspended);return false}
     if result == .alertThirdButtonReturn {closeApproved=true;return true}
-    do {if fileURL==nil {guard try await saveAsWithPanel() != nil else {return false}} else {_ = try await saveNative()};closeApproved = !(try await port.state()).dirty;return closeApproved} catch {presentError(error);return false}
+    do {if fileURL==nil {guard try await saveAsWithPanel() != nil else {autosave.restoreAfterCancelledClose(wasSuspended:wasSuspended);return false}} else {_ = try await saveNative()};closeApproved = !(try await port.state()).dirty;return closeApproved} catch {presentError(error);return false}
   }
   func closeNative(approvalRequired:Bool=false) async throws {
     if approvalRequired && !closeApproved {throw SaveError.sourceChanged}

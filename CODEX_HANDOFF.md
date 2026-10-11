@@ -1,5 +1,7 @@
 # 项目接续提示词
 
+最新实施入口（2026-10-11，优先于下文历史）：R4.1.11文件保存Done已满足，当前22/98（全部R4.0＋R4.1.01–11），下一R4.1.12会话outbox/草稿/启动恢复，再quota/backup/GC和完整原生工作台。真实Release系统面板保存/另存为/取消/重开/正常退出、源码字节与原SQLite回执一致；源码N+1、旧binding、IME、身份、6SIGKILL和原件冲突通过。证据docs/acceptance/pre-alpha.4/development/r41/file-saves-completion.json、D031。c4eab5a CI38119321361四jobs通过但native SessionFixtures readbackHeld失败；显式refresh已修为等待正在进行的readback再发新快照，固定并发真实ABI测试/test-native-contracts、test-saves和Release本地通过，新提交同SHA CI待回读，不把旧失败抹掉。实际Preview合成文件都在仓库target，文档库正常关闭；没有pending面板问题或需要用户再次Save。运行.3，32final gate not_run/no candidate，保留dev/no main/旧公开包/no本机iOS模拟器，直接实施不使用子代理。
+
 最新接续入口（2026-10-10）：`.3` 已公开发行，下一版 `0.1.0-pre-alpha.4` 的全部设计已合并到 `docs/plan/PRE_ALPHA_4.md`（98项实施任务）与 `docs/plan/PRE_ALPHA_4_PROGRESS.md`。主计划第1.4–1.5节给出最终用户体验和全部需求到规格/任务/门禁的对应关系；执行先读第0节、任务进度、32项机器门禁和实际 Git 状态，从最早未完成且前置满足的任务接续，保留工作区中的实现。宿主、共享续行与部分存储已有完成项，不重置任务或从头重建；最终候选尚未分配，运行版本仍`.3`，公开门禁仍not_run。下文带日期的旧状态是历史记录，不覆盖当前任务进度，尤其“不安装Pi/Agent仍预留”等`.3`边界不覆盖`.4`选定的Pi/Node、原生宿主与事务范围；保持dev、不合main、不改旧tag、不启动本机iOS模拟器、直接实施不使用子代理。
 
 请接续当前 OpenMath 项目，不要从零重建或重新制定计划。

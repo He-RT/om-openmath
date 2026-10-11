@@ -40,6 +40,17 @@ private func file(_ url:URL)throws->NativeSourceFile {try NotebookFileCodec.deco
     let invalid=try await native.saveNative(operation:"invalid-math-source")
     let invalidFile=try file(target);precondition(invalidFile.cells[0].source=="let a=" && invalid.sourceRevision==1)
     let saved=try await port.state();precondition(!saved.dirty)
+    let wrongDestination=user.appendingPathComponent("未授权重绑定.omnb")
+    for operationType:NSDocument.SaveOperationType in [.saveOperation,.autosaveInPlaceOperation] {
+      let rejected=await withCheckedContinuation {continuation in
+        native.save(to:wrongDestination,ofType:"org.openmath.notebook",for:operationType) {error in
+          continuation.resume(returning:(error as? SaveError) == .bindingChanged)
+        }
+      }
+      precondition(rejected && !FileManager.default.fileExists(atPath:wrongDestination.path))
+    }
+    let unchangedAfterRejectedDestination=try file(target)
+    precondition(unchangedAfterRejectedDestination.cells[0].source=="let a=")
     let pause=Pause()
     try await MainActor.run {try drafts.edited(cell:"a",generation:1,source:"let a=5",hasMarkedText:false);native.noteEdit()}
     let paused=Task {try await native.saveNative(operation:"save-N",faults:.init {point in if point=="before_save_replace" {pause.enter()} })}
@@ -95,6 +106,15 @@ private func file(_ url:URL)throws->NativeSourceFile {try NotebookFileCodec.deco
     let app=NativeAppStorage(paths:.init(root:root.appendingPathComponent("application"),channel:.preview))
     async let first=app.open();async let another=app.open()
     let (one,two)=try await (first,another);precondition(one === two)
+    let unbound=try await NativeDocumentSession.open(storage:one)
+    let unboundRejected=await withCheckedContinuation {continuation in
+      unbound.document.save(to:wrongDestination,ofType:"org.openmath.notebook",for:.autosaveInPlaceOperation) {error in
+        continuation.resume(returning:(error as? SaveError) == .bindingChanged)
+      }
+    }
+    let unboundState=try await unbound.files.state()
+    precondition(unboundRejected && unboundState.head==nil && !FileManager.default.fileExists(atPath:wrongDestination.path))
+    try await unbound.close()
     let live=try await NativeDocumentSession.open(storage:one,url:second)
     let restored=try await live.host.kernelCommand(.kernel_state(.init(type:.kernel_state)))
     precondition(restored.active_checkpoint_id.value==nil && restored.kernel_state_revision.value==0)

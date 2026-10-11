@@ -22,6 +22,7 @@ actor NativeHostSession {
   private var shutdownTask:Task<Void,any Error>?
   private var closing=false
   private var recovering=false
+  private var recoveryWaiters:[CheckedContinuation<Void,Never>]=[]
   private var recoveryRevision:UInt64=0
   private var lastInvalidatedRustSequence:UInt64=0
   private struct Pending {
@@ -50,7 +51,13 @@ actor NativeHostSession {
   }
   func projection()->HostConfirmedProjection { router.projection }
   /// Explicit trusted UI resynchronization; no new operation or mathematical evaluation.
-  func refreshProjection() async throws {try await recover()}
+  func refreshProjection() async throws {
+    // A UI-requested readback must not silently become a no-op while the event pump is
+    // reading an older snapshot. Wait for that readback, then dispatch a fresh one.
+    while recovering {await withCheckedContinuation {recoveryWaiters.append($0)}}
+    guard !closing else {throw NativeHostSessionError.admissionClosed}
+    try await recover()
+  }
   func updates() throws ->AsyncStream<HostConfirmedProjection> {
     guard subscribers.count<8 else { throw NativeHostSessionError.tooManySubscribers }
     let id=UUID()
@@ -137,13 +144,18 @@ actor NativeHostSession {
   private func recover() async throws {
     guard !recovering else { return }
     recovering=true
-    defer { recovering=false }
+    defer {
+      recovering=false
+      let waiters=recoveryWaiters;recoveryWaiters=[]
+      for waiter in waiters {waiter.resume()}
+    }
     var stable=false
     while !stable {
     let revision=recoveryRevision
     var queue=Array(pending.keys).sorted()
     if queue.isEmpty {
       let snapshot=try await client.snapshot()
+      await probes.afterSnapshot(snapshot)
       if try !router.install(snapshot) { continue }
     }
     var queried=Set<String>()

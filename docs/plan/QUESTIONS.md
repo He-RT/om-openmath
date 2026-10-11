@@ -321,3 +321,7 @@ M13.11 CI repair local verification: unchanged save/probe/remember expectations 
 
 
 R4.1.11 面板问题更正（2026-10-11）：用户确认Save可点击；独立AppKit复现真实返回OK并写出fixture.omnb（SHA256 763e9c79d1ac2e16e53a9aaa5953a15b4433e7260648afde9f95ebf63ddcb171）。实际OpenMath面板已写出「原生面板闭环.omnb」，编辑后Cmd-S保存，原文件SHA与SQLite receipt一致。先前辅助功能短暂禁用不证明产品故障，不再据此修改权限/菜单或要求重授权。另存为/重新打开仍需完整实际回执，不能仅凭按钮可用勾任务。
+
+R4.1.11 已收尾（2026-10-11）：用户回复“已点击Save”已纳入早一构建证据；本轮Release另存为、取消、关闭、Cmd-O重开与窗口退出均实际完成。新文件/原文件SHA相同、同库receipt/outbox匹配，重开独立source0/零checkpoint，正常关闭写入clean shutdown。无需用户再次操作面板；[完整回读](../acceptance/pre-alpha.4/development/r41/file-saves-completion.json)。
+
+同日CI38119321361原生会话刷新fixture失败，其他四jobs成功。显式刷新遇到正在读回不再直接返回；固定占用读回的真实桥接fixture和原断言通过，新SHA CI待推送。该失败与文件是否保存是不同事实，历史日志保留，不宣称所有CI/最终发行gate通过。

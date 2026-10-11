@@ -4,9 +4,9 @@
 
 2026-10-11。目标`0.1.0-pre-alpha.4`，当前运行/公开版本`.3`；开发`dev`，不合main、不改旧标签、本机不启动iOS模拟器。本文只记录结果，规格及完成标准唯一见主计划；计划编写本身不计实施完成。
 
-**当前状态：** 21任务完成（全部R4.0与R4.1.01–10）；其余77任务尚未完成；32最终运行/发行gate全部not_run；candidate未分配，ready_to_publish=false，released_verified=false。设计/HTML/Schema通过不填运行时pass。
+**当前状态：** 22任务完成（全部R4.0与R4.1.01–11）；其余76任务尚未完成；32最终运行/发行gate全部not_run；candidate未分配，ready_to_publish=false，released_verified=false。设计/HTML/Schema通过不填运行时pass。
 
-**下一任务：** R4.1.11 NSDocument打开/保存/冻结快照，然后完整启动恢复、quota/backup/GC与原生工作台。主运行/CABI/同库接纳及source共享逻辑门已完成。真实逆事务、原生文本/IME group、200+pin及物理裁减回执已通过；完整工作台与Agent仍继续后续任务。保持同candidate完整门禁，R4.5.07在R4.5.05冻结前完成。
+**下一任务：** R4.1.12 会话outbox、草稿与启动恢复，然后quota/backup/GC与原生工作台。主运行/CABI/同库接纳及source共享逻辑门已完成。真实逆事务、原生文本/IME group、200+pin及物理裁减回执已通过；完整工作台与Agent仍继续后续任务。保持同candidate完整门禁，R4.5.07在R4.5.05冻结前完成。
 
 ## 已知外部前置
 
@@ -41,7 +41,7 @@
 | [x] [R4.1.08](PRE_ALPHA_4.md#task-r4.1.08) | 完整可写计算状态与无损codec | completed | [整个Session/原证据](../acceptance/pre-alpha.4/development/r41/session-checkpoint.json) / 723相关Rust＋原53＋data-only/角色/预算 | 55d11b8；de0ec9e及前置 |
 | [x] [R4.1.09](PRE_ALPHA_4.md#task-r4.1.09) | 主KernelWorker、候选接纳和直接取消 | completed | [实际主运行](../acceptance/pre-alpha.4/development/r41/kernel-runtime.json) / CABI+Swift+SQLite / 310相关Rust+实际IO/长CAS/close | 5469091；3ce0320、b309baf |
 | [x] [R4.1.10](PRE_ALPHA_4.md#task-r4.1.10) | 不可变结果库和只读检查通道 | completed | [实际原生结果](../acceptance/pre-alpha.4/development/r41/result-runtime.json) / CABI＋worker＋Swift / 324Rust＋actual receipts/late reply | 6d53f17；f04474f；后续补验 |
-| [ ] [R4.1.11](PRE_ALPHA_4.md#task-r4.1.11) | NSDocument打开保存与冻结快照 | in_progress | 实际文件/NSDocument/SQLite与7中断冲突路径通过；实际面板保存通过；另存为/重开待验 | f04474f；后续补验 |
+| [x] [R4.1.11](PRE_ALPHA_4.md#task-r4.1.11) | NSDocument打开保存与冻结快照 | completed | [实际文件/同库回执/本轮Release面板闭环](../acceptance/pre-alpha.4/development/r41/file-saves-completion.json) / 6 SIGKILL+原件冲突 / N+1/IME/身份/取消/重开 | f04474f、c4eab5a；本批待补SHA |
 | [ ] [R4.1.12](PRE_ALPHA_4.md#task-r4.1.12) | 会话outbox、草稿与启动恢复 | planned | — | — |
 | [ ] [R4.1.13](PRE_ALPHA_4.md#task-r4.1.13) | 引用租约、备份、quota与GC | planned | — | — |
 | [ ] [R4.2.01](PRE_ALPHA_4.md#task-r4.2.01) | 原生工作台窗口、分栏和投影 | planned | — | — |
@@ -412,3 +412,10 @@ Done依据与覆盖case/proof:
 - 22d64de CI38100465269五jobs已全部success。当前新代码尚待本批CI，运行.3/final gate not_run/no candidate；不启动本机iOS模拟器，不合main，不改旧公开包。
 
 - D030补验：取消关闭恢复正常自动保存，原failure pause不自动复活，两路径经真实SQLite save intent/receipt验证。新完整test-saves与Release构建通过；[文件身份与面板证据](../acceptance/pre-alpha.4/development/r41/file-identity-and-panels.json)记录源码、命令、原件hash与待完成的UI流程。
+
+## R4开发记录 D031 — 文件面板闭环与会话刷新竞争
+
+- R4.1.11 Done满足，22/98已完成。早一构建实际Save As与用户确认单独记录；本轮Release系统Open取消/Open/Save As取消/新文件保存/关闭/Cmd-O重开/窗口关闭退出通过。三份自有合成文件SHA一致，新Save As receipt/outbox/source hash实际相符；重开独立source0/零accepted checkpoint，两文档clean shutdown均1。[完整证据](../acceptance/pre-alpha.4/development/r41/file-saves-completion.json)。
+- 系统panel回调先orderOut；整个Open面板保留busy，普通保存/自动保存不同URL拒绝；取消关闭里的保存面板恢复原policy。真实文件fixture保留原数学语法错/N+1/旧binding/IME/身份/未知同步，6SIGKILL+原件冲突通过；test-saves和Release构建exit0。
+- c4eab5a/CI38119321361 Rust、Web、依赖、iOS通过，native_macos在SessionFixtures第17行失败。修复显式刷新在已有readback时直接返回的问题；新固定并发fixture、12精确4/丢帧恢复/停止/并发关闭以及test-native-contracts完整exit0。保留原artifact失败，本批CI待推送后回读。
+- 下一任务R4.1.12同文档outbox投影Library、未确认/IME草稿、启动按原ID核对与接纳前缀恢复；不自动重放操作或付费请求。R4.2完整工作台、Agent和发行仍未完成；运行.3/dev/no main/no本机iOS模拟器，32final gate not_run/no candidate。

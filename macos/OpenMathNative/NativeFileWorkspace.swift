@@ -24,13 +24,19 @@ import SwiftUI
     window.delegate=self
   }
   func openPanel() async {
-    guard !busy,let url=await NativeDocument.openWithPanel() else {return}
-    _ = await open(url)
+    guard !busy else {return};busy=true;defer {busy=false}
+    guard let url=await NativeDocument.openWithPanel() else {return}
+    _ = await replaceReserved(url)
   }
   func newDocument() async {_ = await replace(nil)}
   func open(_ url:URL) async->Bool {await replace(url)}
   private func replace(_ url:URL?) async->Bool {
     guard !busy else {return false};busy=true;defer {busy=false}
+    return await replaceReserved(url)
+  }
+  /// Both OS opens and the interactive panel reserve the single-document owner for their
+  /// whole lifetime, so a second menu/window action cannot create an overlapping panel.
+  private func replaceReserved(_ url:URL?) async->Bool {
     do {
       // Prepare the new source without changing the old window. A bad/offline file leaves the
       // current source, marked input, scroll and file binding available.

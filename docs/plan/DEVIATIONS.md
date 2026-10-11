@@ -548,3 +548,11 @@ L2使用精确标称GM分数、50位FindRoot/1000迭代和真实残差，报告�
 - 新源码文件身份实际测试、旧路径异物保留、授权目录外移动/显式新绑定/缺失不重建、损坏negative saved revision均通过；SQLite故障注入在独立后台任务，失败/日志不抹除。
 - 撤回“系统Save/New Folder故障”结论：用户确认可点击，独立AppKit panel真实OK/字节以及OpenMath实际保存/原同库回执成立。辅助功能瞬时状态不能作为永久故障证据；完整另存为/重新打开流程继续验收，任务仍unchecked。
 - 22d64de同SHA CI38100465269五jobs全success；不充本批或final candidate。所有发行gate保持not_run，运行.3/dev/no main/no本机iOS模拟器。
+
+### R4-D025：明确刷新与文件面板生命周期收尾（2026-10-11）
+
+- c4eab5a/CI38119321361的native_macos失败于SessionFixtures第17行readbackHeld，其他四jobs通过。原始artifact保留；测试要求的显式刷新遇到事件泵正在读回时，旧recover直接返回，未保证新快照。
+- 显式refresh等待当前recover完成后发起新读回；后台自动恢复仍合并，不阻塞actor或主线程。完成或抛错均唤醒等待者，关闭中的刷新拒绝。实际fixture先固定占用空操作读回，再加入未admit操作和第二次刷新，验证旧快照在ACK之后返回仍按原ID读取真实结果；128字节丢帧、12次精确4及停止/并发关闭原断言不变。
+- AppKit面板回调显式orderOut后继续；打开面板整个寿命预留单活动文档busy。普通保存和原位自动保存若收到不同URL，返回bindingChanged而不是错误目标成功。真实文件fixture验证两个拒绝均没有写新目标，原文件保留。
+- 取消关闭中的保存面板恢复原autosave policy，保留既有failure pause。系统面板、文件字节、SQLite receipt/outbox和重开source0/零checkpoint/正常退出独立核对完成，R4.1.11 Done满足。启动草稿/Library恢复仍属于R4.1.12，不能把保存完成等同完整崩溃恢复。
+- test-native-contracts、test-saves及SDK27 Release构建实际exit0；[本批证据](../acceptance/pre-alpha.4/development/r41/file-saves-completion.json)。本批新SHA CI待推送后执行，不以本地通过抹掉前一CI失败；32最终gate仍not_run。

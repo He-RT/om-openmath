@@ -1,0 +1,430 @@
+{
+  "schema_version": 1,
+  "record_kind": "development_native_file_save_completion",
+  "task": "R4.1.11",
+  "task_status": "completed",
+  "base_source_sha": "c4eab5a9a33866df82e635e7c20c261982f0e04d",
+  "timestamp_utc": "2026-10-11T07:36:50.651059+00:00",
+  "runtime_version": "0.1.0-pre-alpha.3",
+  "target_version": "0.1.0-pre-alpha.4",
+  "public_gate_evidence": false,
+  "started_simulators": false,
+  "commands": [
+    {
+      "command": "bash macos/Scripts/test-native-contracts.sh",
+      "exit_code": 0,
+      "log": {
+        "path": "target/acceptance/pre-alpha.4/development/r41/contracts-refresh-wait.log",
+        "bytes": 2156,
+        "sha256": "c5eaabae1adfcb35a235a8539530bc3c243ada3bd643dda674fc736b27bf1690"
+      }
+    },
+    {
+      "command": "bash macos/Scripts/test-saves.sh",
+      "exit_code": 0,
+      "log": {
+        "path": "target/acceptance/pre-alpha.4/development/r41/save-panel-lifecycle-final.log",
+        "bytes": 884,
+        "sha256": "c10032d7a11a1d40c2b18fcf1682cb844ad66c5e63281fc8f4a9cf175f0ca036"
+      }
+    },
+    {
+      "command": "bash macos/Scripts/build-native.sh",
+      "exit_code": 0,
+      "log": {
+        "path": "target/acceptance/pre-alpha.4/development/r41/panel-lifecycle-native-build.log",
+        "bytes": 91364,
+        "sha256": "1718a8a7f52608a7338ba91dbc80be31561dd7c8f621f10966c558fe503bf21c"
+      }
+    },
+    {
+      "command": "bash macos/Scripts/test-saves.sh",
+      "exit_code": 0,
+      "log": {
+        "path": "target/acceptance/pre-alpha.4/development/r41/save-panel-lifecycle-final2.log",
+        "bytes": 884,
+        "sha256": "d2df2b34bcfe0645a78ce25ebc774d7d1b66b1419411ed2134a4ffc91c8edb4c"
+      }
+    },
+    {
+      "command": "bash macos/Scripts/build-native.sh",
+      "exit_code": 0,
+      "log": {
+        "path": "target/acceptance/pre-alpha.4/development/r41/panel-lifecycle-native-build-final2.log",
+        "bytes": 90365,
+        "sha256": "574293cb543a12a8b6752a09f559d13058a9202d8faeb382a782854ed5cd8fdd"
+      }
+    },
+    {
+      "command": "10 direct runs of target/macos-native-tests/session-fixtures",
+      "exit_code": 0,
+      "log": {
+        "path": "target/acceptance/pre-alpha.4/development/r41/session-readback-race-repeat.log",
+        "bytes": 7361,
+        "sha256": "7686dcef42fe9d254183d93e32deb2fa81a768f8f03f528c243410737c9c2fbf"
+      }
+    }
+  ],
+  "current_build_documents": [
+    {
+      "document_id": "81b74067-5754-476e-b3eb-d12da2f0ace6",
+      "source_head": {
+        "document_id": "81b74067-5754-476e-b3eb-d12da2f0ace6",
+        "revision": 0,
+        "execution_epoch": 0,
+        "snapshot_hash": "18ac235da9fbc259adb47fb3e15c8f1cb8b80d646f2cdd892db74b1018a387bc",
+        "active_checkpoint_ref": null
+      },
+      "file_head": {
+        "document_id": "81b74067-5754-476e-b3eb-d12da2f0ace6",
+        "binding_revision": 2,
+        "saved_revision": 0,
+        "saved_snapshot_hash": "18ac235da9fbc259adb47fb3e15c8f1cb8b80d646f2cdd892db74b1018a387bc",
+        "last_save_operation": "save-9efa10e1-d5b3-4c0b-9ace-5d615709a776"
+      },
+      "source": {
+        "title": "未命名",
+        "cells": [
+          {
+            "source": "let a=5\na+1\n# 中文🙂 未完成 =",
+            "id": "494e2b0c-aef8-4db5-bd5a-7183a25cae44",
+            "kind": "Math",
+            "dialect": "Modern"
+          }
+        ],
+        "version": 1
+      },
+      "bindings": [
+        {
+          "revision": 1,
+          "fileName": "原生面板闭环.omnb"
+        },
+        {
+          "revision": 2,
+          "fileName": "原生当前构建闭环.omnb"
+        }
+      ],
+      "receipts": [
+        {
+          "operationID": "save-9efa10e1-d5b3-4c0b-9ace-5d615709a776",
+          "documentID": "81b74067-5754-476e-b3eb-d12da2f0ace6",
+          "sourceRevision": 0,
+          "sourceSnapshotHash": "18ac235da9fbc259adb47fb3e15c8f1cb8b80d646f2cdd892db74b1018a387bc",
+          "bindingRevision": 2,
+          "fileHash": "3130d6e4f80abf8293cf8a730054d23a48b9670eb5153994288e1e7da023d9a1",
+          "recovered": false,
+          "completedAt": "2026-10-11T07:31:51.546Z"
+        }
+      ],
+      "accepted_checkpoint_count": 0,
+      "clean_shutdown": true
+    },
+    {
+      "document_id": "92795001-5335-4119-9620-5d4847431e3b",
+      "source_head": {
+        "document_id": "92795001-5335-4119-9620-5d4847431e3b",
+        "revision": 0,
+        "execution_epoch": 0,
+        "snapshot_hash": "116b664ec7f6ad932e9b23da32161170e53a900e6c1d1c588193721f6fa556a2",
+        "active_checkpoint_ref": null
+      },
+      "file_head": {
+        "document_id": "92795001-5335-4119-9620-5d4847431e3b",
+        "binding_revision": 1,
+        "saved_revision": 0,
+        "saved_snapshot_hash": "116b664ec7f6ad932e9b23da32161170e53a900e6c1d1c588193721f6fa556a2",
+        "last_save_operation": null
+      },
+      "source": {
+        "title": "未命名",
+        "version": 1,
+        "cells": [
+          {
+            "dialect": "Modern",
+            "kind": "Math",
+            "source": "let a=5\na+1\n# 中文🙂 未完成 =",
+            "id": "494e2b0c-aef8-4db5-bd5a-7183a25cae44"
+          }
+        ]
+      },
+      "bindings": [
+        {
+          "revision": 1,
+          "fileName": "原生当前构建闭环.omnb"
+        }
+      ],
+      "receipts": [],
+      "accepted_checkpoint_count": 0,
+      "clean_shutdown": true
+    }
+  ],
+  "earlier_build_documents": [
+    {
+      "document_id": "81af4006-57c3-4005-ad5c-18a937dc3716",
+      "source_head": {
+        "document_id": "81af4006-57c3-4005-ad5c-18a937dc3716",
+        "revision": 1,
+        "execution_epoch": 1,
+        "snapshot_hash": "a5b438adb40bdb33bf971970a4b57348f2805063826f41ff02fb1a39fbf69bb6",
+        "active_checkpoint_ref": null
+      },
+      "file_head": {
+        "document_id": "81af4006-57c3-4005-ad5c-18a937dc3716",
+        "binding_revision": 2,
+        "saved_revision": 1,
+        "saved_snapshot_hash": "a5b438adb40bdb33bf971970a4b57348f2805063826f41ff02fb1a39fbf69bb6",
+        "last_save_operation": "save-2b2c8399-f432-4a86-8af8-d13551ab69a3"
+      },
+      "source": {
+        "cells": [
+          {
+            "id": "494e2b0c-aef8-4db5-bd5a-7183a25cae44",
+            "dialect": "Modern",
+            "kind": "Math",
+            "source": "let a=5\na+1\n# 中文🙂 未完成 ="
+          }
+        ],
+        "title": "未命名",
+        "version": 1
+      },
+      "bindings": [
+        {
+          "revision": 1,
+          "fileName": "原生面板闭环.omnb"
+        },
+        {
+          "revision": 2,
+          "fileName": "原生另存为闭环.omnb"
+        }
+      ],
+      "receipts": [
+        {
+          "operationID": "save-5f3234ac-26c5-4153-96eb-0d5abef08d2b",
+          "documentID": "81af4006-57c3-4005-ad5c-18a937dc3716",
+          "sourceRevision": 0,
+          "sourceSnapshotHash": "7c02c654cea6f6c27074b7497e9866735838f624a79a999677a78dfdc62c5b10",
+          "bindingRevision": 1,
+          "fileHash": "2480ce5140df341e29bfee1094653b91954bf94d82e53f2507b61a8824bedc5a",
+          "recovered": false,
+          "completedAt": "2026-10-11T06:28:25.089Z"
+        },
+        {
+          "operationID": "save-dc08f251-0228-4b0f-bfb3-6219b7643ea3",
+          "documentID": "81af4006-57c3-4005-ad5c-18a937dc3716",
+          "sourceRevision": 1,
+          "sourceSnapshotHash": "a5b438adb40bdb33bf971970a4b57348f2805063826f41ff02fb1a39fbf69bb6",
+          "bindingRevision": 1,
+          "fileHash": "3130d6e4f80abf8293cf8a730054d23a48b9670eb5153994288e1e7da023d9a1",
+          "recovered": false,
+          "completedAt": "2026-10-11T06:29:33.068Z"
+        },
+        {
+          "operationID": "save-2b2c8399-f432-4a86-8af8-d13551ab69a3",
+          "documentID": "81af4006-57c3-4005-ad5c-18a937dc3716",
+          "sourceRevision": 1,
+          "sourceSnapshotHash": "a5b438adb40bdb33bf971970a4b57348f2805063826f41ff02fb1a39fbf69bb6",
+          "bindingRevision": 2,
+          "fileHash": "3130d6e4f80abf8293cf8a730054d23a48b9670eb5153994288e1e7da023d9a1",
+          "recovered": false,
+          "completedAt": "2026-10-11T06:54:30.622Z"
+        }
+      ],
+      "accepted_checkpoint_count": 0,
+      "clean_shutdown": true
+    },
+    {
+      "document_id": "5cf555f9-95c1-4291-8310-cdeb35cf7f8e",
+      "source_head": {
+        "document_id": "5cf555f9-95c1-4291-8310-cdeb35cf7f8e",
+        "revision": 0,
+        "execution_epoch": 0,
+        "snapshot_hash": "10e2536198a45612667d5be72f643554d600decbe0a6fe9f5aca28251fe7762c",
+        "active_checkpoint_ref": null
+      },
+      "file_head": {
+        "document_id": "5cf555f9-95c1-4291-8310-cdeb35cf7f8e",
+        "binding_revision": 1,
+        "saved_revision": 0,
+        "saved_snapshot_hash": "10e2536198a45612667d5be72f643554d600decbe0a6fe9f5aca28251fe7762c",
+        "last_save_operation": "save-76c43653-98de-4d3d-af23-fcfb8261d8fa"
+      },
+      "source": {
+        "cells": [
+          {
+            "dialect": "Modern",
+            "kind": "Math",
+            "source": "let a=5\na+1\n# 中文🙂 未完成 =",
+            "id": "494e2b0c-aef8-4db5-bd5a-7183a25cae44"
+          }
+        ],
+        "title": "未命名",
+        "version": 1
+      },
+      "bindings": [
+        {
+          "revision": 1,
+          "fileName": "原生另存为闭环.omnb"
+        }
+      ],
+      "receipts": [
+        {
+          "operationID": "save-6eb44f22-f179-437c-a11e-010f354ac11a",
+          "documentID": "5cf555f9-95c1-4291-8310-cdeb35cf7f8e",
+          "sourceRevision": 0,
+          "sourceSnapshotHash": "10e2536198a45612667d5be72f643554d600decbe0a6fe9f5aca28251fe7762c",
+          "bindingRevision": 1,
+          "fileHash": "3130d6e4f80abf8293cf8a730054d23a48b9670eb5153994288e1e7da023d9a1",
+          "recovered": false,
+          "completedAt": "2026-10-11T07:22:19.732Z"
+        },
+        {
+          "operationID": "save-0d09173f-eed6-4d2d-84e5-00ff76344f6a",
+          "documentID": "5cf555f9-95c1-4291-8310-cdeb35cf7f8e",
+          "sourceRevision": 0,
+          "sourceSnapshotHash": "10e2536198a45612667d5be72f643554d600decbe0a6fe9f5aca28251fe7762c",
+          "bindingRevision": 1,
+          "fileHash": "3130d6e4f80abf8293cf8a730054d23a48b9670eb5153994288e1e7da023d9a1",
+          "recovered": false,
+          "completedAt": "2026-10-11T07:22:22.377Z"
+        },
+        {
+          "operationID": "save-ee7b0737-4f30-494d-8756-b6f0547b5e92",
+          "documentID": "5cf555f9-95c1-4291-8310-cdeb35cf7f8e",
+          "sourceRevision": 0,
+          "sourceSnapshotHash": "10e2536198a45612667d5be72f643554d600decbe0a6fe9f5aca28251fe7762c",
+          "bindingRevision": 1,
+          "fileHash": "3130d6e4f80abf8293cf8a730054d23a48b9670eb5153994288e1e7da023d9a1",
+          "recovered": false,
+          "completedAt": "2026-10-11T07:22:23.478Z"
+        },
+        {
+          "operationID": "save-76c43653-98de-4d3d-af23-fcfb8261d8fa",
+          "documentID": "5cf555f9-95c1-4291-8310-cdeb35cf7f8e",
+          "sourceRevision": 0,
+          "sourceSnapshotHash": "10e2536198a45612667d5be72f643554d600decbe0a6fe9f5aca28251fe7762c",
+          "bindingRevision": 1,
+          "fileHash": "3130d6e4f80abf8293cf8a730054d23a48b9670eb5153994288e1e7da023d9a1",
+          "recovered": false,
+          "completedAt": "2026-10-11T07:22:26.013Z"
+        }
+      ],
+      "accepted_checkpoint_count": 0,
+      "clean_shutdown": true
+    }
+  ],
+  "actual_files": [
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r41/native-file-panel/原生面板闭环.omnb",
+      "bytes": 237,
+      "sha256": "3130d6e4f80abf8293cf8a730054d23a48b9670eb5153994288e1e7da023d9a1"
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r41/native-file-panel/原生另存为闭环.omnb",
+      "bytes": 237,
+      "sha256": "3130d6e4f80abf8293cf8a730054d23a48b9670eb5153994288e1e7da023d9a1"
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r41/native-file-panel/原生当前构建闭环.omnb",
+      "bytes": 237,
+      "sha256": "3130d6e4f80abf8293cf8a730054d23a48b9670eb5153994288e1e7da023d9a1"
+    }
+  ],
+  "ui_observations": [
+    "System Open Cancel returns to scratch without creating a document.",
+    "System Open displays original Chinese/emoji source with status 已打开.",
+    "Save As Cancel preserves original file URL and source.",
+    "System Save As 原生当前构建闭环.omnb returns status 已保存 and actual URL.",
+    "Close notebook returns to scratch; Cmd-O reopens the new file with identical source.",
+    "Window close exits actual process and both document stores record clean shutdown."
+  ],
+  "ui_observation_limits": [
+    "Earlier transient accessibility timeouts were not treated as save failures.",
+    "Original Save As user confirmation and earlier app receipt are recorded separately from the current source build.",
+    "Screenshots in the tool conversation were not archived by this record.",
+    "Final native save URL guard additionally rejects unbound autosave. Actual unbound factory fixture and Release build were rerun; complete panel UI observations belong to the separately hashed ui_sources/ui_app_executable immediately preceding that guard correction."
+  ],
+  "ci_failure": {
+    "run_id": 38119321361,
+    "head_sha": "c4eab5a9a33866df82e635e7c20c261982f0e04d",
+    "conclusion": "failure",
+    "job": "native_macos / native",
+    "failed_step": "Swift 实际 ABI 生命周期与 DTO 负例",
+    "log": {
+      "path": "target/ci-evidence/c4eab5a-native/contracts.log",
+      "bytes": 1616,
+      "sha256": "ca23e9b27c95388ba035a695ae49b5f72f018edbfa18695d86ec6fdd607e7315"
+    },
+    "actual_failure": "SessionFixtures main.swift:17 precondition(readbackHeld)",
+    "other_jobs": "rust/frontend/dependencies/ios success",
+    "resolution": "Explicit refresh waits for in-flight readback and then dispatches a fresh snapshot; deterministic occupied empty-readback fixture passes locally; next same-SHA CI pending."
+  },
+  "sources": [
+    {
+      "path": "macos/OpenMathNative/NativeHostSession.swift",
+      "bytes": 11165,
+      "sha256": "c12479aeeb655798de6c7b8066728871f38d66b0b949577d7f269c7a29e730ab"
+    },
+    {
+      "path": "macos/OpenMathNativeTests/SessionFixtures/main.swift",
+      "bytes": 5676,
+      "sha256": "323d38ddec578e3a4c1a302c8e911c41a0cd91524055ce56693384998383eb69"
+    },
+    {
+      "path": "macos/OpenMathNative/NativeDocument.swift",
+      "bytes": 10458,
+      "sha256": "b36f5e390682b7cefe1bccd0180e56df0b18cc59cda8b8dc5846a75efc7cccf0"
+    },
+    {
+      "path": "macos/OpenMathNative/NativeFileWorkspace.swift",
+      "bytes": 9510,
+      "sha256": "c04e846844a4ec8d0a2c51d3859653296fc34240cf259199b26aa959088b9cb5"
+    },
+    {
+      "path": "macos/OpenMathNativeTests/SaveFixtures/main.swift",
+      "bytes": 18280,
+      "sha256": "7e3293498e307a81f3efa8fac86fc691b81a48c5316654134e19f13797a994a0"
+    }
+  ],
+  "readback_script": {
+    "path": "target/acceptance/pre-alpha.4/development/r41/read-file-completion.py",
+    "bytes": 5595,
+    "sha256": "1d7e2ff0862990c3c5fa23f766aa486bf4501c16fc3d579a6cc328ebabb79621"
+  },
+  "ui_sources": [
+    {
+      "path": "macos/OpenMathNative/NativeHostSession.swift",
+      "bytes": 11165,
+      "sha256": "c12479aeeb655798de6c7b8066728871f38d66b0b949577d7f269c7a29e730ab"
+    },
+    {
+      "path": "macos/OpenMathNativeTests/SessionFixtures/main.swift",
+      "bytes": 5676,
+      "sha256": "323d38ddec578e3a4c1a302c8e911c41a0cd91524055ce56693384998383eb69"
+    },
+    {
+      "path": "macos/OpenMathNative/NativeDocument.swift",
+      "bytes": 10358,
+      "sha256": "af7719a58183373f7c3fc59f67630113458b49464614c2feca53bf3b1cf26c44"
+    },
+    {
+      "path": "macos/OpenMathNative/NativeFileWorkspace.swift",
+      "bytes": 9510,
+      "sha256": "c04e846844a4ec8d0a2c51d3859653296fc34240cf259199b26aa959088b9cb5"
+    },
+    {
+      "path": "macos/OpenMathNativeTests/SaveFixtures/main.swift",
+      "bytes": 17721,
+      "sha256": "b725bb82914b6f5d80d7f45091ce6236a8a69b0652b1e359da3d5870e272f470"
+    }
+  ],
+  "ui_app_executable": {
+    "path": "target/macos-native/Build/Products/Release/OpenMath Preview.app/Contents/MacOS/OpenMathNative",
+    "bytes": 30450080,
+    "sha256": "b5e9fa58f3befd9292cf255a2455d5ae8dd4ef820984d83a4dd74f77c3db753a"
+  },
+  "release_app_executable": {
+    "path": "target/macos-native/Build/Products/Release/OpenMath Preview.app/Contents/MacOS/OpenMathNative",
+    "bytes": 30450080,
+    "sha256": "bc83c1e7b69c627a5d13a716a87d087227912d604bce267cac1fe45bc2fa2a16"
+  }
+}

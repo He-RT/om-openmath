@@ -1,5 +1,6 @@
 //! Trusted native document/kernel port. Source controller is the only shared logical write gate.
 mod commands;
+mod recovery;
 use super::{
     acceptance::{AcceptanceContext, AcceptedKernelState, FrozenKernelPlan},
     worker::{KernelCandidate, KernelJob, KernelWorker, KernelWorkerError},
@@ -25,10 +26,21 @@ pub const KERNEL_BUILD_ID: &str = env!("OPENMATH_NATIVE_KERNEL_BUILD_ID");
 enum Receiver {
     Bootstrap(mpsc::Receiver<Result<FrozenKernelPlan, KernelWorkerError>>),
     Cell(mpsc::Receiver<Result<KernelCandidate, KernelWorkerError>>),
+    Restore(mpsc::Receiver<Result<AcceptedKernelState, KernelWorkerError>>),
 }
 enum Identity {
-    Bootstrap { source: String },
-    Cell { source: String, cell: String },
+    Bootstrap {
+        source: String,
+    },
+    Cell {
+        source: String,
+        cell: String,
+    },
+    Restore {
+        source: String,
+        hash: String,
+        length: usize,
+    },
 }
 struct Entry {
     identity: Identity,
@@ -40,6 +52,7 @@ struct Entry {
     error: Option<String>,
     cancel: Arc<AtomicBool>,
     seed_started: Arc<AtomicBool>,
+    upload: Option<Vec<u8>>,
 }
 /// Native single-document math coordinator, never a second source owner or physical writer.
 pub struct KernelEndpoint {
@@ -118,6 +131,7 @@ impl KernelEndpoint {
             ),
             definitions_current: active.is_some_and(|a| {
                 a.state().binding().execution_epoch == ctx.source.execution_epoch.get()
+                    && a.receipt().producer.config_revision == ctx.config_revision
             }),
             pending_document_write: source.source_gate_busy() || source.kernel_gate().is_some(),
             plan: Nullable(None),
@@ -153,6 +167,49 @@ impl KernelEndpoint {
         source: &mut DocumentCommitController,
     ) -> Result<(), String> {
         for (id, entry) in &mut self.operations {
+            if matches!(entry.identity, Identity::Restore { .. }) {
+                let received = match entry.receiver.as_ref() {
+                    Some(Receiver::Restore(receiver)) => match receiver.try_recv() {
+                        Ok(value) => Some(value),
+                        Err(mpsc::TryRecvError::Empty) => None,
+                        Err(_) => Some(Err(KernelWorkerError::Internal)),
+                    },
+                    _ => None,
+                };
+                if let Some(received) = received {
+                    entry.receiver = None;
+                    match received {
+                        Ok(accepted) if !entry.cancel.load(Ordering::Acquire) && !self.closing => {
+                            entry.receipt = Some(accepted.receipt().clone());
+                            self.active = Some(accepted);
+                            entry.phase = NativeKernelHostReplyPhase::Completed;
+                        }
+                        Ok(accepted) => {
+                            let _ = self.worker.discard(accepted.registry_ref());
+                            entry.phase = NativeKernelHostReplyPhase::Discarded;
+                            entry.error = Some("CANCELLED".into());
+                        }
+                        Err(e) => {
+                            entry.phase = NativeKernelHostReplyPhase::Failed;
+                            entry.error = Some(error(e));
+                        }
+                    }
+                }
+                if entry.receiver.is_none()
+                    && entry.cancel.load(Ordering::Acquire)
+                    && !terminal(&entry.phase)
+                {
+                    entry.upload = None;
+                    entry.phase = NativeKernelHostReplyPhase::Discarded;
+                    entry.error = Some("CANCELLED".into());
+                }
+                if terminal(&entry.phase) && source.kernel_gate() == Some(id.as_str()) {
+                    source
+                        .release_kernel_gate(id)
+                        .map_err(|_| "INTERNAL_ERROR")?;
+                }
+                continue;
+            }
             let received = match entry.receiver.as_ref() {
                 Some(Receiver::Bootstrap(rx)) => match rx.try_recv() {
                     Ok(value) => Some(value.map(Some)),
@@ -168,7 +225,7 @@ impl KernelEndpoint {
                     Err(mpsc::TryRecvError::Empty) => None,
                     Err(_) => Some(Err(KernelWorkerError::Internal)),
                 },
-                None => None,
+                Some(Receiver::Restore(_)) | None => None,
             };
             if let Some(received) = received {
                 entry.receiver = None;

@@ -9,6 +9,15 @@ impl KernelEndpoint {
     ) -> Result<NativeKernelHostReply, String> {
         self.advance(ctx, source)?;
         match command {
+            NativeKernelHostCommand::KernelRestoreStart(body) => {
+                self.restore_start(body, ctx, source)
+            }
+            NativeKernelHostCommand::KernelRestoreWrite(body) => {
+                self.restore_write(body, ctx, source)
+            }
+            NativeKernelHostCommand::KernelRestoreFinish(body) => {
+                self.restore_finish(body, ctx, source)
+            }
             NativeKernelHostCommand::KernelState(_) => Ok(self.base_reply(ctx, source)),
             NativeKernelHostCommand::KernelBootstrap(body) => {
                 if source.operation(&body.operation_id).is_some() {
@@ -90,6 +99,7 @@ impl KernelEndpoint {
                         error: None,
                         cancel,
                         seed_started: started,
+                        upload: None,
                     },
                 );
                 self.status(&body.operation_id, ctx, source)
@@ -148,6 +158,7 @@ impl KernelEndpoint {
                         error: None,
                         cancel,
                         seed_started: Arc::new(AtomicBool::new(false)),
+                        upload: None,
                     },
                 );
                 self.status(&body.operation_id, ctx, source)

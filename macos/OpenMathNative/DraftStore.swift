@@ -79,6 +79,7 @@ struct DraftFence:Sendable {
     return NativeEditorState(runtime_instance_id:runtime,document_id:confirmed.document_id,document_generation:try .init(documentGeneration),source_revision:confirmed.revision,targets:records)
   }
   func overlay(_ cell:String)->NativeDraft? {drafts[Data(cell.utf8)]}
+  var hasSavableEdits:Bool {drafts.values.contains{!$0.composing && !$0.requiresReview && !$0.conflict && !$0.source.utf8.elementsEqual($0.baseSource.utf8)}}
   /// A sync caller persists this exact raw source before reads/run/save/agent edits.
   func pendingEdits(excludingMarked:Bool=false) throws ->[(NativeSourceCell,DraftAcknowledgement)] {
     guard alive else {throw CommitPortError.sourceConflict}

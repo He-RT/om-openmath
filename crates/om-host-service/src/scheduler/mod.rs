@@ -264,6 +264,7 @@ impl NativeHost {
         let id = match &command {
             NativeKernelHostCommand::KernelBootstrap(b) => Some(&b.operation_id),
             NativeKernelHostCommand::KernelRunCell(b) => Some(&b.operation_id),
+            NativeKernelHostCommand::KernelRestoreStart(b) => Some(&b.operation_id),
             _ => None,
         };
         if id.is_some_and(|id| self.shared.operations.status(id).is_some()) {
@@ -274,6 +275,9 @@ impl NativeHost {
                 &command,
                 NativeKernelHostCommand::KernelBootstrap(_)
                     | NativeKernelHostCommand::KernelRunCell(_)
+                    | NativeKernelHostCommand::KernelRestoreStart(_)
+                    | NativeKernelHostCommand::KernelRestoreWrite(_)
+                    | NativeKernelHostCommand::KernelRestoreFinish(_)
                     | NativeKernelHostCommand::KernelBarrier(_)
             )
         {

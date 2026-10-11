@@ -48,6 +48,13 @@ private final class NativeDocumentSnapshot:@unchecked Sendable {
   override func defaultDraftName()->String {"未命名笔记本"}
   override var isDocumentEdited:Bool {edited || super.isDocumentEdited}
   func attach(_ port:NativeFilePort,opened:OpenedNotebook?=nil) {self.port=port;self.loaded=opened;fileType="org.openmath.notebook";if let opened {bindingGeneration=opened.binding.revision;fileURL=URL(fileURLWithPath:opened.binding.displayPath);frozen.replace(opened.bytes);edited=false;updateChangeCount(.changeCleared);statusText="已打开"}}
+  func restoreBinding(_ head:SavedFileHead?,snapshot:NativeSourceSnapshot,dirty:Bool)throws {
+    frozen.replace(try NotebookFileCodec.encode(snapshot.file));fileType="org.openmath.notebook"
+    if let head {bindingGeneration=head.binding.revision;fileURL=URL(fileURLWithPath:head.binding.displayPath)}
+    edited=dirty
+    if !dirty {updateChangeCount(.changeCleared)}
+    statusText=dirty ? "已恢复本地修改，文件尚未保存" : "已恢复本地记录"
+  }
   /// Real native editor/confirmed-source notifications call this; programmatic echoes do not.
   func noteEdit() {guard !dead else {return};closeApproved=false;edited=true;updateChangeCount(.changeDone);statusText="未保存";changed?();if fileURL != nil {autosave.edited()}}
   override nonisolated func data(ofType typeName:String)throws->Data {try frozen.read()}

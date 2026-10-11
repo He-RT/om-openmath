@@ -1,6 +1,6 @@
 """Actual SIGKILL between the two independent durable stores; never replay source or CAS."""
 from pathlib import Path
-import hashlib,json,os,select,signal,sqlite3,subprocess,tempfile,time
+import hashlib,json,os,select,shutil,signal,sqlite3,subprocess,tempfile,time
 
 ROOT=Path(__file__).resolve().parents[3]
 os.chdir(ROOT)
@@ -55,6 +55,19 @@ for stage in STAGES:
     lib.close()
     assert hashlib.sha256(saved.read_bytes()).hexdigest()==before==manifest['fileHash']
     records.append({'boundary':stage,'process_exit':-signal.SIGKILL,'root':str(root.relative_to(ROOT)),'source_snapshot_hash':manifest['snapshotHash'],'accepted_checkpoints':kernel_before,'library_events_before':events_before,'document_projected_before':pending_before,'library_events_after':7,'file_hash':before})
+    if stage==STAGES[0]:
+        # Closed, disposable fixture branch only; this is not the app's backup algorithm.
+        corrupt_root=Path(tempfile.mkdtemp(prefix='recovery-corrupt-',dir=ROOT/'target/macos-storage-tests'))
+        shutil.copytree(root,corrupt_root,dirs_exist_ok=True)
+        corrupt=subprocess.run([str(BINARY),str(corrupt_root),'session-corrupt'],capture_output=True,text=True,env=ENV,timeout=50)
+        assert corrupt.returncode==0,(corrupt.stdout,corrupt.stderr)
+        assert 'Damaged original checkpoint refused' in corrupt.stdout
+        records[-1]['damaged_blob_refused_without_source_loss']=corrupt.stdout.strip()
+        assert hashlib.sha256(saved.read_bytes()).hexdigest()==before
+    native=subprocess.run([str(BINARY),str(root),'session-recover'],capture_output=True,text=True,env=ENV,timeout=50)
+    assert native.returncode==0,(stage,native.stdout,native.stderr)
+    assert 'explicit b-only run uses a=5 and returns6' in native.stdout
+    records[-1]['native_restore_without_replay_and_explicit_b6']=native.stdout.strip()
 evidence=ROOT/'target/acceptance/pre-alpha.4/development/r41'
 evidence.mkdir(parents=True,exist_ok=True)
 (evidence/'library-projection-interruptions.json').write_text(json.dumps(records,ensure_ascii=False,indent=2)+'\n')

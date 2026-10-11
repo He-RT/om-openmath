@@ -29,6 +29,8 @@ actor NativeAppStorage {
   let drafts:DraftStore
   let undo:UndoCoordinator
   let backup:NativeDraftBackup
+  private(set) var recoveryMessages:[String]=[]
+  private(set) var recoveryHistoryCursor:DocumentProjectionCursor?
   private let storage:StorageService
   private var editors:[Data:DraftTextViewAdapter]=[:]
   private var closed=false
@@ -75,6 +77,52 @@ actor NativeAppStorage {
     let editor=try DraftTextViewAdapter(store:drafts,cell:cell,generation:1)
     editor.bindDocumentUndo(undo.manager);editor.didEdit={ [weak document] in document?.noteEdit() }
     editors[key]=editor;return editor
+  }
+  /// Explicit native recovery selection. The local document identity is retained, runtime/grants
+  /// are new, and no cell execution or model request is started by construction.
+  static func recover(storage:StorageService,documentID:String) async throws->NativeDocumentSession {
+    let info=try await storage.openDocument(documentID),physical=NativeFileService()
+    var host:NativeHostClient?
+    do {
+      guard info.identity.storeVersion==5,let snapshot=try await storage.committedSource(documentID) else {throw StorageError.unsupportedVersion}
+      let storedDraft=try await storage.draftBackup(document:documentID),settings=try await storage.calculationSettings(document:documentID)
+      let client=try await NativeHostClient.open();host=client
+      let opened=try await client.sourceCommand(.source_open(.init(type:.source_open,snapshot:snapshot,store_id:info.identity.storeID,calculation:.init(settings?.settings),config_revision:try HostSerial(settings?.revision ?? 0))))
+      let clock=SourceOwnerClock();clock.calibrate(opened.owner_time_ms.value)
+      let drafts=DraftStore(source:snapshot,runtime:client.runtimeInstanceID,generation:opened.document_generation.value,clock:{clock.now()})
+      if let storedDraft {try drafts.restoreBackup(storedDraft)}
+      let source=DocCommitPort(client:client,storage:storage,drafts:drafts,clock:clock),files=NativeFilePort(client:client,storage:storage,source:source,drafts:drafts,files:physical,document:documentID)
+      let owner=try await storage.beginDraftOwner(document:documentID,owner:UUID().uuidString.lowercased(),runtime:client.runtimeInstanceID,generation:opened.document_generation.value)
+      let native=NativeDocument();native.attach(files)
+      let session=NativeDocumentSession(document:native,host:client,source:source,files:files,drafts:drafts,storage:storage,backupOwner:owner)
+      let pending=try await files.recoverPendingSaves(),state=try await files.state()
+      try native.restoreBinding(state.head,snapshot:snapshot,dirty:state.dirty)
+      if !pending.isEmpty {session.recoveryMessages.append("\(pending.count) 项保存结果待核对；未重新覆盖文件。")}
+      do {
+        if try await NativeKernelRecovery.restore(storage:storage,client:client,document:documentID,expectedSourceHash:snapshot.snapshot_hash) != nil {session.recoveryMessages.append("已恢复已接纳的计算状态，没有执行单元格。")}
+      } catch {session.recoveryMessages.append("计算状态未恢复；源码和历史记录已保留。可另存为并打开为新文档重新运行。")}
+      if drafts.confirmed.file.cells.contains(where:{drafts.overlay($0.id)?.requiresReview==true}) {session.recoveryMessages.append("已恢复待确认草稿；请先查看并选择使用内容。")}
+      if !drafts.recoveredOrphans.isEmpty {session.recoveryMessages.append("\(drafts.recoveredOrphans.count) 份已删除单元格的草稿已保留，可复制另存。")}
+      if case .ready=await storage.libraryAvailability() {await session.reconcileRecoveryHistory()}
+      try await session.backup.flush()
+      return session
+    } catch {
+      if let host {try? await host.close()};await physical.close();try? await storage.closeDocument(documentID);throw error
+    }
+  }
+  func reviewDraft(_ cell:String,keep:Bool)throws {
+    try drafts.reviewRecovered(cell:cell,keep:keep);editors[Data(cell.utf8)]?.reflectAcknowledgedSource()
+    if !drafts.confirmed.file.cells.contains(where:{drafts.overlay($0.id)?.requiresReview==true}) {recoveryMessages.removeAll{$0=="已恢复待确认草稿；请先查看并选择使用内容。"}}
+    document.noteEdit()
+  }
+  func reconcileRecoveryHistory() async {
+    do {
+      let result=try await RecoveryService(storage:storage).projectDocument(drafts.confirmed.document_id,startingAt:recoveryHistoryCursor)
+      recoveryHistoryCursor=result.nextCursor
+      recoveryMessages.removeAll{$0.hasPrefix("历史投影")}
+      if !result.complete {recoveryMessages.append("历史投影尚有记录待核对，可继续核对；不会重做原操作。")}
+    } catch {recoveryMessages.removeAll{$0.hasPrefix("历史投影")};recoveryMessages.append("历史投影核对失败，原文档记录已保留。")}
+    document.changed?()
   }
   private func flushSource() async throws {
     let owner=drafts.confirmed.file.cells.first {cell in

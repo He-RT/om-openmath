@@ -134,6 +134,11 @@ actor StorageService {
   private func installLibrary(_ writer:StoreWriter,info:StoreOpenInfo) {library=writer;libraryState=info.identity.storeVersion==2 ? .ready(info) : .legacy(info)}
   private func unavailableLibrary(_ error:StorageError) {libraryState = .unavailable(error)}
   func libraryAvailability()->NativeLibraryAvailability {libraryState}
+  func startupDocuments(after:String?=nil,limit:Int=32) async throws->StartupDocumentPage {
+    guard closeTask==nil,let lease else {throw StorageError.closing}
+    let root=paths.root
+    return try await Task.detached { [lease] in _=lease;return try StartupDocuments.page(root:root,after:after,limit:limit)}.value
+  }
   func documentIdentity(_ document:String) async throws->StoreIdentity {
     guard closeTask==nil,let writer=documents[document] else {throw StorageError.closing}
     return try await writer.header()
@@ -233,6 +238,14 @@ actor StorageService {
   func saveIntent(document:String,operation:String) async throws ->SaveIntent? {
     guard closeTask==nil,let writer=documents[document] else {throw StorageError.closing};return try await writer.saveCall {try $0.readIntent(operation)}
   }
+  func pendingSaveIntents(document:String) async throws->[SaveIntent] {
+    guard closeTask==nil,let writer=documents[document] else {throw StorageError.closing}
+    return try await writer.saveCall {try $0.pendingIntents()}
+  }
+  func confirmSaveNotWritten(document:String,operation:String) async throws {
+    guard closeTask==nil,let writer=documents[document] else {throw StorageError.closing}
+    try await writer.saveCall {try $0.confirmNotWritten(operation)}
+  }
   func saveReceipt(document:String,operation:String) async throws ->SaveReceipt? {
     guard closeTask==nil,let writer=documents[document] else {throw StorageError.closing};return try await writer.saveCall {try $0.query(operation)}
   }
@@ -255,6 +268,10 @@ actor StorageService {
   func acceptedKernelHead(document:String) async throws ->NativeKernelReceipt? {
     guard closeTask==nil,let writer=documents[document] else {throw StorageError.closing}
     return try await writer.kernelCall {try $0.readHead()}
+  }
+  func kernelRecoveryHead(document:String) async throws->StoredKernelRecovery? {
+    guard closeTask==nil,let writer=documents[document] else {throw StorageError.closing}
+    return try await writer.kernelCall {try $0.recoveryHead()}
   }
   func confirmedNoKernelCommit(_ plan:NativeKernelCommit) async throws ->NativeKernelNoCommit {
     guard closeTask==nil,let writer=documents[plan.producer.document_id] else {throw StorageError.closing}

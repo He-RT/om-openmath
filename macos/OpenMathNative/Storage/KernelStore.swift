@@ -1,6 +1,8 @@
 import Foundation
 import SQLite3
 
+struct StoredKernelRecovery:Sendable {let plan:NativeKernelCommit;let receipt:NativeKernelReceipt}
+
 /// Physical acceptance is one SQLite transaction; producer semantics and final cancel remain Rust.
 struct KernelCommitControls:Sendable {
   let ownerBarrier:@Sendable () throws->Void
@@ -82,6 +84,18 @@ final class KernelStore {
   func readHead()throws->NativeKernelReceipt? {
     let read=try SQLiteDatabase(url:url,readonly:true);defer {try? read.close()}
     let result=try head(read);if result != nil {try db.confirmCommittedBytes()};return result
+  }
+  /// Read the original fully verified acceptance plan; no pretty-text reconstruction.
+  func recoveryHead()throws->StoredKernelRecovery? {
+    let reader=try SQLiteDatabase(url:url,readonly:true);defer {try? reader.close()}
+    guard let actual=try head(reader) else {return nil}
+    var plan:NativeKernelCommit?
+    try reader.statement("SELECT plan FROM accepted_checkpoints WHERE document_id=? AND checkpoint_id=?",[.text(identity.documentID!),.text(actual.checkpoint_id)]) {row in
+      plan=try JSONDecoder().decode(NativeKernelCommit.self,from:SQLColumn.data(row,0))
+    }
+    guard let plan else {throw StorageError.corruptIdentity}
+    try KernelValidation.plan(plan);try KernelValidation.receipt(actual,plan:plan);try db.confirmCommittedBytes()
+    return .init(plan:plan,receipt:actual)
   }
   /// Called only after the actual writer task settled; stable source/parent and original absence
   /// are checked together. A broken join, sync error or changed head cannot certify no COMMIT.

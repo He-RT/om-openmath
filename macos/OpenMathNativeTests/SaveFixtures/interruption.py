@@ -19,7 +19,7 @@ for stage in ("save_intent_committed","save_file_synced","save_replaced","save_d
         raise AssertionError((stage,marker,child.stderr.read()))
     child.kill();child.wait(timeout=5)
     assert child.returncode==-signal.SIGKILL
-    inspection=subprocess.run([str(helper),str(root),"inspect"],env=environment,capture_output=True,text=True,encoding="utf-8",timeout=20)
+    inspection=subprocess.run([str(helper),str(root),"inspect-native"],env=environment,capture_output=True,text=True,encoding="utf-8",timeout=20)
     assert inspection.returncode==0,(stage,inspection.returncode,inspection.stderr)
     record=json.loads(inspection.stdout)
     expected=stage not in ("save_intent_committed","save_file_synced")

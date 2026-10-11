@@ -67,10 +67,45 @@ private func actualOutput(_ store:StorageService,_ receipt:NativeKernelReceipt,c
     try await store.close()
     print("Actual restart: 7 original effects including bootstrap, no duplicates, source/accepted prefix/file bytes unchanged; no evaluator or HTTP created")
   }
+  private static func recoveredSession(_ root:URL) async throws {
+    let manifest=try JSONDecoder().decode(Manifest.self,from:Data(contentsOf:root.appendingPathComponent("manifest.json")))
+    let (store,_)=try await StorageService.open(paths:.init(root:root.appendingPathComponent("managed"),channel:.preview))
+    let page=try await store.startupDocuments();precondition(page.records.count==1 && page.records[0].id==manifest.documentID && page.records[0].recoverable)
+    let session=try await NativeDocumentSession.recover(storage:store,documentID:manifest.documentID)
+    let state=try await session.host.kernelCommand(.kernel_state(.init(type:.kernel_state)))
+    precondition(state.active_checkpoint_id.value==manifest.checkpointID && state.kernel_state_revision.value==manifest.kernelRevision && state.definitions_current)
+    let original=try await store.acceptedKernelHead(document:manifest.documentID)!
+    precondition(original.checkpoint_id==manifest.checkpointID && session.drafts.confirmed.snapshot_hash==manifest.snapshotHash)
+    precondition(session.recoveryMessages.contains{$0.contains("没有执行单元格")})
+    // Now explicitly run only b. It must use the restored a=5 definition, without rerunning a.
+    let kernel=KernelCommitPort(client:session.host,storage:store,source:session.source)
+    let next=try await kernel.runCell("b",operation:"explicit-run-after-recovery")
+    let value=try await actualOutput(store,next,cell:"b");precondition(value=="6" && next.kernel_state_revision.value==manifest.kernelRevision+1)
+    let events=try await store.documentOutbox(document:manifest.documentID,kind:.kernel);precondition(events.entries.count==6)
+    await kernel.close();try await session.close();try await store.close()
+    print("Actual native startup selection restores original accepted checkpoint/revision with no replay; explicit b-only run uses a=5 and returns6")
+  }
   static func main() async throws {
     precondition(om_fixture_install_sync_probe()==SQLITE_OK)
     let root=URL(fileURLWithPath:CommandLine.arguments[1],isDirectory:true)
     if CommandLine.arguments.count>2,CommandLine.arguments[2]=="recover" {try await recovered(root);return}
+    if CommandLine.arguments.count>2,CommandLine.arguments[2]=="session-recover" {try await recoveredSession(root);return}
+    if CommandLine.arguments.count>2,CommandLine.arguments[2]=="session-corrupt" {
+      let manifest=try JSONDecoder().decode(Manifest.self,from:Data(contentsOf:root.appendingPathComponent("manifest.json")))
+      let blob=root.appendingPathComponent("managed/Blobs/sha256/\(manifest.checkpointHash.prefix(2))/\(manifest.checkpointHash)")
+      let original=try Data(contentsOf:blob);var damaged=original;damaged[damaged.count-1]^=1;try damaged.write(to:blob)
+      let (storage,_)=try await StorageService.open(paths:.init(root:root.appendingPathComponent("managed"),channel:.preview))
+      let recovered=try await NativeDocumentSession.recover(storage:storage,documentID:manifest.documentID)
+      let state=try await recovered.host.kernelCommand(.kernel_state(.init(type:.kernel_state)))
+      precondition(state.active_checkpoint_id.value==nil && recovered.recoveryMessages.contains{$0.contains("计算状态未恢复")})
+      precondition(recovered.drafts.confirmed.snapshot_hash==manifest.snapshotHash)
+      let physical=try await storage.acceptedKernelHead(document:manifest.documentID)!
+      precondition(physical.checkpoint_id==manifest.checkpointID && physical.kernel_state_revision.value==manifest.kernelRevision)
+      try await recovered.close();try await storage.close()
+      let persistedDamage=try Data(contentsOf:blob);precondition(persistedDamage==damaged)
+      print("Damaged original checkpoint refused: source and historical receipt retained, no empty calculation claimed recovered")
+      return
+    }
     let (store,session,kernel,manifest)=try await prepare(root)
     let sourceEvent=try await store.documentOutbox(document:manifest.documentID,kind:.source).entries[0].effect
     if CommandLine.arguments.count>3,CommandLine.arguments[2]=="crash" {

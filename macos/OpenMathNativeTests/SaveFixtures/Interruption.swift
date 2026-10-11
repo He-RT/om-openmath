@@ -10,6 +10,19 @@ import SQLite3
     let mode=args[2],target=root.appendingPathComponent("user.omnb")
     let id="00000000-0000-0000-0000-000000000412",operation="sigkill-save"
     let (storage,_)=try await StorageService.open(paths:.init(root:root.appendingPathComponent("managed"),channel:.preview))
+    if mode=="inspect-native" {
+      _ = try await storage.openDocument(id)
+      let before=try await storage.saveReceipt(document:id,operation:operation)
+      try await storage.closeDocument(id)
+      let session=try await NativeDocumentSession.recover(storage:storage,documentID:id)
+      let source=session.drafts.confirmed,state=try await session.files.state(),receipt=try await storage.saveReceipt(document:id,operation:operation)
+      let kernel=try await session.host.kernelCommand(.kernel_state(.init(type:.kernel_state)))
+      precondition(source.revision.value==1 && source.file.cells[0].source=="let a=7" && kernel.active_checkpoint_id.value==nil && kernel.kernel_state_revision.value==0)
+      let actual=try NotebookFileCodec.decode(Data(contentsOf:target))
+      if receipt != nil {precondition(actual.cells[0].source=="let a=7" && !state.dirty)} else {precondition(actual.cells[0].source=="let a=2" && state.dirty)}
+      let output=try JSONSerialization.data(withJSONObject:["saved":receipt != nil,"prior_receipt":before != nil,"dirty":state.dirty,"kernel_executed":false,"source_revision":source.revision.value],options:[.sortedKeys])
+      print(String(decoding:output,as:UTF8.self));try await session.close();try await storage.close();return
+    }
     let info=try await storage.openDocument(id)
     let initial:NativeSourceSnapshot
     if mode.hasPrefix("inspect") {

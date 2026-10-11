@@ -64,29 +64,9 @@ impl SourceEndpoint {
             can_write: true,
         };
         let mut coordinator = SourceCoordinator::default();
-        let mut general = om_kernel::config::GeneralConfig::default();
-        if let Some(setting) = calculation {
-            coordinator.dialect = match setting.dialect {
-                NativeCalculationSettingsDialect::Auto => om_kernel::config::ConfigDialect::Auto,
-                NativeCalculationSettingsDialect::Modern => {
-                    om_kernel::config::ConfigDialect::Modern
-                }
-                NativeCalculationSettingsDialect::Wolfram => {
-                    om_kernel::config::ConfigDialect::Wolfram
-                }
-            };
-            coordinator.constants = match setting.constants {
-                NativeCalculationSettingsConstants::Math => om_kernel::config::Constants::Math,
-                NativeCalculationSettingsConstants::Strict => om_kernel::config::Constants::Strict,
-            };
-            general.dialect = coordinator.dialect;
-            general.constants = coordinator.constants;
-            general.reactive = setting.reactive;
-            general.auto_run_dependents = setting.auto_run_dependents;
-            general.show_steps = setting.show_steps;
-            general.auto_plot = setting.auto_plot;
-            general.eval_timeout_ms = setting.eval_timeout_ms.get();
-        }
+        let general = general_configuration(calculation.as_ref());
+        coordinator.dialect = general.dialect;
+        coordinator.constants = general.constants;
         Ok(Self {
             controller: DocumentCommitController::new(owner, runtime, key),
             scope,
@@ -136,6 +116,7 @@ impl SourceEndpoint {
         let id = match &command {
             NativeKernelHostCommand::KernelBootstrap(b) => Some(&b.operation_id),
             NativeKernelHostCommand::KernelRunCell(b) => Some(&b.operation_id),
+            NativeKernelHostCommand::KernelRestoreStart(b) => Some(&b.operation_id),
             _ => None,
         };
         if id.is_some_and(|id| self.results.as_ref().is_some_and(|r| r.has_request(id))) {
@@ -154,6 +135,9 @@ impl SourceEndpoint {
             build: crate::kernel::endpoint::KERNEL_BUILD_ID.into(),
         };
         let kernel = self.kernel.as_mut().expect("created");
+        let previous_checkpoint = kernel
+            .accepted_state()
+            .map(|state| state.receipt().checkpoint_id.clone());
         let newly_accepted = matches!(&command,NativeKernelHostCommand::KernelCompleted(body) if !kernel.operation_completed(&body.operation_id));
         let reply = kernel.command(command, &context, &mut self.controller)?;
         self.scope.definition_revision = reply.kernel_state_revision.get();
@@ -161,7 +145,9 @@ impl SourceEndpoint {
             self.coordinator.known_functions = facts.known_functions.clone();
             self.coordinator.owned = facts.owned.clone();
         }
-        if newly_accepted && reply.phase == NativeKernelHostReplyPhase::Completed {
+        if (newly_accepted && reply.phase == NativeKernelHostReplyPhase::Completed)
+            || (previous_checkpoint.is_none() && reply.active_checkpoint_id.0.is_some())
+        {
             self.pending_result_state = kernel.accepted_state();
             self.flush_result_state();
         }
@@ -525,4 +511,28 @@ pub fn decode_source_command(bytes: &[u8]) -> Result<NativeSourceHostCommand, St
         .expect("checked source schema")
     });
     validation::decode(bytes, &root["$defs"]["NativeSourceHostCommand"], root)
+}
+
+/// Reconstruct the exact supported non-secret calculation configuration for a stored producer.
+pub(crate) fn general_configuration(
+    calculation: Option<&NativeCalculationSettings>,
+) -> om_kernel::config::GeneralConfig {
+    let mut general = om_kernel::config::GeneralConfig::default();
+    if let Some(setting) = calculation {
+        general.dialect = match setting.dialect {
+            NativeCalculationSettingsDialect::Auto => om_kernel::config::ConfigDialect::Auto,
+            NativeCalculationSettingsDialect::Modern => om_kernel::config::ConfigDialect::Modern,
+            NativeCalculationSettingsDialect::Wolfram => om_kernel::config::ConfigDialect::Wolfram,
+        };
+        general.constants = match setting.constants {
+            NativeCalculationSettingsConstants::Math => om_kernel::config::Constants::Math,
+            NativeCalculationSettingsConstants::Strict => om_kernel::config::Constants::Strict,
+        };
+        general.reactive = setting.reactive;
+        general.auto_run_dependents = setting.auto_run_dependents;
+        general.show_steps = setting.show_steps;
+        general.auto_plot = setting.auto_plot;
+        general.eval_timeout_ms = setting.eval_timeout_ms.get();
+    }
+    general
 }

@@ -763,6 +763,15 @@
         },
         {
           "$ref": "#/$defs/KernelState"
+        },
+        {
+          "$ref": "#/$defs/KernelRestoreStart"
+        },
+        {
+          "$ref": "#/$defs/KernelRestoreWrite"
+        },
+        {
+          "$ref": "#/$defs/KernelRestoreFinish"
         }
       ],
       "x-openmath-contract": {
@@ -923,6 +932,80 @@
         "error_code",
         "blob_offset",
         "blob_bytes"
+      ],
+      "additionalProperties": false
+    },
+    "KernelRestoreStart": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "const": "kernel_restore_start"
+        },
+        "operation_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "expected_source_hash": {
+          "$ref": "#/$defs/Sha256"
+        },
+        "byte_length": {
+          "$ref": "#/$defs/Serial"
+        },
+        "payload_hash": {
+          "$ref": "#/$defs/Sha256"
+        }
+      },
+      "required": [
+        "type",
+        "operation_id",
+        "expected_source_hash",
+        "byte_length",
+        "payload_hash"
+      ],
+      "additionalProperties": false
+    },
+    "KernelRestoreWrite": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "const": "kernel_restore_write"
+        },
+        "operation_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "offset": {
+          "$ref": "#/$defs/Serial"
+        },
+        "bytes": {
+          "type": "array",
+          "maxItems": 65536,
+          "items": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 255
+          }
+        }
+      },
+      "required": [
+        "type",
+        "operation_id",
+        "offset",
+        "bytes"
+      ],
+      "additionalProperties": false
+    },
+    "KernelRestoreFinish": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "const": "kernel_restore_finish"
+        },
+        "operation_id": {
+          "$ref": "#/$defs/Identity"
+        }
+      },
+      "required": [
+        "type",
+        "operation_id"
       ],
       "additionalProperties": false
     }

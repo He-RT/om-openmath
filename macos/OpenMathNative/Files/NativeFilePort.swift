@@ -39,6 +39,7 @@ actor NativeFilePort {
   private var preparing:Set<String>=[]
   private var closing=false
   private var unknown:String?
+  private var unresolvedRecovery:Set<String>=[]
   init(client:NativeHostClient,storage:StorageService,source:DocCommitPort,drafts:DraftStore,files:NativeFileService=NativeFileService(),document:String) {
     self.client=client;self.storage=storage;self.source=source;self.drafts=drafts;self.files=files;self.document=document
   }
@@ -48,8 +49,9 @@ actor NativeFilePort {
     let pending=editor.targets.contains{$0.is_dirty||$0.is_composing}
     let head=try await storage.fileHead(document:document)
     let dirty=head?.savedRevision != snapshot.revision.value || head?.savedSnapshotHash != snapshot.snapshot_hash || pending
-    let savable=head?.savedRevision != snapshot.revision.value || head?.savedSnapshotHash != snapshot.snapshot_hash || editor.targets.contains{!$0.is_composing && $0.is_dirty}
-    return .init(head:head,sourceRevision:snapshot.revision.value,sourceSnapshotHash:snapshot.snapshot_hash,hasDrafts:pending,hasSavableWork:savable,dirty:dirty,unknownOperation:unknown)
+    let nativeSavable=await drafts.hasSavableEdits
+    let savable=head?.savedRevision != snapshot.revision.value || head?.savedSnapshotHash != snapshot.snapshot_hash || nativeSavable
+    return .init(head:head,sourceRevision:snapshot.revision.value,sourceSnapshotHash:snapshot.snapshot_hash,hasDrafts:pending,hasSavableWork:savable,dirty:dirty,unknownOperation:unknown ?? unresolvedRecovery.sorted().first)
   }
   /// User panel-selected binding. A new target becomes dirty independently from previous Save ACKs.
   func chooseTarget(_ url:URL,faults:StorageFaults = .init()) async throws->SavedFileHead {
@@ -79,16 +81,23 @@ actor NativeFilePort {
   /// Original ID reconciles a missing ACK; no new file replacement is attempted while unknown.
   func reconcile(_ operation:String,faults:StorageFaults = .init()) async throws->SaveReceipt? {
     guard !active.contains(operation),!preparing.contains(operation) else {throw SaveError.busy}
-    if let actual=try await storage.saveReceipt(document:document,operation:operation) {if unknown==operation {unknown=nil};return actual}
+    if let actual=try await storage.saveReceipt(document:document,operation:operation) {if unknown==operation {unknown=nil};unresolvedRecovery.remove(operation);return actual}
     guard let intent=try await storage.saveIntent(document:document,operation:operation) else {throw SaveError.unknownOutcome}
     if let receipt=try await files.reconcile(intent) {
-      let completed=try await storage.completeSave(receipt,faults:faults);if unknown==operation {unknown=nil};return completed
+      let completed=try await storage.completeSave(receipt,faults:faults);if unknown==operation {unknown=nil};unresolvedRecovery.remove(operation);return completed
     }
-    if unknown==operation {unknown=nil};return nil
+    try await storage.confirmSaveNotWritten(document:document,operation:operation)
+    if unknown==operation {unknown=nil};unresolvedRecovery.remove(operation);return nil
+  }
+  func recoverPendingSaves() async throws->[String] {
+    let intents=try await storage.pendingSaveIntents(document:document)
+    unresolvedRecovery=Set(intents.map(\.operationID))
+    for intent in intents {do {_ = try await reconcile(intent.operationID)} catch { /* Original identity stays explicitly unresolved; do not write. */ }}
+    return unresolvedRecovery.sorted()
   }
   func save(operation:String="save-"+UUID().uuidString.lowercased(),snapshot frozen:SaveSnapshot?=nil,faults:StorageFaults = .init()) async throws->SaveReceipt {
     guard !closing else {throw SaveError.closing}
-    guard unknown==nil,!active.contains(operation),preparing.isEmpty,active.isEmpty else {throw SaveError.busy}
+    guard unknown==nil,unresolvedRecovery.isEmpty,!active.contains(operation),preparing.isEmpty,active.isEmpty else {throw SaveError.busy}
     if let actual=try await storage.saveReceipt(document:document,operation:operation) {return actual}
     if try await storage.saveIntent(document:document,operation:operation) != nil {throw SaveError.unknownOutcome}
     preparing.insert(operation);defer {preparing.remove(operation)}

@@ -6,12 +6,14 @@ import SwiftUI
   @NSApplicationDelegateAdaptor(NativeApplicationDelegate.self) private var delegate
   @StateObject private var workspace=NativeFileWorkspace()
   @StateObject private var scratch=NotebookViewModel()
+  @State private var showingRecovery=false
   var body:some Scene {
     Window("OpenMath Preview",id:"workspace") {
       VStack(spacing:0) {
         HStack {
           Button("新建笔记本",systemImage:"doc.badge.plus") {Task {await workspace.newDocument()}}.disabled(workspace.busy).accessibilityIdentifier("notebook-new")
           Button("打开笔记本",systemImage:"folder") {Task {await workspace.openPanel()}}.disabled(workspace.busy).accessibilityIdentifier("notebook-open")
+          Button("恢复本地记录") {showingRecovery=true;Task {await workspace.refreshRecoverableDocuments()}}.disabled(workspace.busy).accessibilityIdentifier("notebook-recovery-menu")
           Spacer()
         }.padding(12)
         Divider()
@@ -19,7 +21,8 @@ import SwiftUI
         else {HostScratchView(model:scratch);if let error=workspace.errorText {Text(error).foregroundStyle(.red).padding(8)}}
       }.frame(minWidth:640,minHeight:560)
         .background(NativeWindowAttachment(workspace:workspace).frame(width:0,height:0))
-        .task {delegate.attach(workspace,scratch:scratch);await scratch.start()}
+        .task {delegate.attach(workspace,scratch:scratch);await scratch.start();await workspace.refreshRecoverableDocuments()}
+        .sheet(isPresented:$showingRecovery) {NativeRecoveryList(workspace:workspace,isPresented:$showingRecovery)}
         .onDisappear {Task {await scratch.close()}}
     }.defaultSize(width:1100,height:780).commands {
       CommandGroup(replacing:.newItem) {
@@ -31,6 +34,35 @@ import SwiftUI
         Button("另存为…") {Task {await workspace.save(asNew:true)}}.keyboardShortcut("s",modifiers:[.command,.shift]).disabled(workspace.session==nil || workspace.busy)
       }
     }
+  }
+}
+private struct NativeRecoveryList:View {
+  @ObservedObject var workspace:NativeFileWorkspace
+  @Binding var isPresented:Bool
+  var body:some View {
+    VStack(alignment:.leading,spacing:12) {
+      Text("恢复本地记录").font(.title2)
+      Text("选择本地笔记本恢复源码与草稿。不会自动执行单元格或发送模型请求。").font(.caption).foregroundStyle(.secondary)
+      if let warning=workspace.libraryWarning {Text(warning).font(.caption).foregroundStyle(.secondary)}
+      if let error=workspace.errorText {Text(error).font(.caption).foregroundStyle(.red).textSelection(.enabled)}
+      if workspace.busy {ProgressView("正在核对本地记录…")}
+      List(workspace.recoverableDocuments) {record in
+        HStack(alignment:.top) {
+          VStack(alignment:.leading,spacing:4) {
+            Text(record.title)
+            Text(record.hasDrafts ? "有待确认草稿" : record.fileDirty ? "文件尚未保存" : "本地记录与文件已保存状态一致").font(.caption).foregroundStyle(.secondary)
+            if let warning=record.warning {Text(warning).font(.caption).foregroundStyle(.secondary)}
+          }
+          Spacer()
+          Button("恢复") {Task {await workspace.recover(record.id);if workspace.session?.drafts.confirmed.document_id==record.id {isPresented=false}}}.disabled(!record.recoverable || workspace.busy).accessibilityIdentifier("restore-document-"+record.id)
+        }.padding(.vertical,4)
+      }
+      HStack {
+        Button("刷新") {Task {await workspace.refreshRecoverableDocuments()}}.disabled(workspace.busy)
+        if workspace.hasMoreRecoveryDocuments {Button("查看更多") {Task {await workspace.refreshRecoverableDocuments(more:true)}}.disabled(workspace.busy)}
+        Spacer();Button("关闭") {isPresented=false}.keyboardShortcut(.cancelAction).disabled(workspace.busy)
+      }
+    }.padding(20).frame(width:600,height:420)
   }
 }
 private struct HostScratchView:View {

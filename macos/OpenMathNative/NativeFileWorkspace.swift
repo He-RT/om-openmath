@@ -8,6 +8,8 @@ import SwiftUI
   @Published private(set) var busy=false
   @Published private(set) var errorText:String?
   @Published private(set) var libraryWarning:String?
+  @Published private(set) var recoverableDocuments:[StartupDocumentRecord]=[]
+  private var recoveryCursor:String?
   private let services=NativeAppStorage()
   private weak var window:NSWindow?
   private var controller:NSWindowController?
@@ -30,6 +32,29 @@ import SwiftUI
     _ = await replaceReserved(url)
   }
   func newDocument() async {_ = await replace(nil)}
+  func refreshRecoverableDocuments(more:Bool=false) async {
+    guard !busy else {return};busy=true;defer {busy=false}
+    do {
+      let storage=try await services.open();libraryWarning=await storage.libraryAvailability().warning
+      let page=try await storage.startupDocuments(after:more ? recoveryCursor : nil)
+      recoverableDocuments = more ? recoverableDocuments+page.records : page.records;recoveryCursor=page.next
+    } catch {errorText="启动恢复检查失败："+error.localizedDescription}
+  }
+  var hasMoreRecoveryDocuments:Bool {recoveryCursor != nil}
+  func recover(_ document:String) async {
+    guard !busy,session?.drafts.confirmed.document_id != document else {return};busy=true;defer {busy=false}
+    do {
+      let storage=try await services.open()
+      let candidate=try await NativeDocumentSession.recover(storage:storage,documentID:document)
+      if let old=session,!(await old.document.prepareToClose()) {try await candidate.close();return}
+      do {try await removeCurrent()} catch {try? await candidate.close();throw error}
+      session=candidate;candidate.document.changed={ [weak self] in self?.objectWillChange.send() };attachDocumentWindow();errorText=nil
+    } catch {errorText="无法恢复本地笔记本："+error.localizedDescription}
+  }
+  func reviewDraft(_ cell:String,keep:Bool) {
+    guard let session else {return}
+    do {try session.reviewDraft(cell,keep:keep);errorText=nil} catch {errorText="草稿确认失败，内容已保留："+error.localizedDescription}
+  }
   func open(_ url:URL) async->Bool {await replace(url)}
   private func replace(_ url:URL?) async->Bool {
     guard !busy else {return false};busy=true;defer {busy=false}
@@ -136,6 +161,8 @@ struct NativeNotebookFileView:View {
       NativeDraftBackupStatus(backup:session.backup)
       if let error=workspace.errorText {Text(error).foregroundStyle(.red).textSelection(.enabled)}
       if let warning=workspace.libraryWarning {Text(warning).foregroundStyle(.secondary).textSelection(.enabled)}
+      ForEach(Array(session.recoveryMessages.enumerated()),id:\.offset) {_,message in Text(message).font(.caption).foregroundStyle(.secondary).textSelection(.enabled)}
+      if session.recoveryHistoryCursor != nil {Button("继续核对历史") {Task {await session.reconcileRecoveryHistory()}}}
       HStack {
         Button("保存",systemImage:"square.and.arrow.down") {Task {await workspace.save()}}.disabled(workspace.busy).accessibilityIdentifier("notebook-save")
         Button("另存为") {Task {await workspace.save(asNew:true)}}.disabled(workspace.busy)
@@ -149,7 +176,21 @@ struct NativeNotebookFileView:View {
             VStack(alignment:.leading,spacing:5) {
               Text(cell.kind == .math ? "数学" : "文字").font(.caption).foregroundStyle(.secondary)
               NativeSourceFileEditor(session:session,cell:cell).frame(minHeight:110).border(.quaternary)
+              if session.drafts.overlay(cell.id)?.requiresReview==true {
+                HStack {
+                  Text("恢复的草稿尚未确认").font(.caption)
+                  Button("使用恢复草稿") {workspace.reviewDraft(cell.id,keep:true)}
+                  Button("使用已确认源码") {workspace.reviewDraft(cell.id,keep:false)}
+                }
+              }
             }
+          }
+        }
+      }
+      if !session.drafts.recoveredOrphans.isEmpty {
+        DisclosureGroup("已删除单元格的恢复草稿") {
+          ForEach(Array(session.drafts.recoveredOrphans.enumerated()),id:\.offset) {_,draft in
+            Text(String(decoding:draft.sourceUTF8,as:UTF8.self)).font(.system(.body,design:.monospaced)).textSelection(.enabled)
           }
         }
       }

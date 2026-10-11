@@ -1,6 +1,6 @@
 # 原生 Mac 启动恢复实现
 
-2026-10-11。R4.1.12 正在实施，已完成文档事实投影、Library 故障隔离和原生草稿耐久备份。完整启动扫描/工作区恢复、Agent admission/请求恢复仍未完成；运行版本继续 `.3`，不代表 `.4` 已就绪。
+2026-10-12。R4.1.12 正在实施，已完成文档事实投影、Library 故障隔离、原生草稿备份与本地文档启动恢复。Agent规范会话/admission/请求恢复仍未完成；运行版本继续 `.3`，不代表 `.4` 已就绪。
 
 ## 原文档事实与 Library 投影
 
@@ -26,7 +26,7 @@ MainActor只冻结实际TextKit输入，序列化/散列和SQLite提交在后台
 
 最近两份完整快照保留，较早载荷裁减但回执/请求散列保留，不把旧ID当新写入。历史裁减保留活跃草稿引用的source baseline。每份原始文本/基线合计最多4MiB，编码最多8MiB；实际大于4MiB的编码已往返，SQL默认读取上限没有被全局放大，只有草稿显式使用8MiB。
 
-恢复使用新运行实例和editor generation。已被确认源码包含的旧草稿不重做；其余原始文本需要用户确认，基线失配保留冲突，删除格的草稿作为独立记录保留。恢复不调用setMarkedText，因此没有伪造IME session。用户确认保留/使用已确认内容后才允许同步。当前已验证DraftStore与真实TextKit恢复，完整应用启动入口和计算prefix接入仍待完成。
+恢复使用新运行实例和editor generation。已被确认源码包含的旧草稿不重做；其余原始文本需要用户确认，基线失配保留冲突，删除格的草稿作为独立记录保留。恢复不调用setMarkedText，因此没有伪造IME session。用户确认保留/使用已确认内容后才允许同步。DraftStore与真实TextKit恢复、应用启动入口和已接纳计算prefix接入均已验证。
 
 关闭保护先备份，再允许保留本地修改；关闭批准后的新输入仍会撤销批准。备份失败不把文档关掉，原生UI将本地备份状态与用户文件保存状态分别显示。正常关闭最终flush最新快照之后才停止producer，失败不提前停掉备份owner。
 
@@ -51,4 +51,28 @@ SQLite 的 `immutable` URI 读取会跳过锁与变更检测，要求文件在�
 - Library 记录损坏时只读拒绝和工作区降级，健康文档读取与保存保持；原库不被清空。
 - 原存储、保存、206事务/200+pin历史、检查点和编辑屏障回归；SDK27 Release 链接。详见本批机器证据。
 
-实际TextKit标记文本、500ms/2s生产者、晚回执、新lease、真实同步unknown、大快照、跨重启及三个SIGKILL点已验证。完整启动文档扫描与用户选择、已接纳计算prefix/未接纳工作状态/原save intent核对、规范Agent会话/admission/发送未知、备份/迁移/GC及最终同候选门禁继续后续任务，不能由这些底层测试代替。
+实际TextKit标记文本、500ms/2s生产者、晚回执、新lease、真实同步unknown、大快照、跨重启及三个SIGKILL点已验证。规范Agent会话/admission/发送未知、备份/迁移/GC及最终同候选门禁继续后续任务，不能由这些本地恢复测试代替。
+
+## 启动扫描与用户恢复
+
+`StartupDocuments` 只读取已锁定的当前通道根下有效UUID目录和active selector；不扫描用户文件、解析bookmark、猜未选代次或执行源码。每页最多32文档，目录上限10000；校验header/source/draft状态，损坏与尚未升级的数据分别保留不可恢复提示。格式1–4不在普通恢复中自动升级，格式5才接入当前完整端口。
+
+启动显示原生恢复列表，用户选择之后才建立独立新runtime。`NativeDocumentSession.recover` 读取原source head、settings、草稿和文件binding，保留document/store身份，分配新draft lease。恢复的非合成文本/IME文本均先呈现待确认；基线相同且已经被源码接纳的草稿不重复提交。已删除格的草稿可查看复制，不能无声消失。
+
+系统关闭选择“保留本地修改”后，实际退出/重启/恢复已验证。恢复期间原源码0、零计算检查点不变；明确“使用恢复草稿”并保存以后才产生源码1和实际文件回执。尚未确认草稿不会被自动保存提交；恢复提示在确认全部草稿后清除。
+
+## 已接纳计算状态的导入
+
+新增可信host内部`kernel_restore_start/write/finish`，现有2MiB控制请求上限和旧iOS ABI保持。分块每次至多65536字节，检查连续offset与原ID重复块，拒绝不同块/空洞/越界。整体包上限为16MiB metadata＋64MiB Blob＋9字节头，不是模型工具或新的计算授权。格式OMKR1包括原plan/receipt和原OMKS字节，plan/receipt从原KernelStore完整核对得到，原Blob再次验证散列。
+
+Rust导入线程在控制锁外验证整体散列、metadata、原回执、document/store、源码修订关系、精确kernel build、producer数学配置和数据codec。不会执行let或单元格。成功后才把原accepted checkpoint接入当前worker，并更新只读结果/源码函数上下文；kernel state revision保持原值，数据库没有新接纳操作。配置修订不符时definitions_current保持false，不能把旧定义标当前。
+
+恢复期间共享文档逻辑门保护状态接入。直接取消触达导入worker；上传取消/后台失败释放逻辑门，Swift在返回编辑之前核对原终止状态。晚停止不覆写已经完成的原导入。原UI/runtime/preview/取消令牌不会作为新权限恢复。
+
+五个实际中断根均证明：导入不增加source/accepted checkpoint/outbox；随后用户明确只运行b，会使用a=5得到6，并只增加该次计算。损坏原Blob拒绝，原源码和历史接纳回执保留，不创建“恢复成功”的空状态。当前计算状态不可恢复时可另存为、打开为独立新文档重新运行；在原文档显式重置不支持的计算head仍需后续工作台/重置接口，当前不宣称已支持。
+
+## 保存意图与历史核对
+
+恢复读取至多32个原prepared save intent。已存在原receipt直接核对；无receipt则由已有文件协调读取核对实际字节/身份和被交换原件，补真实recovered receipt，或确认未写入；没有再次replace。权限、离线、冲突或未知保持原operation ID待核对，阻止依赖的新保存，不伪造失败/成功。
+
+六个保存SIGKILL点改由实际NativeDocumentSession恢复工厂验收，源码修订1保持，用户文件只读核对后保存状态与真实回执一致，零计算。Library就绪时恢复工厂每批投影256个原事件，未完保留cursor并提供继续核对；Library失败不毁原文档。完整Agent工具admission/网络发送状态仍须后续规范事件账本，R4.1.12保持in_progress。

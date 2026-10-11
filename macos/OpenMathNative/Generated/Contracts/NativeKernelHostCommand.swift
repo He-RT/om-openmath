@@ -11,6 +11,9 @@ public enum NativeKernelHostCommand: Codable, Sendable {
   case kernel_discard(KernelDiscard)
   case kernel_settled(KernelSettled)
   case kernel_state(KernelState)
+  case kernel_restore_start(KernelRestoreStart)
+  case kernel_restore_write(KernelRestoreWrite)
+  case kernel_restore_finish(KernelRestoreFinish)
   public init(from decoder: Decoder) throws {
     let c = try decoder.singleValueContainer()
     if let v = try? c.decode(KernelBootstrap.self) { self = .kernel_bootstrap(v); return }
@@ -23,6 +26,9 @@ public enum NativeKernelHostCommand: Codable, Sendable {
     if let v = try? c.decode(KernelDiscard.self) { self = .kernel_discard(v); return }
     if let v = try? c.decode(KernelSettled.self) { self = .kernel_settled(v); return }
     if let v = try? c.decode(KernelState.self) { self = .kernel_state(v); return }
+    if let v = try? c.decode(KernelRestoreStart.self) { self = .kernel_restore_start(v); return }
+    if let v = try? c.decode(KernelRestoreWrite.self) { self = .kernel_restore_write(v); return }
+    if let v = try? c.decode(KernelRestoreFinish.self) { self = .kernel_restore_finish(v); return }
     throw DecodingError.dataCorrupted(.init(codingPath: decoder.codingPath, debugDescription: "Unknown native union variant"))
   }
   public func encode(to encoder: Encoder) throws {
@@ -37,6 +43,9 @@ public enum NativeKernelHostCommand: Codable, Sendable {
     case .kernel_discard(let v): try v.encode(to: encoder)
     case .kernel_settled(let v): try v.encode(to: encoder)
     case .kernel_state(let v): try v.encode(to: encoder)
+    case .kernel_restore_start(let v): try v.encode(to: encoder)
+    case .kernel_restore_write(let v): try v.encode(to: encoder)
+    case .kernel_restore_finish(let v): try v.encode(to: encoder)
     }
   }
 }

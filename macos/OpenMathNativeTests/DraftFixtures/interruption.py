@@ -31,9 +31,11 @@ for stage in ['draft_backup_before_commit','draft_backup_committed','draft_backu
     assert db.execute('select revision from document_head').fetchone()[0]==0
     assert db.execute('select count(*) from operations').fetchone()[0]==0
     assert db.execute('select count(*) from accepted_checkpoints').fetchone()[0]==0
-    drafts=db.execute('select count(*) from draft_batches').fetchone()[0];db.close()
+    drafts=db.execute('select count(*) from draft_batches b join draft_owners o using(owner_id) where o.lease_serial=1').fetchone()[0]
+    restored_batches=db.execute('select count(*) from draft_batches b join draft_owners o using(owner_id) where o.lease_serial>1').fetchone()[0];db.close()
     assert drafts==(0 if stage=='draft_backup_before_commit' else 1)
-    records.append({'boundary':stage,'process_exit':-signal.SIGKILL,'root':str(root.relative_to(ROOT)),'draft_batches':drafts,'source_revision':0,'source_operations':0,'accepted_checkpoints':0})
+    assert restored_batches>0
+    records.append({'boundary':stage,'process_exit':-signal.SIGKILL,'root':str(root.relative_to(ROOT)),'original_draft_batches':drafts,'new_runtime_backup_batches':restored_batches,'source_revision':0,'source_operations':0,'accepted_checkpoints':0})
 out=ROOT/'target/acceptance/pre-alpha.4/development/r41';out.mkdir(parents=True,exist_ok=True)
 (out/'draft-interruptions.json').write_text(json.dumps(records,ensure_ascii=False,indent=2)+'\n')
 print('Three real draft SIGKILL boundaries: absent or exact original marked-text COMMIT, unchanged source and zero evaluation')

@@ -576,3 +576,11 @@ L2使用精确标称GM分数、50位FindRoot/1000迭代和真实残差，报告�
 - 未确认文本/基线以原UTF8 Data存储，UTF16选区/marked range检验代理对边界，NFC/NFD cell身份按字节；原owner/generation/sequence保留作来源，重启使用新lease/editor身份。恢复不复活IME/授权，不自动提交草稿；已确认相同源码不重做，冲突/orphan保留。
 - 500ms去抖/最大2s producer实际后台编码/hash/同步后ACK，晚输入不被旧ACK清空。unknown按原owner/sequence读取，已确定缺失才补同一冻结ID。保留最近两份full payload与所有精简receipt，SourceHistory保护其baseline；正常close先flush而失败继续保留输入。
 - Source/file/数学接口不通过draft写入变更；NativeUI显示本地备份状态，真实IME/500ms-max2s/late/lease/F_FULLFSYNC/大快照与3 SIGKILL通过。原206历史、文件/检查点/编辑/投影回归和Release通过。完整启动/prefix/save intent、300ms source合并和canonical Agent恢复仍待实现，任务不勾Done。
+
+### R4-D029：本地启动与分块检查点恢复（2026-10-12）
+
+- 新可信host恢复命令只从原KernelStore/Blob获得plan、receipt和原数据，OMKR1封装仅为分块传递，不能由模型提供路径/权限。控制请求2MiB不增，UInt32 DTO字节验证转换为u8，每块65536、总16MiB metadata＋64MiB checkpoint。Hash/decode/import在后台，不在控制/source锁下执行；无source/CAS重跑。
+- 实际AcceptedKernelState.recover的build/config/source/receipt/data校验成功才进active，原revision/原回执不增；ResultRuntime读取原接受事实，新runtime/HMAC/editor scope不沿用旧token。共享门阻止导入竞争，取消/失败终态读回之后才交回编辑；旧配置不冒充当前定义。
+- 同一原生会话工厂恢复source/settings/draft/file与accepted prefix，按原ID只读核对prepared save，无法确认的保留unknown阻止依赖写入，不自动replace。Library ready时按有界cursor补原事件；完整Agent工具admission/network ledger仍待实现，R4.1.12保持未Done。
+- 当前损坏/不兼容数学head保留原件并提示另存为/新文档重算；原文档显式reset接口未实现，不用假空状态替代恢复。旧Native格式不在普通打开/恢复时迁移，R4.1.13继续升级/备份。
+- native UI实际保留未命名草稿后重启/选择/待确认/明确Save，source0→1只在保存时，数学checkpoint0不变，文件和同库回执一致。原菜单AX ID过期不作数据丢失判定，改为可展示旧格式/损坏原因的系统sheet/List并实际操作成功。5+3+6中断路径、111 Rust/269 DTO/Clippy/native contracts/Release通过；本批证据与最终发行门禁分开。

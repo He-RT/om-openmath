@@ -331,3 +331,7 @@ R4.1.12部分验证（2026-10-11）：原文档三类事实投影及Library故�
 25df8d8 CI38122270416后续：Mac及其他三个共享jobs通过，iPhone成功；iPad探索测试a停3.96，截图/AX结果15.6816正确。已补真实thumb端点动作和a4断言，保持原16/旋转/1秒；SDK类型检查通过，新的CI执行待验证。没有打开本机模拟器，也无需用户代点滑块。
 
 47ccfb0 CI38142168036实际结果：Mac/Rust/Web/deps和phone成功，iPad探索端点UI也成功，但原53第27条总3556.718ms超过1000ms。实际transport记录FFI30.942ms、主线程resume3521.889ms，失败来自整次返回等待的计时；保留失败，不改用kernel时间冒充通过，不放宽门槛。下一步继续定位MainActor阻塞，本机不启动模拟器。原件target/ci-evidence/47ccfb0-ios，分段hash见native-drafts.json。
+
+642cfc9 CI38145308816后续五jobs全部success，包含原1秒门槛iPhone/iPad。不能据此抹掉前一失败或认定随机主线程延迟已永久解决；本轮未调整计时/数学，所有原始记录保留，新SHA CI及final候选仍独立要求。
+
+本地启动恢复已验证（2026-10-12）：native actual退出/重启/恢复待确认中文emoji草稿/明确保存成功；原source0、checkpoint0只在确认保存后推进source1。真实prefix导入、损坏Blob拒绝、原save intent和5+3+6中断路径通过。无需用户再次操作Save或授予权限。规范Agent恢复仍未完；原文档不兼容head显式重置尚无接口，当前实际入口为另存/新文档，不把此限制伪装为已完成重算。

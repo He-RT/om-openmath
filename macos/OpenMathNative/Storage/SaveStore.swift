@@ -69,6 +69,20 @@ final class SaveStore {
     };return value
   }
   func readIntent(_ operation:String)throws->SaveIntent? {let reader=try SQLiteDatabase(url:url,readonly:true);defer {try? reader.close()};return try intent(operation,reader:reader)}
+  func pendingIntents()throws->[SaveIntent] {
+    let reader=try SQLiteDatabase(url:url,readonly:true);defer {try? reader.close()}
+    var records:[SaveIntent]=[]
+    try reader.statement("SELECT operation_id FROM save_intents WHERE document_id=? AND phase='prepared' ORDER BY rowid LIMIT 33",[.text(identity.documentID!)]) { [self] row in
+      guard records.count<32,let actual=try intent(SQLColumn.text(row,0),reader:reader) else {throw StorageError.recoveryRequired};records.append(actual)
+    };return records
+  }
+  /// Original coordinated readback has proven no replacement occurred. Never a timeout guess.
+  func confirmNotWritten(_ operation:String)throws {
+    guard let original=try readIntent(operation),try query(operation)==nil else {throw StorageError.corruptIdentity}
+    try db.transaction {
+      try db.statement("UPDATE save_intents SET phase='not_written' WHERE document_id=? AND operation_id=? AND phase='prepared'",[.text(original.documentID),.text(operation)])
+    };try db.confirmCommittedBytes()
+  }
   func prepare(snapshot:SaveSnapshot,binding:FileBinding,operation:String,descriptor:BlobDescriptor,faults:StorageFaults)throws->SaveIntent {
     let value=SaveIntent(codecVersion:1,operationID:operation,documentID:identity.documentID!,storeID:identity.storeID,sourceRevision:snapshot.source.revision.value,sourceSnapshotHash:snapshot.source.snapshot_hash,binding:binding,fileHash:snapshot.fileHash,fileByteLength:UInt64(snapshot.bytes.count));try SaveValidation.intent(value)
     guard descriptor.hash==value.fileHash,descriptor.byteLength==value.fileByteLength else {throw StorageError.corruptIdentity}

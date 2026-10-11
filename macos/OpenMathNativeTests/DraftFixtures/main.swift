@@ -23,11 +23,16 @@ private final class Once:@unchecked Sendable {
     precondition(om_fixture_install_sync_probe()==SQLITE_OK)
     let root=URL(fileURLWithPath:CommandLine.arguments[1],isDirectory:true)
     if CommandLine.arguments.count>2,CommandLine.arguments[2]=="recover" {
-      let (storage,_)=try await StorageService.open(paths:.init(root:root,channel:.preview));_ = try await storage.openDocument(documentID)
+      let (storage,_)=try await StorageService.open(paths:.init(root:root,channel:.preview))
+      let session=try await NativeDocumentSession.recover(storage:storage,documentID:documentID)
       let source=try await storage.committedSource(documentID)!,stored=try await storage.draftBackup(document:documentID)
       let expected=try initial();precondition(source.snapshot_hash==expected.snapshot_hash)
-      if let stored {let raw=String(data:stored.snapshot.cells[0].sourceUTF8,encoding:.utf8)!;precondition(raw=="未完成🙂" && stored.snapshot.cells[0].wasComposing)}
-      try await storage.close();print(stored==nil ? "No draft COMMIT: original source preserved" : "Original draft COMMIT recovered: marked raw text preserved, source untouched");return
+      let restoredEditor=try session.editor("a")
+      if stored?.snapshot.cells.isEmpty==false {
+        precondition(restoredEditor.textView.string=="未完成🙂" && !restoredEditor.textView.hasMarkedText() && session.drafts.overlay("a")!.requiresReview)
+      }
+      let hasDraft=session.drafts.overlay("a")?.requiresReview==true
+      try await session.close();try await storage.close();print(!hasDraft ? "No draft COMMIT: original source preserved" : "Original draft COMMIT recovered: marked raw text preserved, source untouched");return
     }
     let (storage,_)=try await StorageService.open(paths:.init(root:root,channel:.preview)),info=try await storage.openDocument(documentID)
     precondition(info.identity.storeVersion==5)

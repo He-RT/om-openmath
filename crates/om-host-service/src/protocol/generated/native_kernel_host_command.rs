@@ -24,4 +24,10 @@ pub enum NativeKernelHostCommand {
     KernelSettled(KernelSettled),
     /// Variant `KernelState`.
     KernelState(KernelState),
+    /// Variant `KernelRestoreStart`.
+    KernelRestoreStart(KernelRestoreStart),
+    /// Variant `KernelRestoreWrite`.
+    KernelRestoreWrite(KernelRestoreWrite),
+    /// Variant `KernelRestoreFinish`.
+    KernelRestoreFinish(KernelRestoreFinish),
 }

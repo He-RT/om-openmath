@@ -1,0 +1,477 @@
+{
+  "schema_version": 1,
+  "record_kind": "development_native_startup_recovery",
+  "task": "R4.1.12",
+  "task_status": "in_progress",
+  "timestamp_utc": "2026-10-11T17:17:57.863751+00:00",
+  "base_source_sha": "642cfc97fa1c309100c66b5936b802b5e23742ce",
+  "runtime_version": "0.1.0-pre-alpha.3",
+  "target_version": "0.1.0-pre-alpha.4",
+  "public_gate_evidence": false,
+  "started_simulators": false,
+  "commands": [
+    {
+      "command": "cargo test -p om-host-service -p om-apple-ffi --locked",
+      "exit_code": 0,
+      "log": {
+        "path": "target/acceptance/pre-alpha.4/development/r41/startup-host-rust-tests-final.log",
+        "bytes": 13676,
+        "sha256": "6d9c8c9fc9764392642ec91a518a0aab407177dbc106b3039245dbe683a3a3d6"
+      }
+    },
+    {
+      "command": "cargo clippy -p om-host-service -p om-apple-ffi --all-targets --locked -- -D warnings",
+      "exit_code": 0,
+      "log": {
+        "path": "target/acceptance/pre-alpha.4/development/r41/kernel-restore-clippy-final2.log",
+        "bytes": 272,
+        "sha256": "c16333a44d3910a47c689629b314f122b2140780cf2501d550119822fb03ffee"
+      }
+    },
+    {
+      "command": "bash macos/Scripts/test-native-contracts.sh",
+      "exit_code": 0,
+      "log": {
+        "path": "target/acceptance/pre-alpha.4/development/r41/startup-contracts-regression.log",
+        "bytes": 2156,
+        "sha256": "87d91ccc55bedfb286e4f9f29033485ac955c18763a2108d88a3886c1906864a"
+      }
+    },
+    {
+      "command": "bash macos/Scripts/test-recovery.sh",
+      "exit_code": 0,
+      "log": {
+        "path": "target/acceptance/pre-alpha.4/development/r41/startup-kernel-runtime-final4.log",
+        "bytes": 520,
+        "sha256": "eab55d9c8a95e33b3854a018a9ac689ef535457df61b87837a8e8af7960e6abb"
+      }
+    },
+    {
+      "command": "bash macos/Scripts/test-drafts.sh",
+      "exit_code": 0,
+      "log": {
+        "path": "target/acceptance/pre-alpha.4/development/r41/startup-draft-runtime-final4.log",
+        "bytes": 403,
+        "sha256": "3bdf47dc6ec4e8ae475f5a2a2eb19fc221dfa10ca9682679e2432648a08b0c8e"
+      }
+    },
+    {
+      "command": "bash macos/Scripts/test-saves.sh",
+      "exit_code": 0,
+      "log": {
+        "path": "target/acceptance/pre-alpha.4/development/r41/startup-save-runtime-final4.log",
+        "bytes": 884,
+        "sha256": "2b5646a0589fe3ed3623f4cbaa986788a74dec7bf3a14b2849e7f67298a2c540"
+      }
+    },
+    {
+      "command": "bash macos/Scripts/test-commit-port.sh",
+      "exit_code": 0,
+      "log": {
+        "path": "target/acceptance/pre-alpha.4/development/r41/startup-commit-runtime-final.log",
+        "bytes": 2332,
+        "sha256": "8f15e737035253c7ec918e28bcf97eb2396cf23687c2269a2ebc20e83f7594b6"
+      }
+    },
+    {
+      "command": "bash macos/Scripts/build-native.sh",
+      "exit_code": 0,
+      "log": {
+        "path": "target/acceptance/pre-alpha.4/development/r41/startup-list-native-build-final3.log",
+        "bytes": 93655,
+        "sha256": "66369736b82aa827afe0e6ba9bb669ea341f2f174d1fdae097c7c8b1fff54714"
+      }
+    }
+  ],
+  "rust_tests_passed": 111,
+  "generated_dto_count": 269,
+  "sources": [
+    {
+      "path": "crates/om-host-service/src/kernel/endpoint.rs",
+      "bytes": 14666,
+      "sha256": "a9179808181e15573f31dee645442fe8e95277759907011ec8406642db678bdf"
+    },
+    {
+      "path": "crates/om-host-service/src/kernel/endpoint/recovery.rs",
+      "bytes": 9603,
+      "sha256": "a9fa6791f2b4ce6888c835c2541f267b7d1789f0c847ea0d91599c58ece365a5"
+    },
+    {
+      "path": "crates/om-host-service/src/kernel/endpoint/commands.rs",
+      "bytes": 13392,
+      "sha256": "087c5de89552197412d66011f115b7ae1bd16dbdffa181cfc5ced1c0e2d319f6"
+    },
+    {
+      "path": "crates/om-host-service/src/document/endpoint.rs",
+      "bytes": 24996,
+      "sha256": "08d2072fb9ee253e9c29948a51b5ad5d081be31e2fe7803ecfa901e81332514a"
+    },
+    {
+      "path": "crates/om-host-service/src/scheduler/mod.rs",
+      "bytes": 21816,
+      "sha256": "50be6171523f9e5cbc25334abe6863599e9cbbc0c3d74df3cb229865c9c9d347"
+    },
+    {
+      "path": "crates/om-host-service/tests/kernel_endpoint.rs",
+      "bytes": 5618,
+      "sha256": "ae6d00908bedbb27946af8d3a876d32242b9a7fdbb1b458f26f16b4b8653d133"
+    },
+    {
+      "path": "docs/design/native-kernel-store.schema.json",
+      "bytes": 22642,
+      "sha256": "3d9c6d091fdc82d490f3e945150b27f8cc109836023419e9848a881524bae7a4"
+    },
+    {
+      "path": "macos/OpenMathNative/AppHost.swift",
+      "bytes": 6324,
+      "sha256": "7dae57541c2c67a8877fcd98ba414848ebbdeaf67af5449415c1a0641f1f8349"
+    },
+    {
+      "path": "macos/OpenMathNative/NativeFileWorkspace.swift",
+      "bytes": 12716,
+      "sha256": "285653f1da4adceac2832d53fa560b633afbc870d1c5d4ba498116dd4e9fc79c"
+    },
+    {
+      "path": "macos/OpenMathNative/NativeDocument.swift",
+      "bytes": 11280,
+      "sha256": "15bef98e0a86c1d5bb6e1f46054cc0277721ad1f38abc904dca0fcdf653d6313"
+    },
+    {
+      "path": "macos/OpenMathNative/Files/NativeDocumentSession.swift",
+      "bytes": 10456,
+      "sha256": "c2b2a982755974b2d4e2f8248157a1d833eed40c3b15c2bd207be221d784b5a8"
+    },
+    {
+      "path": "macos/OpenMathNative/Files/NativeKernelRecovery.swift",
+      "bytes": 4750,
+      "sha256": "7e754d42ef5cbc3e99c749b9a0617d2ff1ace3fcf3817a71354763628c98e12b"
+    },
+    {
+      "path": "macos/OpenMathNative/Files/NativeFilePort.swift",
+      "bytes": 10582,
+      "sha256": "daf9aeef7396816f174225eb5eb0e899d67b8e34bc30b5af030d664327ee975c"
+    },
+    {
+      "path": "macos/OpenMathNative/Storage/StartupDocuments.swift",
+      "bytes": 4020,
+      "sha256": "af7fbcec45f5843524dc1908471c1cfb66167b7db28548cf072bf34c65b36ca1"
+    },
+    {
+      "path": "macos/OpenMathNative/Storage/KernelStore.swift",
+      "bytes": 15533,
+      "sha256": "4e86a98cd06c22f5eb4ed6341b09213f686a1415a98d283789524d0144927e5c"
+    },
+    {
+      "path": "macos/OpenMathNative/Storage/SaveStore.swift",
+      "bytes": 15158,
+      "sha256": "a672f35be669c470feeb8eb01801e167bfc46274c46209c234db7d6970358ae7"
+    },
+    {
+      "path": "macos/OpenMathNative/Storage/StorageService.swift",
+      "bytes": 25659,
+      "sha256": "adeb3a31ec5ab9073d68e3e7d8aa2897b5e3e0a2e41be8fa538a9bd3f9de29ae"
+    }
+  ],
+  "app_executable": {
+    "path": "target/macos-native/Build/Products/Release/OpenMath Preview.app/Contents/MacOS/OpenMathNative",
+    "bytes": 31586656,
+    "sha256": "702d48e9c7a86c5218f8267fb693016cbb119b8c0b182451ec7e0f4f9c1c44b7"
+  },
+  "kernel_and_library_interruptions": [
+    {
+      "boundary": "library_projection_before_commit",
+      "process_exit": -9,
+      "root": "target/macos-storage-tests/recovery-kill-es3u7paz",
+      "source_snapshot_hash": "709c59214cd90ca0a557bb59b60d5f4ef0a5266f206e4dce5ce66782292e2505",
+      "accepted_checkpoints": 5,
+      "library_events_before": 0,
+      "document_projected_before": 0,
+      "library_events_after": 7,
+      "file_hash": "9b30dd2ee2aef878c8d550df39e15f722a442259ecb11d5bc290e52d6d369a60",
+      "damaged_blob_refused_without_source_loss": "Damaged original checkpoint refused: source and historical receipt retained, no empty calculation claimed recovered",
+      "native_restore_without_replay_and_explicit_b6": "Actual native startup selection restores original accepted checkpoint/revision with no replay; explicit b-only run uses a=5 and returns6"
+    },
+    {
+      "boundary": "library_projection_committed",
+      "process_exit": -9,
+      "root": "target/macos-storage-tests/recovery-kill-wgb329k8",
+      "source_snapshot_hash": "f1ea0aa03e00b859bf9abbc33ee4352c927fbd3285140a7a0769a9eedb3c6d91",
+      "accepted_checkpoints": 5,
+      "library_events_before": 1,
+      "document_projected_before": 0,
+      "library_events_after": 7,
+      "file_hash": "9b30dd2ee2aef878c8d550df39e15f722a442259ecb11d5bc290e52d6d369a60",
+      "native_restore_without_replay_and_explicit_b6": "Actual native startup selection restores original accepted checkpoint/revision with no replay; explicit b-only run uses a=5 and returns6"
+    },
+    {
+      "boundary": "library_projection_confirmed",
+      "process_exit": -9,
+      "root": "target/macos-storage-tests/recovery-kill-79ikfvea",
+      "source_snapshot_hash": "c83664173f6c78569d3f6aa204d93ef1af01f86253de09a7ae8a5fde98031903",
+      "accepted_checkpoints": 5,
+      "library_events_before": 1,
+      "document_projected_before": 0,
+      "library_events_after": 7,
+      "file_hash": "9b30dd2ee2aef878c8d550df39e15f722a442259ecb11d5bc290e52d6d369a60",
+      "native_restore_without_replay_and_explicit_b6": "Actual native startup selection restores original accepted checkpoint/revision with no replay; explicit b-only run uses a=5 and returns6"
+    },
+    {
+      "boundary": "document_projection_before_commit",
+      "process_exit": -9,
+      "root": "target/macos-storage-tests/recovery-kill-0o8j9ugj",
+      "source_snapshot_hash": "121a5b92044309e4e5af5a1c060ed6fe8af850d0b7140b91942ed19bf0c75a35",
+      "accepted_checkpoints": 5,
+      "library_events_before": 1,
+      "document_projected_before": 0,
+      "library_events_after": 7,
+      "file_hash": "9b30dd2ee2aef878c8d550df39e15f722a442259ecb11d5bc290e52d6d369a60",
+      "native_restore_without_replay_and_explicit_b6": "Actual native startup selection restores original accepted checkpoint/revision with no replay; explicit b-only run uses a=5 and returns6"
+    },
+    {
+      "boundary": "document_projection_committed",
+      "process_exit": -9,
+      "root": "target/macos-storage-tests/recovery-kill-n0m6v09m",
+      "source_snapshot_hash": "27ffdcba9d013de6f88741ff6a01897d4b4117cf360e1e4f7978f4c44c2afef7",
+      "accepted_checkpoints": 5,
+      "library_events_before": 1,
+      "document_projected_before": 1,
+      "library_events_after": 7,
+      "file_hash": "9b30dd2ee2aef878c8d550df39e15f722a442259ecb11d5bc290e52d6d369a60",
+      "native_restore_without_replay_and_explicit_b6": "Actual native startup selection restores original accepted checkpoint/revision with no replay; explicit b-only run uses a=5 and returns6"
+    }
+  ],
+  "draft_interruptions": [
+    {
+      "boundary": "draft_backup_before_commit",
+      "process_exit": -9,
+      "root": "target/macos-storage-tests/draft-kill-ezpps68b",
+      "original_draft_batches": 0,
+      "new_runtime_backup_batches": 2,
+      "source_revision": 0,
+      "source_operations": 0,
+      "accepted_checkpoints": 0
+    },
+    {
+      "boundary": "draft_backup_committed",
+      "process_exit": -9,
+      "root": "target/macos-storage-tests/draft-kill-yuv3g3ry",
+      "original_draft_batches": 1,
+      "new_runtime_backup_batches": 2,
+      "source_revision": 0,
+      "source_operations": 0,
+      "accepted_checkpoints": 0
+    },
+    {
+      "boundary": "draft_backup_readback",
+      "process_exit": -9,
+      "root": "target/macos-storage-tests/draft-kill-kxcgpff_",
+      "original_draft_batches": 1,
+      "new_runtime_backup_batches": 2,
+      "source_revision": 0,
+      "source_operations": 0,
+      "accepted_checkpoints": 0
+    }
+  ],
+  "save_interruptions": [
+    {
+      "stage": "save_intent_committed",
+      "root": "/Users/hert/Projects/openmath/target/macos-storage-tests/save-crash-7kths0pd",
+      "exit_code": -9,
+      "readback": {
+        "dirty": true,
+        "kernel_executed": false,
+        "prior_receipt": false,
+        "saved": false,
+        "source_revision": 1
+      }
+    },
+    {
+      "stage": "save_file_synced",
+      "root": "/Users/hert/Projects/openmath/target/macos-storage-tests/save-crash-x7faqhgn",
+      "exit_code": -9,
+      "readback": {
+        "dirty": true,
+        "kernel_executed": false,
+        "prior_receipt": false,
+        "saved": false,
+        "source_revision": 1
+      }
+    },
+    {
+      "stage": "save_replaced",
+      "root": "/Users/hert/Projects/openmath/target/macos-storage-tests/save-crash-nvclxcr1",
+      "exit_code": -9,
+      "readback": {
+        "dirty": false,
+        "kernel_executed": false,
+        "prior_receipt": false,
+        "saved": true,
+        "source_revision": 1
+      }
+    },
+    {
+      "stage": "save_directory_synced",
+      "root": "/Users/hert/Projects/openmath/target/macos-storage-tests/save-crash-s1hhs4nq",
+      "exit_code": -9,
+      "readback": {
+        "dirty": false,
+        "kernel_executed": false,
+        "prior_receipt": false,
+        "saved": true,
+        "source_revision": 1
+      }
+    },
+    {
+      "stage": "save_receipt_before_commit",
+      "root": "/Users/hert/Projects/openmath/target/macos-storage-tests/save-crash-ylbbggsq",
+      "exit_code": -9,
+      "readback": {
+        "dirty": false,
+        "kernel_executed": false,
+        "prior_receipt": false,
+        "saved": true,
+        "source_revision": 1
+      }
+    },
+    {
+      "stage": "save_receipt_committed",
+      "root": "/Users/hert/Projects/openmath/target/macos-storage-tests/save-crash-nevv4np2",
+      "exit_code": -9,
+      "readback": {
+        "dirty": false,
+        "kernel_executed": false,
+        "prior_receipt": true,
+        "saved": true,
+        "source_revision": 1
+      }
+    },
+    {
+      "stage": "displaced-original-conflict",
+      "root": "/Users/hert/Projects/openmath/target/macos-storage-tests/save-displaced-conflict-1lqv9z0h",
+      "exit_code": -9,
+      "readback": {
+        "saved": false,
+        "external_original_preserved": true,
+        "conflict": true
+      }
+    }
+  ],
+  "actual_ui": {
+    "document_id": "07f84758-973a-407e-9d88-118de140f4a3",
+    "original_source_revision": 0,
+    "original_source": "",
+    "observed_preconfirmation_head_revision": 0,
+    "observed_preconfirmation_checkpoint_count": 0,
+    "confirmed_source_head": {
+      "document_id": "07f84758-973a-407e-9d88-118de140f4a3",
+      "revision": 1,
+      "execution_epoch": 1,
+      "snapshot_hash": "b8442ede6c51330bee4d2647b43407b4d5d52ff3bdcb8a2511859659aa5d632c",
+      "active_checkpoint_ref": null
+    },
+    "actual_save_receipts": [
+      {
+        "operationID": "save-0e629e1d-97c0-4fcc-8d7c-766bb78b1d5b",
+        "documentID": "07f84758-973a-407e-9d88-118de140f4a3",
+        "sourceRevision": 1,
+        "sourceSnapshotHash": "b8442ede6c51330bee4d2647b43407b4d5d52ff3bdcb8a2511859659aa5d632c",
+        "bindingRevision": 1,
+        "fileHash": "9febeb696cc68e61f3aed7bfbe8534c5b485c95bceab54ee35347cd0cb3cecfa",
+        "completedAt": "2026-10-11T17:09:53.444Z"
+      }
+    ],
+    "actual_file": {
+      "path": "target/acceptance/pre-alpha.4/development/r41/native-file-panel/启动恢复已确认.omnb",
+      "bytes": 243,
+      "sha256": "9febeb696cc68e61f3aed7bfbe8534c5b485c95bceab54ee35347cd0cb3cecfa"
+    },
+    "accepted_checkpoint_count": 0,
+    "clean_shutdown": true,
+    "runtime_draft_leases": [
+      {
+        "owner_id": "6a46abf3-b3da-4af1-93fc-0a89da23d4f2",
+        "lease_serial": 1
+      },
+      {
+        "owner_id": "3823a9dc-fd2d-45d8-93bd-e620ebc664b0",
+        "lease_serial": 2
+      }
+    ],
+    "observed_actions": [
+      "New native document; paste synthetic Chinese/emoji/incomplete math text",
+      "Actual status 已本地备份",
+      "Close with 保留本地修改, Quit, relaunch",
+      "Native list displays 有待确认草稿; select 恢复",
+      "Text restored verbatim with explicit 使用恢复草稿/使用已确认源码 buttons; source remains0/checkpoints0",
+      "Select 使用恢复草稿 then Cmd-S/system Save to repository target",
+      "Actual saved file/receipt hash match, source1/checkpoints0",
+      "Normal Quit confirms clean shutdown"
+    ],
+    "limits": [
+      "Actual UI observation belongs to startup-list-native-build-final.log; subsequent final build clears the reviewed-draft notice and connects bounded Library reconciliation, both covered by source tests/Release build.",
+      "Native menu AX ID became stale; native sheet list now shows recoverability/warnings and actual row action worked.",
+      "Screenshots are visible in tool history but not archived as images in this evidence record."
+    ]
+  },
+  "previous_ci": {
+    "run_id": 38145308816,
+    "head_sha": "642cfc97fa1c309100c66b5936b802b5e23742ce",
+    "conclusion": "success",
+    "jobs": [
+      {
+        "name": "rust",
+        "conclusion": "success"
+      },
+      {
+        "name": "dependencies",
+        "conclusion": "success"
+      },
+      {
+        "name": "native_macos / native",
+        "conclusion": "success"
+      },
+      {
+        "name": "ios / native",
+        "conclusion": "success"
+      },
+      {
+        "name": "frontend",
+        "conclusion": "success"
+      }
+    ],
+    "does_not_replace_new_ci_or_final_gates": true
+  },
+  "failed_attempts": [
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r41/kernel-recovery-check.log",
+      "bytes": 4136,
+      "sha256": "e99bde4801af08c2cac57fa6ba04c503cb2653b9d8645a10afd70319a3010515"
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r41/startup-recovery-initial.log",
+      "bytes": 2289,
+      "sha256": "ab3e985a4692416439184fd97973cf535a0ab2b27fe9e0fb360333cefec034b6"
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r41/startup-recovery-runtime-final.log",
+      "bytes": 989,
+      "sha256": "689b5561a33370975040feed7b02e425f2bfa751449d0732372d365e1d81107c"
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r41/startup-draft-runtime.log",
+      "bytes": 790,
+      "sha256": "ef82fb29e08dea97ca48e00540356e6af08667670134f487edee3a73bb66f395"
+    }
+  ],
+  "failure_resolutions": [
+    "Generated bytes are u32 DTO values; control validates and converts bounded0..255 to actualu8.",
+    "Abort mapping and Swift throwing boolean/HostSerial comparisons corrected.",
+    "Startup native factory writes new draft-owner backups; original crash batch is checked by original lease1, not mistaken for totalbatch count."
+  ],
+  "remaining_scope": [
+    "Canonical Agent/tool admission/model dispatch interrupted/unknown recovery ledger",
+    "Explicit reset of incompatible/missing original calculation head in same document (currently clear message and new-document re-open workflow)",
+    "Backup/version upgrade/quota/GC",
+    "Full native editor/rendering/Agent/models/media and final .4 release gates"
+  ]
+}

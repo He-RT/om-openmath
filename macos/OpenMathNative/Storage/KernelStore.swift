@@ -10,7 +10,7 @@ final class KernelStore {
   private let url:URL
   private let identity:StoreIdentity
   init(db:SQLiteDatabase,url:URL,identity:StoreIdentity) throws {
-    guard identity.kind=="document",identity.storeVersion==3,identity.documentID != nil else {throw StorageError.unsupportedVersion}
+    guard identity.kind=="document",(3...4).contains(identity.storeVersion),identity.documentID != nil else {throw StorageError.unsupportedVersion}
     self.db=db;self.url=url;self.identity=identity
     try KernelSchema.ensure(db)
   }

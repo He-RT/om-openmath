@@ -61,12 +61,12 @@ struct DraftFence:Sendable {
   }
   func overlay(_ cell:String)->NativeDraft? {drafts[Data(cell.utf8)]}
   /// A sync caller persists this exact raw source before reads/run/save/agent edits.
-  func pendingEdits() throws ->[(NativeSourceCell,DraftAcknowledgement)] {
+  func pendingEdits(excludingMarked:Bool=false) throws ->[(NativeSourceCell,DraftAcknowledgement)] {
     guard alive else {throw CommitPortError.sourceConflict}
     var edits:[(NativeSourceCell,DraftAcknowledgement)]=[]
     for cell in confirmed.file.cells {
       guard let draft=drafts[Data(cell.id.utf8)] else {continue}
-      if draft.composing {throw CommitPortError.editingBusy}
+      if draft.composing {if excludingMarked {continue};throw CommitPortError.editingBusy}
       if draft.conflict {throw CommitPortError.sourceConflict}
       if !draft.source.utf8.elementsEqual(draft.baseSource.utf8) {
         var changed=cell;changed.source=draft.source

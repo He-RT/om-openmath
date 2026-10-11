@@ -41,7 +41,7 @@
 | [x] [R4.1.08](PRE_ALPHA_4.md#task-r4.1.08) | 完整可写计算状态与无损codec | completed | [整个Session/原证据](../acceptance/pre-alpha.4/development/r41/session-checkpoint.json) / 723相关Rust＋原53＋data-only/角色/预算 | 55d11b8；de0ec9e及前置 |
 | [x] [R4.1.09](PRE_ALPHA_4.md#task-r4.1.09) | 主KernelWorker、候选接纳和直接取消 | completed | [实际主运行](../acceptance/pre-alpha.4/development/r41/kernel-runtime.json) / CABI+Swift+SQLite / 310相关Rust+实际IO/长CAS/close | 5469091；3ce0320、b309baf |
 | [x] [R4.1.10](PRE_ALPHA_4.md#task-r4.1.10) | 不可变结果库和只读检查通道 | completed | [实际原生结果](../acceptance/pre-alpha.4/development/r41/result-runtime.json) / CABI＋worker＋Swift / 324Rust＋actual receipts/late reply | 6d53f17；本批待补 |
-| [ ] [R4.1.11](PRE_ALPHA_4.md#task-r4.1.11) | NSDocument打开保存与冻结快照 | planned | — | — |
+| [ ] [R4.1.11](PRE_ALPHA_4.md#task-r4.1.11) | NSDocument打开保存与冻结快照 | in_progress | 实际文件/NSDocument/SQLite与7中断冲突路径通过；系统保存面板待修 | 本批待补 |
 | [ ] [R4.1.12](PRE_ALPHA_4.md#task-r4.1.12) | 会话outbox、草稿与启动恢复 | planned | — | — |
 | [ ] [R4.1.13](PRE_ALPHA_4.md#task-r4.1.13) | 引用租约、备份、quota与GC | planned | — | — |
 | [ ] [R4.2.01](PRE_ALPHA_4.md#task-r4.2.01) | 原生工作台窗口、分栏和投影 | planned | — | — |
@@ -391,3 +391,12 @@ Done依据与覆盖case/proof:
 - 第一轮fixture的throwing precondition compile失败、Message大variant/len_zero Clippy失败保留，修实际fixture/Box布局/断言后再验；无数学期望或30s/1s门槛调整。[result-runtime.json](../acceptance/pre-alpha.4/development/r41/result-runtime.json)保存输入/命令/原输出/source/log hash，设计[result-store.md](../design/result-store.md)同步真实边界。
 - 6d53f17的CI38092397694 Rust/dependencies/nativeMac success；frontend旧完整西瓜.scene-view30s未见、iPhone原row17整次1056.760708ms超原1000ms失败，原log保留，不把前置CI当全success/新SHA/final candidate；上一5469091全CI成功原件仍在。后续门禁继续根因定位，不放宽、不开本机iOS模拟器。
 - R4.1.10 Done/Tests满足，当前21/98、77待完；下一R4.1.11文件快照/NSDocument再恢复/资源管理/全工作台/Agent/模型媒体/现场及发行范围。运行`.3`、32final gate not_run/candidate未分配，结果API完成不代表完整`.4`可发布。
+
+
+## R4开发记录 D029 — 原生文件保存基础（R4.1.11实施中）
+
+- NativeDocument/FilePort/FileService/SaveStore接通实际SourceSnapshot、不可变Blob、同库intent/receipt/outbox和用户授权文件。新文档格式4读取已有Native1–3，不自动升级；Root/Library1、公开`.omnb`v1、Rust数学及iOS ABI保持。
+- 实际保存/N+1/另存为旧回执/外部修改/只读拒绝/IME/同步未知与原ID重启核对通过；应用工厂共享root lease、打开不执行CAS、实际TextKit输入2秒自动保存和UndoManager、后续输入撤销关闭决定通过。6个真正SIGKILL边界与额外被交换外部原件冲突通过，原件保留且不伪造receipt。
+- 已运行test-storage、test-history、test-kernel-store、test-commit-port回归；原SQLite16次真实fullsync、206历史/200+pin、原OMKS/5kernel SIGKILL与跨语言编辑屏障均通过。Release构建通过，CI新增test-saves；本轮未启动本机iOS模拟器。
+- 初始授权/写入同队列死锁、权限拒绝误作unknown、Swift签名/异步autoclosure错误及测试抢先于receipt判断成功的失败保留并修复。系统保存面板异常禁用仍待修；原生新建/输入/关闭保护不等于全部文件UI验收，R4.1.11未完成，计数仍21/98。
+- 前批7b470cc/CI38094998965五jobs全success；不能代替本批/final候选。运行`.3`、32final gate not_run/candidate未分配，下一步先完成面板闭环，再R4.1.12恢复与R4.1.13资源管理。实现见[native-file-saves.md](../design/native-file-saves.md)。

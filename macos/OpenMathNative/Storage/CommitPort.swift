@@ -33,11 +33,11 @@ actor DocCommitPort {
     activeCalls+=1
   }
   /// Used before read/run/save/agent preview. Marked text is protected, invalid manual syntax allowed.
-  @discardableResult func synchronizeDrafts(faults:StorageFaults = .init(),inputGroup:String?=nil) async throws ->NativeCommitState? {
+  @discardableResult func synchronizeDrafts(faults:StorageFaults = .init(),inputGroup:String?=nil,excludingMarked:Bool=false) async throws ->NativeCommitState? {
     try beginCall();defer {activeCalls-=1}
     guard !closing else {throw StorageError.closing}
     guard blockedUnknown==nil else {throw CommitPortError.unknownOutcome}
-    let pending=try await drafts.pendingEdits()
+    let pending=try await drafts.pendingEdits(excludingMarked:excludingMarked)
     guard !pending.isEmpty else {return nil}
     let operations=pending.map { NativeSourceOperation.update_source_cell(.init(kind:.update_cell,cell:$0.0)) }
     let reply=try await client.sourceCommand(.source_prepare_manual(.init(type:.source_prepare_manual,operations:operations,input_group_id:inputGroup)))

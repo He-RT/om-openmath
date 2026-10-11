@@ -62,7 +62,7 @@ enum StorageBootstrap {
       try db.statement("CREATE TABLE store_state(singleton INTEGER PRIMARY KEY CHECK(singleton=1),last_clean_shutdown INTEGER NOT NULL CHECK(last_clean_shutdown IN (0,1)))")
       try db.statement("INSERT INTO store_header VALUES(1,?,?,?,?,?,?,?)",[.text(header.storeID),.text(kind),.integer(1),.integer(header.storeVersion),.integer(header.minimumReaderVersion),.integer(header.codecVersion),document.map(SQLValue.text) ?? .null])
       try db.statement("INSERT INTO store_state VALUES(1,0)")
-      try db.statement(kind=="document" ? "PRAGMA user_version=3" : "PRAGMA user_version=1")
+      try db.statement(kind=="document" ? "PRAGMA user_version=4" : "PRAGMA user_version=1")
       try faults.reach("before_bootstrap_commit")
     }
     try faults.reach("bootstrap_committed")
@@ -78,7 +78,7 @@ enum StorageBootstrap {
   }
   static func readHeader(_ db:SQLiteDatabase) throws ->StoreIdentity {
     let version=try db.integer("PRAGMA user_version")
-    guard version==1 || version==2 || version==3 else { throw StorageError.unsupportedVersion }
+    guard (1...4).contains(version) else { throw StorageError.unsupportedVersion }
     var header:StoreIdentity?
     try db.statement("SELECT store_id,kind,generation,store_version,minimum_reader_version,codec_version,document_id FROM store_header WHERE singleton=1") { row in
       func text(_ column:Int32) throws ->String {

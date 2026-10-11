@@ -3,14 +3,38 @@ import OpenMathHost
 import SwiftUI
 
 @main struct OpenMathNativeApp:App {
+  @NSApplicationDelegateAdaptor(NativeApplicationDelegate.self) private var delegate
+  @StateObject private var workspace=NativeFileWorkspace()
+  @StateObject private var scratch=NotebookViewModel()
   var body:some Scene {
     Window("OpenMath Preview",id:"workspace") {
-      HostScratchView().frame(minWidth:640,minHeight:560)
-    }.defaultSize(width:1100,height:780)
+      VStack(spacing:0) {
+        HStack {
+          Button("新建笔记本",systemImage:"doc.badge.plus") {Task {await workspace.newDocument()}}.disabled(workspace.busy).accessibilityIdentifier("notebook-new")
+          Button("打开笔记本",systemImage:"folder") {Task {await workspace.openPanel()}}.disabled(workspace.busy).accessibilityIdentifier("notebook-open")
+          Spacer()
+        }.padding(12)
+        Divider()
+        if let session=workspace.session {NativeNotebookFileView(workspace:workspace,session:session)}
+        else {HostScratchView(model:scratch);if let error=workspace.errorText {Text(error).foregroundStyle(.red).padding(8)}}
+      }.frame(minWidth:640,minHeight:560)
+        .background(NativeWindowAttachment(workspace:workspace).frame(width:0,height:0))
+        .task {delegate.attach(workspace,scratch:scratch);await scratch.start()}
+        .onDisappear {Task {await scratch.close()}}
+    }.defaultSize(width:1100,height:780).commands {
+      CommandGroup(replacing:.newItem) {
+        Button("新建笔记本") {Task {await workspace.newDocument()}}.keyboardShortcut("n").disabled(workspace.busy)
+        Button("打开笔记本…") {Task {await workspace.openPanel()}}.keyboardShortcut("o").disabled(workspace.busy)
+      }
+      CommandGroup(replacing:.saveItem) {
+        Button("保存") {Task {await workspace.save()}}.keyboardShortcut("s").disabled(workspace.session==nil || workspace.busy)
+        Button("另存为…") {Task {await workspace.save(asNew:true)}}.keyboardShortcut("s",modifiers:[.command,.shift]).disabled(workspace.session==nil || workspace.busy)
+      }
+    }
   }
 }
 private struct HostScratchView:View {
-  @StateObject private var model=NotebookViewModel()
+  @ObservedObject var model:NotebookViewModel
   var body:some View {
     VStack(alignment:.leading,spacing:16) {
       HStack {
@@ -42,9 +66,7 @@ private struct HostScratchView:View {
           .frame(maxWidth:.infinity,alignment:.leading).accessibilityIdentifier("scratch-output")
       }.frame(maxWidth:.infinity,maxHeight:.infinity)
       Text(model.storageMessage).font(.footnote).foregroundStyle(.secondary)
-      Text("此处为隔离试算。笔记本工作台与文件保存正在接入。").font(.footnote).foregroundStyle(.secondary)
+      Text("此处为隔离试算。使用上方新建或打开入口编辑和保存笔记本。").font(.footnote).foregroundStyle(.secondary)
     }.padding(24).tint(.green)
-      .task { await model.start() }
-      .onDisappear { Task { await model.close() } }
   }
 }

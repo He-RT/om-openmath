@@ -10,7 +10,7 @@ import SQLite3
     let (storage,_)=try await StorageService.open(paths:.init(root:root,channel:.preview))
     let info=try await storage.openDocument(initial.document_id)
     if mode=="initialize" {
-      precondition(info.identity.storeVersion==3 && info.identity.minimumReaderVersion==3)
+      precondition(info.identity.storeVersion==4 && info.identity.minimumReaderVersion==4)
       _ = try await storage.initializeSource(initial)
       try JSONEncoder().encode(info).write(to:fixture.appendingPathComponent("store-info.json"))
       try await storage.close();return

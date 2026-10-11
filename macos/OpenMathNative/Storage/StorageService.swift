@@ -16,6 +16,7 @@ private final class StoreWriter:@unchecked Sendable {
   private var source:DocumentStore?
   private var references:BlobReferences?
   private var kernel:KernelStore?
+  private var saves:SaveStore?
   init(_ name:String,lease:RootLease) { self.lease=lease;queue=DispatchQueue(label:"org.openmath.storage."+name,qos:.utility) }
   nonisolated(nonsending) func perform<T:Sendable>(_ body:@escaping @Sendable (StoreWriter)throws->T) async throws ->T {
     try await withCheckedThrowingContinuation { continuation in
@@ -34,7 +35,8 @@ private final class StoreWriter:@unchecked Sendable {
       if kind=="document" { writer.source=try DocumentStore(db:opened.0,url:folder.appendingPathComponent("Generations").appendingPathComponent(String(format:"%06lld",opened.1.generation)).appendingPathComponent("authority.sqlite"),identity:opened.1) }
       let databaseURL=folder.appendingPathComponent("Generations").appendingPathComponent(String(format:"%06lld",opened.1.generation)).appendingPathComponent(kind=="document" ? "authority.sqlite" : "library.sqlite")
       writer.references=try BlobReferences(db:opened.0,url:databaseURL)
-      if kind=="document",opened.1.storeVersion==3 {writer.kernel=try KernelStore(db:opened.0,url:databaseURL,identity:opened.1)}
+      if kind=="document",(3...4).contains(opened.1.storeVersion) {writer.kernel=try KernelStore(db:opened.0,url:databaseURL,identity:opened.1)}
+      if kind=="document",opened.1.storeVersion==4 {writer.saves=try SaveStore(db:opened.0,url:databaseURL,identity:opened.1)}
       return StoreOpenInfo(identity:opened.1,runtime:opened.2)
     }
   }
@@ -50,11 +52,14 @@ private final class StoreWriter:@unchecked Sendable {
   nonisolated(nonsending) func kernelCall<T:Sendable>(_ work:@escaping @Sendable (KernelStore)throws->T) async throws ->T {
     try await perform {writer in guard let kernel=writer.kernel else {throw StorageError.unsupportedVersion};return try work(kernel)}
   }
+  nonisolated(nonsending) func saveCall<T:Sendable>(_ work:@escaping @Sendable (SaveStore)throws->T) async throws ->T {
+    try await perform {writer in guard let saves=writer.saves else {throw StorageError.unsupportedVersion};return try work(saves)}
+  }
   nonisolated(nonsending) func close() async throws {
     try await perform { writer in
       if let db=writer.db {
         try db.transaction { try db.statement("UPDATE store_state SET last_clean_shutdown=1 WHERE singleton=1") }
-        try db.checkpoint();try db.close();writer.db=nil;writer.source=nil;writer.references=nil;writer.kernel=nil
+        try db.checkpoint();try db.close();writer.db=nil;writer.source=nil;writer.references=nil;writer.kernel=nil;writer.saves=nil
       }
     }
   }
@@ -105,6 +110,10 @@ actor StorageService {
     guard closeTask==nil,let writer=documents[source.document_id] else { throw StorageError.closing }
     return try await writer.sourceCall { try $0.initialize(source) }
   }
+  func closeDocument(_ id:String) async throws {
+    guard let writer=documents.removeValue(forKey:id) else {return}
+    try await writer.close()
+  }
   func committedSource(_ id:String) async throws ->NativeSourceSnapshot? {
     guard closeTask==nil,let writer=documents[id] else { throw StorageError.closing }
     return try await writer.sourceCall { try $0.readHead() }
@@ -132,6 +141,30 @@ actor StorageService {
   func sourceReceipt(document:String,operation:String) async throws ->NativeDurableSourceReceipt? {
     guard closeTask==nil,let writer=documents[document] else { throw StorageError.closing }
     return try await writer.sourceCall { try $0.query(operation) }
+  }
+  func fileHead(document:String) async throws ->SavedFileHead? {
+    guard closeTask==nil,let writer=documents[document] else {throw StorageError.closing};return try await writer.saveCall {try $0.readHead()}
+  }
+  func bindFile(_ binding:FileBinding,opened:SaveSnapshot?=nil,faults:StorageFaults = .init()) async throws ->SavedFileHead {
+    guard closeTask==nil,let writer=documents[binding.documentID] else {throw StorageError.closing};return try await writer.saveCall {try $0.choose(binding,opened:opened,faults:faults)}
+  }
+  func saveIntent(document:String,operation:String) async throws ->SaveIntent? {
+    guard closeTask==nil,let writer=documents[document] else {throw StorageError.closing};return try await writer.saveCall {try $0.readIntent(operation)}
+  }
+  func saveReceipt(document:String,operation:String) async throws ->SaveReceipt? {
+    guard closeTask==nil,let writer=documents[document] else {throw StorageError.closing};return try await writer.saveCall {try $0.query(operation)}
+  }
+  func completeSave(_ actual:SaveReceipt,faults:StorageFaults = .init()) async throws ->SaveReceipt {
+    guard closeTask==nil,let writer=documents[actual.documentID] else {throw StorageError.closing};return try await writer.saveCall {try $0.completed(actual,faults:faults)}
+  }
+  func prepareSave(snapshot:SaveSnapshot,binding:FileBinding,operation:String,publication:BlobPublication,faults:StorageFaults = .init()) async throws ->SaveIntent {
+    guard closeTask==nil,let blobs,let writer=documents[snapshot.source.document_id] else {throw StorageError.closing}
+    let transfer=try await blobs.retain(publication)
+    do {
+      guard transfer.descriptor.hash==snapshot.fileHash,transfer.descriptor.byteLength==UInt64(snapshot.bytes.count) else {throw BlobError.corrupt}
+      let actual=try await writer.saveCall {try $0.prepare(snapshot:snapshot,binding:binding,operation:operation,descriptor:transfer.descriptor,faults:faults)}
+      try await blobs.release(transfer);return actual
+    } catch {try? await blobs.release(transfer);throw error}
   }
   func kernelReceipt(document:String,operation:String) async throws ->NativeKernelReceipt? {
     guard closeTask==nil,let writer=documents[document] else {throw StorageError.closing}

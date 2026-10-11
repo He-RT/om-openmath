@@ -37,7 +37,7 @@ bash macos/Scripts/test-native-contracts.sh
 
 新增 `macos-native.yml` 在固定 Xcode 27/SDK27 镜像构建和执行这些验收。当前产物仍是独立 ad-hoc 开发预览，不能据此宣称发行签名、公证或完整 `.4` 已通过。
 
-原生窗口现已接通“试算”，支持运行/停止与⌘↩；结果、错误和取消均来自实际CAS及宿主回执。编辑后保留旧结果并标记源码已改，隔离试算的定义不进入下一操作。这个阶段只实现宿主确认投影和本地草稿，完整笔记本/文件仍未开放。
+原生窗口现已接通“试算”，支持运行/停止与⌘↩；结果、错误和取消均来自实际CAS及宿主回执。编辑后保留旧结果并标记源码已改，隔离试算的定义不进入下一操作。现已开始接入真实笔记本文件编辑入口；完整工作台尚未交付，系统保存面板仍有待修问题，不能把该入口视为已验收的用户文件流程。
 
 `om_host_read_snapshot`直接读取带序列的真实状态，不经操作/事件队列；普通事件批携带`last_rust_event_sequence`。消费者检测缺口后取得足够新的快照，再恢复增量。Swift脚本新增reducer与真实session验收，将事件预算设为128字节以强制所有终止帧丢弃，确认结果通过原ID读回。旧/重复回执不能二次应用；UI订阅缓冲保存最新完整投影，操作终止交付独立。
 
@@ -66,3 +66,5 @@ SQLite首代存储已实现，可运行 `bash macos/Scripts/test-storage.sh`。�
 `bash macos/Scripts/test-history.sh`验证实际206笔源码事务、最近200+固定项、物理裁减、重启和原ID回读。新文档物理格式2，Root/Library仍1；已有Native文档1保持完整而不原地升级。裁减后反向源码不可用时明确拒绝，原receipt/outbox/操作事实仍可核对；旧格式和future版本只读核验，不重建空库。后台维护、quota和备份调度继续R4.1.13。具体数据和接口见[源码历史与文本撤销](../docs/design/source-history-retention.md)。
 
 事件恢复固定发起snapshot时已接纳的ID集合，避免读回在接纳前生成、却在ACK后返回时被误判为unknown。真实ABI fixture将该时序确定性复现；修复保留原ID再读实际结果，不重放计算。普通生产调用不配置fixture barriers。
+
+`bash macos/Scripts/test-saves.sh` 验证实际 source-only 文件、冻结保存、另存为回执隔离、真实同步失败和重启核对，以及7个进程中断/交换原件冲突路径。应用工厂共享根锁，真实 TextKit 输入可自动保存并登记原生撤销，关闭后的新输入不会被丢弃。新建文档格式4保留读取 Native1–3，不自动升级；Root/Library仍1。具体算法和待完成的面板验收见[原生文件保存](../docs/design/native-file-saves.md)。R4.1.11保持实施中，完整恢复和资源管理继续后续任务。

@@ -5,15 +5,13 @@ import SwiftUI
 /// from the document coordinator in R4.1; this model never stores a second writable notebook.
 @MainActor final class NotebookViewModel:ObservableObject {
   @Published var draft="2+2"
-  @Published private(set) var storageMessage="正在初始化本地存储"
+  @Published private(set) var storageMessage="隔离试算；笔记本使用独立文档会话"
   @Published private(set) var projection:HostConfirmedProjection?
   @Published private(set) var output=""
   @Published private(set) var message="正在连接内核"
   @Published private(set) var operationID:String?
   @Published private(set) var cancelPending=false
   @Published private(set) var evaluatedSource:String?
-  private var storage:StorageService?
-  private var storageStart:Task<Void,Never>?
   private var session:NativeHostSession?
   private var watch:Task<Void,Never>?
   private var draftSequence:UInt64=0
@@ -22,16 +20,6 @@ import SwiftUI
   var isStale:Bool { evaluatedSource != nil && evaluatedSource != draft }
   func start() async {
     guard session==nil,alive else { return }
-    storageStart=Task { [weak self] in
-      do {
-        let paths=try NativeStoragePaths.system(.preview)
-        let (store,_)=try await StorageService.open(paths:paths)
-        guard let self,self.alive else { try await store.close();return }
-        self.storage=store;self.storageMessage="本地存储已就绪"
-      } catch StorageError.inUse { self?.storageMessage="本地存储由其他实例使用" }
-      catch StorageError.recoveryRequired { self?.storageMessage="本地存储需要恢复，试算仍可用" }
-      catch { self?.storageMessage="本地存储不可用，试算仍可用" }
-    }
     do {
       let host=try await NativeHostSession.open()
       guard alive else { try await host.close();return }
@@ -83,8 +71,6 @@ import SwiftUI
     watch?.cancel();watch=nil
     if let session { try? await session.close() }
     session=nil
-    await storageStart?.value;storageStart=nil
-    if let storage { try? await storage.close() };storage=nil
   }
   nonisolated private static func display(_ status:HostOperationStatus)->(output:String,message:String) {
     if status.phase == .cancelled { return ("","已停止") }

@@ -1,0 +1,411 @@
+{
+  "schema_version": 1,
+  "record_kind": "development_file_save_evidence",
+  "task": "R4.1.11",
+  "task_status": "in_progress",
+  "timestamp_utc": "2026-10-11T00:57:43.408707+00:00",
+  "base_source_sha": "7b470cc411137925ccaba0417e63b0f507fdaf9b",
+  "runtime_version": "0.1.0-pre-alpha.3",
+  "target_version": "0.1.0-pre-alpha.4",
+  "fresh_document_format": 4,
+  "root_library_format": 1,
+  "commands": [
+    {
+      "command": "bash macos/Scripts/test-saves.sh",
+      "exit_code": 0,
+      "completion_marker": "Mismatched displaced external bytes after crash",
+      "log": {
+        "path": "target/acceptance/pre-alpha.4/development/r41/save-runtime-displaced-final.log",
+        "bytes": 717,
+        "sha256": "fba6f99216622239aa78f7e881e46d840a50164b6bf71eea475a072f0e33e027"
+      }
+    },
+    {
+      "command": "bash macos/Scripts/test-storage.sh",
+      "exit_code": 0,
+      "completion_marker": "Real SQLite crash/restart",
+      "log": {
+        "path": "target/acceptance/pre-alpha.4/development/r41/save-storage-regression.log",
+        "bytes": 415,
+        "sha256": "b3ff356ffe98d739b831176c4f0a47011e1212732776774ece37e20f92d31d60"
+      }
+    },
+    {
+      "command": "bash macos/Scripts/test-history.sh",
+      "exit_code": 0,
+      "completion_marker": "counts 206/206/206/201/5 passed",
+      "log": {
+        "path": "target/acceptance/pre-alpha.4/development/r41/save-history-regression.log",
+        "bytes": 489,
+        "sha256": "aa19b4b90d14ae690b5fe94d9074ad5bbf0dc6eab9bd1ec72eccf6a7b50bbb4e"
+      }
+    },
+    {
+      "command": "bash macos/Scripts/test-kernel-store.sh",
+      "exit_code": 0,
+      "completion_marker": "Five actual kernel acceptance SIGKILL boundaries",
+      "log": {
+        "path": "target/acceptance/pre-alpha.4/development/r41/save-kernel-store-regression.log",
+        "bytes": 2155,
+        "sha256": "b941b29574f85d8b924ff8120137298045e1c648a931248ef8fb7bde29f07ca7"
+      }
+    },
+    {
+      "command": "bash macos/Scripts/test-commit-port.sh",
+      "exit_code": 0,
+      "completion_marker": "ordered close passed",
+      "log": {
+        "path": "target/acceptance/pre-alpha.4/development/r41/save-commit-port-regression.log",
+        "bytes": 2642,
+        "sha256": "d342470f298e5893ac3e2333580d33f677214c7253d622155eb3c768918679a1"
+      }
+    },
+    {
+      "command": "bash macos/Scripts/build-native.sh",
+      "exit_code": 0,
+      "completion_marker": "** BUILD SUCCEEDED **",
+      "log": {
+        "path": "target/acceptance/pre-alpha.4/development/r41/save-native-build-no-default-factory.log",
+        "bytes": 91083,
+        "sha256": "3180e346ad9491619d33751c98d0687f8f315501acf8c00f3d50d9c01dcf6c87"
+      }
+    }
+  ],
+  "sources": [
+    {
+      "path": ".github/workflows/macos-native.yml",
+      "bytes": 3541,
+      "sha256": "9fd1732a2aa53a27094ef5107d4169ee704a3071f9d604e5318dda302a66d4d8"
+    },
+    {
+      "path": "macos/OpenMathNative/AppEventRouter.swift",
+      "bytes": 7021,
+      "sha256": "b1c4130e8c0c14d17d68f5f95161f5f3f40adb7053a9a2b5d158383b17fa0851"
+    },
+    {
+      "path": "macos/OpenMathNative/AppHost.swift",
+      "bytes": 4012,
+      "sha256": "4195fc046682e4003727cd10aa659ece2396f2b1c4026c4e31eabf2ecd9df6b2"
+    },
+    {
+      "path": "macos/OpenMathNative/DraftStore.swift",
+      "bytes": 8510,
+      "sha256": "118e95a0881ecd1c5223805a969abd9c55f32df8257a8a26054d3203ec2f0515"
+    },
+    {
+      "path": "macos/OpenMathNative/Editor/DraftTextViewAdapter.swift",
+      "bytes": 5624,
+      "sha256": "649d2bac4946a28fc5360184487ad96a5bec748e4e33cbd315187e078b5747be"
+    },
+    {
+      "path": "macos/OpenMathNative/Editor/EditorCommitBinding.swift",
+      "bytes": 1214,
+      "sha256": "e6d8a8f04fed934d75c9e817663bf8fdd72befbb81356a96f77e64f52aa2c924"
+    },
+    {
+      "path": "macos/OpenMathNative/Editor/UndoCoordinator.swift",
+      "bytes": 6558,
+      "sha256": "279675515a722b1920ff0c2462a6ef64ea25468080d73f5bb7234667b97fa66f"
+    },
+    {
+      "path": "macos/OpenMathNative/Files/NativeAutosave.swift",
+      "bytes": 2199,
+      "sha256": "5ab554ba9e82919954fe3fd606408921c15a6d97f824259606515fa1072df625"
+    },
+    {
+      "path": "macos/OpenMathNative/Files/NativeDocumentSession.swift",
+      "bytes": 5477,
+      "sha256": "e09fa86b7289117463217f87493f4b85fc861e052ab1a7ff57920add70d307f9"
+    },
+    {
+      "path": "macos/OpenMathNative/Files/NativeFilePort.swift",
+      "bytes": 9890,
+      "sha256": "e8dcaabff23d10fdadd8f4a9d83216d8fe3154c0239b7349f34bdf465ace0e1f"
+    },
+    {
+      "path": "macos/OpenMathNative/Info.plist",
+      "bytes": 1727,
+      "sha256": "0e944ca09ee99033da5206267d45193a0ae2d4593982cf4e84a015af8be855c6"
+    },
+    {
+      "path": "macos/OpenMathNative/Kernel/KernelCommitPort.swift",
+      "bytes": 11481,
+      "sha256": "67c4795ed34bc542b3c62ff0734bdd75078879930090fc1cb0eab35f20a3ef2e"
+    },
+    {
+      "path": "macos/OpenMathNative/NativeDocument.swift",
+      "bytes": 9761,
+      "sha256": "73f5dca7981742a1a7ad4f4e2e2e0b72c9af681e365525fe884e299ed85beca7"
+    },
+    {
+      "path": "macos/OpenMathNative/NativeFileWorkspace.swift",
+      "bytes": 9168,
+      "sha256": "b1a42768ba7f25b0f75cd108e5cf97bd399bfeb0c852b1efbbfbf8c6c3941fe2"
+    },
+    {
+      "path": "macos/OpenMathNative/NativeHostClient.swift",
+      "bytes": 13382,
+      "sha256": "cbf1271bd5f066d2d04c001d034c145a057ff899640c80bbec6e46d1e2cf80ce"
+    },
+    {
+      "path": "macos/OpenMathNative/NativeHostSession.swift",
+      "bytes": 10612,
+      "sha256": "4b2da4c11f0c9f6c2331b50e6263c1828e8dc0a473da02483ee8640dbdd767f0"
+    },
+    {
+      "path": "macos/OpenMathNative/NotebookViewModel.swift",
+      "bytes": 4399,
+      "sha256": "ba589ba6aa462652bd161b9e88cead92f2adc0c3920f49f9ca87d72835e3a70c"
+    },
+    {
+      "path": "macos/OpenMathNative/Rendering/ResultClient.swift",
+      "bytes": 9538,
+      "sha256": "9f1d86a12b690032a6a692c3ec905141aed8a4a7557e8c6825e29d6f53835ff5"
+    },
+    {
+      "path": "macos/OpenMathNative/Storage/BlobReferences.swift",
+      "bytes": 6360,
+      "sha256": "17e576cab1f607685630258e74f554f295ddf09855105917909b33829f12d633"
+    },
+    {
+      "path": "macos/OpenMathNative/Storage/BlobStore.swift",
+      "bytes": 15050,
+      "sha256": "42e051e6f468d1353185d94bb7fea61a1d1914d94964b7f1d855255a321f5237"
+    },
+    {
+      "path": "macos/OpenMathNative/Storage/BlobTypes.swift",
+      "bytes": 1489,
+      "sha256": "78dc3d55c4c0091a15426ee2671f9a692c8acb7137459934562c8e90985b58a1"
+    },
+    {
+      "path": "macos/OpenMathNative/Storage/Bootstrap.swift",
+      "bytes": 7457,
+      "sha256": "1edf33de75c805930658d870cb899e8f2e3c1b414c370a45af2ec82573766dfa"
+    },
+    {
+      "path": "macos/OpenMathNative/Storage/CommitGate.swift",
+      "bytes": 1626,
+      "sha256": "d70b9a9d22dbb547d8d3819c7ae343288ddb95e8048d36cc31ea6556466a7cbb"
+    },
+    {
+      "path": "macos/OpenMathNative/Storage/CommitPort.swift",
+      "bytes": 17215,
+      "sha256": "9719f85911863710d835dc93e7bbfdb44566786646d218dbf754f874e6727b9f"
+    },
+    {
+      "path": "macos/OpenMathNative/Storage/DocumentSchema.swift",
+      "bytes": 3028,
+      "sha256": "aa03da88284d147962c655febb5a51442626a038edc2910c179a9b49ddfb507f"
+    },
+    {
+      "path": "macos/OpenMathNative/Storage/DocumentStore.swift",
+      "bytes": 18334,
+      "sha256": "8bd75f6dc914330273021d18a9179ab5564f5335dbc84eadd94ea8528584e9ca"
+    },
+    {
+      "path": "macos/OpenMathNative/Storage/KernelHashes.swift",
+      "bytes": 5485,
+      "sha256": "3f83bc8a9748abbf4f901f9abb012de087fc186e4f3ea999fcfcd06f354fae30"
+    },
+    {
+      "path": "macos/OpenMathNative/Storage/KernelSchema.swift",
+      "bytes": 3207,
+      "sha256": "42a430504bd512d9f6a3efc5a4bcc9c8c285920ca5fa2e7360781fb8ade64ec6"
+    },
+    {
+      "path": "macos/OpenMathNative/Storage/KernelStore.swift",
+      "bytes": 14631,
+      "sha256": "4ab0bab3cf9c9a061ee9e0b70c27be9198d43f156e8d7690c149762b2827ff11"
+    },
+    {
+      "path": "macos/OpenMathNative/Storage/ManagedFiles.swift",
+      "bytes": 5335,
+      "sha256": "c40b98eed4846e33ae5f6d419386d14a6bd81048dddbe9c2301006358ec5bb3d"
+    },
+    {
+      "path": "macos/OpenMathNative/Storage/SQLColumn.swift",
+      "bytes": 631,
+      "sha256": "f06410bd768b3184a46c4a93393ec9830eba97c0fec39a685eff946919eaeb43"
+    },
+    {
+      "path": "macos/OpenMathNative/Storage/SQLiteDatabase.swift",
+      "bytes": 6882,
+      "sha256": "8cab590842e1d3ff270309fdaf7f880be80b895274d4d40b315941dd5ed6a1f4"
+    },
+    {
+      "path": "macos/OpenMathNative/Storage/SaveOperations.swift",
+      "bytes": 11648,
+      "sha256": "639ccf59f662c2f646dbe8ee4a49c8d2b93abc563d884963f54f71c69dba7b89"
+    },
+    {
+      "path": "macos/OpenMathNative/Storage/SaveStore.swift",
+      "bytes": 13758,
+      "sha256": "fc665e10b571c0c11aa9fe0e951424146b52a1116feca965828a8dbefa121780"
+    },
+    {
+      "path": "macos/OpenMathNative/Storage/SaveTypes.swift",
+      "bytes": 6442,
+      "sha256": "17091e47a902f1a9c4b992c0cb4312772c767f4d0587d40cd4005d0c7a11392c"
+    },
+    {
+      "path": "macos/OpenMathNative/Storage/SourceAdmissionStore.swift",
+      "bytes": 6887,
+      "sha256": "56fa3aca3b9f3669d65fab408308038e86b1bdb27ee8471428a2c3ab2311325e"
+    },
+    {
+      "path": "macos/OpenMathNative/Storage/SourceHashes.swift",
+      "bytes": 7762,
+      "sha256": "1b104381e9026a68a73b98954a497eedb79fafceb5f8f6d59019e6504331b63b"
+    },
+    {
+      "path": "macos/OpenMathNative/Storage/SourceHistoryStore.swift",
+      "bytes": 12273,
+      "sha256": "31c2d4f9d59a553f5d917624db2db6215365e089bb80302b0f43f0b81f936140"
+    },
+    {
+      "path": "macos/OpenMathNative/Storage/StorageService.swift",
+      "bytes": 18740,
+      "sha256": "e770798968956f3e469013f2a66c338f64ef5a95bc4f6c9c7a199022f7b72886"
+    },
+    {
+      "path": "macos/OpenMathNative/Storage/StorageTypes.swift",
+      "bytes": 3358,
+      "sha256": "88056db58ffa6fb4e31d201d5d822c0d02c205a6c04e2f833dbe7e8a7723c6d2"
+    },
+    {
+      "path": "macos/OpenMathNative.xcodeproj/project.pbxproj",
+      "bytes": 100643,
+      "sha256": "ce8e17c1227bc97066488db663e7b0f7c2f70776b9cbb5307ccfae59db56d728"
+    },
+    {
+      "path": "macos/OpenMathNativeTests/SaveFixtures/Interruption.swift",
+      "bytes": 4572,
+      "sha256": "a506b611287e28dee0881f29fbfe6b283f644e88ad7e2a02ef2be7e0b6a842e8"
+    },
+    {
+      "path": "macos/OpenMathNativeTests/SaveFixtures/interruption.py",
+      "bytes": 3567,
+      "sha256": "7aff9a42ad38730f3bf21838d27992821fea31d59763b1297572b0a9962b6344"
+    },
+    {
+      "path": "macos/OpenMathNativeTests/SaveFixtures/main.swift",
+      "bytes": 11305,
+      "sha256": "9af3687e93b77f3982ba82dd224020ee2c16c044131c01819b432486a870177a"
+    },
+    {
+      "path": "macos/Scripts/test-saves.sh",
+      "bytes": 1496,
+      "sha256": "de8d5f41202f23824efa568eb36a3e52a2eaf9c3ea1868ab11f574c492f121f6"
+    }
+  ],
+  "interruption_attempts": [
+    {
+      "stage": "save_intent_committed",
+      "root": "/Users/hert/Projects/openmath/target/macos-storage-tests/save-crash-gwlesui5",
+      "exit_code": -9,
+      "readback": {
+        "dirty": true,
+        "file_source": "let a=2",
+        "kernel_executed": false,
+        "prior_receipt": false,
+        "saved": false,
+        "source_revision": 1
+      }
+    },
+    {
+      "stage": "save_file_synced",
+      "root": "/Users/hert/Projects/openmath/target/macos-storage-tests/save-crash-gmu9d9nj",
+      "exit_code": -9,
+      "readback": {
+        "dirty": true,
+        "file_source": "let a=2",
+        "kernel_executed": false,
+        "prior_receipt": false,
+        "saved": false,
+        "source_revision": 1
+      }
+    },
+    {
+      "stage": "save_replaced",
+      "root": "/Users/hert/Projects/openmath/target/macos-storage-tests/save-crash-0301n407",
+      "exit_code": -9,
+      "readback": {
+        "dirty": false,
+        "file_source": "let a=7",
+        "kernel_executed": false,
+        "prior_receipt": false,
+        "saved": true,
+        "source_revision": 1
+      }
+    },
+    {
+      "stage": "save_directory_synced",
+      "root": "/Users/hert/Projects/openmath/target/macos-storage-tests/save-crash-qm04b6vd",
+      "exit_code": -9,
+      "readback": {
+        "dirty": false,
+        "file_source": "let a=7",
+        "kernel_executed": false,
+        "prior_receipt": false,
+        "saved": true,
+        "source_revision": 1
+      }
+    },
+    {
+      "stage": "save_receipt_before_commit",
+      "root": "/Users/hert/Projects/openmath/target/macos-storage-tests/save-crash-g6txd9gb",
+      "exit_code": -9,
+      "readback": {
+        "dirty": false,
+        "file_source": "let a=7",
+        "kernel_executed": false,
+        "prior_receipt": false,
+        "saved": true,
+        "source_revision": 1
+      }
+    },
+    {
+      "stage": "save_receipt_committed",
+      "root": "/Users/hert/Projects/openmath/target/macos-storage-tests/save-crash-xe1eo0pn",
+      "exit_code": -9,
+      "readback": {
+        "dirty": false,
+        "file_source": "let a=7",
+        "kernel_executed": false,
+        "prior_receipt": true,
+        "saved": true,
+        "source_revision": 1
+      }
+    },
+    {
+      "stage": "displaced-original-conflict",
+      "root": "/Users/hert/Projects/openmath/target/macos-storage-tests/save-displaced-conflict-bm8k0_kn",
+      "exit_code": -9,
+      "readback": {
+        "saved": false,
+        "external_original_preserved": true,
+        "conflict": true
+      }
+    }
+  ],
+  "native_ui": {
+    "new_document": "observed",
+    "actual_textkit_input": "observed",
+    "cancel_keeps_input": "observed",
+    "close_unconfirmed_input_protection": "observed",
+    "close_confirmed_local_source": "observed",
+    "system_save_panel": "failed_button_disabled",
+    "open_save_as_full_flow": "not_verified",
+    "latest_factory_change_ui": "not_run"
+  },
+  "previous_ci": {
+    "sha": "7b470cc411137925ccaba0417e63b0f507fdaf9b",
+    "run_id": 38094998965,
+    "conclusion": "success",
+    "jobs": 5
+  },
+  "final_candidate": null,
+  "runtime_release_gates_updated": false,
+  "ready_to_publish": false,
+  "released_verified": false
+}

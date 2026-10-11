@@ -8,7 +8,7 @@ private struct HistoryFixture:Decodable {let initial:NativeSourceSnapshot;let pl
     let root=URL(fileURLWithPath:CommandLine.arguments[2],isDirectory:true),document=fixture.initial.document_id
     let (storage,_)=try await StorageService.open(paths:.init(root:root,channel:.preview))
     let info=try await storage.openDocument(document)
-    precondition(info.identity.storeVersion==3 && info.identity.minimumReaderVersion==3)
+    precondition(info.identity.storeVersion==4 && info.identity.minimumReaderVersion==4)
     _ = try await storage.initializeSource(fixture.initial)
     for plan in fixture.plans {_ = try await storage.commitSource(plan)}
     try await storage.pinSourceTransaction(document:document,transaction:"tx-1",kind:"user",owner:"user-pin",enabled:true)
@@ -100,7 +100,7 @@ private struct HistoryFixture:Decodable {let initial:NativeSourceSnapshot;let pl
     try await legacy.close()
     try await Task.detached {
       let writer=try SQLiteDatabase(url:legacyDatabase);defer {try? writer.close()};_ = try writer.configure()
-      try writer.transaction {try writer.statement("PRAGMA user_version=4")}
+      try writer.transaction {try writer.statement("PRAGMA user_version=5")}
     }.value
     let futureBytes=try Data(contentsOf:legacyDatabase)
     let (future,_)=try await StorageService.open(paths:.init(root:legacyRoot,channel:.preview))
@@ -109,7 +109,7 @@ private struct HistoryFixture:Decodable {let initial:NativeSourceSnapshot;let pl
     let afterFuture=try Data(contentsOf:legacyDatabase);precondition(futureBytes==afterFuture);try await future.close()
     if CommandLine.arguments.count>3 {
       let report:[String:Any]=["task":"R4.1.07","development_only":true,"fixture_root":root.path,
-        "source_commits":206,"retained":201,"pruned":5,"recent_window":200,"version_3_document":true,
+        "source_commits":206,"retained":201,"pruned":5,"recent_window":200,"version_4_document":true,
         "atomic_prune_rollback":true,"postcommit_prune_unknown":true,"payload_removal_verified":true,
         "original_receipt_preserved":true,"original_id_no_replay":true,"persisted_user_task_pins":true,
         "unpin_allows_compaction":true,"damaged_tombstone_rejected":true,"legacy_native_v1_full_only":true,

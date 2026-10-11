@@ -65,6 +65,7 @@ private final class EditorUndoRouter:UndoManager {
   private var lastInputNS:UInt64=0
   private var previousCaret:NSRange?
   private var inComposition=false
+  var didEdit:(()->Void)?
   var inputGroup:String {group}
   init(store:DraftStore,cell:String,generation:UInt64) throws {
     self.store=store;self.cell=cell;self.generation=generation
@@ -89,7 +90,9 @@ private final class EditorUndoRouter:UndoManager {
   func reportCurrentInput() throws {
     if textView.hasMarkedText() {inComposition=true}
     else if inComposition {inComposition=false;lastInputNS=DispatchTime.now().uptimeNanoseconds}
+    let before=store.overlay(cell)?.sequence
     try store.edited(cell:cell,generation:generation,source:textView.string,hasMarkedText:textView.hasMarkedText())
+    if store.overlay(cell)?.sequence != before {didEdit?()}
   }
   /// Owned acknowledgement never replaces a later overlay or force-ends composition.
   func reflectAcknowledgedSource() {

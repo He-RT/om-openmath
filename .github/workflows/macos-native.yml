@@ -49,6 +49,8 @@ jobs:
         run: bash macos/Scripts/test-kernel-runtime.sh > target/macos-ci-evidence/kernel-runtime.log 2>&1
       - name: 不可变结果 C ABI、完整源码分块和迟到回复
         run: bash macos/Scripts/test-results.sh > target/macos-ci-evidence/results.log 2>&1
+      - name: 原生文件快照、真实保存与进程中断回读
+        run: bash macos/Scripts/test-saves.sh > target/macos-ci-evidence/saves.log 2>&1
       - name: 校验开发包签名和实际 ABI 符号
         run: |
           codesign --verify --deep --strict 'target/macos-native/Build/Products/Release/OpenMath Preview.app'

@@ -526,3 +526,15 @@ L2使用精确标称GM分数、50位FindRoot/1000迭代和真实残差，报告�
 - Complete source保持UTF8 byte边界，fragment返回同一原total/SHA256，Swift每片16KiB且最后整bytes/hash核对，selection/doc lifetime/stale/expired时不返partial success。presentation分页复制actual SolutionSetView的条件/verified/Root/intervals；zero-success error保留actual messages/spans，out0/viewnull不是空成功值。
 - Swift ResultClient仅管MainActor selection generation；source/kernel确认状态或selection变化后实际decoded迟到reply拒绝。ResultTransportProbes只为trusted fixture，serialized/model请求不能设置callback。actual CABI/SQLite/worker/Swift fixture验证exact/80digit/Unicode/steps/solution/2D3D/readonly/scratch/history/partial/late/event/revoke，不以unit synthetic receipts替代physical证据。
 - 14符号及新schema/ResultClient保持工程可生成与同SDK27 Release链接，core forbid unsafe无新dependency；新unsafe只在原独立C ABI bounded copied-input wrapper。第一轮Swift fixture把throwing decode写入precondition autoclosure的compile失败、private worker大enum的Clippy失败均保留，修真实代码/fixture后再验，不放宽数学/计时。
+
+
+### R4-D023：原生文件保存与同库意图/回执（2026-10-11，R4.1.11实施中）
+
+- 新建Native文档格式4增加file_bindings/head、save_intents/receipts/outbox；Root/Library仍1，已有Native1–3不自动升级，格式3检查点继续可读。保存表只启用在4，`.omnb`源码v1及旧iOS ABI不变。
+- Swift原生私有SaveSnapshot/Intent/Receipt不作为Pi参数；真实SourceSnapshot/Blob/SQLite与用户授权URL形成链路。先发布不可变字节及同库intent，再后台协调同目录写/同步/交换/核对字节，最后同库receipt/outbox回读；不声称跨资源原子事务。
+- 保存N期间N+1保持dirty，原binding晚回执不推进新目标；IME保留，非法数学源码可保存。确认的原生输入组登记真实UndoManager，保存不执行数学；NativeAppStorage共享根锁，试算不抢另一份root lease。
+- 不确定结果按原ID核对，真实全刷新失败不ACK，新ID不能重写。交换原件不匹配时保留，重启也检查遗留原件，不能只看到desired hash就误称成功。前置明确拒绝不混为未知；intent回读失败无法证明无效果时仍unknown。
+- 独立目标授权队列修复暂停旧writer时另存为授权排在同队列的实际死锁。失败/sample/退出结果保留；自动保存测试只在真实receipt完成后判定，不凭rename字节抢先成功。没有修改数学期望或放宽性能门槛。
+- 自有自动保存定时器复用intent端口，禁用AppKit默认opaque autosave-elsewhere调度；宿主管理单活动文档。真实输入撤销关闭决定，错误保留编辑器；未命名草稿及启动恢复继续R4.1.12。
+- 物理保存、N+1、旧binding、unknown、原ID、自动保存和原生撤销，以及6 SIGKILL与额外原件冲突通过。原存储、206笔历史、checkpoint与编辑屏障回归通过。系统保存面板Save/New Folder异常禁用仍未解决，类型声明/激活/菜单实验不能替代实际流程，R4.1.11保持unchecked/in_progress。详见[原生文件保存](../design/native-file-saves.md)。
+- 7b470cc的CI38094998965五jobs全部success，只证明前批SHA；本批和最终candidate独立验收。运行`.3`、dev、不合main、不改旧公开资产、不启动本机iOS模拟器。

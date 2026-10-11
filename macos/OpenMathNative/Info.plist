@@ -14,4 +14,16 @@
 <key>LSMinimumSystemVersion</key><string>27.0</string>
 <key>NSHighResolutionCapable</key><true/>
 <key>NSPrincipalClass</key><string>NSApplication</string>
+<key>UTExportedTypeDeclarations</key><array><dict>
+<key>UTTypeIdentifier</key><string>org.openmath.notebook</string>
+<key>UTTypeDescription</key><string>OpenMath 笔记本</string>
+<key>UTTypeConformsTo</key><array><string>public.json</string></array>
+<key>UTTypeTagSpecification</key><dict><key>public.filename-extension</key><array><string>omnb</string></array><key>public.mime-type</key><string>application/x-openmath-notebook</string></dict>
+</dict></array>
+<key>CFBundleDocumentTypes</key><array><dict>
+<key>CFBundleTypeName</key><string>OpenMath 笔记本</string>
+<key>CFBundleTypeRole</key><string>Editor</string>
+<key>LSHandlerRank</key><string>Alternate</string>
+<key>LSItemContentTypes</key><array><string>org.openmath.notebook</string></array>
+</dict></array>
 </dict></plist>

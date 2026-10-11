@@ -124,7 +124,11 @@ final class SourceHistoryStore {
         let preserveKernel=kernelTables ? " AND revision NOT IN (SELECT source_revision FROM accepted_checkpoints WHERE document_id=?) AND revision NOT IN (SELECT accepted_source_revision FROM accepted_checkpoints WHERE document_id=?)" : ""
         var values:[SQLValue]=[.blob(Data()),.text(document),.text(document),.text(document),.text(document)]
         if kernelTables {values += [.text(document),.text(document)]}
-        try db.statement("UPDATE document_revisions SET snapshot=? WHERE document_id=? AND revision NOT IN (SELECT revision FROM document_head WHERE document_id=?) AND revision NOT IN (SELECT t.base_revision FROM transactions t JOIN source_history h ON t.transaction_id=h.transaction_id WHERE h.retained=1 AND h.document_id=?) AND revision NOT IN (SELECT t.committed_revision FROM transactions t JOIN source_history h ON t.transaction_id=h.transaction_id WHERE h.retained=1 AND h.document_id=?)"+preserveKernel,values)
+        var saveTables=false
+        try db.statement("SELECT 1 FROM sqlite_schema WHERE type='table' AND name='save_intents'") {_ in saveTables=true}
+        let preserveSaves=saveTables ? " AND revision NOT IN (SELECT source_revision FROM save_intents WHERE document_id=? AND phase='prepared') AND revision NOT IN (SELECT saved_revision FROM file_head WHERE document_id=? AND saved_revision IS NOT NULL)" : ""
+        if saveTables {values += [.text(document),.text(document)]}
+        try db.statement("UPDATE document_revisions SET snapshot=? WHERE document_id=? AND revision NOT IN (SELECT revision FROM document_head WHERE document_id=?) AND revision NOT IN (SELECT t.base_revision FROM transactions t JOIN source_history h ON t.transaction_id=h.transaction_id WHERE h.retained=1 AND h.document_id=?) AND revision NOT IN (SELECT t.committed_revision FROM transactions t JOIN source_history h ON t.transaction_id=h.transaction_id WHERE h.retained=1 AND h.document_id=?)"+preserveKernel+preserveSaves,values)
         try faults.reach("history_revisions_pruned")
       }
       do {try faults.reach("history_prune_committed")} catch {throw StorageError.unknownCommit(EIO)}

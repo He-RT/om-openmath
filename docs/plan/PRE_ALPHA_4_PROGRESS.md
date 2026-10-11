@@ -41,8 +41,8 @@
 | [x] [R4.1.08](PRE_ALPHA_4.md#task-r4.1.08) | 完整可写计算状态与无损codec | completed | [整个Session/原证据](../acceptance/pre-alpha.4/development/r41/session-checkpoint.json) / 723相关Rust＋原53＋data-only/角色/预算 | 55d11b8；de0ec9e及前置 |
 | [x] [R4.1.09](PRE_ALPHA_4.md#task-r4.1.09) | 主KernelWorker、候选接纳和直接取消 | completed | [实际主运行](../acceptance/pre-alpha.4/development/r41/kernel-runtime.json) / CABI+Swift+SQLite / 310相关Rust+实际IO/长CAS/close | 5469091；3ce0320、b309baf |
 | [x] [R4.1.10](PRE_ALPHA_4.md#task-r4.1.10) | 不可变结果库和只读检查通道 | completed | [实际原生结果](../acceptance/pre-alpha.4/development/r41/result-runtime.json) / CABI＋worker＋Swift / 324Rust＋actual receipts/late reply | 6d53f17；f04474f；后续补验 |
-| [x] [R4.1.11](PRE_ALPHA_4.md#task-r4.1.11) | NSDocument打开保存与冻结快照 | completed | [实际文件/同库回执/本轮Release面板闭环](../acceptance/pre-alpha.4/development/r41/file-saves-completion.json) / 6 SIGKILL+原件冲突 / N+1/IME/身份/取消/重开 | f04474f、c4eab5a；本批待补SHA |
-| [ ] [R4.1.12](PRE_ALPHA_4.md#task-r4.1.12) | 会话outbox、草稿与启动恢复 | planned | — | — |
+| [x] [R4.1.11](PRE_ALPHA_4.md#task-r4.1.11) | NSDocument打开保存与冻结快照 | completed | [实际文件/同库回执/本轮Release面板闭环](../acceptance/pre-alpha.4/development/r41/file-saves-completion.json) / 6 SIGKILL+原件冲突 / N+1/IME/身份/取消/重开 / Mac CI38122270416 success | 25df8d8；f04474f、c4eab5a |
+| [ ] [R4.1.12](PRE_ALPHA_4.md#task-r4.1.12) | 会话outbox、草稿与启动恢复 | in_progress | [原文档事实/两库投影/5 SIGKILL/Library损坏隔离](../acceptance/pre-alpha.4/development/r41/library-projection.json)；草稿与完整启动恢复待完 | 本批待补SHA |
 | [ ] [R4.1.13](PRE_ALPHA_4.md#task-r4.1.13) | 引用租约、备份、quota与GC | planned | — | — |
 | [ ] [R4.2.01](PRE_ALPHA_4.md#task-r4.2.01) | 原生工作台窗口、分栏和投影 | planned | — | — |
 | [ ] [R4.2.02](PRE_ALPHA_4.md#task-r4.2.02) | NSTextView和严格SourceIndexMap | planned | — | — |
@@ -419,3 +419,12 @@ Done依据与覆盖case/proof:
 - 系统panel回调先orderOut；整个Open面板保留busy，普通保存/自动保存不同URL拒绝；取消关闭里的保存面板恢复原policy。真实文件fixture保留原数学语法错/N+1/旧binding/IME/身份/未知同步，6SIGKILL+原件冲突通过；test-saves和Release构建exit0。
 - c4eab5a/CI38119321361 Rust、Web、依赖、iOS通过，native_macos在SessionFixtures第17行失败。修复显式刷新在已有readback时直接返回的问题；新固定并发fixture、12精确4/丢帧恢复/停止/并发关闭以及test-native-contracts完整exit0。保留原artifact失败，本批CI待推送后回读。
 - 下一任务R4.1.12同文档outbox投影Library、未确认/IME草稿、启动按原ID核对与接纳前缀恢复；不自动重放操作或付费请求。R4.2完整工作台、Agent和发行仍未完成；运行.3/dev/no main/no本机iOS模拟器，32final gate not_run/no candidate。
+
+## R4开发记录 D032 — 原文档事实投影与 Library 故障隔离
+
+- R4.1.12实施中，仅Step1完成。Source/kernel/save三份原outbox逐条验证后写Library2不可变事件，按store/event去重；Library实际同步/回读后才标原库projected。保存投影不含路径/bookmark。最大16条/4 MiB原载荷、分批恢复游标不重复卡在第一页；首次和重启不创建 evaluator/HTTP。
+- 真实TextKit→源码事务、四次CAS输出2/3/5/6、保存生成7事实（包括初始化检查点）；回滚、丢ACK、实际全同步未知、伪造投影拒绝、跨文档相同event、完整记录损坏和健康文档另存为通过。两库五个真正SIGKILL点，重复恢复不增加原事实，原源码/初始化＋四计算检查点/文件散列不变。新freshLibrary版本2，原Native1不自动升级；Root1/文档4/.omnb v1不变。
+- SDK只读VFS在WAL不存在时实际O_RDONLY/no-follow打开失败ENOENT；新增仅在根租约/串行队列与无WAL/journal时短期不可变读取，前后核对文件与侧文件。现存日志仍正常读取，不删除WAL或绕过恢复。独立文件变更守卫和原future版本不写回拒绝通过；初期实际失败/诊断保留。
+- test-recovery（5 SIGKILL）、storage（17真实同步＋6初始化中断）、saves（6保存中断）、history（206事务/200+pin）、kernel-store（5接纳中断）、commit-port和Release构建实际exit0。[证据](../acceptance/pre-alpha.4/development/r41/library-projection.json)与[实现](../design/native-recovery.md)。当前22/98，不把投影基础勾成整个恢复完成；接下来草稿/IME持久化与完整启动恢复，再R4.1.13资源/升级。
+- 25df8d8/CI38122270416 Rust/Web/依赖/Mac全部success，phone成功；iPad仅探索UI端点失败，实际slider3.96/正确结果15.6816。测试补真实thumb越过轨道的动作并明确要求a4＋原16，原数学/1秒门槛未改；SDK27 Swift6类型检查通过，执行留新同SHA CI，不在本机启动模拟器。初次类型检查漏XCTest Swift overlay/运算符空格错误已修，日志保留。
+- 运行.3/dev/no main/旧公开资产保留，32final gate仍not_run、candidate未分配；canonical Agent/admission/network、完整工作台及发行不由本批替代。

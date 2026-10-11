@@ -39,6 +39,7 @@ enum StorageBootstrap {
       // Inspect every version/header/hash in a read-only connection before enabling any writing.
       let read=try SQLiteDatabase(url:url,readonly:true)
       let header=try readHeader(read)
+      if kind=="library",header.storeVersion==2 {_ = try LibraryStore(db:read,url:url,identity:header)}
       try read.close()
       guard header.storeID==selector.storeID,header.generation==selector.generation,header.kind==kind,
         header.documentID==document,try header.hash==selector.headerHash else { throw StorageError.corruptIdentity }
@@ -62,10 +63,13 @@ enum StorageBootstrap {
       try db.statement("CREATE TABLE store_state(singleton INTEGER PRIMARY KEY CHECK(singleton=1),last_clean_shutdown INTEGER NOT NULL CHECK(last_clean_shutdown IN (0,1)))")
       try db.statement("INSERT INTO store_header VALUES(1,?,?,?,?,?,?,?)",[.text(header.storeID),.text(kind),.integer(1),.integer(header.storeVersion),.integer(header.minimumReaderVersion),.integer(header.codecVersion),document.map(SQLValue.text) ?? .null])
       try db.statement("INSERT INTO store_state VALUES(1,0)")
-      try db.statement(kind=="document" ? "PRAGMA user_version=4" : "PRAGMA user_version=1")
+      try db.statement("PRAGMA user_version=\(header.storeVersion)")
       try faults.reach("before_bootstrap_commit")
     }
     try faults.reach("bootstrap_committed")
+    // Publish a new Library generation only after its complete projection schema exists.
+    // Opening an already selected format-2 DB never recreates a missing event table.
+    if kind=="library" {_ = try LibraryStore(db:db,url:url,identity:header,create:true)}
     let read=try SQLiteDatabase(url:url,readonly:true)
     guard try readHeader(read)==header else { throw StorageError.corruptIdentity }
     try read.close();try faults.reach("bootstrap_readback")

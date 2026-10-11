@@ -7,6 +7,7 @@ import SwiftUI
   @Published private(set) var session:NativeDocumentSession?
   @Published private(set) var busy=false
   @Published private(set) var errorText:String?
+  @Published private(set) var libraryWarning:String?
   private let services=NativeAppStorage()
   private weak var window:NSWindow?
   private var controller:NSWindowController?
@@ -41,6 +42,7 @@ import SwiftUI
       // Prepare the new source without changing the old window. A bad/offline file leaves the
       // current source, marked input, scroll and file binding available.
       let storage=try await services.open()
+      libraryWarning=await storage.libraryAvailability().warning
       let candidate=try await NativeDocumentSession.open(storage:storage,url:url)
       if let old=session,!((await old.document.prepareToClose())) {try await candidate.close();return false}
       do {try await removeCurrent()} catch {try? await candidate.close();throw error}
@@ -132,6 +134,7 @@ struct NativeNotebookFileView:View {
     VStack(alignment:.leading,spacing:12) {
       HStack {Text(session.document.fileURL?.lastPathComponent ?? "未命名笔记本").font(.title2);Spacer();Text(session.document.statusText).foregroundStyle(.secondary).accessibilityIdentifier("notebook-file-status")}
       if let error=workspace.errorText {Text(error).foregroundStyle(.red).textSelection(.enabled)}
+      if let warning=workspace.libraryWarning {Text(warning).foregroundStyle(.secondary).textSelection(.enabled)}
       HStack {
         Button("保存",systemImage:"square.and.arrow.down") {Task {await workspace.save()}}.disabled(workspace.busy).accessibilityIdentifier("notebook-save")
         Button("另存为") {Task {await workspace.save(asNew:true)}}.disabled(workspace.busy)

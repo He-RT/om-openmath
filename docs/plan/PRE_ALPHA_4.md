@@ -3449,7 +3449,7 @@ UpdateService只读受控官方GitHub Releases/发行清单（预发行不可用
 
 **Steps：**
 
-- [ ] 1. 同文档outbox投影Library并按eventid去重。
+- [x] 1. 同文档outbox投影Library并按eventid去重。
 - [ ] 2. 保留未确认文本/IME草稿和已接纳prefix。
 - [ ] 3. 启动查原op/save intent/checkpoint，失配不自动执行或付费重发。
 - [ ] 4. 执行下面Tests，核对真实输出/失败，更新任务账本与证据后提交本批次。

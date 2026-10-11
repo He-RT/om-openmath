@@ -3,17 +3,47 @@ import SQLite3
 import Darwin
 
 enum SQLValue:Sendable { case integer(Int64),text(String),blob(Data),null }
+/// Used only for a sidecar-free readonly view under the root lease / owning serial queue.
+/// SQLite must never ignore a real WAL or hot rollback journal. The main file and absence
+/// of both sidecars are checked again before/after every query while this view is alive.
+private struct ReadOnlyFileGuard {
+  let url:URL,device:dev_t,inode:ino_t,size:off_t,modified:timespec,changed:timespec
+  static func capture(_ url:URL)throws->Self? {
+    for suffix in ["-wal","-journal"] {
+      if try ManagedFiles.check(URL(fileURLWithPath:url.path+suffix),directory:false) {return nil}
+    }
+    var info=stat();guard lstat(url.path,&info)==0,info.st_mode & S_IFMT==S_IFREG else {throw StorageError.recoveryRequired}
+    return .init(url:url,device:info.st_dev,inode:info.st_ino,size:info.st_size,modified:info.st_mtimespec,changed:info.st_ctimespec)
+  }
+  func validate()throws {
+    guard let actual=try Self.capture(url),actual.device==device,actual.inode==inode,actual.size==size,
+      actual.modified.tv_sec==modified.tv_sec,actual.modified.tv_nsec==modified.tv_nsec,
+      actual.changed.tv_sec==changed.tv_sec,actual.changed.tv_nsec==changed.tv_nsec else {throw StorageError.recoveryRequired}
+  }
+}
 /// Confined to its StoreWriter queue. Statements never escape and every buffer uses SQLite copy.
 final class SQLiteDatabase {
   private var db:OpaquePointer?
   private let url:URL
+  private let readonlyGuard:ReadOnlyFileGuard?
   init(url:URL,readonly:Bool=false,create:Bool=false) throws {
     self.url=url
     precondition(!Thread.isMainThread,"SQLite must remain on its storage queue")
     if !create { guard try ManagedFiles.check(url,directory:false) else { throw StorageError.recoveryRequired } }
     else { _ = try ManagedFiles.check(url,directory:false) }
-    let flags=(readonly ? SQLITE_OPEN_READONLY : SQLITE_OPEN_READWRITE)|(create ? SQLITE_OPEN_CREATE : 0)|SQLITE_OPEN_NOMUTEX|SQLITE_OPEN_NOFOLLOW
-    let status=sqlite3_open_v2(url.path,&db,flags,nil)
+    readonlyGuard=readonly ? try ReadOnlyFileGuard.capture(url) : nil
+    var flags=(readonly ? SQLITE_OPEN_READONLY : SQLITE_OPEN_READWRITE)|(create ? SQLITE_OPEN_CREATE : 0)|SQLITE_OPEN_NOMUTEX|SQLITE_OPEN_NOFOLLOW
+    var filename=url.path
+    if readonlyGuard != nil {
+      // SDK 27's readonly VFS opens a missing WAL without O_CREAT (actual ENOENT).
+      // A serialized, sidecar-free main file is immutable for this short reader lifetime;
+      // use SQLite's documented readonly URI mode without creating/modifying the source DB.
+      guard var components=URLComponents(url:url.absoluteURL,resolvingAgainstBaseURL:false) else {throw StorageError.unsafePath}
+      components.queryItems=[.init(name:"mode",value:"ro"),.init(name:"immutable",value:"1")]
+      guard let encoded=components.url?.absoluteString else {throw StorageError.unsafePath}
+      filename=encoded;flags |= SQLITE_OPEN_URI
+    }
+    let status=sqlite3_open_v2(filename,&db,flags,nil)
     guard status==SQLITE_OK else { if let db { sqlite3_close_v2(db) };db=nil;throw StorageError.sqlite(status,"open") }
     if create { guard chmod(url.path,0o600)==0 else { throw StorageError.system(errno,"database_permissions") } }
     sqlite3_extended_result_codes(db,1);sqlite3_busy_timeout(db,1000)
@@ -26,6 +56,7 @@ final class SQLiteDatabase {
     precondition(!Thread.isMainThread,"SQLite must remain on its storage queue")
     guard !sql.utf8.contains(0),sql.utf8.count<=65536 else { throw StorageError.corruptIdentity }
     guard let db else { throw StorageError.closing }
+    try readonlyGuard?.validate()
     var raw:OpaquePointer?
     let prepared=sql.withCString { bytes in
       var tail:UnsafePointer<CChar>?
@@ -56,9 +87,17 @@ final class SQLiteDatabase {
     while true {
       let result=sqlite3_step(raw)
       if result==SQLITE_DONE { break }
-      guard result==SQLITE_ROW else { throw StorageError.sqlite(result,"step") }
+      guard result==SQLITE_ROW else {
+        #if OPENMATH_STORAGE_FIXTURE
+        // Only explicitly compiled disposable fixture programs print SQL structure/OS errno;
+        // production diagnostics never print paths or bound source/model/credential values.
+        FileHandle.standardError.write(Data("SQLite fixture step failure code=\(result) errno=\(sqlite3_system_errno(db)) message=\(String(cString:sqlite3_errmsg(db))) sql=\(sql)\n".utf8))
+        #endif
+        throw StorageError.sqlite(result,"step")
+      }
       try rows?(raw)
     }
+    try readonlyGuard?.validate()
   }
   func integer(_ sql:String) throws ->Int64 { var output:Int64?;try statement(sql){output=sqlite3_column_int64($0,0)};guard let output else { throw StorageError.corruptIdentity };return output
   }

@@ -1,0 +1,346 @@
+{
+  "schema_version": 1,
+  "record_kind": "development_document_library_projection",
+  "task": "R4.1.12",
+  "task_status": "in_progress",
+  "completed_scope": "Original source/kernel/save outbox projection, durable cross-store ACK, bounded recovery cursor, Library corruption isolation",
+  "base_source_sha": "25df8d8cdcb60b6cd28632488f7c2597392026e3",
+  "timestamp_utc": "2026-10-11T13:05:36.854179+00:00",
+  "runtime_version": "0.1.0-pre-alpha.3",
+  "target_version": "0.1.0-pre-alpha.4",
+  "public_gate_evidence": false,
+  "started_simulators": false,
+  "commands": [
+    {
+      "command": "bash macos/Scripts/test-recovery.sh",
+      "exit_code": 0,
+      "log": {
+        "path": "target/acceptance/pre-alpha.4/development/r41/library-projection-runtime-final5.log",
+        "bytes": 520,
+        "sha256": "55191170c580813b038c49af6e25bb9e235253bfce16b70c9117b5ef12e5f8a4"
+      }
+    },
+    {
+      "command": "bash macos/Scripts/test-storage.sh",
+      "exit_code": 0,
+      "log": {
+        "path": "target/acceptance/pre-alpha.4/development/r41/recovery-storage-regression-final.log",
+        "bytes": 415,
+        "sha256": "db2e8f2f7d3f9bdcde1ab32f75c4b721ae047e8827b613627c672bf3aa3b622f"
+      }
+    },
+    {
+      "command": "bash macos/Scripts/test-saves.sh",
+      "exit_code": 0,
+      "log": {
+        "path": "target/acceptance/pre-alpha.4/development/r41/recovery-saves-regression-final.log",
+        "bytes": 884,
+        "sha256": "374b3aaebee6a9dd640175c092b47ad3f813b87f5efa6a7e909342e7d0452118"
+      }
+    },
+    {
+      "command": "bash macos/Scripts/test-history.sh",
+      "exit_code": 0,
+      "log": {
+        "path": "target/acceptance/pre-alpha.4/development/r41/recovery-history-regression-final.log",
+        "bytes": 386,
+        "sha256": "e25c6658f5cf0d3c60c8f1c05be5e40eb345061300adf4c12b00419a8d2560ca"
+      }
+    },
+    {
+      "command": "bash macos/Scripts/test-kernel-store.sh",
+      "exit_code": 0,
+      "log": {
+        "path": "target/acceptance/pre-alpha.4/development/r41/recovery-kernel-store-regression-final.log",
+        "bytes": 1994,
+        "sha256": "966f341ba94cf965b927a2ef72b8511d15dbd573a021d309ac06eb76646b457c"
+      }
+    },
+    {
+      "command": "bash macos/Scripts/test-commit-port.sh",
+      "exit_code": 0,
+      "log": {
+        "path": "target/acceptance/pre-alpha.4/development/r41/recovery-commit-regression-final.log",
+        "bytes": 2332,
+        "sha256": "fd84ec194c93db102bb756b499b781f601ee89f1c74323426e43101477f50ebb"
+      }
+    },
+    {
+      "command": "bash macos/Scripts/build-native.sh",
+      "exit_code": 0,
+      "log": {
+        "path": "target/acceptance/pre-alpha.4/development/r41/library-projection-native-build.log",
+        "bytes": 95789,
+        "sha256": "99de7d532128fbc631b3184ed92ef94176dd44c40d6c36ef81cc2c0497ab6676"
+      }
+    },
+    {
+      "command": "Swift6/iOS27 Simulator SDK typecheck only, XCTest overlay explicitly included",
+      "exit_code": 0,
+      "log": {
+        "path": "target/acceptance/pre-alpha.4/development/r41/explore-endpoint-typecheck-final2.log",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    }
+  ],
+  "actual_fixture_root": "target/macos-storage-tests/recovery-U2GC75",
+  "original_manifest": {
+    "checkpointHash": "757175a202818e2f9fa32edb6f56a213f0c79337e8c93d6d4aa0bfec1a7e8f97",
+    "checkpointID": "checkpoint-ffed554536de325106089027fe7ef0b2",
+    "documentID": "46b033e5-facb-4159-a82b-637124dbf976",
+    "fileHash": "9b30dd2ee2aef878c8d550df39e15f722a442259ecb11d5bc290e52d6d369a60",
+    "kernelRevision": 4,
+    "snapshotHash": "35bf7c1fd532116dcb1eab7344871ee02810611724d0340f03dd312484530424",
+    "storeID": "ad6ce982-6020-471c-a084-125bd41375fa"
+  },
+  "actual_original_source_revision": 1,
+  "actual_accepted_checkpoints": 5,
+  "checkpoint_contents": "One initialization checkpoint and four independently read outputs 2,3,5,6",
+  "interruptions": [
+    {
+      "boundary": "library_projection_before_commit",
+      "process_exit": -9,
+      "root": "target/macos-storage-tests/recovery-kill-gth8hmh1",
+      "source_snapshot_hash": "5450f06c2d1079c82c42eda2acc56f8a56d677f4ca5f6d8d25665c7f8aa1b5cc",
+      "accepted_checkpoints": 5,
+      "library_events_before": 0,
+      "document_projected_before": 0,
+      "library_events_after": 7,
+      "file_hash": "9b30dd2ee2aef878c8d550df39e15f722a442259ecb11d5bc290e52d6d369a60"
+    },
+    {
+      "boundary": "library_projection_committed",
+      "process_exit": -9,
+      "root": "target/macos-storage-tests/recovery-kill-0iiwh4wl",
+      "source_snapshot_hash": "85f9b452257b405bdb2b2a8bc25da64d72d3d231a1a2c9b3c68df4a4ef5f76f0",
+      "accepted_checkpoints": 5,
+      "library_events_before": 1,
+      "document_projected_before": 0,
+      "library_events_after": 7,
+      "file_hash": "9b30dd2ee2aef878c8d550df39e15f722a442259ecb11d5bc290e52d6d369a60"
+    },
+    {
+      "boundary": "library_projection_confirmed",
+      "process_exit": -9,
+      "root": "target/macos-storage-tests/recovery-kill-yboiykfk",
+      "source_snapshot_hash": "b3e54f0bb3c6fb4a6f8ad64b7bdd8566412cd56927db6def84df3048f513393a",
+      "accepted_checkpoints": 5,
+      "library_events_before": 1,
+      "document_projected_before": 0,
+      "library_events_after": 7,
+      "file_hash": "9b30dd2ee2aef878c8d550df39e15f722a442259ecb11d5bc290e52d6d369a60"
+    },
+    {
+      "boundary": "document_projection_before_commit",
+      "process_exit": -9,
+      "root": "target/macos-storage-tests/recovery-kill-ufwz7uxy",
+      "source_snapshot_hash": "fac403c0edbae410c14b5562bae9574bec2518b6778b47c9ed2a77a8c7be7326",
+      "accepted_checkpoints": 5,
+      "library_events_before": 1,
+      "document_projected_before": 0,
+      "library_events_after": 7,
+      "file_hash": "9b30dd2ee2aef878c8d550df39e15f722a442259ecb11d5bc290e52d6d369a60"
+    },
+    {
+      "boundary": "document_projection_committed",
+      "process_exit": -9,
+      "root": "target/macos-storage-tests/recovery-kill-ut8nqhi0",
+      "source_snapshot_hash": "3019f500d616b6f6c78249bdb7d23911c558311bb95717a2dcfafea4a1de6292",
+      "accepted_checkpoints": 5,
+      "library_events_before": 1,
+      "document_projected_before": 1,
+      "library_events_after": 7,
+      "file_hash": "9b30dd2ee2aef878c8d550df39e15f722a442259ecb11d5bc290e52d6d369a60"
+    }
+  ],
+  "sources": [
+    {
+      "path": "macos/OpenMathNative/Storage/RecoveryTypes.swift",
+      "bytes": 5530,
+      "sha256": "cdb720561c7c329dff74557a97f563ea116c7dc5c8890093559d865351ed3ca6"
+    },
+    {
+      "path": "macos/OpenMathNative/Storage/DocumentOutbox.swift",
+      "bytes": 7222,
+      "sha256": "505be9bdc71db0bb169816e6e5fb0398cfa8b64442c49edb61311bea0206baef"
+    },
+    {
+      "path": "macos/OpenMathNative/Storage/LibraryStore.swift",
+      "bytes": 5693,
+      "sha256": "587f387cd61c2f793ce7fd13740fda1ca07899cd61206d56201698c605199ee0"
+    },
+    {
+      "path": "macos/OpenMathNative/Storage/RecoveryService.swift",
+      "bytes": 2750,
+      "sha256": "7a9b047a0f4741b591ba124d028666af8706b868bc04ffccc38770812b951bb9"
+    },
+    {
+      "path": "macos/OpenMathNative/Storage/SQLiteDatabase.swift",
+      "bytes": 9402,
+      "sha256": "75c8e644d86c3a5d6d007a161571cb485ea4557c3352131790e79ae4047c1123"
+    },
+    {
+      "path": "macos/OpenMathNative/Storage/StorageService.swift",
+      "bytes": 22969,
+      "sha256": "c52bd8c5ed13d5b5598f11d67261f71e733c2b00a8f4ff5a33ee533298308069"
+    },
+    {
+      "path": "macos/OpenMathNative/Storage/Bootstrap.swift",
+      "bytes": 7802,
+      "sha256": "65586f0cc847a1f130ff714d4b9415f5e9cdacf90c5c1809e6513cdefcf1bc12"
+    },
+    {
+      "path": "macos/OpenMathNative/Storage/StorageTypes.swift",
+      "bytes": 3396,
+      "sha256": "75749a0426f38b2bb914237de5820e548c244eb23e20e960186eb95a498f4b1f"
+    },
+    {
+      "path": "macos/OpenMathNative/Files/NativeDocumentSession.swift",
+      "bytes": 5494,
+      "sha256": "ea5de76a37bb18ec9eb61c944b9ce8af4aa95bb95802373a31fab372145e4553"
+    },
+    {
+      "path": "macos/OpenMathNative/NativeFileWorkspace.swift",
+      "bytes": 9742,
+      "sha256": "1bc9a0027fa1f4648916ac72477849b8c49864780452e83ba443d55e998edf93"
+    },
+    {
+      "path": "macos/OpenMathNativeTests/RecoveryFixtures/main.swift",
+      "bytes": 14387,
+      "sha256": "c96de459c243723c8b17178a894f257cecb0ae543f6172b04da1c3f7cfa7601b"
+    },
+    {
+      "path": "macos/OpenMathNativeTests/RecoveryFixtures/interruption.py",
+      "bytes": 4437,
+      "sha256": "c16529bd5f3fc066eb737895c01fcf7a768908aa155c5544bee57d104ed712b9"
+    },
+    {
+      "path": "macos/Scripts/test-recovery.sh",
+      "bytes": 1598,
+      "sha256": "f32324aa234603bd87f7b4ad58d5d4a77269ec1ea9190875e1d8e57810a24bbe"
+    },
+    {
+      "path": "macos/OpenMathNativeTests/StorageFixtures/SyncProbe.c",
+      "bytes": 5987,
+      "sha256": "f764d149397dc6b956a7ea8dd683ee9abd017c4044fb871167271284f1473f20"
+    },
+    {
+      "path": "ios/OpenMathUITests/NotebookUITests.swift",
+      "bytes": 5604,
+      "sha256": "54e85cfad1b2cb95c6b880220b644f0d853d381724117419139a327027e418cb"
+    }
+  ],
+  "app_executable": {
+    "path": "target/macos-native/Build/Products/Release/OpenMath Preview.app/Contents/MacOS/OpenMathNative",
+    "bytes": 30682704,
+    "sha256": "33e821f86a29f9f1dc63b8c9d16aed425f78f0543dc0adf0c5e3f3adc1b429bb"
+  },
+  "read_only_guard": "Root lease/queue serialized sidecar-free immutable reader; actual file change rejected; existing WAL/journal never ignored",
+  "failed_attempts": [
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r41/recovery-library-storage.log",
+      "bytes": 2641,
+      "sha256": "58e265ae36050906a94c61950f79fd81dca3541ed97fc650c1feef537f6fe3c0"
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r41/library-projection-runtime.log",
+      "bytes": 318,
+      "sha256": "f2a8ea1e777646692814ca4a6bfbbb4fc1e17856656af03fb554d06bc8c793cf"
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r41/library-projection-runtime-final.log",
+      "bytes": 741,
+      "sha256": "69c2273eb10dbe2083429e992afbb1b9edc69377d3008503d7f12f769c5d6376"
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r41/library-projection-runtime-traced.log",
+      "bytes": 764,
+      "sha256": "3ca89769aa61d35738cee24ff3780f65d49309a566cd3028367975db45fdcafb"
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r41/library-projection-runtime-final2.log",
+      "bytes": 764,
+      "sha256": "b970b8691c7d17c79789232c3862ddc799d5d3c76ce711d56e577c7602caf767"
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r41/library-projection-runtime-sql-diagnostic.log",
+      "bytes": 870,
+      "sha256": "38118920e886d6addcb57e987d616737de994f963bf6d8f1183d723b26ee19ff"
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r41/library-projection-runtime-open-diagnostic.log",
+      "bytes": 1055,
+      "sha256": "b624ac8de260f8022bf6b584856fc0b2487868e42fd98ba88a637b779e4a77f3"
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r41/library-projection-runtime-final4.log",
+      "bytes": 319,
+      "sha256": "d107b87240899b65c9e45cdef60ff44cdafe115b38cf3cc3445889b75d69eda3"
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r41/explore-endpoint-typecheck.log",
+      "bytes": 33648,
+      "sha256": "013ba19035905c4069b7862b9b0b52213e0dd11253e545cc3213796399065406"
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r41/explore-endpoint-typecheck-final.log",
+      "bytes": 651,
+      "sha256": "608a14c77f5c0bc3fa57d601759576be0295b17cf1a39f78b1f03089fa783d9c"
+    }
+  ],
+  "failure_resolutions": [
+    "Swift escaping closure capture explicitly declares self.",
+    "Actual kernel outbox includes initialization; assertions explicitly require it plus the unchanged four real outputs.",
+    "SDK readonly open of missing WAL failed ENOENT at PRAGMA user_version; serialized sidecar-free guarded readonly URI avoids mutating source DB.",
+    "WAL retention after a clean close is permitted; guard-only fixture uses an independent header copy and never deletes a real WAL.",
+    "Direct XCTest typecheck includes the platform Swift overlay; endpoint predicate operator spacing corrected."
+  ],
+  "previous_ci": {
+    "run_id": 38122270416,
+    "head_sha": "25df8d8cdcb60b6cd28632488f7c2597392026e3",
+    "status": "completed",
+    "conclusion": "failure",
+    "jobs": [
+      {
+        "name": "rust",
+        "conclusion": "success"
+      },
+      {
+        "name": "dependencies",
+        "conclusion": "success"
+      },
+      {
+        "name": "native_macos / native",
+        "conclusion": "success"
+      },
+      {
+        "name": "ios / native",
+        "conclusion": "failure"
+      },
+      {
+        "name": "frontend",
+        "conclusion": "success"
+      }
+    ],
+    "failure": "iPad exploration XCUITest stopped slider at a=3.96; actual correct value 15.6816, exact endpoint16 not reached",
+    "original_ax_tree": {
+      "path": "target/ci-evidence/25df8d8-ios/explore-attachments/1B07B5E7-8128-4306-A848-4230A061BF50.txt",
+      "bytes": 18689,
+      "sha256": "de8f21316ca1179577f6b525b9655d45028d8d33220b80f93adf10f8864bf041"
+    },
+    "original_screenshot": {
+      "path": "target/ci-evidence/25df8d8-ios/explore-attachments/C7F1EE58-C1D1-4E7E-890C-682529CB6C9B.png",
+      "bytes": 302719,
+      "sha256": "58f49eef09c4f5fb26f599ede7b0dd25909976d566480f2fdd062a08e06aeee1"
+    },
+    "resolution": "Test completes actual thumb drag past track and explicitly requires a=4 plus original 16; SDK typecheck passed, new same-SHA CI execution pending."
+  },
+  "remaining_scope": [
+    "Persist unconfirmed source and IME overlays",
+    "Full startup document/source/accepted-prefix/save-intent recovery",
+    "Canonical Agent session/admission/model request interrupted/unknown facts",
+    "Backup/format upgrade/quota/GC",
+    "Native full workbench and final candidate gates"
+  ]
+}

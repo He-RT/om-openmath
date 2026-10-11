@@ -12,6 +12,7 @@
 static int (*real_fcntl)(int,int,...);
 static ssize_t (*real_write)(int,const void*,size_t);
 static ssize_t (*real_pwrite)(int,const void*,size_t,off_t);
+static int (*real_open)(const char*,int,...);
 static atomic_int calls,successes,barriers,unknown,fail_writes,fail_fullsync;
 static int traced_fcntl(int fd,int command,...) {
   if(command==F_FULLFSYNC
@@ -40,16 +41,25 @@ static ssize_t traced_pwrite(int fd,const void *bytes,size_t count,off_t offset)
   if(atomic_load(&fail_writes)){errno=ENOSPC;return -1;}
   return real_pwrite(fd,bytes,count,offset);
 }
+static int traced_open(const char *path,int flags,...) {
+  mode_t mode=0;
+  if(flags&O_CREAT){va_list args;va_start(args,flags);mode=(mode_t)va_arg(args,int);va_end(args);}
+  int result=real_open(path,flags,mode);
+  if(result<0 && strstr(path,".sqlite"))fprintf(stderr,"SQLite fixture open failed errno=%d flags=%x path=%s\n",errno,flags,path);
+  return result;
+}
 int om_fixture_install_sync_probe(void) {
   sqlite3_vfs *vfs=sqlite3_vfs_find(0);
   if(!vfs || vfs->iVersion<3 || !vfs->xGetSystemCall || !vfs->xSetSystemCall)return SQLITE_NOTFOUND;
   real_fcntl=(int(*)(int,int,...))vfs->xGetSystemCall(vfs,"fcntl");
   real_write=(ssize_t(*)(int,const void*,size_t))vfs->xGetSystemCall(vfs,"write");
   real_pwrite=(ssize_t(*)(int,const void*,size_t,off_t))vfs->xGetSystemCall(vfs,"pwrite");
+  real_open=(int(*)(const char*,int,...))vfs->xGetSystemCall(vfs,"open");
   if(!real_fcntl || !real_write || !real_pwrite)return SQLITE_NOTFOUND;
   int result=vfs->xSetSystemCall(vfs,"fcntl",(sqlite3_syscall_ptr)traced_fcntl);
   if(result==SQLITE_OK)result=vfs->xSetSystemCall(vfs,"write",(sqlite3_syscall_ptr)traced_write);
   if(result==SQLITE_OK)result=vfs->xSetSystemCall(vfs,"pwrite",(sqlite3_syscall_ptr)traced_pwrite);
+  if(result==SQLITE_OK && real_open)result=vfs->xSetSystemCall(vfs,"open",(sqlite3_syscall_ptr)traced_open);
   return result;
 }
 int om_fixture_fullsync_calls(void){return atomic_load(&calls);}

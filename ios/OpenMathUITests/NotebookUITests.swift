@@ -93,6 +93,16 @@ final class NotebookUITests: XCTestCase {
     let slider = app.sliders["explore.slider.a"]
     XCTAssertTrue(slider.waitForExistence(timeout: 15))
     slider.adjust(toNormalizedSliderPosition: 1)
+    // XCUITest can stop just inside the endpoint on the wider iPad track (actual a=3.96).
+    // Finish the real thumb drag past the track, then require a=4 and the original exact 16.
+    if let text=slider.value as? String,let value=Double(text),value>=3.8 && value<4 {
+      let frame=slider.frame,inset=min(frame.height/2,frame.width/4)
+      let position=(inset+(frame.width-2*inset)*(value/4))/frame.width
+      slider.coordinate(withNormalizedOffset:.init(dx:position,dy:0.5)).press(forDuration:0.1,
+        thenDragTo:slider.coordinate(withNormalizedOffset:.init(dx:1.15,dy:0.5)))
+    }
+    let atMaximum=NSPredicate {_,_ in (slider.value as? String).flatMap(Double.init)==4}
+    XCTAssertTrue(XCTWaiter.wait(for:[XCTNSPredicateExpectation(predicate:atMaximum,object:nil)],timeout:5) == .completed)
     XCTAssertTrue(app.descendants(matching: .any)["expression.16."].firstMatch.waitForExistence(timeout: 15))
     screenshot("explore-portrait", app)
     XCUIDevice.shared.orientation = .landscapeLeft

@@ -17,6 +17,8 @@ private final class StoreWriter:@unchecked Sendable {
   private var references:BlobReferences?
   private var kernel:KernelStore?
   private var saves:SaveStore?
+  private var effects:LibraryStore?
+  private var outbox:DocumentOutbox?
   init(_ name:String,lease:RootLease) { self.lease=lease;queue=DispatchQueue(label:"org.openmath.storage."+name,qos:.utility) }
   nonisolated(nonsending) func perform<T:Sendable>(_ body:@escaping @Sendable (StoreWriter)throws->T) async throws ->T {
     try await withCheckedThrowingContinuation { continuation in
@@ -37,6 +39,8 @@ private final class StoreWriter:@unchecked Sendable {
       writer.references=try BlobReferences(db:opened.0,url:databaseURL)
       if kind=="document",(3...4).contains(opened.1.storeVersion) {writer.kernel=try KernelStore(db:opened.0,url:databaseURL,identity:opened.1)}
       if kind=="document",opened.1.storeVersion==4 {writer.saves=try SaveStore(db:opened.0,url:databaseURL,identity:opened.1)}
+      if kind=="library",opened.1.storeVersion==2 {writer.effects=try LibraryStore(db:opened.0,url:databaseURL,identity:opened.1)}
+      if kind=="document",let source=writer.source {writer.outbox=DocumentOutbox(db:opened.0,url:databaseURL,identity:opened.1,source:source,kernel:writer.kernel,saves:writer.saves)}
       return StoreOpenInfo(identity:opened.1,runtime:opened.2)
     }
   }
@@ -55,11 +59,23 @@ private final class StoreWriter:@unchecked Sendable {
   nonisolated(nonsending) func saveCall<T:Sendable>(_ work:@escaping @Sendable (SaveStore)throws->T) async throws ->T {
     try await perform {writer in guard let saves=writer.saves else {throw StorageError.unsupportedVersion};return try work(saves)}
   }
+  nonisolated(nonsending) func effectCall<T:Sendable>(_ work:@escaping @Sendable (LibraryStore)throws->T) async throws ->T {
+    try await perform {writer in guard let effects=writer.effects else {throw StorageError.unsupportedVersion};return try work(effects)}
+  }
+  nonisolated(nonsending) func outboxCall<T:Sendable>(_ work:@escaping @Sendable (DocumentOutbox)throws->T) async throws ->T {
+    try await perform {writer in guard let outbox=writer.outbox else {throw StorageError.closing};return try work(outbox)}
+  }
+  /// Failed Library open is not a clean shutdown or a license to replace the original DB.
+  nonisolated(nonsending) func abandon() async {
+    _ = try? await perform {writer in
+      try writer.db?.close();writer.db=nil;writer.source=nil;writer.references=nil;writer.kernel=nil;writer.saves=nil;writer.effects=nil;writer.outbox=nil
+    }
+  }
   nonisolated(nonsending) func close() async throws {
     try await perform { writer in
       if let db=writer.db {
         try db.transaction { try db.statement("UPDATE store_state SET last_clean_shutdown=1 WHERE singleton=1") }
-        try db.checkpoint();try db.close();writer.db=nil;writer.source=nil;writer.references=nil;writer.kernel=nil;writer.saves=nil
+        try db.checkpoint();try db.close();writer.db=nil;writer.source=nil;writer.references=nil;writer.kernel=nil;writer.saves=nil;writer.effects=nil;writer.outbox=nil
       }
     }
   }
@@ -74,25 +90,70 @@ actor StorageService {
   private var lease:RootLease?
   private var blobs:BlobStore?
   private var library:StoreWriter?
+  private var libraryState:NativeLibraryAvailability = .unavailable(.closing)
   private var documents:[String:StoreWriter]=[:]
   private var closeTask:Task<Void,any Error>?
   private init(paths:NativeStoragePaths,lease:RootLease) { self.paths=paths;self.lease=lease;self.blobs=BlobStore(root:paths.root,lease:lease) }
   static func open(paths:NativeStoragePaths,faults:StorageFaults = .init()) async throws ->(StorageService,StoreOpenInfo) {
+    let lease=try await rootLease(paths:paths,faults:faults)
+    let service=StorageService(paths:paths,lease:lease)
+    let writer=StoreWriter("library",lease:lease)
+    let info=try await writer.open(folder:paths.root.appendingPathComponent("Library",isDirectory:true),kind:"library",document:nil,faults:faults)
+    await service.installLibrary(writer,info:info)
+    return (service,info)
+  }
+  private static func rootLease(paths:NativeStoragePaths,faults:StorageFaults) async throws->RootLease {
     let queue=DispatchQueue(label:"org.openmath.storage.bootstrap",qos:.utility)
-    let lease:RootLease=try await withCheckedThrowingContinuation { continuation in
+    return try await withCheckedThrowingContinuation { continuation in
       queue.async {
         precondition(!Thread.isMainThread)
         do { continuation.resume(returning:try StorageBootstrap.root(paths,faults:faults)) }
         catch { continuation.resume(throwing:error) }
       }
     }
-    let service=StorageService(paths:paths,lease:lease)
-    let writer=StoreWriter("library",lease:lease)
-    let info=try await writer.open(folder:paths.root.appendingPathComponent("Library",isDirectory:true),kind:"library",document:nil,faults:faults)
-    await service.installLibrary(writer)
-    return (service,info)
   }
-  private func installLibrary(_ writer:StoreWriter) { library=writer }
+  /// Native workspace can retain a healthy document service when Library alone is damaged.
+  /// Root/channel/lock failures never take this fallback, and no empty replacement is created.
+  static func openWorkspace(paths:NativeStoragePaths,faults:StorageFaults = .init()) async throws->StorageService {
+    let lease=try await rootLease(paths:paths,faults:faults),service=StorageService(paths:paths,lease:lease)
+    let writer=StoreWriter("library",lease:lease)
+    do {
+      let info=try await writer.open(folder:paths.root.appendingPathComponent("Library",isDirectory:true),kind:"library",document:nil,faults:faults)
+      await service.installLibrary(writer,info:info)
+    } catch {
+      await writer.abandon()
+      await service.unavailableLibrary((error as? StorageError) ?? .corruptIdentity)
+    }
+    return service
+  }
+  private func installLibrary(_ writer:StoreWriter,info:StoreOpenInfo) {library=writer;libraryState=info.identity.storeVersion==2 ? .ready(info) : .legacy(info)}
+  private func unavailableLibrary(_ error:StorageError) {libraryState = .unavailable(error)}
+  func libraryAvailability()->NativeLibraryAvailability {libraryState}
+  func documentIdentity(_ document:String) async throws->StoreIdentity {
+    guard closeTask==nil,let writer=documents[document] else {throw StorageError.closing}
+    return try await writer.header()
+  }
+  func documentOutbox(document:String,kind:DocumentEffectKind,after:Int64=0,limit:Int=16) async throws->DocumentOutboxPage {
+    guard closeTask==nil,let writer=documents[document] else {throw StorageError.closing}
+    return try await writer.outboxCall {try $0.page(kind,after:after,limit:limit)}
+  }
+  /// Return only after Library durable readback, then mark the original document event.
+  /// Repeating after a crash reuses its stable store/event identity, including projected=1.
+  func projectDocumentEffect(_ effect:DocumentEffect,faults:StorageFaults = .init()) async throws->LibraryProjectionReceipt {
+    guard closeTask==nil,let writer=documents[effect.documentID] else {throw StorageError.closing}
+    guard let library else {
+      if case .unavailable(let error)=libraryState {throw error};throw StorageError.unsupportedVersion
+    }
+    let actual=try await writer.outboxCall {try $0.verify(effect)}
+    let receipt=try await library.effectCall {try $0.append(actual,faults:faults)}
+    try faults.reach("library_projection_confirmed")
+    try await writer.outboxCall {try $0.acknowledge(effect,receipt:receipt,faults:faults)}
+    return receipt
+  }
+  func libraryEffects(after:Int64=0,limit:Int=16) async throws->[StoredDocumentEffect] {
+    guard closeTask==nil,let library else {throw StorageError.closing}
+    return try await library.effectCall {try $0.page(after:after,limit:limit)}
+  }
   func readLibraryHeader() async throws ->StoreIdentity {
     guard let library,closeTask==nil else { throw StorageError.closing }
     return try await library.header()

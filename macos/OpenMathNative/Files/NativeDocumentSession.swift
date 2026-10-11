@@ -12,7 +12,7 @@ actor NativeAppStorage {
     guard !closed else {throw StorageError.closing}
     if let starting {return try await starting.value}
     let chosen=try paths ?? NativeStoragePaths.system(.preview)
-    let task=Task {let (store,_)=try await StorageService.open(paths:chosen);return store}
+    let task=Task {try await StorageService.openWorkspace(paths:chosen)}
     starting=task
     do {return try await task.value} catch {starting=nil;throw error}
   }

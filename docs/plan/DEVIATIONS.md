@@ -556,3 +556,16 @@ L2使用精确标称GM分数、50位FindRoot/1000迭代和真实残差，报告�
 - AppKit面板回调显式orderOut后继续；打开面板整个寿命预留单活动文档busy。普通保存和原位自动保存若收到不同URL，返回bindingChanged而不是错误目标成功。真实文件fixture验证两个拒绝均没有写新目标，原文件保留。
 - 取消关闭中的保存面板恢复原autosave policy，保留既有failure pause。系统面板、文件字节、SQLite receipt/outbox和重开source0/零checkpoint/正常退出独立核对完成，R4.1.11 Done满足。启动草稿/Library恢复仍属于R4.1.12，不能把保存完成等同完整崩溃恢复。
 - test-native-contracts、test-saves及SDK27 Release构建实际exit0；[本批证据](../acceptance/pre-alpha.4/development/r41/file-saves-completion.json)。本批新SHA CI待推送后执行，不以本地通过抹掉前一CI失败；32最终gate仍not_run。
+
+### R4-D026：原文档事实投影与故障隔离（2026-10-11，R4.1.12部分）
+
+- 新Library2在selector发布前建立不可变document_effect_events；Native Library1普通打开不升级，Root1/文档4不变。确认的源事件以source_store/event身份去重，generation作来源，跨库提交不宣称原子。
+- Library落盘/回读之后标原库projected，丢ACK按原事件核对；重启也核对已标事件，不把flag当唯一事实。入口先从原文档回执验证，伪造保存结果不能先污染Library。保存投影删除私有路径/bookmark。RecoveryService没有CAS/HTTP/凭据依赖，有界游标可继续完整扫描。
+- 支持格式2的有界记录前缀在readonly连接检查，完整坏记录拒绝；openWorkspace只隔离Library失败，根锁/通道/格式失败不能降级。实际原库字节保留、健康文档/source/accepted prefix和另存为均通过；UI警告与保存状态分开。
+- 本机SDK27实际readonly打开不存在WAL返回ENOENT，重启失败不是SQL事实损坏。仅在RootLease/所属queue且无WAL/journal时使用短期不可变URI，查询前后核对device/inode/长度/mtime/ctime及侧文件；任何变化拒绝。现有WAL正常读，不忽略/删改。依据[SQLite URI](https://www.sqlite.org/uri.html)与实际VFS失败推导；原future-format字节不变及物理守卫拒绝通过。守卫测试的header副本不作备份/恢复，正式backup仍按原API计划。
+- 实际初始化＋四次2/3/5/6计算、源码和保存共7事实；初始测试漏初始化记录已加明确断言，没有改数学期望。5 SIGKILL及原存储/文件/历史/检查点/编辑回归通过。Step1完成，未确认/IME草稿、全面启动恢复和Agent canonical会话/admission仍未完成，任务保持in_progress。
+
+### R4-D027：iPad探索测试端点实证（2026-10-11）
+
+- 25df8d8 CI38122270416 Mac/Rust/Web/依赖成功，phone成功，iPad探索UI失败。原始截图与AX树显示a3.96和对应15.6816；XCUITest normalized=1未把thumb拖到最大值，不归因于CAS或参数快照错误。
+- 在该真实近端点情形完成thumb拖到轨道外，并新增a=4检查，保留原expression16及旋转断言。没有扩大数学容差或降低原53整次1秒门槛，未改变产品滑块步长/参数语义。SDK27 Swift6类型检查通过；实机/模拟器执行由下一同SHA CI证明，本机不启模拟器，不把typecheck当UI pass。

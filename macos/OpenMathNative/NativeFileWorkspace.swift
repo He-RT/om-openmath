@@ -133,6 +133,7 @@ struct NativeNotebookFileView:View {
   var body:some View {
     VStack(alignment:.leading,spacing:12) {
       HStack {Text(session.document.fileURL?.lastPathComponent ?? "未命名笔记本").font(.title2);Spacer();Text(session.document.statusText).foregroundStyle(.secondary).accessibilityIdentifier("notebook-file-status")}
+      NativeDraftBackupStatus(backup:session.backup)
       if let error=workspace.errorText {Text(error).foregroundStyle(.red).textSelection(.enabled)}
       if let warning=workspace.libraryWarning {Text(warning).foregroundStyle(.secondary).textSelection(.enabled)}
       HStack {
@@ -155,6 +156,10 @@ struct NativeNotebookFileView:View {
       Text("文件编辑与保存已接通；完整笔记本展示继续按计划接入。打开文件不会自动运行单元格。").font(.footnote).foregroundStyle(.secondary)
     }.padding(20)
   }
+}
+private struct NativeDraftBackupStatus:View {
+  @ObservedObject var backup:NativeDraftBackup
+  var body:some View {Text(backup.status).font(.caption).foregroundStyle(.secondary).accessibilityIdentifier("notebook-draft-backup-status")}
 }
 private struct NativeSourceFileEditor:NSViewRepresentable {
   let session:NativeDocumentSession

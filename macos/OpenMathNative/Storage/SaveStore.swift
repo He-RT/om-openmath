@@ -9,7 +9,7 @@ final class SaveStore {
   private let identity:StoreIdentity
   private static let tables:Set<String>=["file_bindings","file_head","save_intents","save_receipts","save_outbox"]
   init(db:SQLiteDatabase,url:URL,identity:StoreIdentity)throws {
-    guard identity.kind=="document",identity.storeVersion==4,identity.documentID != nil else {throw StorageError.unsupportedVersion}
+    guard identity.kind=="document",(4...5).contains(identity.storeVersion),identity.documentID != nil else {throw StorageError.unsupportedVersion}
     self.db=db;self.url=url;self.identity=identity
     var present=Set<String>();try db.statement("SELECT name FROM sqlite_schema WHERE type='table'") {present.insert(try SQLColumn.text($0,0))}
     let found=present.intersection(Self.tables);if found==Self.tables {return};guard found.isEmpty else {throw StorageError.recoveryRequired}

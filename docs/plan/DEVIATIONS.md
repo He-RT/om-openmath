@@ -569,3 +569,10 @@ L2使用精确标称GM分数、50位FindRoot/1000迭代和真实残差，报告�
 
 - 25df8d8 CI38122270416 Mac/Rust/Web/依赖成功，phone成功，iPad探索UI失败。原始截图与AX树显示a3.96和对应15.6816；XCUITest normalized=1未把thumb拖到最大值，不归因于CAS或参数快照错误。
 - 在该真实近端点情形完成thumb拖到轨道外，并新增a=4检查，保留原expression16及旋转断言。没有扩大数学容差或降低原53整次1秒门槛，未改变产品滑块步长/参数语义。SDK27 Swift6类型检查通过；实机/模拟器执行由下一同SHA CI证明，本机不启模拟器，不把typecheck当UI pass。
+
+### R4-D028：原生草稿记录与实例隔离（2026-10-11，R4.1.12部分）
+
+- 文档fresh5增加draft owner/batch/head，初始化source表及草稿表后再发布selector；已选择5缺表拒绝，不自动升级旧Native1–4。存储三类成功事实和Library2投影语义不变，普通.omnb仍源码v1。
+- 未确认文本/基线以原UTF8 Data存储，UTF16选区/marked range检验代理对边界，NFC/NFD cell身份按字节；原owner/generation/sequence保留作来源，重启使用新lease/editor身份。恢复不复活IME/授权，不自动提交草稿；已确认相同源码不重做，冲突/orphan保留。
+- 500ms去抖/最大2s producer实际后台编码/hash/同步后ACK，晚输入不被旧ACK清空。unknown按原owner/sequence读取，已确定缺失才补同一冻结ID。保留最近两份full payload与所有精简receipt，SourceHistory保护其baseline；正常close先flush而失败继续保留输入。
+- Source/file/数学接口不通过draft写入变更；NativeUI显示本地备份状态，真实IME/500ms-max2s/late/lease/F_FULLFSYNC/大快照与3 SIGKILL通过。原206历史、文件/检查点/编辑/投影回归和Release通过。完整启动/prefix/save intent、300ms source合并和canonical Agent恢复仍待实现，任务不勾Done。

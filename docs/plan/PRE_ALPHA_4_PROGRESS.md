@@ -42,7 +42,7 @@
 | [x] [R4.1.09](PRE_ALPHA_4.md#task-r4.1.09) | 主KernelWorker、候选接纳和直接取消 | completed | [实际主运行](../acceptance/pre-alpha.4/development/r41/kernel-runtime.json) / CABI+Swift+SQLite / 310相关Rust+实际IO/长CAS/close | 5469091；3ce0320、b309baf |
 | [x] [R4.1.10](PRE_ALPHA_4.md#task-r4.1.10) | 不可变结果库和只读检查通道 | completed | [实际原生结果](../acceptance/pre-alpha.4/development/r41/result-runtime.json) / CABI＋worker＋Swift / 324Rust＋actual receipts/late reply | 6d53f17；f04474f；后续补验 |
 | [x] [R4.1.11](PRE_ALPHA_4.md#task-r4.1.11) | NSDocument打开保存与冻结快照 | completed | [实际文件/同库回执/本轮Release面板闭环](../acceptance/pre-alpha.4/development/r41/file-saves-completion.json) / 6 SIGKILL+原件冲突 / N+1/IME/身份/取消/重开 / Mac CI38122270416 success | 25df8d8；f04474f、c4eab5a |
-| [ ] [R4.1.12](PRE_ALPHA_4.md#task-r4.1.12) | 会话outbox、草稿与启动恢复 | in_progress | [原文档事实/两库投影/5 SIGKILL/Library损坏隔离](../acceptance/pre-alpha.4/development/r41/library-projection.json)；草稿与完整启动恢复待完 | 本批待补SHA |
+| [ ] [R4.1.12](PRE_ALPHA_4.md#task-r4.1.12) | 会话outbox、草稿与启动恢复 | in_progress | [两库投影](../acceptance/pre-alpha.4/development/r41/library-projection.json) / [实际原生草稿、3 SIGKILL、8MiB往返](../acceptance/pre-alpha.4/development/r41/native-drafts.json)；完整启动/prefix/save intent待完 | 47ccfb0；本批待补SHA |
 | [ ] [R4.1.13](PRE_ALPHA_4.md#task-r4.1.13) | 引用租约、备份、quota与GC | planned | — | — |
 | [ ] [R4.2.01](PRE_ALPHA_4.md#task-r4.2.01) | 原生工作台窗口、分栏和投影 | planned | — | — |
 | [ ] [R4.2.02](PRE_ALPHA_4.md#task-r4.2.02) | NSTextView和严格SourceIndexMap | planned | — | — |
@@ -428,3 +428,12 @@ Done依据与覆盖case/proof:
 - test-recovery（5 SIGKILL）、storage（17真实同步＋6初始化中断）、saves（6保存中断）、history（206事务/200+pin）、kernel-store（5接纳中断）、commit-port和Release构建实际exit0。[证据](../acceptance/pre-alpha.4/development/r41/library-projection.json)与[实现](../design/native-recovery.md)。当前22/98，不把投影基础勾成整个恢复完成；接下来草稿/IME持久化与完整启动恢复，再R4.1.13资源/升级。
 - 25df8d8/CI38122270416 Rust/Web/依赖/Mac全部success，phone成功；iPad仅探索UI端点失败，实际slider3.96/正确结果15.6816。测试补真实thumb越过轨道的动作并明确要求a4＋原16，原数学/1秒门槛未改；SDK27 Swift6类型检查通过，执行留新同SHA CI，不在本机启动模拟器。初次类型检查漏XCTest Swift overlay/运算符空格错误已修，日志保留。
 - 运行.3/dev/no main/旧公开资产保留，32final gate仍not_run、candidate未分配；canonical Agent/admission/network、完整工作台及发行不由本批替代。
+
+## R4开发记录 D033 — 原生草稿耐久备份与输入保护
+
+- R4.1.12仍in_progress、总22/98。新文档5在selector之前建立草稿schema，旧1–4不自动升级；Root1/Library2/.omnb v1/iOS ABI不变。运行实例取得新lease，晚旧owner拒绝；原序列/hash回读解决unknown，不另起ID重写。
+- 真实TextKit文本/IME/UTF16选区冻结为UTF8原字节，500ms/最大2s后台编码/散列/SQLite耐久确认；旧ACK仅确认旧persistence revision，新输入保持未备份。备份和文件保存状态分别显示，关闭最终flush之后停止producer；失败不会提前关闭/停止备份。
+- 重启的DraftStore/TextKit保留原文与选区，没有setMarkedText或自动源码提交；待确认/冲突/删除格草稿分别保留。实际NFC/NFD、emoji代理对拒绝、新owner、晚输入、全同步unknown原sequence1、超过4MiB的8MiB编码读回和三个真正SIGKILL通过，原source revision0/无计算保持。[机器证据](../acceptance/pre-alpha.4/development/r41/native-drafts.json)。
+- 最近两份完整payload＋原receipt/tombstone，历史裁减保护draft引用的source0。原206/200+pin、文件6中断、检查点5中断、编辑屏障、两库5中断以及Release构建均通过。两个旧schema4断言更新为实际fresh5；新增baseline保留证明，原数学/206事务期望不改；初期编译变量重名失败保留。
+- 47ccfb0/CI38142168036 Mac/Rust/Web/依赖成功，phone成功，iPad第27条总3556.718ms失败；分段FFI30.942ms、decode2.668ms、queue1.104ms、encoded0.109ms、resume3521.889ms。前批探索端点UI已通过。本批未动1秒门槛/数学，没有本机模拟器；主线程恢复阻塞仍需诊断，新SHA CI独立回读。
+- 下一步完整启动扫描、用户恢复选择、source/overlay/已接纳prefix/原save intent与unknown核对，300ms非IME提交及canonical Agent会话/admission/network后续继续；不能把底层草稿往返当完整应用恢复Done。

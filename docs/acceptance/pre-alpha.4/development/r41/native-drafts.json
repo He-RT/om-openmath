@@ -1,0 +1,278 @@
+{
+  "schema_version": 1,
+  "record_kind": "development_native_draft_backup",
+  "task": "R4.1.12",
+  "task_status": "in_progress",
+  "completed_scope": "Native raw draft/IME/UTF16 backup producer, durable same-ID acknowledgement and native overlay restoration",
+  "timestamp_utc": "2026-10-11T13:55:34.423344+00:00",
+  "base_source_sha": "47ccfb0e633ece0572843356fed880f19f71eacd",
+  "runtime_version": "0.1.0-pre-alpha.3",
+  "target_version": "0.1.0-pre-alpha.4",
+  "public_gate_evidence": false,
+  "started_simulators": false,
+  "commands": [
+    {
+      "command": "bash macos/Scripts/test-drafts.sh",
+      "exit_code": 0,
+      "log": {
+        "path": "target/acceptance/pre-alpha.4/development/r41/draft-runtime-large-final.log",
+        "bytes": 403,
+        "sha256": "81404591194c9d4b6b5eb228b764ed792cdf66d2fb0ed809fadf8fce3a8b8cc1"
+      }
+    },
+    {
+      "command": "bash macos/Scripts/test-storage.sh",
+      "exit_code": 0,
+      "log": {
+        "path": "target/acceptance/pre-alpha.4/development/r41/draft-storage-initial.log",
+        "bytes": 415,
+        "sha256": "9a17b7c122ab9bc825e2e1658256b10679c295457542a1d8dd68c67c05a44766"
+      }
+    },
+    {
+      "command": "bash macos/Scripts/test-saves.sh",
+      "exit_code": 0,
+      "log": {
+        "path": "target/acceptance/pre-alpha.4/development/r41/draft-save-integration.log",
+        "bytes": 884,
+        "sha256": "374b3aaebee6a9dd640175c092b47ad3f813b87f5efa6a7e909342e7d0452118"
+      }
+    },
+    {
+      "command": "bash macos/Scripts/test-history.sh",
+      "exit_code": 0,
+      "log": {
+        "path": "target/acceptance/pre-alpha.4/development/r41/draft-history-regression-final2.log",
+        "bytes": 386,
+        "sha256": "d27e139647cf2af6ff5fc17ec71d51f3801b0b304e8f2130b81fcd7237142168"
+      }
+    },
+    {
+      "command": "bash macos/Scripts/test-kernel-store.sh",
+      "exit_code": 0,
+      "log": {
+        "path": "target/acceptance/pre-alpha.4/development/r41/draft-kernel-regression-final2.log",
+        "bytes": 1994,
+        "sha256": "acd77039300de351c6093e5edeb501c4f502bee78f0383c643989dc396eb2267"
+      }
+    },
+    {
+      "command": "bash macos/Scripts/test-commit-port.sh",
+      "exit_code": 0,
+      "log": {
+        "path": "target/acceptance/pre-alpha.4/development/r41/draft-commit-regression-final2.log",
+        "bytes": 2332,
+        "sha256": "c63c75e3b474ed790245d938ecbcd718cda6f876a00010f07d27a21610caadc6"
+      }
+    },
+    {
+      "command": "bash macos/Scripts/test-recovery.sh",
+      "exit_code": 0,
+      "log": {
+        "path": "target/acceptance/pre-alpha.4/development/r41/draft-projection-regression-final2.log",
+        "bytes": 520,
+        "sha256": "9c38a944392570f4a1a2c535c1080d9da47d792bf160385a27c2d95147638ee5"
+      }
+    },
+    {
+      "command": "bash macos/Scripts/build-native.sh",
+      "exit_code": 0,
+      "log": {
+        "path": "target/acceptance/pre-alpha.4/development/r41/draft-native-build-final.log",
+        "bytes": 92252,
+        "sha256": "99704c5e45c29daa2acfabf9fdb70b04e55b6de83ae7a95d30dde76da096538f"
+      }
+    }
+  ],
+  "sources": [
+    {
+      "path": "macos/OpenMathNative/DraftStore.swift",
+      "bytes": 12691,
+      "sha256": "5a5bfcaec63ea5bd5cfdbf69dedc7ad165ff2b30a0398a2c418b72645d4f554d"
+    },
+    {
+      "path": "macos/OpenMathNative/Editor/DraftTextViewAdapter.swift",
+      "bytes": 6011,
+      "sha256": "c4c4c786b8d04d71a4bb8b6108750eb3656302c9fdd51ea01c8b40cb6cd10dbb"
+    },
+    {
+      "path": "macos/OpenMathNative/Files/NativeDraftBackup.swift",
+      "bytes": 4499,
+      "sha256": "b169783ba5799dc124a0c0226697663cf11da9cc65a86d07c048f5d68e3ffe8f"
+    },
+    {
+      "path": "macos/OpenMathNative/Files/NativeDocumentSession.swift",
+      "bytes": 6088,
+      "sha256": "872511ecca4fc0e173966a3e6bc615d51d2da3769a2b508789fdc8db38b589d4"
+    },
+    {
+      "path": "macos/OpenMathNative/NativeDocument.swift",
+      "bytes": 10812,
+      "sha256": "1774694e9cdea372b6cb5616d7dec41c6b45e83d457d7e81c552dcadd4cee9bc"
+    },
+    {
+      "path": "macos/OpenMathNative/Storage/DraftBackupStore.swift",
+      "bytes": 10650,
+      "sha256": "9490a4e761d0dded805fc8b2f8c9a5545378ceaa09b29fa3ead68042a8b5299e"
+    },
+    {
+      "path": "macos/OpenMathNative/Storage/DraftBackupTypes.swift",
+      "bytes": 3665,
+      "sha256": "d9ec33a88e15a64fb2ac5b793862f467341a3bcd56735f5ef8a3c4a04edb5f34"
+    },
+    {
+      "path": "macos/OpenMathNative/Storage/SourceHistoryStore.swift",
+      "bytes": 12643,
+      "sha256": "34ff2145e74b90b7e565fad61e53c5d266e43f26da1dffd4a1b751c01b78cd1c"
+    },
+    {
+      "path": "macos/OpenMathNative/Storage/StorageTypes.swift",
+      "bytes": 3396,
+      "sha256": "2e43001225f65940072628e0b3bc4d470ed3909d28a37f4fd99c1aabdbd0fc9d"
+    },
+    {
+      "path": "macos/OpenMathNative/Storage/Bootstrap.swift",
+      "bytes": 8053,
+      "sha256": "645d8376ebd4a5236ef2816b5e15cfb269a16b9b0bd0367fe23dbc507cd549fe"
+    }
+  ],
+  "actual_fixture_root": "target/macos-storage-tests/drafts-yTmDYd",
+  "actual_original_source_revision": 0,
+  "actual_current_draft_owner": "67c89362-584a-4b13-984a-453d1553607c",
+  "actual_current_draft_sequence": 2,
+  "actual_retained_raw_payloads": 2,
+  "actual_cell_ids_utf8_hex": [
+    "61",
+    "65cc81",
+    "c3a9"
+  ],
+  "interruptions": [
+    {
+      "boundary": "draft_backup_before_commit",
+      "process_exit": -9,
+      "root": "target/macos-storage-tests/draft-kill-pf8h8evk",
+      "draft_batches": 0,
+      "source_revision": 0,
+      "source_operations": 0,
+      "accepted_checkpoints": 0
+    },
+    {
+      "boundary": "draft_backup_committed",
+      "process_exit": -9,
+      "root": "target/macos-storage-tests/draft-kill-ipyvin2z",
+      "draft_batches": 1,
+      "source_revision": 0,
+      "source_operations": 0,
+      "accepted_checkpoints": 0
+    },
+    {
+      "boundary": "draft_backup_readback",
+      "process_exit": -9,
+      "root": "target/macos-storage-tests/draft-kill-fzn3lyie",
+      "draft_batches": 1,
+      "source_revision": 0,
+      "source_operations": 0,
+      "accepted_checkpoints": 0
+    }
+  ],
+  "physical_validation": [
+    "Real NSTextView.setMarkedText reads hasMarkedText/markedRange/selection",
+    "UTF16 surrogate split refusal, exact NFC/NFD identity",
+    "500ms debounce and max2s burst actual durable receipt",
+    "Old ACK cannot mark later input current",
+    "New lease rejects old runtime write",
+    "Actual F_FULLFSYNC unknown resolves original sequence1 without new batch",
+    "Restore into new TextKit editor without system IME; pending text requires review",
+    "Large encoded draft above4MiB reads exact bounded8MiB bytes",
+    "History pruning preserves actual source0 baseline referenced by draft",
+    "Normal file save/close integration regression remains successful"
+  ],
+  "previous_ci": {
+    "run_id": 38142168036,
+    "head_sha": "47ccfb0e633ece0572843356fed880f19f71eacd",
+    "conclusion": "failure",
+    "jobs": [
+      {
+        "name": "frontend",
+        "conclusion": "success"
+      },
+      {
+        "name": "rust",
+        "conclusion": "success"
+      },
+      {
+        "name": "dependencies",
+        "conclusion": "success"
+      },
+      {
+        "name": "ios / native",
+        "conclusion": "failure"
+      },
+      {
+        "name": "native_macos / native",
+        "conclusion": "success"
+      }
+    ],
+    "row_27_metrics": [
+      {
+        "artifact": {
+          "path": "target/ci-evidence/47ccfb0-ios/ios-pad-20261011T132837Z-45448.corpus/E78EA857-A9A7-4B83-B589-5A04751F884C.json",
+          "bytes": 368158,
+          "sha256": "c92aeb5344a27ef224d918724636c8c078d91e7e5a2234455f9b387db3397846"
+        },
+        "device_artifact": "ios-pad-20261011T132837Z-45448.corpus",
+        "row": "27",
+        "total_ms": 3556.718417,
+        "transport": {
+          "ffi_ms": 30.94225,
+          "decode_ms": 2.66775,
+          "encoded_ms": 0.108625,
+          "queued_ms": 1.103833,
+          "resume_ms": 3521.889334
+        }
+      },
+      {
+        "artifact": {
+          "path": "target/ci-evidence/47ccfb0-ios/ios-phone-20261011T131913Z-26634.corpus/91DA8314-B745-4D81-9E9F-40FD9B92F224.json",
+          "bytes": 368125,
+          "sha256": "8a2b3052f3c26b012f6049d9ba0c75cbdd453d5e6a8b407ca1d450d91b70e5b4"
+        },
+        "device_artifact": "ios-phone-20261011T131913Z-26634.corpus",
+        "row": "27",
+        "total_ms": 13.438,
+        "transport": {
+          "decode_ms": 1.959167,
+          "resume_ms": 0.10020799999999919,
+          "ffi_ms": 11.317625,
+          "encoded_ms": 0.0385,
+          "queued_ms": 0.014291
+        }
+      }
+    ],
+    "finding": "iPad row27 fails original1s total, native FFI30.94ms/resume3521.89ms; failure retained, no threshold/math changes",
+    "remaining": "Diagnose main-thread resume stall; new same-SHA CI remains required"
+  },
+  "failed_attempts": [
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r41/draft-history-regression.log",
+      "bytes": 395,
+      "sha256": "96a274969fa5f7a51ead50b930b289257ea5a72afb6f0da8c53b0865a23ed79f"
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r41/draft-history-regression-final.log",
+      "bytes": 4443,
+      "sha256": "d567b5818cab59907ec951af5ec348885c475949520115e6dd101feee66c5085"
+    }
+  ],
+  "failure_resolutions": [
+    "Fresh document schema5 assertions replace previous schema4 in fixtures; original mathematical expectations/206 transaction counts unchanged",
+    "History fixture temporary database variable renamed, and explicit draft baseline retention replaces its formerly pruned source0 assertion"
+  ],
+  "remaining_scope": [
+    "Full application startup/source/editor/checkpoint/file-intent recovery",
+    "300ms non-IME source coalescing/full editor flow",
+    "Canonical Agent session/admission/network recovery",
+    "Backup/format upgrade/quota/GC",
+    "Full native workbench and final release gates"
+  ]
+}

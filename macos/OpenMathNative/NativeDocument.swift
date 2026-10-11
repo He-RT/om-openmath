@@ -23,6 +23,8 @@ private final class NativeDocumentSnapshot:@unchecked Sendable {
   private(set) var statusText="未保存"
   var changed:(()->Void)?
   var beforeSave:(()async throws->Void)?
+  var beforeClose:(()async throws->Void)?
+  var draftsBackedUp:(()->Bool)?
   private var autosaveOwner:NativeAutosave?
   private var autosave:NativeAutosave {
     if let autosaveOwner {return autosaveOwner}
@@ -140,21 +142,24 @@ private final class NativeDocumentSnapshot:@unchecked Sendable {
     let wasSuspended=autosave.isSuspended
     autosave.suspend()
     while saving {try? await Task.sleep(for:.milliseconds(5))}
+    do {try await beforeClose?()} catch {statusText="本地草稿备份失败，请继续编辑或复制输入";changed?();return false}
     guard let port,let state=try? await port.state() else {return false}
     if !state.dirty,state.unknownOperation==nil {closeApproved=true;return true}
     if state.unknownOperation != nil {statusText="保存结果待核对，请先核对后关闭";changed?();return false}
     let alert=NSAlert();alert.messageText="关闭前保存笔记本？";alert.informativeText=state.hasDrafts ? "尚有未提交输入。请保存或继续编辑，当前输入不会被强制结束。" : "当前源码已提交到本地，尚未写入用户文件。"
     alert.addButton(withTitle:"保存");alert.addButton(withTitle:"继续编辑");alert.addButton(withTitle:"关闭，保留本地修改")
-    if state.hasDrafts {alert.buttons.last?.isEnabled=false}
+    if state.hasDrafts && draftsBackedUp?() != true {alert.buttons.last?.isEnabled=false}
     let result=alert.runModal()
     if result == .alertSecondButtonReturn {autosave.restoreAfterCancelledClose(wasSuspended:wasSuspended);return false}
     if result == .alertThirdButtonReturn {closeApproved=true;return true}
     do {if fileURL==nil {guard try await saveAsWithPanel() != nil else {autosave.restoreAfterCancelledClose(wasSuspended:wasSuspended);return false}} else {_ = try await saveNative()};closeApproved = !(try await port.state()).dirty;return closeApproved} catch {presentError(error);return false}
   }
   func closeNative(approvalRequired:Bool=false) async throws {
-    if approvalRequired && !closeApproved {throw SaveError.sourceChanged}
+    try checkCloseApproval(approvalRequired)
     await autosave.finish()
+    try await beforeClose?()
     if approvalRequired && !closeApproved {throw SaveError.sourceChanged}
     dead=true;await port?.close();super.close()
   }
+  func checkCloseApproval(_ required:Bool)throws {if required && !closeApproved {throw SaveError.sourceChanged}}
 }

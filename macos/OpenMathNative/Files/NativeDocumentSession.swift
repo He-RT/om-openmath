@@ -28,13 +28,17 @@ actor NativeAppStorage {
   let files:NativeFilePort
   let drafts:DraftStore
   let undo:UndoCoordinator
+  let backup:NativeDraftBackup
   private let storage:StorageService
   private var editors:[Data:DraftTextViewAdapter]=[:]
   private var closed=false
-  private init(document:NativeDocument,host:NativeHostClient,source:DocCommitPort,files:NativeFilePort,drafts:DraftStore,storage:StorageService) {
+  private init(document:NativeDocument,host:NativeHostClient,source:DocCommitPort,files:NativeFilePort,drafts:DraftStore,storage:StorageService,backupOwner:DraftBackupOwner) {
     self.document=document;self.host=host;self.source=source;self.files=files;self.drafts=drafts;self.storage=storage
     self.undo=UndoCoordinator {transactions,group,operation in try await source.undo(transactions:transactions,group:group,operation:operation)}
-    document.beforeSave={ [weak self] in try await self?.flushSource() }
+    self.backup=NativeDraftBackup(storage:storage,store:drafts,owner:backupOwner)
+    document.beforeSave={ [weak self] in try await self?.backup.flush();try await self?.flushSource() }
+    document.beforeClose={ [weak self] in try await self?.backup.flush() }
+    document.draftsBackedUp={ [weak self] in self?.backup.isCurrent==true }
   }
   static func open(storage:StorageService,url:URL?=nil) async throws->NativeDocumentSession {
     let id=UUID().uuidString.lowercased(),physical=NativeFileService()
@@ -54,11 +58,12 @@ actor NativeAppStorage {
       let reply=try await client.sourceCommand(.source_open(.init(type:.source_open,snapshot:initial,store_id:info.identity.storeID,calculation:.init(nil),config_revision:try HostSerial(0))))
       let clock=SourceOwnerClock();clock.calibrate(reply.owner_time_ms.value)
       let drafts=DraftStore(source:initial,runtime:client.runtimeInstanceID,generation:reply.document_generation.value,clock:{clock.now()})
+      let backupOwner=try await storage.beginDraftOwner(document:id,owner:UUID().uuidString.lowercased(),runtime:client.runtimeInstanceID,generation:reply.document_generation.value)
       let source=DocCommitPort(client:client,storage:storage,drafts:drafts,clock:clock)
       let files=NativeFilePort(client:client,storage:storage,source:source,drafts:drafts,files:physical,document:id)
       if let opened {_ = try await files.adoptOpened(opened)}
       let native=NativeDocument();native.attach(files,opened:opened)
-      return NativeDocumentSession(document:native,host:client,source:source,files:files,drafts:drafts,storage:storage)
+      return NativeDocumentSession(document:native,host:client,source:source,files:files,drafts:drafts,storage:storage,backupOwner:backupOwner)
     } catch {
       if let host {try? await host.close()};await physical.close();try? await storage.closeDocument(id);throw error
     }
@@ -83,7 +88,7 @@ actor NativeAppStorage {
   func close(approvalRequired:Bool=false) async throws {
     guard !closed else {return}
     for editor in editors.values {editor.textView.isEditable=false}
-    do {try await document.closeNative(approvalRequired:approvalRequired)}
+    do {try document.checkCloseApproval(approvalRequired);try await document.closeNative(approvalRequired:approvalRequired);backup.stop()}
     catch {for editor in editors.values {editor.textView.isEditable=true};throw error}
     closed=true;await source.close();try await host.close()
     try await storage.closeDocument(drafts.confirmed.document_id)

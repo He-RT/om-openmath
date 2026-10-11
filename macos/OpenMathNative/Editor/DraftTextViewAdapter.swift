@@ -73,7 +73,8 @@ private final class EditorUndoRouter:UndoManager {
     textView=native
     super.init()
     try store.attachEditor(cell:cell,generation:generation)
-    textView.isRichText=false;textView.allowsUndo=true;textView.string=store.overlay(cell)!.source;textView.delegate=self
+    textView.isRichText=false;textView.allowsUndo=true;textView.string=store.overlay(cell)!.source
+    textView.selectedRanges=store.overlay(cell)!.selections.map{NSValue(range:$0.native)};textView.delegate=self
     native.compositionChanged={ [weak self] in try? self?.reportCurrentInput() }
     native.dirty={ [weak store] in guard let value=store?.overlay(cell) else {return true};return value.composing || value.conflict || !value.source.utf8.elementsEqual(value.baseSource.utf8)}
     native.inputBegan={ [weak self] in self?.beginInputGroup() }
@@ -87,11 +88,14 @@ private final class EditorUndoRouter:UndoManager {
     lastInputNS=now
   }
   func textDidChange(_ notification:Notification) {try? reportCurrentInput()}
+  func textViewDidChangeSelection(_ notification:Notification) {try? reportCurrentInput()}
   func reportCurrentInput() throws {
     if textView.hasMarkedText() {inComposition=true}
     else if inComposition {inComposition=false;lastInputNS=DispatchTime.now().uptimeNanoseconds}
     let before=store.overlay(cell)?.sequence
-    try store.edited(cell:cell,generation:generation,source:textView.string,hasMarkedText:textView.hasMarkedText())
+    let selections=textView.selectedRanges.map{DraftTextRange($0.rangeValue)}
+    let marked=textView.hasMarkedText() ? DraftTextRange(textView.markedRange()) : nil
+    try store.edited(cell:cell,generation:generation,source:textView.string,hasMarkedText:textView.hasMarkedText(),selections:selections,markedRange:marked)
     if store.overlay(cell)?.sequence != before {didEdit?()}
   }
   /// Owned acknowledgement never replaces a later overlay or force-ends composition.

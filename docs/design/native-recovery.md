@@ -1,6 +1,6 @@
 # 原生 Mac 启动恢复实现
 
-2026-10-11。R4.1.12 正在实施，本批完成文档事实投影和 Library 故障隔离。草稿持久化、完整启动扫描、Agent admission/请求恢复仍未完成；运行版本继续 `.3`，不代表 `.4` 已就绪。
+2026-10-11。R4.1.12 正在实施，已完成文档事实投影、Library 故障隔离和原生草稿耐久备份。完整启动扫描/工作区恢复、Agent admission/请求恢复仍未完成；运行版本继续 `.3`，不代表 `.4` 已就绪。
 
 ## 原文档事实与 Library 投影
 
@@ -16,7 +16,19 @@
 
 ## 格式与故障隔离
 
-新 Library 格式为2，store/minimum_reader/codec/user_version 一致；初始化完成投影表后才发布 selector。已选择的格式2缺表时要求恢复，不重建空表。已有 Native Library1继续可读，不在普通打开时自动升级；升级与备份由 R4.1.13 提供。Root仍1，文档仍4；`.omnb` v1、旧 Tauri 数据和 iOS ABI 不变。
+新 Library 格式为2，store/minimum_reader/codec/user_version 一致；初始化完成投影表后才发布 selector。已选择的格式2缺表时要求恢复，不重建空表。已有 Native Library1继续可读，不在普通打开时自动升级；升级与备份由 R4.1.13 提供。Root仍1，新文档为5（增加草稿表，见下节），已有文档1–4不自动升级；`.omnb` v1、旧 Tauri 数据和 iOS ABI 不变。
+
+## 原生草稿耐久备份
+
+新文档5在selector发布前建立草稿 owner、batch和head表，读取已选择的5若缺表则拒绝。每个运行实例取得持久化递增lease；新实例出现后旧owner不能写入或重新取得原lease。snapshot是不可变原始UTF8字节、基线、native draft sequence、UTF16选区/marked range和来源状态；保存不解析、不计算、不改变source revision。选区拒绝拆开UTF16代理对，NFC/NFD单元格仍按字节区分。
+
+MainActor只冻结实际TextKit输入，序列化/散列和SQLite提交在后台。500ms去抖、连续编辑最多2s发起一次备份；真实IO完成才显示已本地备份。旧回执仅确认捕获的persistence revision，新输入仍未备份；新编辑/确认源码/选区变化会更新这个计数。手工保存和关闭前主动flush，发生失败保留输入，unknown按原owner/sequence和冻结散列核对。只有确定原记录不存在时才用原ID补写该同一snapshot；没有新ID重放。
+
+最近两份完整快照保留，较早载荷裁减但回执/请求散列保留，不把旧ID当新写入。历史裁减保留活跃草稿引用的source baseline。每份原始文本/基线合计最多4MiB，编码最多8MiB；实际大于4MiB的编码已往返，SQL默认读取上限没有被全局放大，只有草稿显式使用8MiB。
+
+恢复使用新运行实例和editor generation。已被确认源码包含的旧草稿不重做；其余原始文本需要用户确认，基线失配保留冲突，删除格的草稿作为独立记录保留。恢复不调用setMarkedText，因此没有伪造IME session。用户确认保留/使用已确认内容后才允许同步。当前已验证DraftStore与真实TextKit恢复，完整应用启动入口和计算prefix接入仍待完成。
+
+关闭保护先备份，再允许保留本地修改；关闭批准后的新输入仍会撤销批准。备份失败不把文档关掉，原生UI将本地备份状态与用户文件保存状态分别显示。正常关闭最终flush最新快照之后才停止producer，失败不提前停掉备份owner。
 
 严格 `StorageService.open` 保留原拒绝行为。原生工作区的 `openWorkspace` 在取得正确通道的根锁之后单独打开 Library；Library 损坏/不支持时保留原件，返回明确不可用状态，健康文档与文件保存仍可使用。根格式、路径和锁错误不走此降级。UI 显示独立警告，保存成功不会把它清掉，也不声称助手已经就绪。
 
@@ -39,4 +51,4 @@ SQLite 的 `immutable` URI 读取会跳过锁与变更检测，要求文件在�
 - Library 记录损坏时只读拒绝和工作区降级，健康文档读取与保存保持；原库不被清空。
 - 原存储、保存、206事务/200+pin历史、检查点和编辑屏障回归；SDK27 Release 链接。详见本批机器证据。
 
-未确认文本/IME草稿、恢复实际 editor overlay、启动文档扫描与用户选择、未接纳工作状态/原 save intent 核对、规范 Agent 会话/admission/发送未知、备份/迁移/GC及最终同候选门禁继续后续任务，不能由本批投影测试代替。
+实际TextKit标记文本、500ms/2s生产者、晚回执、新lease、真实同步unknown、大快照、跨重启及三个SIGKILL点已验证。完整启动文档扫描与用户选择、已接纳计算prefix/未接纳工作状态/原save intent核对、规范Agent会话/admission/发送未知、备份/迁移/GC及最终同候选门禁继续后续任务，不能由这些底层测试代替。

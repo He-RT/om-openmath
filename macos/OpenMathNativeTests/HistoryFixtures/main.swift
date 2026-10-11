@@ -8,8 +8,13 @@ private struct HistoryFixture:Decodable {let initial:NativeSourceSnapshot;let pl
     let root=URL(fileURLWithPath:CommandLine.arguments[2],isDirectory:true),document=fixture.initial.document_id
     let (storage,_)=try await StorageService.open(paths:.init(root:root,channel:.preview))
     let info=try await storage.openDocument(document)
-    precondition(info.identity.storeVersion==4 && info.identity.minimumReaderVersion==4)
+    precondition(info.identity.storeVersion==5 && info.identity.minimumReaderVersion==5)
     _ = try await storage.initializeSource(fixture.initial)
+    let draftOwner=try await storage.beginDraftOwner(document:document,owner:UUID().uuidString.lowercased(),runtime:"history-draft-fixture",generation:1)
+    let firstCell=fixture.initial.file.cells[0]
+    let draft=DraftBackupCell(cellID:firstCell.id,editorGeneration:1,draftSequence:1,baseCellRevision:0,baseUTF8:Data(firstCell.source.utf8),sourceUTF8:Data("未提交草稿🙂".utf8),wasComposing:false,conflict:false,requiresReview:false,selections:[DraftTextRange(NSRange(location:0,length:0))],markedRange:nil)
+    let backup=DraftBackupSnapshot(codecVersion:1,owner:draftOwner,sequence:1,sourceRevision:0,sourceSnapshotHash:fixture.initial.snapshot_hash,cells:[draft])
+    _ = try await storage.backupDrafts(backup)
     for plan in fixture.plans {_ = try await storage.commitSource(plan)}
     try await storage.pinSourceTransaction(document:document,transaction:"tx-1",kind:"user",owner:"user-pin",enabled:true)
     try await storage.pinSourceTransaction(document:document,transaction:"tx-2",kind:"task",owner:"continuation-task",enabled:true)
@@ -27,6 +32,11 @@ private struct HistoryFixture:Decodable {let initial:NativeSourceSnapshot;let pl
     catch StorageError.unknownCommit { }
     do {_ = try await storage.sourceTransactions(document:document,ids:["tx-3"]);fatalError("pruned inverse was fabricated")}
     catch StorageError.transactionUnavailable { }
+    let retainedDraft=try await storage.draftBackup(document:document)!
+    precondition(retainedDraft.snapshot.sourceSnapshotHash==fixture.initial.snapshot_hash)
+    let draftBaselineDatabase=root.appendingPathComponent("Documents/\(document)/Generations/000001/authority.sqlite")
+    let retainedBaseline=try await Task.detached {let db=try SQLiteDatabase(url:draftBaselineDatabase,readonly:true);defer {try? db.close()};return try db.integer("SELECT length(snapshot) FROM document_revisions WHERE revision=0")}.value
+    precondition(retainedBaseline>0)
     let old=try await storage.sourceReceipt(document:document,operation:"op-3")!
     let oldBytes=try encoder.encode(old);precondition(oldBytes==originalBytes)
     let admission=try await storage.sourceAdmission(document:document,operation:"op-3")
@@ -63,10 +73,10 @@ private struct HistoryFixture:Decodable {let initial:NativeSourceSnapshot;let pl
       let db=try SQLiteDatabase(url:database,readonly:true);defer {try? db.close()}
       let counts=[try db.integer("SELECT COUNT(*) FROM transactions"),try db.integer("SELECT COUNT(*) FROM operations"),try db.integer("SELECT COUNT(*) FROM outbox"),try db.integer("SELECT COUNT(*) FROM source_history WHERE retained=1"),try db.integer("SELECT COUNT(*) FROM transactions WHERE length(forward_plan)=0 AND length(inverse_snapshot)=0")]
       let compactAdmissions=try db.integer("SELECT COUNT(*) FROM source_admissions WHERE operation_id IN ('op-1','op-3','op-4','op-5','op-6') AND length(plan)<4096")
-      let compactRevisions=try db.integer("SELECT COUNT(*) FROM document_revisions WHERE revision IN (0,3,4,5) AND length(snapshot)=0")
+      let compactRevisions=try db.integer("SELECT COUNT(*) FROM document_revisions WHERE revision IN (3,4,5) AND length(snapshot)=0")
       return (counts,compactAdmissions,compactRevisions)
     }.value
-    precondition(verified.0==[206,206,206,201,5] && verified.1==5 && verified.2==4)
+    precondition(verified.0==[206,206,206,201,5] && verified.1==5 && verified.2==3)
     // The compact metadata is still integrity checked; absence from the old full payload graph
     // must not make a damaged tombstone look like "operation never ran".
     try await Task.detached {

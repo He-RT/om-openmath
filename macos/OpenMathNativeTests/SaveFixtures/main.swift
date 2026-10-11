@@ -25,7 +25,7 @@ private func file(_ url:URL)throws->NativeSourceFile {try NotebookFileCodec.deco
     var initial=NativeSourceSnapshot(codec_version:1,document_id:documentID,revision:try HostSerial(0),execution_epoch:try HostSerial(0),file:opened.file,cell_revisions:try opened.file.cells.map{.init(cell_id:$0.id,revision:try HostSerial(0))},snapshot_hash:"")
     initial.snapshot_hash=SourceHashes.snapshot(initial)
     let (storage,_)=try await StorageService.open(paths:.init(root:root.appendingPathComponent("managed"),channel:.preview)),info=try await storage.openDocument(documentID)
-    precondition(info.identity.storeVersion==4 && info.identity.minimumReaderVersion==4)
+    precondition(info.identity.storeVersion==5 && info.identity.minimumReaderVersion==5)
     _ = try await storage.initializeSource(initial)
     let host=try await NativeHostClient.open()
     let openedHost=try await host.sourceCommand(.source_open(.init(type:.source_open,snapshot:initial,store_id:info.identity.storeID,calculation:.init(nil),config_revision:try HostSerial(0))))

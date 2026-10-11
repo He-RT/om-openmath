@@ -128,7 +128,10 @@ final class SourceHistoryStore {
         try db.statement("SELECT 1 FROM sqlite_schema WHERE type='table' AND name='save_intents'") {_ in saveTables=true}
         let preserveSaves=saveTables ? " AND revision NOT IN (SELECT source_revision FROM save_intents WHERE document_id=? AND phase='prepared') AND revision NOT IN (SELECT saved_revision FROM file_head WHERE document_id=? AND saved_revision IS NOT NULL)" : ""
         if saveTables {values += [.text(document),.text(document)]}
-        try db.statement("UPDATE document_revisions SET snapshot=? WHERE document_id=? AND revision NOT IN (SELECT revision FROM document_head WHERE document_id=?) AND revision NOT IN (SELECT t.base_revision FROM transactions t JOIN source_history h ON t.transaction_id=h.transaction_id WHERE h.retained=1 AND h.document_id=?) AND revision NOT IN (SELECT t.committed_revision FROM transactions t JOIN source_history h ON t.transaction_id=h.transaction_id WHERE h.retained=1 AND h.document_id=?)"+preserveKernel+preserveSaves,values)
+        var draftTables=false;try db.statement("SELECT 1 FROM sqlite_schema WHERE type='table' AND name='draft_batches'") {_ in draftTables=true}
+        let preserveDrafts=draftTables ? " AND revision NOT IN (SELECT source_revision FROM draft_batches WHERE document_id=? AND length(snapshot)>0)" : ""
+        if draftTables {values += [.text(document)]}
+        try db.statement("UPDATE document_revisions SET snapshot=? WHERE document_id=? AND revision NOT IN (SELECT revision FROM document_head WHERE document_id=?) AND revision NOT IN (SELECT t.base_revision FROM transactions t JOIN source_history h ON t.transaction_id=h.transaction_id WHERE h.retained=1 AND h.document_id=?) AND revision NOT IN (SELECT t.committed_revision FROM transactions t JOIN source_history h ON t.transaction_id=h.transaction_id WHERE h.retained=1 AND h.document_id=?)"+preserveKernel+preserveSaves+preserveDrafts,values)
         try faults.reach("history_revisions_pruned")
       }
       do {try faults.reach("history_prune_committed")} catch {throw StorageError.unknownCommit(EIO)}

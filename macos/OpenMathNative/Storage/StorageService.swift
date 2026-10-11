@@ -19,6 +19,7 @@ private final class StoreWriter:@unchecked Sendable {
   private var saves:SaveStore?
   private var effects:LibraryStore?
   private var outbox:DocumentOutbox?
+  private var drafts:DraftBackupStore?
   init(_ name:String,lease:RootLease) { self.lease=lease;queue=DispatchQueue(label:"org.openmath.storage."+name,qos:.utility) }
   nonisolated(nonsending) func perform<T:Sendable>(_ body:@escaping @Sendable (StoreWriter)throws->T) async throws ->T {
     try await withCheckedThrowingContinuation { continuation in
@@ -37,8 +38,9 @@ private final class StoreWriter:@unchecked Sendable {
       if kind=="document" { writer.source=try DocumentStore(db:opened.0,url:folder.appendingPathComponent("Generations").appendingPathComponent(String(format:"%06lld",opened.1.generation)).appendingPathComponent("authority.sqlite"),identity:opened.1) }
       let databaseURL=folder.appendingPathComponent("Generations").appendingPathComponent(String(format:"%06lld",opened.1.generation)).appendingPathComponent(kind=="document" ? "authority.sqlite" : "library.sqlite")
       writer.references=try BlobReferences(db:opened.0,url:databaseURL)
-      if kind=="document",(3...4).contains(opened.1.storeVersion) {writer.kernel=try KernelStore(db:opened.0,url:databaseURL,identity:opened.1)}
-      if kind=="document",opened.1.storeVersion==4 {writer.saves=try SaveStore(db:opened.0,url:databaseURL,identity:opened.1)}
+      if kind=="document",(3...5).contains(opened.1.storeVersion) {writer.kernel=try KernelStore(db:opened.0,url:databaseURL,identity:opened.1)}
+      if kind=="document",(4...5).contains(opened.1.storeVersion) {writer.saves=try SaveStore(db:opened.0,url:databaseURL,identity:opened.1)}
+      if kind=="document",opened.1.storeVersion==5 {writer.drafts=try DraftBackupStore(db:opened.0,url:databaseURL,identity:opened.1)}
       if kind=="library",opened.1.storeVersion==2 {writer.effects=try LibraryStore(db:opened.0,url:databaseURL,identity:opened.1)}
       if kind=="document",let source=writer.source {writer.outbox=DocumentOutbox(db:opened.0,url:databaseURL,identity:opened.1,source:source,kernel:writer.kernel,saves:writer.saves)}
       return StoreOpenInfo(identity:opened.1,runtime:opened.2)
@@ -65,17 +67,20 @@ private final class StoreWriter:@unchecked Sendable {
   nonisolated(nonsending) func outboxCall<T:Sendable>(_ work:@escaping @Sendable (DocumentOutbox)throws->T) async throws ->T {
     try await perform {writer in guard let outbox=writer.outbox else {throw StorageError.closing};return try work(outbox)}
   }
+  nonisolated(nonsending) func draftCall<T:Sendable>(_ work:@escaping @Sendable (DraftBackupStore)throws->T) async throws ->T {
+    try await perform {writer in guard let drafts=writer.drafts else {throw StorageError.unsupportedVersion};return try work(drafts)}
+  }
   /// Failed Library open is not a clean shutdown or a license to replace the original DB.
   nonisolated(nonsending) func abandon() async {
     _ = try? await perform {writer in
-      try writer.db?.close();writer.db=nil;writer.source=nil;writer.references=nil;writer.kernel=nil;writer.saves=nil;writer.effects=nil;writer.outbox=nil
+      try writer.db?.close();writer.db=nil;writer.source=nil;writer.references=nil;writer.kernel=nil;writer.saves=nil;writer.effects=nil;writer.outbox=nil;writer.drafts=nil
     }
   }
   nonisolated(nonsending) func close() async throws {
     try await perform { writer in
       if let db=writer.db {
         try db.transaction { try db.statement("UPDATE store_state SET last_clean_shutdown=1 WHERE singleton=1") }
-        try db.checkpoint();try db.close();writer.db=nil;writer.source=nil;writer.references=nil;writer.kernel=nil;writer.saves=nil;writer.effects=nil;writer.outbox=nil
+        try db.checkpoint();try db.close();writer.db=nil;writer.source=nil;writer.references=nil;writer.kernel=nil;writer.saves=nil;writer.effects=nil;writer.outbox=nil;writer.drafts=nil
       }
     }
   }
@@ -132,6 +137,22 @@ actor StorageService {
   func documentIdentity(_ document:String) async throws->StoreIdentity {
     guard closeTask==nil,let writer=documents[document] else {throw StorageError.closing}
     return try await writer.header()
+  }
+  func beginDraftOwner(document:String,owner:String,runtime:String,generation:UInt64,faults:StorageFaults = .init()) async throws->DraftBackupOwner {
+    guard closeTask==nil,let writer=documents[document] else {throw StorageError.closing}
+    return try await writer.draftCall {try $0.beginOwner(owner,runtime:runtime,generation:generation,faults:faults)}
+  }
+  func backupDrafts(_ snapshot:DraftBackupSnapshot,faults:StorageFaults = .init()) async throws->DraftBackupReceipt {
+    guard closeTask==nil,let writer=documents[snapshot.owner.documentID] else {throw StorageError.closing}
+    return try await writer.draftCall {try $0.write(snapshot,faults:faults)}
+  }
+  func draftBackupReceipt(document:String,owner:String,sequence:UInt64) async throws->DraftBackupReceipt? {
+    guard closeTask==nil,let writer=documents[document] else {throw StorageError.closing}
+    return try await writer.draftCall {try $0.query(owner:owner,sequence:sequence)}
+  }
+  func draftBackup(document:String) async throws->StoredDraftBackup? {
+    guard closeTask==nil,let writer=documents[document] else {throw StorageError.closing}
+    return try await writer.draftCall {try $0.head()}
   }
   func documentOutbox(document:String,kind:DocumentEffectKind,after:Int64=0,limit:Int=16) async throws->DocumentOutboxPage {
     guard closeTask==nil,let writer=documents[document] else {throw StorageError.closing}

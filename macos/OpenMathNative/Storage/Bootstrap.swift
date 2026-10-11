@@ -40,6 +40,7 @@ enum StorageBootstrap {
       let read=try SQLiteDatabase(url:url,readonly:true)
       let header=try readHeader(read)
       if kind=="library",header.storeVersion==2 {_ = try LibraryStore(db:read,url:url,identity:header)}
+      if kind=="document",header.storeVersion==5 {_ = try DraftBackupStore(db:read,url:url,identity:header)}
       try read.close()
       guard header.storeID==selector.storeID,header.generation==selector.generation,header.kind==kind,
         header.documentID==document,try header.hash==selector.headerHash else { throw StorageError.corruptIdentity }
@@ -70,6 +71,10 @@ enum StorageBootstrap {
     // Publish a new Library generation only after its complete projection schema exists.
     // Opening an already selected format-2 DB never recreates a missing event table.
     if kind=="library" {_ = try LibraryStore(db:db,url:url,identity:header,create:true)}
+    if kind=="document" {
+      try DocumentSchema.ensure(db)
+      _ = try DraftBackupStore(db:db,url:url,identity:header,create:true)
+    }
     let read=try SQLiteDatabase(url:url,readonly:true)
     guard try readHeader(read)==header else { throw StorageError.corruptIdentity }
     try read.close();try faults.reach("bootstrap_readback")
@@ -82,7 +87,7 @@ enum StorageBootstrap {
   }
   static func readHeader(_ db:SQLiteDatabase) throws ->StoreIdentity {
     let version=try db.integer("PRAGMA user_version")
-    guard (1...4).contains(version) else { throw StorageError.unsupportedVersion }
+    guard (1...5).contains(version) else { throw StorageError.unsupportedVersion }
     var header:StoreIdentity?
     try db.statement("SELECT store_id,kind,generation,store_version,minimum_reader_version,codec_version,document_id FROM store_header WHERE singleton=1") { row in
       func text(_ column:Int32) throws ->String {

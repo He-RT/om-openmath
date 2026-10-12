@@ -1,25 +1,16 @@
 import AppKit
 import SwiftUI
 
-enum WorkbenchLayout:String {case three,two,compact
-  static func forWidth(_ width:CGFloat)->Self {width>=1042 ? .three : width>=861 ? .two : .compact}
-}
-@MainActor final class WorkbenchNavigation:ObservableObject {
-  @Published var outlineVisible=true
-  @Published var inspectorVisible=true
-  @Published var layout:WorkbenchLayout = .three
-  @Published var inspector="document"
-}
 /// The notebook host remains the same AppKit view through all breakpoints and divider drags.
 /// Collapsed destinations retain their owners; compact access uses native popovers.
 struct WorkspaceView:View {
   @ObservedObject var workspace:NativeFileWorkspace
   let session:NativeDocumentSession
   @ObservedObject private var runtime:NotebookRuntime
-  @StateObject private var navigation=WorkbenchNavigation()
+  @ObservedObject private var navigation:WorkbenchNavigation
   @State private var outlinePopover=false
   @State private var inspectorPopover=false
-  init(workspace:NativeFileWorkspace,session:NativeDocumentSession) {self.workspace=workspace;self.session=session;_runtime=ObservedObject(wrappedValue:session.runtime)}
+  init(workspace:NativeFileWorkspace,session:NativeDocumentSession) {self.workspace=workspace;self.session=session;_runtime=ObservedObject(wrappedValue:session.runtime);_navigation=ObservedObject(wrappedValue:session.runtime.navigation)}
   var body:some View {
     VStack(spacing:0) {
       HStack(spacing:12) {
@@ -48,6 +39,7 @@ struct WorkspaceView:View {
         Spacer();Text("源码版本 \(session.drafts.confirmed.revision.value)").foregroundStyle(.secondary)
       }.font(.caption).padding(.horizontal,16).padding(.vertical,8)
     }
+    .task {await runtime.refreshProjection()}
   }
   private var canRun:Bool {
     runtime.canRun && !workspace.busy && session.drafts.confirmed.file.cells.contains{$0.id==runtime.selectedCell && $0.kind == .math}
@@ -80,21 +72,84 @@ struct WorkspaceView:View {
     VStack(alignment:.leading,spacing:16) {
       Text("检查器").font(.headline)
       Picker("检查内容",selection:$navigation.inspector) {
-        Text("文档").tag("document");Text("结果").tag("result")
-      }.pickerStyle(.segmented).accessibilityIdentifier("workspace-inspector-destination")
-      if navigation.inspector=="document" {
+        ForEach(WorkbenchDestination.allCases) {destination in Text(destination.title).tag(destination)}
+      }.pickerStyle(.menu).accessibilityIdentifier("workspace-inspector-destination")
+      switch navigation.inspector {
+      case .document:
         LabeledContent("单元格",value:String(session.drafts.confirmed.file.cells.count))
         LabeledContent("保存状态",value:session.document.statusText)
         Text(session.backup.status).font(.caption).foregroundStyle(.secondary)
-      } else if let cell=runtime.selectedCell,let result=runtime.results[cell] {
-        Text(result.receipt.producer.terminal_status == .done ? "已接纳计算结果" : "已接纳计算记录，有错误")
-        LabeledContent("完成语句",value:String(result.receipt.producer.successful_statements.value))
-        ForEach(Array(result.sources.enumerated()),id:\.offset) {_,text in
-          Text(String(text.prefix(2000))).font(.system(.callout,design:.monospaced)).textSelection(.enabled)
+      case .result:
+        if let cell=runtime.selectedCell,let result=runtime.results[cell] {
+          Text(result.receipt.producer.terminal_status == .done ? "已接纳计算结果" : "已接纳计算记录，有错误")
+          LabeledContent("完成语句",value:String(result.receipt.producer.successful_statements.value))
+          ForEach(Array(result.sources.enumerated()),id:\.offset) {_,text in
+            Text(String(text.prefix(2000))).font(.system(.callout,design:.monospaced)).textSelection(.enabled)
+          }
+        } else {Text("运行一个数学单元格后，在这里查看已接纳的结果。").foregroundStyle(.secondary)}
+      case .assistant:
+        Image(systemName:"bubble.left.and.bubble.right").font(.title2).foregroundStyle(.secondary)
+        Text("助手尚未启用").font(.headline)
+        Text("你可以继续编辑和计算笔记本。启用助手后，可在这里提问并查看工具操作。").foregroundStyle(.secondary)
+      case .steps:
+        if let cell=runtime.selectedCell,let result=runtime.results[cell],let binding=result.bindings.last(where:{$0.out_index.value>0 && $0.view_id.value != nil}) {
+          WorkbenchStepsPreview(host:session.host,binding:binding).id(binding.result_ref)
+        } else {Text("选择已运行的数学单元格，查看实际记录的步骤。").foregroundStyle(.secondary)}
+      case .variables:
+        if let error=runtime.projectionError {Text(error).foregroundStyle(.secondary)}
+        else if let actual=runtime.projection,actual.active_checkpoint_id.value != nil {
+          let current=actual.definitions_current && actual.execution_epoch.value==session.drafts.confirmed.execution_epoch.value && !session.drafts.confirmed.file.cells.contains {cell in
+            guard cell.kind == .math,let draft=session.drafts.overlay(cell.id) else {return false};return draft.composing || !draft.source.utf8.elementsEqual(cell.source.utf8)
+          }
+          Text(current ? "已接纳当前计算定义" : "源码已修改，计算定义需要重新确认")
+          LabeledContent("计算版本",value:String(actual.kernel_state_revision.value))
+          Text("变量值列表尚不可用。").foregroundStyle(.secondary)
+        } else {Text("尚未建立计算定义。运行数学单元格后可确认定义状态。").foregroundStyle(.secondary)}
+        Button("核对定义状态") {Task {await runtime.refreshProjection()}}
+          .accessibilityIdentifier("workspace-refresh-definitions")
         }
-      } else {Text("运行一个数学单元格后，在这里查看已接纳的结果。").foregroundStyle(.secondary)}
       Spacer()
     }.padding(16).frame(maxWidth:.infinity,maxHeight:.infinity,alignment:.topLeading)
+  }
+}
+
+private struct RecordedStepsPreview:Decodable,Sendable {
+  struct Entry:Decodable,Sendable {struct Step:Decodable,Sendable {let id:String;let rule_id:String;let before_latex:[String];let after_latex:[String]};let step:Step;let child_count:UInt32}
+  let recorded:Bool,total:UInt32,entries:[Entry]
+}
+/// Foundation-level destination uses real immutable steps. The paged tree/typesetter belongs to
+/// the later steps presentation task; an absent record never produces a synthetic explanation.
+private struct WorkbenchStepsPreview:View {
+  let host:NativeHostClient,binding:ResultBinding
+  @State private var page:RecordedStepsPreview?
+  @State private var error:String?
+  var body:some View {
+    Group {
+      if let page {
+        if !page.recorded {Text("本次计算没有记录步骤。").foregroundStyle(.secondary)}
+        else if page.total==0 {Text("本次计算记录中没有步骤。").foregroundStyle(.secondary)}
+        else {ScrollView {VStack(alignment:.leading,spacing:12) {
+          ForEach(page.entries,id:\.step.id) {entry in
+            VStack(alignment:.leading,spacing:4) {
+              Text(entry.step.rule_id).font(.headline)
+              ForEach(Array((entry.step.before_latex+entry.step.after_latex).enumerated()),id:\.offset) {_,source in Text(source).font(.system(.caption,design:.monospaced)).textSelection(.enabled)}
+              if entry.child_count>0 {Text("包含 \(entry.child_count) 个子步骤").font(.caption).foregroundStyle(.secondary)}
+            }
+          }
+          if page.total>UInt32(page.entries.count) {Text("显示前 \(page.entries.count) 项，共 \(page.total) 项。").font(.caption).foregroundStyle(.secondary)}
+        }}}
+      } else if let error {Text(error).foregroundStyle(.secondary)}
+      else {ProgressView("正在读取记录")}
+    }.task {
+      let reader=ResultClient(host:host)
+      do {
+        try reader.select(binding)
+        guard let reply=try await reader.inspect(.inspect_result_steps(.init(kind:.steps,parent_path:[],offset:0,limit:16))) else {throw ResultClientError.staleSelection}
+        let actual=try await Task.detached {try JSONDecoder().decode(RecordedStepsPreview.self,from:JSONEncoder().encode(reply.payload))}.value
+        if !Task.isCancelled {page=actual}
+      } catch {if !Task.isCancelled {self.error="步骤暂无法读取，可重新选择结果后核对。"}}
+      await reader.close()
+    }
   }
 }
 

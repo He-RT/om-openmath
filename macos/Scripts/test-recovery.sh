@@ -13,7 +13,7 @@ swiftc -D OPENMATH_STORAGE_FIXTURE -whole-module-optimization -swift-version 6 -
   macos/OpenMathNative/Files/*.swift macos/OpenMathNative/Editor/*.swift macos/OpenMathNative/Kernel/*.swift \
   macos/OpenMathNative/Rendering/ResultClient.swift \
   macos/OpenMathNative/NativeDocument.swift macos/OpenMathNative/NativeHostClient.swift \
-  macos/OpenMathNative/AppEventRouter.swift macos/OpenMathNative/DraftStore.swift \
+  macos/OpenMathNative/AppEventRouter.swift macos/OpenMathNative/SourceIndexMap.swift macos/OpenMathNative/DraftStore.swift \
   macos/OpenMathNativeTests/RecoveryFixtures/main.swift \
   -L target/macos-storage-tests -lRecoverySyncProbe -Xlinker -rpath -Xlinker "$root/target/macos-storage-tests" \
   -o target/macos-storage-tests/recovery-fixtures

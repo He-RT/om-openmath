@@ -1,0 +1,262 @@
+{
+  "kind": "development_runtime_evidence",
+  "date": "2026-10-13",
+  "tasks": {
+    "R4.2.01": "completed",
+    "R4.2.02": "completed",
+    "R4.2.03": "in_progress"
+  },
+  "native_navigation": {
+    "document_owned": true,
+    "destinations": [
+      "document",
+      "result",
+      "assistant",
+      "steps",
+      "variables"
+    ],
+    "widths": [
+      1042,
+      861,
+      640,
+      1100
+    ],
+    "same_center_editor_selection_scroll": true,
+    "actual_kernel_receipts": [
+      "5",
+      "6"
+    ],
+    "long_cas_edit_stop_and_late_draft": true,
+    "assistant_enabled": false,
+    "variable_values_implemented": false,
+    "recorded_steps_tree_implemented": false,
+    "later_presentation_tasks": [
+      "R4.2.11",
+      "R4.4.18"
+    ]
+  },
+  "source_index": {
+    "scalar_boundary_cases": 42,
+    "all_legal_ranges_roundtripped": true,
+    "corpus": [
+      "Chinese",
+      "emoji",
+      "NFC",
+      "NFD",
+      "ZWJ family",
+      "regional flags",
+      "Tab",
+      "CRLF",
+      "CR",
+      "LF",
+      "empty",
+      "EOF"
+    ],
+    "invalid_utf8_byte_offsets_half_surrogates_overflow_and_stale_sequence_rejected": true,
+    "real_textkit2_raw_newline_and_plain_paste": true,
+    "normalization_or_source_rewrite": false
+  },
+  "commands": [
+    {
+      "command": "bash macos/Scripts/test-workbench.sh",
+      "exit": 0
+    },
+    {
+      "command": "bash macos/Scripts/test-source-editor.sh",
+      "exit": 0
+    },
+    {
+      "command": "bash macos/Scripts/test-undo.sh",
+      "exit": 0
+    },
+    {
+      "command": "bash macos/Scripts/test-commit-port.sh",
+      "exit": 0
+    },
+    {
+      "command": "bash macos/Scripts/test-drafts.sh",
+      "exit": 0
+    },
+    {
+      "command": "bash macos/Scripts/test-saves.sh",
+      "exit": 0
+    },
+    {
+      "command": "bash macos/Scripts/test-recovery.sh",
+      "exit": 0
+    },
+    {
+      "command": "bash macos/Scripts/build-workbench-ui-fixture.sh",
+      "exit": 0
+    },
+    {
+      "command": "bash macos/Scripts/build-native.sh",
+      "exit": 0
+    }
+  ],
+  "live_ui": {
+    "channel": "CUA isolated WorkbenchUIFixture, production components",
+    "actual_results": [
+      "2",
+      "3"
+    ],
+    "destinations_checked": [
+      "steps",
+      "variables",
+      "assistant"
+    ],
+    "no_steps_state_from_actual_record": true,
+    "definition_status_became_stale_on_actual_edit": true,
+    "test_app_quit_verified": true,
+    "actual_chinese_japanese_candidate_windows": "not_verified; control-space and physical Latin keys produced Latin text only; no claim of IME candidate pass"
+  },
+  "ci_prior": {
+    "sha": "80949bf64bc3305d694b2288b3f0f82b14ee246a",
+    "run_id": 38274406316,
+    "rust_frontend_dependencies_ios": "success",
+    "native": "failure; rg missing before fixture execution",
+    "fix": "portable Python source discovery; exact same file list checked",
+    "new_sha_ci": "pending"
+  },
+  "failures_preserved": [
+    "source-editor-attempt-1.log",
+    "ci-80949bf-workbench-rg-missing.log"
+  ],
+  "raw_files": [
+    {
+      "path": "ci-80949bf-workbench-rg-missing.log",
+      "sha256": "0d0986c6f02b0a6a3962b6425d7701427411c0405d96485d5d383db7125cdf7f",
+      "bytes": 197
+    },
+    {
+      "path": "commit-port.log",
+      "sha256": "60811edbde935cdfa5d28c65f274f232663dcd1ae0889ead072ecd687e8969df",
+      "bytes": 2436
+    },
+    {
+      "path": "drafts.log",
+      "sha256": "7e821fcbfe65c1d985b7c018e78384439e03a36e0d8356b0bf0efc8218a104b4",
+      "bytes": 668
+    },
+    {
+      "path": "inputs/macos/OpenMathNative/Editor/DraftTextViewAdapter.swift",
+      "sha256": "78a37713adcaddd6eb3641c353d92d7ab2cf71efd905f9ed73473fbd529c9a7d",
+      "bytes": 8019
+    },
+    {
+      "path": "inputs/macos/OpenMathNative/Editor/NativeSourceEditor.swift",
+      "sha256": "4d9688173eb8dd1d0aa457662556b5e1ee02bf6d4bb1aa7f028bcd90c869553b",
+      "bytes": 1167
+    },
+    {
+      "path": "inputs/macos/OpenMathNative/Kernel/NotebookRuntime.swift",
+      "sha256": "b3d107108ae20a5c8b6943920ac8b06b44f8f1623371e0e5574656df7fcce662",
+      "bytes": 6448
+    },
+    {
+      "path": "inputs/macos/OpenMathNative/SourceIndexMap.swift",
+      "sha256": "4494f260eec5770ea733aba98d8d698f37c66caaaa6784d4c4a7a975070854f0",
+      "bytes": 4292
+    },
+    {
+      "path": "inputs/macos/OpenMathNative/Views/WorkspaceView.swift",
+      "sha256": "d8732d0187a7c1c48e1db9158e9b689e7764245c128e91f13d556e37581d6ff2",
+      "bytes": 13603
+    },
+    {
+      "path": "inputs/macos/OpenMathNativeTests/SourceEditorFixtures/main.swift",
+      "sha256": "c263fdf088fa632a9521859cca2d9ccfeca834e03e1e4760afc4e5fcdeb686a7",
+      "bytes": 5260
+    },
+    {
+      "path": "inputs/macos/OpenMathNativeTests/WorkbenchFixtures/main.swift",
+      "sha256": "b543881aef109bc08847224610e913015efe539e22d165c19a0a67b4ce9a3937",
+      "bytes": 6938
+    },
+    {
+      "path": "inputs/macos/Scripts/test-source-editor.sh",
+      "sha256": "c4ae9aa394764802f9d2ce891fe16b40a15a84adbb02c10a82fa5ddb4fe2b402",
+      "bytes": 887
+    },
+    {
+      "path": "inputs/macos/Scripts/test-workbench.sh",
+      "sha256": "3c35783dbe22972411f6c7c9e25d3758cc5da69b1748b72b76d69734fadea7e0",
+      "bytes": 860
+    },
+    {
+      "path": "plan-check.log",
+      "sha256": "27ed1ab3ef77e6e18dd16e323412dc444327c8f843d18da5c1beeba4256a39f6",
+      "bytes": 754
+    },
+    {
+      "path": "recovery.log",
+      "sha256": "82eee366a1d1aed51587067ceb059219baa714deed48035d491c626b104f682c",
+      "bytes": 520
+    },
+    {
+      "path": "release-final.log",
+      "sha256": "35638d40fbba6f170f8c4f6722b78cb81cbd62288c8a5aa5d17782b5b0fa1672",
+      "bytes": 95982
+    },
+    {
+      "path": "release.log",
+      "sha256": "3830656fbb354de900e499530f693d6166754d1c66f81690f20688835f07c762",
+      "bytes": 99913
+    },
+    {
+      "path": "saves.log",
+      "sha256": "b6fb9fe2188c8fd8947e4995b9a29c9dc30ec0e2072c52a4fbb0c65fd00408ac",
+      "bytes": 884
+    },
+    {
+      "path": "source-editor-attempt-1.log",
+      "sha256": "22931f966adfc97e955a01b998028cb95ff5b9e99e433c2e7ba52364b5f2156f",
+      "bytes": 2471
+    },
+    {
+      "path": "source-editor-attempt-2.log",
+      "sha256": "f0b52690ec90f8aed3b7dc2552a44829f535784193e7583607b7fd0adf72e407",
+      "bytes": 340
+    },
+    {
+      "path": "source-editor-attempt-3.log",
+      "sha256": "771b7407bf219e256f040d29209808889988477a92805808a45d82ab4f162c8f",
+      "bytes": 236
+    },
+    {
+      "path": "source-editor-final.log",
+      "sha256": "4f20720b847d53a73654a33dcee7457b64e2d63e47c7203f4c5ee264c763a40d",
+      "bytes": 236
+    },
+    {
+      "path": "ui-build.log",
+      "sha256": "990271d5050d7b4b14550770b58a89298b144c13ebe85efec40abf14afe47d39",
+      "bytes": 496
+    },
+    {
+      "path": "undo.log",
+      "sha256": "58e6ca7816f4be7c6612c2cc58d46a97920d001a81e2b3ffac7f6d03c07e76da",
+      "bytes": 2216
+    },
+    {
+      "path": "workbench-attempt-1.log",
+      "sha256": "a0295003badc818b679a962ba5257cc5b6ef2648fdb92f678c24e830de4ed74c",
+      "bytes": 690
+    },
+    {
+      "path": "workbench-attempt-2.log",
+      "sha256": "a50777efd08773884c815fd8761b74cb4071f5311abef2987fd8fbab0ef09f13",
+      "bytes": 718
+    },
+    {
+      "path": "workbench-final.log",
+      "sha256": "d52bdb0bd9e2c7359293bdebc04acf5a8977e9adfe9cf5e221d387ff5203870a",
+      "bytes": 557
+    }
+  ],
+  "runtime_version": "0.1.0-pre-alpha.3",
+  "final_gates": "not_run",
+  "candidate": null,
+  "ready_to_publish": false,
+  "released_verified": false
+}

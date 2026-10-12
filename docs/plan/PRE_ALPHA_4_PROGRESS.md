@@ -2,17 +2,17 @@
 
 [完整实施计划](PRE_ALPHA_4.md) · [机器门禁](../acceptance/pre-alpha.4/gates.toml) · [裁决](DEVIATIONS.md) · [问题](QUESTIONS.md)
 
-2026-10-12。目标`0.1.0-pre-alpha.4`，当前运行/公开版本`.3`；开发`dev`，不合main、不改旧标签、本机不启动iOS模拟器。本文只记录结果，规格及完成标准唯一见主计划；计划编写本身不计实施完成。
+2026-10-13。目标`0.1.0-pre-alpha.4`，当前运行/公开版本`.3`；开发`dev`，不合main、不改旧标签、本机不启动iOS模拟器。本文只记录结果，规格及完成标准唯一见主计划；计划编写本身不计实施完成。
 
-**当前状态：** 24任务完成（全部R4.0与R4.1）；其余74任务尚未完成；32最终运行/发行gate全部not_run；candidate未分配，ready_to_publish=false，released_verified=false。设计/HTML/Schema通过不填运行时pass。
+**当前状态：** 26任务完成（全部R4.0与R4.1、R4.2.01–02）；其余72任务尚未完成；32最终运行/发行gate全部not_run；candidate未分配，ready_to_publish=false，released_verified=false。设计/HTML/Schema通过不填运行时pass。
 
-**下一任务：** R4.2.01 原生工作台窗口、分栏和投影，然后完整编辑/公式/图形与Agent/模型媒体。存储维护、备份、新代次、配额和GC已通过实际验证；日末备份触发/数据管理UI仍在R4.2.18接线，完整Pi/provider/上下文/Agent界面仍继续R4.3–4.4，不能将存储Done当产品完成。保持同candidate完整门禁，R4.5.07在R4.5.05冻结前完成。
+**下一任务：** R4.2.03 真实输入法、撤销及草稿屏障，然后非求值分析/编辑/公式/图形与Agent/模型媒体。存储维护、备份、新代次、配额和GC已通过实际验证；日末备份触发/数据管理UI仍在R4.2.18接线，完整Pi/provider/上下文/Agent界面仍继续R4.3–4.4，不能将存储Done当产品完成。保持同candidate完整门禁，R4.5.07在R4.5.05冻结前完成。
 
 ## 已知外部前置
 
 - 原生宿主、事件恢复和首代/source物理存储已运行；DocCommitPort已通过实际跨语言验证；完整工作台、checkpoint及Agent尚未接通，运行源码版本仍`.3`。
 - 上轮只读预检没有Developer ID Application材料；执行阶段复核并按R4.0.11准备接口，真实公开签名门禁不能降级。
-- 现场模型只使用新Registry中的授权测试配置；不自动读取旧Key/环境/profile。当前live gate未运行。
+- 用户已于2026-10-13提供4Router端点及两个模型的测试授权；仓库外私有文件保存凭据，目录/短文本均200。仅开发smoke，不代表新Registry/Pi/工具/媒体或完整live gate；不自动读取旧Key/环境/profile。当前live gate未运行。
 
 ## 任务账本
 
@@ -44,9 +44,9 @@
 | [x] [R4.1.11](PRE_ALPHA_4.md#task-r4.1.11) | NSDocument打开保存与冻结快照 | completed | [实际文件/同库回执/本轮Release面板闭环](../acceptance/pre-alpha.4/development/r41/file-saves-completion.json) / 6 SIGKILL+原件冲突 / N+1/IME/身份/取消/重开 / Mac CI38122270416 success | 25df8d8；f04474f、c4eab5a |
 | [x] [R4.1.12](PRE_ALPHA_4.md#task-r4.1.12) | 会话outbox、草稿与启动恢复 | completed | [indexed长会话/原生恢复入口](../acceptance/pre-alpha.4/development/r41/indexed-session-recovery.json) / 4374事件>16MiB/37+37分页/13+5+3+6SIGKILL/真实UI | a23ef8a、5b96deb、642cfc9；本批待补SHA |
 | [x] [R4.1.13](PRE_ALPHA_4.md#task-r4.1.13) | 引用租约、备份、quota与GC | completed | [实际备份/升级/配额/GC](../acceptance/pre-alpha.4/development/r41/storage-maintenance.json) / 17SIGKILL/原schema/113Rust/15原生回归/Release | 27ede3f |
-| [ ] [R4.2.01](PRE_ALPHA_4.md#task-r4.2.01) | 原生工作台窗口、分栏和投影 | in_progress | [原生基础工作台](../acceptance/pre-alpha.4/development/r42/workbench-foundation.json) / 1042/861/640/真实5和6/长CAS/实际UI | 本批待补SHA |
-| [ ] [R4.2.02](PRE_ALPHA_4.md#task-r4.2.02) | NSTextView和严格SourceIndexMap | planned | — | — |
-| [ ] [R4.2.03](PRE_ALPHA_4.md#task-r4.2.03) | 原生IME、UndoManager与草稿屏障 | planned | — | — |
+| [x] [R4.2.01](PRE_ALPHA_4.md#task-r4.2.01) | 原生工作台窗口、分栏和投影 | completed | [原生导航/严格索引](../acceptance/pre-alpha.4/development/r42/native-source-and-navigation.json) / 实窗/42scalar/滚动/真实5和6/原生回归/Release | 本批待补SHA |
+| [x] [R4.2.02](PRE_ALPHA_4.md#task-r4.2.02) | NSTextView和严格SourceIndexMap | completed | [原生导航/严格索引](../acceptance/pre-alpha.4/development/r42/native-source-and-navigation.json) / 实窗/42scalar/滚动/真实5和6/原生回归/Release | 本批待补SHA |
+| [ ] [R4.2.03](PRE_ALPHA_4.md#task-r4.2.03) | 原生IME、UndoManager与草稿屏障 | in_progress | 原生marked/Undo/草稿中断回归通过；真实中文/日文候选窗口仍待验 | — |
 | [ ] [R4.2.04](PRE_ALPHA_4.md#task-r4.2.04) | 非求值Preview/Complete/Hover和高亮 | planned | — | — |
 | [ ] [R4.2.05](PRE_ALPHA_4.md#task-r4.2.05) | 本地snippets、希腊快捷、Fix和缩进 | planned | — | — |
 | [ ] [R4.2.06](PRE_ALPHA_4.md#task-r4.2.06) | 长笔记本布局、复用与scroll anchors | planned | — | — |
@@ -483,3 +483,12 @@ Done依据与覆盖case/proof:
 - 实际AppKit窗口+原生产组件验证1042/861/640/1100、同一中心view/editor及原UTF16选区/中文emoji字节；SQLite/C ABI得到5和6，长CAS时缩窗/编辑/明确stop，后草稿9保持。持续隔离UI fixture经实际AX/截图验证2和3、目录折叠、结果检查器和分栏；正常关闭笔记本并Quit，不读实际Preview/public根。离屏cacheDisplay不作为实际画面证据。
 - [完整记录](../acceptance/pre-alpha.4/development/r42/workbench-foundation.json)及[实现/技能参考](../design/native-workbench.md)。Release、本轮workbench及原保存6/草稿3/恢复5、kernel-runtime、UndoManager回归均exit0。初次@State多变量声明被编译器拒绝，两个fixture注释/UTF16选区错误与手工enum大小写错误已修；失败原件保留，原数学/性能门槛不变。
 - 27ede3f CI38251418308 Mac/Rust/Web/deps四job通过，iPad原53 row34总1024.01475ms超过原1000ms，分段FFI948.197458/queued55.057208/decode2.589875/resume18.085417；原件已下载target/ci-evidence/27ede3f并封存corpus，不改用内部时间冒充通过。新SHA/完整最终candidate仍独立，本机无模拟器。
+
+## R4开发记录 D039 — 授权模型测试、导航目的地和精确原生索引
+
+- 用户提供的新测试端点/模型/凭据保存于仓库外受限文件（目录0700/文件0600）。4Router模型目录HTTP200且列出两个授权ID；gpt-6.1-sol/gpt-6-luna短文本均HTTP200且返回4。原始临时probe及显式配置文件的可重复脚本输出封存，[开发smoke](../acceptance/pre-alpha.4/development/authorized-api/smoke.json)没有密钥。生产Registry、Pi、工具/媒体和最终live gate仍未接通/未运行，不把transport smoke当完成。
+- R4.2.01 Done：WorkbenchNavigation由原文档持有，文档/结果/助手/步骤/变量五目的地可达；同一原NSHostingView/TextKit/selection和滚动100点跨1042/861/640/1100、切换/隐藏保持。实际SQLite/C ABI得到5和6；长CAS可缩窗、编辑、停止且后稿9保留。步骤基础页取真实不可变记录，空记录明确未录制；变量仅核对真实计算版本/定义是否对应当前源码，完整树/变量值/助手按R4.2.11/R4.4.18继续，未实现能力明确不可用。
+- R4.2.02 Done：原生TextKit2编辑器接线、数学smart替换/自动接受关闭，精确UTF8/UTF16 scalar表绑定source SHA/draft_sequence/行首。CRLF一次逻辑换行且原码元保持；原生Enter按原偏好、纯文本粘贴不拆格。42合法端点与全范围往返，中文/emoji/NFC-NFD/ZWJ/旗帜/Tab/混合换行/空文/EOF、非法UTF8/半代理/byte内部/越界溢出/旧sequence/hash拒绝，实际窗口原字节通过。
+- [完整输入/日志/失败](../acceptance/pre-alpha.4/development/r42/native-source-and-navigation.json)。本轮workbench/source-editor、原DocCommitPort/Undo、草稿3/保存6/恢复5中断与Release通过，269 DTO/工程/计划结构保持。第一版新fixture将throw放进precondition非throw闭包，被编译器拒绝，修为先读取；原失败保存。实窗2/3与真实步骤未记录/定义随编辑失效/助手未启用已看，测试应用正常菜单Quit后确认退出。
+- 80949bf/CI38274406316 Rust/Web/deps/iOS全部成功；Mac因runner未装rg在workbench源码收集阶段退出，未执行该fixture。原artifact封存，测试与UI构建脚本改用现有Python确定性文件发现并核对原文件集合完全相同，新SHA独立查CI，不删测试/放宽断言/新增数学改动。
+- 26/98、R4.2.03 in_progress：真实marked-text API、UndoManager、晚输入/fence与中断回归已有，但此次Control-Space和实际字母键只出现拉丁文本，未验证系统中文/日文候选窗口，不声明该任务Done。下一继续候选窗口、完整非求值编辑分析及余下72项。运行.3/dev/no main/旧公开包/no本机iOS模拟器/无子代理，32final gates not_run/no candidate/ready=false/released=false。

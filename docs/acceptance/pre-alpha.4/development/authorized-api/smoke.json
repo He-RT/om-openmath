@@ -1,0 +1,34 @@
+{
+  "endpoint": "https://4Router.net/v1",
+  "authorization": "user supplied 2026-10-13",
+  "scope": "transport/short text smoke only, not full model/agent/media gate",
+  "models": [
+    {
+      "model": "gpt-6.1-sol",
+      "protocol": "openai_chat_completions",
+      "prompt": "Return only the single ASCII digit equal to 2+2.",
+      "max_completion_tokens": 64,
+      "http_status": 200,
+      "expected_digit_received": true,
+      "finish_reason": "stop",
+      "elapsed_ms": 7005.496
+    },
+    {
+      "model": "gpt-6-luna",
+      "protocol": "openai_chat_completions",
+      "prompt": "Return only the single ASCII digit equal to 2+2.",
+      "max_completion_tokens": 64,
+      "http_status": 200,
+      "expected_digit_received": true,
+      "finish_reason": "stop",
+      "elapsed_ms": 5295.146
+    }
+  ],
+  "checked_at": "2026-10-13",
+  "credential_file": "outside repository; user-owned mode 0600",
+  "models_directory_http": 200,
+  "requested_models_listed": true,
+  "gate_status": "not_run",
+  "production_registry_status": "not_implemented",
+  "credential_embedded": false
+}

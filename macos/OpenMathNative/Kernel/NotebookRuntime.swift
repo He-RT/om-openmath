@@ -1,6 +1,22 @@
 import Foundation
 import SwiftUI
 
+enum WorkbenchLayout:String {case three,two,compact
+  static func forWidth(_ width:CGFloat)->Self {width>=1042 ? .three : width>=861 ? .two : .compact}
+}
+enum WorkbenchDestination:String,CaseIterable,Identifiable {
+  case document,result,assistant,steps,variables
+  var id:String {rawValue}
+  var title:String {switch self {case .document:"文档";case .result:"结果";case .assistant:"助手";case .steps:"步骤";case .variables:"变量"}}
+}
+/// Document-owned navigation survives hiding, popovers and reconstruction of the workspace view.
+@MainActor final class WorkbenchNavigation:ObservableObject {
+  @Published var outlineVisible=true
+  @Published var inspectorVisible=true
+  @Published var layout:WorkbenchLayout = .three
+  @Published var inspector:WorkbenchDestination = .document
+}
+
 struct NotebookCellResult:Sendable {
   let receipt:NativeKernelReceipt
   let bindings:[ResultBinding]
@@ -15,6 +31,8 @@ struct NotebookCellResult:Sendable {
   @Published private(set) var message="就绪"
   @Published private(set) var results:[String:NotebookCellResult]=[:]
   @Published private(set) var unknownOperation:String?
+  @Published private(set) var projection:NativeKernelHostReply?
+  @Published private(set) var projectionError:String?
   @Published var selectedCell:String?
   @Published private(set) var navigationSequence:UInt64=0
   private let kernel:KernelCommitPort,host:NativeHostClient
@@ -22,11 +40,19 @@ struct NotebookCellResult:Sendable {
   private var closing=false
   var beforeRun:(@MainActor () async throws->Void)?
   var changed:(@MainActor ()->Void)?
+  let navigation=WorkbenchNavigation()
   init(host:NativeHostClient,storage:StorageService,source:DocCommitPort) {
     self.host=host;kernel=KernelCommitPort(client:host,storage:storage,source:source)
   }
   var canRun:Bool {!closing && operation==nil && unknownOperation==nil}
   var canStop:Bool {operation != nil && !cancelPending && phase != .completed && phase != .failed && phase != .discarded}
+  func refreshProjection() async {
+    guard !closing else {return}
+    do {
+      let actual=try await kernel.state()
+      guard !closing else {return};projection=actual;projectionError=nil
+    } catch {if !closing {projectionError="定义状态暂无法核对；已有计算记录仍保留。"}}
+  }
   func navigate(to cell:String?) {guard !closing,cell != selectedCell else {return};selectedCell=cell;navigationSequence+=1}
   func run(_ cell:String) {
     guard canRun else {return}
@@ -52,6 +78,7 @@ struct NotebookCellResult:Sendable {
         catch {if !closing {results[cell] = .init(receipt:receipt,bindings:[],sources:[]);message="计算已提交，结果暂无法读取："+String(describing:error)}}
       } catch KernelPortError.unknownOutcome {unknownOperation=id;phase = .unknown;message="运行结果待核对"}
       catch {if !closing {message="运行未完成："+String(describing:error)}}
+      await refreshProjection()
     }
   }
   private func display(_ receipt:NativeKernelReceipt) async throws {

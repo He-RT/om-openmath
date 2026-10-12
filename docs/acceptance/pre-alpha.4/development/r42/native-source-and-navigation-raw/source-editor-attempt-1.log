@@ -1,0 +1,32 @@
+    Finished `release` profile [optimized] target(s) in 0.29s
+macos/OpenMathNativeTests/SourceEditorFixtures/main.swift:23:102: error: call can throw, but it is executed in a non-throwing autoclosure
+21 |       }
+22 |       for offset in 0...unit {
+23 |         if legalUnits.contains(offset) {let raw=try map.utf8Offset(forUTF16:offset);precondition(try map.utf16Offset(forUTF8:raw)==offset)}
+   |                                                                                                      `- error: call can throw, but it is executed in a non-throwing autoclosure
+24 |         else {rejects {_ = try map.byteRange(for:NSRange(location:offset,length:0))}}
+25 |       }
+
+macos/OpenMathNativeTests/SourceEditorFixtures/main.swift:28:26: error: call can throw, but it is executed in a non-throwing autoclosure
+26 |       for first in legalBytes {for last in legalBytes where last>=first {
+27 |         let native=try map.nativeRange(start:first,end:last)
+28 |         precondition(try map.byteRange(for:native)==first..<last)
+   |                          `- error: call can throw, but it is executed in a non-throwing autoclosure
+29 |       }}
+30 |       rejects {_ = try map.byteRange(for:NSRange(location:NSNotFound,length:0))}
+
+macos/OpenMathNativeTests/SourceEditorFixtures/main.swift:40:22: error: call can throw, but it is executed in a non-throwing autoclosure
+38 |     let nfd=try SourceIndexMap(source:"e\u{301}",draftSequence:0),nfc=try SourceIndexMap(source:"é",draftSequence:0)
+39 |     precondition(nfd.sourceHash != nfc.sourceHash)
+40 |     precondition(try nfd.utf8Offset(forUTF16:1)==1)
+   |                      `- error: call can throw, but it is executed in a non-throwing autoclosure
+41 |     precondition(try !nfd.isComposedRange(NSRange(location:1,length:0)))
+42 |     let line=try SourceIndexMap(source:"\tA\r\nB\rC\n",draftSequence:0)
+
+macos/OpenMathNativeTests/SourceEditorFixtures/main.swift:41:23: error: call can throw, but it is executed in a non-throwing autoclosure
+39 |     precondition(nfd.sourceHash != nfc.sourceHash)
+40 |     precondition(try nfd.utf8Offset(forUTF16:1)==1)
+41 |     precondition(try !nfd.isComposedRange(NSRange(location:1,length:0)))
+   |                       `- error: call can throw, but it is executed in a non-throwing autoclosure
+42 |     let line=try SourceIndexMap(source:"\tA\r\nB\rC\n",draftSequence:0)
+43 |     precondition(line.lineStarts.map(\.utf8)==[0,4,6,8] && line.preferredNewline=="\r\n")

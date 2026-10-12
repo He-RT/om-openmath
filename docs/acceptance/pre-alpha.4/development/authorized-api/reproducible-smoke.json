@@ -1,0 +1,51 @@
+{
+  "endpoint": "https://4Router.net/v1",
+  "scope": "authorized development transport/short-text smoke only",
+  "catalog": {
+    "http_status": 200,
+    "requested_models": {
+      "gpt-6.1-sol": true,
+      "gpt-6-luna": true
+    }
+  },
+  "models": [
+    {
+      "model": "gpt-6.1-sol",
+      "protocol": "openai_chat_completions",
+      "request": {
+        "model": "gpt-6.1-sol",
+        "messages": [
+          {
+            "role": "user",
+            "content": "Return only the single ASCII digit equal to 2+2."
+          }
+        ],
+        "max_completion_tokens": 64,
+        "stream": false
+      },
+      "http_status": 200,
+      "expected_digit_received": true,
+      "response_content": "4",
+      "elapsed_ms": 5907.957
+    },
+    {
+      "model": "gpt-6-luna",
+      "protocol": "openai_chat_completions",
+      "request": {
+        "model": "gpt-6-luna",
+        "messages": [
+          {
+            "role": "user",
+            "content": "Return only the single ASCII digit equal to 2+2."
+          }
+        ],
+        "max_completion_tokens": 64,
+        "stream": false
+      },
+      "http_status": 200,
+      "expected_digit_received": true,
+      "response_content": "4",
+      "elapsed_ms": 5522.552
+    }
+  ]
+}

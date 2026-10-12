@@ -14,7 +14,7 @@ import SwiftUI
     let file=NativeSourceFile(version:1,title:"原生工作台验收",cells:[
       .init(id:"a",kind:.math,source:"let a=2",dialect:.modern),
       .init(id:"b",kind:.math,source:"a+1",dialect:.modern),
-      .init(id:"long",kind:.math,source:"map(fn(k)=>sin(k),range(1,1000000))",dialect:.modern)])
+      .init(id:"long",kind:.math,source:"map(fn(k)=>sin(k),range(1,1000000))",dialect:.modern)]+(0..<12).map{NativeSourceCell(id:"text-\($0)",kind:.text,source:"用于滚动验收的原生文字 \($0)",dialect:.auto)})
     let url=root.appendingPathComponent("fixture.omnb");try JSONEncoder().encode(file).write(to:url)
     let services=NativeAppStorage(paths:.init(root:root.appendingPathComponent("storage"),channel:.preview))
     let workspace=NativeFileWorkspace(storage:services)
@@ -50,6 +50,25 @@ import SwiftUI
     precondition(session.runtime.results["a"]?.sources==["5"])
     session.runtime.run("b");try await until {session.runtime.operation==nil}
     precondition(session.runtime.results["b"]?.sources==["6"])
+    let notebookScroll=descendants(split.notebook).compactMap{$0 as? NSScrollView}.first {scroll in
+      guard let document=scroll.documentView,document !== editor else {return false};return descendants(document).contains{$0===editor}
+    }!
+    notebookScroll.contentView.scroll(to:NSPoint(x:0,y:100));notebookScroll.reflectScrolledClipView(notebookScroll.contentView)
+    let scrollOwner=ObjectIdentifier(notebookScroll),scrollPosition=notebookScroll.contentView.bounds.origin
+    precondition(scrollPosition.y>0,"real notebook did not scroll")
+    let navigation=session.runtime.navigation
+    let runtimeOwner=ObjectIdentifier(session.runtime)
+    for destination in WorkbenchDestination.allCases {
+      navigation.inspector=destination
+      navigation.outlineVisible=false;navigation.inspectorVisible=false
+      host.layoutSubtreeIfNeeded();try await Task.sleep(for:.milliseconds(60))
+      navigation.outlineVisible=true;navigation.inspectorVisible=true
+      host.layoutSubtreeIfNeeded();try await Task.sleep(for:.milliseconds(60))
+      precondition(navigation.inspector==destination && ObjectIdentifier(session.runtime)==runtimeOwner)
+      precondition(ObjectIdentifier(split.notebook)==center && editor.selectedRange()==selection)
+      precondition(ObjectIdentifier(notebookScroll)==scrollOwner && notebookScroll.contentView.bounds.origin==scrollPosition,"destination switch reset actual notebook scroll")
+    }
+    precondition(session.runtime.projection?.definitions_current==true)
     session.runtime.run("long");try await until {session.runtime.phase == .running || session.runtime.operation==nil}
     precondition(session.runtime.operation != nil,"long actual CAS did not remain active")
     window.setContentSize(NSSize(width:640,height:780));host.layoutSubtreeIfNeeded()
@@ -62,7 +81,7 @@ import SwiftUI
     let runtime=ObjectIdentifier(session.runtime)
     window.setContentSize(NSSize(width:1042,height:780));host.layoutSubtreeIfNeeded()
     precondition(ObjectIdentifier(session.runtime)==runtime)
-    let report:[String:Any]=["widths":widths,"center_identity_retained":true,"real_native_selection_retained":true,"result_a":"5","result_b":"6","long_cas_edit_stop":true,"pending_late_draft":"let a=9 # 中文🙂"]
+    let report:[String:Any]=["widths":widths,"destinations":WorkbenchDestination.allCases.map(\.rawValue),"navigation_document_owned":true,"real_scroll_retained":true,"center_identity_retained":true,"real_native_selection_retained":true,"result_a":"5","result_b":"6","long_cas_edit_stop":true,"pending_late_draft":"let a=9 # 中文🙂"]
     print(String(decoding:try JSONSerialization.data(withJSONObject:report,options:[.sortedKeys]),as:UTF8.self))
     window.orderOut(nil)
     try await session.close();try await services.close()

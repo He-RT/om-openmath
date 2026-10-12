@@ -10,7 +10,7 @@ swiftc -swift-version 6 -parse-as-library -target arm64-apple-macos27.0 -I macos
   -L target/release -lom_apple_ffi macos/OpenMathNative/Generated/HostContractSupport.swift \
   macos/OpenMathNative/Generated/Contracts/*.swift macos/OpenMathNative/Storage/*.swift \
   macos/OpenMathNative/NativeHostClient.swift macos/OpenMathNative/AppEventRouter.swift \
-  macos/OpenMathNative/DraftStore.swift macos/OpenMathNative/Editor/DraftTextViewAdapter.swift \
+  macos/OpenMathNative/SourceIndexMap.swift macos/OpenMathNative/DraftStore.swift macos/OpenMathNative/Editor/DraftTextViewAdapter.swift \
   macos/OpenMathNativeTests/CommitFixtures/main.swift -o target/macos-storage-tests/commit-fixtures
 attempt_root=$(mktemp -d "$root/target/macos-storage-tests/commit-XXXXXX")
 target/macos-storage-tests/commit-fixtures target/macos-storage-tests/source-plans.json "$attempt_root" target/macos-storage-tests/commit-report.json

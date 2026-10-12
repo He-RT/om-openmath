@@ -1,0 +1,3 @@
+    Finished `release` profile [optimized] target(s) in 0.16s
+macos/Scripts/test-workbench.sh: line 10: rg: command not found
+macos/Scripts/test-workbench.sh: line 11: sources[@]: unbound variable

@@ -1,0 +1,43 @@
+[WebServer] (node:73696) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 12 tests using 2 workers
+
+(node:73698) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:73699) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓   2 e2e/notebook.spec.ts:40:1 › real definition edits cascade, errors remain local and command palette runs the active cell (4.4s)
+(node:73747) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓   1 e2e/notebook.spec.ts:40:1 › real definition edits cascade, errors remain local and command palette runs the active cell (5.6s)
+(node:73756) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓   3 e2e/notebook.spec.ts:40:1 › real definition edits cascade, errors remain local and command palette runs the active cell (4.3s)
+(node:73781) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓   4 e2e/notebook.spec.ts:40:1 › real definition edits cascade, errors remain local and command palette runs the active cell (5.0s)
+(node:73797) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓   5 e2e/notebook.spec.ts:40:1 › real definition edits cascade, errors remain local and command palette runs the active cell (5.0s)
+(node:73818) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓   6 e2e/notebook.spec.ts:40:1 › real definition edits cascade, errors remain local and command palette runs the active cell (4.9s)
+(node:73857) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓   7 e2e/notebook.spec.ts:40:1 › real definition edits cascade, errors remain local and command palette runs the active cell (6.2s)
+(node:73888) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓   8 e2e/notebook.spec.ts:40:1 › real definition edits cascade, errors remain local and command palette runs the active cell (6.5s)
+(node:73910) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓   9 e2e/notebook.spec.ts:40:1 › real definition edits cascade, errors remain local and command palette runs the active cell (5.6s)
+(node:73936) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  10 e2e/notebook.spec.ts:40:1 › real definition edits cascade, errors remain local and command palette runs the active cell (4.9s)
+(node:73948) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  11 e2e/notebook.spec.ts:40:1 › real definition edits cascade, errors remain local and command palette runs the active cell (4.8s)
+  ✓  12 e2e/notebook.spec.ts:40:1 › real definition edits cascade, errors remain local and command palette runs the active cell (3.5s)
+
+  12 passed (40.3s)

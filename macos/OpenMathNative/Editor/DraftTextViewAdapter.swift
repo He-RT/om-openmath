@@ -12,7 +12,7 @@ private final class EditorUndoRouter:UndoManager {
 @MainActor private final class DraftTextView:NSTextView {
   var compositionChanged:(()->Void)?
   var dirty:()->Bool = {true}
-  var inputBegan:(()->Void)?
+  var inputBegan:(()->String)?
   var inputEnded:(()->Void)?
   var focusChanged:(()->Void)?
   var newline:()->String = {"\n"}
@@ -21,6 +21,8 @@ private final class EditorUndoRouter:UndoManager {
   let local=UndoManager()
   private let router=EditorUndoRouter()
   private var commandDepth=0
+  private var openInputGroup:String?
+  private var groupTimer:Task<Void,Never>?
   override var undoManager:UndoManager? {
     router.owner=self
     return commandDepth>0 ? local : router
@@ -29,6 +31,7 @@ private final class EditorUndoRouter:UndoManager {
   var canRouteRedo:Bool {hasMarkedText() ? false : (local.canRedo || (!dirty() && documentManager?.canRedo==true))}
   func routeUndo(redo:Bool) {
     guard !hasMarkedText() else {return}
+    finishInputGroup()
     if (redo && local.canRedo) || (!redo && dirty() && local.canUndo) {
       commandDepth+=1;defer {commandDepth-=1}
       if redo {local.redo()} else {local.undo()}
@@ -40,20 +43,35 @@ private final class EditorUndoRouter:UndoManager {
   private func input(_ body:()->Void) {
     let outer=commandDepth==0
     if outer {
-      if !dirty() {local.removeAllActions()}
-      local.groupsByEvent=false;local.beginUndoGrouping();inputBegan?()
+      if !dirty() {finishInputGroup();local.removeAllActions()}
+      let group=inputBegan?() ?? UUID().uuidString.lowercased()
+      if openInputGroup != group || local.groupingLevel==0 {
+        finishInputGroup();local.groupsByEvent=false;local.beginUndoGrouping();openInputGroup=group
+      }
     }
     commandDepth+=1;body();commandDepth-=1
-    if outer {local.endUndoGrouping();inputEnded?()}
+    if outer {
+      inputEnded?();groupTimer?.cancel()
+      groupTimer=Task { [weak self] in
+        do {try await Task.sleep(for:.milliseconds(600))} catch {return}
+        guard let self,!hasMarkedText() else {return};finishInputGroup()
+      }
+    }
+  }
+  /// Close only our native group, outside a text command. Composition keeps one group until
+  /// the input engine actually ends it; a durable echo cannot create another text operation.
+  func finishInputGroup() {
+    groupTimer?.cancel();groupTimer=nil
+    if openInputGroup != nil,local.groupingLevel>0 {local.endUndoGrouping()}
+    openInputGroup=nil
   }
   override func insertText(_ string:Any,replacementRange:NSRange) {input {super.insertText(string,replacementRange:replacementRange)}}
   override func deleteBackward(_ sender:Any?) {input {super.deleteBackward(sender)}}
   override func deleteForward(_ sender:Any?) {input {super.deleteForward(sender)}}
   override func paste(_ sender:Any?) {
-    guard let text=NSPasteboard.general.string(forType:.string) else {return}
-    insertText(text,replacementRange:selectedRange())
+    input {super.pasteAsPlainText(sender)}
   }
-  override func pasteAsPlainText(_ sender:Any?) {paste(sender)}
+  override func pasteAsPlainText(_ sender:Any?) {input {super.pasteAsPlainText(sender)}}
   override func insertNewline(_ sender:Any?) {
     guard !hasMarkedText() else {super.insertNewline(sender);return}
     insertText(newline(),replacementRange:NSRange(location:NSNotFound,length:0))
@@ -63,7 +81,7 @@ private final class EditorUndoRouter:UndoManager {
     compositionChanged?()
   }
   override func unmarkText() {super.unmarkText();compositionChanged?()}
-  func acknowledged() {if !dirty(),!hasMarkedText() {local.removeAllActions()}}
+  func acknowledged() {if !dirty(),!hasMarkedText() {finishInputGroup();local.removeAllActions()}}
 }
 /// Minimal real native marked-text/input adapter. Rich TextKit2 syntax/selection rendering is
 /// completed by the editor tasks; this layer never substitutes a model/fixture IME flag.
@@ -99,17 +117,18 @@ private final class EditorUndoRouter:UndoManager {
     textView.selectedRanges=store.overlay(cell)!.selections.map{NSValue(range:$0.native)};textView.delegate=self
     native.compositionChanged={ [weak self] in try? self?.reportCurrentInput() }
     native.dirty={ [weak store] in guard let value=store?.overlay(cell) else {return true};return value.composing || value.conflict || !value.source.utf8.elementsEqual(value.baseSource.utf8)}
-    native.inputBegan={ [weak self] in self?.beginInputGroup() }
+    native.inputBegan={ [weak self] in self?.beginInputGroup() ?? UUID().uuidString.lowercased() }
     native.focusChanged={ [weak self] in self?.didFocus?() }
     native.newline={ [weak self] in self?.indexMap.preferredNewline ?? "\n" }
     native.inputEnded={ [weak self] in try? self?.reportCurrentInput();self?.previousCaret=self?.textView.selectedRange() }
   }
   func bindDocumentUndo(_ manager:UndoManager) {(textView as? DraftTextView)?.documentManager=manager}
-  func breakInputGroup() {group=UUID().uuidString.lowercased();previousCaret=nil;lastInputNS=0}
-  private func beginInputGroup() {
+  func breakInputGroup() {(textView as? DraftTextView)?.finishInputGroup();group=UUID().uuidString.lowercased();previousCaret=nil;lastInputNS=0}
+  private func beginInputGroup()->String {
     let now=DispatchTime.now().uptimeNanoseconds,caret=textView.selectedRange()
     if !inComposition && (lastInputNS==0 || now-lastInputNS>600_000_000 || previousCaret != caret) {group=UUID().uuidString.lowercased()}
     lastInputNS=now
+    return group
   }
   func textDidChange(_ notification:Notification) {try? reportCurrentInput()}
   func textViewDidChangeSelection(_ notification:Notification) {try? reportCurrentInput()}

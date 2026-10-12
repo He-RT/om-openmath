@@ -1,0 +1,2 @@
+    Finished `release` profile [optimized] target(s) in 0.30s
+macos/Scripts/test-workbench.sh: line 16: 65079 Trace/BPT trap: 5       target/macos-workbench-tests/workbench-fixtures "$attempt_root"

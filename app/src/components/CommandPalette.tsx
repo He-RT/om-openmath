@@ -9,7 +9,7 @@ export function CommandPalette({
   open: boolean;
   onOpen: (open: boolean) => void;
   t: Messages;
-  commands: { label: string; run: () => void; shortcut?: string }[];
+  commands: { label: string; run: () => void; shortcut?: string; disabled?: boolean }[];
 }) {
   return (
     <Command.Dialog
@@ -24,6 +24,7 @@ export function CommandPalette({
         {commands.map((command) => (
           <Command.Item
             key={command.label}
+            disabled={command.disabled ?? false}
             onSelect={() => {
               command.run();
               onOpen(false);

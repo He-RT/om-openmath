@@ -44,9 +44,9 @@
 | [x] [R4.1.11](PRE_ALPHA_4.md#task-r4.1.11) | NSDocument打开保存与冻结快照 | completed | [实际文件/同库回执/本轮Release面板闭环](../acceptance/pre-alpha.4/development/r41/file-saves-completion.json) / 6 SIGKILL+原件冲突 / N+1/IME/身份/取消/重开 / Mac CI38122270416 success | 25df8d8；f04474f、c4eab5a |
 | [x] [R4.1.12](PRE_ALPHA_4.md#task-r4.1.12) | 会话outbox、草稿与启动恢复 | completed | [indexed长会话/原生恢复入口](../acceptance/pre-alpha.4/development/r41/indexed-session-recovery.json) / 4374事件>16MiB/37+37分页/13+5+3+6SIGKILL/真实UI | a23ef8a、5b96deb、642cfc9；本批待补SHA |
 | [x] [R4.1.13](PRE_ALPHA_4.md#task-r4.1.13) | 引用租约、备份、quota与GC | completed | [实际备份/升级/配额/GC](../acceptance/pre-alpha.4/development/r41/storage-maintenance.json) / 17SIGKILL/原schema/113Rust/15原生回归/Release | 27ede3f |
-| [x] [R4.2.01](PRE_ALPHA_4.md#task-r4.2.01) | 原生工作台窗口、分栏和投影 | completed | [原生导航/严格索引](../acceptance/pre-alpha.4/development/r42/native-source-and-navigation.json) / 实窗/42scalar/滚动/真实5和6/原生回归/Release | 本批待补SHA |
-| [x] [R4.2.02](PRE_ALPHA_4.md#task-r4.2.02) | NSTextView和严格SourceIndexMap | completed | [原生导航/严格索引](../acceptance/pre-alpha.4/development/r42/native-source-and-navigation.json) / 实窗/42scalar/滚动/真实5和6/原生回归/Release | 本批待补SHA |
-| [ ] [R4.2.03](PRE_ALPHA_4.md#task-r4.2.03) | 原生IME、UndoManager与草稿屏障 | in_progress | 原生marked/Undo/草稿中断回归通过；真实中文/日文候选窗口仍待验 | — |
+| [x] [R4.2.01](PRE_ALPHA_4.md#task-r4.2.01) | 原生工作台窗口、分栏和投影 | completed | [原生导航/严格索引](../acceptance/pre-alpha.4/development/r42/native-source-and-navigation.json) / 实窗/42scalar/滚动/真实5和6/原生回归/Release | 6a59193 |
+| [x] [R4.2.02](PRE_ALPHA_4.md#task-r4.2.02) | NSTextView和严格SourceIndexMap | completed | [原生导航/严格索引](../acceptance/pre-alpha.4/development/r42/native-source-and-navigation.json) / 实窗/42scalar/滚动/真实5和6/原生回归/Release | 6a59193 |
+| [ ] [R4.2.03](PRE_ALPHA_4.md#task-r4.2.03) | 原生IME、UndoManager与草稿屏障 | in_progress | [真实输入组/marked保护](../acceptance/pre-alpha.4/development/r42/native-composition.json) / 真实候选窗口及离屏pin仍待验 | 本批待补SHA |
 | [ ] [R4.2.04](PRE_ALPHA_4.md#task-r4.2.04) | 非求值Preview/Complete/Hover和高亮 | planned | — | — |
 | [ ] [R4.2.05](PRE_ALPHA_4.md#task-r4.2.05) | 本地snippets、希腊快捷、Fix和缩进 | planned | — | — |
 | [ ] [R4.2.06](PRE_ALPHA_4.md#task-r4.2.06) | 长笔记本布局、复用与scroll anchors | planned | — | — |
@@ -492,3 +492,12 @@ Done依据与覆盖case/proof:
 - [完整输入/日志/失败](../acceptance/pre-alpha.4/development/r42/native-source-and-navigation.json)。本轮workbench/source-editor、原DocCommitPort/Undo、草稿3/保存6/恢复5中断与Release通过，269 DTO/工程/计划结构保持。第一版新fixture将throw放进precondition非throw闭包，被编译器拒绝，修为先读取；原失败保存。实窗2/3与真实步骤未记录/定义随编辑失效/助手未启用已看，测试应用正常菜单Quit后确认退出。
 - 80949bf/CI38274406316 Rust/Web/deps/iOS全部成功；Mac因runner未装rg在workbench源码收集阶段退出，未执行该fixture。原artifact封存，测试与UI构建脚本改用现有Python确定性文件发现并核对原文件集合完全相同，新SHA独立查CI，不删测试/放宽断言/新增数学改动。
 - 26/98、R4.2.03 in_progress：真实marked-text API、UndoManager、晚输入/fence与中断回归已有，但此次Control-Space和实际字母键只出现拉丁文本，未验证系统中文/日文候选窗口，不声明该任务Done。下一继续候选窗口、完整非求值编辑分析及余下72项。运行.3/dev/no main/旧公开包/no本机iOS模拟器/无子代理，32final gates not_run/no candidate/ready=false/released=false。
+
+## R4开发记录 D040 — 空间回收、真实输入组与命令面板竞态
+
+- 用户要求继续完整计划并随时清理无用项目缓存；确认无cargo/rustc/swiftc/xcodebuild后，仅删除target/debug的deps/build/.fingerprint/incremental可重建缓存，target从52GiB到13GiB，可用磁盘11→50GiB（后续构建约49GiB）。验收原件、CI artifact、原源码/用户凭据、Release及旧公开包均保留。后续定向Rust测试使用CARGO_PROFILE_DEV_DEBUG=0/CARGO_PROFILE_TEST_DEBUG=0，debug缓存约1.2GiB，incremental仍关闭；不降低检查或数学阈值。
+- R4.2.03继续in_progress，26/98。原生local UndoManager按实际input_group保留连续输入的一组，600ms空闲/光标跳转/显式边界另起组，实际marked合成超过空闲仍一组；undo/redo及确认回执前关闭自己组，echo不注册第二份文字undo。粘贴调用原生pasteAsPlainText响应链，保留原字节且单次撤销。
+- 真NSTextInputClient中文/日文markedRange/更新/提交API、连续ab一次撤销/redo/空闲后c独立、合成超过700ms、合成时run及已冻结Agent preview不能替换、原source revision0/无已接纳kernel、NFD/emoji/CRLF粘贴一次撤销通过。它不是系统候选窗口验收；专用可见UI fixture用生产组件/私有root并实时显示真正hasMarkedText/markedRange/草稿/原source revision，无合成模拟按钮。请求临时显示输入法菜单+添加日文后恢复的授权仍待用户回答，未修改系统设置；不据此勾任务。
+- 6a59193 CI38279366974 iOS/Rust/deps成功，Web命令面板复现旧parse错误仍显示时运行收尾busy未结束；palette的Run仍可点，controller静默忽略。已让Run/RunAll同步真实busy/可用cell，并显示disabled样式；原预期4/5s用例未改，固定Node26.11.1实际生产构建下原用例12次及笔记本全7项通过，lint/typecheck通过。
+- 同CI Mac workbench出现Trace/BPT trap，旧-O日志没有具体断言，不能声称修好。补明确file/line失败输出、实际split/editor/selection状态与真实CAS观察，并只收本任务fixture的CI crash reports；本机原断言全部通过，下一新SHA独立诊断。
+- [完整输入/回归/原失败/缓存证据](../acceptance/pre-alpha.4/development/r42/native-composition.json)：undo、composition、草稿3/保存6、source-editor、workbench及Release通过。待真实候选Enter/Tab/Esc与离屏pin；不阻断独立R4.2.07，已核对SwiftMath原fa8244ed固定源码并成功构建Mac真实模块/资源，生产公式接线尚未提交/未完成。运行.3/dev/no main/旧公开包/无子代理/本机无iOS模拟器，32final gate not_run/candidate未分配/ready=false/released=false。

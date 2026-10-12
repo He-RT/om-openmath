@@ -1,0 +1,8 @@
+
+> openmath-app@0.1.0-pre-alpha.3 typecheck
+> tsc --noEmit
+
+src/components/CommandPalette.tsx(25,12): error TS2375: Type '{ children: ("" | Element | undefined)[]; key: string; disabled: boolean | undefined; onSelect: () => void; }' is not assignable to type '{ disabled?: boolean; onSelect?: (value: string) => void; value?: string; keywords?: string[]; forceMount?: boolean; }' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
+  Types of property 'disabled' are incompatible.
+    Type 'boolean | undefined' is not assignable to type 'boolean'.
+      Type 'undefined' is not assignable to type 'boolean'.

@@ -323,6 +323,10 @@
   background: var(--accent-soft);
   color: var(--accent);
 }
+.command-dialog [cmdk-item][data-disabled="true"] {
+  opacity: 0.45;
+  cursor: default;
+}
 .command-dialog kbd {
   color: var(--muted);
   font-size: 11px;

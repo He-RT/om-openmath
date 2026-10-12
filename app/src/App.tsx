@@ -247,11 +247,12 @@ function Workspace({ controller }: { controller: NotebookController }) {
           {
             label: t.run,
             shortcut: "⌘↵",
+            disabled: state.busy || !state.active,
             run: () => {
               if (state.active) void controller.run(state.active);
             },
           },
-          { label: t.runAll, run: () => void controller.runAll() },
+          { label: t.runAll, disabled: state.busy || state.cells.length === 0, run: () => void controller.runAll() },
           {
             label: t.stop,
             shortcut: "⌘.",

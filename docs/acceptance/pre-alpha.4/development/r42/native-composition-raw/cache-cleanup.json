@@ -1,0 +1,37 @@
+{
+  "before_available_gib": 11,
+  "after_available_gib": 50,
+  "removed": [
+    {
+      "path": "target/debug/deps",
+      "kind": "rebuildable Cargo debug cache",
+      "removed": true,
+      "elapsed_s": 23.819
+    },
+    {
+      "path": "target/debug/.fingerprint",
+      "kind": "rebuildable Cargo debug cache",
+      "removed": true,
+      "elapsed_s": 2.491
+    },
+    {
+      "path": "target/debug/build",
+      "kind": "rebuildable Cargo debug cache",
+      "removed": true,
+      "elapsed_s": 0.237
+    },
+    {
+      "path": "target/debug/incremental",
+      "kind": "rebuildable Cargo debug cache",
+      "removed": true,
+      "elapsed_s": 0.0
+    }
+  ],
+  "preserved": [
+    "target/acceptance",
+    "target/ci-evidence",
+    "target/release",
+    "source files",
+    "authorization file outside repository"
+  ]
+}

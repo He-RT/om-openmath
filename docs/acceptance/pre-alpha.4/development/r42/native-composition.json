@@ -1,0 +1,219 @@
+{
+  "kind": "development_runtime_evidence",
+  "date": "2026-10-13",
+  "task": "R4.2.03",
+  "status": "in_progress",
+  "native_input": {
+    "continuous_typing_single_undo": true,
+    "600ms_idle_new_group": true,
+    "real_NSTextInputClient_marked_cases": [
+      "Chinese",
+      "Japanese"
+    ],
+    "marked_over_idle_one_undo": true,
+    "run_and_agent_replacement_blocked_while_marked": true,
+    "confirmed_source_revision": 0,
+    "plain_paste_exact_bytes_single_undo": true,
+    "os_candidate_windows_verified": false,
+    "live_isolated_fixture_built_and_opened": true,
+    "system_input_configuration_authorization": "pending; system preferences unchanged"
+  },
+  "regressions": {
+    "undo": 0,
+    "composition": 0,
+    "drafts_with_3_SIGKILL": 0,
+    "saves_with_6_SIGKILL": 0,
+    "source_editor": 0,
+    "workbench": 0,
+    "release": 0,
+    "node": "26.11.1",
+    "web_palette_original_case_12_runs": "12 passed",
+    "web_notebook_all": "7 passed",
+    "web_lint_typecheck_build": "passed"
+  },
+  "cache_cleanup": {
+    "before_available_gib": 11,
+    "after_available_gib": 50,
+    "Cargo_debug_cache_only": true,
+    "no_running_build_at_deletion": true,
+    "debug_rebuild_without_symbols_bytes": "about 1.2 GiB; no incremental cache"
+  },
+  "ci_prior": {
+    "run": 38279366974,
+    "sha": "6a59193f348815ca8b73f7306a6e04786be361a5",
+    "ios_rust_dependencies": "success",
+    "frontend": "failure; palette run enabled before busy settled, ignored by controller; repaired without test/timeout changes",
+    "native": "workbench trap, no assertion text; not claimed repaired; precise native diagnostics added"
+  },
+  "remaining": [
+    "actual Chinese/Japanese candidate Enter/Tab/Esc",
+    "offscreen active composition pin verification",
+    "full subsequent rendering/Agent/provider/model/media/release scope"
+  ],
+  "final_gates": "not_run",
+  "candidate": null,
+  "ready_to_publish": false,
+  "released_verified": false,
+  "raw_files": [
+    {
+      "path": "cache-cleanup.json",
+      "sha256": "bc287e404f3c740fc3b1b96aa0d407b0febceb5f8e0525f25568778114fc051a",
+      "bytes": 827
+    },
+    {
+      "path": "ci-6a59193-palette-error.md",
+      "sha256": "fd85f1913861e2e6db9504e7999b275fa6e8af52432047ab4f8d62ac0dd4aed5",
+      "bytes": 9450
+    },
+    {
+      "path": "ci-6a59193-workbench-trap.log",
+      "sha256": "d1ae591934b36cfe4c9522d0bfba06a9a152af946451933012954c424451cd43",
+      "bytes": 198
+    },
+    {
+      "path": "composition-attempt-1.log",
+      "sha256": "95243843e6ce54df4201e4a70bdb9721e59b6bd585984b21ad48bcd6853484e8",
+      "bytes": 551
+    },
+    {
+      "path": "composition-final.log",
+      "sha256": "93e5b62214d165bdd564c8e304f2709b3c830c3d6564850aacea361ea668cb0c",
+      "bytes": 671
+    },
+    {
+      "path": "drafts.log",
+      "sha256": "cedca4ac09919330280cca56706c3e5591feb811b5ef8734358ea5d3eb750684",
+      "bytes": 564
+    },
+    {
+      "path": "final-plan-check.log",
+      "sha256": "0fff25cad822bb3e567efe10a6ecfcbdbd05adaafd5dffdcaee4ce62da849e3b",
+      "bytes": 754
+    },
+    {
+      "path": "frontend-build-final.log",
+      "sha256": "5b73045423002aeaf061efda5331a2a0bb1f593acb28f67bbcafcda39034e3d8",
+      "bytes": 6061
+    },
+    {
+      "path": "frontend-build.log",
+      "sha256": "c0e766b085df355f4cfc9c0e4077e5cb12b55f80922e71347f482dfeec499ab2",
+      "bytes": 7130
+    },
+    {
+      "path": "frontend-lint.log",
+      "sha256": "94bbf3f39dcec47f0b2a1e399cf03a70a09aae6ffe88aa7cceecbd25e5e53c1c",
+      "bytes": 68
+    },
+    {
+      "path": "frontend-node-version.log",
+      "sha256": "ff9f714664f5d87ac6548bb3700b0c18bd57add52ac986b01d4aec21543ccfda",
+      "bytes": 9
+    },
+    {
+      "path": "frontend-notebook.log",
+      "sha256": "a6b508a7fe38f2e6e00fc90b22e0c2748d1cdc59f849337d3be6310de9ca36dd",
+      "bytes": 1256
+    },
+    {
+      "path": "frontend-palette.log",
+      "sha256": "18e432d6e1300b9810bec2ca9d714ea8b11b4955039404968f0fb94193999c99",
+      "bytes": 3880
+    },
+    {
+      "path": "frontend-typecheck-final.log",
+      "sha256": "d81fbef2cfe2f7f0d28803b296b7bd17913ea95b6486e417a83ebb76d3d6e20b",
+      "bytes": 60
+    },
+    {
+      "path": "frontend-typecheck.log",
+      "sha256": "839d7fe9727e20ea61a6c80632ec37e5be142e51c6870d9404ac5e52d47585d3",
+      "bytes": 667
+    },
+    {
+      "path": "inputs/app/src/App.tsx",
+      "sha256": "07f147d869104a22328359fc1c51143e3e3552c01941fa8fab5949f70bd60987",
+      "bytes": 10187
+    },
+    {
+      "path": "inputs/app/src/components/CommandPalette.tsx",
+      "sha256": "043350226c48dbb5cb5bc67d50e88eb1a4a818d707753fef116aa4e26ff68878",
+      "bytes": 1010
+    },
+    {
+      "path": "inputs/app/src/styles/chrome.css",
+      "sha256": "f977419a646435151b3dffd23471aa73f4da16e8aef184acdd845180b3f43cc0",
+      "bytes": 6320
+    },
+    {
+      "path": "inputs/macos/OpenMathNative/Editor/DraftTextViewAdapter.swift",
+      "sha256": "877340da07db6fb5af90b5436d43276edfe45664e1b0ac5ae2f833616afeaf36",
+      "bytes": 8928
+    },
+    {
+      "path": "inputs/macos/OpenMathNativeTests/CompositionFixtures/main.swift",
+      "sha256": "50601776177a90b85a9f02ab32ed55ec87ba41b8c3cab63bfb06e46dc5d2bcd3",
+      "bytes": 6199
+    },
+    {
+      "path": "inputs/macos/OpenMathNativeTests/CompositionUIFixture/main.swift",
+      "sha256": "e89b9b7509d9cb9fe579ff8b0d1f31b48308ff88bec2054fae0be4c9b7301900",
+      "bytes": 2652
+    },
+    {
+      "path": "inputs/macos/OpenMathNativeTests/WorkbenchFixtures/main.swift",
+      "sha256": "4bbeb9b546222444c134bb95392d6ce3f1228e6209ee43a7c5ccee9c7b5f525f",
+      "bytes": 7947
+    },
+    {
+      "path": "inputs/macos/Scripts/build-composition-ui-fixture.sh",
+      "sha256": "4eb06c687f24220de54ba17311cf72b91cc1b95e41d6a641f1ed502fb18014ad",
+      "bytes": 1873
+    },
+    {
+      "path": "inputs/macos/Scripts/test-composition.sh",
+      "sha256": "646c275ed96682bc8be4355fe0f4d3840517ddb8144cb9ff8f46b62041f7cf5e",
+      "bytes": 874
+    },
+    {
+      "path": "live-fixture-build.log",
+      "sha256": "7767ec3952952c5258d360f7c437457504c3cfaff2496ef6a0402202b267215f",
+      "bytes": 294
+    },
+    {
+      "path": "plan-check.log",
+      "sha256": "27ed1ab3ef77e6e18dd16e323412dc444327c8f843d18da5c1beeba4256a39f6",
+      "bytes": 754
+    },
+    {
+      "path": "release.log",
+      "sha256": "b6e0bf9627ab4a4299c02a397958b114d47a3c1a94a6ff3c7abf9f9eef515720",
+      "bytes": 95982
+    },
+    {
+      "path": "saves.log",
+      "sha256": "97250eb011c2da8b6b9b1155c1efe1e9b6f1836df6fcacbcc9f3f75c47859efc",
+      "bytes": 884
+    },
+    {
+      "path": "source-editor.log",
+      "sha256": "db547b8d9f0e26712d414a2183ae3e742271c288198c370b40fd660941b21d4c",
+      "bytes": 397
+    },
+    {
+      "path": "undo-attempt-1.log",
+      "sha256": "fb4fdd50532537846910def68e6f40964ddf0b85a3c33d0017abaf99b485453c",
+      "bytes": 5072
+    },
+    {
+      "path": "workbench-diagnostic.log",
+      "sha256": "c301df7794abf48f222fd078ae6e010b1ae3bcf32c05602c48f8f3204e914389",
+      "bytes": 1396
+    },
+    {
+      "path": "workbench.log",
+      "sha256": "88629a5e746f6ebc172543f3c064d47af6c0fb473c483e03e757fe3b7429dcbf",
+      "bytes": 661
+    }
+  ]
+}

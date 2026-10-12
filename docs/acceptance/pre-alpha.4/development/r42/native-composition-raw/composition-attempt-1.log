@@ -1,0 +1,3 @@
+    Finished `release` profile [optimized] target(s) in 0.23s
+{"composition_over_idle_atomic_undo":true,"continuous_typing_one_undo":true,"idle_break_new_group":true,"marked_blocks_run_and_agent_apply":true,"os_candidate_windows":"not_verified_by_API_fixture","plain_paste_one_undo_exact_bytes":true,"real_marked_cases":["中文","日本語"],"source_revision":0}
+Real NSTextInputClient Chinese/Japanese marked events, idle composition, no CAS/source/agent admission, continuous native undo/redo and raw paste passed; OS candidate windows not claimed

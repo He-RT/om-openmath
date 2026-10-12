@@ -1,0 +1,10 @@
+   Compiling om-host-service v0.1.0-pre-alpha.3 (/Users/hert/Projects/openmath/crates/om-host-service)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 1.94s
+     Running `target/debug/examples/kernel_store_contract seed target/macos-storage-tests/kernel-runtime-source`
+    Finished `release` profile [optimized] target(s) in 0.09s
+storage-open
+host-open
+source-open
+kernel-state:state
+a-accepted
+Actual C ABI main kernel + shared source gate + Swift/SQLite: a2->3/a5->6/a9->10; actual title change keeps original producer; stale dependency refusal; original-ID event once; typing overlay while IO; early stop rollback, late stop durable prefix, lost ACK/error prefix, actual fullsync unknown blocks new work until original readback, long CAS source edit/read and abandoned definition no-leak passed

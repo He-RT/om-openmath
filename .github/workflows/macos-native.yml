@@ -59,6 +59,8 @@ jobs:
         run: bash macos/Scripts/test-session-ledger.sh > target/macos-ci-evidence/session-ledger.log 2>&1
       - name: 全库备份、资源回收、新代次与只读回退隔离
         run: bash macos/Scripts/test-maintenance.sh > target/macos-ci-evidence/maintenance.log 2>&1
+      - name: 原生工作台宽度、真实运行与编辑器选区保留
+        run: bash macos/Scripts/test-workbench.sh > target/macos-ci-evidence/workbench.log 2>&1
       - name: 校验开发包签名和实际 ABI 符号
         run: |
           codesign --verify --deep --strict 'target/macos-native/Build/Products/Release/OpenMath Preview.app'

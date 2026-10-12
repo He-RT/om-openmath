@@ -183,6 +183,8 @@ struct NativeWindowAttachment:NSViewRepresentable {
 struct NativeNotebookFileView:View {
   @ObservedObject var workspace:NativeFileWorkspace
   let session:NativeDocumentSession
+  @ObservedObject private var runtime:NotebookRuntime
+  init(workspace:NativeFileWorkspace,session:NativeDocumentSession) {self.workspace=workspace;self.session=session;_runtime=ObservedObject(wrappedValue:session.runtime)}
   var body:some View {
     VStack(alignment:.leading,spacing:12) {
       HStack {Text(session.document.fileURL?.lastPathComponent ?? "未命名笔记本").font(.title2);Spacer();Text(session.document.statusText).foregroundStyle(.secondary).accessibilityIdentifier("notebook-file-status")}
@@ -198,12 +200,31 @@ struct NativeNotebookFileView:View {
         Spacer()
         Button("关闭笔记本") {Task {_ = await workspace.closeDocument()}}.disabled(workspace.busy)
       }
-      ScrollView {
+      ScrollViewReader {proxy in ScrollView {
         LazyVStack(alignment:.leading,spacing:14) {
           ForEach(session.drafts.confirmed.file.cells,id:\.id) {cell in
             VStack(alignment:.leading,spacing:5) {
               Text(cell.kind == .math ? "数学" : "文字").font(.caption).foregroundStyle(.secondary)
               NativeSourceFileEditor(session:session,cell:cell).frame(minHeight:110).border(.quaternary)
+              if cell.kind == .math {
+                HStack {
+                  Button("运行此单元格",systemImage:"play.fill") {runtime.run(cell.id)}.disabled(!runtime.canRun || workspace.busy)
+                    .accessibilityIdentifier("notebook-run-"+cell.id)
+                  if let result=runtime.results[cell.id] {
+                    let stale=result.receipt.producer.execution_epoch.value != session.drafts.confirmed.execution_epoch.value || session.drafts.confirmed.file.cells.filter{$0.kind == .math}.contains{(session.drafts.overlay($0.id)?.source.utf8 ?? $0.source.utf8).elementsEqual($0.source.utf8)==false}
+                    Text(stale ? "历史结果 · 源码已修改" : result.receipt.producer.terminal_status == .done ? "已接纳" : "计算有错误").font(.caption).foregroundStyle(.secondary)
+                  }
+                }
+                if let result=runtime.results[cell.id] {
+                  ForEach(Array(result.sources.enumerated()),id:\.offset) {_,text in
+                    HStack(alignment:.top) {
+                      Text(String(text.prefix(4000))).font(.system(.body,design:.monospaced)).textSelection(.enabled).frame(maxWidth:.infinity,alignment:.leading)
+                      Button("复制结果") {NSPasteboard.general.clearContents();NSPasteboard.general.setString(text,forType:.string)}.labelStyle(.iconOnly)
+                    }.padding(.vertical,6).accessibilityIdentifier("notebook-result-"+cell.id)
+                    if text.count>4000 {Text("此处显示预览，可复制完整结果。").font(.caption).foregroundStyle(.secondary)}
+                  }
+                }
+              }
               if session.drafts.overlay(cell.id)?.requiresReview==true {
                 HStack {
                   Text("恢复的草稿尚未确认").font(.caption)
@@ -211,10 +232,10 @@ struct NativeNotebookFileView:View {
                   Button("使用已确认源码") {workspace.reviewDraft(cell.id,keep:false)}
                 }
               }
-            }
+            }.id(cell.id)
           }
         }
-      }
+      }.onChange(of:runtime.navigationSequence) {if let cell=runtime.selectedCell {proxy.scrollTo(cell,anchor:.top)}}}
       if !session.drafts.recoveredOrphans.isEmpty {
         DisclosureGroup("已删除单元格的恢复草稿") {
           ForEach(Array(session.drafts.recoveredOrphans.enumerated()),id:\.offset) {_,draft in
@@ -222,7 +243,6 @@ struct NativeNotebookFileView:View {
           }
         }
       }
-      Text("文件编辑与保存已接通；完整笔记本展示继续按计划接入。打开文件不会自动运行单元格。").font(.footnote).foregroundStyle(.secondary)
     }.padding(20)
   }
 }

@@ -1,0 +1,28 @@
+   Compiling om-host-service v0.1.0-pre-alpha.3 (/Users/hert/Projects/openmath/crates/om-host-service)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 2.58s
+     Running tests/undo_source.rs (target/debug/deps/undo_source-400dcbfd8b6c864e)
+
+running 16 tests
+test inverse_preserves_later_unrelated_content_title_and_new_cells ... ok
+test later_edit_then_same_bytes_are_not_mistaken_for_the_original_revision ... ok
+test inverse_move_restores_order_but_keeps_unmodified_cells_current_content ... ok
+test disjoint_original_order_changes_do_not_protect_the_unchanged_gap_between_them ... ok
+test later_related_edit_rejects_whole_inverse_without_a_partial_result ... ok
+test a_group_insert_then_edit_is_atomic_and_can_be_removed_without_an_intermediate_snapshot ... ok
+test inverse_insert_removes_only_original_cell_and_refuses_its_later_modification ... ok
+test a_whole_group_can_reverse_its_own_versions_while_preserving_unrelated_later_input ... ok
+test raw_unicode_related_source_and_later_title_are_not_normalized_or_overwritten ... ok
+test tampered_transaction_other_document_and_precommit_snapshot_cannot_be_inverted ... ok
+test unrelated_later_deletion_is_not_resurrected_by_content_inverse ... ok
+test group_order_identity_and_late_conflict_cannot_publish_partial_inverse ... ok
+test structural_inverse_retains_unrelated_edits_outside_original_anchors ... ok
+test new_content_inside_structural_edit_or_reused_deleted_identity_is_a_conflict ... ok
+test maximum_32_transaction_group_reconstructs_the_original_source ... ok
+test all_small_distinct_identity_orders_and_memberships_have_exact_inverse ... ok
+
+test result: ok. 16 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.49s
+
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.09s
+     Running `target/debug/examples/source_store_contract`
+    Finished `release` profile [optimized] target(s) in 0.11s
+Actual native undo: 2 stored transactions -> 1 inverse COMMIT; original-ID duplicate; redo inverse; later manual conflict; lost ACK recovery; fresh runtime readback; real UndoManager grouping/echo/pending/undo/redo/failed-command retention passed

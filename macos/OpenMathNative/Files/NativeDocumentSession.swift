@@ -29,6 +29,7 @@ actor NativeAppStorage {
   let drafts:DraftStore
   let undo:UndoCoordinator
   let backup:NativeDraftBackup
+  let runtime:NotebookRuntime
   private(set) var recoveryMessages:[String]=[]
   private(set) var recoveryHistoryCursor:DocumentProjectionCursor?
   private let storage:StorageService
@@ -38,6 +39,13 @@ actor NativeAppStorage {
     self.document=document;self.host=host;self.source=source;self.files=files;self.drafts=drafts;self.storage=storage
     self.undo=UndoCoordinator {transactions,group,operation in try await source.undo(transactions:transactions,group:group,operation:operation)}
     self.backup=NativeDraftBackup(storage:storage,store:drafts,owner:backupOwner)
+    self.runtime=NotebookRuntime(host:host,storage:storage,source:source)
+    runtime.selectedCell=drafts.confirmed.file.cells.first?.id
+    runtime.beforeRun={ [weak self] in
+      guard let self,!closed else {throw StorageError.closing}
+      _ = try drafts.pendingEdits();try await flushSource()
+    }
+    runtime.changed={ [weak document] in document?.changed?() }
     document.beforeSave={ [weak self] in try await self?.backup.flush();try await self?.flushSource() }
     document.beforeClose={ [weak self] in try await self?.backup.flush() }
     document.draftsBackedUp={ [weak self] in self?.backup.isCurrent==true }
@@ -76,6 +84,7 @@ actor NativeAppStorage {
     if let existing=editors[key] {return existing}
     let editor=try DraftTextViewAdapter(store:drafts,cell:cell,generation:1)
     editor.bindDocumentUndo(undo.manager);editor.didEdit={ [weak document] in document?.noteEdit() }
+    editor.didFocus={ [weak runtime] in runtime?.selectedCell=cell }
     editors[key]=editor;return editor
   }
   /// Explicit native recovery selection. The local document identity is retained, runtime/grants
@@ -138,7 +147,7 @@ actor NativeAppStorage {
     for editor in editors.values {editor.textView.isEditable=false}
     do {try document.checkCloseApproval(approvalRequired);try await document.closeNative(approvalRequired:approvalRequired);backup.stop()}
     catch {for editor in editors.values {editor.textView.isEditable=true};throw error}
-    closed=true;await source.close();try await host.close()
+    closed=true;await runtime.close();await source.close();try await host.close()
     try await storage.closeDocument(drafts.confirmed.document_id)
   }
 }

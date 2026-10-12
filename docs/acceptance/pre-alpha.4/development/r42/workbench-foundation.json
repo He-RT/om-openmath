@@ -1,0 +1,172 @@
+{
+  "schema_version": 1,
+  "record_kind": "development_native_workbench_foundation",
+  "task": "R4.2.01",
+  "task_status": "in_progress",
+  "timestamp_utc": "2026-10-12T13:51:59.628493+00:00",
+  "base_source_sha": "27ede3f6d2ed3ed0cb2e5c67f966a97b23187583",
+  "runtime_version": "0.1.0-pre-alpha.3",
+  "public_gate_evidence": false,
+  "started_simulators": false,
+  "commands": [
+    {
+      "command": "bash macos/Scripts/build-native.sh",
+      "exit_code": 0,
+      "log": "docs/acceptance/pre-alpha.4/development/r42/workbench-foundation-raw/native-release.txt",
+      "sha256": "123407129038ab25ba0d65ff9a6acbc6aeff2eb3caad704b8235ed218f12d61f"
+    },
+    {
+      "command": "bash macos/Scripts/test-workbench.sh",
+      "exit_code": 0,
+      "log": "docs/acceptance/pre-alpha.4/development/r42/workbench-foundation-raw/workbench.txt",
+      "sha256": "c147f6c0b58e1e1d1c1f765d42e1a427b9149a96e55b50d17733c380e8c0776b"
+    },
+    {
+      "command": "bash macos/Scripts/build-workbench-ui-fixture.sh",
+      "exit_code": 0,
+      "log": "docs/acceptance/pre-alpha.4/development/r42/workbench-foundation-raw/ui-fixture.txt",
+      "sha256": "91965be8a4057abf23fbcfd8a306ecb8e4dff94c54075562bb4ae04aae64f569"
+    },
+    {
+      "command": "bash macos/Scripts/test-saves.sh",
+      "exit_code": 0,
+      "log": "docs/acceptance/pre-alpha.4/development/r42/workbench-foundation-raw/regression-saves.txt",
+      "sha256": "3800ff9c9e3b03b8a0df2e260ea40693619c7e4144563cd4359a026633318e47"
+    },
+    {
+      "command": "bash macos/Scripts/test-drafts.sh",
+      "exit_code": 0,
+      "log": "docs/acceptance/pre-alpha.4/development/r42/workbench-foundation-raw/regression-drafts.txt",
+      "sha256": "15f15feb76c29e0a9d5e2df27a15ff2193405c4b825fab57525eaba6f20590ce"
+    },
+    {
+      "command": "bash macos/Scripts/test-recovery.sh",
+      "exit_code": 0,
+      "log": "docs/acceptance/pre-alpha.4/development/r42/workbench-foundation-raw/regression-recovery.txt",
+      "sha256": "eff62360f8a084f12941a1b13b7015d45a70109f6cd1dacf57ea7fbe95a20de7"
+    },
+    {
+      "command": "bash macos/Scripts/test-kernel-runtime.sh",
+      "exit_code": 0,
+      "log": "docs/acceptance/pre-alpha.4/development/r42/workbench-foundation-raw/regression-kernel-runtime.txt",
+      "sha256": "901efa237e396979252a2ed5248712c144a9aedfbe3d25b73120f685438d9bf1"
+    },
+    {
+      "command": "bash macos/Scripts/test-undo.sh",
+      "exit_code": 0,
+      "log": "docs/acceptance/pre-alpha.4/development/r42/workbench-foundation-raw/regression-undo.txt",
+      "sha256": "94d7b0a977eb64bd792063287043de48cbaaa75f6959c63341caadc490d5aa60"
+    }
+  ],
+  "sources": [
+    {
+      "path": "macos/OpenMathNative/Views/WorkspaceView.swift",
+      "sha256": "f565475ebb56db78caf23d17131964be8cdb97f4dce03dfb328a9d0e656f394e"
+    },
+    {
+      "path": "macos/OpenMathNative/Kernel/NotebookRuntime.swift",
+      "sha256": "cf47b11c0aa03f1572810c2210c8ffe387d0e1e7ac584e84b8648fb6f1001d87"
+    },
+    {
+      "path": "macos/OpenMathNative/Files/NativeDocumentSession.swift",
+      "sha256": "a6e4f9767d7936b5a5c14da5bdcdb04657e881febe9a6466e03889fc93c9dd63"
+    },
+    {
+      "path": "macos/OpenMathNative/Editor/DraftTextViewAdapter.swift",
+      "sha256": "438d23bf68b2472a8488d056f6cb47949022284565ec7e044de02bfdbbe9ea7f"
+    },
+    {
+      "path": "macos/OpenMathNative/NativeFileWorkspace.swift",
+      "sha256": "1eb69588e95f8b4a2587844cc895b4f1e9aa39e4adda750413174526b4f4876f"
+    },
+    {
+      "path": "macos/OpenMathNative/AppHost.swift",
+      "sha256": "f3801ce9061f4581d75c2ba87dbf85e300e2cfe07baa0933179adc72f6047c11"
+    },
+    {
+      "path": "macos/OpenMathNativeTests/WorkbenchFixtures/main.swift",
+      "sha256": "1885332d127647e8c637e2d1ef500f3adcc989195616e2b591760dc3329c940c"
+    },
+    {
+      "path": "macos/OpenMathNativeTests/WorkbenchUIFixture/main.swift",
+      "sha256": "2499633e5eb706fb64a7023b86687c654a32f8e055ebe7ae68d1cef9529a06f8"
+    },
+    {
+      "path": "macos/Scripts/test-workbench.sh",
+      "sha256": "bfc1f0977283118cbad83d5ce6c19e11aeee8ff10dc36fe8f53728765c00883a"
+    },
+    {
+      "path": "macos/Scripts/build-workbench-ui-fixture.sh",
+      "sha256": "eca6bba7f52c5a4ee453aa8769c5732458daacf5cb472d010ef0796ad8d172bd"
+    }
+  ],
+  "actual_native_window_checks": {
+    "widths": [
+      1042,
+      861,
+      640,
+      1100
+    ],
+    "same_center_host": true,
+    "same_textkit_editor": true,
+    "native_utf16_selection_unchanged": true,
+    "source_unicode_bytes_unchanged": true,
+    "physical_kernel_receipts": [
+      "5",
+      "6"
+    ],
+    "live_cas_resize_edit_stop": true,
+    "later_draft_retained": "let a=9 # 中文🙂"
+  },
+  "actual_cua_checks": {
+    "fixture_only": true,
+    "window": "fixture.omnb",
+    "original_cell_sources": [
+      "let a=2 # 中文🙂",
+      "a+1"
+    ],
+    "actual_displayed_results": [
+      "2",
+      "3"
+    ],
+    "splitter_width_before": 208,
+    "splitter_width_after": 238,
+    "hide_outline_keeps_results": true,
+    "result_inspector_shows_actual_accepted_result": true,
+    "notebook_closed_normally": true,
+    "fixture_app_quit": true,
+    "capture_kind": "live CUA app screenshot and AX; offscreen cacheDisplay not authoritative"
+  },
+  "remaining": [
+    "assistant/steps/variables destinations require real adapters, R4.2.01 not marked Done",
+    "full formula/structured result/steps/2D/Metal and long notebook still R4.2",
+    "same-candidate final gates not run"
+  ],
+  "previous_ci": {
+    "sha": "27ede3f",
+    "run_id": 38251418308,
+    "url": "https://github.com/He-RT/om-openmath/actions/runs/38251418308",
+    "conclusion": "failure",
+    "passed_jobs": [
+      "dependencies",
+      "rust",
+      "native_macos / native",
+      "frontend"
+    ],
+    "failed_job": "ios / native",
+    "device": "iPad",
+    "row": "34",
+    "total_ms": 1024.01475,
+    "threshold_ms": 1000,
+    "transport": {
+      "ffi_ms": 948.197458,
+      "queued_ms": 55.057208,
+      "encoded_ms": 0.076542,
+      "decode_ms": 2.589875,
+      "resume_ms": 18.085417
+    },
+    "no_relaxed_threshold": true
+  },
+  "ready_to_publish": false,
+  "released_verified": false
+}

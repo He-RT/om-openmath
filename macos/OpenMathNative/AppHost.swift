@@ -19,7 +19,7 @@ import SwiftUI
           Spacer()
         }.padding(12)
         Divider()
-        if let session=workspace.session {NativeNotebookFileView(workspace:workspace,session:session)}
+        if let session=workspace.session {WorkspaceView(workspace:workspace,session:session)}
         else {HostScratchView(model:scratch);if let error=workspace.errorText {Text(error).foregroundStyle(.red).padding(8)}}
       }.frame(minWidth:640,minHeight:560)
         .background(NativeWindowAttachment(workspace:workspace).frame(width:0,height:0))

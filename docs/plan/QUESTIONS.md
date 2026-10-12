@@ -341,3 +341,5 @@ R4.1.12部分验证（2026-10-11）：原文档三类事实投影及Library故�
 R4.1.12恢复收尾（2026-10-12）：长会话4374/>16MiB、37calls/37request plans有界页、缺index拒绝、原生会话查询实际UI已完成；此前4096预算限制解除，任务Done/Tests满足。a23ef8a CI38163760418五jobs成功，保持原1秒/数学，不删除前批失败；本批新SHA/final candidate独立验证。下一R4.1.13版本升级/backup/quota/GC，无用户阻塞，不需要用户再点Save或解锁设备。
 
 R4.1.13收尾（2026-10-12）：备份、显式新代次/rollback_quarantine、全库GC与运行/备份pins、独立缓存/空间预算均实际验证；17强杀、原规范BackupManifest、113Rust、15原生组、Release通过。完整原生工作台及日末触发/数据管理UI继续R4.2，不要求用户再次授权或操作Save。本批新CI/final候选仍独立，既有eac1e35 CI38168802699已全部成功，失败历史和原1s/数学保持。
+
+27ede3f CI38251418308（2026-10-12）：四jobs通过，iPad原53第34条总1024.01475ms超1000ms；实际FFI948.197458/queued55.057208/decode2.589875/resume18.085417，不能称MainActor等待为主，也不改门槛/数学。原xcresult/artifact已下载并封存原corpus；后续同SHA继续核对，当前无用户操作阻塞。R4.2.01基础原生窗口/运行已接通并实际验证，但完整目的地仍待继续，任务保持in_progress。

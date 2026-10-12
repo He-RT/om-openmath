@@ -1,0 +1,3 @@
+    Finished `release` profile [optimized] target(s) in 0.08s
+Actual Library/source/kernel/file projections: durable rollback/lost ACK/F_FULLFSYNC recovery, bounded cursor, namespace separation, forged receipt refusal, private bookmark isolation and complete-record corruption/degraded document saves passed
+Five actual SIGKILL projection boundaries: one stable Library event per original fact, original document ACKs recovered; source/bootstrap+4 calculation checkpoints/file unchanged, no evaluation or network replay

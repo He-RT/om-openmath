@@ -14,6 +14,8 @@ private final class EditorUndoRouter:UndoManager {
   var dirty:()->Bool = {true}
   var inputBegan:(()->Void)?
   var inputEnded:(()->Void)?
+  var focusChanged:(()->Void)?
+  override func becomeFirstResponder()->Bool {let accepted=super.becomeFirstResponder();if accepted {focusChanged?()};return accepted}
   var documentManager:UndoManager?
   let local=UndoManager()
   private let router=EditorUndoRouter()
@@ -66,6 +68,7 @@ private final class EditorUndoRouter:UndoManager {
   private var previousCaret:NSRange?
   private var inComposition=false
   var didEdit:(()->Void)?
+  var didFocus:(()->Void)?
   var inputGroup:String {group}
   init(store:DraftStore,cell:String,generation:UInt64) throws {
     self.store=store;self.cell=cell;self.generation=generation
@@ -78,6 +81,7 @@ private final class EditorUndoRouter:UndoManager {
     native.compositionChanged={ [weak self] in try? self?.reportCurrentInput() }
     native.dirty={ [weak store] in guard let value=store?.overlay(cell) else {return true};return value.composing || value.conflict || !value.source.utf8.elementsEqual(value.baseSource.utf8)}
     native.inputBegan={ [weak self] in self?.beginInputGroup() }
+    native.focusChanged={ [weak self] in self?.didFocus?() }
     native.inputEnded={ [weak self] in try? self?.reportCurrentInput();self?.previousCaret=self?.textView.selectedRange() }
   }
   func bindDocumentUndo(_ manager:UndoManager) {(textView as? DraftTextView)?.documentManager=manager}

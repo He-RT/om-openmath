@@ -43,8 +43,8 @@
 | [x] [R4.1.10](PRE_ALPHA_4.md#task-r4.1.10) | 不可变结果库和只读检查通道 | completed | [实际原生结果](../acceptance/pre-alpha.4/development/r41/result-runtime.json) / CABI＋worker＋Swift / 324Rust＋actual receipts/late reply | 6d53f17；f04474f；后续补验 |
 | [x] [R4.1.11](PRE_ALPHA_4.md#task-r4.1.11) | NSDocument打开保存与冻结快照 | completed | [实际文件/同库回执/本轮Release面板闭环](../acceptance/pre-alpha.4/development/r41/file-saves-completion.json) / 6 SIGKILL+原件冲突 / N+1/IME/身份/取消/重开 / Mac CI38122270416 success | 25df8d8；f04474f、c4eab5a |
 | [x] [R4.1.12](PRE_ALPHA_4.md#task-r4.1.12) | 会话outbox、草稿与启动恢复 | completed | [indexed长会话/原生恢复入口](../acceptance/pre-alpha.4/development/r41/indexed-session-recovery.json) / 4374事件>16MiB/37+37分页/13+5+3+6SIGKILL/真实UI | a23ef8a、5b96deb、642cfc9；本批待补SHA |
-| [x] [R4.1.13](PRE_ALPHA_4.md#task-r4.1.13) | 引用租约、备份、quota与GC | completed | [实际备份/升级/配额/GC](../acceptance/pre-alpha.4/development/r41/storage-maintenance.json) / 17SIGKILL/原schema/113Rust/15原生回归/Release | 本批待补SHA |
-| [ ] [R4.2.01](PRE_ALPHA_4.md#task-r4.2.01) | 原生工作台窗口、分栏和投影 | planned | — | — |
+| [x] [R4.1.13](PRE_ALPHA_4.md#task-r4.1.13) | 引用租约、备份、quota与GC | completed | [实际备份/升级/配额/GC](../acceptance/pre-alpha.4/development/r41/storage-maintenance.json) / 17SIGKILL/原schema/113Rust/15原生回归/Release | 27ede3f |
+| [ ] [R4.2.01](PRE_ALPHA_4.md#task-r4.2.01) | 原生工作台窗口、分栏和投影 | in_progress | [原生基础工作台](../acceptance/pre-alpha.4/development/r42/workbench-foundation.json) / 1042/861/640/真实5和6/长CAS/实际UI | 本批待补SHA |
 | [ ] [R4.2.02](PRE_ALPHA_4.md#task-r4.2.02) | NSTextView和严格SourceIndexMap | planned | — | — |
 | [ ] [R4.2.03](PRE_ALPHA_4.md#task-r4.2.03) | 原生IME、UndoManager与草稿屏障 | planned | — | — |
 | [ ] [R4.2.04](PRE_ALPHA_4.md#task-r4.2.04) | 非求值Preview/Complete/Hover和高亮 | planned | — | — |
@@ -475,3 +475,11 @@ Done依据与覆盖case/proof:
 - 全库及保留代次引用、完整事件/资源、原Blob实际字节、健康备份和运行publication/reader pins核对后GC；过24h孤儿隔离同步/重查后删除，旧staging仅处理应用UUID路径，实际GC强杀后可续核。跨库未来格式拒绝，原字节不回收。派生缓存独立LRU512MiB、producer pin优先于配额，清缓存不动原附件；实际空间256MiB/1GiB门禁、5GiB软预算返回状态。保留最近7普通/2升级前及至少1完整健康备份，软预算不牺牲它们；日末触发和native管理UI仍属R4.2.18。
 - [完整证据](../acceptance/pre-alpha.4/development/r41/storage-maintenance.json)封存输入、19个命令/完整输出/SHA及17实际SIGKILL原件；113 Rust、Clippy、269 DTO、15既有原生专项、Release最终exit0。旧失败构建/测试条件/隔离校验顺序/SHM缓存识别原件保留；没有修改原数学/计时门槛。
 - eac1e35 CI38168802699全部5jobs成功；本批新SHA仍独立CI，不能沿用旧成功。32final gate全部not_run、candidate未分配、ready/released=false，完整Pi/Agent/模型媒体/上下文/工作台及最终发行仍未完成，无用户操作阻塞。
+
+## R4开发记录 D038 — 原生工作台基础分栏与实际运行
+
+- R4.2.01保持in_progress，24/98；已建立原生目录/笔记本/文档-结果检查器及真实宽度1042/861/640基础路径，助手/步骤/变量目的地和完整展示仍继续，不提前勾整个任务。原NSHostingView/TextKit editor/selection保留，隐藏不关闭owner；窄宽度popover可达，实际拖分栏208→238且结果不丢。
+- 文档持有NotebookRuntime，原KernelCommitPort及耐久接纳回执/只读ResultClient实际接通。源提交/原UndoManager确认先于数学运行，不自动跑打开文件；不因窗口或面板隐藏销毁运行。真实producer phase/原ID stop/unknown核对，已提交与结果读取失败分开，晚stop不改成功。
+- 实际AppKit窗口+原生产组件验证1042/861/640/1100、同一中心view/editor及原UTF16选区/中文emoji字节；SQLite/C ABI得到5和6，长CAS时缩窗/编辑/明确stop，后草稿9保持。持续隔离UI fixture经实际AX/截图验证2和3、目录折叠、结果检查器和分栏；正常关闭笔记本并Quit，不读实际Preview/public根。离屏cacheDisplay不作为实际画面证据。
+- [完整记录](../acceptance/pre-alpha.4/development/r42/workbench-foundation.json)及[实现/技能参考](../design/native-workbench.md)。Release、本轮workbench及原保存6/草稿3/恢复5、kernel-runtime、UndoManager回归均exit0。初次@State多变量声明被编译器拒绝，两个fixture注释/UTF16选区错误与手工enum大小写错误已修；失败原件保留，原数学/性能门槛不变。
+- 27ede3f CI38251418308 Mac/Rust/Web/deps四job通过，iPad原53 row34总1024.01475ms超过原1000ms，分段FFI948.197458/queued55.057208/decode2.589875/resume18.085417；原件已下载target/ci-evidence/27ede3f并封存corpus，不改用内部时间冒充通过。新SHA/完整最终candidate仍独立，本机无模拟器。

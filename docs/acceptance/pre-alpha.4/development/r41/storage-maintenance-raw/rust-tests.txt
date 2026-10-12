@@ -1,0 +1,236 @@
+   Compiling om-host-service v0.1.0-pre-alpha.3 (/Users/hert/Projects/openmath/crates/om-host-service)
+   Compiling om-apple-ffi v0.1.0-pre-alpha.3 (/Users/hert/Projects/openmath/crates/om-apple-ffi)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 7.54s
+     Running unittests src/lib.rs (target/debug/deps/om_apple_ffi-5e440b6767ce8e38)
+
+running 9 tests
+test ffi::tests::packet_and_integer_panics_do_not_cross_the_abi ... ok
+test lifecycle_tests::concurrent_event_poll_submit_cancel_and_close_settle_without_stale_pointer_access ... ok
+test lifecycle_tests::create_rejects_null_invalid_utf8_unknown_fields_and_overlimit_with_owned_errors ... ok
+test lifecycle_tests::malformed_submit_and_event_byte_limits_report_actual_failure_or_resync ... ok
+test tests::linking_probe_reports_the_real_desktop_kernel_catalog ... ok
+test lifecycle_tests::real_math_borrowed_input_is_copied_and_all_returned_bytes_are_freed ... ok
+test lifecycle_tests::free_drops_only_owned_matching_allocation_and_empty_is_harmless ... ok
+test registry::tests::finishing_waits_for_real_active_guard_and_stale_token_never_rebinds ... ok
+test lifecycle_tests::consumed_handles_never_alias_and_cancel_is_repeatable_without_rearming ... ok
+
+test result: ok. 9 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.04s
+
+     Running unittests src/lib.rs (target/debug/deps/om_host_service-8c6e3516363084f7)
+
+running 4 tests
+test kernel::worker::lifecycle::tests::unstarted_or_prepared_or_unknown_is_never_optimistically_accepted_or_discarded ... ok
+test results::runtime::queries::tests::source_fragments_keep_exact_utf8_and_never_call_a_partial_source_complete ... ok
+test kernel::worker::lifecycle::tests::cancel_and_actual_commit_barrier_have_one_linearized_order ... ok
+test scheduler::source_gate_tests::barrier_does_not_wait_on_the_source_owner_lock ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/commit_owner.rs (target/debug/deps/commit_owner-5a2bd79ec5405872)
+
+running 7 tests
+test repeated_admission_does_not_rewind_writing_committing_or_unknown ... ok
+test late_fence_dirty_ime_scope_and_unacknowledged_admission_are_rejected ... ok
+test stop_before_barrier_never_enters_commit_and_does_not_change_confirmed_source ... ok
+test stop_after_barrier_is_pending_not_undo_and_unknown_holds_the_original_gate ... ok
+test durable_terminal_admission_never_becomes_a_new_write ... ok
+test cancelled_admission_readback_does_not_release_another_active_gate ... ok
+test actual_kernel_gate_blocks_source_writes_but_keeps_frozen_preview_and_reads_available ... ok
+
+test result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+
+     Running tests/contracts.rs (target/debug/deps/contracts-68024947d103f05c)
+
+running 10 tests
+test unsupported_schema_features_and_false_schemas_are_not_silently_accepted ... ok
+test shared_serials_preserve_maximum_and_never_wrap_or_truncate ... ok
+test actual_generated_host_roundtrips_and_required_null_is_not_optional ... ok
+test frame_budget_invalid_utf8_and_unknown_nullable_fields_fail_closed ... ok
+test identities_unknown_fields_unions_and_closed_state_are_rejected ... ok
+test durable_io_ack_requires_actual_receipt_fields_and_cannot_claim_success_from_null ... ok
+test positive_but_stale_runtime_and_document_generations_fail_owner_binding ... ok
+test native_wire_dispatch_is_typed_and_cannot_change_permissions_by_adding_fields ... ok
+test marked_text_invariants_are_not_confused_with_shape_success ... ok
+test canonical_timestamp_accepts_actual_iso_dates_and_rejects_bad_calendar_or_offset ... ok
+
+test result: ok. 10 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/document_source.rs (target/debug/deps/document_source-9018038116fe76dc)
+
+running 6 tests
+test legacy_unicode_cell_ids_are_byte_distinct_and_roundtrip_without_reassignment ... ok
+test duplicate_cells_overflow_and_reopen_generation_cannot_commit_half_a_document ... ok
+test staged_invalid_math_is_source_and_unknown_receipt_never_changes_authority ... ok
+test execution_epoch_remains_independent_from_source_revision ... ok
+test input_group_is_bound_to_the_original_manual_request_and_not_an_agent_grant ... ok
+test raw_unicode_order_and_per_cell_revision_are_never_normalized ... ok
+
+test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/fixture_support.rs (target/debug/deps/fixture_support-97d724dff42abf0c)
+
+running 2 tests
+test controlled_clock_and_cancel_drive_actual_budget_checks ... ok
+test own_unicode_fixture_passes_the_real_sans_io_provider_decoder_for_every_split ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/kernel_acceptance.rs (target/debug/deps/kernel_acceptance-9b180969b03c866e)
+
+running 5 tests
+test only_entered_original_plan_and_matching_receipt_yield_an_accepted_parent ... ok
+test closed_contract_hashes_roles_unknown_fields_and_receipt_producer_are_checked ... ok
+test data_only_recovery_rejects_wrong_blob_and_current_build_instead_of_replaying_source ... ok
+test early_cancel_final_source_config_or_generation_change_prevents_commit ... ok
+test title_change_accepts_original_producer_but_math_epoch_change_discards_candidate ... ok
+
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.02s
+
+     Running tests/kernel_endpoint.rs (target/debug/deps/kernel_endpoint-af7de9e41028e07b)
+
+running 4 tests
+test closed_wire_does_not_allow_oversized_or_untyped_recovery_chunks ... ok
+test state_command_is_the_same_closed_shape_as_generated_swift ... ok
+test recovery_upload_is_bounded_idempotent_and_directly_cancelled_without_a_state ... ok
+test malformed_complete_payload_fails_in_background_and_releases_the_gate ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+
+     Running tests/kernel_states.rs (target/debug/deps/kernel_states-d517634f090732d2)
+
+running 2 tests
+test original_scoped_bytes_restore_actual_defs_and_old_parent_stays_independent ... ok
+test revoked_external_pins_keep_byte_and_count_reservations_until_reaped ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+
+     Running tests/kernel_worker.rs (target/debug/deps/kernel_worker-d1a221e959254780)
+
+running 8 tests
+test wrong_source_scope_epoch_and_frozen_cancel_are_rejected_or_preserved_as_actual_facts ... ok
+test unchanged_math_after_title_change_keeps_definitions_and_skipped_epoch_retires_them ... ok
+test registry_capacity_failure_and_close_do_not_publish_or_overwrite_the_parent ... ok
+test real_error_keeps_actual_partial_definition_and_history_only_in_the_candidate ... ok
+test explicit_nonreactive_mode_keeps_original_reassignment_semantics ... ok
+test direct_stop_and_parent_lookup_do_not_wait_for_cas_and_queue_tokens_stay_independent ... ok
+test discarded_random_and_out_state_never_become_the_next_implicit_parent ... ok
+test explicit_parent_a2_then_a5_reconcile_retires_old_definitions_and_no_cascade_runs ... ok
+
+test result: ok. 8 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.03s
+
+     Running tests/preview.rs (target/debug/deps/preview-bfdfad484c074f26)
+
+running 10 tests
+test source_only_preview_never_returns_a_commit_ref_or_executes_a_definition ... ok
+test overlapping_matches_duplicate_keys_wrong_kind_and_bad_late_operations_fail_closed ... ok
+test expiry_scope_mode_permission_and_token_tampering_never_commit_old_plans ... ok
+test request_cannot_replace_permissions_or_claim_unknown_original_source_hash ... ok
+test unread_future_cell_ids_and_conflicting_content_changes_cannot_bypass_the_original_snapshot ... ok
+test partial_read_rejects_whole_update_but_allows_ordered_unique_raw_fragments ... ok
+test host_assigns_new_cells_and_frozen_plan_is_retrieved_without_reconstructing_source ... ok
+test discussion_can_inspect_a_patch_but_cannot_commit_and_reopened_runtime_cannot_reuse_it ... ok
+test invalid_syntax_cycle_and_definition_conflict_never_get_committable_refs ... ok
+test patch_budget_and_actual_alias_binding_are_not_inferred_from_documentation ... ok
+
+test result: ok. 10 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+
+     Running tests/references.rs (target/debug/deps/references-294dfdf0088c2bfd)
+
+running 3 tests
+test wrong_issuer_and_nonascii_forgery_cannot_resolve_or_panic ... ok
+test exact_deadline_purpose_and_counter_limits_are_not_implicit_permission ... ok
+test retained_bytes_and_count_are_bounded_and_expired_resources_release_capacity ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.46s
+
+     Running tests/result_runtime.rs (target/debug/deps/result_runtime-f931e24f71bb0fb0)
+
+running 4 tests
+test result_read_schema_rejects_unknown_options_overlarge_pages_or_invented_channels ... ok
+test readonly_result_retention_does_not_keep_an_obsolete_main_pool_envelope_pinned ... ok
+test direct_cancel_and_readback_remain_available_while_a_real_result_worker_is_paused ... ok
+test actual_manifest_pages_source_numeric_and_readonly_controls_have_scoped_original_identity ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.06s
+
+     Running tests/results.rs (target/debug/deps/results-0cc7884b148c8bf3)
+
+running 5 tests
+test scratch_and_readonly_random_out_set_are_isolated_from_original_state ... ok
+test reexecuted_definition_invalidates_and_retires_dependent_owned_value_without_cascade ... ok
+test expired_and_restarted_result_tokens_require_fresh_grants_for_the_same_durable_result ... ok
+test revoked_cache_lookup_keeps_reader_reservation_until_actual_pin_release ... ok
+test actual_result_occurrences_scope_history_and_exact_pages_survive_other_executions ... ok
+
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.15s
+
+     Running tests/scheduler.rs (target/debug/deps/scheduler-d1f0ab295a187684)
+
+running 11 tests
+test rejected_stale_scope_and_unknown_operation_do_not_start_a_job ... ok
+test close_stops_admission_and_waits_only_on_the_finishing_caller ... ok
+test invalid_direct_init_and_source_provenance_are_rejected ... ok
+test overload_queued_stop_and_close_are_bounded_and_terminal ... ok
+test actual_math_and_source_definitions_are_isolated_between_operations ... ok
+test slow_subscriber_gets_explicit_resync_and_retained_outcome ... ok
+test editor_preview_runs_on_an_independent_owner_during_real_math ... ok
+test long_math_does_not_delay_state_read_and_direct_cancellation_settles ... ok
+test independent_snapshot_recovers_dropped_terminal_facts_and_never_consumes_admission ... ok
+test actual_catalog_pagination_and_failed_math_never_claim_success ... ok
+test completed_reads_do_not_consume_active_capacity_or_recursively_embed_old_results ... ok
+
+test result: ok. 11 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.22s
+
+     Running tests/source_endpoint.rs (target/debug/deps/source_endpoint-6c8480685d160e30)
+
+running 2 tests
+test host_command_schema_is_closed_and_requires_the_restored_configuration_binding ... ok
+test restored_constants_are_used_in_the_actual_source_preview ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+
+     Running tests/source_operations.rs (target/debug/deps/source_operations-2d230f99b30bc4d5)
+
+running 5 tests
+test bad_late_operation_never_publishes_earlier_changes_and_patch_budget_is_fixed ... ok
+test actual_setting_values_are_frozen_and_semantic_setting_changes_advance_epoch ... ok
+test pure_text_and_title_changes_do_not_invalidate_math_or_advance_execution_epoch ... ok
+test affected_dependencies_and_real_conflicts_are_from_the_shared_parser ... ok
+test whole_delete_insert_move_update_rename_is_frozen_once_without_changing_authority ... ok
+
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+
+     Running tests/undo_source.rs (target/debug/deps/undo_source-400dcbfd8b6c864e)
+
+running 16 tests
+test inverse_preserves_later_unrelated_content_title_and_new_cells ... ok
+test inverse_move_restores_order_but_keeps_unmodified_cells_current_content ... ok
+test disjoint_original_order_changes_do_not_protect_the_unchanged_gap_between_them ... ok
+test a_group_insert_then_edit_is_atomic_and_can_be_removed_without_an_intermediate_snapshot ... ok
+test later_related_edit_rejects_whole_inverse_without_a_partial_result ... ok
+test later_edit_then_same_bytes_are_not_mistaken_for_the_original_revision ... ok
+test a_whole_group_can_reverse_its_own_versions_while_preserving_unrelated_later_input ... ok
+test structural_inverse_retains_unrelated_edits_outside_original_anchors ... ok
+test unrelated_later_deletion_is_not_resurrected_by_content_inverse ... ok
+test tampered_transaction_other_document_and_precommit_snapshot_cannot_be_inverted ... ok
+test raw_unicode_related_source_and_later_title_are_not_normalized_or_overwritten ... ok
+test new_content_inside_structural_edit_or_reused_deleted_identity_is_a_conflict ... ok
+test inverse_insert_removes_only_original_cell_and_refuses_its_later_modification ... ok
+test group_order_identity_and_late_conflict_cannot_publish_partial_inverse ... ok
+test maximum_32_transaction_group_reconstructs_the_original_source ... ok
+test all_small_distinct_identity_orders_and_memberships_have_exact_inverse ... ok
+
+test result: ok. 16 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.49s
+
+   Doc-tests om_apple_ffi
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+   Doc-tests om_host_service
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+

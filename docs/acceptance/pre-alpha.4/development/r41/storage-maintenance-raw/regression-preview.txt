@@ -1,0 +1,32 @@
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.19s
+     Running tests/preview.rs (target/debug/deps/preview-bfdfad484c074f26)
+
+running 10 tests
+test request_cannot_replace_permissions_or_claim_unknown_original_source_hash ... ok
+test unread_future_cell_ids_and_conflicting_content_changes_cannot_bypass_the_original_snapshot ... ok
+test overlapping_matches_duplicate_keys_wrong_kind_and_bad_late_operations_fail_closed ... ok
+test source_only_preview_never_returns_a_commit_ref_or_executes_a_definition ... ok
+test partial_read_rejects_whole_update_but_allows_ordered_unique_raw_fragments ... ok
+test discussion_can_inspect_a_patch_but_cannot_commit_and_reopened_runtime_cannot_reuse_it ... ok
+test expiry_scope_mode_permission_and_token_tampering_never_commit_old_plans ... ok
+test host_assigns_new_cells_and_frozen_plan_is_retrieved_without_reconstructing_source ... ok
+test invalid_syntax_cycle_and_definition_conflict_never_get_committable_refs ... ok
+test patch_budget_and_actual_alias_binding_are_not_inferred_from_documentation ... ok
+
+test result: ok. 10 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.02s
+
+     Running tests/references.rs (target/debug/deps/references-294dfdf0088c2bfd)
+
+running 3 tests
+test wrong_issuer_and_nonascii_forgery_cannot_resolve_or_panic ... ok
+test exact_deadline_purpose_and_counter_limits_are_not_implicit_permission ... ok
+test retained_bytes_and_count_are_bounded_and_expired_resources_release_capacity ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.46s
+
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.07s
+     Running `target/debug/examples/preview_contract`
+Actual Rust frozen preview -> Swift SQLite commit/readback: original plan and host cell IDs retained, duplicate submission one effect, no reparse of a later draft
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.19s
+     Running `target/debug/examples/preview_contract verify target/macos-storage-tests/frozen-preview-receipt.json`
+Original Rust authority accepted actual frozen-preview SQLite receipt and host-assigned cell ID

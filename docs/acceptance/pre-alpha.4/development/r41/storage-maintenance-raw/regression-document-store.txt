@@ -1,0 +1,12 @@
+    Blocking waiting for file lock on artifact directory
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 3.94s
+     Running `target/debug/examples/source_store_contract`
+Actual Rust plans -> Swift SQLite: original UTF8/order/title, 0->1->2 math revisions, title stays at epoch2, actual settings advance to epoch3, same-ID one effect, different content conflict, malformed whole-plan rejection, restart receipt/head and same-DB fact counts 5/4/4/4/4 passed
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.08s
+     Running `target/debug/examples/source_store_contract verify target/macos-storage-tests/actual-source-receipt.json`
+Actual Swift physical receipt accepted by original Rust source authority
+Actual source COMMIT then F_FULLFSYNC failure: unknown until original-ID readback reconfirms stable bytes
+Actual Rust plans -> Swift SQLite: original UTF8/order/title, 0->1->2 math revisions, title stays at epoch2, actual settings advance to epoch3, same-ID one effect, different content conflict, malformed whole-plan rejection, restart receipt/head and same-DB fact counts 5/4/4/4/4 passed
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.08s
+     Running `target/debug/examples/source_store_contract verify target/macos-storage-tests/actual-source-fullsync-receipt.json`
+Actual Swift physical receipt accepted by original Rust source authority

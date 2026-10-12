@@ -18,6 +18,13 @@ final class SessionRecoveryIndex {
         try db.statement("CREATE INDEX session_tool_order ON session_tool_index(session_id,proposal_sequence,call_id)")
         try db.statement("CREATE TABLE session_request_index(session_id TEXT NOT NULL,context_id TEXT NOT NULL,plan_event TEXT NOT NULL,plan_sequence INTEGER NOT NULL,latest_event TEXT NOT NULL,PRIMARY KEY(session_id,context_id),FOREIGN KEY(session_id,plan_event) REFERENCES session_events(session_id,event_id),FOREIGN KEY(session_id,latest_event) REFERENCES session_events(session_id,event_id))")
         try db.statement("CREATE INDEX session_request_order ON session_request_index(session_id,plan_sequence)")
+        // Explicit staging migration from Library 3; original event/receipt bytes stay intact.
+        try db.statement("SELECT record,record_hash FROM session_events ORDER BY session_id,event_sequence") {row in
+          let bytes=try SQLColumn.data(row,0)
+          guard KernelHashes.data(bytes)==(try SQLColumn.text(row,1)) else {throw StorageError.corruptIdentity}
+          let event=try JSONDecoder().decode(NativeSessionEvent.self,from:bytes);try SessionValidation.event(event)
+          try self.insert(event)
+        }
       }
     }
     let eventCount=try db.integer("SELECT count(*) FROM session_events"),linkCount=try db.integer("SELECT count(*) FROM session_event_links")

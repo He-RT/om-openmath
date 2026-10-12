@@ -65,6 +65,25 @@ final class AgentSessionStore {
     return .init(event:event,receipt:receipt)
   }
   private static let columns="session_id,event_id,event_sequence,source_instance,source_sequence,request_hash,record,record_hash,receipt,receipt_hash"
+  /// Maintenance scans every committed record without retaining entire long conversations.
+  func validateAll()throws {
+    var previous:[String:UInt64]=[:]
+    try db.statement("SELECT \(Self.columns) FROM session_events ORDER BY session_id,event_sequence") { [self] row in
+      let event=try decode(row).event
+      guard event.event_sequence==(previous[event.agent_session_id] ?? 0)+1 else {throw StorageError.corruptIdentity}
+      previous[event.agent_session_id]=event.event_sequence
+      let input=SessionAppendInput(session:event.agent_session_id,eventID:event.event_id,sourceInstance:event.source_instance_id,sourceSequence:event.source_sequence,parentEvent:event.parent_event_id.value,turn:event.agent_turn_id.value,task:event.task_id.value,kind:event.event_kind,payload:Data(event.payload_inline_json.value!.utf8),operation:event.operation_id.value,operationStore:event.operation_store_id.value)
+      if let index {
+        let related=try index.related(input) { [self] id in guard let actual=try read(event.agent_session_id,event:id,reader:db) else {throw StorageError.corruptIdentity};return actual.event}.filter{$0.event_sequence<event.event_sequence}
+        try SessionSemantics.validate(input,events:related);try verifyResources(input,events:related,reader:db,stored:true)
+      }
+    }
+    try db.statement("SELECT source_instance,last_sequence FROM session_producers") {row in
+      var count:Int64=0,maximum:Int64=0
+      try self.db.statement("SELECT count(*),coalesce(max(source_sequence),0) FROM session_events WHERE source_instance=?",[.text(try SQLColumn.text(row,0))]) {count=sqlite3_column_int64($0,0);maximum=sqlite3_column_int64($0,1)}
+      guard count==maximum,maximum==sqlite3_column_int64(row,1) else {throw StorageError.corruptIdentity}
+    }
+  }
   func read(_ session:String,event:String,reader:SQLiteDatabase)throws->StoredSessionEvent? {
     var value:StoredSessionEvent?
     try reader.statement("SELECT \(Self.columns) FROM session_events WHERE session_id=? AND event_id=?",[.text(session),.text(event)]) { [self] row in value=try decode(row)}

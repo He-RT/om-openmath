@@ -1,0 +1,240 @@
+[
+  {
+    "stage": "backup.started",
+    "exit_code": -9,
+    "outcome": "unpublished backup retained",
+    "original_sha256": "6b151fca4dc329383dbcfaecd964abcb7685112cbd15cf72a3f5a84579702445",
+    "inspection": {
+      "backups": 0,
+      "generations": [
+        1,
+        1
+      ]
+    },
+    "root": "/Users/hert/Projects/openmath/target/macos-storage-tests/maintenance-crash-c3kg9ff9"
+  },
+  {
+    "stage": "backup.pages",
+    "exit_code": -9,
+    "outcome": "unpublished backup retained",
+    "original_sha256": "a2d9dc2482c9a9b45d89a2de98ac1db14c457e1d66722e5f95f58bb6fb10c6e8",
+    "inspection": {
+      "backups": 0,
+      "generations": [
+        1,
+        1
+      ]
+    },
+    "root": "/Users/hert/Projects/openmath/target/macos-storage-tests/maintenance-crash-bzk85e9u"
+  },
+  {
+    "stage": "backup.finished",
+    "exit_code": -9,
+    "outcome": "unpublished backup retained",
+    "original_sha256": "fb18562894172a576a377439425fbf335a17b2e297d63b8a79832d3f600be05d",
+    "inspection": {
+      "backups": 0,
+      "generations": [
+        1,
+        1
+      ]
+    },
+    "root": "/Users/hert/Projects/openmath/target/macos-storage-tests/maintenance-crash-tefhqg9g"
+  },
+  {
+    "stage": "backup.synced",
+    "exit_code": -9,
+    "outcome": "unpublished backup retained",
+    "original_sha256": "6773cf90e52bbb0625a978e749b3b5c1727a638566984ba9005c3c38d5c05ca5",
+    "inspection": {
+      "backups": 0,
+      "generations": [
+        1,
+        1
+      ]
+    },
+    "root": "/Users/hert/Projects/openmath/target/macos-storage-tests/maintenance-crash-nocomfb5"
+  },
+  {
+    "stage": "backup.store_verified",
+    "exit_code": -9,
+    "outcome": "unpublished backup retained",
+    "original_sha256": "6e5c1ca27f803e3cae09d5ac63bfefb0d93b3eb7806b8d03d1c4fc30e74553a0",
+    "inspection": {
+      "backups": 0,
+      "generations": [
+        1,
+        1
+      ]
+    },
+    "root": "/Users/hert/Projects/openmath/target/macos-storage-tests/maintenance-crash-gm013_3o"
+  },
+  {
+    "stage": "backup.before_publish",
+    "exit_code": -9,
+    "outcome": "unpublished backup retained",
+    "original_sha256": "11a614d5f4ac5a2840b08c18f346c8cb2603a55065b954e8eb4fa3a9fa2d1832",
+    "inspection": {
+      "backups": 0,
+      "generations": [
+        1,
+        1
+      ]
+    },
+    "root": "/Users/hert/Projects/openmath/target/macos-storage-tests/maintenance-crash-bhg0pnj9"
+  },
+  {
+    "stage": "backup.published",
+    "exit_code": -9,
+    "outcome": "published verified backup",
+    "original_sha256": "ee9dc78a6dcffb465a61beec181c2e7e2f2153767bdb2d271b22c1826f9e5f6f",
+    "inspection": {
+      "backups": 1,
+      "generations": [
+        1,
+        1
+      ]
+    },
+    "root": "/Users/hert/Projects/openmath/target/macos-storage-tests/maintenance-crash-iutic0ci"
+  },
+  {
+    "stage": "generation.verified",
+    "exit_code": -9,
+    "outcome": "original generation still selected",
+    "original_sha256": "d364772c6f961c1aaa9cbc49c898ffdb5c1fab5c8f47b09b2e2d7cf42fcbba71",
+    "inspection": {
+      "backups": 1,
+      "generations": [
+        1,
+        1
+      ]
+    },
+    "root": "/Users/hert/Projects/openmath/target/macos-storage-tests/maintenance-crash-3qt1bmgo"
+  },
+  {
+    "stage": "generation.published",
+    "exit_code": -9,
+    "outcome": "original generation still selected",
+    "original_sha256": "ee6a21823e182ecbf4b26d18f46dd50ce78a1eebbbdcb3aa8ff665d188acc750",
+    "inspection": {
+      "backups": 1,
+      "generations": [
+        1,
+        1
+      ]
+    },
+    "root": "/Users/hert/Projects/openmath/target/macos-storage-tests/maintenance-crash-zhfqrh1o"
+  },
+  {
+    "stage": "generation.before_selector",
+    "exit_code": -9,
+    "outcome": "original generation still selected",
+    "original_sha256": "3f92507c0db3bb4a123cd3f6ead0f05e22eb14a86c3c9332e189f58573a438d2",
+    "inspection": {
+      "backups": 1,
+      "generations": [
+        1,
+        1
+      ]
+    },
+    "root": "/Users/hert/Projects/openmath/target/macos-storage-tests/maintenance-crash-nbesmz6v"
+  },
+  {
+    "stage": "generation.selector.file_synced",
+    "exit_code": -9,
+    "outcome": "original generation still selected",
+    "original_sha256": "aaa7b54d88612c6b202ad4ee2ae0e35d8902a66a608d03983a2d9cfa095167f8",
+    "inspection": {
+      "backups": 1,
+      "generations": [
+        1,
+        1
+      ]
+    },
+    "root": "/Users/hert/Projects/openmath/target/macos-storage-tests/maintenance-crash-rh364soj"
+  },
+  {
+    "stage": "generation.selector.renamed",
+    "exit_code": -9,
+    "outcome": "selected quarantine generation",
+    "original_sha256": "c4a8152e930599441a67f6a8b4e4a2fadf9aafbdbd3548ff5d8f3c9d32091771",
+    "inspection": {
+      "backups": 1,
+      "generations": [
+        1,
+        2
+      ]
+    },
+    "root": "/Users/hert/Projects/openmath/target/macos-storage-tests/maintenance-crash-ecf1hl75"
+  },
+  {
+    "stage": "generation.selector.directory_synced",
+    "exit_code": -9,
+    "outcome": "selected quarantine generation",
+    "original_sha256": "da08a8b9ba09661fa4f8ec5d68e86070ce6546041c7920c395e6bf11155f4aa2",
+    "inspection": {
+      "backups": 1,
+      "generations": [
+        1,
+        2
+      ]
+    },
+    "root": "/Users/hert/Projects/openmath/target/macos-storage-tests/maintenance-crash-3nhpabrv"
+  },
+  {
+    "stage": "generation.selected",
+    "exit_code": -9,
+    "outcome": "selected quarantine generation",
+    "original_sha256": "d29153ebbec119872f9a17b57363114c5a27e3b9ba6c260a9fb72b66a80b8625",
+    "inspection": {
+      "backups": 1,
+      "generations": [
+        1,
+        2
+      ]
+    },
+    "root": "/Users/hert/Projects/openmath/target/macos-storage-tests/maintenance-crash-f2f3b5uf"
+  },
+  {
+    "stage": "gc.quarantined",
+    "exit_code": -9,
+    "outcome": "verified orphan retained in quarantine",
+    "original_sha256": "bec2a4d5dced8f43f31a585428b033371e7324b241ead4b468d340e58319b7ec",
+    "inspection": {
+      "backups": 0,
+      "generations": [
+        1,
+        1
+      ]
+    },
+    "root": "/Users/hert/Projects/openmath/target/macos-storage-tests/maintenance-crash-7twgm3a7"
+  },
+  {
+    "stage": "gc.before_delete",
+    "exit_code": -9,
+    "outcome": "verified orphan retained in quarantine",
+    "original_sha256": "7ef5f6924ac80885c2b7c7ec8ac5c7497d91875bfb1f5ec9d6e272d7dfc9408c",
+    "inspection": {
+      "backups": 0,
+      "generations": [
+        1,
+        1
+      ]
+    },
+    "root": "/Users/hert/Projects/openmath/target/macos-storage-tests/maintenance-crash-9arrim_n"
+  },
+  {
+    "stage": "gc.deleted",
+    "exit_code": -9,
+    "outcome": "unreferenced orphan removed",
+    "original_sha256": "bd1a7730c58e6b39e886fec7f3f2e0fbc6f7d70037a95502f4f75aa9d2505711",
+    "inspection": {
+      "backups": 0,
+      "generations": [
+        1,
+        1
+      ]
+    },
+    "root": "/Users/hert/Projects/openmath/target/macos-storage-tests/maintenance-crash-sznkkm6v"
+  }
+]

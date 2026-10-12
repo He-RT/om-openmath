@@ -39,6 +39,7 @@ enum StorageBootstrap {
       // Inspect every version/header/hash in a read-only connection before enabling any writing.
       let read=try SQLiteDatabase(url:url,readonly:true)
       let header=try readHeader(read)
+      try rejectQuarantine(read)
       if kind=="library",(2...4).contains(header.storeVersion) {_ = try LibraryStore(db:read,url:url,identity:header)}
       if kind=="library",(3...4).contains(header.storeVersion) {_ = try AgentSessionStore(db:read,url:url,identity:header)}
       if kind=="document",header.storeVersion==5 {_ = try DraftBackupStore(db:read,url:url,identity:header)}
@@ -106,5 +107,11 @@ enum StorageBootstrap {
       try db.integer("SELECT count(*) FROM store_state WHERE singleton=1 AND last_clean_shutdown IN (0,1)")==1 else { throw StorageError.corruptIdentity }
     guard try db.text("PRAGMA quick_check(1)")=="ok" else { throw StorageError.corruptIdentity }
     return header
+  }
+  static func rejectQuarantine(_ db:SQLiteDatabase)throws {
+    if try db.integer("SELECT count(*) FROM sqlite_schema WHERE type='table' AND name='store_recovery_state'")>0 {
+      guard try db.integer("SELECT count(*) FROM store_recovery_state WHERE singleton=1 AND rollback_quarantine=1")==1 else {throw StorageError.corruptIdentity}
+      throw StorageError.rollbackQuarantine
+    }
   }
 }

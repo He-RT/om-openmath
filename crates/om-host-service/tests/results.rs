@@ -149,6 +149,94 @@ fn close(worker: &KernelWorker) {
     worker.begin_close().unwrap().unwrap().join().unwrap();
 }
 #[test]
+fn expired_and_restarted_result_tokens_require_fresh_grants_for_the_same_durable_result() {
+    let (worker, ctx, parent) = setup();
+    let accepted = run(&worker, &ctx, &parent, "list", "persisted-list");
+    let record = StoredResult::capture(
+        &accepted,
+        CheckpointLimits::default(),
+        &Interrupt::default(),
+    )
+    .unwrap();
+    let id = record.id().to_owned();
+    let summary = record.summary();
+    let occurrence = &summary.statements[0];
+    let current = scope(&ctx, &accepted);
+    let mut before = ResultStore::new([19; 32], 64 * 1024 * 1024, 16).unwrap();
+    before.register(record).unwrap();
+    let old_token = before
+        .issue(
+            &id,
+            occurrence.out_index,
+            Some(&occurrence.view_id),
+            current.clone(),
+            0,
+        )
+        .unwrap();
+    assert!(matches!(
+        before.resolve(&old_token, &current, 600_000),
+        Err(ResultError::Reference(ReferenceError::Expired))
+    ));
+    let renewed = before
+        .issue(
+            &id,
+            occurrence.out_index,
+            Some(&occurrence.view_id),
+            current.clone(),
+            600_000,
+        )
+        .unwrap();
+    assert_ne!(renewed, old_token);
+    assert!(before.resolve(&renewed, &current, 600_001).is_ok());
+    let mut restarted = ResultStore::new([20; 32], 64 * 1024 * 1024, 16).unwrap();
+    restarted
+        .register(
+            StoredResult::capture(
+                &accepted,
+                CheckpointLimits::default(),
+                &Interrupt::default(),
+            )
+            .unwrap(),
+        )
+        .unwrap();
+    assert!(matches!(
+        restarted.resolve(&old_token, &current, 1),
+        Err(ResultError::Reference(ReferenceError::Invalid))
+    ));
+    let mut denied = current.clone();
+    denied.can_read = false;
+    assert!(matches!(
+        restarted.issue(
+            &id,
+            occurrence.out_index,
+            Some(&occurrence.view_id),
+            denied,
+            1
+        ),
+        Err(ResultError::Reference(ReferenceError::PermissionDenied))
+    ));
+    let mut new_scope = current;
+    new_scope.runtime = "restarted-runtime".into();
+    new_scope.generation += 1;
+    let fresh = restarted
+        .issue(
+            &id,
+            occurrence.out_index,
+            Some(&occurrence.view_id),
+            new_scope.clone(),
+            1,
+        )
+        .unwrap();
+    assert_ne!(fresh, old_token);
+    assert!(restarted.resolve(&fresh, &new_scope, 2).is_ok());
+    restarted.revoke_reference(&fresh).unwrap();
+    assert!(matches!(
+        restarted.resolve(&fresh, &new_scope, 3),
+        Err(ResultError::Reference(ReferenceError::Revoked))
+    ));
+    close(&worker);
+}
+#[test]
 fn actual_result_occurrences_scope_history_and_exact_pages_survive_other_executions() {
     let (worker, ctx, parent) = setup();
     let accepted = run(&worker, &ctx, &parent, "list", "list-one");

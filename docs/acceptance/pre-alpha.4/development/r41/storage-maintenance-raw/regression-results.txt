@@ -1,0 +1,4 @@
+   Compiling om-host-service v0.1.0-pre-alpha.3 (/Users/hert/Projects/openmath/crates/om-host-service)
+   Compiling om-apple-ffi v0.1.0-pre-alpha.3 (/Users/hert/Projects/openmath/crates/om-apple-ffi)
+    Finished `release` profile [optimized] target(s) in 22.81s
+Actual C ABI immutable result worker + Swift ResultClient: exact/80-digit pages, Unicode full source/hash fragments, original steps/2D/3D samples, readonly Set/random/Out and scratch isolation, stale history, real late reply discarded, summary-only events and revocation passed

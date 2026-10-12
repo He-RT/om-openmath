@@ -2,11 +2,11 @@
 
 [完整实施计划](PRE_ALPHA_4.md) · [机器门禁](../acceptance/pre-alpha.4/gates.toml) · [裁决](DEVIATIONS.md) · [问题](QUESTIONS.md)
 
-2026-10-11。目标`0.1.0-pre-alpha.4`，当前运行/公开版本`.3`；开发`dev`，不合main、不改旧标签、本机不启动iOS模拟器。本文只记录结果，规格及完成标准唯一见主计划；计划编写本身不计实施完成。
+2026-10-12。目标`0.1.0-pre-alpha.4`，当前运行/公开版本`.3`；开发`dev`，不合main、不改旧标签、本机不启动iOS模拟器。本文只记录结果，规格及完成标准唯一见主计划；计划编写本身不计实施完成。
 
-**当前状态：** 23任务完成（全部R4.0与R4.1.01–12）；其余75任务尚未完成；32最终运行/发行gate全部not_run；candidate未分配，ready_to_publish=false，released_verified=false。设计/HTML/Schema通过不填运行时pass。
+**当前状态：** 24任务完成（全部R4.0与R4.1）；其余74任务尚未完成；32最终运行/发行gate全部not_run；candidate未分配，ready_to_publish=false，released_verified=false。设计/HTML/Schema通过不填运行时pass。
 
-**下一任务：** R4.1.13 引用租约、备份、格式升级、quota与GC，然后完整原生工作台。恢复查询不重放效果，长会话/未知状态已通过实际验证；完整Pi/provider/上下文/Agent界面仍继续R4.3–4.4，不能将存储Done当产品完成。保持同candidate完整门禁，R4.5.07在R4.5.05冻结前完成。
+**下一任务：** R4.2.01 原生工作台窗口、分栏和投影，然后完整编辑/公式/图形与Agent/模型媒体。存储维护、备份、新代次、配额和GC已通过实际验证；日末备份触发/数据管理UI仍在R4.2.18接线，完整Pi/provider/上下文/Agent界面仍继续R4.3–4.4，不能将存储Done当产品完成。保持同candidate完整门禁，R4.5.07在R4.5.05冻结前完成。
 
 ## 已知外部前置
 
@@ -43,7 +43,7 @@
 | [x] [R4.1.10](PRE_ALPHA_4.md#task-r4.1.10) | 不可变结果库和只读检查通道 | completed | [实际原生结果](../acceptance/pre-alpha.4/development/r41/result-runtime.json) / CABI＋worker＋Swift / 324Rust＋actual receipts/late reply | 6d53f17；f04474f；后续补验 |
 | [x] [R4.1.11](PRE_ALPHA_4.md#task-r4.1.11) | NSDocument打开保存与冻结快照 | completed | [实际文件/同库回执/本轮Release面板闭环](../acceptance/pre-alpha.4/development/r41/file-saves-completion.json) / 6 SIGKILL+原件冲突 / N+1/IME/身份/取消/重开 / Mac CI38122270416 success | 25df8d8；f04474f、c4eab5a |
 | [x] [R4.1.12](PRE_ALPHA_4.md#task-r4.1.12) | 会话outbox、草稿与启动恢复 | completed | [indexed长会话/原生恢复入口](../acceptance/pre-alpha.4/development/r41/indexed-session-recovery.json) / 4374事件>16MiB/37+37分页/13+5+3+6SIGKILL/真实UI | a23ef8a、5b96deb、642cfc9；本批待补SHA |
-| [ ] [R4.1.13](PRE_ALPHA_4.md#task-r4.1.13) | 引用租约、备份、quota与GC | planned | — | — |
+| [x] [R4.1.13](PRE_ALPHA_4.md#task-r4.1.13) | 引用租约、备份、quota与GC | completed | [实际备份/升级/配额/GC](../acceptance/pre-alpha.4/development/r41/storage-maintenance.json) / 17SIGKILL/原schema/113Rust/15原生回归/Release | 本批待补SHA |
 | [ ] [R4.2.01](PRE_ALPHA_4.md#task-r4.2.01) | 原生工作台窗口、分栏和投影 | planned | — | — |
 | [ ] [R4.2.02](PRE_ALPHA_4.md#task-r4.2.02) | NSTextView和严格SourceIndexMap | planned | — | — |
 | [ ] [R4.2.03](PRE_ALPHA_4.md#task-r4.2.03) | 原生IME、UndoManager与草稿屏障 | planned | — | — |
@@ -465,3 +465,13 @@ Done依据与覆盖case/proof:
 - 实际production组件+隔离fixture根的UI验收完成：2原事件，点击“查看与核对”显示call-edit“尚未接纳，未执行”和context-crash“尚未发送”，原source/HTTP均0，正常Quit。使用同一NativeFileWorkspace与StorageService，产品根不通过args可切换；测试fixture不读取Preview/public历史。
 - 长session/index损坏/13规范Tool/request/source/HTTP中断＋原5投影、3草稿、6保存+conflict全部通过，Release最终成功、269DTO/工程/fmt/计划结构通过。最初UI文件放Files被backend通配编译拒绝，已移UI目录/再生工程，失败日志保留。
 - a23ef8a CI38163760418五jobs全部success含iPhone/iPad原1s；不抹掉5b96deb row17失败，也不替本批及final candidate。完整Pi/Provider/Prompt/Context/压缩仍R4.3–4.4，重置不兼容数学head仍需工作台动作；当前只有真正另存新文档路径。运行.3/dev/no main/no本机模拟器/无子代理，32final gate not_run/no candidate。
+
+## R4开发记录 D037 — 备份、显式代次、配额和全库资源维护
+
+- R4.1.13 Done/Tests满足，24/98；下一R4.2.01完整原生工作台。Root1/library4/doc5/.omnb v1/运行.3保持；普通打开不隐式升级，不读取旧应用数据、旧凭据或用户下载目录。
+- StorageService全部异步接口纳入维护屏障，排空已接纳的写入/上传后才快照、升级或GC，新操作明确transactionUnavailable。关闭同样排空，缓存和数据库所有者释放根租约；实际并发上传保持真实publication pin。
+- SQLite Backup API复制完整WAL视图；目标实际F_FULLFSYNC/完整性/外键/行数/引用/DB SHA，实际Blob文件pin、分块复制、SHA/长度及独立自包含副本都确认后才发布。manifest.json符合原冻结Schema，manifest_hash绑定inventory.json实际字节；伪verified被拒绝，原Rust校验器独立通过，发布确认丢失仍保留实际备份。
+- 显式升级先升级前全库备份，在新代次重建Library索引及doc历史/kernel/save/draft，原typed表SHA/计数和回执字节不变，关闭同步/发布代次后才切selector。实际Library3的24原events和文档1的原source op/history、迁移后原事件投影去重通过。回退旧备份恢复Blob并标rollback_quarantine，备份后操作回执确实缺失仍不能打开writer、重放或借升级绕过；Library未来格式时仍独立只读隔离源码。
+- 全库及保留代次引用、完整事件/资源、原Blob实际字节、健康备份和运行publication/reader pins核对后GC；过24h孤儿隔离同步/重查后删除，旧staging仅处理应用UUID路径，实际GC强杀后可续核。跨库未来格式拒绝，原字节不回收。派生缓存独立LRU512MiB、producer pin优先于配额，清缓存不动原附件；实际空间256MiB/1GiB门禁、5GiB软预算返回状态。保留最近7普通/2升级前及至少1完整健康备份，软预算不牺牲它们；日末触发和native管理UI仍属R4.2.18。
+- [完整证据](../acceptance/pre-alpha.4/development/r41/storage-maintenance.json)封存输入、19个命令/完整输出/SHA及17实际SIGKILL原件；113 Rust、Clippy、269 DTO、15既有原生专项、Release最终exit0。旧失败构建/测试条件/隔离校验顺序/SHM缓存识别原件保留；没有修改原数学/计时门槛。
+- eac1e35 CI38168802699全部5jobs成功；本批新SHA仍独立CI，不能沿用旧成功。32final gate全部not_run、candidate未分配、ready/released=false，完整Pi/Agent/模型媒体/上下文/工作台及最终发行仍未完成，无用户操作阻塞。

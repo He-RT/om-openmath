@@ -1,0 +1,4 @@
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.08s
+     Running `target/debug/examples/source_store_contract`
+main/main.swift:146: Precondition failed
+macos/scripts/test-maintenance.sh: line 20: 16142 Trace/BPT trap: 5       target/macos-storage-tests/maintenance-fixtures "$attempt_root" target/macos-storage-tests/maintenance-plans.json

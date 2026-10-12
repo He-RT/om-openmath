@@ -1,0 +1,2 @@
+error: input file 'macos/OpenMathNative/Storage/BlobStore.swift' was modified during the build
+error: input file 'macos/OpenMathNative/Storage/BlobStore.swift' was modified during the build

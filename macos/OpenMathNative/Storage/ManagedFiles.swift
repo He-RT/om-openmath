@@ -59,6 +59,13 @@ enum ManagedFiles {
   static func sync(_ fd:Int32) throws {
     guard fcntl(fd,F_FULLFSYNC)==0 else { throw StorageError.system(errno,"fullfsync") }
   }
+  static func checkPermissionsAndSync(_ url:URL)throws {
+    guard try check(url,directory:false) else {throw StorageError.unsafePath}
+    let fd=open(url.path,O_RDWR|O_NOFOLLOW|O_CLOEXEC)
+    guard fd>=0 else {throw StorageError.system(errno,"managed_sync_open")}
+    defer {Darwin.close(fd)}
+    guard fchmod(fd,0o600)==0 else {throw StorageError.system(errno,"managed_permissions")};try sync(fd)
+  }
   static func syncDirectory(_ url:URL) throws {
     let fd=open(url.path,O_RDONLY|O_DIRECTORY|O_NOFOLLOW|O_CLOEXEC)
     guard fd>=0 else { throw StorageError.system(errno,"open_directory") }
@@ -68,6 +75,7 @@ enum ManagedFiles {
   static func publish<T:Encodable>(_ value:T,to url:URL,faults:StorageFaults) throws {
     let encoder=JSONEncoder();encoder.outputFormatting=[.sortedKeys,.withoutEscapingSlashes]
     let data=try encoder.encode(value)
+    try StorageQuota.require(url,bytes:UInt64(data.count))
     let temporary=url.deletingLastPathComponent().appendingPathComponent(".pending-"+UUID().uuidString)
     let fd=open(temporary.path,O_WRONLY|O_CREAT|O_EXCL|O_NOFOLLOW|O_CLOEXEC,0o600)
     guard fd>=0 else { throw StorageError.system(errno,"open_temporary") }

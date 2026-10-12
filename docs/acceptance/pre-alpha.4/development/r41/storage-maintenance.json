@@ -1,0 +1,754 @@
+{
+  "schema_version": 1,
+  "record_kind": "development_storage_maintenance",
+  "task": "R4.1.13",
+  "task_status": "completed",
+  "timestamp_utc": "2026-10-12T12:46:08.465409+00:00",
+  "base_source_sha": "eac1e3568cabd43170084705ed9e471d885d7ec7",
+  "runtime_version": "0.1.0-pre-alpha.3",
+  "target_version": "0.1.0-pre-alpha.4",
+  "public_gate_evidence": false,
+  "started_simulators": false,
+  "commands": [
+    {
+      "command": "bash macos/Scripts/test-maintenance.sh",
+      "exit_code": 0,
+      "log": {
+        "path": "docs/acceptance/pre-alpha.4/development/r41/storage-maintenance-raw/maintenance.txt",
+        "bytes": 853,
+        "sha256": "b5e8446f7ffb958200b83d07eb70953e14671862e2d4eb9ee77b3fed88dd52d8"
+      }
+    },
+    {
+      "command": "bash macos/Scripts/build-native.sh",
+      "exit_code": 0,
+      "log": {
+        "path": "docs/acceptance/pre-alpha.4/development/r41/storage-maintenance-raw/native-release-build.txt",
+        "bytes": 99413,
+        "sha256": "bae351bef1bfa41aeeec219f5d5a62ab799181d88c44c65d97f010103371aa3f"
+      }
+    },
+    {
+      "command": "cargo test -p om-host-service -p om-apple-ffi --locked",
+      "exit_code": 0,
+      "log": {
+        "path": "docs/acceptance/pre-alpha.4/development/r41/storage-maintenance-raw/rust-tests.txt",
+        "bytes": 13866,
+        "sha256": "9d78869ba449c9ba7a0bc476ad5b01fa43a2264a26724518d701ec0835b14c48"
+      }
+    },
+    {
+      "command": "cargo clippy -p om-host-service -p om-apple-ffi --all-targets --locked -- -D warnings",
+      "exit_code": 0,
+      "log": {
+        "path": "docs/acceptance/pre-alpha.4/development/r41/storage-maintenance-raw/clippy.txt",
+        "bytes": 272,
+        "sha256": "edaa9777188a0e2d6f9f80d2208aac70defa19de01e1aa2e015c76ea08b85149"
+      }
+    },
+    {
+      "command": "bash macos/Scripts/test-storage.sh",
+      "exit_code": 0,
+      "log": {
+        "path": "docs/acceptance/pre-alpha.4/development/r41/storage-maintenance-raw/regression-storage.txt",
+        "bytes": 415,
+        "sha256": "662a100fb60006a8c801549abdbe2c2f929e8671094df4d34569ba327c879a11"
+      }
+    },
+    {
+      "command": "bash macos/Scripts/test-document-store.sh",
+      "exit_code": 0,
+      "log": {
+        "path": "docs/acceptance/pre-alpha.4/development/r41/storage-maintenance-raw/regression-document-store.txt",
+        "bytes": 1405,
+        "sha256": "ece8f6b76f93bbd9ac79f97316d4405948e5769539f86b576df231a0b1fe0e5d"
+      }
+    },
+    {
+      "command": "bash macos/Scripts/test-blobs.sh",
+      "exit_code": 0,
+      "log": {
+        "path": "docs/acceptance/pre-alpha.4/development/r41/storage-maintenance-raw/regression-blobs.txt",
+        "bytes": 346,
+        "sha256": "9a89749898020daddce76fa2ebd45dc5d088c87e619b0efb00988a924946155c"
+      }
+    },
+    {
+      "command": "bash macos/Scripts/test-preview.sh",
+      "exit_code": 0,
+      "log": {
+        "path": "docs/acceptance/pre-alpha.4/development/r41/storage-maintenance-raw/regression-preview.txt",
+        "bytes": 2168,
+        "sha256": "7bbe78d359d3e8e2e58da56c001700b9241cfccddfcf797264247b5d002e9e79"
+      }
+    },
+    {
+      "command": "bash macos/Scripts/test-commit-port.sh",
+      "exit_code": 0,
+      "log": {
+        "path": "docs/acceptance/pre-alpha.4/development/r41/storage-maintenance-raw/regression-commit-port.txt",
+        "bytes": 2533,
+        "sha256": "af9ae5f9dcdaeb024e46f956ceea3f6beba66288d296741617223c156bd847b2"
+      }
+    },
+    {
+      "command": "bash macos/Scripts/test-undo.sh",
+      "exit_code": 0,
+      "log": {
+        "path": "docs/acceptance/pre-alpha.4/development/r41/storage-maintenance-raw/regression-undo.txt",
+        "bytes": 2060,
+        "sha256": "bd45e009bb90284349147c29ccc991f8199b219a988c8f8f4476adf02271f562"
+      }
+    },
+    {
+      "command": "bash macos/Scripts/test-history.sh",
+      "exit_code": 0,
+      "log": {
+        "path": "docs/acceptance/pre-alpha.4/development/r41/storage-maintenance-raw/regression-history.txt",
+        "bytes": 386,
+        "sha256": "80aa2320e2e28eb5855981edc7f589ecc98128c90791c4322f207c3821c23f4c"
+      }
+    },
+    {
+      "command": "bash macos/Scripts/test-kernel-store.sh",
+      "exit_code": 0,
+      "log": {
+        "path": "docs/acceptance/pre-alpha.4/development/r41/storage-maintenance-raw/regression-kernel-store.txt",
+        "bytes": 1994,
+        "sha256": "46c88fb7e955afeb975424cf50a20b32fa726f887413cb160e01b1b0fed6b966"
+      }
+    },
+    {
+      "command": "bash macos/Scripts/test-kernel-runtime.sh",
+      "exit_code": 0,
+      "log": {
+        "path": "docs/acceptance/pre-alpha.4/development/r41/storage-maintenance-raw/regression-kernel-runtime.txt",
+        "bytes": 715,
+        "sha256": "2be10e7f56871489a99b00e6d31070230d05b1ab908d2a0a1016b5b018760b79"
+      }
+    },
+    {
+      "command": "bash macos/Scripts/test-results.sh",
+      "exit_code": 0,
+      "log": {
+        "path": "docs/acceptance/pre-alpha.4/development/r41/storage-maintenance-raw/regression-results.txt",
+        "bytes": 541,
+        "sha256": "e3baf955d869eddfa823e813f4ec712ab695f1018a2c9bb2df3546003cb7445b"
+      }
+    },
+    {
+      "command": "bash macos/Scripts/test-saves.sh",
+      "exit_code": 0,
+      "log": {
+        "path": "docs/acceptance/pre-alpha.4/development/r41/storage-maintenance-raw/regression-saves.txt",
+        "bytes": 884,
+        "sha256": "3800ff9c9e3b03b8a0df2e260ea40693619c7e4144563cd4359a026633318e47"
+      }
+    },
+    {
+      "command": "bash macos/Scripts/test-recovery.sh",
+      "exit_code": 0,
+      "log": {
+        "path": "docs/acceptance/pre-alpha.4/development/r41/storage-maintenance-raw/regression-recovery.txt",
+        "bytes": 520,
+        "sha256": "1d5138e37872381e1c54003a8d3ff9d4db839f5faa6010d090b1b5f2cc2a0d54"
+      }
+    },
+    {
+      "command": "bash macos/Scripts/test-drafts.sh",
+      "exit_code": 0,
+      "log": {
+        "path": "docs/acceptance/pre-alpha.4/development/r41/storage-maintenance-raw/regression-drafts.txt",
+        "bytes": 403,
+        "sha256": "ef335e5c8fa095e63863292be0b0ccdc2131f9cbc8d891184e189ad1c19f0501"
+      }
+    },
+    {
+      "command": "bash macos/Scripts/test-session-ledger.sh",
+      "exit_code": 0,
+      "log": {
+        "path": "docs/acceptance/pre-alpha.4/development/r41/storage-maintenance-raw/regression-session-ledger.txt",
+        "bytes": 1402,
+        "sha256": "9f24294dcafaf002e8ebaaea75603f5add2ae7754df1e4055a981e12d4389a32"
+      }
+    },
+    {
+      "command": "bash macos/Scripts/test-native-contracts.sh",
+      "exit_code": 0,
+      "log": {
+        "path": "docs/acceptance/pre-alpha.4/development/r41/storage-maintenance-raw/regression-native-contracts.txt",
+        "bytes": 2156,
+        "sha256": "c19e07c802c4b7e57ab8491ad2f74f0625d110e5a4358fba183c744fd49001ce"
+      }
+    }
+  ],
+  "sources": [
+    {
+      "path": "macos/OpenMathNative/Storage/AgentSessionStore.swift",
+      "bytes": 26633,
+      "sha256": "b2d6c9304d9dbca6aed3caf2dbee02b558d3aaab038c8f292d39ce633e52df01"
+    },
+    {
+      "path": "macos/OpenMathNative/Storage/AgentSessionTypes.swift",
+      "bytes": 7868,
+      "sha256": "34077ab0feb48a438d22ffcb86730cf5c6898535baeec719258d614f4191efe7"
+    },
+    {
+      "path": "macos/OpenMathNative/Storage/BackupService.swift",
+      "bytes": 13266,
+      "sha256": "f43671beb1e7dc9e4d9d7d436c546ac748037c7b1b578ed8a9db728e16bbab4b"
+    },
+    {
+      "path": "macos/OpenMathNative/Storage/BlobReferences.swift",
+      "bytes": 6360,
+      "sha256": "17e576cab1f607685630258e74f554f295ddf09855105917909b33829f12d633"
+    },
+    {
+      "path": "macos/OpenMathNative/Storage/BlobStore.swift",
+      "bytes": 23978,
+      "sha256": "5e3ca508ec63dd9a5712452c3b11e37b8407a02d234d621a61236112351bd2b6"
+    },
+    {
+      "path": "macos/OpenMathNative/Storage/BlobTypes.swift",
+      "bytes": 1489,
+      "sha256": "78dc3d55c4c0091a15426ee2671f9a692c8acb7137459934562c8e90985b58a1"
+    },
+    {
+      "path": "macos/OpenMathNative/Storage/Bootstrap.swift",
+      "bytes": 8684,
+      "sha256": "7aeee58adfd04619d6ab84660eb9521243ab5588e0cbcd7a88a6afd54156fad0"
+    },
+    {
+      "path": "macos/OpenMathNative/Storage/CanonicalBackupManifest.swift",
+      "bytes": 2097,
+      "sha256": "3c13bd3827551dc09fba1152741979221a0dffe83c62b1bab292be3a05e4c8c9"
+    },
+    {
+      "path": "macos/OpenMathNative/Storage/CommitGate.swift",
+      "bytes": 1626,
+      "sha256": "d70b9a9d22dbb547d8d3819c7ae343288ddb95e8048d36cc31ea6556466a7cbb"
+    },
+    {
+      "path": "macos/OpenMathNative/Storage/CommitPort.swift",
+      "bytes": 17215,
+      "sha256": "9719f85911863710d835dc93e7bbfdb44566786646d218dbf754f874e6727b9f"
+    },
+    {
+      "path": "macos/OpenMathNative/Storage/DerivedCache.swift",
+      "bytes": 6712,
+      "sha256": "42df359a81048b5eb1d598498cd9c9b2daceea42b407af3653a432123bf17e56"
+    },
+    {
+      "path": "macos/OpenMathNative/Storage/DocumentOutbox.swift",
+      "bytes": 8058,
+      "sha256": "5d163b0f669da356a707d8e8fed3a95336f058d15841076536c588da76911fd6"
+    },
+    {
+      "path": "macos/OpenMathNative/Storage/DocumentSchema.swift",
+      "bytes": 3028,
+      "sha256": "aa03da88284d147962c655febb5a51442626a038edc2910c179a9b49ddfb507f"
+    },
+    {
+      "path": "macos/OpenMathNative/Storage/DocumentStore.swift",
+      "bytes": 18334,
+      "sha256": "8bd75f6dc914330273021d18a9179ab5564f5335dbc84eadd94ea8528584e9ca"
+    },
+    {
+      "path": "macos/OpenMathNative/Storage/DraftBackupStore.swift",
+      "bytes": 10650,
+      "sha256": "9490a4e761d0dded805fc8b2f8c9a5545378ceaa09b29fa3ead68042a8b5299e"
+    },
+    {
+      "path": "macos/OpenMathNative/Storage/DraftBackupTypes.swift",
+      "bytes": 3665,
+      "sha256": "d9ec33a88e15a64fb2ac5b793862f467341a3bcd56735f5ef8a3c4a04edb5f34"
+    },
+    {
+      "path": "macos/OpenMathNative/Storage/GarbageCollector.swift",
+      "bytes": 847,
+      "sha256": "721b0acc2d2b7e7963967df974f0c8bc7a9cdb8dea06dcd41cd42066dacbbfe5"
+    },
+    {
+      "path": "macos/OpenMathNative/Storage/KernelHashes.swift",
+      "bytes": 5485,
+      "sha256": "3f83bc8a9748abbf4f901f9abb012de087fc186e4f3ea999fcfcd06f354fae30"
+    },
+    {
+      "path": "macos/OpenMathNative/Storage/KernelSchema.swift",
+      "bytes": 3207,
+      "sha256": "42a430504bd512d9f6a3efc5a4bcc9c8c285920ca5fa2e7360781fb8ade64ec6"
+    },
+    {
+      "path": "macos/OpenMathNative/Storage/KernelStore.swift",
+      "bytes": 15533,
+      "sha256": "4e86a98cd06c22f5eb4ed6341b09213f686a1415a98d283789524d0144927e5c"
+    },
+    {
+      "path": "macos/OpenMathNative/Storage/LibraryStore.swift",
+      "bytes": 5910,
+      "sha256": "b5a9b21d9d8518dee5d99f6081151d039df2539eb1f02020a0ec9865710476a7"
+    },
+    {
+      "path": "macos/OpenMathNative/Storage/ManagedFiles.swift",
+      "bytes": 5797,
+      "sha256": "b88d032597be22875619bbf1deda49f72e3c0230a3bcbc0a36bbaeaed46a2158"
+    },
+    {
+      "path": "macos/OpenMathNative/Storage/RecoveryService.swift",
+      "bytes": 2742,
+      "sha256": "096184733b985c73e79ea749d49b04e588f8a37d6344f3b91541939160eeee35"
+    },
+    {
+      "path": "macos/OpenMathNative/Storage/RecoveryTypes.swift",
+      "bytes": 5530,
+      "sha256": "cdb720561c7c329dff74557a97f563ea116c7dc5c8890093559d865351ed3ca6"
+    },
+    {
+      "path": "macos/OpenMathNative/Storage/SQLColumn.swift",
+      "bytes": 711,
+      "sha256": "4697074a0ce542177e38acace9a2174a2b22848ce02bf19fb5fa280f51df2171"
+    },
+    {
+      "path": "macos/OpenMathNative/Storage/SQLiteDatabase.swift",
+      "bytes": 11370,
+      "sha256": "5e620f6b07e759d1a63af80c147381126d25761e687f4a282a4cf9c6905ca7c2"
+    },
+    {
+      "path": "macos/OpenMathNative/Storage/SaveOperations.swift",
+      "bytes": 16431,
+      "sha256": "b55bd2af300abb6c37dc0953a3898469dcfcb3b628aa4ccf257ca37e848f340c"
+    },
+    {
+      "path": "macos/OpenMathNative/Storage/SaveStore.swift",
+      "bytes": 15158,
+      "sha256": "a672f35be669c470feeb8eb01801e167bfc46274c46209c234db7d6970358ae7"
+    },
+    {
+      "path": "macos/OpenMathNative/Storage/SaveTypes.swift",
+      "bytes": 7433,
+      "sha256": "62bae32f1c14a1030ea1d5b6925d863bba2ce166c1f479afdfbe182ba92f985a"
+    },
+    {
+      "path": "macos/OpenMathNative/Storage/SessionLedgerPort.swift",
+      "bytes": 9537,
+      "sha256": "18802ffd2ff28cb8339f00eb82610e1a22b33f21594425cf6692ebc32e731029"
+    },
+    {
+      "path": "macos/OpenMathNative/Storage/SessionRecovery.swift",
+      "bytes": 1658,
+      "sha256": "97a5abebc88995aa42bb10e851f96f095fb3825519f08c7ef561538f2f7235fc"
+    },
+    {
+      "path": "macos/OpenMathNative/Storage/SessionRecoveryIndex.swift",
+      "bytes": 12351,
+      "sha256": "a4d47c9d5a5c5828d8dda071b7749f5e19bfa12e10c568bfa3b2ed08d4847128"
+    },
+    {
+      "path": "macos/OpenMathNative/Storage/SessionSemantics.swift",
+      "bytes": 12250,
+      "sha256": "1ac8db3705f7427e39a20dd96a9ce7cf58caa3bff5ab1a0b3c1671ec9bbca0ec"
+    },
+    {
+      "path": "macos/OpenMathNative/Storage/SourceAdmissionStore.swift",
+      "bytes": 6887,
+      "sha256": "56fa3aca3b9f3669d65fab408308038e86b1bdb27ee8471428a2c3ab2311325e"
+    },
+    {
+      "path": "macos/OpenMathNative/Storage/SourceHashes.swift",
+      "bytes": 7762,
+      "sha256": "1b104381e9026a68a73b98954a497eedb79fafceb5f8f6d59019e6504331b63b"
+    },
+    {
+      "path": "macos/OpenMathNative/Storage/SourceHistoryStore.swift",
+      "bytes": 12643,
+      "sha256": "34ff2145e74b90b7e565fad61e53c5d266e43f26da1dffd4a1b751c01b78cd1c"
+    },
+    {
+      "path": "macos/OpenMathNative/Storage/StartupDocuments.swift",
+      "bytes": 4070,
+      "sha256": "d6659ef71ed3683a7c1d3eda7b648dc5fb325df668bcfdb641eeb5f62eeb42c8"
+    },
+    {
+      "path": "macos/OpenMathNative/Storage/StorageQuota.swift",
+      "bytes": 2394,
+      "sha256": "fe7bf619917a4e3e5c17c853c8aaafb69664ab04d29e627c38666710a4a09c7c"
+    },
+    {
+      "path": "macos/OpenMathNative/Storage/StorageService.swift",
+      "bytes": 42952,
+      "sha256": "2dfd102f1af87a1170dfd27d2cb7ef1093a298f3165facdf4e38697af3720711"
+    },
+    {
+      "path": "macos/OpenMathNative/Storage/StorageTypes.swift",
+      "bytes": 3450,
+      "sha256": "6639adfb175f3758c4ce064914e2924012cba9318417b393f83130d4eddb5fd7"
+    },
+    {
+      "path": "macos/OpenMathNative/Storage/StoreCatalog.swift",
+      "bytes": 8119,
+      "sha256": "95615e943ae211548e940929c2185941013462bf82619f4af4b659a4e4632c25"
+    },
+    {
+      "path": "macos/OpenMathNative/Storage/StoreGenerationService.swift",
+      "bytes": 8660,
+      "sha256": "016a2faf21b48468eec39dac64227392fc9cbf7602339c4d1baaf7f290bae25c"
+    },
+    {
+      "path": "crates/om-host-service/tests/results.rs",
+      "bytes": 18357,
+      "sha256": "6e7e9de06663a27ceb06d934326c94e183138438a53fafce3ee73e5f40b900ff"
+    },
+    {
+      "path": "crates/om-host-service/examples/validate_backup_manifest.rs",
+      "bytes": 1034,
+      "sha256": "aba9e54a3f0bb8e006486ff28e2e2e75901b92385e785caffa14b6400c56d858"
+    },
+    {
+      "path": "macos/Scripts/test-maintenance.sh",
+      "bytes": 1578,
+      "sha256": "4c10698a248d7e956fa550ffde8e306711ce28f358883ef9a5fe5ec0393caca4"
+    },
+    {
+      "path": "macos/OpenMathNativeTests/MaintenanceFixtures/main.swift",
+      "bytes": 18945,
+      "sha256": "5d958eb34fe31c24852fbdd3706c66b957d7d42d1329375f01c6bc0142956496"
+    },
+    {
+      "path": "macos/OpenMathNativeTests/MaintenanceFixtures/interruption.py",
+      "bytes": 4485,
+      "sha256": "5ace8c7c33d35c9c5992196b231695da0213178c96645127a9930d657eb56e16"
+    },
+    {
+      "path": "docs/design/macos-storage.schema.json",
+      "bytes": 48508,
+      "sha256": "db11eda312b44dedcf49f4c59238faa17e5f1297a97623f536d29cab3c7fd366"
+    }
+  ],
+  "actual_interruption_cases": [
+    {
+      "stage": "backup.started",
+      "exit_code": -9,
+      "outcome": "unpublished backup retained",
+      "original_sha256": "6b151fca4dc329383dbcfaecd964abcb7685112cbd15cf72a3f5a84579702445",
+      "inspection": {
+        "backups": 0,
+        "generations": [
+          1,
+          1
+        ]
+      },
+      "root": "/Users/hert/Projects/openmath/target/macos-storage-tests/maintenance-crash-c3kg9ff9"
+    },
+    {
+      "stage": "backup.pages",
+      "exit_code": -9,
+      "outcome": "unpublished backup retained",
+      "original_sha256": "a2d9dc2482c9a9b45d89a2de98ac1db14c457e1d66722e5f95f58bb6fb10c6e8",
+      "inspection": {
+        "backups": 0,
+        "generations": [
+          1,
+          1
+        ]
+      },
+      "root": "/Users/hert/Projects/openmath/target/macos-storage-tests/maintenance-crash-bzk85e9u"
+    },
+    {
+      "stage": "backup.finished",
+      "exit_code": -9,
+      "outcome": "unpublished backup retained",
+      "original_sha256": "fb18562894172a576a377439425fbf335a17b2e297d63b8a79832d3f600be05d",
+      "inspection": {
+        "backups": 0,
+        "generations": [
+          1,
+          1
+        ]
+      },
+      "root": "/Users/hert/Projects/openmath/target/macos-storage-tests/maintenance-crash-tefhqg9g"
+    },
+    {
+      "stage": "backup.synced",
+      "exit_code": -9,
+      "outcome": "unpublished backup retained",
+      "original_sha256": "6773cf90e52bbb0625a978e749b3b5c1727a638566984ba9005c3c38d5c05ca5",
+      "inspection": {
+        "backups": 0,
+        "generations": [
+          1,
+          1
+        ]
+      },
+      "root": "/Users/hert/Projects/openmath/target/macos-storage-tests/maintenance-crash-nocomfb5"
+    },
+    {
+      "stage": "backup.store_verified",
+      "exit_code": -9,
+      "outcome": "unpublished backup retained",
+      "original_sha256": "6e5c1ca27f803e3cae09d5ac63bfefb0d93b3eb7806b8d03d1c4fc30e74553a0",
+      "inspection": {
+        "backups": 0,
+        "generations": [
+          1,
+          1
+        ]
+      },
+      "root": "/Users/hert/Projects/openmath/target/macos-storage-tests/maintenance-crash-gm013_3o"
+    },
+    {
+      "stage": "backup.before_publish",
+      "exit_code": -9,
+      "outcome": "unpublished backup retained",
+      "original_sha256": "11a614d5f4ac5a2840b08c18f346c8cb2603a55065b954e8eb4fa3a9fa2d1832",
+      "inspection": {
+        "backups": 0,
+        "generations": [
+          1,
+          1
+        ]
+      },
+      "root": "/Users/hert/Projects/openmath/target/macos-storage-tests/maintenance-crash-bhg0pnj9"
+    },
+    {
+      "stage": "backup.published",
+      "exit_code": -9,
+      "outcome": "published verified backup",
+      "original_sha256": "ee9dc78a6dcffb465a61beec181c2e7e2f2153767bdb2d271b22c1826f9e5f6f",
+      "inspection": {
+        "backups": 1,
+        "generations": [
+          1,
+          1
+        ]
+      },
+      "root": "/Users/hert/Projects/openmath/target/macos-storage-tests/maintenance-crash-iutic0ci"
+    },
+    {
+      "stage": "generation.verified",
+      "exit_code": -9,
+      "outcome": "original generation still selected",
+      "original_sha256": "d364772c6f961c1aaa9cbc49c898ffdb5c1fab5c8f47b09b2e2d7cf42fcbba71",
+      "inspection": {
+        "backups": 1,
+        "generations": [
+          1,
+          1
+        ]
+      },
+      "root": "/Users/hert/Projects/openmath/target/macos-storage-tests/maintenance-crash-3qt1bmgo"
+    },
+    {
+      "stage": "generation.published",
+      "exit_code": -9,
+      "outcome": "original generation still selected",
+      "original_sha256": "ee6a21823e182ecbf4b26d18f46dd50ce78a1eebbbdcb3aa8ff665d188acc750",
+      "inspection": {
+        "backups": 1,
+        "generations": [
+          1,
+          1
+        ]
+      },
+      "root": "/Users/hert/Projects/openmath/target/macos-storage-tests/maintenance-crash-zhfqrh1o"
+    },
+    {
+      "stage": "generation.before_selector",
+      "exit_code": -9,
+      "outcome": "original generation still selected",
+      "original_sha256": "3f92507c0db3bb4a123cd3f6ead0f05e22eb14a86c3c9332e189f58573a438d2",
+      "inspection": {
+        "backups": 1,
+        "generations": [
+          1,
+          1
+        ]
+      },
+      "root": "/Users/hert/Projects/openmath/target/macos-storage-tests/maintenance-crash-nbesmz6v"
+    },
+    {
+      "stage": "generation.selector.file_synced",
+      "exit_code": -9,
+      "outcome": "original generation still selected",
+      "original_sha256": "aaa7b54d88612c6b202ad4ee2ae0e35d8902a66a608d03983a2d9cfa095167f8",
+      "inspection": {
+        "backups": 1,
+        "generations": [
+          1,
+          1
+        ]
+      },
+      "root": "/Users/hert/Projects/openmath/target/macos-storage-tests/maintenance-crash-rh364soj"
+    },
+    {
+      "stage": "generation.selector.renamed",
+      "exit_code": -9,
+      "outcome": "selected quarantine generation",
+      "original_sha256": "c4a8152e930599441a67f6a8b4e4a2fadf9aafbdbd3548ff5d8f3c9d32091771",
+      "inspection": {
+        "backups": 1,
+        "generations": [
+          1,
+          2
+        ]
+      },
+      "root": "/Users/hert/Projects/openmath/target/macos-storage-tests/maintenance-crash-ecf1hl75"
+    },
+    {
+      "stage": "generation.selector.directory_synced",
+      "exit_code": -9,
+      "outcome": "selected quarantine generation",
+      "original_sha256": "da08a8b9ba09661fa4f8ec5d68e86070ce6546041c7920c395e6bf11155f4aa2",
+      "inspection": {
+        "backups": 1,
+        "generations": [
+          1,
+          2
+        ]
+      },
+      "root": "/Users/hert/Projects/openmath/target/macos-storage-tests/maintenance-crash-3nhpabrv"
+    },
+    {
+      "stage": "generation.selected",
+      "exit_code": -9,
+      "outcome": "selected quarantine generation",
+      "original_sha256": "d29153ebbec119872f9a17b57363114c5a27e3b9ba6c260a9fb72b66a80b8625",
+      "inspection": {
+        "backups": 1,
+        "generations": [
+          1,
+          2
+        ]
+      },
+      "root": "/Users/hert/Projects/openmath/target/macos-storage-tests/maintenance-crash-f2f3b5uf"
+    },
+    {
+      "stage": "gc.quarantined",
+      "exit_code": -9,
+      "outcome": "verified orphan retained in quarantine",
+      "original_sha256": "bec2a4d5dced8f43f31a585428b033371e7324b241ead4b468d340e58319b7ec",
+      "inspection": {
+        "backups": 0,
+        "generations": [
+          1,
+          1
+        ]
+      },
+      "root": "/Users/hert/Projects/openmath/target/macos-storage-tests/maintenance-crash-7twgm3a7"
+    },
+    {
+      "stage": "gc.before_delete",
+      "exit_code": -9,
+      "outcome": "verified orphan retained in quarantine",
+      "original_sha256": "7ef5f6924ac80885c2b7c7ec8ac5c7497d91875bfb1f5ec9d6e272d7dfc9408c",
+      "inspection": {
+        "backups": 0,
+        "generations": [
+          1,
+          1
+        ]
+      },
+      "root": "/Users/hert/Projects/openmath/target/macos-storage-tests/maintenance-crash-9arrim_n"
+    },
+    {
+      "stage": "gc.deleted",
+      "exit_code": -9,
+      "outcome": "unreferenced orphan removed",
+      "original_sha256": "bd1a7730c58e6b39e886fec7f3f2e0fbc6f7d70037a95502f4f75aa9d2505711",
+      "inspection": {
+        "backups": 0,
+        "generations": [
+          1,
+          1
+        ]
+      },
+      "root": "/Users/hert/Projects/openmath/target/macos-storage-tests/maintenance-crash-sznkkm6v"
+    }
+  ],
+  "original_canonical_manifest": [
+    {
+      "backup_id": "89a5abe1-eac0-4c6a-ac88-a76cc9320362",
+      "blob_hashes": [
+        "1301ba297da24d8333832f34a1f5ee1ecbe81db0093d32e06230c4400901914f"
+      ],
+      "created_at": "2026-10-12T12:41:50Z",
+      "format_version": 1,
+      "manifest_hash": "5472ad3d4a478b54f62e2e78eb0cb296e86d9356646cd52b4da4b941eb59db06",
+      "record_type": "backup_manifest",
+      "stores": [
+        {
+          "sqlite_snapshot_hash": "d86c988678f22f5e3f2c68dd0cc49b743bc612c6cccefaf12995041e046dc8e4",
+          "store_generation": 1,
+          "store_id": "51677051-5800-48b8-9e3d-e1ba98e47445"
+        },
+        {
+          "sqlite_snapshot_hash": "97bef4da3fcdaad98ca574d3abed029ec37962a137b55603566eef910df9cb96",
+          "store_generation": 1,
+          "store_id": "ea8cdb54-2dac-48f3-b97b-60ec44b99d26"
+        }
+      ],
+      "verified": true
+    }
+  ],
+  "rust_tests_passed": 113,
+  "generated_dtos": 269,
+  "original_native_regression_groups": 15,
+  "preserved_failed_attempts": [
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r41/storage-maintenance-raw/r413-blobs.log.txt",
+      "sha256": "d726345e9f7dd0848ba5f4a312036619aa08ff4438d85be5014146762b553fc6",
+      "status": "failed_preserved_not_pass"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r41/storage-maintenance-raw/r413-maintenance.log.txt",
+      "sha256": "d1f5cb8df7f2f7131e3d13a42f7b8ede4c13dc965321662d3ab303f057df05ee",
+      "status": "failed_preserved_not_pass"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r41/storage-maintenance-raw/r413-maintenance-2.log.txt",
+      "sha256": "3fd96eb5460a16cac594a642a6b5cb143273ea8466dac9817d015cc7ba81ba28",
+      "status": "failed_preserved_not_pass"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r41/storage-maintenance-raw/r413-maintenance-3.log.txt",
+      "sha256": "e38d9db2708f7954a38dd8f8cc9d014233fb51fc74cc1508b2730d76ba479321",
+      "status": "failed_preserved_not_pass"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r41/storage-maintenance-raw/r413-maintenance-6.log.txt",
+      "sha256": "53044bd39d7d98db430cd2c7f8c5c1e8c24aaf012742a06a7bf71403ea5e0c4e",
+      "status": "failed_preserved_not_pass"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r41/storage-maintenance-raw/r413-maintenance-final2.log.txt",
+      "sha256": "fb47dbd7402fc619fd7669bace9ab4f9c7c666dfbf2b6a10bc5aa05e41c9df11",
+      "status": "failed_preserved_not_pass"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r41/storage-maintenance-raw/r413-maintenance-final4.log.txt",
+      "sha256": "d5871c1d7af1ecce702b0e5319cbf4d478fb447fdb36dd3054982a74b1448318",
+      "status": "failed_preserved_not_pass"
+    }
+  ],
+  "covered_behaviors": [
+    "Full SQLite API snapshot includes real committed WAL; all selected stores including unopened document",
+    "Original descriptor bytes copied/pinned/hashed; closed original BackupManifest schema plus physical inventory hash",
+    "All committed session records and original references validated before GC; unrecognized/missing cross-store data stops collection",
+    "Running publication/reader/derived producer pins; 24h orphan/staging grace; atomic quarantine and interrupted GC resume",
+    "Maintenance drains actual in-flight upload; new publications rejected while barrier held",
+    "Real SQLite VFS ENOSPC; published backup retained after acknowledgement loss",
+    "Library3 index rebuild and populated document1->5 preserve original event/receipt/operation/history typed rows",
+    "Original projection stable store/event identity survives changed generation with no second insertion",
+    "Restore older backup lacks later operation receipt but rollback_quarantine blocks opening/upgrading/replaying writes",
+    "Quarantined original source independently readable when Library is unsupported; original bytes retained",
+    "512MiB default LRU cache; explicit zero-budget clear preserves active producer and original attachment",
+    "Retain newest7 manual/newest2 pre-upgrade and at least1 complete healthy backup; soft quota does not sacrifice required retention",
+    "Fresh runtime entropy/expiry/permissions/revocation tested on actual accepted CAS result under original durable ID"
+  ],
+  "remaining_product_work": [
+    "Full native workbench/editor/formula/Metal/Agent/provider/media/prompt/context remains R4.2-R4.4",
+    "Daily trigger and native data management UI to consume maintenance APIs in R4.2.18",
+    "Final 32 gates, signing/notarization/live model and same-candidate assets remain not_run"
+  ],
+  "ready_to_publish": false,
+  "released_verified": false
+}

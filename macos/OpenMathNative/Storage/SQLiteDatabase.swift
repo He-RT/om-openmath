@@ -114,6 +114,7 @@ final class SQLiteDatabase {
     return info
   }
   func transaction<T>(_ body:()throws->T) throws ->T {
+    try StorageQuota.require(url)
     try statement("BEGIN IMMEDIATE")
     let value:T
     do { value=try body() }
@@ -151,5 +152,37 @@ final class SQLiteDatabase {
     guard fd>=0 else { throw StorageError.system(errno,"checkpoint_open") }
     defer { Darwin.close(fd) }
     try ManagedFiles.sync(fd)
+  }
+  /// Copy SQLite's committed view, including WAL, into a new standalone database. Both
+  /// handles stay on this queue; errors never publish a partially copied snapshot.
+  func backup(to destination:URL,faults:StorageFaults = .init()) throws {
+    precondition(!Thread.isMainThread)
+    guard let db else {throw StorageError.closing}
+    guard !(try ManagedFiles.check(destination,directory:false)) else {throw StorageError.inUse}
+    try readonlyGuard?.validate()
+    let target=try SQLiteDatabase(url:destination,create:true)
+    defer {try? target.close()}
+    try target.statement("PRAGMA synchronous=FULL")
+    try target.statement("PRAGMA fullfsync=ON")
+    guard let handle=target.db,let copy=sqlite3_backup_init(handle,"main",db,"main") else {throw StorageError.sqlite(target.db.map(sqlite3_errcode) ?? SQLITE_ERROR,"backup_init")}
+    var finished=false
+    defer {if !finished {_ = sqlite3_backup_finish(copy)}}
+    try faults.reach("backup.started")
+    while true {
+      let result=sqlite3_backup_step(copy,128)
+      guard result==SQLITE_OK || result==SQLITE_DONE else {throw StorageError.sqlite(result,"backup_step")}
+      try faults.reach("backup.pages")
+      if result==SQLITE_DONE {break}
+    }
+    let result=sqlite3_backup_finish(copy);finished=true
+    guard result==SQLITE_OK else {throw StorageError.sqlite(result,"backup_finish")}
+    try faults.reach("backup.finished")
+    guard try target.text("PRAGMA journal_mode=DELETE").lowercased()=="delete",
+      try target.text("PRAGMA integrity_check")=="ok" else {throw StorageError.corruptIdentity}
+    var broken=false;try target.statement("PRAGMA foreign_key_check") {_ in broken=true}
+    guard !broken else {throw StorageError.corruptIdentity}
+    try target.synchronizeCommittedBytes();try target.close()
+    try ManagedFiles.syncDirectory(destination.deletingLastPathComponent())
+    try readonlyGuard?.validate();try faults.reach("backup.synced")
   }
 }

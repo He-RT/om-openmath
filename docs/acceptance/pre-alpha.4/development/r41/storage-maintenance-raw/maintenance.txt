@@ -1,0 +1,8 @@
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.08s
+     Running `target/debug/examples/source_store_contract`
+{"actual_fullsync_calls":324,"backup_id":"89a5abe1-eac0-4c6a-ac88-a76cc9320362","blobs":1,"gc_removed":1,"library_generation":2,"restored_generation":2,"rollback_quarantine":true,"stores":2}
+Actual WAL backup/unopened refs/pins/reader/24h grace/maintenance drain/SQLite ENOSPC/lost ACK/Library3 indexed migration/readonly rollback quarantine passed
+17 real SIGKILL boundaries: backups/selector/quarantine/GC verified, original document bytes retained
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.21s
+     Running `target/debug/examples/validate_backup_manifest target/acceptance/pre-alpha.4/development/r41/backup-canonical.json`
+1 actual published backup manifests match the original closed schema

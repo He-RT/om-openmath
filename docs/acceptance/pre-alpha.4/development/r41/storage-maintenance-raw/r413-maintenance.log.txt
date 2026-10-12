@@ -1,0 +1,30 @@
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.38s
+     Running `target/debug/examples/source_store_contract`
+macos/OpenMathNativeTests/MaintenanceFixtures/main.swift:13:15: error: method must be declared fileprivate because its parameter uses a private type
+  4 | import SQLite3
+  5 | 
+  6 | private struct Plans:Decodable {let initial:NativeSourceSnapshot,first:NativeSourceCommit}
+    |                `- note: type declared here
+  7 | private final class Pause:@unchecked Sendable {
+  8 |   let reached=DispatchSemaphore(value:0),release=DispatchSemaphore(value:0)
+    :
+ 11 | @main struct MaintenanceFixtures {
+ 12 |   static func worker<T:Sendable>(_ job:@escaping @Sendable ()throws->T) async throws->T {try await Task.detached(operation:job).value}
+ 13 |   static func prepare(_ root:URL,_ plans:Plans) async throws->StorageService {
+    |               `- error: method must be declared fileprivate because its parameter uses a private type
+ 14 |     let (store,_)=try await StorageService.open(paths:.init(root:root,channel:.preview))
+ 15 |     _ = try await store.openDocument(plans.initial.document_id);_ = try await store.initializeSource(plans.initial)
+
+macos/OpenMathNativeTests/MaintenanceFixtures/main.swift:75:40: error: instance method 'wait' is unavailable from asynchronous contexts; Await a Task handle instead
+ 73 |     let pause=Pause()
+ 74 |     let pending=Task {try await store.publishBlob(data:Data("in-flight upload".utf8),faults:.init {try pause.fault($0)})}
+ 75 |     await Task.detached {pause.reached.wait()}.value
+    |                                        `- error: instance method 'wait' is unavailable from asynchronous contexts; Await a Task handle instead
+ 76 |     let sweep=Task {try await store.collectBlobs()}
+ 77 |     try await Task.sleep(for:.milliseconds(30))
+
+Dispatch.DispatchSemaphore.wait:2:13: note: 'wait()' declared here
+1 | class DispatchSemaphore {
+2 | public func wait()}
+  |             `- note: 'wait()' declared here
+3 | 

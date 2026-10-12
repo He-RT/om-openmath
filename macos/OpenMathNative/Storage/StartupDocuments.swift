@@ -31,6 +31,7 @@ enum StartupDocuments {
         let url=path.appendingPathComponent("Generations/\(String(format:"%06lld",selector.generation))/authority.sqlite")
         let db=try SQLiteDatabase(url:url,readonly:true);defer {try? db.close()}
         let header=try StorageBootstrap.readHeader(db)
+        try StorageBootstrap.rejectQuarantine(db)
         guard header.kind=="document",header.documentID==id,header.storeID==selector.storeID,header.generation==selector.generation,try header.hash==selector.headerHash else {throw StorageError.corruptIdentity}
         var snapshot:NativeSourceSnapshot?
         try db.statement("SELECT r.snapshot FROM document_head h JOIN document_revisions r ON h.document_id=r.document_id AND h.revision=r.revision AND h.snapshot_hash=r.snapshot_hash") {row in

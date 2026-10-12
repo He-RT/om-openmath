@@ -599,3 +599,11 @@ L2使用精确标称GM分数、50位FindRoot/1000迭代和真实残差，报告�
 - 关联查询解除Library3的4096事件上限，恢复每次最多32工具/32请求，游标携session/store/generation和创建上界，保留原历史及未读下一页。4374/>16MiB实际数据、37+37完整页/新接纳/重启通过，不用提高旧全量预算来假装分批。
 - NativeSessionRecoveryList原生List/分栏由实际producer状态驱动，无总量不编造百分比，不因视图结束标完成/取消，依据已读skill progress-and-result-feedback portable基本路径。真实fixture复用产品组件，只注入自有测试Root；产品通道仍构建常量、不允许launch args重定向。
 - 原doc不在当前window也能通过已存在selector核对原ID；无locator/不匹配不创造新库、保持unknown。Writer close成功后才注销，失败仍可核对。原source/HTTP不重复，13+5+3+6中断与UI已验证，R4.1.12 Done满足；Pi/模型/prompt/context/压缩等尚未运行不冒称此任务覆盖。
+
+### R4-D032：统一资源维护、独立备份和新代次隔离（2026-10-12）
+
+- 全库稳定集合在StorageService维护屏障内取得，排空在途队列而非只依赖actor的重入顺序；新接纳拒绝，主线程不运行SQLite/散列/复制。GC还核保留代次、published backup与实际原Blob，缺库/格式/指针/原字节时停止，不能判空。
+- 规范BackupManifest严格保留原Schema八字段；额外物理inventory独立封存，以manifest_hash绑定其排序JSON字节。发布前原DB WAL视图、Blob pin/真实字节和全部校验必须完成。Apple SQLite WAL→DELETE关闭后可能残留SHM缓存，属于已知派生文件，不是恢复权威；未知新增文件/WAL/journal仍保留并阻止候选删除。
+- 新代次保留store ID及原所有操作/回执/事件/历史字节，原typed行SHA/计数核对；doc1摘要从实际原计划构建、Library3索引从原事件构建。迁移前取得全库自包含备份，目标连接全关闭/同步后切selector；未选代次不自动活动。
+- 备份回退统一rollback_quarantine，即使当下原回执查询为空也没有重放许可；普通打开/升级不得取得writer。只读隔离源码独立核文档selector，不依赖Library健康。后续R4.2.18提供原生选择/另存与日末触发。
+- 512MiB派生cache与原Blob物理分开，运行pins优先；7普通/2迁移前/至少1完整健康备份优先于1GiB软预算。实际可用空间门禁仍逐步处理ENOSPC，不自动清外部缓存。17强杀/原Schema/113Rust/15原生组/Release已验证，final candidate gates不由本批置pass。

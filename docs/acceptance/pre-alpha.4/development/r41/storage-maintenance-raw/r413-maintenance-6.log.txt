@@ -1,0 +1,4 @@
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.22s
+     Running `target/debug/examples/source_store_contract`
+Swift/ErrorType.swift:254: Fatal error: Error raised at top level: main.SessionLedgerError.invalidTransition
+macos/scripts/test-maintenance.sh: line 20: 14360 Trace/BPT trap: 5       target/macos-storage-tests/maintenance-fixtures "$attempt_root" target/macos-storage-tests/maintenance-plans.json

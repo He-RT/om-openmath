@@ -9,6 +9,7 @@ rust-version = "1.94"
 license = "MIT OR Apache-2.0"
 
 [workspace.dependencies]
+om-agent-contract = { path = "crates/om-agent-contract", version = "0.1.0-pre-alpha.3" }
 om-analysis = { path = "crates/om-analysis", version = "0.1.0-pre-alpha.3" }
 om-num = { path = "crates/om-num", version = "0.1.0-pre-alpha.3" }
 om-core = { path = "crates/om-core", version = "0.1.0-pre-alpha.3" }

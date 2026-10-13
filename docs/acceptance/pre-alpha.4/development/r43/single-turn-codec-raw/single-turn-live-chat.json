@@ -1,0 +1,132 @@
+{
+  "endpoint": "https://4Router.net/v1",
+  "scope": "authorized development actual Chat SSE/Rust codec; no native transport/Registry/Pi or release gate claim",
+  "models": [
+    {
+      "model": "gpt-6.1-sol",
+      "request_body": {
+        "max_completion_tokens": 64,
+        "messages": [
+          {
+            "content": "Return only the single ASCII digit equal to 2+2.",
+            "role": "user"
+          }
+        ],
+        "model": "gpt-6.1-sol",
+        "stream": true,
+        "stream_options": {
+          "include_usage": true
+        }
+      },
+      "http_status": 200,
+      "response_sse": "data: {\"id\":\"resp_0a766d73f17ab5a2016ace964dab0487d0a4d8c72fd7f0dd24\",\"object\":\"chat.completion.chunk\",\"created\":1791923789,\"model\":\"gpt-6.1-sol\",\"choices\":[{\"index\":0,\"delta\":{\"role\":\"assistant\",\"content\":\"4\"},\"finish_reason\":null,\"native_finish_reason\":null}]}\n\ndata: {\"id\":\"resp_0a766d73f17ab5a2016ace964dab0487d0a4d8c72fd7f0dd24\",\"object\":\"chat.completion.chunk\",\"created\":1791923789,\"model\":\"gpt-6.1-sol\",\"choices\":[{\"index\":0,\"delta\":{},\"finish_reason\":\"stop\",\"native_finish_reason\":\"stop\"}],\"usage\":{\"completion_tokens\":5,\"total_tokens\":24,\"prompt_tokens\":19,\"prompt_tokens_details\":{\"cached_tokens\":0,\"cached_creation_tokens\":0},\"completion_tokens_details\":{\"reasoning_tokens\":0}}}\n\ndata: [DONE]\n\n",
+      "decoded": {
+        "finish": "complete",
+        "message": {
+          "agent_turn_id": "probe-turn",
+          "message_id": "probe-assistant",
+          "message_version": 1,
+          "parts": [
+            {
+              "kind": "text",
+              "part_id": "text-0",
+              "text": "4"
+            }
+          ],
+          "record_type": "canonical_agent_message",
+          "role": "assistant",
+          "task_id": "probe-task"
+        },
+        "partial_calls": [],
+        "provider_reason": "stop",
+        "replay": {
+          "assistant": {
+            "content": "4",
+            "role": "assistant"
+          },
+          "binding": {
+            "adapter_version": "single-turn-1",
+            "model_ref": "gpt-6.1-sol",
+            "protocol": "chat_completions",
+            "provider_ref": "explicit-test-provider",
+            "route_ref": "explicit-test-route"
+          },
+          "provider_model": "gpt-6.1-sol",
+          "response_id": "resp_0a766d73f17ab5a2016ace964dab0487d0a4d8c72fd7f0dd24"
+        },
+        "usage": {
+          "cache_read": 0,
+          "cache_write": null,
+          "input": 19,
+          "output": 5,
+          "total": 24
+        }
+      },
+      "matched": true,
+      "elapsed_ms": 6113.787
+    },
+    {
+      "model": "gpt-6-luna",
+      "request_body": {
+        "max_completion_tokens": 64,
+        "messages": [
+          {
+            "content": "Return only the single ASCII digit equal to 2+2.",
+            "role": "user"
+          }
+        ],
+        "model": "gpt-6-luna",
+        "stream": true,
+        "stream_options": {
+          "include_usage": true
+        }
+      },
+      "http_status": 200,
+      "response_sse": "data: {\"id\":\"resp_01b787038594aa03016ace964c792881a285c62a00eac16529\",\"object\":\"chat.completion.chunk\",\"created\":1791923788,\"model\":\"gpt-6-luna\",\"choices\":[{\"index\":0,\"delta\":{\"role\":\"assistant\",\"content\":\"4\"},\"finish_reason\":null,\"native_finish_reason\":null}]}\n\ndata: {\"id\":\"resp_01b787038594aa03016ace964c792881a285c62a00eac16529\",\"object\":\"chat.completion.chunk\",\"created\":1791923788,\"model\":\"gpt-6-luna\",\"choices\":[{\"index\":0,\"delta\":{},\"finish_reason\":\"stop\",\"native_finish_reason\":\"stop\"}],\"usage\":{\"completion_tokens\":5,\"total_tokens\":24,\"prompt_tokens\":19,\"prompt_tokens_details\":{\"cached_tokens\":0,\"cached_creation_tokens\":0},\"completion_tokens_details\":{\"reasoning_tokens\":0}}}\n\ndata: [DONE]\n\n",
+      "decoded": {
+        "finish": "complete",
+        "message": {
+          "agent_turn_id": "probe-turn",
+          "message_id": "probe-assistant",
+          "message_version": 1,
+          "parts": [
+            {
+              "kind": "text",
+              "part_id": "text-0",
+              "text": "4"
+            }
+          ],
+          "record_type": "canonical_agent_message",
+          "role": "assistant",
+          "task_id": "probe-task"
+        },
+        "partial_calls": [],
+        "provider_reason": "stop",
+        "replay": {
+          "assistant": {
+            "content": "4",
+            "role": "assistant"
+          },
+          "binding": {
+            "adapter_version": "single-turn-1",
+            "model_ref": "gpt-6-luna",
+            "protocol": "chat_completions",
+            "provider_ref": "explicit-test-provider",
+            "route_ref": "explicit-test-route"
+          },
+          "provider_model": "gpt-6-luna",
+          "response_id": "resp_01b787038594aa03016ace964c792881a285c62a00eac16529"
+        },
+        "usage": {
+          "cache_read": 0,
+          "cache_write": null,
+          "input": 19,
+          "output": 5,
+          "total": 24
+        }
+      },
+      "matched": true,
+      "elapsed_ms": 3868.005
+    }
+  ]
+}

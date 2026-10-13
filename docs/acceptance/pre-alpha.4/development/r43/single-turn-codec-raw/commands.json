@@ -1,0 +1,14 @@
+[
+  "CARGO_PROFILE_DEV_DEBUG=0 CARGO_PROFILE_TEST_DEBUG=0 cargo test -p om-host-service -p om-llm -p om-agent-contract --locked",
+  "CARGO_PROFILE_DEV_DEBUG=0 CARGO_PROFILE_TEST_DEBUG=0 cargo clippy -p om-host-service -p om-llm -p om-agent-contract --all-targets --locked -- -D warnings",
+  "cargo fmt --all -- --check",
+  "python3 scripts/native_contracts.py --check",
+  "python3 -X warn_default_encoding -W error::EncodingWarning -m unittest discover -s tests -v",
+  "CARGO_PROFILE_DEV_DEBUG=0 CARGO_PROFILE_TEST_DEBUG=0 bash macos/Scripts/test-native-contracts.sh",
+  "python3 scripts/test_single_turn_pi.py --node target/native-runtime/node-v26.11.1-darwin-arm64/bin/node --evidence target/acceptance/pre-alpha.4/development/r43/single-turn-pi",
+  "bash macos/Scripts/test-agent-package.sh /Users/hert/Projects/openmath/target/macos-agent-package-tests/AgentRuntime",
+  "python3 scripts/probe_single_turn_api.py --config /Users/hert/.config/openmath/testing/pre-alpha-4-api.json --fixture target/debug/examples/single_turn_fixture --output target/acceptance/pre-alpha.4/development/r43/single-turn-live-chat.json",
+  "CI=1 /Users/hert/Projects/openmath/target/native-runtime/node-v26.11.1-darwin-arm64/bin/node node_modules/@playwright/test/cli.js test settings.spec.ts --workers=1 --repeat-each=3 (cwd app)",
+  "xcrun xcresulttool export attachments --path target/ci-evidence/94dbfbe/ios/ios-phone-20261013T195507Z-24218.xcresult --output-path target/ci-evidence/94dbfbe/ios/attachments (read-only; no simulator)",
+  "bash macos/Scripts/test-agent-package.sh '/Users/hert/Projects/openmath/target/macos-native/Build/Products/Release/OpenMath Preview.app/Contents/Resources/AgentRuntime' '/Users/hert/Projects/openmath/target/macos-native/Build/Products/Release/OpenMath Preview.app'"
+]

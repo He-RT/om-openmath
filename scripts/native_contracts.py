@@ -149,6 +149,23 @@ for path in sorted(rust_files):
 rust_files['crates/om-host-service/src/protocol/generated/mod.rs'] = mods
 rust_files.update(swift_files)
 rust_files['docs/design/native-contract-inputs.json'] = json.dumps({'schema_version': 1, 'inputs': inputs, 'generated_dto_count': len(processed - set(PRIMITIVES))},ensure_ascii=False,indent=2)+'\n'
+# One canonical Rust type identity shared by the owner and its independent model codec.
+canonical = set()
+queue = ['AgentCanonicalMessage', 'AgentMessagePart']
+while queue:
+    name = queue.pop()
+    if name in canonical or name in PRIMITIVES:
+        continue
+    canonical.add(name)
+    text = rust_files[f'crates/om-host-service/src/protocol/generated/{snake(name)}.rs']
+    for referenced in re.findall(r'\b[A-Z][A-Za-z0-9]+\b', text):
+        if referenced in models and referenced not in canonical:
+            queue.append(referenced)
+for name in sorted(canonical):
+    path = f'crates/om-host-service/src/protocol/generated/{snake(name)}.rs'
+    rust_files[f'crates/om-agent-contract/src/generated/{snake(name)}.rs'] = rust_files[path]
+    rust_files[path] = f'//! Canonical type generated once and shared with the single-turn codec.\npub use om_agent_contract::{name};\n'
+rust_files['crates/om-agent-contract/src/generated/mod.rs'] = '//! Generated shared canonical DTOs.\nuse super::*;\n' + ''.join(f'mod {snake(name)};\npub use {snake(name)}::*;\n' for name in sorted(canonical))
 # Canonical rustfmt output keeps generated contracts compatible with the workspace check.
 staging = ROOT / 'target/native-contract-generation'
 staging.mkdir(parents=True, exist_ok=True)
@@ -157,7 +174,8 @@ with tempfile.TemporaryDirectory(dir=staging) as tmp:
     for relative, text in rust_files.items():
         if not relative.endswith('.rs'):
             continue
-        path = Path(tmp) / Path(relative).name
+        path = Path(tmp) / relative
+        path.parent.mkdir(parents=True, exist_ok=True)
         path.write_text(text, encoding='utf-8')
         paths.append((relative, path))
     subprocess.run(['rustfmt', '--edition', '2024', '--config', 'skip_children=true'] + [str(p) for _,p in paths], check=True)

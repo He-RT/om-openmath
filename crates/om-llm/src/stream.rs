@@ -131,6 +131,19 @@ impl SseDecoder {
         }
         Ok(frames)
     }
+    /// Strict single-turn EOF must not silently discard an unterminated data event.
+    pub fn finish_strict(&mut self) -> Result<(), LlmError> {
+        if self.failed {
+            return Err(LlmError::Terminal);
+        }
+        let line = self.lines.finish()?;
+        if !self.buf.is_empty() || line.as_ref().is_some_and(|s| !s.is_empty()) {
+            self.failed = true;
+            self.buf.clear();
+            return Err(LlmError::Incomplete);
+        }
+        Ok(())
+    }
     /// Finish the stream, rejecting truncated UTF-8 and discarding incomplete SSE events.
     pub fn finish(&mut self) -> Result<Vec<SseMessage>, LlmError> {
         if self.failed {

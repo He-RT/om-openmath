@@ -17,6 +17,21 @@ private actor ModelHold {
   func wait() async throws {for _ in 0..<500 {if arrived {return};try await Task.sleep(for:.milliseconds(10))};throw AgentSessionError.inactive}
   func late(_ event:AgentModelEventPayload) {continuation?.yield(event);continuation?.finish()}
 }
+
+/// Test-only bridge through the actual Rust library, not a replacement model/provider adapter.
+private func codecMessage(executable:URL,root:URL,input:AgentCanonicalMessage,intent:NativeAgentRequestIntent,task:String)throws->AgentCanonicalMessage {
+  let chunk:[String:Any] = ["id":"provider-response","model":"synthetic-served-alias","choices":[["index":0,"delta":["role":"assistant","content":"中文🙂","tool_calls":[["index":0,"id":"provider-call","type":"function","function":["name":"read_notebook","arguments":"{ \"view\" : \"outline\" }"]]]],"finish_reason":"tool_calls"]]]
+  let sse="data: "+String(decoding:try JSONSerialization.data(withJSONObject:chunk),as:UTF8.self)+"\n\ndata: [DONE]\n\n"
+  let binding:[String:Any] = ["provider_ref":"fixture-provider","route_ref":"fixture-route","model_ref":"fixture-model","adapter_version":"single-turn-1","protocol":"chat_completions"]
+  let frame:[String:Any] = ["request":["binding":binding,"api_model":"synthetic-configured-alias","messages":[["canonical":try JSONSerialization.jsonObject(with:encoded(input)),"replay":NSNull()]],"results":[],"tools":[["name":"read_notebook","description":"Test-only unavailable native handler","parameters":["type":"object"]]],"max_output_tokens":128,"temperature":NSNull(),"stream":true],"message_id":"provider-canonical","task_id":task,"turn_id":intent.agent_turn_id,"status":200,"response":sse]
+  let bytes=try JSONSerialization.data(withJSONObject:frame,options:[.sortedKeys]),process=Process(),stdin=Pipe(),stdout=Pipe()
+  process.executableURL=executable;process.arguments=[];process.standardInput=stdin;process.standardOutput=stdout;process.standardError=FileHandle.nullDevice
+  try process.run();try stdin.fileHandleForWriting.write(contentsOf:bytes);try stdin.fileHandleForWriting.close()
+  let actual=stdout.fileHandleForReading.readDataToEndOfFile();process.waitUntilExit()
+  guard process.terminationStatus==0,actual.count<=1024*1024,let object=try JSONSerialization.jsonObject(with:actual) as? [String:Any],let result=object["result"] as? [String:Any],result["finish"] as? String=="tool_calls",let message=result["message"] else {throw AgentSessionError.invalidFrame}
+  try bytes.write(to:root.appendingPathComponent("actual-codec-input.json"));try actual.write(to:root.appendingPathComponent("actual-codec-output.json"))
+  return try JSONDecoder().decode(AgentCanonicalMessage.self,from:JSONSerialization.data(withJSONObject:message))
+}
 @main struct AgentPackageFixtures {
   static func main() async throws {
     let package=URL(fileURLWithPath:CommandLine.arguments[1],isDirectory:true),root=URL(fileURLWithPath:CommandLine.arguments[2],isDirectory:true)
@@ -29,13 +44,15 @@ private actor ModelHold {
     let drafts=await MainActor.run {DraftStore(source:snapshot,runtime:host.runtimeInstanceID,generation:opened.document_generation.value,clock:{clock.now()})}
     let source=DocCommitPort(client:host,storage:storage,drafts:drafts,clock:clock),kernel=KernelCommitPort(client:host,storage:storage,source:source)
     let service=AgentSessionService(host:host,storage:storage,document:document,generation:opened.document_generation.value)
-    let verified=try await AgentProcess.verified(package:package,signatureRoot:CommandLine.arguments.count>3 ? URL(fileURLWithPath:CommandLine.arguments[3]):nil)
+    let verified=try await AgentProcess.verified(package:package,signatureRoot:CommandLine.arguments.count>3 && !CommandLine.arguments[3].isEmpty ? URL(fileURLWithPath:CommandLine.arguments[3]):nil)
+    let codecExecutable=URL(fileURLWithPath:CommandLine.arguments[4])
     let hello=try await service.activate(session:"production-task",grants:[.read_notebook],readonly:true,coreVersion:"1.0.4",adapterVersion:"openmath-adapter-1")
     let input=AgentCanonicalMessage(record_type:.canonical_agent_message,message_version:1,message_id:"user-input",role:.user,agent_turn_id:.init("input-turn"),task_id:.init(hello.scope.task_id),parts:[.agent_text_part(.init(kind:.text,part_id:"text",text:"真实Pi，合成模型，宿主工具暂不可用🙂"))])
     let task=hello.scope.task_id
     let port=AgentNativeModelPort(prepare:{_ in .init(context:"fixture-context",model:"fixture-model")},stream:{intent in
-      AsyncThrowingStream {continuation in
-        let delta="中文🙂",message=AgentCanonicalMessage(record_type:.canonical_agent_message,message_version:1,message_id:"provider-canonical",role:.assistant,agent_turn_id:.init(intent.agent_turn_id),task_id:.init(task),parts:[.agent_text_part(.init(kind:.text,part_id:"text",text:delta)),.agent_tool_proposal_part(.init(kind:.tool_call,part_id:"call",tool_call_id:"provider-call",name:.read_notebook,arguments_json:"{ \"view\" : \"outline\" }"))])
+      let message=try codecMessage(executable:codecExecutable,root:root,input:input,intent:intent,task:task)
+      return AsyncThrowingStream {continuation in
+        let delta=message.parts.compactMap {part->String? in if case .agent_text_part(let text)=part {return text.text};return nil}.joined()
         continuation.yield(.init(agent_turn_id:intent.agent_turn_id,request_id:intent.request_id,byte_offset:try! HostSerial(0),text:delta,phase:.delta,canonical_message:.init(nil)))
         continuation.yield(.init(agent_turn_id:intent.agent_turn_id,request_id:intent.request_id,byte_offset:try! HostSerial(UInt64(delta.utf8.count)),text:"",phase:.finished,canonical_message:.init(message)));continuation.finish()
       }
@@ -94,6 +111,6 @@ private actor ModelHold {
     let actualEvents=try events.map {try JSONSerialization.jsonObject(with:encoded($0.event))}
     try JSONSerialization.data(withJSONObject:actualEvents,options:[.sortedKeys]).write(to:root.appendingPathComponent("actual-production-ledger.json"))
     await service.close();await source.close();try await host.close();try await storage.close()
-    print(String(decoding:try JSONSerialization.data(withJSONObject:["production_core":"1.0.4","bundled_node":"26.11.1","actual_private_frames":report.frames,"canonical_events":events.count,"model_transport":"synthetic_native_port","tool_outcome":"unavailable_no_effect","manual_after_sigkill":"4","system_node_fallback":false,"PATH":"empty","wrong_architecture":"rejected","missing_resource":"rejected","late_stdin":"rejected","unconfigured_model":"no_fake_message_or_effect","model_cancel_and_late_delta":"rejected","actual_macho_architecture":"rejected","evidence_root":root.path],options:[.sortedKeys]),as:UTF8.self))
+    print(String(decoding:try JSONSerialization.data(withJSONObject:["production_core":"1.0.4","bundled_node":"26.11.1","actual_private_frames":report.frames,"canonical_events":events.count,"model_transport":"actual_rust_codec_synthetic_provider_wire","tool_outcome":"unavailable_no_effect","manual_after_sigkill":"4","system_node_fallback":false,"PATH":"empty","wrong_architecture":"rejected","missing_resource":"rejected","late_stdin":"rejected","unconfigured_model":"no_fake_message_or_effect","model_cancel_and_late_delta":"rejected","actual_macho_architecture":"rejected","evidence_root":root.path],options:[.sortedKeys]),as:UTF8.self))
   }
 }

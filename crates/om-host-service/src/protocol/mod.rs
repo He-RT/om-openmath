@@ -12,28 +12,8 @@ pub const MAX_SERIAL: u64 = 9_007_199_254_740_991;
 /// Maximum ordinary control frame size; large artifacts are referenced separately.
 pub const MAX_CONTROL_BYTES: usize = 2 * 1024 * 1024;
 
-/// A required field whose value may be null. Missing and explicitly null remain distinct.
-#[derive(Clone, Debug, PartialEq)]
-pub struct Nullable<T>(pub Option<T>);
-impl<T: Serialize> Serialize for Nullable<T> {
-    fn serialize<S: serde::Serializer>(&self, serializer: S) -> Result<S::Ok, S::Error> {
-        self.0.serialize(serializer)
-    }
-}
-impl<'de, T: serde::de::DeserializeOwned> Deserialize<'de> for Nullable<T> {
-    fn deserialize<D: serde::Deserializer<'de>>(deserializer: D) -> Result<Self, D::Error> {
-        // deserialize_any (through Value) rejects a missing struct field; Option's missing-field
-        // fallback would silently treat omission as null, violating the machine contract.
-        let value = serde_json::Value::deserialize(deserializer)?;
-        if value.is_null() {
-            Ok(Self(None))
-        } else {
-            serde_json::from_value(value)
-                .map(|v| Self(Some(v)))
-                .map_err(serde::de::Error::custom)
-        }
-    }
-}
+/// Canonical messages and native DTOs share the exact required-null representation.
+pub use om_agent_contract::Nullable;
 
 /// Shared exactly representable monotonic counter. Construction and decode check its range.
 #[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord, Serialize)]

@@ -22,3 +22,6 @@ docs/acceptance/pre-alpha.4/development/r43/frontend-ci-serial-raw/*.log -whites
 docs/acceptance/pre-alpha.4/development/r43/pi-loop-foundation-raw/*.log -whitespace
 
 docs/acceptance/pre-alpha.4/development/r43/pi-production-runtime-raw/*.log -whitespace
+
+docs/acceptance/pre-alpha.4/development/r43/single-turn-codec-raw/*.log -whitespace
+docs/acceptance/pre-alpha.4/development/r43/single-turn-codec-raw/94dbfbe-settings-error-context.md -whitespace

@@ -1,0 +1,3 @@
+    Finished `release` profile [optimized] target(s) in 0.15s
+    Finished `dev` profile [unoptimized] target(s) in 0.08s
+{"actual_macho_architecture":"rejected","actual_private_frames":6,"bundled_node":"26.11.1","canonical_events":3,"evidence_root":"\/Users\/hert\/Projects\/openmath\/target\/macos-agent-package-tests\/attempt-hewzlK","late_stdin":"rejected","manual_after_sigkill":"4","missing_resource":"rejected","model_cancel_and_late_delta":"rejected","model_transport":"actual_rust_codec_synthetic_provider_wire","PATH":"empty","production_core":"1.0.4","system_node_fallback":false,"tool_outcome":"unavailable_no_effect","unconfigured_model":"no_fake_message_or_effect","wrong_architecture":"rejected"}

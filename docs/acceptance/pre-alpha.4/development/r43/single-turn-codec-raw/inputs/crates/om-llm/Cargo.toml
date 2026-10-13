@@ -1,0 +1,31 @@
+[package]
+name = "om-llm"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+description = "Sans-IO configurable LLM integration"
+
+[features]
+default = []
+http = ["dep:reqwest", "dep:tokio", "dep:tokio-util"]
+
+[dependencies]
+om-agent-contract.workspace = true
+om-num.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+ts-rs.workspace = true
+thiserror.workspace = true
+reqwest = { workspace = true, optional = true }
+tokio = { workspace = true, optional = true }
+tokio-util = { workspace = true, optional = true }
+
+[lints]
+workspace = true
+
+[dev-dependencies]
+om-parse.workspace = true
+om-format.workspace = true
+wiremock.workspace = true
+tokio.workspace = true

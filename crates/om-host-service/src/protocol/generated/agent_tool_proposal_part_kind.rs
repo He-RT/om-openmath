@@ -1,9 +1,2 @@
-//! Generated native contract fields; validation/admission remain separate.
-use super::*;
-#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
-/// Contract enum `AgentToolProposalPartKind`.
-pub enum AgentToolProposalPartKind {
-    /// Contract value `tool_call`.
-    #[serde(rename = "tool_call")]
-    ToolCall,
-}
+//! Canonical type generated once and shared with the single-turn codec.
+pub use om_agent_contract::AgentToolProposalPartKind;

@@ -1,0 +1,16 @@
+   Compiling om-llm v0.1.0-pre-alpha.3 (/Users/hert/Projects/openmath/crates/om-llm)
+    Finished `test` profile [unoptimized] target(s) in 1.24s
+     Running tests/single_turn.rs (target/debug/deps/single_turn-4ad4f0866f8759f9)
+
+running 8 tests
+test cases::codec_refuses_malformed_json_duplicate_fields_http_errors_and_late_cancel_bytes ... ok
+test cases::refuses_unknown_finish_empty_tools_duplicate_call_ids_and_known_unsupported_modalities ... ok
+test cases::unsupported_media_opaque_server_tools_and_bad_part_identity_are_not_silently_omitted ... ok
+test cases::multiline_sse_unknown_fields_and_json_bodies_are_real ... ok
+test cases::incomplete_finish_never_presents_partial_calls_as_eligible_proposals ... ok
+test cases::signed_thinking_is_opaque_replay_not_user_text_and_scope_switch_is_explicit ... ok
+test cases::builder_pairs_results_preserves_order_and_refuses_wrong_or_missing_results ... ok
+test cases::all_actual_utf8_cut_positions_keep_multiple_calls_raw_args_usage_and_identity ... ok
+
+test result: ok. 8 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.44s
+

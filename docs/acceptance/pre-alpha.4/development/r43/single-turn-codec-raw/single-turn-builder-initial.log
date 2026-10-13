@@ -1,0 +1,14 @@
+    Checking om-agent-contract v0.1.0-pre-alpha.3 (/Users/hert/Projects/openmath/crates/om-agent-contract)
+   Compiling om-host-service v0.1.0-pre-alpha.3 (/Users/hert/Projects/openmath/crates/om-host-service)
+warning: missing documentation for a function
+  --> crates/om-agent-contract/src/json.rs:84:1
+   |
+84 | pub fn strict_json_bounded(bytes: &[u8], maximum: usize) -> Result<Value, &'static str> {
+   | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   |
+   = note: requested on the command line with `-W missing-docs`
+
+warning: `om-agent-contract` (lib) generated 1 warning
+    Checking om-llm v0.1.0-pre-alpha.3 (/Users/hert/Projects/openmath/crates/om-llm)
+    Checking om-kernel v0.1.0-pre-alpha.3 (/Users/hert/Projects/openmath/crates/om-kernel)
+    Finished `dev` profile [unoptimized] target(s) in 30.09s

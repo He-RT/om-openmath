@@ -1,0 +1,137 @@
+{
+  "scope": "development synthetic provider bytes/native unavailable tool; actual Rust codec and pinned Pi",
+  "trace": [
+    "prepare",
+    "codec:incomplete"
+  ],
+  "proof": [
+    {
+      "input": {
+        "request": {
+          "binding": {
+            "provider_ref": "provider-1",
+            "route_ref": "route-1",
+            "model_ref": "model-1",
+            "adapter_version": "single-turn-1",
+            "protocol": "chat_completions"
+          },
+          "api_model": "configured-alias",
+          "messages": [
+            {
+              "canonical": {
+                "record_type": "canonical_agent_message",
+                "message_version": 1,
+                "message_id": "user",
+                "role": "user",
+                "agent_turn_id": "input-turn",
+                "task_id": "task",
+                "parts": [
+                  {
+                    "kind": "text",
+                    "part_id": "text",
+                    "text": "读取当前笔记本🙂"
+                  }
+                ]
+              },
+              "replay": null
+            }
+          ],
+          "results": [],
+          "tools": [
+            {
+              "name": "read_notebook",
+              "description": "Native fixture unavailable",
+              "parameters": {
+                "type": "object",
+                "properties": {
+                  "view": {
+                    "type": "string"
+                  }
+                },
+                "additionalProperties": false
+              }
+            }
+          ],
+          "max_output_tokens": 128,
+          "temperature": null,
+          "stream": true
+        },
+        "message_id": "canonical-0",
+        "task_id": "task",
+        "turn_id": "turn-0",
+        "status": 200,
+        "response": "data: {\"id\":\"response-0\",\"model\":\"actual-provider-alias\",\"choices\":[{\"index\":0,\"delta\":{\"role\":\"assistant\",\"content\":\"中文🙂\"},\"finish_reason\":null}]}\n\ndata: {\"id\":\"response-0\",\"model\":\"actual-provider-alias\",\"choices\":[{\"index\":0,\"delta\":{\"tool_calls\":[{\"index\":0,\"id\":\"original-call\",\"type\":\"function\",\"function\":{\"name\":\"read_notebook\",\"arguments\":\"{ \\\"view\\\" : \"}}]},\"finish_reason\":\"length\"}]}\n\ndata: [DONE]\n\n"
+      },
+      "actual": {
+        "body": {
+          "max_completion_tokens": 128,
+          "messages": [
+            {
+              "content": "读取当前笔记本🙂",
+              "role": "user"
+            }
+          ],
+          "model": "configured-alias",
+          "stream": true,
+          "stream_options": {
+            "include_usage": true
+          },
+          "tool_choice": "auto",
+          "tools": [
+            {
+              "function": {
+                "description": "Native fixture unavailable",
+                "name": "read_notebook",
+                "parameters": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "view": {
+                      "type": "string"
+                    }
+                  },
+                  "type": "object"
+                }
+              },
+              "type": "function"
+            }
+          ]
+        },
+        "result": {
+          "finish": "incomplete",
+          "message": {
+            "agent_turn_id": "turn-0",
+            "message_id": "canonical-0",
+            "message_version": 1,
+            "parts": [
+              {
+                "kind": "text",
+                "part_id": "text-0",
+                "text": "中文🙂"
+              }
+            ],
+            "record_type": "canonical_agent_message",
+            "role": "assistant",
+            "task_id": "task"
+          },
+          "partial_calls": [
+            {
+              "arguments": "{ \"view\" : ",
+              "id": "original-call",
+              "index": 0,
+              "name": "read_notebook"
+            }
+          ],
+          "provider_reason": "length",
+          "replay": null,
+          "usage": {
+            "cache_read": null,
+            "cache_write": null,
+            "input": null,
+            "output": null,
+            "total": null
+          }
+        }
+      }
+    }
+  ]
+}

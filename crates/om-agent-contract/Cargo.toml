@@ -1,0 +1,14 @@
+[package]
+name = "om-agent-contract"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+description = "Shared generated OpenMath canonical messages; no runtime or authorization"
+
+[dependencies]
+serde.workspace = true
+serde_json.workspace = true
+
+[lints]
+workspace = true

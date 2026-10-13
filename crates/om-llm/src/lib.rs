@@ -5,6 +5,8 @@ mod chat;
 mod job;
 /// Embedded prompts and actual host tool schemas, without IO or CAS dependencies.
 pub mod prompts;
+/// Single-round canonical model codec, independent from legacy Job/tool loops.
+pub mod single_turn;
 #[cfg(feature = "http")]
 pub use job::native::{drive_native, drive_native_cancellable, drive_native_http, native_client};
 pub use job::{Feature, Job, JobInput, JobResult, JobStep, SuggestionValidator};

@@ -3067,6 +3067,14 @@ dependencies = [
 ]
 
 [[package]]
+name = "om-agent-contract"
+version = "0.1.0-pre-alpha.3"
+dependencies = [
+ "serde",
+ "serde_json",
+]
+
+[[package]]
 name = "om-analysis"
 version = "0.1.0-pre-alpha.3"
 dependencies = [
@@ -3173,6 +3181,7 @@ version = "0.1.0-pre-alpha.3"
 dependencies = [
  "getrandom 0.4.3",
  "hmac",
+ "om-agent-contract",
  "om-kernel",
  "om-llm",
  "om-num",
@@ -3228,6 +3237,7 @@ dependencies = [
 name = "om-llm"
 version = "0.1.0-pre-alpha.3"
 dependencies = [
+ "om-agent-contract",
  "om-format",
  "om-num",
  "om-parse",

@@ -615,3 +615,9 @@ L2使用精确标称GM分数、50位FindRoot/1000迭代和真实残差，报告�
 ## D047 · 2026-10-14 生产helper闭包与实际Task
 
 按既定Node/Pi pin生成完整可执行ESM闭包及动态资源，校验上游签名/包内字节与实际签名/架构；空cwd/env、绝对入口及Node公共permission，无外部node/npm依赖。规范输入随原账本事件ref送达，原参数与Pi转换对象分离，host先绑定模型refs与流terminal。任务fixture合成模型传输、无工具效果，真实SIGKILL后同文档主内核4，不把loop_stopped当数学成功；helper不可用不关闭Source/Kernel。a70311f保存CI漏Agent源列表已修保存/草稿/恢复，按原真实中断回归。R4.3.02完成，31/98；所有最终门禁/发布保持未完成。
+
+## D048 · 2026-10-14 单轮协议与实际 Pi 驱动
+
+共享 canonical DTO/required-null/严格 JSON/schema 抽到无 IO 的 om-agent-contract，宿主继续 re-export 原名；原生成器平铺 staging 的同名 mod.rs 冲突已修复并保留初始失败。单轮 builder/decoder 不借旧 Job/LlmChat 多轮逻辑，Pi 是唯一循环；prepare 从同一快照冻结 body 与响应 scope。实际 provider model 可与配置别名不同，replay 匹配 immutable binding；usage缺失null，incomplete调用仅诊断。
+
+真实 Rust→固定 Pi（Chat/Anthropic）及原生私有帧/SQLite ACK 完成，native fixture 仅以测试可执行文件连接 codec，生产 Swift raw bytes/SecretStore 边界由下一 R4.3.04 实现。授权两模型实际SSE通过不是全Registry/工具/付费重试或发行gate。旧CI两性能/等待失败留证，不放宽1s/5s断言，不把本地12次成功冒称根因已修。R4.3.03 Done满足；32/98，66任务及完整最终门禁未完成。

@@ -4,9 +4,9 @@
 
 2026-10-14。目标`0.1.0-pre-alpha.4`，当前运行/公开版本`.3`；开发`dev`，不合main、不改旧标签、本机不启动iOS模拟器。本文只记录结果，规格及完成标准唯一见主计划；计划编写本身不计实施完成。
 
-**当前状态：** 31任务完成（全部R4.0与R4.1、R4.2.01–02、07及09–10、R4.3.01–02）；其余67任务尚未完成；32最终运行/发行gate全部not_run；candidate未分配，ready_to_publish=false，released_verified=false。设计/HTML/Schema通过不填运行时pass。
+**当前状态：** 32任务完成（全部R4.0与R4.1、R4.2.01–02、07及09–10、R4.3.01–03）；其余66任务尚未完成；32最终运行/发行gate全部not_run；candidate未分配，ready_to_publish=false，released_verified=false。设计/HTML/Schema通过不填运行时pass。
 
-**下一任务：** 用户选择保留系统输入法设置、先做其他任务；R4.2.03真实候选窗口仍未验收。独立继续R4.3.03 sans-IO单轮模型codec基础，原依赖满足后再接非求值编辑分析/长笔记本/Markdown。存储维护、备份、新代次、配额和GC已通过实际验证；日末备份触发/数据管理UI仍在R4.2.18接线，完整Pi/provider/上下文/Agent界面仍继续R4.3–4.4，不能将存储Done当产品完成。保持同candidate完整门禁，R4.5.07在R4.5.05冻结前完成。
+**下一任务：** 用户选择保留系统输入法设置、先做其他任务；R4.2.03真实候选窗口仍未验收。独立继续R4.3.04 Swift URLSession和SecretStore传输，原依赖满足后再接非求值编辑分析/长笔记本/Markdown。存储维护、备份、新代次、配额和GC已通过实际验证；日末备份触发/数据管理UI仍在R4.2.18接线，完整Pi/provider/上下文/Agent界面仍继续R4.3–4.4，不能将存储Done当产品完成。保持同candidate完整门禁，R4.5.07在R4.5.05冻结前完成。
 
 ## 已知外部前置
 
@@ -64,7 +64,7 @@
 | [ ] [R4.2.18](PRE_ALPHA_4.md#task-r4.2.18) | 关于、手工更新、诊断与新数据管理 | planned | — | — |
 | [x] [R4.3.01](PRE_ALPHA_4.md#task-r4.3.01) | 规范Agent消息、任务与IPC身份 | completed | [真实source/CABI/私有进程与耐久ACK](../acceptance/pre-alpha.4/development/r43/agent-protocol-native.json)；357DTO、20Rust/3Node/实际SQLite恢复，合成helper无模型/工具执行 | 本批D045 |
 | [x] [R4.3.02](PRE_ALPHA_4.md#task-r4.3.02) | 固定Pi Core与随包生产helper | completed | [实际随包Node/Pi/原生任务](../acceptance/pre-alpha.4/development/r43/pi-production-runtime.json)；86依赖/4169资源、13帧/3事件、SIGKILL后原文档4 | 本批D047 |
-| [ ] [R4.3.03](PRE_ALPHA_4.md#task-r4.3.03) | sans-IO单轮模型codec基础 | planned | — | — |
+| [x] [R4.3.03](PRE_ALPHA_4.md#task-r4.3.03) | sans-IO单轮模型codec基础 | completed | [实际Rust codec/Pi/原生帧及两模型SSE](../acceptance/pre-alpha.4/development/r43/single-turn-codec.json)；10单轮/182回归、4Pi、真实SQLite ACK；生产transport仍后续 | 本批D048 |
 | [ ] [R4.3.04](PRE_ALPHA_4.md#task-r4.3.04) | Swift URLSession和SecretStore传输 | planned | — | — |
 | [ ] [R4.3.05](PRE_ALPHA_4.md#task-r4.3.05) | 读取笔记本与真实函数资料工具 | planned | — | — |
 | [ ] [R4.3.06](PRE_ALPHA_4.md#task-r4.3.06) | 预览与原子修改工具接入 | planned | — | — |
@@ -560,3 +560,9 @@ Done依据与覆盖case/proof:
 - 8真实Node/Pi协议/循环例，21Rust（新host流offset/terminal/旧task/伪receipt拒绝）、严格自身TS/Clippy/fmt/357DTO/工程漂移、最终App Release32字体/许可与严格深签名通过。实际App内Node/Pi通过CABI/source/SQLite完成6helper帧、13双向全帧、3事件（用户、assistant proposal、工具未执行事实）；原参数空白完整保留，ACK后才提案。合成native model port是本任务fixture，没有模型HTTP或工具效果；错误模型配置无假assistant事件。真实SIGKILL后同文档主内核仍4；取消/迟到delta/stdin、缺资源、错manifest及实际Mach-O即使伪造匹配hash拒绝。
 - a70311f/CI38445836520终态4job成功（Rust/frontend/deps/iOS）；Mac保存独立编译漏Agent源，已补保存/草稿/恢复3脚本，原保存6中断、草稿3中断、恢复5中断与原CABI真实回归全通过。新SHA仍需另验CI；不继承旧结果。原全部失败/命令/输入/实际数据与完整manifest/SHA见[54 raw文件证据](../acceptance/pre-alpha.4/development/r43/pi-production-runtime.json)。
 - 清理闲置重复候选约165MiB，当前完整App/独立runtime/Node原包/全证据及源码保留，盘约27GiB；不清理活动编译。私有API外部600/700全计划授权，未进源码/IPC/env/log；OS输入设置保持，R4.2.03候选待验不重问。Root1/lib4/doc5/.omnb1、.3、dev/no main/旧包不变/无子代理/本机iOS模拟器、32finalgate not_run/no candidate/ready=false/released=false；完整67任务及发行继续，goal active。
+
+## D048 · 2026-10-14 独立单轮 codec
+
+Chat/Anthropic 请求与实际 SSE/JSON decoder 完成，canonical 来自同一生成契约；prepare 冻结 binding/工具/输出身份，保留原参数/response ID/model/finish/usage 与兼容 signed thinking，incomplete 不产生可执行调用。182 Rust（含10单轮）/4实际Pi/17 Python/357DTO/Clippy/fmt/原生 ABI 与真实随包 helper 通过；原生实际6 helper帧/13双向帧、3 SQLite事件、ACK后工具不可用、SIGKILL后同文档4。授权两模型真实Chat SSE HTTP200/完整4及usage，仍只是开发smoke；完整证据 single-turn-codec.json。
+
+94dbfbe/CI38457404317终态Rust/deps/Mac success，frontend保存超过5秒后成功、iOS原17总1168ms（FFI280/resume884）失败；原门槛未改。本地设置连续3轮12项pass，不能据此声称CI问题已修复，新提交CI独立验。32/98，66任务与最终发行继续；系统输入设置保留、不使用子代理/本机iOS模拟器、版本仍.3。

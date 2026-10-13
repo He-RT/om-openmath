@@ -4074,7 +4074,7 @@ UpdateService只读受控官方GitHub Releases/发行清单（预发行不可用
 
 #### R4.3.03 sans-IO单轮模型codec基础
 
-- [ ] **R4.3.03 完成**（仅在以下Done和验证满足后勾选）
+- [x] **R4.3.03 完成**（仅在以下Done和验证满足后勾选）
 
 **Files：**
 
@@ -4087,10 +4087,10 @@ UpdateService只读受控官方GitHub Releases/发行清单（预发行不可用
 
 **Steps：**
 
-- [ ] 1. 从旧多轮Job抽单轮builder/decoder，不再套旧LlmChat循环。
-- [ ] 2. 先真实Chat/Anthropic text-tools增量流与result配对。
-- [ ] 3. 保留模型专有回放身份和结束理由。
-- [ ] 4. 执行下面Tests，核对真实输出/失败，更新任务账本与证据后提交本批次。
+- [x] 1. 从旧多轮Job抽单轮builder/decoder，不再套旧LlmChat循环。
+- [x] 2. 先真实Chat/Anthropic text-tools增量流与result配对。
+- [x] 3. 保留模型专有回放身份和结束理由。
+- [x] 4. 执行下面Tests，核对真实输出/失败，更新任务账本与证据后提交本批次。
 
 **Tests：** UTF8切分/SSE多data/工具JSON片段/多call/HTTP错误/finish=incomplete/未知fields。测试位置以Files和第15节影响范围为准，证据保存完整输入/命令/输出，不仅记录“通过”。
 

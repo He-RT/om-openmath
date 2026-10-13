@@ -1,0 +1,38 @@
+   Compiling serde v1.0.229
+   Compiling serde_json v1.0.151
+   Compiling tokio v1.53.1
+   Compiling percent-encoding v2.3.2
+   Compiling form_urlencoded v1.2.2
+   Compiling url v2.5.8
+   Compiling dashu-int v0.6.1
+   Compiling om-agent-contract v0.1.0-pre-alpha.3 (/Users/hert/Projects/openmath/crates/om-agent-contract)
+   Compiling assert-json-diff v2.0.2
+   Compiling ts-rs v12.0.1
+   Compiling dashu-float v0.6.1
+   Compiling tokio-util v0.7.19
+   Compiling deadpool v0.12.3
+   Compiling h2 v0.4.19
+   Compiling dashu-ratio v0.6.1
+   Compiling dashu-cmplx v0.6.1
+   Compiling dashu v0.6.1
+   Compiling om-num v0.1.0-pre-alpha.3 (/Users/hert/Projects/openmath/crates/om-num)
+   Compiling om-core v0.1.0-pre-alpha.3 (/Users/hert/Projects/openmath/crates/om-core)
+   Compiling om-llm v0.1.0-pre-alpha.3 (/Users/hert/Projects/openmath/crates/om-llm)
+   Compiling hyper v1.11.1
+   Compiling om-format v0.1.0-pre-alpha.3 (/Users/hert/Projects/openmath/crates/om-format)
+   Compiling om-parse v0.1.0-pre-alpha.3 (/Users/hert/Projects/openmath/crates/om-parse)
+   Compiling hyper-util v0.1.21
+   Compiling wiremock v0.6.5
+    Finished `test` profile [unoptimized] target(s) in 3.97s
+     Running tests/single_turn.rs (target/debug/deps/single_turn-4ad4f0866f8759f9)
+
+running 6 tests
+test cases::multiline_sse_unknown_fields_and_json_bodies_are_real ... ok
+test cases::codec_refuses_malformed_json_duplicate_fields_http_errors_and_late_cancel_bytes ... ok
+test cases::unsupported_media_opaque_server_tools_and_bad_part_identity_are_not_silently_omitted ... ok
+test cases::incomplete_finish_never_presents_partial_calls_as_eligible_proposals ... ok
+test cases::builder_pairs_results_preserves_order_and_refuses_wrong_or_missing_results ... ok
+test cases::all_actual_utf8_cut_positions_keep_multiple_calls_raw_args_usage_and_identity ... ok
+
+test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.44s
+

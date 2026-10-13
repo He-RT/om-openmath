@@ -1,0 +1,770 @@
+{
+  "schema_version": 1,
+  "task": "R4.3.03",
+  "status": "completed",
+  "date": "2026-10-14",
+  "kind": "development actual single-turn codec/Pi/native proof; no final gate/release claim",
+  "base_commit": "94dbfbe28d9ebb46f79d643f30bdbf110ed295f4",
+  "implemented": [
+    "Independent one-request body compiler/byte decoder without legacy Job/LlmChat loop or transport/retry/tool executor.",
+    "Shared generated canonical types, required-null and strict data/schema validation retain actual native shape and type identity.",
+    "prepare derives body/response binding, tools and stream from one trusted snapshot; output IDs are native-owned.",
+    "Actual Chat/Anthropic SSE/JSON text-tools, original IDs/args/model/finish reason, unknown usage and compatible opaque thinking replay.",
+    "Unknown/truncated finish yields diagnostic-only partial calls; no eligible tool proposal/replay."
+  ],
+  "verified": {
+    "rust_regressions": 182,
+    "single_turn_tests": 10,
+    "pi_codec_tests": 4,
+    "python_contract_tests": 17,
+    "generated_dto_count": 357,
+    "clippy_fmt_generated_drift": "passed",
+    "native_abi_sessions": "passed original actual C ABI/session/router fixtures",
+    "native_helper": {
+      "total_frames": 13,
+      "helper_frames": 6,
+      "sqlite_events": 3,
+      "tool_outcome": "unavailable; no execution",
+      "manual_after_sigkill": "4",
+      "raw_adapter": "actual Rust codec executable in offline native test fixture; production transport is R4.3.04",
+      "actual_signed_app_resource_closure": "passed strict actual App/root/package verification with current codec/native fixture; existing App binary is previous production-helper build, not final candidate"
+    },
+    "authorized_live_chat": [
+      {
+        "model": "gpt-6.1-sol",
+        "http_status": 200,
+        "finish": "complete",
+        "matched": true,
+        "usage": {
+          "cache_read": 0,
+          "cache_write": null,
+          "input": 19,
+          "output": 5,
+          "total": 24
+        }
+      },
+      {
+        "model": "gpt-6-luna",
+        "http_status": 200,
+        "finish": "complete",
+        "matched": true,
+        "usage": {
+          "cache_read": 0,
+          "cache_write": null,
+          "input": 19,
+          "output": 5,
+          "total": 24
+        }
+      }
+    ],
+    "settings_repeat": "12 passed across 3 repeated suites; original CI delay not proven fixed",
+    "secret_scan": {
+      "tracked_and_untracked_files": 2701,
+      "exact_credential_matches": 0,
+      "config_permissions": "0600"
+    }
+  },
+  "previous_ci": {
+    "commit": "94dbfbe",
+    "run_id": 38457404317,
+    "url": "https://github.com/He-RT/om-openmath/actions/runs/38457404317",
+    "rust": "success",
+    "dependencies": "success",
+    "native_macos": "success",
+    "frontend": "failure: save still Saving after 5s then saved",
+    "ios": "failure: original #17 total1168.305417ms; ffi279.835583/resume883.794958; 1s threshold unchanged"
+  },
+  "limits": {
+    "raw_value": 1048576,
+    "total_response": 8388608,
+    "body": 2097152,
+    "tool_calls": 32,
+    "blocks": 128,
+    "arguments": 65536,
+    "single_text": 262144
+  },
+  "limitations": [
+    "Synthetic Anthropic wire, no Anthropic live credential/API claim.",
+    "Actual live requests are short Chat development smoke, not native URLSession/Keychain/Registry/full Pi task release gates.",
+    "Native unavailable tool fixture has no mathematical read/edit/run effects; complete tool loop is later tasks.",
+    "No local iOS simulator or OS input setting changes.",
+    "32 final gates not_run; no candidate; runtime .3; 66 tasks and actual release remain required.",
+    "First generation staging collision, Clippy boolean and fixture operation_id typo retained as failures; current corrected inputs fully captured."
+  ],
+  "commands": [
+    "CARGO_PROFILE_DEV_DEBUG=0 CARGO_PROFILE_TEST_DEBUG=0 cargo test -p om-host-service -p om-llm -p om-agent-contract --locked",
+    "CARGO_PROFILE_DEV_DEBUG=0 CARGO_PROFILE_TEST_DEBUG=0 cargo clippy -p om-host-service -p om-llm -p om-agent-contract --all-targets --locked -- -D warnings",
+    "cargo fmt --all -- --check",
+    "python3 scripts/native_contracts.py --check",
+    "python3 -X warn_default_encoding -W error::EncodingWarning -m unittest discover -s tests -v",
+    "CARGO_PROFILE_DEV_DEBUG=0 CARGO_PROFILE_TEST_DEBUG=0 bash macos/Scripts/test-native-contracts.sh",
+    "python3 scripts/test_single_turn_pi.py --node target/native-runtime/node-v26.11.1-darwin-arm64/bin/node --evidence target/acceptance/pre-alpha.4/development/r43/single-turn-pi",
+    "bash macos/Scripts/test-agent-package.sh /Users/hert/Projects/openmath/target/macos-agent-package-tests/AgentRuntime",
+    "python3 scripts/probe_single_turn_api.py --config /Users/hert/.config/openmath/testing/pre-alpha-4-api.json --fixture target/debug/examples/single_turn_fixture --output target/acceptance/pre-alpha.4/development/r43/single-turn-live-chat.json",
+    "CI=1 /Users/hert/Projects/openmath/target/native-runtime/node-v26.11.1-darwin-arm64/bin/node node_modules/@playwright/test/cli.js test settings.spec.ts --workers=1 --repeat-each=3 (cwd app)",
+    "xcrun xcresulttool export attachments --path target/ci-evidence/94dbfbe/ios/ios-phone-20261013T195507Z-24218.xcresult --output-path target/ci-evidence/94dbfbe/ios/attachments (read-only; no simulator)",
+    "bash macos/Scripts/test-agent-package.sh '/Users/hert/Projects/openmath/target/macos-native/Build/Products/Release/OpenMath Preview.app/Contents/Resources/AgentRuntime' '/Users/hert/Projects/openmath/target/macos-native/Build/Products/Release/OpenMath Preview.app'"
+  ],
+  "source_sha256": {
+    ".github/workflows/ci.yml": "42fff2c41cc8191e338e69a0f59b4a2135e02a1fe1cf823698f75b0326d5e2cb",
+    "Cargo.lock": "914ae4777ae4c08437fc3c7d1d69941c912ee3306c7c7109cabc6323aa8ec28f",
+    "Cargo.toml": "223601b29d80be241066133db2ed48aaf2a94c8b0a5b2bd957e49546d999c1b2",
+    "agent/package-lock.json": "2ad7e038a3bdb98585d1c9ba1e990ab1561ffe7c2f63395dbef9f78e3db1d680",
+    "agent/package.json": "991a5fd965ca8bb8d3f80b3323528b268925a3a5c6377a04e967b00f816c5b8a",
+    "agent/src/bridge.ts": "353a4f0ff3492567301b2831503b0cb6a336486ffffa48dfc512e8062cb0607a",
+    "agent/src/generated/protocol.ts": "f09694f32931f26ca40df82faf614122a360a6059c126fa1c6910b93f53290a7",
+    "agent/src/main.ts": "132360ae3953b96107e5ed3d9e957df443d073634cd7838219d18b994d32f126",
+    "agent/src/runtime.ts": "bacba419662ffb077efe49a56711b8d98bd07ea82a9e170ccbcaf9522adfda22",
+    "agent/test/single-turn-codec.test.mjs": "63460afc82d4a4d3208d069b17e0f76a327bbae419d91b2fd783fa86c4145dc5",
+    "crates/om-agent-contract/Cargo.toml": "1f97ac5930f543ab43175a0541348c41eede85e527295de9b81ea0767edd96b3",
+    "crates/om-agent-contract/src/generated/agent_canonical_message.rs": "cd3e263f509daa1ad9f29d0f2cd39bd0ecf010d630118ee2bd32563c3e8c6d47",
+    "crates/om-agent-contract/src/generated/agent_canonical_message_record_type.rs": "6694fed07d7ba5e37fb6602251364a992ce1c33e7eefafda8216da22b62f8ee2",
+    "crates/om-agent-contract/src/generated/agent_canonical_message_role.rs": "93fb29ac3b9d3ef25f225d7fd0839ac6671ec8310c1599e6f7615f3dd1b1b02f",
+    "crates/om-agent-contract/src/generated/agent_media_part.rs": "7c443eb589d56b2e088c8d7ed49cdd4535b4428032bf1869afaf621d113599e4",
+    "crates/om-agent-contract/src/generated/agent_media_part_kind.rs": "e09b705385ab9d1eb5fe3b0b451ad8b41321f92c7f77c42f0765d59e1aaea479",
+    "crates/om-agent-contract/src/generated/agent_media_part_submission_kind.rs": "2845b47cee5da3835eb0442a751c35396c84f3b24420d528bff8888a9ae05131",
+    "crates/om-agent-contract/src/generated/agent_message_part.rs": "03298e96848843989ceb977964cc75a066671d9da0b57c5c157327477f59bc16",
+    "crates/om-agent-contract/src/generated/agent_step_link_part.rs": "f3b38b959019786cf04ed09664cc547957c75b4a6011b93ab56db034b173d740",
+    "crates/om-agent-contract/src/generated/agent_step_link_part_kind.rs": "fcf6f2701f8acfbd580a6d0b6c4c3006963d838cfd6e80406e57852454fafef0",
+    "crates/om-agent-contract/src/generated/agent_text_part.rs": "7365670698ff22033e156724b292bb5ccf9c520bf64f6478b964f0e3c0a4fefa",
+    "crates/om-agent-contract/src/generated/agent_text_part_kind.rs": "3bd6796d142be80a726682e94dde6a4eac9294e5709d9b86e242917183b22119",
+    "crates/om-agent-contract/src/generated/agent_tool_name.rs": "270c4b51b33879fa75f6e4d675d1d1dfec36fe133a780a58fabd3c36df808784",
+    "crates/om-agent-contract/src/generated/agent_tool_proposal_part.rs": "3b3e23451169df3d724e3976fa204b5d2f55b722ab6d47bed9895587f58dcda1",
+    "crates/om-agent-contract/src/generated/agent_tool_proposal_part_kind.rs": "a2847df727a2bb9c351e9acd07c7ea04562e7bc08e51bd07b8cb27443d23db7d",
+    "crates/om-agent-contract/src/generated/agent_tool_result_part.rs": "bf59792edfc6322ad913889c7774640769b223feea6e12a5ebb962eb8fef5d70",
+    "crates/om-agent-contract/src/generated/agent_tool_result_part_kind.rs": "ae1a14d8e27d4eaa45dc488b1c6fd9908dabd305dc3dd4b8c9e84afde69a5e8b",
+    "crates/om-agent-contract/src/generated/agent_tool_result_part_outcome.rs": "9e30d9dd6219652451284e82b759ebf9f96a1453b589c3dda78645b2604b17bc",
+    "crates/om-agent-contract/src/generated/dialect.rs": "aeb8bb980d1a7cbbd819507b5e833090d05adebdaf1f5418576eb756cd942d4e",
+    "crates/om-agent-contract/src/generated/evaluate_scratch.rs": "bfe02fa65239762e96f3986193391cb8b8727f125d0d89313562bdcc66f7ecd4",
+    "crates/om-agent-contract/src/generated/evaluate_scratch_kind.rs": "e3f4cac560c1663898c5766824e19a600705171a9a855c50b4218181e667c75b",
+    "crates/om-agent-contract/src/generated/mod.rs": "7c41f7f07c9a1083e078d5f435432401e9e65b1b560d6ab3f5384910b3586bde",
+    "crates/om-agent-contract/src/json.rs": "60dbcd9ebd2c155d33e9586e0f17e3308b1c337140dddf56d1d8c5910af34cfd",
+    "crates/om-agent-contract/src/lib.rs": "afdd86daccf66c536e74342e893b27cc72053beed99a6d38a4ab57c63eba99a6",
+    "crates/om-agent-contract/src/schema.rs": "7e1217f6df83dd07ee0fead938087efeec7ae35b8ca3111a5108e3e99ac92cb3",
+    "crates/om-host-service/Cargo.toml": "3383e9373c0c7a6f411fd90b2de5d58e128bb6b7e8498696dc27dab34c67c3e5",
+    "crates/om-host-service/src/agent/framing.rs": "6db96ff2bee93b52f79a072e49e1044457ad3f09cd8bbfd5047f4994f48c0a71",
+    "crates/om-host-service/src/protocol/generated/agent_canonical_message.rs": "c2716307a2783fa6f7e16f1ecab33e64ca7efb0cf25df340f633cd9973bcdef2",
+    "crates/om-host-service/src/protocol/generated/agent_canonical_message_record_type.rs": "38838b5d83aaf4d28e03367114b38e1f11d548d0da959f69cd9e23426af2d678",
+    "crates/om-host-service/src/protocol/generated/agent_canonical_message_role.rs": "d370456393bfffe50402878bf5acad74f2869f766840dba29452bc26fe32beab",
+    "crates/om-host-service/src/protocol/generated/agent_media_part.rs": "d5c793c4775c90457f7d9ad8ad77d88eada2d6689643e9c0665b54c62211d991",
+    "crates/om-host-service/src/protocol/generated/agent_media_part_kind.rs": "84c0be89d7306fb00d978a06b5ab189f59def411a8752eeea1adc219a4aede52",
+    "crates/om-host-service/src/protocol/generated/agent_media_part_submission_kind.rs": "ffc096789463a349a74595f19f3ce2b4446060be0872acc0c8b1c54bf83e284b",
+    "crates/om-host-service/src/protocol/generated/agent_message_part.rs": "b57cc7a68dbbb79fcf3051adeafe1ce494ec36af29607d3c54f55bef9aa58e11",
+    "crates/om-host-service/src/protocol/generated/agent_step_link_part.rs": "4865f235bf0066b7720df2f44f42a8996628f2830a2370ed2e3fe2db6e9e8a72",
+    "crates/om-host-service/src/protocol/generated/agent_step_link_part_kind.rs": "2611c6526d1138daad7ba967b0dcd22d98255c77f7cfe69f8877fbfd580e4f34",
+    "crates/om-host-service/src/protocol/generated/agent_text_part.rs": "ebc72469274ccf00baa6a204cff9d973eedff98595b10e7abda3d4af10ea2ee7",
+    "crates/om-host-service/src/protocol/generated/agent_text_part_kind.rs": "3c959376c2a700884be20a4a427f0380f07445d85d2ca46eca1769fc451724f7",
+    "crates/om-host-service/src/protocol/generated/agent_tool_name.rs": "fd0f249568bd0ce013453469160fa09a1431f1cf37de2e73f5cd2f73b6f3ace8",
+    "crates/om-host-service/src/protocol/generated/agent_tool_proposal_part.rs": "e35f0d85b71c60bad9f8d7dd0d74315152392fc94b4d00eee3c1eaab88c4a9db",
+    "crates/om-host-service/src/protocol/generated/agent_tool_proposal_part_kind.rs": "535cdb149459aa91a9f3cbe15c15b936129fea4dd3099d995ac4ea06a9d8264a",
+    "crates/om-host-service/src/protocol/generated/agent_tool_result_part.rs": "f618c55def6f2edf4081abcd563fc261250b733e9f2be8381b96bb89bc49ffd8",
+    "crates/om-host-service/src/protocol/generated/agent_tool_result_part_kind.rs": "93e22c352cfabbaa0c6df1d834434b1cf16a43d858c84c42351e2a4edb31dfa1",
+    "crates/om-host-service/src/protocol/generated/agent_tool_result_part_outcome.rs": "75e1c8254f884af0a665dc1f5189f67d134dd315c937fea77104d951c42a53a5",
+    "crates/om-host-service/src/protocol/generated/dialect.rs": "8d9b9e516d0cfc3bf88979f8578e92cdb80eb0b386c9ebaace21553deef129cf",
+    "crates/om-host-service/src/protocol/generated/evaluate_scratch.rs": "7999c2951859ef74fbb125a7256d9eecc06770aa54cda65587112b7cb8465374",
+    "crates/om-host-service/src/protocol/generated/evaluate_scratch_kind.rs": "df4c311974756d3b41607e26ee496c366eb955d8d79fb1ae023d54b4264558ba",
+    "crates/om-host-service/src/protocol/mod.rs": "c8b420cc5f3c79ab7ff96b86c106e850dc6fd086130cd0c37f7e4d51154175ff",
+    "crates/om-host-service/src/protocol/validation.rs": "0e4db892b5e57fcdceb2dd29362efd15b68a38e8730be05e526dc0cee1919dfa",
+    "crates/om-llm/Cargo.toml": "f62695bc7031b002930e48a16de0b86228e9ed2dce623bce48172bd00b1edb43",
+    "crates/om-llm/examples/single_turn_fixture.rs": "09600b50586a5f7875ac371e70e16b36ce5d7a29a77a6f113b2251e49ce2e968",
+    "crates/om-llm/src/lib.rs": "999486a85c33985ec6c3a6b3b0a573f477f5b2d8606525d7d0ca8a4b2fb90c25",
+    "crates/om-llm/src/single_turn/build.rs": "508fac6ecf120128973fe7205f6f13801bee40f36d676fee88e31caafbbc3c72",
+    "crates/om-llm/src/single_turn/decode.rs": "5dbb01ce7efd7ed1c479c907c5ac4ba6855312b64e57a741a7b19c3db3c3c80f",
+    "crates/om-llm/src/single_turn/mod.rs": "9bd6dc24368a733f76b740167f6d57d73f09c284e9cb5c324ff03c7663aa61dc",
+    "crates/om-llm/src/single_turn/types.rs": "7c2a777b66f9d60bc5b70a4cde0f6c7bc68c16e9ba87214fc0e558dc10efae7d",
+    "crates/om-llm/src/stream.rs": "da0424ae7c61946b42d343d594cd04fe61bf499b7a58ac58c5c8e12952119144",
+    "crates/om-llm/tests/single_turn.rs": "f5aa24b3a353d9c12e32d7ff744c4cf1a87d0d7f16c884ed400ffc5bf584e3ca",
+    "crates/om-llm/tests/single_turn/cases.rs": "82cdb07595a8adc2f00ac6806095c9d77d2745d16b3c40af1b542cdf0b7ed6db",
+    "docs/design/agent-tools.schema.json": "d884e5db86d4d633353e2739b6122865ffccb659f43dd15252c208df8bb7145a",
+    "docs/design/native-agent.schema.json": "fe150a9e03ff36953865fb7799a41016519f3fb39b71e2e760a0f933c4acf34a",
+    "macos/OpenMathNativeTests/AgentPackageFixtures/main.swift": "020bf2b8d64dcf76d2d36d46bc58a22bb669219b0f5f504b3e4dc23705c1f90a",
+    "macos/Scripts/test-agent-package.sh": "10474aa6ba6d9d388040d14d09f827efabb1b703bf2bf9a69bec62e94218b2c4",
+    "rust-toolchain.toml": "8c86ff5c8fc9a68315f2f49d6f2c43db1907dce10894ea9ff8f0df20e2fef169",
+    "scripts/native_contracts.py": "3951d1c662b35203cbfe2c013de7e8c49872a0efe00c4c9d9b825cb374218e5e",
+    "scripts/probe_single_turn_api.py": "9cc800d788e0b45f4836ff7affacb8a8e3f5c2e841a26f445aca3aaa824e1025",
+    "scripts/test_single_turn_pi.py": "1c478a6e1920bf80a5493b286078989cfe0f12051003760de702eca86354d206",
+    ".gitattributes": "4e161b8c09b44406833d0581c1eab43562842ae2c8306f9b6bc57273eace43dd"
+  },
+  "files": [
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/single-turn-codec-raw/94dbfbe-frontend-job.log",
+      "bytes": 127902,
+      "sha256": "0d0bc2ad37d6e3bc5ca5f23b7491ddaab15be1b463089ebfcc6ef1849ff2f1bd"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/single-turn-codec-raw/94dbfbe-ios-job.log",
+      "bytes": 1195043,
+      "sha256": "7c2bf6510e8eb3c1a51bcef29f7c7846036ae1475fba5181fde673a7b44481c4"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/single-turn-codec-raw/94dbfbe-mobile-corpus.json",
+      "bytes": 368014,
+      "sha256": "ffa4a36f05f36bb5cbfc7c99c58b5ff00b4f08d8d4857f9c82b12d86f0ea654a"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/single-turn-codec-raw/94dbfbe-settings-error-context.md",
+      "bytes": 11950,
+      "sha256": "8ba504aba76a08b07cb02a80a9a6359031b975b7c78da8020d547dc60e7400c8"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/single-turn-codec-raw/actual-app/actual-codec-input.json",
+      "bytes": 1300,
+      "sha256": "f5031bc1428c23ace92a1580b4c385c5792d987d6c418124adcbf374f32c187e"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/single-turn-codec-raw/actual-app/actual-codec-output.json",
+      "bytes": 1453,
+      "sha256": "d00a4ce2b39398327b6f319c1a6a40d2beaa788cbfd70c24c85c71bc5706aadc"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/single-turn-codec-raw/actual-app/actual-production-ledger.json",
+      "bytes": 3715,
+      "sha256": "06f3be9c3d1628c792b82df8b2944ca3cc26891ae35f5c6b0f48ae589c13b216"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/single-turn-codec-raw/actual-app/actual-production-wire.json",
+      "bytes": 10758,
+      "sha256": "3aadc8c227af39ca9c18187c5532a23d42456313b6cdf43b902c7d05859eab6f"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/single-turn-codec-raw/actual-codec-input.json",
+      "bytes": 1300,
+      "sha256": "96b5da6ecc5441881920a0d8cce2dfd4c801bd4490867580f721c94b69beaa35"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/single-turn-codec-raw/actual-codec-output.json",
+      "bytes": 1453,
+      "sha256": "9126b6acfa534abb6d4e0f1f1b0a9a88b5d65cf90d1d55ef1dd249fd835df782"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/single-turn-codec-raw/actual-production-ledger.json",
+      "bytes": 3715,
+      "sha256": "498e283d5752e78c85cf2fe7f729339b05bbc014da64b1162083581a87a26144"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/single-turn-codec-raw/actual-production-wire.json",
+      "bytes": 10758,
+      "sha256": "1eeffcd56f5a4510d00a8a92e3953e362d87de9b86893c5c200e8903fea7ea2c"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/single-turn-codec-raw/anthropic_messages-complete.json",
+      "bytes": 13798,
+      "sha256": "ee0f534fa5bded176cff80b8a62fdcb30bee060c7c168850f83ff0dcbbdd3f0e"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/single-turn-codec-raw/anthropic_messages-incomplete.json",
+      "bytes": 4835,
+      "sha256": "f7f0c10e33ec9a0c1ebe49538f88e3524795c776e5383993098bea88b576cff8"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/single-turn-codec-raw/chat_completions-complete.json",
+      "bytes": 12616,
+      "sha256": "1a8e86a5ead3ea31f4d68b2e6e2b0dae02a89b587491dce2e760a0026430316b"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/single-turn-codec-raw/chat_completions-incomplete.json",
+      "bytes": 4218,
+      "sha256": "e93b5a55b774e5f85f0851b59368fc36f41977dd6f6872197076db92f689db75"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/single-turn-codec-raw/commands.json",
+      "bytes": 1791,
+      "sha256": "69465ac0460e4259fbd719b991d768409f7dae79ea38ceb97cbe14e36ff82967"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/single-turn-codec-raw/inputs/.gitattributes",
+      "bytes": 1580,
+      "sha256": "4e161b8c09b44406833d0581c1eab43562842ae2c8306f9b6bc57273eace43dd"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/single-turn-codec-raw/inputs/.github/workflows/ci.yml",
+      "bytes": 3757,
+      "sha256": "42fff2c41cc8191e338e69a0f59b4a2135e02a1fe1cf823698f75b0326d5e2cb"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/single-turn-codec-raw/inputs/Cargo.lock",
+      "bytes": 158167,
+      "sha256": "914ae4777ae4c08437fc3c7d1d69941c912ee3306c7c7109cabc6323aa8ec28f"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/single-turn-codec-raw/inputs/Cargo.toml",
+      "bytes": 2786,
+      "sha256": "223601b29d80be241066133db2ed48aaf2a94c8b0a5b2bd957e49546d999c1b2"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/single-turn-codec-raw/inputs/agent/package-lock.json",
+      "bytes": 43330,
+      "sha256": "2ad7e038a3bdb98585d1c9ba1e990ab1561ffe7c2f63395dbef9f78e3db1d680"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/single-turn-codec-raw/inputs/agent/package.json",
+      "bytes": 557,
+      "sha256": "991a5fd965ca8bb8d3f80b3323528b268925a3a5c6377a04e967b00f816c5b8a"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/single-turn-codec-raw/inputs/agent/src/bridge.ts",
+      "bytes": 14054,
+      "sha256": "353a4f0ff3492567301b2831503b0cb6a336486ffffa48dfc512e8062cb0607a"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/single-turn-codec-raw/inputs/agent/src/generated/protocol.ts",
+      "bytes": 15582,
+      "sha256": "f09694f32931f26ca40df82faf614122a360a6059c126fa1c6910b93f53290a7"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/single-turn-codec-raw/inputs/agent/src/main.ts",
+      "bytes": 846,
+      "sha256": "132360ae3953b96107e5ed3d9e957df443d073634cd7838219d18b994d32f126"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/single-turn-codec-raw/inputs/agent/src/runtime.ts",
+      "bytes": 4273,
+      "sha256": "bacba419662ffb077efe49a56711b8d98bd07ea82a9e170ccbcaf9522adfda22"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/single-turn-codec-raw/inputs/agent/test/single-turn-codec.test.mjs",
+      "bytes": 7335,
+      "sha256": "63460afc82d4a4d3208d069b17e0f76a327bbae419d91b2fd783fa86c4145dc5"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/single-turn-codec-raw/inputs/crates/om-agent-contract/Cargo.toml",
+      "bytes": 325,
+      "sha256": "1f97ac5930f543ab43175a0541348c41eede85e527295de9b81ea0767edd96b3"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/single-turn-codec-raw/inputs/crates/om-agent-contract/src/generated/agent_canonical_message.rs",
+      "bytes": 996,
+      "sha256": "cd3e263f509daa1ad9f29d0f2cd39bd0ecf010d630118ee2bd32563c3e8c6d47"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/single-turn-codec-raw/inputs/crates/om-agent-contract/src/generated/agent_canonical_message_record_type.rs",
+      "bytes": 377,
+      "sha256": "6694fed07d7ba5e37fb6602251364a992ce1c33e7eefafda8216da22b62f8ee2"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/single-turn-codec-raw/inputs/crates/om-agent-contract/src/generated/agent_canonical_message_role.rs",
+      "bytes": 544,
+      "sha256": "93fb29ac3b9d3ef25f225d7fd0839ac6671ec8310c1599e6f7615f3dd1b1b02f"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/single-turn-codec-raw/inputs/crates/om-agent-contract/src/generated/agent_media_part.rs",
+      "bytes": 731,
+      "sha256": "7c443eb589d56b2e088c8d7ed49cdd4535b4428032bf1869afaf621d113599e4"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/single-turn-codec-raw/inputs/crates/om-agent-contract/src/generated/agent_media_part_kind.rs",
+      "bytes": 299,
+      "sha256": "e09b705385ab9d1eb5fe3b0b451ad8b41321f92c7f77c42f0765d59e1aaea479"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/single-turn-codec-raw/inputs/crates/om-agent-contract/src/generated/agent_media_part_submission_kind.rs",
+      "bytes": 538,
+      "sha256": "2845b47cee5da3835eb0442a751c35396c84f3b24420d528bff8888a9ae05131"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/single-turn-codec-raw/inputs/crates/om-agent-contract/src/generated/agent_message_part.rs",
+      "bytes": 622,
+      "sha256": "03298e96848843989ceb977964cc75a066671d9da0b57c5c157327477f59bc16"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/single-turn-codec-raw/inputs/crates/om-agent-contract/src/generated/agent_step_link_part.rs",
+      "bytes": 710,
+      "sha256": "f3b38b959019786cf04ed09664cc547957c75b4a6011b93ab56db034b173d740"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/single-turn-codec-raw/inputs/crates/om-agent-contract/src/generated/agent_step_link_part_kind.rs",
+      "bytes": 316,
+      "sha256": "fcf6f2701f8acfbd580a6d0b6c4c3006963d838cfd6e80406e57852454fafef0"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/single-turn-codec-raw/inputs/crates/om-agent-contract/src/generated/agent_text_part.rs",
+      "bytes": 619,
+      "sha256": "7365670698ff22033e156724b292bb5ccf9c520bf64f6478b964f0e3c0a4fefa"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/single-turn-codec-raw/inputs/crates/om-agent-contract/src/generated/agent_text_part_kind.rs",
+      "bytes": 294,
+      "sha256": "3bd6796d142be80a726682e94dde6a4eac9294e5709d9b86e242917183b22119"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/single-turn-codec-raw/inputs/crates/om-agent-contract/src/generated/agent_tool_name.rs",
+      "bytes": 1472,
+      "sha256": "270c4b51b33879fa75f6e4d675d1d1dfec36fe133a780a58fabd3c36df808784"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/single-turn-codec-raw/inputs/crates/om-agent-contract/src/generated/agent_tool_proposal_part.rs",
+      "bytes": 808,
+      "sha256": "3b3e23451169df3d724e3976fa204b5d2f55b722ab6d47bed9895587f58dcda1"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/single-turn-codec-raw/inputs/crates/om-agent-contract/src/generated/agent_tool_proposal_part_kind.rs",
+      "bytes": 324,
+      "sha256": "a2847df727a2bb9c351e9acd07c7ea04562e7bc08e51bd07b8cb27443d23db7d"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/single-turn-codec-raw/inputs/crates/om-agent-contract/src/generated/agent_tool_result_part.rs",
+      "bytes": 900,
+      "sha256": "bf59792edfc6322ad913889c7774640769b223feea6e12a5ebb962eb8fef5d70"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/single-turn-codec-raw/inputs/crates/om-agent-contract/src/generated/agent_tool_result_part_kind.rs",
+      "bytes": 326,
+      "sha256": "ae1a14d8e27d4eaa45dc488b1c6fd9908dabd305dc3dd4b8c9e84afde69a5e8b"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/single-turn-codec-raw/inputs/crates/om-agent-contract/src/generated/agent_tool_result_part_outcome.rs",
+      "bytes": 576,
+      "sha256": "9e30d9dd6219652451284e82b759ebf9f96a1453b589c3dda78645b2604b17bc"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/single-turn-codec-raw/inputs/crates/om-agent-contract/src/generated/dialect.rs",
+      "bytes": 431,
+      "sha256": "aeb8bb980d1a7cbbd819507b5e833090d05adebdaf1f5418576eb756cd942d4e"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/single-turn-codec-raw/inputs/crates/om-agent-contract/src/generated/evaluate_scratch.rs",
+      "bytes": 888,
+      "sha256": "bfe02fa65239762e96f3986193391cb8b8727f125d0d89313562bdcc66f7ecd4"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/single-turn-codec-raw/inputs/crates/om-agent-contract/src/generated/evaluate_scratch_kind.rs",
+      "bytes": 333,
+      "sha256": "e3f4cac560c1663898c5766824e19a600705171a9a855c50b4218181e667c75b"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/single-turn-codec-raw/inputs/crates/om-agent-contract/src/generated/mod.rs",
+      "bytes": 1319,
+      "sha256": "7c41f7f07c9a1083e078d5f435432401e9e65b1b560d6ab3f5384910b3586bde"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/single-turn-codec-raw/inputs/crates/om-agent-contract/src/json.rs",
+      "bytes": 3915,
+      "sha256": "60dbcd9ebd2c155d33e9586e0f17e3308b1c337140dddf56d1d8c5910af34cfd"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/single-turn-codec-raw/inputs/crates/om-agent-contract/src/lib.rs",
+      "bytes": 1976,
+      "sha256": "afdd86daccf66c536e74342e893b27cc72053beed99a6d38a4ab57c63eba99a6"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/single-turn-codec-raw/inputs/crates/om-agent-contract/src/schema.rs",
+      "bytes": 11013,
+      "sha256": "7e1217f6df83dd07ee0fead938087efeec7ae35b8ca3111a5108e3e99ac92cb3"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/single-turn-codec-raw/inputs/crates/om-host-service/Cargo.toml",
+      "bytes": 627,
+      "sha256": "3383e9373c0c7a6f411fd90b2de5d58e128bb6b7e8498696dc27dab34c67c3e5"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/single-turn-codec-raw/inputs/crates/om-host-service/src/agent/framing.rs",
+      "bytes": 3568,
+      "sha256": "6db96ff2bee93b52f79a072e49e1044457ad3f09cd8bbfd5047f4994f48c0a71"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/single-turn-codec-raw/inputs/crates/om-host-service/src/protocol/generated/agent_canonical_message.rs",
+      "bytes": 123,
+      "sha256": "c2716307a2783fa6f7e16f1ecab33e64ca7efb0cf25df340f633cd9973bcdef2"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/single-turn-codec-raw/inputs/crates/om-host-service/src/protocol/generated/agent_canonical_message_record_type.rs",
+      "bytes": 133,
+      "sha256": "38838b5d83aaf4d28e03367114b38e1f11d548d0da959f69cd9e23426af2d678"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/single-turn-codec-raw/inputs/crates/om-host-service/src/protocol/generated/agent_canonical_message_role.rs",
+      "bytes": 127,
+      "sha256": "d370456393bfffe50402878bf5acad74f2869f766840dba29452bc26fe32beab"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/single-turn-codec-raw/inputs/crates/om-host-service/src/protocol/generated/agent_media_part.rs",
+      "bytes": 116,
+      "sha256": "d5c793c4775c90457f7d9ad8ad77d88eada2d6689643e9c0665b54c62211d991"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/single-turn-codec-raw/inputs/crates/om-host-service/src/protocol/generated/agent_media_part_kind.rs",
+      "bytes": 120,
+      "sha256": "84c0be89d7306fb00d978a06b5ab189f59def411a8752eeea1adc219a4aede52"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/single-turn-codec-raw/inputs/crates/om-host-service/src/protocol/generated/agent_media_part_submission_kind.rs",
+      "bytes": 130,
+      "sha256": "ffc096789463a349a74595f19f3ce2b4446060be0872acc0c8b1c54bf83e284b"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/single-turn-codec-raw/inputs/crates/om-host-service/src/protocol/generated/agent_message_part.rs",
+      "bytes": 118,
+      "sha256": "b57cc7a68dbbb79fcf3051adeafe1ce494ec36af29607d3c54f55bef9aa58e11"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/single-turn-codec-raw/inputs/crates/om-host-service/src/protocol/generated/agent_step_link_part.rs",
+      "bytes": 119,
+      "sha256": "4865f235bf0066b7720df2f44f42a8996628f2830a2370ed2e3fe2db6e9e8a72"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/single-turn-codec-raw/inputs/crates/om-host-service/src/protocol/generated/agent_step_link_part_kind.rs",
+      "bytes": 123,
+      "sha256": "2611c6526d1138daad7ba967b0dcd22d98255c77f7cfe69f8877fbfd580e4f34"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/single-turn-codec-raw/inputs/crates/om-host-service/src/protocol/generated/agent_text_part.rs",
+      "bytes": 115,
+      "sha256": "ebc72469274ccf00baa6a204cff9d973eedff98595b10e7abda3d4af10ea2ee7"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/single-turn-codec-raw/inputs/crates/om-host-service/src/protocol/generated/agent_text_part_kind.rs",
+      "bytes": 119,
+      "sha256": "3c959376c2a700884be20a4a427f0380f07445d85d2ca46eca1769fc451724f7"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/single-turn-codec-raw/inputs/crates/om-host-service/src/protocol/generated/agent_tool_name.rs",
+      "bytes": 115,
+      "sha256": "fd0f249568bd0ce013453469160fa09a1431f1cf37de2e73f5cd2f73b6f3ace8"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/single-turn-codec-raw/inputs/crates/om-host-service/src/protocol/generated/agent_tool_proposal_part.rs",
+      "bytes": 123,
+      "sha256": "e35f0d85b71c60bad9f8d7dd0d74315152392fc94b4d00eee3c1eaab88c4a9db"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/single-turn-codec-raw/inputs/crates/om-host-service/src/protocol/generated/agent_tool_proposal_part_kind.rs",
+      "bytes": 127,
+      "sha256": "535cdb149459aa91a9f3cbe15c15b936129fea4dd3099d995ac4ea06a9d8264a"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/single-turn-codec-raw/inputs/crates/om-host-service/src/protocol/generated/agent_tool_result_part.rs",
+      "bytes": 121,
+      "sha256": "f618c55def6f2edf4081abcd563fc261250b733e9f2be8381b96bb89bc49ffd8"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/single-turn-codec-raw/inputs/crates/om-host-service/src/protocol/generated/agent_tool_result_part_kind.rs",
+      "bytes": 125,
+      "sha256": "93e22c352cfabbaa0c6df1d834434b1cf16a43d858c84c42351e2a4edb31dfa1"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/single-turn-codec-raw/inputs/crates/om-host-service/src/protocol/generated/agent_tool_result_part_outcome.rs",
+      "bytes": 128,
+      "sha256": "75e1c8254f884af0a665dc1f5189f67d134dd315c937fea77104d951c42a53a5"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/single-turn-codec-raw/inputs/crates/om-host-service/src/protocol/generated/dialect.rs",
+      "bytes": 109,
+      "sha256": "8d9b9e516d0cfc3bf88979f8578e92cdb80eb0b386c9ebaace21553deef129cf"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/single-turn-codec-raw/inputs/crates/om-host-service/src/protocol/generated/evaluate_scratch.rs",
+      "bytes": 117,
+      "sha256": "7999c2951859ef74fbb125a7256d9eecc06770aa54cda65587112b7cb8465374"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/single-turn-codec-raw/inputs/crates/om-host-service/src/protocol/generated/evaluate_scratch_kind.rs",
+      "bytes": 121,
+      "sha256": "df4c311974756d3b41607e26ee496c366eb955d8d79fb1ae023d54b4264558ba"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/single-turn-codec-raw/inputs/crates/om-host-service/src/protocol/mod.rs",
+      "bytes": 2135,
+      "sha256": "c8b420cc5f3c79ab7ff96b86c106e850dc6fd086130cd0c37f7e4d51154175ff"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/single-turn-codec-raw/inputs/crates/om-host-service/src/protocol/validation.rs",
+      "bytes": 127,
+      "sha256": "0e4db892b5e57fcdceb2dd29362efd15b68a38e8730be05e526dc0cee1919dfa"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/single-turn-codec-raw/inputs/crates/om-llm/Cargo.toml",
+      "bytes": 732,
+      "sha256": "f62695bc7031b002930e48a16de0b86228e9ed2dce623bce48172bd00b1edb43"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/single-turn-codec-raw/inputs/crates/om-llm/examples/single_turn_fixture.rs",
+      "bytes": 1838,
+      "sha256": "09600b50586a5f7875ac371e70e16b36ce5d7a29a77a6f113b2251e49ce2e968"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/single-turn-codec-raw/inputs/crates/om-llm/src/lib.rs",
+      "bytes": 903,
+      "sha256": "999486a85c33985ec6c3a6b3b0a573f477f5b2d8606525d7d0ca8a4b2fb90c25"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/single-turn-codec-raw/inputs/crates/om-llm/src/single_turn/build.rs",
+      "bytes": 13888,
+      "sha256": "508fac6ecf120128973fe7205f6f13801bee40f36d676fee88e31caafbbc3c72"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/single-turn-codec-raw/inputs/crates/om-llm/src/single_turn/decode.rs",
+      "bytes": 30454,
+      "sha256": "5dbb01ce7efd7ed1c479c907c5ac4ba6855312b64e57a741a7b19c3db3c3c80f"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/single-turn-codec-raw/inputs/crates/om-llm/src/single_turn/mod.rs",
+      "bytes": 999,
+      "sha256": "9bd6dc24368a733f76b740167f6d57d73f09c284e9cb5c324ff03c7663aa61dc"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/single-turn-codec-raw/inputs/crates/om-llm/src/single_turn/types.rs",
+      "bytes": 8872,
+      "sha256": "7c2a777b66f9d60bc5b70a4cde0f6c7bc68c16e9ba87214fc0e558dc10efae7d"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/single-turn-codec-raw/inputs/crates/om-llm/src/stream.rs",
+      "bytes": 7863,
+      "sha256": "da0424ae7c61946b42d343d594cd04fe61bf499b7a58ac58c5c8e12952119144"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/single-turn-codec-raw/inputs/crates/om-llm/tests/single_turn/cases.rs",
+      "bytes": 17983,
+      "sha256": "82cdb07595a8adc2f00ac6806095c9d77d2745d16b3c40af1b542cdf0b7ed6db"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/single-turn-codec-raw/inputs/crates/om-llm/tests/single_turn.rs",
+      "bytes": 141,
+      "sha256": "f5aa24b3a353d9c12e32d7ff744c4cf1a87d0d7f16c884ed400ffc5bf584e3ca"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/single-turn-codec-raw/inputs/docs/design/agent-tools.schema.json",
+      "bytes": 89022,
+      "sha256": "d884e5db86d4d633353e2739b6122865ffccb659f43dd15252c208df8bb7145a"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/single-turn-codec-raw/inputs/docs/design/native-agent.schema.json",
+      "bytes": 49656,
+      "sha256": "fe150a9e03ff36953865fb7799a41016519f3fb39b71e2e760a0f933c4acf34a"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/single-turn-codec-raw/inputs/macos/OpenMathNativeTests/AgentPackageFixtures/main.swift",
+      "bytes": 13969,
+      "sha256": "020bf2b8d64dcf76d2d36d46bc58a22bb669219b0f5f504b3e4dc23705c1f90a"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/single-turn-codec-raw/inputs/macos/Scripts/test-agent-package.sh",
+      "bytes": 1526,
+      "sha256": "10474aa6ba6d9d388040d14d09f827efabb1b703bf2bf9a69bec62e94218b2c4"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/single-turn-codec-raw/inputs/rust-toolchain.toml",
+      "bytes": 123,
+      "sha256": "8c86ff5c8fc9a68315f2f49d6f2c43db1907dce10894ea9ff8f0df20e2fef169"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/single-turn-codec-raw/inputs/scripts/native_contracts.py",
+      "bytes": 14529,
+      "sha256": "3951d1c662b35203cbfe2c013de7e8c49872a0efe00c4c9d9b825cb374218e5e"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/single-turn-codec-raw/inputs/scripts/probe_single_turn_api.py",
+      "bytes": 5509,
+      "sha256": "9cc800d788e0b45f4836ff7affacb8a8e3f5c2e841a26f445aca3aaa824e1025"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/single-turn-codec-raw/inputs/scripts/test_single_turn_pi.py",
+      "bytes": 1007,
+      "sha256": "1c478a6e1920bf80a5493b286078989cfe0f12051003760de702eca86354d206"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/single-turn-codec-raw/settings-save-repeated.log",
+      "bytes": 1251,
+      "sha256": "32281e5cc64b6d19e521728cb096ed3d4af2870153edce7621880cba6fb99794"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/single-turn-codec-raw/single-turn-actual-app-pi.log",
+      "bytes": 712,
+      "sha256": "003ec9ea2250cfe72fcad335dca52cd3d6a38293e3a3646c22282be2ab52cdaf"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/single-turn-codec-raw/single-turn-builder-initial.log",
+      "bytes": 859,
+      "sha256": "8354cd3b32d124dd67d5ec01908625f2dbc2392f22ea9c14fb8bf2f00a093d13"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/single-turn-codec-raw/single-turn-clippy-final.log",
+      "bytes": 60,
+      "sha256": "bd78efc584786aedeff4a2938ba22269233ac68fe183a1ecbdd47ccc783b7a43"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/single-turn-codec-raw/single-turn-clippy-initial.log",
+      "bytes": 2242,
+      "sha256": "3f8236cf2a6bc2d6515c8268efa1a66b89dc43264605ca49f604fc76e5f0a9f0"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/single-turn-codec-raw/single-turn-decoder-initial.log",
+      "bytes": 446,
+      "sha256": "32909560c8bf98c3f177379f886b999c782a923b0f7e39a135fa393132b202a1"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/single-turn-codec-raw/single-turn-fixture-final-build.log",
+      "bytes": 145,
+      "sha256": "7a3d0b5cead5228d1d32361a17f8b79e29c648904190c75c9081cc02a8befc35"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/single-turn-codec-raw/single-turn-live-chat.json",
+      "bytes": 5194,
+      "sha256": "019e1eb1c70ffd6b7adf439e3a40b48e2fc490af495ceca0c59250edcdbe19f2"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/single-turn-codec-raw/single-turn-live-chat.log",
+      "bytes": 186,
+      "sha256": "15db8fbb3ba2164d33131a574ef9adfa7a7529093d53545cbdbe553280062fdb"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/single-turn-codec-raw/single-turn-native-contracts.log",
+      "bytes": 2640,
+      "sha256": "ac45fdfdf969bae595274193802f5702d0e16bb533530ba32df9f9c133b66d3a"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/single-turn-codec-raw/single-turn-native-pi.log",
+      "bytes": 712,
+      "sha256": "1a14e54063ca4f45c1c84576d9effcfbecdf2cfd4cd11074a6a7deee4405849b"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/single-turn-codec-raw/single-turn-pi-final.log",
+      "bytes": 519,
+      "sha256": "f805d1b09c055022c816a7920042656df3bfcabce021fd468b31b63a3879466d"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/single-turn-codec-raw/single-turn-pi-initial.log",
+      "bytes": 3587,
+      "sha256": "db18af8cde348b15d5fe995f29f6ccf2ac71167dc4f9cc1e265425f637c247da"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/single-turn-codec-raw/single-turn-python-contracts.log",
+      "bytes": 2835,
+      "sha256": "680b57a49e4975157139bfcf6f80c7272c8506d119cd0e8b967c88d7c53a1ef0"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/single-turn-codec-raw/single-turn-python-final.log",
+      "bytes": 2835,
+      "sha256": "b3687b7e75357811c7531a5b4b455c1303c3843eeff3267747f984ba97016495"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/single-turn-codec-raw/single-turn-regression-final.log",
+      "bytes": 24571,
+      "sha256": "71880b855c14f77938df6bfb22d5363753be262ae4f23e4eb0a39a41e4ed826c"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/single-turn-codec-raw/single-turn-shared-contract-initial.log",
+      "bytes": 201672,
+      "sha256": "545e1f5efa5189fb67b13c8ea10b2919240554240548ac375e0e96c07be2e4a7"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/single-turn-codec-raw/single-turn-shared-contract-verified.log",
+      "bytes": 447,
+      "sha256": "76241266556e5e8237a0850a320f100d7e123a24e2346326c3d5cb94becba5b4"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/single-turn-codec-raw/single-turn-shared-host-regression.log",
+      "bytes": 3003,
+      "sha256": "1d0eb12497f86997aa8439d2e14b766e28b21fb63856b416b2636d4b3cbd9099"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/single-turn-codec-raw/single-turn-tests-initial.log",
+      "bytes": 1931,
+      "sha256": "76afa6fab1895a1d7145c16bd169bf7c4d24f2e472a59c77583c5fa239a21e78"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/single-turn-codec-raw/single-turn-tests-verified.log",
+      "bytes": 1098,
+      "sha256": "48786f61a63578f4d0549cc8a446678081e8bb4c41c560e363527e638bf8f594"
+    }
+  ]
+}

@@ -1,0 +1,47 @@
+    Blocking waiting for file lock on build directory
+    Checking serde v1.0.229
+    Checking serde_json v1.0.151
+   Compiling om-host-service v0.1.0-pre-alpha.3 (/Users/hert/Projects/openmath/crates/om-host-service)
+    Checking tokio v1.53.1
+    Checking percent-encoding v2.3.2
+    Checking form_urlencoded v1.2.2
+    Checking url v2.5.8
+    Checking dashu-int v0.6.1
+    Checking ts-rs v12.0.1
+    Checking om-agent-contract v0.1.0-pre-alpha.3 (/Users/hert/Projects/openmath/crates/om-agent-contract)
+    Checking assert-json-diff v2.0.2
+    Checking dashu-float v0.6.1
+    Checking tokio-util v0.7.19
+    Checking deadpool v0.12.3
+    Checking h2 v0.4.19
+    Checking dashu-ratio v0.6.1
+    Checking dashu-cmplx v0.6.1
+    Checking dashu v0.6.1
+    Checking om-num v0.1.0-pre-alpha.3 (/Users/hert/Projects/openmath/crates/om-num)
+    Checking om-core v0.1.0-pre-alpha.3 (/Users/hert/Projects/openmath/crates/om-core)
+    Checking om-llm v0.1.0-pre-alpha.3 (/Users/hert/Projects/openmath/crates/om-llm)
+    Checking om-poly v0.1.0-pre-alpha.3 (/Users/hert/Projects/openmath/crates/om-poly)
+    Checking om-analysis v0.1.0-pre-alpha.3 (/Users/hert/Projects/openmath/crates/om-analysis)
+    Checking hyper v1.11.1
+    Checking om-parse v0.1.0-pre-alpha.3 (/Users/hert/Projects/openmath/crates/om-parse)
+    Checking om-format v0.1.0-pre-alpha.3 (/Users/hert/Projects/openmath/crates/om-format)
+error: this boolean expression can be simplified
+  --> crates/om-llm/src/single_turn/build.rs:87:16
+   |
+87 |               || !resolved
+   |  ________________^
+88 | |                 .insert((r.message_id.as_str(), r.tool_call_id.as_str()), r)
+89 | |                 .is_none()
+   | |__________________________^
+   |
+   = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.94.0/index.html#nonminimal_bool
+   = note: `-D clippy::nonminimal-bool` implied by `-D warnings`
+   = help: to override `-D warnings` add `#[allow(clippy::nonminimal_bool)]`
+help: try
+   |
+87 ~             || resolved
+88 +                 .insert((r.message_id.as_str(), r.tool_call_id.as_str()), r).is_some()
+   |
+
+error: could not compile `om-llm` (lib) due to 1 previous error
+warning: build failed, waiting for other jobs to finish...

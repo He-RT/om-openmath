@@ -1,0 +1,13 @@
+    Finished `dev` profile [unoptimized] target(s) in 0.08s
+✔ chat_completions real single-turn codec drives Pi; incomplete=false (142.083042ms)
+✔ chat_completions real single-turn codec drives Pi; incomplete=true (4.378666ms)
+✔ anthropic_messages real single-turn codec drives Pi; incomplete=false (8.058375ms)
+✔ anthropic_messages real single-turn codec drives Pi; incomplete=true (3.619666ms)
+ℹ tests 4
+ℹ suites 0
+ℹ pass 4
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 377.952708

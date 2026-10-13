@@ -1,9 +1,2 @@
-//! Generated native contract fields; validation/admission remain separate.
-use super::*;
-#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
-/// Contract enum `AgentStepLinkPartKind`.
-pub enum AgentStepLinkPartKind {
-    /// Contract value `step_link`.
-    #[serde(rename = "step_link")]
-    StepLink,
-}
+//! Canonical type generated once and shared with the single-turn codec.
+pub use om_agent_contract::AgentStepLinkPartKind;

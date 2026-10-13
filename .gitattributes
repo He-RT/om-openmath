@@ -10,3 +10,4 @@ macos/OpenMathNative/Resources/Licenses/** -whitespace
 # Raw development logs/failure snapshots retain their exact captured bytes and SHA256.
 docs/acceptance/pre-alpha.4/development/r42/native-math-raw/*.log -whitespace
 docs/acceptance/pre-alpha.4/development/r42/native-math-raw/ci-f875658-settings-failure.md -whitespace
+docs/acceptance/pre-alpha.4/development/r42/native-results-raw/*.log -whitespace

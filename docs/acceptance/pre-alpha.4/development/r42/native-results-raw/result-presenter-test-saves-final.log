@@ -1,0 +1,6 @@
+    Finished `release` profile [optimized] target(s) in 0.23s
+Actual user file/NSDocument/SQLite saves: source-only invalid syntax, N+1 dirty, old-binding ACK historical, Save As, external/read-only refusal, replace lost-ACK original readback, marked input kept, actual F_FULLFSYNC unknown and restart receipt passed
+Application factory: shared root, source-only open, real TextKit input, 2s actual file autosave, native undo and later-input close rejection passed
+Original file identity: same-directory rename follows inode, unrelated old path untouched, moved directory requires explicit new binding, missing target not recreated
+Six real SIGKILL save/restart boundaries: original intent/bytes/receipt reconciled, pre-replacement file untouched, source retained, no CAS replay
+Mismatched displaced external bytes after crash: retained and reported as conflict, no fake save receipt

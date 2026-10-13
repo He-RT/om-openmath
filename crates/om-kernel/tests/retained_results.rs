@@ -218,6 +218,48 @@ fn original_steps_are_paged_and_numeric_value_uses_the_actual_retained_value() {
         .unwrap();
     assert!(!page.recorded && page.entries.is_empty());
 }
+
+#[test]
+fn solution_multiplicity_is_global_across_actual_record_pages() {
+    let mut session = Session::new(Default::default(), None);
+    let output = eval(&mut session, "repeated", "solve((x-1)^20==0,x)");
+    let OutputItem::Solutions { view, .. } = &output.items[0] else {
+        panic!("no actual solution set")
+    };
+    assert_eq!(view.solutions.len(), 20);
+    let retained = session.retain_result("repeated").unwrap();
+    let summary = retained.summary();
+    let record = &summary.statements[0];
+    for (offset, count) in [(0, 16), (16, 4)] {
+        let page = retained
+            .presentation_page(
+                record.out_index,
+                &record.view_id,
+                offset,
+                16,
+                &Interrupt::default(),
+            )
+            .unwrap();
+        let data = &page["presentation"];
+        assert_eq!(data["total_solutions"], 20);
+        assert_eq!(data["solutions"].as_array().unwrap().len(), count);
+        assert_eq!(
+            data["solution_multiplicities"],
+            serde_json::json!(vec![20; count])
+        );
+        assert_eq!(
+            data["solution_first_indices"],
+            serde_json::json!(vec![0; count])
+        );
+    }
+    let ctx = Interrupt::default();
+    ctx.flag.store(true, std::sync::atomic::Ordering::Relaxed);
+    assert!(
+        retained
+            .presentation_page(record.out_index, &record.view_id, 0, 16, &ctx)
+            .is_err()
+    );
+}
 #[test]
 fn geometry_pages_equal_original_kernel_samples_without_any_resampling() {
     let mut session = Session::new(Default::default(), None);

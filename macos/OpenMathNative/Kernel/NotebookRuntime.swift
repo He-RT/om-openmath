@@ -34,10 +34,13 @@ struct NotebookCellResult:Sendable {
 /// operation ID and accepted results come only from the physical kernel receipt/read channel.
 @MainActor final class NotebookRuntime:ObservableObject {
   @Published private(set) var operation:String?
+  @Published private(set) var operationCell:String?
   @Published private(set) var cancelPending=false
   @Published private(set) var phase:NativeKernelHostReplyPhase?
   @Published private(set) var message="就绪"
   @Published private(set) var results:[String:NotebookCellResult]=[:]
+  @Published private(set) var history:[NotebookCellResult]=[]
+  @Published private(set) var historyOmitted:UInt64=0
   @Published private(set) var unknownOperation:String?
   @Published private(set) var projection:NativeKernelHostReply?
   @Published private(set) var projectionError:String?
@@ -46,6 +49,8 @@ struct NotebookCellResult:Sendable {
   private let kernel:KernelCommitPort,host:NativeHostClient
   private var runTask:Task<Void,Never>?
   private var closing=false
+  private var unknownCell:String?
+  private var presenters:[String:ResultPresenter]=[:]
   var beforeRun:(@MainActor () async throws->Void)?
   var changed:(@MainActor ()->Void)?
   let navigation=WorkbenchNavigation()
@@ -54,6 +59,19 @@ struct NotebookCellResult:Sendable {
   }
   var canRun:Bool {!closing && operation==nil && unknownOperation==nil}
   var canStop:Bool {operation != nil && !cancelPending && phase != .completed && phase != .failed && phase != .discarded}
+  func presenter(for binding:ResultBinding)->ResultPresenter {
+    if let existing=presenters[binding.result_ref] {return existing}
+    let value=ResultPresenter(host:host,binding:binding);presenters[binding.result_ref]=value;return value
+  }
+  private func accept(_ result:NotebookCellResult,cell:String) {
+    if let previous=results[cell],previous.receipt.operation_id != result.receipt.operation_id {
+      // History keeps small original receipts/bindings. Complete values are read on demand
+      // from the real immutable result; never duplicate every large output in Swift memory.
+      history.append(.init(receipt:previous.receipt,bindings:previous.bindings,values:[]))
+      if history.count>32 {history.removeFirst();historyOmitted+=1}
+    }
+    results[cell]=result
+  }
   func refreshProjection() async {
     guard !closing else {return}
     do {
@@ -65,7 +83,7 @@ struct NotebookCellResult:Sendable {
   func run(_ cell:String) {
     guard canRun else {return}
     let id="notebook-run-"+UUID().uuidString.lowercased()
-    selectedCell=cell;operation=id;phase=nil;message="正在提交运行请求";cancelPending=false
+    selectedCell=cell;operation=id;operationCell=cell;phase=nil;message="正在提交运行请求";cancelPending=false
     runTask=Task { [weak self] in
       guard let self else {return}
       let polling=Task { [weak self] in
@@ -75,7 +93,7 @@ struct NotebookCellResult:Sendable {
           try? await Task.sleep(for:.milliseconds(100))
         }
       }
-      defer {polling.cancel();if operation==id {operation=nil;cancelPending=false};changed?()}
+      defer {polling.cancel();if operation==id {operation=nil;operationCell=nil;cancelPending=false};changed?()}
       do {
         try await beforeRun?()
         let receipt=try await kernel.runCell(cell,operation:id)
@@ -83,8 +101,8 @@ struct NotebookCellResult:Sendable {
         // A late stop cannot overwrite an actual committed result.
         phase = .completed;message=receipt.producer.terminal_status == .done ? "已完成" : "计算结束，有错误"
         do {try await display(receipt)}
-        catch {if !closing {results[cell] = .init(receipt:receipt,bindings:[],values:[]);message="计算已提交，结果暂无法读取："+String(describing:error)}}
-      } catch KernelPortError.unknownOutcome {unknownOperation=id;phase = .unknown;message="运行结果待核对"}
+        catch {if !closing {accept(.init(receipt:receipt,bindings:[],values:[]),cell:cell);message="计算已提交，结果暂无法读取："+String(describing:error)}}
+      } catch KernelPortError.unknownOutcome {unknownOperation=id;unknownCell=cell;phase = .unknown;message="运行结果待核对"}
       catch {if !closing {message="运行未完成："+String(describing:error)}}
       await refreshProjection()
     }
@@ -106,13 +124,16 @@ struct NotebookCellResult:Sendable {
             let latex=try? await reader.completeSource(format:.latex)
             values.append(.init(binding:binding,source:source,modern:modern,latex:latex))
           }
+          // The first visible projection arrives with its accepted output, so an inspector
+          // switch cannot accidentally coincide with a delayed type/solution height change.
+          await presenter(for:binding).load()
         }
         let next=offset+UInt32(manifest.bindings.count)
         if next>=manifest.total {break}
         guard next>offset else {throw ResultClientError.invalidReply};offset=next
       }
       await reader.close()
-      guard !closing else {return};results[cell] = .init(receipt:receipt,bindings:bindings,values:values)
+      guard !closing else {return};accept(.init(receipt:receipt,bindings:bindings,values:values),cell:cell)
     } catch {await reader.close();throw error}
   }
   func stop() async {
@@ -122,19 +143,21 @@ struct NotebookCellResult:Sendable {
   }
   func reconcile() async {
     guard let id=unknownOperation,operation==nil,!closing else {return}
-    operation=id;defer {operation=nil;changed?()}
+    operation=id;operationCell=unknownCell;defer {operation=nil;operationCell=nil;changed?()}
     do {
       if let receipt=try await kernel.reconcile(id) {
         phase = .completed;unknownOperation=nil;message="已核对原运行结果"
         do {try await display(receipt)} catch {message="已核对计算提交，结果暂无法读取："+String(describing:error)}
       }
       else {phase = .discarded;message="已确认本次运行未提交"}
-      unknownOperation=nil
+      unknownOperation=nil;unknownCell=nil
     } catch {message="运行结果仍待核对："+String(describing:error)}
   }
   func close() async {
     guard !closing else {return};closing=true
     if let operation {await kernel.cancel(operation)}
-    runTask?.cancel();await runTask?.value;await kernel.close();runTask=nil
+    runTask?.cancel();await runTask?.value
+    for owner in presenters.values {await owner.close()};presenters.removeAll()
+    await kernel.close();runTask=nil
   }
 }

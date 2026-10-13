@@ -79,6 +79,19 @@ jobs:
           shutil.copyfile(source,'target/macos-ci-evidence/original-and-scientific-latex.json')
           PY
           python3 macos/Scripts/verify-math-resources.py 'target/macos-native/Build/Products/Release/OpenMath Preview.app' --output target/macos-ci-evidence/math-resources.json
+      - name: Actual solution presentation, stale replies and isolated numeric projection
+        run: |
+          bash macos/Scripts/test-result-presenter.sh > target/macos-ci-evidence/result-presenter.log 2>&1
+          python3 - <<'PY'
+          from pathlib import Path
+          import shutil
+          log=Path('target/macos-ci-evidence/result-presenter.log').read_text()
+          records=[line.removeprefix('PRESENTER_EVIDENCE=') for line in log.splitlines() if line.startswith('PRESENTER_EVIDENCE=')]
+          assert len(records)==1, 'actual presenter record missing'
+          source=Path(records[0]).resolve()
+          assert source.is_relative_to(Path('target/macos-result-presenter-tests').resolve())
+          shutil.copyfile(source,'target/macos-ci-evidence/actual-result-presentations.json')
+          PY
       - name: Collect crashes from this task's native fixtures
         if: failure()
         run: |
@@ -87,7 +100,7 @@ jobs:
           import shutil
           root=Path.home()/'Library/Logs/DiagnosticReports'
           output=Path('target/macos-ci-evidence/fixture-crashes');output.mkdir(parents=True,exist_ok=True)
-          prefixes=('workbench-fixtures-','source-editor-fixtures-','composition-fixtures-','math-render-fixtures-')
+          prefixes=('workbench-fixtures-','source-editor-fixtures-','composition-fixtures-','math-render-fixtures-','result-presenter-fixtures-')
           for path in root.glob('*.ips'):
               if path.name.startswith(prefixes):shutil.copyfile(path,output/path.name)
           PY

@@ -1,0 +1,21 @@
+{
+  "date": "2026-10-13",
+  "bundle_id": "org.openmath.OpenMath.ResultPresenterUIFixture",
+  "method": "Actual CUA accessibility actions and native window screenshots, not offscreen cacheDisplay",
+  "observed": [
+    "Prepared actual fixed cases with explicit fixture button; opening alone did not evaluate.",
+    "Root polynomial/index remained visible after actual 20-digit numeric button returned 1.16730397826141868425549`20.093752210570745.",
+    "Exp solution displayed original Log/complex term, integer membership condition, and actual Numeric 33 verification label.",
+    "Actual 20-fold root displayed global multiplicity 20 on page 1 and page 2, same first solution ordinal.",
+    "80-digit picker and readonly projection retained original full high-precision InputForm/precision mark; light/dark views checked.",
+    "None showed no solutions; All and Region were present in actual accessibility state and typed core fixture; held Solve displayed actual incomplete-branch message rather than no-solutions.",
+    "Actual native edit changed guard2 to guard9; previous value2 remained and displayed source-changed status; re-run accepted9/source revision1; history original-ref read returned2.",
+    "Final zero-success parse error displayed no successful result; real earlier 7/Null prefix remained separately partial.",
+    "Suppressed declarations hidden in final ordinary notebook display; no blank math label invented.",
+    "Closed document and normally quit fixture after inspection."
+  ],
+  "limits": [
+    "Full same-candidate final gates, table/step/graph/Markdown/long-notebook tasks remain separate.",
+    "Screenshots were observed in CUA output; this JSON is an action/observation record, not a stored pixel artifact."
+  ]
+}

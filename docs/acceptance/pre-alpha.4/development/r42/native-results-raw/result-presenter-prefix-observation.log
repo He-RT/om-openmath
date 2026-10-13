@@ -1,0 +1,6 @@
+    Finished `release` profile [optimized] target(s) in 0.26s
+Building for production...
+Build complete! (0.16秒)
+Result presenter check failed at line 84: completed prefix was discarded or marked complete
+main/main.swift:17: Fatal error: completed prefix was discarded or marked complete
+macos/Scripts/test-result-presenter.sh: line 19: 22520 Trace/BPT trap: 5       target/macos-result-presenter-tests/result-presenter-fixtures "$attempt_root"

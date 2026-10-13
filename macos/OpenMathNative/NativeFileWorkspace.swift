@@ -212,21 +212,24 @@ struct NativeNotebookFileView:View {
                     .accessibilityIdentifier("notebook-run-"+cell.id)
                   if let result=runtime.results[cell.id] {
                     let stale=result.receipt.producer.execution_epoch.value != session.drafts.confirmed.execution_epoch.value || session.drafts.confirmed.file.cells.filter{$0.kind == .math}.contains{(session.drafts.overlay($0.id)?.source.utf8 ?? $0.source.utf8).elementsEqual($0.source.utf8)==false}
-                    Text(stale ? "历史结果 · 源码已修改" : result.receipt.producer.terminal_status == .done ? "已接纳" : "计算有错误").font(.caption).foregroundStyle(.secondary)
+                    Text(runtime.operationCell==cell.id ? "上次结果 · 正在重算" : stale ? "历史结果 · 源码已修改" : result.receipt.producer.terminal_status == .done ? "已接纳" : "计算有错误").font(.caption).foregroundStyle(.secondary)
                   }
                 }
                 if let result=runtime.results[cell.id] {
-                  ForEach(result.values) {value in
-                    if let latex=value.latex {
-                      NativeMathView(request:.init(identity:value.id,originalLatex:latex,wolfram:value.source,modern:value.modern))
-                        .padding(.vertical,6).accessibilityIdentifier("notebook-result-"+cell.id)
-                    } else {
-                      HStack(alignment:.top) {
-                        Text(String(value.source.prefix(4000))).font(.system(.body,design:.monospaced)).textSelection(.enabled).frame(maxWidth:.infinity,alignment:.leading)
-                        Button("复制结果") {NSPasteboard.general.clearContents();NSPasteboard.general.setString(value.source,forType:.string)}
-                      }.padding(.vertical,6).accessibilityIdentifier("notebook-result-"+cell.id)
-                      Text("公式源暂不可读取，已保留精确源式。").font(.caption).foregroundStyle(.secondary)
-                      if value.source.count>4000 {Text("此处显示预览，可复制完整结果。").font(.caption).foregroundStyle(.secondary)}
+                  ForEach(result.bindings,id:\.result_ref) {binding in
+                    NativeResultView(presenter:runtime.presenter(for:binding),value:result.values.first{$0.binding.result_ref==binding.result_ref},displayContext:context(result,cell:cell.id))
+                      .accessibilityIdentifier("notebook-result-"+cell.id)
+                  }
+                  if result.bindings.isEmpty {Text("计算已接纳，结果暂无法读取。原操作 \(result.receipt.operation_id) 已保留。").font(.caption).foregroundStyle(.secondary)}
+                }
+                let history=runtime.history.filter{$0.receipt.producer.cell_id.value==cell.id}
+                if !history.isEmpty {
+                  DisclosureGroup("本会话的历史运行（\(history.count)）") {
+                    ForEach(history,id:\.receipt.operation_id) {previous in
+                      Text("历史计算 · 版本 \(previous.receipt.producer.kernel_state_revision.value) / 源码版本 \(previous.receipt.producer.source_revision.value)").font(.caption).textSelection(.enabled)
+                      ForEach(previous.bindings,id:\.result_ref) {binding in
+                        NativeResultView(presenter:runtime.presenter(for:binding),value:nil,displayContext:.history)
+                      }
                     }
                   }
                 }
@@ -242,6 +245,7 @@ struct NativeNotebookFileView:View {
           }
         }
       }.onChange(of:runtime.navigationSequence) {if let cell=runtime.selectedCell {proxy.scrollTo(cell,anchor:.top)}}}
+      if runtime.historyOmitted>0 {Text("本会话显示最近32次历史运行；\(runtime.historyOmitted) 次更早记录不在此内存列表中，原耐久回执未删除。").font(.caption).foregroundStyle(.secondary)}
       if !session.drafts.recoveredOrphans.isEmpty {
         DisclosureGroup("已删除单元格的恢复草稿") {
           ForEach(Array(session.drafts.recoveredOrphans.enumerated()),id:\.offset) {_,draft in
@@ -250,6 +254,13 @@ struct NativeNotebookFileView:View {
         }
       }
     }.padding(20)
+  }
+  private func context(_ result:NotebookCellResult,cell:String)->NativeResultDisplayContext {
+    if runtime.operationCell==cell {return .refreshing}
+    if result.receipt.producer.execution_epoch.value != session.drafts.confirmed.execution_epoch.value || session.drafts.confirmed.file.cells.contains(where:{candidate in
+      candidate.kind == .math && session.drafts.overlay(candidate.id).map{!$0.source.utf8.elementsEqual(candidate.source.utf8)}==true
+    }) {return .sourceChanged}
+    return .current
   }
 }
 private struct NativeDraftBackupStatus:View {

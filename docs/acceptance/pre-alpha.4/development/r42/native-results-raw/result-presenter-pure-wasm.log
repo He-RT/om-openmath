@@ -1,0 +1,40 @@
+   Compiling num-modular v0.6.5
+   Compiling serde_core v1.0.229
+   Compiling serde v1.0.229
+   Compiling num-traits v0.2.19
+   Compiling dashu-int v0.6.1
+   Compiling cfg-if v1.0.5
+   Compiling static_assertions v1.1.0
+   Compiling thiserror v2.0.21
+   Compiling zmij v1.0.23
+   Compiling serde_json v1.0.151
+   Compiling memchr v2.8.3
+   Compiling itoa v1.0.18
+   Compiling smallvec v1.16.2
+   Compiling rustc-hash v2.1.3
+   Compiling dashu-base v0.6.1
+   Compiling bytemuck v1.25.2
+   Compiling once_cell v1.21.4
+   Compiling font-types v0.12.6
+   Compiling zeno v0.3.3
+   Compiling yazi v0.2.1
+   Compiling read-fonts v0.41.0
+   Compiling ts-rs v12.0.1
+   Compiling dashu-float v0.6.1
+   Compiling skrifa v0.44.0
+   Compiling dashu-ratio v0.6.1
+   Compiling dashu-cmplx v0.6.1
+   Compiling dashu v0.6.1
+   Compiling om-num v0.1.0-pre-alpha.3 (/Users/hert/Projects/openmath/crates/om-num)
+   Compiling om-core v0.1.0-pre-alpha.3 (/Users/hert/Projects/openmath/crates/om-core)
+   Compiling om-poly v0.1.0-pre-alpha.3 (/Users/hert/Projects/openmath/crates/om-poly)
+   Compiling om-analysis v0.1.0-pre-alpha.3 (/Users/hert/Projects/openmath/crates/om-analysis)
+   Compiling om-llm v0.1.0-pre-alpha.3 (/Users/hert/Projects/openmath/crates/om-llm)
+   Compiling swash v0.2.10
+   Compiling om-format v0.1.0-pre-alpha.3 (/Users/hert/Projects/openmath/crates/om-format)
+   Compiling om-parse v0.1.0-pre-alpha.3 (/Users/hert/Projects/openmath/crates/om-parse)
+   Compiling om-simplify v0.1.0-pre-alpha.3 (/Users/hert/Projects/openmath/crates/om-simplify)
+   Compiling om-solve v0.1.0-pre-alpha.3 (/Users/hert/Projects/openmath/crates/om-solve)
+   Compiling om-eval v0.1.0-pre-alpha.3 (/Users/hert/Projects/openmath/crates/om-eval)
+   Compiling om-kernel v0.1.0-pre-alpha.3 (/Users/hert/Projects/openmath/crates/om-kernel)
+    Finished `dev` profile [unoptimized] target(s) in 9.80s

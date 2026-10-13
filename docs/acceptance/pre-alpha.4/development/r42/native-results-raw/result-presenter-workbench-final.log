@@ -1,0 +1,11 @@
+    Finished `release` profile [optimized] target(s) in 0.11s
+Building for production...
+[1 / 4]
+Build complete! (0.31秒)
+{"editor_attached":true,"inspector_hidden":false,"notebook_width":544,"outline_hidden":false,"requested_width":1042,"selection_length":1,"selection_location":4,"split_width":1042}
+{"editor_attached":true,"inspector_hidden":false,"notebook_width":571.5,"outline_hidden":true,"requested_width":861,"selection_length":1,"selection_location":4,"split_width":861}
+{"editor_attached":true,"inspector_hidden":true,"notebook_width":638,"outline_hidden":true,"requested_width":640,"selection_length":1,"selection_location":4,"split_width":640}
+{"editor_attached":true,"inspector_hidden":false,"notebook_width":602.5,"outline_hidden":false,"requested_width":1100,"selection_length":1,"selection_location":4,"split_width":1100}
+Long CAS observed: phase=Optional(main.NativeKernelHostReplyPhase.running), message=正在提交运行请求, active=true
+{"center_identity_retained":true,"destinations":["document","result","assistant","steps","variables"],"long_cas_edit_stop":true,"navigation_document_owned":true,"pending_late_draft":"let a=9 # 中文🙂","real_native_selection_retained":true,"real_scroll_retained":true,"result_a":"5","result_b":"6","widths":[1042,861,640,1100]}
+Actual native window 1042/861/640, same notebook view/editor/selection, physical kernel receipts 5/6, live CAS resize/edit/explicit stop and draft retention passed

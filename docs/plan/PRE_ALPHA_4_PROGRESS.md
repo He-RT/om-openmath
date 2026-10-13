@@ -4,9 +4,9 @@
 
 2026-10-13。目标`0.1.0-pre-alpha.4`，当前运行/公开版本`.3`；开发`dev`，不合main、不改旧标签、本机不启动iOS模拟器。本文只记录结果，规格及完成标准唯一见主计划；计划编写本身不计实施完成。
 
-**当前状态：** 27任务完成（全部R4.0与R4.1、R4.2.01–02及07）；其余71任务尚未完成；32最终运行/发行gate全部not_run；candidate未分配，ready_to_publish=false，released_verified=false。设计/HTML/Schema通过不填运行时pass。
+**当前状态：** 28任务完成（全部R4.0与R4.1、R4.2.01–02、07及09）；其余70任务尚未完成；32最终运行/发行gate全部not_run；candidate未分配，ready_to_publish=false，released_verified=false。设计/HTML/Schema通过不填运行时pass。
 
-**下一任务：** 用户选择保留系统输入法设置、先做其他任务；R4.2.03真实候选窗口仍未验收。独立继续R4.2.09结构化结果与数值投影或R4.3.01规范Agent/IPC，原依赖满足后再接非求值编辑分析/长笔记本/Markdown。存储维护、备份、新代次、配额和GC已通过实际验证；日末备份触发/数据管理UI仍在R4.2.18接线，完整Pi/provider/上下文/Agent界面仍继续R4.3–4.4，不能将存储Done当产品完成。保持同candidate完整门禁，R4.5.07在R4.5.05冻结前完成。
+**下一任务：** 用户选择保留系统输入法设置、先做其他任务；R4.2.03真实候选窗口仍未验收。独立继续R4.2.10矩阵/表格/记录与科学诊断或R4.3.01规范Agent/IPC，原依赖满足后再接非求值编辑分析/长笔记本/Markdown。存储维护、备份、新代次、配额和GC已通过实际验证；日末备份触发/数据管理UI仍在R4.2.18接线，完整Pi/provider/上下文/Agent界面仍继续R4.3–4.4，不能将存储Done当产品完成。保持同candidate完整门禁，R4.5.07在R4.5.05冻结前完成。
 
 ## 已知外部前置
 
@@ -50,9 +50,9 @@
 | [ ] [R4.2.04](PRE_ALPHA_4.md#task-r4.2.04) | 非求值Preview/Complete/Hover和高亮 | planned | — | — |
 | [ ] [R4.2.05](PRE_ALPHA_4.md#task-r4.2.05) | 本地snippets、希腊快捷、Fix和缩进 | planned | — | — |
 | [ ] [R4.2.06](PRE_ALPHA_4.md#task-r4.2.06) | 长笔记本布局、复用与scroll anchors | planned | — | — |
-| [x] [R4.2.07](PRE_ALPHA_4.md#task-r4.2.07) | SwiftMath原生公式和原式fallback | completed | [实际57回执/字体/原生附件](../acceptance/pre-alpha.4/development/r42/native-math.json) | 本批 |
+| [x] [R4.2.07](PRE_ALPHA_4.md#task-r4.2.07) | SwiftMath原生公式和原式fallback | completed | [实际57回执/字体/原生附件](../acceptance/pre-alpha.4/development/r42/native-math.json) | 21355b3 |
 | [ ] [R4.2.08](PRE_ALPHA_4.md#task-r4.2.08) | Markdown AST、数学扫描与连续原生流 | planned | — | — |
-| [ ] [R4.2.09](PRE_ALPHA_4.md#task-r4.2.09) | 结果状态、解条件Root与数值投影 | planned | — | — |
+| [x] [R4.2.09](PRE_ALPHA_4.md#task-r4.2.09) | 结果状态、解条件Root与数值投影 | completed | [实际12型/引用/数值](../acceptance/pre-alpha.4/development/r42/native-results.json) | 本批 |
 | [ ] [R4.2.10](PRE_ALPHA_4.md#task-r4.2.10) | 矩阵、表格、记录与科学诊断 | planned | — | — |
 | [ ] [R4.2.11](PRE_ALPHA_4.md#task-r4.2.11) | 真实步骤、变量与独立讲解入口 | planned | — | — |
 | [ ] [R4.2.12](PRE_ALPHA_4.md#task-r4.2.12) | CoreGraphics二维和实际采样控制 | planned | — | — |
@@ -510,3 +510,13 @@ Done依据与覆盖case/proof:
 - f875658/CI38285711835现全部terminal：Rust/deps/iOS success；Web设置保存status超过原5s仍失败，Mac原工作台目的地切换重置真实scroll失败。中心root只在文档会话实例变更时重赋，保留现有观察更新，本地原工作台四宽度/100点scroll/编辑选区/真实5与6/长CAS编辑停止全部通过；新SHA CI待独立验证，不将本地通过称旧CI成功。原SourceEditor/Composition/KernelRuntime、Release、269DTO与工程核验通过。
 - [完整源输入/实际回执/原失败/安装清单/日志](../acceptance/pre-alpha.4/development/r42/native-math.json)及[实现说明](../design/native-math.md)。用户明确选择不调整系统输入法、先其他任务，已关闭暂缓IME fixture，R4.2.03仍in_progress，不再请求同一设置授权。磁盘约48GiB可用，target约13GiB，无需再清仍使用的依赖/Release/证据。
 - 原运行.3、dev、不合main、不改旧公开包/标签、无子代理、不启动本机iOS模拟器，Root1/lib4/doc5/.omnb1，32final gates not_run/no candidate/ready=false/released=false；剩余71任务与完整发行继续，goal保持active。
+
+## R4开发记录 D042 — 原生结果、条件/重数与只读数值
+
+- R4.2.09完成，28/98。ResultPresenter按真实ref保留文档拥有的只读投影，读取原summary/presentation，NativeSolutionView显示finite/none/all/region、原条件/Root/根式/各验证标签；未求值表达式保留真实消息，不当作无解。首次类型与已接纳输出一起准备，原工作台scroll/选区断言仍通过。
+- 核心原presentation page从完整typed解记录（含条件/verification/所有绑定原字节）取全局重数/首次序号，不比较pretty label、不从一页猜全局。派生索引20000条/8MiB/实际Interrupt，原20重根两页16+4均20、同初始序号；原数学求值与公共SolutionSetView不改。Swift只安排当前页，条件不同同值不合并。
+- Actual InspectResultNumeric20/50/80、单解完整InputForm的原readonly InspectExpression20位；ref/原序号/绑定位置/原UTF8隔离，原精确式和80位精度标记保持，Out/random/主定义/源不改变。实际decoded回复等待期间真实编辑guard2→9、主提交后，旧回复不写新展示；源rev只由显式编辑0→1。重算保留旧值，接纳新值后32条小历史原回执/Binding按需读2，不复制全部大值，旧数据不可用不自动重算。运行单元格独立于焦点导航。
+- 真实多语句失败保留2成功记录/7与Null、partial及实际递归错误；零成功E022明确未产生成功结果，不制造前缀；真正suppressed声明不在普通笔记本画输出。可见Cua检查原Root多项式/根序+实际近似1.167303978…、Exp整数条件+真实Numeric33、跨页重数20、高精度80/深浅色、无解/全体/区域、未求值消息、实际编辑/9/历史原值2以及最终零前缀提示，随后正常关文档/退出。
+- [完整实际12输入/回执/数值/原57/回归/失败证据](../acceptance/pre-alpha.4/development/r42/native-results.json)、[实现说明](../design/native-results.md)。6 retained Rust与host results/runtime、Clippy/fmt/pureWASM、269DTO/工程、原ResultClient/KernelRuntime/保存/草稿/恢复/SourceEditor/Composition/Workbench和Release/安装字体许可检查通过。回归编译时输入被编辑的失败明确拒绝并保存，冻结源码后的独立重跑通过；旧单compound测试也保留，不当作真实成功前缀。
+- 21355b3/CI38369472679已五jobs全部success，Mac实际workbench scroll和57SwiftMath/fonts资源也真通过，原1s数学门槛不动/iOS只CI。此批新SHA继续独立核对；此前f875设置超时/scroll失败仍保留。当前约48GiB空闲、target约14GiB，不删当前依赖/Release/源码/证据。
+- 用户保留OS输入设置、R4.2.03真实候选窗口仍未验；下一R4.2.10或规范Agent/IPC，Markdown/Steps需原依赖先满足。运行.3/dev/no main/旧公开包不动/无子代理/no本机模拟器、Root1/lib4/doc5/.omnb1，70任务与完整发行、32finalgate not_run/no candidate/ready=false/released=false，goal保持active。

@@ -1,0 +1,24 @@
+   Compiling om-host-service v0.1.0-pre-alpha.3 (/Users/hert/Projects/openmath/crates/om-host-service)
+   Compiling om-kernel v0.1.0-pre-alpha.3 (/Users/hert/Projects/openmath/crates/om-kernel)
+    Finished `test` profile [unoptimized] target(s) in 7.02s
+     Running tests/result_runtime.rs (target/debug/deps/result_runtime-e90af7c794bc9817)
+
+running 4 tests
+test result_read_schema_rejects_unknown_options_overlarge_pages_or_invented_channels ... ok
+test direct_cancel_and_readback_remain_available_while_a_real_result_worker_is_paused ... ok
+test actual_manifest_pages_source_numeric_and_readonly_controls_have_scoped_original_identity ... ok
+test readonly_result_retention_does_not_keep_an_obsolete_main_pool_envelope_pinned ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.10s
+
+     Running tests/results.rs (target/debug/deps/results-3d9a27a32139f5cf)
+
+running 5 tests
+test scratch_and_readonly_random_out_set_are_isolated_from_original_state ... ok
+test reexecuted_definition_invalidates_and_retires_dependent_owned_value_without_cascade ... ok
+test revoked_cache_lookup_keeps_reader_reservation_until_actual_pin_release ... ok
+test expired_and_restarted_result_tokens_require_fresh_grants_for_the_same_durable_result ... ok
+test actual_result_occurrences_scope_history_and_exact_pages_survive_other_executions ... ok
+
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.24s
+

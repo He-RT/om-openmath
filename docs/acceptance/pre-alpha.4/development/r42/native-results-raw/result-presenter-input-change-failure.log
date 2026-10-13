@@ -1,0 +1,6 @@
+   Compiling om-host-service v0.1.0-pre-alpha.3 (/Users/hert/Projects/openmath/crates/om-host-service)
+    Finished `dev` profile [unoptimized] target(s) in 1.04s
+     Running `target/debug/examples/kernel_store_contract seed target/macos-storage-tests/kernel-runtime-source`
+    Finished `release` profile [optimized] target(s) in 0.11s
+error: input file 'macos/OpenMathNative/Rendering/ResultPresenter.swift' was modified during the build
+error: input file 'macos/OpenMathNative/Rendering/ResultPresenter.swift' was modified during the build

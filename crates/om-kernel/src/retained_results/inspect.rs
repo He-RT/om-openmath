@@ -90,7 +90,35 @@ impl RetainedResult {
                     .skip(offset as usize)
                     .take(limit as usize)
                     .collect::<Vec<_>>();
-                json!({"kind":"solutions","solution_kind":view.kind,"vars":view.vars,"region_latex":view.region_latex,"total_solutions":view.solutions.len(),"total_intervals":view.intervals.len(),"offset":offset,"solutions":solutions,"intervals":intervals})
+                // The original solver expands actual multiplicities into records. Count their
+                // complete typed byte identity (including conditions/verification), not pretty
+                // LaTeX equality or just the current page. Bound this derived index separately.
+                let mut groups = std::collections::BTreeMap::<Vec<u8>, (u32, u32)>::new();
+                let mut keys = Vec::new();
+                let mut bytes = 0usize;
+                if view.solutions.len() > 20000 {
+                    return Err("SOLUTION_PRESENTATION_BUDGET_EXCEEDED".into());
+                }
+                for (index, row) in view.solutions.iter().enumerate() {
+                    ctx.tick().map_err(|e| e.to_string())?;
+                    let key = serde_json::to_vec(row).map_err(|_| "RESULT_ENCODING_FAILED")?;
+                    bytes = bytes
+                        .checked_add(key.len())
+                        .ok_or("SOLUTION_PRESENTATION_BUDGET_EXCEEDED")?;
+                    if bytes > 8 * 1024 * 1024 {
+                        return Err("SOLUTION_PRESENTATION_BUDGET_EXCEEDED".into());
+                    }
+                    let group = groups.entry(key.clone()).or_insert((index as u32, 0));
+                    group.1 += 1;
+                    keys.push(key);
+                }
+                let selected = keys.iter().skip(offset as usize).take(limit as usize);
+                let counts = selected
+                    .clone()
+                    .map(|key| groups[key].1)
+                    .collect::<Vec<_>>();
+                let first_indices = selected.map(|key| groups[key].0).collect::<Vec<_>>();
+                json!({"kind":"solutions","solution_kind":view.kind,"vars":view.vars,"region_latex":view.region_latex,"total_solutions":view.solutions.len(),"total_intervals":view.intervals.len(),"offset":offset,"solutions":solutions,"intervals":intervals,"solution_multiplicities":counts,"solution_first_indices":first_indices})
             }
             Some(OutputItem::Expr { .. }) => {
                 if offset != 0 {

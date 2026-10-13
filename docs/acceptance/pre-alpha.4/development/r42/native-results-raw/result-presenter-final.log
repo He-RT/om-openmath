@@ -1,0 +1,10 @@
+    Blocking waiting for file lock on package cache
+    Blocking waiting for file lock on package cache
+   Compiling om-host-service v0.1.0-pre-alpha.3 (/Users/hert/Projects/openmath/crates/om-host-service)
+   Compiling om-apple-ffi v0.1.0-pre-alpha.3 (/Users/hert/Projects/openmath/crates/om-apple-ffi)
+    Finished `release` profile [optimized] target(s) in 23.14s
+Building for production...
+Build complete! (0.16秒)
+Result presenter check failed at line 81: completed prefix was discarded or marked complete
+main/main.swift:17: Fatal error: completed prefix was discarded or marked complete
+macos/Scripts/test-result-presenter.sh: line 19: 21828 Trace/BPT trap: 5       target/macos-result-presenter-tests/result-presenter-fixtures "$attempt_root"

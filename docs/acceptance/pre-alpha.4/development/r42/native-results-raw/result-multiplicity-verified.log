@@ -1,0 +1,16 @@
+    Blocking waiting for file lock on package cache
+    Blocking waiting for file lock on package cache
+   Compiling om-kernel v0.1.0-pre-alpha.3 (/Users/hert/Projects/openmath/crates/om-kernel)
+    Finished `test` profile [unoptimized] target(s) in 1.12s
+     Running tests/retained_results.rs (target/debug/deps/retained_results-4d66bfdcfeb1bb12)
+
+running 6 tests
+test readonly_set_seed_and_hidden_function_effects_do_not_change_old_or_main_context ... ok
+test solution_multiplicity_is_global_across_actual_record_pages ... ok
+test geometry_pages_equal_original_kernel_samples_without_any_resampling ... ok
+test held_diagnostics_and_initial_explore_geometry_remain_actual_retained_data ... ok
+test original_steps_are_paged_and_numeric_value_uses_the_actual_retained_value ... ok
+test exact_values_unicode_rows_and_occurrences_stay_immutable_across_main_edits ... ok
+
+test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.05s
+

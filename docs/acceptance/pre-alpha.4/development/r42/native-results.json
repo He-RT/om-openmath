@@ -1,0 +1,243 @@
+{
+  "schema_version": 1,
+  "task": "R4.2.09",
+  "date": "2026-10-13",
+  "kind": "development_evidence_not_final_candidate",
+  "base_commit": "21355b3cfcee2fa2e361286bd161cccc9d739e5d",
+  "actual_native_cases": 12,
+  "actual_solution_kinds": [
+    "finite",
+    "none",
+    "all",
+    "region",
+    "conditional_in_finite",
+    "exact_root_in_finite"
+  ],
+  "checks": [
+    "Actual original Kernel/C ABI/SQLite receipts and readonly native summary/presentation, no second solver or source evaluation during presentation.",
+    "Complete typed raw-byte conditions/verification/variable binding identities; same pretty-value different conditions remain separate.",
+    "Actual 20-fold root global multiplicity remains20 on pages0 and16; same original first index; interrupt tested.",
+    "Root polynomial/index/original exact source remains after actual frozen-ref20-digit numeric query; 80-digit value retains precision marker.",
+    "Actual caller-source edit guard2 -> guard9 advances source revision exactly once and retains old ref/history; actual delayed decoded reply is rejected after changed main scope.",
+    "Main definitions, Out, random and source do not change through metadata/numeric viewing; actual retained readonly context used.",
+    "Multi-statement error preserves2 successful original statements and7/Null prefix; zero-success parse error has no fabricated prefix.",
+    "Actual suppressed statements stay suppressed in final ordinary notebook presentation.",
+    "Document-owned operationCell, projection owners and small history survive navigation; close settles readonly work.",
+    "Original53+scientific4 all57 done/ready via unchanged real math/source path; native workbench, result client, kernel runtime, saves, drafts, recovery, source editor and composition regressions passed.",
+    "6 retained-result Rust, host result/runtime tests, Clippy, fmt,269DTO/project checks, pure WASM and Release installed resource closure passed.",
+    "Prior exact21355b3 CI38369472679 all5 jobs success including Mac real scroll/math resources; current change awaits new same-SHA CI."
+  ],
+  "bounds": {
+    "presentation_page": 16,
+    "solution_index_records": 20000,
+    "solution_index_serialized_bytes": 8388608,
+    "same_session_history_headers": 32,
+    "source_full_read_bytes": 8388608
+  },
+  "preserved_failures": [
+    "Initial partial test used one compound expression and did not prove completed statement prefix; actual newline-separated statements now prove2 accepted statements. Original failure logs retained.",
+    "Regression compiler rejected input-file change during its build; source then frozen and affected checks rerun; rejected log retained."
+  ],
+  "limitations": [
+    "Final32gates remain not_run/no candidate/ready_to_publish=false/released_verified=false.",
+    "System input settings preserved by user request; real OS IME candidate windows still unverified.",
+    "Matrix/table/record, Markdown/steps/plot/long-notebook performance and Agent/provider/media remain dedicated subsequent tasks.",
+    "Small history list is this running session; expired original refs give actual unavailable errors and never reexecute old source; durable receipts are not deleted."
+  ],
+  "commands": [
+    "CARGO_PROFILE_DEV_DEBUG=0 CARGO_PROFILE_TEST_DEBUG=0 cargo test -p om-kernel --test retained_results --locked",
+    "CARGO_PROFILE_DEV_DEBUG=0 CARGO_PROFILE_TEST_DEBUG=0 cargo test -p om-host-service --test results --test result_runtime --locked",
+    "CARGO_PROFILE_DEV_DEBUG=0 CARGO_PROFILE_TEST_DEBUG=0 cargo clippy -p om-kernel -p om-host-service --all-targets --locked -- -D warnings",
+    "CARGO_PROFILE_DEV_DEBUG=0 CARGO_PROFILE_TEST_DEBUG=0 cargo build -p om-kernel --no-default-features --locked --target wasm32-unknown-unknown",
+    "bash macos/Scripts/test-result-presenter.sh",
+    "bash macos/Scripts/test-math-render.sh",
+    "bash macos/Scripts/test-workbench.sh",
+    "bash macos/Scripts/build-native.sh",
+    "bash macos/Scripts/test-results.sh",
+    "bash macos/Scripts/test-kernel-runtime.sh",
+    "bash macos/Scripts/test-saves.sh",
+    "bash macos/Scripts/test-drafts.sh",
+    "bash macos/Scripts/test-recovery.sh",
+    "bash macos/Scripts/test-source-editor.sh",
+    "bash macos/Scripts/test-composition.sh"
+  ],
+  "implementation": [
+    {
+      "path": "crates/om-kernel/src/retained_results/inspect.rs",
+      "sha256": "d0b71c209343a99230a3478e2b3a66c14689c23f5f52376c700d626cca88b998"
+    },
+    {
+      "path": "crates/om-kernel/tests/retained_results.rs",
+      "sha256": "c3ede67707ee02acbb2404430c9f934a22b4e1cd7facfa818b8a172c5bb9cdfc"
+    },
+    {
+      "path": "macos/OpenMathNative/Rendering/ResultPresenter.swift",
+      "sha256": "e39dbb607bd0d5d436566aa73cfbf79062b76b9e51363f0cff93206c48a1569b"
+    },
+    {
+      "path": "macos/OpenMathNative/Rendering/SolutionView.swift",
+      "sha256": "14d29c949c964bf1f59d504e4ee06d5d32683ffe949b3f9fb6a7c13cca4975b6"
+    },
+    {
+      "path": "macos/OpenMathNative/Kernel/NotebookRuntime.swift",
+      "sha256": "9f511b176f66a537532e8c2e0776bdcadc747502e3244ec0f745933be25228b9"
+    },
+    {
+      "path": "macos/OpenMathNative/NativeFileWorkspace.swift",
+      "sha256": "bc1f876aaccbb8b0d52412b017c2e3f1c85ba3bc69c267119fd7d4878b260d40"
+    },
+    {
+      "path": "macos/OpenMathNativeTests/ResultPresenterFixtures/main.swift",
+      "sha256": "ec3b49a4ac13e6c457e3bd4295f986b0ab7cb07d29b2862788e5a247a25585ae"
+    },
+    {
+      "path": "macos/OpenMathNativeTests/ResultPresenterUIFixture/main.swift",
+      "sha256": "dc7fe714490e3207a395165d19e5d89a2c91f3f1afa386cb8fac57dc1dbb6e35"
+    },
+    {
+      "path": "macos/Scripts/test-result-presenter.sh",
+      "sha256": "dee7a56fbd5cf3fe6cf3d4933702c789a05759e50baaa8c633a84189fb9b69ae"
+    },
+    {
+      "path": "macos/Scripts/build-result-ui-fixture.sh",
+      "sha256": "f8c9ff8b10637a381ca88efe1146c11246d54272ab3633083646cad989ff399e"
+    }
+  ],
+  "files": [
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r42/native-results-raw/actual-result-presentations.json",
+      "sha256": "5e70fbff9eca0907c50d7169da653fcaaa217986b1e69d4a42fef52f7a4a1b4b",
+      "bytes": 19428
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r42/native-results-raw/ci-21355b3-math-render.log",
+      "sha256": "b4dcd27959861832c10d9bb2a548aa7ea6f3f356482a8e16899149240fab7288",
+      "bytes": 2468
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r42/native-results-raw/ci-21355b3-math-resources.json",
+      "sha256": "2a2aae7b98fda27038fbd5bb5cbd448949ba02c68ac48eee430d2205286ba504",
+      "bytes": 5128
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r42/native-results-raw/ci-21355b3-summary.json",
+      "sha256": "881c6d965f18e2288baa90f0e61d40fc854796fc1df62065705bceae8e210a71",
+      "bytes": 950
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r42/native-results-raw/ci-21355b3-workbench.log",
+      "sha256": "7e34f8623d99b374c72d623c55651f3bf5090fc15a10f5b4a98470c3ffdbd418",
+      "bytes": 1998
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r42/native-results-raw/original53-and-scientific-latex.json",
+      "sha256": "e65ad7c0ad4593737116c6b4a34f76dfd9994392b96e9656bd18e419bbe880ca",
+      "bytes": 49883
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r42/native-results-raw/result-multiplicity-verified.log",
+      "sha256": "5a404e86b373ff8c27631570bd3b4fb2cd4983b1ef628194c8b7edbed04c5300",
+      "bytes": 964
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r42/native-results-raw/result-presenter-clippy.log",
+      "sha256": "fc0eb721e42157ccacf3f46da17402e726ddfad4010f649946519fcdcb6b47e7",
+      "bytes": 5693
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r42/native-results-raw/result-presenter-final.log",
+      "sha256": "5f9942d3b0add05587d4e56f091ce6917bcfcb727e6abc3645f50a7a2693e2cb",
+      "bytes": 752
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r42/native-results-raw/result-presenter-host-regression.log",
+      "sha256": "21a4d02f8bc1fdc58315f2c6d5565382bd87cfed544d910564679c7dfd2f7f3f",
+      "bytes": 1471
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r42/native-results-raw/result-presenter-input-change-failure.log",
+      "sha256": "af9a9e0de7369a7b1157a7e1d50b37f878d4db72f80d34b7c997f2b624b14ddb",
+      "bytes": 544
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r42/native-results-raw/result-presenter-installed-resources.json",
+      "sha256": "2a2aae7b98fda27038fbd5bb5cbd448949ba02c68ac48eee430d2205286ba504",
+      "bytes": 5128
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r42/native-results-raw/result-presenter-math-original53.log",
+      "sha256": "ef73702999e72a5763ef787e662514f7a5338498cc61a00c849183ca91afeddc",
+      "bytes": 2454
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r42/native-results-raw/result-presenter-prefix-observation.log",
+      "sha256": "746bc28fd826778de1085b86c1743a217fe5feba58d77cdb69fb8445de05cb21",
+      "bytes": 447
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r42/native-results-raw/result-presenter-production-final.log",
+      "sha256": "c00a8b3b376a88fc0dd0882b9b8846d39f6de21e7292173eec23a868969e321d",
+      "bytes": 98270
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r42/native-results-raw/result-presenter-pure-wasm.log",
+      "sha256": "52ff1958fcbf174813ca70d2480600ede5a21b270cfb4f4204bf366752bee899",
+      "bytes": 1875
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r42/native-results-raw/result-presenter-test-composition-final.log",
+      "sha256": "82ead553338722f4fb117edbd74b8f69155cda75983cbfb807db617aed3b6b8b",
+      "bytes": 632
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r42/native-results-raw/result-presenter-test-drafts-final.log",
+      "sha256": "7f433ed9a9855bc6fb95a4124b1c19f92dea18dcaabfd448f9b32b631eb58f0e",
+      "bytes": 403
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r42/native-results-raw/result-presenter-test-kernel-runtime-final.log",
+      "sha256": "b6bdb3db4ec43e34130046e449accf81cfc984d38107fa5ade17aba2b58768df",
+      "bytes": 703
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r42/native-results-raw/result-presenter-test-recovery-final.log",
+      "sha256": "b3dcc3b4d84cbdcc76c2cd5e4a6fffe965d718d522673f97951962413e7d7ace",
+      "bytes": 520
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r42/native-results-raw/result-presenter-test-results.log",
+      "sha256": "0748f675c13389f2135d935bda03261a9512c81deffcb781ff3930b393fcf9fc",
+      "bytes": 340
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r42/native-results-raw/result-presenter-test-saves-final.log",
+      "sha256": "8885bccad4bdaa45991af906588de08dac61d98135b8c3b52dfe45c00134ccdb",
+      "bytes": 884
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r42/native-results-raw/result-presenter-test-source-editor-final.log",
+      "sha256": "5ab319634e062bed92499ae05672827bb697a355fbe71b75b9f9ee3309be4fea",
+      "bytes": 289
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r42/native-results-raw/result-presenter-verified.log",
+      "sha256": "d85d5634eb189c8300a57649abcfe94f760fd5ce29eebd484b76e3528b0aaa91",
+      "bytes": 610
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r42/native-results-raw/result-presenter-workbench-final.log",
+      "sha256": "f7a9c462d1ba1ee01b2bc10c6efabab3484ac8664e8579d870a99bd67daab6e9",
+      "bytes": 1461
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r42/native-results-raw/result-ui-verified.log",
+      "sha256": "363b74b85dd55816ba12d75f5deae0388811cc068826366d43ef76f8f598b53c",
+      "bytes": 343
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r42/native-results-raw/visible-ui-observations.json",
+      "sha256": "43fcfef2c936e82f8f304bdcfd2dae693170e8eb74da3780be8c25d754c23ca9",
+      "bytes": 1749
+    }
+  ]
+}

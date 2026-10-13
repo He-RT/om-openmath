@@ -6,16 +6,18 @@ public struct AgentModelEventPayload: Codable, Sendable {
   public var byte_offset: HostSerial
   public var text: String
   public var phase: AgentModelEventPayloadPhase
+  public var canonical_message: HostNullable<AgentCanonicalMessage>
   private enum CodingKeys: String, CodingKey {
     case agent_turn_id
     case request_id
     case byte_offset
     case text
     case phase
+    case canonical_message
   }
   public init(from decoder: Decoder) throws {
     let all = try decoder.container(keyedBy: HostCodingKey.self)
-    let allowed: Set<String> = ["agent_turn_id","request_id","byte_offset","text","phase"]
+    let allowed: Set<String> = ["agent_turn_id","request_id","byte_offset","text","phase","canonical_message"]
     guard all.allKeys.allSatisfy({ allowed.contains($0.stringValue) }) else { throw DecodingError.dataCorrupted(.init(codingPath: decoder.codingPath, debugDescription: "Unknown native contract field")) }
     let c = try decoder.container(keyedBy: CodingKeys.self)
     self.agent_turn_id = try c.decode(String.self, forKey: .agent_turn_id)
@@ -23,12 +25,14 @@ public struct AgentModelEventPayload: Codable, Sendable {
     self.byte_offset = try c.decode(HostSerial.self, forKey: .byte_offset)
     self.text = try c.decode(String.self, forKey: .text)
     self.phase = try c.decode(AgentModelEventPayloadPhase.self, forKey: .phase)
+    self.canonical_message = try c.decode(HostNullable<AgentCanonicalMessage>.self, forKey: .canonical_message)
   }
-  public init(agent_turn_id: String, request_id: String, byte_offset: HostSerial, text: String, phase: AgentModelEventPayloadPhase) {
+  public init(agent_turn_id: String, request_id: String, byte_offset: HostSerial, text: String, phase: AgentModelEventPayloadPhase, canonical_message: HostNullable<AgentCanonicalMessage>) {
     self.agent_turn_id = agent_turn_id
     self.request_id = request_id
     self.byte_offset = byte_offset
     self.text = text
     self.phase = phase
+    self.canonical_message = canonical_message
   }
 }

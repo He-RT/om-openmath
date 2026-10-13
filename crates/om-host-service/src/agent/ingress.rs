@@ -84,6 +84,13 @@ pub enum IngressDisposition {
     /// Loop termination report awaiting native effect reconciliation.
     AwaitingSettlement,
 }
+struct RequestState {
+    intent: RequestIntent,
+    refs: Option<(String, String)>,
+    requested: bool,
+    offset: u64,
+    terminal: bool,
+}
 struct Seen {
     hash: [u8; 32],
     sequence: u64,
@@ -110,7 +117,7 @@ pub struct AgentIngress {
     source_sequence: u64,
     proposals: BTreeMap<String, Proposal>,
     mapped: BTreeMap<String, ToolIntent>,
-    requests: BTreeMap<String, (RequestIntent, Option<(String, String)>)>,
+    requests: BTreeMap<String, RequestState>,
 }
 fn hash(bytes: &[u8]) -> [u8; 32] {
     Sha256::digest(bytes).into()
@@ -335,7 +342,8 @@ impl AgentIngress {
                     return Err("IPC_TASK_NOT_READY");
                 }
                 let p = request.payload;
-                if let Some((original, _)) = self.requests.get(&p.request_id) {
+                if let Some(state) = self.requests.get(&p.request_id) {
+                    let original = &state.intent;
                     if original.turn_id != p.agent_turn_id {
                         return Err("IPC_REQUEST_SCOPE_MISMATCH");
                     }
@@ -349,8 +357,16 @@ impl AgentIngress {
                         turn_id: p.agent_turn_id,
                         request_id: p.request_id,
                     };
-                    self.requests
-                        .insert(intent.request_id.clone(), (intent.clone(), None));
+                    self.requests.insert(
+                        intent.request_id.clone(),
+                        RequestState {
+                            intent: intent.clone(),
+                            refs: None,
+                            requested: false,
+                            offset: 0,
+                            terminal: false,
+                        },
+                    );
                     IngressDisposition::RequestIntent(intent)
                 }
             }
@@ -359,20 +375,22 @@ impl AgentIngress {
                     return Err("IPC_TASK_NOT_READY");
                 }
                 let p = request.payload;
-                let (original, refs) = self
+                let state = self
                     .requests
                     .get_mut(&p.request_id)
                     .ok_or("IPC_REQUEST_NOT_PREPARED")?;
-                if original.turn_id != p.agent_turn_id {
+                if state.intent.turn_id != p.agent_turn_id {
                     return Err("IPC_REQUEST_SCOPE_MISMATCH");
                 }
-                let supplied = (p.context_ref, p.model_config_ref);
-                if refs.as_ref().is_some_and(|previous| previous != &supplied) {
-                    return Err("IPC_REQUEST_ID_CONFLICT");
+                if state.terminal {
+                    return Err("IPC_REQUEST_FINISHED");
                 }
-                *refs = Some(supplied);
-                // References are data. Only the later trusted context/model adapter can resolve them.
-                IngressDisposition::RequestIntent(original.clone())
+                let supplied = (p.context_ref, p.model_config_ref);
+                if state.refs.as_ref() != Some(&supplied) {
+                    return Err("IPC_REQUEST_NOT_BOUND");
+                }
+                state.requested = true;
+                IngressDisposition::RequestIntent(state.intent.clone())
             }
             AgentIPCFrame::AgentErrorFrame(_) => {
                 if self.phase != ConnectionPhase::Ready {
@@ -392,6 +410,85 @@ impl AgentIngress {
         self.sequence = sequence;
         self.bytes += bytes.len();
         Ok(result)
+    }
+    /// Only the native context/model preparer binds references; a helper cannot choose them.
+    pub fn bind_request(&mut self, payload: &AgentModelRequestPayload) -> Result<(), &'static str> {
+        let state = self
+            .requests
+            .get_mut(&payload.request_id)
+            .ok_or("IPC_REQUEST_NOT_PREPARED")?;
+        if state.intent.turn_id != payload.agent_turn_id || state.terminal {
+            return Err("IPC_REQUEST_SCOPE_MISMATCH");
+        }
+        let refs = (
+            payload.context_ref.clone(),
+            payload.model_config_ref.clone(),
+        );
+        if state
+            .refs
+            .as_ref()
+            .is_some_and(|previous| previous != &refs)
+        {
+            return Err("IPC_REQUEST_ID_CONFLICT");
+        }
+        state.refs = Some(refs);
+        Ok(())
+    }
+    /// Actual native stream direction, correlated bytes and terminal canonical model message.
+    pub fn model_event(&mut self, payload: &AgentModelEventPayload) -> Result<(), &'static str> {
+        let state = self
+            .requests
+            .get_mut(&payload.request_id)
+            .ok_or("IPC_REQUEST_NOT_PREPARED")?;
+        if !state.requested
+            || state.terminal
+            || state.intent.turn_id != payload.agent_turn_id
+            || payload.byte_offset.get() != state.offset
+        {
+            return Err("IPC_MODEL_STREAM_MISMATCH");
+        }
+        let finished = payload.phase == AgentModelEventPayloadPhase::Finished;
+        if finished {
+            let message = payload
+                .canonical_message
+                .0
+                .as_ref()
+                .ok_or("IPC_INVALID_TRANSCRIPT")?;
+            if message.role != AgentCanonicalMessageRole::Assistant
+                || message.task_id.0.as_ref() != Some(&self.scope.task)
+                || message.agent_turn_id.0.as_ref() != Some(&state.intent.turn_id)
+                || message
+                    .parts
+                    .iter()
+                    .any(|p| matches!(p, AgentMessagePart::AgentToolResultPart(_)))
+            {
+                return Err("IPC_INVALID_TRANSCRIPT");
+            }
+        } else if payload.canonical_message.0.is_some() {
+            return Err("IPC_INVALID_TRANSCRIPT");
+        }
+        state.offset = state
+            .offset
+            .checked_add(payload.text.len() as u64)
+            .filter(|n| *n <= crate::protocol::MAX_SERIAL)
+            .ok_or("IPC_TASK_BUDGET")?;
+        state.terminal = payload.phase != AgentModelEventPayloadPhase::Delta;
+        Ok(())
+    }
+    /// Missing native handlers produce unavailable only; this is not an admitted operation/effect.
+    pub fn unavailable_tool(&self, payload: &AgentToolResultPayload) -> Result<(), &'static str> {
+        let intent = self
+            .mapped
+            .get(&payload.tool_call_id)
+            .ok_or("IPC_PROPOSAL_NOT_ACKED")?;
+        if intent.turn_id != payload.agent_turn_id
+            || payload.operation_ref.0.is_some()
+            || payload.result_ref.0.is_some()
+            || payload.outcome != AgentToolResultPayloadOutcome::Unavailable
+        {
+            return Err("IPC_TOOL_RECEIPT_REQUIRED");
+        }
+        Ok(())
     }
     /// Trusted native ledger readback, not a peer ACK. Only after a matching durable event
     /// can the helper's canonical tool proposals become eligible for intent-ID mapping.

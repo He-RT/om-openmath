@@ -17,8 +17,10 @@ R4.3.01 的业务记录由 OpenMath 定义，与 Pi 内部 state 无关。机器
 
 接纳过的原始消息限制为4096条/8MiB，工具提案32、模型请求64。写端按宿主序号缓冲，防止并发恢复的 ACK/取消/输入乱序或字节交错；等待32项/2MiB，原发送保留4096条/8MiB。旧 ACK 只允许相同字节重放。stderr 有界读取并丢弃；子进程显式环境只有 PATH，macOS 可以加入 `__CF_USER_TEXT_ENCODING`，不继承 provider 环境或 shell/profile。
 
-Swift AgentSessionService 归 NativeDocumentSession 持有。构造与恢复不会启动模型、求值或进程。输入、steer、follow_up 的规范消息先持久化；重试保持原输入帧。消息处理串行等待，取消绕过账本等待并立即撤销 Rust 接纳。完整事件尚未确认时不会映射工具调用。Foundation 的 `read(upToCount:)` 在实际小帧测试中等待填满长度，已换为单次 POSIX read；读者独立 fd 和有限终止/强制退出路径避免旧描述符复用。
+Swift AgentSessionService 归 NativeDocumentSession 持有。构造与恢复不会启动模型、求值或进程。输入、steer、follow_up 的规范消息先持久化，再在帧中提供完整 canonical message 与事件引用；重试保持原输入帧。消息处理串行等待，取消绕过账本等待并立即撤销 Rust 接纳。完整事件尚未确认时不会映射工具调用。Foundation 的 `read(upToCount:)` 在实际小帧测试中等待填满长度，已换为单次 POSIX read；读者独立 fd 和有限终止/强制退出路径避免旧描述符复用。
 
 传输帧大小与展开后的日记载荷分别受限。实际 1,000,914 字节合法帧展开为超过2MiB的日记载荷，保存被拒绝，没有事件或 ACK；不会裁切为摘要后宣称完整消息。未来更大正文可以经另一个明确的持久 Blob 契约接入。
 
 实际测试使用合成 Node 私有进程，验证完整握手、原 ACK 重放、宿主意图映射、八类恶意/截断进程输出、写入顺序与实际 SQLite 恢复。Pi 1.0.4 和生产随包 runtime/helper 属于 R4.3.02；模型编码、真实网络/SecretStore、12工具 handler 与 Agent loop 属于后续任务。这里没有这些效果，32最终门禁仍为 not_run。
+
+R4.3.02已接[真实随包helper](native-agent-helper.md)。模型引用由宿主先绑定，model_event仅宿主方向且有完整终结规范消息；迟到offset/terminal/task拒绝。工具完成receipt仍必须由后续实际handler提供，本层仅允许无效果的unavailable。

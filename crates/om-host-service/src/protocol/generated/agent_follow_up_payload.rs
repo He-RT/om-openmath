@@ -6,6 +6,8 @@ use super::*;
 pub struct AgentFollowUpPayload {
     /// Contract field `event_ref`.
     pub event_ref: String,
+    /// Contract field `message`.
+    pub message: AgentCanonicalMessage,
 }
 impl std::fmt::Debug for AgentFollowUpPayload {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {

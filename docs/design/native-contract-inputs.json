@@ -31,7 +31,7 @@
     },
     {
       "path": "docs/design/native-agent.schema.json",
-      "sha256": "22565cace83468ee804a73bb860f9786769ea537d1579588255a23452f5c3a92"
+      "sha256": "fe150a9e03ff36953865fb7799a41016519f3fb39b71e2e760a0f933c4acf34a"
     }
   ],
   "generated_dto_count": 357

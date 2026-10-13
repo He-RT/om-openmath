@@ -255,15 +255,7 @@ impl AgentEndpoint {
                     return Err("IPC_TASK_NOT_READY".into());
                 }
                 let frame = framing::decode(c.frame_json.as_bytes()).map_err(str::to_owned)?;
-                if !matches!(
-                    frame,
-                    AgentIPCFrame::AgentUserInputFrame(_)
-                        | AgentIPCFrame::AgentSteerFrame(_)
-                        | AgentIPCFrame::AgentFollowUpFrame(_)
-                ) {
-                    return Err("IPC_WRONG_DIRECTION".into());
-                }
-                let value = serde_json::to_value(frame).map_err(|_| "IPC_INVALID_SHAPE")?;
+                let value = serde_json::to_value(&frame).map_err(|_| "IPC_INVALID_SHAPE")?;
                 let id = value["message_id"]
                     .as_str()
                     .ok_or("IPC_INVALID_SHAPE")?
@@ -295,6 +287,24 @@ impl AgentEndpoint {
                     self.outgoing_sequence -= 1;
                     return Err("STALE_AGENT_SCOPE".into());
                 }
+                let accepted = match &frame {
+                    AgentIPCFrame::AgentUserInputFrame(f) => self.user_message(&f.payload.message),
+                    AgentIPCFrame::AgentSteerFrame(f) => self.user_message(&f.payload.message),
+                    AgentIPCFrame::AgentFollowUpFrame(f) => self.user_message(&f.payload.message),
+                    AgentIPCFrame::AgentModelRequestFrame(f) => {
+                        self.ingress.bind_request(&f.payload)
+                    }
+                    AgentIPCFrame::AgentModelEventFrame(f) => self.ingress.model_event(&f.payload),
+                    AgentIPCFrame::AgentToolResultFrame(f) => {
+                        self.ingress.unavailable_tool(&f.payload)
+                    }
+                    AgentIPCFrame::AgentErrorFrame(_) => Ok(()),
+                    _ => Err("IPC_WRONG_DIRECTION"),
+                };
+                if let Err(code) = accepted {
+                    self.outgoing_sequence -= 1;
+                    return Err(code.into());
+                }
                 let mut reply = self.reply(NativeAgentHostReplyDisposition::Sent);
                 reply.outbound_json = Nullable(Some(c.frame_json));
                 self.sent.insert(id, (digest, reply.clone()));
@@ -317,6 +327,21 @@ impl AgentEndpoint {
             }
             NativeAgentHostCommand::NativeAgentActivate(_) => unreachable!(),
         }
+    }
+    fn user_message(&self, message: &AgentCanonicalMessage) -> Result<(), &'static str> {
+        if message.role != AgentCanonicalMessageRole::User
+            || message.task_id.0.as_ref() != Some(&self.owner.task)
+            || message.parts.iter().any(|p| {
+                matches!(
+                    p,
+                    AgentMessagePart::AgentToolProposalPart(_)
+                        | AgentMessagePart::AgentToolResultPart(_)
+                )
+            })
+        {
+            return Err("IPC_INVALID_USER_INPUT");
+        }
+        Ok(())
     }
     /// Source rebind/close revokes ephemeral grants before physical owner joins.
     pub fn close(&mut self) {

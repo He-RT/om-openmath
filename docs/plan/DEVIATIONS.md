@@ -611,3 +611,7 @@ L2使用精确标称GM分数、50位FindRoot/1000迭代和真实残差，报告�
 ## D045 · 2026-10-14 R4.3.01 实际业务身份与ACK接线
 
 规范canonical字节由Rust产生并原样存入兼容账本封套，避免Swift/Rust JSON编码排序或转义不同造成回执歧义。真实document owner派生scope，恢复消息不恢复授权；工具/模型operation ID仅pending意图。实际Foundation小帧读取阻塞已以POSIX单次read修复，完整失败/sample保留；写端按宿主序号缓冲，取消绕过SQLite等待。传输1MiB与账本2MiB展开限制独立，合法大帧超账本预算明确无ACK拒绝。实际合成私有进程验收使R4.3.01完成；生产Pi与随包runtime仍须R4.3.02，模型/工具执行仍在后续，不能填写最终gate。完整证据见development/r43/agent-protocol-native.json；30/98，68任务及原完整发行继续。
+
+## D047 · 2026-10-14 生产helper闭包与实际Task
+
+按既定Node/Pi pin生成完整可执行ESM闭包及动态资源，校验上游签名/包内字节与实际签名/架构；空cwd/env、绝对入口及Node公共permission，无外部node/npm依赖。规范输入随原账本事件ref送达，原参数与Pi转换对象分离，host先绑定模型refs与流terminal。任务fixture合成模型传输、无工具效果，真实SIGKILL后同文档主内核4，不把loop_stopped当数学成功；helper不可用不关闭Source/Kernel。a70311f保存CI漏Agent源列表已修保存/草稿/恢复，按原真实中断回归。R4.3.02完成，31/98；所有最终门禁/发布保持未完成。

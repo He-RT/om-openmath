@@ -272,3 +272,7 @@ README/安装/移动/完整语言/函数目录/科研案例/发行说明中文�
 ### 2026-10-14 · pre-alpha.4 D045
 
 R4.3.01实际source/CABI/Swift/私有进程与耐久ACK完成，30/98。完整输入/失败/SQLite记录见PRE_ALPHA_4_PROGRESS D045与agent-protocol-native.json。下一R4.3.02；完整68任务与32最终发行门禁未完成，运行.3、dev，无main/旧包改变、无本机iOS模拟器/子代理。闲置项目编译缓存清理3.91GiB。
+
+### 2026-10-14 · pre-alpha.4 D047
+
+R4.3.02真实随包Node/Pi闭包及原生task完成，31/98，下一R4.3.03。包/App/实际MachO/hash/签名/完整资源、私有管道/ACK/取消/SIGKILL后同文档4通过；实际输入/帧/事件/失败见pi-production-runtime.json。修复三处独立测试遗漏Agent源并通过原保存/草稿/恢复。67任务/32最终门禁与发行继续，运行.3/dev，无本机iOS模拟器/子代理/main修改，目标active。

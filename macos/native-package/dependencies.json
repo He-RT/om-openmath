@@ -13,11 +13,12 @@
     "archive_sha256": "0ef9b443000681bffc062ec126d53f97933ea9b086ea73dcba0480d87e639b39",
     "binary_sha256_before_resigning": "72661776a737f5bbd7bc66af9dc5a5ef324819a53df518fdc7143127927c1378",
     "upstream_binary_strict_codesign_verified": true,
-    "openpgp_archive_signature_verified": false,
+    "openpgp_archive_signature_verified": true,
     "notice": "macos/OpenMathNative/Resources/Licenses/Node-LICENSE.txt",
     "notice_sha256": "6b85ee1983d01fa2cdcdd5d1a3053c6221fae41d6a54e43b416bf35969fc4128",
     "system_node_fallback": false,
-    "bundled_with_app": false
+    "bundled_with_app": false,
+    "release_signer_fingerprint": "5BE8A3F6C8A5C01D106C0AD820B1A390B168D356"
   },
   "pi": {
     "core": "1.0.4",

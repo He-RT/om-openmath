@@ -1,0 +1,51 @@
+{"output": "/Users/hert/Projects/openmath/target/macos-agent-package-tests/AgentRuntime", "files": 4169, "bytes": 172232029, "production_packages": 86}
+    Finished `release` profile [optimized] target(s) in 0.27s
+macos/OpenMathNativeTests/AgentPackageFixtures/main.swift:32:101: error: value of type 'NativeKernelReceipt' has no member 'phase'
+30 |     let canonical=try JSONDecoder().decode(SessionCanonicalAssistant.self,from:Data(events[1].event.payload_inline_json.value!.utf8))
+31 |     precondition(canonical.calls[0].arguments==Data("{ \"view\" : \"outline\" }".utf8))
+32 |     let after=try await kernel.runCell("a",operation:"manual-after-helper-task");precondition(after.phase == .completed)
+   |                                                                                                     `- error: value of type 'NativeKernelReceipt' has no member 'phase'
+33 |     let client=await MainActor.run {ResultClient(host:host)};let manifest=try await client.manifest(after.result_id.value!)
+34 |     try await client.select(manifest.bindings.last!)
+
+macos/OpenMathNativeTests/AgentPackageFixtures/main.swift:35:93: error: value of type 'String' has no member 'source'
+33 |     let client=await MainActor.run {ResultClient(host:host)};let manifest=try await client.manifest(after.result_id.value!)
+34 |     try await client.select(manifest.bindings.last!)
+35 |     let full=try await client.completeSource(format:.input_form,path:[])!;precondition(full.source=="4")
+   |                                                                                             `- error: value of type 'String' has no member 'source'
+36 |     // An actual SIGKILL during the next model preparation must leave the notebook/kernel live.
+37 |     let crashHello=try await service.activate(session:"production-crash",grants:[],readonly:true,coreVersion:"1.0.4",adapterVersion:"openmath-adapter-1"),crashPipe=try await verified.launch()
+
+macos/OpenMathNativeTests/AgentPackageFixtures/main.swift:41:99: error: value of type 'NativeKernelReceipt' has no member 'phase'
+39 |     let crashPort=AgentNativeModelPort(prepare:{_ in await crashPipe.terminateImmediately();throw AgentSessionError.inactive},stream:{_ in AsyncThrowingStream {$0.finish()}})
+40 |     do {_ = try await service.run(pipe:crashPipe,hello:crashHello,modelPort:crashPort,input:crashInput);fatalError("killed helper reported settled")} catch { }
+41 |     let intact=try await kernel.runCell("a",operation:"manual-after-sigkill");precondition(intact.phase == .completed)
+   |                                                                                                   `- error: value of type 'NativeKernelReceipt' has no member 'phase'
+42 |     try await client.select(try await client.manifest(intact.result_id.value!).bindings.last!);let again=try await client.completeSource(format:.input_form,path:[])!;precondition(again.source=="4")
+43 |     do {try await pipe.write(Data("{\"sequence\":99}\n".utf8));fatalError("late stdin revived process")} catch { }
+
+macos/OpenMathNativeTests/AgentPackageFixtures/main.swift:42:186: error: value of type 'String' has no member 'source'
+40 |     do {_ = try await service.run(pipe:crashPipe,hello:crashHello,modelPort:crashPort,input:crashInput);fatalError("killed helper reported settled")} catch { }
+41 |     let intact=try await kernel.runCell("a",operation:"manual-after-sigkill");precondition(intact.phase == .completed)
+42 |     try await client.select(try await client.manifest(intact.result_id.value!).bindings.last!);let again=try await client.completeSource(format:.input_form,path:[])!;precondition(again.source=="4")
+   |                                                                                                                                                                                          `- error: value of type 'String' has no member 'source'
+43 |     do {try await pipe.write(Data("{\"sequence\":99}\n".utf8));fatalError("late stdin revived process")} catch { }
+44 |     // Move a required real resource and restore it; closure verification must fail before launch.
+
+macos/OpenMathNativeTests/AgentPackageFixtures/main.swift:34:9: warning: no 'async' operations occur within 'await' expression [#UnnecessaryEffectMarker]
+32 |     let after=try await kernel.runCell("a",operation:"manual-after-helper-task");precondition(after.phase == .completed)
+33 |     let client=await MainActor.run {ResultClient(host:host)};let manifest=try await client.manifest(after.result_id.value!)
+34 |     try await client.select(manifest.bindings.last!)
+   |         `- warning: no 'async' operations occur within 'await' expression [#UnnecessaryEffectMarker]
+35 |     let full=try await client.completeSource(format:.input_form,path:[])!;precondition(full.source=="4")
+36 |     // An actual SIGKILL during the next model preparation must leave the notebook/kernel live.
+
+macos/OpenMathNativeTests/AgentPackageFixtures/main.swift:42:9: warning: no 'async' operations occur within 'await' expression [#UnnecessaryEffectMarker]
+40 |     do {_ = try await service.run(pipe:crashPipe,hello:crashHello,modelPort:crashPort,input:crashInput);fatalError("killed helper reported settled")} catch { }
+41 |     let intact=try await kernel.runCell("a",operation:"manual-after-sigkill");precondition(intact.phase == .completed)
+42 |     try await client.select(try await client.manifest(intact.result_id.value!).bindings.last!);let again=try await client.completeSource(format:.input_form,path:[])!;precondition(again.source=="4")
+   |         `- warning: no 'async' operations occur within 'await' expression [#UnnecessaryEffectMarker]
+43 |     do {try await pipe.write(Data("{\"sequence\":99}\n".utf8));fatalError("late stdin revived process")} catch { }
+44 |     // Move a required real resource and restore it; closure verification must fail before launch.
+
+[#UnnecessaryEffectMarker]: <https://docs.swift.org/compiler/documentation/diagnostics/unnecessary-effect-marker>

@@ -1,0 +1,43 @@
+✖ actual Pi bridge resolves immutable model refs and canonical ACK before unavailable tool hook (8.354ms)
+✔ wrong connection and byte-identical hello replay cannot reset active helper scope (1.133083ms)
+✔ pinned Pi hooks await canonical ACK and tools execute sequentially before next model request (16.354375ms)
+✔ cancel while canonical ACK is pending prevents every tool effect (0.480375ms)
+✔ shell plugins and mismatched canonical user tasks are refused (0.18975ms)
+✔ all actual encoded UTF8 split points and multiple complete frames roundtrip (35.458625ms)
+✔ unknown credentials/URLs/Pi state, missing required null and unsafe counters are rejected (1.019166ms)
+✔ duplicate members, invalid Unicode/UTF8, limits and incomplete EOF poison real connections (0.464959ms)
+ℹ tests 8
+ℹ suites 0
+ℹ pass 7
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 3229.01075
+
+✖ failing tests:
+
+test at agent/test/bridge.test.mjs:9:1
+✖ actual Pi bridge resolves immutable model refs and canonical ACK before unavailable tool hook (8.354ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:
+  + actual - expected
+  
+    [
+      'ready',
+      'prepare_request',
+      'model_request',
+  -   'transcript_event',
+  -   'tool_call',
+  -   'settled'
+    ]
+  
+      at TestContext.<anonymous> (file:///Users/hert/Projects/openmath/agent/test/bridge.test.mjs:25:9)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: [ 'ready', 'prepare_request', 'model_request' ],
+    expected: [ 'ready', 'prepare_request', 'model_request', 'transcript_event', 'tool_call', 'settled' ],
+    operator: 'deepStrictEqual',
+    diff: 'simple'
+  }

@@ -117,6 +117,12 @@ export function decodeFrame(bytes: Uint8Array): AgentIPCFrame {
   if (!matches(value, schema.$defs.AgentIPCFrame)) fail('IPC_INVALID_SHAPE');
   return value as AgentIPCFrame;
 }
+/** Native model codec supplies canonical data, not Pi state or executable provider payloads. */
+export function decodeCanonical(bytes:Uint8Array): import('./generated/protocol.ts').AgentCanonicalMessage {
+  const value=strictJson(bytes);
+  if (!matches(value,schema.$defs.AgentCanonicalMessage)) fail('IPC_INVALID_CANONICAL');
+  return value as unknown as import('./generated/protocol.ts').AgentCanonicalMessage;
+}
 export function encodeFrame(value: AgentIPCFrame): Uint8Array {
   if (!matches(value as Json, schema.$defs.AgentIPCFrame)) fail('IPC_INVALID_SHAPE');
   const bytes = new TextEncoder().encode(JSON.stringify(value)); decodeFrame(bytes);
@@ -128,14 +134,15 @@ export class FrameDecoder {
   #buffer = new Uint8Array(16384);
   #count = 0;
   #failed = false;
-  push(chunk: Uint8Array): AgentIPCFrame[] {
+  push(chunk: Uint8Array): AgentIPCFrame[] {return this.pushRaw(chunk).map(v=>v.frame);}
+  pushRaw(chunk:Uint8Array): {raw:Uint8Array;frame:AgentIPCFrame}[] {
     if (this.#failed) fail('IPC_CONNECTION_FAILED');
-    const frames: AgentIPCFrame[] = [];
+    const frames: {raw:Uint8Array;frame:AgentIPCFrame}[] = [];
     try {
       for (const byte of chunk) {
         if (byte === 10) {
           if (this.#count && this.#buffer[this.#count - 1] === 13) this.#count--;
-          frames.push(decodeFrame(this.#buffer.subarray(0, this.#count))); this.#count = 0;
+          const raw=this.#buffer.slice(0,this.#count);frames.push({raw,frame:decodeFrame(raw)}); this.#count = 0;
           if (frames.length > 32) fail('IPC_BATCH_SIZE');
         } else {
           if (this.#count >= MAX_FRAME_BYTES) fail('IPC_FRAME_SIZE');

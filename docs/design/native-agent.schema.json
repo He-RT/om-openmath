@@ -477,10 +477,14 @@
       "properties": {
         "event_ref": {
           "$ref": "#/$defs/Identity"
+        },
+        "message": {
+          "$ref": "#/$defs/AgentCanonicalMessage"
         }
       },
       "required": [
-        "event_ref"
+        "event_ref",
+        "message"
       ],
       "additionalProperties": false
     },
@@ -761,6 +765,16 @@
             "cancelled"
           ],
           "type": "string"
+        },
+        "canonical_message": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/AgentCanonicalMessage"
+            },
+            {
+              "type": "null"
+            }
+          ]
         }
       },
       "required": [
@@ -768,7 +782,8 @@
         "request_id",
         "byte_offset",
         "text",
-        "phase"
+        "phase",
+        "canonical_message"
       ],
       "additionalProperties": false
     },
@@ -1240,10 +1255,14 @@
       "properties": {
         "event_ref": {
           "$ref": "#/$defs/Identity"
+        },
+        "message": {
+          "$ref": "#/$defs/AgentCanonicalMessage"
         }
       },
       "required": [
-        "event_ref"
+        "event_ref",
+        "message"
       ],
       "additionalProperties": false
     },
@@ -1323,10 +1342,14 @@
       "properties": {
         "event_ref": {
           "$ref": "#/$defs/Identity"
+        },
+        "message": {
+          "$ref": "#/$defs/AgentCanonicalMessage"
         }
       },
       "required": [
-        "event_ref"
+        "event_ref",
+        "message"
       ],
       "additionalProperties": false
     },

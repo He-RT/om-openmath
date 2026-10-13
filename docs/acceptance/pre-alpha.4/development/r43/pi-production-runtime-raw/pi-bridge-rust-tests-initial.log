@@ -1,0 +1,24 @@
+   Compiling om-host-service v0.1.0-pre-alpha.3 (/Users/hert/Projects/openmath/crates/om-host-service)
+    Finished `test` profile [unoptimized] target(s) in 5.15s
+     Running tests/agent_endpoint.rs (target/debug/deps/agent_endpoint-32fef2bb1875f283)
+
+running 3 tests
+test request_ids_are_correlated_without_dispatch_and_peer_model_streams_are_denied ... FAILED
+test durable_confirmation_replay_and_document_close_revoke_real_owner_authority ... ok
+test native_envelope_budget_preserves_raw_frame_and_rejects_duplicate_fields ... ok
+
+failures:
+
+---- request_ids_are_correlated_without_dispatch_and_peer_model_streams_are_denied stdout ----
+
+thread 'request_ids_are_correlated_without_dispatch_and_peer_model_streams_are_denied' (36574951) panicked at crates/om-host-service/tests/agent_endpoint.rs:170:6:
+called `Result::unwrap()` on an `Err` value: "IPC_REQUEST_NOT_BOUND"
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+
+failures:
+    request_ids_are_correlated_without_dispatch_and_peer_model_streams_are_denied
+
+test result: FAILED. 2 passed; 1 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.16s
+
+error: test failed, to rerun pass `-p om-host-service --test agent_endpoint`

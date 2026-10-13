@@ -30,7 +30,9 @@ for await(const chunk of process.stdin){for(const frame of decoder.push(chunk)){
   if(JSON.stringify(ack)!==JSON.stringify(frame))throw Error('ACK replay changed');stage=2;
   emit('tool_call',3,{agent_turn_id:'pipe-turn',tool_call_id:'model-call',proposal_event_ref:'pipe-proposal'});
   emit('prepare_request',4,{agent_turn_id:'pipe-turn',request_id:'model-request'});
-  emit('model_request',5,{agent_turn_id:'pipe-turn',request_id:'model-request',context_ref:'unresolved-context',model_config_ref:'unresolved-config'});
+ }else if(frame.type==='model_request'){
+  emit('model_request',5,frame.payload);
+ }else if(frame.type==='model_event'){
   emit('settled',6,{reason:'loop_stopped'});
   fs.writeFileSync(process.argv[2],JSON.stringify({fixture:true,framework:'synthetic-private-peer',environment_keys:Object.keys(process.env),observed},null,2)+'\n');
   process.stdout.write('',()=>process.exit(0));

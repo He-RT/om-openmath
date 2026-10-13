@@ -1,0 +1,16 @@
+    Finished `release` profile [optimized] target(s) in 0.20s
+macos/OpenMathNative/Files/NativeDocumentSession.swift:32:13: error: cannot find type 'AgentSessionService' in scope
+ 30 |   let undo:UndoCoordinator
+ 31 |   let backup:NativeDraftBackup
+ 32 |   let agent:AgentSessionService
+    |             `- error: cannot find type 'AgentSessionService' in scope
+ 33 |   let runtime:NotebookRuntime
+ 34 |   private(set) var recoveryMessages:[String]=[]
+
+macos/OpenMathNative/Files/NativeDocumentSession.swift:43:16: error: cannot find 'AgentSessionService' in scope
+ 41 |     self.undo=UndoCoordinator {transactions,group,operation in try await source.undo(transactions:transactions,group:group,operation:operation)}
+ 42 |     self.backup=NativeDraftBackup(storage:storage,store:drafts,owner:backupOwner)
+ 43 |     self.agent=AgentSessionService(host:host,storage:storage,document:drafts.confirmed.document_id,generation:drafts.documentGeneration)
+    |                `- error: cannot find 'AgentSessionService' in scope
+ 44 |     self.runtime=NotebookRuntime(host:host,storage:storage,source:source)
+ 45 |     runtime.selectedCell=drafts.confirmed.file.cells.first?.id

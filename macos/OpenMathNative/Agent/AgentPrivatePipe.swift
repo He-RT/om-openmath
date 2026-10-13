@@ -27,21 +27,23 @@ struct AgentFrameBytes {
 /// environment, not app credentials, shell profiles or inherited provider settings.
 actor AgentPrivatePipe {
   private let process:Process,input:FileHandle,output:FileHandle,errors:FileHandle
+  private let ownedDirectory:URL?
+  private var capture:(@Sendable (Data,Bool)async->Void)?
   private var closed=false,writing=false
   private var nextWrite:UInt64=1
   private var pending:[UInt64:Data]=[:],replays:[Data]=[]
   private var written:[UInt64:Data]=[:]
   private var inflight:(UInt64,Data)?
   private var pendingBytes=0,writtenBytes=0
-  private init(process:Process,input:FileHandle,output:FileHandle,errors:FileHandle) {self.process=process;self.input=input;self.output=output;self.errors=errors}
-  static func launch(executable:URL,arguments:[String],directory:URL) async throws->AgentPrivatePipe {
+  private init(process:Process,input:FileHandle,output:FileHandle,errors:FileHandle,directory:URL?) {self.process=process;self.input=input;self.output=output;self.errors=errors;self.ownedDirectory=directory}
+  static func launch(executable:URL,arguments:[String],directory:URL,environment:[String:String]=["PATH":"/usr/bin:/bin"],removeDirectoryOnClose:Bool=false) async throws->AgentPrivatePipe {
     try await Task.detached {
       let process=Process(),stdin=Pipe(),stdout=Pipe(),stderr=Pipe()
       process.executableURL=executable;process.arguments=arguments;process.currentDirectoryURL=directory
-      process.environment=["PATH":"/usr/bin:/bin"]
+      process.environment=environment
       process.standardInput=stdin;process.standardOutput=stdout;process.standardError=stderr
       try process.run()
-      let pipe=AgentPrivatePipe(process:process,input:stdin.fileHandleForWriting,output:stdout.fileHandleForReading,errors:stderr.fileHandleForReading)
+      let pipe=AgentPrivatePipe(process:process,input:stdin.fileHandleForWriting,output:stdout.fileHandleForReading,errors:stderr.fileHandleForReading,directory:removeDirectoryOnClose ? directory:nil)
       Task {await pipe.drainErrors()}
       return pipe
     }.value
@@ -57,7 +59,9 @@ actor AgentPrivatePipe {
   func read() async throws->Data? {
     guard !closed else {return nil};let fd=Darwin.dup(output.fileDescriptor)
     guard fd>=0 else {throw AgentSessionError.invalidFrame}
-    return try await Task.detached {defer {_ = Darwin.close(fd)};return try Self.readChunk(fd,maximum:128*1024)}.value
+    let bytes=try await Task.detached {defer {_ = Darwin.close(fd)};return try Self.readChunk(fd,maximum:128*1024)}.value
+    if let bytes,let capture {await capture(bytes,false)}
+    return bytes
   }
   /// Native command completions can resume out of order. Sequence buffering preserves complete
   /// frames; exact old ACK replays remain byte-identical. No write waits on the actor's read loop.
@@ -86,6 +90,7 @@ actor AgentPrivatePipe {
       if !isReplay {inflight=(nextWrite,item)}
       let handle=input
       try await Task.detached {try handle.write(contentsOf:item)}.value
+      if let capture {await capture(item,true)}
       if !isReplay {
         guard written.count<4096,writtenBytes+item.count<=8*AgentFrameBytes.maximum else {throw AgentSessionError.invalidFrame}
         written[nextWrite]=item;writtenBytes+=item.count;nextWrite+=1;inflight=nil
@@ -103,6 +108,10 @@ actor AgentPrivatePipe {
       if errno != EINTR {throw AgentSessionError.invalidFrame}
     }
   }
+  /// Development fixtures can retain their own authorized exact wire inputs/outputs.
+  func setCapture(_ capture:@escaping @Sendable (Data,Bool)async->Void) {self.capture=capture}
+  /// Supervisor fault recovery can force termination of its own private child.
+  func terminateImmediately() {if process.isRunning {_ = Darwin.kill(process.processIdentifier,SIGKILL)}}
   func close() async {
     guard !closed else {return};closed=true
     if process.isRunning {process.terminate()}
@@ -114,5 +123,6 @@ actor AgentPrivatePipe {
     let child=process
     await Task.detached {child.waitUntilExit()}.value
     try? input.close();try? output.close();try? errors.close()
+    if let directory=ownedDirectory {try? FileManager.default.removeItem(at:directory)}
   }
 }

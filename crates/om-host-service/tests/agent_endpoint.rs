@@ -162,6 +162,8 @@ fn request_ids_are_correlated_without_dispatch_and_peer_model_streams_are_denied
         )
         .is_err()
     );
+    let binding = frame(&hello, "model_request", 2, request("turn", "context"));
+    command(&mut owner,json!({"type":"agent_send","scope":scope(1),"frame_json":serde_json::to_string(&binding).unwrap()})).unwrap();
     let mapped = receive(
         &mut owner,
         &frame(&hello, "model_request", 3, request("turn", "context")),
@@ -180,7 +182,7 @@ fn request_ids_are_correlated_without_dispatch_and_peer_model_streams_are_denied
         )
         .is_err()
     );
-    assert!(receive(&mut owner,&frame(&hello,"model_event",4,json!({"agent_turn_id":"turn","request_id":"provider-request","byte_offset":0,"text":"claimed output","phase":"delta"})),1).is_err());
+    assert!(receive(&mut owner,&frame(&hello,"model_event",4,json!({"agent_turn_id":"turn","request_id":"provider-request","byte_offset":0,"text":"claimed output","phase":"delta","canonical_message":null})),1).is_err());
     command(
         &mut owner,
         json!({"type":"agent_cancel","scope":scope(1),"reason":"user_stop"}),
@@ -239,4 +241,57 @@ fn native_envelope_budget_preserves_raw_frame_and_rejects_duplicate_fields() {
     );
     let duplicate = b"{\"type\":\"agent_status\",\"type\":\"agent_close\",\"scope\":{}}";
     assert!(decode_command(duplicate).is_err());
+}
+
+#[test]
+fn host_stream_has_exact_offsets_one_terminal_and_no_fabricated_tool_receipt() {
+    let mut owner = endpoint();
+    let hello = activate(&mut owner, 1, false);
+    ready(&mut owner, &hello, 1);
+    receive(
+        &mut owner,
+        &frame(
+            &hello,
+            "prepare_request",
+            2,
+            json!({"agent_turn_id":"turn","request_id":"request"}),
+        ),
+        1,
+    )
+    .unwrap();
+    let send = |owner: &mut SourceEndpoint, v: Value| {
+        command(
+            owner,
+            json!({"type":"agent_send","scope":scope(1),"frame_json":serde_json::to_string(&v).unwrap()}),
+        )
+    };
+    let delta = |sequence, offset, text| {
+        frame(
+            &hello,
+            "model_event",
+            sequence,
+            json!({"agent_turn_id":"turn","request_id":"request","byte_offset":offset,"text":text,"phase":"delta","canonical_message":null}),
+        )
+    };
+    assert!(send(&mut owner, delta(2, 0, "🙂")).is_err());
+    send(&mut owner,frame(&hello,"model_request",2,json!({"agent_turn_id":"turn","request_id":"request","context_ref":"native-context","model_config_ref":"native-config"}))).unwrap();
+    receive(&mut owner,&frame(&hello,"model_request",3,json!({"agent_turn_id":"turn","request_id":"request","context_ref":"native-context","model_config_ref":"native-config"})),1).unwrap();
+    send(&mut owner, delta(3, 0, "🙂")).unwrap();
+    assert!(send(&mut owner, delta(4, 3, "x")).is_err());
+    let finished = frame(
+        &hello,
+        "model_event",
+        4,
+        json!({"agent_turn_id":"turn","request_id":"request","byte_offset":4,"text":"","phase":"finished","canonical_message":{"record_type":"canonical_agent_message","message_version":1,"message_id":"model-final","role":"assistant","agent_turn_id":"turn","task_id":"task","parts":[{"kind":"text","part_id":"text","text":"🙂"}]}}),
+    );
+    let mut stale = finished.clone();
+    stale["payload"]["canonical_message"]["task_id"] = json!("old-task");
+    assert!(send(&mut owner, stale).is_err());
+    let original = send(&mut owner, finished.clone()).unwrap();
+    assert_eq!(
+        original.outbound_json.0,
+        send(&mut owner, finished).unwrap().outbound_json.0
+    );
+    assert!(send(&mut owner, delta(5, 4, "late")).is_err());
+    assert!(send(&mut owner,frame(&hello,"tool_result",5,json!({"agent_turn_id":"turn","tool_call_id":"invented","operation_ref":null,"result_ref":null,"outcome":"completed"}))).is_err());
 }

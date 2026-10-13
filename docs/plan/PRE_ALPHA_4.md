@@ -4044,7 +4044,7 @@ UpdateService只读受控官方GitHub Releases/发行清单（预发行不可用
 
 #### R4.3.02 固定Pi Core与随包生产helper
 
-- [ ] **R4.3.02 完成**（仅在以下Done和验证满足后勾选）
+- [x] **R4.3.02 完成**（仅在以下Done和验证满足后勾选）
 
 **Files：**
 
@@ -4059,10 +4059,10 @@ UpdateService只读受控官方GitHub Releases/发行清单（预发行不可用
 
 **Steps：**
 
-- [ ] 1. 用固定Core/AI API做最小真实循环，不装CodingAgent/shell插件。
-- [ ] 2. 编译ESM生产闭包和真实动态资源。
-- [ ] 3. Swift受控env/cwd/私有pipes启动、握手/取消/退出，不fallback系统node。
-- [ ] 4. 执行下面Tests，核对真实输出/失败，更新任务账本与证据后提交本批次。
+- [x] 1. 用固定Core/AI API做最小真实循环，不装CodingAgent/shell插件。
+- [x] 2. 编译ESM生产闭包和真实动态资源。
+- [x] 3. Swift受控env/cwd/私有pipes启动、握手/取消/退出，不fallback系统node。
+- [x] 4. 执行下面Tests，核对真实输出/失败，更新任务账本与证据后提交本批次。
 
 **Tests：** 无npm/PATH/外部node、错架构/资源缺失/迟到stdin/进程崩溃、实际task fixture。测试位置以Files和第15节影响范围为准，证据保存完整输入/命令/输出，不仅记录“通过”。
 

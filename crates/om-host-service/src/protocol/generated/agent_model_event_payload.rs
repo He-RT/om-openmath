@@ -14,6 +14,8 @@ pub struct AgentModelEventPayload {
     pub text: String,
     /// Contract field `phase`.
     pub phase: AgentModelEventPayloadPhase,
+    /// Contract field `canonical_message`.
+    pub canonical_message: Nullable<AgentCanonicalMessage>,
 }
 impl std::fmt::Debug for AgentModelEventPayload {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {

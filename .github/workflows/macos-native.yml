@@ -14,6 +14,14 @@ jobs:
           bash macos/Scripts/verify-env.sh
       - name: 安装固定 Rust 工具链
         run: rustup show active-toolchain
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 26.11.1
+      - name: 安装锁定的helper构建依赖与签名校验工具
+        run: |
+          npm ci --prefix app --ignore-scripts
+          npm ci --prefix agent --omit=dev --ignore-scripts
+          command -v gpg >/dev/null || brew install gnupg
       - name: 校验原生协议和工程漂移
         run: |
           python3 scripts/native_contracts.py --check
@@ -24,9 +32,6 @@ jobs:
           bash macos/Scripts/build-native.sh > target/macos-ci-evidence/build.log 2>&1
       - name: Swift 实际 ABI 生命周期与 DTO 负例
         run: bash macos/Scripts/test-native-contracts.sh > target/macos-ci-evidence/contracts.log 2>&1
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 26.11.1
       - name: 自有媒体、回环 HTTP 与实际 I/O 中断
         run: bash macos/Scripts/test-fixtures.sh > target/macos-ci-evidence/fixtures.log 2>&1
       - name: SQLite 实际同步、根锁和初始化中断
@@ -47,6 +52,8 @@ jobs:
         run: bash macos/Scripts/test-kernel-store.sh > target/macos-ci-evidence/kernel-store.log 2>&1
       - name: 主运行 C ABI、共享文档门与实际取消和接纳
         run: bash macos/Scripts/test-kernel-runtime.sh > target/macos-ci-evidence/kernel-runtime.log 2>&1
+      - name: 包内真实Pi、完整资源与helper崩溃后手工计算
+        run: bash macos/Scripts/test-agent-package.sh > target/macos-ci-evidence/agent-package.log 2>&1
       - name: 私有Agent真实进程、耐久ACK与旧身份恢复隔离
         run: bash macos/Scripts/test-agent-protocol.sh > target/macos-ci-evidence/agent-protocol.log 2>&1
       - name: 不可变结果 C ABI、完整源码分块和迟到回复

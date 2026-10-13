@@ -1,0 +1,167 @@
+{
+  "schema_version": 1,
+  "revision": "fa8244ed032f4a1ade4cb0571bf87d2f1a9fd2d7",
+  "default_face": "latinmodern-math",
+  "checked_files": [
+    {
+      "name": "Asana-Math.otf",
+      "sha256": "b0d9e681c08ff1f4dc6ebf085cc962585ec12cdbd25dc6225890b9f8fd12d568",
+      "bytes": 433528
+    },
+    {
+      "name": "Asana-Math.plist",
+      "sha256": "97ebe044f4c5bdc91ff522bdfb0425f1f88013e8b40bdecdbc9ba6c574e141fb",
+      "bytes": 99277
+    },
+    {
+      "name": "Euler-Math.otf",
+      "sha256": "bd07fef1faecea7fa4a89256e4e06ef94b19e23b1785db6e420229fda37c2efb",
+      "bytes": 428792
+    },
+    {
+      "name": "Euler-Math.plist",
+      "sha256": "7b8f745068f1583ea83a18da079bdecb94e2b7c73ba72a0e89f4edbb2c3a9f9e",
+      "bytes": 50321
+    },
+    {
+      "name": "FiraMath-Regular.otf",
+      "sha256": "2028cbd3dd4d8c0cf1608520eb4759956a83a67931d7b6d8e7c313520186e35b",
+      "bytes": 179840
+    },
+    {
+      "name": "FiraMath-Regular.plist",
+      "sha256": "b32d6388ee5769b6e68ffcc6f660dc73818ef6686ee846f041c2afd4ba6a0305",
+      "bytes": 74123
+    },
+    {
+      "name": "GUST-FONT-LICENSE.txt",
+      "sha256": "2bd69affc3da00715116f713f57eab9707e96daf3562ad0215987b15b9c16f73",
+      "bytes": 1456
+    },
+    {
+      "name": "Garamond-Math.otf",
+      "sha256": "c6161377e97084152b948f62abe874cbe27405938956346b54a4c6488a5009f1",
+      "bytes": 823988
+    },
+    {
+      "name": "Garamond-Math.plist",
+      "sha256": "2fe6c519cbf876e42ec601a14ca615e9bf38f51be6b92ef0bba26cf9ee45f780",
+      "bytes": 192517
+    },
+    {
+      "name": "KpMath-Light.otf",
+      "sha256": "aa6713ae76838a7db9eefe4f503b963dad50df77555ff67a50b72eb832221660",
+      "bytes": 451008
+    },
+    {
+      "name": "KpMath-Light.plist",
+      "sha256": "aaca68ecef79f005f41568df36ac467ec24a2b6732336ec8c357a156e3f4e114",
+      "bytes": 153377
+    },
+    {
+      "name": "KpMath-Sans.otf",
+      "sha256": "a9e82575a514f10ceed193d393bf2ea6ac82980ce7eb8c81be085df159a8c253",
+      "bytes": 293084
+    },
+    {
+      "name": "KpMath-Sans.plist",
+      "sha256": "3db5772fa9fbf71c96ca37eccaf38d8c2d32406c9bda8343d23a3cc0c9de348e",
+      "bytes": 105024
+    },
+    {
+      "name": "LICENSE",
+      "sha256": "431b2cb82b8a55977323598231f1baa44f32accac1231b4781a9a393d0bc29ed",
+      "bytes": 1075
+    },
+    {
+      "name": "LeteSansMath.otf",
+      "sha256": "b9242115e4d41b9ccbe179340d4ddaf5598863389a23677eefb87e8950781313",
+      "bytes": 440268
+    },
+    {
+      "name": "LeteSansMath.plist",
+      "sha256": "b00eeb445c4f525ec53391841d8b6e75c9ede23bbfa77a34c8a720ac8b7bc408",
+      "bytes": 131044
+    },
+    {
+      "name": "LibertinusMath-Regular.otf",
+      "sha256": "e81bd44acbb7119c8f00128b36fecc5d980e10d2450a226ba52402ccf4da9d32",
+      "bytes": 588848
+    },
+    {
+      "name": "LibertinusMath-Regular.plist",
+      "sha256": "35701c3b94bea93016a9161d017bacebd0954025644456aa8b47d0145fede503",
+      "bytes": 99401
+    },
+    {
+      "name": "NotoSansMath-Regular.otf",
+      "sha256": "9dda7e17fa67b7e34083798f56faf5e53ac524456e730ead35c2957e4397ca28",
+      "bytes": 498408
+    },
+    {
+      "name": "NotoSansMath-Regular.plist",
+      "sha256": "232aced02fe2d81553a1545c551d8d5fe824aae0c8c860f18bb10af3f4145c03",
+      "bytes": 225479
+    },
+    {
+      "name": "OFL.txt",
+      "sha256": "a96bed88f867f6a5bbe78ced4ca52a3ce6e002475363d86edd9097b2f8206d8d",
+      "bytes": 5104
+    },
+    {
+      "name": "latinmodern-math.otf",
+      "sha256": "6075562b771f8b82f0c179e363389684f2dd09de30038269e2628e504bd7be0f",
+      "bytes": 733736
+    },
+    {
+      "name": "latinmodern-math.plist",
+      "sha256": "201e6a483783415f335328f2d02b356fe55cd478eb0cd052898236589c8cb946",
+      "bytes": 65067
+    },
+    {
+      "name": "math_table_to_plist.py",
+      "sha256": "62a8e69ae5230b0420a34e28d9b6a44bd1127127e2d1c6ac0f06566583dafb3e",
+      "bytes": 7145
+    },
+    {
+      "name": "texgyretermes-math.otf",
+      "sha256": "e5ce42b4fe826b7ea4c0874359decf0b294439355c511a4794107a9924e2cd5a",
+      "bytes": 532404
+    },
+    {
+      "name": "texgyretermes-math.plist",
+      "sha256": "57ddeac7c51e1342aeb30fb72f6beb4d2f3ee7d51bfb1e07ab9150c06f7ec3c8",
+      "bytes": 58011
+    },
+    {
+      "name": "xits-math.otf",
+      "sha256": "d76666cb2dc222b4a811db96c41cc1853988b91008ec44a194126b4e010a5c6c",
+      "bytes": 538696
+    },
+    {
+      "name": "xits-math.plist",
+      "sha256": "e64b5302d65885a302b34eb2eb1e14c6a66f4c652fcbcd4893411361baae0363",
+      "bytes": 152248
+    },
+    {
+      "name": "SwiftMath-LICENSE.txt",
+      "sha256": "75c39d3db0d038a4966dfb86e4703748ee56434e188959e4423cfc91a54a93af",
+      "bytes": 1078
+    },
+    {
+      "name": "SwiftMath-Fonts-LICENSE",
+      "sha256": "431b2cb82b8a55977323598231f1baa44f32accac1231b4781a9a393d0bc29ed",
+      "bytes": 1075
+    },
+    {
+      "name": "SwiftMath-Fonts-OFL.txt",
+      "sha256": "a96bed88f867f6a5bbe78ced4ca52a3ce6e002475363d86edd9097b2f8206d8d",
+      "bytes": 5104
+    },
+    {
+      "name": "SwiftMath-Fonts-GUST-FONT-LICENSE.txt",
+      "sha256": "2bd69affc3da00715116f713f57eab9707e96daf3562ad0215987b15b9c16f73",
+      "bytes": 1456
+    }
+  ]
+}

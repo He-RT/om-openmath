@@ -21,3 +21,5 @@ ios/OpenMath/Resources/RustNotices/
 macos/Local.xcconfig
 macos/**/xcuserdata/
 macos/TestResults/
+
+macos/OpenMathNative/Resources/AgentRuntime/

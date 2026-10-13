@@ -6,7 +6,7 @@ fn frame() -> Value {
       "runtime_instance_id":"runtime-1","agent_session_id":"session-1","document_id":"document-1",
       "document_generation":1,"task_id":"task-1","task_generation":1,"message_id":"message-1",
       "sequence":1,"reply_to":null,"type":"model_event","payload":{"agent_turn_id":"turn-1",
-      "request_id":"request-1","byte_offset":0,"text":"中文🙂e\u{301}","phase":"delta"}})
+      "request_id":"request-1","byte_offset":0,"text":"中文🙂e\u{301}","phase":"delta","canonical_message":null}})
 }
 #[test]
 fn every_actual_utf8_byte_cut_and_multiple_frames_preserve_text() {

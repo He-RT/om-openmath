@@ -1,0 +1,405 @@
+{
+  "schema_version": 1,
+  "task": "R4.3.02",
+  "status": "completed",
+  "date": "2026-10-14",
+  "kind": "development production-helper task evidence, no release/final gate claim",
+  "base_commit": "a70311fa45bada609cd0f561bd3d19e102c1128b",
+  "versions": {
+    "node": "26.11.1",
+    "core": "1.0.4",
+    "ai": "1.0.4",
+    "adapter": "openmath-adapter-1",
+    "arch": "darwin-arm64",
+    "node_signer": "5BE8A3F6C8A5C01D106C0AD820B1A390B168D356"
+  },
+  "closure": {
+    "packages": 86,
+    "files": 4169,
+    "bytes": 172232377,
+    "entry": "Agent/main.mjs",
+    "typescript_at_user_runtime": false,
+    "npm_at_user_runtime": false,
+    "external_node_fallback": false,
+    "upstream_node_signature": "actual valid OpenPGP/strict Developer ID signature; public app re-signing is later release work"
+  },
+  "implemented": [
+    "Actual fixed Pi Agent with required custom streamFn, native prepare/before/after hooks and sequential twelve named tool declarations; no CodingAgent/shell/plugins.",
+    "Complete canonical input supplied after actual native ledger persistence; model refs bound by actual source owner before helper request, correlated UTF8 offsets and one terminal message.",
+    "Original canonical argument strings retained independently of Pi argument coercion/state; full assistant canonical record persisted and read back before ACK.",
+    "TypeScript compiled to production ESM closure; actual dynamic dependency files/resources and licenses included, complete immutable hash inventory.",
+    "Swift absolute bundled entry, exact actual thin arm64 header/Node code signature, package/App Security API verification, controlled empty cwd/environment, no system PATH/npm/node fallback.",
+    "Node public permission mode restricts filesystem access to package; no native addons/child process grant; this is not an OS sandbox guarantee.",
+    "Bounded raw stdin/stdout/replay/ordered writes/stderr, five-second handshake timeout, cancellation/exit/actual SIGKILL recovery retain independent manual kernel.",
+    "Unavailable tool fact stored as recovery data, no fabricated admitted operation/effect; unconfigured model fails without fake assistant event."
+  ],
+  "verified": {
+    "node_tests": 8,
+    "rust_new_and_existing_contract_tests": 21,
+    "strict_own_typescript": "passed with skipLibCheck for optional upstream declaration",
+    "clippy_fmt_generated_drift": "passed",
+    "actual_app_private_task": {
+      "actual_macho_architecture": "rejected",
+      "actual_private_frames": 6,
+      "bundled_node": "26.11.1",
+      "canonical_events": 3,
+      "evidence_root": "/Users/hert/Projects/openmath/target/macos-agent-package-tests/app-final-dBkVKE",
+      "late_stdin": "rejected",
+      "manual_after_sigkill": "4",
+      "missing_resource": "rejected",
+      "model_cancel_and_late_delta": "rejected",
+      "model_transport": "synthetic_native_port",
+      "PATH": "empty",
+      "production_core": "1.0.4",
+      "system_node_fallback": false,
+      "tool_outcome": "unavailable_no_effect",
+      "unconfigured_model": "no_fake_message_or_effect",
+      "wrong_architecture": "rejected"
+    },
+    "wire_frames_archived": 13,
+    "actual_canonical_events": 3,
+    "source_kernel_after_SIGKILL": "4",
+    "actual_wrong_macho_header": "rejected despite matching modified manifest digest",
+    "resource_missing": "rejected",
+    "old_environment_poison": "not inherited; PATH empty",
+    "cancel_and_late_model_events": "rejected",
+    "late_stdin": "rejected",
+    "native_release_and_deep_strict_signature": "passed",
+    "fonts_licenses": 32,
+    "legacy_saves_drafts_recovery": "passed including actual process interruptions",
+    "baseline_native_cabi": "passed",
+    "private_key_exact_project_scan": "passed; explicit file0600 parent0700"
+  },
+  "limitations": [
+    "Synthetic native model transport is deliberate task fixture; real model codec/URLSession/SecretStore/registry and real twelve tool handlers/Agent UI/loop remain later R4.3/R4.4 tasks.",
+    "Unavailable tool does not execute notebook operations; successful manual 4 is actual independent notebook/kernel behavior after helper failure.",
+    "Pi usage/model carrier is private transport metadata, not measured provider usage; native provider accounting belongs to later model transport.",
+    "Node upstream signature retained in developer preview; same-Team public component re-signing/notary remains R4.5.",
+    "No previous storage/config/credential/profile imported. OS input settings kept; R4.2.03 actual candidate tests remain pending.",
+    "Runtime/public .3 unchanged, Root1/library4/doc5/.omnb1, 32 final gates not_run/no candidate/ready=false/released=false; full plan not complete."
+  ],
+  "preserved_failures": [
+    "Native model request without host ref binding refused; test updated to actual native bind.",
+    "Initial build pin field spelling and standalone fixture return-type assumptions fixed.",
+    "First synthetic bridge parent emitted undefined forbidden properties; closed parser refused, fixed fixture.",
+    "a70311f macOS CI save script omitted Agent source dependencies; saves/drafts/recovery source lists fixed and actual original scenarios rerun.",
+    "Initial upstream Google GenAI declaration references optional absent MCP type; own code strict typechecked without installing MCP/CodingAgent."
+  ],
+  "commands": [
+    "python3 macos/native-package/build-helper.py --output <generated runtime>",
+    "target/native-runtime/node-v26.11.1-darwin-arm64/bin/node --test agent/test/bridge.test.mjs agent/test/pi-runtime.test.mjs agent/test/protocol.test.mjs",
+    "cargo test -p om-host-service --test contracts --test agent_endpoint --test agent_framing --test agent_ingress --locked",
+    "bash macos/Scripts/test-agent-package.sh (actual package + actual App resource/signatureRoot)",
+    "bash macos/Scripts/test-agent-protocol.sh",
+    "bash macos/Scripts/test-saves.sh; bash macos/Scripts/test-drafts.sh; bash macos/Scripts/test-recovery.sh",
+    "bash macos/Scripts/test-native-contracts.sh",
+    "bash macos/Scripts/build-native.sh",
+    "cargo clippy -p om-host-service -p om-apple-ffi --all-targets --locked -- -D warnings",
+    "cargo fmt --all --check",
+    "python3 scripts/native_contracts.py --check",
+    "python3 macos/Scripts/generate-project.py --check",
+    "codesign --verify --deep --strict <actual Release app>"
+  ],
+  "source_sha256": {
+    "agent/src/main.ts": "132360ae3953b96107e5ed3d9e957df443d073634cd7838219d18b994d32f126",
+    "agent/src/runtime.ts": "bacba419662ffb077efe49a56711b8d98bd07ea82a9e170ccbcaf9522adfda22",
+    "agent/src/bridge.ts": "353a4f0ff3492567301b2831503b0cb6a336486ffffa48dfc512e8062cb0607a",
+    "agent/src/protocol.ts": "39c4673f185bf9e63893960684d0691836fb27ed2faf4b332e76f9ed333655d3",
+    "agent/src/generated/protocol.ts": "f09694f32931f26ca40df82faf614122a360a6059c126fa1c6910b93f53290a7",
+    "agent/test/bridge.test.mjs": "dab34225e2255cbc185e3ee6e7ac4288319fb59c6692c8e6809586cad26005f8",
+    "agent/test/pi-runtime.test.mjs": "7272641e1ef7676a302d437e0f1bae602251f4d05bc54937bd1d22b565a28a90",
+    "agent/test/protocol.test.mjs": "acba5d832a48a2ea6c683101ab02994eefb0b847387918398a0b7e422f8b4c17",
+    "macos/OpenMathNative/Agent/AgentProcess.swift": "ba48e4ed82940a9c63356198ee55bc5011a17c1c6b45ba6fd4baf1763c7e65f5",
+    "macos/OpenMathNative/Agent/AgentPrivatePipe.swift": "c2c41dc3aa345bf32fa254518f2cb150004d91103739134f331bba2ffea90a64",
+    "macos/OpenMathNative/Agent/AgentSessionService.swift": "d46eb053e944896ec3963872b761f2986e03457401ddd1eee1f8ee9550e7cfc3",
+    "macos/OpenMathNativeTests/AgentPackageFixtures/main.swift": "3d776600360e6b5be67e43cceb69cb0057ce69c8f62b38041aca361a5136ce79",
+    "macos/OpenMathNativeTests/AgentProtocolFixtures/main.swift": "6cfc7e391871d9d9b7991ff1c65a129165ad0f12c86aed3faaa08376e53452b5",
+    "macos/OpenMathNativeTests/AgentProtocolFixtures/peer.mjs": "7ff3ac48e90b32fec0c80c6c5c466f3edd74f1160111b8f9b549770c49d5e6b0",
+    "macos/native-package/build-helper.py": "162487c8ddc5b4060d749476a62d7ac916630cc23c39ae2e14027daf11a8b7c3",
+    "macos/native-package/keys/node-26.11.1-release.asc": "5115095e2f8010c75da052ecb1cfb3af630e084f0f8daa93a863557b01b0f90a",
+    "macos/native-package/dependencies.json": "e872d56dd49e49a24afd0a04024bc28dd9caae80ddeca0b5308214570f6b02ec",
+    "docs/design/native-agent.schema.json": "fe150a9e03ff36953865fb7799a41016519f3fb39b71e2e760a0f933c4acf34a",
+    "docs/design/agent-tools.schema.json": "d884e5db86d4d633353e2739b6122865ffccb659f43dd15252c208df8bb7145a",
+    "crates/om-host-service/src/agent/endpoint.rs": "5ee47351e121be0e56071ac5b61de545f00062ae5c46fa86703f8f6a1f2032ab",
+    "crates/om-host-service/src/agent/ingress.rs": "69b4dde6a33be1119872488386bdb4bd8566b10d7b0a7b957cf541654985df15",
+    "crates/om-host-service/tests/agent_endpoint.rs": "2b5380989277fc388dbc74599fb841ce21c874ba9686f0033f72333e406d7795",
+    "macos/Scripts/build-native.sh": "8eb62eb8318abf72684d8385b65941927653baf41dc0065e86100d64e4866156",
+    "macos/Scripts/test-agent-package.sh": "8b32d3694c78f2926c78aad70154e64c80914c32e2ffad2120a6e9608ad57e88",
+    "macos/Scripts/test-agent-protocol.sh": "a4132f12cb43906eb5d6c77d7028d50ca4af49703f2a07a0b2c329265333e361",
+    "macos/Scripts/test-saves.sh": "0e1e8c1772ecf32480641243a19d54491ee8dd81910c59acb9e24f671f8a7389",
+    "macos/Scripts/test-drafts.sh": "b2a18619591d7f14847be2a2d2121e1bd0bde2df24c5c1f24b9e99cc36b48c56",
+    "macos/Scripts/test-recovery.sh": "5d6d6d4356953d28259a89f205b0b5520e2f8f895479f8281030de15fd5e7521"
+  },
+  "files": [
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/pi-production-runtime-raw/HelperManifest.json",
+      "sha256": "91a3b62bf824e6b9459958ef67c7c30791cefae363e8e3b7be2f34a23212ea1a",
+      "bytes": 858785
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/pi-production-runtime-raw/a70311f-saves-compile-failure.log",
+      "sha256": "1cb0a0d2ae50b3950ade7f22030a51d47d78d8da4540e2092178c6c5a22c5352",
+      "bytes": 1171
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/pi-production-runtime-raw/actual-production-ledger.json",
+      "sha256": "35e0eab5247684d2216df7ec6c02db2bea5a1ba6c3b8d75cb7e6f259249036a0",
+      "bytes": 3711
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/pi-production-runtime-raw/actual-production-wire.json",
+      "sha256": "893aec9b48d53661a6466a21274801d6b55eb92bc80a4e3b52433dbd1d3f5075",
+      "bytes": 10750
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/pi-production-runtime-raw/input-agent--src--bridge.ts",
+      "sha256": "353a4f0ff3492567301b2831503b0cb6a336486ffffa48dfc512e8062cb0607a",
+      "bytes": 14054
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/pi-production-runtime-raw/input-agent--src--generated--protocol.ts",
+      "sha256": "f09694f32931f26ca40df82faf614122a360a6059c126fa1c6910b93f53290a7",
+      "bytes": 15582
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/pi-production-runtime-raw/input-agent--src--main.ts",
+      "sha256": "132360ae3953b96107e5ed3d9e957df443d073634cd7838219d18b994d32f126",
+      "bytes": 846
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/pi-production-runtime-raw/input-agent--src--protocol.ts",
+      "sha256": "39c4673f185bf9e63893960684d0691836fb27ed2faf4b332e76f9ed333655d3",
+      "bytes": 8570
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/pi-production-runtime-raw/input-agent--src--runtime.ts",
+      "sha256": "bacba419662ffb077efe49a56711b8d98bd07ea82a9e170ccbcaf9522adfda22",
+      "bytes": 4273
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/pi-production-runtime-raw/input-agent--test--bridge.test.mjs",
+      "sha256": "dab34225e2255cbc185e3ee6e7ac4288319fb59c6692c8e6809586cad26005f8",
+      "bytes": 3724
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/pi-production-runtime-raw/input-agent--test--pi-runtime.test.mjs",
+      "sha256": "7272641e1ef7676a302d437e0f1bae602251f4d05bc54937bd1d22b565a28a90",
+      "bytes": 4492
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/pi-production-runtime-raw/input-agent--test--protocol.test.mjs",
+      "sha256": "acba5d832a48a2ea6c683101ab02994eefb0b847387918398a0b7e422f8b4c17",
+      "bytes": 2792
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/pi-production-runtime-raw/input-crates--om-host-service--src--agent--endpoint.rs",
+      "sha256": "5ee47351e121be0e56071ac5b61de545f00062ae5c46fa86703f8f6a1f2032ab",
+      "bytes": 17370
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/pi-production-runtime-raw/input-crates--om-host-service--src--agent--ingress.rs",
+      "sha256": "69b4dde6a33be1119872488386bdb4bd8566b10d7b0a7b957cf541654985df15",
+      "bytes": 21966
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/pi-production-runtime-raw/input-crates--om-host-service--tests--agent_endpoint.rs",
+      "sha256": "2b5380989277fc388dbc74599fb841ce21c874ba9686f0033f72333e406d7795",
+      "bytes": 12047
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/pi-production-runtime-raw/input-docs--design--agent-tools.schema.json",
+      "sha256": "d884e5db86d4d633353e2739b6122865ffccb659f43dd15252c208df8bb7145a",
+      "bytes": 89022
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/pi-production-runtime-raw/input-docs--design--native-agent.schema.json",
+      "sha256": "fe150a9e03ff36953865fb7799a41016519f3fb39b71e2e760a0f933c4acf34a",
+      "bytes": 49656
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/pi-production-runtime-raw/input-macos--OpenMathNative--Agent--AgentPrivatePipe.swift",
+      "sha256": "c2c41dc3aa345bf32fa254518f2cb150004d91103739134f331bba2ffea90a64",
+      "bytes": 6743
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/pi-production-runtime-raw/input-macos--OpenMathNative--Agent--AgentProcess.swift",
+      "sha256": "ba48e4ed82940a9c63356198ee55bc5011a17c1c6b45ba6fd4baf1763c7e65f5",
+      "bytes": 6195
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/pi-production-runtime-raw/input-macos--OpenMathNative--Agent--AgentSessionService.swift",
+      "sha256": "d46eb053e944896ec3963872b761f2986e03457401ddd1eee1f8ee9550e7cfc3",
+      "bytes": 17448
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/pi-production-runtime-raw/input-macos--OpenMathNativeTests--AgentPackageFixtures--main.swift",
+      "sha256": "3d776600360e6b5be67e43cceb69cb0057ce69c8f62b38041aca361a5136ce79",
+      "bytes": 11595
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/pi-production-runtime-raw/input-macos--OpenMathNativeTests--AgentProtocolFixtures--main.swift",
+      "sha256": "6cfc7e391871d9d9b7991ff1c65a129165ad0f12c86aed3faaa08376e53452b5",
+      "bytes": 15056
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/pi-production-runtime-raw/input-macos--OpenMathNativeTests--AgentProtocolFixtures--peer.mjs",
+      "sha256": "7ff3ac48e90b32fec0c80c6c5c466f3edd74f1160111b8f9b549770c49d5e6b0",
+      "bytes": 3152
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/pi-production-runtime-raw/input-macos--Scripts--build-native.sh",
+      "sha256": "8eb62eb8318abf72684d8385b65941927653baf41dc0065e86100d64e4866156",
+      "bytes": 546
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/pi-production-runtime-raw/input-macos--Scripts--test-agent-package.sh",
+      "sha256": "8b32d3694c78f2926c78aad70154e64c80914c32e2ffad2120a6e9608ad57e88",
+      "bytes": 1417
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/pi-production-runtime-raw/input-macos--Scripts--test-agent-protocol.sh",
+      "sha256": "a4132f12cb43906eb5d6c77d7028d50ca4af49703f2a07a0b2c329265333e361",
+      "bytes": 978
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/pi-production-runtime-raw/input-macos--Scripts--test-drafts.sh",
+      "sha256": "b2a18619591d7f14847be2a2d2121e1bd0bde2df24c5c1f24b9e99cc36b48c56",
+      "bytes": 1728
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/pi-production-runtime-raw/input-macos--Scripts--test-recovery.sh",
+      "sha256": "5d6d6d4356953d28259a89f205b0b5520e2f8f895479f8281030de15fd5e7521",
+      "bytes": 1782
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/pi-production-runtime-raw/input-macos--Scripts--test-saves.sh",
+      "sha256": "0e1e8c1772ecf32480641243a19d54491ee8dd81910c59acb9e24f671f8a7389",
+      "bytes": 1716
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/pi-production-runtime-raw/input-macos--native-package--build-helper.py",
+      "sha256": "162487c8ddc5b4060d749476a62d7ac916630cc23c39ae2e14027daf11a8b7c3",
+      "bytes": 6294
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/pi-production-runtime-raw/input-macos--native-package--dependencies.json",
+      "sha256": "e872d56dd49e49a24afd0a04024bc28dd9caae80ddeca0b5308214570f6b02ec",
+      "bytes": 54663
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/pi-production-runtime-raw/input-macos--native-package--keys--node-26.11.1-release.asc",
+      "sha256": "5115095e2f8010c75da052ecb1cfb3af630e084f0f8daa93a863557b01b0f90a",
+      "bytes": 924
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/pi-production-runtime-raw/node-release-signature.txt",
+      "sha256": "140ad4f488537fb49ed044e28008b1463a9095a56746939fafca6ad3c39a69a3",
+      "bytes": 402
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/pi-production-runtime-raw/node26-signature-initial.log",
+      "sha256": "a76fbb16960378eb1a17977ae53396b9022e46ed5b0b2e6f4a9f729f17811e1f",
+      "bytes": 461
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/pi-production-runtime-raw/node26-signature-verified.log",
+      "sha256": "38d37a9f95177e8ff60b12985ae3186fb19a7363ce4a9f23839f5522d7f54272",
+      "bytes": 893
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/pi-production-runtime-raw/node26-upstream-shasums.asc",
+      "sha256": "0f9be28c7f30f21bf5174f1b30aadc268b434455d75635f2eaf3e33ff1da4241",
+      "bytes": 3449
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/pi-production-runtime-raw/pi-app-bundle-task-verified.log",
+      "sha256": "e755f7a6670347084330629841624fa088c1dd3b721b4b8d2ae5b3218dc28c7f",
+      "bytes": 572
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/pi-production-runtime-raw/pi-bridge-node-initial.log",
+      "sha256": "db89eab45b22f3405ef6ca35c263df804e10cdfccdba5ae83702d4d30c452d17",
+      "bytes": 1844
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/pi-production-runtime-raw/pi-bridge-rust-tests-initial.log",
+      "sha256": "1d2b966d2f733594819e2e7c828611cf22d1a8f3bd2841d6cf6beaa1ac2fb73f",
+      "bytes": 1225
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/pi-production-runtime-raw/pi-native-contracts-final.log",
+      "sha256": "1c579f1f9c49f8a58307ef2e84e499270bc8629af7a32630937b66cf80954f34",
+      "bytes": 2156
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/pi-production-runtime-raw/pi-native-release-final.log",
+      "sha256": "2f730ab8821073218a82fe48c8ca8681220d8cae63d295fdaccc4e651e7182b2",
+      "bytes": 114793
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/pi-production-runtime-raw/pi-native-resources-final.json",
+      "sha256": "2a2aae7b98fda27038fbd5bb5cbd448949ba02c68ac48eee430d2205286ba504",
+      "bytes": 5128
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/pi-production-runtime-raw/pi-package-complete-verified.log",
+      "sha256": "a4e7e8e987606846d918332264d66021838c9694727dafe15921a547cba317bf",
+      "bytes": 784
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/pi-production-runtime-raw/pi-package-swift-initial.log",
+      "sha256": "ac34aaa98f82683e69fefb74f29d592f51107344c5051bf7dc63103731bfebdc",
+      "bytes": 5983
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/pi-production-runtime-raw/pi-production-build-initial.log",
+      "sha256": "ed8cabc5bbbab31ac320830ade682ea1eb1e13a8460c10245aae47fbab93a1f3",
+      "bytes": 689
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/pi-production-runtime-raw/pi-production-clippy-final.log",
+      "sha256": "e508dfb3ec2ec976f227bcb19ab7272091817c03330b9cc828643ec2e60a1ef2",
+      "bytes": 260
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/pi-production-runtime-raw/pi-production-node-final.log",
+      "sha256": "3b25a77bb2018ee0e734db51b026e46c22576d3c899df7a73e875f5ae4def21f",
+      "bytes": 907
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/pi-production-runtime-raw/pi-production-rust-final.log",
+      "sha256": "2d3699a1bc629e8b533bf2cd7146c019e1d54ecf82c798d8e7d14f40d4e7fd2e",
+      "bytes": 2720
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/pi-production-runtime-raw/pi-production-ts-verified.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/pi-production-runtime-raw/pi-regression-drafts.log",
+      "sha256": "2b53e4ea2d9b98196c3edb9207ebc948f9b874677ff3322981d4cbfc4e30eb1a",
+      "bytes": 507
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/pi-production-runtime-raw/pi-regression-recovery.log",
+      "sha256": "ce80fe896c3bd62343a7f2ff2264555881de5a119a0ef35df8ffd9a21e462534",
+      "bytes": 681
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/pi-production-runtime-raw/pi-regression-saves.log",
+      "sha256": "b76b286d471a4f7ddd98fe12e86e985aac1cf7b2937da6ce8a80c94a23fe2bb3",
+      "bytes": 884
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/pi-production-runtime-raw/production-dependencies.json",
+      "sha256": "af8aa6655679e54fcd87511a6bfdc2757d139816f06d0bb051b4a9fcab123c93",
+      "bytes": 42701
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/pi-production-runtime-raw/cache-cleanup.json",
+      "sha256": "1568a518e4fecbed87cbb34928919fecf0ae2effc9ef36163c19e6186f660e76",
+      "bytes": 205
+    }
+  ]
+}

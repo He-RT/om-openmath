@@ -2,17 +2,21 @@
 import Foundation
 public struct AgentSteerPayload: Codable, Sendable {
   public var event_ref: String
+  public var message: AgentCanonicalMessage
   private enum CodingKeys: String, CodingKey {
     case event_ref
+    case message
   }
   public init(from decoder: Decoder) throws {
     let all = try decoder.container(keyedBy: HostCodingKey.self)
-    let allowed: Set<String> = ["event_ref"]
+    let allowed: Set<String> = ["event_ref","message"]
     guard all.allKeys.allSatisfy({ allowed.contains($0.stringValue) }) else { throw DecodingError.dataCorrupted(.init(codingPath: decoder.codingPath, debugDescription: "Unknown native contract field")) }
     let c = try decoder.container(keyedBy: CodingKeys.self)
     self.event_ref = try c.decode(String.self, forKey: .event_ref)
+    self.message = try c.decode(AgentCanonicalMessage.self, forKey: .message)
   }
-  public init(event_ref: String) {
+  public init(event_ref: String, message: AgentCanonicalMessage) {
     self.event_ref = event_ref
+    self.message = message
   }
 }

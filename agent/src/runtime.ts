@@ -31,7 +31,9 @@ export class AgentRuntime {
       streamFn: port.stream, getApiKey: () => undefined, maxRetryDelayMs: 0,
       prepareRequest: async (_request, signal) => {
         if (this.#failed) throw new Error('CANONICAL_ACK_FAILED');
-        signal?.throwIfAborted(); await port.prepare(signal); signal?.throwIfAborted();
+        signal?.throwIfAborted();
+        try {await port.prepare(signal);signal?.throwIfAborted();}
+        catch(error){this.#failed=true;this.#agent.abort();throw error;}
       },
       beforeToolCall: async (context, signal) => {
         await this.#persist(context.assistantMessage, signal);
@@ -41,7 +43,9 @@ export class AgentRuntime {
       finishTurn: async (context, signal) => {await this.#persist(context.message, signal);},
     });
   }
+  get failed():boolean {return this.#failed;}
   async #persist(message: AssistantMessage, signal?: AbortSignal): Promise<void> {
+    if(message.stopReason==='error'||message.stopReason==='aborted'){this.#failed=true;return;}
     let pending = this.#receipts.get(message);
     if (!pending) {
       const canonical = this.#port.canonical(message);

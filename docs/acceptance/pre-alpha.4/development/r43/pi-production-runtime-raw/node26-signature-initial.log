@@ -1,0 +1,8 @@
+gpg: keybox '/Users/hert/Projects/openmath/target/native-runtime/signature-verify/verified-public.gpg' created
+[GNUPG:] NEWSIG
+gpg: Signature made Thu Oct  8 07:54:07 2026 +08
+gpg:                using EDDSA key 5BE8A3F6C8A5C01D106C0AD820B1A390B168D356
+[GNUPG:] ERRSIG 20B1A390B168D356 22 8 01 1791417247 9 5BE8A3F6C8A5C01D106C0AD820B1A390B168D356
+[GNUPG:] NO_PUBKEY 20B1A390B168D356
+gpg: Can't check signature: No public key
+[GNUPG:] FAILURE gpg-exit 33554433

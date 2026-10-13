@@ -57,13 +57,14 @@ private final class LedgerPause:@unchecked Sendable {
     let actualService=AgentSessionService(host:pipeHost,storage:storage,document:document,generation:pipeOpen.document_generation.value),pipeHello=try await actualService.activate(session:"pipe-session",grants:[.read_notebook],readonly:true,coreVersion:"1.0.4",adapterVersion:"adapter-1")
     let output=root.appendingPathComponent("actual-peer-frames.json")
     let pipe=try await AgentPrivatePipe.launch(executable:URL(fileURLWithPath:CommandLine.arguments[3]),arguments:[repo.appendingPathComponent("macos/OpenMathNativeTests/AgentProtocolFixtures/peer.mjs").path,output.path],directory:repo)
-    let report=try await actualService.run(pipe:pipe,hello:pipeHello)
+    let modelPort=AgentNativeModelPort(prepare:{_ in .init(context:"fixture-context",model:"fixture-config")},stream:{intent in AsyncThrowingStream {$0.yield(.init(agent_turn_id:intent.agent_turn_id,request_id:intent.request_id,byte_offset:try! HostSerial(0),text:"",phase:.failed,canonical_message:.init(nil)));$0.finish()}})
+    let report=try await actualService.run(pipe:pipe,hello:pipeHello,modelPort:modelPort)
     precondition(report.frames==7 && report.lastPhase == .awaiting_settlement && report.toolIntents.count==1 && report.requestIntents.count==2 && report.requestIntents[0]==report.requestIntents[1])
-    let pipeEvents=try await storage.sessionEvents("pipe-session");precondition(pipeEvents.count==1)
+    let pipeEvents=try await storage.sessionEvents("pipe-session");precondition(pipeEvents.count==2)
     let orderedOutput=root.appendingPathComponent("ordered-host-frames.json")
     let orderedPipe=try await AgentPrivatePipe.launch(executable:URL(fileURLWithPath:CommandLine.arguments[3]),arguments:[repo.appendingPathComponent("macos/OpenMathNativeTests/AgentProtocolFixtures/peer.mjs").path,orderedOutput.path,"collect"],directory:repo)
     var second=try JSONSerialization.jsonObject(with:Data(pipeHello.outbound_json.value!.utf8)) as! [String:Any]
-    second["sequence"]=2;second["message_id"]="outbound-second";second["type"]="user_input";second["payload"]=["event_ref":"synthetic-ordering-input"]
+    second["sequence"]=2;second["message_id"]="outbound-second";second["type"]="user_input";second["payload"]=["event_ref":"synthetic-ordering-input","message":try object(user)]
     let secondBytes=try JSONSerialization.data(withJSONObject:second,options:[.sortedKeys])+Data([10])
     try await orderedPipe.write(secondBytes);try await orderedPipe.write(Data((pipeHello.outbound_json.value!+"\n").utf8))
     while try await orderedPipe.read() != nil { }

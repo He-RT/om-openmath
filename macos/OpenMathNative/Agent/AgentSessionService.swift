@@ -7,8 +7,15 @@ struct SessionCanonicalAssistant:Codable,Sendable {
   let codecVersion:Int,messageID:String,textUTF8:Data,calls:[SessionToolCall],canonicalJSON:String
   let peerMessageID:String,connectionID:String,sourceSequence:UInt64
 }
-struct AgentPipeReport:Sendable {var frames=0;var lastPhase:NativeAgentHostReplyPhase = .starting;var toolIntents:[String]=[];var requestIntents:[String]=[]}
+struct AgentPipeReport:Sendable {var frames=0;var loopReason:AgentSettledPayloadReason?;var lastPhase:NativeAgentHostReplyPhase = .starting;var toolIntents:[String]=[];var requestIntents:[String]=[]}
 struct SessionCanonicalInput:Codable,Sendable {let codecVersion:Int,delivery:String,message:AgentCanonicalMessage}
+
+struct AgentPreparedRequest:Sendable {let context:String,model:String}
+struct AgentNativeModelPort:Sendable {
+  let prepare:@Sendable (NativeAgentRequestIntent)async throws->AgentPreparedRequest
+  let stream:@Sendable (NativeAgentRequestIntent)async throws->AsyncThrowingStream<AgentModelEventPayload,any Error>
+}
+struct AgentToolUnavailable:Codable,Sendable {let codecVersion:Int,kind:String,intent:NativeAgentToolIntent}
 
 /// One document-owned conversation port. Construction/recovery starts no model, tool or helper.
 /// Actor suspension cannot grant authority: every resumed callback is fenced again by Rust.
@@ -21,6 +28,9 @@ actor AgentSessionService {
   private var waiters:[CheckedContinuation<Void,Never>]=[]
   private var inputFrames:[String:String]=[:]
   private var privatePipe:AgentPrivatePipe?
+  private var dispatches:[String:Task<Void,Never>]=[:]
+  private var readyConnection:String?
+  private var toolFrames:[String:String]=[:]
   init(host:NativeHostClient,storage:StorageService,document:String,generation:UInt64) {
     self.host=host;self.storage=storage;self.document=document;self.generation=generation
   }
@@ -36,7 +46,7 @@ actor AgentSessionService {
     let reply=try await host.agentCommand(.native_agent_activate(.init(type:.agent_activate,scope:s,hello_id:"hello-"+UUID().uuidString.lowercased(),core_version:coreVersion,adapter_version:adapterVersion,grants:grants,readonly:readonly)))
     guard !closed,reply.document_id==document else {_ = try? await host.agentCommand(.native_agent_close(.init(type:.agent_close,scope:s)));throw AgentSessionError.stale}
     scope=s;taskGeneration=s.task_generation.value;connectionGeneration=s.connection_generation.value
-    ledger=SessionLedgerPort(storage:storage,session:session);outgoingSequence=1;inputFrames.removeAll()
+    ledger=SessionLedgerPort(storage:storage,session:session);outgoingSequence=1;inputFrames.removeAll();toolFrames.removeAll()
     return reply
   }
   /// Complete raw UTF8 frame bytes reach the stricter Rust decoder before any Swift JSON parsing.
@@ -47,7 +57,7 @@ actor AgentSessionService {
     guard bytes.count<=AgentFrameBytes.maximum,let raw=String(data:bytes,encoding:.utf8) else {throw AgentSessionError.invalidFrame}
     let reply=try await host.agentCommand(.native_agent_receive(.init(type:.agent_receive,scope:s,frame_json:raw)))
     guard reply.document_id==document else {throw AgentSessionError.stale}
-    guard reply.disposition == .transcript else {updateSequence(reply);return reply}
+    guard reply.disposition == .transcript else {if reply.disposition == .ready {readyConnection=s.connection_id};updateSequence(reply);return reply}
     guard let canonical=reply.canonical_json.value,let event=reply.event_id.value,let peer=reply.peer_message_id.value,let sourceSequence=reply.source_sequence.value else {throw AgentSessionError.invalidFrame}
     let message=try JSONDecoder().decode(AgentCanonicalMessage.self,from:Data(canonical.utf8))
     guard message.role == .assistant,message.task_id.value==s.task_id,let turn=message.agent_turn_id.value else {throw AgentSessionError.stale}
@@ -77,7 +87,7 @@ actor AgentSessionService {
     guard ["user_input","steer","follow_up"].contains(delivery),message.role == .user,message.task_id.value==s.task_id else {throw AgentSessionError.invalidFrame}
     try Self.validateInput(message)
     _ = try await ledger.record(SessionCanonicalInput(codecVersion:1,delivery:delivery,message:message),id:event,kind:.user_message,turn:message.agent_turn_id.value,task:s.task_id,faults:faults)
-    let value:[String:Any]=["protocol_version":1,"runtime_instance_id":host.runtimeInstanceID,"document_id":document,"document_generation":generation,"agent_session_id":s.agent_session_id,"task_id":s.task_id,"task_generation":s.task_generation.value,"connection_id":s.connection_id,"connection_generation":s.connection_generation.value,"message_id":"input-frame-"+UUID().uuidString.lowercased(),"sequence":outgoingSequence+1,"reply_to":NSNull(),"type":delivery,"payload":["event_ref":event]]
+    let value:[String:Any]=["protocol_version":1,"runtime_instance_id":host.runtimeInstanceID,"document_id":document,"document_generation":generation,"agent_session_id":s.agent_session_id,"task_id":s.task_id,"task_generation":s.task_generation.value,"connection_id":s.connection_id,"connection_generation":s.connection_generation.value,"message_id":"input-frame-"+UUID().uuidString.lowercased(),"sequence":outgoingSequence+1,"reply_to":NSNull(),"type":delivery,"payload":["event_ref":event,"message":try JSONSerialization.jsonObject(with:JSONEncoder().encode(message))]]
     let bytes=try JSONSerialization.data(withJSONObject:value,options:[.sortedKeys,.withoutEscapingSlashes])
     let raw=inputFrames[event] ?? String(decoding:bytes,as:UTF8.self);inputFrames[event]=raw
     let reply=try await host.agentCommand(.native_agent_send(.init(type:.agent_send,scope:s,frame_json:raw)))
@@ -122,10 +132,13 @@ actor AgentSessionService {
     return reply
   }
   /// Actual private subprocess/pipe. Production Pi packaging is a separate adapter task.
-  func run(pipe:AgentPrivatePipe,hello:NativeAgentHostReply) async throws->AgentPipeReport {
+  func run(pipe:AgentPrivatePipe,hello:NativeAgentHostReply,modelPort:AgentNativeModelPort?=nil,input:AgentCanonicalMessage?=nil) async throws->AgentPipeReport {
     guard !closed,scope != nil,privatePipe==nil,let initial=hello.outbound_json.value else {throw AgentSessionError.inactive}
     privatePipe=pipe
-    var report=AgentPipeReport()
+    let connection=scope!.connection_id
+    let handshake=Task {try? await Task.sleep(for:.seconds(5));if !Task.isCancelled {await self.handshakeTimeout(pipe,connection:connection)}}
+    defer {handshake.cancel()}
+    var report=AgentPipeReport();var delivered=false
     do {
       try await pipe.write(Data((initial+"\n").utf8))
       var decoder=AgentFrameBytes()
@@ -136,21 +149,74 @@ actor AgentSessionService {
           if let intent=reply.tool_intent.value {report.toolIntents.append(intent.operation_id)}
           if let intent=reply.request_intent.value {report.requestIntents.append(intent.operation_id)}
           if let outbound=reply.outbound_json.value {try await pipe.write(Data((outbound+"\n").utf8))}
+          if reply.disposition == .ready,let input,!delivered {delivered=true;_ = try await self.input(input)}
+          let decoded=try JSONDecoder().decode(AgentIPCFrame.self,from:frame)
+          if case .agent_settled_frame(let settled)=decoded {report.loopReason=settled.payload.reason}
+          if reply.disposition == .request_intent,let intent=reply.request_intent.value {
+            let preparing:Bool
+            switch decoded {case .agent_prepare_request_frame:preparing=true;case .agent_model_request_frame:preparing=false;default:throw AgentSessionError.invalidFrame}
+            let key=(preparing ? "prepare-":"model-")+intent.operation_id
+            if dispatches[key]==nil {dispatches[key]=Task {await self.dispatchModel(intent,preparing:preparing,port:modelPort)}}
+          }
+          if reply.disposition == .tool_intent,let intent=reply.tool_intent.value {
+            let key="tool-"+intent.operation_id
+            if dispatches[key]==nil {dispatches[key]=Task {await self.unavailableTool(intent)}}
+          }
+
         }
       }
       try decoder.finish()
       guard report.lastPhase == .awaiting_settlement else {throw AgentSessionError.invalidFrame}
-      await pipe.close();privatePipe=nil
+      stopDispatches();await pipe.close();privatePipe=nil
       if let s=scope {_ = try? await host.agentCommand(.native_agent_close(.init(type:.agent_close,scope:s)))}
       scope=nil;ledger=nil;return report
     } catch {
-      await pipe.close();privatePipe=nil
+      stopDispatches();await pipe.close();privatePipe=nil
       if let s=scope { _ = try? await host.agentCommand(.native_agent_close(.init(type:.agent_close,scope:s))) }
       scope=nil;ledger=nil;throw error
     }
   }
+  private func handshakeTimeout(_ pipe:AgentPrivatePipe,connection:String) async {
+    if scope?.connection_id==connection,readyConnection != connection {await pipe.close()}
+  }
+  private func send(_ kind:String,payload:Data) async throws->String {
+    try await acquire();defer {release()}
+    guard let s=scope,let pipe=privatePipe else {throw AgentSessionError.inactive}
+    let value:[String:Any]=["protocol_version":1,"runtime_instance_id":host.runtimeInstanceID,"document_id":document,"document_generation":generation,"agent_session_id":s.agent_session_id,"task_id":s.task_id,"task_generation":s.task_generation.value,"connection_id":s.connection_id,"connection_generation":s.connection_generation.value,"message_id":"native-frame-"+UUID().uuidString.lowercased(),"sequence":outgoingSequence+1,"reply_to":NSNull(),"type":kind,"payload":try JSONSerialization.jsonObject(with:payload)]
+    let bytes=try JSONSerialization.data(withJSONObject:value,options:[.sortedKeys,.withoutEscapingSlashes]),raw=String(decoding:bytes,as:UTF8.self)
+    let reply=try await host.agentCommand(.native_agent_send(.init(type:.agent_send,scope:s,frame_json:raw)))
+    updateSequence(reply);try await pipe.write(Data((raw+"\n").utf8));return raw
+  }
+  private func dispatchModel(_ intent:NativeAgentRequestIntent,preparing:Bool,port:AgentNativeModelPort?) async {
+    do {
+      guard let port else {throw AgentSessionError.inactive}
+      if preparing {
+        let prepared=try await port.prepare(intent);try Task.checkCancellation()
+        _ = try await send("model_request",payload:JSONEncoder().encode(AgentModelRequestPayload(agent_turn_id:intent.agent_turn_id,request_id:intent.request_id,context_ref:prepared.context,model_config_ref:prepared.model)))
+      } else {
+        let stream=try await port.stream(intent)
+        for try await event in stream {try Task.checkCancellation();_ = try await send("model_event",payload:JSONEncoder().encode(event))}
+      }
+    } catch {
+      if !Task.isCancelled {_ = try? await send("error",payload:JSONEncoder().encode(AgentErrorPayload(code:"NATIVE_MODEL_UNAVAILABLE",recoverable:false)))}
+    }
+  }
+  private func unavailableTool(_ intent:NativeAgentToolIntent) async {
+    do {
+      guard let s=scope,let ledger else {throw AgentSessionError.inactive}
+      _ = try await ledger.record(AgentToolUnavailable(codecVersion:1,kind:"native_tool_unavailable",intent:intent),id:"unavailable-"+intent.operation_id,kind:.recovery,turn:intent.agent_turn_id,task:s.task_id)
+      try Task.checkCancellation()
+      if let original=toolFrames[intent.operation_id],let pipe=privatePipe {
+        let reply=try await host.agentCommand(.native_agent_send(.init(type:.agent_send,scope:s,frame_json:original)));updateSequence(reply);try await pipe.write(Data((original+"\n").utf8))
+      } else {
+        let result=AgentToolResultPayload(agent_turn_id:intent.agent_turn_id,tool_call_id:intent.tool_call_id,operation_ref:.init(nil),result_ref:.init(nil),outcome:.unavailable)
+        toolFrames[intent.operation_id]=try await send("tool_result",payload:JSONEncoder().encode(result))
+      }
+    } catch {if !Task.isCancelled {_ = try? await send("error",payload:JSONEncoder().encode(AgentErrorPayload(code:"NATIVE_TOOL_UNAVAILABLE",recoverable:false)))}}
+  }
+  private func stopDispatches() {for task in dispatches.values {task.cancel()};dispatches.removeAll()}
   func close() async {
-    closed=true
+    closed=true;stopDispatches()
     if let s=scope { _ = try? await host.agentCommand(.native_agent_close(.init(type:.agent_close,scope:s))) }
     scope=nil;ledger=nil
     if let pipe=privatePipe {await pipe.close();privatePipe=nil}

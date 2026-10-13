@@ -37,7 +37,7 @@ jobs:
       - name: Install pinned Agent Core/AI production dependencies
         run: npm ci --prefix agent --omit=dev --ignore-scripts
       - name: Validate actual Pi canonical ACK and sequential hooks
-        run: node --test agent/test/pi-runtime.test.mjs
+        run: node --test agent/test/pi-runtime.test.mjs agent/test/bridge.test.mjs
       - name: Validate private Agent canonical protocol streams
         run: node --test agent/test/protocol.test.mjs
       - name: Build frontend assets

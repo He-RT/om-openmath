@@ -62,7 +62,7 @@
 | [ ] [R4.2.16](PRE_ALPHA_4.md#task-r4.2.16) | 原生主题、可访问语义与初步组件审计 | planned | — | — |
 | [ ] [R4.2.17](PRE_ALPHA_4.md#task-r4.2.17) | 本地计算首启、欢迎恢复与助手空态 | planned | — | — |
 | [ ] [R4.2.18](PRE_ALPHA_4.md#task-r4.2.18) | 关于、手工更新、诊断与新数据管理 | planned | — | — |
-| [ ] [R4.3.01](PRE_ALPHA_4.md#task-r4.3.01) | 规范Agent消息、任务与IPC身份 | planned | — | — |
+| [ ] [R4.3.01](PRE_ALPHA_4.md#task-r4.3.01) | 规范Agent消息、任务与IPC身份 | in_progress | [规范DTO/字节与身份基础](../acceptance/pre-alpha.4/development/r43/agent-protocol-foundation.json)；NativeHost/Swift/实际进程接线仍待完成 | 本批基础 |
 | [ ] [R4.3.02](PRE_ALPHA_4.md#task-r4.3.02) | 固定Pi Core与随包生产helper | planned | — | — |
 | [ ] [R4.3.03](PRE_ALPHA_4.md#task-r4.3.03) | sans-IO单轮模型codec基础 | planned | — | — |
 | [ ] [R4.3.04](PRE_ALPHA_4.md#task-r4.3.04) | Swift URLSession和SecretStore传输 | planned | — | — |
@@ -531,3 +531,12 @@ Done依据与覆盖case/proof:
 - 最后完整原生21用例/真实窗口焦点/NSEvent与Return、10Rust value/retained tests、269DTO/工程/Release安装32资源与签名通过；原57公式/12解、workbench真实width/scroll/CASstop、ResultClient/KernelRuntime回归通过。可见浅/深表格、真实与伪造保证、复制回执、真实嵌套双击/Return检查后正常Quit。原编译/依赖未就绪/大页/原ref过期/AX超时与采样保留，不拿选择性窗口检查宣称千格或AX性能完成。
 - 精确40cc1cb/CI38377911174五jobs全部success；Mac57/12/mathresources/workbench和远端iPhone/iPad各35passed/0failed，仅读xcresult不启动本机模拟器。本批提交后的新SHA另验CI；旧失败不抹。
 - 用户仍保留系统输入设置，R4.2.03真实候选窗口待验。新授权私有API仍可在全计划使用，不读旧Key/env/profile；运行.3/Root1/lib4/doc5/.omnb1/dev/no main/旧公开包不动/无子代理/32final gates not_run/no candidate/ready=false/released=false，完整69任务及发行仍继续，goal active。下一独立R4.3.01规范Agent消息/任务/IPC。
+
+
+## D044 · 2026-10-13 Agent规范契约与入口基础（未完成任务）
+
+- R4.3.01进行中，仍29/98。新增native-agent.schema.json规范15类IPC帧/5类canonical parts/12冻结工具名，合并生成Rust/Swift/TypeScript，native DTO336。没有Pi内部state/任意URL/凭据字段；大字节只受控引用。schema声明版本不证明实际Pi包或runtime，R4.3.02仍未做。
+- Rust/TS FrameDecoder用真实字节断包，UTF8/重复解码member、1MiB、depth64/node32768/batch32、stdout非JSON/不完整EOF失败并poison连接。Rust AgentIngress固定trusted runtime/session/document/task/connection与generation，先scope再duplicate/gap；canonical assistant/turn/task/part/call和原argsJson核对，拒绝伪造工具结果。trusted ledger confirmation以前不能映射工具intent；新native entropy ID与provider/call ID分开、重试同ID不造新intent。readonly/grants/cancel/close和settled仅awaiting实际结算已约束。
+- 这些是pending identity/data，没有executor；NativeHost/CABI真实source owner接线、Swift AgentSessionService真实canonical SQLite readback→confirm→ACK、model/request ID与方向/stream correlation、私有实际process/pipe和跨语言恢复仍未完成，R4.3.01主checkbox保持空。不能拿memory registry合成scope当实际业务接纳，更不能当完整Pi/live gate。
+- 7Rust新protocol/identity+10原contracts、3Node真实流测试、严格tsc、336DTO/Swift真实CABI、Clippy所有host targets/fmt/最终Release32资源+codesign通过。Node开发测试用本机25.9，包内Node26仍属下一任务；CI新增Node协议测试。完整输入构造/检查源码、失败/最后日志SHA见agent-protocol-foundation.json/raw。
+- 7cdfe03/CI38406847557精确SHA五jobsall success，前批R4.2.10开发验证有效；本批新SHA另验CI。无本机模拟器、无子代理、运行.3/dev/no main/旧公开包不动/Root1/lib4/doc5/.omnb1，32finalgates not_run/no candidate/ready=false/released=false。用户保留输入法设置不重问，新授权API仍仓库外私有路径且可全计划用，无旧key/profile/env读取；69任务及完整发行继续，goal active。

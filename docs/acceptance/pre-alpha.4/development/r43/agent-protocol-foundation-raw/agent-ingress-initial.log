@@ -1,0 +1,46 @@
+   Compiling om-host-service v0.1.0-pre-alpha.3 (/Users/hert/Projects/openmath/crates/om-host-service)
+    Finished `test` profile [unoptimized] target(s) in 4.82s
+     Running tests/agent_framing.rs (target/debug/deps/agent_framing-f7d3c8ab25ff2c59)
+
+running 4 tests
+test canonical_media_and_tool_parts_retain_ids_without_executable_urls_or_framework_state ... ok
+test frame_contract_denies_credentials_urls_pi_state_missing_null_and_wrong_versions ... ok
+test unique_json_members_utf8_depth_node_byte_and_eof_limits_are_real ... ok
+test every_actual_utf8_byte_cut_and_multiple_frames_preserve_text ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.16s
+
+     Running tests/agent_ingress.rs (target/debug/deps/agent_ingress-cf185161c60c37f2)
+
+running 3 tests
+test tool_mapping_waits_for_confirmed_canonical_event_and_uses_distinct_host_ids ... FAILED
+test readonly_canonical_forgery_and_turn_proposal_isolation_do_not_create_grants ... FAILED
+test handshake_scope_duplicates_and_gap_never_resume_a_different_activation ... FAILED
+
+failures:
+
+---- tool_mapping_waits_for_confirmed_canonical_event_and_uses_distinct_host_ids stdout ----
+
+thread 'tool_mapping_waits_for_confirmed_canonical_event_and_uses_distinct_host_ids' (36212222) panicked at crates/om-host-service/tests/agent_ingress.rs:108:34:
+called `Result::unwrap()` on an `Err` value: "IPC_INVALID_SHAPE"
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+---- readonly_canonical_forgery_and_turn_proposal_isolation_do_not_create_grants stdout ----
+
+thread 'readonly_canonical_forgery_and_turn_proposal_isolation_do_not_create_grants' (36212221) panicked at crates/om-host-service/tests/agent_ingress.rs:153:34:
+called `Result::unwrap()` on an `Err` value: "IPC_INVALID_SHAPE"
+
+---- handshake_scope_duplicates_and_gap_never_resume_a_different_activation stdout ----
+
+thread 'handshake_scope_duplicates_and_gap_never_resume_a_different_activation' (36212220) panicked at crates/om-host-service/tests/agent_ingress.rs:66:5:
+assertion failed: matches!(accept(&mut owner, &ready()), Ok(IngressDisposition::Ready))
+
+
+failures:
+    handshake_scope_duplicates_and_gap_never_resume_a_different_activation
+    readonly_canonical_forgery_and_turn_proposal_isolation_do_not_create_grants
+    tool_mapping_waits_for_confirmed_canonical_event_and_uses_distinct_host_ids
+
+test result: FAILED. 0 passed; 3 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+
+error: test failed, to rerun pass `-p om-host-service --test agent_ingress`

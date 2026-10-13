@@ -1,0 +1,159 @@
+{
+  "schema_version": 1,
+  "task": "R4.3.01",
+  "status": "in_progress",
+  "date": "2026-10-13",
+  "kind": "development_foundation_not_task_completion_or_final_gate",
+  "base_commit": "7cdfe03bdbca2a445732515cc02512cb20189999",
+  "bounds": {
+    "frame_kinds": 15,
+    "canonical_part_kinds": 5,
+    "frozen_tool_names": 12,
+    "native_dto_total": 336,
+    "max_frame_bytes": 1048576,
+    "json_depth": 64,
+    "json_nodes": 32768
+  },
+  "implemented": [
+    "Canonical schema and generated Rust/Swift/TypeScript DTOs independent of Pi state.",
+    "Rust/TypeScript strict UTF8 NDJSON, duplicate decoded members, depth/node/frame/batch/EOF limits and poison-on-failure.",
+    "Trusted runtime/session/document/task/connection before duplicates; sequence gaps fail the connection.",
+    "Canonical assistant identities and JSON argument validation; helper cannot forge tool-result transcript.",
+    "Host ledger confirmation boundary -> entropy-derived pending native tool intent identity, readonly/grants/cancel/close enforced.",
+    "Loop settled remains awaiting actual native settlement."
+  ],
+  "tests": {
+    "rust_framing": 4,
+    "rust_ingress": 3,
+    "existing_contracts": 10,
+    "typescript_streams": 3,
+    "strict_typecheck": "passed",
+    "swift_generated_actual_abi": "passed",
+    "host_all_targets_clippy": "passed",
+    "release_link": "passed",
+    "installed_resource_files": 32,
+    "codesign": "passed"
+  },
+  "remaining": [
+    "NativeHost/C ABI endpoint bound to actual current source owner.",
+    "Swift AgentSessionService canonical SQLite receipt/readback -> confirm -> ACK and document-owned cancel/close.",
+    "Model/request mapping and direction/stream correlation; trusted context/config route resolution.",
+    "Real private subprocess/pipe handshake, rich message projection/recovery; cross-language old-activation/document tests.",
+    "Complete R4.3.01 Done audit before checkbox."
+  ],
+  "limitations": [
+    "No Pi dispatch/model request/tool execution/Registry/SecretStore/live gate here.",
+    "Data disposition has no executor; downstream directions/model stream routing still need enforcement.",
+    "TypeScript used installed Node25.9 for development; bundled Node26 verification belongs to R4.3.02.",
+    "Handshake declared versions do not prove installed Pi package identity.",
+    "Synthetic trusted scopes do not substitute for actual document/C ABI/SQLite/process binding.",
+    "Total29/98 and32 final gates not_run/no candidate/ready=false/released=false."
+  ],
+  "preserved_failures": [
+    "Generator enum/primitive vocabulary failures; equivalent unsupported SHA regex rejected initial handshake, corrected to shared existing pattern.",
+    "Initial fixture nonexistent get_notebook changed to frozen read_notebook.",
+    "Initial Rust declaration/Option pattern compile errors retained; final suites passed."
+  ],
+  "commands": [
+    "CARGO_PROFILE_DEV_DEBUG=0 CARGO_PROFILE_TEST_DEBUG=0 cargo test -p om-host-service --test contracts --test agent_framing --test agent_ingress --locked",
+    "node --test agent/test/protocol.test.mjs",
+    "node app/node_modules/typescript/bin/tsc --noEmit --strict --module nodenext --target es2024 --allowImportingTsExtensions --types node --typeRoots app/node_modules/@types agent/src/protocol.ts",
+    "CARGO_PROFILE_DEV_DEBUG=0 CARGO_PROFILE_TEST_DEBUG=0 cargo clippy -p om-host-service --all-targets --locked -- -D warnings",
+    "CARGO_PROFILE_DEV_DEBUG=0 CARGO_PROFILE_TEST_DEBUG=0 bash macos/Scripts/test-native-contracts.sh",
+    "CARGO_PROFILE_DEV_DEBUG=0 CARGO_PROFILE_TEST_DEBUG=0 bash macos/Scripts/build-native.sh",
+    "python3 scripts/native_contracts.py --check",
+    "python3 macos/Scripts/generate-project.py --check",
+    "cargo fmt --all -- --check",
+    "codesign --verify --deep --strict <Release app>"
+  ],
+  "source_sha256": {
+    "docs/design/native-agent.schema.json": "7ecf105676176a5104087b52b8714ad9f4d29a498b3c40a5c1a491e0016cccfe",
+    "scripts/native_contracts.py": "378d7dc05357d1c9bae6042441985d3752cf621f29b4cb70d3ae671e33cfecd2",
+    "crates/om-host-service/src/agent/framing.rs": "ca12eb4cd6e5ebf8096664d12f3a1f66c5fce307b98a8c2c66452396d1ff368b",
+    "crates/om-host-service/src/agent/ingress.rs": "2f3d4d5b1acfd58a6438ed797bb20bd95f1bc421fd740bd80710a6d95a57b7f1",
+    "agent/src/protocol.ts": "3a7ba0d0ea1d4369bc0283b0f2d4a6df877427da4e47db39f9fb7cc0da822e91",
+    "agent/src/generated/protocol.ts": "4b614b114fd5b143b4074d4462f46f1305437a5aea548395bb01cfa5e5b5487c",
+    "agent/package.json": "fe88fe3c46855a08e8307f423c19d12c8013dcdd0877699d28534426fbc9ea4b",
+    ".github/workflows/ci.yml": "41ec0064ba55212c6c934afe2aea2cf849301e7ca33c4950ea42cddfa67103b3",
+    "crates/om-host-service/tests/agent_framing.rs": "2cf037602429cd819291cbb71317aaf962f54b783ca9602c1b583ac5929a8c79",
+    "crates/om-host-service/tests/agent_ingress.rs": "6f2f7432d1a26c44bb5f3e6a210e29bdf094d0263b520a52f12f3b0688448031",
+    "agent/test/protocol.test.mjs": "14dea9f4ba0624d63ff9068086995ce83bfc9c482aacec91dfa8fec904026e4c"
+  },
+  "files": [
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/agent-protocol-foundation-raw/agent-foundation-clippy.log",
+      "bytes": 1860,
+      "sha256": "4c2e1d9a6e25b26c11a29fceec60921f31482e262f847455f72ff6cf0d086637"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/agent-protocol-foundation-raw/agent-foundation-regression.log",
+      "bytes": 2171,
+      "sha256": "338c4d8b612d130d1fc9e41f474e7038a34d46b58ac0f1ecfdfeba7ffc68a173"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/agent-protocol-foundation-raw/agent-foundation-release.log",
+      "bytes": 112969,
+      "sha256": "9993d2554585538ac32bed26285bec2182b70284e58c2d7b13b47062263302bc"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/agent-protocol-foundation-raw/agent-foundation-swift-contracts.log",
+      "bytes": 2357,
+      "sha256": "886106aba8a4c4a80dd14e723dc6e8708a465ca3121892af9f71c77ba0fdbec0"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/agent-protocol-foundation-raw/agent-framing-initial.log",
+      "bytes": 1316,
+      "sha256": "3e1cc2a5fd3f5505f51f66c29145f8ada248626eb27b15adc6006d1553039193"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/agent-protocol-foundation-raw/agent-framing-registry-compile.log",
+      "bytes": 927,
+      "sha256": "08116d099fa592ccb7cdff43792aba60f6419079319fab7546da078092fe3435"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/agent-protocol-foundation-raw/agent-framing-registry-typed.log",
+      "bytes": 1299,
+      "sha256": "c94a429285f7d05e019270f6b3e1b3e748d0bb4f1525883db1447295f5b88d93"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/agent-protocol-foundation-raw/agent-ingress-initial.log",
+      "bytes": 2567,
+      "sha256": "be15705a81aeef519af57f426095069d24bdfe86ae084d0ce07cf4a867a3b6fd"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/agent-protocol-foundation-raw/agent-ingress-schema-verified.log",
+      "bytes": 1162,
+      "sha256": "8b9a2b42951aa71be794297930b87ebfcd024f3fee0be185a5d1aee30748ddb7"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/agent-protocol-foundation-raw/agent-typescript-protocol-initial.log",
+      "bytes": 424,
+      "sha256": "1cd2b68ee9f208158f3ce28035cc8389d7ff9905c37ab8b1c11847994dfbb16d"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/agent-protocol-foundation-raw/agent-typescript-typecheck.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/agent-protocol-foundation-raw/complete-framing-inputs-and-checks.rs",
+      "bytes": 4510,
+      "sha256": "2cf037602429cd819291cbb71317aaf962f54b783ca9602c1b583ac5929a8c79"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/agent-protocol-foundation-raw/complete-ingress-inputs-and-checks.rs",
+      "bytes": 7423,
+      "sha256": "6f2f7432d1a26c44bb5f3e6a210e29bdf094d0263b520a52f12f3b0688448031"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/agent-protocol-foundation-raw/complete-typescript-inputs-and-checks.mjs",
+      "bytes": 2767,
+      "sha256": "14dea9f4ba0624d63ff9068086995ce83bfc9c482aacec91dfa8fec904026e4c"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/agent-protocol-foundation-raw/installed-resources.json",
+      "bytes": 5128,
+      "sha256": "2a2aae7b98fda27038fbd5bb5cbd448949ba02c68ac48eee430d2205286ba504"
+    }
+  ]
+}

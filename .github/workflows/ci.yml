@@ -34,6 +34,8 @@ jobs:
           cache-dependency-path: app/package-lock.json
       - name: Install frontend dependencies
         run: npm ci --prefix app
+      - name: Validate private Agent canonical protocol streams
+        run: node --test agent/test/protocol.test.mjs
       - name: Build frontend assets
         run: npm run build --prefix app
       - name: Check formatting

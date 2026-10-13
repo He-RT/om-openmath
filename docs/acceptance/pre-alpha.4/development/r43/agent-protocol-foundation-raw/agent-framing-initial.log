@@ -1,0 +1,25 @@
+   Compiling om-host-service v0.1.0-pre-alpha.3 (/Users/hert/Projects/openmath/crates/om-host-service)
+    Finished `test` profile [unoptimized] target(s) in 5.20s
+     Running tests/agent_framing.rs (target/debug/deps/agent_framing-f7d3c8ab25ff2c59)
+
+running 4 tests
+test canonical_media_and_tool_parts_retain_ids_without_executable_urls_or_framework_state ... FAILED
+test frame_contract_denies_credentials_urls_pi_state_missing_null_and_wrong_versions ... ok
+test unique_json_members_utf8_depth_node_byte_and_eof_limits_are_real ... ok
+test every_actual_utf8_byte_cut_and_multiple_frames_preserve_text ... ok
+
+failures:
+
+---- canonical_media_and_tool_parts_retain_ids_without_executable_urls_or_framework_state stdout ----
+
+thread 'canonical_media_and_tool_parts_retain_ids_without_executable_urls_or_framework_state' (36198377) panicked at crates/om-host-service/tests/agent_framing.rs:90:45:
+called `Result::unwrap()` on an `Err` value: "IPC_INVALID_SHAPE"
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+
+failures:
+    canonical_media_and_tool_parts_retain_ids_without_executable_urls_or_framework_state
+
+test result: FAILED. 3 passed; 1 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.16s
+
+error: test failed, to rerun pass `-p om-host-service --test agent_framing`

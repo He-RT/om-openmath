@@ -10,6 +10,8 @@ pub mod document;
 /// Temporary actual kernel checkpoints and scoped owned restore, independent of document IO.
 pub mod kernel;
 
+/// Private Agent transport and trusted task identity; no model/tool executor lives here.
+pub mod agent;
 /// Host-owned scoped immutable references and deadlines.
 pub mod references;
 /// Immutable actual result ownership, scope-checked references and read-only projections.

@@ -1,0 +1,25 @@
+   Compiling om-host-service v0.1.0-pre-alpha.3 (/Users/hert/Projects/openmath/crates/om-host-service)
+error[E0609]: no field `hash` on type `std::option::Option<&Seen>`
+   --> crates/om-host-service/src/agent/ingress.rs:191:32
+    |
+191 |             return if previous.hash == digest && previous.sequence == sequence {
+    |                                ^^^^ unknown field
+    |
+help: one of the expressions' fields has a field of the same name
+    |
+191 |             return if previous.unwrap().hash == digest && previous.sequence == sequence {
+    |                                +++++++++
+
+error[E0609]: no field `sequence` on type `std::option::Option<&Seen>`
+   --> crates/om-host-service/src/agent/ingress.rs:191:59
+    |
+191 |             return if previous.hash == digest && previous.sequence == sequence {
+    |                                                           ^^^^^^^^ unknown field
+    |
+help: one of the expressions' fields has a field of the same name
+    |
+191 |             return if previous.hash == digest && previous.unwrap().sequence == sequence {
+    |                                                           +++++++++
+
+For more information about this error, try `rustc --explain E0609`.
+error: could not compile `om-host-service` (lib) due to 2 previous errors

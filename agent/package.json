@@ -12,6 +12,7 @@
     "@earendil-works/pi-ai": "1.0.4"
   },
   "scripts": {
-    "audit:dependencies": "node scripts/audit-dependencies.mjs"
+    "audit:dependencies": "node scripts/audit-dependencies.mjs",
+    "test:protocol": "node --test test/protocol.test.mjs"
   }
 }

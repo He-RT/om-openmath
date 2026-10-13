@@ -6,3 +6,7 @@ ios/OpenMath/Resources/SwiftMath-GUST-FONT-LICENSE.txt -whitespace
 
 # Upstream native license notices are preserved byte-for-byte and verified by SHA256.
 macos/OpenMathNative/Resources/Licenses/** -whitespace
+
+# Raw development logs/failure snapshots retain their exact captured bytes and SHA256.
+docs/acceptance/pre-alpha.4/development/r42/native-math-raw/*.log -whitespace
+docs/acceptance/pre-alpha.4/development/r42/native-math-raw/ci-f875658-settings-failure.md -whitespace

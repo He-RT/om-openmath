@@ -30,7 +30,7 @@ struct WorkspaceView:View {
           .popover(isPresented:$inspectorPopover) {inspector.frame(width:300,height:420)}
       }.padding(.horizontal,16).padding(.vertical,10)
       Divider()
-      NativeWorkbenchSplit(outline:AnyView(outline),notebook:AnyView(NativeNotebookFileView(workspace:workspace,session:session)),inspector:AnyView(inspector),navigation:navigation)
+      NativeWorkbenchSplit(outline:AnyView(outline),notebook:AnyView(NativeNotebookFileView(workspace:workspace,session:session)),inspector:AnyView(inspector),navigation:navigation,notebookIdentity:ObjectIdentifier(session))
       Divider()
       HStack {
         if runtime.operation != nil {ProgressView().controlSize(.small)}
@@ -156,19 +156,25 @@ private struct WorkbenchStepsPreview:View {
 private struct NativeWorkbenchSplit:NSViewRepresentable {
   let outline:AnyView,notebook:AnyView,inspector:AnyView
   @ObservedObject var navigation:WorkbenchNavigation
+  let notebookIdentity:ObjectIdentifier
   func makeNSView(context:Context)->WorkbenchSplitView {
     let view=WorkbenchSplitView(navigation:navigation)
     view.outline.rootView=outline;view.notebook.rootView=notebook;view.inspector.rootView=inspector
+    view.notebookIdentity=notebookIdentity
     return view
   }
   func updateNSView(_ view:WorkbenchSplitView,context:Context) {
-    view.outline.rootView=outline;view.notebook.rootView=notebook;view.inspector.rootView=inspector
+    view.outline.rootView=outline;view.inspector.rootView=inspector
+    // The notebook already observes the document/workspace/runtime. Reassigning its AnyView on
+    // every inspector update recreates SwiftUI scroll state, even with the same NSHostingView.
+    if view.notebookIdentity != notebookIdentity {view.notebook.rootView=notebook;view.notebookIdentity=notebookIdentity;view.bindNavigation(navigation)}
     view.showOutline=navigation.outlineVisible;view.showInspector=navigation.inspectorVisible;view.needsLayout=true
   }
 }
 @MainActor final class WorkbenchSplitView:NSSplitView,NSSplitViewDelegate {
   let outline=NSHostingView(rootView:AnyView(EmptyView())),notebook=NSHostingView(rootView:AnyView(EmptyView())),inspector=NSHostingView(rootView:AnyView(EmptyView()))
   var showOutline=true,showInspector=true
+  var notebookIdentity:ObjectIdentifier?
   private weak var navigation:WorkbenchNavigation?
   private var lastLayout:WorkbenchLayout?
   private var lastWidth:CGFloat = -1
@@ -181,6 +187,7 @@ private struct NativeWorkbenchSplit:NSViewRepresentable {
     setAccessibilityIdentifier("workspace-split")
   }
   required init?(coder:NSCoder) {fatalError("init(coder:) has not been implemented")}
+  func bindNavigation(_ value:WorkbenchNavigation) {navigation=value;lastLayout=nil;needsLayout=true}
   override func layout() {
     super.layout();guard bounds.width>0,!arranging else {return}
     let mode=WorkbenchLayout.forWidth(bounds.width)

@@ -4,9 +4,9 @@
 
 2026-10-13。目标`0.1.0-pre-alpha.4`，当前运行/公开版本`.3`；开发`dev`，不合main、不改旧标签、本机不启动iOS模拟器。本文只记录结果，规格及完成标准唯一见主计划；计划编写本身不计实施完成。
 
-**当前状态：** 26任务完成（全部R4.0与R4.1、R4.2.01–02）；其余72任务尚未完成；32最终运行/发行gate全部not_run；candidate未分配，ready_to_publish=false，released_verified=false。设计/HTML/Schema通过不填运行时pass。
+**当前状态：** 27任务完成（全部R4.0与R4.1、R4.2.01–02及07）；其余71任务尚未完成；32最终运行/发行gate全部not_run；candidate未分配，ready_to_publish=false，released_verified=false。设计/HTML/Schema通过不填运行时pass。
 
-**下一任务：** R4.2.03 真实输入法、撤销及草稿屏障，然后非求值分析/编辑/公式/图形与Agent/模型媒体。存储维护、备份、新代次、配额和GC已通过实际验证；日末备份触发/数据管理UI仍在R4.2.18接线，完整Pi/provider/上下文/Agent界面仍继续R4.3–4.4，不能将存储Done当产品完成。保持同candidate完整门禁，R4.5.07在R4.5.05冻结前完成。
+**下一任务：** 用户选择保留系统输入法设置、先做其他任务；R4.2.03真实候选窗口仍未验收。独立继续R4.2.09结构化结果与数值投影或R4.3.01规范Agent/IPC，原依赖满足后再接非求值编辑分析/长笔记本/Markdown。存储维护、备份、新代次、配额和GC已通过实际验证；日末备份触发/数据管理UI仍在R4.2.18接线，完整Pi/provider/上下文/Agent界面仍继续R4.3–4.4，不能将存储Done当产品完成。保持同candidate完整门禁，R4.5.07在R4.5.05冻结前完成。
 
 ## 已知外部前置
 
@@ -50,7 +50,7 @@
 | [ ] [R4.2.04](PRE_ALPHA_4.md#task-r4.2.04) | 非求值Preview/Complete/Hover和高亮 | planned | — | — |
 | [ ] [R4.2.05](PRE_ALPHA_4.md#task-r4.2.05) | 本地snippets、希腊快捷、Fix和缩进 | planned | — | — |
 | [ ] [R4.2.06](PRE_ALPHA_4.md#task-r4.2.06) | 长笔记本布局、复用与scroll anchors | planned | — | — |
-| [ ] [R4.2.07](PRE_ALPHA_4.md#task-r4.2.07) | SwiftMath原生公式和原式fallback | planned | — | — |
+| [x] [R4.2.07](PRE_ALPHA_4.md#task-r4.2.07) | SwiftMath原生公式和原式fallback | completed | [实际57回执/字体/原生附件](../acceptance/pre-alpha.4/development/r42/native-math.json) | 本批 |
 | [ ] [R4.2.08](PRE_ALPHA_4.md#task-r4.2.08) | Markdown AST、数学扫描与连续原生流 | planned | — | — |
 | [ ] [R4.2.09](PRE_ALPHA_4.md#task-r4.2.09) | 结果状态、解条件Root与数值投影 | planned | — | — |
 | [ ] [R4.2.10](PRE_ALPHA_4.md#task-r4.2.10) | 矩阵、表格、记录与科学诊断 | planned | — | — |
@@ -501,3 +501,12 @@ Done依据与覆盖case/proof:
 - 6a59193 CI38279366974 iOS/Rust/deps成功，Web命令面板复现旧parse错误仍显示时运行收尾busy未结束；palette的Run仍可点，controller静默忽略。已让Run/RunAll同步真实busy/可用cell，并显示disabled样式；原预期4/5s用例未改，固定Node26.11.1实际生产构建下原用例12次及笔记本全7项通过，lint/typecheck通过。
 - 同CI Mac workbench出现Trace/BPT trap，旧-O日志没有具体断言，不能声称修好。补明确file/line失败输出、实际split/editor/selection状态与真实CAS观察，并只收本任务fixture的CI crash reports；本机原断言全部通过，下一新SHA独立诊断。
 - [完整输入/回归/原失败/缓存证据](../acceptance/pre-alpha.4/development/r42/native-composition.json)：undo、composition、草稿3/保存6、source-editor、workbench及Release通过。待真实候选Enter/Tab/Esc与离屏pin；不阻断独立R4.2.07，已核对SwiftMath原fa8244ed固定源码并成功构建Mac真实模块/资源，生产公式接线尚未提交/未完成。运行.3/dev/no main/旧公开包/无子代理/本机无iOS模拟器，32final gate not_run/candidate未分配/ready=false/released=false。
+
+## R4开发记录 D041 — 实际原生公式、内联视图与安装资源
+
+- R4.2.07完成，27/98。固定SwiftMath1.7.3/fa8244ed接Mac工程、Release资源和各全源fixture；默认字体与metrics SHA验证、32个安装资源/许可文件完整核验。真实已接纳结果分别只读InputForm/Modern/LaTeX，保留ResultBinding、原UTF8和实际高精度源码，不在renderer制造近似或运行数学。
+- 仅词法flat ASCII operatorname→mathrm显示适配；转义/star/嵌套/中文不改，原式复制与显示分离。64KiB、逻辑深度128（含无括号sqrt/font命令）、实际20000atoms在原生parser/排版前后核对；未知/缺参数/缺失或损坏字体/超预算/非法字号均可选原式及完整复制。300项长式保留22pt横滚，整式原生焦点/Command-C复制无截断。
+- 原53+4科研实际C ABI/SQLite接纳与LaTeX回读，57 done/57非空/57 native ready；分式/根式/pmatrix/cases/区间在12/22/42pt的15组真实metrics。inline由实际TextKit2 fragment provider和frames显示，真实ascent/descent基线，源码替换移除旧view；未知原式真实附件fallback。可见fixture发现原手动mount测试遗漏的系统文件图标，修复公共viewport did-layout回调/provider请求重排和旧icon屏蔽后加强为自动窗口显示及实际frames断言，旧失败保留。深浅色、全部字号/矩阵/条件/区间、内联字形和完整未知命令，以及科研Root原式popover/24pt横滚均已实际屏幕检查。
+- f875658/CI38285711835现全部terminal：Rust/deps/iOS success；Web设置保存status超过原5s仍失败，Mac原工作台目的地切换重置真实scroll失败。中心root只在文档会话实例变更时重赋，保留现有观察更新，本地原工作台四宽度/100点scroll/编辑选区/真实5与6/长CAS编辑停止全部通过；新SHA CI待独立验证，不将本地通过称旧CI成功。原SourceEditor/Composition/KernelRuntime、Release、269DTO与工程核验通过。
+- [完整源输入/实际回执/原失败/安装清单/日志](../acceptance/pre-alpha.4/development/r42/native-math.json)及[实现说明](../design/native-math.md)。用户明确选择不调整系统输入法、先其他任务，已关闭暂缓IME fixture，R4.2.03仍in_progress，不再请求同一设置授权。磁盘约48GiB可用，target约13GiB，无需再清仍使用的依赖/Release/证据。
+- 原运行.3、dev、不合main、不改旧公开包/标签、无子代理、不启动本机iOS模拟器，Root1/lib4/doc5/.omnb1，32final gates not_run/no candidate/ready=false/released=false；剩余71任务与完整发行继续，goal保持active。

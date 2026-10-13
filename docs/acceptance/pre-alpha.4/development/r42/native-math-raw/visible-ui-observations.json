@@ -1,0 +1,26 @@
+{
+  "date": "2026-10-13",
+  "bundle_id": "org.openmath.OpenMath.MathRenderUIFixture",
+  "surface": "actual native window observed with CUA screenshots and accessibility state; no cacheDisplay substitute",
+  "recorded_result_gallery": [
+    "original-2",
+    "original-4",
+    "original-26",
+    "science-fraction",
+    "science-matrix",
+    "science-root",
+    "science-precision"
+  ],
+  "actions_and_observations": [
+    "Original Root LaTeX popover retained operatorname; original-LaTeX copy button used.",
+    "Root font size 22 -> 24 pt; actual horizontal scroll indicator 0.5480687905272061; later roots visible without shrinking.",
+    "Explicit fraction/radical/pmatrix/interval/cases gallery at 12/22/42 pt inspected in light and dark appearances.",
+    "Final actual inline fraction and radical appear on text baseline automatically, with no file icon; original unknown command fully visible including closing brace.",
+    "Earlier icon/blank and fallback-width failure preserved and fixed before task completion.",
+    "Window normally quit after visual inspection."
+  ],
+  "limits": [
+    "Markdown attachment source-map/copy/selection and accessibility text semantics are R4.2.08; this fixture does not claim them.",
+    "Thousands-of-cells performance, final candidate and release gates not run."
+  ]
+}

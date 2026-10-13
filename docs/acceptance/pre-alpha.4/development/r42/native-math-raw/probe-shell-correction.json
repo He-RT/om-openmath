@@ -1,0 +1,5 @@
+{
+  "mistake": "Standalone probe sourced bash-only helper from zsh and attempted an unintended clone.",
+  "cleanup": "Stopped exact probe shell/git processes. Git removed its incomplete clone; removed only the newly created empty /Users/hert/target parent.",
+  "prevention": "Explicit bash for probe; bash-only guard added. Production fixture callers already invoke bash."
+}

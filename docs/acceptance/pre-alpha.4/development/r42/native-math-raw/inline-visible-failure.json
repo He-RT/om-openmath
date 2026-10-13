@@ -1,0 +1,8 @@
+{
+  "date": "2026-10-13",
+  "fixture": "MathRenderUIFixture",
+  "observation": "Actual SwiftUI-hosted text view showed generic file icons instead of inline native fraction/radical and original-source fallback.",
+  "prior_test_limit": "Prior fixture forced mountMathAttachments explicitly after ensureLayout; this did not prove automatic viewport hosting.",
+  "resolution_pending": "Use public macOS 27 NSTextView viewport did-layout callback with super; suppress legacy file icon drawing; require automatic window display in test.",
+  "user_ime_decision": "Preserve system settings and perform other tasks; OS candidate window verification remains incomplete."
+}

@@ -1,0 +1,6 @@
+    Finished `release` profile [optimized] target(s) in 0.26s
+Building for production...
+[Using on-disk description]
+[1 / 4]
+Build complete! (0.84秒)
+Exact scalar roundtrips 42; Chinese/emoji/NFD/ZWJ/flags/Tab/CRLF/EOF, invalid bytes/surrogates/ranges rejected; actual TextKit2 newline/plain paste and original bytes passed

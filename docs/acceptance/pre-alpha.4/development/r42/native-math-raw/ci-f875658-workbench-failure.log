@@ -1,0 +1,8 @@
+    Finished `release` profile [optimized] target(s) in 0.14s
+{"editor_attached":true,"inspector_hidden":false,"notebook_width":544,"outline_hidden":false,"requested_width":1042,"selection_length":1,"selection_location":4,"split_width":1042}
+{"editor_attached":true,"inspector_hidden":false,"notebook_width":572,"outline_hidden":true,"requested_width":861,"selection_length":1,"selection_location":4,"split_width":861}
+{"editor_attached":true,"inspector_hidden":true,"notebook_width":638,"outline_hidden":true,"requested_width":640,"selection_length":1,"selection_location":4,"split_width":640}
+{"editor_attached":true,"inspector_hidden":false,"notebook_width":602,"outline_hidden":false,"requested_width":1100,"selection_length":1,"selection_location":4,"split_width":1100}
+Native workspace check failed at main/main.swift:77: destination switch reset actual notebook scroll
+main/main.swift:77: Fatal error: destination switch reset actual notebook scroll
+macos/Scripts/test-workbench.sh: line 16: 59594 Trace/BPT trap: 5       target/macos-workbench-tests/workbench-fixtures "$attempt_root"

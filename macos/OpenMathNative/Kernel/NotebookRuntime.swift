@@ -17,10 +17,18 @@ enum WorkbenchDestination:String,CaseIterable,Identifiable {
   @Published var inspector:WorkbenchDestination = .document
 }
 
+struct NotebookValueResult:Sendable,Identifiable {
+  let binding:ResultBinding
+  let source:String
+  let modern:String?
+  let latex:String?
+  var id:String {binding.result_id+"/"+String(binding.out_index.value)+"/"+(binding.view_id.value ?? "")}
+}
 struct NotebookCellResult:Sendable {
   let receipt:NativeKernelReceipt
   let bindings:[ResultBinding]
-  let sources:[String]
+  let values:[NotebookValueResult]
+  var sources:[String] {values.map(\.source)}
 }
 /// The document owns this model, not a pane's lifetime. Requests/stop retain their original
 /// operation ID and accepted results come only from the physical kernel receipt/read channel.
@@ -75,7 +83,7 @@ struct NotebookCellResult:Sendable {
         // A late stop cannot overwrite an actual committed result.
         phase = .completed;message=receipt.producer.terminal_status == .done ? "已完成" : "计算结束，有错误"
         do {try await display(receipt)}
-        catch {if !closing {results[cell] = .init(receipt:receipt,bindings:[],sources:[]);message="计算已提交，结果暂无法读取："+String(describing:error)}}
+        catch {if !closing {results[cell] = .init(receipt:receipt,bindings:[],values:[]);message="计算已提交，结果暂无法读取："+String(describing:error)}}
       } catch KernelPortError.unknownOutcome {unknownOperation=id;phase = .unknown;message="运行结果待核对"}
       catch {if !closing {message="运行未完成："+String(describing:error)}}
       await refreshProjection()
@@ -84,7 +92,7 @@ struct NotebookCellResult:Sendable {
   private func display(_ receipt:NativeKernelReceipt) async throws {
     guard let cell=receipt.producer.cell_id.value,let root=receipt.result_id.value else {return}
     let reader=ResultClient(host:host)
-    var offset:UInt32=0,bindings:[ResultBinding]=[],sources:[String]=[]
+    var offset:UInt32=0,bindings:[ResultBinding]=[],values:[NotebookValueResult]=[]
     do {
       while true {
         let manifest=try await reader.manifest(root,offset:offset,limit:16)
@@ -93,7 +101,10 @@ struct NotebookCellResult:Sendable {
           bindings.append(binding)
           if binding.out_index.value>0 {
             try reader.select(binding)
-            if let source=try await reader.completeSource() {sources.append(source)}
+            guard let source=try await reader.completeSource() else {throw ResultClientError.staleSelection}
+            let modern=try? await reader.completeSource(format:.modern)
+            let latex=try? await reader.completeSource(format:.latex)
+            values.append(.init(binding:binding,source:source,modern:modern,latex:latex))
           }
         }
         let next=offset+UInt32(manifest.bindings.count)
@@ -101,7 +112,7 @@ struct NotebookCellResult:Sendable {
         guard next>offset else {throw ResultClientError.invalidReply};offset=next
       }
       await reader.close()
-      guard !closing else {return};results[cell] = .init(receipt:receipt,bindings:bindings,sources:sources)
+      guard !closing else {return};results[cell] = .init(receipt:receipt,bindings:bindings,values:values)
     } catch {await reader.close();throw error}
   }
   func stop() async {

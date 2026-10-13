@@ -1,0 +1,187 @@
+{
+  "schema_version": 1,
+  "task": "R4.2.07",
+  "date": "2026-10-13",
+  "kind": "development_evidence_not_final_candidate",
+  "base_commit": "f87565895b34697816501ec47715c881aa9d358b",
+  "package_revision": "fa8244ed032f4a1ade4cb0571bf87d2f1a9fd2d7",
+  "original_corpus_count": 53,
+  "scientific_count": 4,
+  "actual_output_states": {
+    "ready": 57
+  },
+  "real_metrics_count": 15,
+  "budgets": {
+    "original_latex_bytes": 65536,
+    "logical_depth": 128,
+    "actual_atoms": 20000
+  },
+  "checks": [
+    "Controlled lexical flat-ASCII operatorname adaptation only, original UTF-8 preserved; NFC/NFD cache distinction.",
+    "Actual known fractions/radicals/matrix/conditions/interval glyph metrics at 12/22/42 pt.",
+    "Long 300-term formula keeps 22 pt and actual horizontal scroll; display focus and actual Command-C handler copy complete original.",
+    "Real TextKit2 fragment providers automatically mounted after viewport layout; frame equals actual mathematical metrics; old view removed on source replacement; unsupported inline source mounted.",
+    "Unknown/missing argument, depth including unbraced commands, bytes, actual atoms, nil/corrupt font, NaN size fallback.",
+    "Actual original53 plus scientific receipt -> read-only source variants -> native label; all done with nonempty results; source revision stays 0.",
+    "Release App built and installed bundle matches all font/metrics resources and four license notices (32 files).",
+    "Kernel runtime, exact source editor, composition and original workbench width/scroll/selection/real CAS regressions passed."
+  ],
+  "known_failures": {
+    "f875658_ci": "Rust/dependencies/iOS success; frontend settings status timeout at original 5s; macOS actual scroll-reset assertion. Both failures retained.",
+    "inline_ui": "Manual-mount fixture was insufficient; actual window file icons/blank led to viewport callback, provider relayout and legacy icon suppression fix.",
+    "ime": "User explicitly chose to preserve system settings and do other tasks; real OS candidate windows remain unverified."
+  },
+  "non_claims": [
+    "Final R4G10 and other 31 gates remain not_run.",
+    "Structured solution/numeric presenter, Markdown, long notebook, Agent/provider/media/live remain later tasks.",
+    "No mathematical thresholds or expected results relaxed; no local iOS simulator used."
+  ],
+  "files": [
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r42/native-math-raw/ci-f875658-settings-failure.md",
+      "sha256": "061d72f2ada7f74e67102ef59e0866af64e3af26ad1d7779be71a103dfb6d576",
+      "bytes": 11976
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r42/native-math-raw/ci-f875658-summary.json",
+      "sha256": "7b89d3eb1d22bcef0ad03689dd03da7617073f7e3a9c923bab825fcc9eda070b",
+      "bytes": 950
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r42/native-math-raw/ci-f875658-workbench-failure.log",
+      "sha256": "aa25b38963c76e591b2791ffade500f970bab2e9454821f770cb9902a5e8884d",
+      "bytes": 1093
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r42/native-math-raw/inline-visible-failure.json",
+      "sha256": "43a6e26f53054f3e9b4a75ed1977e769d50227c12169c2f662780a2aca0bdcb6",
+      "bytes": 663
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r42/native-math-raw/installed-math-resources.json",
+      "sha256": "2a2aae7b98fda27038fbd5bb5cbd448949ba02c68ac48eee430d2205286ba504",
+      "bytes": 5128
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r42/native-math-raw/kernel-runtime-final.log",
+      "sha256": "81af600678975b43ef2a7e3acf43afcd8964a69f8a2cd07d11464b3fb7252d99",
+      "bytes": 910
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r42/native-math-raw/math-automatic-final.log",
+      "sha256": "3acaad5889293fca64834eb903722ca53068e6ba9ee4d83accd406aa96b6782e",
+      "bytes": 2493
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r42/native-math-raw/math-automatic-layout.log",
+      "sha256": "33e6f8750bd42a9e8ae51d22769ee09eb217e2455a1510af6840a850b8bd85a5",
+      "bytes": 3623
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r42/native-math-raw/math-final.log",
+      "sha256": "7a4716e8420ed868d8713367bae7cdd521f8e0b9916025e5715f465b5de61a70",
+      "bytes": 2442
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r42/native-math-raw/math-host-final.log",
+      "sha256": "4796b9154950b824e66d050a8fc5988da455c0e651529a9f5e90755b5b6118b0",
+      "bytes": 2442
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r42/native-math-raw/math-ui-production-final.log",
+      "sha256": "4dbe557f8e31009d168b8e8ef04b3f8ac32812701ba0037b26f4e05889e74516",
+      "bytes": 309
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r42/native-math-raw/original-and-scientific-latex.json",
+      "sha256": "1f1c879f9583acd48d039705a1f8a96f45b5601734d894c25fed4597b09db6d8",
+      "bytes": 49883
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r42/native-math-raw/original-corpus-input.json",
+      "sha256": "4a4df8eb53b9fbec1f3ee2271d2c20d75ad3e09761f5a212458f2690082f5dea",
+      "bytes": 11803
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r42/native-math-raw/probe-shell-correction.json",
+      "sha256": "80bd472097d4c5c357c45a3f027c55187be3983157614b945e0650e862bc3b90",
+      "bytes": 375
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r42/native-math-raw/release-final-verified.log",
+      "sha256": "2e78b0b145ea1de8c1f49bc1f227bdccf99114d5a93171e1fca8d9207051b7e0",
+      "bytes": 98017
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r42/native-math-raw/test-composition-final.log",
+      "sha256": "1a2ce0a37133a1f74999d50ad3338701642adbe95c07b7153cc8d257b7047d6a",
+      "bytes": 632
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r42/native-math-raw/test-source-editor-final.log",
+      "sha256": "0d6e4e1d2258494cbeb10d5201be455c79b1c34bd95c4008d80f1879131a104d",
+      "bytes": 329
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r42/native-math-raw/visible-ui-observations.json",
+      "sha256": "12c5087f821b963a3f97bde60faab2791e6d256999615ca940d53b4323d896d4",
+      "bytes": 1316
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r42/native-math-raw/workbench-final-verified.log",
+      "sha256": "1001cd311b037ace76be4cf1faddee18d77dff26b048bc9cd5b083c571ce7143",
+      "bytes": 1449
+    }
+  ],
+  "implementation": [
+    {
+      "path": "macos/OpenMathNative/Rendering/MathRenderAdapter.swift",
+      "sha256": "4a65ff2f66a5291c83620f7f5952969e2ee0767a364e3891d64470f1823b990b"
+    },
+    {
+      "path": "macos/OpenMathNative/Rendering/NativeMathView.swift",
+      "sha256": "a3bf595afef519e6c3a19dea1695d1fac936a48510ae5c554e771a8d29a5092f"
+    },
+    {
+      "path": "macos/OpenMathNative/Kernel/NotebookRuntime.swift",
+      "sha256": "61b0aa1d3e82be40a0e63dfecddaa360e5cc6f2941c27f872ea966466a1ea3e9"
+    },
+    {
+      "path": "macos/OpenMathNative/Views/WorkspaceView.swift",
+      "sha256": "b057cff4ca396e2b16e2f4549066b79c07329a0c7ae5c2034c9b15339b2dba78"
+    },
+    {
+      "path": "macos/OpenMathNativeTests/MathRenderFixtures/main.swift",
+      "sha256": "4493127cb2adb6dddee4f36c05d3d11b58bca7e6bffc55e51ddd0c780a6a6d65"
+    },
+    {
+      "path": "macos/OpenMathNativeTests/MathRenderUIFixture/main.swift",
+      "sha256": "1c058823b9ed78bc33c9cc1d44ada58c3a044c9c73e4c2d5c24c072a1a9ceb15"
+    },
+    {
+      "path": "macos/Scripts/test-math-render.sh",
+      "sha256": "d32d931f47b14a86c563fde9bf98ed69b5d8e8ae516be468e602e00e154f63e8"
+    },
+    {
+      "path": "macos/Scripts/native-math-dependencies.sh",
+      "sha256": "a075de7479999c36ce5b928e6744c2fc9f0f932bf5cb3c53ef9fe87a15ec4fb6"
+    },
+    {
+      "path": "macos/Scripts/verify-math-resources.py",
+      "sha256": "6f2293aa8a18974264008ca0e3556cc096105853bdb977fbf9ef6a7705bf5bfe"
+    },
+    {
+      "path": "macos/Scripts/generate-project.py",
+      "sha256": "f6bc747c50df3ae86db67247f0ae85b23cd9fb8d1f3816993a386bebb55867ae"
+    }
+  ],
+  "commands": [
+    "bash macos/Scripts/test-math-render.sh",
+    "bash macos/Scripts/test-workbench.sh",
+    "bash macos/Scripts/test-source-editor.sh",
+    "bash macos/Scripts/test-composition.sh",
+    "CARGO_PROFILE_DEV_DEBUG=0 CARGO_PROFILE_TEST_DEBUG=0 bash macos/Scripts/test-kernel-runtime.sh",
+    "bash macos/Scripts/build-native.sh",
+    "python3 macos/Scripts/verify-math-resources.py 'target/macos-native/Build/Products/Release/OpenMath Preview.app' --output target/acceptance/pre-alpha.4/development/r42/math-render/installed-math-resources.json"
+  ]
+}

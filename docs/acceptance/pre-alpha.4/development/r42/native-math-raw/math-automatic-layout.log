@@ -1,0 +1,35 @@
+    Finished `release` profile [optimized] target(s) in 0.28s
+Building for production...
+Build complete! (0.15秒)
+macos/OpenMathNative/Rendering/NativeMathView.swift:181:17: warning: main actor-isolated property 'needsLayout' can not be mutated from a nonisolated context
+179 |   override func viewProvider(for parentView:NSView?,location:any NSTextLocation,textContainer:NSTextContainer?)->NSTextAttachmentViewProvider? {
+180 |     let provider=super.viewProvider(for:parentView,location:location,textContainer:textContainer)
+181 |     parentView?.needsLayout=true
+    |                 `- warning: main actor-isolated property 'needsLayout' can not be mutated from a nonisolated context
+182 |     return provider
+183 |   }
+
+/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX27.0.sdk/System/Library/Frameworks/AppKit.framework/Headers/NSView.h:267:16: note: mutation of this property is only permitted within the actor
+265 | - (void)layoutSubtreeIfNeeded API_AVAILABLE(macos(10.7));
+266 | - (void)layout API_AVAILABLE(macos(10.7));
+267 | @property BOOL needsLayout API_AVAILABLE(macos(10.7));
+    |                `- note: mutation of this property is only permitted within the actor
+268 | 
+269 | @property CGFloat alphaValue API_AVAILABLE(macos(10.5));
+{"ascent":16.116,"atoms":3,"baseline":16.116,"case":0,"descent":8.4959999999999987,"size":12,"width":6}
+{"ascent":29.545999999999999,"atoms":3,"baseline":29.545999999999999,"case":0,"descent":15.576000000000001,"size":22,"width":11}
+{"ascent":56.406000000000006,"atoms":3,"baseline":56.406000000000006,"case":0,"descent":29.736000000000001,"size":42,"width":21}
+{"ascent":12.841200000000001,"atoms":5,"baseline":12.841200000000001,"case":1,"descent":2.0388000000000019,"size":12,"width":44.405333333333331}
+{"ascent":23.542199999999998,"atoms":5,"baseline":23.542199999999998,"case":1,"descent":3.7378,"size":22,"width":81.409777777777776}
+{"ascent":44.944200000000002,"atoms":5,"baseline":44.944200000000002,"case":1,"descent":7.1358000000000033,"size":42,"width":155.41866666666667}
+{"ascent":14.327999999999999,"atoms":12,"baseline":14.327999999999999,"case":2,"descent":8.3279999999999994,"size":12,"width":38.328000000000003}
+{"ascent":26.268000000000001,"atoms":12,"baseline":26.268000000000001,"case":2,"descent":15.267999999999999,"size":22,"width":70.268000000000001}
+{"ascent":50.147999999999996,"atoms":12,"baseline":50.147999999999996,"case":2,"descent":29.148,"size":42,"width":134.148}
+{"ascent":16.116,"atoms":9,"baseline":16.116,"case":3,"descent":9.5999999999999996,"size":12,"width":50.616}
+{"ascent":29.545999999999999,"atoms":9,"baseline":29.546000000000003,"case":3,"descent":17.599999999999998,"size":22,"width":92.795999999999992}
+{"ascent":56.406000000000006,"atoms":9,"baseline":56.405999999999999,"case":3,"descent":33.600000000000001,"size":42,"width":177.15600000000001}
+{"ascent":14.91,"atoms":18,"baseline":14.91,"case":4,"descent":8.9100000000000001,"size":12,"width":69.737333333333339}
+{"ascent":27.335000000000001,"atoms":18,"baseline":27.335000000000004,"case":4,"descent":16.334999999999997,"size":22,"width":127.85177777777778}
+{"ascent":54.600000000000001,"atoms":18,"baseline":54.600000000000001,"case":4,"descent":33.600000000000001,"size":42,"width":245.76066666666668}
+Native SwiftMath 15 real sizes/metrics, actual original53+scientific 57 receipt/LaTeX records, raw fallback/inline baseline, missing-font/unknown/depth/byte/atoms and source-only rendering passed
+CORPUS_EVIDENCE=/Users/hert/Projects/openmath/target/macos-math-tests/attempt-FpAzrB/original-and-scientific-latex.json

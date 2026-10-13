@@ -65,6 +65,20 @@ jobs:
         run: bash macos/Scripts/test-source-editor.sh > target/macos-ci-evidence/source-editor.log 2>&1
       - name: Native input groups and actual marked-text protection
         run: bash macos/Scripts/test-composition.sh > target/macos-ci-evidence/composition.log 2>&1
+      - name: Actual SwiftMath views, fonts, budgets and original 53 LaTeX
+        run: |
+          bash macos/Scripts/test-math-render.sh > target/macos-ci-evidence/math-render.log 2>&1
+          python3 - <<'PY'
+          from pathlib import Path
+          import shutil
+          log=Path('target/macos-ci-evidence/math-render.log').read_text()
+          records=[line.removeprefix('CORPUS_EVIDENCE=') for line in log.splitlines() if line.startswith('CORPUS_EVIDENCE=')]
+          assert len(records)==1, 'actual corpus record missing'
+          source=Path(records[0]).resolve()
+          assert source.is_relative_to(Path('target/macos-math-tests').resolve())
+          shutil.copyfile(source,'target/macos-ci-evidence/original-and-scientific-latex.json')
+          PY
+          python3 macos/Scripts/verify-math-resources.py 'target/macos-native/Build/Products/Release/OpenMath Preview.app' --output target/macos-ci-evidence/math-resources.json
       - name: Collect crashes from this task's native fixtures
         if: failure()
         run: |
@@ -73,7 +87,7 @@ jobs:
           import shutil
           root=Path.home()/'Library/Logs/DiagnosticReports'
           output=Path('target/macos-ci-evidence/fixture-crashes');output.mkdir(parents=True,exist_ok=True)
-          prefixes=('workbench-fixtures-','source-editor-fixtures-','composition-fixtures-')
+          prefixes=('workbench-fixtures-','source-editor-fixtures-','composition-fixtures-','math-render-fixtures-')
           for path in root.glob('*.ips'):
               if path.name.startswith(prefixes):shutil.copyfile(path,output/path.name)
           PY

@@ -216,12 +216,18 @@ struct NativeNotebookFileView:View {
                   }
                 }
                 if let result=runtime.results[cell.id] {
-                  ForEach(Array(result.sources.enumerated()),id:\.offset) {_,text in
-                    HStack(alignment:.top) {
-                      Text(String(text.prefix(4000))).font(.system(.body,design:.monospaced)).textSelection(.enabled).frame(maxWidth:.infinity,alignment:.leading)
-                      Button("复制结果") {NSPasteboard.general.clearContents();NSPasteboard.general.setString(text,forType:.string)}.labelStyle(.iconOnly)
-                    }.padding(.vertical,6).accessibilityIdentifier("notebook-result-"+cell.id)
-                    if text.count>4000 {Text("此处显示预览，可复制完整结果。").font(.caption).foregroundStyle(.secondary)}
+                  ForEach(result.values) {value in
+                    if let latex=value.latex {
+                      NativeMathView(request:.init(identity:value.id,originalLatex:latex,wolfram:value.source,modern:value.modern))
+                        .padding(.vertical,6).accessibilityIdentifier("notebook-result-"+cell.id)
+                    } else {
+                      HStack(alignment:.top) {
+                        Text(String(value.source.prefix(4000))).font(.system(.body,design:.monospaced)).textSelection(.enabled).frame(maxWidth:.infinity,alignment:.leading)
+                        Button("复制结果") {NSPasteboard.general.clearContents();NSPasteboard.general.setString(value.source,forType:.string)}
+                      }.padding(.vertical,6).accessibilityIdentifier("notebook-result-"+cell.id)
+                      Text("公式源暂不可读取，已保留精确源式。").font(.caption).foregroundStyle(.secondary)
+                      if value.source.count>4000 {Text("此处显示预览，可复制完整结果。").font(.caption).foregroundStyle(.secondary)}
+                    }
                   }
                 }
               }

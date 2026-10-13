@@ -1,0 +1,717 @@
+[
+  {
+    "cell" : "finite",
+    "input" : "Solve[x^2-5x+6==0,x]",
+    "operation" : "notebook-run-199d252e-511f-497f-ac63-27cbb65d1f2a",
+    "presentation" : {
+      "explore_controls" : null,
+      "explore_values" : null,
+      "presentation" : {
+        "intervals" : [
+
+        ],
+        "kind" : "solutions",
+        "offset" : 0,
+        "region_latex" : null,
+        "solution_first_indices" : [
+          0,
+          1
+        ],
+        "solution_kind" : "finite",
+        "solution_multiplicities" : [
+          1,
+          1
+        ],
+        "solutions" : [
+          {
+            "bindings" : [
+              {
+                "input_form" : "2",
+                "latex" : "2",
+                "modern_form" : "2",
+                "numeric" : "2.`20.093752210570745",
+                "var" : "x",
+                "var_latex" : "x"
+              }
+            ],
+            "condition_latex" : null,
+            "verified" : "Exact"
+          },
+          {
+            "bindings" : [
+              {
+                "input_form" : "3",
+                "latex" : "3",
+                "modern_form" : "3",
+                "numeric" : "3.`20.093752210570745",
+                "var" : "x",
+                "var_latex" : "x"
+              }
+            ],
+            "condition_latex" : null,
+            "verified" : "Exact"
+          }
+        ],
+        "total_intervals" : 0,
+        "total_solutions" : 2,
+        "vars" : [
+          "x"
+        ]
+      },
+      "view_id" : "1"
+    },
+    "terminal" : "done"
+  },
+  {
+    "cell" : "none",
+    "input" : "Solve[Sqrt[x]==-1,x]",
+    "operation" : "notebook-run-bceaea70-28c0-4e71-b8da-fd3b5fd87604",
+    "presentation" : {
+      "explore_controls" : null,
+      "explore_values" : null,
+      "presentation" : {
+        "intervals" : [
+
+        ],
+        "kind" : "solutions",
+        "offset" : 0,
+        "region_latex" : null,
+        "solution_first_indices" : [
+
+        ],
+        "solution_kind" : "none",
+        "solution_multiplicities" : [
+
+        ],
+        "solutions" : [
+
+        ],
+        "total_intervals" : 0,
+        "total_solutions" : 0,
+        "vars" : [
+          "x"
+        ]
+      },
+      "view_id" : "2"
+    },
+    "terminal" : "done"
+  },
+  {
+    "cell" : "all",
+    "input" : "Solve[0==0,x]",
+    "operation" : "notebook-run-a0e96170-c3d6-419f-aa01-d84ee0e0f692",
+    "presentation" : {
+      "explore_controls" : null,
+      "explore_values" : null,
+      "presentation" : {
+        "intervals" : [
+
+        ],
+        "kind" : "solutions",
+        "offset" : 0,
+        "region_latex" : null,
+        "solution_first_indices" : [
+
+        ],
+        "solution_kind" : "all",
+        "solution_multiplicities" : [
+
+        ],
+        "solutions" : [
+
+        ],
+        "total_intervals" : 0,
+        "total_solutions" : 0,
+        "vars" : [
+          "x"
+        ]
+      },
+      "view_id" : "3"
+    },
+    "terminal" : "done"
+  },
+  {
+    "cell" : "region",
+    "input" : "Reduce[x^2<4,x]",
+    "operation" : "notebook-run-728274c9-52c9-46e6-b0e7-c871855b1c55",
+    "presentation" : {
+      "explore_controls" : null,
+      "explore_values" : null,
+      "presentation" : {
+        "intervals" : [
+          {
+            "hi" : "2",
+            "hi_closed" : false,
+            "hi_value" : 2,
+            "lo" : "-2",
+            "lo_closed" : false,
+            "lo_value" : -2
+          }
+        ],
+        "kind" : "solutions",
+        "offset" : 0,
+        "region_latex" : "\\operatorname{Inequality}\\left(-2, \\mathrm{Less}, x, \\mathrm{Less}, 2\\right)",
+        "solution_first_indices" : [
+
+        ],
+        "solution_kind" : "region",
+        "solution_multiplicities" : [
+
+        ],
+        "solutions" : [
+
+        ],
+        "total_intervals" : 1,
+        "total_solutions" : 0,
+        "vars" : [
+          "x"
+        ]
+      },
+      "view_id" : "4"
+    },
+    "terminal" : "done"
+  },
+  {
+    "cell" : "conditional",
+    "input" : "Solve[Exp[x]==2,x]",
+    "operation" : "notebook-run-a16014c1-3161-4e62-91ed-fb82b1176188",
+    "presentation" : {
+      "explore_controls" : null,
+      "explore_values" : null,
+      "presentation" : {
+        "intervals" : [
+
+        ],
+        "kind" : "solutions",
+        "offset" : 0,
+        "region_latex" : null,
+        "solution_first_indices" : [
+          0
+        ],
+        "solution_kind" : "finite",
+        "solution_multiplicities" : [
+          1
+        ],
+        "solutions" : [
+          {
+            "bindings" : [
+              {
+                "input_form" : "(0 + (2)*I)*Pi*C[1] + Log[2]",
+                "latex" : "\\left(2\\mathrm{i}\\right) k \\pi + \\log\\left(2\\right)",
+                "modern_form" : "(0 + (2)*I)Pi*C(1) + log(2)",
+                "numeric" : null,
+                "var" : "x",
+                "var_latex" : "x"
+              }
+            ],
+            "condition_display_latex" : "k \\in \\mathbb{Z}",
+            "condition_latex" : "\\operatorname{Element}\\left(k, \\mathrm{Integers}\\right)",
+            "verified" : {
+              "Numeric" : {
+                "digits" : 33
+              }
+            }
+          }
+        ],
+        "total_intervals" : 0,
+        "total_solutions" : 1,
+        "vars" : [
+          "x"
+        ]
+      },
+      "view_id" : "5"
+    },
+    "terminal" : "done"
+  },
+  {
+    "cell" : "roots",
+    "input" : "Solve[x^5-x-1==0,x]",
+    "operation" : "notebook-run-51a36a59-d14f-442c-a47d-adb14d40e924",
+    "presentation" : {
+      "explore_controls" : null,
+      "explore_values" : null,
+      "presentation" : {
+        "intervals" : [
+
+        ],
+        "kind" : "solutions",
+        "offset" : 0,
+        "region_latex" : null,
+        "solution_first_indices" : [
+          0,
+          1,
+          2,
+          3,
+          4
+        ],
+        "solution_kind" : "finite",
+        "solution_multiplicities" : [
+          1,
+          1,
+          1,
+          1,
+          1
+        ],
+        "solutions" : [
+          {
+            "bindings" : [
+              {
+                "input_form" : "Root[Function[Slot[1]^5 - Slot[1] - 1], 1]",
+                "latex" : "\\operatorname{Root}\\left(\\operatorname{Function}\\left(\\operatorname{Slot}\\left(1\\right)^{5} - \\operatorname{Slot}\\left(1\\right) - 1\\right), 1\\right)",
+                "modern_form" : "Root(function(slot(1)^5 - slot(1) - 1), 1)",
+                "numeric" : "1.16730397826141868425549`20.093752210570745",
+                "root_index" : 1,
+                "var" : "x",
+                "var_latex" : "x"
+              }
+            ],
+            "condition_latex" : null,
+            "verified" : "Exact"
+          },
+          {
+            "bindings" : [
+              {
+                "input_form" : "Root[Function[Slot[1]^5 - Slot[1] - 1], 2]",
+                "latex" : "\\operatorname{Root}\\left(\\operatorname{Function}\\left(\\operatorname{Slot}\\left(1\\right)^{5} - \\operatorname{Slot}\\left(1\\right) - 1\\right), 2\\right)",
+                "modern_form" : "Root(function(slot(1)^5 - slot(1) - 1), 2)",
+                "numeric" : "-0.764884433600584726029037`20.093752210570745 + (-0.352471546031726249316853`20.093752210570745)*I",
+                "root_index" : 2,
+                "var" : "x",
+                "var_latex" : "x"
+              }
+            ],
+            "condition_latex" : null,
+            "verified" : "Exact"
+          },
+          {
+            "bindings" : [
+              {
+                "input_form" : "Root[Function[Slot[1]^5 - Slot[1] - 1], 3]",
+                "latex" : "\\operatorname{Root}\\left(\\operatorname{Function}\\left(\\operatorname{Slot}\\left(1\\right)^{5} - \\operatorname{Slot}\\left(1\\right) - 1\\right), 3\\right)",
+                "modern_form" : "Root(function(slot(1)^5 - slot(1) - 1), 3)",
+                "numeric" : "-0.764884433600584726029037`20.093752210570745 + (0.352471546031726249316853`20.093752210570745)*I",
+                "root_index" : 3,
+                "var" : "x",
+                "var_latex" : "x"
+              }
+            ],
+            "condition_latex" : null,
+            "verified" : "Exact"
+          },
+          {
+            "bindings" : [
+              {
+                "input_form" : "Root[Function[Slot[1]^5 - Slot[1] - 1], 4]",
+                "latex" : "\\operatorname{Root}\\left(\\operatorname{Function}\\left(\\operatorname{Slot}\\left(1\\right)^{5} - \\operatorname{Slot}\\left(1\\right) - 1\\right), 4\\right)",
+                "modern_form" : "Root(function(slot(1)^5 - slot(1) - 1), 4)",
+                "numeric" : "0.181232444469875383901293`20.093752210570745 + (-1.0839541013177106684273`20.093752210570745)*I",
+                "root_index" : 4,
+                "var" : "x",
+                "var_latex" : "x"
+              }
+            ],
+            "condition_latex" : null,
+            "verified" : "Exact"
+          },
+          {
+            "bindings" : [
+              {
+                "input_form" : "Root[Function[Slot[1]^5 - Slot[1] - 1], 5]",
+                "latex" : "\\operatorname{Root}\\left(\\operatorname{Function}\\left(\\operatorname{Slot}\\left(1\\right)^{5} - \\operatorname{Slot}\\left(1\\right) - 1\\right), 5\\right)",
+                "modern_form" : "Root(function(slot(1)^5 - slot(1) - 1), 5)",
+                "numeric" : "0.181232444469875383901293`20.093752210570745 + (1.0839541013177106684273`20.093752210570745)*I",
+                "root_index" : 5,
+                "var" : "x",
+                "var_latex" : "x"
+              }
+            ],
+            "condition_latex" : null,
+            "verified" : "Exact"
+          }
+        ],
+        "total_intervals" : 0,
+        "total_solutions" : 5,
+        "vars" : [
+          "x"
+        ]
+      },
+      "view_id" : "6"
+    },
+    "terminal" : "done"
+  },
+  {
+    "cell" : "multiple",
+    "input" : "Solve[(x-1)^20==0,x]",
+    "operation" : "notebook-run-36f63c8d-827f-4b39-b07a-c53e66a27cae",
+    "presentation" : {
+      "explore_controls" : null,
+      "explore_values" : null,
+      "presentation" : {
+        "intervals" : [
+
+        ],
+        "kind" : "solutions",
+        "offset" : 0,
+        "region_latex" : null,
+        "solution_first_indices" : [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "solution_kind" : "finite",
+        "solution_multiplicities" : [
+          20,
+          20,
+          20,
+          20,
+          20,
+          20,
+          20,
+          20,
+          20,
+          20,
+          20,
+          20,
+          20,
+          20,
+          20,
+          20
+        ],
+        "solutions" : [
+          {
+            "bindings" : [
+              {
+                "input_form" : "1",
+                "latex" : "1",
+                "modern_form" : "1",
+                "numeric" : "1.`20.093752210570745",
+                "var" : "x",
+                "var_latex" : "x"
+              }
+            ],
+            "condition_latex" : null,
+            "verified" : "Exact"
+          },
+          {
+            "bindings" : [
+              {
+                "input_form" : "1",
+                "latex" : "1",
+                "modern_form" : "1",
+                "numeric" : "1.`20.093752210570745",
+                "var" : "x",
+                "var_latex" : "x"
+              }
+            ],
+            "condition_latex" : null,
+            "verified" : "Exact"
+          },
+          {
+            "bindings" : [
+              {
+                "input_form" : "1",
+                "latex" : "1",
+                "modern_form" : "1",
+                "numeric" : "1.`20.093752210570745",
+                "var" : "x",
+                "var_latex" : "x"
+              }
+            ],
+            "condition_latex" : null,
+            "verified" : "Exact"
+          },
+          {
+            "bindings" : [
+              {
+                "input_form" : "1",
+                "latex" : "1",
+                "modern_form" : "1",
+                "numeric" : "1.`20.093752210570745",
+                "var" : "x",
+                "var_latex" : "x"
+              }
+            ],
+            "condition_latex" : null,
+            "verified" : "Exact"
+          },
+          {
+            "bindings" : [
+              {
+                "input_form" : "1",
+                "latex" : "1",
+                "modern_form" : "1",
+                "numeric" : "1.`20.093752210570745",
+                "var" : "x",
+                "var_latex" : "x"
+              }
+            ],
+            "condition_latex" : null,
+            "verified" : "Exact"
+          },
+          {
+            "bindings" : [
+              {
+                "input_form" : "1",
+                "latex" : "1",
+                "modern_form" : "1",
+                "numeric" : "1.`20.093752210570745",
+                "var" : "x",
+                "var_latex" : "x"
+              }
+            ],
+            "condition_latex" : null,
+            "verified" : "Exact"
+          },
+          {
+            "bindings" : [
+              {
+                "input_form" : "1",
+                "latex" : "1",
+                "modern_form" : "1",
+                "numeric" : "1.`20.093752210570745",
+                "var" : "x",
+                "var_latex" : "x"
+              }
+            ],
+            "condition_latex" : null,
+            "verified" : "Exact"
+          },
+          {
+            "bindings" : [
+              {
+                "input_form" : "1",
+                "latex" : "1",
+                "modern_form" : "1",
+                "numeric" : "1.`20.093752210570745",
+                "var" : "x",
+                "var_latex" : "x"
+              }
+            ],
+            "condition_latex" : null,
+            "verified" : "Exact"
+          },
+          {
+            "bindings" : [
+              {
+                "input_form" : "1",
+                "latex" : "1",
+                "modern_form" : "1",
+                "numeric" : "1.`20.093752210570745",
+                "var" : "x",
+                "var_latex" : "x"
+              }
+            ],
+            "condition_latex" : null,
+            "verified" : "Exact"
+          },
+          {
+            "bindings" : [
+              {
+                "input_form" : "1",
+                "latex" : "1",
+                "modern_form" : "1",
+                "numeric" : "1.`20.093752210570745",
+                "var" : "x",
+                "var_latex" : "x"
+              }
+            ],
+            "condition_latex" : null,
+            "verified" : "Exact"
+          },
+          {
+            "bindings" : [
+              {
+                "input_form" : "1",
+                "latex" : "1",
+                "modern_form" : "1",
+                "numeric" : "1.`20.093752210570745",
+                "var" : "x",
+                "var_latex" : "x"
+              }
+            ],
+            "condition_latex" : null,
+            "verified" : "Exact"
+          },
+          {
+            "bindings" : [
+              {
+                "input_form" : "1",
+                "latex" : "1",
+                "modern_form" : "1",
+                "numeric" : "1.`20.093752210570745",
+                "var" : "x",
+                "var_latex" : "x"
+              }
+            ],
+            "condition_latex" : null,
+            "verified" : "Exact"
+          },
+          {
+            "bindings" : [
+              {
+                "input_form" : "1",
+                "latex" : "1",
+                "modern_form" : "1",
+                "numeric" : "1.`20.093752210570745",
+                "var" : "x",
+                "var_latex" : "x"
+              }
+            ],
+            "condition_latex" : null,
+            "verified" : "Exact"
+          },
+          {
+            "bindings" : [
+              {
+                "input_form" : "1",
+                "latex" : "1",
+                "modern_form" : "1",
+                "numeric" : "1.`20.093752210570745",
+                "var" : "x",
+                "var_latex" : "x"
+              }
+            ],
+            "condition_latex" : null,
+            "verified" : "Exact"
+          },
+          {
+            "bindings" : [
+              {
+                "input_form" : "1",
+                "latex" : "1",
+                "modern_form" : "1",
+                "numeric" : "1.`20.093752210570745",
+                "var" : "x",
+                "var_latex" : "x"
+              }
+            ],
+            "condition_latex" : null,
+            "verified" : "Exact"
+          },
+          {
+            "bindings" : [
+              {
+                "input_form" : "1",
+                "latex" : "1",
+                "modern_form" : "1",
+                "numeric" : "1.`20.093752210570745",
+                "var" : "x",
+                "var_latex" : "x"
+              }
+            ],
+            "condition_latex" : null,
+            "verified" : "Exact"
+          }
+        ],
+        "total_intervals" : 0,
+        "total_solutions" : 20,
+        "vars" : [
+          "x"
+        ]
+      },
+      "view_id" : "7"
+    },
+    "terminal" : "done"
+  },
+  {
+    "cell" : "precision",
+    "input" : "decimal(\"0.1\",precision:80)",
+    "operation" : "notebook-run-052217ea-d69f-47a5-9548-8d533618a605",
+    "presentation" : {
+      "explore_controls" : null,
+      "explore_values" : null,
+      "presentation" : {
+        "kind" : "expression",
+        "value_kind" : "scalar"
+      },
+      "view_id" : "8"
+    },
+    "terminal" : "done"
+  },
+  {
+    "cell" : "held",
+    "input" : "Solve[Sin[x]==x,x]",
+    "operation" : "notebook-run-05fdace2-fa8e-4c9a-a732-09054a5e21aa",
+    "presentation" : {
+      "explore_controls" : null,
+      "explore_values" : null,
+      "presentation" : {
+        "kind" : "expression",
+        "value_kind" : "scalar"
+      },
+      "view_id" : "9"
+    },
+    "terminal" : "done"
+  },
+  {
+    "cell" : "partial",
+    "input" : "7\npartialLoop:=partialLoop\npartialLoop",
+    "operation" : "notebook-run-4526f3c6-5d3e-4aa1-bd20-4c38138693e9",
+    "presentation" : {
+      "explore_controls" : null,
+      "explore_values" : null,
+      "presentation" : {
+        "kind" : "expression",
+        "value_kind" : "scalar"
+      },
+      "view_id" : "11"
+    },
+    "terminal" : "error"
+  },
+  {
+    "cell" : "failed",
+    "input" : "let invalid=",
+    "operation" : "notebook-run-d645bce7-e770-4899-837d-7b528e553060",
+    "presentation" : {
+      "items" : [
+        {
+          "message" : "E022: 表达式尚未完成，需要右侧表达式",
+          "span" : {
+            "end" : 12,
+            "start" : 11
+          },
+          "type" : "error"
+        }
+      ],
+      "kind" : "error",
+      "messages" : [
+        {
+          "level" : "Error",
+          "symbol" : "Parse",
+          "tag" : "E022",
+          "text" : "表达式尚未完成，需要右侧表达式"
+        }
+      ],
+      "status" : "Error"
+    },
+    "terminal" : "error"
+  },
+  {
+    "cell" : "guard",
+    "input" : "let guard=2; seed_random(42); guard",
+    "operation" : "notebook-run-c2ea3023-792b-4c99-b081-136840246eba",
+    "presentation" : {
+      "explore_controls" : null,
+      "explore_values" : null,
+      "presentation" : {
+        "kind" : "expression",
+        "value_kind" : "scalar"
+      },
+      "view_id" : "15"
+    },
+    "terminal" : "done"
+  }
+]

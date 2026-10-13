@@ -1,0 +1,7 @@
+    Finished `release` profile [optimized] target(s) in 0.29s
+Building for production...
+[1 / 4]
+Build complete! (0.33秒)
+Actual partial: terminal=error, successful=2, freshness=partial, acceptance=accepted, source=["7", "Null"]
+Actual native result presenter: finite/none/all/region/conditional/Root, global 20-fold multiplicity on two pages, raw-condition isolation, 80-digit projection, real stale reply/history and main Out/random/source purity passed
+PRESENTER_EVIDENCE=/Users/hert/Projects/openmath/target/macos-result-presenter-tests/attempt-sQA1RM/actual-result-presentations.json

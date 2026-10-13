@@ -1,0 +1,332 @@
+{
+  "schema_version": 1,
+  "task": "R4.2.10",
+  "date": "2026-10-13",
+  "kind": "development_evidence_not_final_candidate",
+  "base_commit": "40cc1cbe471604c37e2e92dfd127ac3d57e69b23",
+  "actual_inputs": 21,
+  "actual_ui_inputs": 9,
+  "actual_page_records": 28,
+  "covered_structured_kinds": [
+    "interpolation",
+    "list",
+    "matrix",
+    "model",
+    "quantity",
+    "record",
+    "series",
+    "table"
+  ],
+  "checks": [
+    "Real retained C ABI/Swift typed ValuePage; bounded original path/page/columns, stable occurrence IDs and no evaluator reexecution.",
+    "105x35 matrix, 40x10 table, 37 fields, nested record/list, path32 boundary and invalid paths/page axes/view bindings.",
+    "Default32x8; row100 and column32 independently accepted; actual100x32 data exceeds unchanged256KiB budget, previous page preserved.",
+    "Large-page refusal keeps rechecked accepted summary/presentation and complete source in a separate real document.",
+    "Exact1/3, big90071992547409931234567890, 80-digit atom and NFC/NFD UTF8 sources retained without Double coercion or sorting.",
+    "Full Unicode source assembled via16KiB/hash routes; page excerpt explicitly labeled; real private pasteboard full source acknowledgment and independent UI1/3 pasteboard check.",
+    "Actual root optimize callback supplies origin and certified guarantee; fake/cached/wrapped/nested values have ordinary data labels.",
+    "Fit model definition and actual samples/predictions table, interpolation/series/quantity/ODE real kinds/source remain readable.",
+    "Real NSTableView/NSOutlineView data sources and stable item expansion, selected window first responder and actual Return NSEvent.",
+    "Visible matrix/fraction action, complete copy receipt, light/dark scientific versus arbitrary guarantee, actual nested row double-click and actual focused Return -> nested list; normal Quit.",
+    "Real delayed decoded reply rejected after native guard2->9 edit/commit; main Out/random/definitions/source unchanged by inspection.",
+    "Original57 real math records,12 solution cases, workbench actual widths/scroll/CAS stop, result client/kernel runtime regressions and final Release32 resources/signature passed."
+  ],
+  "bounds": {
+    "default_rows": 32,
+    "default_columns": 8,
+    "max_rows": 100,
+    "max_columns": 32,
+    "max_path": 32,
+    "host_reply_bytes_unchanged": 262144,
+    "source_max_bytes_unchanged": 8388608,
+    "snapshot_bytes_unchanged": 67108864,
+    "snapshot_count_unchanged": 32
+  },
+  "preserved_failures": [
+    "Initial fixture Swift terminal enum/path typing compile errors retained.",
+    "Held expression referred to a not-ready guard owner; actual DEPENDENCY_NOT_READY retained, corrected by a same-cell localGuard declaration.",
+    "A100x32 page hit actual RESULT_PAGE_TOO_LARGE; expectations now preserve the existing byte limit and distinguish per-axis maxima.",
+    "Placing large-source budget fixture in the same document expired the earlier ref under existing retention limits; failure preserved, separate real document isolates that case.",
+    "Initial complete AX observation timed out; sampled actual repeated cell creation, then changed to reusable NSTableCellView. Full matrix AX traversal is still slow; no long-notebook/AX performance gate claimed.",
+    "AX-only row selection initially did not move keyboard focus; actual selection now makes outline the window first responder; real CUA Return then opened nested correctly."
+  ],
+  "limitations": [
+    "32 final gates remain not_run; no candidate, ready_to_publish=false, released_verified=false.",
+    "Large reply/snapshot/source limits remain genuine; unavailable values do not automatically reevaluate.",
+    "Final long-notebook/accessibility performance, Markdown/steps/plots/Agent/provider/media and release require their own tasks.",
+    "System input settings preserved; real OS candidate-window verification deferred by user.",
+    "Screenshots inspected in CUA tool output, no persisted screenshot files claimed. UI proof is selective; the complete21-input native suite covers all structured kinds."
+  ],
+  "commands": [
+    "CARGO_PROFILE_DEV_DEBUG=0 CARGO_PROFILE_TEST_DEBUG=0 cargo test -p om-kernel --test value_pages --test retained_results --locked",
+    "CARGO_PROFILE_DEV_DEBUG=0 CARGO_PROFILE_TEST_DEBUG=0 bash macos/Scripts/test-value-presenter.sh",
+    "bash macos/Scripts/test-result-presenter.sh",
+    "bash macos/Scripts/test-math-render.sh",
+    "bash macos/Scripts/test-workbench.sh",
+    "bash macos/Scripts/test-results.sh",
+    "bash macos/Scripts/test-kernel-runtime.sh",
+    "CARGO_PROFILE_DEV_DEBUG=0 CARGO_PROFILE_TEST_DEBUG=0 bash macos/Scripts/build-result-ui-fixture.sh target/acceptance/pre-alpha.4/development/r42/actual-value-ui-inputs.json structured",
+    "CARGO_PROFILE_DEV_DEBUG=0 CARGO_PROFILE_TEST_DEBUG=0 bash macos/Scripts/build-native.sh",
+    "python3 macos/Scripts/verify-math-resources.py <Release app> --output <evidence>",
+    "codesign --verify --deep --strict <Release app>",
+    "python3 scripts/native_contracts.py --check",
+    "python3 macos/Scripts/generate-project.py --check"
+  ],
+  "ci": {
+    "previous_exact_sha": "40cc1cbe471604c37e2e92dfd127ac3d57e69b23",
+    "run": 38377911174,
+    "all_five_jobs": "success",
+    "ios_phone": {
+      "passed": 35,
+      "failed": 0
+    },
+    "ios_pad": {
+      "passed": 35,
+      "failed": 0
+    },
+    "current_change": "requires_new_same_sha_ci"
+  },
+  "source_sha256": {
+    "macos/OpenMathNative/Rendering/ResultPresenter.swift": "8e299f689e40bf03fccc507f7b1c3e30aef193fe63dae1d72e1262adaa8fdc9a",
+    "macos/OpenMathNative/Rendering/ValueTableView.swift": "0388f29598e4355ee84594e8b6323c102404e0277fe6a9d65ba80259929303a5",
+    "macos/OpenMathNative/Rendering/RecordOutlineView.swift": "d2660f7cf36029a05cd943ff545f32e24db56cc9454f910ba545c547603ccb9c",
+    "macos/OpenMathNative/Rendering/SolutionView.swift": "39a891f76e886323fdc472f3d76b0fcb804a3e242d46b29df4501364c1249a83",
+    "macos/OpenMathNativeTests/ValuePresenterFixtures/main.swift": "331fc148492d3451f01a0baad15dcaa2f6ca6db77c2ff5a7cccea932ca2205fd",
+    "macos/OpenMathNativeTests/ResultPresenterUIFixture/main.swift": "0f04374f96d1d4fd37d51ec256751131e2e68450f2327a3247f2c10e6bc924bf",
+    "macos/Scripts/test-value-presenter.sh": "e5447e84b9e5edfd7b9710aa449fbcbe51f26405e5cbd0136c7d0b26640d391d",
+    "macos/Scripts/build-result-ui-fixture.sh": "287327c779d6d2a7eda3309d85a7b237a5916f53c1868469d135d2c7206669b2",
+    ".github/workflows/macos-native.yml": "9334b1ee05955e2a5e512baf491598fa51fc27c6b0381bfb555427f329943530"
+  },
+  "files": [
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r42/native-values-raw/actual-ui-inputs.json",
+      "bytes": 5884,
+      "sha256": "26b3eb272eec2932bcf9be8e6e17e75365f2ab112d7fdcf1f4b3ae6347ecf750"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r42/native-values-raw/actual-value-inputs.json",
+      "bytes": 218956,
+      "sha256": "be2976eb3c21fbfd6c310528b0dc109108f28df52e717775e581ba195f79e83a"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r42/native-values-raw/actual-value-pages.json",
+      "bytes": 701590,
+      "sha256": "80facd2b4de5ef22ee3472f4b8cee9c7014fc07ef802475303056b209dc7cd98"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r42/native-values-raw/ci-40cc1cb-actual-result-presentations.json",
+      "bytes": 19428,
+      "sha256": "28b1abf694ca60f9233fac4ed726012fe2111bbdce392a3beb466a4739359179"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r42/native-values-raw/ci-40cc1cb-ios-pad-20261013T095446Z-23972-summary.json",
+      "bytes": 1210,
+      "sha256": "a969ad40ed159930a77b0a448bcd5dc9ce8c8cff754aa7df2f8749decd79a8ab"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r42/native-values-raw/ci-40cc1cb-ios-phone-20261013T094527Z-9429-summary.json",
+      "bytes": 1204,
+      "sha256": "f102ac5363a175870fa00d7c3d9886d8f55607f8caf1db0041bf2403b1fc33a7"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r42/native-values-raw/ci-40cc1cb-math-render.log",
+      "bytes": 2506,
+      "sha256": "fc63047d9a2d81c9f67f6982a7c6810a781a5fce7805496e4cdd978eb7c840b5"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r42/native-values-raw/ci-40cc1cb-math-resources.json",
+      "bytes": 5128,
+      "sha256": "2a2aae7b98fda27038fbd5bb5cbd448949ba02c68ac48eee430d2205286ba504"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r42/native-values-raw/ci-40cc1cb-original-and-scientific-latex.json",
+      "bytes": 49883,
+      "sha256": "5b59b62a094f70153a053bf7fc3059f8bc150fefd514b9b14a83fecc985c0550"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r42/native-values-raw/ci-40cc1cb-result-presenter.log",
+      "bytes": 646,
+      "sha256": "6dda855f0988215a839b196f01e88f846c29d99a82e4ab55b2cb8ee2194ce889"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r42/native-values-raw/ci-40cc1cb-run.json",
+      "bytes": 16619,
+      "sha256": "077fcc1dbc3a0ca8f61ca353101584387a5f2aa986000cb5185a41464d4d3ee2"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r42/native-values-raw/ci-40cc1cb-workbench.log",
+      "bytes": 2047,
+      "sha256": "3a30b3a29d9c865b02803413fbcdcf9cef89caf946a8c3dcc3b70298b1f98a63"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r42/native-values-raw/dependency-failure-inputs.omnb",
+      "bytes": 88612,
+      "sha256": "892f24cb0507f2a800e3f84d212dde70f91d2fde742f915530c76cf419ad15ce"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r42/native-values-raw/expired-fixture-failure-inputs.omnb",
+      "bytes": 218715,
+      "sha256": "eeae4f3ac14209e66fd522ddb17461fe9f5666d4a7a03d5672c2342b9ec6e426"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r42/native-values-raw/value-core-regression.log",
+      "bytes": 1371,
+      "sha256": "43b0e3b77203628cb620a459a2f9c5786aaee6cb2f058ef6fbcd13e0e0bc1db1"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r42/native-values-raw/value-installed-resources.json",
+      "bytes": 5128,
+      "sha256": "2a2aae7b98fda27038fbd5bb5cbd448949ba02c68ac48eee430d2205286ba504"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r42/native-values-raw/value-integration-compile.log",
+      "bytes": 594,
+      "sha256": "f65f91a8930d592faa37f4a86aa6f09c6b7af80710b071ac4e0fa29853ecfe0d"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r42/native-values-raw/value-presenter-accessible-cells.log",
+      "bytes": 720,
+      "sha256": "62a7f72498008f05152bf7aae6a9834132dc41c0ef3ded9101ea7c479ed358c8"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r42/native-values-raw/value-presenter-budget-diagnostic.log",
+      "bytes": 494,
+      "sha256": "6391e383d55e78c0c270ef1760055c658d712ae5ed0cd1517bca0c414a8a5574"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r42/native-values-raw/value-presenter-byte-budget.log",
+      "bytes": 697,
+      "sha256": "9fac6c6a6dea73b857e0d0e45cdfef765766c77b6d54c1d72670cc30e7e6b345"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r42/native-values-raw/value-presenter-dependencies.log",
+      "bytes": 384,
+      "sha256": "dc20194977625316d80ff9a440cbffbfd9f767464122f49274ae3159b649cd47"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r42/native-values-raw/value-presenter-diagnostic.log",
+      "bytes": 374,
+      "sha256": "6b0ab1701a64065e6118813e344b5be9fc9bf7eff3b614ab9f2f775310c487e8"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r42/native-values-raw/value-presenter-final.log",
+      "bytes": 752,
+      "sha256": "585e6a142dbbee917c938cd9c5a871af06e4932e7df47f396ce9b4371988e0fd"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r42/native-values-raw/value-presenter-focus-final.log",
+      "bytes": 742,
+      "sha256": "fad84bb19c1a05d54e2982075b50a7fc3bb8bb30417a5f40f97d82448799b006"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r42/native-values-raw/value-presenter-initial.log",
+      "bytes": 4064,
+      "sha256": "db7a57e782732871d03f5202d475390c0156c0c8352647ee9aa232f01062f63a"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r42/native-values-raw/value-presenter-isolated-budget.log",
+      "bytes": 720,
+      "sha256": "ba4779a9a0bc9fc61984ee9257d28dca06b15bc2b60c6c9df40c6c1a910b0d03"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r42/native-values-raw/value-presenter-typed.log",
+      "bytes": 325,
+      "sha256": "39722d8b3626837f80455122a5f080ab6fcdc153de414a933de131fbb1b468b4"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r42/native-values-raw/value-presenter-verified.log",
+      "bytes": 384,
+      "sha256": "11ac991217194d1bb0c362d4577b827aa646cfcc15b657fec6f5a6bfb5f35937"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r42/native-values-raw/value-production-accessible-build.log",
+      "bytes": 101846,
+      "sha256": "a5b3cc97b86f0ab6d217c169efa9f5bd45dbabf1b7f7c45455c354c7df3f8004"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r42/native-values-raw/value-production-build.log",
+      "bytes": 104332,
+      "sha256": "877ef76b8ec419ffa4a2625ba633f36c56f749c43c67523034405a187fe27304"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r42/native-values-raw/value-production-final.log",
+      "bytes": 99390,
+      "sha256": "f115aec9612cd32973b4d6d80bd7b1e1e99348ff948976eba615e024f2fba54d"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r42/native-values-raw/value-production-focus-final.log",
+      "bytes": 98533,
+      "sha256": "6f338f5412bf87cb38e2e4b0d5e05f0fc86704c077093a74e84738f036e7d3db"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r42/native-values-raw/value-regression-test-kernel-runtime.log",
+      "bytes": 3648,
+      "sha256": "88cca140df309577c44960fb0c9f657b471f02339803ee7d496ac89fbf2c0e8d"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r42/native-values-raw/value-regression-test-math-render.log",
+      "bytes": 2442,
+      "sha256": "a3d7780884f0d2f043d321c20970a314156c4be715dbb765301594bfaa88eea7"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r42/native-values-raw/value-regression-test-result-presenter.log",
+      "bytes": 756,
+      "sha256": "704556945c67cf1c9c90cc806d37d152cb2402a688b7a14392af2539474e6104"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r42/native-values-raw/value-regression-test-results.log",
+      "bytes": 340,
+      "sha256": "684c7da65ce2a9f11b34f2c258e48f30d23ccf0a5af0f2a95bb0dbac166a0ff0"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r42/native-values-raw/value-regression-test-workbench.log",
+      "bytes": 1461,
+      "sha256": "b126937ab54d64e7ae275a0ed781a875d68c2e8fe52768f6e5958bc4b1ecdbd7"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r42/native-values-raw/value-ui-build-accessible.log",
+      "bytes": 339,
+      "sha256": "3a95bb98b11632f7447210da0d3ebbe272d8c29c44ec46e12da5ced13b956705"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r42/native-values-raw/value-ui-build-final.log",
+      "bytes": 339,
+      "sha256": "2d7de07d25ac48362ba49820cb975f6f139e68724e24c4bc9ba2ed321a6028a4"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r42/native-values-raw/value-ui-build.log",
+      "bytes": 351,
+      "sha256": "4dc296b44f4e5276e7bbb5a81ac048b74a6d52619dadf05f3dc256f0249b48fb"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r42/native-values-raw/value-ui-clipboard.json",
+      "bytes": 203,
+      "sha256": "a4d78c0816a51e57d7bebf8aaf79d84b35de4ff4ebea6d8ad4a7f424838b9c14"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r42/native-values-raw/value-ui-focus-final.log",
+      "bytes": 339,
+      "sha256": "3a95bb98b11632f7447210da0d3ebbe272d8c29c44ec46e12da5ced13b956705"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r42/native-values-raw/value-ui-sign-compact.log",
+      "bytes": 127,
+      "sha256": "532049b9b5550d39e3dcbbd1c76842bab645cb082bdaa1a625dae2f1d08d9e2a"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r42/native-values-raw/value-ui-timeout-sample.log",
+      "bytes": 248,
+      "sha256": "b66501f63152297d45362f2a86176ec7235292bac07e22122cb57f866455db57"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r42/native-values-raw/value-ui-timeout.sample.txt",
+      "bytes": 717817,
+      "sha256": "8b856fd50c213de7afe1a7903ab2f7695e5bb6d4003e2a3df1d6ad179d47a53c"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r42/native-values-raw/cache-cleanup.json",
+      "bytes": 1442,
+      "sha256": "1b776b5645c47e190660f954899797524b20c26dd78ec1e2a32e6123efabc770"
+    }
+  ]
+}

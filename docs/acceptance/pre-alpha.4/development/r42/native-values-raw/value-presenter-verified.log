@@ -1,0 +1,6 @@
+    Finished `release` profile [optimized] target(s) in 0.23s
+Building for production...
+Build complete! (0.15秒)
+Value presenter failed at 83: value presenter assertion
+main/main.swift:17: Fatal error: value presenter assertion
+macos/Scripts/test-value-presenter.sh: line 19: 44140 Trace/BPT trap: 5       target/macos-value-presenter-tests/value-presenter-fixtures "$attempt_root"

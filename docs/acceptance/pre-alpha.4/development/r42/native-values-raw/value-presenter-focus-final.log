@@ -1,0 +1,7 @@
+    Finished `release` profile [optimized] target(s) in 0.32s
+Building for production...
+[1 / 3] SwiftMath
+Build complete! (0.31秒)
+Actual native structured values: 21 complete inputs, 32x8/default, row100/column32 bounds and actual 256KiB reply refusal with accepted metadata/full source, stable pages/columns/nesting/depth32, exact/highprecision/UTF8 copies, real science vs fake/cached/nested, all structured kinds, Table/Outline, invalid scope and late callbacks, Out/random/source purity passed
+VALUE_EVIDENCE=/Users/hert/Projects/openmath/target/macos-value-presenter-tests/attempt-7JSoDR/actual-value-pages.json
+VALUE_INPUTS=/Users/hert/Projects/openmath/target/macos-value-presenter-tests/attempt-7JSoDR/actual-value-inputs.json

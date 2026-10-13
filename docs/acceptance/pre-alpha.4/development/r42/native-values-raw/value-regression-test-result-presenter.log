@@ -1,0 +1,6 @@
+    Finished `release` profile [optimized] target(s) in 0.12s
+Another instance of SwiftPM (PID: 45945) is already running using '/Users/hert/Projects/openmath/target/macos-swiftmath', waiting until that process has finished execution...Building for production...
+Build complete! (0.15秒)
+Actual partial: terminal=error, successful=2, freshness=partial, acceptance=accepted, source=["7", "Null"]
+Actual native result presenter: finite/none/all/region/conditional/Root, global 20-fold multiplicity on two pages, raw-condition isolation, 80-digit projection, real stale reply/history and main Out/random/source purity passed
+PRESENTER_EVIDENCE=/Users/hert/Projects/openmath/target/macos-result-presenter-tests/attempt-q4fU67/actual-result-presentations.json

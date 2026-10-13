@@ -1,0 +1,5 @@
+    Finished `release` profile [optimized] target(s) in 0.26s
+Building for production...
+Build complete! (0.14秒)
+main/main.swift:52: Fatal error: no actual result: list
+macos/Scripts/test-value-presenter.sh: line 19: 39062 Trace/BPT trap: 5       target/macos-value-presenter-tests/value-presenter-fixtures "$attempt_root"

@@ -105,6 +105,7 @@ struct NativeResultView:View {
           Text(message.symbol+"::"+message.tag+"："+message.text).font(.callout).textSelection(.enabled)
         }
       }
+      if let page=presenter.valuePage {NativeStructuredValueView(presenter:presenter,page:page)}
       if let page=presenter.presentation?.solutions {NativeSolutionView(presenter:presenter,page:page)}
       else if presenter.presentation?.kind=="error" {
         Text(presenter.summary?.statement_count ?? 0>0 ? "后续计算有错误，已接纳的结果仍保留。" : "本次计算有错误，未产生成功结果。").font(.callout)
@@ -112,7 +113,7 @@ struct NativeResultView:View {
       }
       if presenter.presentation?.kind != "error",presenter.presentation?.kind != "suppressed" {
         if let actual=originalValue {
-          if presenter.presentation?.solutions != nil {DisclosureGroup("完整原结果") {expression(actual)}}
+          if presenter.presentation?.solutions != nil || presenter.valuePage != nil {DisclosureGroup("完整原结果") {expression(actual)}}
           else {expression(actual)}
           if presenter.original.out_index.value>0 {
             HStack {

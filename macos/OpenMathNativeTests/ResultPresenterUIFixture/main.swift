@@ -1,7 +1,7 @@
 import SwiftUI
 import Foundation
 
-private struct RecordedInput:Decodable {let cell:String,input:String}
+private struct RecordedInput:Decodable {let cell:String,input:String,dialect:String?}
 @MainActor private final class ResultFixtureWorkspace:ObservableObject {
   let storage:NativeAppStorage
   let workspace:NativeFileWorkspace
@@ -16,7 +16,7 @@ private struct RecordedInput:Decodable {let cell:String,input:String}
     try! FileManager.default.createDirectory(at:root,withIntermediateDirectories:true)
     file=root.appendingPathComponent("results.omnb")
     if !FileManager.default.fileExists(atPath:file.path) {
-      let source=NativeSourceFile(version:1,title:"结果展示验收",cells:cells.map{.init(id:$0.cell,kind:.math,source:$0.input,dialect:["precision","guard","failed"].contains($0.cell) ? .modern : .wolfram)})
+      let source=NativeSourceFile(version:1,title:"结果展示验收",cells:cells.map{.init(id:$0.cell,kind:.math,source:$0.input,dialect:$0.dialect=="modern" || ["precision","guard","failed"].contains($0.cell) ? .modern : .wolfram)})
       try! JSONEncoder().encode(source).write(to:file)
     }
     storage=NativeAppStorage(paths:.init(root:root.appendingPathComponent("storage"),channel:.preview))
@@ -30,7 +30,7 @@ private struct RecordedInput:Decodable {let cell:String,input:String}
       session.runtime.run(cell.cell)
       while session.runtime.operation != nil {try? await Task.sleep(for:.milliseconds(20))}
     }
-    session.runtime.navigate(to:"roots");status="实际结果已接纳，可检查条件、Root、数值和历史。"
+    session.runtime.navigate(to:cells.contains{$0.cell=="roots"} ? "roots" : cells[0].cell);status="实际结果已接纳，可检查公式、结构值、数值和历史。"
   }
 }
 @main struct ResultPresenterUIFixture:App {

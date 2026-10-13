@@ -4,9 +4,9 @@
 
 2026-10-13。目标`0.1.0-pre-alpha.4`，当前运行/公开版本`.3`；开发`dev`，不合main、不改旧标签、本机不启动iOS模拟器。本文只记录结果，规格及完成标准唯一见主计划；计划编写本身不计实施完成。
 
-**当前状态：** 28任务完成（全部R4.0与R4.1、R4.2.01–02、07及09）；其余70任务尚未完成；32最终运行/发行gate全部not_run；candidate未分配，ready_to_publish=false，released_verified=false。设计/HTML/Schema通过不填运行时pass。
+**当前状态：** 29任务完成（全部R4.0与R4.1、R4.2.01–02、07及09–10）；其余69任务尚未完成；32最终运行/发行gate全部not_run；candidate未分配，ready_to_publish=false，released_verified=false。设计/HTML/Schema通过不填运行时pass。
 
-**下一任务：** 用户选择保留系统输入法设置、先做其他任务；R4.2.03真实候选窗口仍未验收。独立继续R4.2.10矩阵/表格/记录与科学诊断或R4.3.01规范Agent/IPC，原依赖满足后再接非求值编辑分析/长笔记本/Markdown。存储维护、备份、新代次、配额和GC已通过实际验证；日末备份触发/数据管理UI仍在R4.2.18接线，完整Pi/provider/上下文/Agent界面仍继续R4.3–4.4，不能将存储Done当产品完成。保持同candidate完整门禁，R4.5.07在R4.5.05冻结前完成。
+**下一任务：** 用户选择保留系统输入法设置、先做其他任务；R4.2.03真实候选窗口仍未验收。独立继续R4.3.01规范Agent/IPC，原依赖满足后再接非求值编辑分析/长笔记本/Markdown。存储维护、备份、新代次、配额和GC已通过实际验证；日末备份触发/数据管理UI仍在R4.2.18接线，完整Pi/provider/上下文/Agent界面仍继续R4.3–4.4，不能将存储Done当产品完成。保持同candidate完整门禁，R4.5.07在R4.5.05冻结前完成。
 
 ## 已知外部前置
 
@@ -52,8 +52,8 @@
 | [ ] [R4.2.06](PRE_ALPHA_4.md#task-r4.2.06) | 长笔记本布局、复用与scroll anchors | planned | — | — |
 | [x] [R4.2.07](PRE_ALPHA_4.md#task-r4.2.07) | SwiftMath原生公式和原式fallback | completed | [实际57回执/字体/原生附件](../acceptance/pre-alpha.4/development/r42/native-math.json) | 21355b3 |
 | [ ] [R4.2.08](PRE_ALPHA_4.md#task-r4.2.08) | Markdown AST、数学扫描与连续原生流 | planned | — | — |
-| [x] [R4.2.09](PRE_ALPHA_4.md#task-r4.2.09) | 结果状态、解条件Root与数值投影 | completed | [实际12型/引用/数值](../acceptance/pre-alpha.4/development/r42/native-results.json) | 本批 |
-| [ ] [R4.2.10](PRE_ALPHA_4.md#task-r4.2.10) | 矩阵、表格、记录与科学诊断 | planned | — | — |
+| [x] [R4.2.09](PRE_ALPHA_4.md#task-r4.2.09) | 结果状态、解条件Root与数值投影 | completed | [实际12型/引用/数值](../acceptance/pre-alpha.4/development/r42/native-results.json) | 40cc1cb |
+| [x] [R4.2.10](PRE_ALPHA_4.md#task-r4.2.10) | 矩阵、表格、记录与科学诊断 | completed | [真实21输入/分页/原式/科学来源](../acceptance/pre-alpha.4/development/r42/native-values.json) | 本批 |
 | [ ] [R4.2.11](PRE_ALPHA_4.md#task-r4.2.11) | 真实步骤、变量与独立讲解入口 | planned | — | — |
 | [ ] [R4.2.12](PRE_ALPHA_4.md#task-r4.2.12) | CoreGraphics二维和实际采样控制 | planned | — | — |
 | [ ] [R4.2.13](PRE_ALPHA_4.md#task-r4.2.13) | Metal三维原生基础管线 | planned | — | — |
@@ -520,3 +520,14 @@ Done依据与覆盖case/proof:
 - [完整实际12输入/回执/数值/原57/回归/失败证据](../acceptance/pre-alpha.4/development/r42/native-results.json)、[实现说明](../design/native-results.md)。6 retained Rust与host results/runtime、Clippy/fmt/pureWASM、269DTO/工程、原ResultClient/KernelRuntime/保存/草稿/恢复/SourceEditor/Composition/Workbench和Release/安装字体许可检查通过。回归编译时输入被编辑的失败明确拒绝并保存，冻结源码后的独立重跑通过；旧单compound测试也保留，不当作真实成功前缀。
 - 21355b3/CI38369472679已五jobs全部success，Mac实际workbench scroll和57SwiftMath/fonts资源也真通过，原1s数学门槛不动/iOS只CI。此批新SHA继续独立核对；此前f875设置超时/scroll失败仍保留。当前约48GiB空闲、target约14GiB，不删当前依赖/Release/源码/证据。
 - 用户保留OS输入设置、R4.2.03真实候选窗口仍未验；下一R4.2.10或规范Agent/IPC，Markdown/Steps需原依赖先满足。运行.3/dev/no main/旧公开包不动/无子代理/no本机模拟器、Root1/lib4/doc5/.omnb1，70任务与完整发行、32finalgate not_run/no candidate/ready=false/released=false，goal保持active。
+
+
+## D043 · 2026-10-13 原生结构值与科学诊断
+
+- R4.2.10完成，29/98。真实InspectResultPage经原result_ref/document/scope/view核对；NSTableView/NSOutlineView有界读取，真实条目稳定身份，原字段展开/选择/双击与Return入口。记录选择拥有实际窗口键盘焦点，隐藏/同页更新不重载数据源。
+- 默认32×8，协议单轴最大100行/32列、path32；真实105×35矩阵、40×10表、37字段、嵌套与深度边界，完整28页/元数据记录及21输入。100×32大页真实触及原256KiB回复预算，保留原页；首次超限保留重新核对的summary/presentation/完整源式。没有抬高64MiB/32快照、8MiB源式或最终性能限额。
+- 精确1/3、大整数90071992547409931234567890、80位原数、NFC/NFD/中文/emoji原字节与性质不丢，不提供Double排序。页面摘录明确命名，完整当前路径的Modern/Wolfram/LaTeX单独分块/SHA读取，等待系统剪贴板接纳与原字节回读；可见1/3独立pbpaste校验。
+- 真实根ScientificOrigin才解释科学字段/保证；任意converged记录、缓存、包装和嵌套不冒认证。实际fit模型及样本/预测表、interpolation/series/quantity/ODE原kind与完整源式可读，不在界面猜曲线。实际延迟回复在native guard2→9提交后丢弃，Out/random/定义/source不因分页改变。
+- 最后完整原生21用例/真实窗口焦点/NSEvent与Return、10Rust value/retained tests、269DTO/工程/Release安装32资源与签名通过；原57公式/12解、workbench真实width/scroll/CASstop、ResultClient/KernelRuntime回归通过。可见浅/深表格、真实与伪造保证、复制回执、真实嵌套双击/Return检查后正常Quit。原编译/依赖未就绪/大页/原ref过期/AX超时与采样保留，不拿选择性窗口检查宣称千格或AX性能完成。
+- 精确40cc1cb/CI38377911174五jobs全部success；Mac57/12/mathresources/workbench和远端iPhone/iPad各35passed/0failed，仅读xcresult不启动本机模拟器。本批提交后的新SHA另验CI；旧失败不抹。
+- 用户仍保留系统输入设置，R4.2.03真实候选窗口待验。新授权私有API仍可在全计划使用，不读旧Key/env/profile；运行.3/Root1/lib4/doc5/.omnb1/dev/no main/旧公开包不动/无子代理/32final gates not_run/no candidate/ready=false/released=false，完整69任务及发行仍继续，goal active。下一独立R4.3.01规范Agent消息/任务/IPC。

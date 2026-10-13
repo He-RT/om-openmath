@@ -1,0 +1,8 @@
+    Finished `release` profile [optimized] target(s) in 0.58s
+Building for production...
+[Using on-disk description]
+[1 / 3] SwiftMath
+Build complete! (0.49 sec)
+Actual partial: terminal=error, successful=2, freshness=partial, acceptance=accepted, source=["7", "Null"]
+Actual native result presenter: finite/none/all/region/conditional/Root, global 20-fold multiplicity on two pages, raw-condition isolation, 80-digit projection, real stale reply/history and main Out/random/source purity passed
+PRESENTER_EVIDENCE=/Users/runner/work/om-openmath/om-openmath/target/macos-result-presenter-tests/attempt-G69BNl/actual-result-presentations.json

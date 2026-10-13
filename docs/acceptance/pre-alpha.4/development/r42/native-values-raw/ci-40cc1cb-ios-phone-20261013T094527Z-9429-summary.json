@@ -1,0 +1,49 @@
+{
+  "devicesAndConfigurations" : [
+    {
+      "device" : {
+        "architecture" : "arm64",
+        "deviceId" : "DB0755B2-C144-4409-B205-9EB7DBD637D6",
+        "deviceName" : "OpenMath-phone-acceptance",
+        "modelName" : "iPhone 18 Pro",
+        "osBuildNumber" : "24A434",
+        "osVersion" : "27.0",
+        "platform" : "iOS Simulator"
+      },
+      "expectedFailures" : 0,
+      "failedTests" : 0,
+      "passedTests" : 35,
+      "skippedTests" : 0,
+      "testPlanConfiguration" : {
+        "configurationId" : "1",
+        "configurationName" : "Test Scheme Action"
+      }
+    }
+  ],
+  "environmentDescription" : "OpenMath · Built with macOS 27.0.1",
+  "expectedFailures" : 0,
+  "failedTests" : 0,
+  "finishTime" : 1791885201.098,
+  "passedTests" : 35,
+  "result" : "Passed",
+  "runtimeWarnings" : [
+
+  ],
+  "skippedTests" : 0,
+  "startTime" : 1791884824.868,
+  "statistics" : [
+
+  ],
+  "testFailures" : [
+
+  ],
+  "title" : "Test - OpenMath",
+  "topInsights" : [
+    {
+      "category" : "Longest Test Runs",
+      "impact" : "30% of duration",
+      "text" : "1 longest test run with outlier durations exceeding 0.86s (three standard deviations)"
+    }
+  ],
+  "totalTestCount" : 35
+}

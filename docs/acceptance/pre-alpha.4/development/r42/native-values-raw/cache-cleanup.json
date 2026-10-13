@@ -1,0 +1,54 @@
+{
+  "kind": "inactive_task_fixture_cache_only",
+  "preserved": [
+    "final attempt-7JSoDR",
+    "complete raw inputs/pages/failures/sample/logs/CI records",
+    "current dependencies/Release/resources",
+    "all source and old public packages",
+    "private authorized API file"
+  ],
+  "removed": [
+    {
+      "path": "target/macos-value-presenter-tests/attempt-D5rilp",
+      "bytes": 29789825
+    },
+    {
+      "path": "target/macos-value-presenter-tests/attempt-HFtgxR",
+      "bytes": 29789811
+    },
+    {
+      "path": "target/macos-value-presenter-tests/attempt-iJjJ8M",
+      "bytes": 29789822
+    },
+    {
+      "path": "target/macos-value-presenter-tests/attempt-ic52Sd",
+      "bytes": 54062464
+    },
+    {
+      "path": "target/macos-value-presenter-tests/attempt-m4rQO2",
+      "bytes": 11043479
+    },
+    {
+      "path": "target/macos-value-presenter-tests/attempt-nEvARg",
+      "bytes": 11132405
+    },
+    {
+      "path": "target/macos-value-presenter-tests/attempt-o2jrpc",
+      "bytes": 26555334
+    },
+    {
+      "path": "target/macos-value-presenter-tests/attempt-pEcHHF",
+      "bytes": 54062508
+    },
+    {
+      "path": "target/macos-value-presenter-tests/attempt-y0wluB",
+      "bytes": 27238631
+    },
+    {
+      "path": "target/acceptance/pre-alpha.4/development/r42/value-ui-fixture/data-first-timeout",
+      "bytes": 26725987
+    }
+  ],
+  "removed_bytes": 300190266,
+  "free_bytes_after": 34451124224
+}

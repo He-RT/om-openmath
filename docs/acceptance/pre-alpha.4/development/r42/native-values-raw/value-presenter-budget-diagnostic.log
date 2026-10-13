@@ -1,0 +1,7 @@
+    Finished `release` profile [optimized] target(s) in 0.24s
+Building for production...
+[1 / 4]
+Build complete! (0.36秒)
+Value presenter failed at 83: column page: 结构化结果暂无法读取：failed("RESULT_REF_EXPIRED")
+main/main.swift:17: Fatal error: column page: 结构化结果暂无法读取：failed("RESULT_REF_EXPIRED")
+macos/Scripts/test-value-presenter.sh: line 19: 44754 Trace/BPT trap: 5       target/macos-value-presenter-tests/value-presenter-fixtures "$attempt_root"

@@ -1,0 +1,37 @@
+    Finished `release` profile [optimized] target(s) in 0.26s
+Building for production...
+Build complete! (0.16秒)
+macos/OpenMathNativeTests/ValuePresenterFixtures/main.swift:61:57: error: type 'NativeKernelTerminalStatus' has no member 'completed'
+ 59 |     for cell in cells {
+ 60 |       let result=try await run(cell.id),binding=result.bindings.last!
+ 61 |       check(result.receipt.producer.terminal_status == .completed,"actual math failed: "+cell.id+" "+result.sources.joined())
+    |                                                         `- error: type 'NativeKernelTerminalStatus' has no member 'completed'
+ 62 |       let owner=session.runtime.presenter(for:binding);owners[cell.id]=owner
+ 63 |       if cell.id != "guard" {check(owner.valuePage != nil,"initial structured page missing: "+cell.id+" "+(owner.message ?? ""));try record(cell.id,"initial",owner.valuePage!)}
+
+macos/OpenMathNativeTests/ValuePresenterFixtures/main.swift:111:36: error: cannot convert value of type '[Any]' to expected argument type '[UInt32]'
+109 |     check(NativeValueClipboard.write(full!,to:pasteboard) && pasteboard.string(forType:.string)!.utf8.elementsEqual(full!.utf8),"complete fragmented Unicode copy altered")
+110 |     let deepOwner=owners["deep"]!,path=Array(repeating:[UInt32(0),1],count:16).flatMap{$0}
+111 |     await deepOwner.loadValue(path:path);check(deepOwner.valuePage!.path.count==32 && deepOwner.valuePage!.rows[0].cells[0].path.count==34)
+    |                                    |- error: cannot convert value of type '[Any]' to expected argument type '[UInt32]'
+    |                                    `- note: arguments to generic parameter 'Element' ('Any' and 'UInt32') are expected to be equal
+112 |     await deepOwner.loadValue(path:path+[0]);check(deepOwner.valuePage!.path==path && deepOwner.message != nil,"depth guard published invalid path")
+113 |     for id in ["empty_list","empty_record","empty_table"] {check(owners[id]!.valuePage!.rows.isEmpty)}
+
+macos/OpenMathNativeTests/ValuePresenterFixtures/main.swift:112:40: error: cannot convert value of type '[Any]' to expected argument type '[UInt32]'
+110 |     let deepOwner=owners["deep"]!,path=Array(repeating:[UInt32(0),1],count:16).flatMap{$0}
+111 |     await deepOwner.loadValue(path:path);check(deepOwner.valuePage!.path.count==32 && deepOwner.valuePage!.rows[0].cells[0].path.count==34)
+112 |     await deepOwner.loadValue(path:path+[0]);check(deepOwner.valuePage!.path==path && deepOwner.message != nil,"depth guard published invalid path")
+    |                                        |- error: cannot convert value of type '[Any]' to expected argument type '[UInt32]'
+    |                                        `- note: arguments to generic parameter 'Element' ('Any' and 'UInt32') are expected to be equal
+113 |     for id in ["empty_list","empty_record","empty_table"] {check(owners[id]!.valuePage!.rows.isEmpty)}
+114 |     check(owners["empty_table"]!.valuePage!.columns==["x","y"])
+
+macos/OpenMathNativeTests/ValuePresenterFixtures/main.swift:112:79: error: cannot convert value of type '[Any]' to expected argument type 'Array<UInt32>'
+110 |     let deepOwner=owners["deep"]!,path=Array(repeating:[UInt32(0),1],count:16).flatMap{$0}
+111 |     await deepOwner.loadValue(path:path);check(deepOwner.valuePage!.path.count==32 && deepOwner.valuePage!.rows[0].cells[0].path.count==34)
+112 |     await deepOwner.loadValue(path:path+[0]);check(deepOwner.valuePage!.path==path && deepOwner.message != nil,"depth guard published invalid path")
+    |                                                                               |- error: cannot convert value of type '[Any]' to expected argument type 'Array<UInt32>'
+    |                                                                               `- note: arguments to generic parameter 'Element' ('Any' and 'UInt32') are expected to be equal
+113 |     for id in ["empty_list","empty_record","empty_table"] {check(owners[id]!.valuePage!.rows.isEmpty)}
+114 |     check(owners["empty_table"]!.valuePage!.columns==["x","y"])

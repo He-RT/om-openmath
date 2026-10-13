@@ -1,0 +1,914 @@
+[
+  {
+    "cell" : "original-1",
+    "input" : "Solve[2x+3==7,x]",
+    "operation" : "notebook-run-5c2ed50e-fc5a-4e20-8cec-37e3b4274222",
+    "outputs" : [
+      {
+        "atoms" : 9,
+        "display_latex" : "\\left[\\left[x \\to 2\\right]\\right]",
+        "original_latex" : "\\left[\\left[x \\to 2\\right]\\right]",
+        "render_state" : "ready",
+        "transforms" : 0,
+        "wolfram" : "{{x -> 2}}"
+      }
+    ],
+    "terminal" : "done"
+  },
+  {
+    "cell" : "original-2",
+    "input" : "Solve[a x+b==0,x]",
+    "operation" : "notebook-run-8b466c1f-569a-459a-adcd-72e8cbc8d619",
+    "outputs" : [
+      {
+        "atoms" : 12,
+        "display_latex" : "\\left[\\left[x \\to -\\frac{b}{a}\\right]\\right]",
+        "original_latex" : "\\left[\\left[x \\to -\\frac{b}{a}\\right]\\right]",
+        "render_state" : "ready",
+        "transforms" : 0,
+        "wolfram" : "{{x -> -b\/a}}"
+      }
+    ],
+    "terminal" : "done"
+  },
+  {
+    "cell" : "original-3",
+    "input" : "Solve[x^2-5x+6==0,x]",
+    "operation" : "notebook-run-10c3578b-1a4a-4dec-8577-fadf0c130ce8",
+    "outputs" : [
+      {
+        "atoms" : 16,
+        "display_latex" : "\\left[\\left[x \\to 2\\right], \\left[x \\to 3\\right]\\right]",
+        "original_latex" : "\\left[\\left[x \\to 2\\right], \\left[x \\to 3\\right]\\right]",
+        "render_state" : "ready",
+        "transforms" : 0,
+        "wolfram" : "{{x -> 2}, {x -> 3}}"
+      }
+    ],
+    "terminal" : "done"
+  },
+  {
+    "cell" : "original-4",
+    "input" : "Solve[x^2==2,x]",
+    "operation" : "notebook-run-2027389b-5308-4828-adf2-fe35f9a974d0",
+    "outputs" : [
+      {
+        "atoms" : 19,
+        "display_latex" : "\\left[\\left[x \\to -\\sqrt{2}\\right], \\left[x \\to \\sqrt{2}\\right]\\right]",
+        "original_latex" : "\\left[\\left[x \\to -\\sqrt{2}\\right], \\left[x \\to \\sqrt{2}\\right]\\right]",
+        "render_state" : "ready",
+        "transforms" : 0,
+        "wolfram" : "{{x -> -2^(1\/2)}, {x -> 2^(1\/2)}}"
+      }
+    ],
+    "terminal" : "done"
+  },
+  {
+    "cell" : "original-5",
+    "input" : "Solve[x^2-2x-1==0,x]",
+    "operation" : "notebook-run-f0f768e0-5119-409b-b4bd-4a7527cb496f",
+    "outputs" : [
+      {
+        "atoms" : 23,
+        "display_latex" : "\\left[\\left[x \\to -\\sqrt{2} + 1\\right], \\left[x \\to \\sqrt{2} + 1\\right]\\right]",
+        "original_latex" : "\\left[\\left[x \\to -\\sqrt{2} + 1\\right], \\left[x \\to \\sqrt{2} + 1\\right]\\right]",
+        "render_state" : "ready",
+        "transforms" : 0,
+        "wolfram" : "{{x -> -2^(1\/2) + 1}, {x -> 2^(1\/2) + 1}}"
+      }
+    ],
+    "terminal" : "done"
+  },
+  {
+    "cell" : "original-6",
+    "input" : "Solve[x^2+1==0,x]",
+    "operation" : "notebook-run-3d9a61d9-ff64-46bc-bdeb-70fa13526eca",
+    "outputs" : [
+      {
+        "atoms" : 17,
+        "display_latex" : "\\left[\\left[x \\to -\\mathrm{i}\\right], \\left[x \\to \\mathrm{i}\\right]\\right]",
+        "original_latex" : "\\left[\\left[x \\to -\\mathrm{i}\\right], \\left[x \\to \\mathrm{i}\\right]\\right]",
+        "render_state" : "ready",
+        "transforms" : 0,
+        "wolfram" : "{{x -> 0 + (-1)*I}, {x -> 0 + (1)*I}}"
+      }
+    ],
+    "terminal" : "done"
+  },
+  {
+    "cell" : "original-7",
+    "input" : "Solve[x^2+2x+5==0,x]",
+    "operation" : "notebook-run-dc47ce73-00ee-44be-956a-251817207379",
+    "outputs" : [
+      {
+        "atoms" : 24,
+        "display_latex" : "\\left[\\left[x \\to -1 - 2\\mathrm{i}\\right], \\left[x \\to -1 + 2\\mathrm{i}\\right]\\right]",
+        "original_latex" : "\\left[\\left[x \\to -1 - 2\\mathrm{i}\\right], \\left[x \\to -1 + 2\\mathrm{i}\\right]\\right]",
+        "render_state" : "ready",
+        "transforms" : 0,
+        "wolfram" : "{{x -> -1 + (-2)*I}, {x -> -1 + (2)*I}}"
+      }
+    ],
+    "terminal" : "done"
+  },
+  {
+    "cell" : "original-8",
+    "input" : "Solve[x^2+x+1==0,x]",
+    "operation" : "notebook-run-ab0edaf3-d289-4bf1-9898-af967779bf31",
+    "outputs" : [
+      {
+        "atoms" : 41,
+        "display_latex" : "\\left[\\left[x \\to \\left(-\\frac{1}{2}\\mathrm{i}\\right) \\sqrt{3} - \\frac{1}{2}\\right], \\left[x \\to \\left(\\frac{1}{2}\\mathrm{i}\\right) \\sqrt{3} - \\frac{1}{2}\\right]\\right]",
+        "original_latex" : "\\left[\\left[x \\to \\left(-\\frac{1}{2}\\mathrm{i}\\right) \\sqrt{3} - \\frac{1}{2}\\right], \\left[x \\to \\left(\\frac{1}{2}\\mathrm{i}\\right) \\sqrt{3} - \\frac{1}{2}\\right]\\right]",
+        "render_state" : "ready",
+        "transforms" : 0,
+        "wolfram" : "{{x -> (0 + (-1\/2)*I)*3^(1\/2) - 1\/2}, {x -> (0 + (1\/2)*I)*3^(1\/2) - 1\/2}}"
+      }
+    ],
+    "terminal" : "done"
+  },
+  {
+    "cell" : "original-9",
+    "input" : "Solve[(x-1)^2==0,x]",
+    "operation" : "notebook-run-6562976a-fae1-48f3-8b58-b991d2b76d77",
+    "outputs" : [
+      {
+        "atoms" : 16,
+        "display_latex" : "\\left[\\left[x \\to 1\\right], \\left[x \\to 1\\right]\\right]",
+        "original_latex" : "\\left[\\left[x \\to 1\\right], \\left[x \\to 1\\right]\\right]",
+        "render_state" : "ready",
+        "transforms" : 0,
+        "wolfram" : "{{x -> 1}, {x -> 1}}"
+      }
+    ],
+    "terminal" : "done"
+  },
+  {
+    "cell" : "original-10",
+    "input" : "Solve[x^3-6x^2+11x-6==0,x]",
+    "operation" : "notebook-run-36840ac7-4470-47f4-a4f2-fce2a7dc2fc9",
+    "outputs" : [
+      {
+        "atoms" : 23,
+        "display_latex" : "\\left[\\left[x \\to 1\\right], \\left[x \\to 2\\right], \\left[x \\to 3\\right]\\right]",
+        "original_latex" : "\\left[\\left[x \\to 1\\right], \\left[x \\to 2\\right], \\left[x \\to 3\\right]\\right]",
+        "render_state" : "ready",
+        "transforms" : 0,
+        "wolfram" : "{{x -> 1}, {x -> 2}, {x -> 3}}"
+      }
+    ],
+    "terminal" : "done"
+  },
+  {
+    "cell" : "original-11",
+    "input" : "Solve[x^3-2x-4==0,x]",
+    "operation" : "notebook-run-7128113b-c827-4974-8421-34f1248e75b2",
+    "outputs" : [
+      {
+        "atoms" : 29,
+        "display_latex" : "\\left[\\left[x \\to 2\\right], \\left[x \\to -1 - \\mathrm{i}\\right], \\left[x \\to -1 + \\mathrm{i}\\right]\\right]",
+        "original_latex" : "\\left[\\left[x \\to 2\\right], \\left[x \\to -1 - \\mathrm{i}\\right], \\left[x \\to -1 + \\mathrm{i}\\right]\\right]",
+        "render_state" : "ready",
+        "transforms" : 0,
+        "wolfram" : "{{x -> 2}, {x -> -1 + (-1)*I}, {x -> -1 + (1)*I}}"
+      }
+    ],
+    "terminal" : "done"
+  },
+  {
+    "cell" : "original-12",
+    "input" : "Solve[x^3-3x+1==0,x,Cubics->True]",
+    "operation" : "notebook-run-dfb7f654-b831-4632-a1a0-6285d523c546",
+    "outputs" : [
+      {
+        "atoms" : 142,
+        "display_latex" : "\\left[\\left[x \\to -\\frac{\\sqrt[3]{-1}}{\\sqrt[3]{\\left(\\frac{1}{2}\\mathrm{i}\\right) \\sqrt{3} - \\frac{1}{2}}} + \\left(-1\\right)^{\\frac{2}{3}} \\sqrt[3]{\\left(\\frac{1}{2}\\mathrm{i}\\right) \\sqrt{3} - \\frac{1}{2}}\\right], \\left[x \\to \\frac{\\left(-1\\right)^{\\frac{2}{3}}}{\\sqrt[3]{\\left(\\frac{1}{2}\\mathrm{i}\\right) \\sqrt{3} - \\frac{1}{2}}} - \\sqrt[3]{-1} \\sqrt[3]{\\left(\\frac{1}{2}\\mathrm{i}\\right) \\sqrt{3} - \\frac{1}{2}}\\right], \\left[x \\to \\frac{1}{\\sqrt[3]{\\left(\\frac{1}{2}\\mathrm{i}\\right) \\sqrt{3} - \\frac{1}{2}}} + \\sqrt[3]{\\left(\\frac{1}{2}\\mathrm{i}\\right) \\sqrt{3} - \\frac{1}{2}}\\right]\\right]",
+        "original_latex" : "\\left[\\left[x \\to -\\frac{\\sqrt[3]{-1}}{\\sqrt[3]{\\left(\\frac{1}{2}\\mathrm{i}\\right) \\sqrt{3} - \\frac{1}{2}}} + \\left(-1\\right)^{\\frac{2}{3}} \\sqrt[3]{\\left(\\frac{1}{2}\\mathrm{i}\\right) \\sqrt{3} - \\frac{1}{2}}\\right], \\left[x \\to \\frac{\\left(-1\\right)^{\\frac{2}{3}}}{\\sqrt[3]{\\left(\\frac{1}{2}\\mathrm{i}\\right) \\sqrt{3} - \\frac{1}{2}}} - \\sqrt[3]{-1} \\sqrt[3]{\\left(\\frac{1}{2}\\mathrm{i}\\right) \\sqrt{3} - \\frac{1}{2}}\\right], \\left[x \\to \\frac{1}{\\sqrt[3]{\\left(\\frac{1}{2}\\mathrm{i}\\right) \\sqrt{3} - \\frac{1}{2}}} + \\sqrt[3]{\\left(\\frac{1}{2}\\mathrm{i}\\right) \\sqrt{3} - \\frac{1}{2}}\\right]\\right]",
+        "render_state" : "ready",
+        "transforms" : 0,
+        "wolfram" : "{{x -> -(-1)^(1\/3)\/((0 + (1\/2)*I)*3^(1\/2) - 1\/2)^(1\/3) + (-1)^(2\/3)*((0 + (1\/2)*I)*3^(1\/2) - 1\/2)^(1\/3)}, {x -> (-1)^(2\/3)\/((0 + (1\/2)*I)*3^(1\/2) - 1\/2)^(1\/3) - (-1)^(1\/3)*((0 + (1\/2)*I)*3^(1\/2) - 1\/2)^(1\/3)}, {x -> ((0 + (1\/2)*I)*3^(1\/2) - 1\/2)^(-1\/3) + ((0 + (1\/2)*I)*3^(1\/2) - 1\/2)^(1\/3)}}"
+      }
+    ],
+    "terminal" : "done"
+  },
+  {
+    "cell" : "original-13",
+    "input" : "Solve[x^3+x+1==0,x,Cubics->True]",
+    "operation" : "notebook-run-766daf38-c49e-4472-90f8-c8c26de80703",
+    "outputs" : [
+      {
+        "atoms" : 134,
+        "display_latex" : "\\left[\\left[x \\to -\\frac{1}{3 \\sqrt[3]{\\frac{\\sqrt{\\frac{31}{3}}}{6} - \\frac{1}{2}}} + \\sqrt[3]{\\frac{\\sqrt{\\frac{31}{3}}}{6} - \\frac{1}{2}}\\right], \\left[x \\to -\\frac{\\left(-1\\right)^{\\frac{2}{3}}}{3 \\sqrt[3]{\\frac{\\sqrt{\\frac{31}{3}}}{6} - \\frac{1}{2}}} - \\sqrt[3]{-1} \\sqrt[3]{\\frac{\\sqrt{\\frac{31}{3}}}{6} - \\frac{1}{2}}\\right], \\left[x \\to \\frac{\\sqrt[3]{-1}}{3 \\sqrt[3]{\\frac{\\sqrt{\\frac{31}{3}}}{6} - \\frac{1}{2}}} + \\left(-1\\right)^{\\frac{2}{3}} \\sqrt[3]{\\frac{\\sqrt{\\frac{31}{3}}}{6} - \\frac{1}{2}}\\right]\\right]",
+        "original_latex" : "\\left[\\left[x \\to -\\frac{1}{3 \\sqrt[3]{\\frac{\\sqrt{\\frac{31}{3}}}{6} - \\frac{1}{2}}} + \\sqrt[3]{\\frac{\\sqrt{\\frac{31}{3}}}{6} - \\frac{1}{2}}\\right], \\left[x \\to -\\frac{\\left(-1\\right)^{\\frac{2}{3}}}{3 \\sqrt[3]{\\frac{\\sqrt{\\frac{31}{3}}}{6} - \\frac{1}{2}}} - \\sqrt[3]{-1} \\sqrt[3]{\\frac{\\sqrt{\\frac{31}{3}}}{6} - \\frac{1}{2}}\\right], \\left[x \\to \\frac{\\sqrt[3]{-1}}{3 \\sqrt[3]{\\frac{\\sqrt{\\frac{31}{3}}}{6} - \\frac{1}{2}}} + \\left(-1\\right)^{\\frac{2}{3}} \\sqrt[3]{\\frac{\\sqrt{\\frac{31}{3}}}{6} - \\frac{1}{2}}\\right]\\right]",
+        "render_state" : "ready",
+        "transforms" : 0,
+        "wolfram" : "{{x -> -1\/(3*((31\/3)^(1\/2)\/6 - 1\/2)^(1\/3)) + ((31\/3)^(1\/2)\/6 - 1\/2)^(1\/3)}, {x -> -(-1)^(2\/3)\/(3*((31\/3)^(1\/2)\/6 - 1\/2)^(1\/3)) - (-1)^(1\/3)*((31\/3)^(1\/2)\/6 - 1\/2)^(1\/3)}, {x -> (-1)^(1\/3)\/(3*((31\/3)^(1\/2)\/6 - 1\/2)^(1\/3)) + (-1)^(2\/3)*((31\/3)^(1\/2)\/6 - 1\/2)^(1\/3)}}"
+      }
+    ],
+    "terminal" : "done"
+  },
+  {
+    "cell" : "original-14",
+    "input" : "Solve[x^3==2,x]",
+    "operation" : "notebook-run-f33facef-7b0f-4fdb-83cc-da7ea5b980c4",
+    "outputs" : [
+      {
+        "atoms" : 42,
+        "display_latex" : "\\left[\\left[x \\to \\sqrt[3]{2}\\right], \\left[x \\to -\\sqrt[3]{-1} \\sqrt[3]{2}\\right], \\left[x \\to \\left(-1\\right)^{\\frac{2}{3}} \\sqrt[3]{2}\\right]\\right]",
+        "original_latex" : "\\left[\\left[x \\to \\sqrt[3]{2}\\right], \\left[x \\to -\\sqrt[3]{-1} \\sqrt[3]{2}\\right], \\left[x \\to \\left(-1\\right)^{\\frac{2}{3}} \\sqrt[3]{2}\\right]\\right]",
+        "render_state" : "ready",
+        "transforms" : 0,
+        "wolfram" : "{{x -> 2^(1\/3)}, {x -> -(-1)^(1\/3)*2^(1\/3)}, {x -> (-1)^(2\/3)*2^(1\/3)}}"
+      }
+    ],
+    "terminal" : "done"
+  },
+  {
+    "cell" : "original-15",
+    "input" : "Solve[x^4-5x^2+4==0,x]",
+    "operation" : "notebook-run-90e91fa4-436e-4f53-ad82-e4d91f3fec52",
+    "outputs" : [
+      {
+        "atoms" : 32,
+        "display_latex" : "\\left[\\left[x \\to -2\\right], \\left[x \\to -1\\right], \\left[x \\to 1\\right], \\left[x \\to 2\\right]\\right]",
+        "original_latex" : "\\left[\\left[x \\to -2\\right], \\left[x \\to -1\\right], \\left[x \\to 1\\right], \\left[x \\to 2\\right]\\right]",
+        "render_state" : "ready",
+        "transforms" : 0,
+        "wolfram" : "{{x -> -2}, {x -> -1}, {x -> 1}, {x -> 2}}"
+      }
+    ],
+    "terminal" : "done"
+  },
+  {
+    "cell" : "original-16",
+    "input" : "Solve[x^4==2,x]",
+    "operation" : "notebook-run-8ffa11c2-59a5-4c9f-a189-653599523bd5",
+    "outputs" : [
+      {
+        "atoms" : 52,
+        "display_latex" : "\\left[\\left[x \\to -2^{\\frac{1}{4}}\\right], \\left[x \\to 2^{\\frac{1}{4}}\\right], \\left[x \\to \\left(-\\mathrm{i}\\right) 2^{\\frac{1}{4}}\\right], \\left[x \\to \\left(\\mathrm{i}\\right) 2^{\\frac{1}{4}}\\right]\\right]",
+        "original_latex" : "\\left[\\left[x \\to -2^{\\frac{1}{4}}\\right], \\left[x \\to 2^{\\frac{1}{4}}\\right], \\left[x \\to \\left(-\\mathrm{i}\\right) 2^{\\frac{1}{4}}\\right], \\left[x \\to \\left(\\mathrm{i}\\right) 2^{\\frac{1}{4}}\\right]\\right]",
+        "render_state" : "ready",
+        "transforms" : 0,
+        "wolfram" : "{{x -> -2^(1\/4)}, {x -> 2^(1\/4)}, {x -> (0 + (-1)*I)*2^(1\/4)}, {x -> (0 + (1)*I)*2^(1\/4)}}"
+      }
+    ],
+    "terminal" : "done"
+  },
+  {
+    "cell" : "original-17",
+    "input" : "Solve[x^5-x+1==0,x]",
+    "operation" : "notebook-run-bdca22ba-d9a6-44b2-b526-3dcc819d15b7",
+    "outputs" : [
+      {
+        "atoms" : 232,
+        "display_latex" : "\\left[\\left[x \\to \\mathrm{Root}\\left(\\mathrm{Function}\\left(\\mathrm{Slot}\\left(1\\right)^{5} - \\mathrm{Slot}\\left(1\\right) + 1\\right), 1\\right)\\right], \\left[x \\to \\mathrm{Root}\\left(\\mathrm{Function}\\left(\\mathrm{Slot}\\left(1\\right)^{5} - \\mathrm{Slot}\\left(1\\right) + 1\\right), 2\\right)\\right], \\left[x \\to \\mathrm{Root}\\left(\\mathrm{Function}\\left(\\mathrm{Slot}\\left(1\\right)^{5} - \\mathrm{Slot}\\left(1\\right) + 1\\right), 3\\right)\\right], \\left[x \\to \\mathrm{Root}\\left(\\mathrm{Function}\\left(\\mathrm{Slot}\\left(1\\right)^{5} - \\mathrm{Slot}\\left(1\\right) + 1\\right), 4\\right)\\right], \\left[x \\to \\mathrm{Root}\\left(\\mathrm{Function}\\left(\\mathrm{Slot}\\left(1\\right)^{5} - \\mathrm{Slot}\\left(1\\right) + 1\\right), 5\\right)\\right]\\right]",
+        "original_latex" : "\\left[\\left[x \\to \\operatorname{Root}\\left(\\operatorname{Function}\\left(\\operatorname{Slot}\\left(1\\right)^{5} - \\operatorname{Slot}\\left(1\\right) + 1\\right), 1\\right)\\right], \\left[x \\to \\operatorname{Root}\\left(\\operatorname{Function}\\left(\\operatorname{Slot}\\left(1\\right)^{5} - \\operatorname{Slot}\\left(1\\right) + 1\\right), 2\\right)\\right], \\left[x \\to \\operatorname{Root}\\left(\\operatorname{Function}\\left(\\operatorname{Slot}\\left(1\\right)^{5} - \\operatorname{Slot}\\left(1\\right) + 1\\right), 3\\right)\\right], \\left[x \\to \\operatorname{Root}\\left(\\operatorname{Function}\\left(\\operatorname{Slot}\\left(1\\right)^{5} - \\operatorname{Slot}\\left(1\\right) + 1\\right), 4\\right)\\right], \\left[x \\to \\operatorname{Root}\\left(\\operatorname{Function}\\left(\\operatorname{Slot}\\left(1\\right)^{5} - \\operatorname{Slot}\\left(1\\right) + 1\\right), 5\\right)\\right]\\right]",
+        "render_state" : "ready",
+        "transforms" : 20,
+        "wolfram" : "{{x -> Root[Function[Slot[1]^5 - Slot[1] + 1], 1]}, {x -> Root[Function[Slot[1]^5 - Slot[1] + 1], 2]}, {x -> Root[Function[Slot[1]^5 - Slot[1] + 1], 3]}, {x -> Root[Function[Slot[1]^5 - Slot[1] + 1], 4]}, {x -> Root[Function[Slot[1]^5 - Slot[1] + 1], 5]}}"
+      }
+    ],
+    "terminal" : "done"
+  },
+  {
+    "cell" : "original-18",
+    "input" : "Solve[x^5==2,x]",
+    "operation" : "notebook-run-60c0212b-1fb2-4b36-ba20-fb8827b207d8",
+    "outputs" : [
+      {
+        "atoms" : 86,
+        "display_latex" : "\\left[\\left[x \\to 2^{\\frac{1}{5}}\\right], \\left[x \\to -\\left(-1\\right)^{\\frac{1}{5}} 2^{\\frac{1}{5}}\\right], \\left[x \\to \\left(-1\\right)^{\\frac{4}{5}} 2^{\\frac{1}{5}}\\right], \\left[x \\to -\\left(-1\\right)^{\\frac{3}{5}} 2^{\\frac{1}{5}}\\right], \\left[x \\to \\left(-1\\right)^{\\frac{2}{5}} 2^{\\frac{1}{5}}\\right]\\right]",
+        "original_latex" : "\\left[\\left[x \\to 2^{\\frac{1}{5}}\\right], \\left[x \\to -\\left(-1\\right)^{\\frac{1}{5}} 2^{\\frac{1}{5}}\\right], \\left[x \\to \\left(-1\\right)^{\\frac{4}{5}} 2^{\\frac{1}{5}}\\right], \\left[x \\to -\\left(-1\\right)^{\\frac{3}{5}} 2^{\\frac{1}{5}}\\right], \\left[x \\to \\left(-1\\right)^{\\frac{2}{5}} 2^{\\frac{1}{5}}\\right]\\right]",
+        "render_state" : "ready",
+        "transforms" : 0,
+        "wolfram" : "{{x -> 2^(1\/5)}, {x -> -(-1)^(1\/5)*2^(1\/5)}, {x -> (-1)^(4\/5)*2^(1\/5)}, {x -> -(-1)^(3\/5)*2^(1\/5)}, {x -> (-1)^(2\/5)*2^(1\/5)}}"
+      }
+    ],
+    "terminal" : "done"
+  },
+  {
+    "cell" : "original-19",
+    "input" : "Solve[(x^2-1)\/(x-1)==0,x]",
+    "operation" : "notebook-run-a2f7ace5-3be2-4f92-a2ca-72c2dce5ae54",
+    "outputs" : [
+      {
+        "atoms" : 10,
+        "display_latex" : "\\left[\\left[x \\to -1\\right]\\right]",
+        "original_latex" : "\\left[\\left[x \\to -1\\right]\\right]",
+        "render_state" : "ready",
+        "transforms" : 0,
+        "wolfram" : "{{x -> -1}}"
+      }
+    ],
+    "terminal" : "done"
+  },
+  {
+    "cell" : "original-20",
+    "input" : "Solve[x\/(x-1)==1\/(x-1),x]",
+    "operation" : "notebook-run-620e8662-903b-4f98-a190-13caaa76c9b1",
+    "outputs" : [
+      {
+        "atoms" : 3,
+        "display_latex" : "\\left[\\right]",
+        "original_latex" : "\\left[\\right]",
+        "render_state" : "ready",
+        "transforms" : 0,
+        "wolfram" : "{}"
+      }
+    ],
+    "terminal" : "done"
+  },
+  {
+    "cell" : "original-21",
+    "input" : "Solve[1\/x+1\/(x+1)==1,x]",
+    "operation" : "notebook-run-4da9b323-6741-4214-abf2-d8d67d0c86f9",
+    "outputs" : [
+      {
+        "atoms" : 31,
+        "display_latex" : "\\left[\\left[x \\to -\\frac{\\sqrt{5}}{2} + \\frac{1}{2}\\right], \\left[x \\to \\frac{\\sqrt{5}}{2} + \\frac{1}{2}\\right]\\right]",
+        "original_latex" : "\\left[\\left[x \\to -\\frac{\\sqrt{5}}{2} + \\frac{1}{2}\\right], \\left[x \\to \\frac{\\sqrt{5}}{2} + \\frac{1}{2}\\right]\\right]",
+        "render_state" : "ready",
+        "transforms" : 0,
+        "wolfram" : "{{x -> -5^(1\/2)\/2 + 1\/2}, {x -> 5^(1\/2)\/2 + 1\/2}}"
+      }
+    ],
+    "terminal" : "done"
+  },
+  {
+    "cell" : "original-22",
+    "input" : "Solve[Sqrt[x+2]==x,x]",
+    "operation" : "notebook-run-d93d7ed6-e46b-4fea-b184-7b634ff839b3",
+    "outputs" : [
+      {
+        "atoms" : 9,
+        "display_latex" : "\\left[\\left[x \\to 2\\right]\\right]",
+        "original_latex" : "\\left[\\left[x \\to 2\\right]\\right]",
+        "render_state" : "ready",
+        "transforms" : 0,
+        "wolfram" : "{{x -> 2}}"
+      }
+    ],
+    "terminal" : "done"
+  },
+  {
+    "cell" : "original-23",
+    "input" : "Solve[Sqrt[x]+Sqrt[x-5]==5,x]",
+    "operation" : "notebook-run-784a0ac9-df1c-47b4-b022-090299cdc60b",
+    "outputs" : [
+      {
+        "atoms" : 9,
+        "display_latex" : "\\left[\\left[x \\to 9\\right]\\right]",
+        "original_latex" : "\\left[\\left[x \\to 9\\right]\\right]",
+        "render_state" : "ready",
+        "transforms" : 0,
+        "wolfram" : "{{x -> 9}}"
+      }
+    ],
+    "terminal" : "done"
+  },
+  {
+    "cell" : "original-24",
+    "input" : "Solve[Sqrt[x]==-1,x]",
+    "operation" : "notebook-run-7737aa0f-94e1-498d-83df-6daaa454bb8c",
+    "outputs" : [
+      {
+        "atoms" : 3,
+        "display_latex" : "\\left[\\right]",
+        "original_latex" : "\\left[\\right]",
+        "render_state" : "ready",
+        "transforms" : 0,
+        "wolfram" : "{}"
+      }
+    ],
+    "terminal" : "done"
+  },
+  {
+    "cell" : "original-25",
+    "input" : "Solve[Abs[x]==2,x,Reals]",
+    "operation" : "notebook-run-eace7fc9-4e9f-4d1b-90f0-a56dfae30427",
+    "outputs" : [
+      {
+        "atoms" : 17,
+        "display_latex" : "\\left[\\left[x \\to -2\\right], \\left[x \\to 2\\right]\\right]",
+        "original_latex" : "\\left[\\left[x \\to -2\\right], \\left[x \\to 2\\right]\\right]",
+        "render_state" : "ready",
+        "transforms" : 0,
+        "wolfram" : "{{x -> -2}, {x -> 2}}"
+      }
+    ],
+    "terminal" : "done"
+  },
+  {
+    "cell" : "original-26",
+    "input" : "Solve[Exp[x]==2,x]",
+    "operation" : "notebook-run-f6ffbe1f-0405-4c26-8c19-9eac06e11768",
+    "outputs" : [
+      {
+        "atoms" : 74,
+        "display_latex" : "\\left[\\left[x \\to \\mathrm{ConditionalExpression}\\left(\\left(2\\mathrm{i}\\right) \\pi \\mathrm{C}\\left(1\\right) + \\log\\left(2\\right), \\mathrm{Element}\\left(\\mathrm{C}\\left(1\\right), \\mathrm{Integers}\\right)\\right)\\right]\\right]",
+        "original_latex" : "\\left[\\left[x \\to \\operatorname{ConditionalExpression}\\left(\\left(2\\mathrm{i}\\right) \\pi \\operatorname{C}\\left(1\\right) + \\log\\left(2\\right), \\operatorname{Element}\\left(\\operatorname{C}\\left(1\\right), \\mathrm{Integers}\\right)\\right)\\right]\\right]",
+        "render_state" : "ready",
+        "transforms" : 4,
+        "wolfram" : "{{x -> ConditionalExpression[(0 + (2)*I)*Pi*C[1] + Log[2], Element[C[1], Integers]]}}"
+      }
+    ],
+    "terminal" : "done"
+  },
+  {
+    "cell" : "original-27",
+    "input" : "Solve[Exp[x]==2,x,Reals]",
+    "operation" : "notebook-run-4fc96f12-2422-414f-a5c6-bf3ba4a08e09",
+    "outputs" : [
+      {
+        "atoms" : 13,
+        "display_latex" : "\\left[\\left[x \\to \\log\\left(2\\right)\\right]\\right]",
+        "original_latex" : "\\left[\\left[x \\to \\log\\left(2\\right)\\right]\\right]",
+        "render_state" : "ready",
+        "transforms" : 0,
+        "wolfram" : "{{x -> Log[2]}}"
+      }
+    ],
+    "terminal" : "done"
+  },
+  {
+    "cell" : "original-28",
+    "input" : "Solve[Log[x]==2,x]",
+    "operation" : "notebook-run-6637407c-93a2-47b4-ab7f-0085db353b33",
+    "outputs" : [
+      {
+        "atoms" : 10,
+        "display_latex" : "\\left[\\left[x \\to e^{2}\\right]\\right]",
+        "original_latex" : "\\left[\\left[x \\to e^{2}\\right]\\right]",
+        "render_state" : "ready",
+        "transforms" : 0,
+        "wolfram" : "{{x -> E^2}}"
+      }
+    ],
+    "terminal" : "done"
+  },
+  {
+    "cell" : "original-29",
+    "input" : "Solve[E^(2x)-3E^x+2==0,x,Reals]",
+    "operation" : "notebook-run-0002e875-bd3b-4c09-8a97-2b419d19e90c",
+    "outputs" : [
+      {
+        "atoms" : 20,
+        "display_latex" : "\\left[\\left[x \\to 0\\right], \\left[x \\to \\log\\left(2\\right)\\right]\\right]",
+        "original_latex" : "\\left[\\left[x \\to 0\\right], \\left[x \\to \\log\\left(2\\right)\\right]\\right]",
+        "render_state" : "ready",
+        "transforms" : 0,
+        "wolfram" : "{{x -> 0}, {x -> Log[2]}}"
+      }
+    ],
+    "terminal" : "done"
+  },
+  {
+    "cell" : "original-30",
+    "input" : "Solve[2^x==8,x,Reals]",
+    "operation" : "notebook-run-3b43103c-5667-47f8-b3e1-338009521637",
+    "outputs" : [
+      {
+        "atoms" : 9,
+        "display_latex" : "\\left[\\left[x \\to 3\\right]\\right]",
+        "original_latex" : "\\left[\\left[x \\to 3\\right]\\right]",
+        "render_state" : "ready",
+        "transforms" : 0,
+        "wolfram" : "{{x -> 3}}"
+      }
+    ],
+    "terminal" : "done"
+  },
+  {
+    "cell" : "original-31",
+    "input" : "Solve[Sin[x]==1\/2,x]",
+    "operation" : "notebook-run-c5be4ff2-c626-477d-84b2-e76c1f8dd89c",
+    "outputs" : [
+      {
+        "atoms" : 135,
+        "display_latex" : "\\left[\\left[x \\to \\mathrm{ConditionalExpression}\\left(2 \\pi \\mathrm{C}\\left(1\\right) + \\frac{\\pi}{6}, \\mathrm{Element}\\left(\\mathrm{C}\\left(1\\right), \\mathrm{Integers}\\right)\\right)\\right], \\left[x \\to \\mathrm{ConditionalExpression}\\left(2 \\pi \\mathrm{C}\\left(1\\right) + \\frac{5 \\pi}{6}, \\mathrm{Element}\\left(\\mathrm{C}\\left(1\\right), \\mathrm{Integers}\\right)\\right)\\right]\\right]",
+        "original_latex" : "\\left[\\left[x \\to \\operatorname{ConditionalExpression}\\left(2 \\pi \\operatorname{C}\\left(1\\right) + \\frac{\\pi}{6}, \\operatorname{Element}\\left(\\operatorname{C}\\left(1\\right), \\mathrm{Integers}\\right)\\right)\\right], \\left[x \\to \\operatorname{ConditionalExpression}\\left(2 \\pi \\operatorname{C}\\left(1\\right) + \\frac{5 \\pi}{6}, \\operatorname{Element}\\left(\\operatorname{C}\\left(1\\right), \\mathrm{Integers}\\right)\\right)\\right]\\right]",
+        "render_state" : "ready",
+        "transforms" : 8,
+        "wolfram" : "{{x -> ConditionalExpression[2*Pi*C[1] + Pi\/6, Element[C[1], Integers]]}, {x -> ConditionalExpression[2*Pi*C[1] + 5*Pi\/6, Element[C[1], Integers]]}}"
+      }
+    ],
+    "terminal" : "done"
+  },
+  {
+    "cell" : "original-32",
+    "input" : "Solve[Sin[x]==2,x,Reals]",
+    "operation" : "notebook-run-19a140d7-1eb2-4d26-b0ea-6fe6b893267c",
+    "outputs" : [
+      {
+        "atoms" : 3,
+        "display_latex" : "\\left[\\right]",
+        "original_latex" : "\\left[\\right]",
+        "render_state" : "ready",
+        "transforms" : 0,
+        "wolfram" : "{}"
+      }
+    ],
+    "terminal" : "done"
+  },
+  {
+    "cell" : "original-33",
+    "input" : "Solve[Tan[x]==1,x]",
+    "operation" : "notebook-run-0f6ab242-eda0-4f37-940f-2b92a5f6b6c7",
+    "outputs" : [
+      {
+        "atoms" : 67,
+        "display_latex" : "\\left[\\left[x \\to \\mathrm{ConditionalExpression}\\left(\\pi \\mathrm{C}\\left(1\\right) + \\frac{\\pi}{4}, \\mathrm{Element}\\left(\\mathrm{C}\\left(1\\right), \\mathrm{Integers}\\right)\\right)\\right]\\right]",
+        "original_latex" : "\\left[\\left[x \\to \\operatorname{ConditionalExpression}\\left(\\pi \\operatorname{C}\\left(1\\right) + \\frac{\\pi}{4}, \\operatorname{Element}\\left(\\operatorname{C}\\left(1\\right), \\mathrm{Integers}\\right)\\right)\\right]\\right]",
+        "render_state" : "ready",
+        "transforms" : 4,
+        "wolfram" : "{{x -> ConditionalExpression[Pi*C[1] + Pi\/4, Element[C[1], Integers]]}}"
+      }
+    ],
+    "terminal" : "done"
+  },
+  {
+    "cell" : "original-34",
+    "input" : "Solve[x E^x==1,x]",
+    "operation" : "notebook-run-3b4c259a-c83e-4a3e-9fa9-0e6ed7464787",
+    "outputs" : [
+      {
+        "atoms" : 22,
+        "display_latex" : "\\left[\\left[x \\to \\mathrm{ProductLog}\\left(1\\right)\\right]\\right]",
+        "original_latex" : "\\left[\\left[x \\to \\operatorname{ProductLog}\\left(1\\right)\\right]\\right]",
+        "render_state" : "ready",
+        "transforms" : 1,
+        "wolfram" : "{{x -> ProductLog[1]}}"
+      }
+    ],
+    "terminal" : "done"
+  },
+  {
+    "cell" : "original-35",
+    "input" : "Solve[a x^2+b x+c==0,x]",
+    "operation" : "notebook-run-2527cc1e-432e-4b08-89ca-7a0265d65871",
+    "outputs" : [
+      {
+        "atoms" : 40,
+        "display_latex" : "\\left[\\left[x \\to \\frac{-b - \\sqrt{b^{2} - 4 a c}}{2 a}\\right], \\left[x \\to \\frac{-b + \\sqrt{b^{2} - 4 a c}}{2 a}\\right]\\right]",
+        "original_latex" : "\\left[\\left[x \\to \\frac{-b - \\sqrt{b^{2} - 4 a c}}{2 a}\\right], \\left[x \\to \\frac{-b + \\sqrt{b^{2} - 4 a c}}{2 a}\\right]\\right]",
+        "render_state" : "ready",
+        "transforms" : 0,
+        "wolfram" : "{{x -> (-b - (b^2 - 4*a*c)^(1\/2))\/(2*a)}, {x -> (-b + (b^2 - 4*a*c)^(1\/2))\/(2*a)}}"
+      }
+    ],
+    "terminal" : "done"
+  },
+  {
+    "cell" : "original-36",
+    "input" : "Solve[{x+y+z==6,2x-y+z==3,x+2y-z==2},{x,y,z}]",
+    "operation" : "notebook-run-3fa711ff-3db6-4ece-ab96-5e2171cde350",
+    "outputs" : [
+      {
+        "atoms" : 17,
+        "display_latex" : "\\left[\\left[x \\to 1, y \\to 2, z \\to 3\\right]\\right]",
+        "original_latex" : "\\left[\\left[x \\to 1, y \\to 2, z \\to 3\\right]\\right]",
+        "render_state" : "ready",
+        "transforms" : 0,
+        "wolfram" : "{{x -> 1, y -> 2, z -> 3}}"
+      }
+    ],
+    "terminal" : "done"
+  },
+  {
+    "cell" : "original-37",
+    "input" : "Solve[{x+y+z==1,x-y==0},{x,y,z}]",
+    "operation" : "notebook-run-7ec7c6e5-51fa-472a-a856-21f89161f57c",
+    "outputs" : [
+      {
+        "atoms" : 27,
+        "display_latex" : "\\left[\\left[x \\to -\\frac{z}{2} + \\frac{1}{2}, y \\to -\\frac{z}{2} + \\frac{1}{2}\\right]\\right]",
+        "original_latex" : "\\left[\\left[x \\to -\\frac{z}{2} + \\frac{1}{2}, y \\to -\\frac{z}{2} + \\frac{1}{2}\\right]\\right]",
+        "render_state" : "ready",
+        "transforms" : 0,
+        "wolfram" : "{{x -> -z\/2 + 1\/2, y -> -z\/2 + 1\/2}}"
+      }
+    ],
+    "terminal" : "done"
+  },
+  {
+    "cell" : "original-38a",
+    "input" : "Solve[{x+y==1,x+y==2},{x,y}]",
+    "operation" : "notebook-run-c31c99aa-585e-4156-9a5b-45d129021e6b",
+    "outputs" : [
+      {
+        "atoms" : 3,
+        "display_latex" : "\\left[\\right]",
+        "original_latex" : "\\left[\\right]",
+        "render_state" : "ready",
+        "transforms" : 0,
+        "wolfram" : "{}"
+      }
+    ],
+    "terminal" : "done"
+  },
+  {
+    "cell" : "original-38b",
+    "input" : "Solve[x==x+1,x]",
+    "operation" : "notebook-run-d7271ae5-3a77-47db-8b73-2056fdf86e1a",
+    "outputs" : [
+      {
+        "atoms" : 3,
+        "display_latex" : "\\left[\\right]",
+        "original_latex" : "\\left[\\right]",
+        "render_state" : "ready",
+        "transforms" : 0,
+        "wolfram" : "{}"
+      }
+    ],
+    "terminal" : "done"
+  },
+  {
+    "cell" : "original-38c",
+    "input" : "Solve[x^2+1==0,x,Reals]",
+    "operation" : "notebook-run-b55b7538-d1af-46dd-a5fe-236343ef2e97",
+    "outputs" : [
+      {
+        "atoms" : 3,
+        "display_latex" : "\\left[\\right]",
+        "original_latex" : "\\left[\\right]",
+        "render_state" : "ready",
+        "transforms" : 0,
+        "wolfram" : "{}"
+      }
+    ],
+    "terminal" : "done"
+  },
+  {
+    "cell" : "original-38d",
+    "input" : "Solve[x^2==2,x,Rationals]",
+    "operation" : "notebook-run-092d921d-1613-457d-b831-f8a11e00b722",
+    "outputs" : [
+      {
+        "atoms" : 3,
+        "display_latex" : "\\left[\\right]",
+        "original_latex" : "\\left[\\right]",
+        "render_state" : "ready",
+        "transforms" : 0,
+        "wolfram" : "{}"
+      }
+    ],
+    "terminal" : "done"
+  },
+  {
+    "cell" : "original-39",
+    "input" : "Solve[{x^2+y^2==1,y==x},{x,y}]",
+    "operation" : "notebook-run-00878e65-7999-40da-8fb4-d97c11e9e2da",
+    "outputs" : [
+      {
+        "atoms" : 38,
+        "display_latex" : "\\left[\\left[x \\to -\\frac{1}{\\sqrt{2}}, y \\to -\\frac{1}{\\sqrt{2}}\\right], \\left[x \\to \\frac{1}{\\sqrt{2}}, y \\to \\frac{1}{\\sqrt{2}}\\right]\\right]",
+        "original_latex" : "\\left[\\left[x \\to -\\frac{1}{\\sqrt{2}}, y \\to -\\frac{1}{\\sqrt{2}}\\right], \\left[x \\to \\frac{1}{\\sqrt{2}}, y \\to \\frac{1}{\\sqrt{2}}\\right]\\right]",
+        "render_state" : "ready",
+        "transforms" : 0,
+        "wolfram" : "{{x -> -1\/2^(1\/2), y -> -1\/2^(1\/2)}, {x -> 2^(-1\/2), y -> 2^(-1\/2)}}"
+      }
+    ],
+    "terminal" : "done"
+  },
+  {
+    "cell" : "original-40",
+    "input" : "Solve[{x^2+y^2==5,x y==2},{x,y}]",
+    "operation" : "notebook-run-cd877689-5821-4bc9-8716-ff394f1e0574",
+    "outputs" : [
+      {
+        "atoms" : 50,
+        "display_latex" : "\\left[\\left[x \\to -2, y \\to -1\\right], \\left[x \\to -1, y \\to -2\\right], \\left[x \\to 1, y \\to 2\\right], \\left[x \\to 2, y \\to 1\\right]\\right]",
+        "original_latex" : "\\left[\\left[x \\to -2, y \\to -1\\right], \\left[x \\to -1, y \\to -2\\right], \\left[x \\to 1, y \\to 2\\right], \\left[x \\to 2, y \\to 1\\right]\\right]",
+        "render_state" : "ready",
+        "transforms" : 0,
+        "wolfram" : "{{x -> -2, y -> -1}, {x -> -1, y -> -2}, {x -> 1, y -> 2}, {x -> 2, y -> 1}}"
+      }
+    ],
+    "terminal" : "done"
+  },
+  {
+    "cell" : "original-41",
+    "input" : "Solve[{x+y+z==0,x y+y z+z x==0,x y z==1},{x,y,z}]",
+    "operation" : "notebook-run-2261c60e-add7-4f52-b907-37469e0d4a25",
+    "outputs" : [
+      {
+        "atoms" : 836,
+        "display_latex" : "\\left[\\left[x \\to \\frac{\\left(\\left(-\\frac{1}{2}\\mathrm{i}\\right) \\sqrt{3} - \\frac{5}{2}\\right)^{3}}{126} - \\frac{\\left(\\left(-\\frac{1}{2}\\mathrm{i}\\right) \\sqrt{3} - \\frac{5}{2}\\right)^{2}}{21} - \\frac{8 \\left(\\left(-\\frac{1}{2}\\mathrm{i}\\right) \\sqrt{3} - \\frac{5}{2}\\right)}{21} + \\frac{7}{18}, y \\to \\frac{\\left(\\left(-\\frac{1}{2}\\mathrm{i}\\right) \\sqrt{3} - \\frac{5}{2}\\right)^{3}}{63} - \\frac{2 \\left(\\left(-\\frac{1}{2}\\mathrm{i}\\right) \\sqrt{3} - \\frac{5}{2}\\right)^{2}}{21} + \\frac{5 \\left(\\left(-\\frac{1}{2}\\mathrm{i}\\right) \\sqrt{3} - \\frac{5}{2}\\right)}{21} + \\frac{7}{9}, z \\to -\\frac{\\left(\\left(-\\frac{1}{2}\\mathrm{i}\\right) \\sqrt{3} - \\frac{5}{2}\\right)^{3}}{42} + \\frac{\\left(\\left(-\\frac{1}{2}\\mathrm{i}\\right) \\sqrt{3} - \\frac{5}{2}\\right)^{2}}{7} + \\frac{\\left(-\\frac{1}{2}\\mathrm{i}\\right) \\sqrt{3} - \\frac{5}{2}}{7} - \\frac{7}{6}\\right], \\left[x \\to \\frac{\\left(\\left(\\frac{1}{2}\\mathrm{i}\\right) \\sqrt{3} - \\frac{5}{2}\\right)^{3}}{126} - \\frac{\\left(\\left(\\frac{1}{2}\\mathrm{i}\\right) \\sqrt{3} - \\frac{5}{2}\\right)^{2}}{21} - \\frac{8 \\left(\\left(\\frac{1}{2}\\mathrm{i}\\right) \\sqrt{3} - \\frac{5}{2}\\right)}{21} + \\frac{7}{18}, y \\to \\frac{\\left(\\left(\\frac{1}{2}\\mathrm{i}\\right) \\sqrt{3} - \\frac{5}{2}\\right)^{3}}{63} - \\frac{2 \\left(\\left(\\frac{1}{2}\\mathrm{i}\\right) \\sqrt{3} - \\frac{5}{2}\\right)^{2}}{21} + \\frac{5 \\left(\\left(\\frac{1}{2}\\mathrm{i}\\right) \\sqrt{3} - \\frac{5}{2}\\right)}{21} + \\frac{7}{9}, z \\to -\\frac{\\left(\\left(\\frac{1}{2}\\mathrm{i}\\right) \\sqrt{3} - \\frac{5}{2}\\right)^{3}}{42} + \\frac{\\left(\\left(\\frac{1}{2}\\mathrm{i}\\right) \\sqrt{3} - \\frac{5}{2}\\right)^{2}}{7} + \\frac{\\left(\\frac{1}{2}\\mathrm{i}\\right) \\sqrt{3} - \\frac{5}{2}}{7} - \\frac{7}{6}\\right], \\left[x \\to \\frac{\\left(\\left(\\mathrm{i}\\right) \\sqrt{3} + 2\\right)^{3}}{126} - \\frac{\\left(\\left(\\mathrm{i}\\right) \\sqrt{3} + 2\\right)^{2}}{21} - \\frac{8 \\left(\\left(\\mathrm{i}\\right) \\sqrt{3} + 2\\right)}{21} + \\frac{7}{18}, y \\to \\frac{\\left(\\left(\\mathrm{i}\\right) \\sqrt{3} + 2\\right)^{3}}{63} - \\frac{2 \\left(\\left(\\mathrm{i}\\right) \\sqrt{3} + 2\\right)^{2}}{21} + \\frac{5 \\left(\\left(\\mathrm{i}\\right) \\sqrt{3} + 2\\right)}{21} + \\frac{7}{9}, z \\to -\\frac{\\left(\\left(\\mathrm{i}\\right) \\sqrt{3} + 2\\right)^{3}}{42} + \\frac{\\left(\\left(\\mathrm{i}\\right) \\sqrt{3} + 2\\right)^{2}}{7} + \\frac{\\left(\\mathrm{i}\\right) \\sqrt{3} + 2}{7} - \\frac{7}{6}\\right], \\left[x \\to \\frac{\\left(-\\mathrm{i}\\right) \\sqrt{3} + 1}{2} - 1, y \\to -\\frac{\\left(-\\mathrm{i}\\right) \\sqrt{3} + 1}{2}, z \\to 1\\right], \\left[x \\to \\frac{\\left(\\left(-\\mathrm{i}\\right) \\sqrt{3} + 2\\right)^{3}}{126} - \\frac{\\left(\\left(-\\mathrm{i}\\right) \\sqrt{3} + 2\\right)^{2}}{21} - \\frac{8 \\left(\\left(-\\mathrm{i}\\right) \\sqrt{3} + 2\\right)}{21} + \\frac{7}{18}, y \\to \\frac{\\left(\\left(-\\mathrm{i}\\right) \\sqrt{3} + 2\\right)^{3}}{63} - \\frac{2 \\left(\\left(-\\mathrm{i}\\right) \\sqrt{3} + 2\\right)^{2}}{21} + \\frac{5 \\left(\\left(-\\mathrm{i}\\right) \\sqrt{3} + 2\\right)}{21} + \\frac{7}{9}, z \\to -\\frac{\\left(\\left(-\\mathrm{i}\\right) \\sqrt{3} + 2\\right)^{3}}{42} + \\frac{\\left(\\left(-\\mathrm{i}\\right) \\sqrt{3} + 2\\right)^{2}}{7} + \\frac{\\left(-\\mathrm{i}\\right) \\sqrt{3} + 2}{7} - \\frac{7}{6}\\right], \\left[x \\to \\frac{\\left(\\mathrm{i}\\right) \\sqrt{3} + 1}{2} - 1, y \\to -\\frac{\\left(\\mathrm{i}\\right) \\sqrt{3} + 1}{2}, z \\to 1\\right]\\right]",
+        "original_latex" : "\\left[\\left[x \\to \\frac{\\left(\\left(-\\frac{1}{2}\\mathrm{i}\\right) \\sqrt{3} - \\frac{5}{2}\\right)^{3}}{126} - \\frac{\\left(\\left(-\\frac{1}{2}\\mathrm{i}\\right) \\sqrt{3} - \\frac{5}{2}\\right)^{2}}{21} - \\frac{8 \\left(\\left(-\\frac{1}{2}\\mathrm{i}\\right) \\sqrt{3} - \\frac{5}{2}\\right)}{21} + \\frac{7}{18}, y \\to \\frac{\\left(\\left(-\\frac{1}{2}\\mathrm{i}\\right) \\sqrt{3} - \\frac{5}{2}\\right)^{3}}{63} - \\frac{2 \\left(\\left(-\\frac{1}{2}\\mathrm{i}\\right) \\sqrt{3} - \\frac{5}{2}\\right)^{2}}{21} + \\frac{5 \\left(\\left(-\\frac{1}{2}\\mathrm{i}\\right) \\sqrt{3} - \\frac{5}{2}\\right)}{21} + \\frac{7}{9}, z \\to -\\frac{\\left(\\left(-\\frac{1}{2}\\mathrm{i}\\right) \\sqrt{3} - \\frac{5}{2}\\right)^{3}}{42} + \\frac{\\left(\\left(-\\frac{1}{2}\\mathrm{i}\\right) \\sqrt{3} - \\frac{5}{2}\\right)^{2}}{7} + \\frac{\\left(-\\frac{1}{2}\\mathrm{i}\\right) \\sqrt{3} - \\frac{5}{2}}{7} - \\frac{7}{6}\\right], \\left[x \\to \\frac{\\left(\\left(\\frac{1}{2}\\mathrm{i}\\right) \\sqrt{3} - \\frac{5}{2}\\right)^{3}}{126} - \\frac{\\left(\\left(\\frac{1}{2}\\mathrm{i}\\right) \\sqrt{3} - \\frac{5}{2}\\right)^{2}}{21} - \\frac{8 \\left(\\left(\\frac{1}{2}\\mathrm{i}\\right) \\sqrt{3} - \\frac{5}{2}\\right)}{21} + \\frac{7}{18}, y \\to \\frac{\\left(\\left(\\frac{1}{2}\\mathrm{i}\\right) \\sqrt{3} - \\frac{5}{2}\\right)^{3}}{63} - \\frac{2 \\left(\\left(\\frac{1}{2}\\mathrm{i}\\right) \\sqrt{3} - \\frac{5}{2}\\right)^{2}}{21} + \\frac{5 \\left(\\left(\\frac{1}{2}\\mathrm{i}\\right) \\sqrt{3} - \\frac{5}{2}\\right)}{21} + \\frac{7}{9}, z \\to -\\frac{\\left(\\left(\\frac{1}{2}\\mathrm{i}\\right) \\sqrt{3} - \\frac{5}{2}\\right)^{3}}{42} + \\frac{\\left(\\left(\\frac{1}{2}\\mathrm{i}\\right) \\sqrt{3} - \\frac{5}{2}\\right)^{2}}{7} + \\frac{\\left(\\frac{1}{2}\\mathrm{i}\\right) \\sqrt{3} - \\frac{5}{2}}{7} - \\frac{7}{6}\\right], \\left[x \\to \\frac{\\left(\\left(\\mathrm{i}\\right) \\sqrt{3} + 2\\right)^{3}}{126} - \\frac{\\left(\\left(\\mathrm{i}\\right) \\sqrt{3} + 2\\right)^{2}}{21} - \\frac{8 \\left(\\left(\\mathrm{i}\\right) \\sqrt{3} + 2\\right)}{21} + \\frac{7}{18}, y \\to \\frac{\\left(\\left(\\mathrm{i}\\right) \\sqrt{3} + 2\\right)^{3}}{63} - \\frac{2 \\left(\\left(\\mathrm{i}\\right) \\sqrt{3} + 2\\right)^{2}}{21} + \\frac{5 \\left(\\left(\\mathrm{i}\\right) \\sqrt{3} + 2\\right)}{21} + \\frac{7}{9}, z \\to -\\frac{\\left(\\left(\\mathrm{i}\\right) \\sqrt{3} + 2\\right)^{3}}{42} + \\frac{\\left(\\left(\\mathrm{i}\\right) \\sqrt{3} + 2\\right)^{2}}{7} + \\frac{\\left(\\mathrm{i}\\right) \\sqrt{3} + 2}{7} - \\frac{7}{6}\\right], \\left[x \\to \\frac{\\left(-\\mathrm{i}\\right) \\sqrt{3} + 1}{2} - 1, y \\to -\\frac{\\left(-\\mathrm{i}\\right) \\sqrt{3} + 1}{2}, z \\to 1\\right], \\left[x \\to \\frac{\\left(\\left(-\\mathrm{i}\\right) \\sqrt{3} + 2\\right)^{3}}{126} - \\frac{\\left(\\left(-\\mathrm{i}\\right) \\sqrt{3} + 2\\right)^{2}}{21} - \\frac{8 \\left(\\left(-\\mathrm{i}\\right) \\sqrt{3} + 2\\right)}{21} + \\frac{7}{18}, y \\to \\frac{\\left(\\left(-\\mathrm{i}\\right) \\sqrt{3} + 2\\right)^{3}}{63} - \\frac{2 \\left(\\left(-\\mathrm{i}\\right) \\sqrt{3} + 2\\right)^{2}}{21} + \\frac{5 \\left(\\left(-\\mathrm{i}\\right) \\sqrt{3} + 2\\right)}{21} + \\frac{7}{9}, z \\to -\\frac{\\left(\\left(-\\mathrm{i}\\right) \\sqrt{3} + 2\\right)^{3}}{42} + \\frac{\\left(\\left(-\\mathrm{i}\\right) \\sqrt{3} + 2\\right)^{2}}{7} + \\frac{\\left(-\\mathrm{i}\\right) \\sqrt{3} + 2}{7} - \\frac{7}{6}\\right], \\left[x \\to \\frac{\\left(\\mathrm{i}\\right) \\sqrt{3} + 1}{2} - 1, y \\to -\\frac{\\left(\\mathrm{i}\\right) \\sqrt{3} + 1}{2}, z \\to 1\\right]\\right]",
+        "render_state" : "ready",
+        "transforms" : 0,
+        "wolfram" : "{{x -> ((0 + (-1\/2)*I)*3^(1\/2) - 5\/2)^3\/126 - ((0 + (-1\/2)*I)*3^(1\/2) - 5\/2)^2\/21 - 8*((0 + (-1\/2)*I)*3^(1\/2) - 5\/2)\/21 + 7\/18, y -> ((0 + (-1\/2)*I)*3^(1\/2) - 5\/2)^3\/63 - 2*((0 + (-1\/2)*I)*3^(1\/2) - 5\/2)^2\/21 + 5*((0 + (-1\/2)*I)*3^(1\/2) - 5\/2)\/21 + 7\/9, z -> -((0 + (-1\/2)*I)*3^(1\/2) - 5\/2)^3\/42 + ((0 + (-1\/2)*I)*3^(1\/2) - 5\/2)^2\/7 + ((0 + (-1\/2)*I)*3^(1\/2) - 5\/2)\/7 - 7\/6}, {x -> ((0 + (1\/2)*I)*3^(1\/2) - 5\/2)^3\/126 - ((0 + (1\/2)*I)*3^(1\/2) - 5\/2)^2\/21 - 8*((0 + (1\/2)*I)*3^(1\/2) - 5\/2)\/21 + 7\/18, y -> ((0 + (1\/2)*I)*3^(1\/2) - 5\/2)^3\/63 - 2*((0 + (1\/2)*I)*3^(1\/2) - 5\/2)^2\/21 + 5*((0 + (1\/2)*I)*3^(1\/2) - 5\/2)\/21 + 7\/9, z -> -((0 + (1\/2)*I)*3^(1\/2) - 5\/2)^3\/42 + ((0 + (1\/2)*I)*3^(1\/2) - 5\/2)^2\/7 + ((0 + (1\/2)*I)*3^(1\/2) - 5\/2)\/7 - 7\/6}, {x -> ((0 + (1)*I)*3^(1\/2) + 2)^3\/126 - ((0 + (1)*I)*3^(1\/2) + 2)^2\/21 - 8*((0 + (1)*I)*3^(1\/2) + 2)\/21 + 7\/18, y -> ((0 + (1)*I)*3^(1\/2) + 2)^3\/63 - 2*((0 + (1)*I)*3^(1\/2) + 2)^2\/21 + 5*((0 + (1)*I)*3^(1\/2) + 2)\/21 + 7\/9, z -> -((0 + (1)*I)*3^(1\/2) + 2)^3\/42 + ((0 + (1)*I)*3^(1\/2) + 2)^2\/7 + ((0 + (1)*I)*3^(1\/2) + 2)\/7 - 7\/6}, {x -> ((0 + (-1)*I)*3^(1\/2) + 1)\/2 - 1, y -> -((0 + (-1)*I)*3^(1\/2) + 1)\/2, z -> 1}, {x -> ((0 + (-1)*I)*3^(1\/2) + 2)^3\/126 - ((0 + (-1)*I)*3^(1\/2) + 2)^2\/21 - 8*((0 + (-1)*I)*3^(1\/2) + 2)\/21 + 7\/18, y -> ((0 + (-1)*I)*3^(1\/2) + 2)^3\/63 - 2*((0 + (-1)*I)*3^(1\/2) + 2)^2\/21 + 5*((0 + (-1)*I)*3^(1\/2) + 2)\/21 + 7\/9, z -> -((0 + (-1)*I)*3^(1\/2) + 2)^3\/42 + ((0 + (-1)*I)*3^(1\/2) + 2)^2\/7 + ((0 + (-1)*I)*3^(1\/2) + 2)\/7 - 7\/6}, {x -> ((0 + (1)*I)*3^(1\/2) + 1)\/2 - 1, y -> -((0 + (1)*I)*3^(1\/2) + 1)\/2, z -> 1}}"
+      }
+    ],
+    "terminal" : "done"
+  },
+  {
+    "cell" : "original-42",
+    "input" : "Reduce[x^2<4,x]",
+    "operation" : "notebook-run-7b5f682f-d08e-4686-a15b-ad170d6542d9",
+    "outputs" : [
+      {
+        "atoms" : 29,
+        "display_latex" : "\\mathrm{Inequality}\\left(-2, \\mathrm{Less}, x, \\mathrm{Less}, 2\\right)",
+        "original_latex" : "\\operatorname{Inequality}\\left(-2, \\mathrm{Less}, x, \\mathrm{Less}, 2\\right)",
+        "render_state" : "ready",
+        "transforms" : 1,
+        "wolfram" : "-2 < x < 2"
+      }
+    ],
+    "terminal" : "done"
+  },
+  {
+    "cell" : "original-43",
+    "input" : "Reduce[(x-1)\/(x+2)>=0,x]",
+    "operation" : "notebook-run-07b8475a-43ba-4dda-b7b4-2592178c8736",
+    "outputs" : [
+      {
+        "atoms" : 8,
+        "display_latex" : "x < -2 \\lor x \\ge 1",
+        "original_latex" : "x < -2 \\lor x \\ge 1",
+        "render_state" : "ready",
+        "transforms" : 0,
+        "wolfram" : "x < -2 || x >= 1"
+      }
+    ],
+    "terminal" : "done"
+  },
+  {
+    "cell" : "original-44",
+    "input" : "Solve[x^2==4,x,Integers]",
+    "operation" : "notebook-run-4633afcf-dfad-4504-9acb-3fdbcbec66f1",
+    "outputs" : [
+      {
+        "atoms" : 17,
+        "display_latex" : "\\left[\\left[x \\to -2\\right], \\left[x \\to 2\\right]\\right]",
+        "original_latex" : "\\left[\\left[x \\to -2\\right], \\left[x \\to 2\\right]\\right]",
+        "render_state" : "ready",
+        "transforms" : 0,
+        "wolfram" : "{{x -> -2}, {x -> 2}}"
+      }
+    ],
+    "terminal" : "done"
+  },
+  {
+    "cell" : "original-45",
+    "input" : "Solve[2x+3y==1,{x,y},Integers]",
+    "operation" : "notebook-run-b3b39dae-6916-4d53-bda6-12cb4b60622a",
+    "outputs" : [
+      {
+        "atoms" : 126,
+        "display_latex" : "\\left[\\left[x \\to \\mathrm{ConditionalExpression}\\left(3 \\mathrm{C}\\left(1\\right) - 1, \\mathrm{Element}\\left(\\mathrm{C}\\left(1\\right), \\mathrm{Integers}\\right)\\right), y \\to \\mathrm{ConditionalExpression}\\left(-2 \\mathrm{C}\\left(1\\right) + 1, \\mathrm{Element}\\left(\\mathrm{C}\\left(1\\right), \\mathrm{Integers}\\right)\\right)\\right]\\right]",
+        "original_latex" : "\\left[\\left[x \\to \\operatorname{ConditionalExpression}\\left(3 \\operatorname{C}\\left(1\\right) - 1, \\operatorname{Element}\\left(\\operatorname{C}\\left(1\\right), \\mathrm{Integers}\\right)\\right), y \\to \\operatorname{ConditionalExpression}\\left(-2 \\operatorname{C}\\left(1\\right) + 1, \\operatorname{Element}\\left(\\operatorname{C}\\left(1\\right), \\mathrm{Integers}\\right)\\right)\\right]\\right]",
+        "render_state" : "ready",
+        "transforms" : 8,
+        "wolfram" : "{{x -> ConditionalExpression[3*C[1] - 1, Element[C[1], Integers]], y -> ConditionalExpression[-2*C[1] + 1, Element[C[1], Integers]]}}"
+      }
+    ],
+    "terminal" : "done"
+  },
+  {
+    "cell" : "original-46",
+    "input" : "Solve[x==x,x]",
+    "operation" : "notebook-run-95ccbeaf-eb6c-4730-aaaa-8c55561eafda",
+    "outputs" : [
+      {
+        "atoms" : 6,
+        "display_latex" : "\\left[\\left[\\right]\\right]",
+        "original_latex" : "\\left[\\left[\\right]\\right]",
+        "render_state" : "ready",
+        "transforms" : 0,
+        "wolfram" : "{{}}"
+      }
+    ],
+    "terminal" : "done"
+  },
+  {
+    "cell" : "original-47",
+    "input" : "Solve[x^2==1&&x!=1,x]",
+    "operation" : "notebook-run-de7b8da8-b022-447b-a274-3d942830a6f2",
+    "outputs" : [
+      {
+        "atoms" : 10,
+        "display_latex" : "\\left[\\left[x \\to -1\\right]\\right]",
+        "original_latex" : "\\left[\\left[x \\to -1\\right]\\right]",
+        "render_state" : "ready",
+        "transforms" : 0,
+        "wolfram" : "{{x -> -1}}"
+      }
+    ],
+    "terminal" : "done"
+  },
+  {
+    "cell" : "original-48",
+    "input" : "Eliminate[{x==y+1,y==2z},y]",
+    "operation" : "notebook-run-17f5896c-d981-4faa-9828-8d3a7d257c09",
+    "outputs" : [
+      {
+        "atoms" : 6,
+        "display_latex" : "x = 2 z + 1",
+        "original_latex" : "x = 2 z + 1",
+        "render_state" : "ready",
+        "transforms" : 0,
+        "wolfram" : "x == (2*z + 1)"
+      }
+    ],
+    "terminal" : "done"
+  },
+  {
+    "cell" : "original-49",
+    "input" : "Solve[{x^2+y^2==25,y==x+1},{x,y}]",
+    "operation" : "notebook-run-8fe3a12e-4d56-404d-92b5-6daa8bda071a",
+    "outputs" : [
+      {
+        "atoms" : 26,
+        "display_latex" : "\\left[\\left[x \\to -4, y \\to -3\\right], \\left[x \\to 3, y \\to 4\\right]\\right]",
+        "original_latex" : "\\left[\\left[x \\to -4, y \\to -3\\right], \\left[x \\to 3, y \\to 4\\right]\\right]",
+        "render_state" : "ready",
+        "transforms" : 0,
+        "wolfram" : "{{x -> -4, y -> -3}, {x -> 3, y -> 4}}"
+      }
+    ],
+    "terminal" : "done"
+  },
+  {
+    "cell" : "original-50",
+    "input" : "Solve[Cos[x]==-1,x]",
+    "operation" : "notebook-run-c71c594b-34df-46d9-84bf-3a26f1b87d7b",
+    "outputs" : [
+      {
+        "atoms" : 66,
+        "display_latex" : "\\left[\\left[x \\to \\mathrm{ConditionalExpression}\\left(2 \\pi \\mathrm{C}\\left(1\\right) + \\pi, \\mathrm{Element}\\left(\\mathrm{C}\\left(1\\right), \\mathrm{Integers}\\right)\\right)\\right]\\right]",
+        "original_latex" : "\\left[\\left[x \\to \\operatorname{ConditionalExpression}\\left(2 \\pi \\operatorname{C}\\left(1\\right) + \\pi, \\operatorname{Element}\\left(\\operatorname{C}\\left(1\\right), \\mathrm{Integers}\\right)\\right)\\right]\\right]",
+        "render_state" : "ready",
+        "transforms" : 4,
+        "wolfram" : "{{x -> ConditionalExpression[2*Pi*C[1] + Pi, Element[C[1], Integers]]}}"
+      }
+    ],
+    "terminal" : "done"
+  },
+  {
+    "cell" : "science-fraction",
+    "input" : "1\/3",
+    "operation" : "notebook-run-3fa9a71a-047e-4011-a44a-270ec5c12a78",
+    "outputs" : [
+      {
+        "atoms" : 3,
+        "display_latex" : "\\frac{1}{3}",
+        "original_latex" : "\\frac{1}{3}",
+        "render_state" : "ready",
+        "transforms" : 0,
+        "wolfram" : "1\/3"
+      }
+    ],
+    "terminal" : "done"
+  },
+  {
+    "cell" : "science-matrix",
+    "input" : "[[1,2],[3,4]]",
+    "operation" : "notebook-run-499a1347-714f-434e-9d32-489b34789580",
+    "outputs" : [
+      {
+        "atoms" : 16,
+        "display_latex" : "\\left[\\left[1, 2\\right], \\left[3, 4\\right]\\right]",
+        "original_latex" : "\\left[\\left[1, 2\\right], \\left[3, 4\\right]\\right]",
+        "render_state" : "ready",
+        "transforms" : 0,
+        "wolfram" : "{{1, 2}, {3, 4}}"
+      }
+    ],
+    "terminal" : "done"
+  },
+  {
+    "cell" : "science-root",
+    "input" : "solve(x^5-x-1==0,x)",
+    "operation" : "notebook-run-75bad35c-d974-4cb2-9331-a96eb8eb2bff",
+    "outputs" : [
+      {
+        "atoms" : 232,
+        "display_latex" : "\\left[\\left[x \\to \\mathrm{Root}\\left(\\mathrm{Function}\\left(\\mathrm{Slot}\\left(1\\right)^{5} - \\mathrm{Slot}\\left(1\\right) - 1\\right), 1\\right)\\right], \\left[x \\to \\mathrm{Root}\\left(\\mathrm{Function}\\left(\\mathrm{Slot}\\left(1\\right)^{5} - \\mathrm{Slot}\\left(1\\right) - 1\\right), 2\\right)\\right], \\left[x \\to \\mathrm{Root}\\left(\\mathrm{Function}\\left(\\mathrm{Slot}\\left(1\\right)^{5} - \\mathrm{Slot}\\left(1\\right) - 1\\right), 3\\right)\\right], \\left[x \\to \\mathrm{Root}\\left(\\mathrm{Function}\\left(\\mathrm{Slot}\\left(1\\right)^{5} - \\mathrm{Slot}\\left(1\\right) - 1\\right), 4\\right)\\right], \\left[x \\to \\mathrm{Root}\\left(\\mathrm{Function}\\left(\\mathrm{Slot}\\left(1\\right)^{5} - \\mathrm{Slot}\\left(1\\right) - 1\\right), 5\\right)\\right]\\right]",
+        "original_latex" : "\\left[\\left[x \\to \\operatorname{Root}\\left(\\operatorname{Function}\\left(\\operatorname{Slot}\\left(1\\right)^{5} - \\operatorname{Slot}\\left(1\\right) - 1\\right), 1\\right)\\right], \\left[x \\to \\operatorname{Root}\\left(\\operatorname{Function}\\left(\\operatorname{Slot}\\left(1\\right)^{5} - \\operatorname{Slot}\\left(1\\right) - 1\\right), 2\\right)\\right], \\left[x \\to \\operatorname{Root}\\left(\\operatorname{Function}\\left(\\operatorname{Slot}\\left(1\\right)^{5} - \\operatorname{Slot}\\left(1\\right) - 1\\right), 3\\right)\\right], \\left[x \\to \\operatorname{Root}\\left(\\operatorname{Function}\\left(\\operatorname{Slot}\\left(1\\right)^{5} - \\operatorname{Slot}\\left(1\\right) - 1\\right), 4\\right)\\right], \\left[x \\to \\operatorname{Root}\\left(\\operatorname{Function}\\left(\\operatorname{Slot}\\left(1\\right)^{5} - \\operatorname{Slot}\\left(1\\right) - 1\\right), 5\\right)\\right]\\right]",
+        "render_state" : "ready",
+        "transforms" : 20,
+        "wolfram" : "{{x -> Root[Function[Slot[1]^5 - Slot[1] - 1], 1]}, {x -> Root[Function[Slot[1]^5 - Slot[1] - 1], 2]}, {x -> Root[Function[Slot[1]^5 - Slot[1] - 1], 3]}, {x -> Root[Function[Slot[1]^5 - Slot[1] - 1], 4]}, {x -> Root[Function[Slot[1]^5 - Slot[1] - 1], 5]}}"
+      }
+    ],
+    "terminal" : "done"
+  },
+  {
+    "cell" : "science-precision",
+    "input" : "decimal(\"0.1\",precision:80)",
+    "operation" : "notebook-run-94714ea5-2b55-4d07-b5f8-629bd17b3ce3",
+    "outputs" : [
+      {
+        "atoms" : 3,
+        "display_latex" : "0.1",
+        "original_latex" : "0.1",
+        "render_state" : "ready",
+        "transforms" : 0,
+        "wolfram" : "0.0999999999999999999999999999999999999999999999999999999999999999999999999999999997892`79.99872134770301"
+      }
+    ],
+    "terminal" : "done"
+  }
+]

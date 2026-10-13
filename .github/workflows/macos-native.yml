@@ -54,6 +54,8 @@ jobs:
         run: bash macos/Scripts/test-kernel-runtime.sh > target/macos-ci-evidence/kernel-runtime.log 2>&1
       - name: 包内真实Pi、完整资源与helper崩溃后手工计算
         run: bash macos/Scripts/test-agent-package.sh > target/macos-ci-evidence/agent-package.log 2>&1
+      - name: 新凭据引用、拒绝交互与锁定状态边界
+        run: bash macos/Scripts/test-secret-store.sh > target/macos-ci-evidence/secret-store.log 2>&1
       - name: 私有Agent真实进程、耐久ACK与旧身份恢复隔离
         run: bash macos/Scripts/test-agent-protocol.sh > target/macos-ci-evidence/agent-protocol.log 2>&1
       - name: 不可变结果 C ABI、完整源码分块和迟到回复

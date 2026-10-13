@@ -1,0 +1,141 @@
+name: macOS 原生宿主门禁
+on:
+  workflow_call:
+permissions:
+  contents: read
+jobs:
+  native:
+    runs-on: xcode-27
+    steps:
+      - uses: actions/checkout@v4
+      - name: 显式选择 Xcode 27.0 和 macOS SDK 27
+        run: |
+          sudo xcode-select -s /Applications/Xcode_27.0.app/Contents/Developer
+          bash macos/Scripts/verify-env.sh
+      - name: 安装固定 Rust 工具链
+        run: rustup show active-toolchain
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 26.11.1
+      - name: 安装锁定的helper构建依赖与签名校验工具
+        run: |
+          npm ci --prefix app --ignore-scripts
+          npm ci --prefix agent --omit=dev --ignore-scripts
+          command -v gpg >/dev/null || brew install gnupg
+      - name: 校验原生协议和工程漂移
+        run: |
+          python3 scripts/native_contracts.py --check
+          python3 macos/Scripts/generate-project.py --check
+      - name: 实际 Release 静态库和 Swift App 链接
+        run: |
+          mkdir -p target/macos-ci-evidence
+          bash macos/Scripts/build-native.sh > target/macos-ci-evidence/build.log 2>&1
+      - name: Swift 实际 ABI 生命周期与 DTO 负例
+        run: bash macos/Scripts/test-native-contracts.sh > target/macos-ci-evidence/contracts.log 2>&1
+      - name: 自有媒体、回环 HTTP 与实际 I/O 中断
+        run: bash macos/Scripts/test-fixtures.sh > target/macos-ci-evidence/fixtures.log 2>&1
+      - name: SQLite 实际同步、根锁和初始化中断
+        run: bash macos/Scripts/test-storage.sh > target/macos-ci-evidence/storage.log 2>&1
+      - name: Rust 原计划与 SQLite 幂等事务/独立回读
+        run: bash macos/Scripts/test-document-store.sh > target/macos-ci-evidence/document-store.log 2>&1
+      - name: Blob 真实字节、引用与发布中断
+        run: bash macos/Scripts/test-blobs.sh > target/macos-ci-evidence/blobs.log 2>&1
+      - name: 冻结预览、引用与实际 SQLite 回执
+        run: bash macos/Scripts/test-preview.sh > target/macos-ci-evidence/preview.log 2>&1
+      - name: 原生编辑屏障、真实源码提交与原 ID 回执恢复
+        run: bash macos/Scripts/test-commit-port.sh > target/macos-ci-evidence/commit-port.log 2>&1
+      - name: 实际逆事务、重启回执及原生 UndoManager
+        run: bash macos/Scripts/test-undo.sh > target/macos-ci-evidence/undo.log 2>&1
+      - name: 最近200源码历史、固定项与实际载荷裁减
+        run: bash macos/Scripts/test-history.sh > target/macos-ci-evidence/history.log 2>&1
+      - name: 实际 CAS 检查点、同库 Blob 接纳与原回执恢复
+        run: bash macos/Scripts/test-kernel-store.sh > target/macos-ci-evidence/kernel-store.log 2>&1
+      - name: 主运行 C ABI、共享文档门与实际取消和接纳
+        run: bash macos/Scripts/test-kernel-runtime.sh > target/macos-ci-evidence/kernel-runtime.log 2>&1
+      - name: 包内真实Pi、完整资源与helper崩溃后手工计算
+        run: bash macos/Scripts/test-agent-package.sh > target/macos-ci-evidence/agent-package.log 2>&1
+      - name: 新凭据引用、拒绝交互与锁定状态边界
+        run: bash macos/Scripts/test-secret-store.sh > target/macos-ci-evidence/secret-store.log 2>&1
+      - name: 私有Agent真实进程、耐久ACK与旧身份恢复隔离
+        run: bash macos/Scripts/test-agent-protocol.sh > target/macos-ci-evidence/agent-protocol.log 2>&1
+      - name: 不可变结果 C ABI、完整源码分块和迟到回复
+        run: bash macos/Scripts/test-results.sh > target/macos-ci-evidence/results.log 2>&1
+      - name: 原生文件快照、真实保存与进程中断回读
+        run: bash macos/Scripts/test-saves.sh > target/macos-ci-evidence/saves.log 2>&1
+      - name: 原文档outbox、Library耐久投影与进程中断恢复
+        run: bash macos/Scripts/test-recovery.sh > target/macos-ci-evidence/recovery.log 2>&1
+      - name: 原生IME草稿备份、晚回执和进程中断恢复
+        run: bash macos/Scripts/test-drafts.sh > target/macos-ci-evidence/drafts.log 2>&1
+      - name: 规范会话、工具接纳与实际网络发送中断恢复
+        run: bash macos/Scripts/test-session-ledger.sh > target/macos-ci-evidence/session-ledger.log 2>&1
+      - name: 全库备份、资源回收、新代次与只读回退隔离
+        run: bash macos/Scripts/test-maintenance.sh > target/macos-ci-evidence/maintenance.log 2>&1
+      - name: 原生工作台宽度、真实运行与编辑器选区保留
+        run: bash macos/Scripts/test-workbench.sh > target/macos-ci-evidence/workbench.log 2>&1
+      - name: Exact native source indexes and TextKit2 editing
+        run: bash macos/Scripts/test-source-editor.sh > target/macos-ci-evidence/source-editor.log 2>&1
+      - name: Native input groups and actual marked-text protection
+        run: bash macos/Scripts/test-composition.sh > target/macos-ci-evidence/composition.log 2>&1
+      - name: Actual SwiftMath views, fonts, budgets and original 53 LaTeX
+        run: |
+          bash macos/Scripts/test-math-render.sh > target/macos-ci-evidence/math-render.log 2>&1
+          python3 - <<'PY'
+          from pathlib import Path
+          import shutil
+          log=Path('target/macos-ci-evidence/math-render.log').read_text()
+          records=[line.removeprefix('CORPUS_EVIDENCE=') for line in log.splitlines() if line.startswith('CORPUS_EVIDENCE=')]
+          assert len(records)==1, 'actual corpus record missing'
+          source=Path(records[0]).resolve()
+          assert source.is_relative_to(Path('target/macos-math-tests').resolve())
+          shutil.copyfile(source,'target/macos-ci-evidence/original-and-scientific-latex.json')
+          PY
+          python3 macos/Scripts/verify-math-resources.py 'target/macos-native/Build/Products/Release/OpenMath Preview.app' --output target/macos-ci-evidence/math-resources.json
+      - name: Actual solution presentation, stale replies and isolated numeric projection
+        run: |
+          bash macos/Scripts/test-result-presenter.sh > target/macos-ci-evidence/result-presenter.log 2>&1
+          python3 - <<'PY'
+          from pathlib import Path
+          import shutil
+          log=Path('target/macos-ci-evidence/result-presenter.log').read_text()
+          records=[line.removeprefix('PRESENTER_EVIDENCE=') for line in log.splitlines() if line.startswith('PRESENTER_EVIDENCE=')]
+          assert len(records)==1, 'actual presenter record missing'
+          source=Path(records[0]).resolve()
+          assert source.is_relative_to(Path('target/macos-result-presenter-tests').resolve())
+          shutil.copyfile(source,'target/macos-ci-evidence/actual-result-presentations.json')
+          PY
+      - name: Actual structured pages, precise copies and scientific origin
+        run: |
+          bash macos/Scripts/test-value-presenter.sh > target/macos-ci-evidence/value-presenter.log 2>&1
+          python3 - <<'PY'
+          from pathlib import Path
+          import shutil
+          log=Path('target/macos-ci-evidence/value-presenter.log').read_text()
+          for prefix,name in [('VALUE_EVIDENCE=','actual-value-pages.json'),('VALUE_INPUTS=','actual-value-inputs.json')]:
+              records=[line.removeprefix(prefix) for line in log.splitlines() if line.startswith(prefix)]
+              assert len(records)==1, 'actual value record missing'
+              source=Path(records[0]).resolve()
+              assert source.is_relative_to(Path('target/macos-value-presenter-tests').resolve())
+              shutil.copyfile(source,Path('target/macos-ci-evidence')/name)
+          PY
+      - name: Collect crashes from this task's native fixtures
+        if: failure()
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import shutil
+          root=Path.home()/'Library/Logs/DiagnosticReports'
+          output=Path('target/macos-ci-evidence/fixture-crashes');output.mkdir(parents=True,exist_ok=True)
+          prefixes=('workbench-fixtures-','source-editor-fixtures-','composition-fixtures-','math-render-fixtures-','result-presenter-fixtures-','value-presenter-fixtures-')
+          for path in root.glob('*.ips'):
+              if path.name.startswith(prefixes):shutil.copyfile(path,output/path.name)
+          PY
+      - name: 校验开发包签名和实际 ABI 符号
+        run: |
+          codesign --verify --deep --strict 'target/macos-native/Build/Products/Release/OpenMath Preview.app'
+          nm -g 'target/macos-native/Build/Products/Release/OpenMath Preview.app/Contents/MacOS/OpenMathNative' > target/macos-ci-evidence/symbols.txt
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: macos-native-development-evidence
+          path: target/macos-ci-evidence/*
+          if-no-files-found: error

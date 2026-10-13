@@ -25,3 +25,4 @@ docs/acceptance/pre-alpha.4/development/r43/pi-production-runtime-raw/*.log -whi
 
 docs/acceptance/pre-alpha.4/development/r43/single-turn-codec-raw/*.log -whitespace
 docs/acceptance/pre-alpha.4/development/r43/single-turn-codec-raw/94dbfbe-settings-error-context.md -whitespace
+docs/acceptance/pre-alpha.4/development/r43/secret-store-foundation-raw/*.log -whitespace

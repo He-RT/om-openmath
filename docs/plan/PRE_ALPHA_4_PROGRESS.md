@@ -65,7 +65,7 @@
 | [x] [R4.3.01](PRE_ALPHA_4.md#task-r4.3.01) | 规范Agent消息、任务与IPC身份 | completed | [真实source/CABI/私有进程与耐久ACK](../acceptance/pre-alpha.4/development/r43/agent-protocol-native.json)；357DTO、20Rust/3Node/实际SQLite恢复，合成helper无模型/工具执行 | 本批D045 |
 | [x] [R4.3.02](PRE_ALPHA_4.md#task-r4.3.02) | 固定Pi Core与随包生产helper | completed | [实际随包Node/Pi/原生任务](../acceptance/pre-alpha.4/development/r43/pi-production-runtime.json)；86依赖/4169资源、13帧/3事件、SIGKILL后原文档4 | 本批D047 |
 | [x] [R4.3.03](PRE_ALPHA_4.md#task-r4.3.03) | sans-IO单轮模型codec基础 | completed | [实际Rust codec/Pi/原生帧及两模型SSE](../acceptance/pre-alpha.4/development/r43/single-turn-codec.json)；10单轮/182回归、4Pi、真实SQLite ACK；生产transport仍后续 | 本批D048 |
-| [ ] [R4.3.04](PRE_ALPHA_4.md#task-r4.3.04) | Swift URLSession和SecretStore传输 | planned | — | — |
+| [ ] [R4.3.04](PRE_ALPHA_4.md#task-r4.3.04) | Swift URLSession和SecretStore传输 | in_progress | [新凭据读取边界基础](../acceptance/pre-alpha.4/development/r43/secret-store-foundation.json)；无旧回退/交互，真实Release；URLSession/Rust接线及锁屏仍未完成 | 本批D049 |
 | [ ] [R4.3.05](PRE_ALPHA_4.md#task-r4.3.05) | 读取笔记本与真实函数资料工具 | planned | — | — |
 | [ ] [R4.3.06](PRE_ALPHA_4.md#task-r4.3.06) | 预览与原子修改工具接入 | planned | — | — |
 | [ ] [R4.3.07](PRE_ALPHA_4.md#task-r4.3.07) | 执行、结果检查和隔离试算工具 | planned | — | — |
@@ -566,3 +566,9 @@ Done依据与覆盖case/proof:
 Chat/Anthropic 请求与实际 SSE/JSON decoder 完成，canonical 来自同一生成契约；prepare 冻结 binding/工具/输出身份，保留原参数/response ID/model/finish/usage 与兼容 signed thinking，incomplete 不产生可执行调用。182 Rust（含10单轮）/4实际Pi/17 Python/357DTO/Clippy/fmt/原生 ABI 与真实随包 helper 通过；原生实际6 helper帧/13双向帧、3 SQLite事件、ACK后工具不可用、SIGKILL后同文档4。授权两模型真实Chat SSE HTTP200/完整4及usage，仍只是开发smoke；完整证据 single-turn-codec.json。
 
 94dbfbe/CI38457404317终态Rust/deps/Mac success，frontend保存超过5秒后成功、iOS原17总1168ms（FFI280/resume884）失败；原门槛未改。本地设置连续3轮12项pass，不能据此声称CI问题已修复，新提交CI独立验。32/98，66任务与最终发行继续；系统输入设置保留、不使用子代理/本机iOS模拟器、版本仍.3。
+
+## D049 · 2026-10-14 新 SecretStore 读取基础（R4.3.04进行中）
+
+新Mac服务精确引用、不枚举或回退旧profile/凭据，WhenUnlockedThisDeviceOnly与禁止同步、LAContext禁止交互；失败状态不返回secret，数据不可Codable/调试脱敏，HTTP CRLF/非ASCII/长度拒绝。实际系统仅查新随机不存在引用；三锁定/认证状态为注入验证，没有锁屏机器或更改系统设置。Swift6 warnings-as-errors/新项目生成/真实Release/strict签名通过。初始弃用API警告已用SDK推荐的LAContext替换并留证。
+
+R4.3.03已推21a08e5，CI38465324522运行中；本基础先本地提交，后续URLSession/Rust通道/生命周期/URLProtocol/实际锁屏验收继续，不勾选R4.3.04，不改32/98及全部最终门禁。

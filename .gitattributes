@@ -16,3 +16,5 @@ docs/acceptance/pre-alpha.4/development/r42/native-values-raw/*.sample.txt -whit
 docs/acceptance/pre-alpha.4/development/r43/agent-protocol-foundation-raw/*.log -whitespace
 
 docs/acceptance/pre-alpha.4/development/r43/agent-protocol-native-raw/*.log -whitespace
+
+docs/acceptance/pre-alpha.4/development/r43/frontend-ci-serial-raw/*.log -whitespace

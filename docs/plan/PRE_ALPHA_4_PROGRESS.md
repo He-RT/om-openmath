@@ -548,3 +548,8 @@ Done依据与覆盖case/proof:
 - 原失败（缺测试源依赖、Foundation填满读小帧死锁/实际sample、Swift async semaphore、OS自动字符编码变量断言）及完整输入、帧、事件、命令/日志/SHA见[证据](../acceptance/pre-alpha.4/development/r43/agent-protocol-native.json)和49 raw文件。Node本机25.9仅开发，CI26.11.1；生产Pi/runtime未验，tool/request仅pending意图，没有模型请求/工具/CAS效果。
 - 549418b exact CI38419147394五job全success；本批新SHA需另验CI。清理16项闲置WASM/iOS编译deps/build/fingerprint/incremental约3.91GiB，保留profile根产品、旧公开包、当前Mac/Debug、所有源码及输入/失败证据；盘约28GiB。
 - OS输入设置保留，R4.2.03真实中文/日文候选窗口待验不重问；私有API仍仓库外600/700全计划可用，无旧Key/env/profile读取。运行/公开.3、Root1/lib4/doc5/.omnb1、dev/no main、无子代理/本机iOS模拟器、32最终gates not_run/no candidate/ready=false/released=false；完整68任务及发行继续，goal active。
+
+## D046 · 2026-10-14 CI资源竞争与Pi循环初验
+
+- eaaa91b/CI38441550266前端36例中34通过/1跳过/1失败：西瓜场景30s仍Running，2 workers。下载原错误页面及完整job日志；本地Node26并行5 workers复现scene5s/西瓜30s两失败，33通过/1跳过。CI改为1 worker后完整35通过/1跳过，96s；保留应用预算、断言与测试时限。资源竞争为证据支持的推断，仍需新SHA CI确认，[官方Playwright建议](https://playwright.dev/docs/ci#workers)同样使用CI串行。[完整证据](../acceptance/pre-alpha.4/development/r43/frontend-ci-serial.json)。
+- R4.3.02开始：官方Node26.11.1 arm64 SHA与现有候选缓存一致；真实Pi1.0.4 wrapper的3循环测试通过（ACK后串行工具/取消阻止执行/拒绝shell与错task），尚为合成native callbacks；ESM生产闭包/动态资源/随包绝对路径/真实task fixture仍待实现。严格自身TS通过skipLibCheck；原上游Google GenAI声明缺可选MCP类型失败日志保留，不为此安装MCP或CodingAgent。任务未完成，当前30/98、最终32gate not_run、运行.3，完整68任务与发行继续。

@@ -1,0 +1,124 @@
+[WebServer]    Compiling cfg-if v1.0.5
+[WebServer]    Compiling serde_core v1.0.229
+[WebServer]    Compiling serde v1.0.229
+[WebServer]    Compiling num-modular v0.6.5
+[WebServer]    Compiling num-traits v0.2.19
+[WebServer]    Compiling dashu-int v0.6.1
+[WebServer]    Compiling static_assertions v1.1.0
+[WebServer]    Compiling thiserror v2.0.21
+[WebServer]    Compiling zmij v1.0.23
+[WebServer]    Compiling serde_json v1.0.151
+[WebServer]    Compiling memchr v2.8.3
+[WebServer]    Compiling itoa v1.0.18
+[WebServer]    Compiling smallvec v1.16.2
+[WebServer]    Compiling dashu-base v0.6.1
+[WebServer]    Compiling rustc-hash v2.1.3
+[WebServer]    Compiling once_cell v1.21.4
+[WebServer]    Compiling bytemuck v1.25.2
+[WebServer]    Compiling wasm-bindgen-shared v0.2.129
+[WebServer]    Compiling unicode-ident v1.0.26
+[WebServer]    Compiling font-types v0.12.6
+[WebServer]    Compiling pin-project-lite v0.2.17
+[WebServer]    Compiling yazi v0.2.1
+[WebServer]    Compiling futures-task v0.3.34
+[WebServer]    Compiling zeno v0.3.3
+[WebServer]    Compiling futures-core v0.3.34
+[WebServer]    Compiling slab v0.4.12
+[WebServer]    Compiling wasm-bindgen v0.2.129
+[WebServer]    Compiling read-fonts v0.41.0
+[WebServer]    Compiling futures-util v0.3.34
+[WebServer]    Compiling console_error_panic_hook v0.1.7
+[WebServer]    Compiling js-sys v0.3.106
+[WebServer]    Compiling ts-rs v12.0.1
+[WebServer]    Compiling dashu-float v0.6.1
+[WebServer]    Compiling skrifa v0.44.0
+[WebServer]    Compiling dashu-ratio v0.6.1
+[WebServer]    Compiling dashu-cmplx v0.6.1
+[WebServer]    Compiling dashu v0.6.1
+[WebServer]    Compiling om-num v0.1.0-pre-alpha.3 (/Users/hert/Projects/openmath/crates/om-num)
+[WebServer]    Compiling om-core v0.1.0-pre-alpha.3 (/Users/hert/Projects/openmath/crates/om-core)
+[WebServer]    Compiling om-poly v0.1.0-pre-alpha.3 (/Users/hert/Projects/openmath/crates/om-poly)
+[WebServer]    Compiling om-analysis v0.1.0-pre-alpha.3 (/Users/hert/Projects/openmath/crates/om-analysis)
+[WebServer]    Compiling om-llm v0.1.0-pre-alpha.3 (/Users/hert/Projects/openmath/crates/om-llm)
+[WebServer]    Compiling swash v0.2.10
+[WebServer]    Compiling om-simplify v0.1.0-pre-alpha.3 (/Users/hert/Projects/openmath/crates/om-simplify)
+[WebServer]    Compiling om-parse v0.1.0-pre-alpha.3 (/Users/hert/Projects/openmath/crates/om-parse)
+[WebServer]    Compiling om-solve v0.1.0-pre-alpha.3 (/Users/hert/Projects/openmath/crates/om-solve)
+[WebServer]    Compiling om-format v0.1.0-pre-alpha.3 (/Users/hert/Projects/openmath/crates/om-format)
+[WebServer]    Compiling om-eval v0.1.0-pre-alpha.3 (/Users/hert/Projects/openmath/crates/om-eval)
+[WebServer]    Compiling om-kernel v0.1.0-pre-alpha.3 (/Users/hert/Projects/openmath/crates/om-kernel)
+[WebServer]    Compiling om-wasm v0.1.0-pre-alpha.3 (/Users/hert/Projects/openmath/crates/om-wasm)
+[WebServer]     Finished `release` profile [optimized] target(s) in 58.25s
+[WebServer] (node:54165) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 36 tests using 5 workers
+(node:54173) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:54176) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:54172) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:54175) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:54174) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+·······°·····F(node:54456) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+················F·····
+
+  1) e2e/scene.spec.ts:3:1 › actual kernel 3D mesh uses real WebGL2, rotates zooms resets and exports original OBJ 
+
+    Error: expect(locator).toBeVisible() failed
+
+    Locator: locator('.scene-view')
+    Expected: visible
+    Timeout: 5000ms
+    Error: element(s) not found
+
+    Call log:
+      - Expect "toBeVisible" locator('.scene-view') with timeout 5000ms
+      - waiting for locator('.scene-view')
+
+
+       5 |  const editor=page.getByRole('textbox',{name:'Math input 1',exact:true});
+       6 |  await editor.fill('parametric_plot([cos(u)*sin(v),sin(u)*sin(v),cos(v)],u:0..2*pi,v:0..pi,mesh_points:16,color:fn(p,u,v)=>[0.1,0.5+0.3*cos(12*u),0.2])');await editor.press('ControlOrMeta+Enter');await editor.press('Escape');
+    >  7 |  const scene=page.locator('.scene-view');await expect(scene).toBeVisible();await expect(scene.getByRole('alert')).toHaveCount(0);
+         |                                                              ^
+       8 |  const canvas=scene.locator('canvas');await expect(canvas).toBeVisible();
+       9 |  const hash=()=>canvas.evaluate((c:HTMLCanvasElement)=>{
+      10 |   const gl=c.getContext('webgl2')!;const data=new Uint8Array(c.width*c.height*4);gl.readPixels(0,0,c.width,c.height,gl.RGBA,gl.UNSIGNED_BYTE,data);
+        at /Users/hert/Projects/openmath/app/e2e/scene.spec.ts:7:62
+
+    Error Context: test-results/scene-actual-kernel-3D-mes-a1a4e-ts-and-exports-original-OBJ/error-context.md
+
+  2) e2e/science-scenarios.spec.ts:17:1 › complete watermelon is actual kernel geometry with skin cut rind seeds GPU rotation and OBJ readback 
+
+    Error: expect(locator).toBeVisible() failed
+
+    Locator: locator('.scene-view')
+    Expected: visible
+    Timeout: 30000ms
+    Error: element(s) not found
+
+    Call log:
+      - Expect "toBeVisible" locator('.scene-view') with timeout 30000ms
+      - waiting for locator('.scene-view')
+
+
+      19 |  const editor=page.getByRole('textbox',{name:'Math input 1',exact:true});
+      20 |  await editor.fill(await readFile(new URL('../../docs/examples/watermelon.om',import.meta.url),'utf8'));await editor.press('ControlOrMeta+Enter');await editor.press('Escape');
+    > 21 |  const scene=page.locator('.scene-view');await expect(scene).toBeVisible({timeout:30_000});await expect(scene.getByRole('alert')).toHaveCount(0);
+         |                                                              ^
+      22 |  const canvas=scene.locator('canvas');await expect(canvas).toBeVisible();
+      23 |  const pixels=()=>canvas.evaluate((c:HTMLCanvasElement)=>{const gl=c.getContext('webgl2')!;const a=new Uint8Array(c.width*c.height*4);gl.readPixels(0,0,c.width,c.height,gl.RGBA,gl.UNSIGNED_BYTE,a);let green=0,red=0,dark=0,sum=0;for(let i=0;i<a.length;i+=4){const r=a[i]!,g=a[i+1]!,b=a[i+2]!;if(g>r*1.7&&g>b*1.3)green++;if(r>g*1.6&&r>b*1.1)red++;if(r<65&&g<65&&b<65)dark++;sum=(sum+r*3+g*7+b*11)%1_000_000_007;}return {green,red,dark,sum};});
+      24 |  const first=await pixels();expect(first.green).toBeGreaterThan(500);expect(first.red).toBeGreaterThan(200);expect(first.dark).toBeGreaterThan(20);
+        at /Users/hert/Projects/openmath/app/e2e/science-scenarios.spec.ts:21:62
+
+    Error Context: test-results/science-scenarios-complete-fa5b5-U-rotation-and-OBJ-readback/error-context.md
+
+  2 failed
+    e2e/scene.spec.ts:3:1 › actual kernel 3D mesh uses real WebGL2, rotates zooms resets and exports original OBJ 
+    e2e/science-scenarios.spec.ts:17:1 › complete watermelon is actual kernel geometry with skin cut rind seeds GPU rotation and OBJ readback 
+  1 skipped
+  33 passed (3.2m)

@@ -1,0 +1,76 @@
+{
+  "schema_version": 1,
+  "kind": "development CI repair, not final gate",
+  "task_progress": "30/98; R4.3.02 remains in progress",
+  "date": "2026-10-14",
+  "trigger": {
+    "sha": "eaaa91bf40f1a5770500c8c805fb6306b51fe06d",
+    "run": 38441550266,
+    "job": 115449123734,
+    "failure": "watermelon scene not visible after 30s; actual page still Running",
+    "workers": 2
+  },
+  "local_before": {
+    "workers": 5,
+    "passed": 33,
+    "skipped": 1,
+    "failed": 2,
+    "failures": [
+      "scene view default5s",
+      "watermelon view30s"
+    ]
+  },
+  "change": "CI uses one Playwright worker; application and test timeouts/assertions unchanged",
+  "local_after": {
+    "workers": 1,
+    "passed": 35,
+    "skipped": 1,
+    "failed": 0,
+    "seconds": 96
+  },
+  "inference": "Parallel CAS/software-GPU resource contention contributed to the timeouts; serialized complete suite passes. Exact new CI must still be checked.",
+  "primary_source": "https://playwright.dev/docs/ci#workers",
+  "command": "CI=true <verified Node26.11.1 arm64>/bin/node node_modules/@playwright/test/cli.js test (cwd app)",
+  "files": [
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/frontend-ci-serial-raw/eaaa91b-frontend-job.log",
+      "sha256": "0fa863d09f438947c35919f9394f48ee91ae3258f0b002c41f1e10641a1c1b1d",
+      "bytes": 118292
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/frontend-ci-serial-raw/error-context.md",
+      "sha256": "ca5380f248f081f67ea1d74d5a0801215c524654469bf87716f68aac9660e0e9",
+      "bytes": 7482
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/frontend-ci-serial-raw/frontend-parallel-local-initial.log",
+      "sha256": "436e7988b9936754a4342dd580c981cf0d538ff2bdb4760ab6c86171a8e8f4bf",
+      "bytes": 7783
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/frontend-ci-serial-raw/frontend-serial-local-verified.log",
+      "sha256": "804e4155f306858ec446565bd65251a8cc5373fb660d0ca0a238d96a3f249726",
+      "bytes": 563
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/frontend-ci-serial-raw/playwright.config.ts",
+      "sha256": "1eb7031ad366e01c7503abf4f1edb02eeb9361258bad79c262b4745c4e619825",
+      "bytes": 679
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/frontend-ci-serial-raw/scene.spec.ts",
+      "sha256": "98544a0daa74a8b8ef6c232f9ec4a35e991cd54311191533d694c2dff663408b",
+      "bytes": 3449
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/frontend-ci-serial-raw/science-scenarios.spec.ts",
+      "sha256": "bd92c1b9d703972ca0a4a11af04dab8a085be5a11d953c828af5361cd0fa306a",
+      "bytes": 4792
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/frontend-ci-serial-raw/watermelon.om",
+      "sha256": "fc77864c5e83a4c0cf3ab28cb8e525bc0f8edc3327a3c55c4b93e70fe544923c",
+      "bytes": 1251
+    }
+  ]
+}

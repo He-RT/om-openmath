@@ -13,6 +13,7 @@
   },
   "scripts": {
     "audit:dependencies": "node scripts/audit-dependencies.mjs",
-    "test:protocol": "node --test test/protocol.test.mjs"
+    "test:protocol": "node --test test/protocol.test.mjs",
+    "test:runtime": "node --test test/pi-runtime.test.mjs"
   }
 }

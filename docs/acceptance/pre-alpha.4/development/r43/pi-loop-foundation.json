@@ -1,0 +1,67 @@
+{
+  "schema_version": 1,
+  "task": "R4.3.02",
+  "status": "in_progress",
+  "date": "2026-10-14",
+  "kind": "actual pinned Pi API development proof, not production helper or final gate",
+  "versions": {
+    "core": "1.0.4",
+    "ai": "1.0.4",
+    "node": "26.11.1",
+    "architecture": "darwin-arm64",
+    "node_archive_sha256": "0ef9b443000681bffc062ec126d53f97933ea9b086ea73dcba0480d87e639b39"
+  },
+  "tests": 3,
+  "tested": [
+    "canonical ACK pending prevents tool callbacks",
+    "sequential two tools and hooks before subsequent request",
+    "abort while ACK pending prevents effects",
+    "shell plugin and old user task denied"
+  ],
+  "callbacks": "synthetic native callbacks, not actual source/tool/SQLite effects",
+  "network_requests": 0,
+  "cas_effects": 0,
+  "production_runtime_packaged": false,
+  "limitations": [
+    "main/frame bridge and canonical input delivery still to implement",
+    "production ESM dependency/resource closure still to implement",
+    "Swift absolute bundled executable/identity/cwd/env/restart/crash isolation still to implement",
+    "upstream Google GenAI declarations reference an uninstalled optional MCP type; own strict code checked with skipLibCheck, no MCP/CodingAgent installation"
+  ],
+  "commands": [
+    "target/native-runtime/node-v26.11.1-darwin-arm64/bin/node --test agent/test/pi-runtime.test.mjs",
+    "node app/node_modules/typescript/bin/tsc --noEmit --strict --skipLibCheck --module nodenext --target es2024 --allowImportingTsExtensions --types node --typeRoots app/node_modules/@types agent/src/runtime.ts"
+  ],
+  "files": [
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/pi-loop-foundation-raw/node26-upstream-sha256.txt",
+      "sha256": "75ff0c104acddb008964dd5feb88f58844b652820cb1cb01696f95031372b293",
+      "bytes": 3171
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/pi-loop-foundation-raw/pi-runtime-initial.log",
+      "sha256": "1921e05b2547afd0d5b362832ad9f9651e3b55f1dc5c7055d7126e5afc5b3f02",
+      "bytes": 385
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/pi-loop-foundation-raw/pi-runtime-typescript-initial.log",
+      "sha256": "542fc676f5112403dfb86012ea343629f4326cce80f033e5d15ca89cfe26de1a",
+      "bytes": 177
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/pi-loop-foundation-raw/pi-runtime-typescript-verified.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/pi-loop-foundation-raw/pi-runtime.test.mjs",
+      "sha256": "7272641e1ef7676a302d437e0f1bae602251f4d05bc54937bd1d22b565a28a90",
+      "bytes": 4492
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/pi-loop-foundation-raw/runtime.ts",
+      "sha256": "569a8ba3b2126410aac5201205d953aaf10a5fc19c53936aa6879ac56aadaf2a",
+      "bytes": 4045
+    }
+  ]
+}

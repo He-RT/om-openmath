@@ -1,0 +1,1 @@
+agent/node_modules/@google/genai/dist/node/node.d.ts(1,29): error TS2307: Cannot find module '@modelcontextprotocol/sdk/client/index.js' or its corresponding type declarations.

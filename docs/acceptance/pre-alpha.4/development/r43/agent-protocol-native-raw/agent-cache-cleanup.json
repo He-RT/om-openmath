@@ -1,0 +1,78 @@
+{
+  "scope": "inactive project compiler caches only",
+  "removed": [
+    {
+      "path": "target/wasm32-unknown-unknown/debug/.fingerprint",
+      "bytes": 199094
+    },
+    {
+      "path": "target/wasm32-unknown-unknown/debug/deps",
+      "bytes": 816694792
+    },
+    {
+      "path": "target/wasm32-unknown-unknown/debug/build",
+      "bytes": 7346
+    },
+    {
+      "path": "target/wasm32-unknown-unknown/debug/incremental",
+      "bytes": 923945250
+    },
+    {
+      "path": "target/wasm32-unknown-unknown/release/.fingerprint",
+      "bytes": 145420
+    },
+    {
+      "path": "target/wasm32-unknown-unknown/release/deps",
+      "bytes": 636018049
+    },
+    {
+      "path": "target/wasm32-unknown-unknown/release/build",
+      "bytes": 5064
+    },
+    {
+      "path": "target/wasm32-unknown-unknown/release/incremental",
+      "bytes": 0
+    },
+    {
+      "path": "target/aarch64-apple-ios/release/.fingerprint",
+      "bytes": 110816
+    },
+    {
+      "path": "target/aarch64-apple-ios/release/deps",
+      "bytes": 909087127
+    },
+    {
+      "path": "target/aarch64-apple-ios/release/build",
+      "bytes": 4137
+    },
+    {
+      "path": "target/aarch64-apple-ios/release/incremental",
+      "bytes": 0
+    },
+    {
+      "path": "target/aarch64-apple-ios-sim/release/.fingerprint",
+      "bytes": 111208
+    },
+    {
+      "path": "target/aarch64-apple-ios-sim/release/deps",
+      "bytes": 908575758
+    },
+    {
+      "path": "target/aarch64-apple-ios-sim/release/build",
+      "bytes": 4278
+    },
+    {
+      "path": "target/aarch64-apple-ios-sim/release/incremental",
+      "bytes": 0
+    }
+  ],
+  "preserved": [
+    "profile root products",
+    "public release packages",
+    "current native Release",
+    "current Rust debug dependencies",
+    "all test input/output evidence",
+    "source and credentials"
+  ],
+  "total_bytes": 4194908339
+}

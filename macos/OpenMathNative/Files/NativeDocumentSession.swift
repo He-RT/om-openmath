@@ -29,6 +29,7 @@ actor NativeAppStorage {
   let drafts:DraftStore
   let undo:UndoCoordinator
   let backup:NativeDraftBackup
+  let agent:AgentSessionService
   let runtime:NotebookRuntime
   private(set) var recoveryMessages:[String]=[]
   private(set) var recoveryHistoryCursor:DocumentProjectionCursor?
@@ -39,6 +40,7 @@ actor NativeAppStorage {
     self.document=document;self.host=host;self.source=source;self.files=files;self.drafts=drafts;self.storage=storage
     self.undo=UndoCoordinator {transactions,group,operation in try await source.undo(transactions:transactions,group:group,operation:operation)}
     self.backup=NativeDraftBackup(storage:storage,store:drafts,owner:backupOwner)
+    self.agent=AgentSessionService(host:host,storage:storage,document:drafts.confirmed.document_id,generation:drafts.documentGeneration)
     self.runtime=NotebookRuntime(host:host,storage:storage,source:source)
     runtime.selectedCell=drafts.confirmed.file.cells.first?.id
     runtime.beforeRun={ [weak self] in
@@ -145,9 +147,9 @@ actor NativeAppStorage {
   func close(approvalRequired:Bool=false) async throws {
     guard !closed else {return}
     for editor in editors.values {editor.textView.isEditable=false}
-    do {try document.checkCloseApproval(approvalRequired);try await document.closeNative(approvalRequired:approvalRequired);backup.stop()}
+    do {try document.checkCloseApproval(approvalRequired);_ = try? await agent.cancel(reason:.document_closed);try await document.closeNative(approvalRequired:approvalRequired);backup.stop()}
     catch {for editor in editors.values {editor.textView.isEditable=true};throw error}
-    closed=true;await runtime.close();await source.close();try await host.close()
+    closed=true;await agent.close();await runtime.close();await source.close();try await host.close()
     try await storage.closeDocument(drafts.confirmed.document_id)
   }
 }

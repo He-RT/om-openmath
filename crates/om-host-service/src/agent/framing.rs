@@ -91,7 +91,10 @@ impl<'de> Visitor<'de> for StrictSeed<'_> {
 /// Parse data-only JSON without silently replacing invalid UTF8 or duplicate fields.
 /// Error strings reveal no peer-controlled text or credential-shaped content.
 pub fn strict_json(bytes: &[u8]) -> Result<Value, &'static str> {
-    if bytes.is_empty() || bytes.len() > MAX_FRAME_BYTES {
+    strict_json_bounded(bytes, MAX_FRAME_BYTES)
+}
+pub(super) fn strict_json_bounded(bytes: &[u8], maximum: usize) -> Result<Value, &'static str> {
+    if bytes.is_empty() || bytes.len() > maximum {
         return Err("IPC_FRAME_SIZE");
     }
     std::str::from_utf8(bytes).map_err(|_| "IPC_INVALID_UTF8")?;

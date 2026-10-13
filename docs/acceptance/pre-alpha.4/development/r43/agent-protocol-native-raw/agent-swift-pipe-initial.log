@@ -1,0 +1,164 @@
+   Compiling om-host-service v0.1.0-pre-alpha.3 (/Users/hert/Projects/openmath/crates/om-host-service)
+   Compiling om-apple-ffi v0.1.0-pre-alpha.3 (/Users/hert/Projects/openmath/crates/om-apple-ffi)
+    Finished `release` profile [optimized] target(s) in 32.52s
+macos/OpenMathNative/Storage/CommitPort.swift:16:22: error: cannot find type 'DraftStore' in scope
+ 14 |   private let client:NativeHostClient
+ 15 |   private let storage:StorageService
+ 16 |   private let drafts:DraftStore
+    |                      `- error: cannot find type 'DraftStore' in scope
+ 17 |   private let clock:SourceOwnerClock
+ 18 |   private var closing=false
+
+macos/OpenMathNative/Storage/CommitPort.swift:23:41: error: cannot find type 'DraftAcknowledgement' in scope
+ 21 |   private var activeCalls=0
+ 22 |   private var cancelRequests=Set<String>()
+ 23 |   private var acknowledgements:[String:[DraftAcknowledgement]]=[:]
+    |                                         `- error: cannot find type 'DraftAcknowledgement' in scope
+ 24 |   private var gates:[String:PhysicalCommitGate]=[:]
+ 25 |   private var blockedUnknown:String?
+
+macos/OpenMathNative/Storage/CommitPort.swift:27:62: error: cannot find type 'DraftStore' in scope
+ 25 |   private var blockedUnknown:String?
+ 26 |   private var admissionOnlyUnknown=Set<String>()
+ 27 |   init(client:NativeHostClient,storage:StorageService,drafts:DraftStore,clock:SourceOwnerClock) {
+    |                                                              `- error: cannot find type 'DraftStore' in scope
+ 28 |     self.client=client;self.storage=storage;self.drafts=drafts;self.clock=clock
+ 29 |   }
+
+macos/OpenMathNative/Storage/CommitPort.swift:116:68: error: cannot find type 'DraftAcknowledgement' in scope
+114 |     return try await execute(plan,acknowledgements:[],manual:false,faults:faults)
+115 |   }
+116 |   private func execute(_ plan:NativeSourceCommit,acknowledgements:[DraftAcknowledgement],manual:Bool,faults:StorageFaults) async throws ->NativeCommitState {
+    |                                                                    `- error: cannot find type 'DraftAcknowledgement' in scope
+117 |     guard !closing else {throw StorageError.closing}
+118 |     let operation=plan.commit.operation_id
+
+macos/OpenMathNative/Storage/CommitPort.swift:45:71: error: cannot infer key path type from context; consider explicitly specifying a root type
+ 43 |     let reply=try await client.sourceCommand(.source_prepare_manual(.init(type:.source_prepare_manual,operations:operations,input_group_id:inputGroup)))
+ 44 |     guard let plan=reply.plan.value else {throw NativeHostClientError.invalidReply}
+ 45 |     let committed=try await execute(plan,acknowledgements:pending.map(\.1),manual:true,faults:faults)
+    |                                                                       `- error: cannot infer key path type from context; consider explicitly specifying a root type
+ 46 |     guard committed.phase == .completed else {throw committed.phase == .cancelled ? CommitPortError.cancelled : CommitPortError.sourceConflict}
+ 47 |     return committed
+
+macos/OpenMathNative/Storage/CommitPort.swift:46:31: error: cannot infer contextual base in reference to member 'completed'
+ 44 |     guard let plan=reply.plan.value else {throw NativeHostClientError.invalidReply}
+ 45 |     let committed=try await execute(plan,acknowledgements:pending.map(\.1),manual:true,faults:faults)
+ 46 |     guard committed.phase == .completed else {throw committed.phase == .cancelled ? CommitPortError.cancelled : CommitPortError.sourceConflict}
+    |                               `- error: cannot infer contextual base in reference to member 'completed'
+ 47 |     return committed
+ 48 |   }
+
+macos/OpenMathNative/Storage/CommitPort.swift:46:69: error: generic parameter 'Element' could not be inferred
+ 44 |     guard let plan=reply.plan.value else {throw NativeHostClientError.invalidReply}
+ 45 |     let committed=try await execute(plan,acknowledgements:pending.map(\.1),manual:true,faults:faults)
+ 46 |     guard committed.phase == .completed else {throw committed.phase == .cancelled ? CommitPortError.cancelled : CommitPortError.sourceConflict}
+    |                                                                     `- error: generic parameter 'Element' could not be inferred
+ 47 |     return committed
+ 48 |   }
+
+macos/OpenMathNative/Storage/CommitPort.swift:55:143: error: cannot infer key path type from context; consider explicitly specifying a root type
+ 53 |     let nativeState=try await drafts.editorState()
+ 54 |     _ = try await client.sourceCommand(.source_editor_changed(.init(type:.source_editor_changed,state:nativeState)))
+ 55 |     let reference=try await client.sourceCommand(.source_snapshot_ref(.init(type:.source_snapshot_ref,complete_cell_ids:source.file.cells.map(\.id))))
+    |                                                                                                                                               `- error: cannot infer key path type from context; consider explicitly specifying a root type
+ 56 |     guard let snapshotRef=reference.reference.value else {throw NativeHostClientError.invalidReply}
+ 57 |     let argument=NativePreviewArgs(snapshot_ref:snapshotRef,input:input)
+
+macos/OpenMathNative/Storage/CommitPort.swift:52:16: warning: no 'async' operations occur within 'await' expression [#UnnecessaryEffectMarker]
+ 50 |     try beginCall();defer {activeCalls-=1}
+ 51 |     try await synchronizeDrafts()
+ 52 |     let source=await drafts.confirmed
+    |                `- warning: no 'async' operations occur within 'await' expression [#UnnecessaryEffectMarker]
+ 53 |     let nativeState=try await drafts.editorState()
+ 54 |     _ = try await client.sourceCommand(.source_editor_changed(.init(type:.source_editor_changed,state:nativeState)))
+
+macos/OpenMathNative/Storage/CommitPort.swift:71:47: error: cannot infer contextual base in reference to member 'undo'
+ 69 |     let source=await drafts.confirmed
+ 70 |     if let actual=try await storage.sourceReceipt(document:source.document_id,operation:operation) {
+ 71 |       guard actual.receipt.operation_kind == .undo,actual.receipt.transaction_id.value != nil else {throw StorageError.idempotencyConflict}
+    |                                               `- error: cannot infer contextual base in reference to member 'undo'
+ 72 |       let metadata=try await storage.sourceUndoMetadata(document:source.document_id,operation:operation)
+ 73 |       guard let metadata,metadata.group_id==group,
+
+macos/OpenMathNative/Storage/CommitPort.swift:69:16: warning: no 'async' operations occur within 'await' expression [#UnnecessaryEffectMarker]
+ 67 |     guard !inFlight.contains(operation),!preparing.contains(operation) else {throw CommitPortError.operationInProgress}
+ 68 |     preparing.insert(operation);defer {preparing.remove(operation)}
+ 69 |     let source=await drafts.confirmed
+    |                `- warning: no 'async' operations occur within 'await' expression [#UnnecessaryEffectMarker]
+ 70 |     if let actual=try await storage.sourceReceipt(document:source.document_id,operation:operation) {
+ 71 |       guard actual.receipt.operation_kind == .undo,actual.receipt.transaction_id.value != nil else {throw StorageError.idempotencyConflict}
+
+macos/OpenMathNative/Storage/CommitPort.swift:146:15: error: cannot find type 'DraftFence' in scope
+144 |       blockedUnknown=operation;throw CommitPortError.unknownOutcome
+145 |     }
+146 |     let fence:DraftFence
+    |               `- error: cannot find type 'DraftFence' in scope
+147 |     let barrier:@Sendable ()throws->Void
+148 |     var acquiredFence:String?
+
+macos/OpenMathNative/Storage/CommitPort.swift:172:95: error: cannot infer contextual base in reference to member 'completed'
+170 |       let receipt=try await storage.commitSource(plan,faults:faults,controls:controls)
+171 |       let result=try await client.sourceCommand(.source_completed(.init(type:.source_completed,operation_id:operation,receipt:receipt)))
+172 |       guard let source=result.snapshot.value,let state=result.operation.value,state.phase == .completed else {throw NativeHostClientError.invalidReply}
+    |                                                                                               `- error: cannot infer contextual base in reference to member 'completed'
+173 |       try await drafts.acknowledge(source,ownDrafts:acknowledgements)
+174 |       self.acknowledgements.removeValue(forKey:operation)
+
+macos/OpenMathNative/Storage/CommitPort.swift:240:33: error: reference to member 'completed' cannot be resolved without a contextual type
+238 |       // lost ACK, then settle the same ID. Restart recovery cannot rely on this in-memory fact.
+239 |       let admitted=try await storage.sourceAdmission(document:source.document_id,operation:operation)
+240 |       guard admitted?.phase != .completed else {throw CommitPortError.unknownOutcome}
+    |                                 `- error: reference to member 'completed' cannot be resolved without a contextual type
+241 |       let settled:NativeCommitState
+242 |       if admitted != nil {
+
+macos/OpenMathNative/Storage/CommitPort.swift:225:16: warning: no 'async' operations occur within 'await' expression [#UnnecessaryEffectMarker]
+223 |     try beginCall();defer {activeCalls-=1}
+224 |     guard !inFlight.contains(operation) else {throw CommitPortError.operationInProgress}
+225 |     let source=await drafts.confirmed
+    |                `- warning: no 'async' operations occur within 'await' expression [#UnnecessaryEffectMarker]
+226 |     if let receipt=try await storage.sourceReceipt(document:source.document_id,operation:operation) {
+227 |       let result=try await client.sourceCommand(.source_completed(.init(type:.source_completed,operation_id:operation,receipt:receipt)))
+
+macos/OpenMathNative/NativeHostClient.swift:95:65: error: cannot find type 'NativeDecodedBatch' in scope
+ 93 |     }
+ 94 |   }
+ 95 |   func nextDecodedEvents(maxBytes:Int=512*1024) async throws -> NativeDecodedBatch {
+    |                                                                 `- error: cannot find type 'NativeDecodedBatch' in scope
+ 96 |     guard let handle else { throw NativeHostClientError.closing }
+ 97 |     return try await Self.background(NativeHostQueues.events) {
+
+macos/OpenMathNative/NativeHostClient.swift:105:16: error: cannot find 'NativeDecodedEvent' in scope
+103 |           status = try JSONDecoder().decode(HostOperationStatus.self, from:JSONEncoder().encode(event.payload))
+104 |         }
+105 |         return NativeDecodedEvent(envelope:event,operation:status)
+    |                `- error: cannot find 'NativeDecodedEvent' in scope
+106 |       }
+107 |       return NativeDecodedBatch(needsResync:batch.needs_resync,lastRustSequence:batch.last_rust_event_sequence.value,events:events)
+
+macos/OpenMathNative/NativeHostClient.swift:107:14: error: cannot find 'NativeDecodedBatch' in scope
+105 |         return NativeDecodedEvent(envelope:event,operation:status)
+106 |       }
+107 |       return NativeDecodedBatch(needsResync:batch.needs_resync,lastRustSequence:batch.last_rust_event_sequence.value,events:events)
+    |              `- error: cannot find 'NativeDecodedBatch' in scope
+108 |     }
+109 |   }
+
+macos/OpenMathNativeTests/AgentProtocolFixtures/main.swift:24:28: error: 'async' call in an autoclosure that does not support concurrency
+22 |     let event=try frame(hello,kind:"transcript_event",sequence:2,payload:["event_id":"complete-event","source_sequence":1,"message":canonical])
+23 |     do {_ = try await service.receive(event,faults:.init {point in if point=="session_event_committed" {throw StorageError.system(EIO,"fixture-lost-ACK")}});fatalError("lost commit ACK became success")} catch StorageError.unknownCommit { }
+24 |     precondition(try await storage.sessionEvents(session).count==1)
+   |                            `- error: 'async' call in an autoclosure that does not support concurrency
+25 |     let blocked=try frame(hello,kind:"tool_call",sequence:3,payload:["agent_turn_id":"turn","tool_call_id":"model-call","proposal_event_ref":"complete-event"])
+26 |     do {_ = try await service.receive(blocked);fatalError("unconfirmed ledger admitted tool")} catch NativeHostClientError.rejected { }
+
+macos/OpenMathNativeTests/AgentProtocolFixtures/main.swift:24:28: error: call can throw, but it is executed in a non-throwing autoclosure
+22 |     let event=try frame(hello,kind:"transcript_event",sequence:2,payload:["event_id":"complete-event","source_sequence":1,"message":canonical])
+23 |     do {_ = try await service.receive(event,faults:.init {point in if point=="session_event_committed" {throw StorageError.system(EIO,"fixture-lost-ACK")}});fatalError("lost commit ACK became success")} catch StorageError.unknownCommit { }
+24 |     precondition(try await storage.sessionEvents(session).count==1)
+   |                            `- error: call can throw, but it is executed in a non-throwing autoclosure
+25 |     let blocked=try frame(hello,kind:"tool_call",sequence:3,payload:["agent_turn_id":"turn","tool_call_id":"model-call","proposal_event_ref":"complete-event"])
+26 |     do {_ = try await service.receive(blocked);fatalError("unconfirmed ledger admitted tool")} catch NativeHostClientError.rejected { }
+
+[#UnnecessaryEffectMarker]: <https://docs.swift.org/compiler/documentation/diagnostics/unnecessary-effect-marker>

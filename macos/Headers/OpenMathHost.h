@@ -23,6 +23,7 @@ om_host_buffer om_host_read_snapshot(om_host_handle *host, const unsigned char *
 om_host_buffer om_host_source_command(om_host_handle *host, const unsigned char *json, size_t len);
 om_host_buffer om_host_kernel_command(om_host_handle *host, const unsigned char *json, size_t len);
 om_host_buffer om_host_result_command(om_host_handle *host, const unsigned char *json, size_t len);
+om_host_buffer om_host_agent_command(om_host_handle *host, const unsigned char *json, size_t len);
 int32_t om_host_cancel(om_host_handle *host, const unsigned char *operation_id, size_t len);
 om_host_buffer om_host_close_begin(om_host_handle *host);
 int32_t om_host_close_finish(om_host_handle *host);

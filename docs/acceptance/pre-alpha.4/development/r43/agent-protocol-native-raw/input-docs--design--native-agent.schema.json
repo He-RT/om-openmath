@@ -1,0 +1,2171 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://openmath.dev/schemas/native-agent-v1.json",
+  "title": "Private native Agent IPC and OpenMath canonical messages",
+  "description": "Shape is not permission. Host owns connection/task/document/grants and admission IDs. Credentials and arbitrary transport URLs are not frame fields. UTF8 NDJSON frames are at most 1MiB; immutable canonical events require durable ACK. Helper settled is loop state, not proof of mathematical/task success.",
+  "oneOf": [
+    {
+      "$ref": "#/$defs/AgentIPCFrame"
+    },
+    {
+      "$ref": "#/$defs/NativeAgentHostCommand"
+    },
+    {
+      "$ref": "#/$defs/NativeAgentHostReply"
+    }
+  ],
+  "$defs": {
+    "Identity": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 256,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "Serial": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991,
+      "description": "共同可精确表示的单调计数；不能静默回绕。"
+    },
+    "Sha256": {
+      "type": "string",
+      "minLength": 64,
+      "maxLength": 64,
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "AgentToolName": {
+      "type": "string",
+      "enum": [
+        "read_notebook",
+        "search_functions",
+        "get_function_docs",
+        "preview_source",
+        "apply_notebook_patch",
+        "run_cells",
+        "inspect_result",
+        "evaluate_scratch",
+        "read_attachment",
+        "prepare_attachment",
+        "get_operation_status",
+        "undo_transaction"
+      ]
+    },
+    "AgentTextPart": {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "const": "text"
+        },
+        "part_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "text": {
+          "type": "string",
+          "maxLength": 262144
+        }
+      },
+      "required": [
+        "kind",
+        "part_id",
+        "text"
+      ],
+      "additionalProperties": false
+    },
+    "AgentMediaPart": {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "const": "media"
+        },
+        "part_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "media_ref": {
+          "$ref": "#/$defs/Identity"
+        },
+        "submission_kind": {
+          "enum": [
+            "image",
+            "audio",
+            "video",
+            "file"
+          ],
+          "type": "string"
+        }
+      },
+      "required": [
+        "kind",
+        "part_id",
+        "media_ref",
+        "submission_kind"
+      ],
+      "additionalProperties": false
+    },
+    "AgentToolProposalPart": {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "const": "tool_call"
+        },
+        "part_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "tool_call_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "name": {
+          "$ref": "#/$defs/AgentToolName"
+        },
+        "arguments_json": {
+          "type": "string",
+          "maxLength": 65536
+        }
+      },
+      "required": [
+        "kind",
+        "part_id",
+        "tool_call_id",
+        "name",
+        "arguments_json"
+      ],
+      "additionalProperties": false
+    },
+    "AgentToolResultPart": {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "const": "tool_result"
+        },
+        "part_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "tool_call_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "operation_ref": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Identity"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "result_ref": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Identity"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "outcome": {
+          "enum": [
+            "completed",
+            "partial",
+            "failed",
+            "unavailable"
+          ],
+          "type": "string"
+        }
+      },
+      "required": [
+        "kind",
+        "part_id",
+        "tool_call_id",
+        "operation_ref",
+        "result_ref",
+        "outcome"
+      ],
+      "additionalProperties": false
+    },
+    "AgentStepLinkPart": {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "const": "step_link"
+        },
+        "part_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "result_ref": {
+          "$ref": "#/$defs/Identity"
+        },
+        "step_id": {
+          "$ref": "#/$defs/Identity"
+        }
+      },
+      "required": [
+        "kind",
+        "part_id",
+        "result_ref",
+        "step_id"
+      ],
+      "additionalProperties": false
+    },
+    "AgentMessagePart": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/AgentTextPart"
+        },
+        {
+          "$ref": "#/$defs/AgentMediaPart"
+        },
+        {
+          "$ref": "#/$defs/AgentToolProposalPart"
+        },
+        {
+          "$ref": "#/$defs/AgentToolResultPart"
+        },
+        {
+          "$ref": "#/$defs/AgentStepLinkPart"
+        }
+      ]
+    },
+    "AgentCanonicalMessage": {
+      "type": "object",
+      "properties": {
+        "record_type": {
+          "const": "canonical_agent_message"
+        },
+        "message_version": {
+          "const": 1
+        },
+        "message_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "role": {
+          "enum": [
+            "system",
+            "user",
+            "assistant",
+            "tool"
+          ],
+          "type": "string"
+        },
+        "agent_turn_id": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Identity"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "task_id": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Identity"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "parts": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/AgentMessagePart"
+          },
+          "minItems": 1,
+          "maxItems": 128
+        }
+      },
+      "required": [
+        "record_type",
+        "message_version",
+        "message_id",
+        "role",
+        "agent_turn_id",
+        "task_id",
+        "parts"
+      ],
+      "additionalProperties": false
+    },
+    "AgentHelloPayload": {
+      "type": "object",
+      "properties": {
+        "core_version": {
+          "type": "string",
+          "maxLength": 64
+        },
+        "adapter_version": {
+          "type": "string",
+          "maxLength": 64
+        },
+        "schema_hash": {
+          "$ref": "#/$defs/Sha256"
+        }
+      },
+      "required": [
+        "core_version",
+        "adapter_version",
+        "schema_hash"
+      ],
+      "additionalProperties": false
+    },
+    "AgentHelloFrame": {
+      "type": "object",
+      "properties": {
+        "protocol_version": {
+          "const": 1
+        },
+        "connection_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "connection_generation": {
+          "$ref": "#/$defs/Serial"
+        },
+        "runtime_instance_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "agent_session_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "document_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "document_generation": {
+          "$ref": "#/$defs/Serial"
+        },
+        "task_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "task_generation": {
+          "$ref": "#/$defs/Serial"
+        },
+        "message_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "sequence": {
+          "$ref": "#/$defs/Serial"
+        },
+        "reply_to": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Identity"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "type": {
+          "const": "hello"
+        },
+        "payload": {
+          "$ref": "#/$defs/AgentHelloPayload"
+        }
+      },
+      "required": [
+        "protocol_version",
+        "connection_id",
+        "connection_generation",
+        "runtime_instance_id",
+        "agent_session_id",
+        "document_id",
+        "document_generation",
+        "task_id",
+        "task_generation",
+        "message_id",
+        "sequence",
+        "reply_to",
+        "type",
+        "payload"
+      ],
+      "additionalProperties": false
+    },
+    "AgentReadyPayload": {
+      "type": "object",
+      "properties": {
+        "core_version": {
+          "type": "string",
+          "maxLength": 64
+        },
+        "adapter_version": {
+          "type": "string",
+          "maxLength": 64
+        },
+        "schema_hash": {
+          "$ref": "#/$defs/Sha256"
+        }
+      },
+      "required": [
+        "core_version",
+        "adapter_version",
+        "schema_hash"
+      ],
+      "additionalProperties": false
+    },
+    "AgentReadyFrame": {
+      "type": "object",
+      "properties": {
+        "protocol_version": {
+          "const": 1
+        },
+        "connection_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "connection_generation": {
+          "$ref": "#/$defs/Serial"
+        },
+        "runtime_instance_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "agent_session_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "document_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "document_generation": {
+          "$ref": "#/$defs/Serial"
+        },
+        "task_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "task_generation": {
+          "$ref": "#/$defs/Serial"
+        },
+        "message_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "sequence": {
+          "$ref": "#/$defs/Serial"
+        },
+        "reply_to": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Identity"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "type": {
+          "const": "ready"
+        },
+        "payload": {
+          "$ref": "#/$defs/AgentReadyPayload"
+        }
+      },
+      "required": [
+        "protocol_version",
+        "connection_id",
+        "connection_generation",
+        "runtime_instance_id",
+        "agent_session_id",
+        "document_id",
+        "document_generation",
+        "task_id",
+        "task_generation",
+        "message_id",
+        "sequence",
+        "reply_to",
+        "type",
+        "payload"
+      ],
+      "additionalProperties": false
+    },
+    "AgentUserInputPayload": {
+      "type": "object",
+      "properties": {
+        "event_ref": {
+          "$ref": "#/$defs/Identity"
+        }
+      },
+      "required": [
+        "event_ref"
+      ],
+      "additionalProperties": false
+    },
+    "AgentUserInputFrame": {
+      "type": "object",
+      "properties": {
+        "protocol_version": {
+          "const": 1
+        },
+        "connection_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "connection_generation": {
+          "$ref": "#/$defs/Serial"
+        },
+        "runtime_instance_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "agent_session_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "document_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "document_generation": {
+          "$ref": "#/$defs/Serial"
+        },
+        "task_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "task_generation": {
+          "$ref": "#/$defs/Serial"
+        },
+        "message_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "sequence": {
+          "$ref": "#/$defs/Serial"
+        },
+        "reply_to": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Identity"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "type": {
+          "const": "user_input"
+        },
+        "payload": {
+          "$ref": "#/$defs/AgentUserInputPayload"
+        }
+      },
+      "required": [
+        "protocol_version",
+        "connection_id",
+        "connection_generation",
+        "runtime_instance_id",
+        "agent_session_id",
+        "document_id",
+        "document_generation",
+        "task_id",
+        "task_generation",
+        "message_id",
+        "sequence",
+        "reply_to",
+        "type",
+        "payload"
+      ],
+      "additionalProperties": false
+    },
+    "AgentPrepareRequestPayload": {
+      "type": "object",
+      "properties": {
+        "agent_turn_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "request_id": {
+          "$ref": "#/$defs/Identity"
+        }
+      },
+      "required": [
+        "agent_turn_id",
+        "request_id"
+      ],
+      "additionalProperties": false
+    },
+    "AgentPrepareRequestFrame": {
+      "type": "object",
+      "properties": {
+        "protocol_version": {
+          "const": 1
+        },
+        "connection_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "connection_generation": {
+          "$ref": "#/$defs/Serial"
+        },
+        "runtime_instance_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "agent_session_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "document_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "document_generation": {
+          "$ref": "#/$defs/Serial"
+        },
+        "task_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "task_generation": {
+          "$ref": "#/$defs/Serial"
+        },
+        "message_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "sequence": {
+          "$ref": "#/$defs/Serial"
+        },
+        "reply_to": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Identity"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "type": {
+          "const": "prepare_request"
+        },
+        "payload": {
+          "$ref": "#/$defs/AgentPrepareRequestPayload"
+        }
+      },
+      "required": [
+        "protocol_version",
+        "connection_id",
+        "connection_generation",
+        "runtime_instance_id",
+        "agent_session_id",
+        "document_id",
+        "document_generation",
+        "task_id",
+        "task_generation",
+        "message_id",
+        "sequence",
+        "reply_to",
+        "type",
+        "payload"
+      ],
+      "additionalProperties": false
+    },
+    "AgentModelRequestPayload": {
+      "type": "object",
+      "properties": {
+        "agent_turn_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "request_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "context_ref": {
+          "$ref": "#/$defs/Identity"
+        },
+        "model_config_ref": {
+          "$ref": "#/$defs/Identity"
+        }
+      },
+      "required": [
+        "agent_turn_id",
+        "request_id",
+        "context_ref",
+        "model_config_ref"
+      ],
+      "additionalProperties": false
+    },
+    "AgentModelRequestFrame": {
+      "type": "object",
+      "properties": {
+        "protocol_version": {
+          "const": 1
+        },
+        "connection_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "connection_generation": {
+          "$ref": "#/$defs/Serial"
+        },
+        "runtime_instance_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "agent_session_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "document_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "document_generation": {
+          "$ref": "#/$defs/Serial"
+        },
+        "task_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "task_generation": {
+          "$ref": "#/$defs/Serial"
+        },
+        "message_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "sequence": {
+          "$ref": "#/$defs/Serial"
+        },
+        "reply_to": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Identity"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "type": {
+          "const": "model_request"
+        },
+        "payload": {
+          "$ref": "#/$defs/AgentModelRequestPayload"
+        }
+      },
+      "required": [
+        "protocol_version",
+        "connection_id",
+        "connection_generation",
+        "runtime_instance_id",
+        "agent_session_id",
+        "document_id",
+        "document_generation",
+        "task_id",
+        "task_generation",
+        "message_id",
+        "sequence",
+        "reply_to",
+        "type",
+        "payload"
+      ],
+      "additionalProperties": false
+    },
+    "AgentModelEventPayload": {
+      "type": "object",
+      "properties": {
+        "agent_turn_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "request_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "byte_offset": {
+          "$ref": "#/$defs/Serial"
+        },
+        "text": {
+          "type": "string",
+          "maxLength": 32768
+        },
+        "phase": {
+          "enum": [
+            "delta",
+            "finished",
+            "failed",
+            "cancelled"
+          ],
+          "type": "string"
+        }
+      },
+      "required": [
+        "agent_turn_id",
+        "request_id",
+        "byte_offset",
+        "text",
+        "phase"
+      ],
+      "additionalProperties": false
+    },
+    "AgentModelEventFrame": {
+      "type": "object",
+      "properties": {
+        "protocol_version": {
+          "const": 1
+        },
+        "connection_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "connection_generation": {
+          "$ref": "#/$defs/Serial"
+        },
+        "runtime_instance_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "agent_session_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "document_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "document_generation": {
+          "$ref": "#/$defs/Serial"
+        },
+        "task_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "task_generation": {
+          "$ref": "#/$defs/Serial"
+        },
+        "message_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "sequence": {
+          "$ref": "#/$defs/Serial"
+        },
+        "reply_to": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Identity"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "type": {
+          "const": "model_event"
+        },
+        "payload": {
+          "$ref": "#/$defs/AgentModelEventPayload"
+        }
+      },
+      "required": [
+        "protocol_version",
+        "connection_id",
+        "connection_generation",
+        "runtime_instance_id",
+        "agent_session_id",
+        "document_id",
+        "document_generation",
+        "task_id",
+        "task_generation",
+        "message_id",
+        "sequence",
+        "reply_to",
+        "type",
+        "payload"
+      ],
+      "additionalProperties": false
+    },
+    "AgentToolCallPayload": {
+      "type": "object",
+      "properties": {
+        "agent_turn_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "tool_call_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "proposal_event_ref": {
+          "$ref": "#/$defs/Identity"
+        }
+      },
+      "required": [
+        "agent_turn_id",
+        "tool_call_id",
+        "proposal_event_ref"
+      ],
+      "additionalProperties": false
+    },
+    "AgentToolCallFrame": {
+      "type": "object",
+      "properties": {
+        "protocol_version": {
+          "const": 1
+        },
+        "connection_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "connection_generation": {
+          "$ref": "#/$defs/Serial"
+        },
+        "runtime_instance_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "agent_session_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "document_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "document_generation": {
+          "$ref": "#/$defs/Serial"
+        },
+        "task_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "task_generation": {
+          "$ref": "#/$defs/Serial"
+        },
+        "message_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "sequence": {
+          "$ref": "#/$defs/Serial"
+        },
+        "reply_to": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Identity"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "type": {
+          "const": "tool_call"
+        },
+        "payload": {
+          "$ref": "#/$defs/AgentToolCallPayload"
+        }
+      },
+      "required": [
+        "protocol_version",
+        "connection_id",
+        "connection_generation",
+        "runtime_instance_id",
+        "agent_session_id",
+        "document_id",
+        "document_generation",
+        "task_id",
+        "task_generation",
+        "message_id",
+        "sequence",
+        "reply_to",
+        "type",
+        "payload"
+      ],
+      "additionalProperties": false
+    },
+    "AgentToolResultPayload": {
+      "type": "object",
+      "properties": {
+        "agent_turn_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "tool_call_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "operation_ref": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Identity"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "result_ref": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Identity"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "outcome": {
+          "enum": [
+            "completed",
+            "partial",
+            "failed",
+            "unavailable"
+          ],
+          "type": "string"
+        }
+      },
+      "required": [
+        "agent_turn_id",
+        "tool_call_id",
+        "operation_ref",
+        "result_ref",
+        "outcome"
+      ],
+      "additionalProperties": false
+    },
+    "AgentToolResultFrame": {
+      "type": "object",
+      "properties": {
+        "protocol_version": {
+          "const": 1
+        },
+        "connection_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "connection_generation": {
+          "$ref": "#/$defs/Serial"
+        },
+        "runtime_instance_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "agent_session_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "document_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "document_generation": {
+          "$ref": "#/$defs/Serial"
+        },
+        "task_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "task_generation": {
+          "$ref": "#/$defs/Serial"
+        },
+        "message_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "sequence": {
+          "$ref": "#/$defs/Serial"
+        },
+        "reply_to": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Identity"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "type": {
+          "const": "tool_result"
+        },
+        "payload": {
+          "$ref": "#/$defs/AgentToolResultPayload"
+        }
+      },
+      "required": [
+        "protocol_version",
+        "connection_id",
+        "connection_generation",
+        "runtime_instance_id",
+        "agent_session_id",
+        "document_id",
+        "document_generation",
+        "task_id",
+        "task_generation",
+        "message_id",
+        "sequence",
+        "reply_to",
+        "type",
+        "payload"
+      ],
+      "additionalProperties": false
+    },
+    "AgentTranscriptEventPayload": {
+      "type": "object",
+      "properties": {
+        "event_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "source_sequence": {
+          "$ref": "#/$defs/Serial"
+        },
+        "message": {
+          "$ref": "#/$defs/AgentCanonicalMessage"
+        }
+      },
+      "required": [
+        "event_id",
+        "source_sequence",
+        "message"
+      ],
+      "additionalProperties": false
+    },
+    "AgentTranscriptEventFrame": {
+      "type": "object",
+      "properties": {
+        "protocol_version": {
+          "const": 1
+        },
+        "connection_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "connection_generation": {
+          "$ref": "#/$defs/Serial"
+        },
+        "runtime_instance_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "agent_session_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "document_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "document_generation": {
+          "$ref": "#/$defs/Serial"
+        },
+        "task_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "task_generation": {
+          "$ref": "#/$defs/Serial"
+        },
+        "message_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "sequence": {
+          "$ref": "#/$defs/Serial"
+        },
+        "reply_to": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Identity"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "type": {
+          "const": "transcript_event"
+        },
+        "payload": {
+          "$ref": "#/$defs/AgentTranscriptEventPayload"
+        }
+      },
+      "required": [
+        "protocol_version",
+        "connection_id",
+        "connection_generation",
+        "runtime_instance_id",
+        "agent_session_id",
+        "document_id",
+        "document_generation",
+        "task_id",
+        "task_generation",
+        "message_id",
+        "sequence",
+        "reply_to",
+        "type",
+        "payload"
+      ],
+      "additionalProperties": false
+    },
+    "AgentAckPayload": {
+      "type": "object",
+      "properties": {
+        "event_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "event_sequence": {
+          "$ref": "#/$defs/Serial"
+        },
+        "receipt_hash": {
+          "$ref": "#/$defs/Sha256"
+        }
+      },
+      "required": [
+        "event_id",
+        "event_sequence",
+        "receipt_hash"
+      ],
+      "additionalProperties": false
+    },
+    "AgentAckFrame": {
+      "type": "object",
+      "properties": {
+        "protocol_version": {
+          "const": 1
+        },
+        "connection_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "connection_generation": {
+          "$ref": "#/$defs/Serial"
+        },
+        "runtime_instance_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "agent_session_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "document_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "document_generation": {
+          "$ref": "#/$defs/Serial"
+        },
+        "task_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "task_generation": {
+          "$ref": "#/$defs/Serial"
+        },
+        "message_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "sequence": {
+          "$ref": "#/$defs/Serial"
+        },
+        "reply_to": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Identity"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "type": {
+          "const": "ack"
+        },
+        "payload": {
+          "$ref": "#/$defs/AgentAckPayload"
+        }
+      },
+      "required": [
+        "protocol_version",
+        "connection_id",
+        "connection_generation",
+        "runtime_instance_id",
+        "agent_session_id",
+        "document_id",
+        "document_generation",
+        "task_id",
+        "task_generation",
+        "message_id",
+        "sequence",
+        "reply_to",
+        "type",
+        "payload"
+      ],
+      "additionalProperties": false
+    },
+    "AgentSteerPayload": {
+      "type": "object",
+      "properties": {
+        "event_ref": {
+          "$ref": "#/$defs/Identity"
+        }
+      },
+      "required": [
+        "event_ref"
+      ],
+      "additionalProperties": false
+    },
+    "AgentSteerFrame": {
+      "type": "object",
+      "properties": {
+        "protocol_version": {
+          "const": 1
+        },
+        "connection_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "connection_generation": {
+          "$ref": "#/$defs/Serial"
+        },
+        "runtime_instance_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "agent_session_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "document_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "document_generation": {
+          "$ref": "#/$defs/Serial"
+        },
+        "task_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "task_generation": {
+          "$ref": "#/$defs/Serial"
+        },
+        "message_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "sequence": {
+          "$ref": "#/$defs/Serial"
+        },
+        "reply_to": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Identity"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "type": {
+          "const": "steer"
+        },
+        "payload": {
+          "$ref": "#/$defs/AgentSteerPayload"
+        }
+      },
+      "required": [
+        "protocol_version",
+        "connection_id",
+        "connection_generation",
+        "runtime_instance_id",
+        "agent_session_id",
+        "document_id",
+        "document_generation",
+        "task_id",
+        "task_generation",
+        "message_id",
+        "sequence",
+        "reply_to",
+        "type",
+        "payload"
+      ],
+      "additionalProperties": false
+    },
+    "AgentFollowUpPayload": {
+      "type": "object",
+      "properties": {
+        "event_ref": {
+          "$ref": "#/$defs/Identity"
+        }
+      },
+      "required": [
+        "event_ref"
+      ],
+      "additionalProperties": false
+    },
+    "AgentFollowUpFrame": {
+      "type": "object",
+      "properties": {
+        "protocol_version": {
+          "const": 1
+        },
+        "connection_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "connection_generation": {
+          "$ref": "#/$defs/Serial"
+        },
+        "runtime_instance_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "agent_session_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "document_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "document_generation": {
+          "$ref": "#/$defs/Serial"
+        },
+        "task_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "task_generation": {
+          "$ref": "#/$defs/Serial"
+        },
+        "message_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "sequence": {
+          "$ref": "#/$defs/Serial"
+        },
+        "reply_to": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Identity"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "type": {
+          "const": "follow_up"
+        },
+        "payload": {
+          "$ref": "#/$defs/AgentFollowUpPayload"
+        }
+      },
+      "required": [
+        "protocol_version",
+        "connection_id",
+        "connection_generation",
+        "runtime_instance_id",
+        "agent_session_id",
+        "document_id",
+        "document_generation",
+        "task_id",
+        "task_generation",
+        "message_id",
+        "sequence",
+        "reply_to",
+        "type",
+        "payload"
+      ],
+      "additionalProperties": false
+    },
+    "AgentCancelPayload": {
+      "type": "object",
+      "properties": {
+        "reason": {
+          "enum": [
+            "user_stop",
+            "document_closed",
+            "application_closed",
+            "superseded"
+          ],
+          "type": "string"
+        }
+      },
+      "required": [
+        "reason"
+      ],
+      "additionalProperties": false
+    },
+    "AgentCancelFrame": {
+      "type": "object",
+      "properties": {
+        "protocol_version": {
+          "const": 1
+        },
+        "connection_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "connection_generation": {
+          "$ref": "#/$defs/Serial"
+        },
+        "runtime_instance_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "agent_session_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "document_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "document_generation": {
+          "$ref": "#/$defs/Serial"
+        },
+        "task_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "task_generation": {
+          "$ref": "#/$defs/Serial"
+        },
+        "message_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "sequence": {
+          "$ref": "#/$defs/Serial"
+        },
+        "reply_to": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Identity"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "type": {
+          "const": "cancel"
+        },
+        "payload": {
+          "$ref": "#/$defs/AgentCancelPayload"
+        }
+      },
+      "required": [
+        "protocol_version",
+        "connection_id",
+        "connection_generation",
+        "runtime_instance_id",
+        "agent_session_id",
+        "document_id",
+        "document_generation",
+        "task_id",
+        "task_generation",
+        "message_id",
+        "sequence",
+        "reply_to",
+        "type",
+        "payload"
+      ],
+      "additionalProperties": false
+    },
+    "AgentSettledPayload": {
+      "type": "object",
+      "properties": {
+        "reason": {
+          "enum": [
+            "loop_stopped",
+            "cancelled",
+            "failed",
+            "interrupted"
+          ],
+          "type": "string"
+        }
+      },
+      "required": [
+        "reason"
+      ],
+      "additionalProperties": false
+    },
+    "AgentSettledFrame": {
+      "type": "object",
+      "properties": {
+        "protocol_version": {
+          "const": 1
+        },
+        "connection_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "connection_generation": {
+          "$ref": "#/$defs/Serial"
+        },
+        "runtime_instance_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "agent_session_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "document_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "document_generation": {
+          "$ref": "#/$defs/Serial"
+        },
+        "task_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "task_generation": {
+          "$ref": "#/$defs/Serial"
+        },
+        "message_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "sequence": {
+          "$ref": "#/$defs/Serial"
+        },
+        "reply_to": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Identity"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "type": {
+          "const": "settled"
+        },
+        "payload": {
+          "$ref": "#/$defs/AgentSettledPayload"
+        }
+      },
+      "required": [
+        "protocol_version",
+        "connection_id",
+        "connection_generation",
+        "runtime_instance_id",
+        "agent_session_id",
+        "document_id",
+        "document_generation",
+        "task_id",
+        "task_generation",
+        "message_id",
+        "sequence",
+        "reply_to",
+        "type",
+        "payload"
+      ],
+      "additionalProperties": false
+    },
+    "AgentErrorPayload": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "$ref": "#/$defs/Identity"
+        },
+        "recoverable": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "code",
+        "recoverable"
+      ],
+      "additionalProperties": false
+    },
+    "AgentErrorFrame": {
+      "type": "object",
+      "properties": {
+        "protocol_version": {
+          "const": 1
+        },
+        "connection_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "connection_generation": {
+          "$ref": "#/$defs/Serial"
+        },
+        "runtime_instance_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "agent_session_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "document_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "document_generation": {
+          "$ref": "#/$defs/Serial"
+        },
+        "task_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "task_generation": {
+          "$ref": "#/$defs/Serial"
+        },
+        "message_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "sequence": {
+          "$ref": "#/$defs/Serial"
+        },
+        "reply_to": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Identity"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "type": {
+          "const": "error"
+        },
+        "payload": {
+          "$ref": "#/$defs/AgentErrorPayload"
+        }
+      },
+      "required": [
+        "protocol_version",
+        "connection_id",
+        "connection_generation",
+        "runtime_instance_id",
+        "agent_session_id",
+        "document_id",
+        "document_generation",
+        "task_id",
+        "task_generation",
+        "message_id",
+        "sequence",
+        "reply_to",
+        "type",
+        "payload"
+      ],
+      "additionalProperties": false
+    },
+    "AgentIPCFrame": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/AgentHelloFrame"
+        },
+        {
+          "$ref": "#/$defs/AgentReadyFrame"
+        },
+        {
+          "$ref": "#/$defs/AgentUserInputFrame"
+        },
+        {
+          "$ref": "#/$defs/AgentPrepareRequestFrame"
+        },
+        {
+          "$ref": "#/$defs/AgentModelRequestFrame"
+        },
+        {
+          "$ref": "#/$defs/AgentModelEventFrame"
+        },
+        {
+          "$ref": "#/$defs/AgentToolCallFrame"
+        },
+        {
+          "$ref": "#/$defs/AgentToolResultFrame"
+        },
+        {
+          "$ref": "#/$defs/AgentTranscriptEventFrame"
+        },
+        {
+          "$ref": "#/$defs/AgentAckFrame"
+        },
+        {
+          "$ref": "#/$defs/AgentSteerFrame"
+        },
+        {
+          "$ref": "#/$defs/AgentFollowUpFrame"
+        },
+        {
+          "$ref": "#/$defs/AgentCancelFrame"
+        },
+        {
+          "$ref": "#/$defs/AgentSettledFrame"
+        },
+        {
+          "$ref": "#/$defs/AgentErrorFrame"
+        }
+      ],
+      "x-openmath-contract": {
+        "rust_boxed_variants": [
+          "AgentHelloFrame",
+          "AgentReadyFrame",
+          "AgentUserInputFrame",
+          "AgentPrepareRequestFrame",
+          "AgentModelRequestFrame",
+          "AgentModelEventFrame",
+          "AgentToolCallFrame",
+          "AgentToolResultFrame",
+          "AgentTranscriptEventFrame",
+          "AgentAckFrame",
+          "AgentSteerFrame",
+          "AgentFollowUpFrame",
+          "AgentCancelFrame",
+          "AgentSettledFrame",
+          "AgentErrorFrame"
+        ]
+      }
+    },
+    "NativeAgentControlScope": {
+      "type": "object",
+      "properties": {
+        "agent_session_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "task_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "task_generation": {
+          "$ref": "#/$defs/Serial"
+        },
+        "connection_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "connection_generation": {
+          "$ref": "#/$defs/Serial"
+        },
+        "document_generation": {
+          "$ref": "#/$defs/Serial"
+        }
+      },
+      "required": [
+        "agent_session_id",
+        "task_id",
+        "task_generation",
+        "connection_id",
+        "connection_generation",
+        "document_generation"
+      ],
+      "additionalProperties": false
+    },
+    "NativeAgentActivate": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "const": "agent_activate"
+        },
+        "scope": {
+          "$ref": "#/$defs/NativeAgentControlScope"
+        },
+        "hello_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "core_version": {
+          "$ref": "#/$defs/Identity"
+        },
+        "adapter_version": {
+          "$ref": "#/$defs/Identity"
+        },
+        "grants": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/AgentToolName"
+          },
+          "maxItems": 12
+        },
+        "readonly": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "type",
+        "scope",
+        "hello_id",
+        "core_version",
+        "adapter_version",
+        "grants",
+        "readonly"
+      ],
+      "additionalProperties": false
+    },
+    "NativeAgentReceive": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "const": "agent_receive"
+        },
+        "scope": {
+          "$ref": "#/$defs/NativeAgentControlScope"
+        },
+        "frame_json": {
+          "type": "string",
+          "maxLength": 1048576
+        }
+      },
+      "required": [
+        "type",
+        "scope",
+        "frame_json"
+      ],
+      "additionalProperties": false
+    },
+    "NativeAgentConfirm": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "const": "agent_confirm"
+        },
+        "scope": {
+          "$ref": "#/$defs/NativeAgentControlScope"
+        },
+        "message_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "event_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "canonical_hash": {
+          "$ref": "#/$defs/Sha256"
+        },
+        "event_sequence": {
+          "$ref": "#/$defs/Serial"
+        },
+        "receipt_hash": {
+          "$ref": "#/$defs/Sha256"
+        }
+      },
+      "required": [
+        "type",
+        "scope",
+        "message_id",
+        "event_id",
+        "canonical_hash",
+        "event_sequence",
+        "receipt_hash"
+      ],
+      "additionalProperties": false
+    },
+    "NativeAgentSend": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "const": "agent_send"
+        },
+        "scope": {
+          "$ref": "#/$defs/NativeAgentControlScope"
+        },
+        "frame_json": {
+          "type": "string",
+          "maxLength": 1048576
+        }
+      },
+      "required": [
+        "type",
+        "scope",
+        "frame_json"
+      ],
+      "additionalProperties": false
+    },
+    "NativeAgentCancel": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "const": "agent_cancel"
+        },
+        "scope": {
+          "$ref": "#/$defs/NativeAgentControlScope"
+        },
+        "reason": {
+          "$ref": "#/$defs/AgentCancelPayloadReason"
+        }
+      },
+      "required": [
+        "type",
+        "scope",
+        "reason"
+      ],
+      "additionalProperties": false
+    },
+    "NativeAgentClose": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "const": "agent_close"
+        },
+        "scope": {
+          "$ref": "#/$defs/NativeAgentControlScope"
+        }
+      },
+      "required": [
+        "type",
+        "scope"
+      ],
+      "additionalProperties": false
+    },
+    "NativeAgentStatus": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "const": "agent_status"
+        },
+        "scope": {
+          "$ref": "#/$defs/NativeAgentControlScope"
+        }
+      },
+      "required": [
+        "type",
+        "scope"
+      ],
+      "additionalProperties": false
+    },
+    "NativeAgentHostCommand": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/NativeAgentActivate"
+        },
+        {
+          "$ref": "#/$defs/NativeAgentReceive"
+        },
+        {
+          "$ref": "#/$defs/NativeAgentConfirm"
+        },
+        {
+          "$ref": "#/$defs/NativeAgentSend"
+        },
+        {
+          "$ref": "#/$defs/NativeAgentCancel"
+        },
+        {
+          "$ref": "#/$defs/NativeAgentClose"
+        },
+        {
+          "$ref": "#/$defs/NativeAgentStatus"
+        }
+      ]
+    },
+    "NativeAgentToolIntent": {
+      "type": "object",
+      "properties": {
+        "operation_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "agent_turn_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "tool_call_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "proposal_event_ref": {
+          "$ref": "#/$defs/Identity"
+        },
+        "name": {
+          "$ref": "#/$defs/AgentToolName"
+        },
+        "arguments_hash": {
+          "$ref": "#/$defs/Sha256"
+        }
+      },
+      "required": [
+        "operation_id",
+        "agent_turn_id",
+        "tool_call_id",
+        "proposal_event_ref",
+        "name",
+        "arguments_hash"
+      ],
+      "additionalProperties": false
+    },
+    "NativeAgentRequestIntent": {
+      "type": "object",
+      "properties": {
+        "operation_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "agent_turn_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "request_id": {
+          "$ref": "#/$defs/Identity"
+        }
+      },
+      "required": [
+        "operation_id",
+        "agent_turn_id",
+        "request_id"
+      ],
+      "additionalProperties": false
+    },
+    "NativeAgentHostReply": {
+      "type": "object",
+      "properties": {
+        "protocol_version": {
+          "const": 1
+        },
+        "runtime_instance_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "document_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "document_generation": {
+          "$ref": "#/$defs/Serial"
+        },
+        "scope": {
+          "$ref": "#/$defs/NativeAgentControlScope"
+        },
+        "phase": {
+          "type": "string",
+          "enum": [
+            "starting",
+            "ready",
+            "cancelling",
+            "awaiting_settlement",
+            "failed",
+            "closed"
+          ]
+        },
+        "disposition": {
+          "type": "string",
+          "enum": [
+            "hello",
+            "ready",
+            "duplicate",
+            "transcript",
+            "tool_intent",
+            "request_intent",
+            "data",
+            "ack",
+            "sent",
+            "cancel",
+            "closed",
+            "status"
+          ]
+        },
+        "outbound_json": {
+          "anyOf": [
+            {
+              "type": "string",
+              "maxLength": 1048576
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "canonical_json": {
+          "anyOf": [
+            {
+              "type": "string",
+              "maxLength": 1048576
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "peer_message_id": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Identity"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "event_id": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Identity"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "source_sequence": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Serial"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "tool_intent": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/NativeAgentToolIntent"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "request_intent": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/NativeAgentRequestIntent"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "protocol_version",
+        "runtime_instance_id",
+        "document_id",
+        "document_generation",
+        "scope",
+        "phase",
+        "disposition",
+        "outbound_json",
+        "canonical_json",
+        "peer_message_id",
+        "event_id",
+        "source_sequence",
+        "tool_intent",
+        "request_intent"
+      ],
+      "additionalProperties": false
+    },
+    "AgentCancelPayloadReason": {
+      "enum": [
+        "user_stop",
+        "document_closed",
+        "application_closed",
+        "superseded"
+      ],
+      "type": "string"
+    }
+  },
+  "x-openmath-contract": {
+    "version": 1,
+    "maximum_frame_bytes": 1048576,
+    "counter_maximum": 9007199254740991,
+    "owner": "trusted native document session",
+    "grant_recovery": "fresh explicit task activation only",
+    "implementation_task": "R4.3.01"
+  }
+}

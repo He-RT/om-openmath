@@ -1,0 +1,14 @@
+    Finished `release` profile [optimized] target(s) in 0.28s
+macos/OpenMathNativeTests/AgentProtocolFixtures/main.swift:43:58: error: instance method 'wait' is unavailable from asynchronous contexts; Await a Task handle instead
+41 |     let pause=LedgerPause()
+42 |     let waiting=Task {try await service.input(user,event:"blocked-user",faults:.init {try pause.reach($0)})}
+43 |     let blockedWriter=await Task.detached {pause.arrived.wait(timeout:.now()+10) == .success}.value;precondition(blockedWriter)
+   |                                                          `- error: instance method 'wait' is unavailable from asynchronous contexts; Await a Task handle instead
+44 |     let stopped=try await service.cancel();precondition(stopped.phase == .cancelling)
+45 |     pause.resume.signal()
+
+Dispatch.DispatchSemaphore.wait:2:13: note: 'wait(timeout:)' declared here
+1 | class DispatchSemaphore {
+2 | public func wait(timeout: DispatchTime) -> DispatchTimeoutResult}
+  |             `- note: 'wait(timeout:)' declared here
+3 | 

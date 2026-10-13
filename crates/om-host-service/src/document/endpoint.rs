@@ -17,6 +17,7 @@ pub struct SourceEndpoint {
     general: om_kernel::config::GeneralConfig,
     kernel: Option<crate::kernel::endpoint::KernelEndpoint>,
     results: Option<crate::results::runtime::ResultRuntime>,
+    agent: Option<crate::agent::endpoint::AgentEndpoint>,
     pending_result_state: Option<crate::kernel::acceptance::AcceptedKernelState>,
 }
 impl SourceEndpoint {
@@ -77,6 +78,7 @@ impl SourceEndpoint {
             kernel: None,
             results: None,
             pending_result_state: None,
+            agent: None,
         })
     }
     /// Actual runtime/document binding for host readback and stale request checks.
@@ -87,6 +89,33 @@ impl SourceEndpoint {
             document_revision: self.controller.owner().snapshot().revision,
             execution_epoch: self.controller.owner().snapshot().execution_epoch,
         }
+    }
+    /// Private Agent activation derives document/runtime from this exact owner.
+    pub fn agent_command(
+        &mut self,
+        command: NativeAgentHostCommand,
+    ) -> Result<NativeAgentHostReply, String> {
+        let binding = self.binding();
+        if let NativeAgentHostCommand::NativeAgentActivate(c) = command {
+            if self
+                .agent
+                .as_ref()
+                .is_some_and(|agent| !agent.can_replace(&c.scope))
+            {
+                return Err("AGENT_TASK_ACTIVE".into());
+            }
+            let (endpoint, reply) = crate::agent::endpoint::AgentEndpoint::activate(
+                c,
+                self.scope.runtime.clone(),
+                binding,
+            )?;
+            self.agent = Some(endpoint);
+            return Ok(reply);
+        }
+        self.agent
+            .as_mut()
+            .ok_or("AGENT_NOT_ACTIVE")?
+            .command(command, &binding)
     }
     /// Direct cancellation does not queue behind SQLite, CAS or SourcePreview's physical IO.
     pub fn cancel(&mut self, operation: &str) -> Option<bool> {
@@ -202,6 +231,9 @@ impl SourceEndpoint {
     }
     /// Revoke work without joining mathematical threads while holding the source owner lock.
     pub fn close_kernel_begin(&mut self) {
+        if let Some(agent) = self.agent.as_mut() {
+            agent.close();
+        }
         if let Some(results) = self.results.as_ref() {
             results.begin_close();
         }

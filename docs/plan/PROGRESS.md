@@ -268,3 +268,7 @@ P146最终本地收尾（覆盖前段进行中）：1085Rust/2原ignored、77前
 公开tag回读确为0889d34，九类assets+manifest全部实际下载，所有byte/SHA256与manifest以及GitHubremote digest一致，六ZIP CRC/path、移动app.3/build3/min27及两个xcf ARM64切片/许可核验成功，总公开文件242188308bytes。公开CLI arm64/版本.3实际roots2/3、pipe1/4/9、SI1km→1000m正确，公开DMG hdiutilverifyVALID。根源/限制/失败记录保留，不以旧SHA或隐藏失败重试冒充通过。截图与summary/json/manifest/checkedasset数据已入docs/acceptance/r3-release和docs/ios-evidence/pre-alpha.3。
 
 README/安装/移动/完整语言/函数目录/科研案例/发行说明中文默认已同步真实状态；默认源笔记本v1，无Agent运行时/事务/PiRig假承诺。tag.1/.2保留，继续dev未合main，本机no模拟器、单代理。此后仅证据/文档提交，不修改已公开tag或已构建源码。最终completionaudit仍需确认文档合同和dev推送完成。
+
+### 2026-10-14 · pre-alpha.4 D045
+
+R4.3.01实际source/CABI/Swift/私有进程与耐久ACK完成，30/98。完整输入/失败/SQLite记录见PRE_ALPHA_4_PROGRESS D045与agent-protocol-native.json。下一R4.3.02；完整68任务与32最终发行门禁未完成，运行.3、dev，无main/旧包改变、无本机iOS模拟器/子代理。闲置项目编译缓存清理3.91GiB。

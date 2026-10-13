@@ -1,0 +1,2 @@
+    Finished `release` profile [optimized] target(s) in 0.24s
+macos/Scripts/test-agent-protocol.sh: line 14: 39846 Terminated: 15          target/macos-agent-protocol-tests/fixtures "$root" "$attempt_root" "$(command -v node)"

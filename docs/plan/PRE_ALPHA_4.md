@@ -4015,7 +4015,7 @@ UpdateService只读受控官方GitHub Releases/发行清单（预发行不可用
 
 #### R4.3.01 规范Agent消息、任务与IPC身份
 
-- [ ] **R4.3.01 完成**（仅在以下Done和验证满足后勾选）
+- [x] **R4.3.01 完成**（仅在以下Done和验证满足后勾选）
 
 **Files：**
 
@@ -4029,10 +4029,10 @@ UpdateService只读受控官方GitHub Releases/发行清单（预发行不可用
 
 **Steps：**
 
-- [ ] 1. 建立OpenMath canonical message/tool/task DTO而非保存Pi内部state。
-- [ ] 2. 将模型ID映射宿主admission ID，scope可信绑定。
-- [ ] 3. 定义握手/ACK/steer/followup/error/settled。
-- [ ] 4. 执行下面Tests，核对真实输出/失败，更新任务账本与证据后提交本批次。
+- [x] 1. 建立OpenMath canonical message/tool/task DTO而非保存Pi内部state。
+- [x] 2. 将模型ID映射宿主admission ID，scope可信绑定。
+- [x] 3. 定义握手/ACK/steer/followup/error/settled。
+- [x] 4. 执行下面Tests，核对真实输出/失败，更新任务账本与证据后提交本批次。
 
 **Tests：** 重复/缺帧/旧connection/task/document代次与超限JSON/UTF8流，秘密不进IPC。测试位置以Files和第15节影响范围为准，证据保存完整输入/命令/输出，不仅记录“通过”。
 

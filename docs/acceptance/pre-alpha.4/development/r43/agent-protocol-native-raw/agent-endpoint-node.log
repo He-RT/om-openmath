@@ -1,0 +1,11 @@
+✔ all actual encoded UTF8 split points and multiple complete frames roundtrip (37.048916ms)
+✔ unknown credentials/URLs/Pi state, missing required null and unsafe counters are rejected (1.426542ms)
+✔ duplicate members, invalid Unicode/UTF8, limits and incomplete EOF poison real connections (0.465084ms)
+ℹ tests 3
+ℹ suites 0
+ℹ pass 3
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 182.476583

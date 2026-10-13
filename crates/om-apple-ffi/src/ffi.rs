@@ -236,6 +236,23 @@ pub unsafe extern "C" fn om_host_result_command(
             .result_command(&unsafe { copied_input(json, len, protocol::MAX_CONTROL_BYTES) }?)
     })
 }
+/// Trusted private Agent control port. Source identity is derived by the Rust document owner.
+/// # Safety
+/// `json` must point to len readable bytes during this call; NULL only for zero length.
+#[unsafe(no_mangle)]
+pub unsafe extern "C" fn om_host_agent_command(
+    host: *mut OmHostHandle,
+    json: *const u8,
+    len: usize,
+) -> OmHostBuffer {
+    packet(|| {
+        let guard = registry::acquire(host, true).map_err(str::to_owned)?;
+        // SAFETY: caller-readable bytes are bounded and copied before Rust decoding.
+        guard
+            .host()
+            .agent_command(&unsafe { copied_input(json, len, protocol::MAX_CONTROL_BYTES) }?)
+    })
+}
 /// Signal the operation directly. 1=signalled, 0=terminal; negative codes are in the C header.
 /// # Safety
 /// `operation_id` must be readable for len bytes during this call; NULL only for len=0.

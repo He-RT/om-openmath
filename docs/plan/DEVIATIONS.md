@@ -607,3 +607,7 @@ L2使用精确标称GM分数、50位FindRoot/1000迭代和真实残差，报告�
 - 新代次保留store ID及原所有操作/回执/事件/历史字节，原typed行SHA/计数核对；doc1摘要从实际原计划构建、Library3索引从原事件构建。迁移前取得全库自包含备份，目标连接全关闭/同步后切selector；未选代次不自动活动。
 - 备份回退统一rollback_quarantine，即使当下原回执查询为空也没有重放许可；普通打开/升级不得取得writer。只读隔离源码独立核文档selector，不依赖Library健康。后续R4.2.18提供原生选择/另存与日末触发。
 - 512MiB派生cache与原Blob物理分开，运行pins优先；7普通/2迁移前/至少1完整健康备份优先于1GiB软预算。实际可用空间门禁仍逐步处理ENOSPC，不自动清外部缓存。17强杀/原Schema/113Rust/15原生组/Release已验证，final candidate gates不由本批置pass。
+
+## D045 · 2026-10-14 R4.3.01 实际业务身份与ACK接线
+
+规范canonical字节由Rust产生并原样存入兼容账本封套，避免Swift/Rust JSON编码排序或转义不同造成回执歧义。真实document owner派生scope，恢复消息不恢复授权；工具/模型operation ID仅pending意图。实际Foundation小帧读取阻塞已以POSIX单次read修复，完整失败/sample保留；写端按宿主序号缓冲，取消绕过SQLite等待。传输1MiB与账本2MiB展开限制独立，合法大帧超账本预算明确无ACK拒绝。实际合成私有进程验收使R4.3.01完成；生产Pi与随包runtime仍须R4.3.02，模型/工具执行仍在后续，不能填写最终gate。完整证据见development/r43/agent-protocol-native.json；30/98，68任务及原完整发行继续。

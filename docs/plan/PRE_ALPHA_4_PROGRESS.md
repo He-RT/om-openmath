@@ -2,11 +2,11 @@
 
 [完整实施计划](PRE_ALPHA_4.md) · [机器门禁](../acceptance/pre-alpha.4/gates.toml) · [裁决](DEVIATIONS.md) · [问题](QUESTIONS.md)
 
-2026-10-13。目标`0.1.0-pre-alpha.4`，当前运行/公开版本`.3`；开发`dev`，不合main、不改旧标签、本机不启动iOS模拟器。本文只记录结果，规格及完成标准唯一见主计划；计划编写本身不计实施完成。
+2026-10-14。目标`0.1.0-pre-alpha.4`，当前运行/公开版本`.3`；开发`dev`，不合main、不改旧标签、本机不启动iOS模拟器。本文只记录结果，规格及完成标准唯一见主计划；计划编写本身不计实施完成。
 
-**当前状态：** 29任务完成（全部R4.0与R4.1、R4.2.01–02、07及09–10）；其余69任务尚未完成；32最终运行/发行gate全部not_run；candidate未分配，ready_to_publish=false，released_verified=false。设计/HTML/Schema通过不填运行时pass。
+**当前状态：** 30任务完成（全部R4.0与R4.1、R4.2.01–02、07及09–10、R4.3.01）；其余68任务尚未完成；32最终运行/发行gate全部not_run；candidate未分配，ready_to_publish=false，released_verified=false。设计/HTML/Schema通过不填运行时pass。
 
-**下一任务：** 用户选择保留系统输入法设置、先做其他任务；R4.2.03真实候选窗口仍未验收。独立继续R4.3.01规范Agent/IPC，原依赖满足后再接非求值编辑分析/长笔记本/Markdown。存储维护、备份、新代次、配额和GC已通过实际验证；日末备份触发/数据管理UI仍在R4.2.18接线，完整Pi/provider/上下文/Agent界面仍继续R4.3–4.4，不能将存储Done当产品完成。保持同candidate完整门禁，R4.5.07在R4.5.05冻结前完成。
+**下一任务：** 用户选择保留系统输入法设置、先做其他任务；R4.2.03真实候选窗口仍未验收。独立继续R4.3.02固定Pi Core与随包生产helper，原依赖满足后再接非求值编辑分析/长笔记本/Markdown。存储维护、备份、新代次、配额和GC已通过实际验证；日末备份触发/数据管理UI仍在R4.2.18接线，完整Pi/provider/上下文/Agent界面仍继续R4.3–4.4，不能将存储Done当产品完成。保持同candidate完整门禁，R4.5.07在R4.5.05冻结前完成。
 
 ## 已知外部前置
 
@@ -62,7 +62,7 @@
 | [ ] [R4.2.16](PRE_ALPHA_4.md#task-r4.2.16) | 原生主题、可访问语义与初步组件审计 | planned | — | — |
 | [ ] [R4.2.17](PRE_ALPHA_4.md#task-r4.2.17) | 本地计算首启、欢迎恢复与助手空态 | planned | — | — |
 | [ ] [R4.2.18](PRE_ALPHA_4.md#task-r4.2.18) | 关于、手工更新、诊断与新数据管理 | planned | — | — |
-| [ ] [R4.3.01](PRE_ALPHA_4.md#task-r4.3.01) | 规范Agent消息、任务与IPC身份 | in_progress | [规范DTO/字节与身份基础](../acceptance/pre-alpha.4/development/r43/agent-protocol-foundation.json)；NativeHost/Swift/实际进程接线仍待完成 | 本批基础 |
+| [x] [R4.3.01](PRE_ALPHA_4.md#task-r4.3.01) | 规范Agent消息、任务与IPC身份 | completed | [真实source/CABI/私有进程与耐久ACK](../acceptance/pre-alpha.4/development/r43/agent-protocol-native.json)；357DTO、20Rust/3Node/实际SQLite恢复，合成helper无模型/工具执行 | 本批D045 |
 | [ ] [R4.3.02](PRE_ALPHA_4.md#task-r4.3.02) | 固定Pi Core与随包生产helper | planned | — | — |
 | [ ] [R4.3.03](PRE_ALPHA_4.md#task-r4.3.03) | sans-IO单轮模型codec基础 | planned | — | — |
 | [ ] [R4.3.04](PRE_ALPHA_4.md#task-r4.3.04) | Swift URLSession和SecretStore传输 | planned | — | — |
@@ -540,3 +540,11 @@ Done依据与覆盖case/proof:
 - 这些是pending identity/data，没有executor；NativeHost/CABI真实source owner接线、Swift AgentSessionService真实canonical SQLite readback→confirm→ACK、model/request ID与方向/stream correlation、私有实际process/pipe和跨语言恢复仍未完成，R4.3.01主checkbox保持空。不能拿memory registry合成scope当实际业务接纳，更不能当完整Pi/live gate。
 - 7Rust新protocol/identity+10原contracts、3Node真实流测试、严格tsc、336DTO/Swift真实CABI、Clippy所有host targets/fmt/最终Release32资源+codesign通过。Node开发测试用本机25.9，包内Node26仍属下一任务；CI新增Node协议测试。完整输入构造/检查源码、失败/最后日志SHA见agent-protocol-foundation.json/raw。
 - 7cdfe03/CI38406847557精确SHA五jobsall success，前批R4.2.10开发验证有效；本批新SHA另验CI。无本机模拟器、无子代理、运行.3/dev/no main/旧公开包不动/Root1/lib4/doc5/.omnb1，32finalgates not_run/no candidate/ready=false/released=false。用户保留输入法设置不重问，新授权API仍仓库外私有路径且可全计划用，无旧key/profile/env读取；69任务及完整发行继续，goal active。
+
+## D045 · 2026-10-14 规范Agent实际宿主接线与耐久ACK
+
+- R4.3.01完成，30/98；下一R4.3.02。357闭合DTO、SourceEndpoint真实owner→CABI→Swift服务，文档生命周期绑定；原消息/请求/工具身份映射与新代次/取消隔离，恢复不复活授权。
+- 20Rust（3新真实source端点+7原协议+10contracts）、3Node、strict tsc/Clippy/fmt/生成漂移、Swift实际CABI原回归、Release及32资源/深度严格签名通过。实际私有合成进程7帧、相同ACK重放、8类异常输出、真实写入序号缓冲与6条SQLite全事件/回执保存；日记恢复后旧runtime/提案/grants拒绝。SQLite写暂停仍可立即取消，已持久化未发送输入保留；1,000,914字节合法帧展开超过2MiB日记限制，拒绝且无ACK/事件。
+- 原失败（缺测试源依赖、Foundation填满读小帧死锁/实际sample、Swift async semaphore、OS自动字符编码变量断言）及完整输入、帧、事件、命令/日志/SHA见[证据](../acceptance/pre-alpha.4/development/r43/agent-protocol-native.json)和49 raw文件。Node本机25.9仅开发，CI26.11.1；生产Pi/runtime未验，tool/request仅pending意图，没有模型请求/工具/CAS效果。
+- 549418b exact CI38419147394五job全success；本批新SHA需另验CI。清理16项闲置WASM/iOS编译deps/build/fingerprint/incremental约3.91GiB，保留profile根产品、旧公开包、当前Mac/Debug、所有源码及输入/失败证据；盘约28GiB。
+- OS输入设置保留，R4.2.03真实中文/日文候选窗口待验不重问；私有API仍仓库外600/700全计划可用，无旧Key/env/profile读取。运行/公开.3、Root1/lib4/doc5/.omnb1、dev/no main、无子代理/本机iOS模拟器、32最终gates not_run/no candidate/ready=false/released=false；完整68任务及发行继续，goal active。

@@ -57,6 +57,16 @@ pub struct ToolIntent {
     /// Complete original data-only argument bytes; validated again by the actual tool handler.
     pub arguments_hash: String,
 }
+/// Provider request identity mapped to one host pending intent, never a network receipt.
+#[derive(Clone, Debug)]
+pub struct RequestIntent {
+    /// Entropy-derived native intent identity.
+    pub operation_id: String,
+    /// Original turn within the active task.
+    pub turn_id: String,
+    /// Original helper request identity.
+    pub request_id: String,
+}
 /// An accepted frame has no automatic evaluator/model dispatch side effect.
 pub enum IngressDisposition {
     /// Peer version/connection handshake is ready.
@@ -69,6 +79,8 @@ pub enum IngressDisposition {
     ToolIntent(ToolIntent),
     /// Other known data frames remain typed for the next service layer.
     Data(AgentIPCFrame),
+    /// A model request is correlated to its original native pending intent.
+    RequestIntent(RequestIntent),
     /// Loop termination report awaiting native effect reconciliation.
     AwaitingSettlement,
 }
@@ -98,6 +110,7 @@ pub struct AgentIngress {
     source_sequence: u64,
     proposals: BTreeMap<String, Proposal>,
     mapped: BTreeMap<String, ToolIntent>,
+    requests: BTreeMap<String, (RequestIntent, Option<(String, String)>)>,
 }
 fn hash(bytes: &[u8]) -> [u8; 32] {
     Sha256::digest(bytes).into()
@@ -105,7 +118,7 @@ fn hash(bytes: &[u8]) -> [u8; 32] {
 fn hash_text(bytes: &[u8]) -> String {
     format!("{:x}", Sha256::digest(bytes))
 }
-fn identity() -> Result<String, &'static str> {
+pub(super) fn identity() -> Result<String, &'static str> {
     let mut bytes = [0_u8; 16];
     getrandom::fill(&mut bytes).map_err(|_| "HOST_ENTROPY_FAILED")?;
     Ok(format!(
@@ -148,6 +161,7 @@ impl AgentIngress {
             source_sequence: 0,
             proposals: BTreeMap::new(),
             mapped: BTreeMap::new(),
+            requests: BTreeMap::new(),
         })
     }
     /// Current shape/replay state, not task success.
@@ -316,10 +330,51 @@ impl AgentIngress {
                 self.phase = ConnectionPhase::AwaitingSettlement;
                 IngressDisposition::AwaitingSettlement
             }
-            AgentIPCFrame::AgentModelRequestFrame(_)
-            | AgentIPCFrame::AgentPrepareRequestFrame(_)
-            | AgentIPCFrame::AgentModelEventFrame(_)
-            | AgentIPCFrame::AgentErrorFrame(_) => {
+            AgentIPCFrame::AgentPrepareRequestFrame(request) => {
+                if self.phase != ConnectionPhase::Ready {
+                    return Err("IPC_TASK_NOT_READY");
+                }
+                let p = request.payload;
+                if let Some((original, _)) = self.requests.get(&p.request_id) {
+                    if original.turn_id != p.agent_turn_id {
+                        return Err("IPC_REQUEST_SCOPE_MISMATCH");
+                    }
+                    IngressDisposition::RequestIntent(original.clone())
+                } else {
+                    if self.requests.len() >= 64 {
+                        return Err("IPC_TASK_BUDGET");
+                    }
+                    let intent = RequestIntent {
+                        operation_id: identity()?,
+                        turn_id: p.agent_turn_id,
+                        request_id: p.request_id,
+                    };
+                    self.requests
+                        .insert(intent.request_id.clone(), (intent.clone(), None));
+                    IngressDisposition::RequestIntent(intent)
+                }
+            }
+            AgentIPCFrame::AgentModelRequestFrame(request) => {
+                if self.phase != ConnectionPhase::Ready {
+                    return Err("IPC_TASK_NOT_READY");
+                }
+                let p = request.payload;
+                let (original, refs) = self
+                    .requests
+                    .get_mut(&p.request_id)
+                    .ok_or("IPC_REQUEST_NOT_PREPARED")?;
+                if original.turn_id != p.agent_turn_id {
+                    return Err("IPC_REQUEST_SCOPE_MISMATCH");
+                }
+                let supplied = (p.context_ref, p.model_config_ref);
+                if refs.as_ref().is_some_and(|previous| previous != &supplied) {
+                    return Err("IPC_REQUEST_ID_CONFLICT");
+                }
+                *refs = Some(supplied);
+                // References are data. Only the later trusted context/model adapter can resolve them.
+                IngressDisposition::RequestIntent(original.clone())
+            }
+            AgentIPCFrame::AgentErrorFrame(_) => {
                 if self.phase != ConnectionPhase::Ready {
                     return Err("IPC_TASK_NOT_READY");
                 }
@@ -398,6 +453,7 @@ impl AgentIngress {
         self.awaiting_transcript = None;
         self.proposals.clear();
         self.mapped.clear();
+        self.requests.clear();
         self.grants.clear();
     }
 }

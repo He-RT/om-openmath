@@ -333,6 +333,20 @@ impl NativeHost {
             .ok_or("SOURCE_NOT_OPEN")?
             .result_command(command)
     }
+    /// Private Agent control is owned by the current source document. It performs no physical IO.
+    pub fn agent_command(&self, bytes: &[u8]) -> Result<NativeAgentHostReply, String> {
+        let command = crate::agent::endpoint::decode_command(bytes)?;
+        if self.shared.closed.load(Ordering::Acquire) {
+            return Err("HOST_CLOSING".into());
+        }
+        self.shared
+            .source
+            .lock()
+            .map_err(|_| "INTERNAL_ERROR")?
+            .as_mut()
+            .ok_or("SOURCE_NOT_OPEN")?
+            .agent_command(command)
+    }
     /// Read retained real operation facts; unavailable IDs cannot be inferred to have never run.
     pub fn operation(&self, id: &str) -> Option<OperationStatus> {
         self.shared.operations.status(id)

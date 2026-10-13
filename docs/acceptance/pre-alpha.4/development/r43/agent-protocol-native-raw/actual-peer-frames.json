@@ -1,0 +1,236 @@
+{
+  "fixture": true,
+  "framework": "synthetic-private-peer",
+  "environment_keys": [
+    "PATH",
+    "__CF_USER_TEXT_ENCODING"
+  ],
+  "observed": [
+    {
+      "direction": "host",
+      "frame": {
+        "agent_session_id": "pipe-session",
+        "connection_generation": 1,
+        "connection_id": "connection-d121eb11-fb03-43c9-aa66-ca59f0ea7f2c",
+        "document_generation": 1,
+        "document_id": "00000000-0000-0000-0000-000000000431",
+        "message_id": "hello-c6650c32-3a06-440f-99ba-6bd04bd907ff",
+        "payload": {
+          "adapter_version": "adapter-1",
+          "core_version": "1.0.4",
+          "schema_hash": "22565cace83468ee804a73bb860f9786769ea537d1579588255a23452f5c3a92"
+        },
+        "protocol_version": 1,
+        "reply_to": null,
+        "runtime_instance_id": "3df2796f-ded6-4b08-bc78-c4cba8fc2bf1",
+        "sequence": 1,
+        "task_generation": 1,
+        "task_id": "task-d6392066-c684-4340-9a34-79e6dd99b254",
+        "type": "hello"
+      }
+    },
+    {
+      "direction": "peer",
+      "frame": {
+        "agent_session_id": "pipe-session",
+        "connection_generation": 1,
+        "connection_id": "connection-d121eb11-fb03-43c9-aa66-ca59f0ea7f2c",
+        "document_generation": 1,
+        "document_id": "00000000-0000-0000-0000-000000000431",
+        "message_id": "peer-1",
+        "payload": {
+          "adapter_version": "adapter-1",
+          "core_version": "1.0.4",
+          "schema_hash": "22565cace83468ee804a73bb860f9786769ea537d1579588255a23452f5c3a92"
+        },
+        "protocol_version": 1,
+        "reply_to": "hello-c6650c32-3a06-440f-99ba-6bd04bd907ff",
+        "runtime_instance_id": "3df2796f-ded6-4b08-bc78-c4cba8fc2bf1",
+        "sequence": 1,
+        "task_generation": 1,
+        "task_id": "task-d6392066-c684-4340-9a34-79e6dd99b254",
+        "type": "ready"
+      }
+    },
+    {
+      "direction": "peer",
+      "frame": {
+        "agent_session_id": "pipe-session",
+        "connection_generation": 1,
+        "connection_id": "connection-d121eb11-fb03-43c9-aa66-ca59f0ea7f2c",
+        "document_generation": 1,
+        "document_id": "00000000-0000-0000-0000-000000000431",
+        "message_id": "peer-2",
+        "payload": {
+          "event_id": "pipe-proposal",
+          "source_sequence": 1,
+          "message": {
+            "record_type": "canonical_agent_message",
+            "message_version": 1,
+            "message_id": "pipe-message",
+            "role": "assistant",
+            "agent_turn_id": "pipe-turn",
+            "task_id": "task-d6392066-c684-4340-9a34-79e6dd99b254",
+            "parts": [
+              {
+                "kind": "text",
+                "part_id": "text",
+                "text": "完整原文 中文🙂 / é"
+              },
+              {
+                "kind": "tool_call",
+                "part_id": "call",
+                "tool_call_id": "model-call",
+                "name": "read_notebook",
+                "arguments_json": "{}"
+              }
+            ]
+          }
+        },
+        "protocol_version": 1,
+        "reply_to": null,
+        "runtime_instance_id": "3df2796f-ded6-4b08-bc78-c4cba8fc2bf1",
+        "sequence": 2,
+        "task_generation": 1,
+        "task_id": "task-d6392066-c684-4340-9a34-79e6dd99b254",
+        "type": "transcript_event"
+      }
+    },
+    {
+      "direction": "host",
+      "frame": {
+        "agent_session_id": "pipe-session",
+        "connection_generation": 1,
+        "connection_id": "connection-d121eb11-fb03-43c9-aa66-ca59f0ea7f2c",
+        "document_generation": 1,
+        "document_id": "00000000-0000-0000-0000-000000000431",
+        "message_id": "agent-operation-19c3942338bc9e08898ec7d21be32863",
+        "payload": {
+          "event_id": "pipe-proposal",
+          "event_sequence": 1,
+          "receipt_hash": "119df49a5708734bd9cf26ff5ccda53be5eb7d48d0cc12efbb3b878dad3c1509"
+        },
+        "protocol_version": 1,
+        "reply_to": "peer-2",
+        "runtime_instance_id": "3df2796f-ded6-4b08-bc78-c4cba8fc2bf1",
+        "sequence": 2,
+        "task_generation": 1,
+        "task_id": "task-d6392066-c684-4340-9a34-79e6dd99b254",
+        "type": "ack"
+      }
+    },
+    {
+      "direction": "host",
+      "frame": {
+        "agent_session_id": "pipe-session",
+        "connection_generation": 1,
+        "connection_id": "connection-d121eb11-fb03-43c9-aa66-ca59f0ea7f2c",
+        "document_generation": 1,
+        "document_id": "00000000-0000-0000-0000-000000000431",
+        "message_id": "agent-operation-19c3942338bc9e08898ec7d21be32863",
+        "payload": {
+          "event_id": "pipe-proposal",
+          "event_sequence": 1,
+          "receipt_hash": "119df49a5708734bd9cf26ff5ccda53be5eb7d48d0cc12efbb3b878dad3c1509"
+        },
+        "protocol_version": 1,
+        "reply_to": "peer-2",
+        "runtime_instance_id": "3df2796f-ded6-4b08-bc78-c4cba8fc2bf1",
+        "sequence": 2,
+        "task_generation": 1,
+        "task_id": "task-d6392066-c684-4340-9a34-79e6dd99b254",
+        "type": "ack"
+      }
+    },
+    {
+      "direction": "peer",
+      "frame": {
+        "agent_session_id": "pipe-session",
+        "connection_generation": 1,
+        "connection_id": "connection-d121eb11-fb03-43c9-aa66-ca59f0ea7f2c",
+        "document_generation": 1,
+        "document_id": "00000000-0000-0000-0000-000000000431",
+        "message_id": "peer-3",
+        "payload": {
+          "agent_turn_id": "pipe-turn",
+          "tool_call_id": "model-call",
+          "proposal_event_ref": "pipe-proposal"
+        },
+        "protocol_version": 1,
+        "reply_to": null,
+        "runtime_instance_id": "3df2796f-ded6-4b08-bc78-c4cba8fc2bf1",
+        "sequence": 3,
+        "task_generation": 1,
+        "task_id": "task-d6392066-c684-4340-9a34-79e6dd99b254",
+        "type": "tool_call"
+      }
+    },
+    {
+      "direction": "peer",
+      "frame": {
+        "agent_session_id": "pipe-session",
+        "connection_generation": 1,
+        "connection_id": "connection-d121eb11-fb03-43c9-aa66-ca59f0ea7f2c",
+        "document_generation": 1,
+        "document_id": "00000000-0000-0000-0000-000000000431",
+        "message_id": "peer-4",
+        "payload": {
+          "agent_turn_id": "pipe-turn",
+          "request_id": "model-request"
+        },
+        "protocol_version": 1,
+        "reply_to": null,
+        "runtime_instance_id": "3df2796f-ded6-4b08-bc78-c4cba8fc2bf1",
+        "sequence": 4,
+        "task_generation": 1,
+        "task_id": "task-d6392066-c684-4340-9a34-79e6dd99b254",
+        "type": "prepare_request"
+      }
+    },
+    {
+      "direction": "peer",
+      "frame": {
+        "agent_session_id": "pipe-session",
+        "connection_generation": 1,
+        "connection_id": "connection-d121eb11-fb03-43c9-aa66-ca59f0ea7f2c",
+        "document_generation": 1,
+        "document_id": "00000000-0000-0000-0000-000000000431",
+        "message_id": "peer-5",
+        "payload": {
+          "agent_turn_id": "pipe-turn",
+          "request_id": "model-request",
+          "context_ref": "unresolved-context",
+          "model_config_ref": "unresolved-config"
+        },
+        "protocol_version": 1,
+        "reply_to": null,
+        "runtime_instance_id": "3df2796f-ded6-4b08-bc78-c4cba8fc2bf1",
+        "sequence": 5,
+        "task_generation": 1,
+        "task_id": "task-d6392066-c684-4340-9a34-79e6dd99b254",
+        "type": "model_request"
+      }
+    },
+    {
+      "direction": "peer",
+      "frame": {
+        "agent_session_id": "pipe-session",
+        "connection_generation": 1,
+        "connection_id": "connection-d121eb11-fb03-43c9-aa66-ca59f0ea7f2c",
+        "document_generation": 1,
+        "document_id": "00000000-0000-0000-0000-000000000431",
+        "message_id": "peer-6",
+        "payload": {
+          "reason": "loop_stopped"
+        },
+        "protocol_version": 1,
+        "reply_to": null,
+        "runtime_instance_id": "3df2796f-ded6-4b08-bc78-c4cba8fc2bf1",
+        "sequence": 6,
+        "task_generation": 1,
+        "task_id": "task-d6392066-c684-4340-9a34-79e6dd99b254",
+        "type": "settled"
+      }
+    }
+  ]
+}

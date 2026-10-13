@@ -1,0 +1,373 @@
+{
+  "schema_version": 1,
+  "task": "R4.3.01",
+  "status": "completed",
+  "date": "2026-10-14",
+  "kind": "development task proof; no final gate or release claim",
+  "base_commit": "549418b737cb0871bd317e71b82c70c5aaef8a86",
+  "bounds": {
+    "frame_utf8_bytes": 1048576,
+    "native_control_bytes": 2097152,
+    "journal_payload_bytes": 2097152,
+    "json_depth": 64,
+    "json_nodes": 32768,
+    "frame_batch": 32,
+    "peer_messages": 4096,
+    "peer_task_bytes": 8388608,
+    "tool_proposals": 32,
+    "model_request_intents": 64,
+    "pending_writes": 32,
+    "pending_write_bytes": 2097152,
+    "retained_outbound_bytes": 8388608
+  },
+  "implemented": [
+    "Closed Pi-independent canonical DTOs and fifteen frames; 357 generated native DTOs.",
+    "C ABI/source-owned Agent endpoint derives actual runtime/document; one active task and monotonic replacement generations.",
+    "Canonical Rust bytes and helper source sequence persisted in actual SQLite envelope; full event/receipt readback before native confirmation and ACK.",
+    "Original ACK and user input frames replay unchanged; entropy host tool/request intent IDs never imply actual admission/execution.",
+    "Prepare/model request correlation rejects changed turn/context/config; helper cannot forge model_event or tool result.",
+    "Bounded raw stdio, poisoned framing/EOF, minimal child environment, ordered write buffering, bounded stderr drain, native cancel independent of SQLite, document close revokes authority.",
+    "Explicit restore retains messages; fresh runtime/task/connection/grants and no restored authorization."
+  ],
+  "tests": {
+    "rust": {
+      "new_and_existing_protocol": 20,
+      "new_document_owned_endpoint": 3
+    },
+    "node_stream_tests": 3,
+    "swift_private_process": {
+      "cancel_did_not_wait_for_SQLite": true,
+      "canonical_events": 1,
+      "fixture": true,
+      "last_phase": "awaiting_settlement",
+      "lost_ack_reconciled": true,
+      "model_requests_dispatched": 0,
+      "negative_private_process_cases": [
+        "invalid_utf8",
+        "partial_eof",
+        "sequence_gap",
+        "stale_scope",
+        "wrong_handshake",
+        "duplicate_field",
+        "oversize",
+        "empty_eof"
+      ],
+      "outbound_sequence_buffer_verified": true,
+      "peer_frames_file": "/Users/hert/Projects/openmath/target/macos-agent-protocol-tests/attempt-ta981z/actual-peer-frames.json",
+      "private_process_frames": 7,
+      "recovery_did_not_restore_authority": true,
+      "source_unchanged": true,
+      "tool_effects_executed": 0,
+      "valid_frame_exceeding_ledger_budget_denied_without_ACK": 1000914
+    },
+    "durable_events_archived": 6,
+    "native_release": "success",
+    "baseline_swift_cabi": "success",
+    "resources": 32,
+    "codesign_deep_strict": "success",
+    "foundation_ci": {
+      "sha": "549418b737cb0871bd317e71b82c70c5aaef8a86",
+      "run": 38419147394,
+      "all_five_jobs": "success"
+    }
+  },
+  "limitations": [
+    "Private process fixture is synthetic, not pinned Pi production helper; production runtime and Pi proof are R4.3.02.",
+    "Tool/model IDs are pending intents only. No tools, evaluator, model dispatch, Registry/SecretStore or ContextSnapshot resolving occurs in this proof; subsequent R4.3 tasks supply these ports.",
+    "One valid 1000914-byte frame exceeds the 2MiB expanded journal envelope budget and is denied without ACK/event; no truncation.",
+    "Local Node25.9 is development only; CI Node26.11.1 and bundled runtime are verified separately.",
+    "settled only awaiting_settlement; no mathematical/task success inferred.",
+    "All 32 final gates stay not_run, no candidate, ready_to_publish=false/released_verified=false; runtime/public .3 unchanged.",
+    "OS input settings preserved; R4.2.03 real candidate window tests remain pending."
+  ],
+  "preserved_failures": [
+    "Initial standalone Swift compile omitted DraftStore/AppEventRouter and used async precondition; fixed fixture wiring.",
+    "Actual small-frame process hung in Foundation read(upToCount:); blocked stack captured, fixed single POSIX read.",
+    "Semaphore wait unavailable in async test closure; synchronous fixture wrapper used.",
+    "Strict PATH-only fixture assertion rejected macOS-inserted __CF_USER_TEXT_ENCODING; actual environment keys preserved, only this system encoding variable allowed."
+  ],
+  "commands": [
+    "CARGO_PROFILE_DEV_DEBUG=0 CARGO_PROFILE_TEST_DEBUG=0 cargo test -p om-host-service --test agent_endpoint --test agent_ingress --test agent_framing --test contracts --locked",
+    "CARGO_PROFILE_DEV_DEBUG=0 CARGO_PROFILE_TEST_DEBUG=0 cargo clippy -p om-host-service -p om-apple-ffi --all-targets --locked -- -D warnings",
+    "node --test agent/test/protocol.test.mjs",
+    "node app/node_modules/typescript/bin/tsc --noEmit --strict --module nodenext --target es2024 --allowImportingTsExtensions --types node --typeRoots app/node_modules/@types agent/src/protocol.ts",
+    "bash macos/Scripts/test-agent-protocol.sh",
+    "CARGO_PROFILE_DEV_DEBUG=0 CARGO_PROFILE_TEST_DEBUG=0 bash macos/Scripts/test-native-contracts.sh",
+    "CARGO_PROFILE_DEV_DEBUG=0 CARGO_PROFILE_TEST_DEBUG=0 bash macos/Scripts/build-native.sh",
+    "python3 scripts/native_contracts.py --check",
+    "python3 macos/Scripts/generate-project.py --check",
+    "cargo fmt --all --check",
+    "python3 macos/Scripts/verify-math-resources.py <Release app> --output <resource inventory>",
+    "codesign --verify --deep --strict <Release app>"
+  ],
+  "source_sha256": {
+    "docs/design/native-agent.schema.json": "22565cace83468ee804a73bb860f9786769ea537d1579588255a23452f5c3a92",
+    "docs/design/native-host-abi.json": "d6d558e4b2819eb5ae3b71fb903f92178508f2db9065a4858f98ed61a051b565",
+    "crates/om-host-service/src/agent/endpoint.rs": "ce19b03d08f280d97589b9ef0b1c69619ff17f01011d1c419de800452169dc04",
+    "crates/om-host-service/src/agent/framing.rs": "b521eb880b3e2237fc7af39f6e9af04aa4cdc889e10bca105a0c1a1d34f4d3de",
+    "crates/om-host-service/src/agent/ingress.rs": "d7028d0fbbcc8348a2f382f77c8bfdc6f63c6bf8cc16736494a9c7a677d6ae59",
+    "crates/om-host-service/src/document/endpoint.rs": "929afbe7f8a2141ae59a134290785e9c55f3e8a06116725862dcc0fbab3982a7",
+    "crates/om-host-service/src/scheduler/mod.rs": "d7df6718af76897f2cceca1c81488d74c8fbd8c6aa28ce4175f16b9020d787e3",
+    "crates/om-apple-ffi/src/ffi.rs": "ad8771964406a68f83ac614a8f2aacf4bca7484fca4570b199ce451634191fcf",
+    "crates/om-host-service/tests/agent_endpoint.rs": "b203d8ef2dbfce264a0a58d4e069fc627a1a62fa88febc4dd86847e9cd4a2403",
+    "crates/om-host-service/tests/agent_ingress.rs": "6f2f7432d1a26c44bb5f3e6a210e29bdf094d0263b520a52f12f3b0688448031",
+    "crates/om-host-service/tests/agent_framing.rs": "2cf037602429cd819291cbb71317aaf962f54b783ca9602c1b583ac5929a8c79",
+    "macos/OpenMathNative/Agent/AgentSessionService.swift": "b3e50a42daef8a1293cf9286ece1cb17cacd67ca3ec1becc196a3295bc7aaf2f",
+    "macos/OpenMathNative/Agent/AgentPrivatePipe.swift": "d6bb232c6d00b9dd49d824c94dca6a7ec51352b949b2bfe5386f89d197cd44cc",
+    "macos/OpenMathNative/NativeHostClient.swift": "fc9fd08daf16b839b882312ecb18568532e83dad946852dea37c8d98ce6207e5",
+    "macos/OpenMathNative/Files/NativeDocumentSession.swift": "8df58ae730b4586086415ca93f022fd8cf036f7d1056cde2ecae938fe7062e4f",
+    "macos/OpenMathNativeTests/AgentProtocolFixtures/main.swift": "3823b26059efe9ca6974fe606a65a6fba0a59972cee7ed9ab6cf7aec1a806fa9",
+    "macos/OpenMathNativeTests/AgentProtocolFixtures/peer.mjs": "b6303bae206815d65d82f4a350d7d93b604b630f017d39d8107d958884d56023",
+    "macos/Scripts/test-agent-protocol.sh": "a4132f12cb43906eb5d6c77d7028d50ca4af49703f2a07a0b2c329265333e361",
+    "agent/src/protocol.ts": "3a7ba0d0ea1d4369bc0283b0f2d4a6df877427da4e47db39f9fb7cc0da822e91",
+    "agent/src/generated/protocol.ts": "2b9ea33cb97ea22bc2f3186384484cd7e4e5fcc5db08c34cfaef33550d47b291",
+    "agent/test/protocol.test.mjs": "14dea9f4ba0624d63ff9068086995ce83bfc9c482aacec91dfa8fec904026e4c"
+  },
+  "files": [
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/agent-protocol-native-raw/actual-ledger-events.json",
+      "sha256": "c8ee30035f886d4685786ac2225c99bf545a18531e7f5a3b4b6cfd3d842a893b",
+      "bytes": 9322
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/agent-protocol-native-raw/actual-peer-frames.json",
+      "sha256": "40019fe2a282c8f7fb7d30396dd1779cd461759913fff2b6613f5e140c55ecab",
+      "bytes": 8099
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/agent-protocol-native-raw/agent-cache-cleanup.json",
+      "sha256": "f00e738148f87e82ba0bdc865b21a48d0ce6ce0766db5fdb02edfb242b652e67",
+      "bytes": 1865
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/agent-protocol-native-raw/agent-endpoint-clippy-initial.log",
+      "sha256": "c0943ab7422f0d100008b75c7d4e16d7a1a26c39d53862a95d86d8cecef06a2d",
+      "bytes": 260
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/agent-protocol-native-raw/agent-endpoint-final-rust.log",
+      "sha256": "dcbe34458d5c4a26598cbc8ad0418b8dd6e3253324f51305fc4f676ce8bb301c",
+      "bytes": 2634
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/agent-protocol-native-raw/agent-endpoint-node.log",
+      "sha256": "17b199acdbc35e41422b2e24d4e527fba862b575d7a76c4d5e0bbbf71a9cace1",
+      "bytes": 424
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/agent-protocol-native-raw/agent-endpoint-typescript.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/agent-protocol-native-raw/agent-native-contracts.log",
+      "sha256": "c94e370998aaeaf6d68730589b76f0a60f29ecd99cddd0b116674e1ee322d323",
+      "bytes": 1167
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/agent-protocol-native-raw/agent-native-release.log",
+      "sha256": "bbd0ed86b76c10c032e78a969fcf916a8d46015e13b2576184653b3c75e51b00",
+      "bytes": 117520
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/agent-protocol-native-raw/agent-native-resources.json",
+      "sha256": "2a2aae7b98fda27038fbd5bb5cbd448949ba02c68ac48eee430d2205286ba504",
+      "bytes": 5128
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/agent-protocol-native-raw/agent-protocol-verified-complete.log",
+      "sha256": "69e6e28c9764d220e0fd27214c5349efb1a5f70cda9a171716ebddef9e22f8e6",
+      "bytes": 739
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/agent-protocol-native-raw/agent-protocol-verified.log",
+      "sha256": "73704bcda8a8dcebbd85c2a021c23d99d77d89772eea29b6edb9ee9210b47cd4",
+      "bytes": 271
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/agent-protocol-native-raw/agent-swift-pipe-attempt-2.log",
+      "sha256": "d1a547b4bdbf8b8929cbecb7024ae6e2e97c49aaa276238621a94d1684999aee",
+      "bytes": 227
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/agent-protocol-native-raw/agent-swift-pipe-blocked.sample.txt",
+      "sha256": "cbc4add470ce5764cfe304e59dc2e5d7574ee4b8b151013e1d49412f11af40a3",
+      "bytes": 112922
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/agent-protocol-native-raw/agent-swift-pipe-final-ordered.log",
+      "sha256": "773a05381d37df1385c553efd5553d40de204e48af6623aafd3aa6f681c36653",
+      "bytes": 1034
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/agent-protocol-native-raw/agent-swift-pipe-initial.log",
+      "sha256": "b3b3bfc5bd4f00001e037cee0fa2d22573fab59ac10cc2f8bf95f3d4d3fb8b77",
+      "bytes": 13419
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/agent-protocol-native-raw/duplicate_field.json",
+      "sha256": "e4b285ea7d1b5b34aacdbf0213e8845ed1ba505005258de1f19d05b3053c7307",
+      "bytes": 964
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/agent-protocol-native-raw/empty_eof.json",
+      "sha256": "dd9e2500d65deeebbd5acf841ea6c5d42304f9a57031164067f883bd1ffcf0c8",
+      "bytes": 54
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/agent-protocol-native-raw/input-agent--src--generated--protocol.ts",
+      "sha256": "2b9ea33cb97ea22bc2f3186384484cd7e4e5fcc5db08c34cfaef33550d47b291",
+      "bytes": 15393
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/agent-protocol-native-raw/input-agent--src--protocol.ts",
+      "sha256": "3a7ba0d0ea1d4369bc0283b0f2d4a6df877427da4e47db39f9fb7cc0da822e91",
+      "bytes": 7995
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/agent-protocol-native-raw/input-agent--test--protocol.test.mjs",
+      "sha256": "14dea9f4ba0624d63ff9068086995ce83bfc9c482aacec91dfa8fec904026e4c",
+      "bytes": 2767
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/agent-protocol-native-raw/input-crates--om-apple-ffi--src--ffi.rs",
+      "sha256": "ad8771964406a68f83ac614a8f2aacf4bca7484fca4570b199ce451634191fcf",
+      "bytes": 12794
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/agent-protocol-native-raw/input-crates--om-host-service--src--agent--endpoint.rs",
+      "sha256": "ce19b03d08f280d97589b9ef0b1c69619ff17f01011d1c419de800452169dc04",
+      "bytes": 16103
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/agent-protocol-native-raw/input-crates--om-host-service--src--agent--framing.rs",
+      "sha256": "b521eb880b3e2237fc7af39f6e9af04aa4cdc889e10bca105a0c1a1d34f4d3de",
+      "bytes": 6672
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/agent-protocol-native-raw/input-crates--om-host-service--src--agent--ingress.rs",
+      "sha256": "d7028d0fbbcc8348a2f382f77c8bfdc6f63c6bf8cc16736494a9c7a677d6ae59",
+      "bytes": 18328
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/agent-protocol-native-raw/input-crates--om-host-service--src--document--endpoint.rs",
+      "sha256": "929afbe7f8a2141ae59a134290785e9c55f3e8a06116725862dcc0fbab3982a7",
+      "bytes": 26111
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/agent-protocol-native-raw/input-crates--om-host-service--src--scheduler--mod.rs",
+      "sha256": "d7df6718af76897f2cceca1c81488d74c8fbd8c6aa28ce4175f16b9020d787e3",
+      "bytes": 22393
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/agent-protocol-native-raw/input-crates--om-host-service--tests--agent_endpoint.rs",
+      "sha256": "b203d8ef2dbfce264a0a58d4e069fc627a1a62fa88febc4dd86847e9cd4a2403",
+      "bytes": 9321
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/agent-protocol-native-raw/input-crates--om-host-service--tests--agent_framing.rs",
+      "sha256": "2cf037602429cd819291cbb71317aaf962f54b783ca9602c1b583ac5929a8c79",
+      "bytes": 4510
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/agent-protocol-native-raw/input-crates--om-host-service--tests--agent_ingress.rs",
+      "sha256": "6f2f7432d1a26c44bb5f3e6a210e29bdf094d0263b520a52f12f3b0688448031",
+      "bytes": 7423
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/agent-protocol-native-raw/input-docs--design--native-agent.schema.json",
+      "sha256": "22565cace83468ee804a73bb860f9786769ea537d1579588255a23452f5c3a92",
+      "bytes": 49109
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/agent-protocol-native-raw/input-docs--design--native-host-abi.json",
+      "sha256": "d6d558e4b2819eb5ae3b71fb903f92178508f2db9065a4858f98ed61a051b565",
+      "bytes": 3566
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/agent-protocol-native-raw/input-macos--OpenMathNative--Agent--AgentPrivatePipe.swift",
+      "sha256": "d6bb232c6d00b9dd49d824c94dca6a7ec51352b949b2bfe5386f89d197cd44cc",
+      "bytes": 5902
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/agent-protocol-native-raw/input-macos--OpenMathNative--Agent--AgentSessionService.swift",
+      "sha256": "b3e50a42daef8a1293cf9286ece1cb17cacd67ca3ec1becc196a3295bc7aaf2f",
+      "bytes": 11898
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/agent-protocol-native-raw/input-macos--OpenMathNative--Files--NativeDocumentSession.swift",
+      "sha256": "8df58ae730b4586086415ca93f022fd8cf036f7d1056cde2ecae938fe7062e4f",
+      "bytes": 11188
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/agent-protocol-native-raw/input-macos--OpenMathNative--NativeHostClient.swift",
+      "sha256": "fc9fd08daf16b839b882312ecb18568532e83dad946852dea37c8d98ce6207e5",
+      "bytes": 14398
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/agent-protocol-native-raw/input-macos--OpenMathNativeTests--AgentProtocolFixtures--main.swift",
+      "sha256": "3823b26059efe9ca6974fe606a65a6fba0a59972cee7ed9ab6cf7aec1a806fa9",
+      "bytes": 14682
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/agent-protocol-native-raw/input-macos--OpenMathNativeTests--AgentProtocolFixtures--peer.mjs",
+      "sha256": "b6303bae206815d65d82f4a350d7d93b604b630f017d39d8107d958884d56023",
+      "bytes": 3183
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/agent-protocol-native-raw/input-macos--Scripts--test-agent-protocol.sh",
+      "sha256": "a4132f12cb43906eb5d6c77d7028d50ca4af49703f2a07a0b2c329265333e361",
+      "bytes": 978
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/agent-protocol-native-raw/invalid_utf8.json",
+      "sha256": "11860bc545dc20e844e1956789d425c55da4148a567696ce435609ad0c15b033",
+      "bytes": 61
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/agent-protocol-native-raw/large-valid-canonical-frame.json",
+      "sha256": "76db1816847f2b682fbaccad47f25b48d6b9e86f7e484a451a547f36b5cbf20d",
+      "bytes": 1000914
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/agent-protocol-native-raw/ordered-host-frames.json",
+      "sha256": "e6b4bf067a64063b5d66f85cd82d911c12d5918e660fff87cb667d9577f5216c",
+      "bytes": 1161
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/agent-protocol-native-raw/oversize.json",
+      "sha256": "384ec88f9c6d536a6dab7ba7bfde4735f10977cad15a93c33d73fecde5b173af",
+      "bytes": 1398157
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/agent-protocol-native-raw/partial_eof.json",
+      "sha256": "264dc72acc3b3dfe339b33ecebd2edc77ead665e8367ea9f1dc5ba3f4a3e11af",
+      "bytes": 68
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/agent-protocol-native-raw/sequence_gap.json",
+      "sha256": "b040432f8bd8a9c7071fa60c84f8265e5bd6621a67178279d2cc5c7f821ab387",
+      "bytes": 929
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/agent-protocol-native-raw/stale_scope.json",
+      "sha256": "3cd9a005c5fea978a846b0dc7dd74457dd076615579392340fbdb8423aa17b18",
+      "bytes": 928
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/agent-protocol-native-raw/store.json",
+      "sha256": "6d2c19004bc3623490d9d74297ce0ccdb3030b1ede2759e49a8c4fb8b736412e",
+      "bytes": 97
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/agent-protocol-native-raw/wrong_handshake.json",
+      "sha256": "a597e19bac96df674257963b6648cef6caeac514133eaaf797d033b76adaf57f",
+      "bytes": 936
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/agent-protocol-native-raw/agent-private-credential-scan.json",
+      "sha256": "f1346bb350cb86c701114cd4f0b318c330d27b3e37017d97227f23f578fc7f37",
+      "bytes": 193
+    }
+  ]
+}

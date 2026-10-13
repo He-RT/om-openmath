@@ -1,0 +1,46 @@
+   Compiling om-host-service v0.1.0-pre-alpha.3 (/Users/hert/Projects/openmath/crates/om-host-service)
+    Finished `test` profile [unoptimized] target(s) in 5.95s
+     Running tests/agent_endpoint.rs (target/debug/deps/agent_endpoint-32fef2bb1875f283)
+
+running 3 tests
+test request_ids_are_correlated_without_dispatch_and_peer_model_streams_are_denied ... ok
+test durable_confirmation_replay_and_document_close_revoke_real_owner_authority ... ok
+test native_envelope_budget_preserves_raw_frame_and_rejects_duplicate_fields ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.13s
+
+     Running tests/agent_framing.rs (target/debug/deps/agent_framing-f7d3c8ab25ff2c59)
+
+running 4 tests
+test canonical_media_and_tool_parts_retain_ids_without_executable_urls_or_framework_state ... ok
+test frame_contract_denies_credentials_urls_pi_state_missing_null_and_wrong_versions ... ok
+test unique_json_members_utf8_depth_node_byte_and_eof_limits_are_real ... ok
+test every_actual_utf8_byte_cut_and_multiple_frames_preserve_text ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.16s
+
+     Running tests/agent_ingress.rs (target/debug/deps/agent_ingress-cf185161c60c37f2)
+
+running 3 tests
+test tool_mapping_waits_for_confirmed_canonical_event_and_uses_distinct_host_ids ... ok
+test readonly_canonical_forgery_and_turn_proposal_isolation_do_not_create_grants ... ok
+test handshake_scope_duplicates_and_gap_never_resume_a_different_activation ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.03s
+
+     Running tests/contracts.rs (target/debug/deps/contracts-c5eafd3c71f3ebb3)
+
+running 10 tests
+test unsupported_schema_features_and_false_schemas_are_not_silently_accepted ... ok
+test shared_serials_preserve_maximum_and_never_wrap_or_truncate ... ok
+test actual_generated_host_roundtrips_and_required_null_is_not_optional ... ok
+test durable_io_ack_requires_actual_receipt_fields_and_cannot_claim_success_from_null ... ok
+test frame_budget_invalid_utf8_and_unknown_nullable_fields_fail_closed ... ok
+test positive_but_stale_runtime_and_document_generations_fail_owner_binding ... ok
+test identities_unknown_fields_unions_and_closed_state_are_rejected ... ok
+test native_wire_dispatch_is_typed_and_cannot_change_permissions_by_adding_fields ... ok
+test canonical_timestamp_accepts_actual_iso_dates_and_rejects_bad_calendar_or_offset ... ok
+test marked_text_invariants_are_not_confused_with_shape_success ... ok
+
+test result: ok. 10 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+

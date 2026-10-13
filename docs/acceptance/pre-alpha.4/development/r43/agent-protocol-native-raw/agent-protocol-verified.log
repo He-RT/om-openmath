@@ -1,0 +1,3 @@
+    Finished `release` profile [optimized] target(s) in 0.28s
+fixtures/main.swift:91: Precondition failed
+macos/Scripts/test-agent-protocol.sh: line 14: 45525 Trace/BPT trap: 5       target/macos-agent-protocol-tests/fixtures "$root" "$attempt_root" "$(command -v node)"

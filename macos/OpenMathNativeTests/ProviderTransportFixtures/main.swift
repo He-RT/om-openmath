@@ -28,10 +28,11 @@ private final class FixtureState:@unchecked Sendable {
 }
 private actor Evidence {
   static let shared=Evidence()
-  var facts:[[String:Any]]=[],frames:[String]=[]
+  var facts:[[String:Any]]=[],frames:[String]=[],sockets:[[String:Any]]=[]
   func record(_ fact:ProviderJournalFact){facts.append(["phase":fact.phase.rawValue,"request":fact.request,"context":fact.context,"status":fact.status.map{Int($0)} as Any? ?? NSNull(),"outcome":fact.outcome.rawValue])}
   func frame(_ event:AgentModelEventPayload)throws {frames.append(String(decoding:try JSONEncoder().encode(event),as:UTF8.self))}
-  func save(_ root:URL)throws {try JSONSerialization.data(withJSONObject:["scope":"synthetic URLProtocol and credential; actual URLSession/Rust C ABI/Agent port","journal_callbacks":facts,"agent_frames_json":frames],options:[.sortedKeys]).write(to:root.appendingPathComponent("actual-native-events.json"))}
+  func socket(request:Data,response:Data,elapsed:Double){sockets.append(["request_raw_base64":request.base64EncodedString(),"response_sse_base64":response.base64EncodedString(),"connection_budget_seconds":1,"configured_response_delay_seconds":1.3,"elapsed_seconds":elapsed])}
+  func save(_ root:URL)throws {try JSONSerialization.data(withJSONObject:["scope":"synthetic URLProtocol and credential; actual URLSession/Rust C ABI/Agent port; owned actual loopback socket","journal_callbacks":facts,"agent_frames_json":frames,"socket_cases":sockets],options:[.sortedKeys]).write(to:root.appendingPathComponent("actual-native-events.json"))}
 }
 private final class FixtureProtocol:URLProtocol,@unchecked Sendable {
   static let state=FixtureState()
@@ -146,6 +147,7 @@ private func failure(_ body:@Sendable ()async throws->ProviderModelResult)async 
     let redirectError=try await failure {try await transport.send(redirected,route:route(redirected,normal),journal:await redirectTrace.journal(),onText:{_ in})}
     precondition(redirectError.reason == .redirect && redirectError.httpStatus==302 && FixtureProtocol.state.count==1)
     for (name,script,timeouts,reason) in [
+      ("connect",Script(delay:0.2,noHeaders:true,noFinish:true),try ProviderTimeouts(connection:0.03,firstResponse:1,idle:1,total:1),ProviderTransportReason.connectionTimeout),
       ("first",Script(delay:0.2,noHeaders:true,noFinish:true),try ProviderTimeouts(firstResponse:0.03,idle:1,total:1),ProviderTransportReason.firstResponseTimeout),
       ("idle",Script(noFinish:true),try ProviderTimeouts(firstResponse:1,idle:0.03,total:1),.idleTimeout),
       ("total",Script(noFinish:true,heartbeat:true),try ProviderTimeouts(firstResponse:0.03,idle:0.03,total:0.1),.totalTimeout),
@@ -159,6 +161,15 @@ private func failure(_ body:@Sendable ()async throws->ProviderModelResult)async 
     try await heldTrace.wait();precondition(FixtureProtocol.state.count==0);heldTask.cancel();await heldTrace.release()
     do {_ = try await heldTask.value;fatalError("cancelled pre-resume succeeded")}catch let e as ProviderTransportFailure {precondition(e.reason == .cancelled && e.outcome == .dispatchOutcomeUnknown)}
     precondition(FixtureProtocol.state.count==0)
+    let delayedWire=try chat("actual delayed headers🙂"),delayedServer=try DelayedLoopbackServer(response:delayedWire,delay:1.3)
+    let delayedModel=try await prepare(host,"delayed-headers"),delayedTrace=Trace()
+    let delayedRoute=try ProviderRoute(binding:delayedModel.binding,endpoint:URL(string:"http://127.0.0.1:\(delayedServer.port)/v1/chat/completions")!,authentication:.none,credentialReference:nil,timeouts:try ProviderTimeouts(connection:1,firstResponse:4,idle:3,total:5),allowHTTPOnLiteralLoopback:true)
+    let started=ContinuousClock.now
+    let delayed=try await transport.send(delayedModel,route:delayedRoute,journal:await delayedTrace.journal(),onText:{_ in})
+    let duration=started.duration(to:.now),elapsed=Double(duration.components.seconds)+Double(duration.components.attoseconds)/1e18
+    precondition(delayedServer.receivedBody && delayed.finish=="complete")
+    precondition(elapsed>=1.3)
+    await Evidence.shared.socket(request:delayedServer.requestBytes,response:delayedWire,elapsed:elapsed)
     let active=try await prepare(host,"active"),activeTrace=Trace();FixtureProtocol.state.reset(Script(noFinish:true,heartbeat:true))
     let task=Task {try await transport.send(active,route:route(active,normal),journal:await activeTrace.journal(),onText:{_ in})}
     for _ in 0..<200 {if FixtureProtocol.state.count>0{break};try await Task.sleep(for:.milliseconds(5))}
@@ -213,6 +224,6 @@ private func failure(_ body:@Sendable ()async throws->ProviderModelResult)async 
       let root=URL(fileURLWithPath:CommandLine.arguments[1],isDirectory:true)
       try FixtureProtocol.state.save(root.appendingPathComponent("actual-http-cases.json"));try await Evidence.shared.save(root)
     }
-    print("Actual Swift URLSession -> original raw bytes -> Rust C ABI codec: UTF8, actual body/final auth, durable-before-resume, 401/429/no retry/error echo, redirect, first/idle/total timeout, pre-resume/active cancel, concurrent real CAS, route boundaries passed. Keychain physical lock-screen pending.")
+    print("Actual Swift URLSession -> original raw bytes -> Rust C ABI codec: UTF8, actual body/final auth, durable-before-resume, 401/429/no retry/error echo, redirect, connection/first/idle/total timeout, real delayed-header loopback beyond connection budget, pre-resume/active cancel, concurrent real CAS, route boundaries passed. Keychain physical lock-screen pending.")
   }
 }

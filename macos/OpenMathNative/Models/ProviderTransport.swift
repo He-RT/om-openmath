@@ -1,6 +1,6 @@
 import Foundation
 
-enum ProviderTransportReason: String, Error, Sendable { case invalidRoute, secret, stale, codec, http, redirect, firstResponseTimeout, idleTimeout, totalTimeout, cancelled, network, limit, journal }
+enum ProviderTransportReason: String, Error, Sendable { case invalidRoute, secret, stale, codec, http, redirect, connectionTimeout, firstResponseTimeout, idleTimeout, totalTimeout, cancelled, network, limit, journal }
 enum ProviderDispatchOutcome: String, Sendable { case notDispatched, dispatchOutcomeUnknown, responseObserved }
 struct ProviderTransportFailure: Error, Sendable {
   let reason: ProviderTransportReason
@@ -17,10 +17,10 @@ struct ProviderBinding: Equatable, Sendable {
   }
 }
 struct ProviderTimeouts: Sendable {
-  let firstResponse: Double, idle: Double, total: Double
-  init(firstResponse:Double=60,idle:Double=30,total:Double=180)throws {
-    guard [firstResponse,idle,total].allSatisfy({$0.isFinite && $0>=0.01 && $0<=600}),total>=firstResponse else {throw ProviderTransportReason.invalidRoute}
-    self.firstResponse=firstResponse;self.idle=idle;self.total=total
+  let connection: Double, firstResponse: Double, idle: Double, total: Double
+  init(connection:Double=10,firstResponse:Double=60,idle:Double=30,total:Double=180)throws {
+    guard [connection,firstResponse,idle,total].allSatisfy({$0.isFinite && $0>=0.01 && $0<=600}),total>=firstResponse else {throw ProviderTransportReason.invalidRoute}
+    self.connection=connection;self.firstResponse=firstResponse;self.idle=idle;self.total=total
   }
 }
 /// Created by the native config/context preparer. It is never decoded from helper/model frames.
@@ -103,20 +103,20 @@ private final class ProviderHTTPPump:NSObject,URLSessionDataDelegate,@unchecked 
   private let continuation:AsyncThrowingStream<ProviderHTTPEvent,any Error>.Continuation
   private let timeouts:ProviderTimeouts
   private var closed=false,totalBytes=0,status:UInt16?,task:URLSessionDataTask?
-  private var stage:Task<Void,Never>?,total:Task<Void,Never>?
+  private var connection:Task<Void,Never>?,stage:Task<Void,Never>?,total:Task<Void,Never>?
   init(continuation:AsyncThrowingStream<ProviderHTTPEvent,any Error>.Continuation,timeouts:ProviderTimeouts){self.continuation=continuation;self.timeouts=timeouts}
   private func timer(_ seconds:Double,_ reason:ProviderTransportReason)->Task<Void,Never> {
     Task { [weak self] in do {try await Task.sleep(for:.seconds(seconds));self?.stop(reason)} catch { } }
   }
   func start(_ task:URLSessionDataTask) {
     lock.lock();guard !closed else {lock.unlock();task.cancel();return}
-    self.task=task;stage=timer(timeouts.firstResponse,.firstResponseTimeout);total=timer(timeouts.total,.totalTimeout);lock.unlock();task.resume()
+    self.task=task;connection=timer(timeouts.connection,.connectionTimeout);stage=timer(timeouts.firstResponse,.firstResponseTimeout);total=timer(timeouts.total,.totalTimeout);lock.unlock();task.resume()
   }
   var observedStatus:UInt16? {lock.lock();defer {lock.unlock()};return status}
   func stop(_ reason:ProviderTransportReason?) {
     lock.lock();guard !closed else {lock.unlock();return};closed=true
-    let stage=stage,total=total,task=task;self.stage=nil;self.total=nil;lock.unlock()
-    stage?.cancel();total?.cancel();task?.cancel()
+    let connection=connection,stage=stage,total=total,task=task;self.connection=nil;self.stage=nil;self.total=nil;lock.unlock()
+    connection?.cancel();stage?.cancel();total?.cancel();task?.cancel()
     if let reason {continuation.finish(throwing:reason)} else {continuation.finish()}
   }
   private func yield(_ event:ProviderHTTPEvent) {
@@ -124,7 +124,7 @@ private final class ProviderHTTPPump:NSObject,URLSessionDataDelegate,@unchecked 
   }
   func urlSession(_ session:URLSession,dataTask:URLSessionDataTask,didReceive response:URLResponse,completionHandler:@escaping @Sendable (URLSession.ResponseDisposition)->Void) {
     guard let response=response as? HTTPURLResponse,let status=UInt16(exactly:response.statusCode),(100...599).contains(status) else {completionHandler(.cancel);stop(.network);return}
-    lock.lock();guard !closed,self.status==nil else {lock.unlock();completionHandler(.cancel);return};self.status=status;stage?.cancel();stage=timer(timeouts.idle,.idleTimeout);lock.unlock()
+    lock.lock();guard !closed,self.status==nil else {lock.unlock();completionHandler(.cancel);return};self.status=status;connection?.cancel();connection=nil;stage?.cancel();stage=timer(timeouts.idle,.idleTimeout);lock.unlock()
     yield(.headers(status));completionHandler(.allow)
   }
   func urlSession(_ session:URLSession,dataTask:URLSessionDataTask,didReceive data:Data) {
@@ -134,6 +134,12 @@ private final class ProviderHTTPPump:NSObject,URLSessionDataDelegate,@unchecked 
   }
   func urlSession(_ session:URLSession,task:URLSessionTask,didCompleteWithError error:(any Error)?) {
     stop(error==nil ? nil:((error as? URLError)?.code == .cancelled ? .cancelled:.network))
+  }
+  /// Public URLSession upload progress confirms request-body bytes sent to the server.
+  /// Our codec always produces a nonempty POST body; a slow model response is then separate.
+  func urlSession(_ session:URLSession,task:URLSessionTask,didSendBodyData bytesSent:Int64,totalBytesSent:Int64,totalBytesExpectedToSend:Int64) {
+    guard totalBytesSent>0 else {return}
+    lock.lock();connection?.cancel();connection=nil;lock.unlock()
   }
   func urlSession(_ session:URLSession,task:URLSessionTask,willPerformHTTPRedirection response:HTTPURLResponse,newRequest request:URLRequest,completionHandler:@escaping @Sendable (URLRequest?)->Void) {
     lock.lock();status=UInt16(exactly:response.statusCode);lock.unlock();completionHandler(nil);stop(.redirect)

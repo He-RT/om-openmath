@@ -627,3 +627,7 @@ L2使用精确标称GM分数、50位FindRoot/1000迭代和真实残差，报告�
 新增纯Rust model codec C ABI，独立mutex/Swift queue与不可复用request/context refs；不授工具/IO，不使用测试CLI作生产codec。URLSession单次请求，final auth、拒绝redirect/持久credential/cookies/cache、unknown dispatch不自动重发。Foundation当前可可靠计时的阶段是first headers/idle/total；拟定独立connect10s未实现，首响应60s包含connect，不伪装为独立预算。实际durable request journal/完整ContextSnapshot producer及物理锁屏未验，R4.3.04保持in_progress，32/98/66required不变。
 
 安装SDK SecItem.h确认Mac非同步解锁访问属性须显式kSecUseDataProtectionKeychain，D049只验证查询形状不足；已补真实DP标记和测试。原始并发编译/URLProtocol body被转为stream的失败保留，正确读取真实流后做原载荷断言。现有原生Agent端口携原canonical与usage/replay/finish，但上下文持久化由必需native callback供给，不以Pi内部数字carrier代替。
+
+## D051 · 2026-10-14 连接预算以实际发送进度分离
+
+安装SDK NSURLSession.h明确countOfBytesSent为发送给server的请求body字节，并通过didSendBodyData回调通知；本单轮接口固定非空POST，可用其观察连接完成的保守上界，与等待模型header分离。连接10/首响应60/idle30/total180各自计时，收到header也可证明连接。真实自有loopback收完body后延迟1.3s，1s连接预算仍成功（实测1.316752083s）；没有进度的连接超时另测。D050列出的连接预算缺口已关闭，真实journal/ContextSnapshot与锁屏仍未验，R4.3.04/完整目标不标完成。

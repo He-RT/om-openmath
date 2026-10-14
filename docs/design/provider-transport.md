@@ -8,10 +8,10 @@ Swift 的 `ProviderRoute` 仅由 native 预备器创建，不从 helper/model fr
 
 SecretStore 只查新服务的精确引用，不枚举或回退旧 profile/key/env。Mac `kSecAttrAccessibleWhenUnlockedThisDeviceOnly` 必须配合 Data Protection Keychain；SDK SecItem.h 明确指出默认 Mac keychain 不支持该属性。已加入 `kSecUseDataProtectionKeychain=true`，并用 fresh LAContext 禁止交互。无权限、锁定或认证失败时拒绝，无替代凭据。此前 D049 只验证了查询形状，不能据此认定默认 Mac keychain 实际执行了解锁访问策略；本批修正并保留旧证据。
 
-实际可执行超时为首响应60秒、流空闲30秒、总180秒，均有确定边界及取消。首响应预算包含 DNS/TCP/TLS 至响应头；Foundation 当前接口未提供本实现能可靠识别的独立连接完成时点，因此原拟定独立10秒连接预算仍未实现，不能以首响应超时冒充。超时后不重发计费请求。
+实际可执行超时为连接10秒、首响应60秒、流空闲30秒、总180秒。连接预算以首个实际请求体发送进度或响应头为完成证据；URLSession公开didSendBodyData回调确认发往服务器的body字节。本接口始终发非空POST，不将等待模型响应继续算作连接阶段。首响应预算同时覆盖至响应头的总体等待。真实回环HTTP测试在1秒连接预算下收完请求，再等1.3秒才回响应，仍成功；无连接进度的独立超时亦已验证。超时后不重发计费请求。
 
 发送前必须 await journal callback，再 resume task。之后未观察到响应的中断保留 dispatch outcome unknown；HTTP状态与本机取消不证明服务端已停止。`NativeModelLifetime` 让 host关闭在actor/账本暂停时也能直接取消HTTP；回调、EOF和迟到字节不会重建已关闭通道。当前 URLProtocol 证据中的 journal callback 是合成回执边界，真实请求账本/ContextSnapshot producer接线仍待完成，不能称已完成耐久请求集成。
 
 `ProviderAgentModelAdapter` 将同一冻结上下文接到 AgentSessionService 原生端口。Unicode文本按UTF8标量拆为最多32768字节，结束时保留原 canonical；incomplete 发failed且没有可执行调用。usage/replay/原结束理由通过强制 complete callback 返回 native context owner，不由Pi私有carrier代替。完整使用方仍需提供实际上下文及持久化实现。
 
-已验证实际URLSession→Rust C ABI（Chat/Anthropic）载荷/认证、401/429/error echo、redirect、三阶段timeout、取消、host关闭、nonce、并行真实CAS=4与原生端口32KiB/截断。两授权模型实际Swift流调用均返回4及usage，仅属开发smoke；使用明确测试凭据，不冒称Keychain/Registry/耐久请求已验收。真实锁屏、独立连接预算、实际请求账本/上下文接线仍为R4.3.04未完成项。完整计划仍32/98；最终gates保持not_run。
+已验证实际URLSession→Rust C ABI（Chat/Anthropic）载荷/认证、401/429/error echo、redirect、三阶段timeout、取消、host关闭、nonce、并行真实CAS=4与原生端口32KiB/截断。两授权模型实际Swift流调用均返回4及usage，仅属开发smoke；使用明确测试凭据，不冒称Keychain/Registry/耐久请求已验收。真实锁屏、实际请求账本/上下文接线仍为R4.3.04未完成项。完整计划仍32/98；最终gates保持not_run。

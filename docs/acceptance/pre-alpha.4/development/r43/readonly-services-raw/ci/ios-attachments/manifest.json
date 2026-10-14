@@ -1,0 +1,62 @@
+[
+  {
+    "attachments" : [
+      {
+        "configurationName" : "Test Scheme Action",
+        "deviceId" : "2A2B5BE2-31A5-4DF0-85FF-A3199686C937",
+        "deviceName" : "OpenMath-phone-acceptance",
+        "exportedFileName" : "622B1F55-5AD8-485F-8850-14A91B19CDE0.png",
+        "isAssociatedWithFailure" : false,
+        "suggestedHumanReadableName" : "explore-landscape_0_36ACF682-D784-4820-8DCA-182310B701AB.png",
+        "timestamp" : 1791980577.97
+      },
+      {
+        "configurationName" : "Test Scheme Action",
+        "deviceId" : "2A2B5BE2-31A5-4DF0-85FF-A3199686C937",
+        "deviceName" : "OpenMath-phone-acceptance",
+        "exportedFileName" : "A1DE5F56-0E40-4717-9371-22123FCA0EE1.png",
+        "isAssociatedWithFailure" : false,
+        "suggestedHumanReadableName" : "explore-portrait_0_5DA850CA-BF41-4478-9E2C-DDA0C6CAA4D0.png",
+        "timestamp" : 1791980570.834
+      },
+      {
+        "configurationName" : "Test Scheme Action",
+        "deviceId" : "2A2B5BE2-31A5-4DF0-85FF-A3199686C937",
+        "deviceName" : "OpenMath-phone-acceptance",
+        "exportedFileName" : "984A1347-887C-49BA-A8D9-34451DDDAA03.txt",
+        "isAssociatedWithFailure" : false,
+        "suggestedHumanReadableName" : "Element Debug Description_0_A12DE319-B966-47AB-AA7B-FF05D05C6EB6.txt",
+        "timestamp" : 1791980564.092
+      },
+      {
+        "configurationName" : "Test Scheme Action",
+        "deviceId" : "2A2B5BE2-31A5-4DF0-85FF-A3199686C937",
+        "deviceName" : "OpenMath-phone-acceptance",
+        "exportedFileName" : "CF9E82E4-914E-4A64-8D4A-880391AE8017",
+        "isAssociatedWithFailure" : false,
+        "suggestedHumanReadableName" : "Synthesized Event 2026-10-14 at 08.22.36 下午",
+        "timestamp" : 1791980556.526
+      },
+      {
+        "configurationName" : "Test Scheme Action",
+        "deviceId" : "2A2B5BE2-31A5-4DF0-85FF-A3199686C937",
+        "deviceName" : "OpenMath-phone-acceptance",
+        "exportedFileName" : "0B8FCE8D-9023-4A25-B1EC-E56CAA188CF8",
+        "isAssociatedWithFailure" : false,
+        "suggestedHumanReadableName" : "Synthesized Event 2026-10-14 at 08.22.33 下午",
+        "timestamp" : 1791980553.653
+      },
+      {
+        "configurationName" : "Test Scheme Action",
+        "deviceId" : "2A2B5BE2-31A5-4DF0-85FF-A3199686C937",
+        "deviceName" : "OpenMath-phone-acceptance",
+        "exportedFileName" : "0698E3C4-ECC7-4441-B5C6-48C51D526C1F.mp4",
+        "isAssociatedWithFailure" : false,
+        "suggestedHumanReadableName" : "Screen Recording 2026-10-14 at 08.22.15 下午.mp4",
+        "timestamp" : 1791980535.823
+      }
+    ],
+    "testIdentifier" : "NotebookUITests/testExplorationRunsInIsolatedScopeAndKeepsSliderAfterRotation()",
+    "testIdentifierURL" : "test://com.apple.xcode/OpenMath/OpenMathUITests/NotebookUITests/testExplorationRunsInIsolatedScopeAndKeepsSliderAfterRotation"
+  }
+]

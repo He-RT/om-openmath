@@ -1,0 +1,72 @@
+{
+  "devices" : [
+    {
+      "architecture" : "arm64",
+      "deviceId" : "2A2B5BE2-31A5-4DF0-85FF-A3199686C937",
+      "deviceName" : "OpenMath-phone-acceptance",
+      "modelName" : "iPhone 18 Pro",
+      "osBuildNumber" : "24A434",
+      "osVersion" : "27.0",
+      "platform" : "iOS Simulator"
+    }
+  ],
+  "duration" : "Ran for 42秒钟",
+  "durationInSeconds" : 42.47991597652435,
+  "hasMediaAttachments" : true,
+  "hasPerformanceMetrics" : false,
+  "startTime" : 1791980535.782,
+  "testDescription" : "Test case with 1 run",
+  "testIdentifier" : "NotebookUITests/testExplorationRunsInIsolatedScopeAndKeepsSliderAfterRotation()",
+  "testIdentifierURL" : "test://com.apple.xcode/OpenMath/OpenMathUITests/NotebookUITests/testExplorationRunsInIsolatedScopeAndKeepsSliderAfterRotation",
+  "testName" : "testExplorationRunsInIsolatedScopeAndKeepsSliderAfterRotation()",
+  "testPlanConfigurations" : [
+    {
+      "configurationId" : "1",
+      "configurationName" : "Test Scheme Action"
+    }
+  ],
+  "testResult" : "Failed",
+  "testRuns" : [
+    {
+      "children" : [
+        {
+          "children" : [
+            {
+              "children" : [
+                {
+                  "name" : "",
+                  "nodeType" : "Source Code Reference",
+                  "sourceLocation" : {
+                    "filePath" : "/Users/runner/work/om-openmath/om-openmath/ios/OpenMathUITests/NotebookUITests.swift",
+                    "lineNumber" : 105
+                  }
+                }
+              ],
+              "name" : "XCTAssertTrue failed",
+              "nodeType" : "Test Case Run",
+              "result" : "Failed",
+              "sourceLocation" : {
+                "filePath" : "/Users/runner/work/om-openmath/om-openmath/ios/OpenMathUITests/NotebookUITests.swift",
+                "lineNumber" : 105
+              }
+            }
+          ],
+          "duration" : "42秒",
+          "durationInSeconds" : 42.47991597652435,
+          "name" : "Test Scheme Action",
+          "nodeIdentifier" : "1",
+          "nodeIdentifierURL" : "test://com.apple.xcode/OpenMath/OpenMathUITests/NotebookUITests/testExplorationRunsInIsolatedScopeAndKeepsSliderAfterRotation",
+          "nodeType" : "Test Plan Configuration",
+          "result" : "Failed"
+        }
+      ],
+      "details" : "iOS Simulator 27.0",
+      "duration" : "42秒",
+      "durationInSeconds" : 42.47991597652435,
+      "name" : "iPhone 18 Pro",
+      "nodeIdentifier" : "2A2B5BE2-31A5-4DF0-85FF-A3199686C937",
+      "nodeType" : "Device",
+      "result" : "Failed"
+    }
+  ]
+}

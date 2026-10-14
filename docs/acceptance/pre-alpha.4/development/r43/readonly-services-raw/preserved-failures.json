@@ -1,0 +1,10 @@
+{
+  "catalog_initial_attempts": [
+    "let sin(x)=x+1",
+    "let sin=fn(x)=>x+1"
+  ],
+  "catalog_correction": "Actual parser protects builtin Sin declaration; genuine accepted lower-case callable value binding tested instead. Kernel protection unchanged.",
+  "read_first_failure": "Actual agent-tools Sha256 uses ^[0-9a-f]{64}$; structural validator only recognized equivalent ^[a-f0-9]{64}$. Added exact equivalent pattern with malformed/uppercase tests; no catch-all regex or ignored keyword.",
+  "source_cursor_review": "Final fragment now has no source continuation when only the next selected cell remains; overall next_cursor still advances.",
+  "initial_source_versions": "Initial full catalog test source revisions were not separately snapshotted. Original attempted statements are listed here and original failure outputs retained; final inputs are exact copied files."
+}

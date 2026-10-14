@@ -1,0 +1,24 @@
+   Compiling om-host-service v0.1.0-pre-alpha.3 (/Users/hert/Projects/openmath/crates/om-host-service)
+    Finished `test` profile [unoptimized] target(s) in 5.16s
+     Running tests/readonly_catalog.rs (target/debug/deps/readonly_catalog-d23bfb83ce328c97)
+
+running 3 tests
+test actual_session_user_binding_precedes_builtin_alias_without_evaluating_docs ... FAILED
+test executable_docs_match_actual_callbacks_and_never_claim_example_verification ... ok
+test defaults_limits_categories_closed_fields_and_selector_nulls_are_strict ... ok
+
+failures:
+
+---- actual_session_user_binding_precedes_builtin_alias_without_evaluating_docs stdout ----
+
+thread 'actual_session_user_binding_precedes_builtin_alias_without_evaluating_docs' (37262562) panicked at crates/om-host-service/tests/readonly_catalog.rs:37:45:
+actual context SourceExecutionContext { known_functions: [], owned: [] }; output CellOutput { items: [Expr { out_index: 1, input_form: "SetDelayed[Sin[Pattern[x, Blank[]]], x + 1]", modern_form: "define(sin(Pattern(x, Blank())), x + 1)", latex: "\\operatorname{SetDelayed}\\left(\\sin\\left(\\operatorname{Pattern}\\left(x, \\operatorname{Blank}\\left(\\right)\\right)\\right), x + 1\\right)", presentation: None }], messages: [Message { symbol: "SetDelayed", tag: "write", text: "Symbol Sin is Protected.", level: Warning }], timing_ms: 0.0 }
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+
+failures:
+    actual_session_user_binding_precedes_builtin_alias_without_evaluating_docs
+
+test result: FAILED. 2 passed; 1 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.08s
+
+error: test failed, to rerun pass `-p om-host-service --test readonly_catalog`

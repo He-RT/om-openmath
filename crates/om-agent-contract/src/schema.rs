@@ -163,7 +163,7 @@ fn check(
                             .bytes()
                             .all(|c| c.is_ascii_alphanumeric() || b"._:-".contains(&c))
                 }
-                "^[a-f0-9]{64}$" => {
+                "^[a-f0-9]{64}$" | "^[0-9a-f]{64}$" => {
                     text.len() == 64
                         && text
                             .bytes()

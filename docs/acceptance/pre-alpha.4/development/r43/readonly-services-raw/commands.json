@@ -1,0 +1,16 @@
+[
+  "CARGO_PROFILE_DEV_DEBUG=0 CARGO_PROFILE_TEST_DEBUG=0 cargo test -p om-host-service -p om-agent-contract -p om-llm --locked -- --nocapture",
+  "CARGO_PROFILE_DEV_DEBUG=0 CARGO_PROFILE_TEST_DEBUG=0 cargo test -p om-kernel --features external-host --test checkpoint --test checkpoint_corpus --test working_session --test source_transactions --test capabilities --locked",
+  "CARGO_PROFILE_DEV_DEBUG=0 CARGO_PROFILE_TEST_DEBUG=0 cargo test -p om-apple-ffi --locked",
+  "CARGO_PROFILE_DEV_DEBUG=0 CARGO_PROFILE_TEST_DEBUG=0 cargo clippy -p om-host-service -p om-agent-contract -p om-llm --all-targets --locked -- -D warnings",
+  "cargo fmt --all --check",
+  "python3 scripts/native_contracts.py --check",
+  "python3 -X warn_default_encoding -W error::EncodingWarning -m unittest discover -s tests -v",
+  "gh api repos/He-RT/om-openmath/actions/jobs/115841833497/logs",
+  "gh run download 38560769195 --name ios-acceptance-evidence --dir <task-ci-dir>/ios-artifact",
+  "xcrun xcresulttool get test-results tests --path <downloaded-xcresult>",
+  "xcrun xcresulttool get test-results test-details --path <downloaded-xcresult> --test-id 'NotebookUITests/testExplorationRunsInIsolatedScopeAndKeepsSliderAfterRotation()'",
+  "xcrun xcresulttool get test-results activities --path <downloaded-xcresult> --test-id 'NotebookUITests/testExplorationRunsInIsolatedScopeAndKeepsSliderAfterRotation()'",
+  "xcrun xcresulttool export attachments --path <downloaded-xcresult> --test-id 'NotebookUITests/testExplorationRunsInIsolatedScopeAndKeepsSliderAfterRotation()' --output-path <task-ci-dir>/ios-attachments",
+  "python3 scripts/check_pre_alpha_4_plan.py --check"
+]

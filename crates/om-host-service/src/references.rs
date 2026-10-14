@@ -90,6 +90,8 @@ pub enum ReferenceKind {
     Preview,
     /// Immutable retained result, up to 10 minutes; explicit readonly history resolution.
     Result,
+    /// Readonly notebook pagination; exact query/snapshot binding, up to 10 minutes.
+    Cursor,
 }
 impl ReferenceKind {
     fn prefix(self) -> &'static str {
@@ -97,6 +99,7 @@ impl ReferenceKind {
             Self::Snapshot => "snapshot",
             Self::Preview => "preview",
             Self::Result => "result",
+            Self::Cursor => "cursor",
         }
     }
     fn maximum_ms(self) -> u64 {
@@ -104,6 +107,7 @@ impl ReferenceKind {
             Self::Snapshot => 600_000,
             Self::Preview => 300_000,
             Self::Result => 600_000,
+            Self::Cursor => 600_000,
         }
     }
 }

@@ -123,6 +123,14 @@ impl WorkingSession {
     }
 }
 impl Session {
+    /// Actual cell states without cloning statement occurrence indexes or mathematical values.
+    pub fn cell_statuses(&self) -> Vec<(String, crate::protocol::CellStatus)> {
+        self.notebook
+            .cells
+            .iter()
+            .map(|cell| (cell.id.clone(), cell.status))
+            .collect()
+    }
     /// Read actual current result identities/statuses without evaluation or duplicating values.
     pub fn current_result_cells(&self) -> Vec<crate::retained_results::CurrentResultCell> {
         self.notebook

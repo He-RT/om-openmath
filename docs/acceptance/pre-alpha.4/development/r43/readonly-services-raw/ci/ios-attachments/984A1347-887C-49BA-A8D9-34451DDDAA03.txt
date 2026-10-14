@@ -1,0 +1,4 @@
+Query chain:
+ →Find: Target Application 'org.openmath.OpenMath'
+  ↪︎Find: Descendants matching type Slider
+    ↪︎Find: Elements matching predicate '"explore.slider.a" IN identifiers'

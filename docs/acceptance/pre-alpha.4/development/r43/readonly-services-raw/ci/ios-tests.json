@@ -1,0 +1,481 @@
+{
+  "devices" : [
+    {
+      "architecture" : "arm64",
+      "deviceId" : "2A2B5BE2-31A5-4DF0-85FF-A3199686C937",
+      "deviceName" : "OpenMath-phone-acceptance",
+      "modelName" : "iPhone 18 Pro",
+      "osBuildNumber" : "24A434",
+      "osVersion" : "27.0",
+      "platform" : "iOS Simulator"
+    }
+  ],
+  "testNodes" : [
+    {
+      "children" : [
+        {
+          "children" : [
+            {
+              "children" : [
+                {
+                  "duration" : "0.96s",
+                  "durationInSeconds" : 0.9598020315170288,
+                  "name" : "testDocumentRoundTripAndReactiveEdits()",
+                  "nodeIdentifier" : "AcceptanceTests/testDocumentRoundTripAndReactiveEdits()",
+                  "nodeIdentifierURL" : "test://com.apple.xcode/OpenMath/OpenMathTests/AcceptanceTests/testDocumentRoundTripAndReactiveEdits",
+                  "nodeType" : "Test Case",
+                  "result" : "Passed"
+                },
+                {
+                  "duration" : "0.0076s",
+                  "durationInSeconds" : 0.007625937461853027,
+                  "name" : "testMarkdownMathDoesNotInterpretCodeAndKeepsSource()",
+                  "nodeIdentifier" : "AcceptanceTests/testMarkdownMathDoesNotInterpretCodeAndKeepsSource()",
+                  "nodeIdentifierURL" : "test://com.apple.xcode/OpenMath/OpenMathTests/AcceptanceTests/testMarkdownMathDoesNotInterpretCodeAndKeepsSource",
+                  "nodeType" : "Test Case",
+                  "result" : "Passed"
+                },
+                {
+                  "duration" : "0.021s",
+                  "durationInSeconds" : 0.02114701271057129,
+                  "name" : "testModernContinuationUsesIdenticalSourceForPreviewAndExecution()",
+                  "nodeIdentifier" : "AcceptanceTests/testModernContinuationUsesIdenticalSourceForPreviewAndExecution()",
+                  "nodeIdentifierURL" : "test://com.apple.xcode/OpenMath/OpenMathTests/AcceptanceTests/testModernContinuationUsesIdenticalSourceForPreviewAndExecution",
+                  "nodeType" : "Test Case",
+                  "result" : "Passed"
+                },
+                {
+                  "duration" : "0.0091s",
+                  "durationInSeconds" : 0.009088993072509766,
+                  "name" : "testNativeMathFractionsMatricesAndUnknownFallback()",
+                  "nodeIdentifier" : "AcceptanceTests/testNativeMathFractionsMatricesAndUnknownFallback()",
+                  "nodeIdentifierURL" : "test://com.apple.xcode/OpenMath/OpenMathTests/AcceptanceTests/testNativeMathFractionsMatricesAndUnknownFallback",
+                  "nodeType" : "Test Case",
+                  "result" : "Passed"
+                },
+                {
+                  "duration" : "2秒",
+                  "durationInSeconds" : 2.673815965652466,
+                  "name" : "testOriginal53RowsThroughMobileKernelAndNativeFormulaParser()",
+                  "nodeIdentifier" : "AcceptanceTests/testOriginal53RowsThroughMobileKernelAndNativeFormulaParser()",
+                  "nodeIdentifierURL" : "test://com.apple.xcode/OpenMath/OpenMathTests/AcceptanceTests/testOriginal53RowsThroughMobileKernelAndNativeFormulaParser",
+                  "nodeType" : "Test Case",
+                  "result" : "Passed"
+                },
+                {
+                  "duration" : "0.00071s",
+                  "durationInSeconds" : 0.0007100105285644531,
+                  "name" : "testUTF16UTF8BoundariesAndIMEOffsets()",
+                  "nodeIdentifier" : "AcceptanceTests/testUTF16UTF8BoundariesAndIMEOffsets()",
+                  "nodeIdentifierURL" : "test://com.apple.xcode/OpenMath/OpenMathTests/AcceptanceTests/testUTF16UTF8BoundariesAndIMEOffsets",
+                  "nodeType" : "Test Case",
+                  "result" : "Passed"
+                }
+              ],
+              "name" : "AcceptanceTests",
+              "nodeIdentifierURL" : "test://com.apple.xcode/OpenMath/OpenMathTests/AcceptanceTests",
+              "nodeType" : "Test Suite",
+              "result" : "Passed"
+            },
+            {
+              "children" : [
+                {
+                  "duration" : "0.21s",
+                  "durationInSeconds" : 0.2105410099029541,
+                  "name" : "testActualRetainedDataAndSharedPNGPersistAndReadBack()",
+                  "nodeIdentifier" : "ArtifactTests/testActualRetainedDataAndSharedPNGPersistAndReadBack()",
+                  "nodeIdentifierURL" : "test://com.apple.xcode/OpenMath/OpenMathTests/ArtifactTests/testActualRetainedDataAndSharedPNGPersistAndReadBack",
+                  "nodeType" : "Test Case",
+                  "result" : "Passed"
+                }
+              ],
+              "name" : "ArtifactTests",
+              "nodeIdentifierURL" : "test://com.apple.xcode/OpenMath/OpenMathTests/ArtifactTests",
+              "nodeType" : "Test Suite",
+              "result" : "Passed"
+            },
+            {
+              "children" : [
+                {
+                  "duration" : "0.0017s",
+                  "durationInSeconds" : 0.0017459392547607422,
+                  "name" : "testMarkdownKeepsIndentedAndUnicodeInlineCodeLiteral()",
+                  "nodeIdentifier" : "CompositionTests/testMarkdownKeepsIndentedAndUnicodeInlineCodeLiteral()",
+                  "nodeIdentifierURL" : "test://com.apple.xcode/OpenMath/OpenMathTests/CompositionTests/testMarkdownKeepsIndentedAndUnicodeInlineCodeLiteral",
+                  "nodeType" : "Test Case",
+                  "result" : "Passed"
+                },
+                {
+                  "duration" : "0.0062s",
+                  "durationInSeconds" : 0.006211996078491211,
+                  "name" : "testPendingCompositionDoesNotReachKernelOrRunUntilCommitted()",
+                  "nodeIdentifier" : "CompositionTests/testPendingCompositionDoesNotReachKernelOrRunUntilCommitted()",
+                  "nodeIdentifierURL" : "test://com.apple.xcode/OpenMath/OpenMathTests/CompositionTests/testPendingCompositionDoesNotReachKernelOrRunUntilCommitted",
+                  "nodeType" : "Test Case",
+                  "result" : "Passed"
+                }
+              ],
+              "name" : "CompositionTests",
+              "nodeIdentifierURL" : "test://com.apple.xcode/OpenMath/OpenMathTests/CompositionTests",
+              "nodeType" : "Test Suite",
+              "result" : "Passed"
+            },
+            {
+              "children" : [
+                {
+                  "duration" : "0.018s",
+                  "durationInSeconds" : 0.017963051795959473,
+                  "name" : "testActualReadonlyContextChangesParametersWithoutMutatingNotebook()",
+                  "nodeIdentifier" : "ExploreTests/testActualReadonlyContextChangesParametersWithoutMutatingNotebook()",
+                  "nodeIdentifierURL" : "test://com.apple.xcode/OpenMath/OpenMathTests/ExploreTests/testActualReadonlyContextChangesParametersWithoutMutatingNotebook",
+                  "nodeType" : "Test Case",
+                  "result" : "Passed"
+                }
+              ],
+              "name" : "ExploreTests",
+              "nodeIdentifierURL" : "test://com.apple.xcode/OpenMath/OpenMathTests/ExploreTests",
+              "nodeType" : "Test Suite",
+              "result" : "Passed"
+            },
+            {
+              "children" : [
+                {
+                  "duration" : "0.0056s",
+                  "durationInSeconds" : 0.005602002143859863,
+                  "name" : "testActualKernelJSONContract()",
+                  "nodeIdentifier" : "KernelTests/testActualKernelJSONContract()",
+                  "nodeIdentifierURL" : "test://com.apple.xcode/OpenMath/OpenMathTests/KernelTests/testActualKernelJSONContract",
+                  "nodeType" : "Test Case",
+                  "result" : "Passed"
+                },
+                {
+                  "duration" : "0.013s",
+                  "durationInSeconds" : 0.01337897777557373,
+                  "name" : "testCallerCancellationBeforeDispatchKeepsNextRequestUsable()",
+                  "nodeIdentifier" : "KernelTests/testCallerCancellationBeforeDispatchKeepsNextRequestUsable()",
+                  "nodeIdentifierURL" : "test://com.apple.xcode/OpenMath/OpenMathTests/KernelTests/testCallerCancellationBeforeDispatchKeepsNextRequestUsable",
+                  "nodeType" : "Test Case",
+                  "result" : "Passed"
+                },
+                {
+                  "duration" : "0.0023s",
+                  "durationInSeconds" : 0.0022929906845092773,
+                  "name" : "testNotebookRejectsDuplicateIDsAndPreservesUnicode()",
+                  "nodeIdentifier" : "KernelTests/testNotebookRejectsDuplicateIDsAndPreservesUnicode()",
+                  "nodeIdentifierURL" : "test://com.apple.xcode/OpenMath/OpenMathTests/KernelTests/testNotebookRejectsDuplicateIDsAndPreservesUnicode",
+                  "nodeType" : "Test Case",
+                  "result" : "Passed"
+                },
+                {
+                  "duration" : "0.006s",
+                  "durationInSeconds" : 0.005999922752380371,
+                  "name" : "testPacketDecodingRejectsBridgeErrorsAndPreservesNestedData()",
+                  "nodeIdentifier" : "KernelTests/testPacketDecodingRejectsBridgeErrorsAndPreservesNestedData()",
+                  "nodeIdentifierURL" : "test://com.apple.xcode/OpenMath/OpenMathTests/KernelTests/testPacketDecodingRejectsBridgeErrorsAndPreservesNestedData",
+                  "nodeType" : "Test Case",
+                  "result" : "Passed"
+                }
+              ],
+              "name" : "KernelTests",
+              "nodeIdentifierURL" : "test://com.apple.xcode/OpenMath/OpenMathTests/KernelTests",
+              "nodeType" : "Test Suite",
+              "result" : "Passed"
+            },
+            {
+              "children" : [
+                {
+                  "duration" : "0.046s",
+                  "durationInSeconds" : 0.04611992835998535,
+                  "name" : "testEditingDuringInterruptPreservesDraftAndIgnoresOldResult()",
+                  "nodeIdentifier" : "LifecycleTests/testEditingDuringInterruptPreservesDraftAndIgnoresOldResult()",
+                  "nodeIdentifierURL" : "test://com.apple.xcode/OpenMath/OpenMathTests/LifecycleTests/testEditingDuringInterruptPreservesDraftAndIgnoresOldResult",
+                  "nodeType" : "Test Case",
+                  "result" : "Passed"
+                },
+                {
+                  "duration" : "0.04s",
+                  "durationInSeconds" : 0.03997695446014404,
+                  "name" : "testSaveFailureBlocksDocumentSwitchAndKeepsSource()",
+                  "nodeIdentifier" : "LifecycleTests/testSaveFailureBlocksDocumentSwitchAndKeepsSource()",
+                  "nodeIdentifierURL" : "test://com.apple.xcode/OpenMath/OpenMathTests/LifecycleTests/testSaveFailureBlocksDocumentSwitchAndKeepsSource",
+                  "nodeType" : "Test Case",
+                  "result" : "Passed"
+                }
+              ],
+              "name" : "LifecycleTests",
+              "nodeIdentifierURL" : "test://com.apple.xcode/OpenMath/OpenMathTests/LifecycleTests",
+              "nodeType" : "Test Suite",
+              "result" : "Passed"
+            },
+            {
+              "children" : [
+                {
+                  "duration" : "0.069s",
+                  "durationInSeconds" : 0.0686180591583252,
+                  "name" : "testInlineMathUsesOneTextLineWhenItFits()",
+                  "nodeIdentifier" : "MarkdownLayoutTests/testInlineMathUsesOneTextLineWhenItFits()",
+                  "nodeIdentifierURL" : "test://com.apple.xcode/OpenMath/OpenMathTests/MarkdownLayoutTests/testInlineMathUsesOneTextLineWhenItFits",
+                  "nodeType" : "Test Case",
+                  "result" : "Passed"
+                }
+              ],
+              "name" : "MarkdownLayoutTests",
+              "nodeIdentifierURL" : "test://com.apple.xcode/OpenMath/OpenMathTests/MarkdownLayoutTests",
+              "nodeType" : "Test Suite",
+              "result" : "Passed"
+            },
+            {
+              "children" : [
+                {
+                  "duration" : "0.93s",
+                  "durationInSeconds" : 0.9303750991821289,
+                  "name" : "testActualExtendedGeometryAndViewportSurviveJSONTransport()",
+                  "nodeIdentifier" : "PlotExtensionTests/testActualExtendedGeometryAndViewportSurviveJSONTransport()",
+                  "nodeIdentifierURL" : "test://com.apple.xcode/OpenMath/OpenMathTests/PlotExtensionTests/testActualExtendedGeometryAndViewportSurviveJSONTransport",
+                  "nodeType" : "Test Case",
+                  "result" : "Passed"
+                }
+              ],
+              "name" : "PlotExtensionTests",
+              "nodeIdentifierURL" : "test://com.apple.xcode/OpenMath/OpenMathTests/PlotExtensionTests",
+              "nodeType" : "Test Suite",
+              "result" : "Passed"
+            },
+            {
+              "children" : [
+                {
+                  "duration" : "0.073s",
+                  "durationInSeconds" : 0.07298803329467773,
+                  "name" : "testOpenedDocumentRestoresWithoutAnEditAndDoesNotExecuteCells()",
+                  "nodeIdentifier" : "RestoreTests/testOpenedDocumentRestoresWithoutAnEditAndDoesNotExecuteCells()",
+                  "nodeIdentifierURL" : "test://com.apple.xcode/OpenMath/OpenMathTests/RestoreTests/testOpenedDocumentRestoresWithoutAnEditAndDoesNotExecuteCells",
+                  "nodeType" : "Test Case",
+                  "result" : "Passed"
+                }
+              ],
+              "name" : "RestoreTests",
+              "nodeIdentifierURL" : "test://com.apple.xcode/OpenMath/OpenMathTests/RestoreTests",
+              "nodeType" : "Test Suite",
+              "result" : "Passed"
+            },
+            {
+              "children" : [
+                {
+                  "duration" : "0.006s",
+                  "durationInSeconds" : 0.005993008613586426,
+                  "name" : "testMobilePreservesActual3DSourceAndExplicitFallbackWithoutGeneratingMeshes()",
+                  "nodeIdentifier" : "SceneTests/testMobilePreservesActual3DSourceAndExplicitFallbackWithoutGeneratingMeshes()",
+                  "nodeIdentifierURL" : "test://com.apple.xcode/OpenMath/OpenMathTests/SceneTests/testMobilePreservesActual3DSourceAndExplicitFallbackWithoutGeneratingMeshes",
+                  "nodeType" : "Test Case",
+                  "result" : "Passed"
+                },
+                {
+                  "duration" : "0.014s",
+                  "durationInSeconds" : 0.014136075973510742,
+                  "name" : "testNativeComposedXYSceneHasRealUnicodeLabelsMarkersAndTransformedPaths()",
+                  "nodeIdentifier" : "SceneTests/testNativeComposedXYSceneHasRealUnicodeLabelsMarkersAndTransformedPaths()",
+                  "nodeIdentifierURL" : "test://com.apple.xcode/OpenMath/OpenMathTests/SceneTests/testNativeComposedXYSceneHasRealUnicodeLabelsMarkersAndTransformedPaths",
+                  "nodeType" : "Test Case",
+                  "result" : "Passed"
+                }
+              ],
+              "name" : "SceneTests",
+              "nodeIdentifierURL" : "test://com.apple.xcode/OpenMath/OpenMathTests/SceneTests",
+              "nodeType" : "Test Suite",
+              "result" : "Passed"
+            },
+            {
+              "children" : [
+                {
+                  "duration" : "0.044s",
+                  "durationInSeconds" : 0.04413807392120361,
+                  "name" : "testOmittedProviderParametersSurviveKeychainReadbackAndLegacyNulls()",
+                  "nodeIdentifier" : "SettingsTests/testOmittedProviderParametersSurviveKeychainReadbackAndLegacyNulls()",
+                  "nodeIdentifierURL" : "test://com.apple.xcode/OpenMath/OpenMathTests/SettingsTests/testOmittedProviderParametersSurviveKeychainReadbackAndLegacyNulls",
+                  "nodeType" : "Test Case",
+                  "result" : "Passed"
+                },
+                {
+                  "duration" : "0.053s",
+                  "durationInSeconds" : 0.05315399169921875,
+                  "name" : "testSecretsAreIsolatedAndFailedPersistenceRollsBack()",
+                  "nodeIdentifier" : "SettingsTests/testSecretsAreIsolatedAndFailedPersistenceRollsBack()",
+                  "nodeIdentifierURL" : "test://com.apple.xcode/OpenMath/OpenMathTests/SettingsTests/testSecretsAreIsolatedAndFailedPersistenceRollsBack",
+                  "nodeType" : "Test Case",
+                  "result" : "Passed"
+                }
+              ],
+              "name" : "SettingsTests",
+              "nodeIdentifierURL" : "test://com.apple.xcode/OpenMath/OpenMathTests/SettingsTests",
+              "nodeType" : "Test Suite",
+              "result" : "Passed"
+            },
+            {
+              "children" : [
+                {
+                  "duration" : "0.12s",
+                  "durationInSeconds" : 0.11961102485656738,
+                  "name" : "testCancellationSuppressesLateChunks()",
+                  "nodeIdentifier" : "TransportTests/testCancellationSuppressesLateChunks()",
+                  "nodeIdentifierURL" : "test://com.apple.xcode/OpenMath/OpenMathTests/TransportTests/testCancellationSuppressesLateChunks",
+                  "nodeType" : "Test Case",
+                  "result" : "Passed"
+                },
+                {
+                  "duration" : "0.067s",
+                  "durationInSeconds" : 0.06697201728820801,
+                  "name" : "testHTTPErrorAndRedirectAreRealFailures()",
+                  "nodeIdentifier" : "TransportTests/testHTTPErrorAndRedirectAreRealFailures()",
+                  "nodeIdentifierURL" : "test://com.apple.xcode/OpenMath/OpenMathTests/TransportTests/testHTTPErrorAndRedirectAreRealFailures",
+                  "nodeType" : "Test Case",
+                  "result" : "Passed"
+                },
+                {
+                  "duration" : "0.017s",
+                  "durationInSeconds" : 0.017083048820495605,
+                  "name" : "testStreamingUTF8AndDraftProbe()",
+                  "nodeIdentifier" : "TransportTests/testStreamingUTF8AndDraftProbe()",
+                  "nodeIdentifierURL" : "test://com.apple.xcode/OpenMath/OpenMathTests/TransportTests/testStreamingUTF8AndDraftProbe",
+                  "nodeType" : "Test Case",
+                  "result" : "Passed"
+                },
+                {
+                  "duration" : "0.042s",
+                  "durationInSeconds" : 0.04233908653259277,
+                  "name" : "testToolsAndProposalReplayRemainReadOnlyUntilExplicitInsert()",
+                  "nodeIdentifier" : "TransportTests/testToolsAndProposalReplayRemainReadOnlyUntilExplicitInsert()",
+                  "nodeIdentifierURL" : "test://com.apple.xcode/OpenMath/OpenMathTests/TransportTests/testToolsAndProposalReplayRemainReadOnlyUntilExplicitInsert",
+                  "nodeType" : "Test Case",
+                  "result" : "Passed"
+                },
+                {
+                  "duration" : "0.036s",
+                  "durationInSeconds" : 0.036041975021362305,
+                  "name" : "testWholeRequestTimeout()",
+                  "nodeIdentifier" : "TransportTests/testWholeRequestTimeout()",
+                  "nodeIdentifierURL" : "test://com.apple.xcode/OpenMath/OpenMathTests/TransportTests/testWholeRequestTimeout",
+                  "nodeType" : "Test Case",
+                  "result" : "Passed"
+                }
+              ],
+              "name" : "TransportTests",
+              "nodeIdentifierURL" : "test://com.apple.xcode/OpenMath/OpenMathTests/TransportTests",
+              "nodeType" : "Test Suite",
+              "result" : "Passed"
+            },
+            {
+              "children" : [
+                {
+                  "duration" : "0.0084s",
+                  "durationInSeconds" : 0.008446097373962402,
+                  "name" : "testAuthoredRecordCannotAcquireFreshScientificProvenance()",
+                  "nodeIdentifier" : "ValuePresentationTests/testAuthoredRecordCannotAcquireFreshScientificProvenance()",
+                  "nodeIdentifierURL" : "test://com.apple.xcode/OpenMath/OpenMathTests/ValuePresentationTests/testAuthoredRecordCannotAcquireFreshScientificProvenance",
+                  "nodeType" : "Test Case",
+                  "result" : "Passed"
+                },
+                {
+                  "duration" : "0.0044s",
+                  "durationInSeconds" : 0.004364967346191406,
+                  "name" : "testRealRetainedTablePageAndStaleSnapshotAreCheckedByKernel()",
+                  "nodeIdentifier" : "ValuePresentationTests/testRealRetainedTablePageAndStaleSnapshotAreCheckedByKernel()",
+                  "nodeIdentifierURL" : "test://com.apple.xcode/OpenMath/OpenMathTests/ValuePresentationTests/testRealRetainedTablePageAndStaleSnapshotAreCheckedByKernel",
+                  "nodeType" : "Test Case",
+                  "result" : "Passed"
+                }
+              ],
+              "name" : "ValuePresentationTests",
+              "nodeIdentifierURL" : "test://com.apple.xcode/OpenMath/OpenMathTests/ValuePresentationTests",
+              "nodeType" : "Test Suite",
+              "result" : "Passed"
+            }
+          ],
+          "name" : "OpenMathTests",
+          "nodeIdentifierURL" : "test://com.apple.xcode/OpenMath/OpenMathTests",
+          "nodeType" : "Unit test bundle",
+          "result" : "Passed"
+        },
+        {
+          "children" : [
+            {
+              "children" : [
+                {
+                  "duration" : "28秒",
+                  "durationInSeconds" : 28.410497903823853,
+                  "name" : "testActualDataPlotExposesKernelSamplesAndKeepsThemAfterRotation()",
+                  "nodeIdentifier" : "NotebookUITests/testActualDataPlotExposesKernelSamplesAndKeepsThemAfterRotation()",
+                  "nodeIdentifierURL" : "test://com.apple.xcode/OpenMath/OpenMathUITests/NotebookUITests/testActualDataPlotExposesKernelSamplesAndKeepsThemAfterRotation",
+                  "nodeType" : "Test Case",
+                  "result" : "Passed"
+                },
+                {
+                  "duration" : "20秒",
+                  "durationInSeconds" : 20.241394996643066,
+                  "name" : "testActualStructuredTableKeepsHeadersTextAndRotation()",
+                  "nodeIdentifier" : "NotebookUITests/testActualStructuredTableKeepsHeadersTextAndRotation()",
+                  "nodeIdentifierURL" : "test://com.apple.xcode/OpenMath/OpenMathUITests/NotebookUITests/testActualStructuredTableKeepsHeadersTextAndRotation",
+                  "nodeType" : "Test Case",
+                  "result" : "Passed"
+                },
+                {
+                  "children" : [
+                    {
+                      "name" : "XCTAssertTrue failed",
+                      "nodeType" : "Failure Message",
+                      "sourceLocation" : {
+                        "filePath" : "/Users/runner/work/om-openmath/om-openmath/ios/OpenMathUITests/NotebookUITests.swift",
+                        "lineNumber" : 105
+                      }
+                    }
+                  ],
+                  "duration" : "42秒",
+                  "durationInSeconds" : 42.47991597652435,
+                  "name" : "testExplorationRunsInIsolatedScopeAndKeepsSliderAfterRotation()",
+                  "nodeIdentifier" : "NotebookUITests/testExplorationRunsInIsolatedScopeAndKeepsSliderAfterRotation()",
+                  "nodeIdentifierURL" : "test://com.apple.xcode/OpenMath/OpenMathUITests/NotebookUITests/testExplorationRunsInIsolatedScopeAndKeepsSliderAfterRotation",
+                  "nodeType" : "Test Case",
+                  "result" : "Failed"
+                },
+                {
+                  "duration" : "37秒",
+                  "durationInSeconds" : 37.25640797615051,
+                  "name" : "testReactiveNotebookHasActualResultsAndEditableSources()",
+                  "nodeIdentifier" : "NotebookUITests/testReactiveNotebookHasActualResultsAndEditableSources()",
+                  "nodeIdentifierURL" : "test://com.apple.xcode/OpenMath/OpenMathUITests/NotebookUITests/testReactiveNotebookHasActualResultsAndEditableSources",
+                  "nodeType" : "Test Case",
+                  "result" : "Passed"
+                },
+                {
+                  "duration" : "37秒",
+                  "durationInSeconds" : 37.082627058029175,
+                  "name" : "testRealQuadraticStepsRotationAndSettings()",
+                  "nodeIdentifier" : "NotebookUITests/testRealQuadraticStepsRotationAndSettings()",
+                  "nodeIdentifierURL" : "test://com.apple.xcode/OpenMath/OpenMathUITests/NotebookUITests/testRealQuadraticStepsRotationAndSettings",
+                  "nodeType" : "Test Case",
+                  "result" : "Passed"
+                }
+              ],
+              "name" : "NotebookUITests",
+              "nodeIdentifierURL" : "test://com.apple.xcode/OpenMath/OpenMathUITests/NotebookUITests",
+              "nodeType" : "Test Suite",
+              "result" : "Failed"
+            }
+          ],
+          "name" : "OpenMathUITests",
+          "nodeIdentifierURL" : "test://com.apple.xcode/OpenMath/OpenMathUITests",
+          "nodeType" : "UI test bundle",
+          "result" : "Failed"
+        }
+      ],
+      "name" : "OpenMath",
+      "nodeType" : "Test Plan",
+      "result" : "Failed"
+    }
+  ],
+  "testPlanConfigurations" : [
+    {
+      "configurationId" : "1",
+      "configurationName" : "Test Scheme Action"
+    }
+  ]
+}

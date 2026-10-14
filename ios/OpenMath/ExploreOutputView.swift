@@ -34,6 +34,7 @@ struct ExploreOutputView: View {
             var next = selected; next[name] = .number(value); run(next)
           }), in: low...high, step: max(Double.leastNonzeroMagnitude, (high-low)/200))
             .disabled(!fresh || context == nil).accessibilityLabel(controller.text("探索参数 ", "Explore parameter ")+name).accessibilityIdentifier("explore.slider.\(name)")
+            .accessibilityValue(String(selected[name].double))
           Text(selected[name].double.formatted(.number.precision(.significantDigits(1...6)))).font(.caption).monospacedDigit()
         }
       }

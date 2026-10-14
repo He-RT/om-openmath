@@ -6,7 +6,7 @@
 
 **当前状态：** 32任务完成（全部R4.0与R4.1、R4.2.01–02、07及09–10、R4.3.01–03）；其余66任务尚未完成；32最终运行/发行gate全部not_run；candidate未分配，ready_to_publish=false，released_verified=false。设计/HTML/Schema通过不填运行时pass。
 
-**下一任务：** 用户选择保留系统输入法设置、先做其他任务；R4.2.03真实候选窗口仍未验收。独立继续R4.3.04 Swift URLSession和SecretStore传输，原依赖满足后再接非求值编辑分析/长笔记本/Markdown。存储维护、备份、新代次、配额和GC已通过实际验证；日末备份触发/数据管理UI仍在R4.2.18接线，完整Pi/provider/上下文/Agent界面仍继续R4.3–4.4，不能将存储Done当产品完成。保持同candidate完整门禁，R4.5.07在R4.5.05冻结前完成。
+**下一任务：** 用户选择保留系统输入法设置、先做其他任务；R4.2.03真实候选窗口仍未验收。独立继续R4.3.05只读工具，数据服务已验证，下一步接原生Agent分发与耐久结果；R4.3.04物理锁屏验收仍未完成，原依赖满足后再接非求值编辑分析/长笔记本/Markdown。存储维护、备份、新代次、配额和GC已通过实际验证；日末备份触发/数据管理UI仍在R4.2.18接线，完整Pi/provider/上下文/Agent界面仍继续R4.3–4.4，不能将存储Done当产品完成。保持同candidate完整门禁，R4.5.07在R4.5.05冻结前完成。
 
 ## 已知外部前置
 
@@ -66,7 +66,7 @@
 | [x] [R4.3.02](PRE_ALPHA_4.md#task-r4.3.02) | 固定Pi Core与随包生产helper | completed | [实际随包Node/Pi/原生任务](../acceptance/pre-alpha.4/development/r43/pi-production-runtime.json)；86依赖/4169资源、13帧/3事件、SIGKILL后原文档4 | 本批D047 |
 | [x] [R4.3.03](PRE_ALPHA_4.md#task-r4.3.03) | sans-IO单轮模型codec基础 | completed | [实际Rust codec/Pi/原生帧及两模型SSE](../acceptance/pre-alpha.4/development/r43/single-turn-codec.json)；10单轮/182回归、4Pi、真实SQLite ACK；生产transport仍后续 | 本批D048 |
 | [ ] [R4.3.04](PRE_ALPHA_4.md#task-r4.3.04) | Swift URLSession和SecretStore传输 | in_progress | [真实请求账本/随包Pi/强杀恢复](../acceptance/pre-alpha.4/development/r43/provider-durable-request.json)；5新+13原SIGKILL、13帧8事件、字面key回显隔离；物理锁屏仍未完成 | 本批D052 |
-| [ ] [R4.3.05](PRE_ALPHA_4.md#task-r4.3.05) | 读取笔记本与真实函数资料工具 | planned | — | — |
+| [ ] [R4.3.05](PRE_ALPHA_4.md#task-r4.3.05) | 读取笔记本与真实函数资料工具 | in_progress | [只读数据服务基础](../acceptance/pre-alpha.4/development/r43/readonly-services-foundation.json)；257实际回调/真实Session绑定/有界UTF8分页；原生工具分发、结果与持久历史未接完 | 本批D053 |
 | [ ] [R4.3.06](PRE_ALPHA_4.md#task-r4.3.06) | 预览与原子修改工具接入 | planned | — | — |
 | [ ] [R4.3.07](PRE_ALPHA_4.md#task-r4.3.07) | 执行、结果检查和隔离试算工具 | planned | — | — |
 | [ ] [R4.3.08](PRE_ALPHA_4.md#task-r4.3.08) | 操作核对、撤销和Host停止控制 | planned | — | — |
@@ -588,3 +588,14 @@ R4.3.03已推21a08e5，CI38465324522运行中；本基础先本地提交，后�
 ProviderRequestLedger实际存body/plan→dispatch→原始response→finish及独立原模型facts Blob，遵循现有request/response owner绑定；metadata与header-only观察自描述，unknown dispatch保持interrupted。五真实SIGKILL在plan/dispatch/response/finish/model回执耐久点恢复准确状态且不发HTTP；原13边界/60schemaevents回归通过。字面auth echo跨chunk拦截，不进入model/Blob/event，完整关闭store扫描为空；正常字节全切分等同原始值，真实timeout保unknown无retry。
 
 随包Pi已直接用ProviderAgentModelAdapter/SwiftURLSession/Rust C ABI/生产账本，移除该集成fixture对测试Rust可执行文件的依赖；standalone/实际签名App资源闭包13双向帧、8SQLite事实、原args/ACK后unavailable、强杀后原文档手工4。实际原request/response与原providerID/model/replay/usage/finish已Blob回读核对。Release/strict签名/371DTO/17Python/旧ledger回归及两授权模型guard后真实live均通过，完整原始输入/SQLgzip/hash/失败在provider-durable-request.json。R4.3.04步骤1–4勾实测，物理锁屏未验故仍in_progress/32of98，完整ContextSnapshot属于R4.4.12未完成；接下来先独立R4.3.05只读真实工具，保持用户系统设置。
+
+
+## D053 · 2026-10-14 只读工具数据服务基础（R4.3.05进行中）
+
+read_notebook默认outline20格、limit1–50、完整cell或32KiB UTF8边界片段、查询绑定游标、128引用/32MiB/10分钟上限；真实DocumentCommitController snapshot记录实际完整曝光集合，读取完整格使用新token，原outline/所有长格片段仍不能整格覆盖。150008字节中文/emoji/组合字符逐字节重组6页通过；历史快照明确is_current=false，scope/权限/过期/倒退时间/篡改游标/重复参数拒绝。符号与Done状态来自实际接受worker checkpoint，config变化显示stale，原checkpoint bytes不变；只读路径不执行源码或抽随机。
+
+真实function_documents只加入257个已实现回调，按actual descriptor ID连接metadata26/原帮助/示例，示例仅not_verified；所有结果逐一通过闭合工具schema。真实Session接受let sin=fn(x)=>x+1后，用户绑定优先于内置别名，不改变原Sin保护。原闭合校验器不识别等价SHA256正则写法导致首轮读取失败，已严格支持两种相同语义拼写，非法长度/大写等仍拒绝。222 Rust（195host/shared/llm、18受影响kernel、9appleABI）、17Python、371DTO、Clippy/fmt均通过，原始输入/命令/输出/失败和SHA见readonly-services-foundation.json/raw。
+
+本批仍是原生只读数据服务基础：未接Agent已ACK intent的原参数分发、Swift耐久结果Blob/ACK和实际随包Pi数据消费；include_outputs=true明确NotAvailable，未伪造result_ref；近期事务只取当前owner真实完成receipt，重启持久历史producer尚未接完。因此R4.3.05仅步骤1–3勾实测，Done/步骤4不勾，任务总数仍32/98，全部最终gate not_run。
+
+bea784c CI38560769195已观察deps/Rust/frontend success、iOS failure、Mac仍运行。下载的原始xcresult/活动/截图表明失败在NotebookUITests.swift:105滑块AX值断言，后续原expression16及旋转断言通过，截图实际a=4/result16。推断系统默认AX值表示/时机与Double断言不匹配（原slider.value文本未包含于证据，不能断言它具体是什么）；ExploreOutputView现在显式发布实际参数值String，保留原数值/timeout断言，修复仍待新SHA CI验证。本机仅读取结果包，未启动iOS模拟器。完整原result归档逐文件核对，待验证清理重复下载副本；系统输入设置不变。

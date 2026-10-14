@@ -61,6 +61,21 @@ impl DocumentCommitController {
     pub fn owner(&self) -> &SourceDocument {
         &self.owner
     }
+    /// Recent genuinely confirmed transactions retained by this live owner, never pending plans.
+    pub fn recent_transaction_refs(&self) -> Vec<String> {
+        let mut receipts = self
+            .pending
+            .values()
+            .filter(|p| p.state.phase == NativeCommitStatePhase::Completed)
+            .filter_map(|p| p.state.receipt.0.as_ref())
+            .collect::<Vec<_>>();
+        receipts.sort_by_key(|r| std::cmp::Reverse(r.receipt.committed_revision.0));
+        receipts
+            .into_iter()
+            .filter_map(|r| r.receipt.transaction_id.0.clone())
+            .take(32)
+            .collect()
+    }
     /// Source and mathematical acceptance share a logical document gate, never a CAS/IO lock.
     /// Reads, previews, draft updates and direct stop remain available while this gate is held.
     pub fn hold_kernel_gate(&mut self, operation: &str) -> Result<(), CommitError> {

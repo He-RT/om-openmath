@@ -62,6 +62,43 @@ pub fn function_catalog() -> FunctionCatalog {
             .collect(),
     }
 }
+/// Actual callback help joined to executable metadata. Planned documentation is never a row.
+/// Examples are source data only and carry no invented verification claim.
+pub fn function_documents() -> serde_json::Value {
+    let catalog = function_catalog();
+    let specs = om_eval::Evaluator::all_specs()
+        .map(|s| (s.symbol.name(), s))
+        .collect::<std::collections::BTreeMap<_, _>>();
+    let documentation = om_core::catalog::documentation();
+    let functions = catalog
+        .functions
+        .iter()
+        .filter_map(|descriptor| {
+            let doc = &specs.get(descriptor.name.as_str())?.doc;
+            let category = documentation["functions"]
+                .as_array()
+                .and_then(|entries| entries.iter().find(|entry| entry["id"] == descriptor.id))
+                .and_then(|entry| entry["category"].as_str())
+                .unwrap_or(doc.category);
+            let examples = doc
+                .examples
+                .iter()
+                .take(10)
+                .map(|source| {
+                    serde_json::json!({
+                        "source":source,"dialect":"Auto","verification":"not_verified"
+                    })
+                })
+                .collect::<Vec<_>>();
+            Some(serde_json::json!({
+                "descriptor": descriptor, "category": category,
+                "signature": doc.modern, "wolfram_signature": doc.wolfram,
+                "summary_zh": doc.summary_zh, "summary_en": doc.summary_en, "examples": examples
+            }))
+        })
+        .collect::<Vec<_>>();
+    serde_json::json!({"metadata_version":catalog.metadata_version,"functions":functions})
+}
 /// Current presentation support, independent of settings, credentials and notebook contents.
 pub fn capabilities(platform: HostPlatform) -> CapabilityInfo {
     let catalog = function_catalog();

@@ -24,6 +24,7 @@ pub struct KernelState {
     hash: String,
     reserved: usize,
     context: om_kernel::source::SourceExecutionContext,
+    cells: Vec<(String, om_kernel::protocol::CellStatus)>,
 }
 impl KernelState {
     /// Immutable payload retention by another bounded owner, without pinning this pool's envelope.
@@ -37,6 +38,7 @@ impl KernelState {
             hash: self.hash.clone(),
             reserved: self.reserved,
             context: self.context.clone(),
+            cells: self.cells.clone(),
         }
     }
     /// Import verified original bytes without executing source. Full codec validation occurs before
@@ -61,7 +63,9 @@ impl KernelState {
             limits,
             ctx,
         )?;
-        let context = validated.into_session().execution_context();
+        let session = validated.into_session();
+        let context = session.execution_context();
+        let cells = cell_states(&session);
         let reserved = bytes
             .len()
             .checked_add(source.title.len())
@@ -72,6 +76,7 @@ impl KernelState {
                 })
             })
             .and_then(|n| context_size(n, &context))
+            .and_then(|n| cell_states_size(n, &cells))
             .ok_or(KernelStateError::Limit)?;
         Ok(Self {
             binding,
@@ -81,6 +86,7 @@ impl KernelState {
             bytes: bytes.into(),
             reserved,
             context,
+            cells,
         })
     }
     /// Freeze an actual idle session off the registry lock. This alone grants no active status.
@@ -96,6 +102,7 @@ impl KernelState {
         };
         let bytes = session.encode_checkpoint(&binding, limits, ctx)?;
         let context = session.execution_context();
+        let cells = cell_states(session);
         let reserved = bytes
             .len()
             .checked_add(state.file.title.len())
@@ -106,6 +113,7 @@ impl KernelState {
                 })
             })
             .and_then(|n| context_size(n, &context))
+            .and_then(|n| cell_states_size(n, &cells))
             .ok_or(KernelStateError::Limit)?;
         Ok(Self {
             binding,
@@ -115,6 +123,7 @@ impl KernelState {
             bytes: bytes.into(),
             reserved,
             context,
+            cells,
         })
     }
     /// Actual captured source; it may precede the current committed document revision.
@@ -128,6 +137,10 @@ impl KernelState {
     /// Actual live context for the source owner after accepted IO, not syntactic declarations.
     pub fn execution_context(&self) -> &om_kernel::source::SourceExecutionContext {
         &self.context
+    }
+    /// Actual checkpoint cell states, captured without source replay or result formatting.
+    pub fn cell_states(&self) -> &[(String, om_kernel::protocol::CellStatus)] {
+        &self.cells
     }
     /// Actual producer/source/math state binding, not a model request.
     pub fn binding(&self) -> &CheckpointBinding {
@@ -293,6 +306,18 @@ impl KernelStatePool {
 }
 fn digest(bytes: &[u8]) -> String {
     format!("{:x}", Sha256::digest(bytes))
+}
+fn cell_states(session: &Session) -> Vec<(String, om_kernel::protocol::CellStatus)> {
+    session.cell_statuses()
+}
+fn cell_states_size(
+    base: usize,
+    cells: &[(String, om_kernel::protocol::CellStatus)],
+) -> Option<usize> {
+    cells.iter().try_fold(base, |n, (id, _)| {
+        n.checked_add(id.len())?
+            .checked_add(std::mem::size_of::<(String, om_kernel::protocol::CellStatus)>())
+    })
 }
 fn context_size(base: usize, context: &om_kernel::source::SourceExecutionContext) -> Option<usize> {
     let n = context

@@ -10,6 +10,28 @@ fn root(name: &str) -> Value {
     serde_json::from_str(text).unwrap()
 }
 #[test]
+fn tool_source_hash_accepts_only_exact_lowercase_sha256() {
+    let root: Value =
+        serde_json::from_str(include_str!("../../../docs/design/agent-tools.schema.json")).unwrap();
+    assert!(
+        validation::validate(
+            &json!("abcdef0123456789".repeat(4)),
+            &root["$defs"]["Sha256"],
+            &root
+        )
+        .is_ok()
+    );
+    for hash in [
+        "A".repeat(64),
+        "g".repeat(64),
+        "0".repeat(63),
+        "0".repeat(65),
+        format!("{}\n", "0".repeat(63)),
+    ] {
+        assert!(validation::validate(&json!(hash), &root["$defs"]["Sha256"], &root).is_err());
+    }
+}
+#[test]
 fn canonical_timestamp_accepts_actual_iso_dates_and_rejects_bad_calendar_or_offset() {
     let schema: Value = serde_json::from_str(include_str!(
         "../../../docs/design/macos-storage.schema.json"

@@ -1,0 +1,491 @@
+{
+  "testIdentifier" : "NotebookUITests/testExplorationRunsInIsolatedScopeAndKeepsSliderAfterRotation()",
+  "testIdentifierURL" : "test://com.apple.xcode/OpenMath/OpenMathUITests/NotebookUITests/testExplorationRunsInIsolatedScopeAndKeepsSliderAfterRotation",
+  "testName" : "testExplorationRunsInIsolatedScopeAndKeepsSliderAfterRotation()",
+  "testRuns" : [
+    {
+      "activities" : [
+        {
+          "activityType" : "com.apple.dt.xctest.activity-type.internal",
+          "attachments" : [
+            {
+              "lifetime" : "deleteOnSuccess",
+              "name" : "Screen Recording 2026-10-14 at 08.22.15 下午.mp4",
+              "payloadId" : "0~M41fiEphq54usz9kx5jv0G4XjMiZ_Y1V8SD4WVmo5QZB_DLlQnIvBsGmaSZG7-NyUQAqDr_XQvz5n_q8Xiephg==",
+              "timestamp" : 1791980535.823,
+              "uuid" : "0698E3C4-ECC7-4441-B5C6-48C51D526C1F"
+            }
+          ],
+          "childActivities" : [
+            {
+              "isAssociatedWithFailure" : false,
+              "startTime" : 1791980535.823,
+              "title" : "kXCTAttachmentScreenRecording"
+            }
+          ],
+          "isAssociatedWithFailure" : false,
+          "startTime" : 1791980535.782,
+          "title" : "Start Test at 2026-10-14 12:22:15.782"
+        },
+        {
+          "activityType" : "com.apple.dt.xctest.activity-type.internal",
+          "isAssociatedWithFailure" : false,
+          "startTime" : 1791980535.827,
+          "title" : "Set Up"
+        },
+        {
+          "activityType" : "com.apple.dt.xctest.activity-type.internal",
+          "childActivities" : [
+            {
+              "activityType" : "com.apple.dt.xctest.activity-type.orientation.portrait",
+              "isAssociatedWithFailure" : false,
+              "startTime" : 1791980535.903,
+              "title" : "Device orientation changed to Portrait"
+            },
+            {
+              "activityType" : "com.apple.dt.xctest.activity-type.orientation.portrait",
+              "isAssociatedWithFailure" : false,
+              "startTime" : 1791980535.955,
+              "title" : "Interface orientation changed to Portrait"
+            },
+            {
+              "activityType" : "com.apple.dt.xctest.activity-type.internal",
+              "isAssociatedWithFailure" : false,
+              "startTime" : 1791980535.987,
+              "title" : "Wait for org.openmath.OpenMath to idle"
+            }
+          ],
+          "isAssociatedWithFailure" : false,
+          "startTime" : 1791980535.829,
+          "title" : "Setting device orientation to Portrait"
+        },
+        {
+          "activityType" : "com.apple.dt.xctest.activity-type.internal",
+          "childActivities" : [
+            {
+              "activityType" : "com.apple.dt.xctest.activity-type.internal",
+              "childActivities" : [
+                {
+                  "activityType" : "com.apple.dt.xctest.activity-type.internal",
+                  "isAssociatedWithFailure" : false,
+                  "startTime" : 1791980536.053,
+                  "title" : "Terminate org.openmath.OpenMath:46663"
+                },
+                {
+                  "activityType" : "com.apple.dt.xctest.activity-type.internal",
+                  "isAssociatedWithFailure" : false,
+                  "startTime" : 1791980537.553,
+                  "title" : "Setting up automation session"
+                },
+                {
+                  "activityType" : "com.apple.dt.xctest.activity-type.internal",
+                  "isAssociatedWithFailure" : false,
+                  "startTime" : 1791980545.399,
+                  "title" : "Wait for org.openmath.OpenMath to idle"
+                }
+              ],
+              "isAssociatedWithFailure" : false,
+              "startTime" : 1791980536.053,
+              "title" : "Launch org.openmath.OpenMath"
+            }
+          ],
+          "isAssociatedWithFailure" : false,
+          "startTime" : 1791980536.052,
+          "title" : "Open org.openmath.OpenMath"
+        },
+        {
+          "activityType" : "com.apple.dt.xctest.activity-type.internal",
+          "childActivities" : [
+            {
+              "activityType" : "com.apple.dt.xctest.activity-type.internal",
+              "childActivities" : [
+                {
+                  "activityType" : "com.apple.dt.xctest.activity-type.internal",
+                  "isAssociatedWithFailure" : false,
+                  "startTime" : 1791980549.084,
+                  "title" : "Checking existence of `\"example.explore\" Button`"
+                }
+              ],
+              "isAssociatedWithFailure" : false,
+              "startTime" : 1791980549.083,
+              "title" : "Checking `Expect predicate `existsNoRetry == 1` for object \"example.explore\" Button`"
+            }
+          ],
+          "isAssociatedWithFailure" : false,
+          "startTime" : 1791980548.017,
+          "title" : "Waiting 30.0s for \"example.explore\" Button to exist"
+        },
+        {
+          "activityType" : "com.apple.dt.xctest.activity-type.internal",
+          "attachments" : [
+            {
+              "lifetime" : "deleteOnSuccess",
+              "name" : "Synthesized Event 2026-10-14 at 08.22.33 下午",
+              "payloadId" : "0~4sG1owykDyNK-nEWa5zxAMYVp3Ye3yG50JG7CNut7wgw7mLld9DbjWnD8wXjP5wedthAAyDdcRa_kvxgYVnHhg==",
+              "timestamp" : 1791980553.653,
+              "uuid" : "0B8FCE8D-9023-4A25-B1EC-E56CAA188CF8"
+            }
+          ],
+          "childActivities" : [
+            {
+              "activityType" : "com.apple.dt.xctest.activity-type.internal",
+              "isAssociatedWithFailure" : false,
+              "startTime" : 1791980549.843,
+              "title" : "Wait for org.openmath.OpenMath to idle"
+            },
+            {
+              "activityType" : "com.apple.dt.xctest.activity-type.internal",
+              "isAssociatedWithFailure" : false,
+              "startTime" : 1791980549.924,
+              "title" : "Find the \"example.explore\" Button"
+            },
+            {
+              "activityType" : "com.apple.dt.xctest.activity-type.internal",
+              "isAssociatedWithFailure" : false,
+              "startTime" : 1791980550.594,
+              "title" : "Check for interrupting elements affecting \"example.explore\" Button"
+            },
+            {
+              "activityType" : "com.apple.dt.xctest.activity-type.internal",
+              "attachments" : [
+                {
+                  "lifetime" : "deleteOnSuccess",
+                  "name" : "Synthesized Event 2026-10-14 at 08.22.33 下午",
+                  "payloadId" : "0~4sG1owykDyNK-nEWa5zxAMYVp3Ye3yG50JG7CNut7wgw7mLld9DbjWnD8wXjP5wedthAAyDdcRa_kvxgYVnHhg==",
+                  "timestamp" : 1791980553.653,
+                  "uuid" : "0B8FCE8D-9023-4A25-B1EC-E56CAA188CF8"
+                }
+              ],
+              "childActivities" : [
+                {
+                  "isAssociatedWithFailure" : false,
+                  "startTime" : 1791980553.653,
+                  "title" : "kXCTAttachmentLegacySynthesizedEvent"
+                }
+              ],
+              "isAssociatedWithFailure" : false,
+              "startTime" : 1791980552.541,
+              "title" : "Synthesize event"
+            },
+            {
+              "activityType" : "com.apple.dt.xctest.activity-type.internal",
+              "isAssociatedWithFailure" : false,
+              "startTime" : 1791980553.654,
+              "title" : "Wait for org.openmath.OpenMath to idle"
+            }
+          ],
+          "isAssociatedWithFailure" : false,
+          "startTime" : 1791980549.842,
+          "title" : "Tap \"example.explore\" Button"
+        },
+        {
+          "activityType" : "com.apple.dt.xctest.activity-type.internal",
+          "childActivities" : [
+            {
+              "activityType" : "com.apple.dt.xctest.activity-type.internal",
+              "childActivities" : [
+                {
+                  "activityType" : "com.apple.dt.xctest.activity-type.internal",
+                  "isAssociatedWithFailure" : false,
+                  "startTime" : 1791980554.97,
+                  "title" : "Checking existence of `\"explore.slider.a\" Slider`"
+                }
+              ],
+              "isAssociatedWithFailure" : false,
+              "startTime" : 1791980554.969,
+              "title" : "Checking `Expect predicate `existsNoRetry == 1` for object \"explore.slider.a\" Slider`"
+            }
+          ],
+          "isAssociatedWithFailure" : false,
+          "startTime" : 1791980553.891,
+          "title" : "Waiting 15.0s for \"explore.slider.a\" Slider to exist"
+        },
+        {
+          "activityType" : "com.apple.dt.xctest.activity-type.internal",
+          "attachments" : [
+            {
+              "lifetime" : "deleteOnSuccess",
+              "name" : "Synthesized Event 2026-10-14 at 08.22.36 下午",
+              "payloadId" : "0~YD6kbdrBZu8Oe1mk6HoY7PwiRFifD71it705I95UsfK_Mjct-XD_IRxRlwsvrosguRjp0bTcH2yL7NboZyo0cw==",
+              "timestamp" : 1791980556.526,
+              "uuid" : "CF9E82E4-914E-4A64-8D4A-880391AE8017"
+            }
+          ],
+          "childActivities" : [
+            {
+              "activityType" : "com.apple.dt.xctest.activity-type.internal",
+              "isAssociatedWithFailure" : false,
+              "startTime" : 1791980555.164,
+              "title" : "Wait for org.openmath.OpenMath to idle"
+            },
+            {
+              "activityType" : "com.apple.dt.xctest.activity-type.internal",
+              "isAssociatedWithFailure" : false,
+              "startTime" : 1791980555.169,
+              "title" : "Find the \"explore.slider.a\" Slider"
+            },
+            {
+              "activityType" : "com.apple.dt.xctest.activity-type.internal",
+              "isAssociatedWithFailure" : false,
+              "startTime" : 1791980555.314,
+              "title" : "Check for interrupting elements affecting \"explore.slider.a\" Slider"
+            },
+            {
+              "activityType" : "com.apple.dt.xctest.activity-type.internal",
+              "attachments" : [
+                {
+                  "lifetime" : "deleteOnSuccess",
+                  "name" : "Synthesized Event 2026-10-14 at 08.22.36 下午",
+                  "payloadId" : "0~YD6kbdrBZu8Oe1mk6HoY7PwiRFifD71it705I95UsfK_Mjct-XD_IRxRlwsvrosguRjp0bTcH2yL7NboZyo0cw==",
+                  "timestamp" : 1791980556.526,
+                  "uuid" : "CF9E82E4-914E-4A64-8D4A-880391AE8017"
+                }
+              ],
+              "childActivities" : [
+                {
+                  "isAssociatedWithFailure" : false,
+                  "startTime" : 1791980556.526,
+                  "title" : "kXCTAttachmentLegacySynthesizedEvent"
+                }
+              ],
+              "isAssociatedWithFailure" : false,
+              "startTime" : 1791980555.705,
+              "title" : "Synthesize event"
+            },
+            {
+              "activityType" : "com.apple.dt.xctest.activity-type.internal",
+              "isAssociatedWithFailure" : false,
+              "startTime" : 1791980556.531,
+              "title" : "Wait for org.openmath.OpenMath to idle"
+            }
+          ],
+          "isAssociatedWithFailure" : false,
+          "startTime" : 1791980555.163,
+          "title" : "Set normalized position of \"explore.slider.a\" Slider to 1.00"
+        },
+        {
+          "activityType" : "com.apple.dt.xctest.activity-type.internal",
+          "isAssociatedWithFailure" : false,
+          "startTime" : 1791980557.78,
+          "title" : "Find the \"explore.slider.a\" Slider"
+        },
+        {
+          "activityType" : "com.apple.dt.xctest.activity-type.internal",
+          "attachments" : [
+            {
+              "lifetime" : "deleteOnSuccess",
+              "name" : "Element Debug Description_0_A12DE319-B966-47AB-AA7B-FF05D05C6EB6.txt",
+              "payloadId" : "0~X6lX7qpfVfRvyOviDzJeLw4ki60vSBwL1M5osDredOX_QBctWODwLcCJvKc41RUyQZBuxklde-Is-4qC2QVfGg==",
+              "timestamp" : 1791980564.092,
+              "uuid" : "984A1347-887C-49BA-A8D9-34451DDDAA03"
+            }
+          ],
+          "childActivities" : [
+            {
+              "activityType" : "com.apple.dt.xctest.activity-type.internal",
+              "isAssociatedWithFailure" : false,
+              "startTime" : 1791980564.072,
+              "title" : "Find the \"explore.slider.a\" Slider (retry 1)"
+            },
+            {
+              "activityType" : "com.apple.dt.xctest.activity-type.internal",
+              "isAssociatedWithFailure" : false,
+              "startTime" : 1791980564.079,
+              "title" : "Find the \"explore.slider.a\" Slider (retry 2)"
+            },
+            {
+              "activityType" : "com.apple.dt.xctest.activity-type.internal",
+              "childActivities" : [
+                {
+                  "activityType" : "com.apple.dt.xctest.activity-type.internal",
+                  "isAssociatedWithFailure" : false,
+                  "startTime" : 1791980564.085,
+                  "title" : "Requesting snapshot of accessibility hierarchy for app with pid 47469"
+                }
+              ],
+              "isAssociatedWithFailure" : false,
+              "startTime" : 1791980564.084,
+              "title" : "Collecting debug information to assist test failure triage"
+            },
+            {
+              "activityType" : "com.apple.dt.xctest.activity-type.internal",
+              "isAssociatedWithFailure" : false,
+              "startTime" : 1791980564.09,
+              "title" : "Requesting snapshot of accessibility hierarchy for app with pid 47469"
+            },
+            {
+              "isAssociatedWithFailure" : false,
+              "startTime" : 1791980564.092,
+              "title" : "Element Debug Description"
+            }
+          ],
+          "isAssociatedWithFailure" : false,
+          "startTime" : 1791980559.962,
+          "title" : "Find the \"explore.slider.a\" Slider"
+        },
+        {
+          "childActivities" : [
+            {
+              "isAssociatedWithFailure" : false,
+              "title" : ""
+            }
+          ],
+          "isAssociatedWithFailure" : true,
+          "startTime" : 1791980564.094,
+          "title" : "XCTAssertTrue failed"
+        },
+        {
+          "activityType" : "com.apple.dt.xctest.activity-type.internal",
+          "childActivities" : [
+            {
+              "activityType" : "com.apple.dt.xctest.activity-type.internal",
+              "childActivities" : [
+                {
+                  "activityType" : "com.apple.dt.xctest.activity-type.internal",
+                  "isAssociatedWithFailure" : false,
+                  "startTime" : 1791980566.323,
+                  "title" : "Checking existence of `\"expression.16.\" Any`"
+                }
+              ],
+              "isAssociatedWithFailure" : false,
+              "startTime" : 1791980566.322,
+              "title" : "Checking `Expect predicate `existsNoRetry == 1` for object \"expression.16.\" Any`"
+            }
+          ],
+          "isAssociatedWithFailure" : false,
+          "startTime" : 1791980565.252,
+          "title" : "Waiting 15.0s for \"expression.16.\" Any to exist"
+        },
+        {
+          "activityType" : "com.apple.dt.xctest.activity-type.internal",
+          "isAssociatedWithFailure" : false,
+          "startTime" : 1791980570.402,
+          "title" : "Find the Target Application 'org.openmath.OpenMath'"
+        },
+        {
+          "activityType" : "com.apple.dt.xctest.activity-type.attachmentContainer",
+          "attachments" : [
+            {
+              "lifetime" : "keepAlways",
+              "name" : "explore-portrait_0_5DA850CA-BF41-4478-9E2C-DDA0C6CAA4D0.png",
+              "payloadId" : "0~wYTp8hTT8ePfgOB9i-eAQd-6_to9vT9jNqgM5iA8UvD3Xa30iUlptPGoGKz62ARXzLcSAWbAt1XO1cJgj1DyLQ==",
+              "timestamp" : 1791980570.834,
+              "uuid" : "A1DE5F56-0E40-4717-9371-22123FCA0EE1"
+            }
+          ],
+          "childActivities" : [
+            {
+              "isAssociatedWithFailure" : false,
+              "startTime" : 1791980570.834,
+              "title" : "explore-portrait"
+            }
+          ],
+          "isAssociatedWithFailure" : false,
+          "startTime" : 1791980570.834,
+          "title" : "Added attachment named 'explore-portrait'"
+        },
+        {
+          "activityType" : "com.apple.dt.xctest.activity-type.internal",
+          "childActivities" : [
+            {
+              "activityType" : "com.apple.dt.xctest.activity-type.orientation.landscapeRight",
+              "isAssociatedWithFailure" : false,
+              "startTime" : 1791980570.855,
+              "title" : "Device orientation changed to Landscape Left"
+            },
+            {
+              "activityType" : "com.apple.dt.xctest.activity-type.orientation.landscapeRight",
+              "isAssociatedWithFailure" : false,
+              "startTime" : 1791980571.117,
+              "title" : "Interface orientation changed to Landscape Right"
+            },
+            {
+              "activityType" : "com.apple.dt.xctest.activity-type.internal",
+              "isAssociatedWithFailure" : false,
+              "startTime" : 1791980571.14,
+              "title" : "Wait for org.openmath.OpenMath to idle"
+            }
+          ],
+          "isAssociatedWithFailure" : false,
+          "startTime" : 1791980570.836,
+          "title" : "Setting device orientation to Landscape Left"
+        },
+        {
+          "activityType" : "com.apple.dt.xctest.activity-type.internal",
+          "childActivities" : [
+            {
+              "activityType" : "com.apple.dt.xctest.activity-type.internal",
+              "childActivities" : [
+                {
+                  "activityType" : "com.apple.dt.xctest.activity-type.internal",
+                  "isAssociatedWithFailure" : false,
+                  "startTime" : 1791980573.096,
+                  "title" : "Checking existence of `\"explore.slider.a\" Slider`"
+                }
+              ],
+              "isAssociatedWithFailure" : false,
+              "startTime" : 1791980573.091,
+              "title" : "Checking `Expect predicate `existsNoRetry == 1` for object \"explore.slider.a\" Slider`"
+            }
+          ],
+          "isAssociatedWithFailure" : false,
+          "startTime" : 1791980572.083,
+          "title" : "Waiting 5.0s for \"explore.slider.a\" Slider to exist"
+        },
+        {
+          "activityType" : "com.apple.dt.xctest.activity-type.internal",
+          "isAssociatedWithFailure" : false,
+          "startTime" : 1791980574.497,
+          "title" : "Checking existence of `\"expression.16.\" Any`"
+        },
+        {
+          "activityType" : "com.apple.dt.xctest.activity-type.internal",
+          "isAssociatedWithFailure" : false,
+          "startTime" : 1791980577.679,
+          "title" : "Find the Target Application 'org.openmath.OpenMath'"
+        },
+        {
+          "activityType" : "com.apple.dt.xctest.activity-type.attachmentContainer",
+          "attachments" : [
+            {
+              "lifetime" : "keepAlways",
+              "name" : "explore-landscape_0_36ACF682-D784-4820-8DCA-182310B701AB.png",
+              "payloadId" : "0~JYMpgZY74ki0nj7QL-AhVjUvbGkLV9OopvcwSZOqVSmQWKyvXich-a9vJNenM2ly04J9cxvoYx4hgGnX07JTWQ==",
+              "timestamp" : 1791980577.97,
+              "uuid" : "622B1F55-5AD8-485F-8850-14A91B19CDE0"
+            }
+          ],
+          "childActivities" : [
+            {
+              "isAssociatedWithFailure" : false,
+              "startTime" : 1791980577.97,
+              "title" : "explore-landscape"
+            }
+          ],
+          "isAssociatedWithFailure" : false,
+          "startTime" : 1791980577.97,
+          "title" : "Added attachment named 'explore-landscape'"
+        },
+        {
+          "activityType" : "com.apple.dt.xctest.activity-type.internal",
+          "isAssociatedWithFailure" : false,
+          "startTime" : 1791980577.972,
+          "title" : "Tear Down"
+        }
+      ],
+      "device" : {
+        "architecture" : "arm64",
+        "deviceId" : "2A2B5BE2-31A5-4DF0-85FF-A3199686C937",
+        "deviceName" : "OpenMath-phone-acceptance",
+        "modelName" : "iPhone 18 Pro",
+        "osBuildNumber" : "24A434",
+        "osVersion" : "27.0",
+        "platform" : "iOS Simulator"
+      },
+      "testPlanConfiguration" : {
+        "configurationId" : "1",
+        "configurationName" : "Test Scheme Action"
+      }
+    }
+  ]
+}

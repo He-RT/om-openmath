@@ -1,0 +1,52 @@
+   Compiling om-agent-contract v0.1.0-pre-alpha.3 (/Users/hert/Projects/openmath/crates/om-agent-contract)
+   Compiling om-llm v0.1.0-pre-alpha.3 (/Users/hert/Projects/openmath/crates/om-llm)
+   Compiling om-kernel v0.1.0-pre-alpha.3 (/Users/hert/Projects/openmath/crates/om-kernel)
+    Finished `test` profile [unoptimized] target(s) in 4.80s
+     Running tests/capabilities.rs (target/debug/deps/capabilities-124fe66632857b4e)
+
+running 4 tests
+test existing_user_alias_function_remains_callable_redefinable_and_inspectable ... ok
+test capabilities_separate_kernel_presentation_and_future_permissions ... ok
+test aliases_have_real_completion_hover_and_user_bindings_still_win ... ok
+test catalog_is_versioned_deterministic_and_callback_filtered ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.02s
+
+     Running tests/checkpoint.rs (target/debug/deps/checkpoint-9431ab50e6ce35b4)
+
+running 5 tests
+test wrong_source_config_identity_version_trailing_limits_and_cancel_do_not_restore ... ok
+test restoring_a_session_never_reexecutes_delayed_source_or_resets_out_history ... ok
+test malformed_owners_record_history_provenance_and_unknown_nested_fields_are_rejected ... ok
+test actual_definitions_owners_out_steps_and_readonly_explore_survive_session_bytes ... ok
+test actual_precision_models_interpolation_and_ode_provenance_are_retained_without_reexecution ... ok
+
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.37s
+
+     Running tests/checkpoint_corpus.rs (target/debug/deps/checkpoint_corpus-9ccfd1a7bbaad80e)
+
+running 1 test
+test all_53_original_authority_results_and_evidence_survive_session_checkpoint ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 9.74s
+
+     Running tests/source_transactions.rs (target/debug/deps/source_transactions-eb6aa8d9cc84e116)
+
+running 5 tests
+test text_title_and_prose_reorder_keep_live_math_and_no_evaluation_occurs ... ok
+test invalid_batch_does_not_modify_definitions_or_source_and_settings_are_not_evaluated ... ok
+test whole_delete_does_not_cascade_and_old_owner_values_are_actually_removed ... ok
+test real_cycle_conflict_and_lexical_function_scope_are_analyzed_without_execution ... ok
+test old_caller_owned_dynamic_side_effects_contribute_real_invalidation ... ok
+
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.02s
+
+     Running tests/working_session.rs (target/debug/deps/working_session-2f7c7efc5e1ffc3f)
+
+running 3 tests
+test working_notebook_retains_real_results_and_owners_then_can_commit_new_definitions ... ok
+test candidate_credentials_io_and_cancellation_are_independent_from_parent ... ok
+test actual_steps_and_readonly_explore_snapshots_survive_the_memory_candidate ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.04s
+

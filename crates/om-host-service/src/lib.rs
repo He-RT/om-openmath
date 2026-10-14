@@ -18,3 +18,5 @@ pub mod agent;
 pub mod references;
 /// Immutable actual result ownership, scope-checked references and read-only projections.
 pub mod results;
+/// Native readonly tool data services; execution/permission admission remains with the owner.
+pub mod tools;

@@ -142,6 +142,9 @@ pub struct ResolvedResult {
     binding: ResultBinding,
 }
 impl ResolvedResult {
+    pub(crate) fn retained(&self) -> &RetainedResult {
+        &self.record.value
+    }
     /// Scope and producer facts computed from current trusted source, never from value contents.
     pub fn binding(&self) -> &ResultBinding {
         &self.binding

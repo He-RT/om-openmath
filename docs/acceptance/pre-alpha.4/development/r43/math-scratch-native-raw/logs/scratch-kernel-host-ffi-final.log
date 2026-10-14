@@ -1,0 +1,886 @@
+    Blocking waiting for file lock on package cache
+    Blocking waiting for file lock on package cache
+   Compiling om-host-service v0.1.0-pre-alpha.3 (/Users/hert/Projects/openmath/crates/om-host-service)
+   Compiling om-apple-ffi v0.1.0-pre-alpha.3 (/Users/hert/Projects/openmath/crates/om-apple-ffi)
+    Finished `test` profile [unoptimized] target(s) in 42.27s
+     Running unittests src/lib.rs (target/debug/deps/om_apple_ffi-1de397b1ea7634b8)
+
+running 9 tests
+test lifecycle_tests::malformed_submit_and_event_byte_limits_report_actual_failure_or_resync ... ok
+test lifecycle_tests::consumed_handles_never_alias_and_cancel_is_repeatable_without_rearming ... ok
+test tests::linking_probe_reports_the_real_desktop_kernel_catalog ... ok
+test lifecycle_tests::real_math_borrowed_input_is_copied_and_all_returned_bytes_are_freed ... ok
+test lifecycle_tests::create_rejects_null_invalid_utf8_unknown_fields_and_overlimit_with_owned_errors ... ok
+test lifecycle_tests::free_drops_only_owned_matching_allocation_and_empty_is_harmless ... ok
+
+thread 'ffi::tests::packet_and_integer_panics_do_not_cross_the_abi' (37867400) panicked at crates/om-apple-ffi/src/ffi.rs:336:53:
+synthetic private payload
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+test lifecycle_tests::concurrent_event_poll_submit_cancel_and_close_settle_without_stale_pointer_access ... ok
+
+thread 'ffi::tests::packet_and_integer_panics_do_not_cross_the_abi' (37867400) panicked at crates/om-apple-ffi/src/ffi.rs:344:31:
+fixture
+test ffi::tests::packet_and_integer_panics_do_not_cross_the_abi ... ok
+test registry::tests::finishing_waits_for_real_active_guard_and_stale_token_never_rebinds ... ok
+
+test result: ok. 9 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.05s
+
+     Running unittests src/lib.rs (target/debug/deps/om_host_service-d8f036e96cb96d62)
+
+running 4 tests
+test kernel::worker::lifecycle::tests::unstarted_or_prepared_or_unknown_is_never_optimistically_accepted_or_discarded ... ok
+test results::runtime::queries::tests::source_fragments_keep_exact_utf8_and_never_call_a_partial_source_complete ... ok
+test scheduler::source_gate_tests::barrier_does_not_wait_on_the_source_owner_lock ... ok
+test kernel::worker::lifecycle::tests::cancel_and_actual_commit_barrier_have_one_linearized_order ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+
+     Running tests/agent_endpoint.rs (target/debug/deps/agent_endpoint-d36dd37a9b5931a7)
+
+running 9 tests
+test apply_only_looks_up_acked_original_preview_and_freezes_precommit_failure_without_effect ... ok
+test request_ids_are_correlated_without_dispatch_and_peer_model_streams_are_denied ... ok
+test durable_confirmation_replay_and_document_close_revoke_real_owner_authority ... ok
+test host_stream_has_exact_offsets_one_terminal_and_no_fabricated_tool_receipt ... ok
+Actual readonly read_notebook original args={ "view" : "cells", "cell_ids":["a"] }; result={"data":{"cells":[{"cell_id":"a","dialect":"Modern","kind":"Math","result_ref":null,"revision":0,"source":"2+2","source_complete":true,"source_cursor":null,"source_hash":"1acf86226c68c1485ca3939884c43ed99abeea344e806548af7ee813c1c0cff3","status":"Stale"}],"is_current":true,"recent_transaction_refs":[],"snapshot_ref":"snapshot-1-f638ef780350ce680d6d0c3b6d2217f49eccea48866bc70cde0a73a5f4df42c2","symbols":[],"title":"实际文档"},"document":{"generation":1,"id":"actual-document","revision":0},"error":null,"ok":true,"operation_ref":null,"pagination":{"next_cursor":null,"truncated":false},"request_ref":"agent-operation-471186b5e6e494aed298d8022319096e","status":"completed"}
+Actual live native barrier with synthetic admission/no physical receipt -> {"data":null,"document":{"generation":1,"id":"actual-document","revision":0},"error":{"code":"UNKNOWN_OUTCOME","details":{},"message":"UNKNOWN_OUTCOME","recovery":"query_operation"},"ok":false,"operation_ref":"operation-2-b08743386ae6e9b122a1598d831be73f4a96af0854bd622dc59c3958361e6f6d","pagination":{"next_cursor":null,"truncated":false},"request_ref":"agent-operation-7b164e181eb584ec76d912525151329a","status":"unknown"}
+Actual Agent read/preview envelopes={"denied":{"data":null,"document":{"generation":1,"id":"actual-document","revision":0},"error":{"code":"INVALID_PATCH","details":{},"message":"INVALID_PATCH","recovery":"refresh_snapshot"},"ok":false,"operation_ref":null,"pagination":{"next_cursor":null,"truncated":false},"request_ref":"agent-operation-916d98d59a9aeb3a4cdc8572407506a0","status":"failed"},"full":{"data":{"cells":[{"cell_id":"a","dialect":"Modern","kind":"Math","result_ref":null,"revision":0,"source":"2+2","source_complete":true,"source_cursor":null,"source_hash":"1acf86226c68c1485ca3939884c43ed99abeea344e806548af7ee813c1c0cff3","status":"Stale"}],"is_current":true,"recent_transaction_refs":[],"snapshot_ref":"snapshot-2-4dc269acbfd799a3963d9da228dee3d246c7f616ac53ac63e3669fd3aaae7063","symbols":[],"title":"实际文档"},"document":{"generation":1,"id":"actual-document","revision":0},"error":null,"ok":true,"operation_ref":null,"pagination":{"next_cursor":null,"truncated":false},"request_ref":"agent-operation-3973afd45902989c3fc79a82e0516b6b","status":"completed"},"original_outline_still_denied":{"data":null,"document":{"generation":1,"id":"actual-document","revision":0},"error":{"code":"INVALID_PATCH","details":{},"message":"INVALID_PATCH","recovery":"refresh_snapshot"},"ok":false,"operation_ref":null,"pagination":{"next_cursor":null,"truncated":false},"request_ref":"agent-operation-50d90c3cd1f28f98b2f5b2d08498056d","status":"failed"},"outline":{"data":{"cells":[{"cell_id":"a","dialect":"Modern","kind":"Math","result_ref":null,"revision":0,"source":null,"source_complete":false,"source_cursor":null,"source_hash":"1acf86226c68c1485ca3939884c43ed99abeea344e806548af7ee813c1c0cff3","status":"Stale"}],"is_current":true,"recent_transaction_refs":[],"snapshot_ref":"snapshot-1-a65edb2034a14745db997e26656a63f7bd9dd3c43c5ada50021a5663f22a146a","symbols":[],"title":"实际文档"},"document":{"generation":1,"id":"actual-document","revision":0},"error":null,"ok":true,"operation_ref":null,"pagination":{"next_cursor":null,"truncated":false},"request_ref":"agent-operation-ad1fc043cf1bf1f7fd6c4f3b822039f9","status":"completed"},"valid":{"data":{"affected_cell_ids":["a"],"assigned_cell_ids":{},"diagnostics":[],"plan_hash":"c1e3e983d5656351affc6393923cd1fdf1a84c8a86bd2f1de2710f1c96cbdb98","preview_kind":"patch","preview_ref":"preview-6-9af28be1e332446224d432a7b941934e4e9dc453abfe49b5731e574cc52c75e5","valid":true},"document":{"generation":1,"id":"actual-document","revision":0},"error":null,"ok":true,"operation_ref":null,"pagination":{"next_cursor":null,"truncated":false},"request_ref":"agent-operation-d1380064b50cec9971faf024060bd9fd","status":"completed"}}
+test agent_preview_consumes_exact_read_issued_scope_without_widening_source_exposure ... ok
+Actual Agent non-effect preview={"extra":{"data":null,"document":{"generation":1,"id":"actual-document","revision":0},"error":{"code":"INVALID_ARGUMENT","details":{},"message":"INVALID_ARGUMENT","recovery":"none"},"ok":false,"operation_ref":null,"pagination":{"next_cursor":null,"truncated":false},"request_ref":"agent-operation-fbbb94a1e1379fcb52221c966aed97d1","status":"failed"},"failed":{"data":null,"document":{"generation":1,"id":"actual-document","revision":0},"error":{"code":"INVALID_PATCH","details":{},"message":"INVALID_PATCH","recovery":"none"},"ok":false,"operation_ref":null,"pagination":{"next_cursor":null,"truncated":false},"request_ref":"agent-operation-c9c8014d7473c18b46d6d7c51abf839a","status":"failed"},"source":{"data":{"affected_cell_ids":[],"assigned_cell_ids":{},"diagnostics":[{"cell_id":null,"code":"W002","end_utf8":4,"message":"未知函数名；表示乘法时请添加 *","severity":"hint","start_utf8":0}],"plan_hash":"72e2114e4469dfa7dd4636ecdb925caa10932a17a8ede25f4f3e3cf2a1d34025","preview_kind":"source","preview_ref":null,"valid":true},"document":{"generation":1,"id":"actual-document","revision":0},"error":null,"ok":true,"operation_ref":null,"pagination":{"next_cursor":null,"truncated":false},"request_ref":"agent-operation-79979043e06e46f708eee20c03d58cc0","status":"completed"},"unchanged":{"data":{"cells":[{"cell_id":"a","dialect":"Modern","kind":"Math","result_ref":null,"revision":0,"source":"2+2","source_complete":true,"source_cursor":null,"source_hash":"1acf86226c68c1485ca3939884c43ed99abeea344e806548af7ee813c1c0cff3","status":"Stale"}],"is_current":true,"recent_transaction_refs":[],"snapshot_ref":"snapshot-3-849489a710752bc445ef0986653f2cb6a314889c2ea8c5265c0b91aa6def0564","symbols":[],"title":"实际文档"},"document":{"generation":1,"id":"actual-document","revision":0},"error":null,"ok":true,"operation_ref":null,"pagination":{"next_cursor":null,"truncated":false},"request_ref":"agent-operation-b5e07dcd86eac3514937485fcbd4ecac","status":"completed"}}
+test agent_source_inspection_is_noncommittable_and_failed_whole_patch_has_no_effect ... ok
+Actual readonly search_functions original args={"query":"sin"}; result={"data":{"functions":[{"function_id":"fn_000102","metadata_version":26,"name":"Sin","signature":"Sin(…)","support":"按真实注册签名与参数个数工作；未支持的表达式保持符号形式并给出已有诊断。"},{"function_id":"fn_000006","metadata_version":26,"name":"ArcCos","signature":"ArcCos(…)","support":"按真实注册签名与参数个数工作；未支持的表达式保持符号形式并给出已有诊断。"},{"function_id":"fn_000007","metadata_version":26,"name":"ArcCosh","signature":"ArcCosh(x)","support":"按真实注册签名与参数个数工作；未支持的表达式保持符号形式并给出已有诊断。"},{"function_id":"fn_000011","metadata_version":26,"name":"ArcSin","signature":"ArcSin(…)","support":"按真实注册签名与参数个数工作；未支持的表达式保持符号形式并给出已有诊断。"},{"function_id":"fn_000012","metadata_version":26,"name":"ArcSinh","signature":"ArcSinh(x)","support":"按真实注册签名与参数个数工作；未支持的表达式保持符号形式并给出已有诊断。"},{"function_id":"fn_000026","metadata_version":26,"name":"Cos","signature":"Cos(…)","support":"按真实注册签名与参数个数工作；未支持的表达式保持符号形式并给出已有诊断。"},{"function_id":"fn_000027","metadata_version":26,"name":"Cosh","signature":"Cosh(x)","support":"按真实注册签名与参数个数工作；未支持的表达式保持符号形式并给出已有诊断。"},{"function_id":"fn_000050","metadata_version":26,"name":"Greater","signature":"Greater(…)","support":"按真实注册签名与参数个数工作；未支持的表达式保持符号形式并给出已有诊断。"}],"metadata_version":26},"document":{"generation":1,"id":"actual-document","revision":0},"error":null,"ok":true,"operation_ref":null,"pagination":{"next_cursor":null,"truncated":false},"request_ref":"agent-operation-4318f75a7e3cb326600c16cb5c2b5abd","status":"completed"}
+test final_agent_commit_barrier_uses_live_task_scope_and_original_frozen_operation ... ok
+Actual readonly get_function_docs original args={"name":"sin"}; result={"data":{"examples":[{"dialect":"Auto","source":"Sin[Pi/6]","verification":"not_verified"},{"dialect":"Auto","source":"Sin[-Pi/6]","verification":"not_verified"}],"function":{"category":"basics","descriptor":{"aliases":[],"arity":{"max":1,"min":1},"attributes":["listable","protected","numeric_function"],"canonical_name":"sin","compatibility_syntax":[],"effect_class":"pure","id":"fn_000102","modern_name":"sin","name":"Sin","options":[],"parameters":[{"default_context":null,"default_source":null,"enum_values":[],"held":false,"max":null,"min":null,"name":"expr","required":true,"runtime_name":null,"value_type":"expression","variadic":false}],"pipe_arg":1,"platforms":["cli","desktop","web","ios"],"precision_modes":["exact","machine","arbitrary_supported"],"precision_notes":"精确计算与已支持的数值近似子集；不把符号保留或格式位数当作新算法/任意精度支持。","return_type":"expression","support":"按真实注册签名与参数个数工作；未支持的表达式保持符号形式并给出已有诊断。"},"examples":[{"dialect":"Auto","source":"Sin[Pi/6]","verification":"not_verified"},{"dialect":"Auto","source":"Sin[-Pi/6]","verification":"not_verified"}],"signature":"Sin(…)","summary_en":"Evaluate exact-angle sine values.","summary_zh":"精确角度正弦。","wolfram_signature":"Sin[…]"},"metadata_version":26},"document":{"generation":1,"id":"actual-document","revision":0},"error":null,"ok":true,"operation_ref":null,"pagination":{"next_cursor":null,"truncated":false},"request_ref":"agent-operation-5f2ab86fe8964772b2a9d294461dad6f","status":"completed"}
+Actual readonly read_notebook original args={"limit":0}; result={"data":null,"document":{"generation":1,"id":"actual-document","revision":0},"error":{"code":"INVALID_ARGUMENT","details":{},"message":"INVALID_ARGUMENT","recovery":"none"},"ok":false,"operation_ref":null,"pagination":{"next_cursor":null,"truncated":false},"request_ref":"agent-operation-607f5912edf925dc7fcbc0532b543c8b","status":"failed"}
+test actual_readonly_producer_requires_acked_original_arguments_and_durable_confirmation ... ok
+test native_envelope_budget_preserves_raw_frame_and_rejects_duplicate_fields ... ok
+
+test result: ok. 9 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.46s
+
+     Running tests/agent_framing.rs (target/debug/deps/agent_framing-c076f1fc6540b593)
+
+running 4 tests
+test canonical_media_and_tool_parts_retain_ids_without_executable_urls_or_framework_state ... ok
+test frame_contract_denies_credentials_urls_pi_state_missing_null_and_wrong_versions ... ok
+test unique_json_members_utf8_depth_node_byte_and_eof_limits_are_real ... ok
+test every_actual_utf8_byte_cut_and_multiple_frames_preserve_text ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.60s
+
+     Running tests/agent_ingress.rs (target/debug/deps/agent_ingress-d3825909258706cc)
+
+running 3 tests
+test tool_mapping_waits_for_confirmed_canonical_event_and_uses_distinct_host_ids ... ok
+test readonly_canonical_forgery_and_turn_proposal_isolation_do_not_create_grants ... ok
+test handshake_scope_duplicates_and_gap_never_resume_a_different_activation ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.06s
+
+     Running tests/commit_owner.rs (target/debug/deps/commit_owner-70b8f943d3909dc1)
+
+running 7 tests
+test repeated_admission_does_not_rewind_writing_committing_or_unknown ... ok
+test stop_before_barrier_never_enters_commit_and_does_not_change_confirmed_source ... ok
+test durable_terminal_admission_never_becomes_a_new_write ... ok
+test stop_after_barrier_is_pending_not_undo_and_unknown_holds_the_original_gate ... ok
+test late_fence_dirty_ime_scope_and_unacknowledged_admission_are_rejected ... ok
+test actual_kernel_gate_blocks_source_writes_but_keeps_frozen_preview_and_reads_available ... ok
+test cancelled_admission_readback_does_not_release_another_active_gate ... ok
+
+test result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.03s
+
+     Running tests/contracts.rs (target/debug/deps/contracts-5e58c382c2cbe2df)
+
+running 11 tests
+test actual_generated_host_roundtrips_and_required_null_is_not_optional ... ok
+test shared_serials_preserve_maximum_and_never_wrap_or_truncate ... ok
+test frame_budget_invalid_utf8_and_unknown_nullable_fields_fail_closed ... ok
+test identities_unknown_fields_unions_and_closed_state_are_rejected ... ok
+test unsupported_schema_features_and_false_schemas_are_not_silently_accepted ... ok
+test durable_io_ack_requires_actual_receipt_fields_and_cannot_claim_success_from_null ... ok
+test positive_but_stale_runtime_and_document_generations_fail_owner_binding ... ok
+test native_wire_dispatch_is_typed_and_cannot_change_permissions_by_adding_fields ... ok
+test marked_text_invariants_are_not_confused_with_shape_success ... ok
+test canonical_timestamp_accepts_actual_iso_dates_and_rejects_bad_calendar_or_offset ... ok
+test tool_source_hash_accepts_only_exact_lowercase_sha256 ... ok
+
+test result: ok. 11 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+
+     Running tests/document_source.rs (target/debug/deps/document_source-8ae3969c8e74f3e2)
+
+running 6 tests
+test execution_epoch_remains_independent_from_source_revision ... ok
+test duplicate_cells_overflow_and_reopen_generation_cannot_commit_half_a_document ... ok
+test raw_unicode_order_and_per_cell_revision_are_never_normalized ... ok
+test input_group_is_bound_to_the_original_manual_request_and_not_an_agent_grant ... ok
+test staged_invalid_math_is_source_and_unknown_receipt_never_changes_authority ... ok
+test legacy_unicode_cell_ids_are_byte_distinct_and_roundtrip_without_reassignment ... ok
+
+test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/fixture_support.rs (target/debug/deps/fixture_support-7fbf5b587fd933cd)
+
+running 2 tests
+test controlled_clock_and_cancel_drive_actual_budget_checks ... ok
+test own_unicode_fixture_passes_the_real_sans_io_provider_decoder_for_every_split ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/kernel_acceptance.rs (target/debug/deps/kernel_acceptance-8bb3ab23a72160a6)
+
+running 5 tests
+test only_entered_original_plan_and_matching_receipt_yield_an_accepted_parent ... ok
+test closed_contract_hashes_roles_unknown_fields_and_receipt_producer_are_checked ... ok
+test data_only_recovery_rejects_wrong_blob_and_current_build_instead_of_replaying_source ... ok
+test title_change_accepts_original_producer_but_math_epoch_change_discards_candidate ... ok
+test early_cancel_final_source_config_or_generation_change_prevents_commit ... ok
+
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.05s
+
+     Running tests/kernel_endpoint.rs (target/debug/deps/kernel_endpoint-3afe3fc26a81c076)
+
+running 4 tests
+test closed_wire_does_not_allow_oversized_or_untyped_recovery_chunks ... ok
+test state_command_is_the_same_closed_shape_as_generated_swift ... ok
+test recovery_upload_is_bounded_idempotent_and_directly_cancelled_without_a_state ... ok
+test malformed_complete_payload_fails_in_background_and_releases_the_gate ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.03s
+
+     Running tests/kernel_states.rs (target/debug/deps/kernel_states-d71ce1ef6511029d)
+
+running 2 tests
+test original_scoped_bytes_restore_actual_defs_and_old_parent_stays_independent ... ok
+test revoked_external_pins_keep_byte_and_count_reservations_until_reaped ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.05s
+
+     Running tests/kernel_worker.rs (target/debug/deps/kernel_worker-5908c8033cb30da7)
+
+running 8 tests
+test registry_capacity_failure_and_close_do_not_publish_or_overwrite_the_parent ... ok
+test unchanged_math_after_title_change_keeps_definitions_and_skipped_epoch_retires_them ... ok
+test real_error_keeps_actual_partial_definition_and_history_only_in_the_candidate ... ok
+test explicit_nonreactive_mode_keeps_original_reassignment_semantics ... ok
+test wrong_source_scope_epoch_and_frozen_cancel_are_rejected_or_preserved_as_actual_facts ... ok
+test direct_stop_and_parent_lookup_do_not_wait_for_cas_and_queue_tokens_stay_independent ... ok
+test discarded_random_and_out_state_never_become_the_next_implicit_parent ... ok
+test explicit_parent_a2_then_a5_reconcile_retires_old_definitions_and_no_cascade_runs ... ok
+
+test result: ok. 8 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.12s
+
+     Running tests/math_inspect.rs (target/debug/deps/math_inspect-c9d3f4b21073a6e9)
+
+running 6 tests
+test independent_result_worker_accepts_original_identity_and_direct_cancel_without_main_execution ... ok
+test closed_original_arguments_exact_cursor_scope_history_expiry_and_cancellation_fail_truthfully ... ok
+test actual_partial_failure_unrecorded_steps_and_absent_geometry_remain_explicit ... ok
+actual solver 7 summary pages and 12 real recorded steps
+test actual_solver_summary_multiplicities_and_depth_first_recorded_steps_paginate_completely ... ok
+actual surface=384 original vertices,44 geometry pages, no rendered media
+test ode_and_scene_expose_actual_original_data_and_preview_never_claims_rendered_media ... ok
+actual wide matrix=4 windows,70 distinct leaves; nested=7 pages
+test values_visit_all_matrix_columns_and_nested_exact_unicode_without_mutating_checkpoint ... ok
+
+test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.33s
+
+     Running tests/math_run_plan.rs (target/debug/deps/math_run_plan-0cf27eddd4928c4f)
+
+running 4 tests
+test acknowledged_argument_hash_closed_parameters_and_native_allowlist_are_authoritative ... ok
+actual bounded source plan={"plan":{"requested_cell_ids":["answer"],"ordered_cell_ids":["a","b","answer"],"edges":[["b","answer"],["a","b"]],"cycle_cell_ids":[],"blocked_cell_ids":[],"unavailable_prerequisite_cell_ids":[]},"continue_on_error":false}
+test real_outline_token_plans_only_required_cells_off_owner_and_never_upgrades_source_exposure ... ok
+test historical_or_cross_task_refs_and_clock_rewind_cannot_choose_current_run_input ... ok
+actual accepted checkpoint plan={"plan":{"requested_cell_ids":["answer"],"ordered_cell_ids":["b","answer"],"edges":[["b","answer"]],"cycle_cell_ids":[],"blocked_cell_ids":[],"unavailable_prerequisite_cell_ids":[]},"continue_on_error":false} /18390 unchanged bytes
+actual source-change plan 0={"plan":{"requested_cell_ids":["answer"],"ordered_cell_ids":["b","answer"],"edges":[["b","answer"]],"cycle_cell_ids":[],"blocked_cell_ids":[],"unavailable_prerequisite_cell_ids":[]},"continue_on_error":false}
+actual source-change plan 1={"plan":{"requested_cell_ids":["answer"],"ordered_cell_ids":["a","b","answer"],"edges":[["b","answer"],["a","b"]],"cycle_cell_ids":[],"blocked_cell_ids":[],"unavailable_prerequisite_cell_ids":[]},"continue_on_error":false}
+test actual_accepted_definition_skips_ready_prerequisite_and_checkpoint_bytes_remain_exact ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.10s
+
+     Running tests/math_scratch.rs (target/debug/deps/math_scratch-0afe06e7acdb40a5)
+
+running 8 tests
+test original_hash_closed_arguments_current_scope_and_direct_budgets_are_enforced ... ok
+test unsupported_calls_remain_symbolic_and_budget_reaches_actual_scratch_evaluation ... ok
+test real_error_prefix_is_retained_without_main_effect_and_refs_expire_and_keep_origin ... ok
+test paused_scratch_does_not_block_result_inspection_and_cancels_without_main_receipt ... ok
+test actual_worker_result_ref_can_be_inspected_as_scratch_with_no_notebook_receipt ... ok
+actual isolated Set/Out/random={99, 2, 0.7415648787718233} / original checkpoint 18343 bytes unchanged
+test local_set_out_and_random_are_independent_with_explicit_scratch_origin_and_real_parent ... ok
+test definitions_require_actual_ready_cells_and_false_mode_has_no_main_bindings ... ok
+test actual_source_change_retires_inherited_definitions_but_title_and_unrelated_work_are_preserved ... ok
+
+test result: ok. 8 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.14s
+
+     Running tests/model_codec.rs (target/debug/deps/model_codec-a8c71d266caa3fc5)
+
+running 3 tests
+test no_model_url_auth_unknown_input_or_cross_runtime_and_eight_live_bound ... ok
+test http_error_echo_cancellation_invalid_bytes_duplicate_members_and_host_close_fail_closed ... ok
+test raw_single_turn_scope_eof_unknown_usage_and_terminal_nonce_are_actual ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.03s
+
+     Running tests/preview.rs (target/debug/deps/preview-a39cbb1a76dfc52f)
+
+running 10 tests
+test source_only_preview_never_returns_a_commit_ref_or_executes_a_definition ... ok
+test unread_future_cell_ids_and_conflicting_content_changes_cannot_bypass_the_original_snapshot ... ok
+test discussion_can_inspect_a_patch_but_cannot_commit_and_reopened_runtime_cannot_reuse_it ... ok
+test overlapping_matches_duplicate_keys_wrong_kind_and_bad_late_operations_fail_closed ... ok
+test request_cannot_replace_permissions_or_claim_unknown_original_source_hash ... ok
+test expiry_scope_mode_permission_and_token_tampering_never_commit_old_plans ... ok
+test invalid_syntax_cycle_and_definition_conflict_never_get_committable_refs ... ok
+test partial_read_rejects_whole_update_but_allows_ordered_unique_raw_fragments ... ok
+test host_assigns_new_cells_and_frozen_plan_is_retrieved_without_reconstructing_source ... ok
+test patch_budget_and_actual_alias_binding_are_not_inferred_from_documentation ... ok
+
+test result: ok. 10 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.05s
+
+     Running tests/readonly_catalog.rs (target/debug/deps/readonly_catalog-3da551810cf47df9)
+
+running 3 tests
+test actual_session_user_binding_precedes_builtin_alias_without_evaluating_docs ... ok
+test defaults_limits_categories_closed_fields_and_selector_nulls_are_strict ... ok
+actual callback documentation rows: 257; metadata revision 26
+test executable_docs_match_actual_callbacks_and_never_claim_example_verification ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.21s
+
+     Running tests/readonly_notebook.rs (target/debug/deps/readonly_notebook-9e86f58a672476b2)
+
+running 7 tests
+test native_history_binding_is_bounded_and_each_read_snapshot_retains_its_original_refs ... ok
+actual immutable history response: {"data":{"cells":[{"cell_id":"cell-0","dialect":"Modern","kind":"Math","result_ref":null,"revision":0,"source":"2+2","source_complete":true,"source_cursor":null,"source_hash":"1acf86226c68c1485ca3939884c43ed99abeea344e806548af7ee813c1c0cff3","status":"Stale"}],"is_current":false,"recent_transaction_refs":[],"snapshot_ref":"snapshot-1-8115ac4feedf24e3f8584756b1102dd8865172e768f25fe0419cafe868b97b34","symbols":[],"title":"中文🙂"},"pagination":{"next_cursor":null,"truncated":false}}
+test historical_source_is_explicit_and_authority_expiry_and_clock_are_enforced ... ok
+test closed_arguments_selection_and_query_bound_cursors_reject_forgery ... ok
+outline/full actual responses: {"full":{"data":{"cells":[{"cell_id":"cell-0","dialect":"Modern","kind":"Math","result_ref":null,"revision":0,"source":"2+2","source_complete":true,"source_cursor":null,"source_hash":"1acf86226c68c1485ca3939884c43ed99abeea344e806548af7ee813c1c0cff3","status":"Stale"}],"is_current":true,"recent_transaction_refs":[],"snapshot_ref":"snapshot-3-2a08ebd95b3d34659eb77389d3124e9c596101b62d0bf76105079b4032790e64","symbols":[],"title":"中文🙂"},"pagination":{"next_cursor":null,"truncated":false}},"outline":{"data":{"cells":[{"cell_id":"cell-0","dialect":"Modern","kind":"Math","result_ref":null,"revision":0,"source":null,"source_complete":false,"source_cursor":null,"source_hash":"1acf86226c68c1485ca3939884c43ed99abeea344e806548af7ee813c1c0cff3","status":"Stale"},{"cell_id":"cell-1","dialect":"Modern","kind":"Math","result_ref":null,"revision":0,"source":null,"source_complete":false,"source_cursor":null,"source_hash":"1acf86226c68c1485ca3939884c43ed99abeea344e806548af7ee813c1c0cff3","status":"Stale"},{"cell_id":"cell-2","dialect":"Modern","kind":"Math","result_ref":null,"revision":0,"source":null,"source_complete":false,"source_cursor":null,"source_hash":"1acf86226c68c1485ca3939884c43ed99abeea344e806548af7ee813c1c0cff3","status":"Stale"},{"cell_id":"cell-3","dialect":"Modern","kind":"Math","result_ref":null,"revision":0,"source":null,"source_complete":false,"source_cursor":null,"source_hash":"1acf86226c68c1485ca3939884c43ed99abeea344e806548af7ee813c1c0cff3","status":"Stale"},{"cell_id":"cell-4","dialect":"Modern","kind":"Math","result_ref":null,"revision":0,"source":null,"source_complete":false,"source_cursor":null,"source_hash":"1acf86226c68c1485ca3939884c43ed99abeea344e806548af7ee813c1c0cff3","status":"Stale"},{"cell_id":"cell-5","dialect":"Modern","kind":"Math","result_ref":null,"revision":0,"source":null,"source_complete":false,"source_cursor":null,"source_hash":"1acf86226c68c1485ca3939884c43ed99abeea344e806548af7ee813c1c0cff3","status":"Stale"},{"cell_id":"cell-6","dialect":"Modern","kind":"Math","result_ref":null,"revision":0,"source":null,"source_complete":false,"source_cursor":null,"source_hash":"1acf86226c68c1485ca3939884c43ed99abeea344e806548af7ee813c1c0cff3","status":"Stale"},{"cell_id":"cell-7","dialect":"Modern","kind":"Math","result_ref":null,"revision":0,"source":null,"source_complete":false,"source_cursor":null,"source_hash":"1acf86226c68c1485ca3939884c43ed99abeea344e806548af7ee813c1c0cff3","status":"Stale"},{"cell_id":"cell-8","dialect":"Modern","kind":"Math","result_ref":null,"revision":0,"source":null,"source_complete":false,"source_cursor":null,"source_hash":"1acf86226c68c1485ca3939884c43ed99abeea344e806548af7ee813c1c0cff3","status":"Stale"},{"cell_id":"cell-9","dialect":"Modern","kind":"Math","result_ref":null,"revision":0,"source":null,"source_complete":false,"source_cursor":null,"source_hash":"1acf86226c68c1485ca3939884c43ed99abeea344e806548af7ee813c1c0cff3","status":"Stale"},{"cell_id":"cell-10","dialect":"Modern","kind":"Math","result_ref":null,"revision":0,"source":null,"source_complete":false,"source_cursor":null,"source_hash":"1acf86226c68c1485ca3939884c43ed99abeea344e806548af7ee813c1c0cff3","status":"Stale"},{"cell_id":"cell-11","dialect":"Modern","kind":"Math","result_ref":null,"revision":0,"source":null,"source_complete":false,"source_cursor":null,"source_hash":"1acf86226c68c1485ca3939884c43ed99abeea344e806548af7ee813c1c0cff3","status":"Stale"},{"cell_id":"cell-12","dialect":"Modern","kind":"Math","result_ref":null,"revision":0,"source":null,"source_complete":false,"source_cursor":null,"source_hash":"1acf86226c68c1485ca3939884c43ed99abeea344e806548af7ee813c1c0cff3","status":"Stale"},{"cell_id":"cell-13","dialect":"Modern","kind":"Math","result_ref":null,"revision":0,"source":null,"source_complete":false,"source_cursor":null,"source_hash":"1acf86226c68c1485ca3939884c43ed99abeea344e806548af7ee813c1c0cff3","status":"Stale"},{"cell_id":"cell-14","dialect":"Modern","kind":"Math","result_ref":null,"revision":0,"source":null,"source_complete":false,"source_cursor":null,"source_hash":"1acf86226c68c1485ca3939884c43ed99abeea344e806548af7ee813c1c0cff3","status":"Stale"},{"cell_id":"cell-15","dialect":"Modern","kind":"Math","result_ref":null,"revision":0,"source":null,"source_complete":false,"source_cursor":null,"source_hash":"1acf86226c68c1485ca3939884c43ed99abeea344e806548af7ee813c1c0cff3","status":"Stale"},{"cell_id":"cell-16","dialect":"Modern","kind":"Math","result_ref":null,"revision":0,"source":null,"source_complete":false,"source_cursor":null,"source_hash":"1acf86226c68c1485ca3939884c43ed99abeea344e806548af7ee813c1c0cff3","status":"Stale"},{"cell_id":"cell-17","dialect":"Modern","kind":"Math","result_ref":null,"revision":0,"source":null,"source_complete":false,"source_cursor":null,"source_hash":"1acf86226c68c1485ca3939884c43ed99abeea344e806548af7ee813c1c0cff3","status":"Stale"},{"cell_id":"cell-18","dialect":"Modern","kind":"Math","result_ref":null,"revision":0,"source":null,"source_complete":false,"source_cursor":null,"source_hash":"1acf86226c68c1485ca3939884c43ed99abeea344e806548af7ee813c1c0cff3","status":"Stale"},{"cell_id":"cell-19","dialect":"Modern","kind":"Math","result_ref":null,"revision":0,"source":null,"source_complete":false,"source_cursor":null,"source_hash":"1acf86226c68c1485ca3939884c43ed99abeea344e806548af7ee813c1c0cff3","status":"Stale"}],"is_current":true,"recent_transaction_refs":[],"snapshot_ref":"snapshot-1-8115ac4feedf24e3f8584756b1102dd8865172e768f25fe0419cafe868b97b34","symbols":[],"title":"中文🙂"},"pagination":{"next_cursor":"cursor-1-a58ca2713fabfeeb6fd3802236b6daf429e400fe522cc120daaedf45a24cf2a3","truncated":true}},"tail":{"data":{"cells":[{"cell_id":"cell-20","dialect":"Modern","kind":"Math","result_ref":null,"revision":0,"source":null,"source_complete":false,"source_cursor":null,"source_hash":"1acf86226c68c1485ca3939884c43ed99abeea344e806548af7ee813c1c0cff3","status":"Stale"},{"cell_id":"cell-21","dialect":"Modern","kind":"Math","result_ref":null,"revision":0,"source":null,"source_complete":false,"source_cursor":null,"source_hash":"1acf86226c68c1485ca3939884c43ed99abeea344e806548af7ee813c1c0cff3","status":"Stale"},{"cell_id":"cell-22","dialect":"Modern","kind":"Math","result_ref":null,"revision":0,"source":null,"source_complete":false,"source_cursor":null,"source_hash":"1acf86226c68c1485ca3939884c43ed99abeea344e806548af7ee813c1c0cff3","status":"Stale"},{"cell_id":"cell-23","dialect":"Modern","kind":"Math","result_ref":null,"revision":0,"source":null,"source_complete":false,"source_cursor":null,"source_hash":"1acf86226c68c1485ca3939884c43ed99abeea344e806548af7ee813c1c0cff3","status":"Stale"},{"cell_id":"cell-24","dialect":"Modern","kind":"Math","result_ref":null,"revision":0,"source":null,"source_complete":false,"source_cursor":null,"source_hash":"1acf86226c68c1485ca3939884c43ed99abeea344e806548af7ee813c1c0cff3","status":"Stale"},{"cell_id":"cell-25","dialect":"Modern","kind":"Math","result_ref":null,"revision":0,"source":null,"source_complete":false,"source_cursor":null,"source_hash":"1acf86226c68c1485ca3939884c43ed99abeea344e806548af7ee813c1c0cff3","status":"Stale"},{"cell_id":"cell-26","dialect":"Modern","kind":"Math","result_ref":null,"revision":0,"source":null,"source_complete":false,"source_cursor":null,"source_hash":"1acf86226c68c1485ca3939884c43ed99abeea344e806548af7ee813c1c0cff3","status":"Stale"}],"is_current":true,"recent_transaction_refs":[],"snapshot_ref":"snapshot-1-8115ac4feedf24e3f8584756b1102dd8865172e768f25fe0419cafe868b97b34","symbols":[],"title":"中文🙂"},"pagination":{"next_cursor":null,"truncated":false}}}
+test outline_is_bounded_and_full_source_exposure_never_upgrades_its_original_token ... ok
+actual accepted symbols/current/stale: {"cells":{"data":{"cells":[{"cell_id":"cell-0","dialect":"Modern","kind":"Math","result_ref":null,"revision":0,"source":null,"source_complete":false,"source_cursor":null,"source_hash":"3d2bc6c6b3f0675f652a55348ea23c5f1a58315567c3b66e12d6bb60f026b7c4","status":"Done"}],"is_current":true,"recent_transaction_refs":[],"snapshot_ref":"snapshot-2-260c4ac8c7f51ad827403443253095b34e509fc8e75b4cb0d617da9679d656e4","symbols":[],"title":"中文🙂"},"pagination":{"next_cursor":null,"truncated":false}},"checkpoint_hash_unchanged":"5030a4bc5afad006e6ee189ef7f3aa656d4c178dc392a1cfe6bdefcf590c7eb1","stale":{"data":{"cells":[],"is_current":true,"recent_transaction_refs":[],"snapshot_ref":"snapshot-3-2a08ebd95b3d34659eb77389d3124e9c596101b62d0bf76105079b4032790e64","symbols":[{"callable":false,"cell_id":"cell-0","is_current":false,"name":"a","producer":{"execution_epoch":0,"kernel_state_revision":1,"snapshot_hash":"4be6a5bea0aa115a3fc7fbec31c507fa729dd05729da832bd6acf22019087691","source_revision":0}},{"callable":true,"cell_id":"cell-0","is_current":false,"name":"sin","producer":{"execution_epoch":0,"kernel_state_revision":1,"snapshot_hash":"4be6a5bea0aa115a3fc7fbec31c507fa729dd05729da832bd6acf22019087691","source_revision":0}}],"title":"中文🙂"},"pagination":{"next_cursor":null,"truncated":false}},"symbols":{"data":{"cells":[],"is_current":true,"recent_transaction_refs":[],"snapshot_ref":"snapshot-1-8115ac4feedf24e3f8584756b1102dd8865172e768f25fe0419cafe868b97b34","symbols":[{"callable":false,"cell_id":"cell-0","is_current":true,"name":"a","producer":{"execution_epoch":0,"kernel_state_revision":1,"snapshot_hash":"4be6a5bea0aa115a3fc7fbec31c507fa729dd05729da832bd6acf22019087691","source_revision":0}},{"callable":true,"cell_id":"cell-0","is_current":true,"name":"sin","producer":{"execution_epoch":0,"kernel_state_revision":1,"snapshot_hash":"4be6a5bea0aa115a3fc7fbec31c507fa729dd05729da832bd6acf22019087691","source_revision":0}}],"title":"中文🙂"},"pagination":{"next_cursor":null,"truncated":false}}}
+test symbols_and_status_are_actual_accepted_facts_with_stale_producer_and_no_random_mutation ... ok
+exact UTF8 reconstruction: 6 pages / 150008 bytes / sha256 146186443cb9b4e9a33e0c3376aee481c43e9e9cdaa22dd659c6bdf808bbd81f; final fragment never full
+test unicode_fragments_reassemble_exact_source_and_final_fragment_still_is_not_full_cell ... ok
+test retention_and_contract_limits_fail_closed_and_expiry_releases_the_actual_leases ... ok
+
+test result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.54s
+
+     Running tests/references.rs (target/debug/deps/references-8c49b2600c8abe98)
+
+running 3 tests
+test wrong_issuer_and_nonascii_forgery_cannot_resolve_or_panic ... ok
+test exact_deadline_purpose_and_counter_limits_are_not_implicit_permission ... ok
+test retained_bytes_and_count_are_bounded_and_expired_resources_release_capacity ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 2.97s
+
+     Running tests/result_runtime.rs (target/debug/deps/result_runtime-c8eca354e26a1319)
+
+running 5 tests
+test result_read_schema_rejects_unknown_options_overlarge_pages_or_invented_channels ... ok
+test readonly_result_retention_does_not_keep_an_obsolete_main_pool_envelope_pinned ... ok
+test actual_manifest_pages_source_numeric_and_readonly_controls_have_scoped_original_identity ... ok
+actual notebook result reference=result-1-614602133155717fde2feda59f50cd6b7095019cc995d136c925042534f55bc2; actual exact row={"cells":[{"count":0,"id":"3:0","kind":"scalar","nature":"exact","path":[0],"source":{"input_form":"1/3","latex":"\\frac{1}{3}","modern_form":"1/3"}}],"id":"3:0","label":"1"}, checkpoint bytes unchanged
+test notebook_output_refs_resolve_real_exact_value_and_never_substitute_a_later_state ... ok
+test direct_cancel_and_readback_remain_available_while_a_real_result_worker_is_paused ... ok
+
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.26s
+
+     Running tests/results.rs (target/debug/deps/results-8abfd6a814591afd)
+
+running 5 tests
+test scratch_and_readonly_random_out_set_are_isolated_from_original_state ... ok
+test reexecuted_definition_invalidates_and_retires_dependent_owned_value_without_cascade ... ok
+test expired_and_restarted_result_tokens_require_fresh_grants_for_the_same_durable_result ... ok
+test revoked_cache_lookup_keeps_reader_reservation_until_actual_pin_release ... ok
+test actual_result_occurrences_scope_history_and_exact_pages_survive_other_executions ... ok
+
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.37s
+
+     Running tests/scheduler.rs (target/debug/deps/scheduler-1dfffe09cb05d0ee)
+
+running 11 tests
+test close_stops_admission_and_waits_only_on_the_finishing_caller ... ok
+test rejected_stale_scope_and_unknown_operation_do_not_start_a_job ... ok
+test invalid_direct_init_and_source_provenance_are_rejected ... ok
+test slow_subscriber_gets_explicit_resync_and_retained_outcome ... ok
+test actual_math_and_source_definitions_are_isolated_between_operations ... ok
+test overload_queued_stop_and_close_are_bounded_and_terminal ... ok
+test editor_preview_runs_on_an_independent_owner_during_real_math ... ok
+test long_math_does_not_delay_state_read_and_direct_cancellation_settles ... ok
+test independent_snapshot_recovers_dropped_terminal_facts_and_never_consumes_admission ... ok
+test actual_catalog_pagination_and_failed_math_never_claim_success ... ok
+test completed_reads_do_not_consume_active_capacity_or_recursively_embed_old_results ... ok
+
+test result: ok. 11 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.22s
+
+     Running tests/source_endpoint.rs (target/debug/deps/source_endpoint-e77a1eebaffdf46b)
+
+running 2 tests
+test host_command_schema_is_closed_and_requires_the_restored_configuration_binding ... ok
+test restored_constants_are_used_in_the_actual_source_preview ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.04s
+
+     Running tests/source_operations.rs (target/debug/deps/source_operations-b119a4f560e2f39e)
+
+running 5 tests
+test bad_late_operation_never_publishes_earlier_changes_and_patch_budget_is_fixed ... ok
+test actual_setting_values_are_frozen_and_semantic_setting_changes_advance_epoch ... ok
+test pure_text_and_title_changes_do_not_invalidate_math_or_advance_execution_epoch ... ok
+test affected_dependencies_and_real_conflicts_are_from_the_shared_parser ... ok
+test whole_delete_insert_move_update_rename_is_frozen_once_without_changing_authority ... ok
+
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.02s
+
+     Running tests/undo_source.rs (target/debug/deps/undo_source-c4f23dd4fd144b85)
+
+running 16 tests
+test later_related_edit_rejects_whole_inverse_without_a_partial_result ... ok
+test inverse_preserves_later_unrelated_content_title_and_new_cells ... ok
+test disjoint_original_order_changes_do_not_protect_the_unchanged_gap_between_them ... ok
+test a_group_insert_then_edit_is_atomic_and_can_be_removed_without_an_intermediate_snapshot ... ok
+test inverse_move_restores_order_but_keeps_unmodified_cells_current_content ... ok
+test later_edit_then_same_bytes_are_not_mistaken_for_the_original_revision ... ok
+test tampered_transaction_other_document_and_precommit_snapshot_cannot_be_inverted ... ok
+test a_whole_group_can_reverse_its_own_versions_while_preserving_unrelated_later_input ... ok
+test raw_unicode_related_source_and_later_title_are_not_normalized_or_overwritten ... ok
+test inverse_insert_removes_only_original_cell_and_refuses_its_later_modification ... ok
+test group_order_identity_and_late_conflict_cannot_publish_partial_inverse ... ok
+test structural_inverse_retains_unrelated_edits_outside_original_anchors ... ok
+test new_content_inside_structural_edit_or_reused_deleted_identity_is_a_conflict ... ok
+test unrelated_later_deletion_is_not_resurrected_by_content_inverse ... ok
+test maximum_32_transaction_group_reconstructs_the_original_source ... ok
+test all_small_distinct_identity_orders_and_memberships_have_exact_inverse ... ok
+
+test result: ok. 16 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.64s
+
+     Running unittests src/lib.rs (target/debug/deps/om_kernel-433355ab878a9804)
+
+running 7 tests
+test session::evaluation::tests::one_shared_budget_and_successful_history_survive_cell_failure ... ok
+test session::evaluation::tests::timing_always_serializes_as_a_finite_nonnegative_number ... ok
+test output::tests::numeric_projection_of_recovered_real_coordinate_is_bounded_and_real ... ok
+test session::evaluation::tests::known_function_reads_follow_precedence_unset_and_never_execute_computed_values ... ok
+test session::evaluation::tests::error_level_evaluator_messages_keep_the_held_value_and_mark_the_cell_error ... ok
+test plot::visualization::tests::transported_parameter_solving_shares_the_sampling_budget_without_writing_history ... ok
+test plot::tests::preparation_instructions_sampling_and_stitching_share_one_budget ... ok
+
+test result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.14s
+
+     Running tests/artifacts.rs (target/debug/deps/artifacts-c1b3b86ba9c65d48)
+
+running 5 tests
+test forged_geometry_formats_resources_non_data_and_interrupts_return_failures ... ok
+test full_table_and_nested_value_exports_ignore_page_offsets_preserve_fields_and_do_not_execute_text ... ok
+test ephemeral_value_tokens_export_the_actual_selected_parameters_without_rerunning_source ... ok
+test svg_keeps_real_domains_colors_values_metadata_and_escaped_text ... ok
+test png_is_lossless_rgba_with_real_unicode_metadata_fonts_and_expected_curve_pixels ... ok
+
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.78s
+
+     Running tests/assistant.rs (target/debug/deps/assistant-2ec30eb7f3655d5a)
+
+running 8 tests
+test malformed_empty_multiple_and_duplicate_replies_are_actual_validation_errors ... ok
+test completion_context_uses_three_preceding_math_sources_and_inert_dialect_comments ... ok
+test fix_is_grounded_in_original_error_source_and_actual_diagnostics ... ok
+test prepared_translate_uses_registered_functions_and_live_symbols_without_mutation ... ok
+test genuine_validator_ignores_model_renderings_and_preserves_poles ... ok
+test completion_preserves_spaces_and_partial_syntax_but_rejects_illegal_tokens_and_duplicates ... ok
+test actual_validator_retries_twice_then_runs_a_valid_proposal_only_on_explicit_evaluate ... ok
+test explanation_contains_real_input_result_step_tree_and_selected_descendants ... ok
+
+test result: ok. 8 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.03s
+
+     Running tests/assistant_edges.rs (target/debug/deps/assistant_edges-9735ea538e81e4b7)
+
+running 5 tests
+test reversed_braces_and_multiple_json_envelopes_never_panic_or_validate ... ok
+test completion_uses_suffix_markers_crlf_unicode_and_lexical_not_syntax_policy ... ok
+test context_position_privacy_nonmath_cells_and_escaped_unicode_line_breaks ... ok
+test stale_steps_cannot_be_explained_and_real_evaluation_errors_reach_fix_prompt ... ok
+test feature_and_context_limits_are_deterministic_without_secret_or_history_leaks ... ok
+
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.26s
+
+     Running tests/capabilities.rs (target/debug/deps/capabilities-d29652875b9d773a)
+
+running 4 tests
+test existing_user_alias_function_remains_callable_redefinable_and_inspectable ... ok
+test capabilities_separate_kernel_presentation_and_future_permissions ... ok
+test aliases_have_real_completion_hover_and_user_bindings_still_win ... ok
+test catalog_is_versioned_deterministic_and_callback_filtered ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.07s
+
+     Running tests/checkpoint.rs (target/debug/deps/checkpoint-010dae9fc575b5ce)
+
+running 5 tests
+test wrong_source_config_identity_version_trailing_limits_and_cancel_do_not_restore ... ok
+test restoring_a_session_never_reexecutes_delayed_source_or_resets_out_history ... ok
+test malformed_owners_record_history_provenance_and_unknown_nested_fields_are_rejected ... ok
+test actual_definitions_owners_out_steps_and_readonly_explore_survive_session_bytes ... ok
+test actual_precision_models_interpolation_and_ode_provenance_are_retained_without_reexecution ... ok
+
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.39s
+
+     Running tests/checkpoint_corpus.rs (target/debug/deps/checkpoint_corpus-22022b0d0d662983)
+
+running 1 test
+test all_53_original_authority_results_and_evidence_survive_session_checkpoint ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 32.87s
+
+     Running tests/composition.rs (target/debug/deps/composition-5f701821f31c5d25)
+
+running 3 tests
+test lexical_closure_dependencies_recalculate_and_notebook_remains_source_only ... ok
+test continuous_ode_dependencies_real_wire_values_and_source_only_saving ... ok
+test named_axis_plot_samples_genuine_kernel_data ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.08s
+
+     Running tests/continuation.rs (target/debug/deps/continuation-b53cbbeb7dfd38c0)
+
+running 3 tests
+test multiline_definitions_preserve_real_dependency_recalculation ... ok
+test preview_is_nonexecuting_and_evaluation_uses_the_exact_same_multiline_source ... ok
+test original_grass_block_with_definition_newlines_produces_identical_real_geometry ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 25.66s
+
+     Running tests/editor.rs (target/debug/deps/editor-d102964a54063c59)
+
+running 5 tests
+test byte_cursor_validation_is_atomic_and_constants_follow_configuration ... ok
+test preview_selection_empty_input_and_source_effects_do_not_run_or_reset_state ... ok
+test hover_actual_docs_and_stored_delayed_definitions_keep_language_and_live_ownership ... ok
+test preview_preserves_actual_diagnostics_tokens_raw_poles_and_executable_actions ... ok
+test completion_aliases_snippets_unicode_ranges_and_context_options_are_executable ... ok
+
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.05s
+
+     Running tests/editor_edges.rs (target/debug/deps/editor_edges-8655bfef54f745e0)
+
+running 6 tests
+test pure_function_parameters_do_not_become_free_axis_solve_actions ... ok
+test dialect_marker_is_comment_context_and_preview_cursor_before_math_selects_first_statement ... ok
+test hover_uses_actual_ownvalue_precedence_truncates_unicode_and_tracks_clear_transfer_delete ... ok
+test raw_preview_actions_preserve_comments_and_error_cells_do_not_display_partial_math ... ok
+test options_remain_in_current_calls_and_comments_strings_part_and_groupings_do_not_leak ... ok
+test completion_ranks_prefix_initials_subsequence_and_is_stable_capped_at_fifty ... ok
+
+test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.07s
+
+     Running tests/editor_latency.rs (target/debug/deps/editor_latency-edb2287bf07c8b5b)
+
+running 1 test
+test warm_1000_character_previews_finish_under_five_milliseconds ... ignored, run explicitly with cargo test -p om-kernel --release --test editor_latency -- --ignored --nocapture
+
+test result: ok. 0 passed; 0 failed; 1 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/editor_names.rs (target/debug/deps/editor_names-2e78678e74c76be7)
+
+running 1 test
+test every_registered_modern_callable_uses_the_real_parser_mapping ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.04s
+
+     Running tests/explanation_selection.rs (target/debug/deps/explanation_selection-9b3c96076bd45ac0)
+
+running 1 test
+test selected_output_explains_its_own_input_result_and_steps_without_mutation ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.03s
+
+     Running tests/explore.rs (target/debug/deps/explore-7320d8538b754c81)
+
+running 8 tests
+test a_user_function_binding_keeps_precedence_over_the_new_modern_alias ... ok
+test previous_output_history_and_local_source_dependencies_remain_real_and_source_only ... ok
+test context_import_has_frozen_real_definitions_random_history_and_no_credentials_or_replay ... ok
+test frozen_graph_rejects_corrupt_references_versions_limits_and_readonly_writes ... ok
+test invalid_controls_writes_overflow_parameters_and_stale_ids_do_not_succeed ... ok
+test graph_context_preserves_precision_holes_callable_heads_and_random_without_replaying_assignments ... ok
+test real_scalar_matrix_curve_and_main_bindings_are_independently_checked ... ok
+test cancellation_inside_detached_sampling_does_not_return_partial_success_and_next_task_recovers ... ok
+
+test result: ok. 8 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.04s
+
+     Running tests/external_host.rs (target/debug/deps/external_host-21ca616d48984c13)
+
+running 1 test
+test external_native_transport_uses_ephemeral_keys_without_desktop_store ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+
+     Running tests/inspection.rs (target/debug/deps/inspection-ef22abcb20fd101c)
+
+running 3 tests
+test readonly_inspection_enforces_injected_deadline_limits_and_real_definitions ... ok
+test numeric_inspection_has_twenty_digits_without_notebook_history_or_flag_changes ... ok
+test actual_solution_display_keeps_copy_source_and_reports_roots_and_precision ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.10s
+
+     Running tests/llm.rs (target/debug/deps/llm-8e4d2e54ab6fb085)
+
+running 6 tests
+test real_probe_byte_timing_cancellation_and_route_errors ... ok
+test genuine_validation_retries_then_exhaustion_and_late_chunks_are_terminal ... ok
+test translation_is_a_real_checked_suggestion_and_runs_only_after_explicit_action ... ok
+test nested_writes_bad_schema_and_proposals_are_checked_without_execution ... ok
+test actual_evaluate_and_solve_tools_replay_results_without_parent_state_changes ... ok
+test completion_filters_real_fim_text_and_local_duplicates_before_delivery ... ok
+
+test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.05s
+
+     Running tests/llm_edges.rs (target/debug/deps/llm_edges-738140eb88d8f8e1)
+
+running 6 tests
+test status_errors_never_stream_error_bodies_or_leak_credentials ... ok
+test invalid_streams_terminal_limits_missing_finish_and_unknown_ids_have_real_errors ... ok
+test active_limits_tombstones_cancel_and_notebook_load_cleanup ... ok
+test injected_deadline_stops_real_tools_and_recovery_leaves_notebook_and_interrupt_untouched ... ok
+test real_tool_schema_unknown_functions_unsupported_solver_and_missing_clock_are_honest ... ok
+test effective_profiles_capabilities_legacy_status_and_genuine_fix_explain_requests ... ok
+
+test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.03s
+
+     Running tests/llm_native.rs (target/debug/deps/llm_native-96a1739878e946f8)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/llm_tool_edges.rs (target/debug/deps/llm_tool_edges-f0f928d738f65dc4)
+
+running 4 tests
+test independent_cancellation_stops_tool_execution_without_resetting_notebook_interrupt ... ok
+test reflected_credentials_are_rejected_before_execution_and_removed_from_public_arguments ... ok
+test seventh_real_tool_round_fails_before_cas_execution_and_no_future_http ... ok
+test live_functions_and_readonly_nested_defined_writes_preserve_parent_history ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.03s
+
+     Running tests/native_config.rs (target/debug/deps/native_config-ca9461e0c2039122)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/native_config_edges.rs (target/debug/deps/native_config_edges-18b1e4300d843bc5)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/operation_cancel.rs (target/debug/deps/operation_cancel-63f685b96c62182d)
+
+running 1 test
+test cancelled_isolated_operation_never_rearms_its_token_or_advances_definitions ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.02s
+
+     Running tests/output_packing.rs (target/debug/deps/output_packing-f9d3488353d16dba)
+
+running 9 tests
+test regions_use_actual_interval_endpoints_with_no_infinite_json_values ... ok
+test no_steps_still_has_real_cards_and_suppressed_solver_results_keep_history ... ok
+test real_exact_solution_cards_preserve_forms_indices_evidence_and_actual_step_tree ... ok
+test plain_lists_wrappers_cached_values_and_declined_calls_stay_expressions ... ok
+test empty_all_conditional_and_free_axis_cards_follow_real_solution_shapes ... ok
+test reactive_outputs_pack_actual_rerun_results_and_preserve_raw_poles ... ok
+test multiplicities_and_generated_parameter_conditions_are_not_lost_in_cards ... ok
+test numerical_and_value_only_families_keep_actual_bindings_and_verification ... ok
+test complex_and_root_numeric_displays_come_from_real_n_and_do_not_consume_history ... ok
+
+test result: ok. 9 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.21s
+
+     Running tests/output_steps.rs (target/debug/deps/output_steps-7dcce42053192128)
+
+running 1 test
+test real_formula_domain_branch_linear_root_and_region_steps_preserve_template_fields ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.44s
+
+     Running tests/plot_edges.rs (target/debug/deps/plot_edges-487124086008d10a)
+
+running 8 tests
+test nonconstant_tiny_curves_use_their_actual_quantile_viewport ... ok
+test shifted_poles_and_tangent_are_disconnected_without_splitting_smooth_steep_curves ... ok
+test all_range_axes_options_and_effectful_sources_fail_atomically ... ok
+test rendering_errors_preserve_completed_held_history_and_block_later_execution ... ok
+test injected_cancellation_stops_mid_sampling_and_next_request_recovers_without_history ... ok
+test plot_local_axes_option_dependencies_and_reactive_sampling_are_real ... ok
+test exact_grid_vertex_crossings_and_saddle_junctions_do_not_join_unrelated_branches ... ok
+test implicit_components_saddles_and_no_zero_discontinuities_keep_actual_topology ... ok
+
+test result: ok. 8 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.15s
+
+     Running tests/plot_extensions.rs (target/debug/deps/plot_extensions-4980d4bfe9b80c5f)
+
+running 10 tests
+test histogram_conserves_every_sample_and_data_plot_does_not_reorder_input ... ok
+test nonfinite_raw_poles_wrong_shapes_and_readonly_writes_are_not_successful_samples ... ok
+test sampled_sources_remain_readonly_and_axes_are_local_with_reactive_parameter_dependencies ... ok
+test histogram_camera_roundtrip_and_log_domain_filtering_do_not_change_real_counts ... ok
+test forged_transport_options_bad_precision_and_unsupported_palette_override_are_rejected ... ok
+test boolean_region_and_scalar_density_have_real_grid_values_not_fabricated_shapes ... ok
+test parametric_circle_samples_the_actual_fixed_domain_and_does_not_rebind_it_on_pan ... ok
+test named_scalar_contours_and_log_function_geometry_keep_original_coordinates ... ok
+test vector_values_and_integral_curve_radius_are_independently_checked ... ok
+test extended_sampling_cancels_without_partial_success_and_recovers_on_the_next_request ... ok
+
+test result: ok. 10 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.14s
+
+     Running tests/plot_parameters.rs (target/debug/deps/plot_parameters-644dba63b195cf6a)
+
+running 7 tests
+test one_invalid_parameter_branch_does_not_discard_a_valid_inequality_union_branch ... ok
+test parameter_poles_selected_domains_and_empty_updates_never_keep_stale_points ... ok
+test legacy_wire_shapes_are_preserved_and_new_optional_metadata_is_explicit ... ok
+test parameterized_regions_update_actual_shading_and_two_axis_points_update_actual_assignments ... ok
+test parameter_default_real_nsolve_and_updated_points_survive_json_roundtrip_in_fresh_session ... ok
+test pole_exclusions_and_complete_parameter_bindings_are_validated_without_relying_on_cache ... ok
+test moving_complex_domain_parameters_out_of_real_roots_clears_highlights_in_successful_sampling ... ok
+
+test result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.34s
+
+     Running tests/plot_sampling.rs (target/debug/deps/plot_sampling-b0c4a66ced27c883)
+
+running 6 tests
+test authority_sine_has_at_least_400_points_and_small_error ... ok
+test invalid_requests_are_atomic_and_empty_nonreal_curves_have_finite_viewports ... ok
+test user_functions_assigned_axes_and_parameters_use_local_readonly_definitions ... ok
+test poles_and_original_holes_split_without_connecting_invalid_domains ... ok
+test authority_circle_is_a_stitched_closed_contour_with_small_residual ... ok
+test explicit_held_plots_and_suppression_keep_real_history_and_event_outputs ... ok
+
+test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.08s
+
+     Running tests/plot_transport_edges.rs (target/debug/deps/plot_transport_edges-3c0de8be21283482)
+
+running 4 tests
+test replay_is_independent_of_later_global_definitions_and_legacy_highlights_are_returned ... ok
+test parameter_solving_and_geometry_honor_cancellation_deadline_and_next_request_recovery ... ok
+test closed_named_roots_embedded_domains_and_multiple_real_system_points_use_actual_coordinates ... ok
+test coupled_defaults_and_original_branch_constraints_never_invent_out_of_domain_points ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.27s
+
+     Running tests/profile_draft.rs (target/debug/deps/profile_draft-37e2eb1270c86a15)
+
+running 1 test
+test ephemeral_profile_probe_keeps_config_and_source_unchanged_and_resolves_masks_by_identity ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+
+     Running tests/protocol.rs (target/debug/deps/protocol-a3b6b4f1bb063775)
+
+running 14 tests
+test explanation_output_selection_is_optional_without_changing_legacy_shape ... ok
+test cli_settings_default_to_disabled_and_roundtrip_only_when_enabled ... ok
+test draft_probe_and_explicit_keyless_profiles_extend_legacy_wire_shapes ... ok
+test actual_recovery_metadata_has_source_only_files_and_separate_variants ... ok
+test actual_inspection_fields_keep_old_binding_fixtures_compatible ... ok
+test actual_http_status_and_probe_metrics_are_additive_wire_fields ... ok
+test notebook_persistence_contains_source_cells_and_never_configuration_or_keys ... ok
+test title_host_locale_and_live_variable_metadata_use_additive_real_wire_shapes ... ok
+test every_request_variant_matches_the_authoritative_wire_shape ... ok
+test nullable_fields_enum_spellings_and_required_fields_are_preserved ... ok
+test config_defaults_redaction_and_submitted_masks_preserve_secrets_by_profile_name ... ok
+test parser_and_solver_adapters_keep_existing_json_without_static_string_leaks ... ok
+test every_response_and_event_roundtrips_with_nested_renderable_dtos ... ok
+test export_bindings ... ok
+
+test result: ok. 14 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.46s
+
+     Running tests/reactive.rs (target/debug/deps/reactive-af70ae60d5829063)
+
+running 9 tests
+test conflicts_do_not_execute_or_clear_prior_successful_definitions ... ok
+test switches_keep_stale_outputs_and_sequential_redefinitions ... ok
+test editing_is_source_only_move_is_atomic_and_run_all_uses_document_order ... ok
+test genuine_cycles_error_and_downstream_is_stale_then_recovers ... ok
+test diamond_and_layer_order_are_stable_and_unrelated_cells_are_untouched ... ok
+test edit_parse_failure_delete_and_kind_change_preserve_correct_live_ownership ... ok
+test failed_prerequisites_block_descendants_but_independent_branches_run ... ok
+test raw_user_function_heads_and_scoped_patterns_drive_dependencies ... ok
+test authority_edit_recalculates_real_solutions_and_keeps_actual_history_steps ... ok
+
+test result: ok. 9 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.06s
+
+     Running tests/reactive_edges.rs (target/debug/deps/reactive_edges-12926bc890eb926b)
+
+running 12 tests
+test dependency_analysis_excludes_registered_builtins_beyond_core_symbol_table ... ok
+test calculus_coordinates_are_local_but_parameters_and_bounds_remain_real_dependencies ... ok
+test rejected_conflicting_evaluate_does_not_invalidate_the_other_owners_dependents ... ok
+test scopes_do_not_hide_symbols_used_outside_the_binding_expression ... ok
+test deferred_global_sets_and_lexical_local_sets_do_not_claim_unexecuted_values ... ok
+test edited_away_live_definitions_do_not_create_false_source_cycles ... ok
+test run_all_cycle_errors_preserve_real_history_of_earlier_evaluations ... ok
+test one_cascade_preserves_interrupt_and_a_new_request_recovers ... ok
+test cancellation_during_auto_execution_keeps_the_completed_root_and_blocks_descendants ... ok
+test stale_prerequisite_outside_the_affected_closure_blocks_execution_until_repaired ... ok
+test delete_auto_recalculates_the_transitive_closure_and_disabled_mode_only_stales ... ok
+test partial_effects_clear_unset_and_identical_reassignments_have_actual_ownership ... ok
+
+test result: ok. 12 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.03s
+
+     Running tests/recovery.rs (target/debug/deps/recovery-6d760e8548f2e4ae)
+
+running 2 tests
+test restore_reports_real_cycles_and_does_not_run_their_dependents ... ok
+test restart_restores_definitions_in_dependency_order_and_retains_source_and_stale_computations ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.04s
+
+     Running tests/retained_results.rs (target/debug/deps/retained_results-67234512f6419896)
+
+running 6 tests
+test readonly_set_seed_and_hidden_function_effects_do_not_change_old_or_main_context ... ok
+test geometry_pages_equal_original_kernel_samples_without_any_resampling ... ok
+test solution_multiplicity_is_global_across_actual_record_pages ... ok
+test held_diagnostics_and_initial_explore_geometry_remain_actual_retained_data ... ok
+test original_steps_are_paged_and_numeric_value_uses_the_actual_retained_value ... ok
+test exact_values_unicode_rows_and_occurrences_stay_immutable_across_main_edits ... ok
+
+test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.17s
+
+     Running tests/run_plan.rs (target/debug/deps/run_plan-80069407f4f581f4)
+
+running 6 tests
+actual affected plan={"requested_cell_ids":["a"],"ordered_cell_ids":["a","dependent","tail"],"edges":[["dependent","tail"],["a","dependent"]],"cycle_cell_ids":[],"blocked_cell_ids":[],"unavailable_prerequisite_cell_ids":[]}
+test real_cycles_blocked_descendants_invalid_inputs_and_direct_cancellation_remain_explicit ... ok
+test affected_uses_actual_graph_and_respects_native_allowed_set_without_hidden_expansion ... ok
+actual dynamic owner and plan={"owners":[{"cell_id":"caller","symbol":"a"},{"cell_id":"function","symbol":"f"}],"plan":{"blocked_cell_ids":[],"cycle_cell_ids":[],"edges":[["caller","consumer"]],"ordered_cell_ids":["caller","consumer"],"requested_cell_ids":["consumer","caller"],"unavailable_prerequisite_cell_ids":[]}}
+actual missing/required plans={"required":{"blocked_cell_ids":[],"cycle_cell_ids":[],"edges":[["b","answer"],["a","b"]],"ordered_cell_ids":["a","b","answer"],"requested_cell_ids":["answer"],"unavailable_prerequisite_cell_ids":[]},"selected":{"blocked_cell_ids":[],"cycle_cell_ids":[],"edges":[],"ordered_cell_ids":["answer"],"requested_cell_ids":["answer"],"unavailable_prerequisite_cell_ids":["b"]}}
+test live_dynamic_owner_controls_prerequisites_and_order_instead_of_syntactic_name_guesses ... ok
+test selected_never_adds_missing_prerequisites_and_required_does_not_run_unrelated_cells ... ok
+actual complete checkpoint unchanged: 19412 bytes
+test planning_preserves_exact_checkpoint_with_actual_definitions_out_and_random ... ok
+test long_actual_dependency_expansion_and_mid_traversal_budget_are_bounded_without_execution ... ok
+
+test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.29s
+
+     Running tests/scene3d.rs (target/debug/deps/scene3d-9dbb376e129ef47b)
+
+running 9 tests
+test unsupported_precision_dimensions_bad_colors_and_readonly_writes_never_fabricate_success ... ok
+test frozen_exploration_changes_only_local_3d_geometry_and_ios_does_not_auto_sample ... ok
+test local_axes_do_not_capture_globals_and_ios_keeps_source_without_generating_mesh ... ok
+test scalar_and_parameter_surfaces_are_actual_samples_with_independent_residuals_and_unit_normals ... ok
+test existing_user_aliases_keep_precedence_and_all_3d_axes_are_lexically_local ... ok
+test three_dimensional_sampling_shares_cancellation_budget_and_a_new_request_recovers ... ok
+test implicit_sphere_has_true_edge_zeros_and_outward_normals_poles_are_not_fake_surfaces ... ok
+test obj_contains_actual_world_vertices_unit_normals_faces_lines_and_original_colors ... ok
+test parameter_curve_and_readonly_color_return_real_coordinates_and_rgb_not_frontend_values ... ok
+
+test result: ok. 9 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 24.73s
+
+     Running tests/scene_graph.rs (target/debug/deps/scene_graph-08d4378c7b04e321)
+
+running 9 tests
+test serialized_modern_symbol_names_survive_2d_3d_and_frozen_exploration_resampling ... ok
+test style_inheritance_and_real_rgba_blending_preserve_alpha_and_validate_components ... ok
+test invalid_shapes_unknown_options_and_readonly_nodes_fail_without_writing_the_session ... ok
+test actual_sphere_ellipsoid_box_cylinder_cone_tube_and_transformed_normals ... ok
+test primitive_normal_directions_center_rotation_and_flattened_geometry_are_independently_correct ... ok
+test real_xy_markers_paths_labels_disks_polygons_and_affine_transforms ... ok
+test real_earth_moon_l2_fixture_has_high_precision_residual_and_proportional_position_diagram ... ok
+test zero_scale_imports_become_actual_points_or_lines_and_total_import_budget_is_checked ... ok
+test real_watermelon_fixture_has_striped_skin_rind_red_section_seeds_and_readable_obj_geometry has been running for over 60 seconds
+test real_watermelon_fixture_has_striped_skin_rind_red_section_seeds_and_readable_obj_geometry ... ok
+
+test result: ok. 9 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 128.04s
+
+     Running tests/session.rs (target/debug/deps/session-8c24e343a22c282b)
+
+running 8 tests
+test parse_preflight_is_atomic_and_suppression_never_loses_messages ... ok
+test function_environment_includes_real_pure_functions_aliases_and_removes_cleared_values ... ok
+test evaluation_uses_the_real_evaluator_and_retains_cells_history_and_source_order ... ok
+test evaluator_failure_stops_later_statements_retains_earlier_effects_and_recovers ... ok
+test parser_env_follows_actual_functions_constant_mode_and_configured_auto_dialect ... ok
+test load_save_preserves_only_sources_and_resets_definitions_without_changing_config ... ok
+test each_statement_retains_real_steps_with_original_source_and_honors_recording ... ok
+test solving_keeps_raw_poles_delayed_definitions_and_invalid_roots_inspectable ... ok
+
+test result: ok. 8 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.12s
+
+     Running tests/session_config.rs (target/debug/deps/session_config-58d4511069366e7d)
+
+running 2 tests
+test injected_clock_and_shared_flag_stop_real_execution_and_allow_recovery ... ok
+test config_roundtrip_resolves_masks_and_pure_requests_do_not_reset_the_interrupt ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+
+     Running tests/solve_plot.rs (target/debug/deps/solve_plot-1a57c9961bf136d5)
+
+running 4 tests
+test actual_regions_shade_unbounded_intervals_and_two_axis_equations_highlight_real_solutions ... ok
+test equality_plots_use_actual_sides_roots_and_minimum_viewport ... ok
+test unsupported_nonreal_infinite_free_axes_and_disabled_auto_plot_do_not_gain_plots ... ok
+test actual_radical_root_numeric_and_reactive_points_are_finite_and_correct ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.66s
+
+     Running tests/source_transactions.rs (target/debug/deps/source_transactions-f4e0cdc8b7a431e0)
+
+running 5 tests
+test text_title_and_prose_reorder_keep_live_math_and_no_evaluation_occurs ... ok
+test invalid_batch_does_not_modify_definitions_or_source_and_settings_are_not_evaluated ... ok
+test whole_delete_does_not_cascade_and_old_owner_values_are_actually_removed ... ok
+test real_cycle_conflict_and_lexical_function_scope_are_analyzed_without_execution ... ok
+test old_caller_owned_dynamic_side_effects_contribute_real_invalidation ... ok
+
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.02s
+
+     Running tests/ui_state.rs (target/debug/deps/ui_state-bccf8edfbb13c418)
+
+running 1 test
+test title_and_host_language_updates_do_not_reset_actual_definitions_or_history ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.02s
+
+     Running tests/value_pages.rs (target/debug/deps/value_pages-2314022d40302719)
+
+running 4 tests
+test old_or_stale_snapshots_and_bad_paths_are_rejected_without_reexecution ... ok
+test tables_page_real_rows_and_columns_keep_occurrence_ids_and_full_source ... ok
+test fresh_science_has_provenance_but_arbitrary_or_cached_records_do_not ... ok
+test scalar_wire_is_unchanged_and_empty_tables_preserve_columns ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.06s
+
+     Running tests/working_session.rs (target/debug/deps/working_session-50e989248322dafb)
+
+running 3 tests
+test working_notebook_retains_real_results_and_owners_then_can_commit_new_definitions ... ok
+test candidate_credentials_io_and_cancellation_are_independent_from_parent ... ok
+test actual_steps_and_readonly_explore_snapshots_survive_the_memory_candidate ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.08s
+
+   Doc-tests om_apple_ffi
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+   Doc-tests om_host_service
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+   Doc-tests om_kernel
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+

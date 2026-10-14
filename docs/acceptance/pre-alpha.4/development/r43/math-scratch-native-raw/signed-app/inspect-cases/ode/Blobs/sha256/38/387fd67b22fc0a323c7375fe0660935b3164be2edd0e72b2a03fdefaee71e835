@@ -1,0 +1,4 @@
+data: {"choices":[{"delta":{"tool_calls":[{"function":{"arguments":"{\"limit\":20,\"part\":\"value\",\"result_ref\":\"result-1-3bfe277c8da287b519785f34df5d0f602527fcd0a9946c2beb600d1182fa7a2f\"}","name":"inspect_result"},"index":0,"id":"preview-call","type":"function"}],"role":"assistant","content":"中文🙂"},"finish_reason":"tool_calls","index":0}],"model":"synthetic-served-alias","id":"provider-response-2"}
+
+data: [DONE]
+

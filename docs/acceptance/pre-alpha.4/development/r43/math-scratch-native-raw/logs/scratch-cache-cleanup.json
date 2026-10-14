@@ -1,0 +1,677 @@
+{
+  "source": "Successful complete Kernel/Host/AppleFFI test-profile executable inventory after385/0 tests, native signed fixture and strict signature; no active compiler or harness",
+  "count": 74,
+  "logical_bytes": 2304030944,
+  "deleted": true,
+  "entries": [
+    {
+      "path": "target/debug/deps/output_packing-f9d3488353d16dba",
+      "target": "output_packing",
+      "target_kind": [
+        "test"
+      ],
+      "bytes": 35464224,
+      "sha256": "d0d8cd5ba089858c8b4a82a45aab599373eb0f65307fd84b280be61603826cc1"
+    },
+    {
+      "path": "target/debug/deps/working_session-50e989248322dafb",
+      "target": "working_session",
+      "target_kind": [
+        "test"
+      ],
+      "bytes": 35431616,
+      "sha256": "5edc31427a43122b3eaa77b99870b6e79dfda06f46d9e5349a2bb134f74c628d"
+    },
+    {
+      "path": "target/debug/deps/inspection-ef22abcb20fd101c",
+      "target": "inspection",
+      "target_kind": [
+        "test"
+      ],
+      "bytes": 35383472,
+      "sha256": "3cb55d59eae3a82354e563d68364c143afe7f15bf1538b8f9140f0cb34b9f022"
+    },
+    {
+      "path": "target/debug/deps/protocol-a3b6b4f1bb063775",
+      "target": "protocol",
+      "target_kind": [
+        "test"
+      ],
+      "bytes": 15555632,
+      "sha256": "3f0b66bd1516504213541030f4496bac4a0b05de730374bc46f476b88ca94976"
+    },
+    {
+      "path": "target/debug/deps/output_steps-7dcce42053192128",
+      "target": "output_steps",
+      "target_kind": [
+        "test"
+      ],
+      "bytes": 35021040,
+      "sha256": "a54449638da7ec957ff81cf1304af7dc78c0d3fc06051c67caa6db62aedc3586"
+    },
+    {
+      "path": "target/debug/deps/reactive-af70ae60d5829063",
+      "target": "reactive",
+      "target_kind": [
+        "test"
+      ],
+      "bytes": 35149856,
+      "sha256": "000518ca659bc1264b605cb3ef4e592231219e284621355f7dad7c7c697953ac"
+    },
+    {
+      "path": "target/debug/deps/solve_plot-1a57c9961bf136d5",
+      "target": "solve_plot",
+      "target_kind": [
+        "test"
+      ],
+      "bytes": 35022064,
+      "sha256": "e22deca73c1f6fe761131331a214bad063008fc1886a4a7fe496e0e18cad52a1"
+    },
+    {
+      "path": "target/debug/deps/session_config-58d4511069366e7d",
+      "target": "session_config",
+      "target_kind": [
+        "test"
+      ],
+      "bytes": 38308896,
+      "sha256": "4a8761a41af477ae594a9bb5de07a655c62a7cb3a080c6eb9f01190b471ce584"
+    },
+    {
+      "path": "target/debug/deps/operation_cancel-63f685b96c62182d",
+      "target": "operation_cancel",
+      "target_kind": [
+        "test"
+      ],
+      "bytes": 34861568,
+      "sha256": "69c0e28dd255025a392b35c55a2fe7878068e93a7111586945d8cf65eed809ed"
+    },
+    {
+      "path": "target/debug/deps/plot_extensions-4980d4bfe9b80c5f",
+      "target": "plot_extensions",
+      "target_kind": [
+        "test"
+      ],
+      "bytes": 35362896,
+      "sha256": "25facaac0b8105845399de60e5da1ad9b90a0e4769efd0c3379248cceec4f921"
+    },
+    {
+      "path": "target/debug/deps/reactive_edges-12926bc890eb926b",
+      "target": "reactive_edges",
+      "target_kind": [
+        "test"
+      ],
+      "bytes": 35153920,
+      "sha256": "219c4d816141497af205f5233873e67e4bf330c1d14bcdcd54e187d9300309a9"
+    },
+    {
+      "path": "target/debug/deps/plot_edges-487124086008d10a",
+      "target": "plot_edges",
+      "target_kind": [
+        "test"
+      ],
+      "bytes": 35101488,
+      "sha256": "5d54f976fdeb323a99a801b6bdc70d5e7508359adbe816a8de4f3da2ac1cd7b2"
+    },
+    {
+      "path": "target/debug/deps/llm_tool_edges-f0f928d738f65dc4",
+      "target": "llm_tool_edges",
+      "target_kind": [
+        "test"
+      ],
+      "bytes": 35046832,
+      "sha256": "41b739c79729c8ab48ab2a53e927e6df275984bc084f288412e29a666cb924d2"
+    },
+    {
+      "path": "target/debug/deps/llm_native-96a1739878e946f8",
+      "target": "llm_native",
+      "target_kind": [
+        "test"
+      ],
+      "bytes": 882160,
+      "sha256": "27239c1f3fd813ce8af6b3d86361ecde3a342e3ff15707e5df89da21afede8cc"
+    },
+    {
+      "path": "target/debug/deps/profile_draft-37e2eb1270c86a15",
+      "target": "profile_draft",
+      "target_kind": [
+        "test"
+      ],
+      "bytes": 35358032,
+      "sha256": "fb22645445937836e4d2b41be2d6993d969874e8872118a464682172d28d096f"
+    },
+    {
+      "path": "target/debug/deps/llm_edges-738140eb88d8f8e1",
+      "target": "llm_edges",
+      "target_kind": [
+        "test"
+      ],
+      "bytes": 35012544,
+      "sha256": "fb4c562b94362d14206dd2934fb93be83327845c31a888d32d67f8365cf2643e"
+    },
+    {
+      "path": "target/debug/deps/checkpoint-010dae9fc575b5ce",
+      "target": "checkpoint",
+      "target_kind": [
+        "test"
+      ],
+      "bytes": 39751600,
+      "sha256": "0cf3bb3f2c143d9377bbfdc974deef3d89257b6bd4fe02637629ab5923b72e42"
+    },
+    {
+      "path": "target/debug/deps/om_kernel-433355ab878a9804",
+      "target": "om_kernel",
+      "target_kind": [
+        "lib"
+      ],
+      "bytes": 34825552,
+      "sha256": "f3c6e3f83c0361e85fa7c20fbaf5697c5270fb8d51ee48632fea133d0a906dcb"
+    },
+    {
+      "path": "target/debug/deps/run_plan-80069407f4f581f4",
+      "target": "run_plan",
+      "target_kind": [
+        "test"
+      ],
+      "bytes": 36544592,
+      "sha256": "b2660c317a6b3c228b59a37a4711e28c90bd6c6f60de1f0e6b8a5d223102988a"
+    },
+    {
+      "path": "target/debug/deps/checkpoint_corpus-22022b0d0d662983",
+      "target": "checkpoint_corpus",
+      "target_kind": [
+        "test"
+      ],
+      "bytes": 40461984,
+      "sha256": "b284b758cb9b8acbfb0449f1aeb574d584eaa2f7eed65ed459981168294e378c"
+    },
+    {
+      "path": "target/debug/deps/ui_state-bccf8edfbb13c418",
+      "target": "ui_state",
+      "target_kind": [
+        "test"
+      ],
+      "bytes": 34862624,
+      "sha256": "0bb3f34253ac4e87d1266fdb5cd6ccb07265695e82e8eef540f13e586e722411"
+    },
+    {
+      "path": "target/debug/deps/explore-7320d8538b754c81",
+      "target": "explore",
+      "target_kind": [
+        "test"
+      ],
+      "bytes": 35279888,
+      "sha256": "dd45261852e30a6fe53172c1ff54daeb3c37b3df4649aa179e8c91835aa8787d"
+    },
+    {
+      "path": "target/debug/deps/editor_latency-edb2287bf07c8b5b",
+      "target": "editor_latency",
+      "target_kind": [
+        "test"
+      ],
+      "bytes": 34911536,
+      "sha256": "988f6f96db9c5643d734e5512019dc9942cb37049c48ba5dc8efb4e26935a490"
+    },
+    {
+      "path": "target/debug/deps/external_host-21ca616d48984c13",
+      "target": "external_host",
+      "target_kind": [
+        "test"
+      ],
+      "bytes": 34861056,
+      "sha256": "81ae39aa74c73b05181082a82993892715554b3dd7dffa9115314a2b395211da"
+    },
+    {
+      "path": "target/debug/deps/llm-8e4d2e54ab6fb085",
+      "target": "llm",
+      "target_kind": [
+        "test"
+      ],
+      "bytes": 35422048,
+      "sha256": "02f0d18322648762cf4c57c9880182862fddb2f55b886b3661024e015a7267c0"
+    },
+    {
+      "path": "target/debug/deps/continuation-b53cbbeb7dfd38c0",
+      "target": "continuation",
+      "target_kind": [
+        "test"
+      ],
+      "bytes": 35046192,
+      "sha256": "5f80141e31fe21c81ebdc2bbb8db6976eae6981f2e9609f8b5bf25f75bb22034"
+    },
+    {
+      "path": "target/debug/deps/assistant_edges-9735ea538e81e4b7",
+      "target": "assistant_edges",
+      "target_kind": [
+        "test"
+      ],
+      "bytes": 34884400,
+      "sha256": "fede1c29a37f5f8adb561a4a685f1f97507e0c79cac5180f4c0851225a941f8e"
+    },
+    {
+      "path": "target/debug/deps/editor_edges-8655bfef54f745e0",
+      "target": "editor_edges",
+      "target_kind": [
+        "test"
+      ],
+      "bytes": 35075840,
+      "sha256": "ac1daefa64a1ae87b754a5a816d5e3d6ef0a8f45a3748e0911bd437cfd141a07"
+    },
+    {
+      "path": "target/debug/deps/native_config-ca9461e0c2039122",
+      "target": "native_config",
+      "target_kind": [
+        "test"
+      ],
+      "bytes": 882160,
+      "sha256": "9e8119274fc89735d2fa840fbb6ffce6777b734fa027038e30f4e3dd94861c10"
+    },
+    {
+      "path": "target/debug/deps/plot_transport_edges-3c0de8be21283482",
+      "target": "plot_transport_edges",
+      "target_kind": [
+        "test"
+      ],
+      "bytes": 37585968,
+      "sha256": "b22f0a58d192fd3190831a693adbbf31383966ac8123da7c6d3518d9dc73ae89"
+    },
+    {
+      "path": "target/debug/deps/assistant-2ec30eb7f3655d5a",
+      "target": "assistant",
+      "target_kind": [
+        "test"
+      ],
+      "bytes": 35422848,
+      "sha256": "648f62192702ebafb0e3b8fd8a2b4bd65442a1b2110dded76eb4710f5c7ddbb4"
+    },
+    {
+      "path": "target/debug/deps/native_config_edges-18b1e4300d843bc5",
+      "target": "native_config_edges",
+      "target_kind": [
+        "test"
+      ],
+      "bytes": 882192,
+      "sha256": "bca85705ccb04fb0081b521f1ec97b05ec539c3bf015515d42571c3432413e5e"
+    },
+    {
+      "path": "target/debug/deps/source_transactions-f4e0cdc8b7a431e0",
+      "target": "source_transactions",
+      "target_kind": [
+        "test"
+      ],
+      "bytes": 35667392,
+      "sha256": "0f7fd0915b1e6956e810cd40c3de6380dc8b2fafd1dcbca065acdb18797ec280"
+    },
+    {
+      "path": "target/debug/deps/editor_names-2e78678e74c76be7",
+      "target": "editor_names",
+      "target_kind": [
+        "test"
+      ],
+      "bytes": 18037328,
+      "sha256": "f46193e280b95b482a143fe8b53f62e39bb61b7d2ce4aca3ffcd0d1e57f3679c"
+    },
+    {
+      "path": "target/debug/deps/om_host_service-d8f036e96cb96d62",
+      "target": "om_host_service",
+      "target_kind": [
+        "lib"
+      ],
+      "bytes": 39958288,
+      "sha256": "b4d0bc5339421cd7496a0710153cb1b49b2695d5a4f886ec67558e82019d2327"
+    },
+    {
+      "path": "target/debug/deps/explanation_selection-9b3c96076bd45ac0",
+      "target": "explanation_selection",
+      "target_kind": [
+        "test"
+      ],
+      "bytes": 35357936,
+      "sha256": "0ab0a0034f9bae7fecf04fa3150ba5f0f1901035eddc5d45d5d64929e5b6d332"
+    },
+    {
+      "path": "target/debug/deps/plot_sampling-b0c4a66ced27c883",
+      "target": "plot_sampling",
+      "target_kind": [
+        "test"
+      ],
+      "bytes": 35145936,
+      "sha256": "41bbb04af680f0b2ee8f1c71c90cc9727ffb7aabbd9ea099cb3ae97bb0ee34b6"
+    },
+    {
+      "path": "target/debug/deps/artifacts-c1b3b86ba9c65d48",
+      "target": "artifacts",
+      "target_kind": [
+        "test"
+      ],
+      "bytes": 35087376,
+      "sha256": "2207f5efa2f995961dad1511350fa62ddc200336fe6114039351b5f6ca62fe81"
+    },
+    {
+      "path": "target/debug/deps/recovery-6d760e8548f2e4ae",
+      "target": "recovery",
+      "target_kind": [
+        "test"
+      ],
+      "bytes": 34895728,
+      "sha256": "1e30a75f62eee11c53d76cd7f966c86852a53fc9dde9a5a7104416b41d71802b"
+    },
+    {
+      "path": "target/debug/deps/composition-5f701821f31c5d25",
+      "target": "composition",
+      "target_kind": [
+        "test"
+      ],
+      "bytes": 38306384,
+      "sha256": "145e816d828b41f9b68d40606b5689d95db809d625f656c7a7b688186cc9b7a6"
+    },
+    {
+      "path": "target/debug/deps/session-8c24e343a22c282b",
+      "target": "session",
+      "target_kind": [
+        "test"
+      ],
+      "bytes": 37635856,
+      "sha256": "115dd39a38d9193de14dab6a8133875ab3c5d950a302743e246785d654745840"
+    },
+    {
+      "path": "target/debug/deps/scene_graph-08d4378c7b04e321",
+      "target": "scene_graph",
+      "target_kind": [
+        "test"
+      ],
+      "bytes": 35134912,
+      "sha256": "e933966c4384cf4306aff5a2032221d7dcab51148067ee3c2037c6b223c659d8"
+    },
+    {
+      "path": "target/debug/deps/agent_ingress-d3825909258706cc",
+      "target": "agent_ingress",
+      "target_kind": [
+        "test"
+      ],
+      "bytes": 4090480,
+      "sha256": "cbf426d6c11746cad1ff7aa8829e89c31de451805e8f9261be4a917ee8bd32fd"
+    },
+    {
+      "path": "target/debug/deps/contracts-5e58c382c2cbe2df",
+      "target": "contracts",
+      "target_kind": [
+        "test"
+      ],
+      "bytes": 3236384,
+      "sha256": "7ef0f88f42084271baa877e01945506d9ed7a1b1799e6e415df371b0d12a6198"
+    },
+    {
+      "path": "target/debug/deps/undo_source-c4f23dd4fd144b85",
+      "target": "undo_source",
+      "target_kind": [
+        "test"
+      ],
+      "bytes": 2113424,
+      "sha256": "01189d06e1cee2344218265f039a26a16b788c20d2b7732c9f6be9623bf0fd90"
+    },
+    {
+      "path": "target/debug/deps/math_run_plan-0cf27eddd4928c4f",
+      "target": "math_run_plan",
+      "target_kind": [
+        "test"
+      ],
+      "bytes": 42782720,
+      "sha256": "f522f378ee7af4d58982eb27631ade6857e0e64a2f475cc5baa8f3a0f2ef549c"
+    },
+    {
+      "path": "target/debug/deps/results-8abfd6a814591afd",
+      "target": "results",
+      "target_kind": [
+        "test"
+      ],
+      "bytes": 41188304,
+      "sha256": "22b2aa3c3881081d09f2c59c38aee609f4ecac2d814276708c4ea4ab8b3a84bd"
+    },
+    {
+      "path": "target/debug/deps/result_runtime-c8eca354e26a1319",
+      "target": "result_runtime",
+      "target_kind": [
+        "test"
+      ],
+      "bytes": 43905600,
+      "sha256": "3272422bf390da4a522a5a1798410b3e425d675a37a23d4f8aef4f8a98096b63"
+    },
+    {
+      "path": "target/debug/deps/scheduler-1dfffe09cb05d0ee",
+      "target": "scheduler",
+      "target_kind": [
+        "test"
+      ],
+      "bytes": 37326288,
+      "sha256": "481ea7bda0354d46e7b57ce232ee16af2c3f4355667c596db570ddcb98e9ca1e"
+    },
+    {
+      "path": "target/debug/deps/commit_owner-70b8f943d3909dc1",
+      "target": "commit_owner",
+      "target_kind": [
+        "test"
+      ],
+      "bytes": 20711760,
+      "sha256": "1f63ff4347a851fb227482861706af0e28d0a00ccf5dba351c2fa9869681af17"
+    },
+    {
+      "path": "target/debug/deps/preview-a39cbb1a76dfc52f",
+      "target": "preview",
+      "target_kind": [
+        "test"
+      ],
+      "bytes": 20431120,
+      "sha256": "745e5c06b982b6b869502b60f46d197489d8b361a029e45747f93a296b66dfce"
+    },
+    {
+      "path": "target/debug/deps/document_source-8ae3969c8e74f3e2",
+      "target": "document_source",
+      "target_kind": [
+        "test"
+      ],
+      "bytes": 1330688,
+      "sha256": "f80679a8b86c1261366c5d96346ace78a1b69553eed5ba02a9e08c2d81450c18"
+    },
+    {
+      "path": "target/debug/deps/agent_framing-c076f1fc6540b593",
+      "target": "agent_framing",
+      "target_kind": [
+        "test"
+      ],
+      "bytes": 3683248,
+      "sha256": "62506efa9e4cdff4a37920ec716951d9d1237fe0264c3ea308a891629ed351a7"
+    },
+    {
+      "path": "target/debug/deps/kernel_endpoint-3afe3fc26a81c076",
+      "target": "kernel_endpoint",
+      "target_kind": [
+        "test"
+      ],
+      "bytes": 44545984,
+      "sha256": "008edfb548437d51ee2e95943ede2c01493900c8d121f8959de5c87752d75f45"
+    },
+    {
+      "path": "target/debug/deps/fixture_support-7fbf5b587fd933cd",
+      "target": "fixture_support",
+      "target_kind": [
+        "test"
+      ],
+      "bytes": 1395520,
+      "sha256": "e7ee7e2e9b0ffbc0a44229543d4c1eb601bbfcb791ad1bab57be02d96381e875"
+    },
+    {
+      "path": "target/debug/deps/readonly_catalog-3da551810cf47df9",
+      "target": "readonly_catalog",
+      "target_kind": [
+        "test"
+      ],
+      "bytes": 35588832,
+      "sha256": "4343b1dc62043e6b4f7bc9d3dc0b1133f0058eab161ba51e4fb05635ec37d7d2"
+    },
+    {
+      "path": "target/debug/deps/model_codec-a8c71d266caa3fc5",
+      "target": "model_codec",
+      "target_kind": [
+        "test"
+      ],
+      "bytes": 37979040,
+      "sha256": "e039643bbb58e7e43788eb96996f968b6fb439a4df922d363d28e1a035e4ca65"
+    },
+    {
+      "path": "target/debug/deps/references-8c49b2600c8abe98",
+      "target": "references",
+      "target_kind": [
+        "test"
+      ],
+      "bytes": 1240608,
+      "sha256": "14060127601e096cf95144e186772fdf8d9ba833e11ccf454a3ecf8a9ae2c767"
+    },
+    {
+      "path": "target/debug/deps/source_endpoint-e77a1eebaffdf46b",
+      "target": "source_endpoint",
+      "target_kind": [
+        "test"
+      ],
+      "bytes": 23510400,
+      "sha256": "09cf6c66d578100408bbf5726ebf7bdee04804824099d6634e3c9cefd5525fc9"
+    },
+    {
+      "path": "target/debug/deps/kernel_worker-5908c8033cb30da7",
+      "target": "kernel_worker",
+      "target_kind": [
+        "test"
+      ],
+      "bytes": 40705696,
+      "sha256": "06fb8c6509c92720897a69f4db8cc5f228c67fd0a38453adc02217cb57bee980"
+    },
+    {
+      "path": "target/debug/deps/kernel_states-d71ce1ef6511029d",
+      "target": "kernel_states",
+      "target_kind": [
+        "test"
+      ],
+      "bytes": 39619936,
+      "sha256": "55cd5ea0243d7c0af3198dc996e90b3a675b47e786feb4b45ea369584066d20c"
+    },
+    {
+      "path": "target/debug/deps/math_inspect-c9d3f4b21073a6e9",
+      "target": "math_inspect",
+      "target_kind": [
+        "test"
+      ],
+      "bytes": 43362944,
+      "sha256": "25ce5a72dc2e97c67d71841b7a1078547cabd1c28a6c2d7689bfbc5da170022b"
+    },
+    {
+      "path": "target/debug/deps/source_operations-b119a4f560e2f39e",
+      "target": "source_operations",
+      "target_kind": [
+        "test"
+      ],
+      "bytes": 19381280,
+      "sha256": "91e010a1fe3d2de26f980a345b86e5f8aa0b9b2bbf78eedcf3770ff13593d2a1"
+    },
+    {
+      "path": "target/debug/deps/kernel_acceptance-8bb3ab23a72160a6",
+      "target": "kernel_acceptance",
+      "target_kind": [
+        "test"
+      ],
+      "bytes": 41262000,
+      "sha256": "fec200988faa1e89e86e6460c99d777fbbdc6ef8a28e6adb87729f47467ab0cf"
+    },
+    {
+      "path": "target/debug/deps/readonly_notebook-9e86f58a672476b2",
+      "target": "readonly_notebook",
+      "target_kind": [
+        "test"
+      ],
+      "bytes": 42564960,
+      "sha256": "be494d159c5fead8f710c10219a04472536d4f97b2ac902ca5617dc40595e018"
+    },
+    {
+      "path": "target/debug/deps/agent_endpoint-d36dd37a9b5931a7",
+      "target": "agent_endpoint",
+      "target_kind": [
+        "test"
+      ],
+      "bytes": 49934224,
+      "sha256": "83856ff421365e353b2fa29ed2122bf2b6221514fdb0fb450316cbf2537c6303"
+    },
+    {
+      "path": "target/debug/deps/math_scratch-0afe06e7acdb40a5",
+      "target": "math_scratch",
+      "target_kind": [
+        "test"
+      ],
+      "bytes": 44724032,
+      "sha256": "8d5872bde7d4317196f7d1fbe2b27812c7480bc3675d4a429e23d4d72a85db95"
+    },
+    {
+      "path": "target/debug/deps/om_apple_ffi-1de397b1ea7634b8",
+      "target": "om_apple_ffi",
+      "target_kind": [
+        "staticlib",
+        "rlib"
+      ],
+      "bytes": 37597360,
+      "sha256": "3c3976a05614db2f4ee165802a0b7453de7a34de4294af19eb79ea59dbb09bac"
+    },
+    {
+      "path": "target/debug/deps/editor-d102964a54063c59",
+      "target": "editor",
+      "target_kind": [
+        "test"
+      ],
+      "bytes": 35065024,
+      "sha256": "926d255c287751e9ed508168af50fcc7bf70f10ec5ee00a33e4a1719d2f8c876"
+    },
+    {
+      "path": "target/debug/deps/value_pages-2314022d40302719",
+      "target": "value_pages",
+      "target_kind": [
+        "test"
+      ],
+      "bytes": 35181664,
+      "sha256": "efbcef7648be3d64c25c9d2793d05744bf53459ee27513da631f3e76f9a87f31"
+    },
+    {
+      "path": "target/debug/deps/capabilities-d29652875b9d773a",
+      "target": "capabilities",
+      "target_kind": [
+        "test"
+      ],
+      "bytes": 39326768,
+      "sha256": "29d7b0c835aa9ac5fbcd8f6910678739fbea03288dd04eecd651be09c8639388"
+    },
+    {
+      "path": "target/debug/deps/retained_results-67234512f6419896",
+      "target": "retained_results",
+      "target_kind": [
+        "test"
+      ],
+      "bytes": 35320064,
+      "sha256": "47ef1fe31be7eb448ce2dbb08b04739d94bf2db72e22e697b8b94b552176cb0a"
+    },
+    {
+      "path": "target/debug/deps/scene3d-9dbb376e129ef47b",
+      "target": "scene3d",
+      "target_kind": [
+        "test"
+      ],
+      "bytes": 35106128,
+      "sha256": "1d1b0a994715016f6952ad26b8e156be71133d56e6806881b858f2f5ffff1b3f"
+    },
+    {
+      "path": "target/debug/deps/plot_parameters-644dba63b195cf6a",
+      "target": "plot_parameters",
+      "target_kind": [
+        "test"
+      ],
+      "bytes": 35774608,
+      "sha256": "9717a05b770bd20f27090c9a5c075a05d8b867baa43558f8465d885de79f0bbf"
+    }
+  ],
+  "all_candidates_absent": true,
+  "free_space_after": "Filesystem      Size    Used   Avail Capacity iused ifree %iused  Mounted on\n/dev/disk3s5   460Gi   386Gi    41Gi    91%    3.6M  431M    1%   /System/Volumes/Data\n"
+}

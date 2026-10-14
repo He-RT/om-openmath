@@ -1,0 +1,4 @@
+data: {"choices":[{"finish_reason":"tool_calls","index":0,"delta":{"tool_calls":[{"index":0,"id":"inspect-scratch-call","function":{"arguments":"{\"limit\":20,\"part\":\"value\",\"result_ref\":\"result-1-6176dfbed37fb3c647b9c2fea9e6a1a124881043e3ce304e2f4f1940a17ab491\"}","name":"inspect_result"},"type":"function"}],"content":"中文🙂","role":"assistant"}}],"model":"synthetic-served-alias","id":"provider-response-3"}
+
+data: [DONE]
+

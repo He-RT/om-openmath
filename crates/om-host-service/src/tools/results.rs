@@ -1,5 +1,7 @@
 //! Inspect actual retained output on the independent result worker, without source evaluation.
 mod geometry;
+mod view;
+use super::scratch::{ScratchEvaluation, ScratchResultStore};
 use crate::{
     agent::ingress::ToolIntent,
     protocol::generated::{AgentToolName, ResultBindingAcceptance, ResultBindingFreshness},
@@ -14,6 +16,7 @@ use om_num::ctx::{Abort, Interrupt};
 use serde::{Deserialize, Serialize};
 use serde_json::{Value, json};
 use sha2::{Digest, Sha256};
+use view::InspectionView;
 
 #[derive(Clone, Copy, Debug, Default, PartialEq, Eq, Deserialize, Serialize)]
 #[serde(rename_all = "snake_case")]
@@ -96,6 +99,7 @@ struct Cursor {
 /// The values remain in the existing immutable ResultStore, not copied or reexecuted here.
 pub struct ResultInspectionService {
     cursors: ReferenceRegistry<Cursor>,
+    scratch: ScratchResultStore,
 }
 /// Actual result owner/current native task facts, supplied by the result worker only.
 pub struct InspectionContext<'a> {
@@ -133,6 +137,10 @@ pub(crate) fn failure(id: &str, scope: &ReferenceScope, code: &str) -> Value {
         "INVALID_REFERENCE" | "STALE_SNAPSHOT" => "INVALID_REFERENCE",
         "CANCELLED" => "CANCELLED",
         "TIMEOUT" => "TIMEOUT",
+        "CONTEXT_NOT_READY" => "CONTEXT_NOT_READY",
+        "DEPENDENCY_NOT_READY" => "DEPENDENCY_NOT_READY",
+        "EXECUTION_FAILED" => "EXECUTION_FAILED",
+        "NOT_SUPPORTED" => "NOT_SUPPORTED",
         "LIMIT_EXCEEDED" | "BUDGET_EXCEEDED" | "RESULT_PAGE_TOO_LARGE" => "LIMIT_EXCEEDED",
         _ => "NOT_AVAILABLE",
     };
@@ -146,6 +154,26 @@ impl ResultInspectionService {
     pub fn new(key: [u8; 32]) -> Self {
         Self {
             cursors: ReferenceRegistry::new(key),
+            scratch: ScratchResultStore::new(
+                Sha256::digest([key.as_slice(), b"isolated-scratch-results"].concat()).into(),
+            ),
+        }
+    }
+    pub(crate) fn complete_scratch(
+        &mut self,
+        packet: ScratchEvaluation,
+        scope: &ReferenceScope,
+        now: u64,
+        ctx: &Interrupt,
+    ) -> Value {
+        let id = packet.request.clone();
+        match self
+            .scratch
+            .register(packet, scope, now, ctx)
+            .and_then(|reference| self.scratch.result(&reference, scope, now))
+        {
+            Ok(value) => value,
+            Err(code) => failure(&id, scope, &code),
         }
     }
     /// Complete closed inspection result, including truthful failures. No evaluation, state
@@ -205,10 +233,25 @@ impl ResultInspectionService {
                 _ => Position::Offset(0),
             }
         };
-        let result = source
-            .store
+        let scratch = self
+            .scratch
             .resolve(&args.result_ref, source.scope, source.now)
-            .map_err(projection)?;
+            .ok();
+        let notebook = if scratch.is_none() {
+            Some(
+                source
+                    .store
+                    .resolve(&args.result_ref, source.scope, source.now)
+                    .map_err(projection)?,
+            )
+        } else {
+            None
+        };
+        let result = if let Some(scratch) = &scratch {
+            InspectionView::scratch(scratch)
+        } else {
+            InspectionView::notebook(notebook.as_ref().expect("selected"))?
+        };
         let (payload, next, render) =
             page(&result, args.part, args.limit, position, source.interrupt)?;
         tick(source.interrupt)?;
@@ -238,16 +281,15 @@ impl ResultInspectionService {
             })
             .transpose()
             .map_err(|_| "LIMIT_EXCEEDED")?;
-        let binding = result.binding();
         let envelope = json!({"ok":true,"status":"completed","request_ref":request.id(),"operation_ref":null,
             "document":{"id":source.scope.document,"generation":source.scope.generation,"revision":source.scope.revision},
-            "data":{"origin":"notebook","is_current":binding.acceptance==ResultBindingAcceptance::Accepted && binding.freshness!=ResultBindingFreshness::Stale,"part":args.part,"payload":payload,"render_state":render,"media_ref":null},
+            "data":{"origin":result.origin,"is_current":result.current,"part":args.part,"payload":payload,"render_state":render,"media_ref":null},
             "error":null,"pagination":{"truncated":next.is_some(),"next_cursor":next}});
         super::checked_data("inspect_result_result", envelope).map_err(|_| "LIMIT_EXCEEDED")
     }
 }
 fn page(
-    result: &ResolvedResult,
+    result: &InspectionView<'_>,
     part: Part,
     limit: u32,
     position: Position,
@@ -258,8 +300,8 @@ fn page(
         (Part::Summary, Position::Offset(offset)) => {
             let s = result.summary();
             let statement = s.statements.iter().find(|s| {
-                u64::from(s.out_index) == binding.out_index.get()
-                    && Some(s.view_id.as_str()) == binding.view_id.0.as_deref()
+                s.out_index == result.out_index
+                    && Some(s.view_id.as_str()) == result.view_id.as_deref()
             });
             let presentation = result
                 .presentation(offset, limit.min(32), ctx)
@@ -299,10 +341,9 @@ fn page(
             let page = result
                 .page(
                     &ValueQuery {
-                        cell_id: binding.cell_id.clone(),
-                        out_index: u32::try_from(binding.out_index.get())
-                            .map_err(|_| "NOT_AVAILABLE")?,
-                        view_id: binding.view_id.0.clone().ok_or("NOT_AVAILABLE")?,
+                        cell_id: result.cell_id.clone(),
+                        out_index: result.out_index,
+                        view_id: result.view_id.clone().ok_or("NOT_AVAILABLE")?,
                         path: route.path.clone(),
                         offset: route.row,
                         limit,

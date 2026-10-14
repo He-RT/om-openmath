@@ -1,9 +1,12 @@
 //! Dedicated immutable-result owner. No data parsing/evaluation/formatting runs on source/UI locks.
 mod queries;
+mod scratch;
 use super::*;
 use crate::protocol::{generated::*, validation};
 use crate::tools::results::{FrozenInspection, InspectionContext, ResultInspectionService};
+use crate::tools::scratch::{FrozenScratch, ScratchEvaluation};
 use om_num::ctx::Clock;
+pub use scratch::ScratchWorkerProbes;
 use serde_json::{Value, json};
 use std::{
     collections::{BTreeMap, VecDeque},
@@ -29,6 +32,12 @@ enum Message {
         scope: Box<ReferenceScope>,
         token: Arc<AtomicBool>,
     },
+    ScratchReady {
+        id: String,
+        scope: Box<ReferenceScope>,
+        result: Result<Box<ScratchEvaluation>, String>,
+        token: Arc<AtomicBool>,
+    },
 }
 struct Entry {
     fingerprint: String,
@@ -49,6 +58,7 @@ pub struct ResultWorkerProbes {
 /// Bounded result worker plus compact original-ID request facts. Cancel is direct and independent.
 pub struct ResultRuntime {
     sender: Mutex<Option<mpsc::SyncSender<Message>>>,
+    scratch_sender: Mutex<Option<mpsc::SyncSender<scratch::Job>>>,
     state: Arc<Mutex<State>>,
     closing: Arc<AtomicBool>,
     owner: Mutex<Option<JoinHandle<()>>>,
@@ -132,6 +142,16 @@ impl ResultRuntime {
     }
     /// Trusted test hook; no serialized request can configure this callback or pause behavior.
     pub fn with_probes(probes: ResultWorkerProbes) -> Result<Self, String> {
+        Self::with_workers(probes, ScratchWorkerProbes::default())
+    }
+    /// A real independently scheduled scratch pause; no serialized request can install it.
+    pub fn with_scratch_probes(probes: ScratchWorkerProbes) -> Result<Self, String> {
+        Self::with_workers(ResultWorkerProbes::default(), probes)
+    }
+    fn with_workers(
+        probes: ResultWorkerProbes,
+        scratch_probes: ScratchWorkerProbes,
+    ) -> Result<Self, String> {
         let mut key = [0; 32];
         getrandom::fill(&mut key).map_err(|_| "ENTROPY_UNAVAILABLE")?;
         let mut store =
@@ -145,6 +165,8 @@ impl ResultRuntime {
         }));
         let closing = Arc::new(AtomicBool::new(false));
         let (sender, receiver) = mpsc::sync_channel::<Message>(4);
+        let (scratch_sender, scratch_owner) =
+            scratch::spawn(sender.clone(), state.clone(), scratch_probes)?;
         let replies = state.clone();
         let closed = closing.clone();
         let owner = thread::Builder::new()
@@ -153,6 +175,43 @@ impl ResultRuntime {
                 let clock: Arc<dyn Clock> = Arc::new(HostClock(Instant::now()));
                 while let Ok(message) = receiver.recv() {
                     match message {
+                        Message::ScratchReady {
+                            id,
+                            scope,
+                            result,
+                            token,
+                        } => {
+                            let context = Interrupt {
+                                flag: token,
+                                clock: Some(clock.clone()),
+                                deadline_ms: Some(clock.now_ms() + 5000.),
+                                steps_left: std::cell::Cell::new(4 * 1024 * 1024),
+                            };
+                            let payload =
+                                std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
+                                    if context.flag.load(Ordering::Acquire) {
+                                        return crate::tools::results::failure(
+                                            &id,
+                                            &scope,
+                                            "CANCELLED",
+                                        );
+                                    }
+                                    match result {
+                                        Ok(packet) => inspections.complete_scratch(
+                                            *packet,
+                                            &scope,
+                                            clock.now_ms() as u64,
+                                            &context,
+                                        ),
+                                        Err(code) => {
+                                            crate::tools::results::failure(&id, &scope, &code)
+                                        }
+                                    }
+                                }))
+                                .map(|p| (None, p))
+                                .map_err(|_| "RESULT_WORKER_PANIC".into());
+                            finish(&replies, &id, payload);
+                        }
                         Message::Accepted(accepted) => {
                             if closed.load(Ordering::Acquire) {
                                 continue;
@@ -248,10 +307,14 @@ impl ResultRuntime {
                         }
                     }
                 }
+                // Scratch owns the only extra sender. Channel closure proves that worker has
+                // finished/drained; join here, never while holding a source/control/UI lock.
+                let _ = scratch_owner.join();
             })
             .map_err(|_| "INTERNAL_ERROR")?;
         Ok(Self {
             sender: Mutex::new(Some(sender)),
+            scratch_sender: Mutex::new(Some(scratch_sender)),
             state,
             closing,
             owner: Mutex::new(Some(owner)),
@@ -326,6 +389,48 @@ impl ResultRuntime {
         scope: &ReferenceScope,
         message: impl FnOnce(Arc<AtomicBool>) -> Message,
     ) -> Result<NativeResultHostReply, String> {
+        self.admit(id, encoded, scope, |token| {
+            self.sender
+                .lock()
+                .map_err(|_| "INTERNAL_ERROR")?
+                .as_ref()
+                .ok_or("HOST_CLOSING")?
+                .try_send(message(token))
+                .map_err(|_| "BUDGET_EXCEEDED".into())
+        })
+    }
+    /// Scratch evaluation is queued on its own CAS thread, independent of immutable inspection.
+    pub fn agent_scratch(
+        &self,
+        request: FrozenScratch,
+        scope: &ReferenceScope,
+    ) -> Result<NativeResultHostReply, String> {
+        if request.scope() != scope {
+            return Err("PERMISSION_DENIED".into());
+        }
+        let id = request.id().to_owned();
+        let encoded = serde_json::to_vec(&request.identity()).map_err(|_| "INVALID_ARGUMENT")?;
+        self.admit(&id, &encoded, scope, |token| {
+            self.scratch_sender
+                .lock()
+                .map_err(|_| "INTERNAL_ERROR")?
+                .as_ref()
+                .ok_or("HOST_CLOSING")?
+                .try_send(scratch::Job {
+                    request,
+                    scope: Box::new(scope.clone()),
+                    token,
+                })
+                .map_err(|_| "BUDGET_EXCEEDED".into())
+        })
+    }
+    fn admit(
+        &self,
+        id: &str,
+        encoded: &[u8],
+        scope: &ReferenceScope,
+        dispatch: impl FnOnce(Arc<AtomicBool>) -> Result<(), String>,
+    ) -> Result<NativeResultHostReply, String> {
         scope.validate().map_err(|_| "STALE_DOCUMENT")?;
         if !scope.can_read {
             return Err("PERMISSION_DENIED".into());
@@ -357,13 +462,7 @@ impl ResultRuntime {
         }
         let reply = base(scope, id)?;
         let token = Arc::new(AtomicBool::new(false));
-        self.sender
-            .lock()
-            .map_err(|_| "INTERNAL_ERROR")?
-            .as_ref()
-            .ok_or("HOST_CLOSING")?
-            .try_send(message(token.clone()))
-            .map_err(|_| "BUDGET_EXCEEDED")?;
+        dispatch(token.clone())?;
         state.entries.insert(
             id.into(),
             Entry {
@@ -394,6 +493,9 @@ impl ResultRuntime {
             }
         }
         if let Ok(mut sender) = self.sender.lock() {
+            sender.take();
+        }
+        if let Ok(mut sender) = self.scratch_sender.lock() {
             sender.take();
         }
     }

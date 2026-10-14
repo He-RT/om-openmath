@@ -1,0 +1,55 @@
+   Compiling om-host-service v0.1.0-pre-alpha.3 (/Users/hert/Projects/openmath/crates/om-host-service)
+    Finished `test` profile [unoptimized] target(s) in 18.90s
+     Running tests/math_inspect.rs (target/debug/deps/math_inspect-57091b25261709b0)
+
+running 6 tests
+test independent_result_worker_accepts_original_identity_and_direct_cancel_without_main_execution ... ok
+test closed_original_arguments_exact_cursor_scope_history_expiry_and_cancellation_fail_truthfully ... ok
+test actual_partial_failure_unrecorded_steps_and_absent_geometry_remain_explicit ... ok
+actual solver 7 summary pages and 12 real recorded steps
+test actual_solver_summary_multiplicities_and_depth_first_recorded_steps_paginate_completely ... ok
+actual surface=384 original vertices,44 geometry pages, no rendered media
+test ode_and_scene_expose_actual_original_data_and_preview_never_claims_rendered_media ... ok
+actual wide matrix=4 windows,70 distinct leaves; nested=7 pages
+test values_visit_all_matrix_columns_and_nested_exact_unicode_without_mutating_checkpoint ... ok
+
+test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.28s
+
+     Running tests/math_scratch.rs (target/debug/deps/math_scratch-a16b8731f4abd698)
+
+running 8 tests
+test original_hash_closed_arguments_current_scope_and_direct_budgets_are_enforced ... ok
+test real_error_prefix_is_retained_without_main_effect_and_refs_expire_and_keep_origin ... ok
+test unsupported_calls_remain_symbolic_and_budget_reaches_actual_scratch_evaluation ... ok
+test paused_scratch_does_not_block_result_inspection_and_cancels_without_main_receipt ... ok
+test actual_worker_result_ref_can_be_inspected_as_scratch_with_no_notebook_receipt ... ok
+actual isolated Set/Out/random={99, 2, 0.7415648787718233} / original checkpoint 18343 bytes unchanged
+test local_set_out_and_random_are_independent_with_explicit_scratch_origin_and_real_parent ... ok
+test actual_source_change_retires_inherited_definitions_but_title_and_unrelated_work_are_preserved ... ok
+test definitions_require_actual_ready_cells_and_false_mode_has_no_main_bindings ... ok
+
+test result: ok. 8 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.12s
+
+     Running tests/result_runtime.rs (target/debug/deps/result_runtime-bf25cc11e388cf61)
+
+running 5 tests
+test result_read_schema_rejects_unknown_options_overlarge_pages_or_invented_channels ... ok
+test readonly_result_retention_does_not_keep_an_obsolete_main_pool_envelope_pinned ... ok
+test actual_manifest_pages_source_numeric_and_readonly_controls_have_scoped_original_identity ... ok
+test direct_cancel_and_readback_remain_available_while_a_real_result_worker_is_paused ... ok
+actual notebook result reference=result-1-4152057d0815d5db6eb4967d155a0e085f18a5026a7248545ca7e50bb6699ea0; actual exact row={"cells":[{"count":0,"id":"3:0","kind":"scalar","nature":"exact","path":[0],"source":{"input_form":"1/3","latex":"\\frac{1}{3}","modern_form":"1/3"}}],"id":"3:0","label":"1"}, checkpoint bytes unchanged
+test notebook_output_refs_resolve_real_exact_value_and_never_substitute_a_later_state ... ok
+
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.27s
+
+     Running tests/results.rs (target/debug/deps/results-b61c55b6feb4cbc3)
+
+running 5 tests
+test scratch_and_readonly_random_out_set_are_isolated_from_original_state ... ok
+test reexecuted_definition_invalidates_and_retires_dependent_owned_value_without_cascade ... ok
+test expired_and_restarted_result_tokens_require_fresh_grants_for_the_same_durable_result ... ok
+test revoked_cache_lookup_keeps_reader_reservation_until_actual_pin_release ... ok
+test actual_result_occurrences_scope_history_and_exact_pages_survive_other_executions ... ok
+
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.37s
+

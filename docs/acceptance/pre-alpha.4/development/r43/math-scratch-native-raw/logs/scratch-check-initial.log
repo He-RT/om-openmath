@@ -1,0 +1,48 @@
+   Compiling om-host-service v0.1.0-pre-alpha.3 (/Users/hert/Projects/openmath/crates/om-host-service)
+    Checking om-kernel v0.1.0-pre-alpha.3 (/Users/hert/Projects/openmath/crates/om-kernel)
+error[E0624]: method `prune` is private
+   --> crates/om-host-service/src/tools/scratch/store.rs:69:19
+    |
+ 69 |         self.refs.prune(now);
+    |                   ^^^^^ private method
+    |
+   ::: crates/om-host-service/src/references.rs:347:5
+    |
+347 |     fn prune(&mut self, now: u64) {
+    |     ----------------------------- private method defined here
+
+error[E0624]: method `to_file` is private
+   --> crates/om-host-service/src/tools/scratch.rs:214:41
+    |
+214 |         let mut file = session.notebook.to_file();
+    |                                         ^^^^^^^ private method
+    |
+   ::: crates/om-kernel/src/notebook.rs:125:5
+    |
+125 |     pub(crate) fn to_file(&self) -> NotebookFile {
+    |     -------------------------------------------- private method defined here
+
+error[E0624]: method `to_file` is private
+   --> crates/om-host-service/src/tools/scratch.rs:250:58
+    |
+250 |                     serde_json::to_vec(&session.notebook.to_file())
+    |                                                          ^^^^^^^ private method
+    |
+   ::: crates/om-kernel/src/notebook.rs:125:5
+    |
+125 |     pub(crate) fn to_file(&self) -> NotebookFile {
+    |     -------------------------------------------- private method defined here
+
+error[E0624]: method `to_file` is private
+   --> crates/om-host-service/src/tools/scratch.rs:281:38
+    |
+281 |             source: session.notebook.to_file(),
+    |                                      ^^^^^^^ private method
+    |
+   ::: crates/om-kernel/src/notebook.rs:125:5
+    |
+125 |     pub(crate) fn to_file(&self) -> NotebookFile {
+    |     -------------------------------------------- private method defined here
+
+For more information about this error, try `rustc --explain E0624`.
+error: could not compile `om-host-service` (lib) due to 4 previous errors

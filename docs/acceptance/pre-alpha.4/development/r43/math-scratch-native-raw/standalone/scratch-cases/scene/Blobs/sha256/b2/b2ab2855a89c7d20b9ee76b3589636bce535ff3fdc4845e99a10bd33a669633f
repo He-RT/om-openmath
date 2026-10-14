@@ -1,0 +1,4 @@
+data: {"id":"provider-response-2","model":"synthetic-served-alias","choices":[{"index":0,"delta":{"role":"assistant","content":"中文🙂","tool_calls":[{"type":"function","index":0,"function":{"arguments":"{\"dialect\":\"Modern\",\"snapshot_ref\":\"snapshot-1-f48f611cb2f84caac1e25a10252c9a683ef622b451b594e935cc828eb213c926\",\"source\":\"plot(x^2-y^2,x:-1..1,y:-1..1,view:\\\"surface\\\",mesh_points:8)\",\"use_notebook_definitions\":true}","name":"evaluate_scratch"},"id":"scratch-call"}]},"finish_reason":"tool_calls"}]}
+
+data: [DONE]
+

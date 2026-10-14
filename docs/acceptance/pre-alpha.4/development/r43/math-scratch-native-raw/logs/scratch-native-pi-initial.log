@@ -1,0 +1,7 @@
+{"output": "/Users/hert/Projects/openmath/target/macos-agent-package-tests/AgentRuntime", "files": 4170, "bytes": 172242821, "production_packages": 86}
+   Compiling om-host-service v0.1.0-pre-alpha.3 (/Users/hert/Projects/openmath/crates/om-host-service)
+   Compiling om-kernel v0.1.0-pre-alpha.3 (/Users/hert/Projects/openmath/crates/om-kernel)
+   Compiling om-apple-ffi v0.1.0-pre-alpha.3 (/Users/hert/Projects/openmath/crates/om-apple-ffi)
+    Finished `release` profile [optimized] target(s) in 4m 27s
+fixtures/main.swift:140: Precondition failed
+macos/Scripts/test-agent-package.sh: line 22: 24970 Trace/BPT trap: 5       env NODE_OPTIONS='--invalid-old-profile' NODE_PATH='/untrusted/old-modules' OPENAI_API_KEY='fixture-sentinel' target/macos-agent-package-tests/fixtures "$package" "$attempt" "${2:-}"

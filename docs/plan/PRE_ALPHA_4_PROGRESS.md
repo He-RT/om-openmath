@@ -68,7 +68,7 @@
 | [ ] [R4.3.04](PRE_ALPHA_4.md#task-r4.3.04) | Swift URLSession和SecretStore传输 | in_progress | [真实请求账本/随包Pi/强杀恢复](../acceptance/pre-alpha.4/development/r43/provider-durable-request.json)、[过期计时回调修复](../acceptance/pre-alpha.4/development/r43/provider-timeout-race.json)；实际计时竞态RED→GREEN；物理锁屏仍未完成 | D052/本批D054 |
 | [x] [R4.3.05](PRE_ALPHA_4.md#task-r4.3.05) | 读取笔记本与真实函数资料工具 | completed | [只读基础](../acceptance/pre-alpha.4/development/r43/readonly-services-foundation.json)、[耐久工具/Pi](../acceptance/pre-alpha.4/development/r43/readonly-native-tool.json)、[实际输出/持久历史](../acceptance/pre-alpha.4/development/r43/readonly-outputs-history.json)；1297Rust/实际签名App两轮/重启history/独立worker | D053/D055/本批D056 |
 | [x] [R4.3.06](PRE_ALPHA_4.md#task-r4.3.06) | 预览与原子修改工具接入 | completed | [预览/Pi三轮](../acceptance/pre-alpha.4/development/r43/patch-preview-foundation.json)、[实际原子提交/Pi四轮](../acceptance/pre-alpha.4/development/r43/patch-atomic-apply.json)；1301Rust/38帧31事件/5真实边界/原回执恢复 | D057/本批D058 |
-| [ ] [R4.3.07](PRE_ALPHA_4.md#task-r4.3.07) | 执行、结果检查和隔离试算工具 | in_progress | [依赖规划](../acceptance/pre-alpha.4/development/r43/math-run-planning.json)、[实际结果检查/Pi](../acceptance/pre-alpha.4/development/r43/math-inspect-native.json)；真实run执行和独立scratch仍未完成 | D059/本批D060 |
+| [ ] [R4.3.07](PRE_ALPHA_4.md#task-r4.3.07) | 执行、结果检查和隔离试算工具 | in_progress | [依赖规划](../acceptance/pre-alpha.4/development/r43/math-run-planning.json)、[实际结果检查/Pi](../acceptance/pre-alpha.4/development/r43/math-inspect-native.json)、[独立scratch/Pi](../acceptance/pre-alpha.4/development/r43/math-scratch-native.json)；真实run执行和组回执仍未完成 | D059/D060/本批D061 |
 | [ ] [R4.3.08](PRE_ALPHA_4.md#task-r4.3.08) | 操作核对、撤销和Host停止控制 | planned | — | — |
 | [ ] [R4.3.09](PRE_ALPHA_4.md#task-r4.3.09) | 附件工具与宿主处理注册接口 | planned | — | — |
 | [ ] [R4.3.10](PRE_ALPHA_4.md#task-r4.3.10) | 全工具原生声明与provider严格schema转换 | planned | — | — |
@@ -694,3 +694,21 @@ standalone及签名App资源实际四个三轮case（有理数、Solve、ODE、s
 本轮在154/0终态、原生签名fixture/strict校验通过且无活跃编译器或harness后，按成功Cargo compiler-artifact清单仅清26个target/debug/deps普通Mach-O测试可执行文件（含unit harness），共715,854,624逻辑字节（约683MiB）；先记录每文件SHA/大小/类型，删除后核对缺席，库/CLI/examples/App/runtime/证据保留，可用约43GiB。
 
 R4.3.07仍进行中、全部Steps/Done未勾，实际run_cells执行/耐久executed与partial链、独立可写scratch/result origin仍required。整体34/98、32最终gate全部not_run、candidate未分配、ready/released=false；用户OS输入设置保留、不重问/不改，真实候选与物理锁屏仍未验。无付费live/子代理/本机iOSsim，dev/no main/旧公开tag和包不动，完整98任务/32门禁/实际发行继续。
+
+## D061 · 2026-10-15 独立可写scratch、独立结果来源与实际四轮回合（R4.3.07步骤3完成）
+
+ACK原evaluate_scratch意图的原参数hash→当前实际read-issued snapshot→真实accepted parent→独立scratch CAS线程→独立readonly结果来源→Swift耐久Blob/SQLite回读/native确认→Pi已接通。definitions=true恢复真实定义/Out/random并按当前源码和计算配置非求值reconcile，只检查表达式所需继承定义是否就绪；false用无主定义的纯Session。独立插格入口只用于隔离副本，不触发主笔记本源码事务/失效/RunAll；实际run_cell复用可传入的Interrupt，restore/计算/编码共同受真实host时钟、min(5秒/配置/调用者期限)、4Mstep与独立cancel约束，无文件/配置/model owner。
+
+Scratch结果通过真实独立checkpoint字节跨线程（独立document/build，16MiB包上限），在结果worker解码为原RetainedResult，单独32结果/32MiB计账及pin保留；HMAC十分钟只读ref区分origin=scratch/acceptance=isolated，包含真正parent provenance，从未创建NativeKernelReceipt或接纳为主head。inspect_result六个part复用纯投影，但保留notebook/scratch来源差异。普通运行错误返回failed/error和真实已成功记录/ref；unsupported Import保留真实symbolic值，不伪造成已执行IO。
+
+8项新增覆盖局部Set99/原Out2/两独立job得到同一原随机样本、主checkpoint逐字不变；真实未执行前置拒绝，constant/无关/title/不继承可运行、改owner失效；原hash/闭合参数/作用域/TTL、restore及实际求值中限步/取消；暂停scratch时独立主结果查询仍能完成；返回ref实际inspect为scratch。Kernel+Host+CABI完整385项/0失败、host+kernel全targets Clippy -D warnings、19 Node26/Pi、strict自身TS(skipLibCheck)、17 Python、389 DTO/工程/fmt、Release与最终strict签名通过。unit parent KernelWorker真实，matching receipt仅synthetic单元契约，以下另有物理证明。
+
+standalone和签名App资源各实际5个四轮case：局部Set/Out/random、Solve、ODE、scene、真实递归错误保留2条成功记录。每例38frames(21host/17helper)、28SQLite事件、4次真实URLSession回环，第三/第四HTTP body逐字含原scratch/inspect结果；Error case保持readonly_failed，其余完成。检查原accepted checkpoint ID/hash不变、无source history，实际Document SQLite仅2 kernel_operations（bootstrap+原main）/1 accepted_result；scratch没有主回执。Storage-only重开原28事件/3工具不创建host/helper/旧grant；原4个inspect场景及两轮read、预览、四轮apply/5边界/强杀后手工4继续通过。合成provider/context工厂不冒称Registry/UI/live完成。
+
+原失败均保存：调用private方法编译拒；通用源码协调器追加格令继承定义被清理的RED；预算decode原误映射；InputForm空格断言；混合方言输入没有成功prefix，Decimal坏输入实际保留symbolic而非fatal error。最终采用原Kernel测试已有Wolfram分行递归错误，不改变数学行为来迁就fixture。首次原生exit133的完整输入/HTTP/wire/SQL原件也归档。证据见[独立scratch/Pi](../acceptance/pre-alpha.4/development/r43/math-scratch-native.json)。
+
+本轮按成功Cargo test-profile executable清单、385/0终态、签名fixture/strict签名、无活跃compiler/harness核对，仅清74个target/debug/deps普通Mach-O测试harness，2,304,030,944逻辑字节（2.15GiB），逐文件SHA/大小/类型和删除后缺席留存；库/CLI/examples/App/runtime/证据保留，可用约41GiB。
+
+只勾R4.3.07步骤3；仍须真实run_cells按selected/required/affected执行、组/子操作的真实executed/partial/unknown/结果ref/原回执恢复，步骤1/2/4和Task Done不勾，整体34/98。32最终gate仍not_run、candidate未分配、ready/released=false；完整98+32门禁+实际发行required。用户OS输入设置保持，真实候选/物理锁屏未验；无子代理/本机iOS模拟器/付费live，dev/no main/旧公开tag包不动。
+
+上一提交b6825f1 CI38616794772：Rust/frontend/dependencies成功；iPhone远端xcresult核对35/0失败，iPad在启动simctl bootstatus时由CoreSimulator devicePair内部断言abort134，尚未执行iPad测试，不算平台通过。原job完整日志、远端xcresult及本机仅xcresulttool读取摘要留存；未启动本机模拟器，未改验收断言或1秒门槛。Mac仍运行，完整本批CI待新提交单独核对。

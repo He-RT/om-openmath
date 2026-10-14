@@ -1,0 +1,16 @@
+{
+  "run": 38616794772,
+  "job": 116034233545,
+  "job_status": "completed/failure",
+  "phone": {
+    "passed": 35,
+    "failed": 0,
+    "skipped": 0
+  },
+  "ipad": "simctl bootstatus aborted before iPad test execution",
+  "exit_code": 134,
+  "exception": "NSInternalInconsistencyException: Invalid parameter not satisfying: devicePair",
+  "stack_origin": "CoreSimulator SimDeviceSet addDevicePairAsync / simctl bootstatus",
+  "local_simulator_started": false,
+  "scope": "Read downloaded remote xcresult with xcresulttool only; no test assertion/1-second budget changed"
+}

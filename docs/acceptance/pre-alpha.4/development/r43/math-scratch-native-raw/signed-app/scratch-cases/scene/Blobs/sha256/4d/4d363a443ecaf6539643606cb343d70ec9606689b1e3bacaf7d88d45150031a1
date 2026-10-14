@@ -1,0 +1,4 @@
+data: {"model":"synthetic-served-alias","choices":[{"delta":{"tool_calls":[{"function":{"arguments":"{\"dialect\":\"Modern\",\"snapshot_ref\":\"snapshot-1-b8fd4533ebd3c73b119d8855788f63966b666e0ba5f8caada2748c58ec350da5\",\"source\":\"plot(x^2-y^2,x:-1..1,y:-1..1,view:\\\"surface\\\",mesh_points:8)\",\"use_notebook_definitions\":true}","name":"evaluate_scratch"},"index":0,"id":"scratch-call","type":"function"}],"content":"中文🙂","role":"assistant"},"finish_reason":"tool_calls","index":0}],"id":"provider-response-2"}
+
+data: [DONE]
+

@@ -1,0 +1,17 @@
+   Compiling om-host-service v0.1.0-pre-alpha.3 (/Users/hert/Projects/openmath/crates/om-host-service)
+    Finished `test` profile [unoptimized] target(s) in 19.76s
+     Running tests/math_scratch.rs (target/debug/deps/math_scratch-a16b8731f4abd698)
+
+running 8 tests
+test unsupported_calls_remain_symbolic_and_budget_reaches_actual_scratch_evaluation ... ok
+test original_hash_closed_arguments_current_scope_and_direct_budgets_are_enforced ... ok
+test paused_scratch_does_not_block_result_inspection_and_cancels_without_main_receipt ... ok
+test real_error_prefix_is_retained_without_main_effect_and_refs_expire_and_keep_origin ... ok
+test actual_worker_result_ref_can_be_inspected_as_scratch_with_no_notebook_receipt ... ok
+actual isolated Set/Out/random={99, 2, 0.7415648787718233} / original checkpoint 18342 bytes unchanged
+test local_set_out_and_random_are_independent_with_explicit_scratch_origin_and_real_parent ... ok
+test definitions_require_actual_ready_cells_and_false_mode_has_no_main_bindings ... ok
+test actual_source_change_retires_inherited_definitions_but_title_and_unrelated_work_are_preserved ... ok
+
+test result: ok. 8 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.08s
+

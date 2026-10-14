@@ -1,0 +1,4 @@
+data: {"choices":[{"finish_reason":"tool_calls","index":0,"delta":{"tool_calls":[{"function":{"arguments":"{\"limit\":20,\"part\":\"geometry\",\"result_ref\":\"result-1-34f8c3c3021bdc38fa67b377801b120f3bdc2f16ed2fb7caf2a4360aa48a0e4c\"}","name":"inspect_result"},"id":"inspect-scratch-call","type":"function","index":0}],"content":"中文🙂","role":"assistant"}}],"model":"synthetic-served-alias","id":"provider-response-3"}
+
+data: [DONE]
+

@@ -48,6 +48,7 @@ impl AgentEndpoint {
                 | AgentToolName::GetFunctionDocs
                 | AgentToolName::PreviewSource
                 | AgentToolName::InspectResult
+                | AgentToolName::EvaluateScratch
         ) {
             return Err("NATIVE_TOOL_UNAVAILABLE".into());
         }

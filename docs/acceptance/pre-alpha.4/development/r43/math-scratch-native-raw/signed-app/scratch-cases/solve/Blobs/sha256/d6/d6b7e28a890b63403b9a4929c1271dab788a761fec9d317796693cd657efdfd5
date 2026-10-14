@@ -1,0 +1,4 @@
+data: {"model":"synthetic-served-alias","id":"provider-response-2","choices":[{"delta":{"content":"中文🙂","role":"assistant","tool_calls":[{"function":{"arguments":"{\"dialect\":\"Modern\",\"snapshot_ref\":\"snapshot-1-6e5b18f8a56d40d97834d8063a2a75925491b8a6279c7f19b8a65cd390ab0cf7\",\"source\":\"solve(x^2-5*x+6==0,x)\",\"use_notebook_definitions\":true}","name":"evaluate_scratch"},"index":0,"id":"scratch-call","type":"function"}]},"finish_reason":"tool_calls","index":0}]}
+
+data: [DONE]
+

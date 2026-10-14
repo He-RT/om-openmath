@@ -1,0 +1,4 @@
+data: {"choices":[{"index":0,"delta":{"role":"assistant","content":"中文🙂","tool_calls":[{"type":"function","index":0,"id":"scratch-call","function":{"arguments":"{\"dialect\":\"Modern\",\"snapshot_ref\":\"snapshot-1-2d4ec7cd745a99cc0f099f312d826161dcfb34185de936a56f590ae5fe46b194\",\"source\":\"let curve=ode(fn(t,y)=>y,initial:1,t:0..1);curve\",\"use_notebook_definitions\":true}","name":"evaluate_scratch"}}]},"finish_reason":"tool_calls"}],"model":"synthetic-served-alias","id":"provider-response-2"}
+
+data: [DONE]
+

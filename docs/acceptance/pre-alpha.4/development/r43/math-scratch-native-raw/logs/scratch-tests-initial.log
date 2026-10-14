@@ -1,0 +1,64 @@
+   Compiling om-host-service v0.1.0-pre-alpha.3 (/Users/hert/Projects/openmath/crates/om-host-service)
+   Compiling om-kernel v0.1.0-pre-alpha.3 (/Users/hert/Projects/openmath/crates/om-kernel)
+warning: unused import: `Ordering`
+  --> crates/om-host-service/tests/math_scratch.rs:27:30
+   |
+27 |         atomic::{AtomicBool, Ordering},
+   |                              ^^^^^^^^
+   |
+   = note: `#[warn(unused_imports)]` (part of `#[warn(unused)]`) on by default
+
+warning: `om-host-service` (test "math_scratch") generated 1 warning (run `cargo fix --test "math_scratch" -p om-host-service` to apply 1 suggestion)
+    Finished `test` profile [unoptimized] target(s) in 28.29s
+     Running tests/math_inspect.rs (target/debug/deps/math_inspect-57091b25261709b0)
+
+running 6 tests
+test independent_result_worker_accepts_original_identity_and_direct_cancel_without_main_execution ... ok
+test closed_original_arguments_exact_cursor_scope_history_expiry_and_cancellation_fail_truthfully ... ok
+test actual_partial_failure_unrecorded_steps_and_absent_geometry_remain_explicit ... ok
+actual solver 7 summary pages and 12 real recorded steps
+test actual_solver_summary_multiplicities_and_depth_first_recorded_steps_paginate_completely ... ok
+actual surface=384 original vertices,44 geometry pages, no rendered media
+test ode_and_scene_expose_actual_original_data_and_preview_never_claims_rendered_media ... ok
+actual wide matrix=4 windows,70 distinct leaves; nested=7 pages
+test values_visit_all_matrix_columns_and_nested_exact_unicode_without_mutating_checkpoint ... ok
+
+test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.21s
+
+     Running tests/math_scratch.rs (target/debug/deps/math_scratch-a16b8731f4abd698)
+
+running 7 tests
+
+thread 'actual_source_change_retires_inherited_definitions_but_title_and_unrelated_work_are_preserved' (37833609) panicked at crates/om-host-service/tests/math_scratch.rs:395:13:
+assertion failed: f.evaluate(&budget()).is_ok()
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+test actual_source_change_retires_inherited_definitions_but_title_and_unrelated_work_are_preserved ... FAILED
+test paused_scratch_does_not_block_result_inspection_and_cancels_without_main_receipt ... ok
+
+thread 'original_hash_closed_arguments_current_scope_and_direct_budgets_are_enforced' (37833613) panicked at crates/om-host-service/tests/math_scratch.rs:493:9:
+assertion `left == right` failed
+  left: "CONTEXT_NOT_READY"
+ right: "LIMIT_EXCEEDED"
+test original_hash_closed_arguments_current_scope_and_direct_budgets_are_enforced ... FAILED
+
+thread 'local_set_out_and_random_are_independent_with_explicit_scratch_origin_and_real_parent' (37833612) panicked at crates/om-host-service/tests/math_scratch.rs:280:9:
+{99, 2, 0.7415648787718233}
+test local_set_out_and_random_are_independent_with_explicit_scratch_origin_and_real_parent ... FAILED
+test real_error_prefix_is_retained_without_main_effect_and_refs_expire_and_keep_origin ... ok
+
+thread 'definitions_require_actual_ready_cells_and_false_mode_has_no_main_bindings' (37833611) panicked at crates/om-host-service/tests/math_scratch.rs:314:44:
+called `Result::unwrap()` on an `Err` value: "DEPENDENCY_NOT_READY"
+test definitions_require_actual_ready_cells_and_false_mode_has_no_main_bindings ... FAILED
+test actual_worker_result_ref_can_be_inspected_as_scratch_with_no_notebook_receipt ... ok
+
+failures:
+
+failures:
+    actual_source_change_retires_inherited_definitions_but_title_and_unrelated_work_are_preserved
+    definitions_require_actual_ready_cells_and_false_mode_has_no_main_bindings
+    local_set_out_and_random_are_independent_with_explicit_scratch_origin_and_real_parent
+    original_hash_closed_arguments_current_scope_and_direct_budgets_are_enforced
+
+test result: FAILED. 3 passed; 4 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.06s
+
+error: test failed, to rerun pass `-p om-host-service --test math_scratch`

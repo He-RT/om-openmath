@@ -4203,7 +4203,7 @@ UpdateService只读受控官方GitHub Releases/发行清单（预发行不可用
 
 - [ ] 1. 按selected/required/affected和依赖就绪执行，不RunAll包装。
 - [ ] 2. 返回真实executed/partial/resultrefs。
-- [ ] 3. scratch继承可用只读checkpoint独立defs/Out/random/预算，不hostIO。
+- [x] 3. scratch继承可用只读checkpoint独立defs/Out/random/预算，不hostIO。
 - [ ] 4. 执行下面Tests，核对真实输出/失败，更新任务账本与证据后提交本批次。
 
 **Tests：** .3Solve/ODE/scene实际输出、unknown/unsupported/partial/cancel、scratchSet局部与主不变。测试位置以Files和第15节影响范围为准，证据保存完整输入/命令/输出，不仅记录“通过”。

@@ -55,6 +55,13 @@ impl Session {
     }
 
     pub(super) fn run_cell(&mut self, index: usize) -> CellRun {
+        self.run_cell_with_budget(index, None)
+    }
+    pub(super) fn run_cell_with_budget(
+        &mut self,
+        index: usize,
+        budget: Option<&Interrupt>,
+    ) -> CellRun {
         let cell = &self.notebook.cells[index];
         let id = cell.id.clone();
         let parsed = self.parse_source(&cell.source, cell.dialect);
@@ -110,7 +117,7 @@ impl Session {
             ..Interrupt::default()
         };
         self.eval.defs.take_changed_symbols();
-        let mut execution = self.execute(&parsed, &ctx);
+        let mut execution = self.execute(&parsed, budget.unwrap_or(&ctx));
         let mutations = self.eval.defs.take_changed_symbols();
         let live = self.eval.defs.defined_symbols();
         self.owners.retain(|symbol, _| live.contains(symbol));

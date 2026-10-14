@@ -14,7 +14,7 @@ struct PendingRead {
 }
 enum PendingReadKind {
     Outputs(String),
-    Inspect,
+    Tool(&'static str),
 }
 
 /// One source owner for the native runtime, separate from CAS/editor/network queues.
@@ -207,7 +207,7 @@ impl SourceEndpoint {
                     .pending_reads
                     .remove(&intent.operation_id)
                     .expect("checked");
-                if let PendingReadKind::Inspect = pending.kind {
+                if let PendingReadKind::Tool(definition) = pending.kind {
                     let envelope = if reply.phase == NativeResultHostReplyPhase::Completed {
                         reply.payload
                     } else {
@@ -217,7 +217,7 @@ impl SourceEndpoint {
                             reply.error_code.0.as_deref().unwrap_or("NOT_AVAILABLE"),
                         )
                     };
-                    let envelope = crate::tools::checked_data("inspect_result_result", envelope)
+                    let envelope = crate::tools::checked_data(definition, envelope)
                         .map_err(|_| "TOOL_RESULT_LIMIT")?;
                     let success = envelope["ok"].as_bool().ok_or("INTERNAL_ERROR")?;
                     return self.agent.as_mut().expect("checked").register_readonly(
@@ -260,20 +260,64 @@ impl SourceEndpoint {
                 );
             }
             self.flush_result_state();
-            if intent.name == AgentToolName::InspectResult {
+            if matches!(
+                intent.name,
+                AgentToolName::InspectResult | AgentToolName::EvaluateScratch
+            ) {
                 if self.results.is_none() {
                     self.results = Some(crate::results::runtime::ResultRuntime::new()?);
                 }
-                let request = crate::tools::results::FrozenInspection::original(&intent, &args)?;
-                self.results
-                    .as_ref()
-                    .expect("created")
-                    .agent_inspect(request, &current)?;
+                let definition = if intent.name == AgentToolName::InspectResult {
+                    let request =
+                        crate::tools::results::FrozenInspection::original(&intent, &args)?;
+                    self.results
+                        .as_ref()
+                        .expect("created")
+                        .agent_inspect(request, &current)?;
+                    "inspect_result_result"
+                } else {
+                    let accepted = self.kernel.as_ref().and_then(|k| k.accepted_state());
+                    let request = crate::tools::scratch::prepare(
+                        &intent,
+                        &args,
+                        crate::tools::scratch::ScratchSource {
+                            reads: self.reads.as_mut().ok_or("AGENT_NOT_ACTIVE")?,
+                            scope: &current,
+                            general: self.general.clone(),
+                            accepted: accepted.as_ref(),
+                            now: self.clock.elapsed().as_millis() as u64,
+                        },
+                    );
+                    let request = match request {
+                        Ok(request) => request,
+                        Err(code) => {
+                            let envelope = crate::tools::results::failure(
+                                &intent.operation_id,
+                                &current,
+                                &code,
+                            );
+                            let envelope =
+                                crate::tools::checked_data("evaluate_scratch_result", envelope)
+                                    .map_err(|_| "TOOL_RESULT_LIMIT")?;
+                            return self.agent.as_mut().expect("checked").register_readonly(
+                                &intent,
+                                &current,
+                                serde_json::to_string(&envelope).map_err(|_| "INTERNAL_ERROR")?,
+                                false,
+                            );
+                        }
+                    };
+                    self.results
+                        .as_ref()
+                        .expect("created")
+                        .agent_scratch(request, &current)?;
+                    "evaluate_scratch_result"
+                };
                 self.pending_reads.insert(
                     intent.operation_id.clone(),
                     PendingRead {
                         scope: current,
-                        kind: PendingReadKind::Inspect,
+                        kind: PendingReadKind::Tool(definition),
                         issued: Instant::now(),
                     },
                 );

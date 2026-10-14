@@ -2,7 +2,7 @@ use super::*;
 use om_kernel::retained_results::{GeometryChannel as C, RetainedGeometryQuery};
 
 pub(super) fn page(
-    result: &ResolvedResult,
+    result: &InspectionView<'_>,
     index: usize,
     offset: u32,
     limit: u32,

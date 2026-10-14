@@ -1,0 +1,224 @@
+   Compiling om-kernel v0.1.0-pre-alpha.3 (/Users/hert/Projects/openmath/crates/om-kernel)
+   Compiling om-host-service v0.1.0-pre-alpha.3 (/Users/hert/Projects/openmath/crates/om-host-service)
+   Compiling om-apple-ffi v0.1.0-pre-alpha.3 (/Users/hert/Projects/openmath/crates/om-apple-ffi)
+    Finished `test` profile [unoptimized] target(s) in 1m 45s
+     Running unittests src/lib.rs (target/debug/deps/om_apple_ffi-1de397b1ea7634b8)
+
+running 9 tests
+test lifecycle_tests::concurrent_event_poll_submit_cancel_and_close_settle_without_stale_pointer_access ... ok
+test tests::linking_probe_reports_the_real_desktop_kernel_catalog ... ok
+test registry::tests::finishing_waits_for_real_active_guard_and_stale_token_never_rebinds ... ok
+test lifecycle_tests::consumed_handles_never_alias_and_cancel_is_repeatable_without_rearming ... ok
+test lifecycle_tests::free_drops_only_owned_matching_allocation_and_empty_is_harmless ... ok
+test lifecycle_tests::create_rejects_null_invalid_utf8_unknown_fields_and_overlimit_with_owned_errors ... ok
+test lifecycle_tests::malformed_submit_and_event_byte_limits_report_actual_failure_or_resync ... ok
+test lifecycle_tests::real_math_borrowed_input_is_copied_and_all_returned_bytes_are_freed ... ok
+
+thread 'ffi::tests::packet_and_integer_panics_do_not_cross_the_abi' (37851384) panicked at crates/om-apple-ffi/src/ffi.rs:336:53:
+synthetic private payload
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+thread 'ffi::tests::packet_and_integer_panics_do_not_cross_the_abi' (37851384) panicked at crates/om-apple-ffi/src/ffi.rs:344:31:
+fixture
+test ffi::tests::packet_and_integer_panics_do_not_cross_the_abi ... ok
+
+test result: ok. 9 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.07s
+
+     Running unittests src/lib.rs (target/debug/deps/om_host_service-d8f036e96cb96d62)
+
+running 4 tests
+test kernel::worker::lifecycle::tests::unstarted_or_prepared_or_unknown_is_never_optimistically_accepted_or_discarded ... ok
+test results::runtime::queries::tests::source_fragments_keep_exact_utf8_and_never_call_a_partial_source_complete ... ok
+test scheduler::source_gate_tests::barrier_does_not_wait_on_the_source_owner_lock ... ok
+test kernel::worker::lifecycle::tests::cancel_and_actual_commit_barrier_have_one_linearized_order ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+
+     Running tests/agent_endpoint.rs (target/debug/deps/agent_endpoint-d36dd37a9b5931a7)
+
+running 9 tests
+test request_ids_are_correlated_without_dispatch_and_peer_model_streams_are_denied ... ok
+test apply_only_looks_up_acked_original_preview_and_freezes_precommit_failure_without_effect ... ok
+test durable_confirmation_replay_and_document_close_revoke_real_owner_authority ... ok
+test host_stream_has_exact_offsets_one_terminal_and_no_fabricated_tool_receipt ... ok
+Actual readonly read_notebook original args={ "view" : "cells", "cell_ids":["a"] }; result={"data":{"cells":[{"cell_id":"a","dialect":"Modern","kind":"Math","result_ref":null,"revision":0,"source":"2+2","source_complete":true,"source_cursor":null,"source_hash":"1acf86226c68c1485ca3939884c43ed99abeea344e806548af7ee813c1c0cff3","status":"Stale"}],"is_current":true,"recent_transaction_refs":[],"snapshot_ref":"snapshot-1-1aeddfc2ba66e442916a9a7403612e2c7f21ffd747d289e0f2d2fd153877dd24","symbols":[],"title":"实际文档"},"document":{"generation":1,"id":"actual-document","revision":0},"error":null,"ok":true,"operation_ref":null,"pagination":{"next_cursor":null,"truncated":false},"request_ref":"agent-operation-2a2a0cb3231d90cf9c76ae433ac41d32","status":"completed"}
+Actual live native barrier with synthetic admission/no physical receipt -> {"data":null,"document":{"generation":1,"id":"actual-document","revision":0},"error":{"code":"UNKNOWN_OUTCOME","details":{},"message":"UNKNOWN_OUTCOME","recovery":"query_operation"},"ok":false,"operation_ref":"operation-2-436f87573efee389e10b7668a0725e43a988efa7cfd45a71a31e5505d21fc35e","pagination":{"next_cursor":null,"truncated":false},"request_ref":"agent-operation-d822db4fce315a64edd8b5f2f5e5f63e","status":"unknown"}
+Actual Agent non-effect preview={"extra":{"data":null,"document":{"generation":1,"id":"actual-document","revision":0},"error":{"code":"INVALID_ARGUMENT","details":{},"message":"INVALID_ARGUMENT","recovery":"none"},"ok":false,"operation_ref":null,"pagination":{"next_cursor":null,"truncated":false},"request_ref":"agent-operation-45e0c7be295be6114acd689c9a84530a","status":"failed"},"failed":{"data":null,"document":{"generation":1,"id":"actual-document","revision":0},"error":{"code":"INVALID_PATCH","details":{},"message":"INVALID_PATCH","recovery":"none"},"ok":false,"operation_ref":null,"pagination":{"next_cursor":null,"truncated":false},"request_ref":"agent-operation-a166f0f4f29595c9d9a9c28902bd7c3c","status":"failed"},"source":{"data":{"affected_cell_ids":[],"assigned_cell_ids":{},"diagnostics":[{"cell_id":null,"code":"W002","end_utf8":4,"message":"未知函数名；表示乘法时请添加 *","severity":"hint","start_utf8":0}],"plan_hash":"72e2114e4469dfa7dd4636ecdb925caa10932a17a8ede25f4f3e3cf2a1d34025","preview_kind":"source","preview_ref":null,"valid":true},"document":{"generation":1,"id":"actual-document","revision":0},"error":null,"ok":true,"operation_ref":null,"pagination":{"next_cursor":null,"truncated":false},"request_ref":"agent-operation-8f08948ec78a6649a03ab82db92174f9","status":"completed"},"unchanged":{"data":{"cells":[{"cell_id":"a","dialect":"Modern","kind":"Math","result_ref":null,"revision":0,"source":"2+2","source_complete":true,"source_cursor":null,"source_hash":"1acf86226c68c1485ca3939884c43ed99abeea344e806548af7ee813c1c0cff3","status":"Stale"}],"is_current":true,"recent_transaction_refs":[],"snapshot_ref":"snapshot-3-ca2cddf3984a239e4778f5b471019e36948af74ee598423e894a9c06d2f68f23","symbols":[],"title":"实际文档"},"document":{"generation":1,"id":"actual-document","revision":0},"error":null,"ok":true,"operation_ref":null,"pagination":{"next_cursor":null,"truncated":false},"request_ref":"agent-operation-23f61100df80ee72eecb79f3aa66c702","status":"completed"}}
+test agent_source_inspection_is_noncommittable_and_failed_whole_patch_has_no_effect ... ok
+Actual Agent read/preview envelopes={"denied":{"data":null,"document":{"generation":1,"id":"actual-document","revision":0},"error":{"code":"INVALID_PATCH","details":{},"message":"INVALID_PATCH","recovery":"refresh_snapshot"},"ok":false,"operation_ref":null,"pagination":{"next_cursor":null,"truncated":false},"request_ref":"agent-operation-152f1378ef0f4a6b9a1582a4326a51b6","status":"failed"},"full":{"data":{"cells":[{"cell_id":"a","dialect":"Modern","kind":"Math","result_ref":null,"revision":0,"source":"2+2","source_complete":true,"source_cursor":null,"source_hash":"1acf86226c68c1485ca3939884c43ed99abeea344e806548af7ee813c1c0cff3","status":"Stale"}],"is_current":true,"recent_transaction_refs":[],"snapshot_ref":"snapshot-2-11feffbb13f89bb6f98cdcc13293f72644de46ef47540aa3bf8148e6ff36d18f","symbols":[],"title":"实际文档"},"document":{"generation":1,"id":"actual-document","revision":0},"error":null,"ok":true,"operation_ref":null,"pagination":{"next_cursor":null,"truncated":false},"request_ref":"agent-operation-8e0602eadb4dff569672dd4366e724f8","status":"completed"},"original_outline_still_denied":{"data":null,"document":{"generation":1,"id":"actual-document","revision":0},"error":{"code":"INVALID_PATCH","details":{},"message":"INVALID_PATCH","recovery":"refresh_snapshot"},"ok":false,"operation_ref":null,"pagination":{"next_cursor":null,"truncated":false},"request_ref":"agent-operation-82156e64b5e761027ac46f0c727c6fb4","status":"failed"},"outline":{"data":{"cells":[{"cell_id":"a","dialect":"Modern","kind":"Math","result_ref":null,"revision":0,"source":null,"source_complete":false,"source_cursor":null,"source_hash":"1acf86226c68c1485ca3939884c43ed99abeea344e806548af7ee813c1c0cff3","status":"Stale"}],"is_current":true,"recent_transaction_refs":[],"snapshot_ref":"snapshot-1-55c060ef96936b56e4b343104f5d745d0884143c3c00d3c38cd7aa5cd7e662d4","symbols":[],"title":"实际文档"},"document":{"generation":1,"id":"actual-document","revision":0},"error":null,"ok":true,"operation_ref":null,"pagination":{"next_cursor":null,"truncated":false},"request_ref":"agent-operation-c4ba7dcf167415ade545e036b08f344b","status":"completed"},"valid":{"data":{"affected_cell_ids":["a"],"assigned_cell_ids":{},"diagnostics":[],"plan_hash":"6aba8b2f5206b5ef346a76d36d0314bab1125dfea72b83b3ddd3509e84d26715","preview_kind":"patch","preview_ref":"preview-6-00628acb3b6a660258c7a7a41e322ea4856bdbdbc399d4f9bb813bd9294413b7","valid":true},"document":{"generation":1,"id":"actual-document","revision":0},"error":null,"ok":true,"operation_ref":null,"pagination":{"next_cursor":null,"truncated":false},"request_ref":"agent-operation-55c69590c58295b3a21fc99b2f61e91a","status":"completed"}}
+test agent_preview_consumes_exact_read_issued_scope_without_widening_source_exposure ... ok
+Actual readonly search_functions original args={"query":"sin"}; result={"data":{"functions":[{"function_id":"fn_000102","metadata_version":26,"name":"Sin","signature":"Sin(…)","support":"按真实注册签名与参数个数工作；未支持的表达式保持符号形式并给出已有诊断。"},{"function_id":"fn_000006","metadata_version":26,"name":"ArcCos","signature":"ArcCos(…)","support":"按真实注册签名与参数个数工作；未支持的表达式保持符号形式并给出已有诊断。"},{"function_id":"fn_000007","metadata_version":26,"name":"ArcCosh","signature":"ArcCosh(x)","support":"按真实注册签名与参数个数工作；未支持的表达式保持符号形式并给出已有诊断。"},{"function_id":"fn_000011","metadata_version":26,"name":"ArcSin","signature":"ArcSin(…)","support":"按真实注册签名与参数个数工作；未支持的表达式保持符号形式并给出已有诊断。"},{"function_id":"fn_000012","metadata_version":26,"name":"ArcSinh","signature":"ArcSinh(x)","support":"按真实注册签名与参数个数工作；未支持的表达式保持符号形式并给出已有诊断。"},{"function_id":"fn_000026","metadata_version":26,"name":"Cos","signature":"Cos(…)","support":"按真实注册签名与参数个数工作；未支持的表达式保持符号形式并给出已有诊断。"},{"function_id":"fn_000027","metadata_version":26,"name":"Cosh","signature":"Cosh(x)","support":"按真实注册签名与参数个数工作；未支持的表达式保持符号形式并给出已有诊断。"},{"function_id":"fn_000050","metadata_version":26,"name":"Greater","signature":"Greater(…)","support":"按真实注册签名与参数个数工作；未支持的表达式保持符号形式并给出已有诊断。"}],"metadata_version":26},"document":{"generation":1,"id":"actual-document","revision":0},"error":null,"ok":true,"operation_ref":null,"pagination":{"next_cursor":null,"truncated":false},"request_ref":"agent-operation-ca22db6411583525a495c30370957d7d","status":"completed"}
+test final_agent_commit_barrier_uses_live_task_scope_and_original_frozen_operation ... ok
+Actual readonly get_function_docs original args={"name":"sin"}; result={"data":{"examples":[{"dialect":"Auto","source":"Sin[Pi/6]","verification":"not_verified"},{"dialect":"Auto","source":"Sin[-Pi/6]","verification":"not_verified"}],"function":{"category":"basics","descriptor":{"aliases":[],"arity":{"max":1,"min":1},"attributes":["listable","protected","numeric_function"],"canonical_name":"sin","compatibility_syntax":[],"effect_class":"pure","id":"fn_000102","modern_name":"sin","name":"Sin","options":[],"parameters":[{"default_context":null,"default_source":null,"enum_values":[],"held":false,"max":null,"min":null,"name":"expr","required":true,"runtime_name":null,"value_type":"expression","variadic":false}],"pipe_arg":1,"platforms":["cli","desktop","web","ios"],"precision_modes":["exact","machine","arbitrary_supported"],"precision_notes":"精确计算与已支持的数值近似子集；不把符号保留或格式位数当作新算法/任意精度支持。","return_type":"expression","support":"按真实注册签名与参数个数工作；未支持的表达式保持符号形式并给出已有诊断。"},"examples":[{"dialect":"Auto","source":"Sin[Pi/6]","verification":"not_verified"},{"dialect":"Auto","source":"Sin[-Pi/6]","verification":"not_verified"}],"signature":"Sin(…)","summary_en":"Evaluate exact-angle sine values.","summary_zh":"精确角度正弦。","wolfram_signature":"Sin[…]"},"metadata_version":26},"document":{"generation":1,"id":"actual-document","revision":0},"error":null,"ok":true,"operation_ref":null,"pagination":{"next_cursor":null,"truncated":false},"request_ref":"agent-operation-edc956e48bc7162c5c38512a890820f6","status":"completed"}
+Actual readonly read_notebook original args={"limit":0}; result={"data":null,"document":{"generation":1,"id":"actual-document","revision":0},"error":{"code":"INVALID_ARGUMENT","details":{},"message":"INVALID_ARGUMENT","recovery":"none"},"ok":false,"operation_ref":null,"pagination":{"next_cursor":null,"truncated":false},"request_ref":"agent-operation-ae0756656f83e86840419b6e4523fa97","status":"failed"}
+test actual_readonly_producer_requires_acked_original_arguments_and_durable_confirmation ... ok
+test native_envelope_budget_preserves_raw_frame_and_rejects_duplicate_fields ... ok
+
+test result: ok. 9 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.54s
+
+     Running tests/agent_framing.rs (target/debug/deps/agent_framing-c076f1fc6540b593)
+
+running 4 tests
+test canonical_media_and_tool_parts_retain_ids_without_executable_urls_or_framework_state ... ok
+test frame_contract_denies_credentials_urls_pi_state_missing_null_and_wrong_versions ... ok
+test unique_json_members_utf8_depth_node_byte_and_eof_limits_are_real ... ok
+test every_actual_utf8_byte_cut_and_multiple_frames_preserve_text ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.68s
+
+     Running tests/agent_ingress.rs (target/debug/deps/agent_ingress-d3825909258706cc)
+
+running 3 tests
+test tool_mapping_waits_for_confirmed_canonical_event_and_uses_distinct_host_ids ... ok
+test readonly_canonical_forgery_and_turn_proposal_isolation_do_not_create_grants ... ok
+test handshake_scope_duplicates_and_gap_never_resume_a_different_activation ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.05s
+
+     Running tests/commit_owner.rs (target/debug/deps/commit_owner-70b8f943d3909dc1)
+
+running 7 tests
+test stop_after_barrier_is_pending_not_undo_and_unknown_holds_the_original_gate ... ok
+test stop_before_barrier_never_enters_commit_and_does_not_change_confirmed_source ... ok
+test durable_terminal_admission_never_becomes_a_new_write ... ok
+test repeated_admission_does_not_rewind_writing_committing_or_unknown ... ok
+test late_fence_dirty_ime_scope_and_unacknowledged_admission_are_rejected ... ok
+test actual_kernel_gate_blocks_source_writes_but_keeps_frozen_preview_and_reads_available ... ok
+test cancelled_admission_readback_does_not_release_another_active_gate ... ok
+
+test result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.04s
+
+     Running tests/contracts.rs (target/debug/deps/contracts-5e58c382c2cbe2df)
+
+running 11 tests
+test positive_but_stale_runtime_and_document_generations_fail_owner_binding ... ok
+test canonical_timestamp_accepts_actual_iso_dates_and_rejects_bad_calendar_or_offset ... ok
+test shared_serials_preserve_maximum_and_never_wrap_or_truncate ... ok
+test actual_generated_host_roundtrips_and_required_null_is_not_optional ... ok
+test durable_io_ack_requires_actual_receipt_fields_and_cannot_claim_success_from_null ... ok
+test frame_budget_invalid_utf8_and_unknown_nullable_fields_fail_closed ... ok
+test identities_unknown_fields_unions_and_closed_state_are_rejected ... ok
+test tool_source_hash_accepts_only_exact_lowercase_sha256 ... ok
+test native_wire_dispatch_is_typed_and_cannot_change_permissions_by_adding_fields ... ok
+test unsupported_schema_features_and_false_schemas_are_not_silently_accepted ... ok
+test marked_text_invariants_are_not_confused_with_shape_success ... ok
+
+test result: ok. 11 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.02s
+
+     Running tests/document_source.rs (target/debug/deps/document_source-8ae3969c8e74f3e2)
+
+running 6 tests
+test execution_epoch_remains_independent_from_source_revision ... ok
+test legacy_unicode_cell_ids_are_byte_distinct_and_roundtrip_without_reassignment ... ok
+test raw_unicode_order_and_per_cell_revision_are_never_normalized ... ok
+test input_group_is_bound_to_the_original_manual_request_and_not_an_agent_grant ... ok
+test staged_invalid_math_is_source_and_unknown_receipt_never_changes_authority ... ok
+test duplicate_cells_overflow_and_reopen_generation_cannot_commit_half_a_document ... ok
+
+test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/fixture_support.rs (target/debug/deps/fixture_support-7fbf5b587fd933cd)
+
+running 2 tests
+test controlled_clock_and_cancel_drive_actual_budget_checks ... ok
+test own_unicode_fixture_passes_the_real_sans_io_provider_decoder_for_every_split ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/kernel_acceptance.rs (target/debug/deps/kernel_acceptance-8bb3ab23a72160a6)
+
+running 5 tests
+test only_entered_original_plan_and_matching_receipt_yield_an_accepted_parent ... ok
+test closed_contract_hashes_roles_unknown_fields_and_receipt_producer_are_checked ... ok
+test early_cancel_final_source_config_or_generation_change_prevents_commit ... ok
+test data_only_recovery_rejects_wrong_blob_and_current_build_instead_of_replaying_source ... ok
+test title_change_accepts_original_producer_but_math_epoch_change_discards_candidate ... ok
+
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.06s
+
+     Running tests/kernel_endpoint.rs (target/debug/deps/kernel_endpoint-3afe3fc26a81c076)
+
+running 4 tests
+test closed_wire_does_not_allow_oversized_or_untyped_recovery_chunks ... ok
+test state_command_is_the_same_closed_shape_as_generated_swift ... ok
+test recovery_upload_is_bounded_idempotent_and_directly_cancelled_without_a_state ... ok
+test malformed_complete_payload_fails_in_background_and_releases_the_gate ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.03s
+
+     Running tests/kernel_states.rs (target/debug/deps/kernel_states-d71ce1ef6511029d)
+
+running 2 tests
+test original_scoped_bytes_restore_actual_defs_and_old_parent_stays_independent ... ok
+test revoked_external_pins_keep_byte_and_count_reservations_until_reaped ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.05s
+
+     Running tests/kernel_worker.rs (target/debug/deps/kernel_worker-5908c8033cb30da7)
+
+running 8 tests
+test registry_capacity_failure_and_close_do_not_publish_or_overwrite_the_parent ... ok
+test real_error_keeps_actual_partial_definition_and_history_only_in_the_candidate ... ok
+test explicit_nonreactive_mode_keeps_original_reassignment_semantics ... ok
+test wrong_source_scope_epoch_and_frozen_cancel_are_rejected_or_preserved_as_actual_facts ... ok
+test unchanged_math_after_title_change_keeps_definitions_and_skipped_epoch_retires_them ... ok
+test direct_stop_and_parent_lookup_do_not_wait_for_cas_and_queue_tokens_stay_independent ... ok
+test discarded_random_and_out_state_never_become_the_next_implicit_parent ... ok
+test explicit_parent_a2_then_a5_reconcile_retires_old_definitions_and_no_cascade_runs ... ok
+
+test result: ok. 8 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.09s
+
+     Running tests/math_inspect.rs (target/debug/deps/math_inspect-c9d3f4b21073a6e9)
+
+running 6 tests
+test independent_result_worker_accepts_original_identity_and_direct_cancel_without_main_execution ... ok
+test closed_original_arguments_exact_cursor_scope_history_expiry_and_cancellation_fail_truthfully ... ok
+test actual_partial_failure_unrecorded_steps_and_absent_geometry_remain_explicit ... ok
+actual solver 7 summary pages and 12 real recorded steps
+test actual_solver_summary_multiplicities_and_depth_first_recorded_steps_paginate_completely ... ok
+actual surface=384 original vertices,44 geometry pages, no rendered media
+test ode_and_scene_expose_actual_original_data_and_preview_never_claims_rendered_media ... ok
+actual wide matrix=4 windows,70 distinct leaves; nested=7 pages
+test values_visit_all_matrix_columns_and_nested_exact_unicode_without_mutating_checkpoint ... ok
+
+test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.32s
+
+     Running tests/math_run_plan.rs (target/debug/deps/math_run_plan-0cf27eddd4928c4f)
+
+running 4 tests
+actual bounded source plan={"plan":{"requested_cell_ids":["answer"],"ordered_cell_ids":["a","b","answer"],"edges":[["b","answer"],["a","b"]],"cycle_cell_ids":[],"blocked_cell_ids":[],"unavailable_prerequisite_cell_ids":[]},"continue_on_error":false}
+test real_outline_token_plans_only_required_cells_off_owner_and_never_upgrades_source_exposure ... ok
+test acknowledged_argument_hash_closed_parameters_and_native_allowlist_are_authoritative ... ok
+test historical_or_cross_task_refs_and_clock_rewind_cannot_choose_current_run_input ... ok
+actual accepted checkpoint plan={"plan":{"requested_cell_ids":["answer"],"ordered_cell_ids":["b","answer"],"edges":[["b","answer"]],"cycle_cell_ids":[],"blocked_cell_ids":[],"unavailable_prerequisite_cell_ids":[]},"continue_on_error":false} /18390 unchanged bytes
+actual source-change plan 0={"plan":{"requested_cell_ids":["answer"],"ordered_cell_ids":["b","answer"],"edges":[["b","answer"]],"cycle_cell_ids":[],"blocked_cell_ids":[],"unavailable_prerequisite_cell_ids":[]},"continue_on_error":false}
+actual source-change plan 1={"plan":{"requested_cell_ids":["answer"],"ordered_cell_ids":["a","b","answer"],"edges":[["b","answer"],["a","b"]],"cycle_cell_ids":[],"blocked_cell_ids":[],"unavailable_prerequisite_cell_ids":[]},"continue_on_error":false}
+test actual_accepted_definition_skips_ready_prerequisite_and_checkpoint_bytes_remain_exact ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.10s
+
+     Running tests/math_scratch.rs (target/debug/deps/math_scratch-0afe06e7acdb40a5)
+
+running 8 tests
+test original_hash_closed_arguments_current_scope_and_direct_budgets_are_enforced ... ok
+test unsupported_calls_remain_symbolic_and_budget_reaches_actual_scratch_evaluation ... ok
+
+thread 'real_error_prefix_is_retained_without_main_effect_and_refs_expire_and_keep_origin' (37852185) panicked at crates/om-host-service/tests/math_scratch.rs:518:5:
+assertion failed: !result["data"]["output_summary"]["summary"]["statements"].as_array().unwrap().is_empty()
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+test real_error_prefix_is_retained_without_main_effect_and_refs_expire_and_keep_origin ... FAILED
+test paused_scratch_does_not_block_result_inspection_and_cancels_without_main_receipt ... ok
+test actual_worker_result_ref_can_be_inspected_as_scratch_with_no_notebook_receipt ... ok
+actual isolated Set/Out/random={99, 2, 0.7415648787718233} / original checkpoint 18341 bytes unchanged
+test local_set_out_and_random_are_independent_with_explicit_scratch_origin_and_real_parent ... ok
+test definitions_require_actual_ready_cells_and_false_mode_has_no_main_bindings ... ok
+test actual_source_change_retires_inherited_definitions_but_title_and_unrelated_work_are_preserved ... ok
+
+failures:
+
+failures:
+    real_error_prefix_is_retained_without_main_effect_and_refs_expire_and_keep_origin
+
+test result: FAILED. 7 passed; 1 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.10s
+
+error: test failed, to rerun pass `-p om-host-service --test math_scratch`

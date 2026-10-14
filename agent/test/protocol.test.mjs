@@ -17,6 +17,15 @@ test('inspect_result keeps original history/partial data closed and separate fro
   const failed={...result,ok:false,status:'failed',data:null,error:{code:'INVALID_REFERENCE',message:'expired',recovery:'retry_read',details:{}}};
   assert.equal(decodeReadonlyResult('inspect_result',encode(failed)).status,'failed');
 });
+test('scratch data retains isolated result and real errors without a notebook modification claim', () => {
+  const data={result_ref:'isolated-result',evaluation_status:'done',output_summary:{origin:'scratch',acceptance:'isolated'},diagnostics:[],notebook_modified:false};
+  const result={ok:true,status:'completed',request_ref:'scratch-request',operation_ref:null,document:{id:'doc',generation:1,revision:0},data,error:null,pagination:{truncated:false,next_cursor:null}};
+  const encode=value=>Buffer.from(JSON.stringify(value));
+  assert.equal(decodeReadonlyResult('evaluate_scratch',encode(result)).status,'completed');
+  for(const bad of [{...result,data:{...data,notebook_modified:true}},{...result,data:{...data,result_ref:null}},{...result,operation_ref:'fabricated-main-operation'}])assert.throws(()=>decodeReadonlyResult('evaluate_scratch',encode(bad)),/IPC_INVALID_TOOL_RESULT/);
+  const partial={...result,ok:false,status:'failed',data:{...data,evaluation_status:'error'},error:{code:'EXECUTION_FAILED',message:'Real scratch error after successful prefix',recovery:'none',details:{}}};
+  assert.equal(decodeReadonlyResult('evaluate_scratch',encode(partial)).status,'failed');
+});
 test('actual preview results preserve source-only and complete patch reference rules', () => {
   const encode=value=>Buffer.from(JSON.stringify(value));
   const data={preview_kind:'source',valid:true,preview_ref:null,plan_hash:'a'.repeat(64),diagnostics:[],affected_cell_ids:[],assigned_cell_ids:{}};

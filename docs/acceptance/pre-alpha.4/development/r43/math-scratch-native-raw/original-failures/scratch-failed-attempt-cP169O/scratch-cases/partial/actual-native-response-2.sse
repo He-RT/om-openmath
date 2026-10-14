@@ -1,0 +1,4 @@
+data: {"choices":[{"index":0,"delta":{"role":"assistant","content":"中文🙂","tool_calls":[{"id":"scratch-call","index":0,"type":"function","function":{"arguments":"{\"dialect\":\"Modern\",\"snapshot_ref\":\"snapshot-1-8b045adc329e741ed57defaffc11afd62acc32034f0788bb36c097d91467f005\",\"source\":\"let a=99; decimal(\\\"bad\\\",precision:80)\",\"use_notebook_definitions\":true}","name":"evaluate_scratch"}}]},"finish_reason":"tool_calls"}],"model":"synthetic-served-alias","id":"provider-response-2"}
+
+data: [DONE]
+

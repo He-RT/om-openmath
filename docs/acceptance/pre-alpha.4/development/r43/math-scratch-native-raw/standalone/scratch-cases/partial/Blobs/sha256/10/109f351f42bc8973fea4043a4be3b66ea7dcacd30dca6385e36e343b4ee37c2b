@@ -1,0 +1,4 @@
+data: {"choices":[{"delta":{"role":"assistant","content":"中文🙂","tool_calls":[{"type":"function","id":"scratch-call","function":{"arguments":"{\"dialect\":\"Wolfram\",\"snapshot_ref\":\"snapshot-1-4658df3c55e17ae2609182479d8fe76f1b43b0eed6482cb45d00d490a8126332\",\"source\":\"a=99;\\nloop:=loop\\nloop\\nnever=5\",\"use_notebook_definitions\":true}","name":"evaluate_scratch"},"index":0}]},"finish_reason":"tool_calls","index":0}],"id":"provider-response-2","model":"synthetic-served-alias"}
+
+data: [DONE]
+

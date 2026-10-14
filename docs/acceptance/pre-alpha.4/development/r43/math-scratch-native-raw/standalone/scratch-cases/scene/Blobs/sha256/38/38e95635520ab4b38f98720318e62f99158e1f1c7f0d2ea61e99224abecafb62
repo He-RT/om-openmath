@@ -1,0 +1,4 @@
+data: {"id":"provider-response-3","model":"synthetic-served-alias","choices":[{"index":0,"delta":{"role":"assistant","content":"中文🙂","tool_calls":[{"type":"function","index":0,"id":"inspect-scratch-call","function":{"name":"inspect_result","arguments":"{\"limit\":20,\"part\":\"geometry\",\"result_ref\":\"result-1-f34ed60e8fb7cf5962d5209dfd666e6f5b0ec8569bc4f9eb28130f933c1cb05b\"}"}}]},"finish_reason":"tool_calls"}]}
+
+data: [DONE]
+

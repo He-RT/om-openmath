@@ -123,6 +123,65 @@ impl WorkingSession {
     }
 }
 impl Session {
+    /// Add a fresh source cell solely to an independent IO-free scratch session. This is not a
+    /// notebook source transaction: inherited current definitions/status/Out remain intact.
+    pub fn append_isolated_input(
+        &mut self,
+        input: crate::protocol::CellInput,
+    ) -> Result<(), String> {
+        if self.config.general.reactive
+            || self.config.llm.enabled
+            || !self.config.llm.profiles.is_empty()
+            || !self.preserve_external_cancel
+            || input.kind != CellKind::Math
+            || input.id.is_empty()
+            || self.notebook.cells.iter().any(|c| c.id == input.id)
+        {
+            return Err("INVALID_ISOLATED_CONTEXT".into());
+        }
+        #[cfg(feature = "native")]
+        if self.config_store.is_some() {
+            return Err("INVALID_ISOLATED_CONTEXT".into());
+        }
+        self.notebook.cells.push(crate::Cell::from_input(input));
+        self.analyze_cell(self.notebook.cells.len() - 1);
+        Ok(())
+    }
+    /// Execute one existing cell of an independently owned, IO-free session with the caller's
+    /// exact deadline/step/cancel budget. No source upsert, cascade or main-state acceptance.
+    pub fn run_isolated_current_cell(
+        &mut self,
+        cell_id: &str,
+        ctx: &om_num::ctx::Interrupt,
+    ) -> Result<CellBoundary, String> {
+        if self.config.general.reactive
+            || self.config.llm.enabled
+            || !self.config.llm.profiles.is_empty()
+            || !Arc::ptr_eq(&ctx.flag, &self.interrupt)
+            || !self.preserve_external_cancel
+        {
+            return Err("INVALID_ISOLATED_CONTEXT".into());
+        }
+        #[cfg(feature = "native")]
+        if self.config_store.is_some() {
+            return Err("INVALID_ISOLATED_CONTEXT".into());
+        }
+        let index = self
+            .notebook
+            .cells
+            .iter()
+            .position(|c| c.id == cell_id && c.kind == CellKind::Math)
+            .ok_or("INVALID_CELL_REFERENCE")?;
+        self.notebook.cells[index].status = CellStatus::Running;
+        self.run_cell_with_budget(index, Some(ctx));
+        let cell = &self.notebook.cells[index];
+        Ok(CellBoundary {
+            cell_id: cell.id.clone(),
+            status: cell.status,
+            successful_statements: cell.records.len(),
+            out_index: cell.exec_count,
+        })
+    }
     /// Actual cell states without cloning statement occurrence indexes or mathematical values.
     pub fn cell_statuses(&self) -> Vec<(String, crate::protocol::CellStatus)> {
         self.notebook

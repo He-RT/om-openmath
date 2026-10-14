@@ -213,7 +213,7 @@ actor AgentSessionService {
   /// Readonly source/catalog/preview producers require actual native results and durable readback.
   private func dispatchTool(_ intent:NativeAgentToolIntent) async {
     if intent.name == .apply_notebook_patch {await dispatchPatch(intent);return}
-    guard [.read_notebook,.search_functions,.get_function_docs,.preview_source,.inspect_result].contains(intent.name) else {await unavailableTool(intent);return}
+    guard [.read_notebook,.search_functions,.get_function_docs,.preview_source,.inspect_result,.evaluate_scratch].contains(intent.name) else {await unavailableTool(intent);return}
     do {
       guard let s=scope,let ledger else {throw AgentSessionError.inactive}
       if intent.name == .read_notebook {

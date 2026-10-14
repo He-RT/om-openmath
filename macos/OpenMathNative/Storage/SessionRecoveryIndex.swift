@@ -48,6 +48,7 @@ final class SessionRecoveryIndex {
       guard proposal==admission.proposalEvent,existing==nil else {throw StorageError.corruptIdentity}
       try db.statement("UPDATE session_tool_index SET admission_event=? WHERE session_id=? AND call_id=?",[.text(event.event_id),.text(event.agent_session_id),.text(admission.callID)])
     case .task_transition:
+      if try SessionRunSemantics.transition(event) != nil {break}
       let payload=try SessionValidation.payload(SessionRequestLifecycle.self,event)
       if let plan=payload.plan {try db.statement("INSERT INTO session_request_index VALUES(?,?,?,?,?)",[.text(event.agent_session_id),.text(plan.contextID),.text(event.event_id),.integer(Int64(event.event_sequence)),.text(event.event_id)])}
       else if let transition=payload.transition {
@@ -105,6 +106,11 @@ final class SessionRecoveryIndex {
       let admission=try JSONDecoder().decode(SessionToolAdmission.self,from:input.payload);ids.insert(admission.proposalEvent)
       try db.statement("SELECT admission_event FROM session_tool_index WHERE session_id=? AND call_id=? AND admission_event IS NOT NULL",[.text(input.session),.text(admission.callID)]) {ids.insert(try SQLColumn.text($0,0))}
     case .task_transition:
+      if let run=try SessionRunSemantics.transition(input.payload) {
+        ids.insert(run.groupAdmission)
+        if let child=run.childAdmission,child != input.eventID {ids.insert(child)}
+        break
+      }
       let payload=try JSONDecoder().decode(SessionRequestLifecycle.self,from:input.payload)
       if let plan=payload.plan {try db.statement("SELECT plan_event FROM session_request_index WHERE session_id=? AND context_id=?",[.text(input.session),.text(plan.contextID)]) {ids.insert(try SQLColumn.text($0,0))}}
     default:break

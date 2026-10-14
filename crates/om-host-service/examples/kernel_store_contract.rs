@@ -101,6 +101,19 @@ fn main() {
         )
         .unwrap();
         write(folder.join("source.json"), owner.snapshot());
+        // Non-evaluating native fixture context, available before the durable run admission.
+        let general = GeneralConfig {
+            auto_run_dependents: false,
+            ..Default::default()
+        };
+        use sha2::{Digest, Sha256};
+        write(
+            folder.join("run-context.json"),
+            &serde_json::json!({
+                "kernel_build": om_host_service::kernel::endpoint::KERNEL_BUILD_ID,
+                "general_hash": format!("{:x}", Sha256::digest(serde_json::to_vec(&general).unwrap()))
+            }),
+        );
         return;
     }
     let stage = &args[3];
@@ -121,12 +134,29 @@ fn main() {
         source,
         general: general.clone(),
         config_revision: serial(0),
-        build: "actual-kernel-store-build".into(),
+        build: if folder.join("run-operation-ids.json").is_file() {
+            om_host_service::kernel::endpoint::KERNEL_BUILD_ID.into()
+        } else {
+            "actual-kernel-store-build".into()
+        },
+    };
+    // Disposable run-group fixture supplies original IDs before any preparation/evaluation.
+    // Ordinary kernel-store fixtures retain their original identities.
+    let operations: Option<std::collections::BTreeMap<String, String>> = folder
+        .join("run-operation-ids.json")
+        .is_file()
+        .then(|| read(folder.join("run-operation-ids.json")));
+    let operation = |stage: &str, fallback: String| {
+        operations
+            .as_ref()
+            .and_then(|ids| ids.get(stage))
+            .cloned()
+            .unwrap_or(fallback)
     };
     if stage == "bootstrap" && mode != "verify" {
         let frozen = FrozenKernelPlan::bootstrap(
             &context,
-            "bootstrap-operation",
+            &operation("bootstrap", "bootstrap-operation".into()),
             &worker,
             CheckpointLimits::default(),
             &Interrupt::default(),
@@ -232,7 +262,7 @@ fn main() {
             let job = KernelJob {
                 runtime_instance_id: context.runtime_instance_id.clone(),
                 document_generation: context.document_generation,
-                operation_id: format!("operation-{stage}"),
+                operation_id: operation(stage, format!("operation-{stage}")),
                 parent_checkpoint_ref: parent.registry_ref().into(),
                 source: context.source.clone(),
                 general: context.general.clone(),

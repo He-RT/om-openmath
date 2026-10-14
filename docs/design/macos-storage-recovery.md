@@ -22,6 +22,12 @@
 
 ## 当前仓库基础
 
+2026-10-15实施补充：R4.3.07的运行组日志使用Library 4现有SessionEvent，不创建第二个文档写入者或伪造聚合KernelReceipt。一次`run_cells`只有一份原始proposal、`tool_admitted`和`tool_started`；admission内的native冻结计划保留原参数SHA、selected/required/affected、真实扩展单元格、原continue_on_error、source/epoch/config/build/general及初始接纳头。组target只是原操作身份，不能按单个kernel effect查询为整组完成。
+
+每个bootstrap/单元格依次写入`task_transition`的`run_child_admitted`、`run_child_started`与`run_child_result`或`run_child_stopped`。admission/start的真实耐久ACK在计算回调之前；child身份由原group operation、参数SHA与原序号稳定派生，Library的同一operation claims表约束组和每个child。result必须核对原文档outbox、原receipt字节SHA、已验证投影和完整typed receipt，不能用重排JSON的字节替代原哈希；bootstrap独立于实际执行单元格计数。进度hash链只从前一不可变事件与原效果生成，包含接纳数、错误数、未接纳终止、实际checkpoint头和unknown事实。
+
+`run_finished`记录completed/partial/failed/cancelled/unknown；尚有未核对child时不能凭此前成功前缀声明整组完成。unknown只允许原效果核对后补齐result/最终状态，不能接纳新child；重启读取不含executor/模型/Helper/旧grant，不回放源码。一个child真实错误前的成功语句及定义按原Session语义保留，并通过原receipt报告。此日志接线的真实Swift/SQLite/数学恢复验证与Rust RunExecutor的控制验证分别留证；原Agent producer/C ABI/Pi执行及新scope结果引用在R4.3.07后续接通，不能由存储测试宣称整个工具已经完成。
+
 - [Notebook::to_file/from_file](../../crates/om-kernel/src/notebook.rs) 与[桌面文件层](../../app/src/state/files.ts)保持 v1 源码文件，加载后没有运行输出；桌面源码保存目前不具备本方案的事务账本。
 - [原配置写入](../../crates/om-kernel/src/native/file.rs)已有相邻临时文件、sync_all 和替换；[凭据层](../../crates/om-kernel/src/native/credentials.rs)使用 service `openmath`/profile，并兼容环境变量和TOML明文。这是旧实现依据，新Mac不默认读取它们，也不把旧keyring路径接入新Registry。
 - [移动文档](../../ios/OpenMath/DocumentStore.swift)使用 UIDocument；新 Mac 使用 NSDocument/文件协调，不替换移动协议。

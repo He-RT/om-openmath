@@ -3,19 +3,55 @@ use std::{
     fs,
     path::PathBuf,
     process::Command,
+    sync::atomic::{AtomicU64, Ordering},
     time::{SystemTime, UNIX_EPOCH},
 };
 fn folder() -> PathBuf {
-    let p = std::env::temp_dir().join(format!(
-        "om-artifact-{}-{}",
-        std::process::id(),
+    folder_at(
         SystemTime::now()
             .duration_since(UNIX_EPOCH)
             .unwrap()
-            .as_nanos()
-    ));
-    fs::create_dir(&p).unwrap();
-    p
+            .as_nanos(),
+    )
+}
+fn folder_at(stamp: u128) -> PathBuf {
+    static NEXT: AtomicU64 = AtomicU64::new(0);
+    loop {
+        let p = std::env::temp_dir().join(format!(
+            "om-artifact-{}-{stamp}-{}",
+            std::process::id(),
+            NEXT.fetch_add(1, Ordering::Relaxed)
+        ));
+        match fs::create_dir(&p) {
+            Ok(()) => return p,
+            Err(error) if error.kind() == std::io::ErrorKind::AlreadyExists => continue,
+            Err(error) => panic!("cannot create isolated CLI export directory: {error}"),
+        }
+    }
+}
+#[test]
+fn parallel_exports_get_distinct_directories_even_with_identical_clock_readings() {
+    let barrier = std::sync::Arc::new(std::sync::Barrier::new(16));
+    let threads = (0..16)
+        .map(|_| {
+            let barrier = barrier.clone();
+            std::thread::spawn(move || {
+                barrier.wait();
+                let path = folder_at(0);
+                fs::write(path.join("owned"), b"only this export").unwrap();
+                path
+            })
+        })
+        .collect::<Vec<_>>();
+    let paths = threads
+        .into_iter()
+        .map(|thread| thread.join().unwrap())
+        .collect::<std::collections::BTreeSet<_>>();
+    assert_eq!(paths.len(), 16);
+    for path in paths {
+        assert_eq!(fs::read(path.join("owned")).unwrap(), b"only this export");
+        fs::remove_dir_all(path).unwrap();
+    }
 }
 #[test]
 fn noninteractive_svg_png_csv_json_exports_are_real_and_invalid_source_never_writes() {

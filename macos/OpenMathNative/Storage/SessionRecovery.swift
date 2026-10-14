@@ -9,6 +9,10 @@ extension RecoveryService {
       guard let target=tool.target,let admittedID=tool.admissionEvent,
         let admissionEvent=try await storage.sessionEvent(session,event:admittedID) else {continue}
       do {
+        if try SessionValidation.payload(SessionToolAdmission.self,admissionEvent.event).run != nil {
+          _ = try await SessionRunPort(storage:storage,ledger:ledger).reconcile(admission:admittedID,faults:faults)
+          continue
+        }
         guard let original=try await storage.reconcileOriginalOperationEffect(target) else {continue}
         let result=SessionToolResult(codecVersion:1,admissionEvent:admittedID,sourceEventID:original.eventID,sourceEffectHash:try original.stableHash,rawReceiptHash:original.rawReceiptHash,recovered:true,outcome:try SessionSemantics.effectOutcome(original,target:target))
         _ = try await ledger.record(result,id:"recovered-"+admittedID,kind:.tool_result,parent:admittedID,turn:admissionEvent.event.agent_turn_id.value,task:admissionEvent.event.task_id.value,target:target,faults:faults)

@@ -76,6 +76,12 @@ struct SessionToolAdmission:Codable,Sendable {
   let toolName:String
   let argumentsHash:String
   let target:SessionOperationTarget
+  /// Native frozen run plan. The target identifies the group, never a fake kernel receipt.
+  let run:SessionRunPlan?
+  init(codecVersion:Int,callID:String,proposalEvent:String,toolName:String,argumentsHash:String,target:SessionOperationTarget,run:SessionRunPlan?=nil) {
+    self.codecVersion=codecVersion;self.callID=callID;self.proposalEvent=proposalEvent;self.toolName=toolName
+    self.argumentsHash=argumentsHash;self.target=target;self.run=run
+  }
 }
 struct SessionToolStarted:Codable,Sendable {let codecVersion:Int,admissionEvent:String}
 struct SessionToolResult:Codable,Sendable {
@@ -111,6 +117,7 @@ struct RecoveredTool:Codable,Sendable {
   let phase:RecoveredToolPhase
   let target:SessionOperationTarget?
   let resultEvent:String?
+  var run:RecoveredRunSummary?=nil
 }
 struct SessionRequestPlan:Codable,Sendable {
   let codecVersion:Int

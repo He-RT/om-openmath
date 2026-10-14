@@ -45,6 +45,7 @@ actor SessionToolPort {
   init(storage:StorageService,ledger:SessionLedgerPort) {self.storage=storage;self.ledger=ledger}
   /// Read the original operation only. This path has no execution callback and cannot retry it.
   func reconcile(admission:SessionToolAdmission,admissionID:String,resultID:String,turn:String,task:String)async throws->SessionAppendReceipt? {
+    guard admission.run==nil else {throw SessionLedgerError.invalidTransition}
     if let existing=try await storage.sessionEvent(ledger.session,event:resultID) {
       guard existing.event.event_kind == .tool_result,existing.event.parent_event_id.value==admissionID,
         existing.event.operation_id.value==admission.target.operationID,existing.event.operation_store_id.value==admission.target.storeID else {throw SessionLedgerError.wrongSourceEffect}
@@ -56,6 +57,7 @@ actor SessionToolPort {
     return try await ledger.record(result,id:resultID,kind:.tool_result,parent:admissionID,turn:turn,task:task,target:admission.target)
   }
   func perform(admission:SessionToolAdmission,admissionID:String,startedID:String,resultID:String,turn:String,task:String,faults:StorageFaults = .init(),execute:@escaping @Sendable ()async throws->Void) async throws->SessionAppendReceipt {
+    guard admission.run==nil else {throw SessionLedgerError.invalidTransition}
     try Task.checkCancellation()
     guard !busy else {throw StorageError.inUse};busy=true;defer {busy=false}
     let document=try await storage.documentIdentity(admission.target.documentID)

@@ -83,6 +83,19 @@ jobs:
         run: bash macos/Scripts/test-drafts.sh > target/macos-ci-evidence/drafts.log 2>&1
       - name: 规范会话、工具接纳与实际网络发送中断恢复
         run: bash macos/Scripts/test-session-ledger.sh > target/macos-ci-evidence/session-ledger.log 2>&1
+      - name: 真实运行组、子操作原回执与SIGKILL恢复
+        run: bash macos/Scripts/test-run-ledger.sh > target/macos-ci-evidence/run-ledger.log 2>&1
+      - name: 保存运行组原始SQLite和中断事实
+        if: always()
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import shutil
+          output=Path('target/macos-ci-evidence/run-ledger-cases')
+          for source in Path('target/macos-storage-tests').glob('run-ledger-*'):
+              if source.is_dir():
+                  shutil.copytree(source,output/source.name,dirs_exist_ok=True)
+          PY
       - name: 全库备份、资源回收、新代次与只读回退隔离
         run: bash macos/Scripts/test-maintenance.sh > target/macos-ci-evidence/maintenance.log 2>&1
       - name: 原生工作台宽度、真实运行与编辑器选区保留

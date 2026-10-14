@@ -1,0 +1,219 @@
+{
+  "schema_version": 1,
+  "kind": "successful_test_profile_ordinary_macho_executable_only",
+  "files": 29,
+  "logical_bytes": 808589024,
+  "records": [
+    {
+      "path": "target/debug/deps/agent_endpoint-616027713b747f45",
+      "bytes": 49995888,
+      "sha256": "4d09fc4f8871699b393552cc762adc07003eef517b362965385f4f5bbcc3d183",
+      "inode": 54850451,
+      "device": 16777232
+    },
+    {
+      "path": "target/debug/deps/agent_framing-53b7f707b1cee714",
+      "bytes": 3659936,
+      "sha256": "9f9bb5f41a170a3e1c9bec528628c3045ec3aa175b90937ec85c6af055676582",
+      "inode": 54850475,
+      "device": 16777232
+    },
+    {
+      "path": "target/debug/deps/agent_ingress-872a027c55047be9",
+      "bytes": 4062704,
+      "sha256": "c0197c38477d9c4618067ca8a9453279ffc0aa0d1f878fbb62d35671f483405d",
+      "inode": 54850257,
+      "device": 16777232
+    },
+    {
+      "path": "target/debug/deps/artifact-238412a1f436a924",
+      "bytes": 1683184,
+      "sha256": "50869a11b9833796f205d22593b6a687c742835df575b6d9f4937e4b7218f1da",
+      "inode": 54850027,
+      "device": 16777232
+    },
+    {
+      "path": "target/debug/deps/commit_owner-eee76ba98ec4e478",
+      "bytes": 20713952,
+      "sha256": "84464d49083db8235e9656cfdfea466be28d2e26faedd246351109f3c7da8874",
+      "inode": 54850415,
+      "device": 16777232
+    },
+    {
+      "path": "target/debug/deps/contracts-7b1a2b8577c625aa",
+      "bytes": 3215280,
+      "sha256": "4656ad2133aeb745734145a8d4699e29c113204d5d9a4c7c28c48ccd7c0e2f6e",
+      "inode": 54850499,
+      "device": 16777232
+    },
+    {
+      "path": "target/debug/deps/document_source-6ba5191ea9bea7c6",
+      "bytes": 1329200,
+      "sha256": "7904ab603899f2f53320aab9a4afb5284fdd0f6c31c4817e90fbaa9361e8d6c6",
+      "inode": 54850523,
+      "device": 16777232
+    },
+    {
+      "path": "target/debug/deps/fixture_support-65d8e7a41e209bab",
+      "bytes": 1393584,
+      "sha256": "d494182a9a760c8b9767426fee7909fb3ede3e9b48bc4668a8b2ad8bdc39c4e0",
+      "inode": 54850392,
+      "device": 16777232
+    },
+    {
+      "path": "target/debug/deps/kernel_acceptance-cfd0c2f95e51f0bb",
+      "bytes": 41241776,
+      "sha256": "fa4f81cc3a5e2e748c7c50852e407c4880cce8688046e020e8663e8eab850721",
+      "inode": 54850521,
+      "device": 16777232
+    },
+    {
+      "path": "target/debug/deps/kernel_endpoint-b0e3d5a2add5101b",
+      "bytes": 44544272,
+      "sha256": "b65f844769f83e8c11d2760b02dd3654d31dc84738242990992045adae116ed0",
+      "inode": 54850514,
+      "device": 16777232
+    },
+    {
+      "path": "target/debug/deps/kernel_states-bb37cefce3adbb8d",
+      "bytes": 39598480,
+      "sha256": "8ffe94dc251688fd00f567aae912049d6b044c447cc95c00bddf4c95ce0dac24",
+      "inode": 54850540,
+      "device": 16777232
+    },
+    {
+      "path": "target/debug/deps/kernel_worker-ee4691de1c02bdee",
+      "bytes": 40702192,
+      "sha256": "d16fe310265450a7fff0d18e22c7696bb8dac0536fb4a2b01d9bb0e5dbd96fb4",
+      "inode": 54850358,
+      "device": 16777232
+    },
+    {
+      "path": "target/debug/deps/math_inspect-57091b25261709b0",
+      "bytes": 43360576,
+      "sha256": "d29afb385c7d9e6a4643b7148d14cc3596653f5382c0f454e5c16b3e81ac295d",
+      "inode": 54850387,
+      "device": 16777232
+    },
+    {
+      "path": "target/debug/deps/math_run_execution-4552b41252042dbd",
+      "bytes": 42937504,
+      "sha256": "080221a14c2c0148b3db65696e3bec4bc4da4d346dc6964e82b8cbd2ece02c0b",
+      "inode": 54850555,
+      "device": 16777232
+    },
+    {
+      "path": "target/debug/deps/math_run_plan-c56a41edb40cdd47",
+      "bytes": 42781280,
+      "sha256": "d8d048980a909f4003a8b92918cfb34c8c0f8c54a09432ef6ab3a9c5fdc879c8",
+      "inode": 54850399,
+      "device": 16777232
+    },
+    {
+      "path": "target/debug/deps/math_scratch-a16b8731f4abd698",
+      "bytes": 44721520,
+      "sha256": "9662ce11cb2bc8bc4a7e3b0485719dfcb7d15f013028c796bfc94b0517d2afcf",
+      "inode": 54850491,
+      "device": 16777232
+    },
+    {
+      "path": "target/debug/deps/model_codec-edc05ce8d4844f4c",
+      "bytes": 37951952,
+      "sha256": "c06aa418c8ff2666f3c9e0cc83c940ed28b60bd25fab8a99169fe20506487b72",
+      "inode": 54850334,
+      "device": 16777232
+    },
+    {
+      "path": "target/debug/deps/om_apple_ffi-575611789755540d",
+      "bytes": 37588016,
+      "sha256": "2be6fb46d54680236fff684b23f073eb072a674aa92696b3cd42589d78b1a337",
+      "inode": 54850348,
+      "device": 16777232
+    },
+    {
+      "path": "target/debug/deps/om_host_service-dcfb613528e458e2",
+      "bytes": 39949856,
+      "sha256": "8f6dc9224add71c937d61e2c8acb5c1192803185933e67b6ccc48a018c126eb5",
+      "inode": 54850158,
+      "device": 16777232
+    },
+    {
+      "path": "target/debug/deps/preview-a18c677d5f834e60",
+      "bytes": 20435952,
+      "sha256": "0aba58f44df7587bf325968867cc3f643e5fdcce00a9e9075b48aedd926afa76",
+      "inode": 54850551,
+      "device": 16777232
+    },
+    {
+      "path": "target/debug/deps/readonly_catalog-d23bfb83ce328c97",
+      "bytes": 35563712,
+      "sha256": "819b6a01ed7abfb9b75fdea7c86bc2fc31f494814004b90baf536820cdaa2cd7",
+      "inode": 54850285,
+      "device": 16777232
+    },
+    {
+      "path": "target/debug/deps/readonly_notebook-65e9ab3aafc505d2",
+      "bytes": 42543680,
+      "sha256": "4b4b89f99aca3301e1619d8b89b10845cf09f060eaf7c8a6dc7909061fb5bd47",
+      "inode": 54850400,
+      "device": 16777232
+    },
+    {
+      "path": "target/debug/deps/references-415658f3b24c6f81",
+      "bytes": 1238208,
+      "sha256": "3dd6cd685513c01e404cb18d56529ec3d6c137305d751b146777f57587530462",
+      "inode": 54850255,
+      "device": 16777232
+    },
+    {
+      "path": "target/debug/deps/result_runtime-bf25cc11e388cf61",
+      "bytes": 43903136,
+      "sha256": "8ad0bc7f786c85f8a5397a3017454891a9ef420e3be41e9fa8c7fbd5645986a7",
+      "inode": 54850479,
+      "device": 16777232
+    },
+    {
+      "path": "target/debug/deps/results-b61c55b6feb4cbc3",
+      "bytes": 41169136,
+      "sha256": "79d89718dde35bb0060532e5a98f970c99cefd9bd7cce447b32433d17aac1c5f",
+      "inode": 54850471,
+      "device": 16777232
+    },
+    {
+      "path": "target/debug/deps/scheduler-e257d75ab1a492f3",
+      "bytes": 37314720,
+      "sha256": "e35cb6fe62964f8ba94036e208aa343cf7b477a839a71a74dfe2107fc4748cf8",
+      "inode": 54850357,
+      "device": 16777232
+    },
+    {
+      "path": "target/debug/deps/source_endpoint-8593f7d6fd1909b3",
+      "bytes": 23535152,
+      "sha256": "86b6fa59e1541ef92d9847c9d982b08d95f3ab3d2e4199af1c044a20a46f8994",
+      "inode": 54850269,
+      "device": 16777232
+    },
+    {
+      "path": "target/debug/deps/source_operations-4c83806d93c41f34",
+      "bytes": 19361984,
+      "sha256": "07c58fc9bd861b459dda63b9c3802af57e45bc15ae4790d8eb8cc504df0e0b36",
+      "inode": 54850469,
+      "device": 16777232
+    },
+    {
+      "path": "target/debug/deps/undo_source-53cd9c5a1e4c8faf",
+      "bytes": 2092192,
+      "sha256": "0f6853ae5db627f994b2d1994a481c681eda109aa260db33a6bda085492e9159",
+      "inode": 54850552,
+      "device": 16777232
+    }
+  ],
+  "deleted": true,
+  "preserved": [
+    "all rlib/rmeta/static libraries and object caches",
+    "CLI/examples",
+    "release library/App/runtime",
+    "evidence and failed originals",
+    "user data and credentials"
+  ]
+}

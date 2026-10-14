@@ -58,6 +58,7 @@ enum SessionSemantics {
         proposal.agent_turn_id.value==input.turn,proposal.task_id.value==input.task else {throw SessionLedgerError.invalidTransition}
       let end=try SessionValidation.payload(SessionAssistantEnd.self,proposal)
       guard let call=end.calls.first(where:{$0.callID==admission.callID}),call.toolName==admission.toolName,KernelHashes.data(call.arguments)==admission.argumentsHash else {throw SessionLedgerError.invalidTransition}
+      try SessionRunSemantics.validateAdmission(admission,call:call)
       for event in events where event.event_kind == .tool_admitted {
         let old=try SessionValidation.payload(SessionToolAdmission.self,event)
         guard old.callID != admission.callID,old.target.storeID != admission.target.storeID || old.target.operationID != admission.target.operationID else {throw SessionLedgerError.executionAlreadyClaimed}
@@ -74,9 +75,11 @@ enum SessionSemantics {
         KernelValidation.hash(result.sourceEffectHash),KernelValidation.hash(result.rawReceiptHash),
         let admission=events.first(where:{$0.event_id==result.admissionEvent && $0.event_kind == .tool_admitted}) else {throw SessionLedgerError.invalidTransition}
       try sameScope(input,admission)
+      guard try SessionValidation.payload(SessionToolAdmission.self,admission).run==nil else {throw SessionLedgerError.invalidTransition}
       guard !events.contains(where:{$0.parent_event_id.value==result.admissionEvent && $0.event_kind == .tool_result}) else {throw SessionLedgerError.invalidTransition}
       if !result.recovered {guard events.contains(where:{$0.parent_event_id.value==result.admissionEvent && $0.event_kind == .tool_started}) else {throw SessionLedgerError.invalidTransition}}
     case .task_transition:
+      if let run=try SessionRunSemantics.transition(input.payload) {try SessionRunSemantics.validate(input,transition:run,events:events);return}
       let lifecycle=try JSONDecoder().decode(SessionRequestLifecycle.self,from:input.payload)
       guard input.turn != nil,input.task != nil else {throw SessionLedgerError.invalidTransition}
       if lifecycle.kind == .request_planned {
@@ -182,6 +185,18 @@ enum SessionSemantics {
           if let result {phase=try SessionValidation.payload(SessionToolResult.self,result).outcome == .partial ? .partial : .completed}
           else {phase=admissionEvent==nil ? .tool_not_started : .tool_outcome_unknown}
           var resultID=result?.event_id
+          var runSummary:RecoveredRunSummary?
+          if let admissionEvent,let admission,admission.run != nil {
+            var latest=admissionEvent
+            for _ in 0..<3010 {
+              let next=events.filter{$0.parent_event_id.value==latest.event_id && [.tool_started,.task_transition].contains($0.event_kind)}
+              guard next.count<=1 else {throw StorageError.corruptIdentity}
+              guard let child=next.first else {break};latest=child
+            }
+            let transition=try SessionRunSemantics.transition(latest)
+            let snapshot=SessionRunSnapshot(admissionEvent:admissionEvent,admission:admission,latest:latest,transition:transition,progress:transition?.progress ?? .init(plan:admission.run!))
+            phase=SessionRunSemantics.recoveredPhase(snapshot);runSummary=snapshot.summary;resultID=transition?.phase != nil ? latest.event_id:nil
+          }
           for next in events where next.event_kind == .recovery && next.parent_event_id.value==event.event_id {
             if let record=try effectRecord(next),record.intent.tool_call_id==call.callID {
               guard record.target==admission?.target,record.admissionEvent==admissionEvent?.event_id else {throw StorageError.corruptIdentity}
@@ -193,10 +208,11 @@ enum SessionSemantics {
               phase=try readonlyPhase(record);resultID=next.event_id
             }
           }
-          tools.append(.init(session:session,proposalEvent:event.event_id,callID:call.callID,admissionEvent:admissionEvent?.event_id,phase:phase,target:admission?.target,resultEvent:resultID))
+          tools.append(.init(session:session,proposalEvent:event.event_id,callID:call.callID,admissionEvent:admissionEvent?.event_id,phase:phase,target:admission?.target,resultEvent:resultID,run:runSummary))
         }
       }
       if event.event_kind == .task_transition {
+        if try SessionRunSemantics.transition(event) != nil {continue}
         let lifecycle=try SessionValidation.payload(SessionRequestLifecycle.self,event)
         guard let plan=lifecycle.plan else {continue}
         var latest=event,phase=SessionDispatchPhase.planned

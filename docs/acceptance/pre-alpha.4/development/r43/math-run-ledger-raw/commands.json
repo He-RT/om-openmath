@@ -1,0 +1,63 @@
+[
+  {
+    "command": "CARGO_PROFILE_DEV_DEBUG=0 CARGO_PROFILE_TEST_DEBUG=0 cargo test --locked -p om-cli --test artifact -- --nocapture",
+    "log": "logs/run-ledger-cli-artifact.log.gz",
+    "exit": 0
+  },
+  {
+    "command": "CARGO_PROFILE_DEV_DEBUG=0 CARGO_PROFILE_TEST_DEBUG=0 cargo test --locked -p om-host-service -p om-apple-ffi",
+    "log": "logs/run-ledger-rust-regression.log.gz",
+    "exit": 0
+  },
+  {
+    "command": "bash macos/Scripts/test-run-ledger.sh",
+    "log": "logs/run-ledger-complete-final.log.gz",
+    "exit": 0,
+    "cases": 16
+  },
+  {
+    "command": "bash macos/Scripts/test-session-ledger.sh",
+    "log": "logs/run-ledger-session-verified.log.gz",
+    "exit": 0
+  },
+  {
+    "command": "CARGO_PROFILE_DEV_DEBUG=0 CARGO_PROFILE_TEST_DEBUG=0 bash macos/Scripts/test-recovery.sh",
+    "log": "logs/run-ledger-recovery-verified.log.gz",
+    "exit": 0
+  },
+  {
+    "command": "CARGO_PROFILE_DEV_DEBUG=0 CARGO_PROFILE_TEST_DEBUG=0 cargo clippy --locked -p om-host-service --all-targets -- -D warnings",
+    "log": "logs/run-ledger-clippy.log.gz",
+    "exit": 0
+  },
+  {
+    "command": "CARGO_PROFILE_DEV_DEBUG=0 CARGO_PROFILE_TEST_DEBUG=0 bash macos/Scripts/build-native.sh",
+    "log": "logs/run-ledger-release-verified.log.gz",
+    "exit": 0
+  },
+  {
+    "command": "bash macos/Scripts/test-agent-package.sh \"target/macos-native/Build/Products/Release/OpenMath Preview.app/Contents/Resources/AgentRuntime\"",
+    "log": "logs/run-ledger-signed-pi-verified.log.gz",
+    "exit": 0
+  },
+  {
+    "command": "codesign --verify --deep --strict --verbose=2 \"target/macos-native/Build/Products/Release/OpenMath Preview.app\"",
+    "log": "logs/run-ledger-signature-verified.log.gz",
+    "exit": 0
+  },
+  {
+    "command": "python3 -X warn_default_encoding -W error::EncodingWarning -m unittest discover -s tests -v",
+    "log": "logs/run-ledger-python.log.gz",
+    "exit": 0
+  },
+  {
+    "command": "python3 scripts/native_contracts.py --check",
+    "log": "logs/run-ledger-contracts.log.gz",
+    "exit": 0
+  },
+  {
+    "command": "python3 macos/Scripts/generate-project.py --check",
+    "log": "logs/run-ledger-project.log.gz",
+    "exit": 0
+  }
+]

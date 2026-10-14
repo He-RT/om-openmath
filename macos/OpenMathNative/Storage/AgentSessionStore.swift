@@ -110,11 +110,22 @@ final class AgentSessionStore {
       if let resource {try BlobReferences.insertWithinTransaction(resource,db:db)}
       try verifyResources(input,events:previousEvents,reader:db)
       var claim:SessionToolAdmission?
+      var runChildClaim:SessionOperationTarget?
+      if input.kind == .task_transition,let transition=try SessionRunSemantics.transition(input.payload),transition.kind == .run_child_admitted {
+        guard let group=previousEvents.first(where:{$0.event_id==transition.groupAdmission}),let index=transition.childIndex else {throw SessionLedgerError.invalidTransition}
+        let admission=try SessionValidation.payload(SessionToolAdmission.self,group),target=try SessionRunSemantics.target(admission,index:index)
+        var existing=false
+        try db.statement("SELECT event_id FROM session_operation_claims WHERE store_id=? AND operation_id=?",[.text(target.storeID),.text(target.operationID)]) {_ in existing=true}
+        guard !existing else {throw SessionLedgerError.executionAlreadyClaimed};runChildClaim=target
+      }
       if input.kind == .tool_admitted {
         let admitted=try JSONDecoder().decode(SessionToolAdmission.self,from:input.payload)
-        var existing:String?
-        try db.statement("SELECT event_id FROM session_operation_claims WHERE store_id=? AND operation_id=?",[.text(admitted.target.storeID),.text(admitted.target.operationID)]) {existing=try SQLColumn.text($0,0)}
-        if existing != nil {
+        var existing:(String,String)?
+        try db.statement("SELECT session_id,event_id FROM session_operation_claims WHERE store_id=? AND operation_id=?",[.text(admitted.target.storeID),.text(admitted.target.operationID)]) {existing=(try SQLColumn.text($0,0),try SQLColumn.text($0,1))}
+        if let existing {
+          guard admitted.run==nil else {throw SessionLedgerError.reconciliationRequired}
+          guard let originalClaim=try read(existing.0,event:existing.1,reader:db),originalClaim.event.event_kind == .tool_admitted,
+            try SessionValidation.payload(SessionToolAdmission.self,originalClaim.event).run==nil else {throw SessionLedgerError.executionAlreadyClaimed}
           var actual:DocumentEffect?
           try db.statement("SELECT record,record_hash FROM document_effect_events WHERE source_store_id=? AND operation_id=?",[.text(admitted.target.storeID),.text(admitted.target.operationID)]) {row in
             let bytes=try SQLColumn.data(row,0);guard KernelHashes.data(bytes)==(try SQLColumn.text(row,1)),actual==nil else {throw StorageError.corruptIdentity}
@@ -134,6 +145,9 @@ final class AgentSessionStore {
       try index?.insert(event)
       if let claim {
         try db.statement("INSERT INTO session_operation_claims VALUES(?,?,?,?)",[.text(claim.target.storeID),.text(claim.target.operationID),.text(input.session),.text(input.eventID)])
+      }
+      if let claim=runChildClaim {
+        try db.statement("INSERT INTO session_operation_claims VALUES(?,?,?,?)",[.text(claim.storeID),.text(claim.operationID),.text(input.session),.text(input.eventID)])
       }
       try db.statement("INSERT INTO session_producers VALUES(?,?) ON CONFLICT(source_instance) DO UPDATE SET last_sequence=excluded.last_sequence",[.text(input.sourceInstance),.integer(Int64(input.sourceSequence))])
       try faults.reach("session_event_before_commit")
@@ -211,6 +225,9 @@ final class AgentSessionStore {
       guard let effect,try SessionSemantics.effectOutcome(effect,target:admission.target)==result.outcome else {throw SessionLedgerError.wrongSourceEffect}
     }
     if input.kind == .task_transition {
+      if let run=try SessionRunSemantics.transition(input.payload) {
+        try verifyRunResources(input,run:run,events:events,reader:reader,stored:stored);return
+      }
       let lifecycle=try JSONDecoder().decode(SessionRequestLifecycle.self,from:input.payload)
       let hash:String?,length:UInt64?,owner:String?
       if let plan=lifecycle.plan {hash=plan.wireBlobHash;length=plan.wireByteLength;owner="request-"+input.session+"-"+plan.contextID}
@@ -250,10 +267,15 @@ final class AgentSessionStore {
     for row in toolRows.prefix(limit) {
       let proposal=try fetch(row.proposal),end=try SessionValidation.payload(SessionAssistantEnd.self,proposal)
       guard proposal.event_sequence==row.sequence,proposal.event_kind == .assistant_end,end.calls.contains(where:{$0.callID==row.call}) else {throw StorageError.corruptIdentity}
-      var target:SessionOperationTarget?,phase=RecoveredToolPhase.tool_not_started,resultID:String?
+      var target:SessionOperationTarget?,phase=RecoveredToolPhase.tool_not_started,resultID:String?,runSummary:RecoveredRunSummary?
       if let admissionID=row.admission {
         let admission=try fetch(admissionID),payload=try SessionValidation.payload(SessionToolAdmission.self,admission)
         guard payload.callID==row.call,payload.proposalEvent==row.proposal else {throw StorageError.corruptIdentity};target=payload.target;phase = .tool_outcome_unknown
+        if payload.run != nil {
+          let snapshot=try runSnapshot(admission:admission,view:view,fetch:fetch,upper:upper)
+          phase=SessionRunSemantics.recoveredPhase(snapshot);runSummary=snapshot.summary
+          resultID=snapshot.transition?.phase != nil ? snapshot.latest.event_id:nil
+        }
         let children=try view.children(session:session,parent:admissionID,fetch:fetch)
         if let result=children.first(where:{$0.event_kind == .tool_result}) {let value=try SessionValidation.payload(SessionToolResult.self,result);phase=value.outcome == .partial ? .partial : .completed;resultID=result.event_id}
       }
@@ -269,7 +291,7 @@ final class AgentSessionStore {
           phase=try SessionSemantics.readonlyPhase(record);resultID=event.event_id
         }
       }
-      tools.append(.init(session:session,proposalEvent:row.proposal,callID:row.call,admissionEvent:row.admission,phase:phase,target:target,resultEvent:resultID))
+      tools.append(.init(session:session,proposalEvent:row.proposal,callID:row.call,admissionEvent:row.admission,phase:phase,target:target,resultEvent:resultID,run:runSummary))
     }
     for row in requestRows.prefix(limit) {
       let plan=try fetch(row.plan);guard plan.event_sequence==row.sequence,try SessionValidation.payload(SessionRequestLifecycle.self,plan).plan?.contextID==row.context else {throw StorageError.corruptIdentity}
@@ -286,6 +308,61 @@ final class AgentSessionStore {
     let complete=toolRows.count<=limit && requestRows.count<=limit
     let next=complete ? nil : SessionRecoveryCursor(session:session,storeID:identity.storeID,generation:identity.generation,upperSequence:upper,afterToolSequence:tools.isEmpty ? cursor?.afterToolSequence ?? 0 : toolRows[min(toolRows.count,limit)-1].sequence,afterToolID:tools.last?.callID ?? cursor?.afterToolID ?? "",afterRequestSequence:requests.isEmpty ? cursor?.afterRequestSequence ?? 0 : requestRows[min(requestRows.count,limit)-1].sequence)
     return .init(tools:tools,requests:requests,lastEventSequence:UInt64(latest),complete:complete,nextCursor:next)
+  }
+  private func verifyRunResources(_ input:SessionAppendInput,run:SessionRunTransition,events:[NativeSessionEvent],reader:SQLiteDatabase,stored:Bool)throws {
+    guard let group=events.first(where:{$0.event_id==run.groupAdmission}) else {throw SessionLedgerError.invalidTransition}
+    let admission=try SessionValidation.payload(SessionToolAdmission.self,group)
+    if stored,run.kind == .run_child_admitted {
+      let target=try SessionRunSemantics.target(admission,index:run.childIndex!)
+      var found=false
+      try reader.statement("SELECT session_id,event_id FROM session_operation_claims WHERE store_id=? AND operation_id=?",[.text(target.storeID),.text(target.operationID)]) {row in
+        guard try SQLColumn.text(row,0)==input.session,try SQLColumn.text(row,1)==input.eventID else {throw StorageError.corruptIdentity};found=true
+      };guard found else {throw StorageError.corruptIdentity}
+    }
+    if run.kind == .run_child_result {
+      guard let original=run.original,let index=run.childIndex else {throw SessionLedgerError.invalidTransition}
+      let target=try SessionRunSemantics.target(admission,index:index)
+      var found=false
+      try reader.statement("SELECT record,record_hash,effect_hash FROM document_effect_events WHERE source_store_id=? AND event_id=?",[.text(target.storeID),.text(original.sourceEventID)]) {row in
+        let bytes=try SQLColumn.data(row,0)
+        guard KernelHashes.data(bytes)==(try SQLColumn.text(row,1)) else {throw StorageError.corruptIdentity}
+        let effect=try JSONDecoder().decode(DocumentEffect.self,from:bytes);try RecoveryValidation.effect(effect)
+        _ = try SessionSemantics.effectOutcome(effect,target:target)
+        let stableHash=try effect.stableHash
+        let actualReceipt=try JSONDecoder().decode(NativeKernelReceipt.self,from:effect.payload)
+        guard try stableHash==SQLColumn.text(row,2),stableHash==original.sourceEffectHash,
+          effect.rawReceiptHash==original.rawReceiptHash,
+          try RecoveryValidation.encode(original.receipt)==RecoveryValidation.encode(actualReceipt) else {throw SessionLedgerError.wrongSourceEffect};found=true
+      };guard found else {throw SessionLedgerError.wrongSourceEffect}
+    }
+  }
+  private func runSnapshot(admission group:NativeSessionEvent,view:SessionRecoveryIndex,fetch:(String)throws->NativeSessionEvent,upper:UInt64=HostSerial.maximum)throws->SessionRunSnapshot {
+    let admission=try SessionValidation.payload(SessionToolAdmission.self,group)
+    guard let plan=admission.run,group.event_kind == .tool_admitted else {throw SessionLedgerError.invalidTransition}
+    var latest=group,finished=false
+    for _ in 0..<(plan.children.count*3+8) {
+      let children=try view.children(session:group.agent_session_id,parent:latest.event_id,fetch:fetch).filter{$0.event_sequence<=upper}
+      guard children.count<=1 else {throw StorageError.corruptIdentity}
+      guard let next=children.first else {finished=true;break}
+      let nextRun=try SessionRunSemantics.transition(next)
+      guard next.event_kind == .tool_started || nextRun?.groupAdmission==group.event_id else {throw StorageError.corruptIdentity}
+      latest=next
+    }
+    guard finished else {throw StorageError.corruptIdentity}
+    let t=try SessionRunSemantics.transition(latest)
+    return .init(admissionEvent:group,admission:admission,latest:latest,transition:t,progress:t?.progress ?? .init(plan:plan))
+  }
+  func runSnapshot(_ session:String,admission:String)throws->SessionRunSnapshot {
+    let reader=try SQLiteDatabase(url:url,readonly:true);defer {try? reader.close()}
+    let view=try SessionRecoveryIndex(db:reader,create:false)
+    let fetch:(String)throws->NativeSessionEvent={ [self] id in
+      guard let value=try read(session,event:id,reader:reader) else {throw StorageError.corruptIdentity}
+      let e=value.event,input=SessionAppendInput(session:e.agent_session_id,eventID:e.event_id,sourceInstance:e.source_instance_id,sourceSequence:e.source_sequence,parentEvent:e.parent_event_id.value,turn:e.agent_turn_id.value,task:e.task_id.value,kind:e.event_kind,payload:Data(e.payload_inline_json.value!.utf8),operation:e.operation_id.value,operationStore:e.operation_store_id.value)
+      let earlier=try view.related(input) { [self] other in guard let actual=try read(session,event:other,reader:reader) else {throw StorageError.corruptIdentity};return actual.event}.filter{$0.event_sequence<e.event_sequence}
+      try SessionSemantics.validate(input,events:earlier);try verifyResources(input,events:earlier,reader:reader,stored:true);return e
+    }
+    let result=try runSnapshot(admission:fetch(admission),view:view,fetch:fetch)
+    try db.confirmCommittedBytes();return result
   }
   func list(after:String?=nil,limit:Int=16)throws->[SessionListRecord] {
     guard limit>0,limit<=32 else {throw StorageError.corruptIdentity}

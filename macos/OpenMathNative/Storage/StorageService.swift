@@ -1,5 +1,10 @@
 import Foundation
 
+/// Confined to StorageService's actor; a dead producer cannot keep recovery disabled.
+private final class WeakSessionRunLifetime {
+  weak var value:SessionRunLifetime?
+  init(_ value:SessionRunLifetime) {self.value=value}
+}
 struct StoreOpenInfo:Sendable,Codable { let identity:StoreIdentity;let runtime:SQLiteRuntimeInfo }
 /// The final transfer retains the root lease until queue-confined SQLite destruction finishes.
 private final class FinalDatabaseOwner:@unchecked Sendable {
@@ -101,6 +106,26 @@ private final class StoreWriter:@unchecked Sendable {
 }
 /// Host-native physical storage. Rust owns document semantics and sends typed commit requests.
 actor StorageService {
+  private struct RunLifetimeKey:Hashable {let session:String,admission:String}
+  private var runLifetimes:[RunLifetimeKey:WeakSessionRunLifetime]=[:]
+  /// Prevent history reconciliation from terminating a currently owned group between cells.
+  /// Weak, memory-only entries disappear with the producer/process and never restore grants.
+  func pinSessionRun(_ session:String,admission:String,lifetime:SessionRunLifetime)throws {
+    guard closeTask==nil else {throw StorageError.closing}
+    runLifetimes=runLifetimes.filter{$0.value.value != nil}
+    let key=RunLifetimeKey(session:session,admission:admission)
+    guard runLifetimes[key]?.value==nil,runLifetimes.count<1024 else {throw StorageError.inUse}
+    runLifetimes[key]=WeakSessionRunLifetime(lifetime)
+  }
+  func unpinSessionRun(_ session:String,admission:String,lifetime:SessionRunLifetime) {
+    let key=RunLifetimeKey(session:session,admission:admission)
+    if runLifetimes[key]?.value === lifetime {runLifetimes.removeValue(forKey:key)}
+  }
+  func sessionRunIsLive(_ session:String,admission:String)->Bool {
+    let key=RunLifetimeKey(session:session,admission:admission)
+    if runLifetimes[key]?.value != nil {return true}
+    runLifetimes.removeValue(forKey:key);return false
+  }
   private let paths:NativeStoragePaths
   private var lease:RootLease?
   private var blobs:BlobStore?
@@ -390,6 +415,12 @@ actor StorageService {
   func sessionRecovery(_ session:String,cursor:SessionRecoveryCursor?=nil,limit:Int=16) async throws->SessionRecoveryPage {
     try beginOperation();defer {endOperation()}
     guard closeTask==nil,let library else {throw StorageError.closing};return try await library.sessionCall {try $0.recover(session,cursor:cursor,limit:limit)}
+  }
+  /// Original immutable group/child facts only. This API has no execution callback.
+  func sessionRunSnapshot(_ session:String,admission:String) async throws->SessionRunSnapshot {
+    try beginOperation();defer {endOperation()}
+    guard closeTask==nil,let library else {throw StorageError.closing}
+    return try await library.sessionCall {try $0.runSnapshot(session,admission:admission)}
   }
   func agentSessions(after:String?=nil,limit:Int=16) async throws->[SessionListRecord] {
     try beginOperation();defer {endOperation()}

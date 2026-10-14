@@ -1,0 +1,22 @@
+test_agent_tools_remain_deferred_and_no_session_data_is_a_notebook_field (test_function_docs.FunctionDocsTests.test_agent_tools_remain_deferred_and_no_session_data_is_a_notebook_field) ... ok
+test_catalog_validates_and_generated_documents_are_current (test_function_docs.FunctionDocsTests.test_catalog_validates_and_generated_documents_are_current) ... ok
+test_fixed_positional_arity_cannot_silently_omit_a_parameter (test_function_docs.FunctionDocsTests.test_fixed_positional_arity_cannot_silently_omit_a_parameter) ... ok
+test_invalid_evidence_or_effect_class_is_rejected (test_function_docs.FunctionDocsTests.test_invalid_evidence_or_effect_class_is_rejected) ... ok
+test_planning_cannot_claim_current_callbacks_or_platforms (test_function_docs.FunctionDocsTests.test_planning_cannot_claim_current_callbacks_or_platforms) ... ok
+test_rename_keeps_identity_but_rebinding_a_callback_is_rejected (test_function_docs.FunctionDocsTests.test_rename_keeps_identity_but_rebinding_a_callback_is_rejected) ... ok
+test_runtime_schema_rejects_missing_callback_or_fictitious_defaults (test_function_docs.FunctionDocsTests.test_runtime_schema_rejects_missing_callback_or_fictitious_defaults) ... ok
+test_ios_production_graph_excludes_desktop_io_and_http_runtime (test_ios.IOSTests.test_ios_production_graph_excludes_desktop_io_and_http_runtime) ... ok
+test_mobile_versions_packages_and_original_corpus_are_pinned (test_ios.IOSTests.test_mobile_versions_packages_and_original_corpus_are_pinned) ... ok
+test_checked_in_versions_and_windows_installer_intent_agree (test_release.ReleaseTests.test_checked_in_versions_and_windows_installer_intent_agree) ... ok
+test_installed_payload_allows_only_the_exact_tauri_bundle_stamp (test_release.ReleaseTests.test_installed_payload_allows_only_the_exact_tauri_bundle_stamp) ... ok
+test_ios_windows_and_catalog_version_drift_is_rejected (test_release.ReleaseTests.test_ios_windows_and_catalog_version_drift_is_rejected) ... ok
+test_release_manifest_covers_exact_assets_with_byte_hashes (test_release.ReleaseTests.test_release_manifest_covers_exact_assets_with_byte_hashes) ... ok
+test_wrong_version_tags_and_partial_asset_sets_cannot_publish (test_release.ReleaseTests.test_wrong_version_tags_and_partial_asset_sets_cannot_publish) ... ok
+test_cargo_resolves_workspace_with_shared_package_policy (test_workspace.WorkspaceTests.test_cargo_resolves_workspace_with_shared_package_policy) ... ok
+test_desktop_is_a_workspace_binary_with_native_kernel (test_workspace.WorkspaceTests.test_desktop_is_a_workspace_binary_with_native_kernel) ... ok
+test_kernel_packages_form_expression_independent_polynomial_graph (test_workspace.WorkspaceTests.test_kernel_packages_form_expression_independent_polynomial_graph) ... ok
+
+----------------------------------------------------------------------
+Ran 17 tests in 2.020s
+
+OK

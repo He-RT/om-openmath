@@ -39,4 +39,7 @@ pub enum NativeAgentHostReplyDisposition {
     /// Contract value `status`.
     #[serde(rename = "status")]
     Status,
+    /// Contract value `pending`.
+    #[serde(rename = "pending")]
+    Pending,
 }

@@ -1,0 +1,68 @@
+{
+  "kind": "development_environment_preflight",
+  "checks": {
+    "architecture": {
+      "exit_code": 0,
+      "value": "arm64"
+    },
+    "os_version": {
+      "exit_code": 0,
+      "value": "27.0.1"
+    },
+    "xcode": {
+      "exit_code": 0,
+      "value": "Xcode 27.0\nBuild version 27A266a"
+    },
+    "macos_sdk": {
+      "exit_code": 0,
+      "value": "27.0"
+    },
+    "rust": {
+      "exit_code": 0,
+      "value": "rustc 1.94.0 (4a4ef493e 2026-03-02)"
+    },
+    "identity_counts": {
+      "exit_code": 0,
+      "developer_id_application": 0,
+      "apple_development": 0
+    }
+  },
+  "errors": [],
+  "is_public_signing_evidence": false,
+  "started_simulators": false
+}
+Native DTOs verified: 377
+    Finished `release` profile [optimized] target(s) in 1.57s
+Swift -> native C ABI -> real Rust CAS: exact 4, math failure, Desktop capability, direct cancel, owned decode/free, consumed handle passed
+Swift/Rust-compatible generated host fields: roundtrip + four negative cases passed
+Native request union uses the exact constant kind in Swift and Rust
+Swift actor client: real exact 4, independent state/cancel, MainActor pulses=4, background shutdown passed
+Pure reducer: duplicates, gap fencing/readback, stale runtime/document, independent producer counters and explicit backpressure passed
+Empty overflow batch carries its actual fence; an older in-flight snapshot cannot clear recovery
+A consumed host cannot be reopened by late callbacks
+request exact-0
+settled exact-0
+request exact-1
+settled exact-1
+request exact-2
+settled exact-2
+request exact-3
+settled exact-3
+request exact-4
+settled exact-4
+request exact-5
+settled exact-5
+request exact-6
+settled exact-6
+request exact-7
+settled exact-7
+request exact-8
+settled exact-8
+request exact-9
+settled exact-9
+request exact-10
+settled exact-10
+request exact-11
+settled exact-11
+Explicit refresh waits for occupied readback; pre-admission snapshot delivered after admission ACK keeps the original ID and reads its real result
+Real session: 12 exact results recovered with every terminal frame suppressed, slow UI latest snapshot, actual parse failure, stop/late stop and concurrent close passed

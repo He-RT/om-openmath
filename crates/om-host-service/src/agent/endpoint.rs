@@ -160,6 +160,7 @@ impl AgentEndpoint {
             NativeAgentHostCommand::NativeAgentStatus(c) => &c.scope,
             NativeAgentHostCommand::NativeAgentReadTool(c) => &c.scope,
             NativeAgentHostCommand::NativeAgentConfirmTool(c) => &c.scope,
+            NativeAgentHostCommand::NativeAgentBindHistory(c) => &c.scope,
         };
         self.check(scope, binding)?;
         match command {
@@ -342,6 +343,9 @@ impl AgentEndpoint {
             }
             NativeAgentHostCommand::NativeAgentReadTool(_) => {
                 Err("READONLY_PRODUCER_REQUIRED".into())
+            }
+            NativeAgentHostCommand::NativeAgentBindHistory(_) => {
+                Err("SOURCE_PRODUCER_REQUIRED".into())
             }
             NativeAgentHostCommand::NativeAgentActivate(_) => unreachable!(),
         }

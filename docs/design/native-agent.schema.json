@@ -2000,6 +2000,9 @@
         },
         {
           "$ref": "#/$defs/NativeAgentConfirmTool"
+        },
+        {
+          "$ref": "#/$defs/NativeAgentBindHistory"
         }
       ]
     },
@@ -2098,7 +2101,8 @@
             "sent",
             "cancel",
             "closed",
-            "status"
+            "status",
+            "pending"
           ]
         },
         "outbound_json": {
@@ -2314,6 +2318,35 @@
         "result_json",
         "result_hash",
         "outcome"
+      ],
+      "additionalProperties": false
+    },
+    "NativeAgentBindHistory": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "const": "agent_bind_history"
+        },
+        "scope": {
+          "$ref": "#/$defs/NativeAgentControlScope"
+        },
+        "expected_snapshot_hash": {
+          "$ref": "#/$defs/Sha256"
+        },
+        "transaction_refs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Identity"
+          },
+          "maxItems": 32,
+          "uniqueItems": true
+        }
+      },
+      "required": [
+        "type",
+        "scope",
+        "expected_snapshot_hash",
+        "transaction_refs"
       ],
       "additionalProperties": false
     }

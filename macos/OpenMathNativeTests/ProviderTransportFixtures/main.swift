@@ -158,7 +158,9 @@ private func failure(_ body:@Sendable ()async throws->ProviderModelResult)async 
       ("connect",Script(delay:0.2,noHeaders:true,noFinish:true),try ProviderTimeouts(connection:0.03,firstResponse:1,idle:1,total:1),ProviderTransportReason.connectionTimeout),
       ("first",Script(delay:0.2,noHeaders:true,noFinish:true),try ProviderTimeouts(firstResponse:0.03,idle:1,total:1),ProviderTransportReason.firstResponseTimeout),
       ("idle",Script(noFinish:true),try ProviderTimeouts(firstResponse:1,idle:0.03,total:1),.idleTimeout),
-      ("total",Script(noFinish:true,heartbeat:true),try ProviderTimeouts(firstResponse:0.03,idle:0.03,total:0.1),.totalTimeout),
+      // Isolate the total guard: a valid 30ms idle expiry can otherwise win under CI callback
+      // scheduling jitter. The independent idle negative above keeps its original 30ms budget.
+      ("total",Script(noFinish:true,heartbeat:true),try ProviderTimeouts(firstResponse:0.03,idle:1,total:0.1),.totalTimeout),
     ] {
       let model=try await prepare(host,name),trace=Trace();FixtureProtocol.state.reset(script)
       let error=try await failure {try await transport.send(model,route:route(model,timeouts),journal:await trace.journal(),onText:{_ in})}

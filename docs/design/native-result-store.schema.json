@@ -557,6 +557,9 @@
         },
         {
           "$ref": "#/$defs/ResultRevoke"
+        },
+        {
+          "$ref": "#/$defs/ResultNotebookReferences"
         }
       ]
     },
@@ -658,6 +661,50 @@
         "kind",
         "offset",
         "limit"
+      ],
+      "additionalProperties": false
+    },
+    "NotebookResultCell": {
+      "type": "object",
+      "properties": {
+        "cell_id": {
+          "$ref": "#/$defs/CellIdentity"
+        },
+        "source_hash": {
+          "$ref": "#/$defs/Sha256"
+        }
+      },
+      "required": [
+        "cell_id",
+        "source_hash"
+      ],
+      "additionalProperties": false
+    },
+    "ResultNotebookReferences": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "const": "result_notebook_references"
+        },
+        "request_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "kernel_state_revision": {
+          "$ref": "#/$defs/Serial"
+        },
+        "cells": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/NotebookResultCell"
+          },
+          "maxItems": 50
+        }
+      },
+      "required": [
+        "type",
+        "request_id",
+        "kernel_state_revision",
+        "cells"
       ],
       "additionalProperties": false
     }

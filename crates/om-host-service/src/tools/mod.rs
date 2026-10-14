@@ -12,7 +12,7 @@ fn schema() -> &'static serde_json::Value {
         .expect("checked tools schema")
     })
 }
-fn checked_data(name: &str, value: serde_json::Value) -> Result<serde_json::Value, ()> {
+pub(crate) fn checked_data(name: &str, value: serde_json::Value) -> Result<serde_json::Value, ()> {
     crate::protocol::validation::validate(&value, &schema()["$defs"][name], schema())
         .map_err(|_| ())?;
     if serde_json::to_vec(&value).map_err(|_| ())?.len() > 256 * 1024 {

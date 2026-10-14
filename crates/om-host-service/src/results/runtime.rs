@@ -53,6 +53,7 @@ fn request_id(command: &NativeResultHostCommand) -> &str {
         NativeResultHostCommand::ResultInspect(b) => &b.request_id,
         NativeResultHostCommand::ResultStatus(b) => &b.request_id,
         NativeResultHostCommand::ResultRevoke(b) => &b.request_id,
+        NativeResultHostCommand::ResultNotebookReferences(b) => &b.request_id,
     }
 }
 fn terminal(phase: &NativeResultHostReplyPhase) -> bool {

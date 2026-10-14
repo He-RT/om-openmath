@@ -12,4 +12,6 @@ pub enum NativeResultHostCommand {
     ResultStatus(ResultStatus),
     /// Variant `ResultRevoke`.
     ResultRevoke(ResultRevoke),
+    /// Variant `ResultNotebookReferences`.
+    ResultNotebookReferences(ResultNotebookReferences),
 }

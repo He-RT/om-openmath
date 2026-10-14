@@ -1,0 +1,10 @@
+   Compiling om-host-service v0.1.0-pre-alpha.3 (/Users/hert/Projects/openmath/crates/om-host-service)
+    Finished `test` profile [unoptimized] target(s) in 5.13s
+     Running tests/result_runtime.rs (target/debug/deps/result_runtime-bf25cc11e388cf61)
+
+running 1 test
+actual notebook result reference=result-1-cc1b539473bd375496f2e06095cfad278497a5d49fbf6ded8ce522c05150937c; actual exact row={"cells":[{"count":0,"id":"3:0","kind":"scalar","nature":"exact","path":[0],"source":{"input_form":"1/3","latex":"\\frac{1}{3}","modern_form":"1/3"}}],"id":"3:0","label":"1"}, checkpoint bytes unchanged
+test notebook_output_refs_resolve_real_exact_value_and_never_substitute_a_later_state ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 4 filtered out; finished in 0.10s
+

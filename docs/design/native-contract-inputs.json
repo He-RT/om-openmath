@@ -27,16 +27,16 @@
     },
     {
       "path": "docs/design/native-result-store.schema.json",
-      "sha256": "89569d4ca0fda51b379f2a7b8626f9ff9ca06fb581b987b9e44462ae1ea99cd1"
+      "sha256": "8a4b14aba4518946981292991964105c3c0c7ccf410820c826a81e8843f91c60"
     },
     {
       "path": "docs/design/native-agent.schema.json",
-      "sha256": "a58c631ab601d7f5351f8da867bb5769022a70464fc991ce35a41ca38fecd5e4"
+      "sha256": "80b52f31d7068ff27e0f825d2bedfdb7d7f2b6261efe9b77ed04423f5e1ff258"
     },
     {
       "path": "docs/design/native-model-codec.schema.json",
       "sha256": "abd34061a53aa2d738196737dcf0f82256ba02826054ae6d8a476e0d739815c2"
     }
   ],
-  "generated_dto_count": 377
+  "generated_dto_count": 382
 }

@@ -550,6 +550,18 @@ actor StorageService {
     guard closeTask==nil,let writer=documents[document] else {throw StorageError.closing}
     return try await writer.sourceCall {try $0.historyEntries()}
   }
+  /// One serialized document read: head and its bounded durable transaction facts cannot mix
+  /// interleaved commits. This returns data only, never recovered source/undo authorization.
+  func readNotebookHistory(document:String) async throws ->(NativeSourceSnapshot,[SourceHistoryEntry]) {
+    try beginOperation();defer {endOperation()}
+    guard closeTask==nil,let writer=documents[document] else {throw StorageError.closing}
+    return try await writer.sourceCall {store in
+      guard let head=try store.readHead() else {throw StorageError.corruptIdentity}
+      let entries=try store.historyEntries()
+      guard entries.allSatisfy({$0.revision<=head.revision.value}) else {throw StorageError.corruptIdentity}
+      return (head,Array(entries.prefix(32)))
+    }
+  }
   func pinSourceTransaction(document:String,transaction:String,kind:String,owner:String,enabled:Bool) async throws {
     try beginOperation();defer {endOperation()}
     guard closeTask==nil,let writer=documents[document] else {throw StorageError.closing}

@@ -1,0 +1,2989 @@
+   Compiling proc-macro2 v1.0.107
+   Compiling serde_core v1.0.229
+   Compiling serde v1.0.229
+   Compiling num-traits v0.2.19
+   Compiling libc v0.2.189
+   Compiling serde_json v1.0.151
+   Compiling rustls v0.23.46
+   Compiling option-ext v0.2.0
+   Compiling keyring-core v1.0.0
+   Compiling getrandom v0.3.4
+   Compiling zerocopy v0.8.59
+   Compiling unarray v0.1.4
+   Compiling siphasher v1.0.4
+   Compiling phf_shared v0.13.1
+   Compiling fastrand v2.5.0
+   Compiling stable_deref_trait v1.2.1
+   Compiling parking_lot_core v0.9.12
+   Compiling scopeguard v1.2.0
+   Compiling phf_generator v0.13.1
+   Compiling lock_api v0.4.14
+   Compiling smallvec v1.16.2
+   Compiling unicode-segmentation v1.13.3
+   Compiling quote v1.0.47
+   Compiling syn v3.0.6
+   Compiling syn v2.0.119
+   Compiling convert_case v0.10.0
+   Compiling dashu-macros v0.6.1
+   Compiling om-host-service v0.1.0-pre-alpha.3 (/Users/hert/Projects/openmath/crates/om-host-service)
+   Compiling objc2-encode v4.1.0
+   Compiling mio v1.2.3
+   Compiling socket2 v0.6.5
+   Compiling core-foundation v0.10.1
+   Compiling security-framework-sys v2.17.0
+   Compiling dirs-sys v0.5.0
+   Compiling directories v6.0.0
+   Compiling num_cpus v1.17.0
+   Compiling getrandom v0.4.3
+   Compiling cpufeatures v0.3.1
+   Compiling rand_core v0.9.5
+   Compiling cpufeatures v0.2.17
+   Compiling sha2 v0.11.0
+   Compiling sha2 v0.10.9
+   Compiling rand_xorshift v0.4.0
+   Compiling rand v0.9.5
+   Compiling errno v0.3.14
+   Compiling objc2-exception-helper v0.1.1
+   Compiling num-conv v0.2.2
+   Compiling time-core v0.1.9
+   Compiling rustix v1.1.5
+   Compiling bitflags v2.13.2
+   Compiling serde_spanned v1.1.1
+   Compiling toml_datetime v1.1.1+spec-1.1.0
+   Compiling security-framework v3.7.0
+   Compiling objc2 v0.6.4
+   Compiling toml v1.1.6+spec-1.1.0
+   Compiling phf_codegen v0.13.1
+   Compiling powerfmt v0.2.0
+   Compiling deranged v0.5.8
+   Compiling ident_case v1.0.1
+   Compiling typeid v1.0.3
+   Compiling strsim v0.11.1
+   Compiling rustls-platform-verifier v0.7.1
+   Compiling synstructure v0.14.0
+   Compiling apple-native-keyring-store v1.0.2
+   Compiling ppv-lite86 v0.2.21
+   Compiling keyring v4.2.0
+   Compiling darling_core v0.24.1
+   Compiling rand_chacha v0.9.0
+   Compiling erased-serde v0.4.10
+   Compiling proptest v1.11.0
+   Compiling web-time v1.1.0
+   Compiling new_debug_unreachable v1.0.6
+   Compiling block2 v0.6.2
+   Compiling string_cache_codegen v0.6.1
+   Compiling alloc-no-stdlib v3.0.0
+   Compiling precomputed-hash v0.1.1
+   Compiling alloc-stdlib v0.3.0
+   Compiling web_atoms v0.2.6
+   Compiling parking_lot v0.12.5
+   Compiling semver v1.0.28
+   Compiling ts-rs-macros v12.0.1
+   Compiling derive_more-impl v2.1.1
+   Compiling phf_macros v0.13.1
+   Compiling quick-xml v0.42.0
+   Compiling serde_derive v1.0.229
+   Compiling thiserror-impl v2.0.21
+   Compiling zerofrom-derive v0.1.8
+   Compiling yoke-derive v0.8.3
+   Compiling zerovec-derive v0.11.6
+   Compiling displaydoc v0.2.7
+   Compiling tokio-macros v2.7.2
+   Compiling futures-macro v0.3.34
+   Compiling thiserror v2.0.21
+   Compiling bytemuck_derive v1.12.1
+   Compiling zerofrom v0.1.8
+   Compiling darling_macro v0.24.1
+   Compiling phf v0.13.1
+   Compiling ts-rs v12.0.1
+   Compiling yoke v0.8.3
+   Compiling tokio v1.53.1
+   Compiling darling v0.24.1
+   Compiling futures-util v0.3.34
+   Compiling anyhow v1.0.104
+   Compiling serde_with_macros v3.24.0
+   Compiling zerovec v0.11.8
+   Compiling zerotrie v0.2.5
+   Compiling bytemuck v1.25.2
+   Compiling font-types v0.12.6
+   Compiling string_cache v0.9.0
+   Compiling brotli-decompressor v6.0.1
+   Compiling tinystr v0.8.4
+   Compiling potential_utf v0.1.6
+   Compiling read-fonts v0.41.0
+   Compiling icu_collections v2.3.0
+   Compiling icu_locale_core v2.3.0
+   Compiling dashu-int v0.6.1
+   Compiling om-agent-contract v0.1.0-pre-alpha.3 (/Users/hert/Projects/openmath/crates/om-agent-contract)
+   Compiling assert-json-diff v2.0.2
+   Compiling same-file v1.0.6
+   Compiling dtoa v1.0.11
+   Compiling heck v0.5.0
+   Compiling icu_provider v2.3.1
+   Compiling dtoa-short v0.3.5
+   Compiling icu_properties v2.3.0
+   Compiling icu_normalizer v2.3.0
+   Compiling futures-executor v0.3.34
+   Compiling brotli v9.0.0
+   Compiling walkdir v2.5.0
+   Compiling uuid v1.26.1
+   Compiling futures v0.3.34
+   Compiling cssparser-macros v0.7.1
+   Compiling tendril v0.5.1
+   Compiling dashu-float v0.6.1
+   Compiling idna_adapter v1.2.2
+   Compiling tokio-util v0.7.19
+   Compiling tower v0.5.3
+   Compiling idna v1.1.0
+   Compiling tokio-rustls v0.26.6
+   Compiling url v2.5.8
+   Compiling deadpool v0.12.3
+   Compiling selectors v0.38.0
+   Compiling h2 v0.4.19
+   Compiling indexmap v1.9.3
+   Compiling glob v0.3.4
+   Compiling tower-http v0.6.11
+   Compiling camino v1.2.6
+   Compiling ctor v1.0.13
+   Compiling cssparser v0.37.0
+   Compiling markup5ever v0.39.0
+   Compiling swift-rs v1.0.8
+   Compiling dashu-ratio v0.6.1
+   Compiling dashu-cmplx v0.6.1
+   Compiling derive_more v2.1.1
+   Compiling serde_derive_internals v0.29.1
+   Compiling servo_arc v0.4.3
+   Compiling bit-vec v0.8.0
+   Compiling hashbrown v0.12.3
+   Compiling schemars v0.8.22
+   Compiling bit-set v0.8.0
+   Compiling dashu v0.6.1
+   Compiling html5ever v0.39.0
+   Compiling schemars_derive v0.8.22
+   Compiling cfb v0.14.0
+   Compiling om-num v0.1.0-pre-alpha.3 (/Users/hert/Projects/openmath/crates/om-num)
+   Compiling jsonptr v0.7.1
+   Compiling cargo-platform v0.1.9
+   Compiling hyper v1.11.1
+   Compiling skrifa v0.44.0
+   Compiling time v0.3.55
+   Compiling om-core v0.1.0-pre-alpha.3 (/Users/hert/Projects/openmath/crates/om-core)
+   Compiling om-poly v0.1.0-pre-alpha.3 (/Users/hert/Projects/openmath/crates/om-poly)
+   Compiling om-analysis v0.1.0-pre-alpha.3 (/Users/hert/Projects/openmath/crates/om-analysis)
+   Compiling foldhash v0.2.0
+   Compiling dyn-clone v1.0.20
+   Compiling base64 v0.21.7
+   Compiling dom_query v0.28.0
+   Compiling om-parse v0.1.0-pre-alpha.3 (/Users/hert/Projects/openmath/crates/om-parse)
+   Compiling om-format v0.1.0-pre-alpha.3 (/Users/hert/Projects/openmath/crates/om-format)
+   Compiling om-simplify v0.1.0-pre-alpha.3 (/Users/hert/Projects/openmath/crates/om-simplify)
+   Compiling hyper-util v0.1.21
+   Compiling plist v1.10.1
+   Compiling om-solve v0.1.0-pre-alpha.3 (/Users/hert/Projects/openmath/crates/om-solve)
+   Compiling serde-untagged v0.1.9
+   Compiling swash v0.2.10
+   Compiling infer v0.22.0
+   Compiling json-patch v4.2.0
+   Compiling cargo_metadata v0.19.2
+   Compiling urlpattern v0.6.0
+   Compiling serde_with v3.24.0
+   Compiling objc2-core-foundation v0.3.2
+   Compiling tempfile v3.27.0
+   Compiling console v0.16.6
+   Compiling hyper-rustls v0.27.10
+   Compiling wiremock v0.6.5
+   Compiling similar v2.7.0
+   Compiling simd-adler32 v0.3.10
+   Compiling reqwest v0.13.5
+   Compiling dispatch2 v0.3.1
+   Compiling insta v1.48.0
+   Compiling objc2-foundation v0.3.2
+   Compiling adler2 v2.0.1
+   Compiling crc32fast v1.5.2
+   Compiling rustc_version v0.4.1
+   Compiling miniz_oxide v0.9.1
+   Compiling embed-resource v3.0.11
+   Compiling dirs v7.0.0
+   Compiling miniz_oxide v0.8.9
+   Compiling tauri-winres v0.3.6
+   Compiling fdeflate v0.3.7
+   Compiling cargo_toml v1.0.1
+   Compiling om-llm v0.1.0-pre-alpha.3 (/Users/hert/Projects/openmath/crates/om-llm)
+   Compiling tauri-utils v2.10.0
+   Compiling om-eval v0.1.0-pre-alpha.3 (/Users/hert/Projects/openmath/crates/om-eval)
+   Compiling flate2 v1.1.10
+   Compiling time-macros v0.2.32
+   Compiling raw-window-handle v0.6.2
+   Compiling crossbeam-utils v0.8.23
+   Compiling dpi v0.1.2
+   Compiling cookie v0.18.2
+   Compiling foreign-types-macros v0.2.4
+   Compiling bitflags v1.3.2
+   Compiling foreign-types-shared v0.3.1
+   Compiling wry v0.57.0
+   Compiling foreign-types v0.5.0
+   Compiling png v0.17.16
+   Compiling om-kernel v0.1.0-pre-alpha.3 (/Users/hert/Projects/openmath/crates/om-kernel)
+   Compiling objc2-quartz-core v0.3.2
+   Compiling crossbeam-channel v0.5.17
+   Compiling core-graphics-types v0.2.0
+   Compiling objc2-app-kit v0.3.2
+   Compiling tauri-runtime v2.12.0
+   Compiling byteorder v1.5.0
+   Compiling ico v0.5.0
+   Compiling core-graphics v0.25.0
+   Compiling png v0.18.1
+   Compiling muda v0.20.0
+   Compiling tauri-runtime-wry v2.12.0
+   Compiling keyboard-types v0.8.3
+   Compiling serialize-to-javascript-impl v0.1.2
+   Compiling signal-hook v0.3.18
+   Compiling wasm-bindgen-shared v0.2.129
+   Compiling serialize-to-javascript v0.1.2
+   Compiling serde_repr v0.1.21
+   Compiling signal-hook-registry v1.4.8
+   Compiling embed_plist v1.2.2
+   Compiling cfg_aliases v0.2.2
+   Compiling rfd v0.16.0
+   Compiling mime v0.3.17
+   Compiling rustversion v1.0.23
+   Compiling tauri-build v2.7.0
+   Compiling tauri-plugin v2.7.0
+   Compiling tauri-codegen v2.7.0
+   Compiling nix v0.31.3
+   Compiling litrs v1.0.0
+   Compiling signal-hook-mio v0.2.5
+   Compiling document-features v0.2.12
+   Compiling strum_macros v0.27.2
+   Compiling iana-time-zone v0.1.65
+   Compiling vte v0.14.1
+   Compiling unicode-width v0.2.2
+   Compiling either v1.18.0
+   Compiling bumpalo v3.20.3
+   Compiling strip-ansi-escapes v0.2.1
+   Compiling crossterm v0.29.0
+   Compiling itertools v0.13.0
+   Compiling wasm-bindgen-macro-support v0.2.129
+   Compiling chrono v0.4.45
+   Compiling wasm-bindgen v0.2.129
+   Compiling objc2-web-kit v0.3.2
+   Compiling tao v0.37.1
+   Compiling window-vibrancy v0.8.1
+   Compiling strum v0.27.2
+   Compiling fd-lock v4.0.4
+   Compiling unicase v2.9.0
+   Compiling yansi v1.0.1
+   Compiling nu-ansi-term v0.50.3
+   Compiling ariadne v0.6.0
+   Compiling reedline v0.49.0
+   Compiling ctrlc v3.5.2
+   Compiling wasm-bindgen-macro v0.2.129
+   Compiling tauri v2.12.0
+   Compiling tauri-plugin-fs v2.6.0
+   Compiling tauri-macros v2.7.0
+   Compiling tauri-plugin-dialog v2.8.0
+   Compiling om-desktop v0.1.0-pre-alpha.3 (/Users/hert/Projects/openmath/app/src-tauri)
+   Compiling console_error_panic_hook v0.1.7
+   Compiling js-sys v0.3.106
+   Compiling om-ios-ffi v0.1.0-pre-alpha.3 (/Users/hert/Projects/openmath/crates/om-ios-ffi)
+   Compiling om-cli v0.1.0-pre-alpha.3 (/Users/hert/Projects/openmath/crates/om-cli)
+   Compiling om-wasm v0.1.0-pre-alpha.3 (/Users/hert/Projects/openmath/crates/om-wasm)
+   Compiling om-apple-ffi v0.1.0-pre-alpha.3 (/Users/hert/Projects/openmath/crates/om-apple-ffi)
+    Finished `test` profile [unoptimized] target(s) in 1m 12s
+     Running unittests src/lib.rs (target/debug/deps/om_agent_contract-4b3d5d39cc6ae19d)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests src/lib.rs (target/debug/deps/om_analysis-85a590e6aedb5163)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/fitting.rs (target/debug/deps/fitting-305cd50da24519ad)
+
+running 5 tests
+test qr_equilibration_recovers_independent_small_columns_and_rejects_lost_data ... ok
+test rank_dimensions_nonfinite_exhaustion_and_callback_cancellation_are_not_success ... ok
+test noisy_lm_uses_actual_gradient_stopping_without_claiming_zero_residual ... ok
+test true_lm_fits_exponential_amplitude_and_rate_with_analytic_jacobian ... ok
+test tall_qr_solves_more_than_sixty_four_rows_and_column_pivots_preserve_order ... ok
+
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/integration.rs (target/debug/deps/integration-cf654095daa39fa7)
+
+running 4 tests
+test scale_roundoff_invalid_options_and_actual_cancellation_are_distinct ... ok
+test finite_reversed_and_improper_integrals_match_closed_references ... ok
+test poles_divergence_and_exhaustion_are_not_successful_approximations ... ok
+test explicit_breakpoints_cover_interior_and_endpoint_singularities ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/interpolation.rs (target/debug/deps/interpolation-9be6b57925197675)
+
+running 3 tests
+test duplicate_nonmonotone_malformed_and_cancelled_data_are_rejected ... ok
+test linear_hermite_and_reversed_nodes_match_known_polynomials ... ok
+test tiny_linear_intervals_do_not_require_overflowing_slopes_and_forged_degree_fails ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/matrix.rs (target/debug/deps/matrix-21c93675f8d5254c)
+
+running 8 tests
+test invalid_shapes_nonfinite_overflow_and_abort_cannot_report_success ... ok
+test least_squares_matches_independent_normal_equations_residual_and_large_scales ... ok
+test householder_qr_reconstructs_rectangles_and_is_orthogonal ... ok
+test pivoted_lu_reconstructs_and_solves_analytic_systems ... ok
+test one_sided_svd_reconstructs_rectangles_and_both_orthogonal_factors ... ok
+test cholesky_and_real_symmetric_eigenvectors_have_independent_certifying_residuals ... ok
+test svd_solution_exposes_rectangular_free_axes_and_minimum_norm_without_fake_consistency ... ok
+test deterministic_small_matrix_properties_cover_ranks_rectangles_and_repeated_spectra ... ok
+
+test result: ok. 8 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/ode.rs (target/debug/deps/ode-b56a0cb69310a24d)
+
+running 6 tests
+test invalid_dimensions_nonfinite_rhs_limits_and_cancel_never_return_success ... ok
+test cancelling_inside_callback_preserves_only_completed_nodes ... ok
+test initial_event_zero_and_zero_span_have_truthful_work_and_domains ... ok
+test halving_fixed_steps_exhibits_fifth_order_endpoint_convergence ... ok
+test backward_time_and_simple_event_use_actual_dense_interpolation ... ok
+test exponential_and_harmonic_solutions_are_correct_between_adaptive_nodes ... ok
+
+test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/optimization.rs (target/debug/deps/optimization-f5aa35f99829838d)
+
+running 6 tests
+test a_large_objective_offset_does_not_make_gradient_convergence_vacuous ... ok
+test brent_checks_actual_interior_endpoint_values_and_reduces_bracket ... ok
+test box_projection_uses_correct_active_gradient_and_fixed_dimensions ... ok
+test dimensional_nonfinite_limits_and_cancellation_never_claim_success ... ok
+test bfgs_matches_quadratic_and_rosenbrock_stationary_solutions ... ok
+test deterministic_coupled_positive_quadratics_have_independent_known_minimizers ... ok
+
+test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/special.rs (target/debug/deps/special-8429880b491fd0ed)
+
+running 4 tests
+test independent_gamma_beta_and_error_function_references ... ok
+test log_gamma_preserves_small_values_near_its_two_zeros ... ok
+test probability_tails_and_failure_contracts ... ok
+test independent_libm_grid_covers_switches_and_subnormal_tails ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests src/lib.rs (target/debug/deps/om_apple_ffi-a9eed2944f4117db)
+
+running 9 tests
+test ffi::tests::packet_and_integer_panics_do_not_cross_the_abi ... ok
+test lifecycle_tests::concurrent_event_poll_submit_cancel_and_close_settle_without_stale_pointer_access ... ok
+test tests::linking_probe_reports_the_real_desktop_kernel_catalog ... ok
+test registry::tests::finishing_waits_for_real_active_guard_and_stale_token_never_rebinds ... ok
+test lifecycle_tests::malformed_submit_and_event_byte_limits_report_actual_failure_or_resync ... ok
+test lifecycle_tests::free_drops_only_owned_matching_allocation_and_empty_is_harmless ... ok
+test lifecycle_tests::create_rejects_null_invalid_utf8_unknown_fields_and_overlimit_with_owned_errors ... ok
+test lifecycle_tests::consumed_handles_never_alias_and_cancel_is_repeatable_without_rearming ... ok
+test lifecycle_tests::real_math_borrowed_input_is_copied_and_all_returned_bytes_are_freed ... ok
+
+test result: ok. 9 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.04s
+
+     Running unittests src/main.rs (target/debug/deps/om-664973b854594399)
+
+running 3 tests
+test render::tests::every_actual_solver_rule_has_bilingual_terminal_titles ... ok
+test hints::tests::key_path_does_not_wait_on_a_busy_cache ... ok
+test hints::tests::disabled_or_busy_session_never_leaves_an_acceptable_stale_hint ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/artifact.rs (target/debug/deps/artifact-304493f08400aad8)
+
+running 3 tests
+test source_only_notebook_exports_the_actual_last_table_and_scope_rejects_export_flags_elsewhere ... ok
+test cli_obj_contains_original_3d_helix_geometry_and_real_normals_without_an_interactive_window ... ok
+test noninteractive_svg_png_csv_json_exports_are_real_and_invalid_source_never_writes ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.06s
+
+     Running tests/cli.rs (target/debug/deps/cli-a5f12718db97380a)
+
+running 5 tests
+test notebook_cells_preserve_their_declared_dialect ... ok
+test piped_repl_is_sequential_and_meta_commands_use_real_records ... ok
+test real_source_and_notebook_files_run_in_order_with_source_only_data ... ok
+test executable_help_and_capabilities_are_query_only_and_never_include_plans ... ok
+test actual_kernel_eval_dialects_json_and_error_codes ... ok
+
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.08s
+
+     Running tests/corpus.rs (target/debug/deps/corpus-e16b61c955c6fd94)
+
+running 2 tests
+test production_wasm_results_match_all_original_authority_rows ... ignored, requires the actual production WASM corpus output from Playwright
+test all_fifty_three_authority_rows_execute_through_actual_cli ... ok
+
+test result: ok. 1 passed; 0 failed; 1 ignored; 0 measured; 0 filtered out; finished in 16.32s
+
+     Running tests/llm.rs (target/debug/deps/llm-953fea148a65d73e)
+
+running 1 test
+test native_probe_and_confirmed_translation_share_the_real_job_and_cas ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.07s
+
+     Running unittests src/lib.rs (target/debug/deps/om_core-9006c1c319973fb2)
+
+running 7 tests
+test message::tests::messages_drain_in_order_and_serialize_contract_fields ... ok
+test symbol::tests::all_builtins_keep_declared_ids_names_and_order ... ok
+test symbol::tests::repeated_names_share_ids_and_different_names_do_not ... ok
+test message::tests::nested_captures_and_panics_do_not_leak_messages ... ok
+test expr::tests::equal_hashes_still_require_equal_structure ... ok
+test symbol::tests::symbol_serde_uses_names_instead_of_process_local_ids ... ok
+test symbol::tests::concurrent_interning_has_no_duplicate_or_missing_symbols ... ok
+
+test result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/add.rs (target/debug/deps/add-f5b0a94d41109267)
+
+running 8 tests
+test big_coefficients_keep_precision_and_machine_contagion ... ok
+test plus_merges_multi_factor_rests_without_nested_times ... ok
+test only_exact_zeros_are_dropped_and_approximate_coefficients_survive ... ok
+test indeterminate_and_infinity_rules_are_order_independent ... ok
+test plus_flattens_nesting_and_reduces_empty_and_singleton_forms ... ok
+test plus_vectors_match_contract_full_forms ... ok
+test thousand_terms_are_sorted_and_merged_within_release_budget ... ok
+test exact_linear_sums_are_permutation_invariant_idempotent_and_equal_in_value ... ok
+
+test result: ok. 8 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.21s
+
+     Running tests/canonicalize.rs (target/debug/deps/canonicalize-4ecdcc026f71b782)
+
+running 8 tests
+test canonicalization_visits_compound_heads_and_all_arguments ... ok
+test direct_arithmetic_calls_resolve_constant_aliases ... ok
+test map_args_normalizes_the_rebuilt_expression_and_nested_results ... ok
+test traversal_captures_nested_constructor_messages ... ok
+test literal_aliases_and_directed_infinities_are_stable ... ok
+test derived_constructors_and_func_respect_minimal_evaluation ... ok
+test structural_replacement_normalizes_once_without_revisiting_values ... ok
+test ten_raw_nested_trees_match_manually_canonical_results ... ok
+
+test result: ok. 8 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/checkpoint.rs (target/debug/deps/checkpoint-75cf380e53d0b336)
+
+running 7 tests
+test signed_zero_atoms_are_not_collapsed_by_value_equality_deduplication ... ok
+test shared_raw_expressions_and_non_symbol_heads_roundtrip ... ok
+test seeded_malformed_graphs_fail_without_panicking_or_unbounded_node_allocation ... ok
+test invalid_utf8_builtin_identity_orphan_nodes_and_forward_edges_are_closed ... ok
+test version_graph_indices_depth_count_size_and_abort_reject_partial_restore ... ok
+test cross_graph_raw_comparison_keeps_bits_and_memoizes_shared_pairs ... ok
+test deeply_shared_subtrees_stay_linear_in_the_number_of_actual_nodes ... ok
+
+test result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/ctx.rs (target/debug/deps/ctx-ab807e46e1aaa280)
+
+running 1 test
+test core_reexports_numeric_context_without_a_wrapper ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/expr.rs (target/debug/deps/expr-972b1a9d34f2f334)
+
+running 11 tests
+test map_args_maps_immediate_arguments_once_in_order ... ok
+test atom_accessors_report_type_heads_and_empty_arguments ... ok
+test leaf_count_counts_heads_and_atoms ... ok
+test free_of_visits_whole_subtrees_and_explicit_heads ... ok
+test raw_normal_construction_keeps_order_and_nesting ... ok
+test free_symbols_exclude_constants_and_function_heads ... ok
+test debug_prints_full_form ... ok
+test replacements_are_simultaneous_first_match_including_heads ... ok
+test numeric_structure_normalizes_and_preserves_variants_and_precision ... ok
+test nonfinite_real_is_rejected - should panic ... ok
+test zero_denominator_is_rejected - should panic ... ok
+
+test result: ok. 11 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/mul.rs (target/debug/deps/mul-0922ae9d0cc8503f)
+
+running 7 tests
+test zero_does_not_hide_indeterminate_or_infinity ... ok
+test flattening_empty_singleton_and_numeric_contagion ... ok
+test plus_uses_complete_product_rebuild_including_minus_one_distribution ... ok
+test grouping_reaches_a_fixed_point_after_numeric_rebuilds ... ok
+test merged_radicals_include_negative_exponents_and_sorted_factors ... ok
+test product_vectors_cover_powers_roots_infinities_and_distribution ... ok
+test exact_products_are_permutation_invariant_idempotent_and_equal_in_value ... ok
+
+test result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.05s
+
+     Running tests/order.rs (target/debug/deps/order-f3cea4ab9d6cdb1d)
+
+running 6 tests
+test monomials_compare_from_last_factor_then_exponent_then_coefficient ... ok
+test symbols_sort_by_folded_then_original_name_not_ids ... ok
+test numbers_sort_by_exact_components_then_precision ... ok
+test atoms_compound_heads_and_arguments_are_lexicographic ... ok
+test raw_degenerate_forms_and_same_precision_variants_have_total_ties ... ok
+test ordering_is_reflexive_antisymmetric_transitive_and_structural ... ok
+
+test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.68s
+
+     Running tests/pow.rs (target/debug/deps/pow-a6dd115a94dd0f36)
+
+running 7 tests
+test minus_one_phases_are_periodic_for_negative_and_large_rational_exponents ... ok
+test rational_root_reductions_cover_both_sides_and_large_degrees ... ok
+test all_forty_canonical_vectors_match_full_form ... ok
+test zero_and_infinity_rules_are_explicit_and_diagnostics_are_captured ... ok
+test approximate_powers_preserve_precision_and_principal_branch ... ok
+test depth_four_trees_are_idempotent_and_preserve_numeric_value ... ok
+test exact_bit_limit_preserves_original_power_and_unit_exceptions ... ok
+
+test result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 3.80s
+
+     Running unittests src/lib.rs (target/debug/deps/om_desktop-16455715006762c3)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests src/main.rs (target/debug/deps/om_desktop-59d941d82ebc747f)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/host.rs (target/debug/deps/host-cd988d3b05a9bc54)
+
+running 2 tests
+test actual_thread_math_envelopes_and_named_secret_commands_are_real_and_masked ... ok
+test local_native_llm_is_driven_and_internal_transport_never_enters_public_response_or_events ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.03s
+
+     Running tests/host_interrupt.rs (target/debug/deps/host_interrupt-f8519b58bddf1146)
+
+running 3 tests
+test native_llm_cancel_aborts_waiting_http_and_shutdown_joins_idle_owner ... ok
+test direct_interrupt_stops_running_real_cas_and_next_request_recovers ... ok
+test queued_byte_acknowledgement_cannot_turn_an_expired_profile_request_into_success ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.29s
+
+     Running unittests src/lib.rs (target/debug/deps/om_eval-b283b189af631e3f)
+
+running 5 tests
+test science::ordering::tests::interrupted_comparison_returns_an_error_without_inventing_an_order ... ok
+test state::tests::lexical_frames_and_evaluation_depth_are_not_persistent_working_boundaries ... ok
+test state::tests::real_user_holding_attributes_are_cloned_and_stage_changes_remain_local ... ok
+test state::codec::tests::actual_machine_signed_zero_and_settings_do_not_pass_through_text_or_defaults ... ok
+test state::codec::tests::actual_all_documented_user_attribute_bits_survive_codec_restore ... ok
+
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+
+     Running tests/algebra.rs (target/debug/deps/algebra-0d1fdc7b91b9fcd7)
+
+running 13 tests
+test every_algebra_entry_has_docs_protection_and_real_arity_validation ... ok
+test algebra_calls_compose_with_definitions_modern_syntax_and_readonly_state ... ok
+test polynomial_queries_keep_parameters_and_axes ... ok
+test apart_restores_proper_and_improper_repeated_factor_fractions ... ok
+test root_conversions_visit_compound_heads_and_keep_symbolic_axes ... ok
+test differentiation_covers_chain_mixed_orders_lists_and_formal_functions ... ok
+test polynomial_arithmetic_uses_exact_content_and_parameter_coefficients ... ok
+test zero_constant_parameter_denominator_and_higher_derivative_edges ... ok
+test fixed_seed_polynomial_identities_check_every_builtin_against_known_constructions ... ok
+test checked_arithmetic_transforms_and_safe_simplification ... ok
+test root_reduce_uses_the_correct_minimal_polynomial_and_root_index ... ok
+test elementary_derivatives_match_independent_centered_numeric_differences ... ok
+test full_simplify_adds_real_radical_work_and_root_conversion_preserves_branches ... ok
+
+test result: ok. 13 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.55s
+
+     Running tests/attributes.rs (target/debug/deps/attributes-00e3e795c69392b3)
+
+running 6 tests
+test mismatched_lengths_emit_one_message_and_preserve_the_expression ... ok
+test listable_threads_matching_lists_broadcasts_scalars_and_handles_empty_lists ... ok
+test holdfirst_and_holdrest_evaluate_only_the_allowed_arguments ... ok
+test hold_and_holdform_preserve_raw_structure_and_side_effects ... ok
+test sequence_expansion_follows_argument_evaluation_and_holdall ... ok
+test wide_threading_obeys_budget_and_does_not_recurse_through_the_host_stack ... ok
+
+test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+
+     Running tests/compiled_numeric.rs (target/debug/deps/compiled_numeric-deb26ff417be8aac)
+
+running 6 tests
+test unsupported_heads_unknown_axes_arity_and_interrupt_are_checked ... ok
+test runtime_instructions_share_real_budget_and_recover_reused_storage ... ok
+test compiler_respects_actual_round_ties_and_two_argument_real_domains ... ok
+test common_real_functions_match_native_methods_and_branch_domains ... ok
+test actual_readonly_preparation_masks_axes_resolves_functions_and_preserves_poles ... ok
+test arithmetic_constants_and_closed_roots_compile_once_with_checked_dimensions ... ok
+
+test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+
+     Running tests/composition.rs (target/debug/deps/composition-3f3b684dcad83c77)
+
+running 5 tests
+test matrix_products_and_hermitian_vector_inner_products_check_dimensions ... ok
+test closures_substitute_outer_parameters_preserve_shadowing_and_avoid_capture ... ok
+test records_fields_and_closed_slices_use_actual_values_and_report_missing_data ... ok
+test pipelines_evaluate_input_once_and_use_map_second_argument ... ok
+test unified_modes_preserve_actual_solution_shapes_and_local_root_semantics ... ok
+
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.25s
+
+     Running tests/data_io.rs (target/debug/deps/data_io-5eacabf199192fa9)
+
+running 5 tests
+test malformed_json_duplicate_keys_and_non_data_outputs_are_rejected ... ok
+test pure_data_parsing_and_export_share_the_actual_budget ... ok
+test csv_quotes_unicode_embedded_newlines_and_headers_roundtrip ... ok
+test json_maps_lossless_data_and_does_not_execute_or_confuse_empty_records ... ok
+test extreme_decimal_data_and_machine_values_preserve_their_actual_point ... ok
+
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.31s
+
+     Running tests/definition_observation.rs (target/debug/deps/definition_observation-fdb811ef0f832f04)
+
+running 3 tests
+test compound_statement_reports_all_real_rhs_side_effects ... ok
+test iterator_scopes_do_not_report_global_parameter_writes ... ok
+test observation_handles_same_value_writes_downvalues_unset_and_direct_clear_without_history ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+
+     Running tests/editor_definitions.rs (target/debug/deps/editor_definitions-25556660214b58d0)
+
+running 1 test
+test read_only_own_and_downvalues_preserve_storage_order_and_effectful_rhs ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+
+     Running tests/elementary.rs (target/debug/deps/elementary-73bb2bf53fd1a510)
+
+running 5 tests
+test all_docs_matches_implemented_milestones_and_elementary_functions_check_arity ... ok
+test reciprocal_angles_and_hyperbolic_special_values_stay_exact ... ok
+test approximation_threads_and_uses_the_complex_principal_branch ... ok
+test every_elementary_function_has_two_numeric_tests_at_machine_and_big_precision ... ok
+test every_complex_family_matches_independent_cmath_fixtures_off_the_cuts ... ok
+
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.49s
+
+     Running tests/evaluation.rs (target/debug/deps/evaluation-a433fff217beaba6)
+
+running 8 tests
+test statements_record_successful_input_output_and_out_reads_previous_results ... ok
+test arity_protection_docs_and_constructor_messages_are_real ... ok
+test readonly_forks_are_snapshots_and_block_all_definition_mutations ... ok
+test atoms_heads_and_recursive_arguments_evaluate_without_history_side_effects ... ok
+test literal_downvalues_stop_at_the_iteration_limit_with_a_held_result ... ok
+test immediate_delayed_unset_and_clear_respect_assignment_targets ... ok
+test recursion_limits_and_abort_restore_the_evaluators_depth ... ok
+test default_recursion_limit_bounds_deep_syntax_and_nested_ownvalues ... ok
+
+test result: ok. 8 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+
+     Running tests/fitting.rs (target/debug/deps/fitting-83ef1b821bf2ba42)
+
+running 6 tests
+test forged_model_source_cannot_execute_or_claim_a_precision_it_does_not_have ... ok
+test invalid_linear_nonlinear_domains_rank_precision_mutations_and_limits_fail_honestly ... ok
+test real_nonlinear_exponential_fit_reports_actual_work_and_model_predictions ... ok
+test multivariate_table_named_functions_and_shadowed_globals_are_local_and_readonly ... ok
+test linear_fit_is_callable_with_actual_ordered_parameters_and_noisy_residuals ... ok
+test fitted_model_data_roundtrip_sampling_and_symbolic_substitution_preserve_the_actual_model ... ok
+
+test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+
+     Running tests/function_catalog.rs (target/debug/deps/function_catalog-cead90491f238722)
+
+running 3 tests
+test export_registry_audit ... ok
+test catalog_covers_registered_builtins_without_promoting_plans ... ok
+test catalog_current_examples_are_registered_examples_and_parse ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.21s
+
+     Running tests/limits.rs (target/debug/deps/limits-35e2d18dd3d91b41)
+
+running 4 tests
+test rational_finite_one_sided_and_infinite_limits_match_exact_orders ... ok
+test nonexistent_oscillatory_unknown_and_mutating_limits_remain_diagnosed ... ok
+test elementary_zero_over_zero_and_essential_sides_use_real_math ... ok
+test shifted_high_order_holes_and_standard_wolfram_rule_syntax_are_exact ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.09s
+
+     Running tests/numeric.rs (target/debug/deps/numeric-d1451ec5a3cf4560)
+
+running 4 tests
+test n_docs_invalid_precision_arity_and_abort_are_real ... ok
+test n_has_fifty_correct_digits_and_machine_rationals ... ok
+test n_approximates_numeric_subtrees_and_preserves_holds ... ok
+test n_refines_cancellation_and_preserves_overflow_and_underflow ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.09s
+
+     Running tests/numeric_integration.rs (target/debug/deps/numeric_integration-50daaf3a6648caea)
+
+running 3 tests
+test raw_holes_split_points_global_axes_and_readonly_state_are_preserved ... ok
+test unsupported_exact_precision_singularities_and_budget_are_real_failures ... ok
+test modern_numeric_integration_returns_real_machine_diagnostics ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.02s
+
+     Running tests/numeric_matrix.rs (target/debug/deps/numeric_matrix-7ff97850340e9a1d)
+
+running 8 tests
+test rank_deficiency_invalid_modes_and_nonreal_inputs_decline ... ok
+test singular_value_factors_reconstruct_and_are_not_placeholder_answers ... ok
+test numeric_inverse_determinant_and_explicit_local_solve_use_real_algorithms ... ok
+test lu_and_qr_return_genuine_reconstructable_factors ... ok
+test symmetric_eigenvalues_and_cholesky_expose_actual_sampled_algebra ... ok
+test exact_affine_result_satisfies_every_free_parameter_without_changing_unique_shape ... ok
+test machine_rank_nullspace_and_rectangular_affine_solutions_are_actual ... ok
+test vector_angle_and_complex_projection_obey_the_declared_inner_product ... ok
+
+test result: ok. 8 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.04s
+
+     Running tests/ode.rs (target/debug/deps/ode-3dd24c5ac668f6cf)
+
+running 6 tests
+test forged_interpolation_data_and_event_mutation_never_execute_as_saved_math ... ok
+test actual_ode_solution_is_callable_dense_and_reports_genuine_work ... ok
+test interpolation_hermite_reverse_time_event_and_sampling_are_actual ... ok
+test named_functions_parameters_local_time_and_vector_shape_roundtrip ... ok
+test sixty_four_states_and_time_compile_together_without_shape_loss ... ok
+test nonfinite_wrong_dimension_precision_mutation_and_extrapolation_fail_honestly ... ok
+
+test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.29s
+
+     Running tests/optimization.rs (target/debug/deps/optimization-c1b42311d7c5644c)
+
+running 6 tests
+test certificate_reconstructs_the_independent_input_hessian_and_exact_rational_minimizer ... ok
+test actual_local_min_max_brent_bfgs_and_box_candidates_have_real_work ... ok
+test readonly_record_bounds_method_tolerances_and_guarantees_do_not_change_meaning ... ok
+test unsupported_global_approximate_inputs_domains_bad_dimensions_and_writes_fail ... ok
+test exact_global_positive_and_semidefinite_quadratics_preserve_free_axes ... ok
+test exact_box_kkt_and_concave_maximum_are_genuine_global_certificates ... ok
+
+test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+
+     Running tests/patterns.rs (target/debug/deps/patterns-7737e8383ebc6b39)
+
+running 11 tests
+test substitution_is_simultaneous_and_keeps_held_arithmetic_raw ... ok
+test delayed_functions_bind_parameters_and_global_values_do_not_rename_patterns ... ok
+test conditions_evaluate_substituted_bindings_and_false_results_backtrack ... ok
+test repeated_names_match_structural_values_consistently ... ok
+test literals_on_definition_targets_are_evaluated_without_applying_old_downvalues ... ok
+test typed_blanks_and_literal_heads_reject_wrong_categories ... ok
+test sequence_patterns_bind_all_arguments_and_backtrack_at_literal_anchors ... ok
+test unsupported_patterns_emit_a_warning_and_remain_unmatched ... ok
+test direct_matcher_charges_budget_and_substitution_is_simultaneous_in_heads ... ok
+test conditions_resume_sequence_search_and_recursion_is_bounded ... ok
+test deeply_nested_definition_targets_stop_without_host_recursion ... ok
+
+test result: ok. 11 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.04s
+
+     Running tests/probability.rs (target/debug/deps/probability-d8b33a32071f0ffe)
+
+running 5 tests
+test compiled_special_functions_keep_domains_and_actual_interrupts ... ok
+test unsupported_domains_precision_and_options_report_real_failure ... ok
+test explicit_seed_readonly_and_failed_requests_do_not_advance_session_stream ... ok
+test real_special_values_and_distributions ... ok
+test random_cancellation_is_atomic_and_known_distribution_moments_hold ... ok
+
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.03s
+
+     Running tests/reflection.rs (target/debug/deps/reflection-dab79e9c41d42f3a)
+
+running 5 tests
+test query_names_are_held_unknown_input_is_diagnosed_and_budget_is_real ... ok
+test help_and_options_expose_real_stable_ids_hold_roles_and_precision_boundaries ... ok
+test string_name_bindings_are_read_safely_and_shadowed_aliases_are_not_misreported ... ok
+test planned_and_deferred_docs_are_browsable_but_not_executable ... ok
+test current_function_identities_and_unknown_host_capabilities_remain_truthful ... ok
+
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.04s
+
+     Running tests/roots.rs (target/debug/deps/roots-731c840746ab33c9)
+
+running 4 tests
+test diag_extracts_real_rectangular_matrix_diagonals_and_still_constructs_vectors ... ok
+test real_cubes_and_principal_nth_roots_preserve_their_branch_contracts ... ok
+test root_precision_listability_and_interrupts_use_actual_existing_math ... ok
+test nth_root_held_resolution_preserves_raw_poles_and_lowers_for_real_sampling ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.02s
+
+     Running tests/runtime_catalog.rs (target/debug/deps/runtime_catalog-6a3926bb600b4952)
+
+running 3 tests
+test runtime_schemas_match_every_actual_callback ... ok
+test per_call_steps_use_actual_recording_without_changing_session_defaults ... ok
+test every_preferred_invocation_is_real_modern_source_for_the_claimed_callback ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.02s
+
+     Running tests/scalars.rs (target/debug/deps/scalars-99397bf3e212d129)
+
+running 4 tests
+test boolean_short_circuiting_preserves_side_effect_order ... ok
+test scalar_docs_arity_and_domain_rejection_match_functionality ... ok
+test threaded_scalar_functions_and_pattern_conditions_share_evaluation ... ok
+test scalar_and_boolean_examples_have_at_least_two_per_implemented_function ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+
+     Running tests/science_basics.rs (target/debug/deps/science_basics-a507e9b3ad665cac)
+
+running 7 tests
+test numeric_boundaries_preserve_exactness ... ok
+test decimal_uses_textual_exact_input_and_rescale_keeps_rational_values ... ok
+test empty_samples_zero_variance_and_invalid_shapes_decline_honestly ... ok
+test grouping_preserves_first_occurrence_and_sort_keys_execute_once ... ok
+test data_composition_is_deterministic_and_uses_real_predicates ... ok
+test exact_sample_definitions_and_type7_quantiles ... ok
+test exact_matrix_operations_reconstruct_and_reject_singular_or_mismatched_inputs ... ok
+
+test result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.02s
+
+     Running tests/science_robustness.rs (target/debug/deps/science_robustness-436519b5cfeb0de6)
+
+running 3 tests
+test rationalize_chooses_zero_and_negative_symmetry_without_division_panics ... ok
+test machine_mean_preserves_small_terms_and_does_not_overflow_representable_average ... ok
+test sorted_keys_and_quantiles_remain_stable_and_interrupts_recover ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.02s
+
+     Running tests/series.rs (target/debug/deps/series-7c6092f347c13cea)
+
+running 4 tests
+test taylor_axes_are_local_readonly_and_cancelled_work_retains_session_state ... ok
+test truncation_range_singularities_branch_points_and_formal_derivatives_are_not_faked ... ok
+test true_derivatives_produce_exact_taylor_coefficients_and_normal_polynomials ... ok
+test independent_binomial_coefficients_high_orders_and_wolfram_specs_are_real ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.02s
+
+     Running tests/solver.rs (target/debug/deps/solver-73995b01c2a999b7)
+
+running 16 tests
+test invalid_nested_roots_decline_the_whole_solving_call ... ok
+test malformed_and_unsupported_calls_remain_inspectable ... ok
+test delayed_definitions_pure_functions_parameters_and_inference ... ok
+test nested_root_parameters_resolve_before_equation_normalization ... ok
+test exact_roots_and_conditional_evaluation ... ok
+test explicit_arithmetic_heads_and_opaque_numeric_calls_preserve_poles ... ok
+test true_conditional_sources_and_named_function_lists_keep_raw_meaning ... ok
+test explicit_empty_variables_and_no_steps_adapters_keep_contracts ... ok
+test local_and_numeric_raw_poles_are_never_erased ... ok
+test raw_holes_match_the_public_solver_and_steps ... ok
+test shapes_domains_and_values_preserve_axis_order_and_multiplicity ... ok
+test recording_readonly_and_statement_boundaries ... ok
+test generated_conditions_and_roots_keep_full_solution_meaning ... ok
+test numeric_precision_domains_and_local_methods_use_public_kernels ... ok
+test solver_abort_restores_held_scopes_and_all_calls_have_docs ... ok
+test formula_options_cover_cubic_and_quartic_branches ... ok
+
+test result: ok. 16 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 2.43s
+
+     Running tests/solver_corpus.rs (target/debug/deps/solver_corpus-8e3c16f198ea5075)
+
+running 1 test
+test all_fifty_three_authority_rows_execute_through_evaluator ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 8.52s
+
+     Running tests/solver_provenance.rs (target/debug/deps/solver_provenance-8eb7730826cbfe19)
+
+running 4 tests
+test actual_outcome_retains_evidence_with_steps_disabled_and_takes_once ... ok
+test immediate_assignment_forwards_actual_solver_evidence_but_cached_reads_do_not ... ok
+test tail_calls_and_final_compound_children_keep_actual_provenance ... ok
+test matching_literals_nested_calls_declines_and_previous_results_do_not_forge_evidence ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.03s
+
+     Running tests/state_codec.rs (target/debug/deps/state_codec-f8927f6f6891f22b)
+
+running 8 tests
+test state_codec_rejects_wrong_build_readonly_truncation_limits_and_cancel ... ok
+test delayed_rhs_is_not_replayed_and_out_is_restored_without_history_reexecution ... ok
+test persisted_readonly_projection_remains_distinct_from_writable_checkpoint ... ok
+test definitions_rules_attributes_changes_history_and_random_continue_after_data_only_restore ... ok
+test capture_restore_recapture_is_byte_stable_and_keeps_shared_history_values ... ok
+test metadata_budget_history_limits_order_and_packet_lengths_reject_malformed_states ... ok
+test registry_metadata_indices_and_duplicate_ownership_are_not_trusted_from_input ... ok
+test actual_root_high_precision_interpolation_and_fit_values_restore_without_recomputation ... ok
+
+test result: ok. 8 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.35s
+
+     Running tests/steps.rs (target/debug/deps/steps-17106a644617979a)
+
+running 1 test
+test steps_start_empty_and_do_not_leak_between_statements_or_forks ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/structure.rs (target/debug/deps/structure-fac9d16fc6b24499)
+
+running 7 tests
+test all_registered_structure_functions_have_help_and_work_after_budget_failure ... ok
+test pure_functions_substitute_slots_and_respect_nested_function_scope ... ok
+test replacement_is_simultaneous_pattern_aware_and_repeated_replacement_is_bounded ... ok
+test finite_iterators_shadow_variables_restore_state_and_preserve_readonly_mode ... ok
+test list_access_mapping_and_application_preserve_heads_and_one_based_indices ... ok
+test recursive_iterator_bounds_use_heap_frames_and_restore_outer_scopes ... ok
+test rule_patterns_shadow_global_values_and_recursive_rhs_stays_bounded ... ok
+
+test result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.02s
+
+     Running tests/symbolic_integration.rs (target/debug/deps/symbolic_integration-e9348aca846761ff)
+
+running 6 tests
+test local_real_domain_conditions_are_proved_over_a_definite_interval ... ok
+test gaussian_parameters_readonly_axes_and_unsupported_exact_are_honest ... ok
+test polynomials_linear_substitution_and_finite_parts_are_actual_primitives ... ok
+test rational_linear_quadratic_and_repeated_factors_are_verified ... ok
+test independent_polynomial_coefficients_and_branch_conditions_are_preserved ... ok
+test rational_domains_real_branch_paths_and_parameter_convergence_are_explicit ... ok
+
+test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.07s
+
+     Running tests/table_data.rs (target/debug/deps/table_data-86730c197a6112c1)
+
+running 3 tests
+test table_keys_evaluate_once_and_bad_shapes_do_not_claim_success ... ok
+test fold_group_counts_zip_and_record_sort_use_actual_rows ... ok
+test table_subset_sort_and_structural_operations_preserve_headers ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.02s
+
+     Running tests/units.rs (target/debug/deps/units-2c76ca14af2d173f)
+
+running 4 tests
+test incompatible_dimensions_affine_units_and_unknown_input_are_real_failures ... ok
+test products_powers_and_compatible_sums_preserve_real_dimensions ... ok
+test exact_si_prefixes_and_fixed_conversions ... ok
+test derived_relations_explicit_arithmetic_and_input_precision_are_preserved ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.02s
+
+     Running tests/vector_calculus.rs (target/debug/deps/vector_calculus-5d2f912c5bd2776e)
+
+running 5 tests
+test malformed_vector_dimensions_and_budget_do_not_produce_fake_results ... ok
+test local_variables_and_readonly_source_leave_global_definitions_intact ... ok
+test new_elementary_derivatives_match_independent_centered_values ... ok
+test curl_grad_and_div_curl_are_identically_zero ... ok
+test gradient_jacobian_hessian_and_laplacian_use_real_symbolic_derivatives ... ok
+
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.02s
+
+     Running tests/working_stage.rs (target/debug/deps/working_stage-a3829749db58b34f)
+
+running 4 tests
+test readonly_projection_cannot_be_promoted_to_a_writable_owner ... ok
+test exact_numeric_atoms_and_settings_are_cloned_without_machine_projection ... ok
+test staged_definitions_rules_and_out_are_isolated_until_consumed ... ok
+test discarded_random_stage_does_not_advance_owner_and_consumed_state_keeps_the_stream ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.02s
+
+     Running unittests src/lib.rs (target/debug/deps/om_format-6537eaaf48361f95)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/composition.rs (target/debug/deps/composition-fb74d5781aadda3c)
+
+running 1 test
+test composed_source_is_lossless_including_local_builtin_alias_heads ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+
+     Running tests/display.rs (target/debug/deps/display-4eb381d4b966e66a)
+
+running 2 tests
+test text_is_escaped_and_large_exponents_keep_their_meaning ... ok
+test fractions_roots_powers_greek_functions_and_operators_have_mathematical_display ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+
+     Running tests/serialized_symbols.rs (target/debug/deps/serialized_symbols-ddbb023ef8cb6ef8)
+
+running 1 test
+test input_form_reader_preserves_underscores_heads_patterns_precision_and_unicode ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+
+     Running tests/source_forms.rs (target/debug/deps/source_forms-9871b83ad44f1b53)
+
+running 7 tests
+test inequality_nodes_print_valid_wolfram_chains_and_keep_grouping ... ok
+test display_order_can_be_disabled_and_does_not_mutate_the_tree ... ok
+test compound_heads_round_trip_without_changing_grouped_multiplication ... ok
+test standard_forms_are_readable_and_precedence_preserves_meaning ... ok
+test all_forty_full_form_vectors_match_and_both_source_forms_round_trip ... ok
+test canonical_depth_four_trees_round_trip ... ok
+test strings_machine_values_and_big_precision_survive_reparsing ... ok
+
+test result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.04s
+
+     Running unittests src/lib.rs (target/debug/deps/om_host_service-a03fbb0cfb646b50)
+
+running 4 tests
+test kernel::worker::lifecycle::tests::unstarted_or_prepared_or_unknown_is_never_optimistically_accepted_or_discarded ... ok
+test results::runtime::queries::tests::source_fragments_keep_exact_utf8_and_never_call_a_partial_source_complete ... ok
+test kernel::worker::lifecycle::tests::cancel_and_actual_commit_barrier_have_one_linearized_order ... ok
+test scheduler::source_gate_tests::barrier_does_not_wait_on_the_source_owner_lock ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/agent_endpoint.rs (target/debug/deps/agent_endpoint-3eb300d73ad6b39f)
+
+running 5 tests
+test request_ids_are_correlated_without_dispatch_and_peer_model_streams_are_denied ... ok
+test durable_confirmation_replay_and_document_close_revoke_real_owner_authority ... ok
+test host_stream_has_exact_offsets_one_terminal_and_no_fabricated_tool_receipt ... ok
+test actual_readonly_producer_requires_acked_original_arguments_and_durable_confirmation ... ok
+test native_envelope_budget_preserves_raw_frame_and_rejects_duplicate_fields ... ok
+
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.14s
+
+     Running tests/agent_framing.rs (target/debug/deps/agent_framing-0ffec8dca1698fb9)
+
+running 4 tests
+test canonical_media_and_tool_parts_retain_ids_without_executable_urls_or_framework_state ... ok
+test frame_contract_denies_credentials_urls_pi_state_missing_null_and_wrong_versions ... ok
+test unique_json_members_utf8_depth_node_byte_and_eof_limits_are_real ... ok
+test every_actual_utf8_byte_cut_and_multiple_frames_preserve_text ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.17s
+
+     Running tests/agent_ingress.rs (target/debug/deps/agent_ingress-ce4ed42ef11a80d6)
+
+running 3 tests
+test tool_mapping_waits_for_confirmed_canonical_event_and_uses_distinct_host_ids ... ok
+test readonly_canonical_forgery_and_turn_proposal_isolation_do_not_create_grants ... ok
+test handshake_scope_duplicates_and_gap_never_resume_a_different_activation ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.03s
+
+     Running tests/commit_owner.rs (target/debug/deps/commit_owner-f2ace17670e364a9)
+
+running 7 tests
+test durable_terminal_admission_never_becomes_a_new_write ... ok
+test stop_after_barrier_is_pending_not_undo_and_unknown_holds_the_original_gate ... ok
+test stop_before_barrier_never_enters_commit_and_does_not_change_confirmed_source ... ok
+test late_fence_dirty_ime_scope_and_unacknowledged_admission_are_rejected ... ok
+test repeated_admission_does_not_rewind_writing_committing_or_unknown ... ok
+test cancelled_admission_readback_does_not_release_another_active_gate ... ok
+test actual_kernel_gate_blocks_source_writes_but_keeps_frozen_preview_and_reads_available ... ok
+
+test result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.02s
+
+     Running tests/contracts.rs (target/debug/deps/contracts-47c895b57df695ca)
+
+running 11 tests
+test shared_serials_preserve_maximum_and_never_wrap_or_truncate ... ok
+test frame_budget_invalid_utf8_and_unknown_nullable_fields_fail_closed ... ok
+test identities_unknown_fields_unions_and_closed_state_are_rejected ... ok
+test durable_io_ack_requires_actual_receipt_fields_and_cannot_claim_success_from_null ... ok
+test actual_generated_host_roundtrips_and_required_null_is_not_optional ... ok
+test positive_but_stale_runtime_and_document_generations_fail_owner_binding ... ok
+test unsupported_schema_features_and_false_schemas_are_not_silently_accepted ... ok
+test native_wire_dispatch_is_typed_and_cannot_change_permissions_by_adding_fields ... ok
+test marked_text_invariants_are_not_confused_with_shape_success ... ok
+test canonical_timestamp_accepts_actual_iso_dates_and_rejects_bad_calendar_or_offset ... ok
+test tool_source_hash_accepts_only_exact_lowercase_sha256 ... ok
+
+test result: ok. 11 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/document_source.rs (target/debug/deps/document_source-206b92f62c4e7e70)
+
+running 6 tests
+test execution_epoch_remains_independent_from_source_revision ... ok
+test legacy_unicode_cell_ids_are_byte_distinct_and_roundtrip_without_reassignment ... ok
+test duplicate_cells_overflow_and_reopen_generation_cannot_commit_half_a_document ... ok
+test staged_invalid_math_is_source_and_unknown_receipt_never_changes_authority ... ok
+test raw_unicode_order_and_per_cell_revision_are_never_normalized ... ok
+test input_group_is_bound_to_the_original_manual_request_and_not_an_agent_grant ... ok
+
+test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/fixture_support.rs (target/debug/deps/fixture_support-2f70f5153cb95e27)
+
+running 2 tests
+test controlled_clock_and_cancel_drive_actual_budget_checks ... ok
+test own_unicode_fixture_passes_the_real_sans_io_provider_decoder_for_every_split ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/kernel_acceptance.rs (target/debug/deps/kernel_acceptance-9cc2da800d335d1b)
+
+running 5 tests
+test only_entered_original_plan_and_matching_receipt_yield_an_accepted_parent ... ok
+test closed_contract_hashes_roles_unknown_fields_and_receipt_producer_are_checked ... ok
+test data_only_recovery_rejects_wrong_blob_and_current_build_instead_of_replaying_source ... ok
+test title_change_accepts_original_producer_but_math_epoch_change_discards_candidate ... ok
+test early_cancel_final_source_config_or_generation_change_prevents_commit ... ok
+
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.03s
+
+     Running tests/kernel_endpoint.rs (target/debug/deps/kernel_endpoint-4ae372d8e79d1025)
+
+running 4 tests
+test closed_wire_does_not_allow_oversized_or_untyped_recovery_chunks ... ok
+test state_command_is_the_same_closed_shape_as_generated_swift ... ok
+test recovery_upload_is_bounded_idempotent_and_directly_cancelled_without_a_state ... ok
+test malformed_complete_payload_fails_in_background_and_releases_the_gate ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.02s
+
+     Running tests/kernel_states.rs (target/debug/deps/kernel_states-1e5637f1147f56ba)
+
+running 2 tests
+test original_scoped_bytes_restore_actual_defs_and_old_parent_stays_independent ... ok
+test revoked_external_pins_keep_byte_and_count_reservations_until_reaped ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.02s
+
+     Running tests/kernel_worker.rs (target/debug/deps/kernel_worker-1771d6a8c5f89885)
+
+running 8 tests
+test registry_capacity_failure_and_close_do_not_publish_or_overwrite_the_parent ... ok
+test wrong_source_scope_epoch_and_frozen_cancel_are_rejected_or_preserved_as_actual_facts ... ok
+test explicit_nonreactive_mode_keeps_original_reassignment_semantics ... ok
+test unchanged_math_after_title_change_keeps_definitions_and_skipped_epoch_retires_them ... ok
+test real_error_keeps_actual_partial_definition_and_history_only_in_the_candidate ... ok
+test direct_stop_and_parent_lookup_do_not_wait_for_cas_and_queue_tokens_stay_independent ... ok
+test discarded_random_and_out_state_never_become_the_next_implicit_parent ... ok
+test explicit_parent_a2_then_a5_reconcile_retires_old_definitions_and_no_cascade_runs ... ok
+
+test result: ok. 8 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.04s
+
+     Running tests/model_codec.rs (target/debug/deps/model_codec-cc7a658128125dac)
+
+running 3 tests
+test no_model_url_auth_unknown_input_or_cross_runtime_and_eight_live_bound ... ok
+test http_error_echo_cancellation_invalid_bytes_duplicate_members_and_host_close_fail_closed ... ok
+test raw_single_turn_scope_eof_unknown_usage_and_terminal_nonce_are_actual ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.02s
+
+     Running tests/preview.rs (target/debug/deps/preview-3aa1bdca843e4b44)
+
+running 10 tests
+test request_cannot_replace_permissions_or_claim_unknown_original_source_hash ... ok
+test unread_future_cell_ids_and_conflicting_content_changes_cannot_bypass_the_original_snapshot ... ok
+test overlapping_matches_duplicate_keys_wrong_kind_and_bad_late_operations_fail_closed ... ok
+test source_only_preview_never_returns_a_commit_ref_or_executes_a_definition ... ok
+test partial_read_rejects_whole_update_but_allows_ordered_unique_raw_fragments ... ok
+test discussion_can_inspect_a_patch_but_cannot_commit_and_reopened_runtime_cannot_reuse_it ... ok
+test expiry_scope_mode_permission_and_token_tampering_never_commit_old_plans ... ok
+test host_assigns_new_cells_and_frozen_plan_is_retrieved_without_reconstructing_source ... ok
+test invalid_syntax_cycle_and_definition_conflict_never_get_committable_refs ... ok
+test patch_budget_and_actual_alias_binding_are_not_inferred_from_documentation ... ok
+
+test result: ok. 10 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.02s
+
+     Running tests/readonly_catalog.rs (target/debug/deps/readonly_catalog-255d6dd088ad3640)
+
+running 3 tests
+test actual_session_user_binding_precedes_builtin_alias_without_evaluating_docs ... ok
+test defaults_limits_categories_closed_fields_and_selector_nulls_are_strict ... ok
+test executable_docs_match_actual_callbacks_and_never_claim_example_verification ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.08s
+
+     Running tests/readonly_notebook.rs (target/debug/deps/readonly_notebook-413feefddad898bc)
+
+running 7 tests
+test native_history_binding_is_bounded_and_each_read_snapshot_retains_its_original_refs ... ok
+test historical_source_is_explicit_and_authority_expiry_and_clock_are_enforced ... ok
+test closed_arguments_selection_and_query_bound_cursors_reject_forgery ... ok
+test outline_is_bounded_and_full_source_exposure_never_upgrades_its_original_token ... ok
+test symbols_and_status_are_actual_accepted_facts_with_stale_producer_and_no_random_mutation ... ok
+test unicode_fragments_reassemble_exact_source_and_final_fragment_still_is_not_full_cell ... ok
+test retention_and_contract_limits_fail_closed_and_expiry_releases_the_actual_leases ... ok
+
+test result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.14s
+
+     Running tests/references.rs (target/debug/deps/references-1fb68bf68fc9e4da)
+
+running 3 tests
+test wrong_issuer_and_nonascii_forgery_cannot_resolve_or_panic ... ok
+test exact_deadline_purpose_and_counter_limits_are_not_implicit_permission ... ok
+test retained_bytes_and_count_are_bounded_and_expired_resources_release_capacity ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.49s
+
+     Running tests/result_runtime.rs (target/debug/deps/result_runtime-6e730a12d5a85524)
+
+running 5 tests
+test result_read_schema_rejects_unknown_options_overlarge_pages_or_invented_channels ... ok
+test readonly_result_retention_does_not_keep_an_obsolete_main_pool_envelope_pinned ... ok
+test actual_manifest_pages_source_numeric_and_readonly_controls_have_scoped_original_identity ... ok
+test direct_cancel_and_readback_remain_available_while_a_real_result_worker_is_paused ... ok
+test notebook_output_refs_resolve_real_exact_value_and_never_substitute_a_later_state ... ok
+
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.12s
+
+     Running tests/results.rs (target/debug/deps/results-e2ba592fc0998c69)
+
+running 5 tests
+test scratch_and_readonly_random_out_set_are_isolated_from_original_state ... ok
+test reexecuted_definition_invalidates_and_retires_dependent_owned_value_without_cascade ... ok
+test expired_and_restarted_result_tokens_require_fresh_grants_for_the_same_durable_result ... ok
+test revoked_cache_lookup_keeps_reader_reservation_until_actual_pin_release ... ok
+test actual_result_occurrences_scope_history_and_exact_pages_survive_other_executions ... ok
+
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.14s
+
+     Running tests/scheduler.rs (target/debug/deps/scheduler-4b11eabffb99d0de)
+
+running 11 tests
+test close_stops_admission_and_waits_only_on_the_finishing_caller ... ok
+test rejected_stale_scope_and_unknown_operation_do_not_start_a_job ... ok
+test invalid_direct_init_and_source_provenance_are_rejected ... ok
+test slow_subscriber_gets_explicit_resync_and_retained_outcome ... ok
+test actual_math_and_source_definitions_are_isolated_between_operations ... ok
+test overload_queued_stop_and_close_are_bounded_and_terminal ... ok
+test editor_preview_runs_on_an_independent_owner_during_real_math ... ok
+test long_math_does_not_delay_state_read_and_direct_cancellation_settles ... ok
+test independent_snapshot_recovers_dropped_terminal_facts_and_never_consumes_admission ... ok
+test actual_catalog_pagination_and_failed_math_never_claim_success ... ok
+test completed_reads_do_not_consume_active_capacity_or_recursively_embed_old_results ... ok
+
+test result: ok. 11 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.19s
+
+     Running tests/source_endpoint.rs (target/debug/deps/source_endpoint-948ea7a950ddce16)
+
+running 2 tests
+test host_command_schema_is_closed_and_requires_the_restored_configuration_binding ... ok
+test restored_constants_are_used_in_the_actual_source_preview ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.02s
+
+     Running tests/source_operations.rs (target/debug/deps/source_operations-96497a8f18f167b4)
+
+running 5 tests
+test bad_late_operation_never_publishes_earlier_changes_and_patch_budget_is_fixed ... ok
+test actual_setting_values_are_frozen_and_semantic_setting_changes_advance_epoch ... ok
+test pure_text_and_title_changes_do_not_invalidate_math_or_advance_execution_epoch ... ok
+test affected_dependencies_and_real_conflicts_are_from_the_shared_parser ... ok
+test whole_delete_insert_move_update_rename_is_frozen_once_without_changing_authority ... ok
+
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.02s
+
+     Running tests/undo_source.rs (target/debug/deps/undo_source-8cee847a3ecf7948)
+
+running 16 tests
+test inverse_preserves_later_unrelated_content_title_and_new_cells ... ok
+test a_group_insert_then_edit_is_atomic_and_can_be_removed_without_an_intermediate_snapshot ... ok
+test later_edit_then_same_bytes_are_not_mistaken_for_the_original_revision ... ok
+test inverse_insert_removes_only_original_cell_and_refuses_its_later_modification ... ok
+test later_related_edit_rejects_whole_inverse_without_a_partial_result ... ok
+test inverse_move_restores_order_but_keeps_unmodified_cells_current_content ... ok
+test disjoint_original_order_changes_do_not_protect_the_unchanged_gap_between_them ... ok
+test group_order_identity_and_late_conflict_cannot_publish_partial_inverse ... ok
+test a_whole_group_can_reverse_its_own_versions_while_preserving_unrelated_later_input ... ok
+test raw_unicode_related_source_and_later_title_are_not_normalized_or_overwritten ... ok
+test structural_inverse_retains_unrelated_edits_outside_original_anchors ... ok
+test new_content_inside_structural_edit_or_reused_deleted_identity_is_a_conflict ... ok
+test tampered_transaction_other_document_and_precommit_snapshot_cannot_be_inverted ... ok
+test unrelated_later_deletion_is_not_resurrected_by_content_inverse ... ok
+test maximum_32_transaction_group_reconstructs_the_original_source ... ok
+test all_small_distinct_identity_orders_and_memberships_have_exact_inverse ... ok
+
+test result: ok. 16 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.50s
+
+     Running unittests src/lib.rs (target/debug/deps/om_ios_ffi-a02db6632fef4995)
+
+running 1 test
+test ffi::tests::abi_rejects_invalid_buffers_releases_ownership_and_closes_unknown_handles ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+
+     Running tests/bridge.rs (target/debug/deps/bridge-b7666f15a6392aa4)
+
+running 2 tests
+test bridge_solves_reacts_preserves_source_and_rejects_bad_envelopes ... ok
+test independent_interrupt_recovers_without_resetting_definitions ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.05s
+
+     Running tests/corpus.rs (target/debug/deps/corpus-1bee4ba59ae2394f)
+
+running 1 test
+test mobile_bridge_matches_every_original_authority_row ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 9.85s
+
+     Running unittests src/lib.rs (target/debug/deps/om_kernel-8d49415f65e5f406)
+
+running 7 tests
+test session::evaluation::tests::one_shared_budget_and_successful_history_survive_cell_failure ... ok
+test session::evaluation::tests::timing_always_serializes_as_a_finite_nonnegative_number ... ok
+test output::tests::numeric_projection_of_recovered_real_coordinate_is_bounded_and_real ... ok
+test session::evaluation::tests::known_function_reads_follow_precedence_unset_and_never_execute_computed_values ... ok
+test session::evaluation::tests::error_level_evaluator_messages_keep_the_held_value_and_mark_the_cell_error ... ok
+test plot::visualization::tests::transported_parameter_solving_shares_the_sampling_budget_without_writing_history ... ok
+test plot::tests::preparation_instructions_sampling_and_stitching_share_one_budget ... ok
+
+test result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.07s
+
+     Running tests/artifacts.rs (target/debug/deps/artifacts-aa79a866216c95e0)
+
+running 5 tests
+test forged_geometry_formats_resources_non_data_and_interrupts_return_failures ... ok
+test full_table_and_nested_value_exports_ignore_page_offsets_preserve_fields_and_do_not_execute_text ... ok
+test svg_keeps_real_domains_colors_values_metadata_and_escaped_text ... ok
+test ephemeral_value_tokens_export_the_actual_selected_parameters_without_rerunning_source ... ok
+test png_is_lossless_rgba_with_real_unicode_metadata_fonts_and_expected_curve_pixels ... ok
+
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.29s
+
+     Running tests/assistant.rs (target/debug/deps/assistant-d54ce6bbe9adfdc4)
+
+running 8 tests
+test malformed_empty_multiple_and_duplicate_replies_are_actual_validation_errors ... ok
+test completion_context_uses_three_preceding_math_sources_and_inert_dialect_comments ... ok
+test fix_is_grounded_in_original_error_source_and_actual_diagnostics ... ok
+test prepared_translate_uses_registered_functions_and_live_symbols_without_mutation ... ok
+test genuine_validator_ignores_model_renderings_and_preserves_poles ... ok
+test completion_preserves_spaces_and_partial_syntax_but_rejects_illegal_tokens_and_duplicates ... ok
+test actual_validator_retries_twice_then_runs_a_valid_proposal_only_on_explicit_evaluate ... ok
+test explanation_contains_real_input_result_step_tree_and_selected_descendants ... ok
+
+test result: ok. 8 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.02s
+
+     Running tests/assistant_edges.rs (target/debug/deps/assistant_edges-61ff8152f0f2b3ca)
+
+running 5 tests
+test reversed_braces_and_multiple_json_envelopes_never_panic_or_validate ... ok
+test completion_uses_suffix_markers_crlf_unicode_and_lexical_not_syntax_policy ... ok
+test context_position_privacy_nonmath_cells_and_escaped_unicode_line_breaks ... ok
+test stale_steps_cannot_be_explained_and_real_evaluation_errors_reach_fix_prompt ... ok
+test feature_and_context_limits_are_deterministic_without_secret_or_history_leaks ... ok
+
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.11s
+
+     Running tests/capabilities.rs (target/debug/deps/capabilities-fd5dc6b9341bfd9e)
+
+running 4 tests
+test existing_user_alias_function_remains_callable_redefinable_and_inspectable ... ok
+test aliases_have_real_completion_hover_and_user_bindings_still_win ... ok
+test capabilities_separate_kernel_presentation_and_future_permissions ... ok
+test catalog_is_versioned_deterministic_and_callback_filtered ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.04s
+
+     Running tests/checkpoint.rs (target/debug/deps/checkpoint-543b4bc531124fc5)
+
+running 5 tests
+test wrong_source_config_identity_version_trailing_limits_and_cancel_do_not_restore ... ok
+test restoring_a_session_never_reexecutes_delayed_source_or_resets_out_history ... ok
+test malformed_owners_record_history_provenance_and_unknown_nested_fields_are_rejected ... ok
+test actual_definitions_owners_out_steps_and_readonly_explore_survive_session_bytes ... ok
+test actual_precision_models_interpolation_and_ode_provenance_are_retained_without_reexecution ... ok
+
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.39s
+
+     Running tests/checkpoint_corpus.rs (target/debug/deps/checkpoint_corpus-ec8edd98d504da44)
+
+running 1 test
+test all_53_original_authority_results_and_evidence_survive_session_checkpoint ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 9.65s
+
+     Running tests/composition.rs (target/debug/deps/composition-82d63bb1950d42de)
+
+running 3 tests
+test lexical_closure_dependencies_recalculate_and_notebook_remains_source_only ... ok
+test continuous_ode_dependencies_real_wire_values_and_source_only_saving ... ok
+test named_axis_plot_samples_genuine_kernel_data ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.04s
+
+     Running tests/continuation.rs (target/debug/deps/continuation-a02c37020db8f0e7)
+
+running 3 tests
+test multiline_definitions_preserve_real_dependency_recalculation ... ok
+test preview_is_nonexecuting_and_evaluation_uses_the_exact_same_multiline_source ... ok
+test original_grass_block_with_definition_newlines_produces_identical_real_geometry ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 7.26s
+
+     Running tests/editor.rs (target/debug/deps/editor-397a489124a7a183)
+
+running 5 tests
+test byte_cursor_validation_is_atomic_and_constants_follow_configuration ... ok
+test preview_selection_empty_input_and_source_effects_do_not_run_or_reset_state ... ok
+test hover_actual_docs_and_stored_delayed_definitions_keep_language_and_live_ownership ... ok
+test preview_preserves_actual_diagnostics_tokens_raw_poles_and_executable_actions ... ok
+test completion_aliases_snippets_unicode_ranges_and_context_options_are_executable ... ok
+
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.03s
+
+     Running tests/editor_edges.rs (target/debug/deps/editor_edges-688794390db11b3e)
+
+running 6 tests
+test pure_function_parameters_do_not_become_free_axis_solve_actions ... ok
+test dialect_marker_is_comment_context_and_preview_cursor_before_math_selects_first_statement ... ok
+test hover_uses_actual_ownvalue_precedence_truncates_unicode_and_tracks_clear_transfer_delete ... ok
+test raw_preview_actions_preserve_comments_and_error_cells_do_not_display_partial_math ... ok
+test options_remain_in_current_calls_and_comments_strings_part_and_groupings_do_not_leak ... ok
+test completion_ranks_prefix_initials_subsequence_and_is_stable_capped_at_fifty ... ok
+
+test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.04s
+
+     Running tests/editor_latency.rs (target/debug/deps/editor_latency-74a3dd68f54e06df)
+
+running 1 test
+test warm_1000_character_previews_finish_under_five_milliseconds ... ignored, run explicitly with cargo test -p om-kernel --release --test editor_latency -- --ignored --nocapture
+
+test result: ok. 0 passed; 0 failed; 1 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/editor_names.rs (target/debug/deps/editor_names-7a8ae9714c7d6135)
+
+running 1 test
+test every_registered_modern_callable_uses_the_real_parser_mapping ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.03s
+
+     Running tests/explanation_selection.rs (target/debug/deps/explanation_selection-88c9347902ebefa2)
+
+running 1 test
+test selected_output_explains_its_own_input_result_and_steps_without_mutation ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.02s
+
+     Running tests/explore.rs (target/debug/deps/explore-eb172b166cde97c5)
+
+running 8 tests
+test a_user_function_binding_keeps_precedence_over_the_new_modern_alias ... ok
+test previous_output_history_and_local_source_dependencies_remain_real_and_source_only ... ok
+test context_import_has_frozen_real_definitions_random_history_and_no_credentials_or_replay ... ok
+test frozen_graph_rejects_corrupt_references_versions_limits_and_readonly_writes ... ok
+test invalid_controls_writes_overflow_parameters_and_stale_ids_do_not_succeed ... ok
+test graph_context_preserves_precision_holes_callable_heads_and_random_without_replaying_assignments ... ok
+test real_scalar_matrix_curve_and_main_bindings_are_independently_checked ... ok
+test cancellation_inside_detached_sampling_does_not_return_partial_success_and_next_task_recovers ... ok
+
+test result: ok. 8 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.03s
+
+     Running tests/external_host.rs (target/debug/deps/external_host-971d757bc725d2d3)
+
+running 1 test
+test external_native_transport_uses_ephemeral_keys_without_desktop_store ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/inspection.rs (target/debug/deps/inspection-23792b159bd6ce64)
+
+running 3 tests
+test readonly_inspection_enforces_injected_deadline_limits_and_real_definitions ... ok
+test numeric_inspection_has_twenty_digits_without_notebook_history_or_flag_changes ... ok
+test actual_solution_display_keeps_copy_source_and_reports_roots_and_precision ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.36s
+
+     Running tests/llm.rs (target/debug/deps/llm-cc47127aa442c154)
+
+running 6 tests
+test genuine_validation_retries_then_exhaustion_and_late_chunks_are_terminal ... ok
+test nested_writes_bad_schema_and_proposals_are_checked_without_execution ... ok
+test real_probe_byte_timing_cancellation_and_route_errors ... ok
+test translation_is_a_real_checked_suggestion_and_runs_only_after_explicit_action ... ok
+test actual_evaluate_and_solve_tools_replay_results_without_parent_state_changes ... ok
+test completion_filters_real_fim_text_and_local_duplicates_before_delivery ... ok
+
+test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.02s
+
+     Running tests/llm_edges.rs (target/debug/deps/llm_edges-fce240dc2d10b623)
+
+running 6 tests
+test status_errors_never_stream_error_bodies_or_leak_credentials ... ok
+test invalid_streams_terminal_limits_missing_finish_and_unknown_ids_have_real_errors ... ok
+test active_limits_tombstones_cancel_and_notebook_load_cleanup ... ok
+test injected_deadline_stops_real_tools_and_recovery_leaves_notebook_and_interrupt_untouched ... ok
+test real_tool_schema_unknown_functions_unsupported_solver_and_missing_clock_are_honest ... ok
+test effective_profiles_capabilities_legacy_status_and_genuine_fix_explain_requests ... ok
+
+test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.02s
+
+     Running tests/llm_native.rs (target/debug/deps/llm_native-2495c50a41d05026)
+
+running 2 tests
+test native_http_cancellation_and_status_error_remain_session_results ... ok
+test native_credentials_real_http_tools_and_portable_events_share_one_job ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.03s
+
+     Running tests/llm_tool_edges.rs (target/debug/deps/llm_tool_edges-c5628cb7642766f6)
+
+running 4 tests
+test reflected_credentials_are_rejected_before_execution_and_removed_from_public_arguments ... ok
+test independent_cancellation_stops_tool_execution_without_resetting_notebook_interrupt ... ok
+test seventh_real_tool_round_fails_before_cas_execution_and_no_future_http ... ok
+test live_functions_and_readonly_nested_defined_writes_preserve_parent_history ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.02s
+
+     Running tests/native_config.rs (target/debug/deps/native_config-dea5be29e491e166)
+
+running 8 tests
+test key_priority_debug_and_unavailable_vault_fallback_use_actual_sources ... ok
+test invalid_files_and_configs_are_sanitized_and_preserved_without_overwrite ... ok
+test project_path_and_pure_sessions_have_no_implicit_native_io ... ok
+test trusted_load_save_and_presentation_preserve_existing_credential_sources ... ok
+test missing_partial_and_complete_toml_preserve_defaults_and_trusted_keys ... ok
+test file_failure_rolls_back_vault_and_session_state_then_recovers ... ok
+test bound_session_stores_real_vault_keys_preserves_masks_and_never_persists_env_values ... ok
+test bound_config_and_credentials_survive_source_notebook_load_and_reload ... ok
+
+test result: ok. 8 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.03s
+
+     Running tests/native_config_edges.rs (target/debug/deps/native_config_edges-18e753e93c4bc1af)
+
+running 5 tests
+test invalid_updates_and_nonunicode_files_do_not_modify_durable_or_runtime_state ... ok
+test locked_nonunicode_and_unavailable_providers_keep_the_declared_resolution_policy ... ok
+test provider_that_mutates_then_fails_is_restored_before_reporting_the_update_failure ... ok
+test later_vault_failure_restores_earlier_keys_and_explicit_rollback_failure_is_honest ... ok
+test masks_empty_keys_removal_and_rename_preserve_only_the_correct_named_credentials ... ok
+
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.03s
+
+     Running tests/operation_cancel.rs (target/debug/deps/operation_cancel-6000815b4f07b702)
+
+running 1 test
+test cancelled_isolated_operation_never_rearms_its_token_or_advances_definitions ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+
+     Running tests/output_packing.rs (target/debug/deps/output_packing-b7af00ccab6cf0d4)
+
+running 9 tests
+test real_exact_solution_cards_preserve_forms_indices_evidence_and_actual_step_tree ... ok
+test regions_use_actual_interval_endpoints_with_no_infinite_json_values ... ok
+test no_steps_still_has_real_cards_and_suppressed_solver_results_keep_history ... ok
+test plain_lists_wrappers_cached_values_and_declined_calls_stay_expressions ... ok
+test empty_all_conditional_and_free_axis_cards_follow_real_solution_shapes ... ok
+test reactive_outputs_pack_actual_rerun_results_and_preserve_raw_poles ... ok
+test multiplicities_and_generated_parameter_conditions_are_not_lost_in_cards ... ok
+test numerical_and_value_only_families_keep_actual_bindings_and_verification ... ok
+test complex_and_root_numeric_displays_come_from_real_n_and_do_not_consume_history ... ok
+
+test result: ok. 9 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.39s
+
+     Running tests/output_steps.rs (target/debug/deps/output_steps-0b8c082100ec9d0e)
+
+running 1 test
+test real_formula_domain_branch_linear_root_and_region_steps_preserve_template_fields ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.47s
+
+     Running tests/plot_edges.rs (target/debug/deps/plot_edges-36a7718f793d9e36)
+
+running 8 tests
+test nonconstant_tiny_curves_use_their_actual_quantile_viewport ... ok
+test shifted_poles_and_tangent_are_disconnected_without_splitting_smooth_steep_curves ... ok
+test all_range_axes_options_and_effectful_sources_fail_atomically ... ok
+test rendering_errors_preserve_completed_held_history_and_block_later_execution ... ok
+test plot_local_axes_option_dependencies_and_reactive_sampling_are_real ... ok
+test injected_cancellation_stops_mid_sampling_and_next_request_recovers_without_history ... ok
+test exact_grid_vertex_crossings_and_saddle_junctions_do_not_join_unrelated_branches ... ok
+test implicit_components_saddles_and_no_zero_discontinuities_keep_actual_topology ... ok
+
+test result: ok. 8 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.08s
+
+     Running tests/plot_extensions.rs (target/debug/deps/plot_extensions-6519ba4ebeeac4a5)
+
+running 10 tests
+test histogram_camera_roundtrip_and_log_domain_filtering_do_not_change_real_counts ... ok
+test histogram_conserves_every_sample_and_data_plot_does_not_reorder_input ... ok
+test nonfinite_raw_poles_wrong_shapes_and_readonly_writes_are_not_successful_samples ... ok
+test forged_transport_options_bad_precision_and_unsupported_palette_override_are_rejected ... ok
+test sampled_sources_remain_readonly_and_axes_are_local_with_reactive_parameter_dependencies ... ok
+test boolean_region_and_scalar_density_have_real_grid_values_not_fabricated_shapes ... ok
+test parametric_circle_samples_the_actual_fixed_domain_and_does_not_rebind_it_on_pan ... ok
+test named_scalar_contours_and_log_function_geometry_keep_original_coordinates ... ok
+test vector_values_and_integral_curve_radius_are_independently_checked ... ok
+test extended_sampling_cancels_without_partial_success_and_recovers_on_the_next_request ... ok
+
+test result: ok. 10 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.08s
+
+     Running tests/plot_parameters.rs (target/debug/deps/plot_parameters-c7e98903efad481b)
+
+running 7 tests
+test one_invalid_parameter_branch_does_not_discard_a_valid_inequality_union_branch ... ok
+test parameter_poles_selected_domains_and_empty_updates_never_keep_stale_points ... ok
+test legacy_wire_shapes_are_preserved_and_new_optional_metadata_is_explicit ... ok
+test parameter_default_real_nsolve_and_updated_points_survive_json_roundtrip_in_fresh_session ... ok
+test parameterized_regions_update_actual_shading_and_two_axis_points_update_actual_assignments ... ok
+test pole_exclusions_and_complete_parameter_bindings_are_validated_without_relying_on_cache ... ok
+test moving_complex_domain_parameters_out_of_real_roots_clears_highlights_in_successful_sampling ... ok
+
+test result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.13s
+
+     Running tests/plot_sampling.rs (target/debug/deps/plot_sampling-3e62895822d62dd3)
+
+running 6 tests
+test invalid_requests_are_atomic_and_empty_nonreal_curves_have_finite_viewports ... ok
+test authority_sine_has_at_least_400_points_and_small_error ... ok
+test user_functions_assigned_axes_and_parameters_use_local_readonly_definitions ... ok
+test poles_and_original_holes_split_without_connecting_invalid_domains ... ok
+test authority_circle_is_a_stitched_closed_contour_with_small_residual ... ok
+test explicit_held_plots_and_suppression_keep_real_history_and_event_outputs ... ok
+
+test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.05s
+
+     Running tests/plot_transport_edges.rs (target/debug/deps/plot_transport_edges-f7cc8940deab3a24)
+
+running 4 tests
+test replay_is_independent_of_later_global_definitions_and_legacy_highlights_are_returned ... ok
+test parameter_solving_and_geometry_honor_cancellation_deadline_and_next_request_recovery ... ok
+test closed_named_roots_embedded_domains_and_multiple_real_system_points_use_actual_coordinates ... ok
+test coupled_defaults_and_original_branch_constraints_never_invent_out_of_domain_points ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.10s
+
+     Running tests/profile_draft.rs (target/debug/deps/profile_draft-4b01bea3ccba99a7)
+
+running 3 tests
+test native_draft_key_intents_preserve_env_precedence_without_vault_or_file_writes ... ok
+test ephemeral_profile_probe_keeps_config_and_source_unchanged_and_resolves_masks_by_identity ... ok
+test actual_native_draft_http_uses_new_key_and_returns_real_probe_metrics_without_saving ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+
+     Running tests/protocol.rs (target/debug/deps/protocol-b449c247a8c82704)
+
+running 14 tests
+test explanation_output_selection_is_optional_without_changing_legacy_shape ... ok
+test actual_http_status_and_probe_metrics_are_additive_wire_fields ... ok
+test draft_probe_and_explicit_keyless_profiles_extend_legacy_wire_shapes ... ok
+test actual_inspection_fields_keep_old_binding_fixtures_compatible ... ok
+test notebook_persistence_contains_source_cells_and_never_configuration_or_keys ... ok
+test actual_recovery_metadata_has_source_only_files_and_separate_variants ... ok
+test title_host_locale_and_live_variable_metadata_use_additive_real_wire_shapes ... ok
+test every_request_variant_matches_the_authoritative_wire_shape ... ok
+test cli_settings_default_to_disabled_and_roundtrip_only_when_enabled ... ok
+test nullable_fields_enum_spellings_and_required_fields_are_preserved ... ok
+test config_defaults_redaction_and_submitted_masks_preserve_secrets_by_profile_name ... ok
+test parser_and_solver_adapters_keep_existing_json_without_static_string_leaks ... ok
+test every_response_and_event_roundtrips_with_nested_renderable_dtos ... ok
+test export_bindings ... ok
+
+test result: ok. 14 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.44s
+
+     Running tests/reactive.rs (target/debug/deps/reactive-e793bd82c0b585d8)
+
+running 9 tests
+test conflicts_do_not_execute_or_clear_prior_successful_definitions ... ok
+test switches_keep_stale_outputs_and_sequential_redefinitions ... ok
+test editing_is_source_only_move_is_atomic_and_run_all_uses_document_order ... ok
+test genuine_cycles_error_and_downstream_is_stale_then_recovers ... ok
+test diamond_and_layer_order_are_stable_and_unrelated_cells_are_untouched ... ok
+test edit_parse_failure_delete_and_kind_change_preserve_correct_live_ownership ... ok
+test failed_prerequisites_block_descendants_but_independent_branches_run ... ok
+test raw_user_function_heads_and_scoped_patterns_drive_dependencies ... ok
+test authority_edit_recalculates_real_solutions_and_keeps_actual_history_steps ... ok
+
+test result: ok. 9 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.02s
+
+     Running tests/reactive_edges.rs (target/debug/deps/reactive_edges-68c1357b838512f1)
+
+running 12 tests
+test dependency_analysis_excludes_registered_builtins_beyond_core_symbol_table ... ok
+test calculus_coordinates_are_local_but_parameters_and_bounds_remain_real_dependencies ... ok
+test scopes_do_not_hide_symbols_used_outside_the_binding_expression ... ok
+test rejected_conflicting_evaluate_does_not_invalidate_the_other_owners_dependents ... ok
+test stale_prerequisite_outside_the_affected_closure_blocks_execution_until_repaired ... ok
+test run_all_cycle_errors_preserve_real_history_of_earlier_evaluations ... ok
+test cancellation_during_auto_execution_keeps_the_completed_root_and_blocks_descendants ... ok
+test edited_away_live_definitions_do_not_create_false_source_cycles ... ok
+test deferred_global_sets_and_lexical_local_sets_do_not_claim_unexecuted_values ... ok
+test delete_auto_recalculates_the_transitive_closure_and_disabled_mode_only_stales ... ok
+test one_cascade_preserves_interrupt_and_a_new_request_recovers ... ok
+test partial_effects_clear_unset_and_identical_reassignments_have_actual_ownership ... ok
+
+test result: ok. 12 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.02s
+
+     Running tests/recovery.rs (target/debug/deps/recovery-da10c0bb8993ec22)
+
+running 2 tests
+test restore_reports_real_cycles_and_does_not_run_their_dependents ... ok
+test restart_restores_definitions_in_dependency_order_and_retains_source_and_stale_computations ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.02s
+
+     Running tests/retained_results.rs (target/debug/deps/retained_results-8a0536fb8f2457ba)
+
+running 6 tests
+test readonly_set_seed_and_hidden_function_effects_do_not_change_old_or_main_context ... ok
+test solution_multiplicity_is_global_across_actual_record_pages ... ok
+test geometry_pages_equal_original_kernel_samples_without_any_resampling ... ok
+test held_diagnostics_and_initial_explore_geometry_remain_actual_retained_data ... ok
+test original_steps_are_paged_and_numeric_value_uses_the_actual_retained_value ... ok
+test exact_values_unicode_rows_and_occurrences_stay_immutable_across_main_edits ... ok
+
+test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.07s
+
+     Running tests/scene3d.rs (target/debug/deps/scene3d-8832a69fd0d004af)
+
+running 9 tests
+test unsupported_precision_dimensions_bad_colors_and_readonly_writes_never_fabricate_success ... ok
+test frozen_exploration_changes_only_local_3d_geometry_and_ios_does_not_auto_sample ... ok
+test local_axes_do_not_capture_globals_and_ios_keeps_source_without_generating_mesh ... ok
+test scalar_and_parameter_surfaces_are_actual_samples_with_independent_residuals_and_unit_normals ... ok
+test existing_user_aliases_keep_precedence_and_all_3d_axes_are_lexically_local ... ok
+test three_dimensional_sampling_shares_cancellation_budget_and_a_new_request_recovers ... ok
+test implicit_sphere_has_true_edge_zeros_and_outward_normals_poles_are_not_fake_surfaces ... ok
+test obj_contains_actual_world_vertices_unit_normals_faces_lines_and_original_colors ... ok
+test parameter_curve_and_readonly_color_return_real_coordinates_and_rgb_not_frontend_values ... ok
+
+test result: ok. 9 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 7.22s
+
+     Running tests/scene_graph.rs (target/debug/deps/scene_graph-dae58e77303fc990)
+
+running 9 tests
+test style_inheritance_and_real_rgba_blending_preserve_alpha_and_validate_components ... ok
+test serialized_modern_symbol_names_survive_2d_3d_and_frozen_exploration_resampling ... ok
+test invalid_shapes_unknown_options_and_readonly_nodes_fail_without_writing_the_session ... ok
+test actual_sphere_ellipsoid_box_cylinder_cone_tube_and_transformed_normals ... ok
+test real_xy_markers_paths_labels_disks_polygons_and_affine_transforms ... ok
+test primitive_normal_directions_center_rotation_and_flattened_geometry_are_independently_correct ... ok
+test real_earth_moon_l2_fixture_has_high_precision_residual_and_proportional_position_diagram ... ok
+test zero_scale_imports_become_actual_points_or_lines_and_total_import_budget_is_checked ... ok
+test real_watermelon_fixture_has_striped_skin_rind_red_section_seeds_and_readable_obj_geometry ... ok
+
+test result: ok. 9 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 38.14s
+
+     Running tests/session.rs (target/debug/deps/session-3c43a9a5935f0a63)
+
+running 8 tests
+test parse_preflight_is_atomic_and_suppression_never_loses_messages ... ok
+test evaluator_failure_stops_later_statements_retains_earlier_effects_and_recovers ... ok
+test evaluation_uses_the_real_evaluator_and_retains_cells_history_and_source_order ... ok
+test function_environment_includes_real_pure_functions_aliases_and_removes_cleared_values ... ok
+test parser_env_follows_actual_functions_constant_mode_and_configured_auto_dialect ... ok
+test load_save_preserves_only_sources_and_resets_definitions_without_changing_config ... ok
+test each_statement_retains_real_steps_with_original_source_and_honors_recording ... ok
+test solving_keeps_raw_poles_delayed_definitions_and_invalid_roots_inspectable ... ok
+
+test result: ok. 8 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.06s
+
+     Running tests/session_config.rs (target/debug/deps/session_config-95c86e44c766ee27)
+
+running 2 tests
+test injected_clock_and_shared_flag_stop_real_execution_and_allow_recovery ... ok
+test config_roundtrip_resolves_masks_and_pure_requests_do_not_reset_the_interrupt ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+
+     Running tests/solve_plot.rs (target/debug/deps/solve_plot-3ff626dc6a3f873f)
+
+running 4 tests
+test equality_plots_use_actual_sides_roots_and_minimum_viewport ... ok
+test actual_regions_shade_unbounded_intervals_and_two_axis_equations_highlight_real_solutions ... ok
+test unsupported_nonreal_infinite_free_axes_and_disabled_auto_plot_do_not_gain_plots ... ok
+test actual_radical_root_numeric_and_reactive_points_are_finite_and_correct ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.20s
+
+     Running tests/source_transactions.rs (target/debug/deps/source_transactions-0134a4a73f89cc62)
+
+running 5 tests
+test text_title_and_prose_reorder_keep_live_math_and_no_evaluation_occurs ... ok
+test invalid_batch_does_not_modify_definitions_or_source_and_settings_are_not_evaluated ... ok
+test whole_delete_does_not_cascade_and_old_owner_values_are_actually_removed ... ok
+test real_cycle_conflict_and_lexical_function_scope_are_analyzed_without_execution ... ok
+test old_caller_owned_dynamic_side_effects_contribute_real_invalidation ... ok
+
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.02s
+
+     Running tests/ui_state.rs (target/debug/deps/ui_state-1d42268f60a6b297)
+
+running 1 test
+test title_and_host_language_updates_do_not_reset_actual_definitions_or_history ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.02s
+
+     Running tests/value_pages.rs (target/debug/deps/value_pages-bf85298b7365daad)
+
+running 4 tests
+test old_or_stale_snapshots_and_bad_paths_are_rejected_without_reexecution ... ok
+test tables_page_real_rows_and_columns_keep_occurrence_ids_and_full_source ... ok
+test fresh_science_has_provenance_but_arbitrary_or_cached_records_do_not ... ok
+test scalar_wire_is_unchanged_and_empty_tables_preserve_columns ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.03s
+
+     Running tests/working_session.rs (target/debug/deps/working_session-f14976bf9501288f)
+
+running 3 tests
+test working_notebook_retains_real_results_and_owners_then_can_commit_new_definitions ... ok
+test candidate_credentials_io_and_cancellation_are_independent_from_parent ... ok
+test actual_steps_and_readonly_explore_snapshots_survive_the_memory_candidate ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.04s
+
+     Running unittests src/lib.rs (target/debug/deps/om_llm-9a4c54758bc7d1ba)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/chat_requests.rs (target/debug/deps/chat_requests-3044125ca32ea3f7)
+
+running 5 tests
+test anthropic_extracts_system_and_merges_tool_results_with_real_tool_input_blocks ... ok
+test disabled_capabilities_optional_keys_and_extra_headers_are_deterministic_and_case_insensitive ... ok
+test checked_invalid_profiles_messages_and_tool_json_fail_without_leaking_secrets ... ok
+test debug_redacts_keys_headers_endpoint_and_private_prompt_but_explicit_transport_is_real ... ok
+test openai_request_has_actual_headers_body_capabilities_and_multi_role_tool_replay ... ok
+
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/extra_body.rs (target/debug/deps/extra_body-862a86b683ddc4c4)
+
+running 3 tests
+test protocol_overrides_are_rejected_and_sensitive_extra_values_are_not_debugged ... ok
+test vendor_body_options_are_actual_request_parameters_and_not_prompt_data ... ok
+test oversized_vendor_data_is_rejected_without_including_payloads ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.03s
+
+     Running tests/fim.rs (target/debug/deps/fim-513c95faa59d4931)
+
+running 5 tests
+test checked_profile_header_errors_and_empty_prefix_suffix_are_real ... ok
+test wrong_or_malformed_response_fields_never_become_completion_text ... ok
+test chat_fallback_is_nonstreaming_target_correct_and_has_insertion_only_prompt ... ok
+test mandated_provider_fixtures_and_chat_fallback_fields_return_exact_raw_text ... ok
+test three_fim_requests_have_exact_endpoints_json_sampling_and_headers ... ok
+
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/fim_edges.rs (target/debug/deps/fim_edges-50bb921a61b2d9e4)
+
+running 6 tests
+test incomplete_ollama_wrong_assistant_roles_and_tool_content_do_not_finish_a_completion ... ok
+test response_limit_and_remote_errors_keep_payloads_out_of_display_and_debug ... ok
+test anthropic_fallback_keeps_text_and_empty_completion_without_returning_thinking_content ... ok
+test explicit_choice_zero_and_duplicate_or_missing_choices_have_truthful_semantics ... ok
+test explicit_tool_finish_reasons_and_nonassistant_anthropic_messages_are_not_insertions ... ok
+test deterministic_requests_reuse_shared_credentials_and_endpoint_checks_for_all_kinds ... ok
+
+test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/job_edges.rs (target/debug/deps/job_edges-5e5be240dedbe2cb)
+
+running 9 tests
+test terminal_failures_do_not_change_with_late_http_metadata_or_transport_messages ... ok
+test stream_and_transport_errors_redact_actual_profile_and_custom_header_credentials ... ok
+test missing_and_malformed_tools_do_not_become_completed_text ... ok
+test retry_conversations_never_copy_known_credentials_from_a_reflected_model_response ... ok
+test actual_validation_retries_stop_after_two_and_retry_diagnostics_redact_keys ... ok
+test tool_argument_roots_must_be_real_objects_before_host_execution ... ok
+test wrong_partial_duplicate_results_and_invalid_active_phase_calls_never_issue_http ... ok
+test arbitrary_large_indices_are_bounded_by_count_and_real_http_data_limits ... ok
+test six_real_tool_rounds_allow_final_text_but_a_seventh_invocation_fails ... ok
+
+test result: ok. 9 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+
+     Running tests/job_streams.rs (target/debug/deps/job_streams-5e4a035dddcb04ef)
+
+running 4 tests
+test genuine_empty_text_finishes_but_metadata_or_truncated_frames_do_not ... ok
+test target_correct_completion_and_test_profile_probes_support_real_provider_formats ... ok
+test conflicting_tool_metadata_postfinish_data_and_duplicate_http_end_fail_explicitly ... ok
+test actual_job_byte_split_results_and_tool_requests_match_whole_fixture_feeds ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+
+     Running tests/jobs.rs (target/debug/deps/jobs-8229072b8422d2e1)
+
+running 5 tests
+test completion_uses_actual_fim_body_and_http_json_without_streaming_or_trim ... ok
+test finish_events_do_not_dispatch_before_http_end_and_duplicate_terminal_calls_are_harmless ... ok
+test invalid_new_cancel_missing_stream_and_http_errors_are_real_failures ... ok
+test two_actual_tool_rounds_then_final_text_replay_real_openai_and_anthropic_requests ... ok
+test structured_results_delegate_to_actual_host_parser_and_retry_actual_diagnostics ... ok
+
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+
+     Running tests/native_cancel.rs (target/debug/deps/native_cancel-c6e5eeebdadf77e8)
+
+running 1 test
+test callback_cancel_does_not_forward_later_events_from_the_same_response_chunk ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+
+     Running tests/native_http.rs (target/debug/deps/native_http-71433e24a460af49)
+
+running 8 tests
+test safe_factory_refuses_redirect_without_forwarding_custom_credentials ... ok
+test provider_status_and_reflected_secrets_are_real_bounded_and_safe ... ok
+test actual_openai_anthropic_text_and_authorization_then_cached_terminal ... ok
+test two_tool_rounds_return_to_host_then_replay_actual_results_and_final_text ... ok
+test actual_nonstream_fim_providers_and_chat_fallback_return_raw_insertions ... ok
+test actual_parser_retry_http_rounds_are_driven_until_real_result ... ok
+test malformed_invalid_utf8_missing_finish_and_oversized_responses_do_not_complete ... ok
+test configured_timeout_and_early_inflight_cancellation_drop_actual_requests ... ok
+
+test result: ok. 8 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.05s
+
+     Running tests/native_stream.rs (target/debug/deps/native_stream-811cb88e51b53100)
+
+running 4 tests
+test connection_failures_do_not_format_configured_url_credentials_or_replay_partial_http ... ok
+test cancellation_from_a_real_body_delta_stops_further_events_and_keeps_terminal_state ... ok
+test actual_body_stall_uses_profile_timeout ... ok
+test genuine_single_byte_http_chunks_preserve_multibyte_text ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.34s
+
+     Running tests/prompts.rs (target/debug/deps/prompts-f46547edf6b72387)
+
+running 3 tests
+test embedded_translate_keeps_all_eight_plan_examples_and_bilingual_rules ... ok
+test supplied_data_is_json_encoded_and_never_expands_instruction_templates ... ok
+test chat_tools_have_actual_plan_schemas_and_roundtrip_into_checked_request ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/request_edges.rs (target/debug/deps/request_edges-c5eb21f5da9f3e14)
+
+running 7 tests
+test anthropic_malformed_json_is_rejected_after_a_valid_tool_association ... ok
+test checked_chat_replay_rejects_orphan_duplicate_and_unfinished_tool_associations ... ok
+test tool_names_and_schema_roots_are_checked_before_request_creation ... ok
+test completed_rounds_can_preserve_provider_ids_reused_in_a_later_round ... ok
+test malformed_authorities_do_not_escape_checked_endpoint_validation ... ok
+test checked_profiles_and_browser_headers_use_real_targets_and_no_masked_credential ... ok
+test actual_two_tool_result_order_and_anthropic_initial_objects_are_preserved ... ok
+
+test result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/single_turn.rs (target/debug/deps/single_turn-d21bb362223e1277)
+
+running 10 tests
+test cases::nonstream_known_unsupported_content_cannot_be_silently_discarded ... ok
+test cases::codec_refuses_malformed_json_duplicate_fields_http_errors_and_late_cancel_bytes ... ok
+test cases::refuses_unknown_finish_empty_tools_duplicate_call_ids_and_known_unsupported_modalities ... ok
+test cases::multiline_sse_unknown_fields_and_json_bodies_are_real ... ok
+test cases::prepared_body_and_response_share_declared_tools_binding_and_host_output_identity ... ok
+test cases::incomplete_finish_never_presents_partial_calls_as_eligible_proposals ... ok
+test cases::unsupported_media_opaque_server_tools_and_bad_part_identity_are_not_silently_omitted ... ok
+test cases::signed_thinking_is_opaque_replay_not_user_text_and_scope_switch_is_explicit ... ok
+test cases::builder_pairs_results_preserves_order_and_refuses_wrong_or_missing_results ... ok
+test cases::all_actual_utf8_cut_positions_keep_multiple_calls_raw_args_usage_and_identity ... ok
+
+test result: ok. 10 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.46s
+
+     Running tests/stream_edges.rs (target/debug/deps/stream_edges-ab359f59cb80d890)
+
+running 3 tests
+test ndjson_rejects_malformed_records_and_terminal_decoders_do_not_resume ... ok
+test known_malformed_provider_containers_and_required_tool_start_fields_emit_errors ... ok
+test every_utf8_crlf_split_preserves_exact_messages_and_only_one_bom_is_removed ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/streams.rs (target/debug/deps/streams-234350df21883506)
+
+running 7 tests
+test malformed_utf8_incomplete_scalars_and_oversized_lines_events_fail_explicitly ... ok
+test sse_bom_crlf_bare_cr_comments_multiline_and_empty_data_follow_actual_framing ... ok
+test ndjson_incremental_unicode_crlf_and_final_record_are_actual_json_records ... ok
+test provider_errors_metadata_choice_zero_and_anthropic_initial_inputs_are_truthful ... ok
+test actual_interleaved_fragments_preserve_ids_names_indices_and_final_json ... ok
+test real_finish_markers_keep_specific_reasons_before_terminal_markers ... ok
+test mandated_multibyte_text_and_two_tool_fixtures_are_identical_for_seeded_byte_splits ... ok
+
+test result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.02s
+
+     Running unittests src/lib.rs (target/debug/deps/om_num-186ef8e162987e50)
+
+running 90 tests
+test ball::elementary_tests::whole_and_nonpositive_domains_are_conservative ... ok
+test ball::elementary_tests::logarithm_cut_and_sqrt_sign_uncertainty_are_enclosed ... ok
+test ball::tests::arbitrary_finite_ball_products_enclose_all_corners ... ok
+test ball::tests::cancellation_and_precision_reduction_keep_enclosures ... ok
+test ball::elementary_tests::uncertain_inputs_include_interior_trigonometric_extrema ... ok
+test ball::tests::complex_arithmetic_encloses_exact_answers ... ok
+test ball::tests::complex_division_certifies_nonzero_imaginary_intervals ... ok
+test ball::tests::large_exponents_remain_finite_and_zero_boundary_is_inclusive ... ok
+test ball::tests::rational_conversion_encloses_rounding_including_negative_values ... ok
+test ball::tests::signs_uncertainty_and_division_domains ... ok
+test ball::tests::sqrt_two_is_certified_by_exact_squared_endpoints ... ok
+test ball::tests::whole_line_propagates_without_infinity_arithmetic ... ok
+test modp::tests::near_u64_limit_does_not_overflow ... ok
+test ball::elementary_tests::real_functions_match_binary64_with_the_planned_tolerance ... ok
+test modp::tests::validates_moduli_and_normalizes_residues ... ok
+test ntheory::primality::tests::miller_rabin_and_lucas_reject_each_others_pseudoprimes ... ok
+test ball::elementary_tests::complex_log_magnitude_matches_modulus_reference_and_preserves_origin_rejection ... ok
+test modp::tests::all_small_field_units_and_distributivity ... ok
+test ntheory::tests::bpsw_covers_large_primes_squares_and_miller_rabin_pseudoprimes ... ok
+test ntheory::tests::factoring_handles_zero_units_signs_and_multiplicities ... ok
+test ntheory::tests::fermat_64_factorization_matches_known_factors ... ok
+test ntheory::tests::gcd_and_bezout_cover_signs_and_zero ... ok
+test ntheory::tests::partial_factorizations_preserve_unresolved_composites ... ok
+test ntheory::tests::perfect_powers_select_maximal_exponent ... ok
+test ntheory::tests::pollard_factorizations_are_reproducible ... ok
+test ntheory::tests::primality_rejects_carmichael_and_strong_pseudoprimes ... ok
+test ntheory::tests::bezout_identity ... ok
+test ntheory::tests::radical_factors_cover_rational_constructor_numerators ... ok
+test ball::tests::arithmetic_encloses_exact_rational_results ... ok
+test ntheory::tests::primes_match_independent_sieve_through_the_first_thousand_primes ... ok
+test ntheory::tests::factor_product_is_original_for_any_budget ... ok
+test ntheory::tests::roots_handle_sign_degree_and_units ... ok
+test ntheory::tests::square_root_is_exact_at_large_boundaries ... ok
+test number::tests::approximate_complex_zero_imaginary_is_retained ... ok
+test number::tests::arithmetic_roundtrips_through_serde_without_losing_precision ... ok
+test number::tests::arithmetic_vectors_from_canonical_spec ... ok
+test number::tests::big_comparison_does_not_round_through_machine_precision ... ok
+test number::tests::big_serde_preserves_nontrivial_significand_exponent_and_precision ... ok
+test number::tests::complex_components_share_machine_precision ... ok
+test number::tests::complex_multiplication_uses_exact_cross_terms ... ok
+test number::tests::complex_normalization_promotes_both_components_if_machine_cannot_hold_one ... ok
+test number::tests::complex_numbers_are_not_ordered_as_reals ... ok
+test number::tests::complex_reciprocal_avoids_machine_squared_magnitude_overflow ... ok
+test number::tests::complex_reciprocal_avoids_squared_magnitude_underflow ... ok
+test number::tests::complex_reciprocal_uses_exact_squared_magnitude ... ok
+test number::tests::every_representation_of_zero_has_no_reciprocal ... ok
+test number::tests::exact_addition_can_become_integer ... ok
+test number::tests::exact_addition_reduces_rationals ... ok
+test number::tests::exact_and_big_arithmetic_preserves_big_precision ... ok
+test number::tests::exact_and_machine_arithmetic_remains_machine ... ok
+test number::tests::exact_comparison_does_not_round_large_integers_to_f64 ... ok
+test number::tests::exact_complex_zero_imaginary_collapses ... ok
+test number::tests::exact_machine_comparison_is_mathematical_not_coerced ... ok
+test number::tests::exact_multiplication_reduces_rationals ... ok
+test number::tests::finite_big_can_cancel_after_machine_overflow ... ok
+test number::tests::huge_exact_operand_does_not_create_machine_infinity ... ok
+test ntheory::primality::tests::strong_lucas_accepts_independently_sieved_primes ... ok
+test number::tests::huge_signed_exponents_work_for_unit_bases ... ok
+test number::tests::imaginary_unit_squared_is_minus_one ... ok
+test ntheory::tests::roots_and_radical_extraction_preserve_integers ... ok
+test number::tests::integer_reciprocal_is_exact_rational ... ok
+test number::tests::integers_do_not_overflow_machine_words ... ok
+test number::tests::machine_addition_overflow_promotes_to_finite_big ... ok
+test number::tests::machine_and_big_selects_machine ... ok
+test number::tests::machine_multiplication_overflow_promotes_to_finite_big ... ok
+test number::tests::machine_reciprocal_overflow_promotes_to_big ... ok
+test number::tests::mixed_complex_precision_is_selected_before_arithmetic ... ok
+test number::tests::negative_integer_power_is_exact ... ok
+test number::tests::negative_powers_of_zero_are_rejected ... ok
+test number::tests::negative_rational_is_negated_exactly ... ok
+test number::tests::negative_rational_reciprocal_normalizes ... ok
+test number::tests::nested_complex_components_are_flattened ... ok
+test number::tests::rational_power_with_positive_exponent ... ok
+test number::tests::precision_contagion_matrix_is_symmetric ... ok
+test number::tests::rational_with_unit_denominator_normalizes_to_integer ... ok
+test number::tests::rational_zero_normalizes_to_integer ... ok
+test number::tests::sign_and_identity_predicates_cover_scalar_categories ... ok
+test number::tests::two_big_operands_select_minimum_precision ... ok
+test number::tests::zero_exponent_yields_one_for_nonzero_base ... ok
+test number::tests::zero_to_zero_is_indeterminate ... ok
+test rng::tests::same_seed_reproduces_ranges_including_large_widths ... ok
+test rng::tests::seed_zero_matches_known_stream ... ok
+test number::tests::exact_complex_inverse_and_normalization ... ok
+test number::tests::exact_rational_ring_laws ... ok
+test ball::elementary_tests::complex_principal_values_and_elementary_identities ... ok
+test ball::elementary_tests::high_precision_values_match_independent_decimal_fixtures ... ok
+test ball::elementary_tests::pi_has_the_first_thousand_decimal_digits_with_certified_endpoints ... ok
+test ball::elementary_tests::complex_functions_match_independent_decimal_fixtures ... ok
+test ball::elementary_tests::varied_precision_enclosures_contain_directed_library_oracles ... ok
+test number::tests::huge_exact_power_stops_at_the_bit_limit ... ok
+
+test result: ok. 90 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 2.24s
+
+     Running tests/checkpoint.rs (target/debug/deps/checkpoint-6c9ce308563253a9)
+
+running 5 tests
+test invalid_numbers_version_limits_truncation_and_abort_do_not_produce_partial_values ... ok
+test raw_big_float_infinity_sentinels_and_noncanonical_mantissas_are_rejected ... ok
+test high_precision_signed_zero_and_boundary_mantissas_are_not_reinterpreted ... ok
+test exact_binary_floats_and_complex_numbers_roundtrip_without_decimal_projection ... ok
+test seeded_machine_bit_corpus_preserves_all_finite_payloads ... ok
+
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/ctx.rs (target/debug/deps/ctx-5fd8e00584da8882)
+
+running 6 tests
+test expired_default_deadline_is_detected_on_the_first_tick ... ok
+test missing_clock_or_deadline_needs_no_native_time ... ok
+test short_deadlines_and_error_priority_are_explicit ... ok
+test deadline_polling_is_bounded_and_not_per_iteration ... ok
+test default_budget_and_short_quotas_do_not_underflow ... ok
+test shared_atomic_flag_interrupts_immediately_even_between_clock_polls ... ok
+
+test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests src/lib.rs (target/debug/deps/om_parse-22603a0fa9a4ecc6)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/composition.rs (target/debug/deps/composition-3f29705919142479)
+
+running 6 tests
+test ranges_decimal_boundaries_and_slices_are_unambiguous ... ok
+test records_use_literal_keys_keep_order_and_preserve_brace_lists ... ok
+test lambda_is_contextual_and_keeps_lexical_parameter_names ... ok
+test auto_detection_preserves_explicit_modern_programs_with_ambiguous_index_brackets ... ok
+test pipe_uses_metadata_position_and_associates_left ... ok
+test actual_modes_and_named_axes_lower_to_existing_held_protocol ... ok
+
+test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+
+     Running tests/continuation.rs (target/debug/deps/continuation-9b273197426435cf)
+
+running 6 tests
+test eof_and_semicolon_diagnostics_point_to_the_unfinished_operator ... ok
+test completed_expressions_and_explicit_terminators_still_end_statements ... ok
+test invalid_function_definitions_do_not_register_successful_bindings ... ok
+test blank_lines_comments_and_crlf_preserve_byte_coordinates ... ok
+test unfinished_modern_expressions_continue_without_changing_ast ... ok
+test missing_operands_do_not_consume_the_next_independent_declaration ... ok
+
+test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+
+     Running tests/diagnostics.rs (target/debug/deps/diagnostics-bcab21c393e6edb1)
+
+running 5 tests
+test unterminated_literals_repair_without_losing_content ... ok
+test known_function_fixes_keep_the_callers_environment_and_comments_are_preserved ... ok
+test comments_and_strings_do_not_confuse_bracket_repair ... ok
+test bracket_diagnostics_are_precise_and_a_single_fix_completes_the_grouping ... ok
+test modern_ambiguity_diagnostics_point_to_the_exact_source_problem ... ok
+
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+
+     Running tests/lexer.rs (target/debug/deps/lexer-3fa515c46da9818d)
+
+running 14 tests
+test brackets_stay_individual_and_adjacency_is_recoverable ... ok
+test all_operators_use_longest_match ... ok
+test hash_and_underscore_follow_the_selected_dialect ... ok
+test highlights_follow_token_categories ... ok
+test malformed_literals_report_whole_byte_spans_and_recover ... ok
+test modern_keywords_are_whole_words_and_wolfram_names_are_symbols ... ok
+test modern_numeric_spellings_and_adjacency ... ok
+test named_letters_can_be_part_of_a_single_identifier ... ok
+test strings_preserve_spelling_and_protect_comment_delimiters ... ok
+test unicode_identifiers_have_byte_spans_and_stop_before_superscripts ... ok
+test named_characters_cover_required_greek_constants_and_operators ... ok
+test wolfram_precision_exponents_and_base_literals ... ok
+test comments_nest_and_leave_statement_newlines ... ok
+test arbitrary_small_inputs_terminate_and_only_emit_valid_ordered_utf8_spans ... ok
+
+test result: ok. 14 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.03s
+
+     Running tests/modern.rs (target/debug/deps/modern-094a0d37ff9e2a36)
+
+running 12 tests
+test literals_keep_machine_or_requested_binary_precision ... ok
+test precedence_and_associativity_vectors ... ok
+test automatic_dialect_detection_has_positive_and_negative_vectors ... ok
+test constants_can_be_strict_without_changing_other_name_mappings ... ok
+test highlighting_and_markers_preserve_original_source_offsets ... ok
+test the_three_ambiguity_rulings_emit_the_required_diagnostics_and_fixes ... ok
+test statement_boundaries_suppression_and_multiline_groups ... ok
+test names_and_keyword_options_follow_section_7_4 ... ok
+test every_modern_language_construct_has_a_raw_tree_vector ... ok
+test function_aliases_do_not_rename_free_letters_or_bound_parameters ... ok
+test malformed_inputs_recover_and_nesting_is_bounded ... ok
+test arbitrary_short_sources_terminate_and_wide_and_deep_inputs_are_distinguished ... ok
+
+test result: ok. 12 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.10s
+
+     Running tests/runtime_metadata.rs (target/debug/deps/runtime_metadata-179229e28704d477)
+
+running 4 tests
+test user_binding_beats_new_alias ... ok
+test redeclaration_preserves_existing_alias_binding ... ok
+test modern_aliases_resolve_actual_callbacks ... ok
+test named_options_are_function_specific_and_repairable ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+
+     Running tests/wolfram.rs (target/debug/deps/wolfram-a6660f4fe5f0e151)
+
+running 8 tests
+test precision_and_named_characters_are_not_discarded ... ok
+test semicolons_build_compound_expressions_and_newlines_separate_statements ... ok
+test malformed_wolfram_inputs_terminate_recover_and_retain_utf8_positions ... ok
+test precedence_follows_the_official_operator_table ... ok
+test the_wolfram_subset_has_raw_expression_vectors ... ok
+test all_section_14_wolfram_inputs_parse_without_errors ... ok
+test both_dialects_produce_equivalent_raw_and_canonical_arithmetic ... ok
+test wolfram_highlighting_and_arbitrary_short_sources_keep_valid_positions ... ok
+
+test result: ok. 8 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.04s
+
+     Running unittests src/lib.rs (target/debug/deps/om_poly-90896dcd16a5d3aa)
+
+running 5 tests
+test factor_z::tests::symmetric_residues_keep_the_positive_half_endpoint ... ok
+test gcd::tests::symmetric_radix_digits_include_positive_half_and_negative_values ... ok
+test gcd::tests::exhausted_heuristic_attempts_execute_the_prs_fallback ... ok
+test multivariate_factor::tests::subset_cap_returns_the_original_primitive_remainder ... ok
+test factor_z::tests::hard_subset_cap_retains_an_exact_unfactored_remainder ... ok
+
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/algebraic.rs (target/debug/deps/algebraic-cc3fd70ea48c799e)
+
+running 14 tests
+test degree_cap_unknown_and_interrupts_are_honest ... ok
+test rational_demotion_and_reducible_input_select_the_certified_factor ... ok
+test realalg_contract_keeps_primitive_positive_leading_poly_and_exact_interval ... ok
+test same_minpoly_rank_different_minpoly_comparison_and_reciprocals_are_exact ... ok
+test authority_sum_and_product_have_irreducible_minpolys_and_correct_real_roots ... ok
+test real_sign_and_comparison_refine_beyond_the_numeric_complex_precision_cap ... ok
+test additive_and_multiplicative_identities_retain_existing_exact_certificates ... ok
+test square_and_opposite_cancel_for_planted_quadratics ... ok
+test batch_certified_roots_preserve_distinct_identity_and_index_numbering ... ok
+test authority_cubic_power_reduces_exactly_to_zero ... ok
+test complex_rootreduce_and_refinement_preserve_branch_and_index ... ok
+test repeated_root_batches_retain_exact_ranks_and_honor_current_interrupts ... ok
+test nonmonic_rational_shifts_and_mixed_complex_arithmetic_select_correct_branches ... ok
+test authority_root_numbering_puts_reals_first_and_negative_conjugate_first ... ok
+
+test result: ok. 14 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.50s
+
+     Running tests/bareiss.rs (target/debug/deps/bareiss-8958e2a2db5fcbab)
+
+running 8 tests
+test swaps_skipped_columns_zero_size_and_shape_context_rejections ... ok
+test authority_determinant_and_unique_three_by_three_solution ... ok
+test budgets_and_external_cancel_cover_elimination_and_back_substitution ... ok
+test authority_underdetermined_and_inconsistent_systems ... ok
+test parameter_contradictions_preserve_their_nonzero_pivot_conditions ... ok
+test parameter_authority_uses_only_needed_generic_assumption_and_cancels_fractions ... ok
+test determinants_equal_independent_leibniz_expansion ... ok
+test planted_rectangular_solutions_and_complete_nullspace_are_certified ... ok
+
+test result: ok. 8 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.02s
+
+     Running tests/complex_roots.rs (target/debug/deps/complex_roots-0a43ae7c42c9b9ac)
+
+running 8 tests
+test external_cancel_and_budget_stop_iterations_and_certification ... ok
+test linear_exact_root_disks_support_rational_nonmonic_inputs ... ok
+test zeros_constants_repetitions_and_invalid_precisions_are_checked ... ok
+test exact_gaussian_and_real_roots_lie_in_certified_disjoint_disks ... ok
+test repeated_root_disks_reuse_certificates_but_always_honor_current_cancellation ... ok
+test authority_irreducible_root_vectors_match_independent_approximations ... ok
+test precision_doubles_for_near_collisions_and_tiny_imaginary_pairs ... ok
+test planted_gaussian_roots_are_all_enclosed_in_unique_disks ... ok
+
+test result: ok. 8 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.87s
+
+     Running tests/dimension.rs (target/debug/deps/dimension-717f797a71b107a5)
+
+running 4 tests
+test unit_zero_parameter_variables_and_supports_have_explicit_dimensions ... ok
+test invalid_basis_contexts_and_all_traversals_propagate_interrupt ... ok
+test authority_xy_is_positive_dimensional_and_standard_systems_are_zero_dimensional ... ok
+test dimension_matches_support_bitmask_oracle ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.04s
+
+     Running tests/division.rs (target/debug/deps/division-80473bc1545f3e1e)
+
+running 6 tests
+test division_content_and_pseudo_remainder_budget_failures_return_abort ... ok
+test authority_division_prem_and_signed_content_vectors ... ok
+test pseudo_division_retains_missing_leading_powers_when_degrees_drop_early ... ok
+test exact_polynomial_and_scalar_division_reject_nondivisibility ... ok
+test pseudo_remainders_work_over_integer_parameter_polynomials ... ok
+test fixed_seed_pseudo_division_exact_division_and_content_reconstruct ... ok
+
+test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.02s
+
+     Running tests/factor_z.rs (target/debug/deps/factor_z-ce1f6d759681bf2b)
+
+running 6 tests
+test mignotte_bound_is_exact_and_sign_independent ... ok
+test content_zero_constants_and_extracted_monomial_multiplicities ... ok
+test large_integer_coefficients_and_bad_small_primes_still_factor ... ok
+test fixed_seeds_and_cancelled_searches_are_reproducible ... ok
+test authority_zassenhaus_integer_factor_vectors ... ok
+test generated_polynomial_products_reconstruct_with_exact_divisors ... ok
+
+test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.15s
+
+     Running tests/fglm.rs (target/debug/deps/fglm-981fa08bee366ce7)
+
+running 6 tests
+test positive_dimension_nonbasis_contexts_and_unit_ideal_are_handled ... ok
+test interrupt_stops_validation_standard_basis_enumeration_and_row_reduction ... ok
+test nonradical_multiplicities_and_rational_coefficients_survive_conversion ... ok
+test authority_systems_convert_to_exact_direct_lex_bases ... ok
+test coupled_zero_dimensional_quadratics_equal_direct_lex ... ok
+test triangular_zero_dimensional_systems_equal_direct_lex ... ok
+
+test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.06s
+
+     Running tests/finite_factor.rs (target/debug/deps/finite_factor-6645a2e7a46d0a0c)
+
+running 7 tests
+test finite_factorization_and_power_charge_steps_and_propagate_cancellation ... ok
+test finite_factorization_rejects_non_squarefree_and_invalid_equal_degrees ... ok
+test ddf_separates_linear_quadratic_and_cubic_factors ... ok
+test modular_power_large_exponents_and_constant_moduli ... ok
+test authority_ddf_and_edf_prime_field_vectors ... ok
+test edf_handles_cubic_groups_large_characteristics_and_repeated_seeds ... ok
+test fixed_seed_ddf_edf_factor_products_and_independent_irreducibility ... ok
+
+test result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.43s
+
+     Running tests/foundation.rs (target/debug/deps/foundation-648df7bb8a7dba94)
+
+running 13 tests
+test monomial_orders_and_cached_degrees_follow_lex_and_grevlex ... ok
+test integer_and_rational_traits_have_exact_arithmetic_and_euclidean_remainders ... ok
+test rational_and_finite_field_polynomial_operations_use_the_real_coefficient_field ... ok
+test field_long_division_has_a_reconstruction_and_a_smaller_remainder ... ok
+test different_bound_moduli_are_rejected_instead_of_silently_mixed - should panic ... ok
+test runtime_prime_field_identities_adopt_the_modulus_and_large_residues_stay_safe ... ok
+test polynomial_loops_and_sparse_normalization_obey_interrupts ... ok
+test sparse_constructor_merges_duplicates_and_sorts_each_order_deterministically ... ok
+test univariate_integer_arithmetic_trims_zeros_and_preserves_ring_identities ... ok
+test sparse_ring_arithmetic_also_works_as_a_univariate_coefficient_ring ... ok
+test finite_field_zero_holes_are_canonical_in_products_and_exact_division ... ok
+test fixed_seed_polynomial_ring_laws_and_field_division_reconstruct ... ok
+test sparse_distributivity_and_negation_hold_in_both_monomial_orders ... ok
+
+test result: ok. 13 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.08s
+
+     Running tests/gcd.rs (target/debug/deps/gcd-75b6b3ced7793189)
+
+running 9 tests
+test gcd_paths_and_sparse_division_propagate_budget_and_cancellation ... ok
+test sparse_exact_division_rejects_nondivisibility_and_zero_divisors ... ok
+test dense_parameter_coefficients_share_the_recursive_integer_gcd ... ok
+test authority_univariate_gcd_vectors_and_zero_content_edges ... ok
+test subresultant_degree_gaps_nonmonic_and_large_integer_coefficients ... ok
+test recursive_multivariate_gcd_preserves_coefficient_contents_and_orders ... ok
+test planted_coprime_cofactors_verify_multivariate_gcd_maximality ... ok
+test univariate_paths_agree_and_scaling_preserves_gcd ... ok
+test sparse_paths_agree_with_planted_multivariate_factors ... ok
+
+test result: ok. 9 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.18s
+
+     Running tests/groebner.rs (target/debug/deps/groebner-59c9aa544d47c8bf)
+
+running 6 tests
+test empty_zero_constants_contexts_overflow_and_budget_are_checked ... ok
+test normal_form_is_exact_unscaled_and_spoly_cancels_leading_monomial ... ok
+test fraction_free_coefficients_and_order_conversion_preserve_ideal ... ok
+test authority_lex_vectors_and_unit_ideal_match_exactly ... ok
+test nonunit_planted_systems_match_exhaustive_pair_oracle ... ok
+test filtered_sugar_basis_equals_exhaustive_pairs_for_small_random_systems ... ok
+
+test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.22s
+
+     Running tests/hensel.rs (target/debug/deps/hensel-0b3fde7631f9d5b5)
+
+running 9 tests
+test hensel_step_retains_a_leading_coefficient_that_vanishes_in_the_residue ... ok
+test field_extended_gcd_produces_monic_bezout_certificate ... ok
+test invalid_hensel_inputs_reject_singular_primes_or_broken_certificates ... ok
+test quadratic_hensel_steps_preserve_product_and_bezout_at_squared_moduli ... ok
+test nonmonic_integer_lift_retains_original_finite_factors ... ok
+test big_modulus_lifts_and_cancellation_are_portable_and_bounded ... ok
+test balanced_multifactor_tree_single_factor_and_non_power_of_two_exponents ... ok
+test random_prime_hensel_products_reconstruct_and_preserve_residues ... ok
+test arbitrary_integer_inputs_lift_their_actual_modular_factorization ... ok
+
+test result: ok. 9 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.04s
+
+     Running tests/hermite.rs (target/debug/deps/hermite-b94cc5ac39a8f35c)
+
+running 6 tests
+test authority_diophantine_two_x_plus_three_y_has_complete_integer_family ... ok
+test divisibility_overdetermined_zero_and_shape_boundaries ... ok
+test large_signed_coefficients_and_interruptible_gcd_column_updates ... ok
+test canonical_authority_lattice_forms_and_rank_deficiency ... ok
+test planted_integer_systems_return_all_solutions_over_z ... ok
+test column_form_is_invariant_under_elementary_unimodular_changes ... ok
+
+test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+
+     Running tests/isolation.rs (target/debug/deps/isolation-cdb5111f60c76fa9)
+
+running 9 tests
+test negative_content_constants_zero_and_repeated_roots_have_checked_semantics ... ok
+test isolation_and_refinement_propagate_budget_deadline_and_external_cancel ... ok
+test authority_real_root_vectors_are_sorted_and_certified ... ok
+test dyadic_split_roots_are_emitted_once_and_neighbour_intervals_exclude_them ... ok
+test refinement_rejects_incorrect_interval_certificates ... ok
+test refinement_uses_exact_signs_and_reaches_requested_bits ... ok
+test very_close_rational_roots_and_large_cauchy_bounds_remain_exact ... ok
+test planted_real_roots_with_complex_pair_agree_with_sturm ... ok
+test arbitrary_squarefree_integer_polynomials_have_all_sturm_roots ... ok
+
+test result: ok. 9 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.13s
+
+     Running tests/linear_observed.rs (target/debug/deps/linear_observed-d9efb231461cbe3d)
+
+running 2 tests
+test observation_abort_is_propagated ... ok
+test observed_fraction_free_updates_have_exact_certificates ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/multivariate_factor.rs (target/debug/deps/multivariate_factor-49140eac6ce32890)
+
+running 7 tests
+test multivariate_factor_budget_and_external_abort_propagate ... ok
+test oversized_mapping_preserves_exact_remainder_and_marks_possible_reducibility ... ok
+test irreducible_inverse_candidates_are_verified_and_inactive_variables_are_retained ... ok
+test signed_content_repeated_factors_monomials_constants_and_zero ... ok
+test nonlinear_and_three_variable_planted_factors_are_all_recovered ... ok
+test authority_multivariate_factor_vectors_in_both_orders ... ok
+test planted_multivariate_linear_factors_reconstruct_and_remain_exact_divisors ... ok
+
+test result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.22s
+
+     Running tests/resultant.rs (target/debug/deps/resultant-1ecd89c7f6ce314d)
+
+running 6 tests
+test resultant_and_discriminant_propagate_interrupts_before_boundary_returns ... ok
+test constant_zero_content_and_resultant_sign_conventions ... ok
+test authority_resultants_and_parameter_discriminants ... ok
+test parameter_contents_and_nonmonic_prs_retain_exact_scaling ... ok
+test fixed_seed_resultants_match_sylvester_determinants_and_discriminant_identities ... ok
+test parameter_resultants_commute_with_degree_preserving_specializations ... ok
+
+test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.05s
+
+     Running tests/squarefree.rs (target/debug/deps/squarefree-2cc45c75b011d155)
+
+running 7 tests
+test rational_yun_clears_denominators_and_retains_primitive_factors ... ok
+test derivatives_and_monic_field_gcd_obey_each_characteristic ... ok
+test authority_yun_and_frobenius_vectors ... ok
+test squarefree_derivative_and_field_gcd_propagate_interrupts ... ok
+test integer_content_nonmonic_factors_zero_and_constants ... ok
+test finite_fields_mixed_inseparability_content_and_nested_pth_roots ... ok
+test fixed_seed_squarefree_factor_products_and_arbitrary_inputs_reconstruct ... ok
+
+test result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.07s
+
+     Running unittests src/lib.rs (target/debug/deps/om_simplify-eae64badd260cf0a)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/algebra.rs (target/debug/deps/algebra-ce09c2e0430aba7c)
+
+running 5 tests
+test expand_distributes_positive_powers_and_keeps_negative_power_kernels ... ok
+test constants_zeros_and_checked_resource_failures_are_honest ... ok
+test normalized_generators_support_cancellation_and_opaque_functions ... ok
+test authority_together_cancel_and_factor_vectors ... ok
+test rational_transformations_and_idempotence_preserve_exact_values ... ok
+
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.10s
+
+     Running tests/convert.rs (target/debug/deps/convert-2f0580345bdd84b4)
+
+running 8 tests
+test exact_constants_machine_and_complex_atoms_and_empty_polynomials_roundtrip ... ok
+test explicit_compound_generators_degree_bound_and_invalid_output_context_are_checked ... ok
+test budgets_and_external_cancel_stop_conversion_and_reconstruction ... ok
+test authority_fractional_powers_share_one_generator_and_base_relation ... ok
+test raw_syntax_nested_rational_powers_and_arbitrary_function_bases_normalize ... ok
+test authority_unreduced_fraction_and_common_denominator_views ... ok
+test transcendental_and_parameter_atoms_are_independent_with_deterministic_requested_axes ... ok
+test rational_polynomial_views_roundtrip_terms_and_evaluate_exactly ... ok
+
+test result: ok. 8 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.06s
+
+     Running tests/numeval.rs (target/debug/deps/numeval-ef3ccfa41bc4bf4d)
+
+running 12 tests
+test final_rounding_handles_dyadic_midpoints_and_input_precision_modes ... ok
+test complex_principal_branches_and_overflow_remain_finite ... ok
+test positive_integer_powers_enclose_bases_whose_balls_contain_zero ... ok
+test repeated_numeric_subtrees_keep_directed_rounding_precision_and_cancellation ... ok
+test pi_has_fifty_decimal_digits_and_results_stabilize_when_work_precision_doubles ... ok
+test certified_realness_keeps_formula_real_parts_and_resolves_principal_cuts ... ok
+test scalar_elementary_functions_match_binary64_and_both_precision_modes ... ok
+test certified_real_sum_survives_rational_distribution_without_replacing_real_part ... ok
+test reciprocal_inverse_functions_axes_and_singularities ... ok
+test nested_numeric_expression_evaluation_is_iterative_and_interruptible ... ok
+test huge_binary_exponents_do_not_materialize_enormous_rationals ... ok
+test principal_product_log_has_certified_two_hundred_digit_real_residuals ... ok
+
+test result: ok. 12 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 6.37s
+
+     Running tests/simplify.rs (target/debug/deps/simplify-06114cfe91e7c4e4)
+
+running 8 tests
+test weighted_integer_and_root_costs_are_exact_quarter_units ... ok
+test checked_search_propagates_interrupts_and_preserves_unsupported_atoms ... ok
+test power_expansion_requires_explicit_positive_real_variables ... ok
+test rational_denominator_cycles_preserve_the_winner_with_finite_work ... ok
+test rational_search_combines_cancellation_factoring_and_content ... ok
+test exact_denesting_and_root_reduce_are_search_candidates ... ok
+test search_never_increases_cost_or_changes_a_rational_function ... ok
+test trigonometric_pythagorean_and_both_double_angle_directions ... ok
+
+test result: ok. 8 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.76s
+
+     Running tests/special.rs (target/debug/deps/special-72c27eabec59d188)
+
+running 4 tests
+test planned_exact_values_and_principal_branches_match ... ok
+test remaining_exact_rules_have_fifty_digit_numeric_certificates ... ok
+test inverse_tables_and_log_rules_have_fifty_digit_numeric_certificates ... ok
+test every_supported_pi_grid_value_has_a_fifty_digit_numeric_certificate ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.40s
+
+     Running tests/zero.rs (target/debug/deps/zero-8858d5166af6c972)
+
+running 10 tests
+test checked_interfaces_propagate_budget_and_cancellation ... ok
+test structural_and_rational_levels_decide_formal_identities ... ok
+test principal_cubic_bridge_has_independent_exact_endpoint_certificate ... ok
+test rational_expressions_are_decided_exactly ... ok
+test enclosure_adapter_exposes_certificates_and_rejects_invalid_work ... ok
+test all_five_authority_vectors ... ok
+test root_expression_bridge_certifies_minpoly_and_root_number ... ok
+test algebraic_zero_denominators_and_negative_radicands_are_not_false_certificates ... ok
+test denesting_and_radical_relations_preserve_principal_values ... ok
+test numeric_level_refines_before_classifying_and_never_proves_zero ... ok
+
+test result: ok. 10 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.69s
+
+     Running unittests src/lib.rs (target/debug/deps/om_solve-ce79ebc1bb3586a9)
+
+running 10 tests
+test univariate::transcendental::check::tests::unavailable_numeric_equality_is_unknown_in_a_condition ... ok
+test univariate::transcendental::check::tests::explicit_period_constraints_allow_only_valid_off_diagonal_members ... ok
+test univariate::transcendental::check::tests::exact_parameter_identity_keeps_exact_evidence_after_domain_probes ... ok
+test univariate::transcendental::check::tests::two_independent_constants_do_not_prove_a_false_diagonal_identity ... ok
+test univariate::transcendental::check::tests::periodic_nonzero_requires_integer_pi_steps_and_a_nonzero_offset ... ok
+test univariate::transcendental::check::tests::pairwise_probes_challenge_a_false_three_parameter_identity ... ok
+test univariate::order::tests::polynomial_recovery_coordinates_use_a_bounded_exact_expansion_for_ties ... ok
+test univariate::transcendental::check::tests::numeric_product_log_can_disprove_a_closed_equality ... ok
+test univariate::transcendental::check::tests::valid_period_families_keep_all_independent_constants ... ok
+test univariate::order::tests::identical_complex_root_certificates_compare_both_components_without_reprojection ... ok
+
+test result: ok. 10 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.07s
+
+     Running tests/discrete_domains.rs (target/debug/deps/discrete_domains-676bec43e760746b)
+
+running 9 tests
+test integer_systems_clear_rationals_and_reject_lattice_inconsistency ... ok
+test source_poles_and_generated_parameter_names_survive_integer_lattices ... ok
+test integer_hnf_diophantine_family_is_complete_in_small_box ... ok
+test discrete_steps_disabled_recording_and_abort_are_real ... ok
+test authority_rational_integer_roots_and_exact_near_integer_rejection ... ok
+test polynomial_coordinates_reduce_to_rationals_and_explicit_domains_filter ... ok
+test planted_integer_affine_families_have_exact_residual ... ok
+test mixed_systems_filter_integer_coordinates_after_complete_substitution ... ok
+test every_system_entry_uses_integer_lattices_and_closed_unknowns_decline ... ok
+
+test result: ok. 9 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.12s
+
+     Running tests/evidence_codec.rs (target/debug/deps/evidence_codec-71e76a04a9c0aae3)
+
+running 4 tests
+test structured_step_kinds_rule_ids_and_nested_order_roundtrip ... ok
+test real_quadratic_solver_steps_survive_raw_evidence_roundtrip ... ok
+test malformed_rules_forward_steps_and_missing_roots_cannot_forge_a_derivation ... ok
+test actual_exact_numeric_and_region_solution_sets_preserve_full_metadata ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.03s
+
+     Running tests/linear_system.rs (target/debug/deps/linear_system-6ff5cbd6886b92a9)
+
+running 8 tests
+test huge_exact_solutions_do_not_attach_nonfinite_display_coordinates ... ok
+test row_steps_are_exact_operations_and_back_substitution_matches_the_result ... ok
+test explicit_real_domains_symbolic_denominators_and_empty_conditions_are_preserved ... ok
+test fractions_free_columns_original_poles_and_degenerate_equations ... ok
+test conditions_generic_contradictions_and_disabled_recording_are_honest ... ok
+test row_swaps_and_nonunit_previous_pivots_have_exact_full_matrix_steps ... ok
+test authority_unique_underdetermined_inconsistent_and_parameter_systems ... ok
+test planted_two_by_two_systems_recover_exact_rational_values ... ok
+
+test result: ok. 8 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.05s
+
+     Running tests/normalize.rs (target/debug/deps/normalize-65089446d3535dd2)
+
+running 9 tests
+test unequal_chains_are_pairwise_and_empty_equations_keep_conditions ... ok
+test membership_domains_and_inequality_routing_remain_explicit ... ok
+test disjunctions_distribute_without_losing_branch_constraints ... ok
+test raw_denominators_are_retained_even_when_canonical_construction_cancels ... ok
+test lists_conjunctions_chained_equalities_and_booleans ... ok
+test automatic_variables_are_name_sorted_and_only_first_n_are_solved ... ok
+test normalization_emits_real_steps_and_honest_resource_failures ... ok
+test negative_real_part_powers_logs_and_trigonometric_poles ... ok
+test distributed_branches_agree_with_an_independent_boolean_oracle ... ok
+
+test result: ok. 9 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.10s
+
+     Running tests/numeric_domains.rs (target/debug/deps/numeric_domains-0c2e44fcb2804b96)
+
+running 1 test
+test actual_nsolve_discrete_membership_is_checked_before_numeric_rounding ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.02s
+
+     Running tests/numerical.rs (target/debug/deps/numerical-7f9a389f27826614)
+
+running 12 tests
+test lex_elimination_returns_exact_surviving_relations ... ok
+test bracketed_brent_roots_endpoints_and_invalid_brackets_are_checked ... ok
+test local_failures_poles_recording_and_budget_contracts_are_atomic ... ok
+test nsolve_systems_multiplicities_and_original_poles_survive ... ok
+test high_precision_brent_and_original_poles_are_certified ... ok
+test numeric_steps_include_the_rounded_verified_assignments_and_honest_evidence ... ok
+test arbitrary_precision_newton_and_numeric_jacobian_fallback_are_honest ... ok
+test rounded_numeric_poles_inexact_coefficients_and_invalid_starts_are_checked ... ok
+test local_convergence_is_invariant_under_small_equation_scaling ... ok
+test nsolve_rejects_incomplete_families_and_invalid_precision ... ok
+test damped_newton_scalar_transcendental_system_and_complex_roots_converge ... ok
+test nsolve_quintic_machine_and_arbitrary_precision_roots_are_complete ... ok
+
+test result: ok. 12 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.88s
+
+     Running tests/poly_general.rs (target/debug/deps/poly_general-ac54e2ca1416c042)
+
+running 9 tests
+test general_paths_propagate_abort_and_refuse_nonpolynomial_input ... ok
+test parameter_roots_keep_original_leading_assumptions_and_zero_valuation ... ok
+test root_and_general_formula_steps_are_actual_and_disabled_options_stay_empty ... ok
+test default_root_objects_have_exact_source_polynomial_and_one_based_indices ... ok
+test cardano_authority_cubics_and_zero_plus_branch_have_all_radical_roots ... ok
+test repeated_general_factors_preserve_yun_and_mixed_factor_multiplicities ... ok
+test ferrari_resolvent_cubic_and_depressed_biquadratic_are_branch_complete ... ok
+test power_composition_uses_root_of_original_polynomial_until_reduced_roots_are_radical ... ok
+test generated_small_quartics_have_four_certified_radical_roots ... ok
+
+test result: ok. 9 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 8.82s
+
+     Running tests/poly_reals.rs (target/debug/deps/poly_reals-9bc8ecfab56a90f7)
+
+running 7 tests
+test unknown_parameter_root_realness_keeps_roots_assumptions_and_diagnostics ... ok
+test domain_filter_records_actual_counts_and_honors_disabled_recording_and_abort ... ok
+test planted_real_and_gaussian_factors_keep_only_real_multiplicities ... ok
+test native_root_indices_are_filtered_per_factor_with_distinct_root_counts ... ok
+test cardano_and_ferrari_real_subsets_preserve_original_radical_values ... ok
+test real_domain_keeps_exact_real_radicals_and_rejects_nonreal_branches ... ok
+test precision_refinement_separates_tiny_imaginary_parts_and_retains_numeric_unknowns ... ok
+
+test result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 2.60s
+
+     Running tests/poly_substitutions.rs (target/debug/deps/poly_substitutions-f909cb904cd11386)
+
+running 8 tests
+test reductions_propagate_checked_resource_exhaustion ... ok
+test symbolic_binomial_content_zero_powers_and_unsupported_components ... ok
+test mixed_factors_order_equal_real_projections_by_exact_imaginary_parts ... ok
+test reciprocal_substitution_and_double_inverse_roots ... ok
+test substitution_and_formula_steps_are_emitted_during_computation ... ok
+test binomial_authority_values_and_complex_principal_branches ... ok
+test maximal_power_substitution_and_nested_reductions ... ok
+test planted_positive_binomials_retain_all_roots_and_multiplicities ... ok
+
+test result: ok. 8 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 2.07s
+
+     Running tests/poly_system.rs (target/debug/deps/poly_system-8cd8700ee4cd5f75)
+
+running 10 tests
+test positive_parameter_assumptions_and_free_real_axes_are_retained ... ok
+test repeated_and_nonmonogenic_components_never_emit_indeterminate_or_partial_finite_sets ... ok
+test close_coordinates_sort_by_certified_values_before_later_variables ... ok
+test shape_failure_uses_a_real_primitive_element_and_records_actual_basis ... ok
+test positive_dimension_prefers_later_free_axes_and_keeps_unsolved_relations ... ok
+test unit_zero_nonlinear_foreign_kernels_disabled_recording_and_abort_are_honest ... ok
+test conjugate_and_distinct_primary_points_keep_original_local_lengths ... ok
+test planted_product_grids_are_complete ... ok
+test authority_circle_line_products_and_cyclic_systems_have_every_solution ... ok
+test root_coordinates_original_poles_and_real_domains_are_retained ... ok
+
+test result: ok. 10 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 2.03s
+
+     Running tests/poly_uni.rs (target/debug/deps/poly_uni-a063270e673d7ce3)
+
+running 14 tests
+test options_defaults_and_solution_set_wolfram_shapes ... ok
+test checked_polynomial_work_rejects_limits_and_propagates_abort ... ok
+test constants_exact_special_coefficients_and_unsupported_paths_are_honest ... ok
+test conditional_limit_attaches_complete_assumption_conjunctions ... ok
+test coefficient_denominators_and_composite_heads_preserve_dependency ... ok
+test symbolic_monomial_factors_are_extracted_with_multiplicity ... ok
+test generic_parameters_have_exact_formulas_and_leading_assumptions ... ok
+test factor_events_reconstruct_signed_content_and_fractional_inputs ... ok
+test symbolic_coefficient_content_is_removed_before_root_formulas ... ok
+test authority_linear_quadratic_and_reducible_cubic_vectors ... ok
+test recorded_denominator_clearing_propagates_budget_without_panicking ... ok
+test computation_emits_square_free_factor_and_formula_events ... ok
+test fractional_contents_multiplicity_and_complex_quadratics ... ok
+test planted_gaussian_roots_and_repeated_factors_are_recovered ... ok
+
+test result: ok. 14 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.15s
+
+     Running tests/radical.rs (target/debug/deps/radical-654a46f2ab9755a3)
+
+running 10 tests
+test polynomial_delegation_retains_yun_multiplicity ... ok
+test elimination_multiplicity_is_not_reported_as_duplicate_radical_solutions ... ok
+test isolation_power_and_verification_steps_record_the_actual_equations_and_rejection ... ok
+test raw_cancelled_denominator_holes_are_checked_before_accepting_roots ... ok
+test parameter_content_and_source_denominator_assumptions_are_retained ... ok
+test authority_square_root_equations_drop_extraneous_candidates_even_when_verify_never ... ok
+test planted_nonnegative_square_root_roots_are_verified ... ok
+test degenerate_eliminants_unsupported_kernels_disabled_steps_and_abort_are_honest ... ok
+test powers_denominators_and_shared_fractional_bases_use_principal_values ... ok
+test nested_and_three_radical_equations_have_complete_resultant_elimination ... ok
+
+test result: ok. 10 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.27s
+
+     Running tests/reduce_ineq.rs (target/debug/deps/reduce_ineq-e9b9ed8aabd1cc07)
+
+running 10 tests
+test unsupported_constraints_decline_and_invalid_inputs_or_abort_propagate ... ok
+test raw_poles_survive_cancellation_and_zero_numerators ... ok
+test pure_equations_convert_to_boolean_relations ... ok
+test solve_routes_inequalities_with_real_sign_steps_and_disabled_recording ... ok
+test authority_sign_charts_have_exact_open_and_closed_endpoints ... ok
+test conjunctions_unions_singletons_and_adjacent_cells_merge_exactly ... ok
+test planted_sign_charts_match_independent_exact_fraction_membership ... ok
+test repeated_high_degree_inputs_use_the_small_square_free_root_certificate ... ok
+test real_chart_does_not_silently_drop_complex_logical_alternatives ... ok
+test algebraic_critical_points_use_exact_order_and_cross_polynomial_deduplication ... ok
+
+test result: ok. 10 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.21s
+
+     Running tests/solve_corpus.rs (target/debug/deps/solve_corpus-9e4c172722ccdad0)
+
+running 1 test
+test all_fifty_three_authority_rows_execute_and_validate ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 7.96s
+
+     Running tests/solve_dispatch.rs (target/debug/deps/solve_dispatch-738a9df0945fd149)
+
+running 13 tests
+test constrained_identities_keep_domains_and_plain_identities_stay_all ... ok
+test equivalent_union_guards_deduplicate_without_summing_multiplicities ... ok
+test logical_unions_deduplicate_and_unsupported_branches_remain_atomic ... ok
+test public_steps_and_interrupt_contracts_are_complete ... ok
+test pure_rational_quadratics_preserve_compact_exact_radicals ... ok
+test radical_principal_checks_cannot_be_disabled ... ok
+test original_rational_holes_are_preserved_before_canonicalization ... ok
+test systems_discrete_domains_and_mixed_sources_share_the_public_pipeline ... ok
+test generic_quadratic_original_residuals_keep_both_constructed_roots ... ok
+test independent_periods_and_close_coordinate_sorting_are_certified ... ok
+test parameter_assumptions_remain_visible_when_requested ... ok
+test authority_linear_polynomial_multiplicity_and_root_provenance ... ok
+test tangent_integer_periods_do_not_expose_redundant_pole_conditions ... ok
+
+test result: ok. 13 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.99s
+
+     Running tests/steps.rs (target/debug/deps/steps-b071a3aaef8f2a16)
+
+running 6 tests
+test finish_closes_open_branches_and_extra_exit_is_harmless ... ok
+test all_step_families_match_the_exported_closed_registry ... ok
+test prebuilt_children_are_renumbered_and_kinds_own_rule_ids ... ok
+test disabled_recording_does_not_construct_steps ... ok
+test stable_hierarchical_ids_follow_emission_and_branch_order ... ok
+test export_rule_ids ... ok
+
+test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/substitution_system.rs (target/debug/deps/substitution_system-e7f57cc5fb9125f7)
+
+running 11 tests
+test underdetermined_mixed_systems_keep_later_original_free_variables ... ok
+test actual_substitution_steps_disabled_recording_and_abort_are_preserved ... ok
+test generic_guards_constraint_only_inputs_and_options_are_preserved ... ok
+test original_canceled_poles_and_explicit_real_membership_are_enforced ... ok
+test compound_axes_and_duplicate_requested_variables_use_normalized_axes ... ok
+test independent_periods_avoid_each_other_and_existing_generated_names ... ok
+test lifting_uses_same_argument_circle_relations_and_retains_period_constraints ... ok
+test mixed_exponential_linear_and_radical_systems_check_original_branches ... ok
+test unsupported_finite_branches_and_more_than_64_branches_decline_atomically ... ok
+test planted_mixed_systems_recover_exact_coordinates ... ok
+test kernel_lifting_recovers_coupled_arguments_without_auxiliary_axes ... ok
+
+test result: ok. 11 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.69s
+
+     Running tests/transcendental.rs (target/debug/deps/transcendental-5c1418119d96c9d0)
+
+running 15 tests
+test mandatory_checks_custom_constants_and_generic_conditions_obey_options ... ok
+test excluded_members_of_a_complex_family_become_conditions ... ok
+test commensurate_exponentials_use_rational_slopes_shifts_and_integer_power_bases ... ok
+test authority_exponential_log_and_periodic_families ... ok
+test fresh_constants_original_poles_steps_and_options_are_honest ... ok
+test product_log_uses_exact_defining_identity_and_real_branch_ranges ... ok
+test real_absolute_values_split_real_arguments_and_refuse_unproven_complex_arguments ... ok
+test degenerate_boundaries_symbolic_nonzero_values_and_polynomial_delegation ... ok
+test sine_cosine_unification_and_nested_inverse_stripping_are_complete ... ok
+test principal_log_and_inverse_trig_ranges_are_enforced ... ok
+test generated_affine_sine_families_satisfy_independent_ball_checks ... ok
+test symbolic_inverse_ranges_keep_original_branch_guards_and_uncertain_numeric_boundaries_decline ... ok
+test reciprocal_trig_and_hyperbolic_inverse_table_has_verified_branches ... ok
+test generic_leading_assumptions_skip_invalid_parameter_samples ... ok
+test outer_integer_and_fractional_powers_of_elementary_kernels_keep_principal_branches ... ok
+
+test result: ok. 15 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 3.12s
+
+     Running unittests src/lib.rs (target/debug/deps/om_wasm-708c22643de426de)
+
+running 2 tests
+test tests::bad_envelopes_have_no_math_side_effects ... ok
+test tests::real_json_dispatch_solves_and_exports_source_dependency_recovery ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.02s
+
+   Doc-tests om_agent_contract
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+   Doc-tests om_analysis
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+   Doc-tests om_apple_ffi
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+   Doc-tests om_core
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+   Doc-tests om_desktop
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+   Doc-tests om_eval
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+   Doc-tests om_format
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+   Doc-tests om_host_service
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+   Doc-tests om_ios_ffi
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+   Doc-tests om_kernel
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+   Doc-tests om_llm
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+   Doc-tests om_num
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+   Doc-tests om_parse
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+   Doc-tests om_poly
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+   Doc-tests om_simplify
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+   Doc-tests om_solve
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+   Doc-tests om_wasm
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+

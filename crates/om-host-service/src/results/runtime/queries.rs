@@ -64,6 +64,18 @@ pub(super) fn execute(
 ) -> Result<(Option<ResultBinding>, Value), String> {
     ctx.tick().map_err(|e| e.to_string())?;
     let (binding, payload) = match command {
+        NativeResultHostCommand::ResultNotebookReferences(body) => (
+            None,
+            store
+                .notebook_references(
+                    &body.cells,
+                    body.kernel_state_revision.get(),
+                    scope,
+                    now,
+                    ctx,
+                )
+                .map_err(projection_error)?,
+        ),
         NativeResultHostCommand::ResultManifest(body) => (
             None,
             store

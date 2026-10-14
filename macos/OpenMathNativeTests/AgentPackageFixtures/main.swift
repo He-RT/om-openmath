@@ -37,7 +37,7 @@ private func nativeProviderTurn(host:NativeHostClient,storage:StorageService,roo
     messages.append(["canonical":try JSONSerialization.jsonObject(with:encoded(result.canonical)),"replay":NSNull()])
     results.append(["message_id":result.canonical.message_id,"tool_call_id":result.intent.tool_call_id,"text":String(decoding:bytes,as:UTF8.self),"is_error":false])
   }
-  let delta:[String:Any] = second ? ["role":"assistant","content":"已读取真实笔记本🙂"]:["role":"assistant","content":"中文🙂","tool_calls":[["index":0,"id":"provider-call","type":"function","function":["name":"read_notebook","arguments":"{ \"view\" : \"outline\" }"]]]]
+  let delta:[String:Any] = second ? ["role":"assistant","content":"已读取真实笔记本🙂"]:["role":"assistant","content":"中文🙂","tool_calls":[["index":0,"id":"provider-call","type":"function","function":["name":"read_notebook","arguments":"{ \"view\" : \"outline\", \"include_outputs\" : true }"]]]]
   let chunk:[String:Any] = ["id":second ? "provider-response-2":"provider-response","model":"synthetic-served-alias","choices":[["index":0,"delta":delta,"finish_reason":second ? "stop":"tool_calls"]]]
   let sse=Data(("data: "+String(decoding:try JSONSerialization.data(withJSONObject:chunk),as:UTF8.self)+"\n\ndata: [DONE]\n\n").utf8)
   let request:[String:Any] = ["binding":["provider_ref":"fixture-provider","route_ref":"fixture-route","model_ref":"fixture-model","adapter_version":"single-turn-1","protocol":"chat_completions"],"api_model":"synthetic-configured-alias","messages":messages,"results":results,"tools":[["name":"read_notebook","description":"Read actual confirmed source","parameters":["type":"object"]]],"max_output_tokens":128,"temperature":NSNull(),"stream":true]
@@ -61,6 +61,11 @@ private func nativeProviderTurn(host:NativeHostClient,storage:StorageService,roo
     let clock=SourceOwnerClock();clock.calibrate(opened.owner_time_ms.value)
     let drafts=await MainActor.run {DraftStore(source:snapshot,runtime:host.runtimeInstanceID,generation:opened.document_generation.value,clock:{clock.now()})}
     let source=DocCommitPort(client:host,storage:storage,drafts:drafts,clock:clock),kernel=KernelCommitPort(client:host,storage:storage,source:source)
+    let rename=try await source.preview(.preview_patch_input(.init(kind:.patch,operations:[.preview_rename_notebook(.init(type:.rename_notebook,title:"持久事务与真实输出"))])))
+    let renamed=try await source.apply(rename.preview_ref.value!)
+    precondition(renamed.phase == .completed)
+    let actualHistoryTransaction=renamed.receipt.value!.receipt.transaction_id.value!
+    _ = try await kernel.runCell("a",operation:"actual-output-before-read")
     let service=AgentSessionService(host:host,storage:storage,document:document,generation:opened.document_generation.value)
     let verified=try await AgentProcess.verified(package:package,signatureRoot:CommandLine.arguments.count>3 && !CommandLine.arguments[3].isEmpty ? URL(fileURLWithPath:CommandLine.arguments[3]):nil)
     let hello=try await service.activate(session:"production-task",grants:[.read_notebook],readonly:true,coreVersion:"1.0.4",adapterVersion:"openmath-adapter-1")
@@ -73,7 +78,7 @@ private func nativeProviderTurn(host:NativeHostClient,storage:StorageService,roo
     precondition(report.frames==9 && report.lastPhase == .awaiting_settlement && report.toolIntents.count==1)
     let events=try await storage.sessionEvents("production-task");precondition(events.count==14 && events.filter{$0.event.event_kind == .task_transition}.count==8 && events.filter{$0.event.event_kind == .assistant_end}.count==2)
     let canonical=try JSONDecoder().decode(SessionCanonicalAssistant.self,from:Data(events.first{$0.event.event_kind == .assistant_end}!.event.payload_inline_json.value!.utf8))
-    precondition(canonical.calls[0].arguments==Data("{ \"view\" : \"outline\" }".utf8))
+    precondition(canonical.calls[0].arguments==Data("{ \"view\" : \"outline\", \"include_outputs\" : true }".utf8))
     let after=try await kernel.runCell("a",operation:"manual-after-helper-task");precondition(after.result_id.value != nil)
     let client=await MainActor.run {ResultClient(host:host)};let manifest=try await client.manifest(after.result_id.value!)
     try client.select(manifest.bindings.last!)
@@ -138,6 +143,9 @@ private func nativeProviderTurn(host:NativeHostClient,storage:StorageService,roo
       precondition(KernelHashes.data(bytes)==record.blobHash)
       let envelope=try JSONSerialization.jsonObject(with:bytes) as! [String:Any],data=envelope["data"] as! [String:Any]
       precondition((data["cells"] as! [[String:Any]])[0]["cell_id"] as? String=="a")
+      let originalCells=data["cells"] as! [[String:Any]]
+      precondition((originalCells[0]["result_ref"] as? String)?.hasPrefix("result-")==true)
+      precondition((data["recent_transaction_refs"] as! [String]).contains(actualHistoryTransaction))
       try bytes.write(to:root.appendingPathComponent("actual-readonly-result.json"))
       let negativeSession="readonly-negative";_ = try await reopened.createAgentSession(negativeSession)
       let negativeLedger=SessionLedgerPort(storage:reopened,session:negativeSession)
@@ -151,6 +159,28 @@ private func nativeProviderTurn(host:NativeHostClient,storage:StorageService,roo
       let rejected=try await reopened.sessionEvents(negativeSession);precondition(rejected.count==1)
     }
     let unchanged=try await reopened.sessionEvents("production-task");precondition(unchanged.count==recoveredEvents.count)
+    _ = try await reopened.openDocument(document)
+    let (historyHead,historyEntries)=try await reopened.readNotebookHistory(document:document)
+    let newHost=try await NativeHostClient.open()
+    let newOpen=try await newHost.sourceCommand(.source_open(.init(type:.source_open,snapshot:historyHead,store_id:info.identity.storeID,calculation:.init(nil),config_revision:try HostSerial(0))))
+    let newService=AgentSessionService(host:newHost,storage:reopened,document:document,generation:newOpen.document_generation.value)
+    let activation=try await newService.activate(session:"history-after-restart",grants:[.read_notebook],readonly:true,coreVersion:"1.0.4",adapterVersion:"openmath-adapter-1")
+    let originalHello=try JSONSerialization.jsonObject(with:Data(activation.outbound_json.value!.utf8)) as! [String:Any]
+    func peer(_ kind:String,_ sequence:UInt64,_ payload:[String:Any],reply:String?=nil)throws->Data {
+      var frame=originalHello;frame["type"]=kind;frame["sequence"]=sequence;frame["message_id"]="restart-peer-\(sequence)";frame["reply_to"]=reply as Any? ?? NSNull();frame["payload"]=payload
+      return try JSONSerialization.data(withJSONObject:frame,options:[.sortedKeys])
+    }
+    _ = try await newService.receive(peer("ready",1,originalHello["payload"] as! [String:Any],reply:originalHello["message_id"] as? String))
+    let historyCanonical:[String:Any] = ["record_type":"canonical_agent_message","message_version":1,"message_id":"history-proposal","role":"assistant","agent_turn_id":"history-turn","task_id":activation.scope.task_id,"parts":[["kind":"tool_call","part_id":"history-part","tool_call_id":"history-call","name":"read_notebook","arguments_json":"{}"]]]
+    _ = try await newService.receive(peer("transcript_event",2,["event_id":"history-event","source_sequence":1,"message":historyCanonical]))
+    let mapped=try await newService.receive(peer("tool_call",3,["agent_turn_id":"history-turn","tool_call_id":"history-call","proposal_event_ref":"history-event"]))
+    do {_ = try await newHost.agentCommand(.native_agent_bind_history(.init(type:.agent_bind_history,scope:activation.scope,expected_snapshot_hash:String(repeating:"0",count:64),transaction_refs:historyEntries.map(\.transaction))));fatalError("stale history head accepted")}catch NativeHostClientError.rejected { }
+    _ = try await newHost.agentCommand(.native_agent_bind_history(.init(type:.agent_bind_history,scope:activation.scope,expected_snapshot_hash:historyHead.snapshot_hash,transaction_refs:historyEntries.map(\.transaction))))
+    let fresh=try await newHost.agentCommand(.native_agent_read_tool(.init(type:.agent_read_tool,scope:activation.scope,operation_id:mapped.tool_intent.value!.operation_id)))
+    let freshJSON=fresh.readonly_result.value!.result_json,freshObject=try JSONSerialization.jsonObject(with:Data(freshJSON.utf8)) as! [String:Any]
+    precondition(((freshObject["data"] as! [String:Any])["recent_transaction_refs"] as! [String]).contains(actualHistoryTransaction))
+    try Data(freshJSON.utf8).write(to:root.appendingPathComponent("actual-new-host-persisted-history.json"))
+    await newService.close();try await newHost.close()
     try await reopened.close()
     print(String(decoding:try JSONSerialization.data(withJSONObject:["production_core":"1.0.4","bundled_node":"26.11.1","actual_private_frames":report.frames,"canonical_events":events.count,"model_transport":"actual_urlsession_rust_cabi_durable_request_ledger","tool_outcome":"completed_actual_readonly_no_mutation","manual_after_sigkill":"4","system_node_fallback":false,"PATH":"empty","wrong_architecture":"rejected","missing_resource":"rejected","late_stdin":"rejected","unconfigured_model":"no_fake_message_or_effect","model_cancel_and_late_delta":"rejected","actual_macho_architecture":"rejected","evidence_root":root.path],options:[.sortedKeys]),as:UTF8.self))
   }

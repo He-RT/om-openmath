@@ -7,7 +7,7 @@ use crate::{
     agent::ingress::ToolIntent,
     document::{commit::DocumentCommitController, coordinator::SourceCoordinator},
     kernel::acceptance::AcceptedKernelState,
-    protocol::generated::AgentToolName,
+    protocol::generated::{AgentToolName, NotebookResultCell},
     references::ReferenceScope,
 };
 use serde_json::{Value, json};
@@ -25,6 +25,15 @@ pub struct ReadonlySource<'a> {
     pub scope: &'a ReferenceScope,
     /// Native monotonic time.
     pub now: u64,
+}
+/// Frozen source/catalog envelope plus optional independent output work. Never a kernel request.
+pub struct DispatchResult {
+    /// Complete bounded result body before output refs are attached.
+    pub json: String,
+    /// Actual closed tool outcome.
+    pub success: bool,
+    /// Exact captured kernel fence and exposed cell/hash set, if outputs were requested.
+    pub outputs: Option<(u64, Vec<NotebookResultCell>)>,
 }
 fn read_error(error: ReadError) -> (&'static str, &'static str) {
     match error {
@@ -50,8 +59,9 @@ pub fn execute(
     intent: &ToolIntent,
     args: &[u8],
     source: ReadonlySource<'_>,
-) -> Result<(String, bool), String> {
+) -> Result<DispatchResult, String> {
     let current_revision = source.controller.owner().snapshot().revision.get();
+    let mut outputs = None;
     let outcome = match intent.name {
         AgentToolName::ReadNotebook => source
             .reads
@@ -63,7 +73,26 @@ pub fn execute(
                 source.scope,
                 source.now,
             )
-            .map(|p| (p.data, Some(p.pagination), p.source_revision))
+            .map(|p| {
+                if p.include_outputs {
+                    outputs = Some((
+                        p.kernel_state_revision,
+                        p.data["cells"]
+                            .as_array()
+                            .expect("checked cells")
+                            .iter()
+                            .map(|c| NotebookResultCell {
+                                cell_id: c["cell_id"].as_str().expect("checked cell").into(),
+                                source_hash: c["source_hash"]
+                                    .as_str()
+                                    .expect("checked hash")
+                                    .into(),
+                            })
+                            .collect(),
+                    ));
+                }
+                (p.data, Some(p.pagination), p.source_revision)
+            })
             .map_err(read_error),
         AgentToolName::SearchFunctions => catalog::search(args)
             .map(|p| (p, None, current_revision))
@@ -121,6 +150,10 @@ pub fn execute(
     let envelope =
         super::checked_data(definition, envelope).map_err(|_| "TOOL_RESULT_LIMIT".to_owned())?;
     serde_json::to_string(&envelope)
-        .map(|value| (value, success))
+        .map(|json| DispatchResult {
+            json,
+            success,
+            outputs,
+        })
         .map_err(|_| "TOOL_RESULT_ENCODING".into())
 }

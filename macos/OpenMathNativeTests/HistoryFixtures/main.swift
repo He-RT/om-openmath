@@ -22,6 +22,19 @@ private struct HistoryFixture:Decodable {let initial:NativeSourceSnapshot;let pl
     let encoder=JSONEncoder();encoder.outputFormatting=[.sortedKeys]
     let originalBytes=try encoder.encode(original)
     let head=try await storage.committedSource(document)!
+    let historyDatabase=root.appendingPathComponent("Documents/\(document)/Generations/000001/authority.sqlite")
+    try await Task.detached {
+      let writer=try SQLiteDatabase(url:historyDatabase);defer {try? writer.close()}
+      try writer.transaction {try writer.statement("UPDATE source_history SET operation_id='invented-history-operation' WHERE transaction_id='tx-206'")}
+    }.value
+    do {_ = try await storage.readNotebookHistory(document:document);fatalError("history summary/column identity mismatch was returned to native Agent")}
+    catch StorageError.corruptIdentity { }
+    try await Task.detached {
+      let writer=try SQLiteDatabase(url:historyDatabase);defer {try? writer.close()}
+      try writer.transaction {try writer.statement("UPDATE source_history SET operation_id='op-206' WHERE transaction_id='tx-206'")}
+    }.value
+    let (historyHead,agentRecent)=try await storage.readNotebookHistory(document:document)
+    precondition(historyHead.snapshot_hash==head.snapshot_hash && agentRecent.count==32 && agentRecent[0].transaction=="tx-206")
     let rolledBack=StorageFaults {point in if point=="history_payloads_pruned" {throw StorageError.system(ENOSPC,"history-rollback")} }
     do {_ = try await storage.compactSourceHistory(document:document,faults:rolledBack);fatalError("partial pruning was acknowledged")}
     catch StorageError.system { }

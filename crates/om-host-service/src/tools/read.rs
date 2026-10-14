@@ -83,6 +83,12 @@ pub struct ReadPage {
     /// Original frozen source revision, for the native outer result envelope only.
     #[serde(skip)]
     pub source_revision: u64,
+    /// The original snapshot's accepted-state fence; no later random draw may replace its output.
+    #[serde(skip)]
+    pub kernel_state_revision: u64,
+    /// Actual requested output enrichment is performed on the independent result owner.
+    #[serde(skip)]
+    pub include_outputs: bool,
     /// Closed read_notebook_data shape.
     pub data: Value,
     /// Explicit truncation and an opaque cursor bound to this exact query.
@@ -94,6 +100,7 @@ pub struct ReadNotebookService {
     snapshots: BTreeMap<String, Retained>,
     bytes: usize,
     cursors: ReferenceRegistry<Cursor>,
+    history: Option<(ReferenceScope, Vec<String>)>,
 }
 fn decode(bytes: &[u8]) -> Result<Args, ReadError> {
     let root = super::schema();
@@ -170,7 +177,35 @@ impl ReadNotebookService {
             snapshots: BTreeMap::new(),
             bytes: 0,
             cursors: ReferenceRegistry::new(host_key),
+            history: None,
         }
+    }
+    /// Trusted native IO callback after independent durable history/head readback. Refs are data,
+    /// never transaction write/undo grants; the exact current snapshot must still match at read.
+    pub fn bind_history(
+        &mut self,
+        scope: &ReferenceScope,
+        refs: Vec<String>,
+    ) -> Result<(), ReadError> {
+        scope.validate().map_err(|_| ReadError::StaleSnapshot)?;
+        if !scope.can_read {
+            return Err(ReadError::PermissionDenied);
+        }
+        if refs.len() > 32
+            || refs.iter().collect::<BTreeSet<_>>().len() != refs.len()
+            || refs.iter().any(|s| {
+                s.is_empty()
+                    || s.len() > 256
+                    || !s
+                        .bytes()
+                        .enumerate()
+                        .all(|(i, c)| c.is_ascii_alphanumeric() || (i > 0 && b"._:-".contains(&c)))
+            })
+        {
+            return Err(ReadError::InvalidArgument);
+        }
+        self.history = Some((scope.clone(), refs));
+        Ok(())
     }
     fn prune(&mut self, scope: &ReferenceScope, now: u64) {
         self.snapshots.retain(|_, entry| {
@@ -250,11 +285,19 @@ impl ReadNotebookService {
                 byte_offset: 0,
             }
         };
-        if query.outputs {
-            return Err(ReadError::NotAvailable);
-        }
         let mut snapshot = if query.snapshot.is_empty() {
-            capture(controller, coordinator, accepted, scope, now)?
+            let mut snapshot = capture(controller, coordinator, accepted, scope, now)?;
+            if let Some((bound, refs)) = &self.history
+                && bound == scope
+            {
+                for reference in refs {
+                    if !snapshot.recent_transaction_refs.contains(reference) {
+                        snapshot.recent_transaction_refs.push(reference.clone());
+                    }
+                }
+                snapshot.recent_transaction_refs.truncate(32);
+            }
+            snapshot
         } else {
             let retained = self
                 .snapshots
@@ -399,6 +442,8 @@ impl ReadNotebookService {
         let data = super::checked_data("read_notebook_data",json!({"snapshot_ref":reference,"is_current":is_current,"title":snapshot.source.file.title,"cells":cells,"symbols":symbols,"recent_transaction_refs":snapshot.recent_transaction_refs})).map_err(|_| ReadError::LimitExceeded)?;
         Ok(ReadPage {
             source_revision: snapshot.source.revision.get(),
+            kernel_state_revision: snapshot.scope.definition_revision,
+            include_outputs: query.outputs,
             data,
             pagination: json!({"truncated":cursor.is_some(),"next_cursor":cursor}),
         })

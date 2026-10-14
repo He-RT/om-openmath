@@ -1,0 +1,21 @@
+{
+  "atomic_prune_rollback" : true,
+  "damaged_tombstone_rejected" : true,
+  "development_only" : true,
+  "final_candidate_gate" : false,
+  "fixture_root" : "\/Users\/hert\/Projects\/openmath\/target\/macos-storage-tests\/history-C5txSa",
+  "future_document_readonly_rejected" : true,
+  "legacy_native_v1_full_only" : true,
+  "original_id_no_replay" : true,
+  "original_receipt_preserved" : true,
+  "payload_removal_verified" : true,
+  "persisted_user_task_pins" : true,
+  "postcommit_prune_unknown" : true,
+  "pruned" : 5,
+  "recent_window" : 200,
+  "retained" : 201,
+  "source_commits" : 206,
+  "task" : "R4.1.07",
+  "unpin_allows_compaction" : true,
+  "version_4_document" : true
+}

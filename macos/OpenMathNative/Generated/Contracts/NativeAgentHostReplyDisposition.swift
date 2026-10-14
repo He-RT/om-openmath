@@ -13,4 +13,5 @@ public enum NativeAgentHostReplyDisposition: String, Codable, Sendable {
   case `cancel` = "cancel"
   case `closed` = "closed"
   case `status` = "status"
+  case `pending` = "pending"
 }

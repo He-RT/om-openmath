@@ -1,0 +1,34 @@
+{"output": "/Users/hert/Projects/openmath/target/macos-agent-package-tests/AgentRuntime", "files": 4169, "bytes": 172238412, "production_packages": 86}
+   Compiling om-agent-contract v0.1.0-pre-alpha.3 (/Users/hert/Projects/openmath/crates/om-agent-contract)
+   Compiling om-host-service v0.1.0-pre-alpha.3 (/Users/hert/Projects/openmath/crates/om-host-service)
+   Compiling om-llm v0.1.0-pre-alpha.3 (/Users/hert/Projects/openmath/crates/om-llm)
+   Compiling om-kernel v0.1.0-pre-alpha.3 (/Users/hert/Projects/openmath/crates/om-kernel)
+   Compiling om-apple-ffi v0.1.0-pre-alpha.3 (/Users/hert/Projects/openmath/crates/om-apple-ffi)
+    Finished `release` profile [optimized] target(s) in 39.72s
+macos/OpenMathNative/Storage/SourceHistoryStore.swift:89:43: error: reference to property 'document' in closure requires explicit use of 'self' to make capture semantics explicit
+ 84 |       guard limit>0,limit<=200 else {throw StorageError.corruptIdentity}
+ 85 |       var output:[SourceHistoryEntry]=[]
+ 86 |       try db.statement("SELECT h.transaction_id,h.operation_id,h.revision,h.retained,EXISTS(SELECT 1 FROM source_history_pins p WHERE p.transaction_id=h.transaction_id),h.summary,h.summary_hash FROM source_history h WHERE h.document_id=? ORDER BY h.revision DESC LIMIT ?",[.text(document),.integer(Int64(limit))]) {row in
+    |                                                                                                                                                                                                                                                                                                                           `- note: capture 'self' explicitly to enable implicit 'self' in this closure
+ 87 |         let data=try SQLColumn.data(row,5);guard DocumentStore.digest(data)==(try SQLColumn.text(row,6)) else {throw StorageError.corruptIdentity}
+ 88 |         let summary=try JSONDecoder().decode(NativeSourceTransactionTombstone.self,from:data);try Self.validate(summary)
+ 89 |         guard summary.commit.document_id==document,summary.commit.transaction_id==(try SQLColumn.text(row,0)),
+    |                                           |- error: reference to property 'document' in closure requires explicit use of 'self' to make capture semantics explicit
+    |                                           `- note: reference 'self.' explicitly
+ 90 |           summary.commit.operation_id==(try SQLColumn.text(row,1)),sqlite3_column_int64(row,2)>=0,
+ 91 |           UInt64(sqlite3_column_int64(row,2))==summary.commit.committed_revision.value else {throw StorageError.corruptIdentity}
+
+macos/OpenMathNativeTests/AgentPackageFixtures/main.swift:174:9: error: invalid redeclaration of 'canonical'
+ 78 |     precondition(report.frames==9 && report.lastPhase == .awaiting_settlement && report.toolIntents.count==1)
+ 79 |     let events=try await storage.sessionEvents("production-task");precondition(events.count==14 && events.filter{$0.event.event_kind == .task_transition}.count==8 && events.filter{$0.event.event_kind == .assistant_end}.count==2)
+ 80 |     let canonical=try JSONDecoder().decode(SessionCanonicalAssistant.self,from:Data(events.first{$0.event.event_kind == .assistant_end}!.event.payload_inline_json.value!.utf8))
+    |         `- note: 'canonical' previously declared here
+ 81 |     precondition(canonical.calls[0].arguments==Data("{ \"view\" : \"outline\", \"include_outputs\" : true }".utf8))
+ 82 |     let after=try await kernel.runCell("a",operation:"manual-after-helper-task");precondition(after.result_id.value != nil)
+    :
+172 |     }
+173 |     _ = try await newService.receive(peer("ready",1,originalHello["payload"] as! [String:Any],reply:originalHello["message_id"] as? String))
+174 |     let canonical:[String:Any] = ["record_type":"canonical_agent_message","message_version":1,"message_id":"history-proposal","role":"assistant","agent_turn_id":"history-turn","task_id":activation.scope.task_id,"parts":[["kind":"tool_call","part_id":"history-part","tool_call_id":"history-call","name":"read_notebook","arguments_json":"{}"]]]
+    |         `- error: invalid redeclaration of 'canonical'
+175 |     _ = try await newService.receive(peer("transcript_event",2,["event_id":"history-event","source_sequence":1,"message":canonical]))
+176 |     let mapped=try await newService.receive(peer("tool_call",3,["agent_turn_id":"history-turn","tool_call_id":"history-call","proposal_event_ref":"history-event"]))

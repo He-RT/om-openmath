@@ -317,6 +317,7 @@ impl NativeHost {
             NativeResultHostCommand::ResultManifest(b) => Some(&b.request_id),
             NativeResultHostCommand::ResultInspect(b) => Some(&b.request_id),
             NativeResultHostCommand::ResultRevoke(b) => Some(&b.request_id),
+            NativeResultHostCommand::ResultNotebookReferences(b) => Some(&b.request_id),
             _ => None,
         };
         if id.is_some_and(|id| self.shared.operations.status(id).is_some()) {

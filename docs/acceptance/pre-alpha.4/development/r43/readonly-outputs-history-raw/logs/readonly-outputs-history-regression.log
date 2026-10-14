@@ -1,0 +1,27 @@
+    Blocking waiting for file lock on package cache
+    Blocking waiting for file lock on package cache
+   Compiling om-host-service v0.1.0-pre-alpha.3 (/Users/hert/Projects/openmath/crates/om-host-service)
+    Finished `dev` profile [unoptimized] target(s) in 5.60s
+     Running `target/debug/examples/history_store_contract`
+macos/OpenMathNativeTests/HistoryFixtures/main.swift:63:9: error: invalid redeclaration of 'recent'
+ 34 |       try writer.transaction {try writer.statement("UPDATE source_history SET operation_id='op-206' WHERE transaction_id='tx-206'")}
+ 35 |     }.value
+ 36 |     let (historyHead,recent)=try await storage.readNotebookHistory(document:document)
+    |                      `- note: 'recent' previously declared here
+ 37 |     precondition(historyHead.snapshot_hash==head.snapshot_hash && recent.count==32 && recent[0].transaction=="tx-206")
+ 38 |     let rolledBack=StorageFaults {point in if point=="history_payloads_pruned" {throw StorageError.system(ENOSPC,"history-rollback")} }
+    :
+ 61 |     let after=try await storage.committedSource(document)!
+ 62 |     precondition(after.snapshot_hash==head.snapshot_hash && after.revision.value==206)
+ 63 |     let recent=try await storage.sourceHistory(document:document)
+    |         `- error: invalid redeclaration of 'recent'
+ 64 |     precondition(recent.count==200 && recent.first?.revision==206 && recent.last?.revision==7 && recent.allSatisfy(\.retained))
+ 65 |     do {try await storage.pinSourceTransaction(document:document,transaction:"tx-3",kind:"user",owner:"resurrect",enabled:true);fatalError("pin resurrected pruned inverse")}
+
+macos/OpenMathNativeTests/HistoryFixtures/main.swift:64:116: error: cannot infer key path type from context; consider explicitly specifying a root type
+ 62 |     precondition(after.snapshot_hash==head.snapshot_hash && after.revision.value==206)
+ 63 |     let recent=try await storage.sourceHistory(document:document)
+ 64 |     precondition(recent.count==200 && recent.first?.revision==206 && recent.last?.revision==7 && recent.allSatisfy(\.retained))
+    |                                                                                                                    `- error: cannot infer key path type from context; consider explicitly specifying a root type
+ 65 |     do {try await storage.pinSourceTransaction(document:document,transaction:"tx-3",kind:"user",owner:"resurrect",enabled:true);fatalError("pin resurrected pruned inverse")}
+ 66 |     catch StorageError.transactionUnavailable { }

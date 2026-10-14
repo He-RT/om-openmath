@@ -1,0 +1,4 @@
+data: {"model":"synthetic-served-alias","choices":[{"delta":{"role":"assistant","content":"已读取真实笔记本🙂"},"index":0,"finish_reason":"stop"}],"id":"provider-response-2"}
+
+data: [DONE]
+

@@ -147,6 +147,156 @@ fn complete(
     reply
 }
 #[test]
+fn notebook_output_refs_resolve_real_exact_value_and_never_substitute_a_later_state() {
+    let (accepted, mut scope, worker) = owned_setup();
+    scope.task = Some("actual-read-task".into());
+    scope.task_generation = 1;
+    let before = accepted.state().bytes().to_vec();
+    let runtime = ResultRuntime::new().unwrap();
+    runtime.accepted(accepted.clone()).unwrap();
+    let source = accepted
+        .receipt()
+        .producer
+        .cell_source_hash
+        .0
+        .as_ref()
+        .unwrap();
+    let query = |id: &str, upper: u64, hash: &str| {
+        command(
+            json!({"type":"result_notebook_references","request_id":id,"kernel_state_revision":upper,"cells":[{"cell_id":"list","source_hash":hash}]}),
+        )
+    };
+    let reply = complete(
+        &runtime,
+        query("notebook-outputs", scope.definition_revision, source),
+        &scope,
+    );
+    assert_eq!(reply.phase, NativeResultHostReplyPhase::Completed);
+    let token = reply.payload["list"].as_str().unwrap();
+    assert!(token.starts_with("result-"));
+    let inspected = complete(
+        &runtime,
+        command(
+            json!({"type":"result_inspect","request_id":"actual-ref-page","result_ref":token,"query":{"kind":"page","path":[],"offset":0,"limit":1,"column_offset":0,"column_limit":1}}),
+        ),
+        &scope,
+    );
+    assert_eq!(
+        inspected.payload["rows"][0]["cells"][0]["source"]["input_form"],
+        "1/3"
+    );
+    assert!(complete(&runtime, query("prior-state", 0, source), &scope).payload["list"].is_null());
+    assert!(
+        complete(
+            &runtime,
+            query("wrong-source", scope.definition_revision, &"0".repeat(64)),
+            &scope
+        )
+        .payload["list"]
+            .is_null()
+    );
+    assert_eq!(
+        complete(
+            &runtime,
+            query("future-state", scope.definition_revision + 1, source),
+            &scope
+        )
+        .phase,
+        NativeResultHostReplyPhase::Failed
+    );
+    let mut other = scope.clone();
+    other.task_generation += 1;
+    let denied = complete(
+        &runtime,
+        command(
+            json!({"type":"result_inspect","request_id":"old-task-ref","result_ref":token,"query":{"kind":"summary"}}),
+        ),
+        &other,
+    );
+    assert_eq!(denied.phase, NativeResultHostReplyPhase::Failed);
+    let doc = SourceDocument::new(
+        scope.document.clone(),
+        Serial::new(scope.generation).unwrap(),
+        serde_json::from_value(serde_json::to_value(accepted.state().source()).unwrap()).unwrap(),
+    )
+    .unwrap();
+    assert_eq!(doc.snapshot().snapshot_hash, scope.snapshot_hash);
+    let context = AcceptanceContext {
+        runtime_instance_id: scope.runtime.clone(),
+        store_id: "store".into(),
+        document_generation: Serial::new(scope.generation).unwrap(),
+        source: doc.snapshot().clone(),
+        general: accepted.state().general().clone(),
+        config_revision: Serial::new(scope.config_revision).unwrap(),
+        build: "result-read-fixture".into(),
+    };
+    let candidate = worker
+        .submit(KernelJob {
+            runtime_instance_id: scope.runtime.clone(),
+            document_generation: Serial::new(scope.generation).unwrap(),
+            operation_id: "real-second-output".into(),
+            parent_checkpoint_ref: accepted.registry_ref().into(),
+            source: context.source.clone(),
+            general: context.general.clone(),
+            config_revision: Serial::new(scope.config_revision).unwrap(),
+            cell_id: "list".into(),
+            cancel: Arc::new(AtomicBool::new(false)),
+        })
+        .unwrap()
+        .recv_timeout(Duration::from_secs(10))
+        .unwrap()
+        .unwrap();
+    let plan = FrozenKernelPlan::candidate(candidate, &accepted, &context, &worker).unwrap();
+    plan.enter_commit(&context, Some(&accepted)).unwrap();
+    let newer = plan.accept_receipt(&receipt(plan.plan())).unwrap();
+    runtime.accepted(newer.clone()).unwrap();
+    let mut next_scope = scope.clone();
+    next_scope.definition_revision = newer.receipt().kernel_state_revision.get();
+    let historical = complete(
+        &runtime,
+        query("historical-output", scope.definition_revision, source),
+        &next_scope,
+    );
+    let latest = complete(
+        &runtime,
+        query("newest-output", next_scope.definition_revision, source),
+        &next_scope,
+    );
+    let old = complete(
+        &runtime,
+        command(
+            json!({"type":"result_inspect","request_id":"old-producer","result_ref":historical.payload["list"],"query":{"kind":"summary"}}),
+        ),
+        &next_scope,
+    );
+    let new = complete(
+        &runtime,
+        command(
+            json!({"type":"result_inspect","request_id":"new-producer","result_ref":latest.payload["list"],"query":{"kind":"summary"}}),
+        ),
+        &next_scope,
+    );
+    assert_eq!(
+        old.binding.0.as_ref().unwrap().kernel_state_revision.get(),
+        scope.definition_revision
+    );
+    assert_eq!(
+        new.binding.0.as_ref().unwrap().kernel_state_revision.get(),
+        next_scope.definition_revision
+    );
+    assert_eq!(
+        old.binding.0.as_ref().unwrap().freshness,
+        ResultBindingFreshness::Stale
+    );
+    assert_eq!(before, accepted.state().bytes());
+    println!(
+        "actual notebook result reference={}; actual exact row={}, checkpoint bytes unchanged",
+        token, inspected.payload["rows"][0]
+    );
+    runtime.take_thread().unwrap().join().unwrap();
+    worker.begin_close().unwrap().unwrap().join().unwrap();
+}
+#[test]
 fn actual_manifest_pages_source_numeric_and_readonly_controls_have_scoped_original_identity() {
     let (accepted, scope) = setup();
     let runtime = ResultRuntime::new().unwrap();
@@ -306,47 +456,55 @@ impl Gate {
 }
 #[test]
 fn direct_cancel_and_readback_remain_available_while_a_real_result_worker_is_paused() {
-    let gate = Arc::new(Gate {
-        state: Mutex::new((false, false)),
-        signal: Condvar::new(),
-    });
-    let callback = gate.clone();
-    let runtime = ResultRuntime::with_probes(ResultWorkerProbes {
-        before_query: Some(Arc::new(move || callback.pause())),
-    })
-    .unwrap();
-    let (accepted, scope) = setup();
-    runtime.accepted(accepted.clone()).unwrap();
-    let cmd = command(
-        json!({"type":"result_manifest","request_id":"paused","root_result_id":accepted.receipt().result_id.0,"offset":0,"limit":1}),
-    );
-    runtime.command(cmd, &scope).unwrap();
-    let lock = gate.state.lock().unwrap();
-    let (lock, timeout) = gate
-        .signal
-        .wait_timeout_while(lock, Duration::from_secs(10), |s| !s.0)
+    for notebook in [false, true] {
+        let gate = Arc::new(Gate {
+            state: Mutex::new((false, false)),
+            signal: Condvar::new(),
+        });
+        let callback = gate.clone();
+        let runtime = ResultRuntime::with_probes(ResultWorkerProbes {
+            before_query: Some(Arc::new(move || callback.pause())),
+        })
         .unwrap();
-    assert!(!timeout.timed_out() && lock.0);
-    drop(lock);
-    let start = Instant::now();
-    assert_eq!(
-        runtime
-            .command(
-                command(json!({"type":"result_status","request_id":"paused"})),
-                &scope
+        let (accepted, scope) = setup();
+        runtime.accepted(accepted.clone()).unwrap();
+        let cmd = if notebook {
+            command(
+                json!({"type":"result_notebook_references","request_id":"paused","kernel_state_revision":scope.definition_revision,"cells":[{"cell_id":"list","source_hash":accepted.receipt().producer.cell_source_hash.0}]}),
             )
-            .unwrap()
-            .phase,
-        NativeResultHostReplyPhase::Running
-    );
-    assert_eq!(runtime.cancel("paused"), Some(true));
-    assert!(start.elapsed() < Duration::from_secs(1));
-    gate.release();
-    let reply = complete(
-        &runtime,
-        command(json!({"type":"result_status","request_id":"paused"})),
-        &scope,
-    );
-    assert_eq!(reply.phase, NativeResultHostReplyPhase::Cancelled);
-    runtime.take_thread().unwrap().join().unwrap();
+        } else {
+            command(
+                json!({"type":"result_manifest","request_id":"paused","root_result_id":accepted.receipt().result_id.0,"offset":0,"limit":1}),
+            )
+        };
+        runtime.command(cmd, &scope).unwrap();
+        let lock = gate.state.lock().unwrap();
+        let (lock, timeout) = gate
+            .signal
+            .wait_timeout_while(lock, Duration::from_secs(10), |s| !s.0)
+            .unwrap();
+        assert!(!timeout.timed_out() && lock.0);
+        drop(lock);
+        let start = Instant::now();
+        assert_eq!(
+            runtime
+                .command(
+                    command(json!({"type":"result_status","request_id":"paused"})),
+                    &scope
+                )
+                .unwrap()
+                .phase,
+            NativeResultHostReplyPhase::Running
+        );
+        assert_eq!(runtime.cancel("paused"), Some(true));
+        assert!(start.elapsed() < Duration::from_secs(1));
+        gate.release();
+        let reply = complete(
+            &runtime,
+            command(json!({"type":"result_status","request_id":"paused"})),
+            &scope,
+        );
+        assert_eq!(reply.phase, NativeResultHostReplyPhase::Cancelled);
+        runtime.take_thread().unwrap().join().unwrap();
+    }
 }

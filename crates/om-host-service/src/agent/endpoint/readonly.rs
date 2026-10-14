@@ -9,6 +9,22 @@ pub(super) struct ReadonlyEntry {
     issued: std::time::Instant,
 }
 impl AgentEndpoint {
+    /// Host-only source/history callbacks still require this exact live activation.
+    pub fn check_native_scope(
+        &self,
+        scope: &NativeAgentControlScope,
+        binding: &DocumentBinding,
+    ) -> Result<(), String> {
+        self.check(scope, binding)?;
+        if self.ingress.phase() != ConnectionPhase::Ready {
+            return Err("IPC_TASK_NOT_READY".into());
+        }
+        Ok(())
+    }
+    /// Work is queued on the independent immutable-result owner; poll the same request identity.
+    pub fn pending_readonly(&self) -> NativeAgentHostReply {
+        self.reply(NativeAgentHostReplyDisposition::Pending)
+    }
     /// Derive task scope solely from the actual activation and current source owner facts.
     pub fn readonly_scope(&self, current: ReferenceScope) -> ReferenceScope {
         self.ingress.read_scope(current)

@@ -1,0 +1,206 @@
+[
+  {
+    "source": "target/acceptance/pre-alpha.4/development/r43/readonly-outputs-test-artifacts.jsonl",
+    "archive": "logs/readonly-outputs-test-artifacts.jsonl.gz",
+    "original_bytes": 581573,
+    "original_sha256": "c35fe3d1e3fbe5491919734fd81cffcd80b0174a128d69d3bd7dc933d278ce1e"
+  },
+  {
+    "source": "target/macos-agent-package-tests/attempt-NqM8BA/Documents/00000000-0000-0000-0000-000000000432/Generations/000001/authority.sqlite",
+    "archive": "standalone/Documents/00000000-0000-0000-0000-000000000432/Generations/000001/authority.sqlite.gz",
+    "original_bytes": 303104,
+    "original_sha256": "0320101b3e4d4a76ea9834a39cc66f59a6aae741ac247caefaefe05b098a6ef6"
+  },
+  {
+    "source": "target/macos-agent-package-tests/attempt-NqM8BA/Documents/00000000-0000-0000-0000-000000000432/Generations/000001/authority.sqlite-shm",
+    "archive": "standalone/Documents/00000000-0000-0000-0000-000000000432/Generations/000001/authority.sqlite-shm.gz",
+    "original_bytes": 32768,
+    "original_sha256": "8d41639c9b5661f3d7b211d3e6f8974c340e5f63e21ea8832d88c1cfd190cee9"
+  },
+  {
+    "source": "target/macos-agent-package-tests/attempt-NqM8BA/Documents/00000000-0000-0000-0000-000000000432/Generations/000001/authority.sqlite-wal",
+    "archive": "standalone/Documents/00000000-0000-0000-0000-000000000432/Generations/000001/authority.sqlite-wal.gz",
+    "original_bytes": 0,
+    "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "source": "target/macos-agent-package-tests/attempt-NqM8BA/Library/Generations/000001/library.sqlite",
+    "archive": "standalone/Library/Generations/000001/library.sqlite.gz",
+    "original_bytes": 172032,
+    "original_sha256": "e8611011f49f142f2dc035bfb084e4d9b30b15bd94da476d932127b053fa1dbb"
+  },
+  {
+    "source": "target/macos-agent-package-tests/attempt-NqM8BA/Library/Generations/000001/library.sqlite-shm",
+    "archive": "standalone/Library/Generations/000001/library.sqlite-shm.gz",
+    "original_bytes": 32768,
+    "original_sha256": "33f463219b747e165826c2eddcd2c8bffeee36cf220674e6943a05051db8ac82"
+  },
+  {
+    "source": "target/macos-agent-package-tests/attempt-NqM8BA/Library/Generations/000001/library.sqlite-wal",
+    "archive": "standalone/Library/Generations/000001/library.sqlite-wal.gz",
+    "original_bytes": 0,
+    "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "source": "target/macos-agent-package-tests/attempt-imKCnb/Documents/00000000-0000-0000-0000-000000000432/Generations/000001/authority.sqlite",
+    "archive": "signed-app/Documents/00000000-0000-0000-0000-000000000432/Generations/000001/authority.sqlite.gz",
+    "original_bytes": 303104,
+    "original_sha256": "2e7b7424c7d70f3daf0120f34127f2ca9a9908b4eeda63c89ceb5a1eaaeca857"
+  },
+  {
+    "source": "target/macos-agent-package-tests/attempt-imKCnb/Documents/00000000-0000-0000-0000-000000000432/Generations/000001/authority.sqlite-shm",
+    "archive": "signed-app/Documents/00000000-0000-0000-0000-000000000432/Generations/000001/authority.sqlite-shm.gz",
+    "original_bytes": 32768,
+    "original_sha256": "fbfbbdfd6b370a1d7aaf4425e27054fd4555b704029dad05d7bcae33c9a390cf"
+  },
+  {
+    "source": "target/macos-agent-package-tests/attempt-imKCnb/Documents/00000000-0000-0000-0000-000000000432/Generations/000001/authority.sqlite-wal",
+    "archive": "signed-app/Documents/00000000-0000-0000-0000-000000000432/Generations/000001/authority.sqlite-wal.gz",
+    "original_bytes": 0,
+    "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "source": "target/macos-agent-package-tests/attempt-imKCnb/Library/Generations/000001/library.sqlite",
+    "archive": "signed-app/Library/Generations/000001/library.sqlite.gz",
+    "original_bytes": 172032,
+    "original_sha256": "c1f6af6b323af1685276f31a07373f35e64b9b71cb7a3e17c4c7d846ec98879c"
+  },
+  {
+    "source": "target/macos-agent-package-tests/attempt-imKCnb/Library/Generations/000001/library.sqlite-shm",
+    "archive": "signed-app/Library/Generations/000001/library.sqlite-shm.gz",
+    "original_bytes": 32768,
+    "original_sha256": "90499647b72b4aad8e618e93bc03c49c899ca5afeda683af9f8ede06db45ef27"
+  },
+  {
+    "source": "target/macos-agent-package-tests/attempt-imKCnb/Library/Generations/000001/library.sqlite-wal",
+    "archive": "signed-app/Library/Generations/000001/library.sqlite-wal.gz",
+    "original_bytes": 0,
+    "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "source": "target/macos-storage-tests/history-C5txSa/Documents/00000000-0000-0000-0000-000000000041/Generations/000001/authority.sqlite",
+    "archive": "history-206/Documents/00000000-0000-0000-0000-000000000041/Generations/000001/authority.sqlite.gz",
+    "original_bytes": 11288576,
+    "original_sha256": "aaa8a0d858f7bae0af3c53116985ff09e41f470a6832bf44b06acd0a19258610"
+  },
+  {
+    "source": "target/macos-storage-tests/history-C5txSa/Documents/00000000-0000-0000-0000-000000000041/Generations/000001/authority.sqlite-shm",
+    "archive": "history-206/Documents/00000000-0000-0000-0000-000000000041/Generations/000001/authority.sqlite-shm.gz",
+    "original_bytes": 32768,
+    "original_sha256": "b52d84c5e111eeb9675a3b7f7b1ccb5473b53ec76bcd9f95c8e6598a1561bd94"
+  },
+  {
+    "source": "target/macos-storage-tests/history-C5txSa/Documents/00000000-0000-0000-0000-000000000041/Generations/000001/authority.sqlite-wal",
+    "archive": "history-206/Documents/00000000-0000-0000-0000-000000000041/Generations/000001/authority.sqlite-wal.gz",
+    "original_bytes": 0,
+    "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "source": "target/macos-storage-tests/history-C5txSa/Documents/00000000-0000-0000-0000-000000000041/active.json",
+    "archive": "history-206/Documents/00000000-0000-0000-0000-000000000041/active.json.gz",
+    "original_bytes": 166,
+    "original_sha256": "4c06dc1ac37be3015aa281c675b4cc68609aff15897df678ff138181b8e4db59"
+  },
+  {
+    "source": "target/macos-storage-tests/history-C5txSa/Library/Generations/000001/library.sqlite",
+    "archive": "history-206/Library/Generations/000001/library.sqlite.gz",
+    "original_bytes": 122880,
+    "original_sha256": "a0a92207480d73da018e071c8074af05ba46aa902e33bd91a88e46d1bcc2788e"
+  },
+  {
+    "source": "target/macos-storage-tests/history-C5txSa/Library/Generations/000001/library.sqlite-shm",
+    "archive": "history-206/Library/Generations/000001/library.sqlite-shm.gz",
+    "original_bytes": 32768,
+    "original_sha256": "1d6bb75c1c0c8a90e6038b20a794ed53c0efb2cc0660a57688c2f1e1b497c7c2"
+  },
+  {
+    "source": "target/macos-storage-tests/history-C5txSa/Library/Generations/000001/library.sqlite-wal",
+    "archive": "history-206/Library/Generations/000001/library.sqlite-wal.gz",
+    "original_bytes": 0,
+    "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "source": "target/macos-storage-tests/history-C5txSa/Library/active.json",
+    "archive": "history-206/Library/active.json.gz",
+    "original_bytes": 166,
+    "original_sha256": "b35428bcd395f1b3ee73235b7327800997bb53d11852f548a32fd6af7535813f"
+  },
+  {
+    "source": "target/macos-storage-tests/history-C5txSa/legacy-native/Documents/00000000-0000-0000-0000-000000000041/Generations/000001/authority.sqlite",
+    "archive": "history-206/legacy-native/Documents/00000000-0000-0000-0000-000000000041/Generations/000001/authority.sqlite.gz",
+    "original_bytes": 299008,
+    "original_sha256": "cc233a0d37f816e1bc2a80a1dedb637a82e13dabbb44f0ffd1a6f37275e2dcbb"
+  },
+  {
+    "source": "target/macos-storage-tests/history-C5txSa/legacy-native/Documents/00000000-0000-0000-0000-000000000041/Generations/000001/authority.sqlite-shm",
+    "archive": "history-206/legacy-native/Documents/00000000-0000-0000-0000-000000000041/Generations/000001/authority.sqlite-shm.gz",
+    "original_bytes": 32768,
+    "original_sha256": "fd4c9fda9cd3f9ae7c962b0ddf37232294d55580e1aa165aa06129b8549389eb"
+  },
+  {
+    "source": "target/macos-storage-tests/history-C5txSa/legacy-native/Documents/00000000-0000-0000-0000-000000000041/Generations/000001/authority.sqlite-wal",
+    "archive": "history-206/legacy-native/Documents/00000000-0000-0000-0000-000000000041/Generations/000001/authority.sqlite-wal.gz",
+    "original_bytes": 0,
+    "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "source": "target/macos-storage-tests/history-C5txSa/legacy-native/Documents/00000000-0000-0000-0000-000000000041/active.json",
+    "archive": "history-206/legacy-native/Documents/00000000-0000-0000-0000-000000000041/active.json.gz",
+    "original_bytes": 166,
+    "original_sha256": "695b5fc1a9577f990c771ba661e28d327712a7ed85b9bf29821e0d1d57294455"
+  },
+  {
+    "source": "target/macos-storage-tests/history-C5txSa/legacy-native/Library/Generations/000001/library.sqlite",
+    "archive": "history-206/legacy-native/Library/Generations/000001/library.sqlite.gz",
+    "original_bytes": 122880,
+    "original_sha256": "2376a69c290827c1809e1914f12e83aa7895f2d85736fd4e3407fc1f2324cefb"
+  },
+  {
+    "source": "target/macos-storage-tests/history-C5txSa/legacy-native/Library/Generations/000001/library.sqlite-shm",
+    "archive": "history-206/legacy-native/Library/Generations/000001/library.sqlite-shm.gz",
+    "original_bytes": 32768,
+    "original_sha256": "2a70be79c8adc84715bc0273499fb85bd0ca3c6346763405b2b09af012541825"
+  },
+  {
+    "source": "target/macos-storage-tests/history-C5txSa/legacy-native/Library/Generations/000001/library.sqlite-wal",
+    "archive": "history-206/legacy-native/Library/Generations/000001/library.sqlite-wal.gz",
+    "original_bytes": 0,
+    "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "source": "target/macos-storage-tests/history-C5txSa/legacy-native/Library/active.json",
+    "archive": "history-206/legacy-native/Library/active.json.gz",
+    "original_bytes": 166,
+    "original_sha256": "de7ab6f62437e7fa2b4cb81bdd9fe292ade5e4bf487242296b9b8b97fc2b46ec"
+  },
+  {
+    "source": "target/macos-storage-tests/history-C5txSa/legacy-native/store.json",
+    "archive": "history-206/legacy-native/store.json.gz",
+    "original_bytes": 97,
+    "original_sha256": "c15d99d9f67bddbdc06cdf100d4fbb391b812d546e63f8abe5d5d4435e002262"
+  },
+  {
+    "source": "target/macos-storage-tests/history-C5txSa/legacy-native/store.lock",
+    "archive": "history-206/legacy-native/store.lock.gz",
+    "original_bytes": 0,
+    "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "source": "target/macos-storage-tests/history-C5txSa/store.json",
+    "archive": "history-206/store.json.gz",
+    "original_bytes": 97,
+    "original_sha256": "9d8e79886969923cdd2bbcdb02b3cc1990280f7782751a03807e6510541b9263"
+  },
+  {
+    "source": "target/macos-storage-tests/history-C5txSa/store.lock",
+    "archive": "history-206/store.lock.gz",
+    "original_bytes": 0,
+    "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "source": "target/macos-storage-tests/history-plans.json",
+    "archive": "history-plans.json.gz",
+    "original_bytes": 3250419,
+    "original_sha256": "616331b1149f21a90115cf5309eab7b45331f98bd2dad400a3d3f7f98e0b4616"
+  }
+]

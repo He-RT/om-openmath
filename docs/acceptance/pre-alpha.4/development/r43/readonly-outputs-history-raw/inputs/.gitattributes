@@ -1,0 +1,42 @@
+# SSE messages must end with a blank line; retain all other whitespace checks.
+crates/om-llm/tests/fixtures/*.sse whitespace=blank-at-eol,space-before-tab,-blank-at-eof
+
+# 保留上游字体许可证原文空白。
+ios/OpenMath/Resources/SwiftMath-GUST-FONT-LICENSE.txt -whitespace
+
+# Upstream native license notices are preserved byte-for-byte and verified by SHA256.
+macos/OpenMathNative/Resources/Licenses/** -whitespace
+
+# Raw development logs/failure snapshots retain their exact captured bytes and SHA256.
+docs/acceptance/pre-alpha.4/development/r42/native-math-raw/*.log -whitespace
+docs/acceptance/pre-alpha.4/development/r42/native-math-raw/ci-f875658-settings-failure.md -whitespace
+docs/acceptance/pre-alpha.4/development/r42/native-results-raw/*.log -whitespace
+docs/acceptance/pre-alpha.4/development/r42/native-values-raw/*.log -whitespace
+docs/acceptance/pre-alpha.4/development/r42/native-values-raw/*.sample.txt -whitespace
+docs/acceptance/pre-alpha.4/development/r43/agent-protocol-foundation-raw/*.log -whitespace
+
+docs/acceptance/pre-alpha.4/development/r43/agent-protocol-native-raw/*.log -whitespace
+
+docs/acceptance/pre-alpha.4/development/r43/frontend-ci-serial-raw/*.log -whitespace
+
+docs/acceptance/pre-alpha.4/development/r43/pi-loop-foundation-raw/*.log -whitespace
+
+docs/acceptance/pre-alpha.4/development/r43/pi-production-runtime-raw/*.log -whitespace
+
+docs/acceptance/pre-alpha.4/development/r43/single-turn-codec-raw/*.log -whitespace
+docs/acceptance/pre-alpha.4/development/r43/single-turn-codec-raw/94dbfbe-settings-error-context.md -whitespace
+docs/acceptance/pre-alpha.4/development/r43/secret-store-foundation-raw/*.log -whitespace
+docs/acceptance/pre-alpha.4/development/r43/provider-transport-raw/*.log -whitespace
+docs/acceptance/pre-alpha.4/development/r43/provider-connect-budget-raw/*.log -whitespace
+docs/acceptance/pre-alpha.4/development/r43/provider-durable-request-raw/*.log -whitespace
+docs/acceptance/pre-alpha.4/development/r43/provider-durable-request-raw/**/*.sse whitespace=blank-at-eol,space-before-tab,-blank-at-eof
+docs/acceptance/pre-alpha.4/development/r43/readonly-services-raw/**/*.log -whitespace
+docs/acceptance/pre-alpha.4/development/r43/provider-timeout-race-raw/**/*.log -whitespace
+docs/acceptance/pre-alpha.4/development/r43/provider-timeout-race-raw/**/*.sse whitespace=blank-at-eol,space-before-tab,-blank-at-eof
+docs/acceptance/pre-alpha.4/development/r43/provider-timeout-race-raw/**/Blobs/sha256/** binary
+docs/acceptance/pre-alpha.4/development/r43/readonly-native-tool-raw/**/*.log -whitespace
+docs/acceptance/pre-alpha.4/development/r43/readonly-native-tool-raw/**/*.sse whitespace=blank-at-eol,space-before-tab,-blank-at-eof
+docs/acceptance/pre-alpha.4/development/r43/readonly-native-tool-raw/**/Blobs/sha256/** binary
+docs/acceptance/pre-alpha.4/development/r43/readonly-outputs-history-raw/**/*.log -whitespace
+docs/acceptance/pre-alpha.4/development/r43/readonly-outputs-history-raw/**/*.sse whitespace=blank-at-eol,space-before-tab,-blank-at-eof
+docs/acceptance/pre-alpha.4/development/r43/readonly-outputs-history-raw/**/Blobs/sha256/** binary

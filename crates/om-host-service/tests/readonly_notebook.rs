@@ -128,17 +128,16 @@ fn outline_is_bounded_and_full_source_exposure_never_upgrades_its_original_token
         &outline.data["snapshot_ref"],
         "2+2"
     ));
-    assert_eq!(
-        read(
-            &mut service,
-            &mut controller,
-            &scope,
-            json!({"include_outputs":true}),
-            2
-        )
-        .unwrap_err(),
-        ReadError::NotAvailable
-    );
+    let outputs = read(
+        &mut service,
+        &mut controller,
+        &scope,
+        json!({"include_outputs":true}),
+        2,
+    )
+    .unwrap();
+    assert!(outputs.include_outputs);
+    assert!(outputs.data["cells"][0]["result_ref"].is_null());
     let full=read(&mut service,&mut controller,&scope,json!({"view":"cells","cell_ids":["cell-0"],"snapshot_ref":outline.data["snapshot_ref"],"include_outputs":false}),2).unwrap();
     assert_eq!(full.data["cells"][0]["source"], "2+2");
     assert_eq!(full.data["cells"][0]["source_complete"], true);
@@ -410,6 +409,44 @@ fn receipt(p: &NativeKernelCommit) -> NativeKernelReceipt {
         result_id: p.result_id.clone(),
         outbox_event_id: p.outbox_event_id.clone(),
         committed_at: "2026-10-14T00:00:00Z".into(),
+    }
+}
+#[test]
+fn native_history_binding_is_bounded_and_each_read_snapshot_retains_its_original_refs() {
+    let (mut controller, scope) = setup(&["2+2"]);
+    let mut service = ReadNotebookService::new([9; 32]);
+    service
+        .bind_history(&scope, vec!["persisted-transaction".into()])
+        .unwrap();
+    let page = read(&mut service, &mut controller, &scope, json!({}), 0).unwrap();
+    assert_eq!(
+        page.data["recent_transaction_refs"],
+        json!(["persisted-transaction"])
+    );
+    service
+        .bind_history(&scope, vec!["new-history".into()])
+        .unwrap();
+    let frozen = read(
+        &mut service,
+        &mut controller,
+        &scope,
+        json!({"snapshot_ref":page.data["snapshot_ref"]}),
+        1,
+    )
+    .unwrap();
+    assert_eq!(
+        frozen.data["recent_transaction_refs"],
+        page.data["recent_transaction_refs"]
+    );
+    for refs in [
+        vec!["bad path".into()],
+        vec!["dup".into(), "dup".into()],
+        (0..33).map(|i| format!("tx-{i}")).collect(),
+    ] {
+        assert_eq!(
+            service.bind_history(&scope, refs),
+            Err(ReadError::InvalidArgument)
+        );
     }
 }
 #[test]

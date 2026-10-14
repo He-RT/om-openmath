@@ -1,0 +1,19 @@
+   Compiling om-host-service v0.1.0-pre-alpha.3 (/Users/runner/work/om-openmath/om-openmath/crates/om-host-service)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 1.58s
+Actual kernel bootstrap: SQLite/Blob/source/head/outbox/receipt [1, 1, 1, 1, 1, 0], rollback/cancel/original-ID/reopen bytes verified
+Actual Swift same-DB receipt and original OMKS bytes restored by Rust: bootstrap, a=a, revision 0
+Actual kernel a: SQLite/Blob/source/head/outbox/receipt [2, 2, 2, 2, 1, 1], rollback/cancel/original-ID/reopen bytes verified
+Actual immutable ResultStore captured only from original Swift receipt/Blob: a, readonly a=2
+Actual Swift same-DB receipt and original OMKS bytes restored by Rust: a, a=2, revision 1
+Actual kernel b: SQLite/Blob/source/head/outbox/receipt [3, 3, 3, 3, 1, 2], rollback/cancel/original-ID/reopen bytes verified
+Actual immutable ResultStore captured only from original Swift receipt/Blob: b, readonly a+1=3
+Actual Swift same-DB receipt and original OMKS bytes restored by Rust: b, a+1=3, revision 2
+Actual kernel error: SQLite/Blob/source/head/outbox/receipt [4, 4, 4, 4, 1, 3], rollback/cancel/original-ID/reopen bytes verified
+Actual immutable ResultStore captured only from original Swift receipt/Blob: error, readonly partial=7
+Actual Swift same-DB receipt and original OMKS bytes restored by Rust: error, partial=7, revision 3
+Actual kernel bootstrap: SQLite/Blob/source/head/outbox/receipt [1, 1, 1, 1, 1, 0], rollback/cancel/original-ID/reopen bytes verified
+Actual kernel a: SQLite/Blob/source/head/outbox/receipt [2, 2, 2, 2, 1, 1], rollback/cancel/original-ID/reopen bytes verified
+Actual kernel b: SQLite/Blob/source/head/outbox/receipt [3, 3, 3, 3, 1, 2], rollback/cancel/original-ID/reopen bytes verified
+Actual immutable ResultStore captured only from original Swift receipt/Blob: b, readonly a+1=3
+Actual Swift same-DB receipt and original OMKS bytes restored by Rust: b, a+1=3, revision 2
+Five actual kernel acceptance SIGKILL boundaries: Blob ref/head/checkpoint/operation/outbox commit together; previous parent or exact accepted candidate retained

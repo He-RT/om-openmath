@@ -1,0 +1,3 @@
+    Finished `dev` profile [unoptimized] target(s) in 0.28s
+     Running `target/debug/examples/history_store_contract`
+Actual 206 SQLite source commits: 200 + persistent pins, atomic prune rollback/lost ACK, physical removal, original-ID facts/no replay, reopen/unpin/damage refusal, legacy v1 full-only and future version readonly refusal; counts 206/206/206/201/5 passed

@@ -214,7 +214,17 @@ actor AgentSessionService {
     guard [.read_notebook,.search_functions,.get_function_docs].contains(intent.name) else {await unavailableTool(intent);return}
     do {
       guard let s=scope,let ledger else {throw AgentSessionError.inactive}
-      let reply=try await host.agentCommand(.native_agent_read_tool(.init(type:.agent_read_tool,scope:s,operation_id:intent.operation_id)))
+      if intent.name == .read_notebook {
+        let (head,entries)=try await storage.readNotebookHistory(document:document)
+        _ = try await host.agentCommand(.native_agent_bind_history(.init(type:.agent_bind_history,scope:s,expected_snapshot_hash:head.snapshot_hash,transaction_refs:entries.map(\.transaction))))
+      }
+      var reply=try await host.agentCommand(.native_agent_read_tool(.init(type:.agent_read_tool,scope:s,operation_id:intent.operation_id)))
+      let deadline=ContinuousClock.now.advanced(by:.seconds(10))
+      while reply.disposition == .pending {
+        try Task.checkCancellation();guard ContinuousClock.now<deadline else {throw AgentSessionError.busy}
+        try await Task.sleep(for:.milliseconds(10))
+        reply=try await host.agentCommand(.native_agent_read_tool(.init(type:.agent_read_tool,scope:s,operation_id:intent.operation_id)))
+      }
       guard let result=reply.readonly_result.value,result.operation_id==intent.operation_id,result.tool_call_id==intent.tool_call_id,
         result.agent_turn_id==intent.agent_turn_id,result.name==intent.name else {throw AgentSessionError.stale}
       let bytes=Data(result.result_json.utf8)

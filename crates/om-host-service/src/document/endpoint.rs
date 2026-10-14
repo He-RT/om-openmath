@@ -6,6 +6,11 @@ use crate::{
 };
 use sha2::{Digest, Sha256};
 use std::{sync::OnceLock, time::Instant};
+struct PendingRead {
+    scope: ReferenceScope,
+    json: String,
+    issued: Instant,
+}
 
 /// One source owner for the native runtime, separate from CAS/editor/network queues.
 pub struct SourceEndpoint {
@@ -19,6 +24,7 @@ pub struct SourceEndpoint {
     results: Option<crate::results::runtime::ResultRuntime>,
     agent: Option<crate::agent::endpoint::AgentEndpoint>,
     reads: Option<crate::tools::read::ReadNotebookService>,
+    pending_reads: std::collections::BTreeMap<String, PendingRead>,
     pending_result_state: Option<crate::kernel::acceptance::AcceptedKernelState>,
 }
 impl SourceEndpoint {
@@ -81,6 +87,7 @@ impl SourceEndpoint {
             pending_result_state: None,
             agent: None,
             reads: None,
+            pending_reads: std::collections::BTreeMap::new(),
         })
     }
     /// Actual runtime/document binding for host readback and stale request checks.
@@ -114,6 +121,7 @@ impl SourceEndpoint {
             let mut read_key = [0; 32];
             getrandom::fill(&mut read_key).map_err(|_| "ENTROPY_UNAVAILABLE")?;
             self.reads = Some(crate::tools::read::ReadNotebookService::new(read_key));
+            self.pending_reads.clear();
             self.agent = Some(endpoint);
             return Ok(reply);
         }
@@ -127,14 +135,95 @@ impl SourceEndpoint {
             .as_ref()
             .ok_or("AGENT_NOT_ACTIVE")?
             .readonly_scope(current);
+        if let NativeAgentHostCommand::NativeAgentBindHistory(c) = command {
+            self.agent
+                .as_ref()
+                .expect("checked")
+                .check_native_scope(&c.scope, &binding)?;
+            if c.expected_snapshot_hash != current.snapshot_hash {
+                return Err("STALE_DOCUMENT".into());
+            }
+            self.reads
+                .as_mut()
+                .ok_or("AGENT_NOT_ACTIVE")?
+                .bind_history(&current, c.transaction_refs)
+                .map_err(|_| "INVALID_HISTORY")?;
+            return self.agent.as_mut().expect("checked").command(
+                NativeAgentHostCommand::NativeAgentStatus(NativeAgentStatus {
+                    r#type: NativeAgentStatusType::AgentStatus,
+                    scope: c.scope,
+                }),
+                &binding,
+                &current,
+            );
+        }
         if let NativeAgentHostCommand::NativeAgentReadTool(c) = command {
             let agent = self.agent.as_ref().expect("checked");
             let (intent, args, cached) = agent.readonly_input(&c, &binding, &current)?;
             if let Some(result) = cached {
                 return Ok(agent.readonly_reply(result));
             }
+            if let Some(pending) = self.pending_reads.get(&intent.operation_id) {
+                if pending.scope != current || pending.issued.elapsed().as_secs() >= 10 {
+                    if let Some(results) = &self.results {
+                        let _ = results.cancel(&intent.operation_id);
+                    }
+                    self.pending_reads.remove(&intent.operation_id);
+                    return Err("STALE_SNAPSHOT".into());
+                }
+                let reply = self
+                    .results
+                    .as_ref()
+                    .ok_or("RESULT_NOT_AVAILABLE")?
+                    .command(
+                        NativeResultHostCommand::ResultStatus(ResultStatus {
+                            r#type: ResultStatusType::ResultStatus,
+                            request_id: intent.operation_id.clone(),
+                        }),
+                        &current,
+                    )?;
+                if matches!(
+                    reply.phase,
+                    NativeResultHostReplyPhase::Queued | NativeResultHostReplyPhase::Running
+                ) {
+                    return Ok(self.agent.as_ref().expect("checked").pending_readonly());
+                }
+                let pending = self
+                    .pending_reads
+                    .remove(&intent.operation_id)
+                    .expect("checked");
+                let mut envelope: serde_json::Value =
+                    serde_json::from_str(&pending.json).map_err(|_| "INTERNAL_ERROR")?;
+                let success = reply.phase == NativeResultHostReplyPhase::Completed;
+                if success {
+                    for cell in envelope["data"]["cells"]
+                        .as_array_mut()
+                        .ok_or("INTERNAL_ERROR")?
+                    {
+                        cell["result_ref"] = reply
+                            .payload
+                            .get(cell["cell_id"].as_str().ok_or("INTERNAL_ERROR")?)
+                            .cloned()
+                            .ok_or("RESULT_NOT_AVAILABLE")?;
+                    }
+                } else {
+                    envelope["ok"] = serde_json::json!(false);
+                    envelope["status"] = serde_json::json!("failed");
+                    envelope["data"] = serde_json::Value::Null;
+                    envelope["error"] = serde_json::json!({"code":"NOT_AVAILABLE","message":"Actual retained output metadata unavailable","recovery":"retry_read","details":{}});
+                }
+                let envelope = crate::tools::checked_data("read_notebook_result", envelope)
+                    .map_err(|_| "TOOL_RESULT_LIMIT")?;
+                return self.agent.as_mut().expect("checked").register_readonly(
+                    &intent,
+                    &current,
+                    serde_json::to_string(&envelope).map_err(|_| "INTERNAL_ERROR")?,
+                    success,
+                );
+            }
+            self.flush_result_state();
             let accepted = self.kernel.as_ref().and_then(|k| k.accepted_state());
-            let (json, success) = crate::tools::dispatch::execute(
+            let result = crate::tools::dispatch::execute(
                 &intent,
                 args.as_bytes(),
                 crate::tools::dispatch::ReadonlySource {
@@ -146,11 +235,36 @@ impl SourceEndpoint {
                     now: self.clock.elapsed().as_millis() as u64,
                 },
             )?;
-            return self
-                .agent
-                .as_mut()
-                .expect("checked")
-                .register_readonly(&intent, &current, json, success);
+            if result.success
+                && let Some((revision, cells)) = result.outputs
+                && !cells.is_empty()
+                && let Some(results) = &self.results
+            {
+                results.command(
+                    NativeResultHostCommand::ResultNotebookReferences(ResultNotebookReferences {
+                        r#type: ResultNotebookReferencesType::ResultNotebookReferences,
+                        request_id: intent.operation_id.clone(),
+                        kernel_state_revision: Serial::new(revision)?,
+                        cells,
+                    }),
+                    &current,
+                )?;
+                self.pending_reads.insert(
+                    intent.operation_id.clone(),
+                    PendingRead {
+                        scope: current,
+                        json: result.json,
+                        issued: Instant::now(),
+                    },
+                );
+                return Ok(self.agent.as_ref().expect("checked").pending_readonly());
+            }
+            return self.agent.as_mut().expect("checked").register_readonly(
+                &intent,
+                &current,
+                result.json,
+                result.success,
+            );
         }
         let closing = matches!(
             &command,
@@ -163,6 +277,12 @@ impl SourceEndpoint {
             .expect("checked")
             .command(command, &binding, &current);
         if closing && reply.is_ok() {
+            for id in self.pending_reads.keys() {
+                if let Some(results) = &self.results {
+                    let _ = results.cancel(id);
+                }
+            }
+            self.pending_reads.clear();
             self.reads = None;
         }
         reply
@@ -254,6 +374,7 @@ impl SourceEndpoint {
             NativeResultHostCommand::ResultManifest(b) => Some(&b.request_id),
             NativeResultHostCommand::ResultInspect(b) => Some(&b.request_id),
             NativeResultHostCommand::ResultRevoke(b) => Some(&b.request_id),
+            NativeResultHostCommand::ResultNotebookReferences(b) => Some(&b.request_id),
             _ => None,
         };
         if id.is_some_and(|id| {
@@ -281,6 +402,7 @@ impl SourceEndpoint {
     }
     /// Revoke work without joining mathematical threads while holding the source owner lock.
     pub fn close_kernel_begin(&mut self) {
+        self.pending_reads.clear();
         self.reads = None;
         if let Some(agent) = self.agent.as_mut() {
             agent.close();

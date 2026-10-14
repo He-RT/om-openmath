@@ -173,6 +173,67 @@ struct CurrentFacts {
     cells: Vec<om_kernel::retained_results::CurrentResultCell>,
 }
 impl ResultStore {
+    /// Latest retained real output per exact source cell, bounded by the read snapshot's accepted
+    /// kernel revision. A later re-evaluation (including random output) cannot replace its history.
+    pub fn notebook_references(
+        &mut self,
+        cells: &[NotebookResultCell],
+        upper: u64,
+        scope: &ReferenceScope,
+        now: u64,
+        ctx: &Interrupt,
+    ) -> Result<serde_json::Value, ResultError> {
+        if upper > scope.definition_revision
+            || cells.len() > 50
+            || cells
+                .iter()
+                .map(|c| &c.cell_id)
+                .collect::<std::collections::BTreeSet<_>>()
+                .len()
+                != cells.len()
+        {
+            return Err(ResultError::Invalid);
+        }
+        let mut refs = serde_json::Map::new();
+        for cell in cells {
+            ctx.tick()
+                .map_err(|e| ResultError::Projection(e.to_string()))?;
+            let record = self
+                .records
+                .values()
+                .filter(|record| {
+                    let producer = &record.receipt.producer;
+                    record.receipt.document_id == scope.document
+                        && producer.cell_id.0.as_ref() == Some(&cell.cell_id)
+                        && producer.cell_source_hash.0.as_ref() == Some(&cell.source_hash)
+                        && producer.kernel_state_revision.get() <= upper
+                })
+                .max_by_key(|record| record.receipt.kernel_state_revision.get())
+                .cloned();
+            let reference = if let Some(record) = record {
+                let summary = record.summary();
+                if let Some(statement) = summary.statements.iter().rev().find(|s| !s.suppressed) {
+                    Some(self.issue(
+                        record.id(),
+                        statement.out_index,
+                        Some(&statement.view_id),
+                        scope.clone(),
+                        now,
+                    )?)
+                } else if summary.statements.is_empty()
+                    && summary.status == om_kernel::protocol::CellStatus::Error
+                {
+                    Some(self.issue(record.id(), 0, None, scope.clone(), now)?)
+                } else {
+                    None
+                }
+            } else {
+                None
+            };
+            refs.insert(cell.cell_id.clone(), serde_json::json!(reference));
+        }
+        Ok(serde_json::Value::Object(refs))
+    }
     /// Small original occurrence metadata with scoped refs, paged independently from value data.
     pub fn manifest(
         &mut self,

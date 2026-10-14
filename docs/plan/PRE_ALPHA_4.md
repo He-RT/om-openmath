@@ -4131,7 +4131,7 @@ UpdateService只读受控官方GitHub Releases/发行清单（预发行不可用
 
 #### R4.3.05 读取笔记本与真实函数资料工具
 
-- [ ] **R4.3.05 完成**（仅在以下Done和验证满足后勾选）
+- [x] **R4.3.05 完成**（仅在以下Done和验证满足后勾选）
 
 **Files：**
 
@@ -4147,7 +4147,7 @@ UpdateService只读受控官方GitHub Releases/发行清单（预发行不可用
 - [x] 1. outline默认有界读取，cells完整/分页来源明确。
 - [x] 2. 查询实际实现回调+metadata/示例，不返回planned条目。
 - [x] 3. 现有用户函数绑定覆盖内置别名按真实Session。
-- [ ] 4. 执行下面Tests，核对真实输出/失败，更新任务账本与证据后提交本批次。
+- [x] 4. 执行下面Tests，核对真实输出/失败，更新任务账本与证据后提交本批次。
 
 **Tests：** 所有参数/default/unknown/refs/分页/limit、符号stale/源码excerpt不能整格覆盖。测试位置以Files和第15节影响范围为准，证据保存完整输入/命令/输出，不仅记录“通过”。
 

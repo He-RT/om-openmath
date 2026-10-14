@@ -1,0 +1,5 @@
+   Compiling om-host-service v0.1.0-pre-alpha.3 (/Users/hert/Projects/openmath/crates/om-host-service)
+   Compiling om-desktop v0.1.0-pre-alpha.3 (/Users/hert/Projects/openmath/app/src-tauri)
+   Compiling om-cli v0.1.0-pre-alpha.3 (/Users/hert/Projects/openmath/crates/om-cli)
+   Compiling om-apple-ffi v0.1.0-pre-alpha.3 (/Users/hert/Projects/openmath/crates/om-apple-ffi)
+    Finished `test` profile [unoptimized] target(s) in 16.53s

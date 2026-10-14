@@ -86,6 +86,9 @@ final class SourceHistoryStore {
       try db.statement("SELECT h.transaction_id,h.operation_id,h.revision,h.retained,EXISTS(SELECT 1 FROM source_history_pins p WHERE p.transaction_id=h.transaction_id),h.summary,h.summary_hash FROM source_history h WHERE h.document_id=? ORDER BY h.revision DESC LIMIT ?",[.text(document),.integer(Int64(limit))]) {row in
         let data=try SQLColumn.data(row,5);guard DocumentStore.digest(data)==(try SQLColumn.text(row,6)) else {throw StorageError.corruptIdentity}
         let summary=try JSONDecoder().decode(NativeSourceTransactionTombstone.self,from:data);try Self.validate(summary)
+        guard summary.commit.document_id==self.document,summary.commit.transaction_id==(try SQLColumn.text(row,0)),
+          summary.commit.operation_id==(try SQLColumn.text(row,1)),sqlite3_column_int64(row,2)>=0,
+          UInt64(sqlite3_column_int64(row,2))==summary.commit.committed_revision.value else {throw StorageError.corruptIdentity}
         output.append(.init(transaction:try SQLColumn.text(row,0),operation:try SQLColumn.text(row,1),revision:UInt64(sqlite3_column_int64(row,2)),retained:sqlite3_column_int64(row,3)==1,pinned:sqlite3_column_int64(row,4)==1,inputGroup:summary.input_group_id))
       }
       return output

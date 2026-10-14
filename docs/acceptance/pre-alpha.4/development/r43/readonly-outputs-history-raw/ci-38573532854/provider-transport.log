@@ -1,0 +1,4 @@
+    Finished `release` profile [optimized] target(s) in 0.38s
+Evidence: /Users/runner/work/om-openmath/om-openmath/target/macos-provider-transport-tests/attempt-5v8Wrj
+fixtures/main.swift:169: Precondition failed
+macos/Scripts/test-provider-transport.sh: line 17: 73924 Trace/BPT trap: 5       target/macos-provider-transport-tests/fixtures "$attempt"

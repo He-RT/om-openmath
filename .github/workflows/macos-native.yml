@@ -58,6 +58,17 @@ jobs:
         run: bash macos/Scripts/test-secret-store.sh > target/macos-ci-evidence/secret-store.log 2>&1
       - name: 实际URLSession与Rust单轮通道、超时取消和并行CAS
         run: bash macos/Scripts/test-provider-transport.sh > target/macos-ci-evidence/provider-transport.log 2>&1
+      - name: 保存原始传输用例与超时事实（失败时同样保留）
+        if: always()
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import shutil
+          output=Path('target/macos-ci-evidence/provider-transport-cases')
+          for source in Path('target/macos-provider-transport-tests').glob('attempt-*'):
+              if source.is_dir():
+                  shutil.copytree(source,output/source.name,dirs_exist_ok=True)
+          PY
       - name: 真实模型请求账本与五个耐久边界SIGKILL恢复
         run: bash macos/Scripts/test-provider-ledger.sh > target/macos-ci-evidence/provider-ledger.log 2>&1
       - name: 私有Agent真实进程、耐久ACK与旧身份恢复隔离

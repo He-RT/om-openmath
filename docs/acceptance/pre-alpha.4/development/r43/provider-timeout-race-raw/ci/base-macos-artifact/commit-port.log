@@ -1,0 +1,37 @@
+   Compiling om-host-service v0.1.0-pre-alpha.3 (/Users/runner/work/om-openmath/om-openmath/crates/om-host-service)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 12.24s
+     Running unittests src/lib.rs (target/debug/deps/om_host_service-1b6dee9b76224b8e)
+
+running 4 tests
+test kernel::worker::lifecycle::tests::unstarted_or_prepared_or_unknown_is_never_optimistically_accepted_or_discarded ... ok
+test results::runtime::queries::tests::source_fragments_keep_exact_utf8_and_never_call_a_partial_source_complete ... ok
+test scheduler::source_gate_tests::barrier_does_not_wait_on_the_source_owner_lock ... ok
+test kernel::worker::lifecycle::tests::cancel_and_actual_commit_barrier_have_one_linearized_order ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+
+     Running tests/commit_owner.rs (target/debug/deps/commit_owner-35c08f0112a17d45)
+
+running 7 tests
+test durable_terminal_admission_never_becomes_a_new_write ... ok
+test cancelled_admission_readback_does_not_release_another_active_gate ... ok
+test actual_kernel_gate_blocks_source_writes_but_keeps_frozen_preview_and_reads_available ... ok
+test repeated_admission_does_not_rewind_writing_committing_or_unknown ... ok
+test late_fence_dirty_ime_scope_and_unacknowledged_admission_are_rejected ... ok
+test stop_after_barrier_is_pending_not_undo_and_unknown_holds_the_original_gate ... ok
+test stop_before_barrier_never_enters_commit_and_does_not_change_confirmed_source ... ok
+
+test result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.03s
+
+     Running tests/source_endpoint.rs (target/debug/deps/source_endpoint-42b630d1d4167c8d)
+
+running 2 tests
+test host_command_schema_is_closed_and_requires_the_restored_configuration_binding ... ok
+test restored_constants_are_used_in_the_actual_source_preview ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.03s
+
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.26s
+     Running `target/debug/examples/source_store_contract`
+    Finished `release` profile [optimized] target(s) in 0.27s
+Actual C ABI + MainActor NSTextView + SQLite: IME/raw invalid source protection; original-ID duplicate/no replay; admission and COMMIT lost ACK readback; typing/expiry/pre-barrier stop rollback; read-during-IO; post-COMMIT stop success, newer marked overlay/conflict and ordered close passed

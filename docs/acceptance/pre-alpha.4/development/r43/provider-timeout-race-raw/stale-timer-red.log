@@ -1,0 +1,8 @@
+   Compiling om-agent-contract v0.1.0-pre-alpha.3 (/Users/hert/Projects/openmath/crates/om-agent-contract)
+   Compiling om-host-service v0.1.0-pre-alpha.3 (/Users/hert/Projects/openmath/crates/om-host-service)
+   Compiling om-llm v0.1.0-pre-alpha.3 (/Users/hert/Projects/openmath/crates/om-llm)
+   Compiling om-kernel v0.1.0-pre-alpha.3 (/Users/hert/Projects/openmath/crates/om-kernel)
+   Compiling om-apple-ffi v0.1.0-pre-alpha.3 (/Users/hert/Projects/openmath/crates/om-apple-ffi)
+    Finished `release` profile [optimized] target(s) in 37.04s
+Swift/ErrorType.swift:254: Fatal error: Error raised at top level: fixtures.ProviderTransportFailure(reason: fixtures.ProviderTransportReason.firstResponseTimeout, outcome: fixtures.ProviderDispatchOutcome.responseObserved, httpStatus: Optional(200))
+macos/Scripts/test-provider-transport.sh: line 16: 16589 Trace/BPT trap: 5       target/macos-provider-transport-tests/fixtures "$attempt"

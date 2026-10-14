@@ -31,3 +31,6 @@ docs/acceptance/pre-alpha.4/development/r43/provider-connect-budget-raw/*.log -w
 docs/acceptance/pre-alpha.4/development/r43/provider-durable-request-raw/*.log -whitespace
 docs/acceptance/pre-alpha.4/development/r43/provider-durable-request-raw/**/*.sse whitespace=blank-at-eol,space-before-tab,-blank-at-eof
 docs/acceptance/pre-alpha.4/development/r43/readonly-services-raw/**/*.log -whitespace
+docs/acceptance/pre-alpha.4/development/r43/provider-timeout-race-raw/**/*.log -whitespace
+docs/acceptance/pre-alpha.4/development/r43/provider-timeout-race-raw/**/*.sse whitespace=blank-at-eol,space-before-tab,-blank-at-eof
+docs/acceptance/pre-alpha.4/development/r43/provider-timeout-race-raw/**/Blobs/sha256/** binary

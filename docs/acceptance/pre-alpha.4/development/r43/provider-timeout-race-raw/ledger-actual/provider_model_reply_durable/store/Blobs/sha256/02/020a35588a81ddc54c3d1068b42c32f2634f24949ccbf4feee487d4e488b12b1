@@ -1,0 +1,1 @@
+{"max_completion_tokens":64,"messages":[{"content":"2+2","role":"user"}],"model":"synthetic","stream":true,"stream_options":{"include_usage":true}}

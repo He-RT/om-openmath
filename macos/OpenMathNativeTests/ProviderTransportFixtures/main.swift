@@ -4,6 +4,7 @@ import Security
 private struct Script:Sendable {
   var status=200, chunks:[Data]=[], delay:Double=0.005, noHeaders=false, noFinish=false, heartbeat=false
   var redirect:URL?
+  var beforeFinish:(@Sendable ()async->Void)?
 }
 private final class FixtureState:@unchecked Sendable {
   let lock=NSLock();var script=Script(),requests:[URLRequest]=[],stops=0
@@ -58,7 +59,7 @@ private final class FixtureProtocol:URLProtocol,@unchecked Sendable {
           try Task.checkCancellation();client?.urlProtocol(self,didLoad:chunk);try await Task.sleep(for:.seconds(script.delay))
         }
         if script.heartbeat {while !Task.isCancelled {client?.urlProtocol(self,didLoad:Data(": ping\n\n".utf8));try await Task.sleep(for:.milliseconds(5))}}
-        if !script.noFinish {client?.urlProtocolDidFinishLoading(self)}
+        if !script.noFinish {await script.beforeFinish?();try Task.checkCancellation();client?.urlProtocolDidFinishLoading(self)}
       } catch { }
     }
     workLock.withLock {if stopped {worker.cancel()} else {work=worker}}
@@ -80,7 +81,14 @@ private actor Trace {
   func setHold(){hold=true}
   func release(){hold=false;paused?.resume();paused=nil}
   func wait()async throws {for _ in 0..<500 {if arrived{return};try await Task.sleep(for:.milliseconds(5))};throw ProviderTransportReason.journal}
+  func waitResponse()async throws {for _ in 0..<500 {if phases.contains(where:{$0.phase == .responseStarted}) {return};try await Task.sleep(for:.milliseconds(5))};throw ProviderTransportReason.journal}
   func journal()->ProviderTransportJournal {.init(record:{[self] fact in try await record(fact)},responseBytes:{_ in})}
+}
+private actor FixtureGate {
+  var open=false
+  private var waiters:[CheckedContinuation<Void,Never>]=[]
+  func wait()async {if !open {await withCheckedContinuation {waiters.append($0)}}}
+  func release(){open=true;let pending=waiters;waiters.removeAll();for waiter in pending {waiter.resume()}}
 }
 func json(_ object:Any)throws->String {String(decoding:try JSONSerialization.data(withJSONObject:object,options:[.sortedKeys]),as:UTF8.self)}
 func chat(_ text:String,reason:String="stop")throws->Data {
@@ -154,8 +162,26 @@ private func failure(_ body:@Sendable ()async throws->ProviderModelResult)async 
     ] {
       let model=try await prepare(host,name),trace=Trace();FixtureProtocol.state.reset(script)
       let error=try await failure {try await transport.send(model,route:route(model,timeouts),journal:await trace.journal(),onText:{_ in})}
+      if CommandLine.arguments.count>1 {
+        let observation:[String:Any] = ["case":name,"expected_reason":reason.rawValue,"actual_reason":error.reason.rawValue,"outcome":error.outcome.rawValue,"requests":FixtureProtocol.state.count]
+        try JSONSerialization.data(withJSONObject:observation,options:[.sortedKeys]).write(to:URL(fileURLWithPath:CommandLine.arguments[1],isDirectory:true).appendingPathComponent("timeout-"+name+".json"))
+      }
       precondition(error.reason==reason && error.outcome != .notDispatched && FixtureProtocol.state.count==1)
     }
+    // Wake the real first-response timer, then accept actual headers while that callback is held.
+    // Opening EOF only AFTER the old callback settles distinguishes a stale timeout from success.
+    let timerWoke=FixtureGate(),timerRelease=FixtureGate(),timerSettled=FixtureGate(),finish=FixtureGate()
+    let staleTransport=ProviderTransport(secrets:secrets,testConfiguration:{let c=URLSessionConfiguration.ephemeral;c.protocolClasses=[FixtureProtocol.self];return c},testTimeoutProbe:.init(woke:{reason in if reason == .firstResponseTimeout {await timerWoke.release();await timerRelease.wait()}},settled:{reason in if reason == .firstResponseTimeout {await timerSettled.release()}}))
+    let staleModel=try await prepare(host,"stale-timer"),staleTrace=Trace()
+    FixtureProtocol.state.reset(Script(chunks:[wire],delay:0.1,beforeFinish:{await finish.wait()}))
+    let staleTask=Task {try await staleTransport.send(staleModel,route:route(staleModel,try ProviderTimeouts(firstResponse:0.03,idle:3,total:5)),journal:await staleTrace.journal(),onText:{_ in})}
+    await timerWoke.wait();try await staleTrace.waitResponse();await timerRelease.release();await timerSettled.wait()
+    if CommandLine.arguments.count>1 {
+      let observation:[String:Any] = ["timer_woke":await timerWoke.open,"response_observed":true,"old_callback_settled":await timerSettled.open,"eof_still_held":!(await finish.open),"requests":FixtureProtocol.state.count]
+      try JSONSerialization.data(withJSONObject:observation,options:[.sortedKeys]).write(to:URL(fileURLWithPath:CommandLine.arguments[1],isDirectory:true).appendingPathComponent("stale-timer-before-eof.json"))
+    }
+    await finish.release()
+    let staleResult=try await staleTask.value;precondition(staleResult.finish=="complete" && FixtureProtocol.state.count==1)
     let held=try await prepare(host,"held"),heldTrace=Trace();await heldTrace.setHold();FixtureProtocol.state.reset(Script())
     let heldTask=Task {try await transport.send(held,route:route(held,normal),journal:await heldTrace.journal(),onText:{_ in})}
     try await heldTrace.wait();precondition(FixtureProtocol.state.count==0);heldTask.cancel();await heldTrace.release()

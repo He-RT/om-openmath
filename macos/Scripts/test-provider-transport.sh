@@ -13,5 +13,5 @@ swiftc -whole-module-optimization -swift-version 6 -warnings-as-errors -parse-as
   macos/OpenMathNative/Agent/AgentNativeModelPort.swift \
   macos/OpenMathNativeTests/ProviderTransportFixtures/*.swift -o target/macos-provider-transport-tests/fixtures
 attempt=$(mktemp -d "$root/target/macos-provider-transport-tests/attempt-XXXXXX")
-target/macos-provider-transport-tests/fixtures "$attempt"
 printf 'Evidence: %s\n' "$attempt"
+target/macos-provider-transport-tests/fixtures "$attempt"

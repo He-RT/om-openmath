@@ -1,0 +1,3 @@
+    Finished `release` profile [optimized] target(s) in 0.87s
+fixtures/main.swift:157: Precondition failed
+macos/Scripts/test-provider-transport.sh: line 16: 63141 Trace/BPT trap: 5       target/macos-provider-transport-tests/fixtures "$attempt"

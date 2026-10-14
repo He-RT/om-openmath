@@ -1,0 +1,4 @@
+data: {"id":"provider-id","model":"served-model","choices":[{"index":0,"delta":{"content":"4"},"finish_reason":"stop"}]}
+
+data: [DONE]
+

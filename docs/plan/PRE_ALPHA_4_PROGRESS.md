@@ -65,7 +65,7 @@
 | [x] [R4.3.01](PRE_ALPHA_4.md#task-r4.3.01) | 规范Agent消息、任务与IPC身份 | completed | [真实source/CABI/私有进程与耐久ACK](../acceptance/pre-alpha.4/development/r43/agent-protocol-native.json)；357DTO、20Rust/3Node/实际SQLite恢复，合成helper无模型/工具执行 | 本批D045 |
 | [x] [R4.3.02](PRE_ALPHA_4.md#task-r4.3.02) | 固定Pi Core与随包生产helper | completed | [实际随包Node/Pi/原生任务](../acceptance/pre-alpha.4/development/r43/pi-production-runtime.json)；86依赖/4169资源、13帧/3事件、SIGKILL后原文档4 | 本批D047 |
 | [x] [R4.3.03](PRE_ALPHA_4.md#task-r4.3.03) | sans-IO单轮模型codec基础 | completed | [实际Rust codec/Pi/原生帧及两模型SSE](../acceptance/pre-alpha.4/development/r43/single-turn-codec.json)；10单轮/182回归、4Pi、真实SQLite ACK；生产transport仍后续 | 本批D048 |
-| [ ] [R4.3.04](PRE_ALPHA_4.md#task-r4.3.04) | Swift URLSession和SecretStore传输 | in_progress | [真实请求账本/随包Pi/强杀恢复](../acceptance/pre-alpha.4/development/r43/provider-durable-request.json)；5新+13原SIGKILL、13帧8事件、字面key回显隔离；物理锁屏仍未完成 | 本批D052 |
+| [ ] [R4.3.04](PRE_ALPHA_4.md#task-r4.3.04) | Swift URLSession和SecretStore传输 | in_progress | [真实请求账本/随包Pi/强杀恢复](../acceptance/pre-alpha.4/development/r43/provider-durable-request.json)、[过期计时回调修复](../acceptance/pre-alpha.4/development/r43/provider-timeout-race.json)；实际计时竞态RED→GREEN；物理锁屏仍未完成 | D052/本批D054 |
 | [ ] [R4.3.05](PRE_ALPHA_4.md#task-r4.3.05) | 读取笔记本与真实函数资料工具 | in_progress | [只读数据服务基础](../acceptance/pre-alpha.4/development/r43/readonly-services-foundation.json)；257实际回调/真实Session绑定/有界UTF8分页；原生工具分发、结果与持久历史未接完 | 本批D053 |
 | [ ] [R4.3.06](PRE_ALPHA_4.md#task-r4.3.06) | 预览与原子修改工具接入 | planned | — | — |
 | [ ] [R4.3.07](PRE_ALPHA_4.md#task-r4.3.07) | 执行、结果检查和隔离试算工具 | planned | — | — |
@@ -599,3 +599,10 @@ read_notebook默认outline20格、limit1–50、完整cell或32KiB UTF8边界片
 本批仍是原生只读数据服务基础：未接Agent已ACK intent的原参数分发、Swift耐久结果Blob/ACK和实际随包Pi数据消费；include_outputs=true明确NotAvailable，未伪造result_ref；近期事务只取当前owner真实完成receipt，重启持久历史producer尚未接完。因此R4.3.05仅步骤1–3勾实测，Done/步骤4不勾，任务总数仍32/98，全部最终gate not_run。
 
 bea784c CI38560769195已观察deps/Rust/frontend success、iOS failure、Mac仍运行。下载的原始xcresult/活动/截图表明失败在NotebookUITests.swift:105滑块AX值断言，后续原expression16及旋转断言通过，截图实际a=4/result16。推断系统默认AX值表示/时机与Double断言不匹配（原slider.value文本未包含于证据，不能断言它具体是什么）；ExploreOutputView现在显式发布实际参数值String，保留原数值/timeout断言，修复仍待新SHA CI验证。本机仅读取结果包，未启动iOS模拟器。完整原result归档逐文件核对，待验证清理重复下载副本；系统输入设置不变。
+
+
+## D054 · 2026-10-14 撤销已唤醒的过期计时回调（R4.3.04继续）
+
+bea784c CI38560769195终态deps/Rust/frontend success，iOS与Mac failure。Mac artifact原日志指向ProviderTransportFixtures:157复合超时断言，未记录具体哪一case/actual reason，不能把它直接归因到某种超时。复查发现独立可证实竞态：Task.sleep已经返回后，响应阶段取消旧Task仍可能调用stop。新增可信fixture probe在真实首响应timer唤醒后暂停回调，让实际URLSession收到200并推进idle阶段；EOF保持关闭，释放旧回调并等待其执行完。原实现实际错误firstResponseTimeout/responseObserved/200（RED）；加每lane不可复用ticket并在同一锁内验证/撤销后，同用例完整成功（GREEN），旧回调不得结束新阶段。生产10/60/30/180及全部原合成负例时间窗/断言均未放宽。
+
+原URLProtocol/真实回环/4种timeout/CAS/取消回归通过，新增各case实际reason/outcome/次数在断言前落文件；CI新增always步骤保留这些attempt事实，失败后也能定位。实际Library4请求账本、原字节、echo拒绝、unknown timeout与5真实SIGKILL恢复无HTTP重放通过；Release重建和严格签名、实际重签App资源随包Pi（6helper帧/8SQLite事实/强杀后手工4）通过；17Python/371DTO通过。原始RED/GREEN源、实际输入/请求/计时事实/原CI日志见provider-timeout-race.json/raw。iOS D053显式actual AX值修复仍须新SHA CI证明，物理锁屏未验/工具接线未完，32/98/所有最终gate not_run保持。aaf48f3已推，其CI38565187538曾运行；本修复后续提交CI按新SHA独立核验。此前重复CI result下载经耐久归档逐文件核对后清除13113610字节，当前43GiB空余，所需build缓存保留。

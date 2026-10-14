@@ -100,23 +100,40 @@ struct ProviderTransportJournal:Sendable {
   let responseBytes:@Sendable (Data)async throws->Void
 }
 private enum ProviderHTTPEvent:Sendable {case headers(UInt16),bytes(Data)}
+/// Trusted fixture scheduling at the actual timer wake/settlement boundary; never on the wire.
+struct ProviderTimeoutTestProbe:Sendable {
+  let woke:@Sendable (ProviderTransportReason)async->Void
+  let settled:@Sendable (ProviderTransportReason)async->Void
+}
 private final class ProviderHTTPPump:NSObject,URLSessionDataDelegate,@unchecked Sendable {
+  private enum TimerLane:Hashable,Sendable {case connection,stage,total}
+  private struct TimerTicket:Sendable {let lane:TimerLane,id:UUID}
   private let lock=NSLock()
   private let continuation:AsyncThrowingStream<ProviderHTTPEvent,any Error>.Continuation
   private let timeouts:ProviderTimeouts
+  private let testProbe:ProviderTimeoutTestProbe?
   private var closed=false,totalBytes=0,status:UInt16?,task:URLSessionDataTask?
   private var connection:Task<Void,Never>?,stage:Task<Void,Never>?,total:Task<Void,Never>?
-  init(continuation:AsyncThrowingStream<ProviderHTTPEvent,any Error>.Continuation,timeouts:ProviderTimeouts){self.continuation=continuation;self.timeouts=timeouts}
-  private func timer(_ seconds:Double,_ reason:ProviderTransportReason)->Task<Void,Never> {
-    Task { [weak self] in do {try await Task.sleep(for:.seconds(seconds));self?.stop(reason)} catch { } }
+  private var timerIDs:[TimerLane:UUID]=[:]
+  init(continuation:AsyncThrowingStream<ProviderHTTPEvent,any Error>.Continuation,timeouts:ProviderTimeouts,testProbe:ProviderTimeoutTestProbe?){self.continuation=continuation;self.timeouts=timeouts;self.testProbe=testProbe}
+  // Called with lock held. Cancellation alone cannot revoke a callback already past sleep.
+  private func timer(_ seconds:Double,_ reason:ProviderTransportReason,_ lane:TimerLane)->Task<Void,Never> {
+    let ticket=TimerTicket(lane:lane,id:UUID());timerIDs[lane]=ticket.id
+    let probe=testProbe
+    return Task { [weak self] in do {try await Task.sleep(for:.seconds(seconds));await probe?.woke(reason);self?.settle(reason,ticket:ticket);await probe?.settled(reason)} catch { } }
   }
   func start(_ task:URLSessionDataTask) {
     lock.lock();guard !closed else {lock.unlock();task.cancel();return}
-    self.task=task;connection=timer(timeouts.connection,.connectionTimeout);stage=timer(timeouts.firstResponse,.firstResponseTimeout);total=timer(timeouts.total,.totalTimeout);lock.unlock();task.resume()
+    self.task=task;connection=timer(timeouts.connection,.connectionTimeout,.connection);stage=timer(timeouts.firstResponse,.firstResponseTimeout,.stage);total=timer(timeouts.total,.totalTimeout,.total);lock.unlock();task.resume()
   }
   var observedStatus:UInt16? {lock.lock();defer {lock.unlock()};return status}
   func stop(_ reason:ProviderTransportReason?) {
-    lock.lock();guard !closed else {lock.unlock();return};closed=true
+    settle(reason,ticket:nil)
+  }
+  private func settle(_ reason:ProviderTransportReason?,ticket:TimerTicket?) {
+    lock.lock();guard !closed else {lock.unlock();return}
+    if let ticket,timerIDs[ticket.lane] != ticket.id {lock.unlock();return}
+    closed=true;timerIDs.removeAll()
     let connection=connection,stage=stage,total=total,task=task;self.connection=nil;self.stage=nil;self.total=nil;lock.unlock()
     connection?.cancel();stage?.cancel();total?.cancel();task?.cancel()
     if let reason {continuation.finish(throwing:reason)} else {continuation.finish()}
@@ -126,12 +143,12 @@ private final class ProviderHTTPPump:NSObject,URLSessionDataDelegate,@unchecked 
   }
   func urlSession(_ session:URLSession,dataTask:URLSessionDataTask,didReceive response:URLResponse,completionHandler:@escaping @Sendable (URLSession.ResponseDisposition)->Void) {
     guard let response=response as? HTTPURLResponse,let status=UInt16(exactly:response.statusCode),(100...599).contains(status) else {completionHandler(.cancel);stop(.network);return}
-    lock.lock();guard !closed,self.status==nil else {lock.unlock();completionHandler(.cancel);return};self.status=status;connection?.cancel();connection=nil;stage?.cancel();stage=timer(timeouts.idle,.idleTimeout);lock.unlock()
+    lock.lock();guard !closed,self.status==nil else {lock.unlock();completionHandler(.cancel);return};self.status=status;connection?.cancel();connection=nil;timerIDs.removeValue(forKey:.connection);stage?.cancel();stage=timer(timeouts.idle,.idleTimeout,.stage);lock.unlock()
     yield(.headers(status));completionHandler(.allow)
   }
   func urlSession(_ session:URLSession,dataTask:URLSessionDataTask,didReceive data:Data) {
     lock.lock();guard !closed else {lock.unlock();return};totalBytes+=data.count
-    let over=totalBytes>8*1024*1024;stage?.cancel();stage=timer(timeouts.idle,.idleTimeout);lock.unlock()
+    let over=totalBytes>8*1024*1024;stage?.cancel();stage=timer(timeouts.idle,.idleTimeout,.stage);lock.unlock()
     if over {stop(.limit)} else {yield(.bytes(data))}
   }
   func urlSession(_ session:URLSession,task:URLSessionTask,didCompleteWithError error:(any Error)?) {
@@ -141,7 +158,7 @@ private final class ProviderHTTPPump:NSObject,URLSessionDataDelegate,@unchecked 
   /// Our codec always produces a nonempty POST body; a slow model response is then separate.
   func urlSession(_ session:URLSession,task:URLSessionTask,didSendBodyData bytesSent:Int64,totalBytesSent:Int64,totalBytesExpectedToSend:Int64) {
     guard totalBytesSent>0 else {return}
-    lock.lock();connection?.cancel();connection=nil;lock.unlock()
+    lock.lock();connection?.cancel();connection=nil;timerIDs.removeValue(forKey:.connection);lock.unlock()
   }
   func urlSession(_ session:URLSession,task:URLSessionTask,willPerformHTTPRedirection response:HTTPURLResponse,newRequest request:URLRequest,completionHandler:@escaping @Sendable (URLRequest?)->Void) {
     lock.lock();status=UInt16(exactly:response.statusCode);lock.unlock();completionHandler(nil);stop(.redirect)
@@ -154,8 +171,9 @@ private final class ProviderHTTPPump:NSObject,URLSessionDataDelegate,@unchecked 
 struct ProviderTransport:Sendable {
   let secrets:SecretStore
   private let makeConfiguration:@Sendable ()->URLSessionConfiguration
-  init(secrets:SecretStore){self.secrets=secrets;makeConfiguration={.ephemeral}}
-  init(secrets:SecretStore,testConfiguration:@escaping @Sendable ()->URLSessionConfiguration){self.secrets=secrets;makeConfiguration=testConfiguration}
+  private let testTimeoutProbe:ProviderTimeoutTestProbe?
+  init(secrets:SecretStore){self.secrets=secrets;makeConfiguration={.ephemeral};testTimeoutProbe=nil}
+  init(secrets:SecretStore,testConfiguration:@escaping @Sendable ()->URLSessionConfiguration,testTimeoutProbe:ProviderTimeoutTestProbe?=nil){self.secrets=secrets;makeConfiguration=testConfiguration;self.testTimeoutProbe=testTimeoutProbe}
   func send(_ model:ProviderModelSession,route:ProviderRoute,journal:ProviderTransportJournal,onText:@escaping @Sendable (String)async throws->Void)async throws->ProviderModelResult {
     var dispatched=false,pump:ProviderHTTPPump?,responseGuard:ProviderSecretResponseGuard?
     let prepared=model.prepared
@@ -175,7 +193,7 @@ struct ProviderTransport:Sendable {
       let configuration=makeConfiguration();configuration.httpCookieStorage=nil;configuration.urlCache=nil;configuration.urlCredentialStorage=nil;configuration.requestCachePolicy = .reloadIgnoringLocalCacheData
       configuration.timeoutIntervalForRequest=max(route.timeouts.firstResponse,route.timeouts.idle);configuration.timeoutIntervalForResource=route.timeouts.total
       let pair=AsyncThrowingStream<ProviderHTTPEvent,any Error>.makeStream(bufferingPolicy:.bufferingOldest(32))
-      let actualPump=ProviderHTTPPump(continuation:pair.continuation,timeouts:route.timeouts);pump=actualPump
+      let actualPump=ProviderHTTPPump(continuation:pair.continuation,timeouts:route.timeouts,testProbe:testTimeoutProbe);pump=actualPump
       model.lifetime.bind {actualPump.stop(.cancelled)}
       let session=URLSession(configuration:configuration,delegate:actualPump,delegateQueue:nil)
       defer {session.invalidateAndCancel()}

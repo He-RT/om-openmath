@@ -1,0 +1,21 @@
+[
+  {
+    "command": "bash macos/Scripts/test-provider-transport.sh",
+    "source": "red/ source snapshot; original synthetic windows and deterministic scheduling probe",
+    "expected_result": "uncaught firstResponseTimeout,responseObserved,200; exit133"
+  },
+  {
+    "command": "bash macos/Scripts/test-provider-transport.sh",
+    "source": "inputs/ source snapshot; lane ticket validation",
+    "expected_result": "complete; exit0"
+  },
+  "bash macos/Scripts/test-provider-ledger.sh",
+  "xcodebuild -project macos/OpenMathNative.xcodeproj -scheme OpenMathNative -configuration Release -derivedDataPath target/macos-native -destination 'platform=macOS,arch=arm64' build",
+  "codesign --verify --deep --strict 'target/macos-native/Build/Products/Release/OpenMath Preview.app'",
+  "bash macos/Scripts/test-agent-package.sh '/Users/hert/Projects/openmath/target/macos-native/Build/Products/Release/OpenMath Preview.app/Contents/Resources/AgentRuntime' '/Users/hert/Projects/openmath/target/macos-native/Build/Products/Release/OpenMath Preview.app'",
+  "python3 -X warn_default_encoding -W error::EncodingWarning -m unittest discover -s tests -v",
+  "python3 scripts/native_contracts.py --check",
+  "python3 scripts/check_pre_alpha_4_plan.py --check",
+  "gh run download 38560769195 --name macos-native-development-evidence --dir <task-ci-dir>/macos-artifact",
+  "gh api repos/He-RT/om-openmath/actions/jobs/115841833568/logs"
+]

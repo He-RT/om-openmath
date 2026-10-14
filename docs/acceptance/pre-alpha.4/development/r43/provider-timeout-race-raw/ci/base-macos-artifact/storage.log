@@ -1,0 +1,4 @@
+sync calls=20 success=20 unknown=0
+Actual SQLite 3.54.0 unix F_FULLFSYNC calls 20 success 20 barriers 26
+Bootstrap/readback/reopen, locks, missing selector, future root/DB, unwritable/symlink root, real SQLite ENOSPC/postcommit sync unknown and legacy sentinel passed
+Real SQLite crash/restart: six boundaries, no unselected generation guessed, selector identity retained, process-owned lock released only on death

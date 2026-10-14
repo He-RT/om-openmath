@@ -1,0 +1,1 @@
+{"max_completion_tokens":128,"messages":[{"content":"真实Pi，合成模型，宿主工具暂不可用🙂","role":"user"}],"model":"synthetic-configured-alias","stream":true,"stream_options":{"include_usage":true},"tool_choice":"auto","tools":[{"function":{"description":"Native unavailable fixture handler","name":"read_notebook","parameters":{"type":"object"}},"type":"function"}]}

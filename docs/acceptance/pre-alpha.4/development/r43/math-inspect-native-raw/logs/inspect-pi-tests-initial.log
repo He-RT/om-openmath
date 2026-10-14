@@ -1,0 +1,40 @@
+✔ actual Pi bridge resolves immutable model refs and canonical ACK before unavailable tool hook (108.201292ms)
+✔ wrong connection and byte-identical hello replay cannot reset active helper scope (10.073042ms)
+✔ actual Pi consumes a complete native readonly result and continues to a second model turn (80.033292ms)
+✔ actual Pi settles an unknown source effect without a second model request or write retry (19.015542ms)
+✔ sealed own fixture bytes and real streaming UTF-8 boundaries (14.280125ms)
+✔ pinned Pi hooks await canonical ACK and tools execute sequentially before next model request (48.580958ms)
+✔ cancel while canonical ACK is pending prevents every tool effect (4.041292ms)
+✔ shell plugins and mismatched canonical user tasks are refused (1.756125ms)
+✖ inspect_result keeps original history/partial data closed and separate from render claims (3.750084ms)
+✔ actual preview results preserve source-only and complete patch reference rules (3.453666ms)
+✔ patch result preserves actual operation/saved=false and uncertain writes cannot continue a loop (3.651041ms)
+✔ all actual encoded UTF8 split points and multiple complete frames roundtrip (167.820375ms)
+✔ unknown credentials/URLs/Pi state, missing required null and unsafe counters are rejected (2.856417ms)
+✔ duplicate members, invalid Unicode/UTF8, limits and incomplete EOF poison real connections (1.199584ms)
+✔ chat_completions real single-turn codec drives Pi; incomplete=false (664.429958ms)
+✔ chat_completions real single-turn codec drives Pi; incomplete=true (28.141125ms)
+✔ anthropic_messages real single-turn codec drives Pi; incomplete=false (58.528375ms)
+✔ anthropic_messages real single-turn codec drives Pi; incomplete=true (25.167459ms)
+ℹ tests 18
+ℹ suites 0
+ℹ pass 17
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 4181.415167
+
+✖ failing tests:
+
+test at agent/test/protocol.test.mjs:11:1
+✖ inspect_result keeps original history/partial data closed and separate from render claims (3.750084ms)
+  Error: IPC_INVALID_TOOL_RESULT
+      at fail (file:///Users/hert/Projects/openmath/agent/src/protocol.ts:14:44)
+      at decodeToolResult (file:///Users/hert/Projects/openmath/agent/src/protocol.ts:129:202)
+      at decodeReadonlyResult (file:///Users/hert/Projects/openmath/agent/src/protocol.ts:122:10)
+      at TestContext.<anonymous> (file:///Users/hert/Projects/openmath/agent/test/protocol.test.mjs:14:16)
+      at Test.runInAsyncScope (node:async_hooks:226:14)
+      at Test.run (node:internal/test_runner/test:1402:25)
+      at Test.start (node:internal/test_runner/test:1262:17)
+      at startSubtestAfterBootstrap (node:internal/test_runner/harness:387:17)

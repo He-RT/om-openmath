@@ -8,6 +8,15 @@ const sample = {
   document_generation: 1, task_id: 'task-1', task_generation: 1, message_id: 'message-1', sequence: 1, reply_to: null,
   type: 'model_event', payload: { agent_turn_id: 'turn-1', request_id: 'request-1', byte_offset: 0, text: '中文🙂é', phase: 'delta', canonical_message: null },
 };
+test('inspect_result keeps original history/partial data closed and separate from render claims', () => {
+  const result={ok:true,status:'completed',request_ref:'native-inspect',operation_ref:null,document:{id:'doc',generation:1,revision:2},data:{origin:'notebook',is_current:false,part:'summary',payload:{status:'Error',binding:{freshness:'stale'},successful_statements:1},render_state:'not_applicable',media_ref:null},error:null,pagination:{truncated:false,next_cursor:null}};
+  const encode=value=>Buffer.from(JSON.stringify(value));
+  assert.equal(decodeReadonlyResult('inspect_result',encode(result)).ok,true);
+  for(const payload of [{},[],"原文🙂",1,true,null])assert.equal(decodeReadonlyResult('inspect_result',encode({...result,data:{...result.data,payload}})).ok,true);
+  for(const bad of [{...result,data:{...result.data,source:'execute'}},{...result,operation_ref:'invented-operation'},{...result,data:{...result.data,origin:'main_kernel'}},{...result,status:'partial'}])assert.throws(()=>decodeToolResult('inspect_result',encode(bad)),/IPC_INVALID_TOOL_RESULT/);
+  const failed={...result,ok:false,status:'failed',data:null,error:{code:'INVALID_REFERENCE',message:'expired',recovery:'retry_read',details:{}}};
+  assert.equal(decodeReadonlyResult('inspect_result',encode(failed)).status,'failed');
+});
 test('actual preview results preserve source-only and complete patch reference rules', () => {
   const encode=value=>Buffer.from(JSON.stringify(value));
   const data={preview_kind:'source',valid:true,preview_ref:null,plan_hash:'a'.repeat(64),diagnostics:[],affected_cell_ids:[],assigned_cell_ids:{}};

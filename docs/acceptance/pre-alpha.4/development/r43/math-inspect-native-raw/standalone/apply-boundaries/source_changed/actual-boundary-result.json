@@ -1,0 +1,1 @@
+{"data":null,"document":{"generation":1,"id":"00000000-0000-0000-0000-000000000438","revision":1},"error":{"code":"STALE_SNAPSHOT","details":{},"message":"STALE_SNAPSHOT","recovery":"refresh_snapshot"},"ok":false,"operation_ref":null,"pagination":{"next_cursor":null,"truncated":false},"request_ref":"agent-operation-4f6983dd3eb38c3e799e7b3b2b7bff2c","status":"failed"}

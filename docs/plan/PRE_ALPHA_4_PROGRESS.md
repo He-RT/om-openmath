@@ -68,7 +68,7 @@
 | [ ] [R4.3.04](PRE_ALPHA_4.md#task-r4.3.04) | Swift URLSession和SecretStore传输 | in_progress | [真实请求账本/随包Pi/强杀恢复](../acceptance/pre-alpha.4/development/r43/provider-durable-request.json)、[过期计时回调修复](../acceptance/pre-alpha.4/development/r43/provider-timeout-race.json)；实际计时竞态RED→GREEN；物理锁屏仍未完成 | D052/本批D054 |
 | [x] [R4.3.05](PRE_ALPHA_4.md#task-r4.3.05) | 读取笔记本与真实函数资料工具 | completed | [只读基础](../acceptance/pre-alpha.4/development/r43/readonly-services-foundation.json)、[耐久工具/Pi](../acceptance/pre-alpha.4/development/r43/readonly-native-tool.json)、[实际输出/持久历史](../acceptance/pre-alpha.4/development/r43/readonly-outputs-history.json)；1297Rust/实际签名App两轮/重启history/独立worker | D053/D055/本批D056 |
 | [x] [R4.3.06](PRE_ALPHA_4.md#task-r4.3.06) | 预览与原子修改工具接入 | completed | [预览/Pi三轮](../acceptance/pre-alpha.4/development/r43/patch-preview-foundation.json)、[实际原子提交/Pi四轮](../acceptance/pre-alpha.4/development/r43/patch-atomic-apply.json)；1301Rust/38帧31事件/5真实边界/原回执恢复 | D057/本批D058 |
-| [ ] [R4.3.07](PRE_ALPHA_4.md#task-r4.3.07) | 执行、结果检查和隔离试算工具 | in_progress | selected/required/affected真实依赖规划、原read token/实际checkpoint与标题freshness回归；实际执行、inspect和scratch尚未完成 | 本批D059 |
+| [ ] [R4.3.07](PRE_ALPHA_4.md#task-r4.3.07) | 执行、结果检查和隔离试算工具 | in_progress | [依赖规划](../acceptance/pre-alpha.4/development/r43/math-run-planning.json)、[实际结果检查/Pi](../acceptance/pre-alpha.4/development/r43/math-inspect-native.json)；真实run执行和独立scratch仍未完成 | D059/本批D060 |
 | [ ] [R4.3.08](PRE_ALPHA_4.md#task-r4.3.08) | 操作核对、撤销和Host停止控制 | planned | — | — |
 | [ ] [R4.3.09](PRE_ALPHA_4.md#task-r4.3.09) | 附件工具与宿主处理注册接口 | planned | — | — |
 | [ ] [R4.3.10](PRE_ALPHA_4.md#task-r4.3.10) | 全工具原生声明与provider严格schema转换 | planned | — | — |
@@ -678,3 +678,19 @@ Host冻结入口只接原RunCells意图与匹配参数hash，从当前实际Read
 按成功Cargo compiler-artifact清单和65项测试终态核对、无编译器/被选harness运行后，清理11个普通测试可执行文件428,370,368逻辑字节（约409MiB），逐文件SHA及缺席核对留存；可用约43GiB，库/CLI/examples/App/runtime/证据保留。
 
 本批只是执行规划基础，R4.3.07步骤和Done均不勾选，整体仍34/98。后续继续ACK原intent→真实math worker/KernelCommitPort、真实executed/partial/resultrefs、inspect_result及独立可写scratch；不造主Kernel receipt。用户选择保留系统输入设置，R4.2.03候选与R4.3.04物理锁屏未验且不重问；32最终gate仍not_run、candidate未分配、ready/released=false，完整98任务/32门禁/实际发行仍required。
+
+## D060 · 2026-10-15 实际结果检查、不可变分页与耐久Pi回合（R4.3.07进行中）
+
+inspect_result从已ACK原intent解析原canonical参数hash，使用当前真正Agent作用域消费read_notebook实际签发的result_ref；SourceEndpoint只调度/轮询，heavy projection在独立ResultRuntime。主状态没有重新求值/接纳或文件IO。复用现有StoredResult/ResultStore及真实producer、历史/partial currentness，手工task=None不能消费Agent ref；当前source/task/grant/config/editor变化会令待完成原生请求失效，恢复文本不恢复任何授权。
+
+实现六个part：summary分页保留原Solve解、条件、verified和重数；value按原值路径遍历全部矩阵列及嵌套容器，精确/高精度/Unicode原式保持；diagnostics分页读原消息；steps深度优先读取真实记录节点及原path/child_count，不创造计算步骤；geometry逐原channel/object/segment页读取真实坐标/索引；preview无已注册渲染媒体时明确data_only/unavailable且media_ref=null。原result TTL不延长，opaque cursor绑定result/part/limit/完整当前scope，沿用128条/32MiB/10分钟上限；5秒/4Msteps/独立取消、100行/32列/240KiB payload与深度/route预算均有实际拒绝。
+
+6项新增数学检查测试与8组定向42项、Host+CABI全154项/0失败、host全targets Clippy -D warnings、18 Node26/Pi、strict自身TypeScript(skipLibCheck)、17 Python、389 DTO/工程/fmt通过。实际测试覆盖35列×2行70个不同元素、7页嵌套精确与高精度值、20重根7页、12条完整原步骤、ODE原record、384曲面顶点44页及独立数学残差，原checkpoint bytes逐字不变；无步骤/无几何/真实Error/过期/改query或权限/取消/限步保持明确。unit里的KernelWorker真实但acceptance receipt为synthetic matching契约，不能替代以下物理存储证明。
+
+standalone及签名App资源实际四个三轮case（有理数、Solve、ODE、scene）：每例29frames(16host/13helper)、21SQLite事件、3次URLSession回环，KernelCommitPort先实际计算/同库接纳→read真实ref→独立inspect→耐久ReadonlyRecord Blob/SQLite回读/native确认→Pi，第三HTTP body逐字含原结果。检查阶段实际accepted checkpoint ID/hash不变、source/history无写；手工作用域原ref拒绝，storage-only重开21事件/2只读完成且无host/helper/旧grant。原两轮/预览三轮/原子修改四轮/5实际边界及强杀后手工4继续通过。模型route/context工厂仍合成fixture配真实存储，不冒称Registry/UI/live完成。
+
+新增Pi测试先发现原validator不支持JSON Schema多类型type数组，合法JsonPayload被IPC_INVALID_TOOL_RESULT拒。保留RED日志/原protocol.ts后补齐类型union，六种JSON payload及无effect operation_ref规则通过；inspection完成可忠实描述Error/stale数学状态，不把它变成数学成功。源码/原输入/HTTP/wire/原SQL压缩与SHA见[实际结果检查证据](../acceptance/pre-alpha.4/development/r43/math-inspect-native.json)。
+
+本轮在154/0终态、原生签名fixture/strict校验通过且无活跃编译器或harness后，按成功Cargo compiler-artifact清单仅清26个target/debug/deps普通Mach-O测试可执行文件（含unit harness），共715,854,624逻辑字节（约683MiB）；先记录每文件SHA/大小/类型，删除后核对缺席，库/CLI/examples/App/runtime/证据保留，可用约43GiB。
+
+R4.3.07仍进行中、全部Steps/Done未勾，实际run_cells执行/耐久executed与partial链、独立可写scratch/result origin仍required。整体34/98、32最终gate全部not_run、candidate未分配、ready/released=false；用户OS输入设置保留、不重问/不改，真实候选与物理锁屏仍未验。无付费live/子代理/本机iOSsim，dev/no main/旧公开tag和包不动，完整98任务/32门禁/实际发行继续。

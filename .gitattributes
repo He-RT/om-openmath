@@ -49,3 +49,6 @@ docs/acceptance/pre-alpha.4/development/r43/patch-atomic-apply-raw/**/Blobs/sha2
 docs/acceptance/pre-alpha.4/development/r43/math-run-planning-raw/**/*.log -whitespace
 docs/acceptance/pre-alpha.4/development/r43/math-run-planning-raw/**/*.sse whitespace=blank-at-eol,space-before-tab,-blank-at-eof
 docs/acceptance/pre-alpha.4/development/r43/math-run-planning-raw/**/Blobs/sha256/** binary
+docs/acceptance/pre-alpha.4/development/r43/math-inspect-native-raw/**/*.log -whitespace
+docs/acceptance/pre-alpha.4/development/r43/math-inspect-native-raw/**/*.sse whitespace=blank-at-eol,space-before-tab,-blank-at-eof
+docs/acceptance/pre-alpha.4/development/r43/math-inspect-native-raw/**/Blobs/sha256/** binary

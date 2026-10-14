@@ -1,0 +1,4 @@
+data: {"choices":[{"index":0,"delta":{"content":"中文🙂","tool_calls":[{"index":0,"type":"function","function":{"arguments":"{\"input\":{\"kind\":\"patch\",\"operations\":[{\"expected_source_hash\":\"1acf86226c68c1485ca3939884c43ed99abeea344e806548af7ee813c1c0cff3\",\"source\":\"3+3\",\"target\":{\"cell_id\":\"a\"},\"type\":\"update_cell\"}]},\"snapshot_ref\":\"snapshot-1-2a159adc84b1b778e6c96f927b96f0aa9e96254b335132a9b8534bf9c37dde0c\"}","name":"preview_source"},"id":"preview-call"}],"role":"assistant"},"finish_reason":"tool_calls"}],"model":"synthetic-served-alias","id":"provider-response-2"}
+
+data: [DONE]
+

@@ -96,7 +96,8 @@ function matches(value: Json, rule: any, depth = 0, root = schema): boolean {
   if (rule.if) {const branch=matches(value,rule.if,depth+1,root)?rule.then:rule.else;if(branch&&!matches(value,branch,depth+1,root))return false;}
   if (rule.type) {
     const type = value === null ? 'null' : Array.isArray(value) ? 'array' : typeof value;
-    if (rule.type === 'integer' ? typeof value !== 'number' || !Number.isSafeInteger(value) : type !== rule.type) return false;
+    const permitted=(candidate:string)=>candidate==='integer'?typeof value==='number'&&Number.isSafeInteger(value):type===candidate;
+    if(Array.isArray(rule.type)?!rule.type.some(permitted):!permitted(rule.type))return false;
   }
   if (typeof value === 'string') {
     const count = [...value].length;
@@ -123,10 +124,10 @@ export function decodeReadonlyResult(name:string,bytes:Uint8Array):{ok:boolean,s
 }
 /** All native tool data stays closed; effects additionally carry a real operation identity. */
 export function decodeToolResult(name:string,bytes:Uint8Array):{ok:boolean,status:string,operation_ref:string|null} {
-  if(!['read_notebook','search_functions','get_function_docs','preview_source','apply_notebook_patch'].includes(name)||bytes.length>262144)fail('IPC_TOOL_RESULT_LIMIT');
+  if(!['read_notebook','search_functions','get_function_docs','preview_source','apply_notebook_patch','inspect_result'].includes(name)||bytes.length>262144)fail('IPC_TOOL_RESULT_LIMIT');
   const value=strictJson(bytes),rule=toolSchema.$defs[name+'_result'];
   const phases=name==='apply_notebook_patch'?['completed','failed','cancelled','unknown']:['completed','failed'];
-  if(!matches(value,rule,0,toolSchema)||value===null||typeof value!=='object'||Array.isArray(value)||!phases.includes(String(value.status)))fail('IPC_INVALID_TOOL_RESULT');
+  if(!matches(value,rule,0,toolSchema)||value===null||typeof value!=='object'||Array.isArray(value)||!phases.includes(String(value.status))||(name!=='apply_notebook_patch'&&value.operation_ref!==null))fail('IPC_INVALID_TOOL_RESULT');
   return value as unknown as {ok:boolean,status:string,operation_ref:string|null};
 }
 export function decodeFrame(bytes: Uint8Array): AgentIPCFrame {

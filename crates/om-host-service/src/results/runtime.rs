@@ -2,6 +2,7 @@
 mod queries;
 use super::*;
 use crate::protocol::{generated::*, validation};
+use crate::tools::results::{FrozenInspection, InspectionContext, ResultInspectionService};
 use om_num::ctx::Clock;
 use serde_json::{Value, json};
 use std::{
@@ -20,6 +21,11 @@ enum Message {
     Accepted(Box<AcceptedKernelState>),
     Read {
         command: Box<NativeResultHostCommand>,
+        scope: Box<ReferenceScope>,
+        token: Arc<AtomicBool>,
+    },
+    Inspect {
+        request: FrozenInspection,
         scope: Box<ReferenceScope>,
         token: Arc<AtomicBool>,
     },
@@ -130,6 +136,9 @@ impl ResultRuntime {
         getrandom::fill(&mut key).map_err(|_| "ENTROPY_UNAVAILABLE")?;
         let mut store =
             ResultStore::new(key, 64 * 1024 * 1024, 32).map_err(|_| "BUDGET_EXCEEDED")?;
+        let mut inspection_key = [0; 32];
+        getrandom::fill(&mut inspection_key).map_err(|_| "ENTROPY_UNAVAILABLE")?;
+        let mut inspections = ResultInspectionService::new(inspection_key);
         let state = Arc::new(Mutex::new(State {
             entries: BTreeMap::new(),
             completed: VecDeque::new(),
@@ -167,6 +176,42 @@ impl ResultRuntime {
                                     let _ = store.register_recent(record);
                                 }
                             }));
+                        }
+                        Message::Inspect {
+                            request,
+                            scope,
+                            token,
+                        } => {
+                            let id = request.id().to_owned();
+                            if let Ok(mut entries) = replies.lock()
+                                && let Some(entry) = entries.entries.get_mut(&id)
+                            {
+                                entry.reply.phase = NativeResultHostReplyPhase::Running;
+                            }
+                            let context = Interrupt {
+                                flag: token,
+                                clock: Some(clock.clone()),
+                                deadline_ms: Some(clock.now_ms() + 5000.),
+                                steps_left: std::cell::Cell::new(4 * 1024 * 1024),
+                            };
+                            let result =
+                                std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
+                                    if let Some(probe) = &probes.before_query {
+                                        probe();
+                                    }
+                                    inspections.execute(
+                                        &request,
+                                        InspectionContext {
+                                            store: &store,
+                                            scope: &scope,
+                                            now: clock.now_ms() as u64,
+                                            interrupt: &context,
+                                        },
+                                    )
+                                }))
+                                .map(|payload| (None, payload))
+                                .map_err(|_| "RESULT_WORKER_PANIC".into());
+                            finish(&replies, &id, result);
                         }
                         Message::Read {
                             command,
@@ -236,8 +281,8 @@ impl ResultRuntime {
             return Err("PERMISSION_DENIED".into());
         }
         let id = request_id(&command);
-        let mut state = self.state.lock().map_err(|_| "INTERNAL_ERROR")?;
         if let NativeResultHostCommand::ResultStatus(_) = command {
+            let state = self.state.lock().map_err(|_| "INTERNAL_ERROR")?;
             let entry = state.entries.get(id).ok_or("INVALID_REFERENCE")?;
             let original = &entry.scope;
             if original.runtime != scope.runtime
@@ -252,10 +297,43 @@ impl ResultRuntime {
             }
             return Ok(entry.reply.clone());
         }
+        let encoded = serde_json::to_vec(&command).map_err(|_| "INVALID_ARGUMENT")?;
+        self.enqueue(id, &encoded, scope, |token| Message::Read {
+            command: Box::new(command.clone()),
+            scope: Box::new(scope.clone()),
+            token,
+        })
+    }
+    /// Queue only a native-frozen original inspect intent. Caller scope must come from the actual
+    /// Agent activation, never the manual task=None result command adapter.
+    pub fn agent_inspect(
+        &self,
+        request: FrozenInspection,
+        scope: &ReferenceScope,
+    ) -> Result<NativeResultHostReply, String> {
+        let id = request.id().to_owned();
+        let encoded = serde_json::to_vec(&request.identity()).map_err(|_| "INVALID_ARGUMENT")?;
+        self.enqueue(&id, &encoded, scope, |token| Message::Inspect {
+            request,
+            scope: Box::new(scope.clone()),
+            token,
+        })
+    }
+    fn enqueue(
+        &self,
+        id: &str,
+        encoded: &[u8],
+        scope: &ReferenceScope,
+        message: impl FnOnce(Arc<AtomicBool>) -> Message,
+    ) -> Result<NativeResultHostReply, String> {
+        scope.validate().map_err(|_| "STALE_DOCUMENT")?;
+        if !scope.can_read {
+            return Err("PERMISSION_DENIED".into());
+        }
         if self.closing.load(Ordering::Acquire) {
             return Err("HOST_CLOSING".into());
         }
-        let encoded = serde_json::to_vec(&command).map_err(|_| "INVALID_ARGUMENT")?;
+        let mut state = self.state.lock().map_err(|_| "INTERNAL_ERROR")?;
         let mut hasher = sha2::Sha256::new();
         use sha2::Digest;
         hasher.update(encoded);
@@ -284,11 +362,7 @@ impl ResultRuntime {
             .map_err(|_| "INTERNAL_ERROR")?
             .as_ref()
             .ok_or("HOST_CLOSING")?
-            .try_send(Message::Read {
-                command: Box::new(command.clone()),
-                scope: Box::new(scope.clone()),
-                token: token.clone(),
-            })
+            .try_send(message(token.clone()))
             .map_err(|_| "BUDGET_EXCEEDED")?;
         state.entries.insert(
             id.into(),

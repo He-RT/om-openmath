@@ -1,0 +1,1 @@
+{"codec_version":1,"document_id":"00000000-0000-0000-0000-000000000438","snapshot_hash":"d896c9eb0e67f271ccbdb6be222081d937d4303f1e09d9beba728cf21748105a","revision":0,"cell_revisions":[{"revision":0,"cell_id":"a"}],"execution_epoch":0,"file":{"title":"原子提交边界","version":1,"cells":[{"kind":"Math","source":"2+2","dialect":"Modern","id":"a"}]}}

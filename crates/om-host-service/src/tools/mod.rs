@@ -3,6 +3,7 @@ pub mod catalog;
 pub mod dispatch;
 pub mod patch;
 pub mod read;
+pub mod results;
 pub mod run;
 
 fn schema() -> &'static serde_json::Value {

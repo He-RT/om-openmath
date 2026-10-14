@@ -9,8 +9,12 @@ use sha2::{Digest, Sha256};
 use std::{sync::OnceLock, time::Instant};
 struct PendingRead {
     scope: ReferenceScope,
-    json: String,
+    kind: PendingReadKind,
     issued: Instant,
+}
+enum PendingReadKind {
+    Outputs(String),
+    Inspect,
 }
 
 /// One source owner for the native runtime, separate from CAS/editor/network queues.
@@ -203,8 +207,31 @@ impl SourceEndpoint {
                     .pending_reads
                     .remove(&intent.operation_id)
                     .expect("checked");
+                if let PendingReadKind::Inspect = pending.kind {
+                    let envelope = if reply.phase == NativeResultHostReplyPhase::Completed {
+                        reply.payload
+                    } else {
+                        crate::tools::results::failure(
+                            &intent.operation_id,
+                            &current,
+                            reply.error_code.0.as_deref().unwrap_or("NOT_AVAILABLE"),
+                        )
+                    };
+                    let envelope = crate::tools::checked_data("inspect_result_result", envelope)
+                        .map_err(|_| "TOOL_RESULT_LIMIT")?;
+                    let success = envelope["ok"].as_bool().ok_or("INTERNAL_ERROR")?;
+                    return self.agent.as_mut().expect("checked").register_readonly(
+                        &intent,
+                        &current,
+                        serde_json::to_string(&envelope).map_err(|_| "INTERNAL_ERROR")?,
+                        success,
+                    );
+                }
+                let PendingReadKind::Outputs(json) = pending.kind else {
+                    unreachable!()
+                };
                 let mut envelope: serde_json::Value =
-                    serde_json::from_str(&pending.json).map_err(|_| "INTERNAL_ERROR")?;
+                    serde_json::from_str(&json).map_err(|_| "INTERNAL_ERROR")?;
                 let success = reply.phase == NativeResultHostReplyPhase::Completed;
                 if success {
                     for cell in envelope["data"]["cells"]
@@ -233,6 +260,25 @@ impl SourceEndpoint {
                 );
             }
             self.flush_result_state();
+            if intent.name == AgentToolName::InspectResult {
+                if self.results.is_none() {
+                    self.results = Some(crate::results::runtime::ResultRuntime::new()?);
+                }
+                let request = crate::tools::results::FrozenInspection::original(&intent, &args)?;
+                self.results
+                    .as_ref()
+                    .expect("created")
+                    .agent_inspect(request, &current)?;
+                self.pending_reads.insert(
+                    intent.operation_id.clone(),
+                    PendingRead {
+                        scope: current,
+                        kind: PendingReadKind::Inspect,
+                        issued: Instant::now(),
+                    },
+                );
+                return Ok(self.agent.as_ref().expect("checked").pending_readonly());
+            }
             let accepted = self.kernel.as_ref().and_then(|k| k.accepted_state());
             let result = crate::tools::dispatch::execute(
                 &intent,
@@ -264,7 +310,7 @@ impl SourceEndpoint {
                     intent.operation_id.clone(),
                     PendingRead {
                         scope: current,
-                        json: result.json,
+                        kind: PendingReadKind::Outputs(result.json),
                         issued: Instant::now(),
                     },
                 );

@@ -1,0 +1,25 @@
+✔ actual Pi bridge resolves immutable model refs and canonical ACK before unavailable tool hook (61.42325ms)
+✔ wrong connection and byte-identical hello replay cannot reset active helper scope (6.066833ms)
+✔ actual Pi consumes a complete native readonly result and continues to a second model turn (41.761125ms)
+✔ actual Pi settles an unknown source effect without a second model request or write retry (23.305166ms)
+✔ sealed own fixture bytes and real streaming UTF-8 boundaries (99.780375ms)
+✔ pinned Pi hooks await canonical ACK and tools execute sequentially before next model request (29.767333ms)
+✔ cancel while canonical ACK is pending prevents every tool effect (1.49525ms)
+✔ shell plugins and mismatched canonical user tasks are refused (0.917084ms)
+✔ actual preview results preserve source-only and complete patch reference rules (6.976541ms)
+✔ patch result preserves actual operation/saved=false and uncertain writes cannot continue a loop (3.658667ms)
+✔ all actual encoded UTF8 split points and multiple complete frames roundtrip (488.845167ms)
+✔ unknown credentials/URLs/Pi state, missing required null and unsafe counters are rejected (4.907167ms)
+✔ duplicate members, invalid Unicode/UTF8, limits and incomplete EOF poison real connections (0.987584ms)
+✔ chat_completions real single-turn codec drives Pi; incomplete=false (420.665625ms)
+✔ chat_completions real single-turn codec drives Pi; incomplete=true (18.229583ms)
+✔ anthropic_messages real single-turn codec drives Pi; incomplete=false (44.480375ms)
+✔ anthropic_messages real single-turn codec drives Pi; incomplete=true (18.622667ms)
+ℹ tests 17
+ℹ suites 0
+ℹ pass 17
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 4774.462

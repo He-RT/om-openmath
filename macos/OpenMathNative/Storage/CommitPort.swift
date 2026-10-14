@@ -95,6 +95,13 @@ actor DocCommitPort {
     try beginCall();defer {activeCalls-=1}
     guard !closing else {throw StorageError.closing}
     let reply=try await client.sourceCommand(.source_begin(.init(type:.source_begin,preview_ref:previewRef)))
+    return try await applyPrepared(reply,faults:faults)
+  }
+  /// Only the native owner can prepare an Agent plan from an ACKed original apply intent.
+  /// The same admission/editor fence/unknown reconciliation code handles both callers.
+  func applyPrepared(_ reply:NativeSourceHostReply,faults:StorageFaults = .init()) async throws ->NativeCommitState {
+    try beginCall();defer {activeCalls-=1}
+    guard !closing else {throw StorageError.closing}
     if reply.plan.value==nil,let state=reply.operation.value {
       guard !inFlight.contains(state.operation_id) else {throw CommitPortError.operationInProgress}
       if state.phase == .completed {return try await reconcile(state.operation_id)}
@@ -191,8 +198,10 @@ actor DocCommitPort {
   }
   private func settleNoCommit(_ operation:String,document:String,cancelled:Bool) async throws ->NativeCommitState {
     do {
-      _ = try await storage.settleSourceAdmission(document:document,operation:operation,cancelled:cancelled)
-      let actual=try await client.sourceCommand(.source_settled(.init(type:.source_settled,operation_id:operation,cancelled:cancelled)))
+      let status=try await client.sourceCommand(.source_status(.init(type:.source_status,operation_id:operation)))
+      let stopped=cancelled || status.operation.value?.cancel_requested == true
+      _ = try await storage.settleSourceAdmission(document:document,operation:operation,cancelled:stopped)
+      let actual=try await client.sourceCommand(.source_settled(.init(type:.source_settled,operation_id:operation,cancelled:stopped)))
       guard let state=actual.operation.value else {throw NativeHostClientError.invalidReply}
       return state
     } catch {

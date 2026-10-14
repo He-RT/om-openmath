@@ -1,0 +1,4 @@
+   Compiling om-host-service v0.1.0-pre-alpha.3 (/Users/hert/Projects/openmath/crates/om-host-service)
+   Compiling om-apple-ffi v0.1.0-pre-alpha.3 (/Users/hert/Projects/openmath/crates/om-apple-ffi)
+    Finished `release` profile [optimized] target(s) in 1m 07s
+{"actual_macho_architecture":"rejected","actual_private_frames":9,"bundled_node":"26.11.1","canonical_events":14,"evidence_root":"\/Users\/hert\/Projects\/openmath\/target\/macos-agent-package-tests\/attempt-A3kJu4","late_stdin":"rejected","manual_after_sigkill":"4","missing_resource":"rejected","model_cancel_and_late_delta":"rejected","model_transport":"actual_urlsession_rust_cabi_durable_request_ledger","PATH":"empty","production_core":"1.0.4","system_node_fallback":false,"tool_outcome":"completed_actual_readonly_no_mutation","unconfigured_model":"no_fake_message_or_effect","wrong_architecture":"rejected"}

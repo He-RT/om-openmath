@@ -1,6 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { FrameDecoder, encodeFrame, decodeFrame, decodeReadonlyResult, strictJson, schemaHash, MAX_FRAME_BYTES } from '../src/protocol.ts';
+import { FrameDecoder, encodeFrame, decodeFrame, decodeReadonlyResult, decodeToolResult, strictJson, schemaHash, MAX_FRAME_BYTES } from '../src/protocol.ts';
+import { notebookPatchResult } from '../src/tools/notebook.ts';
 const sample = {
   protocol_version: 1, connection_id: 'connection-1', connection_generation: 1,
   runtime_instance_id: 'runtime-1', agent_session_id: 'session-1', document_id: 'document-1',
@@ -19,6 +20,17 @@ test('actual preview results preserve source-only and complete patch reference r
   const fake=structuredClone(result);fake.data.preview_ref='fake-source-preview';
   assert.throws(()=>decodeReadonlyResult('preview_source',encode(fake)),/IPC_INVALID_TOOL_RESULT/);
   assert.throws(()=>decodeReadonlyResult('apply_notebook_patch',encode(result)),/IPC_TOOL_RESULT_LIMIT/);
+});
+test('patch result preserves actual operation/saved=false and uncertain writes cannot continue a loop', () => {
+  const result={ok:true,status:'completed',request_ref:'request',operation_ref:'original-operation',document:{id:'doc',generation:1,revision:1},data:{transaction_ref:'original-transaction',snapshot_ref:'new-snapshot',changed_cell_ids:['a'],invalidated_cell_ids:['a'],plan_hash:'a'.repeat(64),saved:false},error:null,pagination:{truncated:false,next_cursor:null}};
+  const payload=body=>({agent_turn_id:'turn',tool_call_id:'call',operation_ref:body.operation_ref,result_ref:'native-result',outcome:body.status,result_json:JSON.stringify(body)});
+  assert.equal(notebookPatchResult(payload(result)).details.operationRef,'original-operation');
+  for(const bad of [{...result,data:{...result.data,saved:true}},{...result,data:{...result.data,extra:true}}])assert.throws(()=>decodeToolResult('apply_notebook_patch',Buffer.from(JSON.stringify(bad))),/IPC_INVALID_TOOL_RESULT/);
+  const unknown={...result,ok:false,status:'unknown',data:null,error:{code:'UNKNOWN_OUTCOME',message:'unknown',recovery:'query_operation',details:{}}};
+  assert.equal(notebookPatchResult(payload(unknown)).terminate,true);
+  assert.equal(notebookPatchResult(payload(unknown)).isError,true);
+  assert.throws(()=>notebookPatchResult({...payload(unknown),operation_ref:'new-operation'}),/IPC_TOOL_RESULT_MISMATCH/);
+  assert.throws(()=>decodeToolResult('apply_notebook_patch',Buffer.from(JSON.stringify({...unknown,operation_ref:null}))),/IPC_INVALID_TOOL_RESULT/);
 });
 test('all actual encoded UTF8 split points and multiple complete frames roundtrip', () => {
   const line = encodeFrame(sample);

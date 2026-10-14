@@ -16,6 +16,7 @@ struct AgentToolUnavailable:Codable,Sendable {let codecVersion:Int,kind:String,i
 /// Actor suspension cannot grant authority: every resumed callback is fenced again by Rust.
 actor AgentSessionService {
   private let host:NativeHostClient,storage:StorageService,document:String,generation:UInt64
+  private let sourcePort:DocCommitPort?
   private var scope:NativeAgentControlScope?
   private var ledger:SessionLedgerPort?
   private var taskGeneration:UInt64=0,connectionGeneration:UInt64=0,outgoingSequence:UInt64=0
@@ -26,8 +27,8 @@ actor AgentSessionService {
   private var dispatches:[String:Task<Void,Never>]=[:]
   private var readyConnection:String?
   private var toolFrames:[String:String]=[:]
-  init(host:NativeHostClient,storage:StorageService,document:String,generation:UInt64) {
-    self.host=host;self.storage=storage;self.document=document;self.generation=generation
+  init(host:NativeHostClient,storage:StorageService,document:String,generation:UInt64,sourcePort:DocCommitPort?=nil) {
+    self.host=host;self.storage=storage;self.document=document;self.generation=generation;self.sourcePort=sourcePort
   }
   /// Fresh explicit activation. Persisted messages are data and never recreate grants.
   func activate(session:String,grants:[AgentToolName],readonly:Bool,coreVersion:String,adapterVersion:String) async throws->NativeAgentHostReply {
@@ -211,6 +212,7 @@ actor AgentSessionService {
   }
   /// Readonly source/catalog/preview producers require actual native results and durable readback.
   private func dispatchTool(_ intent:NativeAgentToolIntent) async {
+    if intent.name == .apply_notebook_patch {await dispatchPatch(intent);return}
     guard [.read_notebook,.search_functions,.get_function_docs,.preview_source].contains(intent.name) else {await unavailableTool(intent);return}
     do {
       guard let s=scope,let ledger else {throw AgentSessionError.inactive}
@@ -250,6 +252,62 @@ actor AgentSessionService {
       let payload=AgentToolResultPayload(agent_turn_id:intent.agent_turn_id,tool_call_id:intent.tool_call_id,operation_ref:.init(nil),result_ref:.init(result.result_ref),outcome:result.outcome == .completed ? .completed:.failed,result_json:.init(String(decoding:original,as:UTF8.self)))
       toolFrames[intent.operation_id]=try await send("tool_result",payload:JSONEncoder().encode(payload))
     } catch {if !Task.isCancelled {_ = try? await send("error",payload:JSONEncoder().encode(AgentErrorPayload(code:"NATIVE_READONLY_RESULT_UNAVAILABLE",recoverable:false)))}}
+  }
+  private func dispatchPatch(_ intent:NativeAgentToolIntent)async {
+    do {
+      guard let s=scope,let ledger,let sourcePort else {await unavailableTool(intent);return}
+      let prepared=try await host.sourceCommand(.source_begin_agent(.init(type:.source_begin_agent,operation_id:intent.operation_id)))
+      var target:SessionOperationTarget?,admissionID:String?,outcomeID:String?,failure:NativeAgentEffectToolFailureCode?
+      if let plan=prepared.plan.value {
+        let info=try await storage.documentIdentity(document)
+        let actual=SessionOperationTarget(documentID:plan.commit.document_id,storeID:info.storeID,operationID:plan.commit.operation_id,kind:.source,expectedHash:plan.commit.request_hash)
+        let admitted="admit-"+intent.operation_id,result="operation-result-"+intent.operation_id
+        target=actual;admissionID=admitted
+        let admission=SessionToolAdmission(codecVersion:1,callID:intent.tool_call_id,proposalEvent:intent.proposal_event_ref,toolName:intent.name.rawValue,argumentsHash:intent.arguments_hash,target:actual)
+        let tool=SessionToolPort(storage:storage,ledger:ledger)
+        do {
+          _ = try await tool.perform(admission:admission,admissionID:admitted,startedID:"started-"+intent.operation_id,resultID:result,turn:intent.agent_turn_id,task:s.task_id,execute:{
+            let state=try await sourcePort.applyPrepared(prepared)
+            guard state.phase == .completed else {throw state.phase == .cancelled ? CommitPortError.cancelled:CommitPortError.sourceConflict}
+          })
+          outcomeID=result
+        } catch {
+          if Task.isCancelled {throw CancellationError()}
+          if let error=error as? CommitPortError {
+            switch error {case .editingBusy,.invalidFence:failure = .editing_busy;default:failure = .preview_mismatch}
+          } else {failure = .preview_mismatch}
+          // Read original receipt only. An ACK loss never invokes a second source operation.
+          _ = try? await sourcePort.reconcile(plan.commit.operation_id)
+          if try await tool.reconcile(admission:admission,admissionID:admitted,resultID:result,turn:intent.agent_turn_id,task:s.task_id) != nil {outcomeID=result;failure=nil}
+        }
+      }
+      try Task.checkCancellation()
+      let reply=try await host.agentCommand(.native_agent_effect_tool(.init(type:.agent_effect_tool,scope:s,operation_id:intent.operation_id,failure_code:.init(failure))))
+      guard let result=reply.effect_result.value,result.operation_id==intent.operation_id,result.tool_call_id==intent.tool_call_id,
+        result.agent_turn_id==intent.agent_turn_id,result.name == .apply_notebook_patch,
+        result.operation_ref.value==target?.operationID else {throw AgentSessionError.stale}
+      let bytes=Data(result.result_json.utf8)
+      guard bytes.count<=262144,KernelHashes.data(bytes)==result.result_hash else {throw AgentSessionError.invalidFrame}
+      let outcome=try JSONDecoder().decode(AgentToolResultPayloadOutcome.self,from:JSONEncoder().encode(result.outcome))
+      let canonicalOutcome=try JSONDecoder().decode(AgentToolResultPartOutcome.self,from:JSONEncoder().encode(result.outcome))
+      let event="effect-"+intent.operation_id,owner=BlobOwner(kind:.context,id:event)
+      let canonical=AgentCanonicalMessage(record_type:.canonical_agent_message,message_version:1,message_id:event,role:.tool,agent_turn_id:.init(intent.agent_turn_id),task_id:.init(s.task_id),parts:[.agent_tool_result_part(.init(kind:.tool_result,part_id:event,tool_call_id:intent.tool_call_id,operation_ref:result.operation_ref,result_ref:.init(result.result_ref),outcome:canonicalOutcome))])
+      let record=AgentEffectRecord(codecVersion:1,kind:"native_effect_result",intent:intent,resultRef:result.result_ref,blobHash:result.result_hash,byteLength:UInt64(bytes.count),canonical:canonical,target:target,admissionEvent:admissionID,outcomeEvent:outcomeID)
+      let publication=try await storage.publishBlob(data:bytes,expectedHash:result.result_hash)
+      do {
+        _ = try await ledger.record(record,id:event,kind:.recovery,parent:intent.proposal_event_ref,turn:intent.agent_turn_id,task:s.task_id,target:target,resource:publication,resourceOwner:owner)
+        try await storage.releaseBlob(publication)
+      } catch {try? await storage.releaseBlob(publication);throw error}
+      guard let stored=try await storage.sessionEvent(s.agent_session_id,event:event),stored.event.payload_inline_json.value.map({Data($0.utf8)}) == (try RecoveryValidation.encode(record)) else {throw AgentSessionError.ledgerMismatch}
+      let lease=try await storage.openReferencedBlob(owner:owner,hash:result.result_hash)
+      let original:Data
+      do {original=try await storage.readBlob(lease,offset:0,count:bytes.count);try await storage.closeBlob(lease)}catch {try? await storage.closeBlob(lease);throw error}
+      guard original==bytes else {throw AgentSessionError.ledgerMismatch}
+      try Task.checkCancellation()
+      _ = try await host.agentCommand(.native_agent_confirm_tool(.init(type:.agent_confirm_tool,scope:s,operation_id:intent.operation_id,result_ref:result.result_ref,result_hash:result.result_hash,event_id:event,event_sequence:try HostSerial(stored.receipt.eventSequence),receipt_hash:stored.receipt.recordHash)))
+      let payload=AgentToolResultPayload(agent_turn_id:intent.agent_turn_id,tool_call_id:intent.tool_call_id,operation_ref:result.operation_ref,result_ref:.init(result.result_ref),outcome:outcome,result_json:.init(String(decoding:original,as:UTF8.self)))
+      toolFrames[intent.operation_id]=try await send("tool_result",payload:JSONEncoder().encode(payload))
+    } catch {if !Task.isCancelled {_ = try? await send("error",payload:JSONEncoder().encode(AgentErrorPayload(code:"NATIVE_PATCH_RESULT_UNAVAILABLE",recoverable:false)))}}
   }
   private func stopDispatches() {for task in dispatches.values {task.cancel()};dispatches.removeAll()}
   func close() async {

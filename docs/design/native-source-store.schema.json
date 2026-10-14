@@ -1279,6 +1279,9 @@
         },
         {
           "$ref": "#/$defs/SourceRecoverUndo"
+        },
+        {
+          "$ref": "#/$defs/SourceBeginAgent"
         }
       ]
     },
@@ -1529,6 +1532,22 @@
         "forward_plan_hash",
         "inverse_payload_hash"
       ]
+    },
+    "SourceBeginAgent": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "const": "source_begin_agent"
+        },
+        "operation_id": {
+          "$ref": "#/$defs/Identity"
+        }
+      },
+      "required": [
+        "type",
+        "operation_id"
+      ],
+      "additionalProperties": false
     }
   }
 }

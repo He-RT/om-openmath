@@ -176,6 +176,12 @@ final class AgentSessionStore {
     return .init(events:all,complete:false)
   }
   private func verifyResources(_ input:SessionAppendInput,events:[NativeSessionEvent],reader:SQLiteDatabase,stored:Bool=false)throws {
+    if input.kind == .recovery,let record=try SessionSemantics.effectRecord(input.payload) {
+      var matched=false
+      try reader.statement("SELECT o.byte_length FROM blob_refs r JOIN blob_objects o USING(blob_hash) WHERE r.owner_kind='context' AND r.owner_id=? AND r.blob_hash=?",[.text(input.eventID),.text(record.blobHash)]) {row in
+        guard sqlite3_column_int64(row,0)==Int64(record.byteLength) else {throw StorageError.corruptIdentity};matched=true
+      };guard matched else {throw BlobError.missing}
+    }
     if input.kind == .recovery,let record=try SessionSemantics.readonlyRecord(input.payload) {
       var matched=false
       try reader.statement("SELECT o.byte_length FROM blob_refs r JOIN blob_objects o USING(blob_hash) WHERE r.owner_kind='context' AND r.owner_id=? AND r.blob_hash=?",[.text(input.eventID),.text(record.blobHash)]) {row in
@@ -253,6 +259,11 @@ final class AgentSessionStore {
       }
       let readonly=try view.readonlyResults(session:session,parent:row.proposal,fetch:fetch).filter{$0.event_sequence<=upper}
       for event in readonly {
+        if let record=try SessionSemantics.effectRecord(event),record.intent.tool_call_id==row.call {
+          guard record.target==target,record.admissionEvent==row.admission else {throw StorageError.corruptIdentity}
+          let effectPhase=try SessionSemantics.effectPhase(record)
+          if !(effectPhase == .tool_outcome_unknown && phase == .completed) {phase=effectPhase;resultID=event.event_id}
+        }
         if let record=try SessionSemantics.readonlyRecord(event),record.intent.tool_call_id==row.call {
           guard row.admission==nil,resultID==nil else {throw StorageError.corruptIdentity}
           phase=try SessionSemantics.readonlyPhase(record);resultID=event.event_id

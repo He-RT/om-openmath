@@ -1,4 +1,5 @@
 //! Trusted host source bridge. Physical IO stays in Swift; controller methods are short owner steps.
+mod patch;
 use super::{SourceDocument, commit::DocumentCommitController, coordinator::SourceCoordinator};
 use crate::{
     protocol::{Nullable, Serial, generated::*, validation},
@@ -25,6 +26,7 @@ pub struct SourceEndpoint {
     agent: Option<crate::agent::endpoint::AgentEndpoint>,
     reads: Option<crate::tools::read::ReadNotebookService>,
     pending_reads: std::collections::BTreeMap<String, PendingRead>,
+    patches: std::collections::BTreeMap<String, patch::PendingPatch>,
     pending_result_state: Option<crate::kernel::acceptance::AcceptedKernelState>,
 }
 impl SourceEndpoint {
@@ -88,6 +90,7 @@ impl SourceEndpoint {
             agent: None,
             reads: None,
             pending_reads: std::collections::BTreeMap::new(),
+            patches: std::collections::BTreeMap::new(),
         })
     }
     /// Actual runtime/document binding for host readback and stale request checks.
@@ -122,6 +125,7 @@ impl SourceEndpoint {
             getrandom::fill(&mut read_key).map_err(|_| "ENTROPY_UNAVAILABLE")?;
             self.reads = Some(crate::tools::read::ReadNotebookService::new(read_key));
             self.pending_reads.clear();
+            self.patches.clear();
             self.agent = Some(endpoint);
             return Ok(reply);
         }
@@ -135,6 +139,13 @@ impl SourceEndpoint {
             .as_ref()
             .ok_or("AGENT_NOT_ACTIVE")?
             .readonly_scope(current);
+        if let NativeAgentHostCommand::NativeAgentEffectTool(c) = command {
+            self.agent
+                .as_ref()
+                .expect("checked")
+                .check_native_scope(&c.scope, &binding)?;
+            return self.agent_patch_result(&c.operation_id, c.failure_code.0, current);
+        }
         if let NativeAgentHostCommand::NativeAgentBindHistory(c) = command {
             self.agent
                 .as_ref()
@@ -277,6 +288,11 @@ impl SourceEndpoint {
             .expect("checked")
             .command(command, &binding, &current);
         if closing && reply.is_ok() {
+            for patch in self.patches.values() {
+                let _ = self
+                    .controller
+                    .cancel(&patch.plan.commit.commit.operation_id);
+            }
             for id in self.pending_reads.keys() {
                 if let Some(results) = &self.results {
                     let _ = results.cancel(id);
@@ -454,6 +470,9 @@ impl SourceEndpoint {
             super::commit::CommitError::Preview(_) => "STALE_SNAPSHOT".to_owned(),
         };
         match command {
+            NativeSourceHostCommand::SourceBeginAgent(body) => {
+                self.begin_agent_patch(&body.operation_id, &mut reply)?;
+            }
             NativeSourceHostCommand::SourceRecoverUndo(body) => {
                 if body.receipt.receipt.store_id != self.store {
                     return Err("INVALID_RECEIPT".into());
@@ -604,9 +623,10 @@ impl SourceEndpoint {
                 ));
             }
             NativeSourceHostCommand::SourceBarrier(body) => {
+                let current = self.patch_barrier_scope(&body.operation_id)?;
                 reply.operation = Nullable(Some(
                     self.controller
-                        .enter_commit(&body.operation_id, &body.fence_id, &self.scope, now)
+                        .enter_commit(&body.operation_id, &body.fence_id, &current, now)
                         .map_err(error)?,
                 ));
             }

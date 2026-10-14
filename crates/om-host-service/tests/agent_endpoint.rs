@@ -79,13 +79,13 @@ fn preview_task(owner: &mut SourceEndpoint) -> Value {
 }
 /// These are unit-level synthetic ledger acknowledgements. Native Swift fixtures separately prove
 /// the original SQLite receipt path; this helper does not claim a physical storage commit.
-fn data_call(
+fn mapped_call(
     owner: &mut SourceEndpoint,
     hello: &Value,
     sequence: &mut u64,
     name: &str,
     args: Value,
-) -> NativeAgentReadonlyResult {
+) -> NativeAgentToolIntent {
     let event = format!("proposal-{}", *sequence);
     let call = format!("call-{}", *sequence);
     let proposal = frame(
@@ -112,6 +112,16 @@ fn data_call(
     .0
     .unwrap();
     *sequence += 1;
+    mapped
+}
+fn data_call(
+    owner: &mut SourceEndpoint,
+    hello: &Value,
+    sequence: &mut u64,
+    name: &str,
+    args: Value,
+) -> NativeAgentReadonlyResult {
+    let mapped = mapped_call(owner, hello, sequence, name, args);
     let query =
         json!({"type":"agent_read_tool","scope":scope(1),"operation_id":mapped.operation_id});
     let result = command(owner, query.clone())
@@ -133,6 +143,176 @@ fn data_call(
         format!("{:x}", Sha256::digest(result.result_json.as_bytes()))
     );
     result
+}
+fn source_command(
+    owner: &mut SourceEndpoint,
+    value: Value,
+) -> Result<NativeSourceHostReply, String> {
+    owner.command(om_host_service::document::endpoint::decode_source_command(
+        &serde_json::to_vec(&value).unwrap(),
+    )?)
+}
+fn prepare_apply(
+    owner: &mut SourceEndpoint,
+) -> (Value, NativeAgentToolIntent, NativeSourceHostReply) {
+    let hello = preview_task(owner);
+    let mut sequence = 2;
+    let read = data_call(
+        owner,
+        &hello,
+        &mut sequence,
+        "read_notebook",
+        json!({"view":"cells","cell_ids":["a"]}),
+    );
+    let read: Value = serde_json::from_str(&read.result_json).unwrap();
+    let preview = data_call(
+        owner,
+        &hello,
+        &mut sequence,
+        "preview_source",
+        json!({"snapshot_ref":read["data"]["snapshot_ref"],"input":{"kind":"patch","operations":[{"type":"update_cell","target":{"cell_id":"a"},"expected_source_hash":format!("{:x}",Sha256::digest(b"2+2")),"source":"3+3"}]}}),
+    );
+    let preview: Value = serde_json::from_str(&preview.result_json).unwrap();
+    let intent = mapped_call(
+        owner,
+        &hello,
+        &mut sequence,
+        "apply_notebook_patch",
+        json!({"preview_ref":preview["data"]["preview_ref"]}),
+    );
+    let reply = source_command(
+        owner,
+        json!({"type":"source_begin_agent","operation_id":intent.operation_id}),
+    )
+    .unwrap();
+    assert!(reply.plan.0.is_some());
+    assert_eq!(
+        reply.plan.0.as_ref().unwrap().commit.actor,
+        DocumentCommitActor::Agent
+    );
+    assert_eq!(
+        reply.plan.0.as_ref().unwrap().commit.task_id.0.as_deref(),
+        Some("task")
+    );
+    let replay = source_command(
+        owner,
+        json!({"type":"source_begin_agent","operation_id":intent.operation_id}),
+    )
+    .unwrap();
+    assert_eq!(
+        serde_json::to_vec(&reply.plan).unwrap(),
+        serde_json::to_vec(&replay.plan).unwrap()
+    );
+    (hello, intent, reply)
+}
+#[test]
+fn final_agent_commit_barrier_uses_live_task_scope_and_original_frozen_operation() {
+    for mode in ["live", "cancel", "editor_changed", "marked"] {
+        let mut owner = endpoint();
+        let (_, intent, prepared) = prepare_apply(&mut owner);
+        let plan = prepared.plan.0.unwrap();
+        let operation = &plan.commit.operation_id;
+        let mut forged = json!({"type":"source_begin_agent","operation_id":intent.operation_id});
+        forged["preview_ref"] = json!("substituted");
+        assert!(source_command(&mut owner, forged).is_err());
+        source_command(&mut owner,json!({"type":"source_admitted","operation_id":operation,"admission":{"protocol_version":1,"document_id":"actual-document","operation_id":operation,"request_hash":plan.commit.request_hash,"phase":"accepted","created_by_runtime":"actual-runtime","receipt":null}})).unwrap();
+        let now = prepared.owner_time_ms.get();
+        let fence = json!({"protocol_version":1,"fence_id":"actual-fence","runtime_instance_id":"actual-runtime","document_id":"actual-document","document_generation":1,"source_revision":0,"source_snapshot_hash":plan.before.snapshot_hash,"issued_ms":now,"expires_ms":now+2000,"targets":[{"cell_id":"a","editor_generation":1,"draft_sequence":0,"base_cell_revision":0,"source_hash":format!("{:x}",Sha256::digest(b"2+2")),"is_composing":mode=="marked","is_dirty":false}]});
+        let fenced = source_command(
+            &mut owner,
+            json!({"type":"source_fenced","operation_id":operation,"fence":fence}),
+        );
+        if mode == "marked" {
+            assert!(fenced.is_err());
+            continue;
+        }
+        fenced.unwrap();
+        if mode == "cancel" {
+            command(
+                &mut owner,
+                json!({"type":"agent_cancel","scope":scope(1),"reason":"user_stop"}),
+            )
+            .unwrap();
+        }
+        if mode == "editor_changed" {
+            source_command(&mut owner,json!({"type":"source_editor_changed","state":{"runtime_instance_id":"actual-runtime","document_id":"actual-document","document_generation":1,"source_revision":0,"targets":[]}})).unwrap();
+        }
+        let barrier = source_command(
+            &mut owner,
+            json!({"type":"source_barrier","operation_id":operation,"fence_id":"actual-fence"}),
+        );
+        if mode == "live" {
+            assert_eq!(
+                barrier.unwrap().operation.0.unwrap().phase,
+                NativeCommitStatePhase::Committing
+            );
+            // No SQLite receipt is manufactured by a barrier. Unknown remains a structured fact.
+            source_command(
+                &mut owner,
+                json!({"type":"source_unknown","operation_id":operation}),
+            )
+            .unwrap();
+            let result=command(&mut owner,json!({"type":"agent_effect_tool","scope":scope(1),"operation_id":intent.operation_id,"failure_code":null})).unwrap().effect_result.0.unwrap();
+            let body: Value = serde_json::from_str(&result.result_json).unwrap();
+            assert_eq!(body["status"], "unknown");
+            assert_eq!(body["error"]["code"], "UNKNOWN_OUTCOME");
+            assert_eq!(body["error"]["recovery"], "query_operation");
+            assert_eq!(body["operation_ref"], *operation);
+            println!(
+                "Actual live native barrier with synthetic admission/no physical receipt -> {}",
+                result.result_json
+            );
+        } else {
+            assert!(barrier.is_err(), "{mode} acquired commit authority");
+        }
+        assert_eq!(owner.binding().document_revision.get(), 0);
+    }
+}
+#[test]
+fn apply_only_looks_up_acked_original_preview_and_freezes_precommit_failure_without_effect() {
+    let mut owner = endpoint();
+    let hello = preview_task(&mut owner);
+    let mut sequence = 2;
+    assert!(
+        source_command(
+            &mut owner,
+            json!({"type":"source_begin_agent","operation_id":"invented"})
+        )
+        .is_err()
+    );
+    let intent = mapped_call(
+        &mut owner,
+        &hello,
+        &mut sequence,
+        "apply_notebook_patch",
+        json!({"preview_ref":"source-only-has-no-committable-ref","source":"invented","grants":["write"]}),
+    );
+    let prepared = source_command(
+        &mut owner,
+        json!({"type":"source_begin_agent","operation_id":intent.operation_id}),
+    )
+    .unwrap();
+    assert!(prepared.plan.0.is_none());
+    let query = json!({"type":"agent_effect_tool","scope":scope(1),"operation_id":intent.operation_id,"failure_code":null});
+    let result = command(&mut owner, query.clone())
+        .unwrap()
+        .effect_result
+        .0
+        .unwrap();
+    assert_eq!(
+        result.result_json,
+        command(&mut owner, query)
+            .unwrap()
+            .effect_result
+            .0
+            .unwrap()
+            .result_json
+    );
+    let body: Value = serde_json::from_str(&result.result_json).unwrap();
+    assert_eq!(body["status"], "failed");
+    assert_eq!(body["error"]["code"], "INVALID_ARGUMENT");
+    assert!(body["operation_ref"].is_null());
+    assert_eq!(owner.binding().document_revision.get(), 0);
 }
 #[test]
 fn agent_preview_consumes_exact_read_issued_scope_without_widening_source_exposure() {

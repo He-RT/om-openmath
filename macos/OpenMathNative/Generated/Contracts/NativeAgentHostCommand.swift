@@ -11,6 +11,7 @@ public enum NativeAgentHostCommand: Codable, Sendable {
   case native_agent_read_tool(NativeAgentReadTool)
   case native_agent_confirm_tool(NativeAgentConfirmTool)
   case native_agent_bind_history(NativeAgentBindHistory)
+  case native_agent_effect_tool(NativeAgentEffectTool)
   public init(from decoder: Decoder) throws {
     let c = try decoder.singleValueContainer()
     if let v = try? c.decode(NativeAgentActivate.self) { self = .native_agent_activate(v); return }
@@ -23,6 +24,7 @@ public enum NativeAgentHostCommand: Codable, Sendable {
     if let v = try? c.decode(NativeAgentReadTool.self) { self = .native_agent_read_tool(v); return }
     if let v = try? c.decode(NativeAgentConfirmTool.self) { self = .native_agent_confirm_tool(v); return }
     if let v = try? c.decode(NativeAgentBindHistory.self) { self = .native_agent_bind_history(v); return }
+    if let v = try? c.decode(NativeAgentEffectTool.self) { self = .native_agent_effect_tool(v); return }
     throw DecodingError.dataCorrupted(.init(codingPath: decoder.codingPath, debugDescription: "Unknown native union variant"))
   }
   public func encode(to encoder: Encoder) throws {
@@ -37,6 +39,7 @@ public enum NativeAgentHostCommand: Codable, Sendable {
     case .native_agent_read_tool(let v): try v.encode(to: encoder)
     case .native_agent_confirm_tool(let v): try v.encode(to: encoder)
     case .native_agent_bind_history(let v): try v.encode(to: encoder)
+    case .native_agent_effect_tool(let v): try v.encode(to: encoder)
     }
   }
 }

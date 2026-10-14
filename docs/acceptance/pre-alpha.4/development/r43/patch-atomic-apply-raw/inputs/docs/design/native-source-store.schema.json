@@ -1,0 +1,1553 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:openmath:native-source-store:v1",
+  "title": "Typed source-store contract",
+  "description": "Trusted Rust frozen plans/Swift storage port. DTO shape is not agent permission or an editor fence; runtime registration remains in the corresponding task.",
+  "oneOf": [
+    {
+      "$ref": "#/$defs/NativeSourceSnapshot"
+    },
+    {
+      "$ref": "#/$defs/NativeSourceCommit"
+    },
+    {
+      "$ref": "#/$defs/NativeDurableSourceReceipt"
+    }
+  ],
+  "$defs": {
+    "Identity": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 256,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "Serial": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991,
+      "description": "共同可精确表示的单调计数；不能静默回绕。"
+    },
+    "Sha256": {
+      "type": "string",
+      "minLength": 64,
+      "maxLength": 64,
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "Dialect": {
+      "type": "string",
+      "enum": [
+        "Modern",
+        "Wolfram",
+        "Auto"
+      ]
+    },
+    "BlobHash": {
+      "$ref": "#/$defs/Sha256"
+    },
+    "Timestamp": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 64
+    },
+    "NativeCellKind": {
+      "type": "string",
+      "enum": [
+        "Math",
+        "Text",
+        "Ask"
+      ]
+    },
+    "NativeSourceCell": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/CellIdentity"
+        },
+        "kind": {
+          "$ref": "#/$defs/NativeCellKind"
+        },
+        "source": {
+          "type": "string",
+          "maxLength": 2097152
+        },
+        "dialect": {
+          "$ref": "#/$defs/Dialect"
+        }
+      },
+      "required": [
+        "id",
+        "kind",
+        "source",
+        "dialect"
+      ],
+      "additionalProperties": false
+    },
+    "NativeSourceFile": {
+      "type": "object",
+      "properties": {
+        "version": {
+          "const": 1
+        },
+        "title": {
+          "type": "string",
+          "maxLength": 16384
+        },
+        "cells": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/NativeSourceCell"
+          },
+          "maxItems": 10000
+        }
+      },
+      "required": [
+        "version",
+        "title",
+        "cells"
+      ],
+      "additionalProperties": false
+    },
+    "NativeCellRevision": {
+      "type": "object",
+      "properties": {
+        "cell_id": {
+          "$ref": "#/$defs/CellIdentity"
+        },
+        "revision": {
+          "$ref": "#/$defs/Serial"
+        }
+      },
+      "required": [
+        "cell_id",
+        "revision"
+      ],
+      "additionalProperties": false
+    },
+    "NativeSourceSnapshot": {
+      "type": "object",
+      "properties": {
+        "codec_version": {
+          "const": 1
+        },
+        "document_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "revision": {
+          "$ref": "#/$defs/Serial"
+        },
+        "execution_epoch": {
+          "$ref": "#/$defs/Serial"
+        },
+        "file": {
+          "$ref": "#/$defs/NativeSourceFile"
+        },
+        "cell_revisions": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/NativeCellRevision"
+          },
+          "maxItems": 10000
+        },
+        "snapshot_hash": {
+          "$ref": "#/$defs/Sha256"
+        }
+      },
+      "required": [
+        "codec_version",
+        "document_id",
+        "revision",
+        "execution_epoch",
+        "file",
+        "cell_revisions",
+        "snapshot_hash"
+      ],
+      "additionalProperties": false
+    },
+    "DocumentCommit": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "record_type": {
+          "const": "document_commit"
+        },
+        "document_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "operation_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "transaction_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "request_hash": {
+          "$ref": "#/$defs/Sha256"
+        },
+        "base_revision": {
+          "$ref": "#/$defs/Serial"
+        },
+        "committed_revision": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        },
+        "snapshot_hash": {
+          "$ref": "#/$defs/Sha256"
+        },
+        "snapshot_blob_hash": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/BlobHash"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "inverse_plan_hash": {
+          "$ref": "#/$defs/Sha256"
+        },
+        "execution_epoch": {
+          "$ref": "#/$defs/Serial"
+        },
+        "actor": {
+          "type": "string",
+          "enum": [
+            "manual",
+            "agent",
+            "undo",
+            "external_merge"
+          ]
+        },
+        "task_id": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Identity"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "undo_of": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Identity"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "changed_cell_ids": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/CellIdentity"
+          },
+          "uniqueItems": true
+        },
+        "outbox_event_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "committed_at": {
+          "$ref": "#/$defs/Timestamp"
+        }
+      },
+      "required": [
+        "record_type",
+        "document_id",
+        "operation_id",
+        "transaction_id",
+        "request_hash",
+        "base_revision",
+        "committed_revision",
+        "snapshot_hash",
+        "snapshot_blob_hash",
+        "inverse_plan_hash",
+        "execution_epoch",
+        "actor",
+        "task_id",
+        "undo_of",
+        "changed_cell_ids",
+        "outbox_event_id",
+        "committed_at"
+      ],
+      "description": "同库提交记录；revision=base+1、head/receipt/idempotency/outbox 一致性及 actor 授权由运行时验证。",
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "actor": {
+                "const": "agent"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "task_id": {
+                "$ref": "#/$defs/Identity"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "actor": {
+                "const": "undo"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "undo_of": {
+                "$ref": "#/$defs/Identity"
+              }
+            }
+          }
+        }
+      ],
+      "x-implementation-status": "partial: actual source transactions; other operations/admission/grants registered later"
+    },
+    "OperationReceipt": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "record_type": {
+          "const": "operation_receipt"
+        },
+        "store_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "document_id": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Identity"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "operation_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "operation_kind": {
+          "type": "string",
+          "enum": [
+            "source_edit",
+            "undo",
+            "run_cells",
+            "scratch",
+            "media_prepare",
+            "save_file"
+          ]
+        },
+        "request_hash": {
+          "$ref": "#/$defs/Sha256"
+        },
+        "phase": {
+          "type": "string",
+          "enum": [
+            "accepted",
+            "queued",
+            "running",
+            "cancelling",
+            "completed",
+            "partial",
+            "failed",
+            "cancelled",
+            "unknown"
+          ]
+        },
+        "transaction_id": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Identity"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "committed_revision": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Serial"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "accepted_result_ids": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Identity"
+          },
+          "uniqueItems": true
+        },
+        "details_blob_hash": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/BlobHash"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "details_retention": {
+          "type": "string",
+          "enum": [
+            "full",
+            "tombstone"
+          ]
+        },
+        "error_code": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Identity"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "updated_at": {
+          "$ref": "#/$defs/Timestamp"
+        }
+      },
+      "required": [
+        "record_type",
+        "store_id",
+        "document_id",
+        "operation_id",
+        "operation_kind",
+        "request_hash",
+        "phase",
+        "transaction_id",
+        "committed_revision",
+        "accepted_result_ids",
+        "details_blob_hash",
+        "details_retention",
+        "error_code",
+        "updated_at"
+      ],
+      "description": "幂等事实保留；终止状态转移、操作归属及参数散列由宿主验证，不以 expired token 代替 ledger ID。",
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "operation_kind": {
+                "enum": [
+                  "source_edit",
+                  "undo"
+                ]
+              },
+              "phase": {
+                "const": "completed"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "document_id": {
+                "$ref": "#/$defs/Identity"
+              },
+              "transaction_id": {
+                "$ref": "#/$defs/Identity"
+              },
+              "committed_revision": {
+                "$ref": "#/$defs/Serial"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "details_retention": {
+                "const": "tombstone"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "details_blob_hash": {
+                "type": "null"
+              }
+            }
+          }
+        }
+      ],
+      "x-implementation-status": "partial: actual source transactions; other operations/admission/grants registered later"
+    },
+    "NativeSourceCommit": {
+      "type": "object",
+      "properties": {
+        "protocol_version": {
+          "const": 1
+        },
+        "generation": {
+          "$ref": "#/$defs/Serial"
+        },
+        "commit": {
+          "$ref": "#/$defs/DocumentCommit"
+        },
+        "before": {
+          "$ref": "#/$defs/NativeSourceSnapshot"
+        },
+        "after": {
+          "$ref": "#/$defs/NativeSourceSnapshot"
+        },
+        "calculation_change": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/NativeCalculationChange"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "undo_group": {
+          "$ref": "#/$defs/NativeUndoGroup"
+        },
+        "input_group_id": {
+          "$ref": "#/$defs/Identity"
+        }
+      },
+      "required": [
+        "protocol_version",
+        "generation",
+        "commit",
+        "before",
+        "after",
+        "calculation_change"
+      ],
+      "additionalProperties": false
+    },
+    "NativeDurableSourceReceipt": {
+      "type": "object",
+      "properties": {
+        "protocol_version": {
+          "const": 1
+        },
+        "receipt": {
+          "$ref": "#/$defs/OperationReceipt"
+        },
+        "snapshot_hash": {
+          "$ref": "#/$defs/Sha256"
+        },
+        "inverse_plan_hash": {
+          "$ref": "#/$defs/Sha256"
+        },
+        "execution_epoch": {
+          "$ref": "#/$defs/Serial"
+        },
+        "outbox_event_id": {
+          "$ref": "#/$defs/Identity"
+        }
+      },
+      "required": [
+        "protocol_version",
+        "receipt",
+        "snapshot_hash",
+        "inverse_plan_hash",
+        "execution_epoch",
+        "outbox_event_id"
+      ],
+      "additionalProperties": false
+    },
+    "CellIdentity": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 256,
+      "description": "源码单元格ID沿用.omnb v1的非空文本；按原UTF8区分，不作为路径或operation身份。"
+    },
+    "InsertSourceCell": {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "const": "insert_cell"
+        },
+        "cell": {
+          "$ref": "#/$defs/NativeSourceCell"
+        },
+        "after_cell_id": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/CellIdentity"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "kind",
+        "cell",
+        "after_cell_id"
+      ],
+      "additionalProperties": false
+    },
+    "UpdateSourceCell": {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "const": "update_cell"
+        },
+        "cell": {
+          "$ref": "#/$defs/NativeSourceCell"
+        }
+      },
+      "required": [
+        "kind",
+        "cell"
+      ],
+      "additionalProperties": false
+    },
+    "DeleteSourceCells": {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "const": "delete_cells"
+        },
+        "cell_ids": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/CellIdentity"
+          },
+          "minItems": 1,
+          "maxItems": 64,
+          "uniqueItems": true
+        }
+      },
+      "required": [
+        "kind",
+        "cell_ids"
+      ],
+      "additionalProperties": false
+    },
+    "MoveSourceCells": {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "const": "move_cells"
+        },
+        "cell_ids": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/CellIdentity"
+          },
+          "minItems": 1,
+          "maxItems": 64,
+          "uniqueItems": true
+        },
+        "after_cell_id": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/CellIdentity"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "kind",
+        "cell_ids",
+        "after_cell_id"
+      ],
+      "additionalProperties": false
+    },
+    "RenameSourceNotebook": {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "const": "rename_notebook"
+        },
+        "title": {
+          "type": "string",
+          "maxLength": 16384
+        }
+      },
+      "required": [
+        "kind",
+        "title"
+      ],
+      "additionalProperties": false
+    },
+    "NativeSourceOperation": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/InsertSourceCell"
+        },
+        {
+          "$ref": "#/$defs/UpdateSourceCell"
+        },
+        {
+          "$ref": "#/$defs/DeleteSourceCells"
+        },
+        {
+          "$ref": "#/$defs/MoveSourceCells"
+        },
+        {
+          "$ref": "#/$defs/RenameSourceNotebook"
+        }
+      ]
+    },
+    "NativeCalculationSettings": {
+      "type": "object",
+      "properties": {
+        "dialect": {
+          "type": "string",
+          "enum": [
+            "auto",
+            "modern",
+            "wolfram"
+          ]
+        },
+        "constants": {
+          "type": "string",
+          "enum": [
+            "math",
+            "strict"
+          ]
+        },
+        "reactive": {
+          "type": "boolean"
+        },
+        "auto_run_dependents": {
+          "type": "boolean"
+        },
+        "show_steps": {
+          "type": "boolean"
+        },
+        "auto_plot": {
+          "type": "boolean"
+        },
+        "eval_timeout_ms": {
+          "$ref": "#/$defs/Serial"
+        }
+      },
+      "required": [
+        "dialect",
+        "constants",
+        "reactive",
+        "auto_run_dependents",
+        "show_steps",
+        "auto_plot",
+        "eval_timeout_ms"
+      ],
+      "additionalProperties": false
+    },
+    "NativeCalculationChange": {
+      "type": "object",
+      "properties": {
+        "before": {
+          "$ref": "#/$defs/NativeCalculationSettings"
+        },
+        "after": {
+          "$ref": "#/$defs/NativeCalculationSettings"
+        }
+      },
+      "required": [
+        "before",
+        "after"
+      ],
+      "additionalProperties": false
+    },
+    "NativeEditorTarget": {
+      "type": "object",
+      "properties": {
+        "cell_id": {
+          "$ref": "#/$defs/CellIdentity"
+        },
+        "editor_generation": {
+          "$ref": "#/$defs/Serial"
+        },
+        "draft_sequence": {
+          "$ref": "#/$defs/Serial"
+        },
+        "base_cell_revision": {
+          "$ref": "#/$defs/Serial"
+        },
+        "source_hash": {
+          "$ref": "#/$defs/Sha256"
+        },
+        "is_composing": {
+          "type": "boolean"
+        },
+        "is_dirty": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "cell_id",
+        "editor_generation",
+        "draft_sequence",
+        "base_cell_revision",
+        "source_hash",
+        "is_composing",
+        "is_dirty"
+      ],
+      "additionalProperties": false
+    },
+    "NativeEditorFence": {
+      "type": "object",
+      "properties": {
+        "protocol_version": {
+          "const": 1
+        },
+        "fence_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "runtime_instance_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "document_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "document_generation": {
+          "$ref": "#/$defs/Serial"
+        },
+        "source_revision": {
+          "$ref": "#/$defs/Serial"
+        },
+        "source_snapshot_hash": {
+          "$ref": "#/$defs/Sha256"
+        },
+        "issued_ms": {
+          "$ref": "#/$defs/Serial"
+        },
+        "expires_ms": {
+          "$ref": "#/$defs/Serial"
+        },
+        "targets": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/NativeEditorTarget"
+          },
+          "maxItems": 1000
+        }
+      },
+      "required": [
+        "protocol_version",
+        "fence_id",
+        "runtime_instance_id",
+        "document_id",
+        "document_generation",
+        "source_revision",
+        "source_snapshot_hash",
+        "issued_ms",
+        "expires_ms",
+        "targets"
+      ],
+      "additionalProperties": false
+    },
+    "NativeSourceAdmission": {
+      "type": "object",
+      "properties": {
+        "protocol_version": {
+          "const": 1
+        },
+        "document_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "operation_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "request_hash": {
+          "$ref": "#/$defs/Sha256"
+        },
+        "phase": {
+          "type": "string",
+          "enum": [
+            "accepted",
+            "completed",
+            "cancelled",
+            "failed",
+            "unknown"
+          ]
+        },
+        "created_by_runtime": {
+          "$ref": "#/$defs/Identity"
+        },
+        "receipt": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/NativeDurableSourceReceipt"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "protocol_version",
+        "document_id",
+        "operation_id",
+        "request_hash",
+        "phase",
+        "created_by_runtime",
+        "receipt"
+      ],
+      "additionalProperties": false
+    },
+    "NativeCommitState": {
+      "type": "object",
+      "properties": {
+        "protocol_version": {
+          "const": 1
+        },
+        "document_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "operation_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "request_hash": {
+          "$ref": "#/$defs/Sha256"
+        },
+        "phase": {
+          "type": "string",
+          "enum": [
+            "awaiting_admission",
+            "awaiting_fence",
+            "writing",
+            "committing",
+            "unknown",
+            "completed",
+            "cancelled",
+            "failed"
+          ]
+        },
+        "cancel_requested": {
+          "type": "boolean"
+        },
+        "receipt": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/NativeDurableSourceReceipt"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "protocol_version",
+        "document_id",
+        "operation_id",
+        "request_hash",
+        "phase",
+        "cancel_requested",
+        "receipt"
+      ],
+      "additionalProperties": false
+    },
+    "NativeEditorState": {
+      "type": "object",
+      "properties": {
+        "runtime_instance_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "document_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "document_generation": {
+          "$ref": "#/$defs/Serial"
+        },
+        "source_revision": {
+          "$ref": "#/$defs/Serial"
+        },
+        "targets": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/NativeEditorTarget"
+          },
+          "maxItems": 1000
+        }
+      },
+      "required": [
+        "runtime_instance_id",
+        "document_id",
+        "document_generation",
+        "source_revision",
+        "targets"
+      ],
+      "additionalProperties": false
+    },
+    "SourceOpen": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "const": "source_open"
+        },
+        "snapshot": {
+          "$ref": "#/$defs/NativeSourceSnapshot"
+        },
+        "store_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "calculation": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/NativeCalculationSettings"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "config_revision": {
+          "$ref": "#/$defs/Serial"
+        }
+      },
+      "required": [
+        "type",
+        "snapshot",
+        "store_id",
+        "calculation",
+        "config_revision"
+      ],
+      "additionalProperties": false
+    },
+    "SourceRead": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "const": "source_read"
+        }
+      },
+      "required": [
+        "type"
+      ],
+      "additionalProperties": false
+    },
+    "SourceSnapshotRef": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "const": "source_snapshot_ref"
+        },
+        "complete_cell_ids": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/CellIdentity"
+          },
+          "maxItems": 10000
+        }
+      },
+      "required": [
+        "type",
+        "complete_cell_ids"
+      ],
+      "additionalProperties": false
+    },
+    "SourcePreview": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "const": "source_preview"
+        },
+        "arguments": {
+          "type": "object"
+        }
+      },
+      "required": [
+        "type",
+        "arguments"
+      ],
+      "additionalProperties": false
+    },
+    "SourceBegin": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "const": "source_begin"
+        },
+        "preview_ref": {
+          "$ref": "#/$defs/Identity"
+        }
+      },
+      "required": [
+        "type",
+        "preview_ref"
+      ],
+      "additionalProperties": false
+    },
+    "SourceAdmitted": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "const": "source_admitted"
+        },
+        "operation_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "admission": {
+          "$ref": "#/$defs/NativeSourceAdmission"
+        }
+      },
+      "required": [
+        "type",
+        "operation_id",
+        "admission"
+      ],
+      "additionalProperties": false
+    },
+    "SourceFenced": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "const": "source_fenced"
+        },
+        "operation_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "fence": {
+          "$ref": "#/$defs/NativeEditorFence"
+        }
+      },
+      "required": [
+        "type",
+        "operation_id",
+        "fence"
+      ],
+      "additionalProperties": false
+    },
+    "SourceBarrier": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "const": "source_barrier"
+        },
+        "operation_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "fence_id": {
+          "$ref": "#/$defs/Identity"
+        }
+      },
+      "required": [
+        "type",
+        "operation_id",
+        "fence_id"
+      ],
+      "additionalProperties": false
+    },
+    "SourceUnknown": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "const": "source_unknown"
+        },
+        "operation_id": {
+          "$ref": "#/$defs/Identity"
+        }
+      },
+      "required": [
+        "type",
+        "operation_id"
+      ],
+      "additionalProperties": false
+    },
+    "SourceCompleted": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "const": "source_completed"
+        },
+        "operation_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "receipt": {
+          "$ref": "#/$defs/NativeDurableSourceReceipt"
+        }
+      },
+      "required": [
+        "type",
+        "operation_id",
+        "receipt"
+      ],
+      "additionalProperties": false
+    },
+    "SourceSettled": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "const": "source_settled"
+        },
+        "operation_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "cancelled": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "type",
+        "operation_id",
+        "cancelled"
+      ],
+      "additionalProperties": false
+    },
+    "SourceStatus": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "const": "source_status"
+        },
+        "operation_id": {
+          "$ref": "#/$defs/Identity"
+        }
+      },
+      "required": [
+        "type",
+        "operation_id"
+      ],
+      "additionalProperties": false
+    },
+    "SourceEditorChanged": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "const": "source_editor_changed"
+        },
+        "state": {
+          "$ref": "#/$defs/NativeEditorState"
+        }
+      },
+      "required": [
+        "type",
+        "state"
+      ],
+      "additionalProperties": false
+    },
+    "NativeSourceHostCommand": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/SourceOpen"
+        },
+        {
+          "$ref": "#/$defs/SourceRead"
+        },
+        {
+          "$ref": "#/$defs/SourceSnapshotRef"
+        },
+        {
+          "$ref": "#/$defs/SourcePreview"
+        },
+        {
+          "$ref": "#/$defs/SourceBegin"
+        },
+        {
+          "$ref": "#/$defs/SourceAdmitted"
+        },
+        {
+          "$ref": "#/$defs/SourceFenced"
+        },
+        {
+          "$ref": "#/$defs/SourceBarrier"
+        },
+        {
+          "$ref": "#/$defs/SourceUnknown"
+        },
+        {
+          "$ref": "#/$defs/SourceCompleted"
+        },
+        {
+          "$ref": "#/$defs/SourceSettled"
+        },
+        {
+          "$ref": "#/$defs/SourceStatus"
+        },
+        {
+          "$ref": "#/$defs/SourceEditorChanged"
+        },
+        {
+          "$ref": "#/$defs/SourcePrepareManual"
+        },
+        {
+          "$ref": "#/$defs/SourcePrepareUndo"
+        },
+        {
+          "$ref": "#/$defs/SourceRecoverUndo"
+        },
+        {
+          "$ref": "#/$defs/SourceBeginAgent"
+        }
+      ]
+    },
+    "NativeSourceHostReply": {
+      "type": "object",
+      "properties": {
+        "protocol_version": {
+          "const": 1
+        },
+        "kind": {
+          "type": "string",
+          "enum": [
+            "opened",
+            "source",
+            "snapshot_ref",
+            "preview",
+            "commit_plan",
+            "state",
+            "editor_updated"
+          ]
+        },
+        "document_generation": {
+          "$ref": "#/$defs/Serial"
+        },
+        "snapshot": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/NativeSourceSnapshot"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "plan": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/NativeSourceCommit"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "preview": {
+          "anyOf": [
+            {
+              "type": "object"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "reference": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Identity"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "operation": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/NativeCommitState"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "owner_time_ms": {
+          "$ref": "#/$defs/Serial"
+        }
+      },
+      "required": [
+        "protocol_version",
+        "kind",
+        "document_generation",
+        "snapshot",
+        "plan",
+        "preview",
+        "reference",
+        "operation",
+        "owner_time_ms"
+      ],
+      "additionalProperties": false
+    },
+    "SourcePrepareManual": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "const": "source_prepare_manual"
+        },
+        "operations": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/NativeSourceOperation"
+          },
+          "minItems": 1,
+          "maxItems": 64
+        },
+        "input_group_id": {
+          "$ref": "#/$defs/Identity"
+        }
+      },
+      "required": [
+        "type",
+        "operations"
+      ],
+      "additionalProperties": false
+    },
+    "NativeUndoGroup": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "group_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "transaction_ids": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Identity"
+          },
+          "minItems": 1,
+          "maxItems": 32,
+          "uniqueItems": true
+        }
+      },
+      "required": [
+        "group_id",
+        "transaction_ids"
+      ]
+    },
+    "NativeStoredSourceTransaction": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "store_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "transaction_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "plan": {
+          "$ref": "#/$defs/NativeSourceCommit"
+        },
+        "receipt": {
+          "$ref": "#/$defs/NativeDurableSourceReceipt"
+        }
+      },
+      "required": [
+        "store_id",
+        "transaction_id",
+        "plan",
+        "receipt"
+      ]
+    },
+    "SourcePrepareUndo": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "type": {
+          "const": "source_prepare_undo"
+        },
+        "operation_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "group_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "records": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/NativeStoredSourceTransaction"
+          },
+          "minItems": 1,
+          "maxItems": 32
+        }
+      },
+      "required": [
+        "type",
+        "operation_id",
+        "group_id",
+        "records"
+      ]
+    },
+    "SourceRecoverUndo": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "type": {
+          "const": "source_recover_undo"
+        },
+        "receipt": {
+          "$ref": "#/$defs/NativeDurableSourceReceipt"
+        }
+      },
+      "required": [
+        "type",
+        "receipt"
+      ]
+    },
+    "NativeSourceTransactionTombstone": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "record_type": {
+          "const": "source_transaction_tombstone"
+        },
+        "codec_version": {
+          "const": 1
+        },
+        "commit": {
+          "$ref": "#/$defs/DocumentCommit"
+        },
+        "calculation_change": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/NativeCalculationChange"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "undo_group": {
+          "$ref": "#/$defs/NativeUndoGroup"
+        },
+        "forward_plan_hash": {
+          "$ref": "#/$defs/Sha256"
+        },
+        "inverse_payload_hash": {
+          "$ref": "#/$defs/Sha256"
+        },
+        "input_group_id": {
+          "$ref": "#/$defs/Identity"
+        }
+      },
+      "required": [
+        "record_type",
+        "codec_version",
+        "commit",
+        "calculation_change",
+        "forward_plan_hash",
+        "inverse_payload_hash"
+      ]
+    },
+    "SourceBeginAgent": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "const": "source_begin_agent"
+        },
+        "operation_id": {
+          "$ref": "#/$defs/Identity"
+        }
+      },
+      "required": [
+        "type",
+        "operation_id"
+      ],
+      "additionalProperties": false
+    }
+  }
+}

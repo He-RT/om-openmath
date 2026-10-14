@@ -5,4 +5,6 @@ public enum AgentToolResultPartOutcome: String, Codable, Sendable {
   case `partial` = "partial"
   case `failed` = "failed"
   case `unavailable` = "unavailable"
+  case `cancelled` = "cancelled"
+  case `unknown` = "unknown"
 }

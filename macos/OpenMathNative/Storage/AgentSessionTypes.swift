@@ -88,11 +88,20 @@ struct SessionToolResult:Codable,Sendable {
   let outcome:SessionToolOutcome
 }
 enum SessionToolOutcome:String,Codable,Sendable {case completed,partial}
-enum RecoveredToolPhase:String,Codable,Sendable {case tool_not_started,tool_outcome_unknown,completed,partial,readonly_completed,readonly_failed}
+enum RecoveredToolPhase:String,Codable,Sendable {case tool_not_started,tool_outcome_unknown,completed,partial,readonly_completed,readonly_failed,failed,cancelled}
 /// A confirmed readonly data result grants no DocCommit/CAS operation or recovered authority.
 struct AgentReadonlyRecord:Codable,Sendable {
   let codecVersion:Int,kind:String,intent:NativeAgentToolIntent,resultRef:String,blobHash:String,byteLength:UInt64
   let canonical:AgentCanonicalMessage
+}
+/// A canonical effect data result is linked to the original durable admission and actual outcome.
+/// Its text/ref is retained data; decoding this record cannot authorize or rerun any operation.
+struct AgentEffectRecord:Codable,Sendable {
+  let codecVersion:Int,kind:String,intent:NativeAgentToolIntent,resultRef:String,blobHash:String,byteLength:UInt64
+  let canonical:AgentCanonicalMessage
+  let target:SessionOperationTarget?
+  let admissionEvent:String?
+  let outcomeEvent:String?
 }
 struct RecoveredTool:Codable,Sendable {
   let session:String

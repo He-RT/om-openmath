@@ -1,0 +1,235 @@
+[
+  {
+    "boundary": "session_event_before_commit.tool_admitted",
+    "root": "target/macos-storage-tests/session-ledger-kill-1mn3f1f1",
+    "exit_code": -9,
+    "recovery": {
+      "after": "tool_not_started",
+      "before": "tool_not_started",
+      "events": 1,
+      "requests": [],
+      "source_revision": 0
+    },
+    "session_events_after_repeated_recovery": 1,
+    "actual_http_calls_before": 0,
+    "actual_http_calls_after": 0,
+    "wire_sha256": null
+  },
+  {
+    "boundary": "session_event_committed.tool_admitted",
+    "root": "target/macos-storage-tests/session-ledger-kill-8nllfufy",
+    "exit_code": -9,
+    "recovery": {
+      "after": "tool_outcome_unknown",
+      "before": "tool_outcome_unknown",
+      "events": 2,
+      "requests": [],
+      "source_revision": 0
+    },
+    "session_events_after_repeated_recovery": 2,
+    "actual_http_calls_before": 0,
+    "actual_http_calls_after": 0,
+    "wire_sha256": null
+  },
+  {
+    "boundary": "tool_admission_acknowledged",
+    "root": "target/macos-storage-tests/session-ledger-kill-o5ons4cl",
+    "exit_code": -9,
+    "recovery": {
+      "after": "tool_outcome_unknown",
+      "before": "tool_outcome_unknown",
+      "events": 2,
+      "requests": [],
+      "source_revision": 0
+    },
+    "session_events_after_repeated_recovery": 2,
+    "actual_http_calls_before": 0,
+    "actual_http_calls_after": 0,
+    "wire_sha256": null
+  },
+  {
+    "boundary": "tool_execution_claimed",
+    "root": "target/macos-storage-tests/session-ledger-kill-lb9yv0q4",
+    "exit_code": -9,
+    "recovery": {
+      "after": "tool_outcome_unknown",
+      "before": "tool_outcome_unknown",
+      "events": 3,
+      "requests": [],
+      "source_revision": 0
+    },
+    "session_events_after_repeated_recovery": 3,
+    "actual_http_calls_before": 0,
+    "actual_http_calls_after": 0,
+    "wire_sha256": null
+  },
+  {
+    "boundary": "source_committed",
+    "root": "target/macos-storage-tests/session-ledger-kill-1g0sxu5z",
+    "exit_code": -9,
+    "recovery": {
+      "after": "completed",
+      "before": "tool_outcome_unknown",
+      "events": 4,
+      "requests": [],
+      "source_revision": 1
+    },
+    "session_events_after_repeated_recovery": 4,
+    "actual_http_calls_before": 0,
+    "actual_http_calls_after": 0,
+    "wire_sha256": null
+  },
+  {
+    "boundary": "tool_effect_returned",
+    "root": "target/macos-storage-tests/session-ledger-kill-sjgstxjd",
+    "exit_code": -9,
+    "recovery": {
+      "after": "completed",
+      "before": "tool_outcome_unknown",
+      "events": 4,
+      "requests": [],
+      "source_revision": 1
+    },
+    "session_events_after_repeated_recovery": 4,
+    "actual_http_calls_before": 0,
+    "actual_http_calls_after": 0,
+    "wire_sha256": null
+  },
+  {
+    "boundary": "session_event_before_commit.tool_result",
+    "root": "target/macos-storage-tests/session-ledger-kill-hzmq7kmz",
+    "exit_code": -9,
+    "recovery": {
+      "after": "completed",
+      "before": "tool_outcome_unknown",
+      "events": 4,
+      "requests": [],
+      "source_revision": 1
+    },
+    "session_events_after_repeated_recovery": 4,
+    "actual_http_calls_before": 0,
+    "actual_http_calls_after": 0,
+    "wire_sha256": null
+  },
+  {
+    "boundary": "session_event_committed.tool_result",
+    "root": "target/macos-storage-tests/session-ledger-kill-mq5cq97a",
+    "exit_code": -9,
+    "recovery": {
+      "after": "completed",
+      "before": "completed",
+      "events": 4,
+      "requests": [],
+      "source_revision": 1
+    },
+    "session_events_after_repeated_recovery": 4,
+    "actual_http_calls_before": 0,
+    "actual_http_calls_after": 0,
+    "wire_sha256": null
+  },
+  {
+    "boundary": "request_plan_acknowledged",
+    "root": "target/macos-storage-tests/session-ledger-kill-smflnwny",
+    "exit_code": -9,
+    "recovery": {
+      "after": "tool_not_started",
+      "before": "tool_not_started",
+      "events": 2,
+      "requests": [
+        {
+          "context": "context-crash",
+          "phase": "not_dispatched"
+        }
+      ],
+      "source_revision": 0
+    },
+    "session_events_after_repeated_recovery": 2,
+    "actual_http_calls_before": 0,
+    "actual_http_calls_after": 0,
+    "wire_sha256": null
+  },
+  {
+    "boundary": "request_dispatch_acknowledged",
+    "root": "target/macos-storage-tests/session-ledger-kill-mg7qv9bo",
+    "exit_code": -9,
+    "recovery": {
+      "after": "tool_not_started",
+      "before": "tool_not_started",
+      "events": 3,
+      "requests": [
+        {
+          "context": "context-crash",
+          "phase": "dispatch_outcome_unknown"
+        }
+      ],
+      "source_revision": 0
+    },
+    "session_events_after_repeated_recovery": 3,
+    "actual_http_calls_before": 0,
+    "actual_http_calls_after": 0,
+    "wire_sha256": null
+  },
+  {
+    "boundary": "request_response_observed",
+    "root": "target/macos-storage-tests/session-ledger-kill-zn_25qmj",
+    "exit_code": -9,
+    "recovery": {
+      "after": "tool_not_started",
+      "before": "tool_not_started",
+      "events": 3,
+      "requests": [
+        {
+          "context": "context-crash",
+          "phase": "dispatch_outcome_unknown"
+        }
+      ],
+      "source_revision": 0
+    },
+    "session_events_after_repeated_recovery": 3,
+    "actual_http_calls_before": 1,
+    "actual_http_calls_after": 1,
+    "wire_sha256": "20f2ed9e19f9d489568edd19ae287bf8dd6b92613889c56f1aa240e6d2910936"
+  },
+  {
+    "boundary": "request_response_acknowledged",
+    "root": "target/macos-storage-tests/session-ledger-kill-dvu2xqbh",
+    "exit_code": -9,
+    "recovery": {
+      "after": "tool_not_started",
+      "before": "tool_not_started",
+      "events": 4,
+      "requests": [
+        {
+          "context": "context-crash",
+          "phase": "response_observed"
+        }
+      ],
+      "source_revision": 0
+    },
+    "session_events_after_repeated_recovery": 4,
+    "actual_http_calls_before": 1,
+    "actual_http_calls_after": 1,
+    "wire_sha256": "20f2ed9e19f9d489568edd19ae287bf8dd6b92613889c56f1aa240e6d2910936"
+  },
+  {
+    "boundary": "request_finish_acknowledged",
+    "root": "target/macos-storage-tests/session-ledger-kill-kj_n64mz",
+    "exit_code": -9,
+    "recovery": {
+      "after": "tool_not_started",
+      "before": "tool_not_started",
+      "events": 5,
+      "requests": [
+        {
+          "context": "context-crash",
+          "phase": "finished"
+        }
+      ],
+      "source_revision": 0
+    },
+    "session_events_after_repeated_recovery": 5,
+    "actual_http_calls_before": 1,
+    "actual_http_calls_after": 1,
+    "wire_sha256": "20f2ed9e19f9d489568edd19ae287bf8dd6b92613889c56f1aa240e6d2910936"
+  }
+]

@@ -1,0 +1,21 @@
+    Checking om-agent-contract v0.1.0-pre-alpha.3 (/Users/hert/Projects/openmath/crates/om-agent-contract)
+   Compiling om-host-service v0.1.0-pre-alpha.3 (/Users/hert/Projects/openmath/crates/om-host-service)
+    Checking om-llm v0.1.0-pre-alpha.3 (/Users/hert/Projects/openmath/crates/om-llm)
+    Checking om-kernel v0.1.0-pre-alpha.3 (/Users/hert/Projects/openmath/crates/om-kernel)
+warning: missing documentation for a method
+  --> crates/om-host-service/src/agent/endpoint/effect.rs:53:5
+   |
+53 | /     pub fn register_effect(
+54 | |         &mut self,
+55 | |         intent: &ToolIntent,
+56 | |         scope: &ReferenceScope,
+57 | |         operation: Option<String>,
+58 | |         json: String,
+59 | |     ) -> Result<NativeAgentHostReply, String> {
+   | |_____________________________________________^
+   |
+   = note: requested on the command line with `-W missing-docs`
+
+warning: `om-host-service` (lib) generated 1 warning
+    Checking om-apple-ffi v0.1.0-pre-alpha.3 (/Users/hert/Projects/openmath/crates/om-apple-ffi)
+    Finished `dev` profile [unoptimized] target(s) in 14.10s

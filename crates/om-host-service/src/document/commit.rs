@@ -144,6 +144,17 @@ impl DocumentCommitController {
             .inspect(input, &self.owner, scope, now, time)
             .map_err(CommitError::Preview)
     }
+    /// Resolve the already frozen plan without admission, source changes or new identifiers.
+    pub fn frozen_preview(
+        &self,
+        reference: &str,
+        scope: &ReferenceScope,
+        now: u64,
+    ) -> Result<Arc<FrozenPreviewPlan>, CommitError> {
+        self.previews
+            .resolve_for_commit(reference, &self.owner, scope, now)
+            .map_err(CommitError::Preview)
+    }
     /// Begin only after original immutable preview resolution. Return a plan for physical durable
     /// admission; this does not mean a write has run or that a COMMIT may enter yet.
     pub fn begin(
@@ -159,6 +170,11 @@ impl DocumentCommitController {
             if self.runtime != scope.runtime
                 || pending.state.document_id != scope.document
                 || !scope.can_read
+                || pending.plan.as_ref().is_some_and(|p| {
+                    p.scope.task != scope.task
+                        || p.scope.task_generation != scope.task_generation
+                        || p.scope.grant_revision != scope.grant_revision
+                })
             {
                 return Err(CommitError::Invalid);
             }

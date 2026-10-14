@@ -4,7 +4,8 @@ import {createAssistantMessageEventStream, type AssistantMessage,type AssistantM
 import type {AgentTool} from '@earendil-works/pi-agent-core';
 import type {TSchema} from 'typebox';
 import {AgentRuntime} from './runtime.ts';
-import {encodeFrame,decodeCanonical,decodeReadonlyResult,schemaHash,strictJson} from './protocol.ts';
+import {notebookPatchResult} from './tools/notebook.ts';
+import {encodeFrame,decodeCanonical,decodeToolResult,schemaHash,strictJson} from './protocol.ts';
 import type {AgentIPCFrame,AgentHelloFrame,AgentCanonicalMessage,AgentModelRequestPayload,AgentToolResultPayload,AgentToolName} from './generated/protocol.ts';
 
 const toolSchema=JSON.parse(readFileSync(new URL('../../docs/design/agent-tools.schema.json',import.meta.url),'utf8'));
@@ -72,9 +73,9 @@ export class AgentBridge {
    }
    case 'model_event':this.#modelEvent(frame.payload);break;
    case 'tool_result':{
-    const p=frame.payload,pending=this.#tools.get(p.tool_call_id);if(!pending||pending.turn!==p.agent_turn_id||p.operation_ref!==null)throw new Error('IPC_TOOL_RECEIPT_REQUIRED');
-    if(p.outcome==='unavailable'){if(p.result_ref!==null||p.result_json!==null)throw new Error('IPC_TOOL_RECEIPT_REQUIRED');}
-    else {if(!p.result_ref||p.result_json===null)throw new Error('IPC_TOOL_RECEIPT_REQUIRED');const envelope=decodeReadonlyResult(pending.name,Buffer.from(p.result_json));if(envelope.status!==p.outcome||envelope.ok!==(p.outcome==='completed'))throw new Error('IPC_TOOL_RESULT_MISMATCH');}
+    const p=frame.payload,pending=this.#tools.get(p.tool_call_id);if(!pending||pending.turn!==p.agent_turn_id)throw new Error('IPC_TOOL_RECEIPT_REQUIRED');
+    if(p.outcome==='unavailable'){if(p.operation_ref!==null||p.result_ref!==null||p.result_json!==null)throw new Error('IPC_TOOL_RECEIPT_REQUIRED');}
+    else {if(!p.result_ref||p.result_json===null)throw new Error('IPC_TOOL_RECEIPT_REQUIRED');const envelope=decodeToolResult(pending.name,Buffer.from(p.result_json));if(envelope.status!==p.outcome||envelope.ok!==(p.outcome==='completed')||envelope.operation_ref!==p.operation_ref||(pending.name!=='apply_notebook_patch'&&p.operation_ref!==null))throw new Error('IPC_TOOL_RESULT_MISMATCH');}
     this.#tools.delete(frame.payload.tool_call_id);pending.resolve(frame.payload);break;
    }
    case 'cancel':this.#cancelled=true;this.#rejectPending(new Error('AGENT_CANCELLED'));this.#runtime!.abort();if(!this.#active)await this.#stop('cancelled');break;
@@ -87,7 +88,8 @@ export class AgentBridge {
   const tools:AgentTool[]=toolSchema.properties.tool.enum.map((name:AgentToolName)=>({name,label:name,description:'Native '+name,parameters:argumentsSchema(name),replay:'never',execute:async(call:string)=>{
    const result=this.#results.get(call);if(!result)throw new Error('IPC_TOOL_NOT_ACKED');this.#results.delete(call);
    if(result.outcome==='unavailable')return {content:[{type:'text',text:'Native tool unavailable'}],details:{outcome:result.outcome},isError:true,terminate:true};
-   return {content:[{type:'text',text:result.result_json!}],details:{outcome:result.outcome,resultRef:result.result_ref},isError:result.outcome!=='completed'};
+   if(name==='apply_notebook_patch')return notebookPatchResult(result);
+   return {content:[{type:'text',text:result.result_json!}],details:{outcome:result.outcome,resultRef:result.result_ref,operationRef:result.operation_ref},isError:result.outcome!=='completed',terminate:result.outcome==='unknown'||result.outcome==='cancelled'};
   }}));
   return new AgentRuntime(task,model,tools,{
    canonical:message=>{const canonical=this.#canonical.get(message);if(!canonical)throw new Error('IPC_MODEL_MESSAGE_MISSING');return canonical;},

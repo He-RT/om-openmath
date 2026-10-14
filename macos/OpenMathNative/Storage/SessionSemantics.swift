@@ -3,6 +3,18 @@ import Foundation
 /// Pure event interpretation. It has no executor and treats uncertain effects as uncertain;
 /// current document success comes only from verified external document facts.
 enum SessionSemantics {
+  static func effectRecord(_ bytes:Data)throws->AgentEffectRecord? {
+    guard let object=try JSONSerialization.jsonObject(with:bytes) as? [String:Any],object["kind"] as? String=="native_effect_result" else {return nil}
+    return try JSONDecoder().decode(AgentEffectRecord.self,from:bytes)
+  }
+  static func effectRecord(_ event:NativeSessionEvent)throws->AgentEffectRecord? {
+    guard event.event_kind == .recovery,let text=event.payload_inline_json.value else {return nil}
+    return try effectRecord(Data(text.utf8))
+  }
+  static func effectPhase(_ record:AgentEffectRecord)throws->RecoveredToolPhase {
+    guard record.canonical.parts.count==1,case .agent_tool_result_part(let part)=record.canonical.parts[0] else {throw StorageError.corruptIdentity}
+    switch part.outcome {case .completed:return .completed;case .failed:return .failed;case .cancelled:return .cancelled;case .unknown:return .tool_outcome_unknown;default:throw StorageError.corruptIdentity}
+  }
   static func readonlyRecord(_ bytes:Data)throws->AgentReadonlyRecord? {
     guard let object=try JSONSerialization.jsonObject(with:bytes) as? [String:Any],object["kind"] as? String=="native_readonly_result" else {return nil}
     return try JSONDecoder().decode(AgentReadonlyRecord.self,from:bytes)
@@ -94,6 +106,39 @@ enum SessionSemantics {
         } else {guard transition.responseBlobHash==nil,transition.responseByteLength==nil else {throw StorageError.corruptIdentity}}
       }
     case .recovery:
+      if let record=try effectRecord(input.payload) {
+        let intent=record.intent,message=record.canonical
+        guard record.codecVersion==1,intent.name == .apply_notebook_patch,
+          SourceValidation.identity(intent.operation_id),SourceValidation.identity(record.resultRef),KernelValidation.hash(record.blobHash),
+          record.byteLength>0,record.byteLength<=262144,input.eventID=="effect-"+intent.operation_id,
+          input.operation==record.target?.operationID,input.operationStore==record.target?.storeID,
+          input.parentEvent==intent.proposal_event_ref,input.turn==intent.agent_turn_id,
+          let proposal=events.first(where:{$0.event_kind == .assistant_end && $0.event_id==intent.proposal_event_ref}),
+          proposal.task_id.value==input.task,proposal.agent_turn_id.value==input.turn,
+          message.record_type == .canonical_agent_message,message.message_version==1,message.role == .tool,message.message_id==input.eventID,
+          message.task_id.value==input.task,message.agent_turn_id.value==input.turn,message.parts.count==1,
+          case .agent_tool_result_part(let part)=message.parts[0],part.part_id==input.eventID,part.tool_call_id==intent.tool_call_id,
+          part.operation_ref.value==record.target?.operationID,part.result_ref.value==record.resultRef else {throw SessionLedgerError.invalidTransition}
+        let end=try SessionValidation.payload(SessionAssistantEnd.self,proposal)
+        guard let call=end.calls.first(where:{$0.callID==intent.tool_call_id}),call.toolName==intent.name.rawValue,
+          KernelHashes.data(call.arguments)==intent.arguments_hash else {throw SessionLedgerError.invalidTransition}
+        _ = try effectPhase(record)
+        if let target=record.target {
+          try SessionValidation.target(target)
+          guard let admittedID=record.admissionEvent,let admitted=events.first(where:{$0.event_kind == .tool_admitted && $0.event_id==admittedID}),
+            admitted.task_id.value==input.task,admitted.agent_turn_id.value==input.turn else {throw SessionLedgerError.invalidTransition}
+          let admission=try SessionValidation.payload(SessionToolAdmission.self,admitted)
+          guard admission.target==target,admission.callID==intent.tool_call_id,admission.argumentsHash==intent.arguments_hash else {throw SessionLedgerError.invalidTransition}
+          if part.outcome == .completed {
+            guard let resultID=record.outcomeEvent,let result=events.first(where:{$0.event_kind == .tool_result && $0.event_id==resultID && $0.parent_event_id.value==admittedID}),
+              result.operation_id.value==target.operationID,result.operation_store_id.value==target.storeID,
+              (try SessionValidation.payload(SessionToolResult.self,result)).outcome == .completed else {throw SessionLedgerError.invalidTransition}
+          } else {guard record.outcomeEvent==nil else {throw SessionLedgerError.invalidTransition}}
+        } else {guard record.admissionEvent==nil,record.outcomeEvent==nil,part.outcome == .failed else {throw SessionLedgerError.invalidTransition}}
+        for event in events where event.event_kind == .recovery {
+          if let old=try effectRecord(event),old.intent.tool_call_id==intent.tool_call_id {throw SessionLedgerError.invalidTransition}
+        }
+      }
       if let record=try readonlyRecord(input.payload) {
         let intent=record.intent,message=record.canonical
         guard record.codecVersion==1,[.read_notebook,.search_functions,.get_function_docs,.preview_source].contains(intent.name),
@@ -138,6 +183,11 @@ enum SessionSemantics {
           else {phase=admissionEvent==nil ? .tool_not_started : .tool_outcome_unknown}
           var resultID=result?.event_id
           for next in events where next.event_kind == .recovery && next.parent_event_id.value==event.event_id {
+            if let record=try effectRecord(next),record.intent.tool_call_id==call.callID {
+              guard record.target==admission?.target,record.admissionEvent==admissionEvent?.event_id else {throw StorageError.corruptIdentity}
+              let effectPhase=try effectPhase(record)
+              if !(effectPhase == .tool_outcome_unknown && phase == .completed) {phase=effectPhase;resultID=next.event_id}
+            }
             if let record=try readonlyRecord(next),record.intent.tool_call_id==call.callID {
               guard admissionEvent==nil,resultID==nil else {throw StorageError.corruptIdentity}
               phase=try readonlyPhase(record);resultID=next.event_id

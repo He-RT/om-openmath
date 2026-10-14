@@ -1,0 +1,39 @@
+{
+  "task": "R4.3.06",
+  "scope": "actual atomic apply, current32 final gates untouched",
+  "new_native_commands": {
+    "source_begin_agent": "only ACKed native intent operation_id; caller cannot resupply preview/doc/grants/source",
+    "agent_effect_tool": "only scoped original intent ID and bounded native editor failure diagnostic; actual original-ID state determines phase",
+    "source_barrier": "existing short try-lock physical callback; looks up current Agent scope/grants for mapped source operation"
+  },
+  "result_lifecycle": "actual SessionToolPort admission/start precedes DocCommitPort IO; only matching original durable tool_result may support canonical completed effect; every data Blob is independently read back before native confirmation",
+  "cancellation_fix": "DocCommitPort settleNoCommit reads the native original operation cancel_requested before settling durable admission, retaining cancellation when direct host stop won at the final barrier",
+  "unknown_behavior": "actual Pi SDK terminate=true after unknown/cancelled result; no next model request or effect replay. Later actual receipt readback can establish completed in indexed/fallback recovery while keeping historical unknown canonical bytes unchanged",
+  "boundary_evidence": "5 boundary cases use explicit synthetic peer frames with actual native C ABI, actual SQLite canonical ACK and actual source port; no helper/model or OS IME candidate window in that fixture. Four-turn fixture separately uses actual signed bundled Pi and actual URLSession loopbacks",
+  "initial_failures": [
+    {
+      "kind": "generator tool output, transcribed exception; no on-disk raw log",
+      "input": "new optional enum was initially type:[string,null] with enum including JSON null",
+      "actual_output": "AttributeError: 'NoneType' object has no attribute 'upper' at scripts/native_contracts.py pascal(name)",
+      "correction": "use existing generator-supported anyOf nonnull enum and explicit null before generating389 DTOs"
+    },
+    {
+      "kind": "initial cargo check warning, full log retained",
+      "actual_output": "missing documentation for public register_effect",
+      "correction": "added exact native source authority documentation; -D warnings Clippy passed"
+    },
+    {
+      "kind": "original apply fixture failed on preview roundtrip, complete original attempt/input compressed",
+      "actual_output": "fixtures/main.swift:123: Precondition failed",
+      "cause": "structural Swift Codable decoders accepted readonly shape as effect shape because new effect target fields are optional; fixture did not filter kind, making synthetic tool call IDs/count wrong",
+      "correction": "explicit kind==native_effect_result filter in test factory and result collection; production SessionSemantics already checks kind before decode"
+    },
+    {
+      "kind": "failed patch application, no mutation",
+      "actual_output": "Expected NativeAgentBindHistory error HISTORY_PRODUCER_REQUIRED did not match existing SOURCE_PRODUCER_REQUIRED",
+      "correction": "read exact current source then applied correct patch"
+    }
+  ],
+  "pending": "R4.3.07 actual run/inspect/scratch; full ContextSnapshot producer R4.4.12, Registry/UI/live remain later; physical lockscreen/R4.2.03 candidate windows not claimed; preserve user OS input settings",
+  "final_candidate_gate": false
+}

@@ -1,0 +1,10 @@
+    Checking om-agent-contract v0.1.0-pre-alpha.3 (/Users/hert/Projects/openmath/crates/om-agent-contract)
+   Compiling om-host-service v0.1.0-pre-alpha.3 (/Users/hert/Projects/openmath/crates/om-host-service)
+    Checking om-llm v0.1.0-pre-alpha.3 (/Users/hert/Projects/openmath/crates/om-llm)
+    Checking om-kernel v0.1.0-pre-alpha.3 (/Users/hert/Projects/openmath/crates/om-kernel)
+    Checking om-desktop v0.1.0-pre-alpha.3 (/Users/hert/Projects/openmath/app/src-tauri)
+    Checking om-ios-ffi v0.1.0-pre-alpha.3 (/Users/hert/Projects/openmath/crates/om-ios-ffi)
+    Checking om-cli v0.1.0-pre-alpha.3 (/Users/hert/Projects/openmath/crates/om-cli)
+    Checking om-wasm v0.1.0-pre-alpha.3 (/Users/hert/Projects/openmath/crates/om-wasm)
+    Checking om-apple-ffi v0.1.0-pre-alpha.3 (/Users/hert/Projects/openmath/crates/om-apple-ffi)
+    Finished `dev` profile [unoptimized] target(s) in 49.35s

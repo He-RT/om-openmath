@@ -24,4 +24,6 @@ pub enum NativeAgentHostCommand {
     NativeAgentConfirmTool(NativeAgentConfirmTool),
     /// Variant `NativeAgentBindHistory`.
     NativeAgentBindHistory(NativeAgentBindHistory),
+    /// Variant `NativeAgentEffectTool`.
+    NativeAgentEffectTool(NativeAgentEffectTool),
 }

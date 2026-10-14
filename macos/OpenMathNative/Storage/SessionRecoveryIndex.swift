@@ -91,6 +91,11 @@ final class SessionRecoveryIndex {
     var ids=Set<String>(),parents=Set<String>()
     if let parent=input.parentEvent {ids.insert(parent);parents.insert(parent)}
     switch input.kind {
+    case .recovery:
+      if let record=try SessionSemantics.effectRecord(input.payload) {
+        if let id=record.admissionEvent {ids.insert(id);parents.insert(id)}
+        if let id=record.outcomeEvent {ids.insert(id)}
+      }
     case .assistant_end:
       let end=try JSONDecoder().decode(SessionAssistantEnd.self,from:input.payload)
       for call in end.calls {

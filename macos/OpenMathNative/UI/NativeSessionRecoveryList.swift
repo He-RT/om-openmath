@@ -49,7 +49,7 @@ struct NativeSessionRecoveryList:View {
     }.padding(20).frame(width:700,height:480)
   }
   private func toolText(_ phase:RecoveredToolPhase)->String {
-    switch phase {case .tool_not_started:return "尚未接纳，未执行";case .tool_outcome_unknown:return "效果未知，需要核对原操作";case .completed:return "原操作已确认完成";case .partial:return "已确认部分效果，未全部完成";case .readonly_completed:return "只读查询已完成";case .readonly_failed:return "只读查询已记录失败"}
+    switch phase {case .tool_not_started:return "尚未接纳，未执行";case .tool_outcome_unknown:return "效果未知，需要核对原操作";case .completed:return "原操作已确认完成";case .partial:return "已确认部分效果，未全部完成";case .readonly_completed:return "只读查询已完成";case .readonly_failed:return "只读查询已记录失败";case .failed:return "修改未提交";case .cancelled:return "修改已取消"}
   }
   private func requestText(_ phase:RecoveredRequestPhase)->String {
     switch phase {case .not_dispatched:return "尚未发送";case .dispatch_outcome_unknown:return "发送结果未知，未重发";case .response_observed:return "已收到响应，回复中断";case .finished:return "请求已完成";case .failed:return "请求已记录失败"}

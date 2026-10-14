@@ -40,7 +40,7 @@ actor NativeAppStorage {
     self.document=document;self.host=host;self.source=source;self.files=files;self.drafts=drafts;self.storage=storage
     self.undo=UndoCoordinator {transactions,group,operation in try await source.undo(transactions:transactions,group:group,operation:operation)}
     self.backup=NativeDraftBackup(storage:storage,store:drafts,owner:backupOwner)
-    self.agent=AgentSessionService(host:host,storage:storage,document:drafts.confirmed.document_id,generation:drafts.documentGeneration)
+    self.agent=AgentSessionService(host:host,storage:storage,document:drafts.confirmed.document_id,generation:drafts.documentGeneration,sourcePort:source)
     self.runtime=NotebookRuntime(host:host,storage:storage,source:source)
     runtime.selectedCell=drafts.confirmed.file.cells.first?.id
     runtime.beforeRun={ [weak self] in

@@ -36,4 +36,6 @@ pub enum NativeSourceHostCommand {
     SourcePrepareUndo(SourcePrepareUndo),
     /// Variant `SourceRecoverUndo`.
     SourceRecoverUndo(SourceRecoverUndo),
+    /// Variant `SourceBeginAgent`.
+    SourceBeginAgent(SourceBeginAgent),
 }

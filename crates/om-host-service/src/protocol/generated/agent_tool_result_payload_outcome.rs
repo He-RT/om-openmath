@@ -15,4 +15,10 @@ pub enum AgentToolResultPayloadOutcome {
     /// Contract value `unavailable`.
     #[serde(rename = "unavailable")]
     Unavailable,
+    /// Contract value `cancelled`.
+    #[serde(rename = "cancelled")]
+    Cancelled,
+    /// Contract value `unknown`.
+    #[serde(rename = "unknown")]
+    Unknown,
 }

@@ -167,7 +167,9 @@
             "completed",
             "partial",
             "failed",
-            "unavailable"
+            "unavailable",
+            "cancelled",
+            "unknown"
           ],
           "type": "string"
         }
@@ -983,7 +985,9 @@
             "completed",
             "partial",
             "failed",
-            "unavailable"
+            "unavailable",
+            "cancelled",
+            "unknown"
           ],
           "type": "string"
         },
@@ -2003,6 +2007,9 @@
         },
         {
           "$ref": "#/$defs/NativeAgentBindHistory"
+        },
+        {
+          "$ref": "#/$defs/NativeAgentEffectTool"
         }
       ]
     },
@@ -2186,6 +2193,16 @@
               "type": "null"
             }
           ]
+        },
+        "effect_result": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/NativeAgentEffectResult"
+            },
+            {
+              "type": "null"
+            }
+          ]
         }
       },
       "required": [
@@ -2203,7 +2220,8 @@
         "source_sequence",
         "tool_intent",
         "request_intent",
-        "readonly_result"
+        "readonly_result",
+        "effect_result"
       ],
       "additionalProperties": false
     },
@@ -2347,6 +2365,99 @@
         "scope",
         "expected_snapshot_hash",
         "transaction_refs"
+      ],
+      "additionalProperties": false
+    },
+    "NativeAgentEffectResult": {
+      "type": "object",
+      "properties": {
+        "operation_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "agent_turn_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "tool_call_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "name": {
+          "$ref": "#/$defs/AgentToolName"
+        },
+        "result_ref": {
+          "$ref": "#/$defs/Identity"
+        },
+        "result_json": {
+          "type": "string",
+          "maxLength": 262144
+        },
+        "result_hash": {
+          "$ref": "#/$defs/Sha256"
+        },
+        "outcome": {
+          "type": "string",
+          "enum": [
+            "completed",
+            "failed",
+            "cancelled",
+            "unknown"
+          ]
+        },
+        "operation_ref": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Identity"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "operation_id",
+        "agent_turn_id",
+        "tool_call_id",
+        "name",
+        "result_ref",
+        "result_json",
+        "result_hash",
+        "outcome",
+        "operation_ref"
+      ],
+      "additionalProperties": false
+    },
+    "NativeAgentEffectTool": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "const": "agent_effect_tool"
+        },
+        "scope": {
+          "$ref": "#/$defs/NativeAgentControlScope"
+        },
+        "operation_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "failure_code": {
+          "anyOf": [
+            {
+              "type": "string",
+              "enum": [
+                "EDITING_BUSY",
+                "PREVIEW_MISMATCH"
+              ]
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "type",
+        "scope",
+        "operation_id",
+        "failure_code"
       ],
       "additionalProperties": false
     }

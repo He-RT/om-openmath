@@ -49,3 +49,19 @@ test('actual Pi consumes a complete native readonly result and continues to a se
  assert.equal(decodeReadonlyResult('read_notebook',Buffer.from(JSON.stringify(nativeResult))).ok,true);
  for(const changed of [{...nativeResult,ok:false},{...nativeResult,error:{code:'INVALID_ARGUMENT'}},{...nativeResult,extra:true},{...nativeResult,data:{...nativeResult.data,extra:true}}])assert.throws(()=>decodeReadonlyResult('read_notebook',Buffer.from(JSON.stringify(changed))),/IPC_INVALID_TOOL_RESULT/);
 });
+test('actual Pi settles an unknown source effect without a second model request or write retry',async()=>{
+ const observed=[];let bridge,sequence=1,turn=0;const done=Promise.withResolvers();
+ const deliver=f=>bridge.accept(f,raw(f));
+ const nativeResult={ok:false,status:'unknown',request_ref:'native-intent',operation_ref:'original-source-operation',document:{id:'document',generation:1,revision:0},data:null,error:{code:'UNKNOWN_OUTCOME',message:'Read original operation before continuing',recovery:'query_operation',details:{}},pagination:{truncated:false,next_cursor:null}};
+ bridge=new AgentBridge(async bytes=>{
+  const frame=decodeFrame(bytes.slice(0,-1));observed.push(frame);
+  const reply=(kind,payload,reply_to=null)=>deliver(hostFrame(kind,++sequence,payload,reply_to));
+  if(frame.type==='ready')await reply('user_input',{event_ref:'input',message:user});
+  if(frame.type==='prepare_request'){turn++;assert.equal(turn,1,'uncertain source effect requested another model turn');await reply('model_request',{...frame.payload,context_ref:'context',model_config_ref:'config'});}
+  if(frame.type==='model_request')await reply('model_event',{agent_turn_id:frame.payload.agent_turn_id,request_id:frame.payload.request_id,byte_offset:0,text:'',phase:'finished',canonical_message:{...user,message_id:'assistant',role:'assistant',agent_turn_id:frame.payload.agent_turn_id,parts:[{kind:'tool_call',part_id:'call',tool_call_id:'apply-call',name:'apply_notebook_patch',arguments_json:'{"preview_ref":"frozen-preview"}'}]}});
+  if(frame.type==='transcript_event')await reply('ack',{event_id:frame.payload.event_id,event_sequence:1,receipt_hash:'a'.repeat(64)},frame.message_id);
+  if(frame.type==='tool_call')await reply('tool_result',{agent_turn_id:frame.payload.agent_turn_id,tool_call_id:'apply-call',operation_ref:'original-source-operation',result_ref:'native-result',outcome:'unknown',result_json:JSON.stringify(nativeResult)});
+ },()=>done.resolve());
+ await deliver(hello);let timer;try {await Promise.race([done.promise,new Promise((_,reject)=>{timer=setTimeout(()=>reject(Error('unknown Pi timeout')),3000)})]);}finally {clearTimeout(timer);}
+ assert.equal(turn,1);assert.equal(observed.filter(f=>f.type==='tool_call').length,1);assert.equal(observed.at(-1).type,'settled');
+});

@@ -48,6 +48,12 @@
     "original_sha256": "ca3210a6077da3d1ce345af5f0edeb694471735251a0943f83e6155c996594a9"
   },
   {
+    "source": "target/acceptance/pre-alpha.4/development/r43/run-ledger-commit.log",
+    "archive": "logs/run-ledger-commit.log.gz",
+    "original_bytes": 513216,
+    "original_sha256": "ded719b7e5879f8e25e9dc2fef35b03df04b7468a8b1df662aeb8efc27e5787f"
+  },
+  {
     "source": "target/acceptance/pre-alpha.4/development/r43/run-ledger-complete-final.log",
     "archive": "logs/run-ledger-complete-final.log.gz",
     "original_bytes": 14123,
@@ -112,6 +118,18 @@
     "archive": "logs/run-ledger-live-recovery-red.log.gz",
     "original_bytes": 686,
     "original_sha256": "eedecbc9cab9968e8434477bb9839d432d86f381e7dd13e926dc449b7b441101"
+  },
+  {
+    "source": "target/acceptance/pre-alpha.4/development/r43/run-ledger-plan-frozen-design-failure.log",
+    "archive": "logs/run-ledger-plan-frozen-design-failure.log.gz",
+    "original_bytes": 784,
+    "original_sha256": "c1fd43b95c86a20aff5eacc1af54a6847add8b76fdf88bc9bd03247a636430ae"
+  },
+  {
+    "source": "target/acceptance/pre-alpha.4/development/r43/run-ledger-plan-verified.log",
+    "archive": "logs/run-ledger-plan-verified.log.gz",
+    "original_bytes": 754,
+    "original_sha256": "83e0b2e764e45dd7cac727bdcdefe1b28868d4bc164e466ff1e4ec37e83dc3ce"
   },
   {
     "source": "target/acceptance/pre-alpha.4/development/r43/run-ledger-plan.log",

@@ -6,7 +6,7 @@
 
 **当前状态：** 33任务完成（全部R4.0与R4.1、R4.2.01–02、07及09–10、R4.3.01–03及05）；其余65任务尚未完成；32最终运行/发行gate全部not_run；candidate未分配，ready_to_publish=false，released_verified=false。设计/HTML/Schema通过不填运行时pass。
 
-**下一任务：** 用户选择保留系统输入法设置、先做其他任务；R4.2.03真实候选窗口仍未验收。R4.3.05三个只读工具已完成实际输出引用与持久事务历史，独立继续R4.3.06预览及原子修改工具，复用真实读取snapshot和DocCommitPort；R4.3.04物理锁屏验收仍未完成，原依赖满足后再接非求值编辑分析/长笔记本/Markdown。存储维护、备份、新代次、配额和GC已通过实际验证；日末备份触发/数据管理UI仍在R4.2.18接线，完整Pi/provider/上下文/Agent界面仍继续R4.3–4.4，不能将存储Done当产品完成。保持同candidate完整门禁，R4.5.07在R4.5.05冻结前完成。
+**下一任务：** 用户选择保留系统输入法设置、先做其他任务；R4.2.03真实候选窗口仍未验收。R4.3.05三个只读工具已完成实际输出引用与持久事务历史，继续R4.3.06；预览已通过实际随包Pi三轮，下一接原子修改的DocCommitPort、耐久effect回执及冲突/未知结果；R4.3.04物理锁屏验收仍未完成，原依赖满足后再接非求值编辑分析/长笔记本/Markdown。存储维护、备份、新代次、配额和GC已通过实际验证；日末备份触发/数据管理UI仍在R4.2.18接线，完整Pi/provider/上下文/Agent界面仍继续R4.3–4.4，不能将存储Done当产品完成。保持同candidate完整门禁，R4.5.07在R4.5.05冻结前完成。
 
 ## 已知外部前置
 
@@ -67,7 +67,7 @@
 | [x] [R4.3.03](PRE_ALPHA_4.md#task-r4.3.03) | sans-IO单轮模型codec基础 | completed | [实际Rust codec/Pi/原生帧及两模型SSE](../acceptance/pre-alpha.4/development/r43/single-turn-codec.json)；10单轮/182回归、4Pi、真实SQLite ACK；生产transport仍后续 | 本批D048 |
 | [ ] [R4.3.04](PRE_ALPHA_4.md#task-r4.3.04) | Swift URLSession和SecretStore传输 | in_progress | [真实请求账本/随包Pi/强杀恢复](../acceptance/pre-alpha.4/development/r43/provider-durable-request.json)、[过期计时回调修复](../acceptance/pre-alpha.4/development/r43/provider-timeout-race.json)；实际计时竞态RED→GREEN；物理锁屏仍未完成 | D052/本批D054 |
 | [x] [R4.3.05](PRE_ALPHA_4.md#task-r4.3.05) | 读取笔记本与真实函数资料工具 | completed | [只读基础](../acceptance/pre-alpha.4/development/r43/readonly-services-foundation.json)、[耐久工具/Pi](../acceptance/pre-alpha.4/development/r43/readonly-native-tool.json)、[实际输出/持久历史](../acceptance/pre-alpha.4/development/r43/readonly-outputs-history.json)；1297Rust/实际签名App两轮/重启history/独立worker | D053/D055/本批D056 |
-| [ ] [R4.3.06](PRE_ALPHA_4.md#task-r4.3.06) | 预览与原子修改工具接入 | planned | — | — |
+| [ ] [R4.3.06](PRE_ALPHA_4.md#task-r4.3.06) | 预览与原子修改工具接入 | in_progress | [实际冻结预览/Pi三轮](../acceptance/pre-alpha.4/development/r43/patch-preview-foundation.json)；31Rust/15Node/29帧21事件，原子提交及effect结果待接，未勾Done | 本批D057 |
 | [ ] [R4.3.07](PRE_ALPHA_4.md#task-r4.3.07) | 执行、结果检查和隔离试算工具 | planned | — | — |
 | [ ] [R4.3.08](PRE_ALPHA_4.md#task-r4.3.08) | 操作核对、撤销和Host停止控制 | planned | — | — |
 | [ ] [R4.3.09](PRE_ALPHA_4.md#task-r4.3.09) | 附件工具与宿主处理注册接口 | planned | — | — |
@@ -634,3 +634,18 @@ Swift在单一document串行读中获取confirmed head与最多32个持久事务
 21c47a2 CI38573532854已终态：Rust/frontend/iPhone+iPad成功；依赖因10月14日新披露四项Rustls公告失败，Cargo.lock仅0.23.45→0.23.46与checksum变化，cargo deny --locked check通过；Mac total负例实际先触发合法idleTimeout，隔离该case idle guard为1秒，total100ms与独立idle30ms负例/生产10/60/30/180秒不改，实际transport全部回归通过。原CI/失败case与官方公告原文均封存；新提交CI另核，不能用本地代替。
 
 按成功Cargo compiler-artifact清单，仅删除216个target/debug/deps中profile.test=true普通可执行测试缓存，先记录各SHA/字节/清单与无编译进程证据，释放3,841,244,032字节（3.58GiB），可用约44GiB。依赖库、CLI/examples、当前App/runtime、用户文件及全部证据保留。R4.3.04物理锁屏、R4.2.03真实候选仍未验，保留用户系统输入设置、不重问；无子代理/本机iOS模拟器。32最终gate全部not_run/no candidate/ready=false/released=false，运行版本仍.3，dev/no main/旧公开tag包不改，完整计划与真实发行继续。
+
+
+## D057 · 2026-10-15 实际Agent冻结预览与三轮上下文（R4.3.06进行中）
+
+R4.3.05完成批次已推dev b15a39fe8b4ec688a54567a5ca74375b77d6bd5a，CI38595323283最后观察Rust/frontend/dependencies成功，iOS已进入iPad、Mac进入实际提交/存储流程，尚未当全CI成功。完整98任务/32最终gate/真实发行范围不变。
+
+tools/patch.rs已将ACKed原始preview_source参数直接传给现有DocumentCommitController/PreviewService，以原read_notebook真实snapshot及当前Agent任务/grants验证，不新建手工scope、不扩大完整源码曝光。source-only无committable ref，真实有效整个patch才冻结原计划。原有native结果hash/ref→Swift耐久Blob/canonical recovery→独立回读→确认→Pi原数据路径也接入preview_source；此结果只表示检查/冻结完成，不执行源码或提交。
+
+31项Rust回归覆盖真实Agent读取→预览、旧outline经后续full read仍不能整格覆盖、手工task=None端口不能消费Agent预览、source-only无提交ref、patch第二项失败不改源码/revision/epoch及未知参数闭合拒绝。15 Node26/Pi、strict自身TS(skipLibCheck)、Clippy host全部targets -D warnings、17 Python、382DTO/生成工程/fmt、Release及strict签名通过。
+
+新增独立实际Pi三轮：真实读取格a完整2+2→实际冻结3+3 patch→第三轮HTTP body逐字使用已落库预览结果，standalone和签名Release App资源闭包都29帧（16host/13helper）、21SQLite事件、2个readonly结果/3个真实回环URLSession请求，confirmed head仍原hash/revision0、无source history/运行/保存。Storage-only重开恢复原21事件与2个只读完成事实，无host/helper/HTTP/旧授权；原两轮20帧/14事件、真实输出/持久history、SIGKILL后原文档手工4及资源/取消/架构负例均继续通过。
+
+原始失败完整保留：fixture遗漏cells必需cell_ids被Pi schema先拒；合成context工厂将多轮assistant排在tool结果之前，被原生codec在第三次prepare拒，已按实际持久事件顺序组装；21事件被fixture误作默认16条首页，已按原16条页/after游标读取，21事件恢复用现有支持32条页，生产默认/上限及精确21断言不变。Swift fixture三个实际类型误用与原编译失败也保留。完整输入/原wire/原body/Blob/压缩SQL与原失败源文件、命令、SHA见patch-preview-foundation.json/raw。
+
+R4.3.06尚未完成：apply_notebook_patch仍unavailable；下一让原ACKed apply意图仅解析preview_ref，接真实DocCommitPort/SessionToolPort耐久admission与原operation效果回执。最终source COMMIT屏障必须核实当前真实AgentScope，不能用手工task=None或恢复旧grant；冲突/IME/未知状态要结构化且不假报保存/运行。该任务所有步骤与Done仍未勾，33/98保持。完整ContextSnapshot producer仍属R4.4.12；当前factory是合成route+实际数据fixture，非Registry/UI/live完成。用户OS输入设置保留、R4.2.03真实候选/R4.3.04物理锁屏仍未验；无子代理/本机iOS模拟器，本批无付费live；.3/dev/no main/旧公开tag包不动，32finalgates not_run/no candidate/ready=false/released=false。

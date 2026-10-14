@@ -1,6 +1,7 @@
 //! Actual native tool data services, independent of model loops and host IO.
 pub mod catalog;
 pub mod dispatch;
+pub mod patch;
 pub mod read;
 
 fn schema() -> &'static serde_json::Value {

@@ -1,0 +1,3 @@
+    Finished `release` profile [optimized] target(s) in 0.48s
+fixtures/main.swift:84: Precondition failed
+macos/Scripts/test-agent-package.sh: line 22: 66858 Trace/BPT trap: 5       env NODE_OPTIONS='--invalid-old-profile' NODE_PATH='/untrusted/old-modules' OPENAI_API_KEY='fixture-sentinel' target/macos-agent-package-tests/fixtures "$package" "$attempt" "${2:-}"

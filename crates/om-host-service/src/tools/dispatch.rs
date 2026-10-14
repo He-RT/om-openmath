@@ -123,6 +123,11 @@ pub fn execute(
                 .map_err(catalog_error)
             }
         }
+        AgentToolName::PreviewSource => {
+            super::patch::preview(args, source.controller, source.scope, source.now)
+                .map(|data| (data, None, current_revision))
+                .map_err(super::patch::error)
+        }
         _ => return Err("NATIVE_TOOL_UNAVAILABLE".into()),
     };
     let success = outcome.is_ok();
@@ -145,6 +150,7 @@ pub fn execute(
         AgentToolName::ReadNotebook => "read_notebook_result",
         AgentToolName::SearchFunctions => "search_functions_result",
         AgentToolName::GetFunctionDocs => "get_function_docs_result",
+        AgentToolName::PreviewSource => "preview_source_result",
         _ => unreachable!(),
     };
     let envelope =

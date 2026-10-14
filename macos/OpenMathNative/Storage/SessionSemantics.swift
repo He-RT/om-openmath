@@ -96,7 +96,7 @@ enum SessionSemantics {
     case .recovery:
       if let record=try readonlyRecord(input.payload) {
         let intent=record.intent,message=record.canonical
-        guard record.codecVersion==1,[.read_notebook,.search_functions,.get_function_docs].contains(intent.name),
+        guard record.codecVersion==1,[.read_notebook,.search_functions,.get_function_docs,.preview_source].contains(intent.name),
           SourceValidation.identity(intent.operation_id),SourceValidation.identity(record.resultRef),KernelValidation.hash(record.blobHash),
           record.byteLength>0,record.byteLength<=262144,input.eventID=="readonly-"+intent.operation_id,
           input.operation==nil,input.operationStore==nil,input.parentEvent==intent.proposal_event_ref,input.turn==intent.agent_turn_id,

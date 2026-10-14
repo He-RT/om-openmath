@@ -46,6 +46,7 @@ impl AgentEndpoint {
             AgentToolName::ReadNotebook
                 | AgentToolName::SearchFunctions
                 | AgentToolName::GetFunctionDocs
+                | AgentToolName::PreviewSource
         ) {
             return Err("NATIVE_TOOL_UNAVAILABLE".into());
         }

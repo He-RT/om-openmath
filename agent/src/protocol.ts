@@ -118,7 +118,7 @@ function matches(value: Json, rule: any, depth = 0, root = schema): boolean {
 }
 /** Data only, after native durability; no result may become a tool grant or source command. */
 export function decodeReadonlyResult(name:string,bytes:Uint8Array):{ok:boolean,status:'completed'|'failed'} {
-  if(!['read_notebook','search_functions','get_function_docs'].includes(name)||bytes.length>262144)fail('IPC_TOOL_RESULT_LIMIT');
+  if(!['read_notebook','search_functions','get_function_docs','preview_source'].includes(name)||bytes.length>262144)fail('IPC_TOOL_RESULT_LIMIT');
   const value=strictJson(bytes),rule=toolSchema.$defs[name+'_result'];
   if(!matches(value,rule,0,toolSchema)||value===null||typeof value!=='object'||Array.isArray(value)||!['completed','failed'].includes(String(value.status)))fail('IPC_INVALID_TOOL_RESULT');
   return value as unknown as {ok:boolean,status:'completed'|'failed'};

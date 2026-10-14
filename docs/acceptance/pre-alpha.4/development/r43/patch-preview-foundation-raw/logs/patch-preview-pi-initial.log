@@ -1,0 +1,19 @@
+{"output": "/Users/hert/Projects/openmath/target/macos-agent-package-tests/AgentRuntime", "files": 4169, "bytes": 172238430, "production_packages": 86}
+   Compiling om-host-service v0.1.0-pre-alpha.3 (/Users/hert/Projects/openmath/crates/om-host-service)
+   Compiling om-apple-ffi v0.1.0-pre-alpha.3 (/Users/hert/Projects/openmath/crates/om-apple-ffi)
+    Finished `release` profile [optimized] target(s) in 3m 40s
+macos/OpenMathNativeTests/AgentPackageFixtures/main.swift:103:26: error: static method 'encode' requires that 'SessionRecoveryPage' conform to 'Encodable'
+101 |   let (reopened,_)=try await StorageService.open(paths:.init(root:root,channel:.preview)),recovery=try await reopened.sessionRecovery(session)
+102 |   precondition(recovery.lastEventSequence==21 && recovery.tools.count==2 && recovery.tools.allSatisfy{$0.phase == .readonly_completed && $0.target==nil && $0.admissionEvent==nil})
+103 |   try RecoveryValidation.encode(recovery).write(to:root.appendingPathComponent("actual-preview-recovery.json"))
+    |                          `- error: static method 'encode' requires that 'SessionRecoveryPage' conform to 'Encodable'
+104 |   try await reopened.close()
+105 | }
+
+macos/OpenMathNative/Storage/RecoveryTypes.swift:64:15: note: where 'T' = 'SessionRecoveryPage'
+ 62 | enum RecoveryValidation {
+ 63 |   static let maximumPayload=4*1024*1024
+ 64 |   static func encode<T:Encodable>(_ value:T)throws->Data {
+    |               `- note: where 'T' = 'SessionRecoveryPage'
+ 65 |     let encoder=JSONEncoder();encoder.outputFormatting=[.sortedKeys,.withoutEscapingSlashes]
+ 66 |     return try encoder.encode(value)

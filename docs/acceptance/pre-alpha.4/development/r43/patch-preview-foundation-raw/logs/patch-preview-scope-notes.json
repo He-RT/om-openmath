@@ -1,0 +1,28 @@
+{
+  "task": "R4.3.06",
+  "stage": "preview foundation, apply not implemented",
+  "native_chain": [
+    "ACKed original canonical arguments",
+    "AgentIngress actual current task/grant scope",
+    "exact read-issued preview snapshot in existing DocumentCommitController",
+    "tools/patch.rs calls existing PreviewService and closed actual result",
+    "original durable Blob/event readback and confirmation reused",
+    "actual Pi consumes result"
+  ],
+  "effect_followup": [
+    "Native prepare apply must resolve only ACKed apply intent preview_ref in same live task scope; never issue a manual replacement read token",
+    "DocCommitPort must execute original frozen plan, SessionToolPort durable admission/start precede effect, real external receipt required",
+    "Native final source barrier must derive actual live Agent task scope, not default manual task=None; cancel/changed grants/source/IME refuse before COMMIT",
+    "Build completed/failed/unknown result from actual original operation receipt/status, real changed/invalidated IDs, saved=false and newly issued bounded snapshot; no source rerender/re-execution on ACK loss",
+    "Canonical effect result must be durably linked to original tool admission/actual document fact; recovery remains data-only, never restores grants"
+  ],
+  "known_local_initial_failures": [
+    "Negative whole patch omitted mandatory expected_source_hash on missing delete selector, so schema correctly returned INVALID_ARGUMENT; supplied required hash to test actual INVALID_PATCH branch without weakening assertion",
+    "Swift fixture attempted to encode non-Codable SessionRecoveryPage; now serializes only actual Codable tools/requests and bounded page facts",
+    "Swift fixture report.toolIntents is already [String] operation IDs; fixed diagnostic capture type without changing expectations",
+    "Actual Pi validates cells view cell_ids before native tool dispatch; initial fixture request omitted it and stopped before any readonly result; supplied required actual cell a",
+    "Initial synthetic context factory grouped all assistant messages before tool messages; native codec rejected dangling tool calls at third prepare. Fixed fixture to preserve actual durable event order. Real read and preview results were already committed as exact data Blobs",
+    "Three-turn run had helper13/actualSQLite21, but fixture treated default16-event page as whole transcript. Fixed fixture to iterate original bounded16 pages and use supported32 recovery page for21 events; core limits/defaults and exact expected21 unchanged"
+  ],
+  "final_candidate_gate": false
+}

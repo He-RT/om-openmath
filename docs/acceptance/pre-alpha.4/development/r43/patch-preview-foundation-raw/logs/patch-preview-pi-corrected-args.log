@@ -1,0 +1,8 @@
+    Finished `release` profile [optimized] target(s) in 1.24s
+macos/OpenMathNativeTests/AgentPackageFixtures/main.swift:79:115: error: value of type 'String' has no member 'name'
+ 77 |   let report=try await service.run(pipe:pipe,hello:hello,modelPort:adapter.port(),input:input)
+ 78 |   try await wire.save(root.appendingPathComponent("actual-preview-wire.json"))
+ 79 |   try JSONSerialization.data(withJSONObject:["helper_frames":report.frames,"tool_names":report.toolIntents.map{$0.name.rawValue},"last_phase":report.lastPhase.rawValue],options:[.sortedKeys]).write(to:root.appendingPathComponent("actual-preview-report.json"))
+    |                                                                                                                   `- error: value of type 'String' has no member 'name'
+ 80 |   precondition(report.frames==13 && report.toolIntents.count==2 && report.lastPhase == .awaiting_settlement)
+ 81 |   let events=try await storage.sessionEvents(session);precondition(events.count==21)

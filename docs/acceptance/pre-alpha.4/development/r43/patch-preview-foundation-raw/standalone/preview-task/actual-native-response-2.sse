@@ -1,0 +1,4 @@
+data: {"id":"provider-response-2","model":"synthetic-served-alias","choices":[{"index":0,"finish_reason":"tool_calls","delta":{"content":"中文🙂","tool_calls":[{"type":"function","function":{"name":"preview_source","arguments":"{\"input\":{\"kind\":\"patch\",\"operations\":[{\"expected_source_hash\":\"1acf86226c68c1485ca3939884c43ed99abeea344e806548af7ee813c1c0cff3\",\"source\":\"3+3\",\"target\":{\"cell_id\":\"a\"},\"type\":\"update_cell\"}]},\"snapshot_ref\":\"snapshot-1-bc6828ab8014e0c9147d1eaeb8f6338fb885adbe51c1a70dc781288838439cab\"}"},"index":0,"id":"preview-call"}],"role":"assistant"}}]}
+
+data: [DONE]
+

@@ -1,0 +1,16 @@
+    Finished `release` profile [optimized] target(s) in 0.59s
+macos/OpenMathNativeTests/AgentPackageFixtures/main.swift:13:44: error: value of type 'UInt64' has no member 'value'
+ 11 |     let page=try await storage.sessionEvents(session,after:after,limit:16)
+ 12 |     guard let last=page.last else {return all}
+ 13 |     precondition(last.event.event_sequence.value>after && all.count+page.count<=64)
+    |                                            `- error: value of type 'UInt64' has no member 'value'
+ 14 |     all+=page;after=last.event.event_sequence.value
+ 15 |   }
+
+macos/OpenMathNativeTests/AgentPackageFixtures/main.swift:14:47: error: value of type 'UInt64' has no member 'value'
+ 12 |     guard let last=page.last else {return all}
+ 13 |     precondition(last.event.event_sequence.value>after && all.count+page.count<=64)
+ 14 |     all+=page;after=last.event.event_sequence.value
+    |                                               `- error: value of type 'UInt64' has no member 'value'
+ 15 |   }
+ 16 | }

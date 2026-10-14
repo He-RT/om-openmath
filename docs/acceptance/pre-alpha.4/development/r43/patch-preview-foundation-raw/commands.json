@@ -1,0 +1,17 @@
+[
+  "CARGO_PROFILE_DEV_DEBUG=0 CARGO_PROFILE_TEST_DEBUG=0 cargo test -p om-host-service --test agent_endpoint --test readonly_notebook --test preview --test commit_owner --locked -- --nocapture",
+  "CARGO_PROFILE_DEV_DEBUG=0 CARGO_PROFILE_TEST_DEBUG=0 cargo clippy -p om-host-service --all-targets --locked -- -D warnings",
+  "OPENMATH_SINGLE_TURN_FIXTURE=$PWD/target/debug/examples/single_turn_fixture target/macos-agent-package-tests/AgentRuntime/Node/node --test agent/test/*.test.mjs",
+  "target/macos-agent-package-tests/AgentRuntime/Node/node app/node_modules/typescript/bin/tsc --noEmit --strict --skipLibCheck --target es2024 --module nodenext --allowImportingTsExtensions agent/src/main.ts",
+  "python3 -X warn_default_encoding -W error::EncodingWarning -m unittest discover -s tests -v",
+  "bash macos/Scripts/test-agent-package.sh",
+  "bash macos/Scripts/test-agent-package.sh /Users/hert/Projects/openmath/target/macos-agent-package-tests/AgentRuntime",
+  "env NODE_OPTIONS=--invalid-old-profile NODE_PATH=/untrusted/old-modules OPENAI_API_KEY=fixture-sentinel target/macos-agent-package-tests/fixtures '<signed App AgentRuntime absolute path>' '<fresh fixture root>' '<signed App absolute path>' (reuse exact just-compiled binary; no source/library changes)",
+  "python3 macos/native-package/build-helper.py --output macos/OpenMathNative/Resources/AgentRuntime",
+  "xcodebuild -project macos/OpenMathNative.xcodeproj -scheme OpenMathNative -configuration Release -derivedDataPath target/macos-native -destination 'platform=macOS,arch=arm64' build",
+  "codesign --verify --deep --strict 'target/macos-native/Build/Products/Release/OpenMath Preview.app'",
+  "cargo fmt --all --check",
+  "python3 scripts/native_contracts.py --check",
+  "python3 macos/Scripts/generate-project.py --check",
+  "python3 scripts/check_pre_alpha_4_plan.py --check"
+]

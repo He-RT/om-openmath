@@ -1,12 +1,25 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { FrameDecoder, encodeFrame, decodeFrame, strictJson, schemaHash, MAX_FRAME_BYTES } from '../src/protocol.ts';
+import { FrameDecoder, encodeFrame, decodeFrame, decodeReadonlyResult, strictJson, schemaHash, MAX_FRAME_BYTES } from '../src/protocol.ts';
 const sample = {
   protocol_version: 1, connection_id: 'connection-1', connection_generation: 1,
   runtime_instance_id: 'runtime-1', agent_session_id: 'session-1', document_id: 'document-1',
   document_generation: 1, task_id: 'task-1', task_generation: 1, message_id: 'message-1', sequence: 1, reply_to: null,
   type: 'model_event', payload: { agent_turn_id: 'turn-1', request_id: 'request-1', byte_offset: 0, text: '中文🙂é', phase: 'delta', canonical_message: null },
 };
+test('actual preview results preserve source-only and complete patch reference rules', () => {
+  const encode=value=>Buffer.from(JSON.stringify(value));
+  const data={preview_kind:'source',valid:true,preview_ref:null,plan_hash:'a'.repeat(64),diagnostics:[],affected_cell_ids:[],assigned_cell_ids:{}};
+  const result={ok:true,status:'completed',request_ref:'request',operation_ref:null,document:{id:'doc',generation:1,revision:0},data,error:null,pagination:{truncated:false,next_cursor:null}};
+  assert.equal(decodeReadonlyResult('preview_source',encode(result)).status,'completed');
+  const patch=structuredClone(result);patch.data.preview_kind='patch';
+  assert.throws(()=>decodeReadonlyResult('preview_source',encode(patch)),/IPC_INVALID_TOOL_RESULT/);
+  patch.data.preview_ref='actual-preview';
+  assert.equal(decodeReadonlyResult('preview_source',encode(patch)).status,'completed');
+  const fake=structuredClone(result);fake.data.preview_ref='fake-source-preview';
+  assert.throws(()=>decodeReadonlyResult('preview_source',encode(fake)),/IPC_INVALID_TOOL_RESULT/);
+  assert.throws(()=>decodeReadonlyResult('apply_notebook_patch',encode(result)),/IPC_TOOL_RESULT_LIMIT/);
+});
 test('all actual encoded UTF8 split points and multiple complete frames roundtrip', () => {
   const line = encodeFrame(sample);
   for (let cut = 0; cut <= line.length; cut++) {

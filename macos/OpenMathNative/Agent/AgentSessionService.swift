@@ -209,9 +209,9 @@ actor AgentSessionService {
       }
     } catch {if !Task.isCancelled {_ = try? await send("error",payload:JSONEncoder().encode(AgentErrorPayload(code:"NATIVE_TOOL_UNAVAILABLE",recoverable:false)))}}
   }
-  /// Only three actual readonly producers are available. Other tools keep their unavailable path.
+  /// Readonly source/catalog/preview producers require actual native results and durable readback.
   private func dispatchTool(_ intent:NativeAgentToolIntent) async {
-    guard [.read_notebook,.search_functions,.get_function_docs].contains(intent.name) else {await unavailableTool(intent);return}
+    guard [.read_notebook,.search_functions,.get_function_docs,.preview_source].contains(intent.name) else {await unavailableTool(intent);return}
     do {
       guard let s=scope,let ledger else {throw AgentSessionError.inactive}
       if intent.name == .read_notebook {

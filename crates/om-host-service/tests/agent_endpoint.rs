@@ -71,6 +71,205 @@ fn ready(owner: &mut SourceEndpoint, hello: &Value, generation: u64) {
         NativeAgentHostReplyPhase::Ready
     );
 }
+fn preview_task(owner: &mut SourceEndpoint) -> Value {
+    let hello=command(owner,json!({"type":"agent_activate","scope":scope(1),"hello_id":"hello","core_version":"1.0.4","adapter_version":"adapter-1","grants":["read_notebook","preview_source","apply_notebook_patch"],"readonly":false})).unwrap();
+    let hello: Value = serde_json::from_str(hello.outbound_json.0.as_ref().unwrap()).unwrap();
+    ready(owner, &hello, 1);
+    hello
+}
+/// These are unit-level synthetic ledger acknowledgements. Native Swift fixtures separately prove
+/// the original SQLite receipt path; this helper does not claim a physical storage commit.
+fn data_call(
+    owner: &mut SourceEndpoint,
+    hello: &Value,
+    sequence: &mut u64,
+    name: &str,
+    args: Value,
+) -> NativeAgentReadonlyResult {
+    let event = format!("proposal-{}", *sequence);
+    let call = format!("call-{}", *sequence);
+    let proposal = frame(
+        hello,
+        "transcript_event",
+        *sequence,
+        json!({"event_id":event,"source_sequence":*sequence/2,"message":{"record_type":"canonical_agent_message","message_version":1,"message_id":event,"role":"assistant","agent_turn_id":"turn","task_id":"task","parts":[{"kind":"tool_call","part_id":call,"tool_call_id":call,"name":name,"arguments_json":serde_json::to_string(&args).unwrap()}]}}),
+    );
+    let pending = receive(owner, &proposal, 1).unwrap();
+    command(owner,json!({"type":"agent_confirm","scope":scope(1),"message_id":proposal["message_id"],"event_id":event,"canonical_hash":format!("{:x}",Sha256::digest(pending.canonical_json.0.unwrap().as_bytes())),"event_sequence":*sequence,"receipt_hash":"a".repeat(64)})).unwrap();
+    *sequence += 1;
+    let mapped = receive(
+        owner,
+        &frame(
+            hello,
+            "tool_call",
+            *sequence,
+            json!({"agent_turn_id":"turn","tool_call_id":call,"proposal_event_ref":event}),
+        ),
+        1,
+    )
+    .unwrap()
+    .tool_intent
+    .0
+    .unwrap();
+    *sequence += 1;
+    let query =
+        json!({"type":"agent_read_tool","scope":scope(1),"operation_id":mapped.operation_id});
+    let result = command(owner, query.clone())
+        .unwrap()
+        .readonly_result
+        .0
+        .unwrap();
+    assert_eq!(
+        result.result_json,
+        command(owner, query)
+            .unwrap()
+            .readonly_result
+            .0
+            .unwrap()
+            .result_json
+    );
+    assert_eq!(
+        result.result_hash,
+        format!("{:x}", Sha256::digest(result.result_json.as_bytes()))
+    );
+    result
+}
+#[test]
+fn agent_preview_consumes_exact_read_issued_scope_without_widening_source_exposure() {
+    let mut owner = endpoint();
+    let hello = preview_task(&mut owner);
+    let mut sequence = 2;
+    let before = owner.binding();
+    let outline = data_call(
+        &mut owner,
+        &hello,
+        &mut sequence,
+        "read_notebook",
+        json!({}),
+    );
+    let outline: Value = serde_json::from_str(&outline.result_json).unwrap();
+    let patch = |reference: &Value| json!({"snapshot_ref":reference,"input":{"kind":"patch","operations":[{"type":"update_cell","target":{"cell_id":"a"},"expected_source_hash":format!("{:x}",Sha256::digest(b"2+2")),"source":"3+3"}]}});
+    let denied = data_call(
+        &mut owner,
+        &hello,
+        &mut sequence,
+        "preview_source",
+        patch(&outline["data"]["snapshot_ref"]),
+    );
+    let denied: Value = serde_json::from_str(&denied.result_json).unwrap();
+    assert_eq!(denied["error"]["code"], "INVALID_PATCH");
+    assert_eq!(denied["error"]["recovery"], "refresh_snapshot");
+    let full = data_call(
+        &mut owner,
+        &hello,
+        &mut sequence,
+        "read_notebook",
+        json!({"view":"cells","cell_ids":["a"]}),
+    );
+    let full: Value = serde_json::from_str(&full.result_json).unwrap();
+    assert_eq!(full["data"]["cells"][0]["source"], "2+2");
+    let valid = data_call(
+        &mut owner,
+        &hello,
+        &mut sequence,
+        "preview_source",
+        patch(&full["data"]["snapshot_ref"]),
+    );
+    let valid: Value = serde_json::from_str(&valid.result_json).unwrap();
+    assert_eq!(valid["data"]["valid"], true);
+    assert!(
+        valid["data"]["preview_ref"]
+            .as_str()
+            .unwrap()
+            .starts_with("preview-")
+    );
+    assert_eq!(valid["operation_ref"], Value::Null);
+    // The default manual port has task=None; it cannot consume this real Agent-bound plan.
+    assert!(
+        owner
+            .command(
+                serde_json::from_value(
+                    json!({"type":"source_begin","preview_ref":valid["data"]["preview_ref"]})
+                )
+                .unwrap()
+            )
+            .is_err()
+    );
+    let original_outline = data_call(
+        &mut owner,
+        &hello,
+        &mut sequence,
+        "preview_source",
+        patch(&outline["data"]["snapshot_ref"]),
+    );
+    let original_outline: Value = serde_json::from_str(&original_outline.result_json).unwrap();
+    assert_eq!(original_outline["status"], "failed");
+    assert_eq!(owner.binding().document_revision, before.document_revision);
+    assert_eq!(owner.binding().execution_epoch, before.execution_epoch);
+    println!(
+        "Actual Agent read/preview envelopes={}",
+        json!({"outline":outline,"denied":denied,"full":full,"valid":valid,"original_outline_still_denied":original_outline})
+    );
+}
+#[test]
+fn agent_source_inspection_is_noncommittable_and_failed_whole_patch_has_no_effect() {
+    let mut owner = endpoint();
+    let hello = preview_task(&mut owner);
+    let mut sequence = 2;
+    let full = data_call(
+        &mut owner,
+        &hello,
+        &mut sequence,
+        "read_notebook",
+        json!({"view":"cells","cell_ids":["a"]}),
+    );
+    let full: Value = serde_json::from_str(&full.result_json).unwrap();
+    let reference = full["data"]["snapshot_ref"].clone();
+    let source = data_call(
+        &mut owner,
+        &hello,
+        &mut sequence,
+        "preview_source",
+        json!({"snapshot_ref":reference,"input":{"kind":"source","source":"rand()","dialect":"Modern"}}),
+    );
+    let source: Value = serde_json::from_str(&source.result_json).unwrap();
+    assert_eq!(source["status"], "completed");
+    assert_eq!(source["data"]["preview_kind"], "source");
+    assert!(source["data"]["preview_ref"].is_null());
+    let failed = data_call(
+        &mut owner,
+        &hello,
+        &mut sequence,
+        "preview_source",
+        json!({"snapshot_ref":reference,"input":{"kind":"patch","operations":[{"type":"update_cell","target":{"cell_id":"a"},"expected_source_hash":format!("{:x}",Sha256::digest(b"2+2")),"source":"3+3"},{"type":"delete_cell","target":{"cell_id":"missing"},"expected_source_hash":"0".repeat(64)}]}}),
+    );
+    let failed: Value = serde_json::from_str(&failed.result_json).unwrap();
+    assert_eq!(failed["status"], "failed");
+    assert_eq!(failed["error"]["code"], "INVALID_PATCH");
+    let extra = data_call(
+        &mut owner,
+        &hello,
+        &mut sequence,
+        "preview_source",
+        json!({"snapshot_ref":reference,"input":{"kind":"source","source":"2+2","dialect":"Modern"},"doc":"forged"}),
+    );
+    let extra: Value = serde_json::from_str(&extra.result_json).unwrap();
+    assert_eq!(extra["error"]["code"], "INVALID_ARGUMENT");
+    let unchanged = data_call(
+        &mut owner,
+        &hello,
+        &mut sequence,
+        "read_notebook",
+        json!({"view":"cells","cell_ids":["a"]}),
+    );
+    let unchanged: Value = serde_json::from_str(&unchanged.result_json).unwrap();
+    assert_eq!(unchanged["data"]["cells"][0]["source"], "2+2");
+    assert_eq!(unchanged["document"]["revision"], 0);
+    println!(
+        "Actual Agent non-effect preview={}",
+        json!({"source":source,"failed":failed,"extra":extra,"unchanged":unchanged})
+    );
+}
 #[test]
 fn actual_readonly_producer_requires_acked_original_arguments_and_durable_confirmation() {
     for (name, args, expected) in [

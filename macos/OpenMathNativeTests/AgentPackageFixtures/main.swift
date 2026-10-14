@@ -2,6 +2,18 @@ import Foundation
 import CryptoKit
 
 func encoded<T:Encodable>(_ value:T)throws->Data {try JSONEncoder().encode(value)}
+/// This three-turn fixture exceeds the storage API's default 16-event page. Read its bounded
+/// original pages instead of mistaking the first page for a complete conversation.
+private func fixtureEvents(_ storage:StorageService,_ session:String)async throws->[StoredSessionEvent] {
+  var after:UInt64=0
+  var all:[StoredSessionEvent]=[]
+  while true {
+    let page=try await storage.sessionEvents(session,after:after,limit:16)
+    guard let last=page.last else {return all}
+    precondition(last.event.event_sequence>after && all.count+page.count<=64)
+    all+=page;after=last.event.event_sequence
+  }
+}
 private actor WireCapture {
   var host=AgentFrameBytes(),helper=AgentFrameBytes(),frames:[[String:String]]=[]
   func append(_ bytes:Data,toHelper:Bool) {
@@ -19,16 +31,19 @@ private actor ModelHold {
 }
 
 /// The actual native transport/C ABI/Library producer; only provider wire and route are synthetic.
-private func nativeProviderTurn(host:NativeHostClient,storage:StorageService,root:URL,input:AgentCanonicalMessage,intent:NativeAgentRequestIntent,task:String)async throws->ProviderPreparedTurn {
-  let stored=try await storage.sessionEvents("production-task")
+private func nativeProviderTurn(host:NativeHostClient,storage:StorageService,root:URL,input:AgentCanonicalMessage,intent:NativeAgentRequestIntent,task:String,session:String="production-task",preview:Bool=false)async throws->ProviderPreparedTurn {
+  let stored=try await fixtureEvents(storage,session)
   let readonly=stored.compactMap {event->AgentReadonlyRecord? in guard let raw=event.event.payload_inline_json.value else {return nil};return try? JSONDecoder().decode(AgentReadonlyRecord.self,from:Data(raw.utf8))}
-  let second = !readonly.isEmpty
+  let second = !readonly.isEmpty,finishing = second && (!preview || readonly.count==2)
   var messages:[[String:Any]] = [["canonical":try JSONSerialization.jsonObject(with:encoded(input)),"replay":NSNull()]],results:[[String:Any]]=[]
-  for event in stored where event.event.event_kind == .assistant_end {
-    let original=try JSONDecoder().decode(SessionCanonicalAssistant.self,from:Data(event.event.payload_inline_json.value!.utf8))
-    messages.append(["canonical":try JSONSerialization.jsonObject(with:Data(original.canonicalJSON.utf8)),"replay":NSNull()])
-  }
-  for result in readonly {
+  // Preserve the actual durable event order: every assistant call is followed by its tool result
+  // before the next assistant. The native codec rejects a reordered/dangling tool conversation.
+  for event in stored {
+    if event.event.event_kind == .assistant_end {
+      let original=try JSONDecoder().decode(SessionCanonicalAssistant.self,from:Data(event.event.payload_inline_json.value!.utf8))
+      messages.append(["canonical":try JSONSerialization.jsonObject(with:Data(original.canonicalJSON.utf8)),"replay":NSNull()])
+    }
+    guard let text=event.event.payload_inline_json.value,let result=try? JSONDecoder().decode(AgentReadonlyRecord.self,from:Data(text.utf8)) else {continue}
     let owner=BlobOwner(kind:.context,id:result.canonical.message_id),lease=try await storage.openReferencedBlob(owner:owner,hash:result.blobHash)
     let bytes=try await storage.readBlob(lease,offset:0,count:Int(result.byteLength));try await storage.closeBlob(lease)
     guard KernelHashes.data(bytes)==result.blobHash else {throw AgentSessionError.ledgerMismatch}
@@ -37,18 +52,74 @@ private func nativeProviderTurn(host:NativeHostClient,storage:StorageService,roo
     messages.append(["canonical":try JSONSerialization.jsonObject(with:encoded(result.canonical)),"replay":NSNull()])
     results.append(["message_id":result.canonical.message_id,"tool_call_id":result.intent.tool_call_id,"text":String(decoding:bytes,as:UTF8.self),"is_error":false])
   }
-  let delta:[String:Any] = second ? ["role":"assistant","content":"已读取真实笔记本🙂"]:["role":"assistant","content":"中文🙂","tool_calls":[["index":0,"id":"provider-call","type":"function","function":["name":"read_notebook","arguments":"{ \"view\" : \"outline\", \"include_outputs\" : true }"]]]]
-  let chunk:[String:Any] = ["id":second ? "provider-response-2":"provider-response","model":"synthetic-served-alias","choices":[["index":0,"delta":delta,"finish_reason":second ? "stop":"tool_calls"]]]
+  var tool="read_notebook",arguments=preview ? "{ \"view\" : \"cells\", \"cell_ids\" : [\"a\"] }":"{ \"view\" : \"outline\", \"include_outputs\" : true }"
+  if preview && readonly.count==1 {
+    let data=try JSONSerialization.jsonObject(with:Data((results[0]["text"] as! String).utf8)) as! [String:Any],read=data["data"] as! [String:Any],cell=(read["cells"] as! [[String:Any]])[0]
+    precondition(cell["source_complete"] as? Bool==true && cell["source"] as? String=="2+2")
+    tool="preview_source"
+    arguments=String(decoding:try JSONSerialization.data(withJSONObject:["snapshot_ref":read["snapshot_ref"]!,"input":["kind":"patch","operations":[["type":"update_cell","target":["cell_id":"a"],"expected_source_hash":cell["source_hash"]!,"source":"3+3"]]]],options:[.sortedKeys]),as:UTF8.self)
+  }
+  let delta:[String:Any] = finishing ? ["role":"assistant","content":"已读取真实笔记本🙂"]:["role":"assistant","content":"中文🙂","tool_calls":[["index":0,"id":second ? "preview-call":"provider-call","type":"function","function":["name":tool,"arguments":arguments]]]]
+  let chunk:[String:Any] = ["id":"provider-response-\(readonly.count+1)","model":"synthetic-served-alias","choices":[["index":0,"delta":delta,"finish_reason":finishing ? "stop":"tool_calls"]]]
   let sse=Data(("data: "+String(decoding:try JSONSerialization.data(withJSONObject:chunk),as:UTF8.self)+"\n\ndata: [DONE]\n\n").utf8)
-  let request:[String:Any] = ["binding":["provider_ref":"fixture-provider","route_ref":"fixture-route","model_ref":"fixture-model","adapter_version":"single-turn-1","protocol":"chat_completions"],"api_model":"synthetic-configured-alias","messages":messages,"results":results,"tools":[["name":"read_notebook","description":"Read actual confirmed source","parameters":["type":"object"]]],"max_output_tokens":128,"temperature":NSNull(),"stream":true]
+  var tools:[[String:Any]] = [["name":"read_notebook","description":"Read actual confirmed source","parameters":["type":"object"]]]
+  if preview {tools.append(["name":"preview_source","description":"Inspect actual frozen source plan","parameters":["type":"object"]])}
+  let request:[String:Any] = ["binding":["provider_ref":"fixture-provider","route_ref":"fixture-route","model_ref":"fixture-model","adapter_version":"single-turn-1","protocol":"chat_completions"],"api_model":"synthetic-configured-alias","messages":messages,"results":results,"tools":tools,"max_output_tokens":128,"temperature":NSNull(),"stream":true]
   let bytes=try JSONSerialization.data(withJSONObject:request,options:[.sortedKeys]),context="fixture-context-"+UUID().uuidString.lowercased()
   let model=try await ProviderModelSession.prepare(host:host,requestJSON:String(decoding:bytes,as:UTF8.self),request:intent.request_id,context:context,task:task,turn:intent.agent_turn_id,message:"provider-canonical-"+intent.agent_turn_id)
   let server=try DelayedLoopbackServer(response:sse,delay:0.01)
   let route=try ProviderRoute(binding:model.binding,endpoint:URL(string:"http://127.0.0.1:\(server.port)/v1/chat/completions")!,authentication:.none,credentialReference:nil,timeouts:try ProviderTimeouts(firstResponse:5,idle:3,total:8),allowHTTPOnLiteralLoopback:true)
-  let ledger=SessionLedgerPort(storage:storage,session:"production-task"),owner=ProviderRequestLedger(storage:storage,ledger:ledger,model:model)
-  let suffix=second ? "-2":""
+  let ledger=SessionLedgerPort(storage:storage,session:session),owner=ProviderRequestLedger(storage:storage,ledger:ledger,model:model)
+  let suffix=second ? "-\(readonly.count+1)":""
   try bytes.write(to:root.appendingPathComponent("actual-native-model-input"+suffix+".json"));try model.body.write(to:root.appendingPathComponent("actual-native-http-body"+suffix+".json"));try sse.write(to:root.appendingPathComponent("actual-native-response"+suffix+".sse"))
   return owner.turn(route:route)
+}
+/// A separate actual three-turn Pi task. The model can freeze a patch from the real returned read
+/// token; neither this task nor storage-only recovery commits/runs/saves that proposed patch.
+private func nativePreviewRoundTrip(package:URL,signatureRoot:URL?,root:URL)async throws {
+  let document="00000000-0000-0000-0000-000000000436",session="preview-task"
+  var snapshot=NativeSourceSnapshot(codec_version:1,document_id:document,revision:try HostSerial(0),execution_epoch:try HostSerial(0),file:.init(version:1,title:"真实Agent冻结预览",cells:[.init(id:"a",kind:.math,source:"2+2",dialect:.modern)]),cell_revisions:[.init(cell_id:"a",revision:try HostSerial(0))],snapshot_hash:"")
+  snapshot.snapshot_hash=SourceHashes.snapshot(snapshot)
+  let (storage,_)=try await StorageService.open(paths:.init(root:root,channel:.preview)),info=try await storage.openDocument(document)
+  _ = try await storage.initializeSource(snapshot)
+  let host=try await NativeHostClient.open(),opened=try await host.sourceCommand(.source_open(.init(type:.source_open,snapshot:snapshot,store_id:info.identity.storeID,calculation:.init(nil),config_revision:try HostSerial(0))))
+  let service=AgentSessionService(host:host,storage:storage,document:document,generation:opened.document_generation.value)
+  let hello=try await service.activate(session:session,grants:[.read_notebook,.preview_source],readonly:true,coreVersion:"1.0.4",adapterVersion:"openmath-adapter-1")
+  let input=AgentCanonicalMessage(record_type:.canonical_agent_message,message_version:1,message_id:"preview-input",role:.user,agent_turn_id:.init("input-turn"),task_id:.init(hello.scope.task_id),parts:[.agent_text_part(.init(kind:.text,part_id:"text",text:"读取实际源码后仅预览整个修改"))])
+  let adapter=ProviderAgentModelAdapter(transport:ProviderTransport(secrets:SecretStore()),factory:{intent in try await nativeProviderTurn(host:host,storage:storage,root:root,input:input,intent:intent,task:hello.scope.task_id,session:session,preview:true)})
+  let verified=try await AgentProcess.verified(package:package,signatureRoot:signatureRoot),pipe=try await verified.launch(),wire=WireCapture()
+  await pipe.setCapture {bytes,direction in await wire.append(bytes,toHelper:direction)}
+  let report=try await service.run(pipe:pipe,hello:hello,modelPort:adapter.port(),input:input)
+  try await wire.save(root.appendingPathComponent("actual-preview-wire.json"))
+  try JSONSerialization.data(withJSONObject:["helper_frames":report.frames,"tool_operation_ids":report.toolIntents,"last_phase":report.lastPhase.rawValue],options:[.sortedKeys]).write(to:root.appendingPathComponent("actual-preview-report.json"))
+  precondition(report.frames==13 && report.toolIntents.count==2 && report.lastPhase == .awaiting_settlement)
+  let events=try await fixtureEvents(storage,session);precondition(events.count==21)
+  let records=events.compactMap {entry->AgentReadonlyRecord? in guard let text=entry.event.payload_inline_json.value else {return nil};return try? JSONDecoder().decode(AgentReadonlyRecord.self,from:Data(text.utf8))}
+  precondition(records.count==2 && records.map(\.intent.name)==[.read_notebook,.preview_source])
+  var previewText=""
+  for record in records {
+    let lease=try await storage.openReferencedBlob(owner:.init(kind:.context,id:record.canonical.message_id),hash:record.blobHash)
+    let bytes=try await storage.readBlob(lease,offset:0,count:Int(record.byteLength));try await storage.closeBlob(lease)
+    precondition(KernelHashes.data(bytes)==record.blobHash)
+    try bytes.write(to:root.appendingPathComponent(record.intent.name == .read_notebook ? "actual-preview-read.json":"actual-preview-result.json"))
+    if record.intent.name == .preview_source {
+      let envelope=try JSONSerialization.jsonObject(with:bytes) as! [String:Any],data=envelope["data"] as! [String:Any]
+      precondition(envelope["ok"] as? Bool==true && data["valid"] as? Bool==true && (data["preview_ref"] as? String)?.hasPrefix("preview-")==true)
+      previewText=String(decoding:bytes,as:UTF8.self)
+    }
+  }
+  let third=try JSONSerialization.jsonObject(with:Data(contentsOf:root.appendingPathComponent("actual-native-http-body-3.json"))) as! [String:Any],messages=third["messages"] as! [[String:Any]]
+  precondition(messages.filter{$0["role"] as? String=="tool"}.count==2 && messages.contains{$0["tool_call_id"] as? String=="preview-call" && $0["content"] as? String==previewText})
+  let (head,history)=try await storage.readNotebookHistory(document:document)
+  precondition(head.snapshot_hash==snapshot.snapshot_hash && head.revision.value==0 && history.isEmpty)
+  try await wire.save(root.appendingPathComponent("actual-preview-wire.json"))
+  try JSONSerialization.data(withJSONObject:try events.map {try JSONSerialization.jsonObject(with:encoded($0.event))},options:[.sortedKeys]).write(to:root.appendingPathComponent("actual-preview-ledger.json"))
+  await adapter.close();await service.close();try await host.close();try await storage.close()
+  let (reopened,_)=try await StorageService.open(paths:.init(root:root,channel:.preview)),recovery=try await reopened.sessionRecovery(session,limit:32)
+  precondition(recovery.complete && recovery.lastEventSequence==21 && recovery.tools.count==2 && recovery.tools.allSatisfy{$0.phase == .readonly_completed && $0.target==nil && $0.admissionEvent==nil})
+  let recoveredData:[String:Any] = ["tools":try JSONSerialization.jsonObject(with:RecoveryValidation.encode(recovery.tools)),"requests":try JSONSerialization.jsonObject(with:RecoveryValidation.encode(recovery.requests)),"last_event_sequence":recovery.lastEventSequence,"complete":recovery.complete,"host_or_helper_created":false]
+  try JSONSerialization.data(withJSONObject:recoveredData,options:[.sortedKeys]).write(to:root.appendingPathComponent("actual-preview-recovery.json"))
+  try await reopened.close()
 }
 @main struct AgentPackageFixtures {
   static func main() async throws {
@@ -182,6 +253,7 @@ private func nativeProviderTurn(host:NativeHostClient,storage:StorageService,roo
     try Data(freshJSON.utf8).write(to:root.appendingPathComponent("actual-new-host-persisted-history.json"))
     await newService.close();try await newHost.close()
     try await reopened.close()
+    try await nativePreviewRoundTrip(package:package,signatureRoot:CommandLine.arguments.count>3 && !CommandLine.arguments[3].isEmpty ? URL(fileURLWithPath:CommandLine.arguments[3]):nil,root:root.appendingPathComponent("preview-task"))
     print(String(decoding:try JSONSerialization.data(withJSONObject:["production_core":"1.0.4","bundled_node":"26.11.1","actual_private_frames":report.frames,"canonical_events":events.count,"model_transport":"actual_urlsession_rust_cabi_durable_request_ledger","tool_outcome":"completed_actual_readonly_no_mutation","manual_after_sigkill":"4","system_node_fallback":false,"PATH":"empty","wrong_architecture":"rejected","missing_resource":"rejected","late_stdin":"rejected","unconfigured_model":"no_fake_message_or_effect","model_cancel_and_late_delta":"rejected","actual_macho_architecture":"rejected","evidence_root":root.path],options:[.sortedKeys]),as:UTF8.self))
   }
 }

@@ -24,7 +24,7 @@ enum LiveFixtureError:Error {case invalidConfig,unexpectedResult}
       let requestJSON=String(decoding:try JSONSerialization.data(withJSONObject:request),as:UTF8.self)
       let nonce=UUID().uuidString.lowercased(),model=try await ProviderModelSession.prepare(host:host,requestJSON:requestJSON,request:"probe-"+nonce,context:"context-"+nonce,task:"probe-task",turn:"probe-turn",message:"assistant-"+nonce)
       let route=try ProviderRoute(binding:model.binding,endpoint:endpoint,authentication:.bearer,credentialReference:"explicit-user-test",timeouts:try ProviderTimeouts(firstResponse:60,idle:30,total:90))
-      let result=try await transport.send(model,route:route,journal:.init(record:{_ in}),onText:{_ in})
+      let result=try await transport.send(model,route:route,journal:.init(record:{_ in},responseBytes:{_ in}),onText:{_ in})
       let text=result.message.parts.compactMap {part->String? in if case .agent_text_part(let p)=part{return p.text};return nil}.joined()
       guard result.finish=="complete",text.trimmingCharacters(in:.whitespacesAndNewlines)=="4" else {throw LiveFixtureError.unexpectedResult}
       reports.append(["model":name,"matched":true,"finish":result.finish,"response":"4","usage":try JSONSerialization.jsonObject(with:result.usageJSON),"scope":"authorized Swift URLSession/Rust C ABI development smoke; injected explicit credential, no Registry or durable request ledger claim"])

@@ -1,0 +1,12 @@
+   Compiling om-host-service v0.1.0-pre-alpha.3 (/Users/hert/Projects/openmath/crates/om-host-service)
+    Finished `dev` profile [unoptimized] target(s) in 5.05s
+     Running `target/debug/examples/source_store_contract`
+Actual long session4374 events/>16MiB: new calls admitted beyond4096, all37 calls and37 request plans recovered in bounded5-row pages, original raw prefix retained and restart passed
+Canonical actual SQLite session: proposal/admission/unknown/original document recovered result, no callback replay; sequence/idempotency/gap/stream refusal, original ACK and request planned/dispatch/response/finish byte facts passed
+Complete canonical event corruption rejected; original Library bytes and healthy source retained
+Missing transactional recovery pointer rejected rather than hiding an original tool call
+13 actual SIGKILL session/tool/source/URLSession dispatch boundaries: no duplicate source effect or HTTP request, original completed facts recovered, not-started/unknown retained
+   Compiling om-host-service v0.1.0-pre-alpha.3 (/Users/hert/Projects/openmath/crates/om-host-service)
+    Finished `dev` profile [unoptimized] target(s) in 0.83s
+     Running `target/debug/examples/validate_session_events target/acceptance/pre-alpha.4/development/r41/session-ledger-canonical-events.json`
+60 actual canonical session events match the original closed schema

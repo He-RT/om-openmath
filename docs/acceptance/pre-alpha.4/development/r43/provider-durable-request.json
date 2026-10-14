@@ -1,0 +1,567 @@
+{
+  "schema_version": 1,
+  "task": "R4.3.04",
+  "status": "in_progress",
+  "date": "2026-10-14",
+  "base_commit": "7b2364286b0156d345da3d80ea4bc73547562615",
+  "scope": "actual Library4/Rust C ABI/URLSession/production Pi request-lifecycle integration; physical lock-screen remains unverified",
+  "verified": {
+    "normal": "five actual model request facts including original wire body/response/provider ID/model/replay/usage/finish stored in immutable referenced Blobs; readback exact",
+    "new_sigkill_boundaries": 5,
+    "recovery": [
+      "not_dispatched",
+      "dispatch_outcome_unknown",
+      "response_observed",
+      "finished",
+      "finished"
+    ],
+    "recovery_starts_transport": false,
+    "original_regression_sigkills": 13,
+    "original_schema_events": 60,
+    "synthetic_auth_echo": "actual loopback server reflection rejected before model/Blob/event; entire closed store exact-key scan empty; split guard every cut verified",
+    "actual_sent_timeout": "persisted interrupted -> dispatch_outcome_unknown without retry",
+    "bundled_pi": {
+      "frames": 13,
+      "helper_frames": 6,
+      "sqlite_events": 8,
+      "model": "actual URLSession -> native Rust codec, actual request/response/reply ledger -> canonical durable ACK",
+      "tool": "unavailable/no effects",
+      "manual_after_sigkill": "4",
+      "tested": "standalone package plus existing actual signed App resource closure with current native fixture"
+    },
+    "release_signature": "passed",
+    "python": 17,
+    "generated_dtos": 371,
+    "live_after_echo_guard": "both explicitly authorized models actual Swift URLSession/Rust C ABI complete4/input19/output5/total24; separate injected-credential development smoke, no Keychain/Registry claim"
+  },
+  "pending": [
+    "physical locked-screen Keychain acceptance; current locked/auth statuses are injected while query structure/real missing-reference lookup are verified",
+    "full Prompt/media/tool ContextSnapshot producer is separate R4.4.12; current actual request facts do not claim it complete",
+    "full66remainingtasks/32finalgates/actualrelease"
+  ],
+  "preserved_failures": [
+    "wrong Blob owner namespace rejected by existing storage verifier; fixed caller, no verifier weakening",
+    "fixture log created before Root1 initialization rejected recoveryRequired; logs moved outside managed store",
+    "strict Swift async enumerator/nonthrowing autoclosure rejected; fixture scan made synchronous"
+  ],
+  "commands": [
+    "bash macos/Scripts/test-secret-store.sh",
+    "bash macos/Scripts/test-provider-transport.sh",
+    "bash macos/Scripts/test-provider-ledger.sh",
+    "CARGO_PROFILE_DEV_DEBUG=0 CARGO_PROFILE_TEST_DEBUG=0 bash macos/Scripts/test-session-ledger.sh",
+    "bash macos/Scripts/test-agent-package.sh /Users/hert/Projects/openmath/target/macos-agent-package-tests/AgentRuntime",
+    "bash macos/Scripts/test-agent-package.sh '/Users/hert/Projects/openmath/target/macos-native/Build/Products/Release/OpenMath Preview.app/Contents/Resources/AgentRuntime' '/Users/hert/Projects/openmath/target/macos-native/Build/Products/Release/OpenMath Preview.app'",
+    "xcodebuild -project macos/OpenMathNative.xcodeproj -scheme OpenMathNative -configuration Release -derivedDataPath target/macos-native -destination 'platform=macOS,arch=arm64' build",
+    "codesign --verify --deep --strict 'target/macos-native/Build/Products/Release/OpenMath Preview.app'",
+    "python3 -X warn_default_encoding -W error::EncodingWarning -m unittest discover -s tests -v",
+    "python3 scripts/native_contracts.py --check",
+    "python3 macos/Scripts/generate-project.py --check",
+    "bash macos/Scripts/probe-provider-transport.sh /Users/hert/.config/openmath/testing/pre-alpha-4-api.json"
+  ],
+  "source_sha256": {
+    ".github/workflows/macos-native.yml": "5ea5352e0fe8bbf407e43380ef37b21df66c90ddf6869685c177ea29e9eb036c",
+    "macos/OpenMathNative.xcodeproj/project.pbxproj": "9c59ba89730e431e78343bcb31800963f00790b34283776c848faffe43a13957",
+    "macos/OpenMathNative/Models/ProviderRequestLedger.swift": "12fb707f984b8a68dff4f187e9047d496c2ce269b28736bcc4bb6ca7f49ac72e",
+    "macos/OpenMathNative/Models/ProviderTransport.swift": "3bf3ec9237f093cd508ce84b08e2defa981c5900f473df6c5f12d4c551bee3d5",
+    "macos/OpenMathNative/Models/SecretStore.swift": "370cfa6e3c6a4ff88f10a8318bffe8a36342321e2f06e78304709566da175435",
+    "macos/OpenMathNativeTests/AgentPackageFixtures/main.swift": "dbc896db284c9ef1e386fb72be8a0261385f565fb1eb98f1aed041829eadb593",
+    "macos/OpenMathNativeTests/ProviderLedgerFixtures/interruption.py": "ccc125137ab36c79c96693626aede67219557b82df030f6033124f333fce0fe0",
+    "macos/OpenMathNativeTests/ProviderLedgerFixtures/main.swift": "17784d2533f00e08c13662598eab467c3775e07906fec5c4ecc0479e06075f02",
+    "macos/OpenMathNativeTests/ProviderLiveFixtures/main.swift": "44d4f1c28281be09287b89ee944fb90a5569d6c4e2891e3a6093db08b81815c4",
+    "macos/OpenMathNativeTests/ProviderTransportFixtures/main.swift": "f3f4490e2f2a7eec0a3db70572e423674660d5bde4e7dcc6668cf7004c7dc72d",
+    "macos/OpenMathNativeTests/SecretStoreFixtures/main.swift": "c22881f1479589cf076f67455872034f8f76eecede1541696db354a90b520c4f",
+    "macos/Scripts/probe-provider-transport.sh": "4f7fce7553f416b52fe88036f2402ee5b31aba344a4de92dca6bc41696e4c942",
+    "macos/Scripts/test-agent-package.sh": "c625c29a504571eaae039248192175dda51e407fd16085186acf68cb9c2bf0eb",
+    "macos/Scripts/test-provider-ledger.sh": "3954a214fba6a9326c2ce97c6cc2b8fc8e16b0f3a4c6504b58b3e2c82ae832a4",
+    "macos/Scripts/test-provider-transport.sh": "c84e4d7f698c5fd0425c720345ed1cf1832a39338ebff6d24113857b5f808e43"
+  },
+  "databases": [
+    {
+      "captured_path": "docs/acceptance/pre-alpha.4/development/r43/provider-durable-request-raw/actual-ledger/provider_request_plan_durable/store/Library/Generations/000001/library.sqlite.gz",
+      "original_bytes": 122880,
+      "original_sha256": "bd9ad58824ec5d6fabdb1db482ead44c0574837ba08be75bc9fcadf5cea4c979"
+    },
+    {
+      "captured_path": "docs/acceptance/pre-alpha.4/development/r43/provider-durable-request-raw/actual-ledger/timeout/Library/Generations/000001/library.sqlite.gz",
+      "original_bytes": 131072,
+      "original_sha256": "48def295f0bc761b4602d53990eb10953f5d02524b2bd3b4b2a6f742fa127954"
+    },
+    {
+      "captured_path": "docs/acceptance/pre-alpha.4/development/r43/provider-durable-request-raw/actual-ledger/provider_model_reply_durable/store/Library/Generations/000001/library.sqlite.gz",
+      "original_bytes": 135168,
+      "original_sha256": "f40d8b6f304b459f8696d7abe9353cf3145438271177eff205e5b1ba581ce122"
+    },
+    {
+      "captured_path": "docs/acceptance/pre-alpha.4/development/r43/provider-durable-request-raw/actual-ledger/provider_dispatch_durable/store/Library/Generations/000001/library.sqlite.gz",
+      "original_bytes": 122880,
+      "original_sha256": "26089bc0387478b1bdd32bf59f7f2608ef78a0ff355d1dba0fe41b0f230351f9"
+    },
+    {
+      "captured_path": "docs/acceptance/pre-alpha.4/development/r43/provider-durable-request-raw/actual-ledger/complete/Library/Generations/000001/library.sqlite.gz",
+      "original_bytes": 135168,
+      "original_sha256": "35259bf785cc0815624bd6fe101a44dedfe19a60c863ad9e4b571bccb208e998"
+    },
+    {
+      "captured_path": "docs/acceptance/pre-alpha.4/development/r43/provider-durable-request-raw/actual-ledger/provider_finish_durable/store/Library/Generations/000001/library.sqlite.gz",
+      "original_bytes": 131072,
+      "original_sha256": "70d7db174e0643ff25ade108b9e7b25a4fa31e8258068f815757fd042c64b3ee"
+    },
+    {
+      "captured_path": "docs/acceptance/pre-alpha.4/development/r43/provider-durable-request-raw/actual-ledger/echo/Library/Generations/000001/library.sqlite.gz",
+      "original_bytes": 131072,
+      "original_sha256": "a6ca40c13935aaaf19bef88604cf38fca5f01674c423cbba5a00d77978a22f3e"
+    },
+    {
+      "captured_path": "docs/acceptance/pre-alpha.4/development/r43/provider-durable-request-raw/actual-ledger/provider_response_durable/store/Library/Generations/000001/library.sqlite.gz",
+      "original_bytes": 131072,
+      "original_sha256": "f150c944acea683e610bbaacf1b1261599bf9ea7a00c52c6e1781fc1c65b50d5"
+    }
+  ],
+  "files": [
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/provider-durable-request-raw/actual-app-pi/actual-native-http-body.json",
+      "bytes": 385,
+      "sha256": "0f1143beb27479b693178449abe732bf68a3f4189e85b19fb457a6134548f1e9"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/provider-durable-request-raw/actual-app-pi/actual-native-model-input.json",
+      "bytes": 728,
+      "sha256": "1eff3f4f68f82b4d48f3724ef6feca64e670787a86bdadec782d89e50ba9d160"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/provider-durable-request-raw/actual-app-pi/actual-native-response.sse",
+      "bytes": 329,
+      "sha256": "07fca1ee4ba7e3611352357bd2a53a438ee6e5f20240da318f31a8f63741662f"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/provider-durable-request-raw/actual-app-pi/actual-production-ledger.json",
+      "bytes": 8670,
+      "sha256": "2259ab5f7b25d047a1ed0a194eb3c828864b7a1afb74b6980c88f72a606e4689"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/provider-durable-request-raw/actual-app-pi/actual-production-wire.json",
+      "bytes": 10832,
+      "sha256": "5eab46848fd4998d2a7f4443566a82f5c433ef66f19f044486d28021ae1916f6"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/provider-durable-request-raw/actual-http-cases.json",
+      "bytes": 123533,
+      "sha256": "8d510d07d04ad3cc7337c6ce0faf512d2b199f51d0485455011e89b3e761c48e"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/provider-durable-request-raw/actual-ledger/complete/Library/Generations/000001/library.sqlite.gz",
+      "bytes": 4911,
+      "sha256": "ae80eb9b059c9814e6d43f5c068461a885c0888149738e20c74ecd65158d25da"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/provider-durable-request-raw/actual-ledger/complete/Library/active.json",
+      "bytes": 166,
+      "sha256": "91f518b36e3c0ac62008fbc263972da24a9aa7add90f5cdf7967700684b7e4cb"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/provider-durable-request-raw/actual-ledger/complete/actual-events.json",
+      "bytes": 4328,
+      "sha256": "9cd1fb049e8d2904389ba5ad73602ebfafde5e12caf4d33ab32c7c786524b5a9"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/provider-durable-request-raw/actual-ledger/complete/actual-model-facts.json",
+      "bytes": 709,
+      "sha256": "953478de80570eef2a481879256655bd412d00dfc31379b0354a7d9d3d90dff7"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/provider-durable-request-raw/actual-ledger/complete/actual-request-body.json",
+      "bytes": 147,
+      "sha256": "020a35588a81ddc54c3d1068b42c32f2634f24949ccbf4feee487d4e488b12b1"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/provider-durable-request-raw/actual-ledger/complete/actual-response.sse",
+      "bytes": 136,
+      "sha256": "5117bade3258c7ed4456163e88af495d2976587ad683e1f89dc9d880c33899a5"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/provider-durable-request-raw/actual-ledger/complete/recovered-events.json",
+      "bytes": 4328,
+      "sha256": "ffe8b6c92f1665f5df1ad4c1710abca6de5a581a028a988a40336e49ce310d9e"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/provider-durable-request-raw/actual-ledger/complete/store.json",
+      "bytes": 97,
+      "sha256": "eb391bf9ba277bee2f6d2b4c20473d7f06c186ce8769bdc4866b6736f526a2c9"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/provider-durable-request-raw/actual-ledger/echo/Library/Generations/000001/library.sqlite.gz",
+      "bytes": 4414,
+      "sha256": "260165eea9144eed2942c73b781768f552e7396ae9606ee6966872eef1a210bf"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/provider-durable-request-raw/actual-ledger/echo/Library/active.json",
+      "bytes": 166,
+      "sha256": "e39356b1890d0b868013f97e5ae8dafe16f86bdccc2ce369297b36e4e48dab9e"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/provider-durable-request-raw/actual-ledger/echo/store.json",
+      "bytes": 97,
+      "sha256": "5afaf99d605dc8e38dadd3aa5ad652df54d1df24fb0cf44231069f0bf438f7e3"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/provider-durable-request-raw/actual-ledger/provider_dispatch_durable/child.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/provider-durable-request-raw/actual-ledger/provider_dispatch_durable/recovery.log",
+      "bytes": 105,
+      "sha256": "8e650e8322775d042814a3e72348cacc0ee0f0496e3b13738d4c3dcead5ed6e0"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/provider-durable-request-raw/actual-ledger/provider_dispatch_durable/store/Library/Generations/000001/library.sqlite.gz",
+      "bytes": 3532,
+      "sha256": "8312805726051364d1f16ada8a80ef4f000a9b65502d26af8ffeb2f80b6e17ab"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/provider-durable-request-raw/actual-ledger/provider_dispatch_durable/store/Library/active.json",
+      "bytes": 166,
+      "sha256": "86a3dd270bcef07f2a0f103d7ab32d18a8f1c3201bf0440792f9318b5896c2ff"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/provider-durable-request-raw/actual-ledger/provider_dispatch_durable/store/recovered-events.json",
+      "bytes": 1629,
+      "sha256": "1db380b13d8c163d5d880f3b85e3e4919bc6afb54374c1cda692034d276c4dba"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/provider-durable-request-raw/actual-ledger/provider_dispatch_durable/store/store.json",
+      "bytes": 97,
+      "sha256": "ed2bc3a314ac1a4adf061afb1475580c73d8d39edc27058599111d7a0e288b30"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/provider-durable-request-raw/actual-ledger/provider_finish_durable/child.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/provider-durable-request-raw/actual-ledger/provider_finish_durable/recovery.log",
+      "bytes": 89,
+      "sha256": "c633670558c7b981e9bf8f1626585304a8cc59f8f2a3aa80767813715d4da2c5"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/provider-durable-request-raw/actual-ledger/provider_finish_durable/store/Library/Generations/000001/library.sqlite.gz",
+      "bytes": 4422,
+      "sha256": "8e8abd064cff9823112a738f7fd05cbc2daff5642a7778629926a3f0a2ecd178"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/provider-durable-request-raw/actual-ledger/provider_finish_durable/store/Library/active.json",
+      "bytes": 166,
+      "sha256": "e60180c4e2b8fdd3049d56bf7d28a320d005ebc06fb74715f52e9e1803988463"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/provider-durable-request-raw/actual-ledger/provider_finish_durable/store/recovered-events.json",
+      "bytes": 3459,
+      "sha256": "bf6ad449b2dcceed4be084fa54b5f4e86ca6cbc6450ff95a13256d2ae0037227"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/provider-durable-request-raw/actual-ledger/provider_finish_durable/store/store.json",
+      "bytes": 97,
+      "sha256": "500b758bb26866994c55da55dd80a4bac8e4f73ea849a12fdfaeb98f6f2ad597"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/provider-durable-request-raw/actual-ledger/provider_model_reply_durable/child.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/provider-durable-request-raw/actual-ledger/provider_model_reply_durable/recovery.log",
+      "bytes": 89,
+      "sha256": "c647cfae6c3c2cbea320892d82f8babb91392f2203c76763e2cddaed6d760877"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/provider-durable-request-raw/actual-ledger/provider_model_reply_durable/store/Library/Generations/000001/library.sqlite.gz",
+      "bytes": 4918,
+      "sha256": "b6dcc5f194a50075c542df248214e13f3b96092fa425e7e599d75e30092c4eda"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/provider-durable-request-raw/actual-ledger/provider_model_reply_durable/store/Library/active.json",
+      "bytes": 166,
+      "sha256": "3912a7ee9c92751e164ea161f6d7e25b5499e2bb69911b459d37e669d486cace"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/provider-durable-request-raw/actual-ledger/provider_model_reply_durable/store/recovered-events.json",
+      "bytes": 4328,
+      "sha256": "182d1c0e48a635764f2dc808b3f430bfe0ef558d516ee11397b7665d45b417d6"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/provider-durable-request-raw/actual-ledger/provider_model_reply_durable/store/store.json",
+      "bytes": 97,
+      "sha256": "d831c3488ff1db0f3b3348adddccb01ee72f6ddd3490061b5512ebec7a385f49"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/provider-durable-request-raw/actual-ledger/provider_request_plan_durable/child.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/provider-durable-request-raw/actual-ledger/provider_request_plan_durable/recovery.log",
+      "bytes": 95,
+      "sha256": "620689b5ed9b8ef0aee8a7603c79f8ec0f77bdee0df0e2138cad49a635dce086"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/provider-durable-request-raw/actual-ledger/provider_request_plan_durable/store/Library/Generations/000001/library.sqlite.gz",
+      "bytes": 3118,
+      "sha256": "ae6a0c33c00a7a69e8f86797a8d4f3b067aed14816b6cb3e4eb77aaba515113d"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/provider-durable-request-raw/actual-ledger/provider_request_plan_durable/store/Library/active.json",
+      "bytes": 166,
+      "sha256": "561b7faeb3d21953ed157eaa964285af33830bf4ec4c95c91aec73f788dc1f88"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/provider-durable-request-raw/actual-ledger/provider_request_plan_durable/store/recovered-events.json",
+      "bytes": 828,
+      "sha256": "7ebed4d20b14c76775efa2a62cc4f997fd652311d2f7ec8a47031da79e965b98"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/provider-durable-request-raw/actual-ledger/provider_request_plan_durable/store/store.json",
+      "bytes": 97,
+      "sha256": "5d7c02366a8b39841b0fde871bb341b3b19e8400fc9175e85d7fe88ec2b3e3db"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/provider-durable-request-raw/actual-ledger/provider_response_durable/child.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/provider-durable-request-raw/actual-ledger/provider_response_durable/recovery.log",
+      "bytes": 98,
+      "sha256": "3eaa23eb6e707271caf396236f1166d8d0e49fe3df93e8d725b3026e358ae1c4"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/provider-durable-request-raw/actual-ledger/provider_response_durable/store/Library/Generations/000001/library.sqlite.gz",
+      "bytes": 4094,
+      "sha256": "0ad17d35cbc0b1339d3d5cffaccc074c83296667e18c281767125d089aa34aa9"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/provider-durable-request-raw/actual-ledger/provider_response_durable/store/Library/active.json",
+      "bytes": 166,
+      "sha256": "52da1b07472caea96ab1ed8f894902b88c629e7edff2d6e3300562b99150c68a"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/provider-durable-request-raw/actual-ledger/provider_response_durable/store/recovered-events.json",
+      "bytes": 2548,
+      "sha256": "b3ca743d14a5ea62f4e3cfe716a9084233455762163e066d558a08ee5b4e06ca"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/provider-durable-request-raw/actual-ledger/provider_response_durable/store/store.json",
+      "bytes": 97,
+      "sha256": "0e99f44960f8df47feb6416d8796b94b040c22631c5a4c097eacf7e15bc5e3e5"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/provider-durable-request-raw/actual-ledger/timeout/Library/Generations/000001/library.sqlite.gz",
+      "bytes": 3986,
+      "sha256": "3397aa7a18c117a23f7d263d7f29f3061b5d064687d77d46d19ea6f79a8ff6d7"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/provider-durable-request-raw/actual-ledger/timeout/Library/active.json",
+      "bytes": 166,
+      "sha256": "e7ca1cd93fe7e8a005006bc74f69b185b1179d4a406a0e76631ebfdcde36a7de"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/provider-durable-request-raw/actual-ledger/timeout/store.json",
+      "bytes": 97,
+      "sha256": "1995648df0b49e4563548a54f4652dae1329cc6760cd326d2630f908d9ad693b"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/provider-durable-request-raw/actual-native-events.json",
+      "bytes": 134143,
+      "sha256": "d1d7cab4fa936327fb5139d4589106bd8ec163903102aadc08564a91d1046269"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/provider-durable-request-raw/inputs/.github/workflows/macos-native.yml",
+      "bytes": 9211,
+      "sha256": "5ea5352e0fe8bbf407e43380ef37b21df66c90ddf6869685c177ea29e9eb036c"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/provider-durable-request-raw/inputs/macos/OpenMathNative/Models/ProviderRequestLedger.swift",
+      "bytes": 7504,
+      "sha256": "12fb707f984b8a68dff4f187e9047d496c2ce269b28736bcc4bb6ca7f49ac72e"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/provider-durable-request-raw/inputs/macos/OpenMathNative/Models/ProviderTransport.swift",
+      "bytes": 17726,
+      "sha256": "3bf3ec9237f093cd508ce84b08e2defa981c5900f473df6c5f12d4c551bee3d5"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/provider-durable-request-raw/inputs/macos/OpenMathNative/Models/SecretStore.swift",
+      "bytes": 4179,
+      "sha256": "370cfa6e3c6a4ff88f10a8318bffe8a36342321e2f06e78304709566da175435"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/provider-durable-request-raw/inputs/macos/OpenMathNative.xcodeproj/project.pbxproj",
+      "bytes": 149497,
+      "sha256": "9c59ba89730e431e78343bcb31800963f00790b34283776c848faffe43a13957"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/provider-durable-request-raw/inputs/macos/OpenMathNativeTests/AgentPackageFixtures/main.swift",
+      "bytes": 13386,
+      "sha256": "dbc896db284c9ef1e386fb72be8a0261385f565fb1eb98f1aed041829eadb593"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/provider-durable-request-raw/inputs/macos/OpenMathNativeTests/ProviderLedgerFixtures/interruption.py",
+      "bytes": 1617,
+      "sha256": "ccc125137ab36c79c96693626aede67219557b82df030f6033124f333fce0fe0"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/provider-durable-request-raw/inputs/macos/OpenMathNativeTests/ProviderLedgerFixtures/main.swift",
+      "bytes": 7664,
+      "sha256": "17784d2533f00e08c13662598eab467c3775e07906fec5c4ecc0479e06075f02"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/provider-durable-request-raw/inputs/macos/OpenMathNativeTests/ProviderLiveFixtures/main.swift",
+      "bytes": 3440,
+      "sha256": "44d4f1c28281be09287b89ee944fb90a5569d6c4e2891e3a6093db08b81815c4"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/provider-durable-request-raw/inputs/macos/OpenMathNativeTests/ProviderTransportFixtures/main.swift",
+      "bytes": 21069,
+      "sha256": "f3f4490e2f2a7eec0a3db70572e423674660d5bde4e7dcc6668cf7004c7dc72d"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/provider-durable-request-raw/inputs/macos/OpenMathNativeTests/SecretStoreFixtures/main.swift",
+      "bytes": 4503,
+      "sha256": "c22881f1479589cf076f67455872034f8f76eecede1541696db354a90b520c4f"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/provider-durable-request-raw/inputs/macos/Scripts/probe-provider-transport.sh",
+      "bytes": 995,
+      "sha256": "4f7fce7553f416b52fe88036f2402ee5b31aba344a4de92dca6bc41696e4c942"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/provider-durable-request-raw/inputs/macos/Scripts/test-agent-package.sh",
+      "bytes": 1524,
+      "sha256": "c625c29a504571eaae039248192175dda51e407fd16085186acf68cb9c2bf0eb"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/provider-durable-request-raw/inputs/macos/Scripts/test-provider-ledger.sh",
+      "bytes": 1568,
+      "sha256": "3954a214fba6a9326c2ce97c6cc2b8fc8e16b0f3a4c6504b58b3e2c82ae832a4"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/provider-durable-request-raw/inputs/macos/Scripts/test-provider-transport.sh",
+      "bytes": 1121,
+      "sha256": "c84e4d7f698c5fd0425c720345ed1cf1832a39338ebff6d24113857b5f808e43"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/provider-durable-request-raw/provider-durable-actual-app.log",
+      "bytes": 661,
+      "sha256": "3346fb8fe96bb65fe88385591627fd05a96190e2ab1cbed4ab890e80d2a9f236"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/provider-durable-request-raw/provider-durable-ledger-corrected.log",
+      "bytes": 613,
+      "sha256": "4dc5df5216ff0d29e556d3b6d10129dca132fde76cf90a558501eaea68bb8537"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/provider-durable-request-raw/provider-durable-ledger-diagnostic.log",
+      "bytes": 433,
+      "sha256": "192fa733980442eda20d7d0e488c1010aabdde54e76387f16062e563abf27cac"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/provider-durable-request-raw/provider-durable-ledger-final.log",
+      "bytes": 1058,
+      "sha256": "a7bbb94a84186a3062e2b923336cff8bdadc9860703a87e684a8c2d393d8aebc"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/provider-durable-request-raw/provider-durable-ledger-initial.log",
+      "bytes": 433,
+      "sha256": "b726d051356496a8878558a7137fa89a52911ac25d7edfd84ab7c5e73806af49"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/provider-durable-request-raw/provider-durable-ledger-negative-initial.log",
+      "bytes": 1961,
+      "sha256": "be264894f116ae5c5b6535969530b3cb1801907a21f03a3bc4a217328b560559"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/provider-durable-request-raw/provider-durable-ledger-negative-verified.log",
+      "bytes": 1058,
+      "sha256": "ed1d6c3880bfde6beeb98b58fe6c82c24caba41c31c611e65016094e634b774b"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/provider-durable-request-raw/provider-durable-ledger-verified.log",
+      "bytes": 864,
+      "sha256": "1f5f790ba0ddeb7bef395e7e8a8ac2e3a70d419d6540ef7b5aaded779a64c50a"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/provider-durable-request-raw/provider-durable-live-guard.log",
+      "bytes": 651,
+      "sha256": "d0f56f29de9e2aa5de43507fc0728171bbd0db685c79d2578cd5a39ac539b0fc"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/provider-durable-request-raw/provider-durable-pi-initial.log",
+      "bytes": 661,
+      "sha256": "fcf130701c0e3cf8ab4fdf3c4eb8df52d64d2cdfe72f3a57ca3a0d000960a61d"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/provider-durable-request-raw/provider-durable-python.log",
+      "bytes": 2835,
+      "sha256": "c78b008011da22f0dc2d374fa154cd527e431e49c9243c0823e28b734cc5c0bc"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/provider-durable-request-raw/provider-durable-release.log",
+      "bytes": 119529,
+      "sha256": "21266818efa69cbcebebd44465d2b939755bcc406dd1032927843022a9029424"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/provider-durable-request-raw/provider-durable-signature.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/provider-durable-request-raw/provider-durable-transport-regression.log",
+      "bytes": 517,
+      "sha256": "f24ba938c9a53f01f8e543f0902655041b3f2caacb5e59e926ecccab3cf8fb8d"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/provider-durable-request-raw/provider-ledger-typecheck-initial.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/provider-durable-request-raw/provider-original-ledger-regression.log",
+      "bytes": 1378,
+      "sha256": "ca51267c5eb0c0741f5e3cd47f93c56e01836f51514af75a73d829847a5ff4ee"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/provider-durable-request-raw/provider-response-guard-cuts.log",
+      "bytes": 200,
+      "sha256": "766281fc3d3507fd34d995be95c2ddc389bf98c634696bc0d46e732dfe7fb998"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/provider-durable-request-raw/provider-response-guard-initial.log",
+      "bytes": 517,
+      "sha256": "00e8a7f231e6a1856904d5e35221428f4c0fa8788ed8b81e5b7f57891b215b72"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/provider-durable-request-raw/standalone-pi/actual-native-http-body.json",
+      "bytes": 385,
+      "sha256": "0f1143beb27479b693178449abe732bf68a3f4189e85b19fb457a6134548f1e9"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/provider-durable-request-raw/standalone-pi/actual-native-model-input.json",
+      "bytes": 728,
+      "sha256": "999d6aab767503b6d57a6a587fef0e71acbde4ca329d264daad63ccdbd85456d"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/provider-durable-request-raw/standalone-pi/actual-native-response.sse",
+      "bytes": 329,
+      "sha256": "df9d48be40cd53e5cf5490984088645e9f11e62ca5ef086a992cccebdbde5ac4"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/provider-durable-request-raw/standalone-pi/actual-production-ledger.json",
+      "bytes": 8670,
+      "sha256": "2fd107972f09e0d6c6a556c40fa9c71e772f8630d9da20552ed36e307d72ccaf"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/provider-durable-request-raw/standalone-pi/actual-production-wire.json",
+      "bytes": 10832,
+      "sha256": "021a377a6ecf26e64e575a6f603067809216811d49ec1e7d95f6a9209ba552d1"
+    }
+  ]
+}

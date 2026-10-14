@@ -1,0 +1,11 @@
+    Finished `release` profile [optimized] target(s) in 0.22s
+Actual Library4 request body/plan/dispatch before socket, original response/finish/model facts committed: 5 events; real HTTP/Rust codec result4, no credentials.
+Recovered finished from 5 original events; no transport/host started, no event appended.
+Actual server credential echo rejected before model/Blob/event; entire closed store exact-value scan empty.
+Actual sent request timeout persisted interrupted/dispatch_outcome_unknown; no retry.
+provider_request_plan_durable: actual SIGKILL -> not_dispatched; read-only recovery, no replay
+provider_dispatch_durable: actual SIGKILL -> dispatch_outcome_unknown; read-only recovery, no replay
+provider_response_durable: actual SIGKILL -> response_observed; read-only recovery, no replay
+provider_finish_durable: actual SIGKILL -> finished; read-only recovery, no replay
+provider_model_reply_durable: actual SIGKILL -> finished; read-only recovery, no replay
+Evidence: /Users/hert/Projects/openmath/target/macos-provider-ledger-tests/attempt-wuQV2E

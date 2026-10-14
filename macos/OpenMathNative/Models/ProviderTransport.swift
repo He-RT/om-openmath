@@ -1,6 +1,6 @@
 import Foundation
 
-enum ProviderTransportReason: String, Error, Sendable { case invalidRoute, secret, stale, codec, http, redirect, connectionTimeout, firstResponseTimeout, idleTimeout, totalTimeout, cancelled, network, limit, journal }
+enum ProviderTransportReason: String, Error, Sendable { case invalidRoute, secret, credentialEcho, stale, codec, http, redirect, connectionTimeout, firstResponseTimeout, idleTimeout, totalTimeout, cancelled, network, limit, journal }
 enum ProviderDispatchOutcome: String, Sendable { case notDispatched, dispatchOutcomeUnknown, responseObserved }
 struct ProviderTransportFailure: Error, Sendable {
   let reason: ProviderTransportReason
@@ -96,6 +96,8 @@ struct ProviderJournalFact:Sendable {
 struct ProviderTransportJournal:Sendable {
   /// The caller supplies actual durable request-lifecycle persistence. No automatic no-op default.
   let record:@Sendable (ProviderJournalFact)async throws->Void
+  /// Original response bytes after the native auth-echo guard; no auth header is provided.
+  let responseBytes:@Sendable (Data)async throws->Void
 }
 private enum ProviderHTTPEvent:Sendable {case headers(UInt16),bytes(Data)}
 private final class ProviderHTTPPump:NSObject,URLSessionDataDelegate,@unchecked Sendable {
@@ -155,7 +157,7 @@ struct ProviderTransport:Sendable {
   init(secrets:SecretStore){self.secrets=secrets;makeConfiguration={.ephemeral}}
   init(secrets:SecretStore,testConfiguration:@escaping @Sendable ()->URLSessionConfiguration){self.secrets=secrets;makeConfiguration=testConfiguration}
   func send(_ model:ProviderModelSession,route:ProviderRoute,journal:ProviderTransportJournal,onText:@escaping @Sendable (String)async throws->Void)async throws->ProviderModelResult {
-    var dispatched=false,pump:ProviderHTTPPump?
+    var dispatched=false,pump:ProviderHTTPPump?,responseGuard:ProviderSecretResponseGuard?
     let prepared=model.prepared
     func outcome()->ProviderDispatchOutcome {pump?.observedStatus != nil ? .responseObserved:dispatched ? .dispatchOutcomeUnknown:.notDispatched}
     do {
@@ -166,6 +168,7 @@ struct ProviderTransport:Sendable {
       if route.binding.wireProtocol=="anthropic_messages" {request.setValue("2023-06-01",forHTTPHeaderField:"anthropic-version")}
       if let reference=route.credentialReference {
         let secret=try await secrets.read(reference:reference)
+        responseGuard=secret.responseGuard()
         for (key,value) in secret.authenticationHeader(route.authentication){request.setValue(value,forHTTPHeaderField:key)}
       }
       try Task.checkCancellation()
@@ -188,15 +191,21 @@ struct ProviderTransport:Sendable {
           case .headers(let status):
             try await journal.record(.init(phase:.responseStarted,request:prepared.request_ref,context:prepared.context_ref,status:status,outcome:.responseObserved))
             try await model.headers(status)
-          case .bytes(let bytes):for text in try await model.feed(bytes) {try await onText(text)}
+          case .bytes(let bytes):
+            let ready=try responseGuard?.feed(bytes) ?? bytes
+            if !ready.isEmpty {try await journal.responseBytes(ready);for text in try await model.feed(ready) {try await onText(text)}}
           }
         }
+        if let final=try responseGuard?.feed(Data(),final:true),!final.isEmpty {try await journal.responseBytes(final);for text in try await model.feed(final){try await onText(text)}}
         try Task.checkCancellation();return try await model.finish()
       } onCancel:{actualPump.stop(.cancelled)}
       try await journal.record(.init(phase:.finished,request:prepared.request_ref,context:prepared.context_ref,status:actualPump.observedStatus,outcome:.responseObserved))
       return result
     } catch {
-      let reason:ProviderTransportReason = error is CancellationError ? .cancelled:(error as? ProviderTransportReason ?? (error is ProviderSecretError ? .secret:.journal))
+      let reason:ProviderTransportReason
+      if error is CancellationError {reason = .cancelled}
+      else if case ProviderSecretError.echoed=error {reason = pump?.observedStatus.map({!(200..<300).contains($0)}) == true ? .http:.credentialEcho}
+      else {reason = error as? ProviderTransportReason ?? (error is ProviderSecretError ? .secret:.journal)}
       pump?.stop(reason);await model.cancel()
       let observed=outcome(),status=pump?.observedStatus
       // A failing terminal persistence callback cannot turn an unknown request into safe retry.

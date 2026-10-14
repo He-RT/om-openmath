@@ -65,7 +65,7 @@
 | [x] [R4.3.01](PRE_ALPHA_4.md#task-r4.3.01) | 规范Agent消息、任务与IPC身份 | completed | [真实source/CABI/私有进程与耐久ACK](../acceptance/pre-alpha.4/development/r43/agent-protocol-native.json)；357DTO、20Rust/3Node/实际SQLite恢复，合成helper无模型/工具执行 | 本批D045 |
 | [x] [R4.3.02](PRE_ALPHA_4.md#task-r4.3.02) | 固定Pi Core与随包生产helper | completed | [实际随包Node/Pi/原生任务](../acceptance/pre-alpha.4/development/r43/pi-production-runtime.json)；86依赖/4169资源、13帧/3事件、SIGKILL后原文档4 | 本批D047 |
 | [x] [R4.3.03](PRE_ALPHA_4.md#task-r4.3.03) | sans-IO单轮模型codec基础 | completed | [实际Rust codec/Pi/原生帧及两模型SSE](../acceptance/pre-alpha.4/development/r43/single-turn-codec.json)；10单轮/182回归、4Pi、真实SQLite ACK；生产transport仍后续 | 本批D048 |
-| [ ] [R4.3.04](PRE_ALPHA_4.md#task-r4.3.04) | Swift URLSession和SecretStore传输 | in_progress | [实际Swift传输/Rust C ABI/原生端口](../acceptance/pre-alpha.4/development/r43/provider-transport.json)；194Rust/371DTO/双协议URLProtocol/两模型live；真实请求账本/锁屏仍未完成；独立connect预算经真实回环验证 | 本批D051 |
+| [ ] [R4.3.04](PRE_ALPHA_4.md#task-r4.3.04) | Swift URLSession和SecretStore传输 | in_progress | [真实请求账本/随包Pi/强杀恢复](../acceptance/pre-alpha.4/development/r43/provider-durable-request.json)；5新+13原SIGKILL、13帧8事件、字面key回显隔离；物理锁屏仍未完成 | 本批D052 |
 | [ ] [R4.3.05](PRE_ALPHA_4.md#task-r4.3.05) | 读取笔记本与真实函数资料工具 | planned | — | — |
 | [ ] [R4.3.06](PRE_ALPHA_4.md#task-r4.3.06) | 预览与原子修改工具接入 | planned | — | — |
 | [ ] [R4.3.07](PRE_ALPHA_4.md#task-r4.3.07) | 执行、结果检查和隔离试算工具 | planned | — | — |
@@ -582,3 +582,9 @@ R4.3.03已推21a08e5，CI38465324522运行中；本基础先本地提交，后�
 ## D051 · 2026-10-14 独立连接预算（R4.3.04继续）
 
 通过公开URLSession didSendBodyData/实际body发送观察连接已建立，或响应头观察作保守完成证据；本接口非空POST，连接10s与首响应60s/idle30s/total180s各自计时。真实自有HTTP回环收完请求后延迟1.3s响应，在1s connection预算仍成功；无连接进度的connection timeout分别验证，未把模型等待裁为连接超时。完整raw HTTP请求、SSE、实测elapsed及全部旧URLProtocol回归保存。真实请求账本/ContextSnapshot producer及物理锁屏仍未完成，R4.3.04保持in_progress、32/98。99889e4已推dev，新CI另核；本连接小批次先本地保存，继续下一接线。
+
+## D052 · 2026-10-14 真实请求账本与随包原生传输
+
+ProviderRequestLedger实际存body/plan→dispatch→原始response→finish及独立原模型facts Blob，遵循现有request/response owner绑定；metadata与header-only观察自描述，unknown dispatch保持interrupted。五真实SIGKILL在plan/dispatch/response/finish/model回执耐久点恢复准确状态且不发HTTP；原13边界/60schemaevents回归通过。字面auth echo跨chunk拦截，不进入model/Blob/event，完整关闭store扫描为空；正常字节全切分等同原始值，真实timeout保unknown无retry。
+
+随包Pi已直接用ProviderAgentModelAdapter/SwiftURLSession/Rust C ABI/生产账本，移除该集成fixture对测试Rust可执行文件的依赖；standalone/实际签名App资源闭包13双向帧、8SQLite事实、原args/ACK后unavailable、强杀后原文档手工4。实际原request/response与原providerID/model/replay/usage/finish已Blob回读核对。Release/strict签名/371DTO/17Python/旧ledger回归及两授权模型guard后真实live均通过，完整原始输入/SQLgzip/hash/失败在provider-durable-request.json。R4.3.04步骤1–4勾实测，物理锁屏未验故仍in_progress/32of98，完整ContextSnapshot属于R4.4.12未完成；接下来先独立R4.3.05只读真实工具，保持用户系统设置。

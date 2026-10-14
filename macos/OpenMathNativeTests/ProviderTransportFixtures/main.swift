@@ -80,7 +80,7 @@ private actor Trace {
   func setHold(){hold=true}
   func release(){hold=false;paused?.resume();paused=nil}
   func wait()async throws {for _ in 0..<500 {if arrived{return};try await Task.sleep(for:.milliseconds(5))};throw ProviderTransportReason.journal}
-  func journal()->ProviderTransportJournal {.init(record:{[self] fact in try await record(fact)})}
+  func journal()->ProviderTransportJournal {.init(record:{[self] fact in try await record(fact)},responseBytes:{_ in})}
 }
 func json(_ object:Any)throws->String {String(decoding:try JSONSerialization.data(withJSONObject:object,options:[.sortedKeys]),as:UTF8.self)}
 func chat(_ text:String,reason:String="stop")throws->Data {
@@ -188,7 +188,7 @@ private func failure(_ body:@Sendable ()async throws->ProviderModelResult)async 
     precondition(computed);task.cancel()
     do {_ = try await task.value;fatalError("cancelled active request succeeded")}catch let e as ProviderTransportFailure {precondition(e.reason == .cancelled)}
     let malformed=try await prepare(host,"malformed"),malTrace=Trace();FixtureProtocol.state.reset(Script(chunks:[Data("data: {\"error\":{\"message\":\"synthetic-secret\"}}\n\n".utf8)]))
-    let mal=try await failure {try await transport.send(malformed,route:route(malformed,normal),journal:await malTrace.journal(),onText:{_ in})};precondition(mal.reason == .codec && !String(describing:mal).contains("synthetic-secret"))
+    let mal=try await failure {try await transport.send(malformed,route:route(malformed,normal),journal:await malTrace.journal(),onText:{_ in})};precondition(mal.reason == .credentialEcho && !String(describing:mal).contains("synthetic-secret"))
     for url in ["http://outside.invalid/v1","https://user:secret@unit.fixture.invalid/v1","https://unit.fixture.invalid/v1?key=secret","file:///tmp/model","http://localhost/v1"] {
       do {_ = try ProviderRoute(binding:model.binding,endpoint:URL(string:url)!,authentication:.none,credentialReference:nil,timeouts:normal,allowHTTPOnLiteralLoopback:true);fatalError("unsafe route accepted")}catch ProviderTransportReason.invalidRoute { }
     }

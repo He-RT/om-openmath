@@ -1,0 +1,7 @@
+    Finished `release` profile [optimized] target(s) in 0.08s
+Actual Library4 request body/plan/dispatch before socket, original response/finish/model facts committed: 5 events; real HTTP/Rust codec result4, no credentials.
+Recovered finished from 5 original events; no transport/host started, no event appended.
+Traceback (most recent call last):
+  File "/Users/hert/Projects/openmath/macos/OpenMathNativeTests/ProviderLedgerFixtures/interruption.py", line 25, in <module>
+    raise RuntimeError(f'{stage}: child exited before boundary')
+RuntimeError: provider_request_plan_durable: child exited before boundary

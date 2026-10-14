@@ -11,13 +11,12 @@ else
  package="$1"
 fi
 cargo build -p om-apple-ffi --release --locked
-cargo build -p om-llm --example single_turn_fixture --locked
 swiftc -whole-module-optimization -swift-version 6 -parse-as-library -target arm64-apple-macos27.0 -I macos/Headers \
  -L target/release -lom_apple_ffi macos/OpenMathNative/Generated/HostContractSupport.swift \
  macos/OpenMathNative/Generated/Contracts/*.swift macos/OpenMathNative/Storage/*.swift macos/OpenMathNative/Kernel/*.swift \
  macos/OpenMathNative/Rendering/ResultClient.swift macos/OpenMathNative/Rendering/ResultPresenter.swift \
  macos/OpenMathNative/NativeHostClient.swift macos/OpenMathNative/AppEventRouter.swift macos/OpenMathNative/DraftStore.swift \
- macos/OpenMathNative/Agent/*.swift macos/OpenMathNativeTests/AgentPackageFixtures/main.swift -o target/macos-agent-package-tests/fixtures
+ macos/OpenMathNative/Agent/*.swift macos/OpenMathNative/Models/*.swift macos/OpenMathNativeTests/ProviderTransportFixtures/LoopbackServer.swift macos/OpenMathNativeTests/AgentPackageFixtures/main.swift -o target/macos-agent-package-tests/fixtures
 attempt=$(mktemp -d "$root/target/macos-agent-package-tests/attempt-XXXXXX")
 env NODE_OPTIONS='--invalid-old-profile' NODE_PATH='/untrusted/old-modules' OPENAI_API_KEY='fixture-sentinel' \
- target/macos-agent-package-tests/fixtures "$package" "$attempt" "${2:-}" "$root/target/debug/examples/single_turn_fixture"
+ target/macos-agent-package-tests/fixtures "$package" "$attempt" "${2:-}"

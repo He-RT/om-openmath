@@ -1,0 +1,16 @@
+    Finished `release` profile [optimized] target(s) in 0.23s
+macos/OpenMathNativeTests/ProviderLedgerFixtures/main.swift:50:37: error: instance method 'makeIterator' is unavailable from asynchronous contexts
+48 |       try await host.close();try await storage.close()
+49 |       if mode=="echo",let files=FileManager.default.enumerator(at:root,includingPropertiesForKeys:[.isRegularFileKey]) {
+50 |         for case let file as URL in files where (try file.resourceValues(forKeys:[.isRegularFileKey])).isRegularFile==true {precondition(try Data(contentsOf:file).range(of:Data(secret.utf8))==nil)}
+   |                                     `- error: instance method 'makeIterator' is unavailable from asynchronous contexts
+51 |       }
+52 |       print(mode=="echo" ? "Actual server credential echo rejected before model/Blob/event; entire closed store exact-value scan empty.":"Actual sent request timeout persisted interrupted/dispatch_outcome_unknown; no retry.")
+
+macos/OpenMathNativeTests/ProviderLedgerFixtures/main.swift:50:142: error: call can throw, but it is executed in a non-throwing autoclosure
+48 |       try await host.close();try await storage.close()
+49 |       if mode=="echo",let files=FileManager.default.enumerator(at:root,includingPropertiesForKeys:[.isRegularFileKey]) {
+50 |         for case let file as URL in files where (try file.resourceValues(forKeys:[.isRegularFileKey])).isRegularFile==true {precondition(try Data(contentsOf:file).range(of:Data(secret.utf8))==nil)}
+   |                                                                                                                                              `- error: call can throw, but it is executed in a non-throwing autoclosure
+51 |       }
+52 |       print(mode=="echo" ? "Actual server credential echo rejected before model/Blob/event; entire closed store exact-value scan empty.":"Actual sent request timeout persisted interrupted/dispatch_outcome_unknown; no retry.")

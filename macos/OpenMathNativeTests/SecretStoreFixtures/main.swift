@@ -54,6 +54,16 @@ private final class QueryCapture: @unchecked Sendable {
       do { _ = try ProviderSecret(bytes); fatalError("invalid HTTP secret") }
       catch ProviderSecretError.invalidValue { }
     }
+    let echoed=Data("prefix synthetic-credential suffix".utf8),normal=Data("data: 中文🙂\n\ndata: [DONE]\n\n".utf8)
+    for cut in 0...echoed.count {
+      var gate=secret.responseGuard(),published=Data()
+      do {published.append(try gate.feed(echoed.prefix(cut)));published.append(try gate.feed(echoed.dropFirst(cut)));published.append(try gate.feed(Data(),final:true));fatalError("split credential echo escaped")}
+      catch ProviderSecretError.echoed {precondition(published.range(of:Data("synthetic-credential".utf8))==nil)}
+    }
+    for cut in 0...normal.count {
+      var gate=secret.responseGuard(),published=Data();published.append(try gate.feed(normal.prefix(cut)));published.append(try gate.feed(normal.dropFirst(cut)));published.append(try gate.feed(Data(),final:true));precondition(published==normal)
+      precondition(gate.debugDescription=="ProviderSecretResponseGuard(redacted)")
+    }
     // A real system read for an explicitly new random reference cannot enumerate legacy data.
     let actual = SecretStore(), unused = "fixture-missing-" + UUID().uuidString.lowercased()
     do { _ = try await actual.read(reference: unused); fatalError("random missing reference existed") }

@@ -2,7 +2,7 @@ import Foundation
 import Security
 import LocalAuthentication
 
-enum ProviderSecretError: Error, Sendable { case invalidReference, missing, locked, unavailable, invalidValue }
+enum ProviderSecretError: Error, Sendable { case invalidReference, missing, locked, unavailable, invalidValue, echoed }
 enum ProviderAuthentication: Sendable { case none, bearer, anthropicAPIKey }
 
 /// Ephemeral credential bytes. They are not Codable and never have a printable value.
@@ -15,6 +15,7 @@ struct ProviderSecret: Sendable, CustomStringConvertible, CustomDebugStringConve
   }
   var description: String { "ProviderSecret(redacted)" }
   var debugDescription: String { description }
+  func responseGuard()->ProviderSecretResponseGuard {ProviderSecretResponseGuard(needle:bytes)}
   /// Called only while constructing the final native URLRequest, after route/body validation.
   func authenticationHeader(_ method: ProviderAuthentication) -> [String: String] {
     let value = String(decoding: bytes, as: UTF8.self)
@@ -23,6 +24,21 @@ struct ProviderSecret: Sendable, CustomStringConvertible, CustomDebugStringConve
     case .bearer: return ["Authorization": "Bearer " + value]
     case .anthropicAPIKey: return ["x-api-key": value]
     }
+  }
+}
+
+/// Hold a possible key suffix across chunks so a literal auth echo never reaches model/ledger.
+struct ProviderSecretResponseGuard:Sendable,CustomStringConvertible,CustomDebugStringConvertible {
+  private let needle:Data
+  private var pending=Data()
+  fileprivate init(needle:Data){self.needle=needle}
+  var description:String {"ProviderSecretResponseGuard(redacted)"}
+  var debugDescription:String {description}
+  mutating func feed(_ bytes:Data,final:Bool=false)throws->Data {
+    pending.append(bytes)
+    guard pending.range(of:needle)==nil else {pending.removeAll();throw ProviderSecretError.echoed}
+    let count=final ? pending.count:max(0,pending.count-(needle.count-1))
+    let ready=Data(pending.prefix(count));pending.removeFirst(count);return ready
   }
 }
 

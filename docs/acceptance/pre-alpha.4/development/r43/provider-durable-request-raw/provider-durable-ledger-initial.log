@@ -1,0 +1,3 @@
+    Finished `release` profile [optimized] target(s) in 0.31s
+Swift/ErrorType.swift:254: Fatal error: Error raised at top level: fixtures.ProviderTransportFailure(reason: fixtures.ProviderTransportReason.journal, outcome: fixtures.ProviderDispatchOutcome.notDispatched, httpStatus: nil)
+macos/Scripts/test-provider-ledger.sh: line 17: 97273 Trace/BPT trap: 5       target/macos-provider-ledger-tests/fixtures "$attempt/complete" run

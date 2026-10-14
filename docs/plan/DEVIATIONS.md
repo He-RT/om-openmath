@@ -631,3 +631,9 @@ L2使用精确标称GM分数、50位FindRoot/1000迭代和真实残差，报告�
 ## D051 · 2026-10-14 连接预算以实际发送进度分离
 
 安装SDK NSURLSession.h明确countOfBytesSent为发送给server的请求body字节，并通过didSendBodyData回调通知；本单轮接口固定非空POST，可用其观察连接完成的保守上界，与等待模型header分离。连接10/首响应60/idle30/total180各自计时，收到header也可证明连接。真实自有loopback收完body后延迟1.3s，1s连接预算仍成功（实测1.316752083s）；没有进度的连接超时另测。D050列出的连接预算缺口已关闭，真实journal/ContextSnapshot与锁屏仍未验，R4.3.04/完整目标不标完成。
+
+## D052 · 2026-10-14 持久请求事实不等于供应商成功
+
+生产ProviderRequestLedger使用现有Library4语义和强制Blob owner匹配，未放宽verifier；原owner错绑定被拒留证。first response保存实际原始字节，headers-only以自描述状态观察保存，不假装完整response；finish原Blob与model metadata另存。已发而无response的本机timeout保持interrupted/unknown，不自动收费重试；Recovery无transport。auth字面echo跨chunk拦截后不发布包含值的字节，正常流不截断或改写。
+
+原生随包fixture现用生产URLSession/C ABI/账本端口而非测试CLI，canonical工具proposal仍等待实际SQLite ACK；工具未完成的handler如实unavailable。五新SIGKILL与原13/完整raw SQL/读回通过，物理锁屏未验证仍不勾R4.3.04；完整ContextSnapshot服务属R4.4.12，不能用request body事实代替它。32/98/66required及最终gates/版本边界保持。

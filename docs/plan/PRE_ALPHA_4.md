@@ -4115,10 +4115,10 @@ UpdateService只读受控官方GitHub Releases/发行清单（预发行不可用
 
 **Steps：**
 
-- [ ] 1. Swift按冻结route/config/context构造实际请求，auth仅最终头。
-- [ ] 2. 拒绝redirect、HTTPS与显式loopback策略/阶段超时/取消。
-- [ ] 3. rawbytes交独立Rustcodec，控制事件不卡CAS。
-- [ ] 4. 使用测试专用合成route/credential intent接通URLProtocol，不以尚未完成的生产Registry为前置。
+- [x] 1. Swift按冻结route/config/context构造实际请求，auth仅最终头。
+- [x] 2. 拒绝redirect、HTTPS与显式loopback策略/阶段超时/取消。
+- [x] 3. rawbytes交独立Rustcodec，控制事件不卡CAS。
+- [x] 4. 使用测试专用合成route/credential intent接通URLProtocol，不以尚未完成的生产Registry为前置。
 - [ ] 5. 执行下面Tests，核对真实输出/失败，更新任务账本与证据后提交本批次。
 
 **Tests：** URLProtocol实际载荷/401/429/超时/取消/重定向/错误回显脱敏，lockscreenKeychain拒绝。测试位置以Files和第15节影响范围为准，证据保存完整输入/命令/输出，不仅记录“通过”。

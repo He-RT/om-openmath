@@ -10,8 +10,10 @@ SecretStore 只查新服务的精确引用，不枚举或回退旧 profile/key/e
 
 实际可执行超时为连接10秒、首响应60秒、流空闲30秒、总180秒。连接预算以首个实际请求体发送进度或响应头为完成证据；URLSession公开didSendBodyData回调确认发往服务器的body字节。本接口始终发非空POST，不将等待模型响应继续算作连接阶段。首响应预算同时覆盖至响应头的总体等待。真实回环HTTP测试在1秒连接预算下收完请求，再等1.3秒才回响应，仍成功；无连接进度的独立超时亦已验证。超时后不重发计费请求。
 
-发送前必须 await journal callback，再 resume task。之后未观察到响应的中断保留 dispatch outcome unknown；HTTP状态与本机取消不证明服务端已停止。`NativeModelLifetime` 让 host关闭在actor/账本暂停时也能直接取消HTTP；回调、EOF和迟到字节不会重建已关闭通道。当前 URLProtocol 证据中的 journal callback 是合成回执边界，真实请求账本/ContextSnapshot producer接线仍待完成，不能称已完成耐久请求集成。
+发送前必须 await journal callback，再 resume task。之后未观察到响应的中断保留 dispatch outcome unknown；HTTP状态与本机取消不证明服务端已停止。`NativeModelLifetime` 让 host关闭在actor/账本暂停时也能直接取消HTTP；回调、EOF和迟到字节不会重建已关闭通道。URLProtocol 单元证据仍是合成回执边界；ProviderRequestLedger 已接入真实Library4事件/Blob，在发送前提交planned/dispatch_started，收到原始响应后提交response_started与finished。原提供商ID/model/usage/replay/finish另存原Blob；恢复没有transport。五个真实SIGKILL耐久边界及原请求13个中断回归通过。完整Prompt/媒体/工具上下文快照构建仍属于R4.4.12，不能以请求body落盘代替整个ContextSnapshot完成。
 
-`ProviderAgentModelAdapter` 将同一冻结上下文接到 AgentSessionService 原生端口。Unicode文本按UTF8标量拆为最多32768字节，结束时保留原 canonical；incomplete 发failed且没有可执行调用。usage/replay/原结束理由通过强制 complete callback 返回 native context owner，不由Pi私有carrier代替。完整使用方仍需提供实际上下文及持久化实现。
+`ProviderAgentModelAdapter` 将同一冻结上下文接到 AgentSessionService 原生端口。Unicode文本按UTF8标量拆为最多32768字节，结束时保留原 canonical；incomplete 发failed且没有可执行调用。usage/replay/原结束理由通过强制 complete callback 返回 native context owner，不由Pi私有carrier代替。ProviderRequestLedger.turn提供实际持久化实现，随包Pi原生fixture已直接使用此生产端口和真实URLSession/Rust C ABI，13个双向帧、8个SQLite事实，原始工具参数及ACK边界保留。实际ContextSnapshot选择/构建仍由后续上下文服务承担。
 
-已验证实际URLSession→Rust C ABI（Chat/Anthropic）载荷/认证、401/429/error echo、redirect、三阶段timeout、取消、host关闭、nonce、并行真实CAS=4与原生端口32KiB/截断。两授权模型实际Swift流调用均返回4及usage，仅属开发smoke；使用明确测试凭据，不冒称Keychain/Registry/耐久请求已验收。真实锁屏、实际请求账本/上下文接线仍为R4.3.04未完成项。完整计划仍32/98；最终gates保持not_run。
+已验证实际URLSession→Rust C ABI（Chat/Anthropic）载荷/认证、401/429/error echo、redirect、三阶段timeout、取消、host关闭、nonce、并行真实CAS=4与原生端口32KiB/截断。两授权模型实际Swift流调用均返回4及usage，仅属开发smoke；使用明确测试凭据，不冒称Keychain/Registry/耐久请求已验收。真实锁屏仍为R4.3.04未完成项。完整计划仍32/98；最终gates保持not_run。
+
+认证secret的字面回显在字节交付前跨chunk检测，保留可能的secret后缀直到可判定；匹配则停止，不将该值送往Rust模型、Blob或事件。正常字节不改写，全部切分位验证并真实server echo对关闭后的整个测试store扫描为空。HTTP超时无响应以interrupted恢复dispatch_outcome_unknown，不能将本机失败当未发送。

@@ -45,15 +45,23 @@ impl Session {
 
     pub(super) fn plan(&self, selected: &BTreeSet<usize>) -> Plan {
         let mut edges = vec![BTreeSet::new(); self.notebook.cells.len()];
-        let mut degrees = vec![0; edges.len()];
         for &from in selected {
             // Old live ownership propagates invalidation, but only current source defines an edge.
             let defines = &self.notebook.cells[from].defines;
             for &to in selected {
                 if from != to && !defines.is_disjoint(&self.notebook.cells[to].uses) {
                     edges[from].insert(to);
-                    degrees[to] += 1;
                 }
+            }
+        }
+        Self::order_plan(selected, edges)
+    }
+
+    pub(super) fn order_plan(selected: &BTreeSet<usize>, edges: Vec<BTreeSet<usize>>) -> Plan {
+        let mut degrees = vec![0; edges.len()];
+        for &from in selected {
+            for &to in &edges[from] {
+                degrees[to] += 1;
             }
         }
         let mut remaining = selected.clone();

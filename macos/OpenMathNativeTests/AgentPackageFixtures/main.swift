@@ -336,6 +336,11 @@ private func nativeApplyBoundaries(root:URL)async throws {
     precondition(renamed.phase == .completed)
     let actualHistoryTransaction=renamed.receipt.value!.receipt.transaction_id.value!
     _ = try await kernel.runCell("a",operation:"actual-output-before-read")
+    // A second actual title-only source transaction after math must keep the real accepted
+    // status/definitions fresh; its new whole-document hash is not a Math invalidation.
+    let titleOnly=try await source.preview(.preview_patch_input(.init(kind:.patch,operations:[.preview_rename_notebook(.init(type:.rename_notebook,title:"计算后仅改标题，结果仍新鲜"))])))
+    let titleCommit=try await source.apply(titleOnly.preview_ref.value!)
+    precondition(titleCommit.phase == .completed)
     let service=AgentSessionService(host:host,storage:storage,document:document,generation:opened.document_generation.value)
     let verified=try await AgentProcess.verified(package:package,signatureRoot:CommandLine.arguments.count>3 && !CommandLine.arguments[3].isEmpty ? URL(fileURLWithPath:CommandLine.arguments[3]):nil)
     let hello=try await service.activate(session:"production-task",grants:[.read_notebook],readonly:true,coreVersion:"1.0.4",adapterVersion:"openmath-adapter-1")
@@ -415,6 +420,7 @@ private func nativeApplyBoundaries(root:URL)async throws {
       precondition((data["cells"] as! [[String:Any]])[0]["cell_id"] as? String=="a")
       let originalCells=data["cells"] as! [[String:Any]]
       precondition((originalCells[0]["result_ref"] as? String)?.hasPrefix("result-")==true)
+      precondition(originalCells[0]["status"] as? String=="Done")
       precondition((data["recent_transaction_refs"] as! [String]).contains(actualHistoryTransaction))
       try bytes.write(to:root.appendingPathComponent("actual-readonly-result.json"))
       let negativeSession="readonly-negative";_ = try await reopened.createAgentSession(negativeSession)

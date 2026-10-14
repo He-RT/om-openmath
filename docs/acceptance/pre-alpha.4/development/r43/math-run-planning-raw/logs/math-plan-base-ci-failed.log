@@ -1,0 +1,351 @@
+native_macos / native	UNKNOWN STEP	﻿2026-10-14T17:20:18.1517150Z Current runner version: '2.337.0'
+native_macos / native	UNKNOWN STEP	2026-10-14T17:20:18.1533880Z ##[group]Runner Image Provisioner
+native_macos / native	UNKNOWN STEP	2026-10-14T17:20:18.1534420Z Hosted Compute Agent
+native_macos / native	UNKNOWN STEP	2026-10-14T17:20:18.1534790Z Version: 20261006.597
+native_macos / native	UNKNOWN STEP	2026-10-14T17:20:18.1535200Z Commit: c696a59e4a9ffbc6a6203385bd1b2a10e87b1c9c
+native_macos / native	UNKNOWN STEP	2026-10-14T17:20:18.1535670Z Build Date: 2026-10-06T21:39:28Z
+native_macos / native	UNKNOWN STEP	2026-10-14T17:20:18.1536120Z Worker ID: {f2f7a62d-781e-45a0-be9d-5ad04477a7ee}
+native_macos / native	UNKNOWN STEP	2026-10-14T17:20:18.1536580Z Region: westus
+native_macos / native	UNKNOWN STEP	2026-10-14T17:20:18.1536930Z Cloud: MacCloud
+native_macos / native	UNKNOWN STEP	2026-10-14T17:20:18.1537280Z ##[endgroup]
+native_macos / native	UNKNOWN STEP	2026-10-14T17:20:18.1538160Z ##[group]Operating System
+native_macos / native	UNKNOWN STEP	2026-10-14T17:20:18.1538550Z macOS
+native_macos / native	UNKNOWN STEP	2026-10-14T17:20:18.1538900Z 27.0.1
+native_macos / native	UNKNOWN STEP	2026-10-14T17:20:18.1539260Z 26A434
+native_macos / native	UNKNOWN STEP	2026-10-14T17:20:18.1539620Z ##[endgroup]
+native_macos / native	UNKNOWN STEP	2026-10-14T17:20:18.1540040Z ##[group]Runner Image
+native_macos / native	UNKNOWN STEP	2026-10-14T17:20:18.1540480Z Image: xcode-27-arm64
+native_macos / native	UNKNOWN STEP	2026-10-14T17:20:18.1540900Z Version: 20261012.0260.1
+native_macos / native	UNKNOWN STEP	2026-10-14T17:20:18.1541800Z Included Software: https://github.com/actions/runner-images/blob/xcode-27-arm64/20261012.0260/images/macos/xcode-27-arm64-Readme.md
+native_macos / native	UNKNOWN STEP	2026-10-14T17:20:18.1542850Z Image Release: https://github.com/actions/runner-images/releases/tag/xcode-27-arm64%2F20261012.0260
+native_macos / native	UNKNOWN STEP	2026-10-14T17:20:18.1543620Z ##[endgroup]
+native_macos / native	UNKNOWN STEP	2026-10-14T17:20:18.1544390Z ##[group]GITHUB_TOKEN Permissions
+native_macos / native	UNKNOWN STEP	2026-10-14T17:20:18.1545900Z Contents: read
+native_macos / native	UNKNOWN STEP	2026-10-14T17:20:18.1546420Z Metadata: read
+native_macos / native	UNKNOWN STEP	2026-10-14T17:20:18.1546800Z ##[endgroup]
+native_macos / native	UNKNOWN STEP	2026-10-14T17:20:18.1548440Z Secret source: Actions
+native_macos / native	UNKNOWN STEP	2026-10-14T17:20:18.1549040Z Cache mode: write
+native_macos / native	UNKNOWN STEP	2026-10-14T17:20:18.1549590Z Prepare workflow directory
+native_macos / native	UNKNOWN STEP	2026-10-14T17:20:18.2136960Z Prepare all required actions
+native_macos / native	UNKNOWN STEP	2026-10-14T17:20:18.2233290Z Getting action download info
+native_macos / native	UNKNOWN STEP	2026-10-14T17:20:18.5422560Z Download action repository 'actions/checkout@v4' (SHA:11d5960a326750d5838078e36cf38b85af677262)
+native_macos / native	UNKNOWN STEP	2026-10-14T17:20:18.8356210Z Download action repository 'actions/setup-node@v4' (SHA:49933ea5288caeca8642d1e84afbd3f7d6820020)
+native_macos / native	UNKNOWN STEP	2026-10-14T17:20:18.9667110Z Download action repository 'actions/upload-artifact@v4' (SHA:ea165f8d65b6e75b540449e92b4886f43607fa02)
+native_macos / native	UNKNOWN STEP	2026-10-14T17:20:19.2250460Z Uses: He-RT/om-openmath/.github/workflows/macos-native.yml@refs/heads/dev (449144c700373af76e8bf9ab15f5b34ac1f66e5c)
+native_macos / native	UNKNOWN STEP	2026-10-14T17:20:19.2253890Z Complete job name: native_macos / native
+native_macos / native	UNKNOWN STEP	2026-10-14T17:20:19.2930200Z ##[group]Run actions/checkout@v4
+native_macos / native	UNKNOWN STEP	2026-10-14T17:20:19.2931110Z with:
+native_macos / native	UNKNOWN STEP	2026-10-14T17:20:19.2931440Z   repository: He-RT/om-openmath
+native_macos / native	UNKNOWN STEP	2026-10-14T17:20:19.2934280Z   token: ***
+native_macos / native	UNKNOWN STEP	2026-10-14T17:20:19.2934580Z   ssh-strict: true
+native_macos / native	UNKNOWN STEP	2026-10-14T17:20:19.2934900Z   ssh-user: git
+native_macos / native	UNKNOWN STEP	2026-10-14T17:20:19.2935220Z   persist-credentials: true
+native_macos / native	UNKNOWN STEP	2026-10-14T17:20:19.2935570Z   clean: true
+native_macos / native	UNKNOWN STEP	2026-10-14T17:20:19.2935890Z   sparse-checkout-cone-mode: true
+native_macos / native	UNKNOWN STEP	2026-10-14T17:20:19.2936250Z   fetch-depth: 1
+native_macos / native	UNKNOWN STEP	2026-10-14T17:20:19.2936560Z   fetch-tags: false
+native_macos / native	UNKNOWN STEP	2026-10-14T17:20:19.2936870Z   show-progress: true
+native_macos / native	UNKNOWN STEP	2026-10-14T17:20:19.2937190Z   lfs: false
+native_macos / native	UNKNOWN STEP	2026-10-14T17:20:19.2937490Z   submodules: false
+native_macos / native	UNKNOWN STEP	2026-10-14T17:20:19.2937820Z   set-safe-directory: true
+native_macos / native	UNKNOWN STEP	2026-10-14T17:20:19.2938200Z   allow-unsafe-pr-checkout: false
+native_macos / native	UNKNOWN STEP	2026-10-14T17:20:19.2938690Z ##[endgroup]
+native_macos / native	UNKNOWN STEP	2026-10-14T17:20:19.5065280Z Syncing repository: He-RT/om-openmath
+native_macos / native	UNKNOWN STEP	2026-10-14T17:20:19.5067570Z ##[group]Getting Git version info
+native_macos / native	UNKNOWN STEP	2026-10-14T17:20:19.5068210Z Working directory is '/Users/runner/work/om-openmath/om-openmath'
+native_macos / native	UNKNOWN STEP	2026-10-14T17:20:19.5069030Z [command]/opt/homebrew/bin/git version
+native_macos / native	UNKNOWN STEP	2026-10-14T17:20:19.5387190Z git version 2.56.0
+native_macos / native	UNKNOWN STEP	2026-10-14T17:20:19.5402360Z ##[endgroup]
+native_macos / native	UNKNOWN STEP	2026-10-14T17:20:19.5416230Z Copying '/Users/runner/.gitconfig' to '/Users/runner/work/_temp/b3933bca-de09-4ccd-bc34-e13839637f88/.gitconfig'
+native_macos / native	UNKNOWN STEP	2026-10-14T17:20:19.5420780Z Temporarily overriding HOME='/Users/runner/work/_temp/b3933bca-de09-4ccd-bc34-e13839637f88' before making global git config changes
+native_macos / native	UNKNOWN STEP	2026-10-14T17:20:19.5425660Z Adding repository directory to the temporary git global config as a safe directory
+native_macos / native	UNKNOWN STEP	2026-10-14T17:20:19.5429050Z [command]/opt/homebrew/bin/git config --global --add safe.directory /Users/runner/work/om-openmath/om-openmath
+native_macos / native	UNKNOWN STEP	2026-10-14T17:20:19.5618610Z Deleting the contents of '/Users/runner/work/om-openmath/om-openmath'
+native_macos / native	UNKNOWN STEP	2026-10-14T17:20:19.5624550Z ##[group]Initializing the repository
+native_macos / native	UNKNOWN STEP	2026-10-14T17:20:19.5629750Z [command]/opt/homebrew/bin/git init /Users/runner/work/om-openmath/om-openmath
+native_macos / native	UNKNOWN STEP	2026-10-14T17:20:19.5837280Z hint: Using 'master' as the name for the initial branch. This default branch name
+native_macos / native	UNKNOWN STEP	2026-10-14T17:20:19.5838240Z hint: will change to "main" in Git 3.0. To configure the initial branch name
+native_macos / native	UNKNOWN STEP	2026-10-14T17:20:19.5838950Z hint: to use in all of your new repositories, which will suppress this warning,
+native_macos / native	UNKNOWN STEP	2026-10-14T17:20:19.5839500Z hint: call:
+native_macos / native	UNKNOWN STEP	2026-10-14T17:20:19.5839940Z hint:
+native_macos / native	UNKNOWN STEP	2026-10-14T17:20:19.5840400Z hint: 	git config --global init.defaultBranch <name>
+native_macos / native	UNKNOWN STEP	2026-10-14T17:20:19.5840850Z hint:
+native_macos / native	UNKNOWN STEP	2026-10-14T17:20:19.5841280Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+native_macos / native	UNKNOWN STEP	2026-10-14T17:20:19.5842070Z hint: 'development'. The just-created branch can be renamed via this command:
+native_macos / native	UNKNOWN STEP	2026-10-14T17:20:19.5842730Z hint:
+native_macos / native	UNKNOWN STEP	2026-10-14T17:20:19.5843090Z hint: 	git branch -m <name>
+native_macos / native	UNKNOWN STEP	2026-10-14T17:20:19.5843460Z hint:
+native_macos / native	UNKNOWN STEP	2026-10-14T17:20:19.5844010Z hint: Disable this message with "git config set advice.defaultBranchName false"
+native_macos / native	UNKNOWN STEP	2026-10-14T17:20:19.5844770Z Initialized empty Git repository in /Users/runner/work/om-openmath/om-openmath/.git/
+native_macos / native	UNKNOWN STEP	2026-10-14T17:20:19.5851180Z [command]/opt/homebrew/bin/git remote add origin https://github.com/He-RT/om-openmath
+native_macos / native	UNKNOWN STEP	2026-10-14T17:20:19.5933120Z ##[endgroup]
+native_macos / native	UNKNOWN STEP	2026-10-14T17:20:19.5933980Z ##[group]Disabling automatic garbage collection
+native_macos / native	UNKNOWN STEP	2026-10-14T17:20:19.5934700Z [command]/opt/homebrew/bin/git config --local gc.auto 0
+native_macos / native	UNKNOWN STEP	2026-10-14T17:20:19.6001020Z ##[endgroup]
+native_macos / native	UNKNOWN STEP	2026-10-14T17:20:19.6001660Z ##[group]Setting up auth
+native_macos / native	UNKNOWN STEP	2026-10-14T17:20:19.6006380Z [command]/opt/homebrew/bin/git config --local --name-only --get-regexp core\.sshCommand
+native_macos / native	UNKNOWN STEP	2026-10-14T17:20:19.6075150Z [command]/opt/homebrew/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+native_macos / native	UNKNOWN STEP	2026-10-14T17:20:19.6999090Z [command]/opt/homebrew/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+native_macos / native	UNKNOWN STEP	2026-10-14T17:20:19.7075130Z [command]/opt/homebrew/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+native_macos / native	UNKNOWN STEP	2026-10-14T17:20:19.7979430Z [command]/opt/homebrew/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+native_macos / native	UNKNOWN STEP	2026-10-14T17:20:19.8070340Z [command]/opt/homebrew/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+native_macos / native	UNKNOWN STEP	2026-10-14T17:20:19.9405450Z [command]/opt/homebrew/bin/git config --local http.https://github.com/.extraheader AUTHORIZATION: basic ***
+native_macos / native	UNKNOWN STEP	2026-10-14T17:20:19.9517270Z ##[endgroup]
+native_macos / native	UNKNOWN STEP	2026-10-14T17:20:19.9518290Z ##[group]Fetching the repository
+native_macos / native	UNKNOWN STEP	2026-10-14T17:20:19.9523710Z [command]/opt/homebrew/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin +449144c700373af76e8bf9ab15f5b34ac1f66e5c:refs/remotes/origin/dev
+native_macos / native	UNKNOWN STEP	2026-10-14T17:20:22.1994280Z From https://github.com/He-RT/om-openmath
+native_macos / native	UNKNOWN STEP	2026-10-14T17:20:22.2016740Z  * [new ref]         449144c700373af76e8bf9ab15f5b34ac1f66e5c -> origin/dev
+native_macos / native	UNKNOWN STEP	2026-10-14T17:20:22.2022480Z ##[endgroup]
+native_macos / native	UNKNOWN STEP	2026-10-14T17:20:22.2023210Z ##[group]Determining the checkout info
+native_macos / native	UNKNOWN STEP	2026-10-14T17:20:22.2039820Z ##[endgroup]
+native_macos / native	UNKNOWN STEP	2026-10-14T17:20:22.2041030Z [command]/opt/homebrew/bin/git sparse-checkout disable
+native_macos / native	UNKNOWN STEP	2026-10-14T17:20:22.2178820Z [command]/opt/homebrew/bin/git config --local --unset-all extensions.worktreeConfig
+native_macos / native	UNKNOWN STEP	2026-10-14T17:20:22.2285620Z ##[group]Checking out the ref
+native_macos / native	UNKNOWN STEP	2026-10-14T17:20:22.2286560Z [command]/opt/homebrew/bin/git checkout --progress --force -B dev refs/remotes/origin/dev
+native_macos / native	UNKNOWN STEP	2026-10-14T17:20:23.3355300Z Updating files:  82% (3828/4661)
+native_macos / native	UNKNOWN STEP	2026-10-14T17:20:23.3992460Z Updating files:  83% (3869/4661)
+native_macos / native	UNKNOWN STEP	2026-10-14T17:20:23.4135960Z Updating files:  84% (3916/4661)
+native_macos / native	UNKNOWN STEP	2026-10-14T17:20:23.4277020Z Updating files:  85% (3962/4661)
+native_macos / native	UNKNOWN STEP	2026-10-14T17:20:23.4321030Z Updating files:  86% (4009/4661)
+native_macos / native	UNKNOWN STEP	2026-10-14T17:20:23.4400690Z Updating files:  87% (4056/4661)
+native_macos / native	UNKNOWN STEP	2026-10-14T17:20:23.4504550Z Updating files:  88% (4102/4661)
+native_macos / native	UNKNOWN STEP	2026-10-14T17:20:23.4515890Z Updating files:  89% (4149/4661)
+native_macos / native	UNKNOWN STEP	2026-10-14T17:20:23.4627700Z Updating files:  90% (4195/4661)
+native_macos / native	UNKNOWN STEP	2026-10-14T17:20:23.4677310Z Updating files:  91% (4242/4661)
+native_macos / native	UNKNOWN STEP	2026-10-14T17:20:23.4752470Z Updating files:  92% (4289/4661)
+native_macos / native	UNKNOWN STEP	2026-10-14T17:20:23.4848160Z Updating files:  93% (4335/4661)
+native_macos / native	UNKNOWN STEP	2026-10-14T17:20:23.4943140Z Updating files:  94% (4382/4661)
+native_macos / native	UNKNOWN STEP	2026-10-14T17:20:23.5079890Z Updating files:  95% (4428/4661)
+native_macos / native	UNKNOWN STEP	2026-10-14T17:20:23.5191100Z Updating files:  96% (4475/4661)
+native_macos / native	UNKNOWN STEP	2026-10-14T17:20:23.5281010Z Updating files:  97% (4522/4661)
+native_macos / native	UNKNOWN STEP	2026-10-14T17:20:23.5376870Z Updating files:  98% (4568/4661)
+native_macos / native	UNKNOWN STEP	2026-10-14T17:20:23.5481260Z Updating files:  99% (4615/4661)
+native_macos / native	UNKNOWN STEP	2026-10-14T17:20:23.5488140Z Updating files: 100% (4661/4661)
+native_macos / native	UNKNOWN STEP	2026-10-14T17:20:23.5523280Z Updating files: 100% (4661/4661), done.
+native_macos / native	UNKNOWN STEP	2026-10-14T17:20:23.5656490Z Switched to a new branch 'dev'
+native_macos / native	UNKNOWN STEP	2026-10-14T17:20:23.5658850Z branch 'dev' set up to track 'origin/dev'.
+native_macos / native	UNKNOWN STEP	2026-10-14T17:20:23.5669030Z ##[endgroup]
+native_macos / native	UNKNOWN STEP	2026-10-14T17:20:23.5790420Z [command]/opt/homebrew/bin/git log -1 --format=%H
+native_macos / native	UNKNOWN STEP	2026-10-14T17:20:23.5879090Z 449144c700373af76e8bf9ab15f5b34ac1f66e5c
+native_macos / native	UNKNOWN STEP	2026-10-14T17:20:23.6187680Z ##[group]Run sudo xcode-select -s /Applications/Xcode_27.0.app/Contents/Developer
+native_macos / native	UNKNOWN STEP	2026-10-14T17:20:23.6189280Z [36;1msudo xcode-select -s /Applications/Xcode_27.0.app/Contents/Developer[0m
+native_macos / native	UNKNOWN STEP	2026-10-14T17:20:23.6190340Z [36;1mbash macos/Scripts/verify-env.sh[0m
+native_macos / native	UNKNOWN STEP	2026-10-14T17:20:23.6310110Z shell: /bin/bash -e {0}
+native_macos / native	UNKNOWN STEP	2026-10-14T17:20:23.6310530Z ##[endgroup]
+native_macos / native	UNKNOWN STEP	2026-10-14T17:20:38.4761670Z {
+native_macos / native	UNKNOWN STEP	2026-10-14T17:20:38.4763000Z   "kind": "development_environment_preflight",
+native_macos / native	UNKNOWN STEP	2026-10-14T17:20:38.4763530Z   "checks": {
+native_macos / native	UNKNOWN STEP	2026-10-14T17:20:38.4763760Z     "architecture": {
+native_macos / native	UNKNOWN STEP	2026-10-14T17:20:38.4764120Z       "exit_code": 0,
+native_macos / native	UNKNOWN STEP	2026-10-14T17:20:38.4765310Z       "value": "arm64"
+native_macos / native	UNKNOWN STEP	2026-10-14T17:20:38.4766700Z     },
+native_macos / native	UNKNOWN STEP	2026-10-14T17:20:38.4767530Z     "os_version": {
+native_macos / native	UNKNOWN STEP	2026-10-14T17:20:38.4768230Z       "exit_code": 0,
+native_macos / native	UNKNOWN STEP	2026-10-14T17:20:38.4769060Z       "value": "27.0.1"
+native_macos / native	UNKNOWN STEP	2026-10-14T17:20:38.4769810Z     },
+native_macos / native	UNKNOWN STEP	2026-10-14T17:20:38.4770570Z     "xcode": {
+native_macos / native	UNKNOWN STEP	2026-10-14T17:20:38.4771140Z       "exit_code": 0,
+native_macos / native	UNKNOWN STEP	2026-10-14T17:20:38.4772770Z       "value": "Xcode 27.0\nBuild version 27A266a"
+native_macos / native	UNKNOWN STEP	2026-10-14T17:20:38.4773220Z     },
+native_macos / native	UNKNOWN STEP	2026-10-14T17:20:38.4773780Z     "macos_sdk": {
+native_macos / native	UNKNOWN STEP	2026-10-14T17:20:38.4774080Z       "exit_code": 0,
+native_macos / native	UNKNOWN STEP	2026-10-14T17:20:38.4774450Z       "value": "27.0"
+native_macos / native	UNKNOWN STEP	2026-10-14T17:20:38.4774700Z     },
+native_macos / native	UNKNOWN STEP	2026-10-14T17:20:38.4775030Z     "rust": {
+native_macos / native	UNKNOWN STEP	2026-10-14T17:20:38.4775300Z       "exit_code": 0,
+native_macos / native	UNKNOWN STEP	2026-10-14T17:20:38.4775790Z       "value": "rustc 1.94.0 (4a4ef493e 2026-03-02)"
+native_macos / native	UNKNOWN STEP	2026-10-14T17:20:38.4776100Z     },
+native_macos / native	UNKNOWN STEP	2026-10-14T17:20:38.4776380Z     "identity_counts": {
+native_macos / native	UNKNOWN STEP	2026-10-14T17:20:38.4776660Z       "exit_code": 0,
+native_macos / native	UNKNOWN STEP	2026-10-14T17:20:38.4777010Z       "developer_id_application": 0,
+native_macos / native	UNKNOWN STEP	2026-10-14T17:20:38.4777460Z       "apple_development": 0
+native_macos / native	UNKNOWN STEP	2026-10-14T17:20:38.4777720Z     }
+native_macos / native	UNKNOWN STEP	2026-10-14T17:20:38.4778350Z   },
+native_macos / native	UNKNOWN STEP	2026-10-14T17:20:38.4778910Z   "errors": [],
+native_macos / native	UNKNOWN STEP	2026-10-14T17:20:38.4779320Z   "is_public_signing_evidence": false,
+native_macos / native	UNKNOWN STEP	2026-10-14T17:20:38.4779910Z   "started_simulators": false
+native_macos / native	UNKNOWN STEP	2026-10-14T17:20:38.4780620Z }
+native_macos / native	UNKNOWN STEP	2026-10-14T17:20:38.5040050Z ##[group]Run rustup show active-toolchain
+native_macos / native	UNKNOWN STEP	2026-10-14T17:20:38.5040500Z [36;1mrustup show active-toolchain[0m
+native_macos / native	UNKNOWN STEP	2026-10-14T17:20:38.5128650Z shell: /bin/bash -e {0}
+native_macos / native	UNKNOWN STEP	2026-10-14T17:20:38.5129030Z ##[endgroup]
+native_macos / native	UNKNOWN STEP	2026-10-14T17:20:38.6181400Z 1.94.0-aarch64-apple-darwin (overridden by '/Users/runner/work/om-openmath/om-openmath/rust-toolchain.toml')
+native_macos / native	UNKNOWN STEP	2026-10-14T17:20:38.6341250Z ##[group]Run actions/setup-node@v4
+native_macos / native	UNKNOWN STEP	2026-10-14T17:20:38.6341470Z with:
+native_macos / native	UNKNOWN STEP	2026-10-14T17:20:38.6341630Z   node-version: 26.11.1
+native_macos / native	UNKNOWN STEP	2026-10-14T17:20:38.6341930Z   always-auth: false
+native_macos / native	UNKNOWN STEP	2026-10-14T17:20:38.6342150Z   check-latest: false
+native_macos / native	UNKNOWN STEP	2026-10-14T17:20:38.6346210Z   token: ***
+native_macos / native	UNKNOWN STEP	2026-10-14T17:20:38.6346560Z ##[endgroup]
+native_macos / native	UNKNOWN STEP	2026-10-14T17:20:39.0237570Z Attempting to download 26.11.1...
+native_macos / native	UNKNOWN STEP	2026-10-14T17:20:39.0421460Z (node:1609) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+native_macos / native	UNKNOWN STEP	2026-10-14T17:20:39.0423810Z (Use `node --trace-deprecation ...` to show where the warning was created)
+native_macos / native	UNKNOWN STEP	2026-10-14T17:20:39.8058340Z Acquiring 26.11.1 - arm64 from https://github.com/actions/node-versions/releases/download/26.11.1-37718106145/node-26.11.1-darwin-arm64.tar.gz
+native_macos / native	UNKNOWN STEP	2026-10-14T17:20:40.5270900Z Extracting ...
+native_macos / native	UNKNOWN STEP	2026-10-14T17:20:40.5425360Z [command]/usr/bin/tar xz --strip 1 -C /Users/runner/work/_temp/4ebef834-a289-445b-9f2a-046cb2435c48 -f /Users/runner/work/_temp/6c515162-e45d-4479-a898-a942c391015e
+native_macos / native	UNKNOWN STEP	2026-10-14T17:20:41.6899800Z Adding to the cache ...
+native_macos / native	UNKNOWN STEP	2026-10-14T17:20:44.4824840Z ##[group]Environment details
+native_macos / native	UNKNOWN STEP	2026-10-14T17:20:45.1769740Z node: v26.11.1
+native_macos / native	UNKNOWN STEP	2026-10-14T17:20:45.1770920Z npm: 11.20.0
+native_macos / native	UNKNOWN STEP	2026-10-14T17:20:45.1772060Z yarn: 1.22.22
+native_macos / native	UNKNOWN STEP	2026-10-14T17:20:45.1773730Z ##[endgroup]
+native_macos / native	UNKNOWN STEP	2026-10-14T17:20:45.2003410Z ##[group]Run npm ci --prefix app --ignore-scripts
+native_macos / native	UNKNOWN STEP	2026-10-14T17:20:45.2003920Z [36;1mnpm ci --prefix app --ignore-scripts[0m
+native_macos / native	UNKNOWN STEP	2026-10-14T17:20:45.2004340Z [36;1mnpm ci --prefix agent --omit=dev --ignore-scripts[0m
+native_macos / native	UNKNOWN STEP	2026-10-14T17:20:45.2004700Z [36;1mcommand -v gpg >/dev/null || brew install gnupg[0m
+native_macos / native	UNKNOWN STEP	2026-10-14T17:20:45.2074980Z shell: /bin/bash -e {0}
+native_macos / native	UNKNOWN STEP	2026-10-14T17:20:45.2077200Z ##[endgroup]
+native_macos / native	UNKNOWN STEP	2026-10-14T17:20:51.2035420Z 
+native_macos / native	UNKNOWN STEP	2026-10-14T17:20:51.2053300Z added 240 packages, and audited 241 packages in 6s
+native_macos / native	UNKNOWN STEP	2026-10-14T17:20:51.2053780Z 
+native_macos / native	UNKNOWN STEP	2026-10-14T17:20:51.2054290Z 53 packages are looking for funding
+native_macos / native	UNKNOWN STEP	2026-10-14T17:20:51.2054820Z   run `npm fund` for details
+native_macos / native	UNKNOWN STEP	2026-10-14T17:20:51.2060090Z 
+native_macos / native	UNKNOWN STEP	2026-10-14T17:20:51.2062570Z 1 high severity vulnerability
+native_macos / native	UNKNOWN STEP	2026-10-14T17:20:51.2062760Z 
+native_macos / native	UNKNOWN STEP	2026-10-14T17:20:51.2063010Z To address all issues, run:
+native_macos / native	UNKNOWN STEP	2026-10-14T17:20:51.2117120Z   npm audit fix
+native_macos / native	UNKNOWN STEP	2026-10-14T17:20:51.2125520Z 
+native_macos / native	UNKNOWN STEP	2026-10-14T17:20:51.2126500Z Run `npm audit` for details.
+native_macos / native	UNKNOWN STEP	2026-10-14T17:20:52.6671660Z npm warn deprecated node-domexception@1.0.0: Use your platform's native DOMException instead
+native_macos / native	UNKNOWN STEP	2026-10-14T17:20:57.0167340Z 
+native_macos / native	UNKNOWN STEP	2026-10-14T17:20:57.0170860Z added 86 packages, and audited 87 packages in 5s
+native_macos / native	UNKNOWN STEP	2026-10-14T17:20:57.0180590Z 
+native_macos / native	UNKNOWN STEP	2026-10-14T17:20:57.0181840Z 5 packages are looking for funding
+native_macos / native	UNKNOWN STEP	2026-10-14T17:20:57.0182940Z   run `npm fund` for details
+native_macos / native	UNKNOWN STEP	2026-10-14T17:20:57.0196040Z 
+native_macos / native	UNKNOWN STEP	2026-10-14T17:20:57.0197800Z found 0 vulnerabilities
+native_macos / native	UNKNOWN STEP	2026-10-14T17:20:57.0513970Z ##[group]Run python3 scripts/native_contracts.py --check
+native_macos / native	UNKNOWN STEP	2026-10-14T17:20:57.0514550Z [36;1mpython3 scripts/native_contracts.py --check[0m
+native_macos / native	UNKNOWN STEP	2026-10-14T17:20:57.0514930Z [36;1mpython3 macos/Scripts/generate-project.py --check[0m
+native_macos / native	UNKNOWN STEP	2026-10-14T17:20:57.0562460Z shell: /bin/bash -e {0}
+native_macos / native	UNKNOWN STEP	2026-10-14T17:20:57.0562870Z ##[endgroup]
+native_macos / native	UNKNOWN STEP	2026-10-14T17:20:58.4090100Z Native DTOs verified: 389
+native_macos / native	UNKNOWN STEP	2026-10-14T17:20:58.5054380Z Native Mac project verified
+native_macos / native	UNKNOWN STEP	2026-10-14T17:20:58.5197190Z ##[group]Run mkdir -p target/macos-ci-evidence
+native_macos / native	UNKNOWN STEP	2026-10-14T17:20:58.5198560Z [36;1mmkdir -p target/macos-ci-evidence[0m
+native_macos / native	UNKNOWN STEP	2026-10-14T17:20:58.5199850Z [36;1mbash macos/Scripts/build-native.sh > target/macos-ci-evidence/build.log 2>&1[0m
+native_macos / native	UNKNOWN STEP	2026-10-14T17:20:58.5243290Z shell: /bin/bash -e {0}
+native_macos / native	UNKNOWN STEP	2026-10-14T17:20:58.5245500Z ##[endgroup]
+native_macos / native	UNKNOWN STEP	2026-10-14T17:28:21.8063290Z ##[group]Run bash macos/Scripts/test-native-contracts.sh > target/macos-ci-evidence/contracts.log 2>&1
+native_macos / native	UNKNOWN STEP	2026-10-14T17:28:21.8065730Z [36;1mbash macos/Scripts/test-native-contracts.sh > target/macos-ci-evidence/contracts.log 2>&1[0m
+native_macos / native	UNKNOWN STEP	2026-10-14T17:28:22.0401510Z shell: /bin/bash -e {0}
+native_macos / native	UNKNOWN STEP	2026-10-14T17:28:22.0402530Z ##[endgroup]
+native_macos / native	UNKNOWN STEP	2026-10-14T17:36:04.0437620Z ##[group]Run bash macos/Scripts/test-fixtures.sh > target/macos-ci-evidence/fixtures.log 2>&1
+native_macos / native	UNKNOWN STEP	2026-10-14T17:36:04.0438430Z [36;1mbash macos/Scripts/test-fixtures.sh > target/macos-ci-evidence/fixtures.log 2>&1[0m
+native_macos / native	UNKNOWN STEP	2026-10-14T17:36:04.0693370Z shell: /bin/bash -e {0}
+native_macos / native	UNKNOWN STEP	2026-10-14T17:36:04.0693720Z ##[endgroup]
+native_macos / native	UNKNOWN STEP	2026-10-14T17:36:11.4982780Z ##[group]Run bash macos/Scripts/test-storage.sh > target/macos-ci-evidence/storage.log 2>&1
+native_macos / native	UNKNOWN STEP	2026-10-14T17:36:11.4983530Z [36;1mbash macos/Scripts/test-storage.sh > target/macos-ci-evidence/storage.log 2>&1[0m
+native_macos / native	UNKNOWN STEP	2026-10-14T17:36:11.5176640Z shell: /bin/bash -e {0}
+native_macos / native	UNKNOWN STEP	2026-10-14T17:36:11.5176930Z ##[endgroup]
+native_macos / native	UNKNOWN STEP	2026-10-14T17:37:25.6276160Z ##[group]Run bash macos/Scripts/test-document-store.sh > target/macos-ci-evidence/document-store.log 2>&1
+native_macos / native	UNKNOWN STEP	2026-10-14T17:37:25.6276960Z [36;1mbash macos/Scripts/test-document-store.sh > target/macos-ci-evidence/document-store.log 2>&1[0m
+native_macos / native	UNKNOWN STEP	2026-10-14T17:37:25.6326210Z shell: /bin/bash -e {0}
+native_macos / native	UNKNOWN STEP	2026-10-14T17:37:25.6326440Z ##[endgroup]
+native_macos / native	UNKNOWN STEP	2026-10-14T17:39:24.9473360Z ##[group]Run bash macos/Scripts/test-blobs.sh > target/macos-ci-evidence/blobs.log 2>&1
+native_macos / native	UNKNOWN STEP	2026-10-14T17:39:24.9474350Z [36;1mbash macos/Scripts/test-blobs.sh > target/macos-ci-evidence/blobs.log 2>&1[0m
+native_macos / native	UNKNOWN STEP	2026-10-14T17:39:24.9535440Z shell: /bin/bash -e {0}
+native_macos / native	UNKNOWN STEP	2026-10-14T17:39:24.9535790Z ##[endgroup]
+native_macos / native	UNKNOWN STEP	2026-10-14T17:40:39.3873600Z ##[group]Run bash macos/Scripts/test-preview.sh > target/macos-ci-evidence/preview.log 2>&1
+native_macos / native	UNKNOWN STEP	2026-10-14T17:40:39.3970330Z [36;1mbash macos/Scripts/test-preview.sh > target/macos-ci-evidence/preview.log 2>&1[0m
+native_macos / native	UNKNOWN STEP	2026-10-14T17:40:39.4011790Z shell: /bin/bash -e {0}
+native_macos / native	UNKNOWN STEP	2026-10-14T17:40:39.4011960Z ##[endgroup]
+native_macos / native	UNKNOWN STEP	2026-10-14T17:41:51.1900070Z ##[group]Run bash macos/Scripts/test-commit-port.sh > target/macos-ci-evidence/commit-port.log 2>&1
+native_macos / native	UNKNOWN STEP	2026-10-14T17:41:51.1901120Z [36;1mbash macos/Scripts/test-commit-port.sh > target/macos-ci-evidence/commit-port.log 2>&1[0m
+native_macos / native	UNKNOWN STEP	2026-10-14T17:41:51.2028780Z shell: /bin/bash -e {0}
+native_macos / native	UNKNOWN STEP	2026-10-14T17:41:51.2029170Z ##[endgroup]
+native_macos / native	UNKNOWN STEP	2026-10-14T17:43:26.6035700Z ##[group]Run bash macos/Scripts/test-undo.sh > target/macos-ci-evidence/undo.log 2>&1
+native_macos / native	UNKNOWN STEP	2026-10-14T17:43:26.6036470Z [36;1mbash macos/Scripts/test-undo.sh > target/macos-ci-evidence/undo.log 2>&1[0m
+native_macos / native	UNKNOWN STEP	2026-10-14T17:43:26.6084510Z shell: /bin/bash -e {0}
+native_macos / native	UNKNOWN STEP	2026-10-14T17:43:26.6084960Z ##[endgroup]
+native_macos / native	UNKNOWN STEP	2026-10-14T17:44:58.9496180Z ##[group]Run bash macos/Scripts/test-history.sh > target/macos-ci-evidence/history.log 2>&1
+native_macos / native	UNKNOWN STEP	2026-10-14T17:44:58.9497160Z [36;1mbash macos/Scripts/test-history.sh > target/macos-ci-evidence/history.log 2>&1[0m
+native_macos / native	UNKNOWN STEP	2026-10-14T17:44:58.9541460Z shell: /bin/bash -e {0}
+native_macos / native	UNKNOWN STEP	2026-10-14T17:44:58.9541750Z ##[endgroup]
+native_macos / native	UNKNOWN STEP	2026-10-14T17:46:26.4144670Z ##[group]Run bash macos/Scripts/test-kernel-store.sh > target/macos-ci-evidence/kernel-store.log 2>&1
+native_macos / native	UNKNOWN STEP	2026-10-14T17:46:26.4145830Z [36;1mbash macos/Scripts/test-kernel-store.sh > target/macos-ci-evidence/kernel-store.log 2>&1[0m
+native_macos / native	UNKNOWN STEP	2026-10-14T17:46:26.4194970Z shell: /bin/bash -e {0}
+native_macos / native	UNKNOWN STEP	2026-10-14T17:46:26.4195360Z ##[endgroup]
+native_macos / native	UNKNOWN STEP	2026-10-14T17:47:51.8755950Z ##[group]Run bash macos/Scripts/test-kernel-runtime.sh > target/macos-ci-evidence/kernel-runtime.log 2>&1
+native_macos / native	UNKNOWN STEP	2026-10-14T17:47:51.8757640Z [36;1mbash macos/Scripts/test-kernel-runtime.sh > target/macos-ci-evidence/kernel-runtime.log 2>&1[0m
+native_macos / native	UNKNOWN STEP	2026-10-14T17:47:51.8855280Z shell: /bin/bash -e {0}
+native_macos / native	UNKNOWN STEP	2026-10-14T17:47:51.8855610Z ##[endgroup]
+native_macos / native	UNKNOWN STEP	2026-10-14T17:49:52.9542250Z ##[group]Run bash macos/Scripts/test-agent-package.sh > target/macos-ci-evidence/agent-package.log 2>&1
+native_macos / native	UNKNOWN STEP	2026-10-14T17:49:52.9543740Z [36;1mbash macos/Scripts/test-agent-package.sh > target/macos-ci-evidence/agent-package.log 2>&1[0m
+native_macos / native	UNKNOWN STEP	2026-10-14T17:49:52.9636530Z shell: /bin/bash -e {0}
+native_macos / native	UNKNOWN STEP	2026-10-14T17:49:52.9637020Z ##[endgroup]
+native_macos / native	UNKNOWN STEP	2026-10-14T17:50:51.4780340Z ##[group]Run bash macos/Scripts/test-secret-store.sh > target/macos-ci-evidence/secret-store.log 2>&1
+native_macos / native	UNKNOWN STEP	2026-10-14T17:50:51.4784050Z [36;1mbash macos/Scripts/test-secret-store.sh > target/macos-ci-evidence/secret-store.log 2>&1[0m
+native_macos / native	UNKNOWN STEP	2026-10-14T17:50:51.5198600Z shell: /bin/bash -e {0}
+native_macos / native	UNKNOWN STEP	2026-10-14T17:50:51.5198890Z ##[endgroup]
+native_macos / native	UNKNOWN STEP	2026-10-14T17:50:52.9423300Z ##[group]Run bash macos/Scripts/test-provider-transport.sh > target/macos-ci-evidence/provider-transport.log 2>&1
+native_macos / native	UNKNOWN STEP	2026-10-14T17:50:52.9425970Z [36;1mbash macos/Scripts/test-provider-transport.sh > target/macos-ci-evidence/provider-transport.log 2>&1[0m
+native_macos / native	UNKNOWN STEP	2026-10-14T17:50:52.9488180Z shell: /bin/bash -e {0}
+native_macos / native	UNKNOWN STEP	2026-10-14T17:50:52.9496590Z ##[endgroup]
+native_macos / native	UNKNOWN STEP	2026-10-14T17:51:06.4208390Z ##[error]Process completed with exit code 133.
+native_macos / native	UNKNOWN STEP	2026-10-14T17:51:06.4684150Z ##[group]Run python3 - <<'PY'
+native_macos / native	UNKNOWN STEP	2026-10-14T17:51:06.4687740Z [36;1mpython3 - <<'PY'[0m
+native_macos / native	UNKNOWN STEP	2026-10-14T17:51:06.4688200Z [36;1mfrom pathlib import Path[0m
+native_macos / native	UNKNOWN STEP	2026-10-14T17:51:06.4688530Z [36;1mimport shutil[0m
+native_macos / native	UNKNOWN STEP	2026-10-14T17:51:06.4689080Z [36;1moutput=Path('target/macos-ci-evidence/provider-transport-cases')[0m
+native_macos / native	UNKNOWN STEP	2026-10-14T17:51:06.4689590Z [36;1mfor source in Path('target/macos-provider-transport-tests').glob('attempt-*'):[0m
+native_macos / native	UNKNOWN STEP	2026-10-14T17:51:06.4690040Z [36;1m    if source.is_dir():[0m
+native_macos / native	UNKNOWN STEP	2026-10-14T17:51:06.4783540Z [36;1m        shutil.copytree(source,output/source.name,dirs_exist_ok=True)[0m
+native_macos / native	UNKNOWN STEP	2026-10-14T17:51:06.4784140Z [36;1mPY[0m
+native_macos / native	UNKNOWN STEP	2026-10-14T17:51:06.4872060Z shell: /bin/bash -e {0}
+native_macos / native	UNKNOWN STEP	2026-10-14T17:51:06.4872470Z ##[endgroup]
+native_macos / native	UNKNOWN STEP	2026-10-14T17:51:07.3346310Z ##[group]Run python3 - <<'PY'
+native_macos / native	UNKNOWN STEP	2026-10-14T17:51:07.3346570Z [36;1mpython3 - <<'PY'[0m
+native_macos / native	UNKNOWN STEP	2026-10-14T17:51:07.3346920Z [36;1mfrom pathlib import Path[0m
+native_macos / native	UNKNOWN STEP	2026-10-14T17:51:07.3347160Z [36;1mimport shutil[0m
+native_macos / native	UNKNOWN STEP	2026-10-14T17:51:07.3347430Z [36;1mroot=Path.home()/'Library/Logs/DiagnosticReports'[0m
+native_macos / native	UNKNOWN STEP	2026-10-14T17:51:07.3347920Z [36;1moutput=Path('target/macos-ci-evidence/fixture-crashes');output.mkdir(parents=True,exist_ok=True)[0m
+native_macos / native	UNKNOWN STEP	2026-10-14T17:51:07.3348820Z [36;1mprefixes=('workbench-fixtures-','source-editor-fixtures-','composition-fixtures-','math-render-fixtures-','result-presenter-fixtures-','value-presenter-fixtures-')[0m
+native_macos / native	UNKNOWN STEP	2026-10-14T17:51:07.3349530Z [36;1mfor path in root.glob('*.ips'):[0m
+native_macos / native	UNKNOWN STEP	2026-10-14T17:51:07.3349870Z [36;1m    if path.name.startswith(prefixes):shutil.copyfile(path,output/path.name)[0m
+native_macos / native	UNKNOWN STEP	2026-10-14T17:51:07.3350200Z [36;1mPY[0m
+native_macos / native	UNKNOWN STEP	2026-10-14T17:51:07.3391200Z shell: /bin/bash -e {0}
+native_macos / native	UNKNOWN STEP	2026-10-14T17:51:07.3391390Z ##[endgroup]
+native_macos / native	UNKNOWN STEP	2026-10-14T17:51:07.4442870Z ##[group]Run actions/upload-artifact@v4
+native_macos / native	UNKNOWN STEP	2026-10-14T17:51:07.4443140Z with:
+native_macos / native	UNKNOWN STEP	2026-10-14T17:51:07.4443310Z   name: macos-native-development-evidence
+native_macos / native	UNKNOWN STEP	2026-10-14T17:51:07.4443640Z   path: target/macos-ci-evidence/*
+native_macos / native	UNKNOWN STEP	2026-10-14T17:51:07.4443890Z   if-no-files-found: error
+native_macos / native	UNKNOWN STEP	2026-10-14T17:51:07.4444170Z   compression-level: 6
+native_macos / native	UNKNOWN STEP	2026-10-14T17:51:07.4444380Z   overwrite: false
+native_macos / native	UNKNOWN STEP	2026-10-14T17:51:07.4444540Z   include-hidden-files: false
+native_macos / native	UNKNOWN STEP	2026-10-14T17:51:07.4444770Z ##[endgroup]
+native_macos / native	UNKNOWN STEP	2026-10-14T17:51:08.0354640Z (node:65969) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+native_macos / native	UNKNOWN STEP	2026-10-14T17:51:08.0355580Z (Use `node --trace-deprecation ...` to show where the warning was created)
+native_macos / native	UNKNOWN STEP	2026-10-14T17:51:08.0435230Z With the provided path, there will be 19 files uploaded
+native_macos / native	UNKNOWN STEP	2026-10-14T17:51:08.0435900Z Artifact name is valid!
+native_macos / native	UNKNOWN STEP	2026-10-14T17:51:08.0436340Z Root directory input is valid!
+native_macos / native	UNKNOWN STEP	2026-10-14T17:51:08.3583440Z Beginning upload of artifact content to blob storage
+native_macos / native	UNKNOWN STEP	2026-10-14T17:51:08.4116800Z (node:65969) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities.
+native_macos / native	UNKNOWN STEP	2026-10-14T17:51:08.6014930Z Uploaded bytes 42110
+native_macos / native	UNKNOWN STEP	2026-10-14T17:51:08.6543010Z Finished uploading artifact content to blob storage!
+native_macos / native	UNKNOWN STEP	2026-10-14T17:51:08.6546530Z SHA256 digest of uploaded artifact zip is 2420760910946147774e375f281d7878291c4997333eb004b5b57c43b7cea13b
+native_macos / native	UNKNOWN STEP	2026-10-14T17:51:08.6548920Z Finalizing artifact upload
+native_macos / native	UNKNOWN STEP	2026-10-14T17:51:08.9432770Z Artifact macos-native-development-evidence.zip successfully finalized. Artifact ID 11917412112
+native_macos / native	UNKNOWN STEP	2026-10-14T17:51:08.9447950Z Artifact macos-native-development-evidence has been successfully uploaded! Final size is 42110 bytes. Artifact ID is 11917412112
+native_macos / native	UNKNOWN STEP	2026-10-14T17:51:08.9485570Z Artifact download URL: https://github.com/He-RT/om-openmath/actions/runs/38605677497/artifacts/11917412112
+native_macos / native	UNKNOWN STEP	2026-10-14T17:51:08.9753120Z Post job cleanup.
+native_macos / native	UNKNOWN STEP	2026-10-14T17:51:09.1069550Z [command]/opt/homebrew/bin/git version
+native_macos / native	UNKNOWN STEP	2026-10-14T17:51:09.1328630Z git version 2.56.0
+native_macos / native	UNKNOWN STEP	2026-10-14T17:51:09.1347180Z Copying '/Users/runner/.gitconfig' to '/Users/runner/work/_temp/53454162-8429-48cd-ab16-5f7d91376d39/.gitconfig'
+native_macos / native	UNKNOWN STEP	2026-10-14T17:51:09.1354480Z Temporarily overriding HOME='/Users/runner/work/_temp/53454162-8429-48cd-ab16-5f7d91376d39' before making global git config changes
+native_macos / native	UNKNOWN STEP	2026-10-14T17:51:09.1355450Z Adding repository directory to the temporary git global config as a safe directory
+native_macos / native	UNKNOWN STEP	2026-10-14T17:51:09.1358450Z [command]/opt/homebrew/bin/git config --global --add safe.directory /Users/runner/work/om-openmath/om-openmath
+native_macos / native	UNKNOWN STEP	2026-10-14T17:51:09.1477710Z [command]/opt/homebrew/bin/git config --local --name-only --get-regexp core\.sshCommand
+native_macos / native	UNKNOWN STEP	2026-10-14T17:51:09.1542530Z [command]/opt/homebrew/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+native_macos / native	UNKNOWN STEP	2026-10-14T17:51:09.2805470Z [command]/opt/homebrew/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+native_macos / native	UNKNOWN STEP	2026-10-14T17:51:09.2863570Z http.https://github.com/.extraheader
+native_macos / native	UNKNOWN STEP	2026-10-14T17:51:09.2870750Z [command]/opt/homebrew/bin/git config --local --unset-all http.https://github.com/.extraheader
+native_macos / native	UNKNOWN STEP	2026-10-14T17:51:09.2943760Z [command]/opt/homebrew/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+native_macos / native	UNKNOWN STEP	2026-10-14T17:51:09.4105460Z [command]/opt/homebrew/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+native_macos / native	UNKNOWN STEP	2026-10-14T17:51:09.4212740Z [command]/opt/homebrew/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+native_macos / native	UNKNOWN STEP	2026-10-14T17:51:09.5324040Z Cleaning up orphan processes
+native_macos / native	UNKNOWN STEP	2026-10-14T17:51:12.8554980Z Terminate orphan process: pid (1910) (scdaemon)
+native_macos / native	UNKNOWN STEP	2026-10-14T17:51:12.8994150Z Terminate orphan process: pid (1909) (gpg-agent)
+native_macos / native	UNKNOWN STEP	2026-10-14T17:51:13.6880320Z ##[warning]Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/checkout@v4, actions/setup-node@v4, actions/upload-artifact@v4. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/

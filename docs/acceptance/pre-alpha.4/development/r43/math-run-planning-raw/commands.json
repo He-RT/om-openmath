@@ -1,0 +1,21 @@
+[
+  "CARGO_PROFILE_DEV_DEBUG=0 CARGO_PROFILE_TEST_DEBUG=0 cargo test -p om-kernel --test run_plan --test reactive --test reactive_edges --test source_transactions --test working_session --locked -- --nocapture",
+  "CARGO_PROFILE_DEV_DEBUG=0 CARGO_PROFILE_TEST_DEBUG=0 cargo test -p om-host-service --test math_run_plan --test readonly_notebook --test kernel_endpoint --test kernel_worker --test kernel_acceptance --test kernel_states --locked -- --nocapture",
+  "CARGO_PROFILE_DEV_DEBUG=0 CARGO_PROFILE_TEST_DEBUG=0 cargo clippy -p om-host-service -p om-kernel --all-targets --locked -- -D warnings",
+  "python3 -X warn_default_encoding -W error::EncodingWarning -m unittest discover -s tests -v",
+  "python3 scripts/native_contracts.py --check",
+  "python3 macos/Scripts/generate-project.py --check",
+  "cargo fmt --all --check",
+  "bash macos/Scripts/test-agent-package.sh /Users/hert/Projects/openmath/target/macos-agent-package-tests/AgentRuntime (original incomplete attempt; no terminal report)",
+  "env NODE_OPTIONS=--invalid-old-profile NODE_PATH=/untrusted/old-modules OPENAI_API_KEY=fixture-sentinel target/macos-agent-package-tests/fixtures \"$PWD/target/macos-agent-package-tests/AgentRuntime\" <fresh math-plan-standalone root> (successful original binary reuse)",
+  "bash macos/Scripts/build-native.sh",
+  "env NODE_OPTIONS=--invalid-old-profile NODE_PATH=/untrusted/old-modules OPENAI_API_KEY=fixture-sentinel target/macos-agent-package-tests/fixtures <signed App Resources/AgentRuntime> <fresh math-plan-signed root> <signed App>",
+  "codesign --verify --deep --strict target/macos-native/Build/Products/Release/OpenMath\\ Preview.app",
+  "python3 scripts/check_pre_alpha_4_plan.py --check",
+  "gh run view 38605677497 --json status,conclusion,jobs",
+  "gh run view 38605677497 --log-failed",
+  "gh run download 38605677497 -n macos-native-development-evidence -D target/acceptance/pre-alpha.4/development/r43/math-plan-base-ci-artifacts",
+  "bash macos/Scripts/test-provider-transport.sh (isolated and final forced delayed-header cases)",
+  "CARGO_PROFILE_DEV_DEBUG=0 CARGO_PROFILE_TEST_DEBUG=0 cargo test -p om-kernel --test run_plan --test reactive --test reactive_edges --test source_transactions --test working_session --locked --no-run --message-format=json",
+  "CARGO_PROFILE_DEV_DEBUG=0 CARGO_PROFILE_TEST_DEBUG=0 cargo test -p om-host-service --test math_run_plan --test readonly_notebook --test kernel_endpoint --test kernel_worker --test kernel_acceptance --test kernel_states --locked --no-run --message-format=json"
+]

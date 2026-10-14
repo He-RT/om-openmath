@@ -1,0 +1,22 @@
+   Compiling om-host-service v0.1.0-pre-alpha.3 (/Users/hert/Projects/openmath/crates/om-host-service)
+    Finished `test` profile [unoptimized] target(s) in 23.17s
+     Running tests/math_run_plan.rs (target/debug/deps/math_run_plan-c56a41edb40cdd47)
+
+running 1 test
+actual accepted checkpoint plan={"plan":{"requested_cell_ids":["answer"],"ordered_cell_ids":["b","answer"],"edges":[["b","answer"]],"cycle_cell_ids":[],"blocked_cell_ids":[],"unavailable_prerequisite_cell_ids":[]},"continue_on_error":false} /18390 unchanged bytes
+
+thread 'actual_accepted_definition_skips_ready_prerequisite_and_checkpoint_bytes_remain_exact' (37728279) panicked at crates/om-host-service/tests/math_run_plan.rs:395:9:
+assertion `left == right` failed
+  left: String("Stale")
+ right: "Done"
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+test actual_accepted_definition_skips_ready_prerequisite_and_checkpoint_bytes_remain_exact ... FAILED
+
+failures:
+
+failures:
+    actual_accepted_definition_skips_ready_prerequisite_and_checkpoint_bytes_remain_exact
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 3 filtered out; finished in 0.06s
+
+error: test failed, to rerun pass `-p om-host-service --test math_run_plan`

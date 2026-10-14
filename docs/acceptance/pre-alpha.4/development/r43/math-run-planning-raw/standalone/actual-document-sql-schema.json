@@ -1,0 +1,114 @@
+[
+  {
+    "name": "accepted_checkpoints",
+    "sql": "CREATE TABLE accepted_checkpoints(checkpoint_id TEXT PRIMARY KEY,document_id TEXT NOT NULL,operation_id TEXT NOT NULL,request_hash TEXT NOT NULL,blob_hash TEXT NOT NULL,byte_length INTEGER NOT NULL,source_revision INTEGER NOT NULL,source_snapshot_hash TEXT NOT NULL,accepted_source_revision INTEGER NOT NULL,accepted_snapshot_hash TEXT NOT NULL,execution_epoch INTEGER NOT NULL,kernel_state_revision INTEGER NOT NULL,plan BLOB NOT NULL,UNIQUE(document_id,operation_id),UNIQUE(document_id,checkpoint_id),FOREIGN KEY(document_id,source_revision,source_snapshot_hash) REFERENCES document_revisions(document_id,revision,snapshot_hash),FOREIGN KEY(document_id,accepted_source_revision,accepted_snapshot_hash) REFERENCES document_revisions(document_id,revision,snapshot_hash),FOREIGN KEY(blob_hash) REFERENCES blob_objects(blob_hash))"
+  },
+  {
+    "name": "accepted_results",
+    "sql": "CREATE TABLE accepted_results(result_id TEXT PRIMARY KEY,document_id TEXT NOT NULL,checkpoint_id TEXT NOT NULL,cell_id TEXT NOT NULL,cell_source_hash TEXT NOT NULL,terminal_status TEXT NOT NULL,successful_statements INTEGER NOT NULL,out_index INTEGER,FOREIGN KEY(document_id,checkpoint_id) REFERENCES accepted_checkpoints(document_id,checkpoint_id))"
+  },
+  {
+    "name": "blob_objects",
+    "sql": "CREATE TABLE blob_objects(blob_hash TEXT PRIMARY KEY CHECK(length(blob_hash)=64),byte_length INTEGER NOT NULL CHECK(byte_length>=0 AND byte_length<=134217728))"
+  },
+  {
+    "name": "blob_refs",
+    "sql": "CREATE TABLE blob_refs(owner_kind TEXT NOT NULL,owner_id TEXT NOT NULL,blob_hash TEXT NOT NULL,media_type TEXT NOT NULL,codec_version TEXT NOT NULL,PRIMARY KEY(owner_kind,owner_id,blob_hash),FOREIGN KEY(blob_hash) REFERENCES blob_objects(blob_hash))"
+  },
+  {
+    "name": "document_head",
+    "sql": "CREATE TABLE document_head(document_id TEXT PRIMARY KEY,revision INTEGER NOT NULL,execution_epoch INTEGER NOT NULL,snapshot_hash TEXT NOT NULL,active_checkpoint_ref TEXT,FOREIGN KEY(document_id,revision,snapshot_hash) REFERENCES document_revisions(document_id,revision,snapshot_hash))"
+  },
+  {
+    "name": "document_revisions",
+    "sql": "CREATE TABLE document_revisions(document_id TEXT NOT NULL,revision INTEGER NOT NULL CHECK(revision>=0 AND revision<=9007199254740991),execution_epoch INTEGER NOT NULL,snapshot_hash TEXT NOT NULL,snapshot BLOB NOT NULL,PRIMARY KEY(document_id,revision),UNIQUE(document_id,revision,snapshot_hash))"
+  },
+  {
+    "name": "draft_batches",
+    "sql": "CREATE TABLE draft_batches(owner_id TEXT NOT NULL,sequence INTEGER NOT NULL CHECK(sequence>0),document_id TEXT NOT NULL,source_revision INTEGER NOT NULL,source_snapshot_hash TEXT NOT NULL,snapshot BLOB NOT NULL,snapshot_hash TEXT NOT NULL,receipt BLOB NOT NULL,receipt_hash TEXT NOT NULL,PRIMARY KEY(owner_id,sequence),FOREIGN KEY(owner_id) REFERENCES draft_owners(owner_id),FOREIGN KEY(document_id,source_revision,source_snapshot_hash) REFERENCES document_revisions(document_id,revision,snapshot_hash))"
+  },
+  {
+    "name": "draft_owners",
+    "sql": "CREATE TABLE draft_owners(owner_id TEXT PRIMARY KEY,lease_serial INTEGER NOT NULL UNIQUE CHECK(lease_serial>0),record BLOB NOT NULL,record_hash TEXT NOT NULL)"
+  },
+  {
+    "name": "draft_state",
+    "sql": "CREATE TABLE draft_state(singleton INTEGER PRIMARY KEY CHECK(singleton=1),active_owner_id TEXT,current_owner_id TEXT,current_sequence INTEGER,FOREIGN KEY(active_owner_id) REFERENCES draft_owners(owner_id),FOREIGN KEY(current_owner_id,current_sequence) REFERENCES draft_batches(owner_id,sequence))"
+  },
+  {
+    "name": "file_bindings",
+    "sql": "CREATE TABLE file_bindings(document_id TEXT NOT NULL,binding_revision INTEGER NOT NULL,record BLOB NOT NULL,record_hash TEXT NOT NULL,PRIMARY KEY(document_id,binding_revision))"
+  },
+  {
+    "name": "file_head",
+    "sql": "CREATE TABLE file_head(document_id TEXT PRIMARY KEY,binding_revision INTEGER NOT NULL,saved_revision INTEGER,saved_snapshot_hash TEXT,last_save_operation TEXT,FOREIGN KEY(document_id,binding_revision) REFERENCES file_bindings(document_id,binding_revision),FOREIGN KEY(document_id,saved_revision,saved_snapshot_hash) REFERENCES document_revisions(document_id,revision,snapshot_hash))"
+  },
+  {
+    "name": "kernel_head",
+    "sql": "CREATE TABLE kernel_head(document_id TEXT PRIMARY KEY,checkpoint_id TEXT NOT NULL,kernel_state_revision INTEGER NOT NULL,FOREIGN KEY(document_id,checkpoint_id) REFERENCES accepted_checkpoints(document_id,checkpoint_id))"
+  },
+  {
+    "name": "kernel_operations",
+    "sql": "CREATE TABLE kernel_operations(document_id TEXT NOT NULL,operation_id TEXT NOT NULL,request_hash TEXT NOT NULL,checkpoint_id TEXT NOT NULL,receipt BLOB NOT NULL,receipt_hash TEXT NOT NULL,PRIMARY KEY(document_id,operation_id),FOREIGN KEY(document_id,checkpoint_id) REFERENCES accepted_checkpoints(document_id,checkpoint_id))"
+  },
+  {
+    "name": "kernel_outbox",
+    "sql": "CREATE TABLE kernel_outbox(event_id TEXT PRIMARY KEY,document_id TEXT NOT NULL,operation_id TEXT NOT NULL,payload BLOB NOT NULL,payload_hash TEXT NOT NULL,projected INTEGER NOT NULL DEFAULT 0 CHECK(projected IN (0,1)),UNIQUE(document_id,operation_id),FOREIGN KEY(document_id,operation_id) REFERENCES kernel_operations(document_id,operation_id))"
+  },
+  {
+    "name": "kernel_transitions",
+    "sql": "CREATE TABLE kernel_transitions(document_id TEXT NOT NULL,operation_id TEXT NOT NULL,sequence INTEGER NOT NULL,phase TEXT NOT NULL CHECK(phase='accepted'),receipt_hash TEXT NOT NULL,PRIMARY KEY(document_id,operation_id,sequence),FOREIGN KEY(document_id,operation_id) REFERENCES kernel_operations(document_id,operation_id))"
+  },
+  {
+    "name": "operation_transitions",
+    "sql": "CREATE TABLE operation_transitions(document_id TEXT NOT NULL,operation_id TEXT NOT NULL,sequence INTEGER NOT NULL,phase TEXT NOT NULL,receipt_hash TEXT NOT NULL,PRIMARY KEY(document_id,operation_id,sequence),FOREIGN KEY(document_id,operation_id) REFERENCES operations(document_id,operation_id))"
+  },
+  {
+    "name": "operations",
+    "sql": "CREATE TABLE operations(document_id TEXT NOT NULL,operation_id TEXT NOT NULL,request_hash TEXT NOT NULL,phase TEXT NOT NULL CHECK(phase IN ('completed')),transaction_id TEXT NOT NULL,committed_revision INTEGER NOT NULL,receipt BLOB NOT NULL,PRIMARY KEY(document_id,operation_id),FOREIGN KEY(transaction_id) REFERENCES transactions(transaction_id),FOREIGN KEY(document_id,committed_revision) REFERENCES document_revisions(document_id,revision))"
+  },
+  {
+    "name": "outbox",
+    "sql": "CREATE TABLE outbox(event_id TEXT PRIMARY KEY,document_id TEXT NOT NULL,operation_id TEXT NOT NULL,payload BLOB NOT NULL,payload_hash TEXT NOT NULL,projected INTEGER NOT NULL DEFAULT 0 CHECK(projected IN (0,1)),UNIQUE(document_id,operation_id),FOREIGN KEY(document_id,operation_id) REFERENCES operations(document_id,operation_id))"
+  },
+  {
+    "name": "save_intents",
+    "sql": "CREATE TABLE save_intents(document_id TEXT NOT NULL,operation_id TEXT NOT NULL,source_revision INTEGER NOT NULL,source_snapshot_hash TEXT NOT NULL,binding_revision INTEGER NOT NULL,file_hash TEXT NOT NULL,file_length INTEGER NOT NULL,record BLOB NOT NULL,record_hash TEXT NOT NULL,phase TEXT NOT NULL CHECK(phase IN ('prepared','completed','not_written','conflict')),PRIMARY KEY(document_id,operation_id),FOREIGN KEY(document_id,source_revision,source_snapshot_hash) REFERENCES document_revisions(document_id,revision,snapshot_hash),FOREIGN KEY(document_id,binding_revision) REFERENCES file_bindings(document_id,binding_revision),FOREIGN KEY(file_hash) REFERENCES blob_objects(blob_hash))"
+  },
+  {
+    "name": "save_outbox",
+    "sql": "CREATE TABLE save_outbox(event_id TEXT PRIMARY KEY,document_id TEXT NOT NULL,operation_id TEXT NOT NULL,payload BLOB NOT NULL,payload_hash TEXT NOT NULL,projected INTEGER NOT NULL DEFAULT 0 CHECK(projected IN (0,1)),FOREIGN KEY(document_id,operation_id) REFERENCES save_receipts(document_id,operation_id))"
+  },
+  {
+    "name": "save_receipts",
+    "sql": "CREATE TABLE save_receipts(document_id TEXT NOT NULL,operation_id TEXT NOT NULL,record BLOB NOT NULL,record_hash TEXT NOT NULL,PRIMARY KEY(document_id,operation_id),FOREIGN KEY(document_id,operation_id) REFERENCES save_intents(document_id,operation_id))"
+  },
+  {
+    "name": "source_admission_transitions",
+    "sql": "CREATE TABLE source_admission_transitions(document_id TEXT NOT NULL,operation_id TEXT NOT NULL,sequence INTEGER NOT NULL,phase TEXT NOT NULL,PRIMARY KEY(document_id,operation_id,sequence),FOREIGN KEY(document_id,operation_id) REFERENCES source_admissions(document_id,operation_id))"
+  },
+  {
+    "name": "source_admissions",
+    "sql": "CREATE TABLE source_admissions(document_id TEXT NOT NULL,operation_id TEXT NOT NULL,request_hash TEXT NOT NULL,created_by_runtime TEXT NOT NULL,phase TEXT NOT NULL CHECK(phase IN ('accepted','completed','cancelled','failed','unknown')),plan BLOB NOT NULL,PRIMARY KEY(document_id,operation_id))"
+  },
+  {
+    "name": "source_history",
+    "sql": "CREATE TABLE source_history(transaction_id TEXT PRIMARY KEY,document_id TEXT NOT NULL,operation_id TEXT NOT NULL,revision INTEGER NOT NULL,summary BLOB NOT NULL,summary_hash TEXT NOT NULL,retained INTEGER NOT NULL CHECK(retained IN (0,1)),UNIQUE(document_id,operation_id),FOREIGN KEY(transaction_id) REFERENCES transactions(transaction_id))"
+  },
+  {
+    "name": "source_history_pins",
+    "sql": "CREATE TABLE source_history_pins(transaction_id TEXT NOT NULL,owner_kind TEXT NOT NULL CHECK(owner_kind IN ('user','task','native_undo','system')),owner_id TEXT NOT NULL,PRIMARY KEY(transaction_id,owner_kind,owner_id),FOREIGN KEY(transaction_id) REFERENCES source_history(transaction_id))"
+  },
+  {
+    "name": "store_header",
+    "sql": "CREATE TABLE store_header(singleton INTEGER PRIMARY KEY CHECK(singleton=1),store_id TEXT NOT NULL,kind TEXT NOT NULL,generation INTEGER NOT NULL,store_version INTEGER NOT NULL,minimum_reader_version INTEGER NOT NULL,codec_version INTEGER NOT NULL,document_id TEXT)"
+  },
+  {
+    "name": "store_state",
+    "sql": "CREATE TABLE store_state(singleton INTEGER PRIMARY KEY CHECK(singleton=1),last_clean_shutdown INTEGER NOT NULL CHECK(last_clean_shutdown IN (0,1)))"
+  },
+  {
+    "name": "transactions",
+    "sql": "CREATE TABLE transactions(transaction_id TEXT PRIMARY KEY,document_id TEXT NOT NULL,operation_id TEXT NOT NULL,base_revision INTEGER NOT NULL,committed_revision INTEGER NOT NULL,request_hash TEXT NOT NULL,forward_plan BLOB NOT NULL,inverse_snapshot BLOB NOT NULL,inverse_hash TEXT NOT NULL,UNIQUE(document_id,operation_id),FOREIGN KEY(document_id,base_revision) REFERENCES document_revisions(document_id,revision),FOREIGN KEY(document_id,committed_revision) REFERENCES document_revisions(document_id,revision))"
+  }
+]

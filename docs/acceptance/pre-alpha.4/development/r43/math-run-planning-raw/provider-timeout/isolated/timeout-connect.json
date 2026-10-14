@@ -1,0 +1,1 @@
+{"actual_reason":"connectionTimeout","case":"connect","competing_timer_callbacks_held":false,"expected_reason":"connectionTimeout","outcome":"dispatchOutcomeUnknown","requests":1}

@@ -1,0 +1,70 @@
+   Compiling om-kernel v0.1.0-pre-alpha.3 (/Users/hert/Projects/openmath/crates/om-kernel)
+    Finished `test` profile [unoptimized] target(s) in 2.62s
+     Running tests/reactive.rs (target/debug/deps/reactive-37a9e58f51ad1b3a)
+
+running 9 tests
+test conflicts_do_not_execute_or_clear_prior_successful_definitions ... ok
+test switches_keep_stale_outputs_and_sequential_redefinitions ... ok
+test genuine_cycles_error_and_downstream_is_stale_then_recovers ... ok
+test editing_is_source_only_move_is_atomic_and_run_all_uses_document_order ... ok
+test diamond_and_layer_order_are_stable_and_unrelated_cells_are_untouched ... ok
+test edit_parse_failure_delete_and_kind_change_preserve_correct_live_ownership ... ok
+test failed_prerequisites_block_descendants_but_independent_branches_run ... ok
+test raw_user_function_heads_and_scoped_patterns_drive_dependencies ... ok
+test authority_edit_recalculates_real_solutions_and_keeps_actual_history_steps ... ok
+
+test result: ok. 9 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.08s
+
+     Running tests/reactive_edges.rs (target/debug/deps/reactive_edges-ea6256c63c782532)
+
+running 12 tests
+test dependency_analysis_excludes_registered_builtins_beyond_core_symbol_table ... ok
+test calculus_coordinates_are_local_but_parameters_and_bounds_remain_real_dependencies ... ok
+test scopes_do_not_hide_symbols_used_outside_the_binding_expression ... ok
+test rejected_conflicting_evaluate_does_not_invalidate_the_other_owners_dependents ... ok
+test stale_prerequisite_outside_the_affected_closure_blocks_execution_until_repaired ... ok
+test run_all_cycle_errors_preserve_real_history_of_earlier_evaluations ... ok
+test edited_away_live_definitions_do_not_create_false_source_cycles ... ok
+test cancellation_during_auto_execution_keeps_the_completed_root_and_blocks_descendants ... ok
+test deferred_global_sets_and_lexical_local_sets_do_not_claim_unexecuted_values ... ok
+test one_cascade_preserves_interrupt_and_a_new_request_recovers ... ok
+test delete_auto_recalculates_the_transitive_closure_and_disabled_mode_only_stales ... ok
+test partial_effects_clear_unset_and_identical_reassignments_have_actual_ownership ... ok
+
+test result: ok. 12 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.05s
+
+     Running tests/run_plan.rs (target/debug/deps/run_plan-fb2edaae6dba0d18)
+
+running 5 tests
+test real_cycles_blocked_descendants_invalid_inputs_and_direct_cancellation_remain_explicit ... ok
+actual affected plan={"requested_cell_ids":["a"],"ordered_cell_ids":["a","dependent","tail"],"edges":[["dependent","tail"],["a","dependent"]],"cycle_cell_ids":[],"blocked_cell_ids":[],"unavailable_prerequisite_cell_ids":[]}
+test affected_uses_actual_graph_and_respects_native_allowed_set_without_hidden_expansion ... ok
+actual missing/required plans={"required":{"blocked_cell_ids":[],"cycle_cell_ids":[],"edges":[["b","answer"],["a","b"]],"ordered_cell_ids":["a","b","answer"],"requested_cell_ids":["answer"],"unavailable_prerequisite_cell_ids":[]},"selected":{"blocked_cell_ids":[],"cycle_cell_ids":[],"edges":[],"ordered_cell_ids":["answer"],"requested_cell_ids":["answer"],"unavailable_prerequisite_cell_ids":["b"]}}
+actual dynamic owner and plan={"owners":[{"cell_id":"caller","symbol":"a"},{"cell_id":"function","symbol":"f"}],"plan":{"blocked_cell_ids":[],"cycle_cell_ids":[],"edges":[["caller","consumer"]],"ordered_cell_ids":["caller","consumer"],"requested_cell_ids":["consumer","caller"],"unavailable_prerequisite_cell_ids":[]}}
+test selected_never_adds_missing_prerequisites_and_required_does_not_run_unrelated_cells ... ok
+test live_dynamic_owner_controls_prerequisites_and_order_instead_of_syntactic_name_guesses ... ok
+actual complete checkpoint unchanged: 19412 bytes
+test planning_preserves_exact_checkpoint_with_actual_definitions_out_and_random ... ok
+
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.03s
+
+     Running tests/source_transactions.rs (target/debug/deps/source_transactions-09ae57297e821116)
+
+running 5 tests
+test text_title_and_prose_reorder_keep_live_math_and_no_evaluation_occurs ... ok
+test invalid_batch_does_not_modify_definitions_or_source_and_settings_are_not_evaluated ... ok
+test whole_delete_does_not_cascade_and_old_owner_values_are_actually_removed ... ok
+test real_cycle_conflict_and_lexical_function_scope_are_analyzed_without_execution ... ok
+test old_caller_owned_dynamic_side_effects_contribute_real_invalidation ... ok
+
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.02s
+
+     Running tests/working_session.rs (target/debug/deps/working_session-6c2092e8719a8bdc)
+
+running 3 tests
+test working_notebook_retains_real_results_and_owners_then_can_commit_new_definitions ... ok
+test candidate_credentials_io_and_cancellation_are_independent_from_parent ... ok
+test actual_steps_and_readonly_explore_snapshots_survive_the_memory_candidate ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.05s
+

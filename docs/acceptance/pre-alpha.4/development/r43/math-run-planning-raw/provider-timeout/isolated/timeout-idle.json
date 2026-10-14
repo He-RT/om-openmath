@@ -1,0 +1,1 @@
+{"actual_reason":"idleTimeout","case":"idle","competing_timer_callbacks_held":false,"expected_reason":"idleTimeout","outcome":"responseObserved","requests":1}

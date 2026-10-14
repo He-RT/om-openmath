@@ -1,0 +1,4 @@
+data: {"id":"provider-response-3","model":"synthetic-served-alias","choices":[{"finish_reason":"tool_calls","delta":{"content":"中文🙂","role":"assistant","tool_calls":[{"id":"apply-call","type":"function","function":{"name":"apply_notebook_patch","arguments":"{\"preview_ref\":\"preview-5-a3782ed614892c6a3758ec9928e56cc92e3ae848a95334af725c6b6bbee70bc5\"}"},"index":0}]},"index":0}]}
+
+data: [DONE]
+

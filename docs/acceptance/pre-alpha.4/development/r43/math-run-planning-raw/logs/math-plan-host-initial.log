@@ -1,0 +1,25 @@
+error: no test target named `kernel_runtime` in `om-host-service` package
+help: available test targets:
+    agent_endpoint
+    agent_framing
+    agent_ingress
+    commit_owner
+    contracts
+    document_source
+    fixture_support
+    kernel_acceptance
+    kernel_endpoint
+    kernel_states
+    kernel_worker
+    math_run_plan
+    model_codec
+    preview
+    readonly_catalog
+    readonly_notebook
+    references
+    result_runtime
+    results
+    scheduler
+    source_endpoint
+    source_operations
+    undo_source

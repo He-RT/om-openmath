@@ -1,0 +1,77 @@
+{
+  "source": "successful explicit kernel+host Cargo compiler-artifact inventories after 65 passed targeted Rust tests",
+  "count": 11,
+  "logical_bytes": 428370368,
+  "deleted": true,
+  "entries": [
+    {
+      "path": "target/debug/deps/run_plan-fb2edaae6dba0d18",
+      "bytes": 36546304,
+      "sha256": "79dcf833e68621ece224c0e548dd30ebc268a7226659003359db9ad88de900cd",
+      "target": "run_plan"
+    },
+    {
+      "path": "target/debug/deps/reactive-37a9e58f51ad1b3a",
+      "bytes": 35149360,
+      "sha256": "876f727b52d33d6babdcdfa1cbab2d8217ecf4459cd2fcb16948754883636580",
+      "target": "reactive"
+    },
+    {
+      "path": "target/debug/deps/source_transactions-09ae57297e821116",
+      "bytes": 35667968,
+      "sha256": "17f884c5642543efe2f1390d4318743c0bbef7e488c5729a570d9036b7293151",
+      "target": "source_transactions"
+    },
+    {
+      "path": "target/debug/deps/working_session-6c2092e8719a8bdc",
+      "bytes": 35432208,
+      "sha256": "2f4c9883522702f7a47a78f0bd4679fc80c3386df46cd7ac42abb643f19593d5",
+      "target": "working_session"
+    },
+    {
+      "path": "target/debug/deps/reactive_edges-ea6256c63c782532",
+      "bytes": 35153408,
+      "sha256": "79789a250490f0549e863961dc1d3c9446b296389a3f467d47dc6d43537eb34d",
+      "target": "reactive_edges"
+    },
+    {
+      "path": "target/debug/deps/kernel_states-bb37cefce3adbb8d",
+      "bytes": 39596784,
+      "sha256": "d4e3c5bae55d0f1558a8a2901ccdc969d1dd8fa534b9ef56ddd4d53ccc02aec1",
+      "target": "kernel_states"
+    },
+    {
+      "path": "target/debug/deps/math_run_plan-c56a41edb40cdd47",
+      "bytes": 42772512,
+      "sha256": "5f0ecdd3b12a52cc3d0edcc460ca9527d21dcb92bb4e90fa23714f2385ccc615",
+      "target": "math_run_plan"
+    },
+    {
+      "path": "target/debug/deps/kernel_worker-ee4691de1c02bdee",
+      "bytes": 40698720,
+      "sha256": "4c9ad1e31c75337ff6a184abbb325d9dfe615958f2c824a4d071652f1df7c006",
+      "target": "kernel_worker"
+    },
+    {
+      "path": "target/debug/deps/kernel_endpoint-b0e3d5a2add5101b",
+      "bytes": 43575376,
+      "sha256": "380fb70f61a7b70b730daf35929abc0fadc3177ef0af3215a868249c6be91054",
+      "target": "kernel_endpoint"
+    },
+    {
+      "path": "target/debug/deps/readonly_notebook-65e9ab3aafc505d2",
+      "bytes": 42540304,
+      "sha256": "f4ba9fbb651e50481c6ac47f843e8be3e5afa3fbf9a7322a884ea270bd00a2c7",
+      "target": "readonly_notebook"
+    },
+    {
+      "path": "target/debug/deps/kernel_acceptance-cfd0c2f95e51f0bb",
+      "bytes": 41237424,
+      "sha256": "df7243cf91c6e171ebaee13f678befa6fb525f4f540fe3818464794d5a06ea5c",
+      "target": "kernel_acceptance"
+    }
+  ],
+  "all_candidates_absent": true,
+  "free_space_after": "Filesystem      Size    Used   Avail Capacity iused ifree %iused  Mounted on\n/dev/disk3s5   460Gi   385Gi    43Gi    90%    3.6M  449M    1%   /System/Volumes/Data\n",
+  "preflight_note": "Initial process command+args UTF8 decode rejected before any deletion; final comm-only process inventory uses replacement for unrelated non-UTF8 names, checks compiler and exact selected executable paths"
+}

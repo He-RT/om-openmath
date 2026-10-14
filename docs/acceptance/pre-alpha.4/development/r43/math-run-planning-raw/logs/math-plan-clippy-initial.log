@@ -1,0 +1,28 @@
+    Checking om-agent-contract v0.1.0-pre-alpha.3 (/Users/hert/Projects/openmath/crates/om-agent-contract)
+    Checking om-num v0.1.0-pre-alpha.3 (/Users/hert/Projects/openmath/crates/om-num)
+    Checking tokio-rustls v0.26.6
+    Checking rustls-platform-verifier v0.7.1
+   Compiling om-host-service v0.1.0-pre-alpha.3 (/Users/hert/Projects/openmath/crates/om-host-service)
+    Checking hyper-rustls v0.27.10
+    Checking reqwest v0.13.5
+    Checking om-core v0.1.0-pre-alpha.3 (/Users/hert/Projects/openmath/crates/om-core)
+    Checking om-poly v0.1.0-pre-alpha.3 (/Users/hert/Projects/openmath/crates/om-poly)
+    Checking om-analysis v0.1.0-pre-alpha.3 (/Users/hert/Projects/openmath/crates/om-analysis)
+    Checking om-llm v0.1.0-pre-alpha.3 (/Users/hert/Projects/openmath/crates/om-llm)
+    Checking om-parse v0.1.0-pre-alpha.3 (/Users/hert/Projects/openmath/crates/om-parse)
+    Checking om-format v0.1.0-pre-alpha.3 (/Users/hert/Projects/openmath/crates/om-format)
+    Checking om-simplify v0.1.0-pre-alpha.3 (/Users/hert/Projects/openmath/crates/om-simplify)
+    Checking om-solve v0.1.0-pre-alpha.3 (/Users/hert/Projects/openmath/crates/om-solve)
+    Checking om-eval v0.1.0-pre-alpha.3 (/Users/hert/Projects/openmath/crates/om-eval)
+    Checking om-kernel v0.1.0-pre-alpha.3 (/Users/hert/Projects/openmath/crates/om-kernel)
+error: unused import: `Value`
+  --> crates/om-host-service/tests/math_run_plan.rs:24:18
+   |
+24 | use serde_json::{Value, json};
+   |                  ^^^^^
+   |
+   = note: `-D unused-imports` implied by `-D warnings`
+   = help: to override `-D warnings` add `#[allow(unused_imports)]`
+
+error: could not compile `om-host-service` (test "math_run_plan") due to 1 previous error
+warning: build failed, waiting for other jobs to finish...

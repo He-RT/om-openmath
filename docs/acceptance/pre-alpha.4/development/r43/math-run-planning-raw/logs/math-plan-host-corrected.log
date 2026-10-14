@@ -1,0 +1,85 @@
+    Blocking waiting for file lock on artifact directory
+   Compiling om-host-service v0.1.0-pre-alpha.3 (/Users/hert/Projects/openmath/crates/om-host-service)
+   Compiling om-kernel v0.1.0-pre-alpha.3 (/Users/hert/Projects/openmath/crates/om-kernel)
+warning: unused import: `Value`
+  --> crates/om-host-service/tests/math_run_plan.rs:24:18
+   |
+24 | use serde_json::{Value, json};
+   |                  ^^^^^
+   |
+   = note: `#[warn(unused_imports)]` (part of `#[warn(unused)]`) on by default
+
+warning: `om-host-service` (test "math_run_plan") generated 1 warning (run `cargo fix --test "math_run_plan" -p om-host-service` to apply 1 suggestion)
+    Finished `test` profile [unoptimized] target(s) in 1m 18s
+     Running tests/kernel_acceptance.rs (target/debug/deps/kernel_acceptance-cfd0c2f95e51f0bb)
+
+running 5 tests
+test only_entered_original_plan_and_matching_receipt_yield_an_accepted_parent ... ok
+test closed_contract_hashes_roles_unknown_fields_and_receipt_producer_are_checked ... ok
+test data_only_recovery_rejects_wrong_blob_and_current_build_instead_of_replaying_source ... ok
+test title_change_accepts_original_producer_but_math_epoch_change_discards_candidate ... ok
+test early_cancel_final_source_config_or_generation_change_prevents_commit ... ok
+
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.05s
+
+     Running tests/kernel_endpoint.rs (target/debug/deps/kernel_endpoint-b0e3d5a2add5101b)
+
+running 4 tests
+test closed_wire_does_not_allow_oversized_or_untyped_recovery_chunks ... ok
+test state_command_is_the_same_closed_shape_as_generated_swift ... ok
+test recovery_upload_is_bounded_idempotent_and_directly_cancelled_without_a_state ... ok
+test malformed_complete_payload_fails_in_background_and_releases_the_gate ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.02s
+
+     Running tests/kernel_states.rs (target/debug/deps/kernel_states-bb37cefce3adbb8d)
+
+running 2 tests
+test original_scoped_bytes_restore_actual_defs_and_old_parent_stays_independent ... ok
+test revoked_external_pins_keep_byte_and_count_reservations_until_reaped ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.03s
+
+     Running tests/kernel_worker.rs (target/debug/deps/kernel_worker-ee4691de1c02bdee)
+
+running 8 tests
+test registry_capacity_failure_and_close_do_not_publish_or_overwrite_the_parent ... ok
+test wrong_source_scope_epoch_and_frozen_cancel_are_rejected_or_preserved_as_actual_facts ... ok
+test explicit_nonreactive_mode_keeps_original_reassignment_semantics ... ok
+test unchanged_math_after_title_change_keeps_definitions_and_skipped_epoch_retires_them ... ok
+test real_error_keeps_actual_partial_definition_and_history_only_in_the_candidate ... ok
+test direct_stop_and_parent_lookup_do_not_wait_for_cas_and_queue_tokens_stay_independent ... ok
+test discarded_random_and_out_state_never_become_the_next_implicit_parent ... ok
+test explicit_parent_a2_then_a5_reconcile_retires_old_definitions_and_no_cascade_runs ... ok
+
+test result: ok. 8 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.07s
+
+     Running tests/math_run_plan.rs (target/debug/deps/math_run_plan-c56a41edb40cdd47)
+
+running 4 tests
+test acknowledged_argument_hash_closed_parameters_and_native_allowlist_are_authoritative ... ok
+actual bounded source plan={"plan":{"requested_cell_ids":["answer"],"ordered_cell_ids":["a","b","answer"],"edges":[["b","answer"],["a","b"]],"cycle_cell_ids":[],"blocked_cell_ids":[],"unavailable_prerequisite_cell_ids":[]},"continue_on_error":false}
+test real_outline_token_plans_only_required_cells_off_owner_and_never_upgrades_source_exposure ... ok
+test historical_or_cross_task_refs_and_clock_rewind_cannot_choose_current_run_input ... ok
+actual accepted checkpoint plan={"plan":{"requested_cell_ids":["answer"],"ordered_cell_ids":["b","answer"],"edges":[["b","answer"]],"cycle_cell_ids":[],"blocked_cell_ids":[],"unavailable_prerequisite_cell_ids":[]},"continue_on_error":false} /18390 unchanged bytes
+test actual_accepted_definition_skips_ready_prerequisite_and_checkpoint_bytes_remain_exact ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.05s
+
+     Running tests/readonly_notebook.rs (target/debug/deps/readonly_notebook-65e9ab3aafc505d2)
+
+running 7 tests
+test native_history_binding_is_bounded_and_each_read_snapshot_retains_its_original_refs ... ok
+actual immutable history response: {"data":{"cells":[{"cell_id":"cell-0","dialect":"Modern","kind":"Math","result_ref":null,"revision":0,"source":"2+2","source_complete":true,"source_cursor":null,"source_hash":"1acf86226c68c1485ca3939884c43ed99abeea344e806548af7ee813c1c0cff3","status":"Stale"}],"is_current":false,"recent_transaction_refs":[],"snapshot_ref":"snapshot-1-8115ac4feedf24e3f8584756b1102dd8865172e768f25fe0419cafe868b97b34","symbols":[],"title":"中文🙂"},"pagination":{"next_cursor":null,"truncated":false}}
+test historical_source_is_explicit_and_authority_expiry_and_clock_are_enforced ... ok
+test closed_arguments_selection_and_query_bound_cursors_reject_forgery ... ok
+outline/full actual responses: {"full":{"data":{"cells":[{"cell_id":"cell-0","dialect":"Modern","kind":"Math","result_ref":null,"revision":0,"source":"2+2","source_complete":true,"source_cursor":null,"source_hash":"1acf86226c68c1485ca3939884c43ed99abeea344e806548af7ee813c1c0cff3","status":"Stale"}],"is_current":true,"recent_transaction_refs":[],"snapshot_ref":"snapshot-3-2a08ebd95b3d34659eb77389d3124e9c596101b62d0bf76105079b4032790e64","symbols":[],"title":"中文🙂"},"pagination":{"next_cursor":null,"truncated":false}},"outline":{"data":{"cells":[{"cell_id":"cell-0","dialect":"Modern","kind":"Math","result_ref":null,"revision":0,"source":null,"source_complete":false,"source_cursor":null,"source_hash":"1acf86226c68c1485ca3939884c43ed99abeea344e806548af7ee813c1c0cff3","status":"Stale"},{"cell_id":"cell-1","dialect":"Modern","kind":"Math","result_ref":null,"revision":0,"source":null,"source_complete":false,"source_cursor":null,"source_hash":"1acf86226c68c1485ca3939884c43ed99abeea344e806548af7ee813c1c0cff3","status":"Stale"},{"cell_id":"cell-2","dialect":"Modern","kind":"Math","result_ref":null,"revision":0,"source":null,"source_complete":false,"source_cursor":null,"source_hash":"1acf86226c68c1485ca3939884c43ed99abeea344e806548af7ee813c1c0cff3","status":"Stale"},{"cell_id":"cell-3","dialect":"Modern","kind":"Math","result_ref":null,"revision":0,"source":null,"source_complete":false,"source_cursor":null,"source_hash":"1acf86226c68c1485ca3939884c43ed99abeea344e806548af7ee813c1c0cff3","status":"Stale"},{"cell_id":"cell-4","dialect":"Modern","kind":"Math","result_ref":null,"revision":0,"source":null,"source_complete":false,"source_cursor":null,"source_hash":"1acf86226c68c1485ca3939884c43ed99abeea344e806548af7ee813c1c0cff3","status":"Stale"},{"cell_id":"cell-5","dialect":"Modern","kind":"Math","result_ref":null,"revision":0,"source":null,"source_complete":false,"source_cursor":null,"source_hash":"1acf86226c68c1485ca3939884c43ed99abeea344e806548af7ee813c1c0cff3","status":"Stale"},{"cell_id":"cell-6","dialect":"Modern","kind":"Math","result_ref":null,"revision":0,"source":null,"source_complete":false,"source_cursor":null,"source_hash":"1acf86226c68c1485ca3939884c43ed99abeea344e806548af7ee813c1c0cff3","status":"Stale"},{"cell_id":"cell-7","dialect":"Modern","kind":"Math","result_ref":null,"revision":0,"source":null,"source_complete":false,"source_cursor":null,"source_hash":"1acf86226c68c1485ca3939884c43ed99abeea344e806548af7ee813c1c0cff3","status":"Stale"},{"cell_id":"cell-8","dialect":"Modern","kind":"Math","result_ref":null,"revision":0,"source":null,"source_complete":false,"source_cursor":null,"source_hash":"1acf86226c68c1485ca3939884c43ed99abeea344e806548af7ee813c1c0cff3","status":"Stale"},{"cell_id":"cell-9","dialect":"Modern","kind":"Math","result_ref":null,"revision":0,"source":null,"source_complete":false,"source_cursor":null,"source_hash":"1acf86226c68c1485ca3939884c43ed99abeea344e806548af7ee813c1c0cff3","status":"Stale"},{"cell_id":"cell-10","dialect":"Modern","kind":"Math","result_ref":null,"revision":0,"source":null,"source_complete":false,"source_cursor":null,"source_hash":"1acf86226c68c1485ca3939884c43ed99abeea344e806548af7ee813c1c0cff3","status":"Stale"},{"cell_id":"cell-11","dialect":"Modern","kind":"Math","result_ref":null,"revision":0,"source":null,"source_complete":false,"source_cursor":null,"source_hash":"1acf86226c68c1485ca3939884c43ed99abeea344e806548af7ee813c1c0cff3","status":"Stale"},{"cell_id":"cell-12","dialect":"Modern","kind":"Math","result_ref":null,"revision":0,"source":null,"source_complete":false,"source_cursor":null,"source_hash":"1acf86226c68c1485ca3939884c43ed99abeea344e806548af7ee813c1c0cff3","status":"Stale"},{"cell_id":"cell-13","dialect":"Modern","kind":"Math","result_ref":null,"revision":0,"source":null,"source_complete":false,"source_cursor":null,"source_hash":"1acf86226c68c1485ca3939884c43ed99abeea344e806548af7ee813c1c0cff3","status":"Stale"},{"cell_id":"cell-14","dialect":"Modern","kind":"Math","result_ref":null,"revision":0,"source":null,"source_complete":false,"source_cursor":null,"source_hash":"1acf86226c68c1485ca3939884c43ed99abeea344e806548af7ee813c1c0cff3","status":"Stale"},{"cell_id":"cell-15","dialect":"Modern","kind":"Math","result_ref":null,"revision":0,"source":null,"source_complete":false,"source_cursor":null,"source_hash":"1acf86226c68c1485ca3939884c43ed99abeea344e806548af7ee813c1c0cff3","status":"Stale"},{"cell_id":"cell-16","dialect":"Modern","kind":"Math","result_ref":null,"revision":0,"source":null,"source_complete":false,"source_cursor":null,"source_hash":"1acf86226c68c1485ca3939884c43ed99abeea344e806548af7ee813c1c0cff3","status":"Stale"},{"cell_id":"cell-17","dialect":"Modern","kind":"Math","result_ref":null,"revision":0,"source":null,"source_complete":false,"source_cursor":null,"source_hash":"1acf86226c68c1485ca3939884c43ed99abeea344e806548af7ee813c1c0cff3","status":"Stale"},{"cell_id":"cell-18","dialect":"Modern","kind":"Math","result_ref":null,"revision":0,"source":null,"source_complete":false,"source_cursor":null,"source_hash":"1acf86226c68c1485ca3939884c43ed99abeea344e806548af7ee813c1c0cff3","status":"Stale"},{"cell_id":"cell-19","dialect":"Modern","kind":"Math","result_ref":null,"revision":0,"source":null,"source_complete":false,"source_cursor":null,"source_hash":"1acf86226c68c1485ca3939884c43ed99abeea344e806548af7ee813c1c0cff3","status":"Stale"}],"is_current":true,"recent_transaction_refs":[],"snapshot_ref":"snapshot-1-8115ac4feedf24e3f8584756b1102dd8865172e768f25fe0419cafe868b97b34","symbols":[],"title":"中文🙂"},"pagination":{"next_cursor":"cursor-1-a58ca2713fabfeeb6fd3802236b6daf429e400fe522cc120daaedf45a24cf2a3","truncated":true}},"tail":{"data":{"cells":[{"cell_id":"cell-20","dialect":"Modern","kind":"Math","result_ref":null,"revision":0,"source":null,"source_complete":false,"source_cursor":null,"source_hash":"1acf86226c68c1485ca3939884c43ed99abeea344e806548af7ee813c1c0cff3","status":"Stale"},{"cell_id":"cell-21","dialect":"Modern","kind":"Math","result_ref":null,"revision":0,"source":null,"source_complete":false,"source_cursor":null,"source_hash":"1acf86226c68c1485ca3939884c43ed99abeea344e806548af7ee813c1c0cff3","status":"Stale"},{"cell_id":"cell-22","dialect":"Modern","kind":"Math","result_ref":null,"revision":0,"source":null,"source_complete":false,"source_cursor":null,"source_hash":"1acf86226c68c1485ca3939884c43ed99abeea344e806548af7ee813c1c0cff3","status":"Stale"},{"cell_id":"cell-23","dialect":"Modern","kind":"Math","result_ref":null,"revision":0,"source":null,"source_complete":false,"source_cursor":null,"source_hash":"1acf86226c68c1485ca3939884c43ed99abeea344e806548af7ee813c1c0cff3","status":"Stale"},{"cell_id":"cell-24","dialect":"Modern","kind":"Math","result_ref":null,"revision":0,"source":null,"source_complete":false,"source_cursor":null,"source_hash":"1acf86226c68c1485ca3939884c43ed99abeea344e806548af7ee813c1c0cff3","status":"Stale"},{"cell_id":"cell-25","dialect":"Modern","kind":"Math","result_ref":null,"revision":0,"source":null,"source_complete":false,"source_cursor":null,"source_hash":"1acf86226c68c1485ca3939884c43ed99abeea344e806548af7ee813c1c0cff3","status":"Stale"},{"cell_id":"cell-26","dialect":"Modern","kind":"Math","result_ref":null,"revision":0,"source":null,"source_complete":false,"source_cursor":null,"source_hash":"1acf86226c68c1485ca3939884c43ed99abeea344e806548af7ee813c1c0cff3","status":"Stale"}],"is_current":true,"recent_transaction_refs":[],"snapshot_ref":"snapshot-1-8115ac4feedf24e3f8584756b1102dd8865172e768f25fe0419cafe868b97b34","symbols":[],"title":"中文🙂"},"pagination":{"next_cursor":null,"truncated":false}}}
+test outline_is_bounded_and_full_source_exposure_never_upgrades_its_original_token ... ok
+actual accepted symbols/current/stale: {"cells":{"data":{"cells":[{"cell_id":"cell-0","dialect":"Modern","kind":"Math","result_ref":null,"revision":0,"source":null,"source_complete":false,"source_cursor":null,"source_hash":"3d2bc6c6b3f0675f652a55348ea23c5f1a58315567c3b66e12d6bb60f026b7c4","status":"Done"}],"is_current":true,"recent_transaction_refs":[],"snapshot_ref":"snapshot-2-260c4ac8c7f51ad827403443253095b34e509fc8e75b4cb0d617da9679d656e4","symbols":[],"title":"中文🙂"},"pagination":{"next_cursor":null,"truncated":false}},"checkpoint_hash_unchanged":"0e0ef6e21013d6f27cd31f7fac5e0e38fe26186f249922b64e091e13a67229e9","stale":{"data":{"cells":[],"is_current":true,"recent_transaction_refs":[],"snapshot_ref":"snapshot-3-2a08ebd95b3d34659eb77389d3124e9c596101b62d0bf76105079b4032790e64","symbols":[{"callable":false,"cell_id":"cell-0","is_current":false,"name":"a","producer":{"execution_epoch":0,"kernel_state_revision":1,"snapshot_hash":"4be6a5bea0aa115a3fc7fbec31c507fa729dd05729da832bd6acf22019087691","source_revision":0}},{"callable":true,"cell_id":"cell-0","is_current":false,"name":"sin","producer":{"execution_epoch":0,"kernel_state_revision":1,"snapshot_hash":"4be6a5bea0aa115a3fc7fbec31c507fa729dd05729da832bd6acf22019087691","source_revision":0}}],"title":"中文🙂"},"pagination":{"next_cursor":null,"truncated":false}},"symbols":{"data":{"cells":[],"is_current":true,"recent_transaction_refs":[],"snapshot_ref":"snapshot-1-8115ac4feedf24e3f8584756b1102dd8865172e768f25fe0419cafe868b97b34","symbols":[{"callable":false,"cell_id":"cell-0","is_current":true,"name":"a","producer":{"execution_epoch":0,"kernel_state_revision":1,"snapshot_hash":"4be6a5bea0aa115a3fc7fbec31c507fa729dd05729da832bd6acf22019087691","source_revision":0}},{"callable":true,"cell_id":"cell-0","is_current":true,"name":"sin","producer":{"execution_epoch":0,"kernel_state_revision":1,"snapshot_hash":"4be6a5bea0aa115a3fc7fbec31c507fa729dd05729da832bd6acf22019087691","source_revision":0}}],"title":"中文🙂"},"pagination":{"next_cursor":null,"truncated":false}}}
+test symbols_and_status_are_actual_accepted_facts_with_stale_producer_and_no_random_mutation ... ok
+exact UTF8 reconstruction: 6 pages / 150008 bytes / sha256 146186443cb9b4e9a33e0c3376aee481c43e9e9cdaa22dd659c6bdf808bbd81f; final fragment never full
+test unicode_fragments_reassemble_exact_source_and_final_fragment_still_is_not_full_cell ... ok
+test retention_and_contract_limits_fail_closed_and_expiry_releases_the_actual_leases ... ok
+
+test result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.49s
+

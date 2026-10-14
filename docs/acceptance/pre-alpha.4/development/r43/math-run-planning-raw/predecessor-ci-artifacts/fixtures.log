@@ -1,0 +1,12 @@
+Fixture hashes, actual UTF-8 HTTP bytes/errors/redirect rejection/timeout and six real interruption points passed
+✔ sealed own fixture bytes and real streaming UTF-8 boundaries (8.524084ms)
+ℹ tests 1
+ℹ suites 0
+ℹ pass 1
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 108.995459
+IOServiceMatchingfailed for: AppleM2ScalerParavirtDriver
+Actual ImageIO/PDFKit/AVFoundation: own PNG dimensions/color, PDF text, PCM audio power, all 10 H264 frame times and moving-marker pixels passed

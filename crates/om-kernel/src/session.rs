@@ -15,6 +15,8 @@ mod inspection;
 mod native;
 mod plotting;
 mod reactive;
+mod run_plan;
+pub use run_plan::{CellExecutionPlan, CellExecutionScope};
 mod recovery;
 mod values;
 mod working;

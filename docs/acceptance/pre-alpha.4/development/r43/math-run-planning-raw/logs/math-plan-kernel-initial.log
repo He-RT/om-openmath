@@ -1,0 +1,44 @@
+   Compiling tokio-rustls v0.26.6
+   Compiling om-agent-contract v0.1.0-pre-alpha.3 (/Users/hert/Projects/openmath/crates/om-agent-contract)
+   Compiling rustls-platform-verifier v0.7.1
+   Compiling hyper-rustls v0.27.10
+   Compiling reqwest v0.13.5
+   Compiling om-llm v0.1.0-pre-alpha.3 (/Users/hert/Projects/openmath/crates/om-llm)
+   Compiling om-kernel v0.1.0-pre-alpha.3 (/Users/hert/Projects/openmath/crates/om-kernel)
+error[E0277]: the trait bound `SourceExecutionContext: serde::Serialize` is not satisfied
+   --> crates/om-kernel/tests/run_plan.rs:197:9
+    |
+197 |         serde_json::json!({"owners":owned,"plan":both})
+    |         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |         |
+    |         the trait `serde_core::ser::Serialize` is not implemented for `SourceExecutionContext`
+    |         required by a bound introduced by this call
+    |
+    = note: for local types consider adding `#[derive(serde::Serialize)]` to your `SourceExecutionContext` type
+    = note: for types from other crates check whether the crate offers a `serde` feature flag
+    = help: the following other types implement trait `serde_core::ser::Serialize`:
+              &'a T
+              &'a mut T
+              ()
+              (T,)
+              (T0, T1)
+              (T0, T1, T2)
+              (T0, T1, T2, T3)
+              (T0, T1, T2, T3, T4)
+            and 301 others
+    = note: required for `&SourceExecutionContext` to implement `serde_core::ser::Serialize`
+note: required by a bound in `to_value`
+   --> /Users/hert/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde_json-1.0.151/src/value/mod.rs:997:8
+    |
+995 | pub fn to_value<T>(value: T) -> Result<Value, Error>
+    |        -------- required by a bound in this function
+996 | where
+997 |     T: Serialize,
+    |        ^^^^^^^^^ required by this bound in `to_value`
+    = note: the full name for the type has been written to '/Users/hert/Projects/openmath/target/debug/deps/run_plan-fb2edaae6dba0d18.long-type-17096454609574763027.txt'
+    = note: consider using `--verbose` to print the full type name to the console
+    = note: this error originates in the macro `$crate::json_internal` which comes from the expansion of the macro `serde_json::json` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+For more information about this error, try `rustc --explain E0277`.
+error: could not compile `om-kernel` (test "run_plan") due to 1 previous error
+warning: build failed, waiting for other jobs to finish...

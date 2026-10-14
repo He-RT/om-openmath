@@ -1,0 +1,1 @@
+{"actual_reason":"totalTimeout","case":"total","competing_timer_actually_woke":false,"competing_timer_callbacks_held":true,"expected_reason":"totalTimeout","outcome":"responseObserved","requests":1}

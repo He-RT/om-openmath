@@ -3,6 +3,7 @@ pub mod catalog;
 pub mod dispatch;
 pub mod patch;
 pub mod read;
+pub mod run;
 
 fn schema() -> &'static serde_json::Value {
     static SCHEMA: std::sync::OnceLock<serde_json::Value> = std::sync::OnceLock::new();

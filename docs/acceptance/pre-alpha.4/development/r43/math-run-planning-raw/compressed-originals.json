@@ -1,0 +1,638 @@
+[
+  {
+    "source": "target/acceptance/pre-alpha.4/development/r43/math-plan-test-artifacts-host-final.jsonl",
+    "archive": "logs/math-plan-test-artifacts-host-final.jsonl.gz",
+    "original_bytes": 85549,
+    "original_sha256": "5de96057570452b07c215191bff34a6c8b1f66142cfdb11f5c7a9f88951ee340"
+  },
+  {
+    "source": "target/acceptance/pre-alpha.4/development/r43/math-plan-test-artifacts-host.jsonl",
+    "archive": "logs/math-plan-test-artifacts-host.jsonl.gz",
+    "original_bytes": 85549,
+    "original_sha256": "73df2703e2f667d1911313cc5fcada601afe1a041bb4a25d29aea8552937bda6"
+  },
+  {
+    "source": "target/acceptance/pre-alpha.4/development/r43/math-plan-test-artifacts-kernel-final.jsonl",
+    "archive": "logs/math-plan-test-artifacts-kernel-final.jsonl.gz",
+    "original_bytes": 157604,
+    "original_sha256": "686509dcf6db6c7eb682ac08842966c2597f28b6d9ed44698d5cf4b871717067"
+  },
+  {
+    "source": "target/acceptance/pre-alpha.4/development/r43/math-plan-test-artifacts-kernel.jsonl",
+    "archive": "logs/math-plan-test-artifacts-kernel.jsonl.gz",
+    "original_bytes": 157604,
+    "original_sha256": "a73e672521caf00837019874a538cdb96a61b2138563ae7a39285ec9187b8bd7"
+  },
+  {
+    "source": "target/macos-agent-package-tests/math-plan-standalone-CvvEbA/Documents/00000000-0000-0000-0000-000000000432/Generations/000001/authority.sqlite",
+    "archive": "standalone/Documents/00000000-0000-0000-0000-000000000432/Generations/000001/authority.sqlite.gz",
+    "original_bytes": 311296,
+    "original_sha256": "ac75dd03d5a1bc61dc315ccd1a7f2a5187c61ffb5594eb3ec1b70e6f10706649"
+  },
+  {
+    "source": "target/macos-agent-package-tests/math-plan-standalone-CvvEbA/Documents/00000000-0000-0000-0000-000000000432/Generations/000001/authority.sqlite-shm",
+    "archive": "standalone/Documents/00000000-0000-0000-0000-000000000432/Generations/000001/authority.sqlite-shm.gz",
+    "original_bytes": 32768,
+    "original_sha256": "fd4c9fda9cd3f9ae7c962b0ddf37232294d55580e1aa165aa06129b8549389eb"
+  },
+  {
+    "source": "target/macos-agent-package-tests/math-plan-standalone-CvvEbA/Documents/00000000-0000-0000-0000-000000000432/Generations/000001/authority.sqlite-wal",
+    "archive": "standalone/Documents/00000000-0000-0000-0000-000000000432/Generations/000001/authority.sqlite-wal.gz",
+    "original_bytes": 0,
+    "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "source": "target/macos-agent-package-tests/math-plan-standalone-CvvEbA/Library/Generations/000001/library.sqlite",
+    "archive": "standalone/Library/Generations/000001/library.sqlite.gz",
+    "original_bytes": 172032,
+    "original_sha256": "6b3c8a8bd66dd726b05b778b011a0b3b178802753a94494f5ea74a6ffbf08a01"
+  },
+  {
+    "source": "target/macos-agent-package-tests/math-plan-standalone-CvvEbA/Library/Generations/000001/library.sqlite-shm",
+    "archive": "standalone/Library/Generations/000001/library.sqlite-shm.gz",
+    "original_bytes": 32768,
+    "original_sha256": "e7bc99ea8fb8ffaeb927d34308304b55540be8cf430159c27257a20f7a79fb15"
+  },
+  {
+    "source": "target/macos-agent-package-tests/math-plan-standalone-CvvEbA/Library/Generations/000001/library.sqlite-wal",
+    "archive": "standalone/Library/Generations/000001/library.sqlite-wal.gz",
+    "original_bytes": 0,
+    "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "source": "target/macos-agent-package-tests/math-plan-standalone-CvvEbA/apply-boundaries/cancel_before_commit/Documents/00000000-0000-0000-0000-000000000438/Generations/000001/authority.sqlite",
+    "archive": "standalone/apply-boundaries/cancel_before_commit/Documents/00000000-0000-0000-0000-000000000438/Generations/000001/authority.sqlite.gz",
+    "original_bytes": 270336,
+    "original_sha256": "155c1dc237a332c704b2b9f63b435307b2e08c762dbe2c53c16d8eb80c083f01"
+  },
+  {
+    "source": "target/macos-agent-package-tests/math-plan-standalone-CvvEbA/apply-boundaries/cancel_before_commit/Documents/00000000-0000-0000-0000-000000000438/Generations/000001/authority.sqlite-shm",
+    "archive": "standalone/apply-boundaries/cancel_before_commit/Documents/00000000-0000-0000-0000-000000000438/Generations/000001/authority.sqlite-shm.gz",
+    "original_bytes": 32768,
+    "original_sha256": "70f05ba9943493ba799abed314de015dd228509378d05d2d1e4a131ae719f77b"
+  },
+  {
+    "source": "target/macos-agent-package-tests/math-plan-standalone-CvvEbA/apply-boundaries/cancel_before_commit/Documents/00000000-0000-0000-0000-000000000438/Generations/000001/authority.sqlite-wal",
+    "archive": "standalone/apply-boundaries/cancel_before_commit/Documents/00000000-0000-0000-0000-000000000438/Generations/000001/authority.sqlite-wal.gz",
+    "original_bytes": 0,
+    "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "source": "target/macos-agent-package-tests/math-plan-standalone-CvvEbA/apply-boundaries/cancel_before_commit/Library/Generations/000001/library.sqlite",
+    "archive": "standalone/apply-boundaries/cancel_before_commit/Library/Generations/000001/library.sqlite.gz",
+    "original_bytes": 143360,
+    "original_sha256": "628ceed9e5167cd4fcf7cb55359993ea350a3574bbd2954dfaee4ea48a45d8de"
+  },
+  {
+    "source": "target/macos-agent-package-tests/math-plan-standalone-CvvEbA/apply-boundaries/cancel_before_commit/Library/Generations/000001/library.sqlite-shm",
+    "archive": "standalone/apply-boundaries/cancel_before_commit/Library/Generations/000001/library.sqlite-shm.gz",
+    "original_bytes": 32768,
+    "original_sha256": "69ea3ae8bd5fe091dbdb33e6598fbf88209dd020b7a44bd63027eb538c351285"
+  },
+  {
+    "source": "target/macos-agent-package-tests/math-plan-standalone-CvvEbA/apply-boundaries/cancel_before_commit/Library/Generations/000001/library.sqlite-wal",
+    "archive": "standalone/apply-boundaries/cancel_before_commit/Library/Generations/000001/library.sqlite-wal.gz",
+    "original_bytes": 0,
+    "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "source": "target/macos-agent-package-tests/math-plan-standalone-CvvEbA/apply-boundaries/duplicate/Documents/00000000-0000-0000-0000-000000000438/Generations/000001/authority.sqlite",
+    "archive": "standalone/apply-boundaries/duplicate/Documents/00000000-0000-0000-0000-000000000438/Generations/000001/authority.sqlite.gz",
+    "original_bytes": 270336,
+    "original_sha256": "04508dd7a836e82b82ada86769a7f38d297c46e8668c1c194c9a750725e85cb9"
+  },
+  {
+    "source": "target/macos-agent-package-tests/math-plan-standalone-CvvEbA/apply-boundaries/duplicate/Documents/00000000-0000-0000-0000-000000000438/Generations/000001/authority.sqlite-shm",
+    "archive": "standalone/apply-boundaries/duplicate/Documents/00000000-0000-0000-0000-000000000438/Generations/000001/authority.sqlite-shm.gz",
+    "original_bytes": 32768,
+    "original_sha256": "8d3c88c4f9e97209eaf958316ecaf5fe8d127bc8de924db126319af6079b11c5"
+  },
+  {
+    "source": "target/macos-agent-package-tests/math-plan-standalone-CvvEbA/apply-boundaries/duplicate/Documents/00000000-0000-0000-0000-000000000438/Generations/000001/authority.sqlite-wal",
+    "archive": "standalone/apply-boundaries/duplicate/Documents/00000000-0000-0000-0000-000000000438/Generations/000001/authority.sqlite-wal.gz",
+    "original_bytes": 0,
+    "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "source": "target/macos-agent-package-tests/math-plan-standalone-CvvEbA/apply-boundaries/duplicate/Library/Generations/000001/library.sqlite",
+    "archive": "standalone/apply-boundaries/duplicate/Library/Generations/000001/library.sqlite.gz",
+    "original_bytes": 147456,
+    "original_sha256": "3738d80999e406148b749b5e3f681cf25f9aa17b5b326387ca3dbcf8ca83ee48"
+  },
+  {
+    "source": "target/macos-agent-package-tests/math-plan-standalone-CvvEbA/apply-boundaries/duplicate/Library/Generations/000001/library.sqlite-shm",
+    "archive": "standalone/apply-boundaries/duplicate/Library/Generations/000001/library.sqlite-shm.gz",
+    "original_bytes": 32768,
+    "original_sha256": "b842962f9582c1395c4d13777e7d74e6bca150a4c49dc6a20f3a670e9483715c"
+  },
+  {
+    "source": "target/macos-agent-package-tests/math-plan-standalone-CvvEbA/apply-boundaries/duplicate/Library/Generations/000001/library.sqlite-wal",
+    "archive": "standalone/apply-boundaries/duplicate/Library/Generations/000001/library.sqlite-wal.gz",
+    "original_bytes": 0,
+    "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "source": "target/macos-agent-package-tests/math-plan-standalone-CvvEbA/apply-boundaries/lost_source_ack/Documents/00000000-0000-0000-0000-000000000438/Generations/000001/authority.sqlite",
+    "archive": "standalone/apply-boundaries/lost_source_ack/Documents/00000000-0000-0000-0000-000000000438/Generations/000001/authority.sqlite.gz",
+    "original_bytes": 270336,
+    "original_sha256": "8a36376ee63b4988ad391c47ff11a42c66a581107cbb0e61daad048360ad8411"
+  },
+  {
+    "source": "target/macos-agent-package-tests/math-plan-standalone-CvvEbA/apply-boundaries/lost_source_ack/Documents/00000000-0000-0000-0000-000000000438/Generations/000001/authority.sqlite-shm",
+    "archive": "standalone/apply-boundaries/lost_source_ack/Documents/00000000-0000-0000-0000-000000000438/Generations/000001/authority.sqlite-shm.gz",
+    "original_bytes": 32768,
+    "original_sha256": "d666bb64cfa46fa3dc355cae139771919649bf4afb28dc40f77fdca084b2bb85"
+  },
+  {
+    "source": "target/macos-agent-package-tests/math-plan-standalone-CvvEbA/apply-boundaries/lost_source_ack/Documents/00000000-0000-0000-0000-000000000438/Generations/000001/authority.sqlite-wal",
+    "archive": "standalone/apply-boundaries/lost_source_ack/Documents/00000000-0000-0000-0000-000000000438/Generations/000001/authority.sqlite-wal.gz",
+    "original_bytes": 0,
+    "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "source": "target/macos-agent-package-tests/math-plan-standalone-CvvEbA/apply-boundaries/lost_source_ack/Library/Generations/000001/library.sqlite",
+    "archive": "standalone/apply-boundaries/lost_source_ack/Library/Generations/000001/library.sqlite.gz",
+    "original_bytes": 147456,
+    "original_sha256": "844cb6ff29ee5ede573b35e3611b3431fabac1d6c67a9c2564517933d6272b5c"
+  },
+  {
+    "source": "target/macos-agent-package-tests/math-plan-standalone-CvvEbA/apply-boundaries/lost_source_ack/Library/Generations/000001/library.sqlite-shm",
+    "archive": "standalone/apply-boundaries/lost_source_ack/Library/Generations/000001/library.sqlite-shm.gz",
+    "original_bytes": 32768,
+    "original_sha256": "44644ec1322e0af42dfccbb3f4ad5e6ee54af349f2c9593e347a15a8579e874f"
+  },
+  {
+    "source": "target/macos-agent-package-tests/math-plan-standalone-CvvEbA/apply-boundaries/lost_source_ack/Library/Generations/000001/library.sqlite-wal",
+    "archive": "standalone/apply-boundaries/lost_source_ack/Library/Generations/000001/library.sqlite-wal.gz",
+    "original_bytes": 0,
+    "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "source": "target/macos-agent-package-tests/math-plan-standalone-CvvEbA/apply-boundaries/marked/Documents/00000000-0000-0000-0000-000000000438/Generations/000001/authority.sqlite",
+    "archive": "standalone/apply-boundaries/marked/Documents/00000000-0000-0000-0000-000000000438/Generations/000001/authority.sqlite.gz",
+    "original_bytes": 270336,
+    "original_sha256": "2febbc469a9a828ca986abb95c23f4a959fdc8890691293703ffa182b7d67add"
+  },
+  {
+    "source": "target/macos-agent-package-tests/math-plan-standalone-CvvEbA/apply-boundaries/marked/Documents/00000000-0000-0000-0000-000000000438/Generations/000001/authority.sqlite-shm",
+    "archive": "standalone/apply-boundaries/marked/Documents/00000000-0000-0000-0000-000000000438/Generations/000001/authority.sqlite-shm.gz",
+    "original_bytes": 32768,
+    "original_sha256": "9d4ed8b5ea015da6ed47acf6294195cf18aa173a87513bdf2b359a765a307504"
+  },
+  {
+    "source": "target/macos-agent-package-tests/math-plan-standalone-CvvEbA/apply-boundaries/marked/Documents/00000000-0000-0000-0000-000000000438/Generations/000001/authority.sqlite-wal",
+    "archive": "standalone/apply-boundaries/marked/Documents/00000000-0000-0000-0000-000000000438/Generations/000001/authority.sqlite-wal.gz",
+    "original_bytes": 0,
+    "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "source": "target/macos-agent-package-tests/math-plan-standalone-CvvEbA/apply-boundaries/marked/Library/Generations/000001/library.sqlite",
+    "archive": "standalone/apply-boundaries/marked/Library/Generations/000001/library.sqlite.gz",
+    "original_bytes": 143360,
+    "original_sha256": "57d54a59c701671e757f73b401e8bfc72dcf6a4b5ea964d2206a908cacb349aa"
+  },
+  {
+    "source": "target/macos-agent-package-tests/math-plan-standalone-CvvEbA/apply-boundaries/marked/Library/Generations/000001/library.sqlite-shm",
+    "archive": "standalone/apply-boundaries/marked/Library/Generations/000001/library.sqlite-shm.gz",
+    "original_bytes": 32768,
+    "original_sha256": "ebfd7582169d5ac55ccfa661746db3158a779de72dc6d259cae6078bdbb77524"
+  },
+  {
+    "source": "target/macos-agent-package-tests/math-plan-standalone-CvvEbA/apply-boundaries/marked/Library/Generations/000001/library.sqlite-wal",
+    "archive": "standalone/apply-boundaries/marked/Library/Generations/000001/library.sqlite-wal.gz",
+    "original_bytes": 0,
+    "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "source": "target/macos-agent-package-tests/math-plan-standalone-CvvEbA/apply-boundaries/source_changed/Documents/00000000-0000-0000-0000-000000000438/Generations/000001/authority.sqlite",
+    "archive": "standalone/apply-boundaries/source_changed/Documents/00000000-0000-0000-0000-000000000438/Generations/000001/authority.sqlite.gz",
+    "original_bytes": 270336,
+    "original_sha256": "866ad316a13c48b8448c09a936e1985ab4b5cddd84fb547d0ea14048719d5b8c"
+  },
+  {
+    "source": "target/macos-agent-package-tests/math-plan-standalone-CvvEbA/apply-boundaries/source_changed/Documents/00000000-0000-0000-0000-000000000438/Generations/000001/authority.sqlite-shm",
+    "archive": "standalone/apply-boundaries/source_changed/Documents/00000000-0000-0000-0000-000000000438/Generations/000001/authority.sqlite-shm.gz",
+    "original_bytes": 32768,
+    "original_sha256": "0b6980338cc30d25c57ba4f21169475a4d27ca37fde4c44d411bddf975fa1148"
+  },
+  {
+    "source": "target/macos-agent-package-tests/math-plan-standalone-CvvEbA/apply-boundaries/source_changed/Documents/00000000-0000-0000-0000-000000000438/Generations/000001/authority.sqlite-wal",
+    "archive": "standalone/apply-boundaries/source_changed/Documents/00000000-0000-0000-0000-000000000438/Generations/000001/authority.sqlite-wal.gz",
+    "original_bytes": 0,
+    "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "source": "target/macos-agent-package-tests/math-plan-standalone-CvvEbA/apply-boundaries/source_changed/Library/Generations/000001/library.sqlite",
+    "archive": "standalone/apply-boundaries/source_changed/Library/Generations/000001/library.sqlite.gz",
+    "original_bytes": 139264,
+    "original_sha256": "f47c2193904180316cf4a9f88b818107ea2f2575bc8ad85557e225010c223a34"
+  },
+  {
+    "source": "target/macos-agent-package-tests/math-plan-standalone-CvvEbA/apply-boundaries/source_changed/Library/Generations/000001/library.sqlite-shm",
+    "archive": "standalone/apply-boundaries/source_changed/Library/Generations/000001/library.sqlite-shm.gz",
+    "original_bytes": 32768,
+    "original_sha256": "469d2438168d84325f066b2b65a3f5aec33cab94056cbc2ae53e1b55a071c1c5"
+  },
+  {
+    "source": "target/macos-agent-package-tests/math-plan-standalone-CvvEbA/apply-boundaries/source_changed/Library/Generations/000001/library.sqlite-wal",
+    "archive": "standalone/apply-boundaries/source_changed/Library/Generations/000001/library.sqlite-wal.gz",
+    "original_bytes": 0,
+    "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "source": "target/macos-agent-package-tests/math-plan-standalone-CvvEbA/apply-task/Documents/00000000-0000-0000-0000-000000000437/Generations/000001/authority.sqlite",
+    "archive": "standalone/apply-task/Documents/00000000-0000-0000-0000-000000000437/Generations/000001/authority.sqlite.gz",
+    "original_bytes": 270336,
+    "original_sha256": "42a4809ebabd4eeacb1005667d508aecf701efdbc440ba3ade76e3da76338f4f"
+  },
+  {
+    "source": "target/macos-agent-package-tests/math-plan-standalone-CvvEbA/apply-task/Documents/00000000-0000-0000-0000-000000000437/Generations/000001/authority.sqlite-shm",
+    "archive": "standalone/apply-task/Documents/00000000-0000-0000-0000-000000000437/Generations/000001/authority.sqlite-shm.gz",
+    "original_bytes": 32768,
+    "original_sha256": "239225849d5131b598bc581b4fed62d7d84bb7b288489c29c1e8693026f6bf10"
+  },
+  {
+    "source": "target/macos-agent-package-tests/math-plan-standalone-CvvEbA/apply-task/Documents/00000000-0000-0000-0000-000000000437/Generations/000001/authority.sqlite-wal",
+    "archive": "standalone/apply-task/Documents/00000000-0000-0000-0000-000000000437/Generations/000001/authority.sqlite-wal.gz",
+    "original_bytes": 0,
+    "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "source": "target/macos-agent-package-tests/math-plan-standalone-CvvEbA/apply-task/Library/Generations/000001/library.sqlite",
+    "archive": "standalone/apply-task/Library/Generations/000001/library.sqlite.gz",
+    "original_bytes": 212992,
+    "original_sha256": "b3b3126bb8dbabdaa9bffb16f21275ec77cda0eeebf9113019a0769f8dd323cb"
+  },
+  {
+    "source": "target/macos-agent-package-tests/math-plan-standalone-CvvEbA/apply-task/Library/Generations/000001/library.sqlite-shm",
+    "archive": "standalone/apply-task/Library/Generations/000001/library.sqlite-shm.gz",
+    "original_bytes": 32768,
+    "original_sha256": "ae15377c2f59b63d046e48c5698b5780a2e9c5dc51d2087d3a06b8b905d54d1e"
+  },
+  {
+    "source": "target/macos-agent-package-tests/math-plan-standalone-CvvEbA/apply-task/Library/Generations/000001/library.sqlite-wal",
+    "archive": "standalone/apply-task/Library/Generations/000001/library.sqlite-wal.gz",
+    "original_bytes": 0,
+    "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "source": "target/macos-agent-package-tests/math-plan-standalone-CvvEbA/preview-task/Documents/00000000-0000-0000-0000-000000000436/Generations/000001/authority.sqlite",
+    "archive": "standalone/preview-task/Documents/00000000-0000-0000-0000-000000000436/Generations/000001/authority.sqlite.gz",
+    "original_bytes": 270336,
+    "original_sha256": "073f61df20c4d5e06195f0900504e9fb83ca66ddaec14b2e965f3d900745fd68"
+  },
+  {
+    "source": "target/macos-agent-package-tests/math-plan-standalone-CvvEbA/preview-task/Documents/00000000-0000-0000-0000-000000000436/Generations/000001/authority.sqlite-shm",
+    "archive": "standalone/preview-task/Documents/00000000-0000-0000-0000-000000000436/Generations/000001/authority.sqlite-shm.gz",
+    "original_bytes": 32768,
+    "original_sha256": "702ee17f077949aeced4800f7a590fcd64d74ef263e957d8008ec24bd02978be"
+  },
+  {
+    "source": "target/macos-agent-package-tests/math-plan-standalone-CvvEbA/preview-task/Documents/00000000-0000-0000-0000-000000000436/Generations/000001/authority.sqlite-wal",
+    "archive": "standalone/preview-task/Documents/00000000-0000-0000-0000-000000000436/Generations/000001/authority.sqlite-wal.gz",
+    "original_bytes": 0,
+    "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "source": "target/macos-agent-package-tests/math-plan-standalone-CvvEbA/preview-task/Library/Generations/000001/library.sqlite",
+    "archive": "standalone/preview-task/Library/Generations/000001/library.sqlite.gz",
+    "original_bytes": 176128,
+    "original_sha256": "ed28705a3229b42d0c376c64427401ce6cd49fa31ba42d3a9fd881d8a0f89d9d"
+  },
+  {
+    "source": "target/macos-agent-package-tests/math-plan-standalone-CvvEbA/preview-task/Library/Generations/000001/library.sqlite-shm",
+    "archive": "standalone/preview-task/Library/Generations/000001/library.sqlite-shm.gz",
+    "original_bytes": 32768,
+    "original_sha256": "1d9d09d38b172e8dc631e1abd5b962a98e5512fbf822014b3470735826c0ac15"
+  },
+  {
+    "source": "target/macos-agent-package-tests/math-plan-standalone-CvvEbA/preview-task/Library/Generations/000001/library.sqlite-wal",
+    "archive": "standalone/preview-task/Library/Generations/000001/library.sqlite-wal.gz",
+    "original_bytes": 0,
+    "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "source": "target/macos-agent-package-tests/math-plan-signed-S79wNA/Documents/00000000-0000-0000-0000-000000000432/Generations/000001/authority.sqlite",
+    "archive": "signed-app/Documents/00000000-0000-0000-0000-000000000432/Generations/000001/authority.sqlite.gz",
+    "original_bytes": 311296,
+    "original_sha256": "0a8023a26619e48245d1fdf5f0b4affff0a4fff82c1e417cdafcee22e35cb4c2"
+  },
+  {
+    "source": "target/macos-agent-package-tests/math-plan-signed-S79wNA/Documents/00000000-0000-0000-0000-000000000432/Generations/000001/authority.sqlite-shm",
+    "archive": "signed-app/Documents/00000000-0000-0000-0000-000000000432/Generations/000001/authority.sqlite-shm.gz",
+    "original_bytes": 32768,
+    "original_sha256": "fd4c9fda9cd3f9ae7c962b0ddf37232294d55580e1aa165aa06129b8549389eb"
+  },
+  {
+    "source": "target/macos-agent-package-tests/math-plan-signed-S79wNA/Documents/00000000-0000-0000-0000-000000000432/Generations/000001/authority.sqlite-wal",
+    "archive": "signed-app/Documents/00000000-0000-0000-0000-000000000432/Generations/000001/authority.sqlite-wal.gz",
+    "original_bytes": 0,
+    "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "source": "target/macos-agent-package-tests/math-plan-signed-S79wNA/Library/Generations/000001/library.sqlite",
+    "archive": "signed-app/Library/Generations/000001/library.sqlite.gz",
+    "original_bytes": 172032,
+    "original_sha256": "f5f79978ab1d1237f1ce149d95b87486fbb99815772b8d061016973be7c39eee"
+  },
+  {
+    "source": "target/macos-agent-package-tests/math-plan-signed-S79wNA/Library/Generations/000001/library.sqlite-shm",
+    "archive": "signed-app/Library/Generations/000001/library.sqlite-shm.gz",
+    "original_bytes": 32768,
+    "original_sha256": "ce661b41d4e8512f73bd99e51e49dbdb82196cc7a31c05e6d3cbe6d2945d3f7b"
+  },
+  {
+    "source": "target/macos-agent-package-tests/math-plan-signed-S79wNA/Library/Generations/000001/library.sqlite-wal",
+    "archive": "signed-app/Library/Generations/000001/library.sqlite-wal.gz",
+    "original_bytes": 0,
+    "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "source": "target/macos-agent-package-tests/math-plan-signed-S79wNA/apply-boundaries/cancel_before_commit/Documents/00000000-0000-0000-0000-000000000438/Generations/000001/authority.sqlite",
+    "archive": "signed-app/apply-boundaries/cancel_before_commit/Documents/00000000-0000-0000-0000-000000000438/Generations/000001/authority.sqlite.gz",
+    "original_bytes": 270336,
+    "original_sha256": "07d03ba36a0d1b081e5da5c8203f350a15410a67d2b6db6983d52cdfc7d46075"
+  },
+  {
+    "source": "target/macos-agent-package-tests/math-plan-signed-S79wNA/apply-boundaries/cancel_before_commit/Documents/00000000-0000-0000-0000-000000000438/Generations/000001/authority.sqlite-shm",
+    "archive": "signed-app/apply-boundaries/cancel_before_commit/Documents/00000000-0000-0000-0000-000000000438/Generations/000001/authority.sqlite-shm.gz",
+    "original_bytes": 32768,
+    "original_sha256": "92ebcfb567d806090a1af09ed4ff5badae4d0fa48fc0b288b8046ef12141d54e"
+  },
+  {
+    "source": "target/macos-agent-package-tests/math-plan-signed-S79wNA/apply-boundaries/cancel_before_commit/Documents/00000000-0000-0000-0000-000000000438/Generations/000001/authority.sqlite-wal",
+    "archive": "signed-app/apply-boundaries/cancel_before_commit/Documents/00000000-0000-0000-0000-000000000438/Generations/000001/authority.sqlite-wal.gz",
+    "original_bytes": 0,
+    "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "source": "target/macos-agent-package-tests/math-plan-signed-S79wNA/apply-boundaries/cancel_before_commit/Library/Generations/000001/library.sqlite",
+    "archive": "signed-app/apply-boundaries/cancel_before_commit/Library/Generations/000001/library.sqlite.gz",
+    "original_bytes": 143360,
+    "original_sha256": "8ebef6dfffbb2ff4fb72d95f644814345cdd325ac0a9bd4fe601bee7dbc8f95a"
+  },
+  {
+    "source": "target/macos-agent-package-tests/math-plan-signed-S79wNA/apply-boundaries/cancel_before_commit/Library/Generations/000001/library.sqlite-shm",
+    "archive": "signed-app/apply-boundaries/cancel_before_commit/Library/Generations/000001/library.sqlite-shm.gz",
+    "original_bytes": 32768,
+    "original_sha256": "b4d608a5f9a5412f126c097691116d52588bddae8ce66417516de20f00c73937"
+  },
+  {
+    "source": "target/macos-agent-package-tests/math-plan-signed-S79wNA/apply-boundaries/cancel_before_commit/Library/Generations/000001/library.sqlite-wal",
+    "archive": "signed-app/apply-boundaries/cancel_before_commit/Library/Generations/000001/library.sqlite-wal.gz",
+    "original_bytes": 0,
+    "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "source": "target/macos-agent-package-tests/math-plan-signed-S79wNA/apply-boundaries/duplicate/Documents/00000000-0000-0000-0000-000000000438/Generations/000001/authority.sqlite",
+    "archive": "signed-app/apply-boundaries/duplicate/Documents/00000000-0000-0000-0000-000000000438/Generations/000001/authority.sqlite.gz",
+    "original_bytes": 270336,
+    "original_sha256": "6e3f030a957d4c96d24cd30a644b01309fd5fd310275e26a8fc5ec2de2b0569b"
+  },
+  {
+    "source": "target/macos-agent-package-tests/math-plan-signed-S79wNA/apply-boundaries/duplicate/Documents/00000000-0000-0000-0000-000000000438/Generations/000001/authority.sqlite-shm",
+    "archive": "signed-app/apply-boundaries/duplicate/Documents/00000000-0000-0000-0000-000000000438/Generations/000001/authority.sqlite-shm.gz",
+    "original_bytes": 32768,
+    "original_sha256": "f5110a2a67a01bfb0a2274673c33e59de441c17e04ff6dc26f76ec24c2cccaa4"
+  },
+  {
+    "source": "target/macos-agent-package-tests/math-plan-signed-S79wNA/apply-boundaries/duplicate/Documents/00000000-0000-0000-0000-000000000438/Generations/000001/authority.sqlite-wal",
+    "archive": "signed-app/apply-boundaries/duplicate/Documents/00000000-0000-0000-0000-000000000438/Generations/000001/authority.sqlite-wal.gz",
+    "original_bytes": 0,
+    "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "source": "target/macos-agent-package-tests/math-plan-signed-S79wNA/apply-boundaries/duplicate/Library/Generations/000001/library.sqlite",
+    "archive": "signed-app/apply-boundaries/duplicate/Library/Generations/000001/library.sqlite.gz",
+    "original_bytes": 147456,
+    "original_sha256": "0476666e57677a2b196e9c84b767ebd9661dd4d68ec690f18f000b384826fdab"
+  },
+  {
+    "source": "target/macos-agent-package-tests/math-plan-signed-S79wNA/apply-boundaries/duplicate/Library/Generations/000001/library.sqlite-shm",
+    "archive": "signed-app/apply-boundaries/duplicate/Library/Generations/000001/library.sqlite-shm.gz",
+    "original_bytes": 32768,
+    "original_sha256": "883228f16ff99a448e110fdca08823edae3d039493243d4f0f27ce09067ab178"
+  },
+  {
+    "source": "target/macos-agent-package-tests/math-plan-signed-S79wNA/apply-boundaries/duplicate/Library/Generations/000001/library.sqlite-wal",
+    "archive": "signed-app/apply-boundaries/duplicate/Library/Generations/000001/library.sqlite-wal.gz",
+    "original_bytes": 0,
+    "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "source": "target/macos-agent-package-tests/math-plan-signed-S79wNA/apply-boundaries/lost_source_ack/Documents/00000000-0000-0000-0000-000000000438/Generations/000001/authority.sqlite",
+    "archive": "signed-app/apply-boundaries/lost_source_ack/Documents/00000000-0000-0000-0000-000000000438/Generations/000001/authority.sqlite.gz",
+    "original_bytes": 270336,
+    "original_sha256": "d789692a7f678e127f798453c5fd0f40fe81b5a0a57384f744884f18d7d63fc7"
+  },
+  {
+    "source": "target/macos-agent-package-tests/math-plan-signed-S79wNA/apply-boundaries/lost_source_ack/Documents/00000000-0000-0000-0000-000000000438/Generations/000001/authority.sqlite-shm",
+    "archive": "signed-app/apply-boundaries/lost_source_ack/Documents/00000000-0000-0000-0000-000000000438/Generations/000001/authority.sqlite-shm.gz",
+    "original_bytes": 32768,
+    "original_sha256": "892085cc4cc241ed75915ec63316104db3d967e71d70315ce4ebcb480d1e613f"
+  },
+  {
+    "source": "target/macos-agent-package-tests/math-plan-signed-S79wNA/apply-boundaries/lost_source_ack/Documents/00000000-0000-0000-0000-000000000438/Generations/000001/authority.sqlite-wal",
+    "archive": "signed-app/apply-boundaries/lost_source_ack/Documents/00000000-0000-0000-0000-000000000438/Generations/000001/authority.sqlite-wal.gz",
+    "original_bytes": 0,
+    "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "source": "target/macos-agent-package-tests/math-plan-signed-S79wNA/apply-boundaries/lost_source_ack/Library/Generations/000001/library.sqlite",
+    "archive": "signed-app/apply-boundaries/lost_source_ack/Library/Generations/000001/library.sqlite.gz",
+    "original_bytes": 147456,
+    "original_sha256": "9fce9d44fa555e1b9be9ad5b75801e909f3f82721d72e506986c5559837abbab"
+  },
+  {
+    "source": "target/macos-agent-package-tests/math-plan-signed-S79wNA/apply-boundaries/lost_source_ack/Library/Generations/000001/library.sqlite-shm",
+    "archive": "signed-app/apply-boundaries/lost_source_ack/Library/Generations/000001/library.sqlite-shm.gz",
+    "original_bytes": 32768,
+    "original_sha256": "ead0cc15fc7ebab251a85560f0aca4ffc612b2d52a3aa8039fef11a4f56e90a7"
+  },
+  {
+    "source": "target/macos-agent-package-tests/math-plan-signed-S79wNA/apply-boundaries/lost_source_ack/Library/Generations/000001/library.sqlite-wal",
+    "archive": "signed-app/apply-boundaries/lost_source_ack/Library/Generations/000001/library.sqlite-wal.gz",
+    "original_bytes": 0,
+    "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "source": "target/macos-agent-package-tests/math-plan-signed-S79wNA/apply-boundaries/marked/Documents/00000000-0000-0000-0000-000000000438/Generations/000001/authority.sqlite",
+    "archive": "signed-app/apply-boundaries/marked/Documents/00000000-0000-0000-0000-000000000438/Generations/000001/authority.sqlite.gz",
+    "original_bytes": 270336,
+    "original_sha256": "6415b92dd9048ae9f6b4f621141b0fa4d2ff52494652a7d0d5e651c6fd36500d"
+  },
+  {
+    "source": "target/macos-agent-package-tests/math-plan-signed-S79wNA/apply-boundaries/marked/Documents/00000000-0000-0000-0000-000000000438/Generations/000001/authority.sqlite-shm",
+    "archive": "signed-app/apply-boundaries/marked/Documents/00000000-0000-0000-0000-000000000438/Generations/000001/authority.sqlite-shm.gz",
+    "original_bytes": 32768,
+    "original_sha256": "d691fc5fad89eff62dd3683642d329055520932797623ab85a4dac21aca5246e"
+  },
+  {
+    "source": "target/macos-agent-package-tests/math-plan-signed-S79wNA/apply-boundaries/marked/Documents/00000000-0000-0000-0000-000000000438/Generations/000001/authority.sqlite-wal",
+    "archive": "signed-app/apply-boundaries/marked/Documents/00000000-0000-0000-0000-000000000438/Generations/000001/authority.sqlite-wal.gz",
+    "original_bytes": 0,
+    "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "source": "target/macos-agent-package-tests/math-plan-signed-S79wNA/apply-boundaries/marked/Library/Generations/000001/library.sqlite",
+    "archive": "signed-app/apply-boundaries/marked/Library/Generations/000001/library.sqlite.gz",
+    "original_bytes": 143360,
+    "original_sha256": "ed5961e4232e07a9b577dc84521e15b4151c6c69f38809745716d63168488265"
+  },
+  {
+    "source": "target/macos-agent-package-tests/math-plan-signed-S79wNA/apply-boundaries/marked/Library/Generations/000001/library.sqlite-shm",
+    "archive": "signed-app/apply-boundaries/marked/Library/Generations/000001/library.sqlite-shm.gz",
+    "original_bytes": 32768,
+    "original_sha256": "11cc0c68feed25220b61a7f9898dd4b94c961df8de8f111f8779d49c50fc289e"
+  },
+  {
+    "source": "target/macos-agent-package-tests/math-plan-signed-S79wNA/apply-boundaries/marked/Library/Generations/000001/library.sqlite-wal",
+    "archive": "signed-app/apply-boundaries/marked/Library/Generations/000001/library.sqlite-wal.gz",
+    "original_bytes": 0,
+    "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "source": "target/macos-agent-package-tests/math-plan-signed-S79wNA/apply-boundaries/source_changed/Documents/00000000-0000-0000-0000-000000000438/Generations/000001/authority.sqlite",
+    "archive": "signed-app/apply-boundaries/source_changed/Documents/00000000-0000-0000-0000-000000000438/Generations/000001/authority.sqlite.gz",
+    "original_bytes": 270336,
+    "original_sha256": "a8b1604478672c4854bc312625230343da6c9055091a40cd15971047f1817685"
+  },
+  {
+    "source": "target/macos-agent-package-tests/math-plan-signed-S79wNA/apply-boundaries/source_changed/Documents/00000000-0000-0000-0000-000000000438/Generations/000001/authority.sqlite-shm",
+    "archive": "signed-app/apply-boundaries/source_changed/Documents/00000000-0000-0000-0000-000000000438/Generations/000001/authority.sqlite-shm.gz",
+    "original_bytes": 32768,
+    "original_sha256": "83288cdf8fa1399239748ed51e21406cd23d8b60d9d1b5ef05f52f560a0e2cf4"
+  },
+  {
+    "source": "target/macos-agent-package-tests/math-plan-signed-S79wNA/apply-boundaries/source_changed/Documents/00000000-0000-0000-0000-000000000438/Generations/000001/authority.sqlite-wal",
+    "archive": "signed-app/apply-boundaries/source_changed/Documents/00000000-0000-0000-0000-000000000438/Generations/000001/authority.sqlite-wal.gz",
+    "original_bytes": 0,
+    "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "source": "target/macos-agent-package-tests/math-plan-signed-S79wNA/apply-boundaries/source_changed/Library/Generations/000001/library.sqlite",
+    "archive": "signed-app/apply-boundaries/source_changed/Library/Generations/000001/library.sqlite.gz",
+    "original_bytes": 139264,
+    "original_sha256": "89e184ba51d8229401741ee7def6eb59bb2571d86d69e139fa90e3ebdda94c15"
+  },
+  {
+    "source": "target/macos-agent-package-tests/math-plan-signed-S79wNA/apply-boundaries/source_changed/Library/Generations/000001/library.sqlite-shm",
+    "archive": "signed-app/apply-boundaries/source_changed/Library/Generations/000001/library.sqlite-shm.gz",
+    "original_bytes": 32768,
+    "original_sha256": "5b763e83edc63d97edbe1ec350dc7cdb3c4e3496dc6c054a62a0505ddbafaf10"
+  },
+  {
+    "source": "target/macos-agent-package-tests/math-plan-signed-S79wNA/apply-boundaries/source_changed/Library/Generations/000001/library.sqlite-wal",
+    "archive": "signed-app/apply-boundaries/source_changed/Library/Generations/000001/library.sqlite-wal.gz",
+    "original_bytes": 0,
+    "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "source": "target/macos-agent-package-tests/math-plan-signed-S79wNA/apply-task/Documents/00000000-0000-0000-0000-000000000437/Generations/000001/authority.sqlite",
+    "archive": "signed-app/apply-task/Documents/00000000-0000-0000-0000-000000000437/Generations/000001/authority.sqlite.gz",
+    "original_bytes": 270336,
+    "original_sha256": "f318fbc57122eb244f7aa36e93a160a7e36103f3a04f7364f09883632c771230"
+  },
+  {
+    "source": "target/macos-agent-package-tests/math-plan-signed-S79wNA/apply-task/Documents/00000000-0000-0000-0000-000000000437/Generations/000001/authority.sqlite-shm",
+    "archive": "signed-app/apply-task/Documents/00000000-0000-0000-0000-000000000437/Generations/000001/authority.sqlite-shm.gz",
+    "original_bytes": 32768,
+    "original_sha256": "733428a184afb25819be1d35014ec2eb66ab2cc4e09bf4687d7ca56dcd9068a0"
+  },
+  {
+    "source": "target/macos-agent-package-tests/math-plan-signed-S79wNA/apply-task/Documents/00000000-0000-0000-0000-000000000437/Generations/000001/authority.sqlite-wal",
+    "archive": "signed-app/apply-task/Documents/00000000-0000-0000-0000-000000000437/Generations/000001/authority.sqlite-wal.gz",
+    "original_bytes": 0,
+    "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "source": "target/macos-agent-package-tests/math-plan-signed-S79wNA/apply-task/Library/Generations/000001/library.sqlite",
+    "archive": "signed-app/apply-task/Library/Generations/000001/library.sqlite.gz",
+    "original_bytes": 212992,
+    "original_sha256": "019146c5ad0f5c9a2e6adfbeead8eac502178e94ac76ad46f56513c9a8ddf809"
+  },
+  {
+    "source": "target/macos-agent-package-tests/math-plan-signed-S79wNA/apply-task/Library/Generations/000001/library.sqlite-shm",
+    "archive": "signed-app/apply-task/Library/Generations/000001/library.sqlite-shm.gz",
+    "original_bytes": 32768,
+    "original_sha256": "7aceeac3cd3f8b87e12343377710cd3e03471a17b2347d194dd795cf847466e0"
+  },
+  {
+    "source": "target/macos-agent-package-tests/math-plan-signed-S79wNA/apply-task/Library/Generations/000001/library.sqlite-wal",
+    "archive": "signed-app/apply-task/Library/Generations/000001/library.sqlite-wal.gz",
+    "original_bytes": 0,
+    "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "source": "target/macos-agent-package-tests/math-plan-signed-S79wNA/preview-task/Documents/00000000-0000-0000-0000-000000000436/Generations/000001/authority.sqlite",
+    "archive": "signed-app/preview-task/Documents/00000000-0000-0000-0000-000000000436/Generations/000001/authority.sqlite.gz",
+    "original_bytes": 270336,
+    "original_sha256": "142af56f5ce5926b944119d70b389588a5e0b662974c0629324cbffa77adbbcc"
+  },
+  {
+    "source": "target/macos-agent-package-tests/math-plan-signed-S79wNA/preview-task/Documents/00000000-0000-0000-0000-000000000436/Generations/000001/authority.sqlite-shm",
+    "archive": "signed-app/preview-task/Documents/00000000-0000-0000-0000-000000000436/Generations/000001/authority.sqlite-shm.gz",
+    "original_bytes": 32768,
+    "original_sha256": "1a92a7bc48d931a925185d4105e1597ffe06f6fedf7e25c5302d2c77009f776e"
+  },
+  {
+    "source": "target/macos-agent-package-tests/math-plan-signed-S79wNA/preview-task/Documents/00000000-0000-0000-0000-000000000436/Generations/000001/authority.sqlite-wal",
+    "archive": "signed-app/preview-task/Documents/00000000-0000-0000-0000-000000000436/Generations/000001/authority.sqlite-wal.gz",
+    "original_bytes": 0,
+    "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "source": "target/macos-agent-package-tests/math-plan-signed-S79wNA/preview-task/Library/Generations/000001/library.sqlite",
+    "archive": "signed-app/preview-task/Library/Generations/000001/library.sqlite.gz",
+    "original_bytes": 176128,
+    "original_sha256": "548def5cf0fb2b8471a9262632d0c4930724274d693e557f5836a43b2e83ff03"
+  },
+  {
+    "source": "target/macos-agent-package-tests/math-plan-signed-S79wNA/preview-task/Library/Generations/000001/library.sqlite-shm",
+    "archive": "signed-app/preview-task/Library/Generations/000001/library.sqlite-shm.gz",
+    "original_bytes": 32768,
+    "original_sha256": "4a06dc10711d2f7173cf69e17c60c8d9fa735836483e2b8f8d300252ccfa4cdb"
+  },
+  {
+    "source": "target/macos-agent-package-tests/math-plan-signed-S79wNA/preview-task/Library/Generations/000001/library.sqlite-wal",
+    "archive": "signed-app/preview-task/Library/Generations/000001/library.sqlite-wal.gz",
+    "original_bytes": 0,
+    "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "source": "target/macos-agent-package-tests/attempt-qtIzgA/Documents/00000000-0000-0000-0000-000000000432/Generations/000001/authority.sqlite",
+    "archive": "incomplete-original-attempt/Documents/00000000-0000-0000-0000-000000000432/Generations/000001/authority.sqlite.gz",
+    "original_bytes": 4096,
+    "original_sha256": "2e96884c16791c7d4bde90a6db2c9da33c2a2aab3e52088adc148c368552a423"
+  },
+  {
+    "source": "target/macos-agent-package-tests/attempt-qtIzgA/Documents/00000000-0000-0000-0000-000000000432/Generations/000001/authority.sqlite-shm",
+    "archive": "incomplete-original-attempt/Documents/00000000-0000-0000-0000-000000000432/Generations/000001/authority.sqlite-shm.gz",
+    "original_bytes": 32768,
+    "original_sha256": "ca8ddfcc3b0dba8325454f15e424f38a08f585b438cbd06cbdf9d06bab895263"
+  },
+  {
+    "source": "target/macos-agent-package-tests/attempt-qtIzgA/Documents/00000000-0000-0000-0000-000000000432/Generations/000001/authority.sqlite-wal",
+    "archive": "incomplete-original-attempt/Documents/00000000-0000-0000-0000-000000000432/Generations/000001/authority.sqlite-wal.gz",
+    "original_bytes": 836392,
+    "original_sha256": "22383e71d1dfc37375bdda42ac0e23460964b2480f933bb5d11e5c6adbdaa238"
+  },
+  {
+    "source": "target/macos-agent-package-tests/attempt-qtIzgA/Library/Generations/000001/library.sqlite",
+    "archive": "incomplete-original-attempt/Library/Generations/000001/library.sqlite.gz",
+    "original_bytes": 4096,
+    "original_sha256": "2e96884c16791c7d4bde90a6db2c9da33c2a2aab3e52088adc148c368552a423"
+  },
+  {
+    "source": "target/macos-agent-package-tests/attempt-qtIzgA/Library/Generations/000001/library.sqlite-shm",
+    "archive": "incomplete-original-attempt/Library/Generations/000001/library.sqlite-shm.gz",
+    "original_bytes": 32768,
+    "original_sha256": "64e64b13855eaf1a3717e8b2dcf834e82ca48562172491da21a77560cd3ecf76"
+  },
+  {
+    "source": "target/macos-agent-package-tests/attempt-qtIzgA/Library/Generations/000001/library.sqlite-wal",
+    "archive": "incomplete-original-attempt/Library/Generations/000001/library.sqlite-wal.gz",
+    "original_bytes": 918792,
+    "original_sha256": "38a90414ca6cf2d4cc582a7352fc2196423327e63d867bd961eab1e1e20655f1"
+  }
+]

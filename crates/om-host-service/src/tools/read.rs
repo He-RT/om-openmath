@@ -139,8 +139,12 @@ fn capture(
         {
             return Err(ReadError::StaleSnapshot);
         }
-        let fresh = producer.source_snapshot_hash == source.snapshot_hash
-            && producer.execution_epoch == source.execution_epoch.get()
+        // Title/prose changes preserve actual math state. Keep original producer provenance,
+        // but test freshness using the real Math sequence/content and its execution/config epoch.
+        let fresh = !om_kernel::source::math_source_changed(
+            state.source(),
+            &crate::document::coordinator::kernel_file(&source.file),
+        ) && producer.execution_epoch == source.execution_epoch.get()
             && accepted.receipt().producer.config_revision.get() == scope.config_revision;
         if fresh {
             for (id, status) in state.cell_states() {
@@ -171,6 +175,32 @@ fn capture(
     })
 }
 impl ReadNotebookService {
+    /// Resolve the actual read-issued token for an explicit math operation. Historical snapshots
+    /// remain readable as history but cannot choose a current execution checkpoint or source.
+    /// This never issues a replacement preview token or upgrades full-cell source exposure.
+    pub fn current_math_snapshot(
+        &mut self,
+        reference: &str,
+        scope: &ReferenceScope,
+        now: u64,
+    ) -> Result<NativeSourceSnapshot, ReadError> {
+        scope.validate().map_err(|_| ReadError::StaleSnapshot)?;
+        if !scope.can_read {
+            return Err(ReadError::PermissionDenied);
+        }
+        self.prune(scope, now);
+        let retained = self
+            .snapshots
+            .get(reference)
+            .ok_or(ReadError::InvalidReference)?;
+        if now < retained.snapshot.issued {
+            return Err(ReadError::InvalidReference);
+        }
+        if retained.snapshot.scope != *scope {
+            return Err(ReadError::StaleSnapshot);
+        }
+        Ok(retained.snapshot.source.clone())
+    }
     /// Fresh entropy is supplied by the trusted native host (deterministic only in own fixtures).
     pub fn new(host_key: [u8; 32]) -> Self {
         Self {

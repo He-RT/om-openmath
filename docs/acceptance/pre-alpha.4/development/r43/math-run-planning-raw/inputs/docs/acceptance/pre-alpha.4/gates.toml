@@ -1,0 +1,538 @@
+schema_version = 1
+scope_version = 1
+status = "design_only"
+target_version = "0.1.0-pre-alpha.4"
+target_tag = "v0.1.0-pre-alpha.4"
+current_runtime_version = "0.1.0-pre-alpha.3"
+baseline_sha = "0889d34e4fce9926054025ca71ea328f6cc65b39"
+candidate_sha = "UNSET"
+ready_to_publish = false
+released_verified = false
+local_ios_simulators_allowed = false
+legacy_data_migration_in_scope = false
+
+# Gate/case/依赖与证据种类为设计。所有新运行验收均not_run，不以原型检查替代。
+
+[[gate]]
+id = "R4G01"
+release_execution_required = false
+name = "范围、版本与候选身份"
+phase = "R4.5"
+mandatory = true
+implementation_status = "planned"
+check_status = "not_run"
+platforms = ["multi-platform"]
+depends_on = []
+required_case_ids = ["VR01", "VR02", "VR03", "VR04"]
+required_evidence_kinds = ["version_audit"]
+specs = ["docs/plan/PRE_ALPHA_4.md#版本和身份规则"]
+pre_publish_required = true
+post_publish_required = false
+
+[[gate]]
+id = "R4G02"
+release_execution_required = false
+name = "依赖、许可与最小系统锁定"
+phase = "R4.0"
+mandatory = true
+implementation_status = "planned"
+check_status = "not_run"
+platforms = ["multi-platform"]
+depends_on = []
+required_case_ids = ["DP01", "DP02", "DP03"]
+required_evidence_kinds = ["dependency_audit", "native_build"]
+specs = ["docs/design/macos-installation.md#nodepi-与依赖供应"]
+pre_publish_required = true
+post_publish_required = false
+
+[[gate]]
+id = "R4G03"
+release_execution_required = false
+name = "Rust与纯WASM及生成契约"
+phase = "R4.0"
+mandatory = true
+implementation_status = "planned"
+check_status = "not_run"
+platforms = ["core", "web"]
+depends_on = []
+required_case_ids = ["CORE01", "CORE02", "CORE03"]
+required_evidence_kinds = ["ci_checks"]
+specs = [".github/workflows/ci.yml"]
+pre_publish_required = true
+post_publish_required = false
+
+[[gate]]
+id = "R4G04"
+release_execution_required = false
+name = "原53数学与科研兼容"
+phase = "R4.0"
+mandatory = true
+implementation_status = "planned"
+check_status = "not_run"
+platforms = ["core"]
+depends_on = ["R4G03"]
+required_case_ids = ["MATH01", "MATH02", "MATH03"]
+required_evidence_kinds = ["cas_correctness"]
+specs = ["tests/corpus/solve.toml", "crates/om-cli/tests/corpus.rs"]
+pre_publish_required = true
+post_publish_required = false
+
+[[gate]]
+id = "R4G05"
+release_execution_required = false
+name = "共享续行与根因诊断"
+phase = "R4.0"
+mandatory = true
+implementation_status = "planned"
+check_status = "not_run"
+platforms = ["core", "mac-native", "web", "ios-phone", "ios-pad"]
+depends_on = ["R4G03", "R4G04"]
+required_case_ids = ["L01", "L02", "L03", "L04"]
+required_evidence_kinds = ["cas_correctness", "native_runtime", "ci_checks"]
+specs = ["docs/plan/NEXT_RELEASE.md#现代语法自动续行与连锁诊断修复"]
+pre_publish_required = true
+post_publish_required = false
+
+[[gate]]
+id = "R4G06"
+release_execution_required = true
+name = "Mac原生Release工程与桥接"
+phase = "R4.0"
+mandatory = true
+implementation_status = "planned"
+check_status = "not_run"
+platforms = ["mac-native"]
+depends_on = ["R4G02", "R4G03"]
+required_case_ids = ["NB01", "NB02", "NB03"]
+required_evidence_kinds = ["native_build", "native_runtime"]
+specs = ["docs/design/macos-native-ui.md#分阶段交付"]
+pre_publish_required = true
+post_publish_required = false
+
+[[gate]]
+id = "R4G07"
+release_execution_required = true
+name = "宿主并发与生命周期"
+phase = "R4.1"
+mandatory = true
+implementation_status = "planned"
+check_status = "not_run"
+platforms = ["mac-native"]
+depends_on = ["R4G06"]
+required_case_ids = ["H01", "H02", "H03", "H04", "H05", "H06", "H07", "H08", "H09"]
+required_evidence_kinds = ["native_runtime", "race_fixture"]
+specs = ["docs/design/macos-host-state.md#首批实现与验收"]
+pre_publish_required = true
+post_publish_required = false
+
+[[gate]]
+id = "R4G08"
+release_execution_required = true
+name = "存储、草稿和崩溃恢复"
+phase = "R4.1"
+mandatory = true
+implementation_status = "planned"
+check_status = "not_run"
+platforms = ["mac-native"]
+depends_on = ["R4G06", "R4G07"]
+required_case_ids = ["SR01", "SR02", "SR03", "SR04", "SR05", "SR06", "SR07", "SR08", "SR09", "SR10", "SR11", "SR12"]
+required_evidence_kinds = ["native_runtime", "crash_fixture"]
+specs = ["docs/design/macos-storage-recovery.md#实施顺序与验收账本"]
+pre_publish_required = true
+post_publish_required = false
+
+[[gate]]
+id = "R4G09"
+release_execution_required = true
+name = "Unicode原生编辑、IME与undo"
+phase = "R4.2"
+mandatory = true
+implementation_status = "planned"
+check_status = "not_run"
+platforms = ["mac-native"]
+depends_on = ["R4G05", "R4G07", "R4G08"]
+required_case_ids = ["ER01", "ER02", "ER03", "ER04", "ER05"]
+required_evidence_kinds = ["native_runtime", "native_ui", "manual_ui"]
+specs = ["docs/design/macos-editor-rendering.md#实施与验收"]
+pre_publish_required = true
+post_publish_required = false
+
+[[gate]]
+id = "R4G10"
+release_execution_required = true
+name = "公式Markdown解步骤与精确分页"
+phase = "R4.2"
+mandatory = true
+implementation_status = "planned"
+check_status = "not_run"
+platforms = ["mac-native"]
+depends_on = ["R4G04", "R4G07"]
+required_case_ids = ["ER06", "ER07", "ER08"]
+required_evidence_kinds = ["native_runtime", "native_ui", "cas_correctness"]
+specs = ["docs/design/macos-editor-rendering.md#结果步骤与结构化值"]
+pre_publish_required = true
+post_publish_required = false
+
+[[gate]]
+id = "R4G11"
+release_execution_required = true
+name = "二维与Metal完整几何、探索及导出"
+phase = "R4.2"
+mandatory = true
+implementation_status = "planned"
+check_status = "not_run"
+platforms = ["mac-native"]
+depends_on = ["R4G04", "R4G07"]
+required_case_ids = ["ER09", "ER10"]
+required_evidence_kinds = ["native_ui", "gpu_render", "artifact_readback"]
+specs = ["docs/design/macos-editor-rendering.md#二维渲染与采样", "docs/design/macos-editor-rendering.md#三维-metal-渲染"]
+pre_publish_required = true
+post_publish_required = false
+
+[[gate]]
+id = "R4G12"
+release_execution_required = true
+name = "原生请求和输入/渲染性能"
+phase = "R4.6"
+mandatory = true
+implementation_status = "planned"
+check_status = "not_run"
+platforms = ["mac-native"]
+depends_on = ["R4G07", "R4G09", "R4G10", "R4G11"]
+required_case_ids = ["ER11", "ER12", "PFMAC"]
+required_evidence_kinds = ["native_performance", "native_ui"]
+specs = ["docs/plan/PRE_ALPHA_4.md#数学语法与性能门槛", "docs/design/macos-editor-rendering.md#实施与验收"]
+pre_publish_required = true
+post_publish_required = false
+
+[[gate]]
+id = "R4G13"
+release_execution_required = true
+name = "12工具handler与权限/只读契约"
+phase = "R4.3"
+mandatory = true
+implementation_status = "planned"
+check_status = "not_run"
+platforms = ["mac-native"]
+depends_on = ["R4G07", "R4G08"]
+required_case_ids = ["TL01", "TL02", "TL03", "TL04", "TL05"]
+required_evidence_kinds = ["handler_contract", "cas_correctness"]
+specs = ["docs/design/agent-tools.md#实施门禁", "docs/design/agent-tools.schema.json"]
+pre_publish_required = true
+post_publish_required = false
+
+[[gate]]
+id = "R4G14"
+release_execution_required = true
+name = "实际Pi与合成模型完整闭环"
+phase = "R4.3"
+mandatory = true
+implementation_status = "planned"
+check_status = "not_run"
+platforms = ["mac-native"]
+depends_on = ["R4G13", "R4G20"]
+required_case_ids = ["AG01", "AG02", "AG03", "AG04", "AG05", "AG06", "AG07", "AG08"]
+required_evidence_kinds = ["agent_fixture", "native_runtime", "cas_correctness"]
+specs = ["docs/design/notebook-agent.md#实施顺序与验收"]
+pre_publish_required = true
+post_publish_required = false
+
+[[gate]]
+id = "R4G15"
+release_execution_required = true
+name = "供应商默认/单模型覆盖与媒体wire"
+phase = "R4.4"
+mandatory = true
+implementation_status = "planned"
+check_status = "not_run"
+platforms = ["mac-native"]
+depends_on = ["R4G08", "R4G13", "R4G20"]
+required_case_ids = ["MM01", "MM02", "MM03", "MM04", "MM05", "MM06", "MM07", "MM08", "MM09", "MM10", "MM11", "MM12", "MM13", "MM14", "MM15"]
+required_evidence_kinds = ["model_fixture", "native_runtime", "native_ui"]
+specs = ["docs/design/model-media.md#实施与真实验收"]
+pre_publish_required = true
+post_publish_required = false
+
+[[gate]]
+id = "R4G16"
+release_execution_required = true
+name = "实际上下文提示词/记忆与压缩"
+phase = "R4.4"
+mandatory = true
+implementation_status = "planned"
+check_status = "not_run"
+platforms = ["mac-native"]
+depends_on = ["R4G08", "R4G13", "R4G14", "R4G15"]
+required_case_ids = ["CX01", "CX02", "CX03", "CX04", "CX05", "CX06", "CX07", "CX08"]
+required_evidence_kinds = ["model_fixture", "native_runtime", "context_wire"]
+specs = ["docs/design/agent-context.md#实施顺序和验收"]
+pre_publish_required = true
+post_publish_required = false
+
+[[gate]]
+id = "R4G17"
+release_execution_required = true
+name = "真实模型现场任务与视觉路线"
+phase = "R4.6"
+mandatory = true
+implementation_status = "planned"
+check_status = "not_run"
+platforms = ["mac-native"]
+depends_on = ["R4G09", "R4G11", "R4G14", "R4G15", "R4G16"]
+required_case_ids = ["LV01", "LV02", "LV03", "LV04"]
+required_evidence_kinds = ["live_model", "cas_correctness", "gpu_render", "manual_ui"]
+specs = ["docs/plan/PRE_ALPHA_4.md#agent模型和媒体验收"]
+pre_publish_required = true
+post_publish_required = false
+
+[[gate]]
+id = "R4G18"
+release_execution_required = true
+name = "原生工作台/AX/组件率与实际UX"
+phase = "R4.6"
+mandatory = true
+implementation_status = "planned"
+check_status = "not_run"
+platforms = ["mac-native"]
+depends_on = ["R4G09", "R4G10", "R4G11", "R4G15", "R4G16"]
+required_case_ids = ["UI01", "UI02", "UI03", "UI04", "UI05"]
+required_evidence_kinds = ["native_ui", "manual_ui", "component_audit"]
+specs = ["docs/design/macos-ux.md#交付验收", "docs/design/macos-ui-inventory.json"]
+pre_publish_required = true
+post_publish_required = false
+
+[[gate]]
+id = "R4G19"
+release_execution_required = true
+name = "全新初始化/首次启动/关于/更新/回退"
+phase = "R4.4"
+mandatory = true
+implementation_status = "planned"
+check_status = "not_run"
+platforms = ["mac-native", "mac-installed"]
+depends_on = ["R4G08", "R4G15"]
+required_case_ids = ["IN01", "IN02", "IN07", "IN08", "IN09", "IN10", "IN11", "IN12"]
+required_evidence_kinds = ["native_runtime", "native_ui", "installed_runtime"]
+specs = ["docs/design/macos-installation.md#实施顺序与门禁"]
+pre_publish_required = true
+post_publish_required = false
+
+[[gate]]
+id = "R4G20"
+release_execution_required = true
+name = "包内Node/Pi闭包与IPC"
+phase = "R4.3"
+mandatory = true
+implementation_status = "planned"
+check_status = "not_run"
+platforms = ["mac-native", "mac-installed"]
+depends_on = ["R4G02", "R4G06"]
+required_case_ids = ["IN03", "IN04"]
+required_evidence_kinds = ["bundle_audit", "installed_runtime", "native_runtime"]
+specs = ["docs/design/macos-installation.md#自包含包结构"]
+pre_publish_required = true
+post_publish_required = false
+
+[[gate]]
+id = "R4G21"
+release_execution_required = true
+name = "最终签名公证DMGZIP实际安装"
+phase = "R4.6"
+mandatory = true
+implementation_status = "planned"
+check_status = "not_run"
+platforms = ["mac-installed"]
+depends_on = ["R4G01", "R4G19", "R4G20"]
+required_case_ids = ["IN05", "IN06"]
+required_evidence_kinds = ["signature_notary", "installed_runtime", "artifact_readback"]
+specs = ["docs/design/macos-installation.md#构建与发行顺序"]
+pre_publish_required = true
+post_publish_required = false
+
+[[gate]]
+id = "R4G22"
+release_execution_required = true
+name = "CLI原53Release200ms"
+phase = "R4.6"
+mandatory = true
+implementation_status = "planned"
+check_status = "not_run"
+platforms = ["core"]
+depends_on = ["R4G04"]
+required_case_ids = ["PFCLI"]
+required_evidence_kinds = ["native_performance", "cas_correctness"]
+specs = ["crates/om-cli/tests/corpus.rs"]
+pre_publish_required = true
+post_publish_required = false
+
+[[gate]]
+id = "R4G23"
+release_execution_required = true
+name = "生产Web/WASM数学GPU及原1s"
+phase = "R4.6"
+mandatory = true
+implementation_status = "planned"
+check_status = "not_run"
+platforms = ["web"]
+depends_on = ["R4G03", "R4G04", "R4G05"]
+required_case_ids = ["WEB01", "WEB02", "WEB03", "PFWEB"]
+required_evidence_kinds = ["ci_checks", "web_runtime", "gpu_render", "cas_correctness", "web_performance"]
+specs = [".github/workflows/ci.yml", "app/e2e/performance.spec.ts"]
+pre_publish_required = true
+post_publish_required = false
+
+[[gate]]
+id = "R4G24"
+release_execution_required = true
+name = "WindowsEXE实际安装回读"
+phase = "R4.6"
+mandatory = true
+implementation_status = "planned"
+check_status = "not_run"
+platforms = ["windows-installed"]
+depends_on = ["R4G01", "R4G04", "R4G05"]
+required_case_ids = ["PW01"]
+required_evidence_kinds = ["installed_runtime", "artifact_readback", "gpu_render"]
+specs = [".github/workflows/release.yml"]
+pre_publish_required = true
+post_publish_required = false
+
+[[gate]]
+id = "R4G25"
+release_execution_required = true
+name = "WindowsMSI实际安装回读"
+phase = "R4.6"
+mandatory = true
+implementation_status = "planned"
+check_status = "not_run"
+platforms = ["windows-installed"]
+depends_on = ["R4G01", "R4G04", "R4G05"]
+required_case_ids = ["PW02"]
+required_evidence_kinds = ["installed_runtime", "artifact_readback", "gpu_render"]
+specs = [".github/workflows/release.yml"]
+pre_publish_required = true
+post_publish_required = false
+
+[[gate]]
+id = "R4G26"
+release_execution_required = true
+name = "iPhone27原生及整次原53<1s"
+phase = "R4.6"
+mandatory = true
+implementation_status = "planned"
+check_status = "not_run"
+platforms = ["ios-phone"]
+depends_on = ["R4G03", "R4G04", "R4G05"]
+required_case_ids = ["IOS01", "PFPHONE"]
+required_evidence_kinds = ["ci_checks", "native_runtime", "mobile_performance", "cas_correctness"]
+specs = [".github/workflows/ios.yml", "ios/OpenMathTests/AcceptanceTests.swift"]
+pre_publish_required = true
+post_publish_required = false
+
+[[gate]]
+id = "R4G27"
+release_execution_required = true
+name = "iPad27原生及整次原53<1s"
+phase = "R4.6"
+mandatory = true
+implementation_status = "planned"
+check_status = "not_run"
+platforms = ["ios-pad"]
+depends_on = ["R4G03", "R4G04", "R4G05"]
+required_case_ids = ["IOS02", "PFPAD"]
+required_evidence_kinds = ["ci_checks", "native_runtime", "mobile_performance", "cas_correctness"]
+specs = [".github/workflows/ios.yml", "ios/OpenMathTests/AcceptanceTests.swift"]
+pre_publish_required = true
+post_publish_required = false
+
+[[gate]]
+id = "R4G28"
+release_execution_required = true
+name = "两移动切片/链接/模拟器附件"
+phase = "R4.6"
+mandatory = true
+implementation_status = "planned"
+check_status = "not_run"
+platforms = ["assets", "ios-phone", "ios-pad"]
+depends_on = ["R4G01", "R4G26", "R4G27"]
+required_case_ids = ["IOS03"]
+required_evidence_kinds = ["native_build", "bundle_audit", "artifact_readback"]
+specs = [".github/workflows/ios.yml"]
+pre_publish_required = true
+post_publish_required = false
+
+[[gate]]
+id = "R4G29"
+release_execution_required = true
+name = "九最终资产、版本/许可/字节清单"
+phase = "R4.6"
+mandatory = true
+implementation_status = "planned"
+check_status = "not_run"
+platforms = ["assets"]
+depends_on = ["R4G01", "R4G21", "R4G22", "R4G23", "R4G24", "R4G25", "R4G28"]
+required_case_ids = ["AS01", "AS02", "AS03"]
+required_evidence_kinds = ["bundle_audit", "artifact_readback"]
+specs = ["docs/releasing.md", "docs/design/macos-installation.md#构建与发行顺序"]
+pre_publish_required = true
+post_publish_required = false
+
+[[gate]]
+id = "R4G30"
+release_execution_required = false
+name = "中文文档/能力/范围与已知限制"
+phase = "R4.6"
+mandatory = true
+implementation_status = "planned"
+check_status = "not_run"
+platforms = ["multi-platform"]
+depends_on = ["R4G01", "R4G15", "R4G16", "R4G18"]
+required_case_ids = ["DOC01", "DOC02", "DOC03"]
+required_evidence_kinds = ["documentation_audit", "handler_contract", "component_audit"]
+specs = ["docs/plan/PRE_ALPHA_4.md#缺陷重测和范围变化", "docs/README.md"]
+pre_publish_required = true
+post_publish_required = false
+
+[[gate]]
+id = "R4G31"
+release_execution_required = false
+name = "公开前同候选汇总"
+phase = "R4.6"
+mandatory = true
+implementation_status = "planned"
+check_status = "not_run"
+platforms = ["multi-platform"]
+depends_on = ["R4G01", "R4G02", "R4G03", "R4G04", "R4G05", "R4G06", "R4G07", "R4G08", "R4G09", "R4G10", "R4G11", "R4G12", "R4G13", "R4G14", "R4G15", "R4G16", "R4G17", "R4G18", "R4G19", "R4G20", "R4G21", "R4G22", "R4G23", "R4G24", "R4G25", "R4G26", "R4G27", "R4G28", "R4G29", "R4G30"]
+required_case_ids = ["AGG01"]
+required_evidence_kinds = ["ci_aggregation", "artifact_readback"]
+specs = ["docs/plan/PRE_ALPHA_4.md#ci与发行汇总设计"]
+pre_publish_required = true
+post_publish_required = false
+
+[[gate]]
+id = "R4G32"
+release_execution_required = false
+name = "公开tag与九下载和程序回读"
+phase = "R4.7"
+mandatory = true
+implementation_status = "planned"
+check_status = "not_run"
+platforms = ["assets", "multi-platform"]
+depends_on = ["R4G31"]
+required_case_ids = ["PUB01", "PUB02", "PUB03"]
+required_evidence_kinds = ["public_readback", "artifact_readback"]
+specs = ["docs/plan/PRE_ALPHA_4.md#ci与发行汇总设计"]
+pre_publish_required = false
+post_publish_required = true
+
+[historic_manual_coverage]
+status = "user_deferred_not_passed"
+platform = "ios"
+items = ["VoiceOver完整人工遍历", "浮动键盘", "真机窄窗口"]
+source = "此前用户直接要求暂缓这些iOS人工专项"
+applies_to_new_mac_required_gates = false
+
+[asset_set]
+expected_count = 9
+manifest_name = "release-manifest.json"
+expected_names = ["OpenMath-web_0.1.0-pre-alpha.4.zip", "OpenMathKernel_0.1.0-pre-alpha.4.xcframework.zip", "OpenMath_0.1.0-pre-alpha.4_aarch64.dmg", "OpenMath_0.1.0-pre-alpha.4_ios_simulator_arm64.app.zip", "OpenMath_0.1.0-pre-alpha.4_macos_arm64.app.zip", "OpenMath_0.1.0-pre-alpha.4_x64-setup.exe", "OpenMath_0.1.0-pre-alpha.4_x64_zh-CN.msi", "om-cli_0.1.0-pre-alpha.4_macos_arm64.zip", "om-cli_0.1.0-pre-alpha.4_windows_x64.zip"]

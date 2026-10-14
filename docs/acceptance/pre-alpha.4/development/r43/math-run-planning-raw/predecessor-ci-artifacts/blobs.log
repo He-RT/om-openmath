@@ -1,0 +1,2 @@
+Actual immutable blobs: exact original PDF and 3MiB byte readback, non-overwrite dedup, pin/reader retention, atomic DB refs/rollback, corruption/missing/hash rejection and persisted refs with no resurrected pins passed
+Six actual BlobStore publication crashes: no partial target, complete orphan only after link, zero references/pins on restart

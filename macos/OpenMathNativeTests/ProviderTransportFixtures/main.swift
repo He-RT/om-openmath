@@ -158,14 +158,26 @@ private func failure(_ body:@Sendable ()async throws->ProviderModelResult)async 
       ("connect",Script(delay:0.2,noHeaders:true,noFinish:true),try ProviderTimeouts(connection:0.03,firstResponse:1,idle:1,total:1),ProviderTransportReason.connectionTimeout),
       ("first",Script(delay:0.2,noHeaders:true,noFinish:true),try ProviderTimeouts(firstResponse:0.03,idle:1,total:1),ProviderTransportReason.firstResponseTimeout),
       ("idle",Script(noFinish:true),try ProviderTimeouts(firstResponse:1,idle:0.03,total:1),.idleTimeout),
-      // Isolate the total guard: a valid 30ms idle expiry can otherwise win under CI callback
-      // scheduling jitter. The independent idle negative above keeps its original 30ms budget.
+      // The total case holds competing timer callbacks below. Header delivery can legitimately
+      // exceed 30ms on CI; the independent first/idle negatives keep their original budgets.
       ("total",Script(noFinish:true,heartbeat:true),try ProviderTimeouts(firstResponse:0.03,idle:1,total:0.1),.totalTimeout),
+      // Force the observed CI ordering: the first timer wakes before any headers can arrive.
+      ("total-delayed-header",Script(delay:0.2,noFinish:true),try ProviderTimeouts(firstResponse:0.03,idle:1,total:0.1),.totalTimeout),
     ] {
       let model=try await prepare(host,name),trace=Trace();FixtureProtocol.state.reset(script)
-      let error=try await failure {try await transport.send(model,route:route(model,timeouts),journal:await trace.journal(),onText:{_ in})}
+      let competingTimers=FixtureGate(),competingTimerWoke=FixtureGate(),isTotal=name.hasPrefix("total")
+      // Exercise the actual total timer without racing an unrelated first-response/idle timer.
+      // The existing trusted wake probe pauses only those competing callbacks; production
+      // deadlines and the total timer itself are unchanged. Release even if the assertion fails.
+      let timeoutTransport=isTotal ? ProviderTransport(secrets:secrets,testConfiguration:{let c=URLSessionConfiguration.ephemeral;c.protocolClasses=[FixtureProtocol.self];return c},testTimeoutProbe:.init(woke:{reason in if reason != .totalTimeout {await competingTimerWoke.release();await competingTimers.wait()}},settled:{_ in})):transport
+      let error:ProviderTransportFailure
+      do {error=try await failure {try await timeoutTransport.send(model,route:route(model,timeouts),journal:await trace.journal(),onText:{_ in})}}
+      catch {await competingTimers.release();throw error}
+      await competingTimers.release()
+      let actuallyHeld=await competingTimerWoke.open
+      if name == "total-delayed-header" {precondition(actuallyHeld && error.outcome == .dispatchOutcomeUnknown)}
       if CommandLine.arguments.count>1 {
-        let observation:[String:Any] = ["case":name,"expected_reason":reason.rawValue,"actual_reason":error.reason.rawValue,"outcome":error.outcome.rawValue,"requests":FixtureProtocol.state.count]
+        let observation:[String:Any] = ["case":name,"expected_reason":reason.rawValue,"actual_reason":error.reason.rawValue,"outcome":error.outcome.rawValue,"requests":FixtureProtocol.state.count,"competing_timer_callbacks_held":isTotal,"competing_timer_actually_woke":actuallyHeld]
         try JSONSerialization.data(withJSONObject:observation,options:[.sortedKeys]).write(to:URL(fileURLWithPath:CommandLine.arguments[1],isDirectory:true).appendingPathComponent("timeout-"+name+".json"))
       }
       precondition(error.reason==reason && error.outcome != .notDispatched && FixtureProtocol.state.count==1)

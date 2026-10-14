@@ -1,0 +1,4 @@
+   Compiling om-host-service v0.1.0-pre-alpha.3 (/Users/runner/work/om-openmath/om-openmath/crates/om-host-service)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.58s
+     Running `target/debug/examples/history_store_contract`
+Actual 206 SQLite source commits: 200 + persistent pins, atomic prune rollback/lost ACK, physical removal, original-ID facts/no replay, reopen/unpin/damage refusal, legacy v1 full-only and future version readonly refusal; counts 206/206/206/201/5 passed

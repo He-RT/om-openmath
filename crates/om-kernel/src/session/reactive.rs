@@ -140,22 +140,33 @@ impl Session {
     }
 
     pub(super) fn prerequisites_ready(&self, index: usize) -> bool {
-        self.notebook.cells[index].uses.iter().all(|symbol| {
+        self.prerequisite_cells(index)
+            .iter()
+            .all(|&i| self.notebook.cells[i].status == CellStatus::Done)
+    }
+
+    /// Share actual live-owner precedence with non-executing Agent run planning.
+    pub(super) fn prerequisite_cells(&self, index: usize) -> BTreeSet<usize> {
+        let mut required = BTreeSet::new();
+        for symbol in &self.notebook.cells[index].uses {
             if let Some(owner) = self.owners.get(symbol) {
-                self.notebook
-                    .cells
-                    .iter()
-                    .find(|c| &c.id == owner)
-                    .is_none_or(|c| c.status == CellStatus::Done)
+                if let Some(i) = self.notebook.cells.iter().position(|c| &c.id == owner) {
+                    required.insert(i);
+                }
             } else {
-                self.notebook.cells.iter().enumerate().all(|(i, c)| {
-                    i == index
-                        || c.kind != CellKind::Math
-                        || !c.defines.contains(symbol)
-                        || c.status == CellStatus::Done
-                })
+                required.extend(
+                    self.notebook
+                        .cells
+                        .iter()
+                        .enumerate()
+                        .filter(|(i, c)| {
+                            *i != index && c.kind == CellKind::Math && c.defines.contains(symbol)
+                        })
+                        .map(|(i, _)| i),
+                );
             }
-        })
+        }
+        required
     }
 
     pub(super) fn evaluate_cell(

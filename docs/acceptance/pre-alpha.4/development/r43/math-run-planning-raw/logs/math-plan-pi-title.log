@@ -1,0 +1,4 @@
+   Compiling om-host-service v0.1.0-pre-alpha.3 (/Users/hert/Projects/openmath/crates/om-host-service)
+   Compiling om-kernel v0.1.0-pre-alpha.3 (/Users/hert/Projects/openmath/crates/om-kernel)
+   Compiling om-apple-ffi v0.1.0-pre-alpha.3 (/Users/hert/Projects/openmath/crates/om-apple-ffi)
+    Finished `release` profile [optimized] target(s) in 3m 15s

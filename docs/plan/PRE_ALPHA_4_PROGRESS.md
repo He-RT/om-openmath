@@ -68,7 +68,7 @@
 | [ ] [R4.3.04](PRE_ALPHA_4.md#task-r4.3.04) | Swift URLSession和SecretStore传输 | in_progress | [真实请求账本/随包Pi/强杀恢复](../acceptance/pre-alpha.4/development/r43/provider-durable-request.json)、[过期计时回调修复](../acceptance/pre-alpha.4/development/r43/provider-timeout-race.json)；实际计时竞态RED→GREEN；物理锁屏仍未完成 | D052/本批D054 |
 | [x] [R4.3.05](PRE_ALPHA_4.md#task-r4.3.05) | 读取笔记本与真实函数资料工具 | completed | [只读基础](../acceptance/pre-alpha.4/development/r43/readonly-services-foundation.json)、[耐久工具/Pi](../acceptance/pre-alpha.4/development/r43/readonly-native-tool.json)、[实际输出/持久历史](../acceptance/pre-alpha.4/development/r43/readonly-outputs-history.json)；1297Rust/实际签名App两轮/重启history/独立worker | D053/D055/本批D056 |
 | [x] [R4.3.06](PRE_ALPHA_4.md#task-r4.3.06) | 预览与原子修改工具接入 | completed | [预览/Pi三轮](../acceptance/pre-alpha.4/development/r43/patch-preview-foundation.json)、[实际原子提交/Pi四轮](../acceptance/pre-alpha.4/development/r43/patch-atomic-apply.json)；1301Rust/38帧31事件/5真实边界/原回执恢复 | D057/本批D058 |
-| [ ] [R4.3.07](PRE_ALPHA_4.md#task-r4.3.07) | 执行、结果检查和隔离试算工具 | planned | — | — |
+| [ ] [R4.3.07](PRE_ALPHA_4.md#task-r4.3.07) | 执行、结果检查和隔离试算工具 | in_progress | selected/required/affected真实依赖规划、原read token/实际checkpoint与标题freshness回归；实际执行、inspect和scratch尚未完成 | 本批D059 |
 | [ ] [R4.3.08](PRE_ALPHA_4.md#task-r4.3.08) | 操作核对、撤销和Host停止控制 | planned | — | — |
 | [ ] [R4.3.09](PRE_ALPHA_4.md#task-r4.3.09) | 附件工具与宿主处理注册接口 | planned | — | — |
 | [ ] [R4.3.10](PRE_ALPHA_4.md#task-r4.3.10) | 全工具原生声明与provider严格schema转换 | planned | — | — |
@@ -664,3 +664,17 @@ standalone和最终签名Release App资源均实际四轮38帧（21host/17helper
 全workspace1301 Rust/0失败、workspace Clippy全targets -D warnings、17 Node26/Pi（含真实SDK unknown终止）、17 Python、strict自身TS(skipLibCheck)、389同源DTO/生成工程/fmt、Release及最终strict签名通过。原13 SIGKILL、60闭合schema事件、4374事件>16MiB/37calls+37plans按5条页恢复回归通过。完整源码/命令/原失败/38帧/原HTTP/Blob/SQL压缩字节与SHA见patch-atomic-apply.json/raw。满足Done/Tests，R4.3.06全勾，34/98、下一R4.3.07。
 
 本轮按成功Cargo compiler-artifact清单又清216个target/debug/deps普通测试harness，先验1301/0终态、无compiler或运行harness，并记录每文件SHA/字节/清单；删除3,842,580,880逻辑字节（3.58GiB），可用约43GiB。库/CLI/examples/App/runtime/证据/用户文件均保留。ea008c4 CI38599857402最后Rust/frontend/dependencies成功、iOS进入iPad、Mac进入私有Agent耐久ACK/进程回归，未当最终全CI；b15a39f旧run后因后继提交取消Mac/iOS，不冒称全通过。新提交CI单独核对。用户OS输入设置保留、不重问/不改；R4.2.03真实候选与R4.3.04物理锁屏仍未验，本批无付费live/子代理/本机iOS模拟器。运行.3/Root1/Library4/doc5/.omnb1/dev/no main/旧公开tag包不动，32最终gate全部not_run/no candidate/ready=false/released=false，完整计划和真实发行继续required。
+
+## D059 · 2026-10-15 真实数学依赖规划与标题修改后的结果新鲜度（R4.3.07进行中）
+
+新增Session非求值执行规划：selected只规划指定格，required仅加入实际未Done的前置，affected沿实际读写关系扩展；复用现有拓扑/环判定和live owner优先级，动态写入归属也按真实Session处理。显式native allowed集合限制扩展，最多1000格，遍历可取消/限步；与RunAll无关。仅产生有序计划、真实环/阻塞/外部未就绪前置，不求值或改defs、Out、随机及原checkpoint bytes。
+
+Host冻结入口只接原RunCells意图与匹配参数hash，从当前实际ReadNotebookService签发的snapshot_ref取得源码，继承真实accepted checkpoint并在独立线程按KernelWorker同规则reconcile；无checkpoint且definition revision非零拒绝。历史read/source token不授权当前执行、outline不升级整格替换权限；source/epoch/config/editor/task/grants/期限变化仍拒绝，模型不能传source/grants或扩大native执行allowlist。
+
+补验发现只读捕获原用整个文档hash判断数学freshness，真实标题事务会误报Stale。先以原实现复现，再改为比较实际数学源码、execution epoch和计算配置；只改标题保留Done/现有定义，数学源码变化仍Stale，原producer hash/revision保持原样。65项Rust（35 Kernel、30 Host）通过，真实KernelWorker状态与synthetic matching unit receipts仅是单元契约证明，不冒称SQLite耐久执行。standalone与签名App均实际计算后再改标题，原生read返回Done/原result_ref/两笔持久事务，20frames14events与第二HTTP body exact；四轮原子修改38frames31events/5实际边界/强杀后手工4也通过，Release及最终strict签名通过。17 Python、389 DTO、工程/fmt与host+kernel全targets Clippy通过，完整原输入/日志见[数学规划证据](../acceptance/pre-alpha.4/development/r43/math-run-planning.json)。
+
+449144c CI38605677497终态为failure：Rust/frontend/dependencies/iOS成功，Mac总超时负例实际首响应超时抢先，原日志和四个实际timeout JSON留存。仅fixture使用已有trusted timer probe隔离竞争回调，原30ms首响应/idle和所有生产timeout不改；新增200ms延迟headers验证真实首响应timer已先唤醒，独立total仍正确触发，实际URLSession/CABI/取消/并行CAS回归通过。这是测试case隔离，未发现或修改生产timer行为。首次原生attempt进程结束但无terminal report，原因与exit未知、不计pass；其部分原件保留，新fresh根重用原已编译程序实际通过。
+
+按成功Cargo compiler-artifact清单和65项测试终态核对、无编译器/被选harness运行后，清理11个普通测试可执行文件428,370,368逻辑字节（约409MiB），逐文件SHA及缺席核对留存；可用约43GiB，库/CLI/examples/App/runtime/证据保留。
+
+本批只是执行规划基础，R4.3.07步骤和Done均不勾选，整体仍34/98。后续继续ACK原intent→真实math worker/KernelCommitPort、真实executed/partial/resultrefs、inspect_result及独立可写scratch；不造主Kernel receipt。用户选择保留系统输入设置，R4.2.03候选与R4.3.04物理锁屏未验且不重问；32最终gate仍not_run、candidate未分配、ready/released=false，完整98任务/32门禁/实际发行仍required。

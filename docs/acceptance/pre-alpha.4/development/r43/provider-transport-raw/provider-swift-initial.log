@@ -1,0 +1,25 @@
+macos/OpenMathNative/Models/ProviderTransport.swift:149:18: error: no 'async' operations occur within 'await' expression [#UnnecessaryEffectMarker]
+147 |   func send(_ model:ProviderModelSession,route:ProviderRoute,journal:ProviderTransportJournal,onText:@escaping @Sendable (String)async throws->Void)async throws->ProviderModelResult {
+148 |     var dispatched=false,pump:ProviderHTTPPump?
+149 |     let prepared=await model.prepared
+    |                  `- error: no 'async' operations occur within 'await' expression [#UnnecessaryEffectMarker]
+150 |     func outcome()->ProviderDispatchOutcome {pump?.observedStatus != nil ? .responseObserved:dispatched ? .dispatchOutcomeUnknown:.notDispatched}
+151 |     do {
+
+macos/OpenMathNative/Models/ProviderTransport.swift:152:13: error: no 'async' operations occur within 'await' expression [#UnnecessaryEffectMarker]
+150 |     func outcome()->ProviderDispatchOutcome {pump?.observedStatus != nil ? .responseObserved:dispatched ? .dispatchOutcomeUnknown:.notDispatched}
+151 |     do {
+152 |       guard await model.binding==route.binding else {throw ProviderTransportReason.stale}
+    |             `- error: no 'async' operations occur within 'await' expression [#UnnecessaryEffectMarker]
+153 |       try await model.claim();try Task.checkCancellation()
+154 |       var request=URLRequest(url:route.endpoint);request.httpMethod="POST";request.httpBody=await model.body
+
+macos/OpenMathNative/Models/ProviderTransport.swift:154:93: error: no 'async' operations occur within 'await' expression [#UnnecessaryEffectMarker]
+152 |       guard await model.binding==route.binding else {throw ProviderTransportReason.stale}
+153 |       try await model.claim();try Task.checkCancellation()
+154 |       var request=URLRequest(url:route.endpoint);request.httpMethod="POST";request.httpBody=await model.body
+    |                                                                                             `- error: no 'async' operations occur within 'await' expression [#UnnecessaryEffectMarker]
+155 |       request.setValue("application/json",forHTTPHeaderField:"Content-Type");request.setValue(prepared.stream ? "text/event-stream":"application/json",forHTTPHeaderField:"Accept")
+156 |       if route.binding.wireProtocol=="anthropic_messages" {request.setValue("2023-06-01",forHTTPHeaderField:"anthropic-version")}
+
+[#UnnecessaryEffectMarker]: <https://docs.swift.org/compiler/documentation/diagnostics/unnecessary-effect-marker>

@@ -1,0 +1,607 @@
+{
+  "schema_version": 1,
+  "task": "R4.3.04",
+  "status": "in_progress",
+  "date": "2026-10-14",
+  "base_commit": "e95b044a5d40bb7afee885b0b4880a4f8b6d800c",
+  "scope": "actual independent Rust model C ABI + Swift transport/native Agent adapter; incomplete durable request/keychain physical acceptance",
+  "verified": {
+    "rust_regressions": 194,
+    "new_model_channel_cases": 3,
+    "python_contracts": 17,
+    "generated_dto_count": 371,
+    "swift": "Swift6 warnings-as-errors URLProtocol actual requests/body/auth/raw UTF8/Chat+Anthropic payloads, 401/429/no retry/redacted errors, redirect, first/idle/total timeout, pre-resume/active/host-close cancellation, real concurrent CAS=4, Agent32KiB/incomplete",
+    "live": "two explicitly authorized models actual Swift URLSession/Rust C ABI complete result4/input19/output5/total24; no Registry/Keychain persistence/durable request claim",
+    "native": "original C ABI/session tests, prior actual bundled Pi crash/manual4 fixtures, Release build and strict signature passed",
+    "secret": "new namespace precise ref + DataProtectionKeychain/WhenUnlockedThisDeviceOnly/LAContext no UI; locked/auth status denials, no old fallback"
+  },
+  "bounds": {
+    "live_channels": 8,
+    "request_and_context_nonce_lifetime": 4096,
+    "feed_bytes": 8192,
+    "request_control_bytes": 2097152,
+    "response_bytes": 8388608,
+    "helper_text_delta_bytes": 32768
+  },
+  "remaining": [
+    "Actual durable request lifecycle/ContextSnapshot producer wiring; callback in URLProtocol/live proof is explicitly synthetic.",
+    "Physical lock-screen Keychain exercise; current denial tests inject actual Security OSStatus values and inspect production query.",
+    "Separate proposed10s connection budget; implemented60s first response includes DNS/TCP/TLS/headers, idle30/total180.",
+    "Full Registry/tool/UI/live Agent flow and final candidate gates remain later requirements."
+  ],
+  "corrections": [
+    "D049 lacked kSecUseDataProtectionKeychain; installed SDK SecItem.h proves it is required on Mac for nonsynchronizing kSecAttrAccessible. Fixed and retained initial evidence.",
+    "Preserved Swift strict-concurrency compile failures and URLProtocol httpBodyStream nil-capture failure; actual stream body capture now verified."
+  ],
+  "previous_ci": {
+    "conclusion": "success",
+    "head_sha": "21a08e52d3937f65d124b6961128d9946db15331",
+    "html_url": "https://github.com/He-RT/om-openmath/actions/runs/38465324522",
+    "id": 38465324522,
+    "status": "completed"
+  },
+  "previous_ci_jobs": [
+    {
+      "conclusion": "success",
+      "name": "dependencies",
+      "status": "completed"
+    },
+    {
+      "conclusion": "success",
+      "name": "ios / native",
+      "status": "completed"
+    },
+    {
+      "conclusion": "success",
+      "name": "rust",
+      "status": "completed"
+    },
+    {
+      "conclusion": "success",
+      "name": "frontend",
+      "status": "completed"
+    },
+    {
+      "conclusion": "success",
+      "name": "native_macos / native",
+      "status": "completed"
+    }
+  ],
+  "commands": [
+    "CARGO_PROFILE_DEV_DEBUG=0 CARGO_PROFILE_TEST_DEBUG=0 cargo test -p om-host-service -p om-apple-ffi -p om-llm --locked",
+    "CARGO_PROFILE_DEV_DEBUG=0 CARGO_PROFILE_TEST_DEBUG=0 cargo clippy -p om-host-service -p om-apple-ffi --all-targets --locked -- -D warnings",
+    "cargo fmt --all -- --check",
+    "python3 scripts/native_contracts.py --check",
+    "python3 macos/Scripts/generate-project.py --check",
+    "bash macos/Scripts/test-secret-store.sh",
+    "bash macos/Scripts/test-provider-transport.sh",
+    "bash macos/Scripts/test-native-contracts.sh",
+    "bash macos/Scripts/test-agent-package.sh /Users/hert/Projects/openmath/target/macos-agent-package-tests/AgentRuntime",
+    "bash macos/Scripts/probe-provider-transport.sh /Users/hert/.config/openmath/testing/pre-alpha-4-api.json",
+    "xcodebuild -project macos/OpenMathNative.xcodeproj -scheme OpenMathNative -configuration Release -derivedDataPath target/macos-native -destination 'platform=macOS,arch=arm64' build",
+    "codesign --verify --deep --strict 'target/macos-native/Build/Products/Release/OpenMath Preview.app'",
+    "python3 -X warn_default_encoding -W error::EncodingWarning -m unittest discover -s tests -v"
+  ],
+  "source_sha256": {
+    ".github/workflows/macos-native.yml": "706bcede7b085b527014bfd8dcb5e1407ab51dec4387dc655118731ba11fba21",
+    "crates/om-apple-ffi/src/ffi.rs": "0a22cb0a0ff6434aa421ad7b89a6bb3c18112786858d5a822e480e28ef253dcb",
+    "crates/om-host-service/Cargo.toml": "b34ffd3b073234b1d01326f5052020524dfe01b1b7c7a15fc91822ef0bd51705",
+    "crates/om-host-service/src/lib.rs": "44a0d6ac5e2c36f15bb80a35fe089a026268c16973451c205e9cd79d2f6a664c",
+    "crates/om-host-service/src/model/mod.rs": "494a941c627464d3371fae41d1909bda3303c5306c4d5f3317a350364a97ad18",
+    "crates/om-host-service/src/protocol/generated/mod.rs": "5b6a9a4c3a3a61ebb1c924c061bfb154822caedd53154e4190f8a187bee58e12",
+    "crates/om-host-service/src/protocol/generated/native_model_codec_cancel.rs": "3808cc34b83410b34210a3936100069dcd3733713cbfeac695933055153f0761",
+    "crates/om-host-service/src/protocol/generated/native_model_codec_cancel_type.rs": "641fe039a60f97f411329cd1f09f0a4daa171e8f3939ada87bf46afc260c1ace",
+    "crates/om-host-service/src/protocol/generated/native_model_codec_command.rs": "1a1153d0038df8031419923382bdb0d8836021988a3ee2db47537ac33ed191cf",
+    "crates/om-host-service/src/protocol/generated/native_model_codec_feed.rs": "7da6178f659c08234d1e8df416f05f6774f90b36e206c0769b31758340782932",
+    "crates/om-host-service/src/protocol/generated/native_model_codec_feed_type.rs": "84822812a50dacfd26d5718f647607d87c8e039dde6124c8ddcab8fb1e51a925",
+    "crates/om-host-service/src/protocol/generated/native_model_codec_finish.rs": "ec3a4b843ba80075660c1f5e4fd606c9400f98c2e5c57f530e6aab7fa5e0f025",
+    "crates/om-host-service/src/protocol/generated/native_model_codec_finish_type.rs": "ba6503de1003b45297c66e8293447652e95717f5988237d37a1f6439653d0342",
+    "crates/om-host-service/src/protocol/generated/native_model_codec_headers.rs": "3214eaaf5f01155b6b53c0da54c3c695ae4102bb983168a50ce21fcf8b9bdc3b",
+    "crates/om-host-service/src/protocol/generated/native_model_codec_headers_type.rs": "84696a994c7964821abf43d0bf8c30a558f0229daf67fc41fbc162f5ca4e8fdd",
+    "crates/om-host-service/src/protocol/generated/native_model_codec_prepare.rs": "d9114557e93d325e30890ca33f620d72d8101ebf4cf52ed9db0ca5329a9052de",
+    "crates/om-host-service/src/protocol/generated/native_model_codec_prepare_type.rs": "5fdbac00640784a095daa526bbec63240d5a4f994d9fbe27b753c31f2cf4584d",
+    "crates/om-host-service/src/protocol/generated/native_model_codec_reply.rs": "95764e6480308492a36bfdddc6b66bfddb00e79729c7dc64bc64f7c8afbdbe9c",
+    "crates/om-host-service/src/protocol/generated/native_model_codec_reply_error_code.rs": "092c8d47ccabcd6873c86df0ebac874180fd5a7861d328b52310cf22b3693203",
+    "crates/om-host-service/src/protocol/generated/native_model_codec_reply_phase.rs": "371471e81de15bd1fa84c854c71665924627b271e9df38d3143dfb6fdf09aabe",
+    "crates/om-host-service/src/scheduler/mod.rs": "47574bc8c76f4536fdf136c1683b50c62419a82270af66422fa42f990c080afc",
+    "crates/om-host-service/tests/model_codec.rs": "8026797497a40a15899953b82e33ec1346303f0a17bc9737b1822569e581338b",
+    "crates/om-llm/src/single_turn/build.rs": "508fac6ecf120128973fe7205f6f13801bee40f36d676fee88e31caafbbc3c72",
+    "crates/om-llm/src/single_turn/decode.rs": "5dbb01ce7efd7ed1c479c907c5ac4ba6855312b64e57a741a7b19c3db3c3c80f",
+    "crates/om-llm/src/single_turn/mod.rs": "9bd6dc24368a733f76b740167f6d57d73f09c284e9cb5c324ff03c7663aa61dc",
+    "crates/om-llm/src/single_turn/types.rs": "7c2a777b66f9d60bc5b70a4cde0f6c7bc68c16e9ba87214fc0e558dc10efae7d",
+    "docs/design/native-contract-inputs.json": "43b9f5b85f069ee8127517ad0991a7c2c24a4e1cb7097aa38973be3b0d532675",
+    "docs/design/native-host-abi.json": "25ebebedce75d6ff2dbf7964321ad4bfd23b4a36eb9226da577c5f70d67b66b3",
+    "docs/design/native-model-codec.schema.json": "abd34061a53aa2d738196737dcf0f82256ba02826054ae6d8a476e0d739815c2",
+    "macos/Headers/OpenMathHost.h": "bf21a960847c73abca4da69994a2b8227db567c5ffd7dcbf01b2029459a71acf",
+    "macos/OpenMathNative.xcodeproj/project.pbxproj": "7e1f56a177571538147c76d0af24af44d322b852166516a7ca542c90c94be9b2",
+    "macos/OpenMathNative/Agent/AgentNativeModelPort.swift": "bb86540432eabe9d3adc7530eaa8ee3030dbe29ecd84e528b57e9ea3c8bd2e73",
+    "macos/OpenMathNative/Agent/AgentSessionService.swift": "3bfad28d24b1301df5e73d346ef663169b1161b492e3486cde3fba4860894cc7",
+    "macos/OpenMathNative/Generated/Contracts/NativeModelCodecCancel.swift": "1ab022753318fdc1932138864db84879b10e34f6c991b9e8663e96600d7381ba",
+    "macos/OpenMathNative/Generated/Contracts/NativeModelCodecCancelType.swift": "43bb66aee162e4be2d02d8c76a7a3dcc5e999d7210bf2113c6968cc2309c40d0",
+    "macos/OpenMathNative/Generated/Contracts/NativeModelCodecCommand.swift": "6c05c999a93140ec36e0b4718ff691d1caa794e922f43ee8898d26c74129e002",
+    "macos/OpenMathNative/Generated/Contracts/NativeModelCodecFeed.swift": "6b67241c17378a741ecf0be538c4b86bd38bb5a486a7d5886f51765b6d078c51",
+    "macos/OpenMathNative/Generated/Contracts/NativeModelCodecFeedType.swift": "ed1edb1ec301ad70a716f88ddb6b73c80f7a57b6e2af2d3a070e60eabc7270d2",
+    "macos/OpenMathNative/Generated/Contracts/NativeModelCodecFinish.swift": "03dc6c3559b9f9f0352f75e5136dfadb3a3631a8a902b6e827c4d11b91db821a",
+    "macos/OpenMathNative/Generated/Contracts/NativeModelCodecFinishType.swift": "9081ff987384cf29d8170b023dc598293c4def621ef011c99b8a336de2ed4495",
+    "macos/OpenMathNative/Generated/Contracts/NativeModelCodecHeaders.swift": "7fe9abca4eb5a203b23f73b0c18741e239002976405240027f6b02a594fa9ad6",
+    "macos/OpenMathNative/Generated/Contracts/NativeModelCodecHeadersType.swift": "240af0f2a4f81688673c9b0747869f2578b3f3ac70e46ef78d660ab3778f4f33",
+    "macos/OpenMathNative/Generated/Contracts/NativeModelCodecPrepare.swift": "0127e27f1004f3dd95f349d9b9b47c4ffe4389e1ab6be46c04dafff103997efe",
+    "macos/OpenMathNative/Generated/Contracts/NativeModelCodecPrepareType.swift": "a9388d73ccec782d96e2ea787db7932ca3e7abd42127903f37163b798ef4a367",
+    "macos/OpenMathNative/Generated/Contracts/NativeModelCodecReply.swift": "1d650d510a8321d0c83a61a7dd8730628e749ca8f2d9ff58c3044e08a376eea1",
+    "macos/OpenMathNative/Generated/Contracts/NativeModelCodecReplyErrorCode.swift": "6dcc19a848d160adcc7f931e584e5ebe20ed4aa9ea7a518057f7ede9e092a4f4",
+    "macos/OpenMathNative/Generated/Contracts/NativeModelCodecReplyPhase.swift": "058a8ee02a783e8c611a531719f34a1ea5a5f3837e3b068f6cdafa9ae2d3744f",
+    "macos/OpenMathNative/Models/ProviderAgentModelAdapter.swift": "257f11acd090d573183aa702c082e3426b315b01ab3770f913a687b08989e1b9",
+    "macos/OpenMathNative/Models/ProviderTransport.swift": "c92e61de49309e8b20b9efd120c705039235fd18f7f2c90054843a566dfbf25c",
+    "macos/OpenMathNative/Models/SecretStore.swift": "dd3cf35a3827552fe0336f070955ab4630b68a1434bcb852b3c8009179642e4b",
+    "macos/OpenMathNative/NativeHostClient.swift": "4f600369f74427bd72a1fe66946cb8e09686cebeb125679c72b3938b42c88b3b",
+    "macos/OpenMathNativeTests/ProviderLiveFixtures/main.swift": "baa21ba7c1cbf123aaf655843538c2fef1e98fad8d24375578fe957e996938e3",
+    "macos/OpenMathNativeTests/ProviderTransportFixtures/main.swift": "d159602e4e2c0d112bf19795a45bfa15c35c77acbe7257ed4cbe8deb020adc68",
+    "macos/OpenMathNativeTests/SecretStoreFixtures/main.swift": "cffb79184371074805f675eb52c755847142322068addc4ad2d4112290d930b6",
+    "macos/Scripts/probe-provider-transport.sh": "ecfa05f1f8e8e9036ce0edf6a3b9f8b804ad7e3f35363fdb2d5fa5801a79da03",
+    "macos/Scripts/test-provider-transport.sh": "f52cb28aeb55896cbefa9634e2c05d3fb721518674bc1274a6a65820785a4ff5",
+    "macos/Scripts/test-secret-store.sh": "cc7de04061ce84e17888a95777ae5733c249c44961a9edeb616f8a661f6b306d",
+    "scripts/native_contracts.py": "d510f3494ebb98596c9f243d1214832a1078d725752aec8b28f0d36a8f2fe3f8"
+  },
+  "files": [
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/provider-transport-raw/21a08e5-ci-jobs.json",
+      "bytes": 339,
+      "sha256": "1826d482b466ccaffd6f15014344223f41cdb0184e6d8ff659fc7f0c2a5ba16e"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/provider-transport-raw/21a08e5-ci-summary.json",
+      "bytes": 192,
+      "sha256": "817f7cd56ee7c5080194b3bcdd59cfbe7882bc42dedfd4e7770091a737fb9586"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/provider-transport-raw/actual-http-cases.json",
+      "bytes": 122898,
+      "sha256": "5dbc2c5db292ec8ddec6f20a4c7d28ed2e401165a9977340b09db6a58bf6e5b7"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/provider-transport-raw/actual-native-events.json",
+      "bytes": 132358,
+      "sha256": "50a41af221c26d005b21ec5ee97746c69e9c10e6ae3a7646913ad51192cea28e"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/provider-transport-raw/commands.json",
+      "bytes": 1171,
+      "sha256": "2752c79d0d68ece0b2dca046d1eaeecdaae2a37090723409d59e3f2b7ea28a16"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/provider-transport-raw/inputs/.github/workflows/macos-native.yml",
+      "bytes": 9030,
+      "sha256": "706bcede7b085b527014bfd8dcb5e1407ab51dec4387dc655118731ba11fba21"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/provider-transport-raw/inputs/crates/om-apple-ffi/src/ffi.rs",
+      "bytes": 13464,
+      "sha256": "0a22cb0a0ff6434aa421ad7b89a6bb3c18112786858d5a822e480e28ef253dcb"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/provider-transport-raw/inputs/crates/om-host-service/Cargo.toml",
+      "bytes": 651,
+      "sha256": "b34ffd3b073234b1d01326f5052020524dfe01b1b7c7a15fc91822ef0bd51705"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/provider-transport-raw/inputs/crates/om-host-service/src/lib.rs",
+      "bytes": 804,
+      "sha256": "44a0d6ac5e2c36f15bb80a35fe089a026268c16973451c205e9cd79d2f6a664c"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/provider-transport-raw/inputs/crates/om-host-service/src/model/mod.rs",
+      "bytes": 7395,
+      "sha256": "494a941c627464d3371fae41d1909bda3303c5306c4d5f3317a350364a97ad18"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/provider-transport-raw/inputs/crates/om-host-service/src/protocol/generated/mod.rs",
+      "bytes": 23084,
+      "sha256": "5b6a9a4c3a3a61ebb1c924c061bfb154822caedd53154e4190f8a187bee58e12"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/provider-transport-raw/inputs/crates/om-host-service/src/protocol/generated/native_model_codec_cancel.rs",
+      "bytes": 700,
+      "sha256": "3808cc34b83410b34210a3936100069dcd3733713cbfeac695933055153f0761"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/provider-transport-raw/inputs/crates/om-host-service/src/protocol/generated/native_model_codec_cancel_type.rs",
+      "bytes": 352,
+      "sha256": "641fe039a60f97f411329cd1f09f0a4daa171e8f3939ada87bf46afc260c1ace"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/provider-transport-raw/inputs/crates/om-host-service/src/protocol/generated/native_model_codec_command.rs",
+      "bytes": 714,
+      "sha256": "1a1153d0038df8031419923382bdb0d8836021988a3ee2db47537ac33ed191cf"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/provider-transport-raw/inputs/crates/om-host-service/src/protocol/generated/native_model_codec_feed.rs",
+      "bytes": 747,
+      "sha256": "7da6178f659c08234d1e8df416f05f6774f90b36e206c0769b31758340782932"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/provider-transport-raw/inputs/crates/om-host-service/src/protocol/generated/native_model_codec_feed_type.rs",
+      "bytes": 342,
+      "sha256": "84822812a50dacfd26d5718f647607d87c8e039dde6124c8ddcab8fb1e51a925"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/provider-transport-raw/inputs/crates/om-host-service/src/protocol/generated/native_model_codec_finish.rs",
+      "bytes": 700,
+      "sha256": "ec3a4b843ba80075660c1f5e4fd606c9400f98c2e5c57f530e6aab7fa5e0f025"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/provider-transport-raw/inputs/crates/om-host-service/src/protocol/generated/native_model_codec_finish_type.rs",
+      "bytes": 352,
+      "sha256": "ba6503de1003b45297c66e8293447652e95717f5988237d37a1f6439653d0342"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/provider-transport-raw/inputs/crates/om-host-service/src/protocol/generated/native_model_codec_headers.rs",
+      "bytes": 759,
+      "sha256": "3214eaaf5f01155b6b53c0da54c3c695ae4102bb983168a50ce21fcf8b9bdc3b"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/provider-transport-raw/inputs/crates/om-host-service/src/protocol/generated/native_model_codec_headers_type.rs",
+      "bytes": 357,
+      "sha256": "84696a994c7964821abf43d0bf8c30a558f0229daf67fc41fbc162f5ca4e8fdd"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/provider-transport-raw/inputs/crates/om-host-service/src/protocol/generated/native_model_codec_prepare.rs",
+      "bytes": 1040,
+      "sha256": "d9114557e93d325e30890ca33f620d72d8101ebf4cf52ed9db0ca5329a9052de"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/provider-transport-raw/inputs/crates/om-host-service/src/protocol/generated/native_model_codec_prepare_type.rs",
+      "bytes": 357,
+      "sha256": "5fdbac00640784a095daa526bbec63240d5a4f994d9fbe27b753c31f2cf4584d"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/provider-transport-raw/inputs/crates/om-host-service/src/protocol/generated/native_model_codec_reply.rs",
+      "bytes": 1549,
+      "sha256": "95764e6480308492a36bfdddc6b66bfddb00e79729c7dc64bc64f7c8afbdbe9c"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/provider-transport-raw/inputs/crates/om-host-service/src/protocol/generated/native_model_codec_reply_error_code.rs",
+      "bytes": 1055,
+      "sha256": "092c8d47ccabcd6873c86df0ebac874180fd5a7861d328b52310cf22b3693203"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/provider-transport-raw/inputs/crates/om-host-service/src/protocol/generated/native_model_codec_reply_phase.rs",
+      "bytes": 733,
+      "sha256": "371471e81de15bd1fa84c854c71665924627b271e9df38d3143dfb6fdf09aabe"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/provider-transport-raw/inputs/crates/om-host-service/src/scheduler/mod.rs",
+      "bytes": 23167,
+      "sha256": "47574bc8c76f4536fdf136c1683b50c62419a82270af66422fa42f990c080afc"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/provider-transport-raw/inputs/crates/om-host-service/tests/model_codec.rs",
+      "bytes": 5517,
+      "sha256": "8026797497a40a15899953b82e33ec1346303f0a17bc9737b1822569e581338b"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/provider-transport-raw/inputs/crates/om-llm/src/single_turn/build.rs",
+      "bytes": 13888,
+      "sha256": "508fac6ecf120128973fe7205f6f13801bee40f36d676fee88e31caafbbc3c72"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/provider-transport-raw/inputs/crates/om-llm/src/single_turn/decode.rs",
+      "bytes": 30454,
+      "sha256": "5dbb01ce7efd7ed1c479c907c5ac4ba6855312b64e57a741a7b19c3db3c3c80f"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/provider-transport-raw/inputs/crates/om-llm/src/single_turn/mod.rs",
+      "bytes": 999,
+      "sha256": "9bd6dc24368a733f76b740167f6d57d73f09c284e9cb5c324ff03c7663aa61dc"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/provider-transport-raw/inputs/crates/om-llm/src/single_turn/types.rs",
+      "bytes": 8872,
+      "sha256": "7c2a777b66f9d60bc5b70a4cde0f6c7bc68c16e9ba87214fc0e558dc10efae7d"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/provider-transport-raw/inputs/docs/design/native-contract-inputs.json",
+      "bytes": 1471,
+      "sha256": "43b9f5b85f069ee8127517ad0991a7c2c24a4e1cb7097aa38973be3b0d532675"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/provider-transport-raw/inputs/docs/design/native-host-abi.json",
+      "bytes": 3708,
+      "sha256": "25ebebedce75d6ff2dbf7964321ad4bfd23b4a36eb9226da577c5f70d67b66b3"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/provider-transport-raw/inputs/docs/design/native-model-codec.schema.json",
+      "bytes": 6999,
+      "sha256": "abd34061a53aa2d738196737dcf0f82256ba02826054ae6d8a476e0d739815c2"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/provider-transport-raw/inputs/macos/Headers/OpenMathHost.h",
+      "bytes": 2086,
+      "sha256": "bf21a960847c73abca4da69994a2b8227db567c5ffd7dcbf01b2029459a71acf"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/provider-transport-raw/inputs/macos/OpenMathNative/Agent/AgentNativeModelPort.swift",
+      "bytes": 333,
+      "sha256": "bb86540432eabe9d3adc7530eaa8ee3030dbe29ecd84e528b57e9ea3c8bd2e73"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/provider-transport-raw/inputs/macos/OpenMathNative/Agent/AgentSessionService.swift",
+      "bytes": 17134,
+      "sha256": "3bfad28d24b1301df5e73d346ef663169b1161b492e3486cde3fba4860894cc7"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/provider-transport-raw/inputs/macos/OpenMathNative/Generated/Contracts/NativeModelCodecCancel.swift",
+      "bytes": 1243,
+      "sha256": "1ab022753318fdc1932138864db84879b10e34f6c991b9e8663e96600d7381ba"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/provider-transport-raw/inputs/macos/OpenMathNative/Generated/Contracts/NativeModelCodecCancelType.swift",
+      "bytes": 184,
+      "sha256": "43bb66aee162e4be2d02d8c76a7a3dcc5e999d7210bf2113c6968cc2309c40d0"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/provider-transport-raw/inputs/macos/OpenMathNative/Generated/Contracts/NativeModelCodecCommand.swift",
+      "bytes": 1595,
+      "sha256": "6c05c999a93140ec36e0b4718ff691d1caa794e922f43ee8898d26c74129e002"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/provider-transport-raw/inputs/macos/OpenMathNative/Generated/Contracts/NativeModelCodecFeed.swift",
+      "bytes": 1388,
+      "sha256": "6b67241c17378a741ecf0be538c4b86bd38bb5a486a7d5886f51765b6d078c51"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/provider-transport-raw/inputs/macos/OpenMathNative/Generated/Contracts/NativeModelCodecFeedType.swift",
+      "bytes": 178,
+      "sha256": "ed1edb1ec301ad70a716f88ddb6b73c80f7a57b6e2af2d3a070e60eabc7270d2"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/provider-transport-raw/inputs/macos/OpenMathNative/Generated/Contracts/NativeModelCodecFinish.swift",
+      "bytes": 1243,
+      "sha256": "03dc6c3559b9f9f0352f75e5136dfadb3a3631a8a902b6e827c4d11b91db821a"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/provider-transport-raw/inputs/macos/OpenMathNative/Generated/Contracts/NativeModelCodecFinishType.swift",
+      "bytes": 184,
+      "sha256": "9081ff987384cf29d8170b023dc598293c4def621ef011c99b8a336de2ed4495"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/provider-transport-raw/inputs/macos/OpenMathNative/Generated/Contracts/NativeModelCodecHeaders.swift",
+      "bytes": 1402,
+      "sha256": "7fe9abca4eb5a203b23f73b0c18741e239002976405240027f6b02a594fa9ad6"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/provider-transport-raw/inputs/macos/OpenMathNative/Generated/Contracts/NativeModelCodecHeadersType.swift",
+      "bytes": 187,
+      "sha256": "240af0f2a4f81688673c9b0747869f2578b3f3ac70e46ef78d660ab3778f4f33"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/provider-transport-raw/inputs/macos/OpenMathNative/Generated/Contracts/NativeModelCodecPrepare.swift",
+      "bytes": 2222,
+      "sha256": "0127e27f1004f3dd95f349d9b9b47c4ffe4389e1ab6be46c04dafff103997efe"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/provider-transport-raw/inputs/macos/OpenMathNative/Generated/Contracts/NativeModelCodecPrepareType.swift",
+      "bytes": 187,
+      "sha256": "a9388d73ccec782d96e2ea787db7932ca3e7abd42127903f37163b798ef4a367"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/provider-transport-raw/inputs/macos/OpenMathNative/Generated/Contracts/NativeModelCodecReply.swift",
+      "bytes": 3782,
+      "sha256": "1d650d510a8321d0c83a61a7dd8730628e749ca8f2d9ff58c3044e08a376eea1"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/provider-transport-raw/inputs/macos/OpenMathNative/Generated/Contracts/NativeModelCodecReplyErrorCode.swift",
+      "bytes": 431,
+      "sha256": "6dcc19a848d160adcc7f931e584e5ebe20ed4aa9ea7a518057f7ede9e092a4f4"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/provider-transport-raw/inputs/macos/OpenMathNative/Generated/Contracts/NativeModelCodecReplyPhase.swift",
+      "bytes": 315,
+      "sha256": "058a8ee02a783e8c611a531719f34a1ea5a5f3837e3b068f6cdafa9ae2d3744f"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/provider-transport-raw/inputs/macos/OpenMathNative/Models/ProviderAgentModelAdapter.swift",
+      "bytes": 4420,
+      "sha256": "257f11acd090d573183aa702c082e3426b315b01ab3770f913a687b08989e1b9"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/provider-transport-raw/inputs/macos/OpenMathNative/Models/ProviderTransport.swift",
+      "bytes": 16250,
+      "sha256": "c92e61de49309e8b20b9efd120c705039235fd18f7f2c90054843a566dfbf25c"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/provider-transport-raw/inputs/macos/OpenMathNative/Models/SecretStore.swift",
+      "bytes": 3307,
+      "sha256": "dd3cf35a3827552fe0336f070955ab4630b68a1434bcb852b3c8009179642e4b"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/provider-transport-raw/inputs/macos/OpenMathNative/NativeHostClient.swift",
+      "bytes": 16699,
+      "sha256": "4f600369f74427bd72a1fe66946cb8e09686cebeb125679c72b3938b42c88b3b"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/provider-transport-raw/inputs/macos/OpenMathNative.xcodeproj/project.pbxproj",
+      "bytes": 149185,
+      "sha256": "7e1f56a177571538147c76d0af24af44d322b852166516a7ca542c90c94be9b2"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/provider-transport-raw/inputs/macos/OpenMathNativeTests/ProviderLiveFixtures/main.swift",
+      "bytes": 3419,
+      "sha256": "baa21ba7c1cbf123aaf655843538c2fef1e98fad8d24375578fe957e996938e3"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/provider-transport-raw/inputs/macos/OpenMathNativeTests/ProviderTransportFixtures/main.swift",
+      "bytes": 19417,
+      "sha256": "d159602e4e2c0d112bf19795a45bfa15c35c77acbe7257ed4cbe8deb020adc68"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/provider-transport-raw/inputs/macos/OpenMathNativeTests/SecretStoreFixtures/main.swift",
+      "bytes": 3593,
+      "sha256": "cffb79184371074805f675eb52c755847142322068addc4ad2d4112290d930b6"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/provider-transport-raw/inputs/macos/Scripts/probe-provider-transport.sh",
+      "bytes": 869,
+      "sha256": "ecfa05f1f8e8e9036ce0edf6a3b9f8b804ad7e3f35363fdb2d5fa5801a79da03"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/provider-transport-raw/inputs/macos/Scripts/test-provider-transport.sh",
+      "bytes": 998,
+      "sha256": "f52cb28aeb55896cbefa9634e2c05d3fb721518674bc1274a6a65820785a4ff5"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/provider-transport-raw/inputs/macos/Scripts/test-secret-store.sh",
+      "bytes": 414,
+      "sha256": "cc7de04061ce84e17888a95777ae5733c249c44961a9edeb616f8a661f6b306d"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/provider-transport-raw/inputs/scripts/native_contracts.py",
+      "bytes": 14563,
+      "sha256": "d510f3494ebb98596c9f243d1214832a1078d725752aec8b28f0d36a8f2fe3f8"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/provider-transport-raw/legacy-pi-regression/actual-codec-input.json",
+      "bytes": 1300,
+      "sha256": "13099e7bedc1fae3a266dd8b469e69684e2c3049a9b0e5e997692505ac344e5d"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/provider-transport-raw/legacy-pi-regression/actual-codec-output.json",
+      "bytes": 1453,
+      "sha256": "59fe161942780c2da0f282727d4a74bb84a413776a8fc56ef0002cc2bcb78c5b"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/provider-transport-raw/legacy-pi-regression/actual-production-ledger.json",
+      "bytes": 3715,
+      "sha256": "447cb1bf04016c5679bfaef18c87e5656c3dbd8bd539b40513b71d136fe36ad6"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/provider-transport-raw/legacy-pi-regression/actual-production-wire.json",
+      "bytes": 10758,
+      "sha256": "b8302dcc9ecce1e3e07eb897b821a98ac151f02afff32d0d8f200bb8e9049b3a"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/provider-transport-raw/model-codec-channel-initial.log",
+      "bytes": 543,
+      "sha256": "fd0405409b1a055513c53f55f74d6587bc65db8e5cdfd224c643a2c834e9d28a"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/provider-transport-raw/model-codec-clippy-initial.log",
+      "bytes": 1348,
+      "sha256": "2861ab1ba209f3e9b50445e5a0a594cfa7070e995013afb5bccc2320ce2c656f"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/provider-transport-raw/model-codec-tests-initial.log",
+      "bytes": 1602,
+      "sha256": "6efc98e75302ae0e63d4c79c09ba4254e3e474bf9c95a6c0d320a09ecb814a2c"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/provider-transport-raw/provider-adapter-initial.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/provider-transport-raw/provider-clippy-final.log",
+      "bytes": 60,
+      "sha256": "e7a0e788c2f011df0653279f56cd58dcca091a34d28573a86e1b886eaa34b4d9"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/provider-transport-raw/provider-ffi-release-initial.log",
+      "bytes": 546,
+      "sha256": "03bf1b79b0db6d094b44d598bb50f161f2fdc8e313e393688f190ffabfe3ce22"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/provider-transport-raw/provider-live-swift-initial.log",
+      "bytes": 651,
+      "sha256": "6f6a638fde31e086243b5b49728fb1340d06e332a287b2611b2a30aa7e2e095a"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/provider-transport-raw/provider-native-regression.log",
+      "bytes": 2156,
+      "sha256": "32c79458296942862fff4d66c164ff010225796215c6485df7291a2eea4dfd4f"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/provider-transport-raw/provider-pi-regression.log",
+      "bytes": 854,
+      "sha256": "91ca540a671878ab3f3d392386c1dc30ae261cd8488a7950dc1049177100db65"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/provider-transport-raw/provider-python-contracts.log",
+      "bytes": 2835,
+      "sha256": "bb5ff8b1c23727ad4c5651b81cb9d1693efdccaee572498beb553d4494e13126"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/provider-transport-raw/provider-release-final.log",
+      "bytes": 119583,
+      "sha256": "1767c1a70267eac51960476faffa58d1d75d7cf63146449b3f0d8ee4e802ead7"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/provider-transport-raw/provider-rust-regression.log",
+      "bytes": 25242,
+      "sha256": "d383b49ac3f516f9b39943af56ab51044eb377c4efa3159bc2a30936d98ca723"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/provider-transport-raw/provider-signature-final.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/provider-transport-raw/provider-swift-initial.log",
+      "bytes": 2469,
+      "sha256": "e78cb63a50fea2cebba316e6a6a47169fde88738979d78eb6f35e2fcd79c1792"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/provider-transport-raw/provider-swift-verified.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/provider-transport-raw/provider-transport-adapter-initial.log",
+      "bytes": 358,
+      "sha256": "6d9ae3941591bc2ae1000ac73a6ceaf4f3691779eef6bc8ff9ee2e4c47c0649c"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/provider-transport-raw/provider-transport-evidence-final.log",
+      "bytes": 2139,
+      "sha256": "2224c306f828f8a968f9962ff7688b3294e6161730f978288e7ab9b0be1aa50e"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/provider-transport-raw/provider-transport-evidence-verified.log",
+      "bytes": 451,
+      "sha256": "885679582b9f306315b359a62aa697f78acef4374a916991d0dbe209e458e946"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/provider-transport-raw/provider-transport-fifth.log",
+      "bytes": 559,
+      "sha256": "78e0caa0db35fa1de2cc728b294850029f4351d48eaf6e5dfad159f78bf4b188"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/provider-transport-raw/provider-transport-final.log",
+      "bytes": 358,
+      "sha256": "7674031ce1468025f98d788a696c027400295163ade9390ac0e1804e5086e61b"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/provider-transport-raw/provider-transport-fourth.log",
+      "bytes": 285,
+      "sha256": "53e72adb34318e442778051d9912eb274f3d8b8b5e906cb9284dbecc7516c24b"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/provider-transport-raw/provider-transport-initial.log",
+      "bytes": 4058,
+      "sha256": "79598d03ca800218c0e041afa7aaf2b400498223f7708b011928a00e05465ae1"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/provider-transport-raw/provider-transport-second.log",
+      "bytes": 8287,
+      "sha256": "947eb2b830baa5d8e8a9c717bad433344ede73d03c1815f0252e0ae3ecf50ec1"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/provider-transport-raw/provider-transport-third.log",
+      "bytes": 1455,
+      "sha256": "45bec57a5bf666b7c89ad2781c8a20c09100a19e82dea121e133cca940ffc51a"
+    },
+    {
+      "path": "docs/acceptance/pre-alpha.4/development/r43/provider-transport-raw/secret-store-dp-verified.log",
+      "bytes": 200,
+      "sha256": "766281fc3d3507fd34d995be95c2ddc389bf98c634696bc0d46e732dfe7fb998"
+    }
+  ]
+}

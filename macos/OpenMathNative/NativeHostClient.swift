@@ -26,6 +26,8 @@ private enum NativeHostQueues {
   static let recovery = DispatchQueue(label: "org.openmath.native.recovery", qos: .userInitiated)
   static let kernel = DispatchQueue(label: "org.openmath.native.kernel.control", qos: .userInitiated)
   static let agent = DispatchQueue(label: "org.openmath.native.agent.control", qos: .userInitiated)
+  static let model = DispatchQueue(label: "org.openmath.native.model.codec", qos: .userInitiated)
+  static let modelCancel = DispatchQueue(label: "org.openmath.native.model.cancel", qos: .userInitiated)
   static let results = DispatchQueue(label: "org.openmath.native.results.control", qos: .userInitiated)
   static let cancel = DispatchQueue(label: "org.openmath.native.cancel", qos: .userInitiated)
   static let shutdown = DispatchQueue(label: "org.openmath.native.shutdown", qos: .utility)
@@ -34,6 +36,20 @@ private enum NativeHostQueues {
 enum NativeHostClientError: Error, Sendable {
   case rejected(HostError), closing, emptyBuffer, incompatibleVersion, invalidReply, status(Int32)
 }
+/// Synchronous revocation reaches a native HTTP task even while an actor/ledger is suspended.
+final class NativeModelLifetime:@unchecked Sendable {
+  private let lock=NSLock()
+  private var closed=false,hook:(@Sendable ()->Void)?
+  var isClosed:Bool {lock.withLock {closed}}
+  func bind(_ callback:@escaping @Sendable ()->Void) {
+    let invoke=lock.withLock {if closed{return true};hook=callback;return false}
+    if invoke {callback()}
+  }
+  func close() {
+    let callback=lock.withLock {()->(@Sendable ()->Void)? in guard !closed else {return nil};closed=true;let value=hook;hook=nil;return value}
+    callback?()
+  }
+}
 
 /// Transport only: it owns ABI lifetime, not a second document or a synthesized success state.
 /// All encoding, bounded polling, decoding/freeing and owner joins execute off the caller actor.
@@ -41,6 +57,7 @@ actor NativeHostClient {
   let runtimeInstanceID: String
   private var handle: NativeHostHandle?
   private var closeTask:Task<Void,any Error>?
+  private var modelLifetimes:[String:NativeModelLifetime]=[:]
   private init(runtime: String, handle: NativeHostHandle) {
     runtimeInstanceID = runtime
     self.handle = handle
@@ -183,6 +200,26 @@ actor NativeHostClient {
       return reply
     }
   }
+  /// Pure model channel on its own queue; cancellation never waits for the CAS owner.
+  func modelCodecCommand(_ command:NativeModelCodecCommand) async throws->NativeModelCodecReply {
+    guard let handle else {throw NativeHostClientError.closing}
+    let runtime=runtimeInstanceID
+    let cancelling:Bool
+    if case .native_model_codec_cancel=command {cancelling=true} else {cancelling=false}
+    return try await Self.background(cancelling ? NativeHostQueues.modelCancel:NativeHostQueues.model) {
+      let data=try JSONEncoder().encode(command)
+      guard data.count<=2*1024*1024 else {throw NativeHostClientError.invalidReply}
+      let buffer=data.withUnsafeBytes {om_host_model_codec_command(handle.pointer,$0.bindMemory(to:UInt8.self).baseAddress,$0.count)}
+      let reply:NativeModelCodecReply=try Self.read(buffer)
+      guard reply.protocol_version==1,reply.runtime_instance_id==runtime else {throw NativeHostClientError.invalidReply}
+      return reply
+    }
+  }
+  func registerModelLifetime(_ id:String,_ lifetime:NativeModelLifetime)throws {
+    guard handle != nil,closeTask==nil,modelLifetimes[id]==nil,modelLifetimes.count<8 else {lifetime.close();throw NativeHostClientError.closing}
+    modelLifetimes[id]=lifetime
+  }
+  func removeModelLifetime(_ id:String){modelLifetimes.removeValue(forKey:id)?.close()}
   /// Short final Rust owner check; prepared off MainActor and called by the physical SQL writer.
   func kernelBarrier(operation:String) async throws ->(@Sendable ()throws->Void) {
     guard let handle else {throw NativeHostClientError.closing}
@@ -220,6 +257,7 @@ actor NativeHostClient {
   }
   /// Callers stop their event consumer first. Outstanding C calls are guarded and settled in Rust.
   func close() async throws {
+    for token in modelLifetimes.values {token.close()};modelLifetimes.removeAll()
     if let closeTask { return try await closeTask.value }
     guard let handle else { return }
     self.handle = nil

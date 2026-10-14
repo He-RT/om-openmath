@@ -1,0 +1,32 @@
+    Finished `release` profile [optimized] target(s) in 0.25s
+macos/OpenMathNativeTests/ProviderTransportFixtures/main.swift:32:160: error: ambiguous use of 'init'
+ 30 |   static let shared=Evidence()
+ 31 |   var facts:[[String:Any]]=[],frames:[String]=[]
+ 32 |   func record(_ fact:ProviderJournalFact){facts.append(["phase":fact.phase.rawValue,"request":fact.request,"context":fact.context,"status":fact.status.map(Int.init) as Any? ?? NSNull(),"outcome":fact.outcome.rawValue])}
+    |                                                                                                                                                                `- error: ambiguous use of 'init'
+ 33 |   func frame(_ event:AgentModelEventPayload)throws {frames.append(String(decoding:try JSONEncoder().encode(event),as:UTF8.self))}
+ 34 |   func save(_ root:URL)throws {try JSONSerialization.data(withJSONObject:["scope":"synthetic URLProtocol and credential; actual URLSession/Rust C ABI/Agent port","journal_callbacks":facts,"agent_frames_json":frames],options:[.sortedKeys]).write(to:root.appendingPathComponent("actual-native-events.json"))}
+
+Swift.SignedInteger.init:2:8: note: found this candidate in module 'Swift'
+1 | protocol SignedInteger {
+2 | public init?<T>(exactly source: T) where T : BinaryInteger}
+  |        `- note: found this candidate in module 'Swift'
+3 | 
+
+Swift.SignedInteger.init:2:8: note: found this candidate in module 'Swift'
+1 | protocol SignedInteger {
+2 | public init<T>(_ source: T) where T : BinaryInteger}
+  |        `- note: found this candidate in module 'Swift'
+3 | 
+
+Swift.FixedWidthInteger.init:2:19: note: found this candidate in module 'Swift'
+1 | protocol FixedWidthInteger {
+2 | @inlinable public init<T>(truncatingIfNeeded source: T) where T : BinaryInteger}
+  |                   `- note: found this candidate in module 'Swift'
+3 | 
+
+Swift.FixedWidthInteger.init:2:19: note: found this candidate in module 'Swift'
+1 | protocol FixedWidthInteger {
+2 | @inlinable public init<Other>(clamping source: Other) where Other : BinaryInteger}
+  |                   `- note: found this candidate in module 'Swift'
+3 | 

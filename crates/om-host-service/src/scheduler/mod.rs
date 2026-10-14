@@ -29,6 +29,7 @@ pub(crate) enum Control {
     Stop,
 }
 struct Shared {
+    model: Mutex<crate::model::ModelChannel>,
     source: Mutex<Option<crate::document::endpoint::SourceEndpoint>>,
     source_generation: Mutex<crate::protocol::Serial>,
     admission: Mutex<()>,
@@ -50,6 +51,7 @@ impl NativeHost {
         // Public safe callers cannot bypass bounds by constructing a DTO directly.
         wire::decode_init(&serde_json::to_vec(&init).map_err(|_| "INVALID_ARGUMENT")?)?;
         let shared = Arc::new(Shared {
+            model: Mutex::new(crate::model::ModelChannel::default()),
             source: Mutex::new(None),
             source_generation: Mutex::new(crate::protocol::Serial::new(0)?),
             admission: Mutex::new(()),
@@ -347,6 +349,17 @@ impl NativeHost {
             .ok_or("SOURCE_NOT_OPEN")?
             .agent_command(command)
     }
+    /// Independent pure model channel. It never takes source, kernel or event-owner locks.
+    pub fn model_codec_command(&self, bytes: &[u8]) -> Result<NativeModelCodecReply, String> {
+        if self.shared.closed.load(Ordering::Acquire) {
+            return Err("HOST_CLOSING".into());
+        }
+        let mut model = self.shared.model.lock().map_err(|_| "INTERNAL_ERROR")?;
+        if self.shared.closed.load(Ordering::Acquire) {
+            return Err("HOST_CLOSING".into());
+        }
+        model.command(&self.shared.runtime, bytes)
+    }
     /// Read retained real operation facts; unavailable IDs cannot be inferred to have never run.
     pub fn operation(&self, id: &str) -> Option<OperationStatus> {
         self.shared.operations.status(id)
@@ -412,6 +425,9 @@ impl NativeHost {
             return;
         };
         if !self.shared.closed.swap(true, Ordering::AcqRel) {
+            if let Ok(mut model) = self.shared.model.lock() {
+                model.close();
+            }
             if let Ok(mut phase) = self.shared.projection.lock() {
                 *phase = HostPhase::Closing;
             }

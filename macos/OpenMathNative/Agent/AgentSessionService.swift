@@ -10,11 +10,6 @@ struct SessionCanonicalAssistant:Codable,Sendable {
 struct AgentPipeReport:Sendable {var frames=0;var loopReason:AgentSettledPayloadReason?;var lastPhase:NativeAgentHostReplyPhase = .starting;var toolIntents:[String]=[];var requestIntents:[String]=[]}
 struct SessionCanonicalInput:Codable,Sendable {let codecVersion:Int,delivery:String,message:AgentCanonicalMessage}
 
-struct AgentPreparedRequest:Sendable {let context:String,model:String}
-struct AgentNativeModelPort:Sendable {
-  let prepare:@Sendable (NativeAgentRequestIntent)async throws->AgentPreparedRequest
-  let stream:@Sendable (NativeAgentRequestIntent)async throws->AsyncThrowingStream<AgentModelEventPayload,any Error>
-}
 struct AgentToolUnavailable:Codable,Sendable {let codecVersion:Int,kind:String,intent:NativeAgentToolIntent}
 
 /// One document-owned conversation port. Construction/recovery starts no model, tool or helper.

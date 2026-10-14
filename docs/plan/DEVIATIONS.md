@@ -621,3 +621,9 @@ L2使用精确标称GM分数、50位FindRoot/1000迭代和真实残差，报告�
 共享 canonical DTO/required-null/严格 JSON/schema 抽到无 IO 的 om-agent-contract，宿主继续 re-export 原名；原生成器平铺 staging 的同名 mod.rs 冲突已修复并保留初始失败。单轮 builder/decoder 不借旧 Job/LlmChat 多轮逻辑，Pi 是唯一循环；prepare 从同一快照冻结 body 与响应 scope。实际 provider model 可与配置别名不同，replay 匹配 immutable binding；usage缺失null，incomplete调用仅诊断。
 
 真实 Rust→固定 Pi（Chat/Anthropic）及原生私有帧/SQLite ACK 完成，native fixture 仅以测试可执行文件连接 codec，生产 Swift raw bytes/SecretStore 边界由下一 R4.3.04 实现。授权两模型实际SSE通过不是全Registry/工具/付费重试或发行gate。旧CI两性能/等待失败留证，不放宽1s/5s断言，不把本地12次成功冒称根因已修。R4.3.03 Done满足；32/98，66任务及完整最终门禁未完成。
+
+## D050 · 2026-10-14 独立模型通道与真实传输边界
+
+新增纯Rust model codec C ABI，独立mutex/Swift queue与不可复用request/context refs；不授工具/IO，不使用测试CLI作生产codec。URLSession单次请求，final auth、拒绝redirect/持久credential/cookies/cache、unknown dispatch不自动重发。Foundation当前可可靠计时的阶段是first headers/idle/total；拟定独立connect10s未实现，首响应60s包含connect，不伪装为独立预算。实际durable request journal/完整ContextSnapshot producer及物理锁屏未验，R4.3.04保持in_progress，32/98/66required不变。
+
+安装SDK SecItem.h确认Mac非同步解锁访问属性须显式kSecUseDataProtectionKeychain，D049只验证查询形状不足；已补真实DP标记和测试。原始并发编译/URLProtocol body被转为stream的失败保留，正确读取真实流后做原载荷断言。现有原生Agent端口携原canonical与usage/replay/finish，但上下文持久化由必需native callback供给，不以Pi内部数字carrier代替。

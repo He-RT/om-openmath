@@ -13,6 +13,7 @@ private final class QueryCapture: @unchecked Sendable {
     precondition(object[kSecMatchLimit] as? String == kSecMatchLimitOne as String)
     precondition((object[kSecUseAuthenticationContext] as? LAContext)?.interactionNotAllowed == true)
     precondition(object[kSecAttrSynchronizable] as? Bool == false)
+    precondition(object[kSecUseDataProtectionKeychain] as? Bool == true)
     lock.lock(); count += 1; lock.unlock()
   }
   var calls: Int { lock.lock(); defer { lock.unlock() }; return count }

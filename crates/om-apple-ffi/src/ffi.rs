@@ -253,6 +253,23 @@ pub unsafe extern "C" fn om_host_agent_command(
             .agent_command(&unsafe { copied_input(json, len, protocol::MAX_CONTROL_BYTES) }?)
     })
 }
+/// Trusted pure single-turn codec channel. No network/credentials/CAS or second model loop.
+/// # Safety
+/// `json` must point to len readable bytes during this call; NULL only for zero length.
+#[unsafe(no_mangle)]
+pub unsafe extern "C" fn om_host_model_codec_command(
+    host: *mut OmHostHandle,
+    json: *const u8,
+    len: usize,
+) -> OmHostBuffer {
+    packet(|| {
+        let guard = registry::acquire(host, false).map_err(str::to_owned)?;
+        // SAFETY: caller-readable input is bounded and copied before parsing.
+        guard
+            .host()
+            .model_codec_command(&unsafe { copied_input(json, len, protocol::MAX_CONTROL_BYTES) }?)
+    })
+}
 /// Signal the operation directly. 1=signalled, 0=terminal; negative codes are in the C header.
 /// # Safety
 /// `operation_id` must be readable for len bytes during this call; NULL only for len=0.

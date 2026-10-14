@@ -59,6 +59,7 @@ actor SecretStore {
       kSecMatchLimit as String: kSecMatchLimitOne,
       kSecReturnData as String: true,
       kSecAttrSynchronizable as String: false,
+      kSecUseDataProtectionKeychain as String: true,
       kSecUseAuthenticationContext as String: authentication,
     ]
     let (status, bytes) = reader(query as CFDictionary)

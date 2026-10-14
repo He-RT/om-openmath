@@ -1,0 +1,3 @@
+    Finished `release` profile [optimized] target(s) in 0.08s
+fixtures/main.swift:89: Fatal error: Unexpectedly found nil while unwrapping an Optional value
+macos/Scripts/test-provider-transport.sh: line 13: 17671 Trace/BPT trap: 5       target/macos-provider-transport-tests/fixtures

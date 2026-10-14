@@ -1,0 +1,2 @@
+    Finished `release` profile [optimized] target(s) in 0.20s
+Actual Swift URLSession -> original raw bytes -> Rust C ABI codec: UTF8, actual body/final auth, durable-before-resume, 401/429/no retry/error echo, redirect, first/idle/total timeout, pre-resume/active cancel, concurrent real CAS, route boundaries passed. Keychain physical lock-screen pending.

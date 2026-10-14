@@ -1,0 +1,304 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://openmath.dev/schemas/native-model-codec-v1.json",
+  "title": "Trusted native independent single-turn codec channel",
+  "description": "No URL, auth, HTTP or permission grant. One opaque codec frozen to native request/context/task/turn. Swift transport supplies actual status/raw bytes/EOF. Closing is terminal and channels never own a model/tool loop.",
+  "oneOf": [
+    {
+      "$ref": "#/$defs/NativeModelCodecCommand"
+    },
+    {
+      "$ref": "#/$defs/NativeModelCodecReply"
+    }
+  ],
+  "$defs": {
+    "Identity": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 256,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "NativeModelCodecPrepare": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "const": "model_codec_prepare"
+        },
+        "runtime_instance_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "request_ref": {
+          "$ref": "#/$defs/Identity"
+        },
+        "context_ref": {
+          "$ref": "#/$defs/Identity"
+        },
+        "task_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "agent_turn_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "message_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "request_json": {
+          "type": "string",
+          "maxLength": 1048576
+        }
+      },
+      "required": [
+        "type",
+        "runtime_instance_id",
+        "request_ref",
+        "context_ref",
+        "task_id",
+        "agent_turn_id",
+        "message_id",
+        "request_json"
+      ],
+      "additionalProperties": false
+    },
+    "NativeModelCodecHeaders": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "const": "model_codec_headers"
+        },
+        "runtime_instance_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "codec_ref": {
+          "$ref": "#/$defs/Identity"
+        },
+        "status": {
+          "type": "integer",
+          "minimum": 100,
+          "maximum": 599
+        }
+      },
+      "required": [
+        "type",
+        "runtime_instance_id",
+        "codec_ref",
+        "status"
+      ],
+      "additionalProperties": false
+    },
+    "NativeModelCodecFeed": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "const": "model_codec_feed"
+        },
+        "runtime_instance_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "codec_ref": {
+          "$ref": "#/$defs/Identity"
+        },
+        "bytes": {
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 255
+          },
+          "maxItems": 8192
+        }
+      },
+      "required": [
+        "type",
+        "runtime_instance_id",
+        "codec_ref",
+        "bytes"
+      ],
+      "additionalProperties": false
+    },
+    "NativeModelCodecFinish": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "const": "model_codec_finish"
+        },
+        "runtime_instance_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "codec_ref": {
+          "$ref": "#/$defs/Identity"
+        }
+      },
+      "required": [
+        "type",
+        "runtime_instance_id",
+        "codec_ref"
+      ],
+      "additionalProperties": false
+    },
+    "NativeModelCodecCancel": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "const": "model_codec_cancel"
+        },
+        "runtime_instance_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "codec_ref": {
+          "$ref": "#/$defs/Identity"
+        }
+      },
+      "required": [
+        "type",
+        "runtime_instance_id",
+        "codec_ref"
+      ],
+      "additionalProperties": false
+    },
+    "NativeModelCodecCommand": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/NativeModelCodecPrepare"
+        },
+        {
+          "$ref": "#/$defs/NativeModelCodecHeaders"
+        },
+        {
+          "$ref": "#/$defs/NativeModelCodecFeed"
+        },
+        {
+          "$ref": "#/$defs/NativeModelCodecFinish"
+        },
+        {
+          "$ref": "#/$defs/NativeModelCodecCancel"
+        }
+      ]
+    },
+    "NativeModelCodecReply": {
+      "type": "object",
+      "properties": {
+        "protocol_version": {
+          "type": "integer",
+          "const": 1
+        },
+        "runtime_instance_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "codec_ref": {
+          "$ref": "#/$defs/Identity"
+        },
+        "request_ref": {
+          "$ref": "#/$defs/Identity"
+        },
+        "context_ref": {
+          "$ref": "#/$defs/Identity"
+        },
+        "task_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "agent_turn_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "message_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "phase": {
+          "type": "string",
+          "enum": [
+            "prepared",
+            "headers",
+            "streaming",
+            "decoded",
+            "failed",
+            "cancelled"
+          ]
+        },
+        "stream": {
+          "type": "boolean"
+        },
+        "body_json": {
+          "anyOf": [
+            {
+              "type": "string",
+              "maxLength": 2097152
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "text_deltas": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "maxLength": 262144
+          },
+          "maxItems": 128
+        },
+        "result_json": {
+          "anyOf": [
+            {
+              "type": "string",
+              "maxLength": 4194304
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "error_code": {
+          "anyOf": [
+            {
+              "type": "string",
+              "enum": [
+                "input",
+                "unsupported",
+                "replay",
+                "response",
+                "incomplete",
+                "limit",
+                "http",
+                "cancelled",
+                "closed",
+                "provider"
+              ]
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "http_status": {
+          "anyOf": [
+            {
+              "type": "integer",
+              "minimum": 100,
+              "maximum": 599
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "protocol_version",
+        "runtime_instance_id",
+        "codec_ref",
+        "request_ref",
+        "context_ref",
+        "task_id",
+        "agent_turn_id",
+        "message_id",
+        "phase",
+        "stream",
+        "body_json",
+        "text_deltas",
+        "result_json",
+        "error_code",
+        "http_status"
+      ],
+      "additionalProperties": false
+    }
+  }
+}

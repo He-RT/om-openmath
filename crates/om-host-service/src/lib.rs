@@ -1,5 +1,7 @@
 //! Framework-independent native host protocol and authoritative coordination services.
 #![forbid(unsafe_code)]
+/// Independent native single-turn model codec channel; no network or authority.
+pub mod model;
 pub mod protocol;
 
 /// Independent native owners, queues and operation cancellation.

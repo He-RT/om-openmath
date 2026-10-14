@@ -1,0 +1,64 @@
+   Compiling om-host-service v0.1.0-pre-alpha.3 (/Users/hert/Projects/openmath/crates/om-host-service)
+   Compiling om-apple-ffi v0.1.0-pre-alpha.3 (/Users/hert/Projects/openmath/crates/om-apple-ffi)
+    Finished `release` profile [optimized] target(s) in 29.56s
+macos/OpenMathNativeTests/ProviderTransportFixtures/main.swift:22:10: error: passing closure as a 'sending' parameter risks causing data races between code in the current isolation context and concurrent execution of the closure [#RegionIsolation::SendingClosureRisksDataRace]
+ 20 |   override func startLoading() {
+ 21 |     let script=Self.state.started(request)
+ 22 |     work=Task { [self] in
+    |          `- error: passing closure as a 'sending' parameter risks causing data races between code in the current isolation context and concurrent execution of the closure [#RegionIsolation::SendingClosureRisksDataRace]
+ 23 |       do {
+ 24 |         try await Task.sleep(for:.seconds(script.delay))
+ 25 |         if let target=script.redirect {
+ 26 |           let response=HTTPURLResponse(url:request.url!,statusCode:302,httpVersion:"HTTP/1.1",headerFields:["Location":target.absoluteString])!
+    |                                            `- note: closure captures 'self' which is accessible to code in the current isolation context
+ 27 |           client?.urlProtocol(self,wasRedirectedTo:URLRequest(url:target),redirectResponse:response);return
+ 28 |         }
+
+macos/OpenMathNativeTests/ProviderTransportFixtures/main.swift:88:33: error: sending value of non-Sendable type '() async throws -> ProviderModelResult' risks causing data races [#RegionIsolation::SendingRisksDataRace]
+ 86 |     let body=try JSONSerialization.jsonObject(with:captured[0].httpBody!) as! [String:Any];precondition(body["model"] as? String=="configured-alias" && body["api_key"]==nil)
+ 87 |     let phases=await trace.phases.map(\.phase);precondition(phases==[.dispatchStarted,.responseStarted,.finished])
+ 88 |     let repeatFailure=try await failure {try await transport.send(model,route:route(model,normal),journal:await trace.journal(),onText:{_ in})};precondition(repeatFailure.reason == .stale && FixtureProtocol.state.count==1)
+    |                                 |- error: sending value of non-Sendable type '() async throws -> ProviderModelResult' risks causing data races [#RegionIsolation::SendingRisksDataRace]
+    |                                 `- note: sending main actor-isolated value of non-Sendable type '() async throws -> ProviderModelResult' to @concurrent global function 'failure' risks causing races in between main actor-isolated and @concurrent uses
+ 89 |     for status in [401,429] {
+ 90 |       let model=try await prepare(host,"http-\(status)"),trace=Trace()
+
+macos/OpenMathNativeTests/ProviderTransportFixtures/main.swift:92:27: error: sending value of non-Sendable type '() async throws -> ProviderModelResult' risks causing data races [#RegionIsolation::SendingRisksDataRace]
+ 90 |       let model=try await prepare(host,"http-\(status)"),trace=Trace()
+ 91 |       FixtureProtocol.state.reset(Script(status:status,chunks:[Data("synthetic-secret provider error echo".utf8)]))
+ 92 |       let error=try await failure {try await transport.send(model,route:route(model,normal),journal:await trace.journal(),onText:{_ in fatalError("error body emitted text")})}
+    |                           |- error: sending value of non-Sendable type '() async throws -> ProviderModelResult' risks causing data races [#RegionIsolation::SendingRisksDataRace]
+    |                           `- note: sending main actor-isolated value of non-Sendable type '() async throws -> ProviderModelResult' to @concurrent global function 'failure' risks causing races in between main actor-isolated and @concurrent uses
+ 93 |       precondition(error.reason == .http && error.httpStatus==UInt16(status) && error.outcome == .responseObserved && FixtureProtocol.state.count==1)
+ 94 |       precondition(!String(describing:error).contains("synthetic-secret"))
+
+macos/OpenMathNativeTests/ProviderTransportFixtures/main.swift:98:33: error: sending value of non-Sendable type '() async throws -> ProviderModelResult' risks causing data races [#RegionIsolation::SendingRisksDataRace]
+ 96 |     let redirected=try await prepare(host,"redirect"),redirectTrace=Trace()
+ 97 |     FixtureProtocol.state.reset(Script(redirect:URL(string:"https://other.invalid/credential-sink")!))
+ 98 |     let redirectError=try await failure {try await transport.send(redirected,route:route(redirected,normal),journal:await redirectTrace.journal(),onText:{_ in})}
+    |                                 |- error: sending value of non-Sendable type '() async throws -> ProviderModelResult' risks causing data races [#RegionIsolation::SendingRisksDataRace]
+    |                                 `- note: sending main actor-isolated value of non-Sendable type '() async throws -> ProviderModelResult' to @concurrent global function 'failure' risks causing races in between main actor-isolated and @concurrent uses
+ 99 |     precondition(redirectError.reason == .redirect && redirectError.httpStatus==302 && FixtureProtocol.state.count==1)
+100 |     for (name,script,timeouts,reason) in [
+
+macos/OpenMathNativeTests/ProviderTransportFixtures/main.swift:106:27: error: sending value of non-Sendable type '() async throws -> ProviderModelResult' risks causing data races [#RegionIsolation::SendingRisksDataRace]
+104 |     ] {
+105 |       let model=try await prepare(host,name),trace=Trace();FixtureProtocol.state.reset(script)
+106 |       let error=try await failure {try await transport.send(model,route:route(model,timeouts),journal:await trace.journal(),onText:{_ in})}
+    |                           |- error: sending value of non-Sendable type '() async throws -> ProviderModelResult' risks causing data races [#RegionIsolation::SendingRisksDataRace]
+    |                           `- note: sending main actor-isolated value of non-Sendable type '() async throws -> ProviderModelResult' to @concurrent global function 'failure' risks causing races in between main actor-isolated and @concurrent uses
+107 |       precondition(error.reason==reason && error.outcome != .notDispatched && FixtureProtocol.state.count==1)
+108 |     }
+
+macos/OpenMathNativeTests/ProviderTransportFixtures/main.swift:127:23: error: sending value of non-Sendable type '() async throws -> ProviderModelResult' risks causing data races [#RegionIsolation::SendingRisksDataRace]
+125 |     do {_ = try await task.value;fatalError("cancelled active request succeeded")}catch let e as ProviderTransportFailure {precondition(e.reason == .cancelled)}
+126 |     let malformed=try await prepare(host,"malformed"),malTrace=Trace();FixtureProtocol.state.reset(Script(chunks:[Data("data: {\"error\":{\"message\":\"synthetic-secret\"}}\n\n".utf8)]))
+127 |     let mal=try await failure {try await transport.send(malformed,route:route(malformed,normal),journal:await malTrace.journal(),onText:{_ in})};precondition(mal.reason == .codec && !String(describing:mal).contains("synthetic-secret"))
+    |                       |- error: sending value of non-Sendable type '() async throws -> ProviderModelResult' risks causing data races [#RegionIsolation::SendingRisksDataRace]
+    |                       `- note: sending main actor-isolated value of non-Sendable type '() async throws -> ProviderModelResult' to @concurrent global function 'failure' risks causing races in between main actor-isolated and @concurrent uses
+128 |     for url in ["http://outside.invalid/v1","https://user:secret@unit.fixture.invalid/v1","https://unit.fixture.invalid/v1?key=secret","file:///tmp/model","http://localhost/v1"] {
+129 |       do {_ = try ProviderRoute(binding:model.binding,endpoint:URL(string:url)!,authentication:.none,credentialReference:nil,timeouts:normal,allowHTTPOnLiteralLoopback:true);fatalError("unsafe route accepted")}catch ProviderTransportReason.invalidRoute { }
+
+[#RegionIsolation]: <https://docs.swift.org/compiler/documentation/diagnostics/region-isolation>
+[#SendingClosureRisksDataRace]: <https://docs.swift.org/compiler/documentation/diagnostics/sending-closure-risks-data-race>
+[#SendingRisksDataRace]: <https://docs.swift.org/compiler/documentation/diagnostics/sending-risks-data-race>

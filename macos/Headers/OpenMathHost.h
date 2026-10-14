@@ -28,6 +28,7 @@ int32_t om_host_cancel(om_host_handle *host, const unsigned char *operation_id, 
 om_host_buffer om_host_close_begin(om_host_handle *host);
 int32_t om_host_close_finish(om_host_handle *host);
 void om_host_buffer_free(om_host_buffer buffer);
+om_host_buffer om_host_model_codec_command(om_host_handle *host, const unsigned char *json, size_t len);
 #ifdef __cplusplus
 }
 #endif

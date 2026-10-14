@@ -65,7 +65,7 @@
 | [x] [R4.3.01](PRE_ALPHA_4.md#task-r4.3.01) | 规范Agent消息、任务与IPC身份 | completed | [真实source/CABI/私有进程与耐久ACK](../acceptance/pre-alpha.4/development/r43/agent-protocol-native.json)；357DTO、20Rust/3Node/实际SQLite恢复，合成helper无模型/工具执行 | 本批D045 |
 | [x] [R4.3.02](PRE_ALPHA_4.md#task-r4.3.02) | 固定Pi Core与随包生产helper | completed | [实际随包Node/Pi/原生任务](../acceptance/pre-alpha.4/development/r43/pi-production-runtime.json)；86依赖/4169资源、13帧/3事件、SIGKILL后原文档4 | 本批D047 |
 | [x] [R4.3.03](PRE_ALPHA_4.md#task-r4.3.03) | sans-IO单轮模型codec基础 | completed | [实际Rust codec/Pi/原生帧及两模型SSE](../acceptance/pre-alpha.4/development/r43/single-turn-codec.json)；10单轮/182回归、4Pi、真实SQLite ACK；生产transport仍后续 | 本批D048 |
-| [ ] [R4.3.04](PRE_ALPHA_4.md#task-r4.3.04) | Swift URLSession和SecretStore传输 | in_progress | [新凭据读取边界基础](../acceptance/pre-alpha.4/development/r43/secret-store-foundation.json)；无旧回退/交互，真实Release；URLSession/Rust接线及锁屏仍未完成 | 本批D049 |
+| [ ] [R4.3.04](PRE_ALPHA_4.md#task-r4.3.04) | Swift URLSession和SecretStore传输 | in_progress | [实际Swift传输/Rust C ABI/原生端口](../acceptance/pre-alpha.4/development/r43/provider-transport.json)；194Rust/371DTO/双协议URLProtocol/两模型live；真实请求账本、独立connect预算/锁屏仍未完成 | 本批D050 |
 | [ ] [R4.3.05](PRE_ALPHA_4.md#task-r4.3.05) | 读取笔记本与真实函数资料工具 | planned | — | — |
 | [ ] [R4.3.06](PRE_ALPHA_4.md#task-r4.3.06) | 预览与原子修改工具接入 | planned | — | — |
 | [ ] [R4.3.07](PRE_ALPHA_4.md#task-r4.3.07) | 执行、结果检查和隔离试算工具 | planned | — | — |
@@ -572,3 +572,9 @@ Chat/Anthropic 请求与实际 SSE/JSON decoder 完成，canonical 来自同一�
 新Mac服务精确引用、不枚举或回退旧profile/凭据，WhenUnlockedThisDeviceOnly与禁止同步、LAContext禁止交互；失败状态不返回secret，数据不可Codable/调试脱敏，HTTP CRLF/非ASCII/长度拒绝。实际系统仅查新随机不存在引用；三锁定/认证状态为注入验证，没有锁屏机器或更改系统设置。Swift6 warnings-as-errors/新项目生成/真实Release/strict签名通过。初始弃用API警告已用SDK推荐的LAContext替换并留证。
 
 R4.3.03已推21a08e5，CI38465324522运行中；本基础先本地提交，后续URLSession/Rust通道/生命周期/URLProtocol/实际锁屏验收继续，不勾选R4.3.04，不改32/98及全部最终门禁。
+
+## D050 · 2026-10-14 实际原生单轮传输（R4.3.04进行中）
+
+独立Rust model channel/C ABI与371DTO、SwiftURLSession实际原始字节接线完成；随机codec ref、request/context nonce、8在途/4096历史、8KiB feed、host close单向撤销，与CAS/source队列分离。ProviderRoute拒绝非HTTPS/认证query/任意redirect、只允许显式literal loopback；认证仅最终native头、cookie/cache/shared credential关闭、不自动付费重试。原生Agent端口分割32KiB Unicode，incomplete失败不发可执行canonical，保留原usage/replay/结束理由给native complete callback。
+
+194Rust/17Python/371DTO/Clippy/fmt、实际URLProtocol Chat+Anthropic/body/auth/401/429/echo/三阶段timeout/cancel/hostclose/并行真实CAS4、原ABI/Pi回归与Release/strict签名通过；两授权模型实际SwiftURLSession→Rust C ABI均完整4/实际usage。首响应60s包含DNS/TCP/TLS，独立连接10s尚未实现；durable request journal callback在此证据为合成边界，真实ContextSnapshot/请求账本producer和物理锁屏仍待验，不勾Done，不改32/98。SDK确认D049缺DataProtectionKeychain标记导致默认Mac访问策略不能成立，现已修正、留旧证据。完整输入/实际HTTP/原生事件/源hash/初始失败见provider-transport.json/raw。21a08e5 CI38465324522已五job success；当前新提交另验。

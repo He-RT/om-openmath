@@ -1,0 +1,4 @@
+   Compiling om-host-service v0.1.0-pre-alpha.3 (/Users/hert/Projects/openmath/crates/om-host-service)
+   Compiling om-apple-ffi v0.1.0-pre-alpha.3 (/Users/hert/Projects/openmath/crates/om-apple-ffi)
+    Finished `release` profile [optimized] target(s) in 29.62s
+Actual Swift URLSession -> original raw bytes -> Rust C ABI codec: UTF8, actual body/final auth, durable-before-resume, 401/429/no retry/error echo, redirect, first/idle/total timeout, pre-resume/active cancel, concurrent real CAS, route boundaries passed. Keychain physical lock-screen pending.

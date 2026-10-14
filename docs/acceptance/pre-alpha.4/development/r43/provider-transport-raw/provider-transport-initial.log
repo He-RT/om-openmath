@@ -1,0 +1,48 @@
+   Compiling om-host-service v0.1.0-pre-alpha.3 (/Users/hert/Projects/openmath/crates/om-host-service)
+   Compiling om-apple-ffi v0.1.0-pre-alpha.3 (/Users/hert/Projects/openmath/crates/om-apple-ffi)
+    Finished `release` profile [optimized] target(s) in 29.59s
+macos/OpenMathNativeTests/ProviderTransportFixtures/main.swift:82:30: error: actor-isolated property 'text' can not be referenced from the main actor
+ 42 | }
+ 43 | private actor Trace {
+ 44 |   var phases:[ProviderJournalFact]=[],text=""
+    |                                       `- note: property declared here
+ 45 |   var hold=false,arrived=false
+ 46 |   func record(_ fact:ProviderJournalFact)async throws {
+    :
+ 80 |     let result=try await transport.send(model,route:route(model,normal),journal:await trace.journal(),onText:{await trace.append($0)})
+ 81 |     precondition(result.finish=="complete" && result.message.message_id=="native-success")
+ 82 |     precondition(await trace.text=="中文🙂完整")
+    |                              `- error: actor-isolated property 'text' can not be referenced from the main actor
+ 83 |     let captured=FixtureProtocol.state.captured;precondition(captured.count==1)
+ 84 |     precondition(captured[0].value(forHTTPHeaderField:"Authorization")=="Bearer synthetic-secret")
+
+macos/OpenMathNativeTests/ProviderTransportFixtures/main.swift:86:30: error: actor-isolated property 'phases' can not be referenced from the main actor
+ 42 | }
+ 43 | private actor Trace {
+ 44 |   var phases:[ProviderJournalFact]=[],text=""
+    |       `- note: property declared here
+ 45 |   var hold=false,arrived=false
+ 46 |   func record(_ fact:ProviderJournalFact)async throws {
+    :
+ 84 |     precondition(captured[0].value(forHTTPHeaderField:"Authorization")=="Bearer synthetic-secret")
+ 85 |     let body=try JSONSerialization.jsonObject(with:captured[0].httpBody!) as! [String:Any];precondition(body["model"] as? String=="configured-alias" && body["api_key"]==nil)
+ 86 |     precondition(await trace.phases.map(\.phase)==[.dispatchStarted,.responseStarted,.finished])
+    |                              `- error: actor-isolated property 'phases' can not be referenced from the main actor
+ 87 |     let repeatFailure=try await failure {try await transport.send(model,route:route(model,normal),journal:await trace.journal(),onText:{_ in})};precondition(repeatFailure.reason == .stale && FixtureProtocol.state.count==1)
+ 88 |     for status in [401,429] {
+
+macos/OpenMathNativeTests/ProviderTransportFixtures/main.swift:82:18: error: 'await' in an autoclosure that does not support concurrency
+ 80 |     let result=try await transport.send(model,route:route(model,normal),journal:await trace.journal(),onText:{await trace.append($0)})
+ 81 |     precondition(result.finish=="complete" && result.message.message_id=="native-success")
+ 82 |     precondition(await trace.text=="中文🙂完整")
+    |                  `- error: 'await' in an autoclosure that does not support concurrency
+ 83 |     let captured=FixtureProtocol.state.captured;precondition(captured.count==1)
+ 84 |     precondition(captured[0].value(forHTTPHeaderField:"Authorization")=="Bearer synthetic-secret")
+
+macos/OpenMathNativeTests/ProviderTransportFixtures/main.swift:86:18: error: 'await' in an autoclosure that does not support concurrency
+ 84 |     precondition(captured[0].value(forHTTPHeaderField:"Authorization")=="Bearer synthetic-secret")
+ 85 |     let body=try JSONSerialization.jsonObject(with:captured[0].httpBody!) as! [String:Any];precondition(body["model"] as? String=="configured-alias" && body["api_key"]==nil)
+ 86 |     precondition(await trace.phases.map(\.phase)==[.dispatchStarted,.responseStarted,.finished])
+    |                  `- error: 'await' in an autoclosure that does not support concurrency
+ 87 |     let repeatFailure=try await failure {try await transport.send(model,route:route(model,normal),journal:await trace.journal(),onText:{_ in})};precondition(repeatFailure.reason == .stale && FixtureProtocol.state.count==1)
+ 88 |     for status in [401,429] {

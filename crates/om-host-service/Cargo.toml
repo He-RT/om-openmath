@@ -8,6 +8,7 @@ description = "Safe authoritative document coordinator and native host protocol"
 
 [dependencies]
 om-agent-contract.workspace = true
+om-llm.workspace = true
 om-kernel = { workspace = true, features = ["external-host"] }
 om-num.workspace = true
 serde.workspace = true

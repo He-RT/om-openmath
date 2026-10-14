@@ -56,6 +56,8 @@ jobs:
         run: bash macos/Scripts/test-agent-package.sh > target/macos-ci-evidence/agent-package.log 2>&1
       - name: 新凭据引用、拒绝交互与锁定状态边界
         run: bash macos/Scripts/test-secret-store.sh > target/macos-ci-evidence/secret-store.log 2>&1
+      - name: 实际URLSession与Rust单轮通道、超时取消和并行CAS
+        run: bash macos/Scripts/test-provider-transport.sh > target/macos-ci-evidence/provider-transport.log 2>&1
       - name: 私有Agent真实进程、耐久ACK与旧身份恢复隔离
         run: bash macos/Scripts/test-agent-protocol.sh > target/macos-ci-evidence/agent-protocol.log 2>&1
       - name: 不可变结果 C ABI、完整源码分块和迟到回复

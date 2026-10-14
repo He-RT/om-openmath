@@ -1,0 +1,16 @@
+    Finished `release` profile [optimized] target(s) in 0.17s
+macos/OpenMathNativeTests/ProviderTransportFixtures/main.swift:22:10: error: passing closure as a 'sending' parameter risks causing data races between code in the current isolation context and concurrent execution of the closure [#RegionIsolation::SendingClosureRisksDataRace]
+ 20 |   override func startLoading() {
+ 21 |     let script=Self.state.started(request)
+ 22 |     work=Task { [self] in
+    |          `- error: passing closure as a 'sending' parameter risks causing data races between code in the current isolation context and concurrent execution of the closure [#RegionIsolation::SendingClosureRisksDataRace]
+ 23 |       do {
+ 24 |         try await Task.sleep(for:.seconds(script.delay))
+ 25 |         if let target=script.redirect {
+ 26 |           let response=HTTPURLResponse(url:request.url!,statusCode:302,httpVersion:"HTTP/1.1",headerFields:["Location":target.absoluteString])!
+    |                                            `- note: closure captures 'self' which is accessible to code in the current isolation context
+ 27 |           client?.urlProtocol(self,wasRedirectedTo:URLRequest(url:target),redirectResponse:response);return
+ 28 |         }
+
+[#RegionIsolation]: <https://docs.swift.org/compiler/documentation/diagnostics/region-isolation>
+[#SendingClosureRisksDataRace]: <https://docs.swift.org/compiler/documentation/diagnostics/sending-closure-risks-data-race>

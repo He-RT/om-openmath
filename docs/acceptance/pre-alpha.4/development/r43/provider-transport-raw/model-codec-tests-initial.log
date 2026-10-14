@@ -1,0 +1,29 @@
+   Compiling om-agent-contract v0.1.0-pre-alpha.3 (/Users/hert/Projects/openmath/crates/om-agent-contract)
+   Compiling om-host-service v0.1.0-pre-alpha.3 (/Users/hert/Projects/openmath/crates/om-host-service)
+   Compiling om-llm v0.1.0-pre-alpha.3 (/Users/hert/Projects/openmath/crates/om-llm)
+   Compiling om-kernel v0.1.0-pre-alpha.3 (/Users/hert/Projects/openmath/crates/om-kernel)
+warning: missing documentation for the crate
+  --> crates/om-host-service/tests/model_codec.rs:1:1
+   |
+ 1 | / use om_host_service::{model::ModelChannel, protocol::generated::*, scheduler::NativeHost};
+ 2 | | use serde_json::{Value,json};
+ 3 | | fn request()->Value {
+ 4 | |     json!({"binding":{"provider_ref":"provider","route_ref":"route","model_ref":"model","adapter_version":"single-turn-1","protoco...
+...  |
+38 | |     let mut bad=prepare("url");bad["url"]=json!("https://untrusted.invalid");assert!(command(&mut c,bad).is_err());
+39 | | }
+   | |_^
+   |
+   = note: requested on the command line with `-W missing-docs`
+
+warning: `om-host-service` (test "model_codec") generated 1 warning
+    Finished `test` profile [unoptimized] target(s) in 7.31s
+     Running tests/model_codec.rs (target/debug/deps/model_codec-edc05ce8d4844f4c)
+
+running 3 tests
+test no_model_url_auth_unknown_input_or_cross_runtime_and_eight_live_bound ... ok
+test http_error_echo_cancellation_invalid_bytes_duplicate_members_and_host_close_fail_closed ... ok
+test raw_single_turn_scope_eof_unknown_usage_and_terminal_nonce_are_actual ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.02s
+

@@ -6,7 +6,7 @@
 
 **当前状态：** 32任务完成（全部R4.0与R4.1、R4.2.01–02、07及09–10、R4.3.01–03）；其余66任务尚未完成；32最终运行/发行gate全部not_run；candidate未分配，ready_to_publish=false，released_verified=false。设计/HTML/Schema通过不填运行时pass。
 
-**下一任务：** 用户选择保留系统输入法设置、先做其他任务；R4.2.03真实候选窗口仍未验收。独立继续R4.3.05只读工具，数据服务已验证，下一步接原生Agent分发与耐久结果；R4.3.04物理锁屏验收仍未完成，原依赖满足后再接非求值编辑分析/长笔记本/Markdown。存储维护、备份、新代次、配额和GC已通过实际验证；日末备份触发/数据管理UI仍在R4.2.18接线，完整Pi/provider/上下文/Agent界面仍继续R4.3–4.4，不能将存储Done当产品完成。保持同candidate完整门禁，R4.5.07在R4.5.05冻结前完成。
+**下一任务：** 用户选择保留系统输入法设置、先做其他任务；R4.2.03真实候选窗口仍未验收。独立继续R4.3.05只读工具，原生分发/耐久结果/实际随包Pi两轮已接通，下一步接真实输出引用与持久事务历史；R4.3.04物理锁屏验收仍未完成，原依赖满足后再接非求值编辑分析/长笔记本/Markdown。存储维护、备份、新代次、配额和GC已通过实际验证；日末备份触发/数据管理UI仍在R4.2.18接线，完整Pi/provider/上下文/Agent界面仍继续R4.3–4.4，不能将存储Done当产品完成。保持同candidate完整门禁，R4.5.07在R4.5.05冻结前完成。
 
 ## 已知外部前置
 
@@ -66,7 +66,7 @@
 | [x] [R4.3.02](PRE_ALPHA_4.md#task-r4.3.02) | 固定Pi Core与随包生产helper | completed | [实际随包Node/Pi/原生任务](../acceptance/pre-alpha.4/development/r43/pi-production-runtime.json)；86依赖/4169资源、13帧/3事件、SIGKILL后原文档4 | 本批D047 |
 | [x] [R4.3.03](PRE_ALPHA_4.md#task-r4.3.03) | sans-IO单轮模型codec基础 | completed | [实际Rust codec/Pi/原生帧及两模型SSE](../acceptance/pre-alpha.4/development/r43/single-turn-codec.json)；10单轮/182回归、4Pi、真实SQLite ACK；生产transport仍后续 | 本批D048 |
 | [ ] [R4.3.04](PRE_ALPHA_4.md#task-r4.3.04) | Swift URLSession和SecretStore传输 | in_progress | [真实请求账本/随包Pi/强杀恢复](../acceptance/pre-alpha.4/development/r43/provider-durable-request.json)、[过期计时回调修复](../acceptance/pre-alpha.4/development/r43/provider-timeout-race.json)；实际计时竞态RED→GREEN；物理锁屏仍未完成 | D052/本批D054 |
-| [ ] [R4.3.05](PRE_ALPHA_4.md#task-r4.3.05) | 读取笔记本与真实函数资料工具 | in_progress | [只读数据服务基础](../acceptance/pre-alpha.4/development/r43/readonly-services-foundation.json)；257实际回调/真实Session绑定/有界UTF8分页；原生工具分发、结果与持久历史未接完 | 本批D053 |
+| [ ] [R4.3.05](PRE_ALPHA_4.md#task-r4.3.05) | 读取笔记本与真实函数资料工具 | in_progress | [只读数据基础](../acceptance/pre-alpha.4/development/r43/readonly-services-foundation.json)、[原生工具耐久结果/Pi两轮](../acceptance/pre-alpha.4/development/r43/readonly-native-tool.json)；ACK原参数/三工具真实结果/Blob回读/typed恢复；outputs引用与持久事务历史未接完 | D053/本批D055 |
 | [ ] [R4.3.06](PRE_ALPHA_4.md#task-r4.3.06) | 预览与原子修改工具接入 | planned | — | — |
 | [ ] [R4.3.07](PRE_ALPHA_4.md#task-r4.3.07) | 执行、结果检查和隔离试算工具 | planned | — | — |
 | [ ] [R4.3.08](PRE_ALPHA_4.md#task-r4.3.08) | 操作核对、撤销和Host停止控制 | planned | — | — |
@@ -606,3 +606,16 @@ bea784c CI38560769195已观察deps/Rust/frontend success、iOS failure、Mac仍�
 bea784c CI38560769195终态deps/Rust/frontend success，iOS与Mac failure。Mac artifact原日志指向ProviderTransportFixtures:157复合超时断言，未记录具体哪一case/actual reason，不能把它直接归因到某种超时。复查发现独立可证实竞态：Task.sleep已经返回后，响应阶段取消旧Task仍可能调用stop。新增可信fixture probe在真实首响应timer唤醒后暂停回调，让实际URLSession收到200并推进idle阶段；EOF保持关闭，释放旧回调并等待其执行完。原实现实际错误firstResponseTimeout/responseObserved/200（RED）；加每lane不可复用ticket并在同一锁内验证/撤销后，同用例完整成功（GREEN），旧回调不得结束新阶段。生产10/60/30/180及全部原合成负例时间窗/断言均未放宽。
 
 原URLProtocol/真实回环/4种timeout/CAS/取消回归通过，新增各case实际reason/outcome/次数在断言前落文件；CI新增always步骤保留这些attempt事实，失败后也能定位。实际Library4请求账本、原字节、echo拒绝、unknown timeout与5真实SIGKILL恢复无HTTP重放通过；Release重建和严格签名、实际重签App资源随包Pi（6helper帧/8SQLite事实/强杀后手工4）通过；17Python/371DTO通过。原始RED/GREEN源、实际输入/请求/计时事实/原CI日志见provider-timeout-race.json/raw。iOS D053显式actual AX值修复仍须新SHA CI证明，物理锁屏未验/工具接线未完，32/98/所有最终gate not_run保持。aaf48f3已推，其CI38565187538曾运行；本修复后续提交CI按新SHA独立核验。此前重复CI result下载经耐久归档逐文件核对后清除13113610字节，当前43GiB空余，所需build缓存保留。
+
+
+## D055 · 2026-10-14 原生只读工具耐久结果与实际Pi两轮（R4.3.05继续）
+
+agent_read_tool只接受已ACK proposal映射出的operation_id；host从原canonical提案保留的arguments_json取参，不接受调用者重发参数/工具名。SourceEndpoint实际执行read_notebook/search_functions/get_function_docs，冻结闭合结果、随机result_ref与原字节hash；旧ID回读同一原结果，原scope变化/取消/10分钟过期拒绝，包括已经sent的旧帧重放。Rust已验证3工具真实返回及结构化INVALID_ARGUMENT、确认前禁止send、hash/body篡改/跨scope/原始重复字段/额外参数拒绝；原outer catalog envelope漏pagination初测失败后已修，始终按原schema校验，不改schema放行。
+
+Swift发布真实结果Blob，记录带canonical role=tool/result_ref的native_readonly_result恢复事实；独立回读SQLite事件和引用Blob原字节后agent_confirm_tool，才允许tool_result帧携带同份result_json给helper。该帧新增required nullable result_json，与不带内联内容的canonical tool_result part分开；同源377DTO和helper schema hash握手使旧资源不能混用。helper验证闭合工具结果，将原数据交Pi工具流程并继续下一轮；未实现工具仍unavailable。真实Rust C ABI→Swift Library→私有随包Pi→第二轮真实URLSession/Rust codec，实际20双向frames（11host/9helper）、14SQLite事件、原参数空白保留，第二轮body包含从引用Blob回读的tool content；无真实付费请求。
+
+恢复时仅读Storage，不创建host/helper/HTTP，结果Blob和14事件不变；专门readonly_completed/readonly_failed状态避免把完成的只读查询误投影为未开始。SessionSemantics验证原call/name/arguments hash/turn/task/canonical ref，原Blob引用和字节长度必须存在；缺引用和篡改原参数实际append被拒绝。indexed和纯事件fallback均投影真实只读状态，不产生DocCommit/CAS effect或恢复权限。原13SIGKILL/60schemaevents、长4374事件/>16MiB分页回归通过。原脚本缺debug=0会重建调试符号缓存，本批补显式profile变量，原Rust输入输出逐字节相同。
+
+205Rust回归、14固定Node26/Pi测试、strict自身TS/skipLibCheck、17Python、377DTO/生成项目/Clippy/fmt通过；Release重建和严格签名，standalone及重签App原资源真实两轮/持久恢复/错误资源/迟到stdin/取消/无模型拒绝/强杀后手工4通过。完整源码输入、原wire/body/事件/压缩原SQLite、原失败与SHA见readonly-native-tool.json/raw。原Node全套初次漏显式offline codec fixture环境、Node合成终结payload含undefined多余键、Swift SessionRecoveryPage不可Encodable等测试错误原日志保留，已在测试调用/自描述投影修正。
+
+include_outputs=true仍明确NOT_AVAILABLE，尚未绑定真实ResultRuntime producer；recent_transaction_refs仍只来自live owner真实完成receipt，重启持久事务历史producer待接。因此R4.3.05不勾Done/步骤4、32/98/所有finalgate not_run保持；R4.3.04物理锁屏及R4.2.03真实候选窗口未验，系统输入设置不变。f74371b CI38567271292最后观察Rust/frontend/deps success，iOS在iPad流程、Mac已越过transport到后续Agent/存储流程，未当最终成功；新提交CI按新SHA另核。完整计划与最终发行继续required。

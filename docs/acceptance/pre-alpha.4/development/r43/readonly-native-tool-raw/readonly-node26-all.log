@@ -1,0 +1,17 @@
+✔ actual Pi bridge resolves immutable model refs and canonical ACK before unavailable tool hook (10.616791ms)
+✔ wrong connection and byte-identical hello replay cannot reset active helper scope (1.130792ms)
+✔ actual Pi consumes a complete native readonly result and continues to a second model turn (6.207166ms)
+✔ pinned Pi hooks await canonical ACK and tools execute sequentially before next model request (13.684625ms)
+✔ cancel while canonical ACK is pending prevents every tool effect (0.402792ms)
+✔ shell plugins and mismatched canonical user tasks are refused (0.189ms)
+✔ all actual encoded UTF8 split points and multiple complete frames roundtrip (37.763875ms)
+✔ unknown credentials/URLs/Pi state, missing required null and unsafe counters are rejected (1.0985ms)
+✔ duplicate members, invalid Unicode/UTF8, limits and incomplete EOF poison real connections (0.537625ms)
+ℹ tests 9
+ℹ suites 0
+ℹ pass 9
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 3225.866125

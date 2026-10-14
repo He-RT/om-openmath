@@ -15,6 +15,7 @@ public struct NativeAgentHostReply: Codable, Sendable {
   public var source_sequence: HostNullable<HostSerial>
   public var tool_intent: HostNullable<NativeAgentToolIntent>
   public var request_intent: HostNullable<NativeAgentRequestIntent>
+  public var readonly_result: HostNullable<NativeAgentReadonlyResult>
   private enum CodingKeys: String, CodingKey {
     case protocol_version
     case runtime_instance_id
@@ -30,10 +31,11 @@ public struct NativeAgentHostReply: Codable, Sendable {
     case source_sequence
     case tool_intent
     case request_intent
+    case readonly_result
   }
   public init(from decoder: Decoder) throws {
     let all = try decoder.container(keyedBy: HostCodingKey.self)
-    let allowed: Set<String> = ["protocol_version","runtime_instance_id","document_id","document_generation","scope","phase","disposition","outbound_json","canonical_json","peer_message_id","event_id","source_sequence","tool_intent","request_intent"]
+    let allowed: Set<String> = ["protocol_version","runtime_instance_id","document_id","document_generation","scope","phase","disposition","outbound_json","canonical_json","peer_message_id","event_id","source_sequence","tool_intent","request_intent","readonly_result"]
     guard all.allKeys.allSatisfy({ allowed.contains($0.stringValue) }) else { throw DecodingError.dataCorrupted(.init(codingPath: decoder.codingPath, debugDescription: "Unknown native contract field")) }
     let c = try decoder.container(keyedBy: CodingKeys.self)
     self.protocol_version = try c.decode(UInt32.self, forKey: .protocol_version)
@@ -50,8 +52,9 @@ public struct NativeAgentHostReply: Codable, Sendable {
     self.source_sequence = try c.decode(HostNullable<HostSerial>.self, forKey: .source_sequence)
     self.tool_intent = try c.decode(HostNullable<NativeAgentToolIntent>.self, forKey: .tool_intent)
     self.request_intent = try c.decode(HostNullable<NativeAgentRequestIntent>.self, forKey: .request_intent)
+    self.readonly_result = try c.decode(HostNullable<NativeAgentReadonlyResult>.self, forKey: .readonly_result)
   }
-  public init(protocol_version: UInt32, runtime_instance_id: String, document_id: String, document_generation: HostSerial, scope: NativeAgentControlScope, phase: NativeAgentHostReplyPhase, disposition: NativeAgentHostReplyDisposition, outbound_json: HostNullable<String>, canonical_json: HostNullable<String>, peer_message_id: HostNullable<String>, event_id: HostNullable<String>, source_sequence: HostNullable<HostSerial>, tool_intent: HostNullable<NativeAgentToolIntent>, request_intent: HostNullable<NativeAgentRequestIntent>) {
+  public init(protocol_version: UInt32, runtime_instance_id: String, document_id: String, document_generation: HostSerial, scope: NativeAgentControlScope, phase: NativeAgentHostReplyPhase, disposition: NativeAgentHostReplyDisposition, outbound_json: HostNullable<String>, canonical_json: HostNullable<String>, peer_message_id: HostNullable<String>, event_id: HostNullable<String>, source_sequence: HostNullable<HostSerial>, tool_intent: HostNullable<NativeAgentToolIntent>, request_intent: HostNullable<NativeAgentRequestIntent>, readonly_result: HostNullable<NativeAgentReadonlyResult>) {
     self.protocol_version = protocol_version
     self.runtime_instance_id = runtime_instance_id
     self.document_id = document_id
@@ -66,5 +69,6 @@ public struct NativeAgentHostReply: Codable, Sendable {
     self.source_sequence = source_sequence
     self.tool_intent = tool_intent
     self.request_intent = request_intent
+    self.readonly_result = readonly_result
   }
 }

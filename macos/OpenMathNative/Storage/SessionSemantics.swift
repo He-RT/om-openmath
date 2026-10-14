@@ -3,6 +3,18 @@ import Foundation
 /// Pure event interpretation. It has no executor and treats uncertain effects as uncertain;
 /// current document success comes only from verified external document facts.
 enum SessionSemantics {
+  static func readonlyRecord(_ bytes:Data)throws->AgentReadonlyRecord? {
+    guard let object=try JSONSerialization.jsonObject(with:bytes) as? [String:Any],object["kind"] as? String=="native_readonly_result" else {return nil}
+    return try JSONDecoder().decode(AgentReadonlyRecord.self,from:bytes)
+  }
+  static func readonlyRecord(_ event:NativeSessionEvent)throws->AgentReadonlyRecord? {
+    guard event.event_kind == .recovery,let text=event.payload_inline_json.value else {return nil}
+    return try readonlyRecord(Data(text.utf8))
+  }
+  static func readonlyPhase(_ record:AgentReadonlyRecord)throws->RecoveredToolPhase {
+    guard record.canonical.parts.count==1,case .agent_tool_result_part(let part)=record.canonical.parts[0] else {throw StorageError.corruptIdentity}
+    switch part.outcome {case .completed:return .readonly_completed;case .failed:return .readonly_failed;default:throw StorageError.corruptIdentity}
+  }
   private static func sameScope(_ input:SessionAppendInput,_ event:NativeSessionEvent)throws {
     guard input.turn==event.agent_turn_id.value,input.task==event.task_id.value,
       input.operation==event.operation_id.value,input.operationStore==event.operation_store_id.value else {throw SessionLedgerError.invalidTransition}
@@ -81,7 +93,28 @@ enum SessionSemantics {
           guard let hash=transition.responseBlobHash,KernelValidation.hash(hash),let length=transition.responseByteLength,length>0,length<=128*1024*1024 else {throw StorageError.corruptIdentity}
         } else {guard transition.responseBlobHash==nil,transition.responseByteLength==nil else {throw StorageError.corruptIdentity}}
       }
-    case .user_message,.user_stop,.recovery:
+    case .recovery:
+      if let record=try readonlyRecord(input.payload) {
+        let intent=record.intent,message=record.canonical
+        guard record.codecVersion==1,[.read_notebook,.search_functions,.get_function_docs].contains(intent.name),
+          SourceValidation.identity(intent.operation_id),SourceValidation.identity(record.resultRef),KernelValidation.hash(record.blobHash),
+          record.byteLength>0,record.byteLength<=262144,input.eventID=="readonly-"+intent.operation_id,
+          input.operation==nil,input.operationStore==nil,input.parentEvent==intent.proposal_event_ref,input.turn==intent.agent_turn_id,
+          let proposal=events.first(where:{$0.event_kind == .assistant_end && $0.event_id==intent.proposal_event_ref}),
+          proposal.task_id.value==input.task,proposal.agent_turn_id.value==input.turn,
+          message.record_type == .canonical_agent_message,message.message_version==1,message.role == .tool,message.message_id==input.eventID,
+          message.task_id.value==input.task,message.agent_turn_id.value==input.turn,message.parts.count==1,
+          case .agent_tool_result_part(let part)=message.parts[0],part.part_id==input.eventID,part.tool_call_id==intent.tool_call_id,
+          part.operation_ref.value==nil,part.result_ref.value==record.resultRef else {throw SessionLedgerError.invalidTransition}
+        let end=try SessionValidation.payload(SessionAssistantEnd.self,proposal)
+        guard let call=end.calls.first(where:{$0.callID==intent.tool_call_id}),call.toolName==intent.name.rawValue,
+          KernelHashes.data(call.arguments)==intent.arguments_hash else {throw SessionLedgerError.invalidTransition}
+        _ = try readonlyPhase(record)
+        for previous in events where previous.event_kind == .recovery {
+          if let old=try readonlyRecord(previous),old.intent.tool_call_id==intent.tool_call_id {throw SessionLedgerError.invalidTransition}
+        }
+      }
+    case .user_message,.user_stop:
       break
     case .prompt_change,.compaction:
       // These records require Prompt/Context transaction adapters, implemented by R4.4.
@@ -100,10 +133,17 @@ enum SessionSemantics {
             if record.proposalEvent==event.event_id,record.callID==call.callID {guard admissionEvent==nil else {throw StorageError.corruptIdentity};admissionEvent=next;admission=record}
           }
           let result=admissionEvent.flatMap {admit in events.first(where:{$0.event_kind == .tool_result && $0.parent_event_id.value==admit.event_id})}
-          let phase:RecoveredToolPhase
+          var phase:RecoveredToolPhase
           if let result {phase=try SessionValidation.payload(SessionToolResult.self,result).outcome == .partial ? .partial : .completed}
           else {phase=admissionEvent==nil ? .tool_not_started : .tool_outcome_unknown}
-          tools.append(.init(session:session,proposalEvent:event.event_id,callID:call.callID,admissionEvent:admissionEvent?.event_id,phase:phase,target:admission?.target,resultEvent:result?.event_id))
+          var resultID=result?.event_id
+          for next in events where next.event_kind == .recovery && next.parent_event_id.value==event.event_id {
+            if let record=try readonlyRecord(next),record.intent.tool_call_id==call.callID {
+              guard admissionEvent==nil,resultID==nil else {throw StorageError.corruptIdentity}
+              phase=try readonlyPhase(record);resultID=next.event_id
+            }
+          }
+          tools.append(.init(session:session,proposalEvent:event.event_id,callID:call.callID,admissionEvent:admissionEvent?.event_id,phase:phase,target:admission?.target,resultEvent:resultID))
         }
       }
       if event.event_kind == .task_transition {

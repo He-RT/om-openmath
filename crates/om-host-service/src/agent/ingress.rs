@@ -54,7 +54,7 @@ pub struct ToolIntent {
     pub proposal_event: String,
     /// Actual canonical tool name.
     pub name: AgentToolName,
-    /// Complete original data-only argument bytes; validated again by the actual tool handler.
+    /// Hash of complete original arguments; the acknowledged proposal retains the exact bytes.
     pub arguments_hash: String,
 }
 /// Provider request identity mapped to one host pending intent, never a network receipt.
@@ -134,6 +134,43 @@ pub(super) fn identity() -> Result<String, &'static str> {
     ))
 }
 impl AgentIngress {
+    /// Only an already ACKed canonical proposal and its mapped native operation can be read.
+    pub fn original_tool(&self, operation: &str) -> Result<(ToolIntent, String), &'static str> {
+        if self.phase != ConnectionPhase::Ready {
+            return Err("IPC_TASK_NOT_READY");
+        }
+        let intent = self
+            .mapped
+            .values()
+            .find(|i| i.operation_id == operation)
+            .ok_or("IPC_PROPOSAL_NOT_ACKED")?;
+        let proposal = self
+            .proposals
+            .get(&intent.call_id)
+            .ok_or("IPC_PROPOSAL_NOT_ACKED")?;
+        if !self.grants.contains(&intent.name)
+            || proposal.turn != intent.turn_id
+            || proposal.event != intent.proposal_event
+            || proposal.call.name != intent.name
+            || hash_text(proposal.call.arguments_json.as_bytes()) != intent.arguments_hash
+        {
+            return Err("IPC_CALL_SCOPE_MISMATCH");
+        }
+        Ok((intent.clone(), proposal.call.arguments_json.clone()))
+    }
+    /// Trusted task authority for readonly snapshot/cursor scopes; never decoded from tool args.
+    pub fn read_scope(
+        &self,
+        mut current: crate::references::ReferenceScope,
+    ) -> crate::references::ReferenceScope {
+        current.task = Some(self.scope.task.clone());
+        current.task_generation = self.scope.task_generation.get();
+        current.execution_mode &= !self.readonly;
+        current.can_write &=
+            !self.readonly && self.grants.contains(&AgentToolName::ApplyNotebookPatch);
+        current.can_preview &= self.grants.contains(&AgentToolName::PreviewSource);
+        current
+    }
     /// The native caller supplies scope/grants and version pins from explicit activation.
     /// Transcript restoration must create a fresh activation and connection instead.
     pub fn new(
@@ -484,6 +521,7 @@ impl AgentIngress {
         if intent.turn_id != payload.agent_turn_id
             || payload.operation_ref.0.is_some()
             || payload.result_ref.0.is_some()
+            || payload.result_json.0.is_some()
             || payload.outcome != AgentToolResultPayloadOutcome::Unavailable
         {
             return Err("IPC_TOOL_RECEIPT_REQUIRED");

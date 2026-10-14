@@ -20,15 +20,34 @@ private actor ModelHold {
 
 /// The actual native transport/C ABI/Library producer; only provider wire and route are synthetic.
 private func nativeProviderTurn(host:NativeHostClient,storage:StorageService,root:URL,input:AgentCanonicalMessage,intent:NativeAgentRequestIntent,task:String)async throws->ProviderPreparedTurn {
-  let chunk:[String:Any] = ["id":"provider-response","model":"synthetic-served-alias","choices":[["index":0,"delta":["role":"assistant","content":"中文🙂","tool_calls":[["index":0,"id":"provider-call","type":"function","function":["name":"read_notebook","arguments":"{ \"view\" : \"outline\" }"]]]],"finish_reason":"tool_calls"]]]
+  let stored=try await storage.sessionEvents("production-task")
+  let readonly=stored.compactMap {event->AgentReadonlyRecord? in guard let raw=event.event.payload_inline_json.value else {return nil};return try? JSONDecoder().decode(AgentReadonlyRecord.self,from:Data(raw.utf8))}
+  let second = !readonly.isEmpty
+  var messages:[[String:Any]] = [["canonical":try JSONSerialization.jsonObject(with:encoded(input)),"replay":NSNull()]],results:[[String:Any]]=[]
+  for event in stored where event.event.event_kind == .assistant_end {
+    let original=try JSONDecoder().decode(SessionCanonicalAssistant.self,from:Data(event.event.payload_inline_json.value!.utf8))
+    messages.append(["canonical":try JSONSerialization.jsonObject(with:Data(original.canonicalJSON.utf8)),"replay":NSNull()])
+  }
+  for result in readonly {
+    let owner=BlobOwner(kind:.context,id:result.canonical.message_id),lease=try await storage.openReferencedBlob(owner:owner,hash:result.blobHash)
+    let bytes=try await storage.readBlob(lease,offset:0,count:Int(result.byteLength));try await storage.closeBlob(lease)
+    guard KernelHashes.data(bytes)==result.blobHash else {throw AgentSessionError.ledgerMismatch}
+    let data=try JSONSerialization.jsonObject(with:bytes) as! [String:Any]
+    precondition(data["ok"] as? Bool==true)
+    messages.append(["canonical":try JSONSerialization.jsonObject(with:encoded(result.canonical)),"replay":NSNull()])
+    results.append(["message_id":result.canonical.message_id,"tool_call_id":result.intent.tool_call_id,"text":String(decoding:bytes,as:UTF8.self),"is_error":false])
+  }
+  let delta:[String:Any] = second ? ["role":"assistant","content":"已读取真实笔记本🙂"]:["role":"assistant","content":"中文🙂","tool_calls":[["index":0,"id":"provider-call","type":"function","function":["name":"read_notebook","arguments":"{ \"view\" : \"outline\" }"]]]]
+  let chunk:[String:Any] = ["id":second ? "provider-response-2":"provider-response","model":"synthetic-served-alias","choices":[["index":0,"delta":delta,"finish_reason":second ? "stop":"tool_calls"]]]
   let sse=Data(("data: "+String(decoding:try JSONSerialization.data(withJSONObject:chunk),as:UTF8.self)+"\n\ndata: [DONE]\n\n").utf8)
-  let request:[String:Any] = ["binding":["provider_ref":"fixture-provider","route_ref":"fixture-route","model_ref":"fixture-model","adapter_version":"single-turn-1","protocol":"chat_completions"],"api_model":"synthetic-configured-alias","messages":[["canonical":try JSONSerialization.jsonObject(with:encoded(input)),"replay":NSNull()]],"results":[],"tools":[["name":"read_notebook","description":"Native unavailable fixture handler","parameters":["type":"object"]]],"max_output_tokens":128,"temperature":NSNull(),"stream":true]
+  let request:[String:Any] = ["binding":["provider_ref":"fixture-provider","route_ref":"fixture-route","model_ref":"fixture-model","adapter_version":"single-turn-1","protocol":"chat_completions"],"api_model":"synthetic-configured-alias","messages":messages,"results":results,"tools":[["name":"read_notebook","description":"Read actual confirmed source","parameters":["type":"object"]]],"max_output_tokens":128,"temperature":NSNull(),"stream":true]
   let bytes=try JSONSerialization.data(withJSONObject:request,options:[.sortedKeys]),context="fixture-context-"+UUID().uuidString.lowercased()
-  let model=try await ProviderModelSession.prepare(host:host,requestJSON:String(decoding:bytes,as:UTF8.self),request:intent.request_id,context:context,task:task,turn:intent.agent_turn_id,message:"provider-canonical")
+  let model=try await ProviderModelSession.prepare(host:host,requestJSON:String(decoding:bytes,as:UTF8.self),request:intent.request_id,context:context,task:task,turn:intent.agent_turn_id,message:"provider-canonical-"+intent.agent_turn_id)
   let server=try DelayedLoopbackServer(response:sse,delay:0.01)
   let route=try ProviderRoute(binding:model.binding,endpoint:URL(string:"http://127.0.0.1:\(server.port)/v1/chat/completions")!,authentication:.none,credentialReference:nil,timeouts:try ProviderTimeouts(firstResponse:5,idle:3,total:8),allowHTTPOnLiteralLoopback:true)
   let ledger=SessionLedgerPort(storage:storage,session:"production-task"),owner=ProviderRequestLedger(storage:storage,ledger:ledger,model:model)
-  try bytes.write(to:root.appendingPathComponent("actual-native-model-input.json"));try model.body.write(to:root.appendingPathComponent("actual-native-http-body.json"));try sse.write(to:root.appendingPathComponent("actual-native-response.sse"))
+  let suffix=second ? "-2":""
+  try bytes.write(to:root.appendingPathComponent("actual-native-model-input"+suffix+".json"));try model.body.write(to:root.appendingPathComponent("actual-native-http-body"+suffix+".json"));try sse.write(to:root.appendingPathComponent("actual-native-response"+suffix+".sse"))
   return owner.turn(route:route)
 }
 @main struct AgentPackageFixtures {
@@ -45,14 +64,14 @@ private func nativeProviderTurn(host:NativeHostClient,storage:StorageService,roo
     let service=AgentSessionService(host:host,storage:storage,document:document,generation:opened.document_generation.value)
     let verified=try await AgentProcess.verified(package:package,signatureRoot:CommandLine.arguments.count>3 && !CommandLine.arguments[3].isEmpty ? URL(fileURLWithPath:CommandLine.arguments[3]):nil)
     let hello=try await service.activate(session:"production-task",grants:[.read_notebook],readonly:true,coreVersion:"1.0.4",adapterVersion:"openmath-adapter-1")
-    let input=AgentCanonicalMessage(record_type:.canonical_agent_message,message_version:1,message_id:"user-input",role:.user,agent_turn_id:.init("input-turn"),task_id:.init(hello.scope.task_id),parts:[.agent_text_part(.init(kind:.text,part_id:"text",text:"真实Pi，合成模型，宿主工具暂不可用🙂"))])
+    let input=AgentCanonicalMessage(record_type:.canonical_agent_message,message_version:1,message_id:"user-input",role:.user,agent_turn_id:.init("input-turn"),task_id:.init(hello.scope.task_id),parts:[.agent_text_part(.init(kind:.text,part_id:"text",text:"真实Pi，合成模型，读取实际笔记本🙂"))])
     let task=hello.scope.task_id
     let adapter=ProviderAgentModelAdapter(transport:ProviderTransport(secrets:SecretStore()),factory:{intent in try await nativeProviderTurn(host:host,storage:storage,root:root,input:input,intent:intent,task:task)})
     let port=adapter.port()
     let pipe=try await verified.launch(),wire=WireCapture();await pipe.setCapture {bytes,direction in await wire.append(bytes,toHelper:direction)};let report=try await service.run(pipe:pipe,hello:hello,modelPort:port,input:input)
     try await wire.save(root.appendingPathComponent("actual-production-wire.json"))
-    precondition(report.frames==6 && report.lastPhase == .awaiting_settlement && report.toolIntents.count==1)
-    let events=try await storage.sessionEvents("production-task");precondition(events.count==8 && events.filter{$0.event.event_kind == .task_transition}.count==4 && events.filter{$0.event.event_kind == .assistant_end}.count==1)
+    precondition(report.frames==9 && report.lastPhase == .awaiting_settlement && report.toolIntents.count==1)
+    let events=try await storage.sessionEvents("production-task");precondition(events.count==14 && events.filter{$0.event.event_kind == .task_transition}.count==8 && events.filter{$0.event.event_kind == .assistant_end}.count==2)
     let canonical=try JSONDecoder().decode(SessionCanonicalAssistant.self,from:Data(events.first{$0.event.event_kind == .assistant_end}!.event.payload_inline_json.value!.utf8))
     precondition(canonical.calls[0].arguments==Data("{ \"view\" : \"outline\" }".utf8))
     let after=try await kernel.runCell("a",operation:"manual-after-helper-task");precondition(after.result_id.value != nil)
@@ -103,6 +122,36 @@ private func nativeProviderTurn(host:NativeHostClient,storage:StorageService,roo
     let actualEvents=try events.map {try JSONSerialization.jsonObject(with:encoded($0.event))}
     try JSONSerialization.data(withJSONObject:actualEvents,options:[.sortedKeys]).write(to:root.appendingPathComponent("actual-production-ledger.json"))
     await adapter.close();await service.close();await source.close();try await host.close();try await storage.close()
-    print(String(decoding:try JSONSerialization.data(withJSONObject:["production_core":"1.0.4","bundled_node":"26.11.1","actual_private_frames":report.frames,"canonical_events":events.count,"model_transport":"actual_urlsession_rust_cabi_durable_request_ledger","tool_outcome":"unavailable_no_effect","manual_after_sigkill":"4","system_node_fallback":false,"PATH":"empty","wrong_architecture":"rejected","missing_resource":"rejected","late_stdin":"rejected","unconfigured_model":"no_fake_message_or_effect","model_cancel_and_late_delta":"rejected","actual_macho_architecture":"rejected","evidence_root":root.path],options:[.sortedKeys]),as:UTF8.self))
+    // Reopen only storage. Historical data/ref retention never recreates a host/task/helper grant.
+    let (reopened,_)=try await StorageService.open(paths:.init(root:root,channel:.preview))
+    let recoveredEvents=try await reopened.sessionEvents("production-task")
+    precondition(recoveredEvents.count==events.count)
+    let recovered=try await reopened.sessionRecovery("production-task")
+    precondition(recovered.tools.count==1 && recovered.tools[0].phase == .readonly_completed && recovered.tools[0].target==nil && recovered.tools[0].admissionEvent==nil)
+    let recovery:[String:Any] = ["tools":try JSONSerialization.jsonObject(with:RecoveryValidation.encode(recovered.tools)),"requests":try JSONSerialization.jsonObject(with:RecoveryValidation.encode(recovered.requests)),"last_event_sequence":recovered.lastEventSequence,"complete":recovered.complete,"host_or_helper_created":false]
+    try JSONSerialization.data(withJSONObject:recovery,options:[.sortedKeys]).write(to:root.appendingPathComponent("actual-readonly-recovery.json"))
+    let recoveredReads=recoveredEvents.compactMap {entry->AgentReadonlyRecord? in guard let text=entry.event.payload_inline_json.value else {return nil};return try? JSONDecoder().decode(AgentReadonlyRecord.self,from:Data(text.utf8))}
+    precondition(recoveredReads.count==1)
+    for record in recoveredReads {
+      let reader=try await reopened.openReferencedBlob(owner:.init(kind:.context,id:record.canonical.message_id),hash:record.blobHash)
+      let bytes=try await reopened.readBlob(reader,offset:0,count:Int(record.byteLength));try await reopened.closeBlob(reader)
+      precondition(KernelHashes.data(bytes)==record.blobHash)
+      let envelope=try JSONSerialization.jsonObject(with:bytes) as! [String:Any],data=envelope["data"] as! [String:Any]
+      precondition((data["cells"] as! [[String:Any]])[0]["cell_id"] as? String=="a")
+      try bytes.write(to:root.appendingPathComponent("actual-readonly-result.json"))
+      let negativeSession="readonly-negative";_ = try await reopened.createAgentSession(negativeSession)
+      let negativeLedger=SessionLedgerPort(storage:reopened,session:negativeSession)
+      let assistant=try JSONDecoder().decode(SessionCanonicalAssistant.self,from:Data(events.first{$0.event.event_kind == .assistant_end}!.event.payload_inline_json.value!.utf8))
+      _ = try await negativeLedger.record(assistant,id:record.intent.proposal_event_ref,kind:.assistant_end,turn:record.intent.agent_turn_id,task:record.canonical.task_id.value)
+      let missing=AgentReadonlyRecord(codecVersion:1,kind:record.kind,intent:record.intent,resultRef:record.resultRef,blobHash:String(repeating:"a",count:64),byteLength:record.byteLength,canonical:record.canonical)
+      do {_ = try await negativeLedger.record(missing,id:record.canonical.message_id,kind:.recovery,parent:record.intent.proposal_event_ref,turn:record.intent.agent_turn_id,task:record.canonical.task_id.value);fatalError("readonly record accepted absent Blob reference")}catch BlobError.missing { }
+      var changed=record.intent;changed.arguments_hash=String(repeating:"0",count:64)
+      let wrong=AgentReadonlyRecord(codecVersion:1,kind:record.kind,intent:changed,resultRef:record.resultRef,blobHash:record.blobHash,byteLength:record.byteLength,canonical:record.canonical)
+      do {_ = try await negativeLedger.record(wrong,id:record.canonical.message_id,kind:.recovery,parent:record.intent.proposal_event_ref,turn:record.intent.agent_turn_id,task:record.canonical.task_id.value);fatalError("readonly record accepted changed proposal arguments")}catch SessionLedgerError.invalidTransition { }
+      let rejected=try await reopened.sessionEvents(negativeSession);precondition(rejected.count==1)
+    }
+    let unchanged=try await reopened.sessionEvents("production-task");precondition(unchanged.count==recoveredEvents.count)
+    try await reopened.close()
+    print(String(decoding:try JSONSerialization.data(withJSONObject:["production_core":"1.0.4","bundled_node":"26.11.1","actual_private_frames":report.frames,"canonical_events":events.count,"model_transport":"actual_urlsession_rust_cabi_durable_request_ledger","tool_outcome":"completed_actual_readonly_no_mutation","manual_after_sigkill":"4","system_node_fallback":false,"PATH":"empty","wrong_architecture":"rejected","missing_resource":"rejected","late_stdin":"rejected","unconfigured_model":"no_fake_message_or_effect","model_cancel_and_late_delta":"rejected","actual_macho_architecture":"rejected","evidence_root":root.path],options:[.sortedKeys]),as:UTF8.self))
   }
 }

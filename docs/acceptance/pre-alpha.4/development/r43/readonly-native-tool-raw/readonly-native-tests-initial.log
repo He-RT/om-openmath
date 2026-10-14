@@ -1,0 +1,45 @@
+   Compiling om-agent-contract v0.1.0-pre-alpha.3 (/Users/hert/Projects/openmath/crates/om-agent-contract)
+   Compiling om-host-service v0.1.0-pre-alpha.3 (/Users/hert/Projects/openmath/crates/om-host-service)
+   Compiling om-llm v0.1.0-pre-alpha.3 (/Users/hert/Projects/openmath/crates/om-llm)
+   Compiling om-kernel v0.1.0-pre-alpha.3 (/Users/hert/Projects/openmath/crates/om-kernel)
+    Finished `test` profile [unoptimized] target(s) in 8.57s
+     Running tests/agent_endpoint.rs (target/debug/deps/agent_endpoint-616027713b747f45)
+
+running 4 tests
+test request_ids_are_correlated_without_dispatch_and_peer_model_streams_are_denied ... ok
+test durable_confirmation_replay_and_document_close_revoke_real_owner_authority ... ok
+test host_stream_has_exact_offsets_one_terminal_and_no_fabricated_tool_receipt ... ok
+test native_envelope_budget_preserves_raw_frame_and_rejects_duplicate_fields ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.14s
+
+     Running tests/agent_ingress.rs (target/debug/deps/agent_ingress-872a027c55047be9)
+
+running 3 tests
+test tool_mapping_waits_for_confirmed_canonical_event_and_uses_distinct_host_ids ... ok
+test readonly_canonical_forgery_and_turn_proposal_isolation_do_not_create_grants ... ok
+test handshake_scope_duplicates_and_gap_never_resume_a_different_activation ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.02s
+
+     Running tests/readonly_catalog.rs (target/debug/deps/readonly_catalog-d23bfb83ce328c97)
+
+running 3 tests
+test actual_session_user_binding_precedes_builtin_alias_without_evaluating_docs ... ok
+test defaults_limits_categories_closed_fields_and_selector_nulls_are_strict ... ok
+test executable_docs_match_actual_callbacks_and_never_claim_example_verification ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.08s
+
+     Running tests/readonly_notebook.rs (target/debug/deps/readonly_notebook-65e9ab3aafc505d2)
+
+running 6 tests
+test historical_source_is_explicit_and_authority_expiry_and_clock_are_enforced ... ok
+test outline_is_bounded_and_full_source_exposure_never_upgrades_its_original_token ... ok
+test closed_arguments_selection_and_query_bound_cursors_reject_forgery ... ok
+test symbols_and_status_are_actual_accepted_facts_with_stale_producer_and_no_random_mutation ... ok
+test unicode_fragments_reassemble_exact_source_and_final_fragment_still_is_not_full_cell ... ok
+test retention_and_contract_limits_fail_closed_and_expiry_releases_the_actual_leases ... ok
+
+test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.15s
+

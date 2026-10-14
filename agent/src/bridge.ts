@@ -4,7 +4,7 @@ import {createAssistantMessageEventStream, type AssistantMessage,type AssistantM
 import type {AgentTool} from '@earendil-works/pi-agent-core';
 import type {TSchema} from 'typebox';
 import {AgentRuntime} from './runtime.ts';
-import {encodeFrame,decodeCanonical,schemaHash,strictJson} from './protocol.ts';
+import {encodeFrame,decodeCanonical,decodeReadonlyResult,schemaHash,strictJson} from './protocol.ts';
 import type {AgentIPCFrame,AgentHelloFrame,AgentCanonicalMessage,AgentModelRequestPayload,AgentToolResultPayload,AgentToolName} from './generated/protocol.ts';
 
 const toolSchema=JSON.parse(readFileSync(new URL('../../docs/design/agent-tools.schema.json',import.meta.url),'utf8'));
@@ -32,7 +32,7 @@ export class AgentBridge {
  #canonical=new WeakMap<AssistantMessage,AgentCanonicalMessage>();#events=new Map<string,string>();
  #request?:AgentModelRequestPayload;#prepared?:{resolve:(payload:AgentModelRequestPayload)=>void,reject:(error:Error)=>void};
  #stream?:AssistantMessageEventStream;#offset=0;#requestTerminal=false;#partial?:AssistantMessage;#cancelled=false;#failure=false;
- #tools=new Map<string,{resolve:(result:AgentToolResultPayload)=>void,reject:(error:Error)=>void,turn:string}>();
+ #tools=new Map<string,{resolve:(result:AgentToolResultPayload)=>void,reject:(error:Error)=>void,turn:string,name:string}>();
  #results=new Map<string,AgentToolResultPayload>();#writes=Promise.resolve();
  readonly #write:(bytes:Uint8Array)=>Promise<void>;readonly #settled:()=>void;
  constructor(write:(bytes:Uint8Array)=>Promise<void>,settled:()=>void){this.#write=write;this.#settled=settled;}
@@ -72,7 +72,9 @@ export class AgentBridge {
    }
    case 'model_event':this.#modelEvent(frame.payload);break;
    case 'tool_result':{
-    const pending=this.#tools.get(frame.payload.tool_call_id);if(!pending||pending.turn!==frame.payload.agent_turn_id||frame.payload.outcome!=='unavailable')throw new Error('IPC_TOOL_RECEIPT_REQUIRED');
+    const p=frame.payload,pending=this.#tools.get(p.tool_call_id);if(!pending||pending.turn!==p.agent_turn_id||p.operation_ref!==null)throw new Error('IPC_TOOL_RECEIPT_REQUIRED');
+    if(p.outcome==='unavailable'){if(p.result_ref!==null||p.result_json!==null)throw new Error('IPC_TOOL_RECEIPT_REQUIRED');}
+    else {if(!p.result_ref||p.result_json===null)throw new Error('IPC_TOOL_RECEIPT_REQUIRED');const envelope=decodeReadonlyResult(pending.name,Buffer.from(p.result_json));if(envelope.status!==p.outcome||envelope.ok!==(p.outcome==='completed'))throw new Error('IPC_TOOL_RESULT_MISMATCH');}
     this.#tools.delete(frame.payload.tool_call_id);pending.resolve(frame.payload);break;
    }
    case 'cancel':this.#cancelled=true;this.#rejectPending(new Error('AGENT_CANCELLED'));this.#runtime!.abort();if(!this.#active)await this.#stop('cancelled');break;
@@ -84,7 +86,8 @@ export class AgentBridge {
  #createRuntime(task:string):AgentRuntime{
   const tools:AgentTool[]=toolSchema.properties.tool.enum.map((name:AgentToolName)=>({name,label:name,description:'Native '+name,parameters:argumentsSchema(name),replay:'never',execute:async(call:string)=>{
    const result=this.#results.get(call);if(!result)throw new Error('IPC_TOOL_NOT_ACKED');this.#results.delete(call);
-   return {content:[{type:'text',text:'Native tool unavailable'}],details:{outcome:result.outcome},isError:true,terminate:true};
+   if(result.outcome==='unavailable')return {content:[{type:'text',text:'Native tool unavailable'}],details:{outcome:result.outcome},isError:true,terminate:true};
+   return {content:[{type:'text',text:result.result_json!}],details:{outcome:result.outcome,resultRef:result.result_ref},isError:result.outcome!=='completed'};
   }}));
   return new AgentRuntime(task,model,tools,{
    canonical:message=>{const canonical=this.#canonical.get(message);if(!canonical)throw new Error('IPC_MODEL_MESSAGE_MISSING');return canonical;},
@@ -110,7 +113,7 @@ export class AgentBridge {
    beforeTool:async(context,signal)=>{
     const canonical=this.#canonical.get(context.assistantMessage);if(!canonical?.agent_turn_id)throw new Error('IPC_MODEL_MESSAGE_MISSING');
     const event=this.#events.get(canonical.message_id);if(!event)throw new Error('IPC_PROPOSAL_NOT_ACKED');
-    const pending=Promise.withResolvers<AgentToolResultPayload>();void pending.promise.catch(()=>{});this.#tools.set(context.toolCall.id,{resolve:pending.resolve,reject:pending.reject,turn:canonical.agent_turn_id});
+    const pending=Promise.withResolvers<AgentToolResultPayload>();void pending.promise.catch(()=>{});this.#tools.set(context.toolCall.id,{resolve:pending.resolve,reject:pending.reject,turn:canonical.agent_turn_id,name:context.toolCall.name});
     await this.#send('tool_call',{agent_turn_id:canonical.agent_turn_id,tool_call_id:context.toolCall.id,proposal_event_ref:event});
     this.#results.set(context.toolCall.id,await pending.promise);signal?.throwIfAborted();
    },

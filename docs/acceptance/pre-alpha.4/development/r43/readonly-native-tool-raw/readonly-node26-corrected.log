@@ -1,0 +1,30 @@
+✔ actual Pi bridge resolves immutable model refs and canonical ACK before unavailable tool hook (10.911917ms)
+✔ wrong connection and byte-identical hello replay cannot reset active helper scope (1.1025ms)
+✖ actual Pi consumes a complete native readonly result and continues to a second model turn (3.4235ms)
+ℹ tests 3
+ℹ suites 0
+ℹ pass 2
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 3242.892625
+
+✖ failing tests:
+
+test at agent/test/bridge.test.mjs:34:1
+✖ actual Pi consumes a complete native readonly result and continues to a second model turn (3.4235ms)
+  AssertionError [ERR_ASSERTION]: [{"protocol_version":1,"connection_id":"connection","connection_generation":1,"runtime_instance_id":"runtime","agent_session_id":"session","document_id":"document","document_generation":1,"task_id":"task","task_generation":1,"message_id":"helper-3df80725-9bdf-40b3-877d-77ebbbf12287","sequence":1,"reply_to":"hello","type":"ready","payload":{"core_version":"1.0.4","adapter_version":"openmath-adapter-1","schema_hash":"a58c631ab601d7f5351f8da867bb5769022a70464fc991ce35a41ca38fecd5e4"}},{"protocol_version":1,"connection_id":"connection","connection_generation":1,"runtime_instance_id":"runtime","agent_session_id":"session","document_id":"document","document_generation":1,"task_id":"task","task_generation":1,"message_id":"helper-ba878ba9-e4df-4d2f-b4ad-08b268e6cbc2","sequence":2,"reply_to":null,"type":"prepare_request","payload":{"agent_turn_id":"turn-ac9cb070-1aa7-43e4-bda4-46984afe0e4d","request_id":"request-a2ac9274-61d5-42e6-a9e6-b142ca074e19"}},{"protocol_version":1,"connection_id":"connection","connection_generation":1,"runtime_instance_id":"runtime","agent_session_id":"session","document_id":"document","document_generation":1,"task_id":"task","task_generation":1,"message_id":"helper-3cf92e0d-d124-4709-91a5-d1f5bbdb2af5","sequence":3,"reply_to":null,"type":"model_request","payload":{"agent_turn_id":"turn-ac9cb070-1aa7-43e4-bda4-46984afe0e4d","request_id":"request-a2ac9274-61d5-42e6-a9e6-b142ca074e19","context_ref":"context-1","model_config_ref":"config"}}]
+  
+  1 !== 2
+  
+      at TestContext.<anonymous> (file:///Users/hert/Projects/openmath/agent/test/bridge.test.mjs:48:9)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: 1,
+    expected: 2,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }

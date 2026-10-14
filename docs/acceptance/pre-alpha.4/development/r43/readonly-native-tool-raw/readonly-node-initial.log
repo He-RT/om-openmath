@@ -1,0 +1,13 @@
+✔ actual Pi bridge resolves immutable model refs and canonical ACK before unavailable tool hook (9.465458ms)
+✔ wrong connection and byte-identical hello replay cannot reset active helper scope (1.735125ms)
+✔ all actual encoded UTF8 split points and multiple complete frames roundtrip (37.703541ms)
+✔ unknown credentials/URLs/Pi state, missing required null and unsafe counters are rejected (1.084375ms)
+✔ duplicate members, invalid Unicode/UTF8, limits and incomplete EOF poison real connections (0.567125ms)
+ℹ tests 5
+ℹ suites 0
+ℹ pass 5
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 3369.729709

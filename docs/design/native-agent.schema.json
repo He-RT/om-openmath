@@ -986,6 +986,18 @@
             "unavailable"
           ],
           "type": "string"
+        },
+        "result_json": {
+          "anyOf": [
+            {
+              "type": "string",
+              "maxLength": 262144
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "Exact bounded native tool-result envelope, read back from its durable Blob before delivery; canonical messages retain result_ref only."
         }
       },
       "required": [
@@ -993,7 +1005,8 @@
         "tool_call_id",
         "operation_ref",
         "result_ref",
-        "outcome"
+        "outcome",
+        "result_json"
       ],
       "additionalProperties": false
     },
@@ -1981,6 +1994,12 @@
         },
         {
           "$ref": "#/$defs/NativeAgentStatus"
+        },
+        {
+          "$ref": "#/$defs/NativeAgentReadTool"
+        },
+        {
+          "$ref": "#/$defs/NativeAgentConfirmTool"
         }
       ]
     },
@@ -2153,6 +2172,16 @@
               "type": "null"
             }
           ]
+        },
+        "readonly_result": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/NativeAgentReadonlyResult"
+            },
+            {
+              "type": "null"
+            }
+          ]
         }
       },
       "required": [
@@ -2169,7 +2198,8 @@
         "event_id",
         "source_sequence",
         "tool_intent",
-        "request_intent"
+        "request_intent",
+        "readonly_result"
       ],
       "additionalProperties": false
     },
@@ -2181,6 +2211,111 @@
         "superseded"
       ],
       "type": "string"
+    },
+    "NativeAgentReadTool": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "const": "agent_read_tool"
+        },
+        "scope": {
+          "$ref": "#/$defs/NativeAgentControlScope"
+        },
+        "operation_id": {
+          "$ref": "#/$defs/Identity"
+        }
+      },
+      "required": [
+        "type",
+        "scope",
+        "operation_id"
+      ],
+      "additionalProperties": false
+    },
+    "NativeAgentConfirmTool": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "const": "agent_confirm_tool"
+        },
+        "scope": {
+          "$ref": "#/$defs/NativeAgentControlScope"
+        },
+        "operation_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "result_ref": {
+          "$ref": "#/$defs/Identity"
+        },
+        "result_hash": {
+          "$ref": "#/$defs/Sha256"
+        },
+        "event_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "event_sequence": {
+          "$ref": "#/$defs/Serial"
+        },
+        "receipt_hash": {
+          "$ref": "#/$defs/Sha256"
+        }
+      },
+      "required": [
+        "type",
+        "scope",
+        "operation_id",
+        "result_ref",
+        "result_hash",
+        "event_id",
+        "event_sequence",
+        "receipt_hash"
+      ],
+      "additionalProperties": false
+    },
+    "NativeAgentReadonlyResult": {
+      "type": "object",
+      "properties": {
+        "operation_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "agent_turn_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "tool_call_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "name": {
+          "$ref": "#/$defs/AgentToolName"
+        },
+        "result_ref": {
+          "$ref": "#/$defs/Identity"
+        },
+        "result_json": {
+          "type": "string",
+          "maxLength": 262144
+        },
+        "result_hash": {
+          "$ref": "#/$defs/Sha256"
+        },
+        "outcome": {
+          "type": "string",
+          "enum": [
+            "completed",
+            "failed"
+          ]
+        }
+      },
+      "required": [
+        "operation_id",
+        "agent_turn_id",
+        "tool_call_id",
+        "name",
+        "result_ref",
+        "result_json",
+        "result_hash",
+        "outcome"
+      ],
+      "additionalProperties": false
     }
   },
   "x-openmath-contract": {

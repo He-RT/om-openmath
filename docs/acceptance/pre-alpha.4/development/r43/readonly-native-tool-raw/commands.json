@@ -1,0 +1,23 @@
+[
+  "CARGO_PROFILE_DEV_DEBUG=0 CARGO_PROFILE_TEST_DEBUG=0 cargo check -p om-host-service --locked",
+  "CARGO_PROFILE_DEV_DEBUG=0 CARGO_PROFILE_TEST_DEBUG=0 cargo test -p om-host-service -p om-agent-contract -p om-llm -p om-apple-ffi --locked -- --nocapture",
+  "CARGO_PROFILE_DEV_DEBUG=0 CARGO_PROFILE_TEST_DEBUG=0 cargo clippy -p om-host-service -p om-agent-contract -p om-llm -p om-apple-ffi --all-targets --locked -- -D warnings",
+  "cargo fmt --all --check",
+  "python3 scripts/native_contracts.py --check",
+  "python3 macos/Scripts/generate-project.py --check",
+  "python3 -X warn_default_encoding -W error::EncodingWarning -m unittest discover -s tests -v",
+  "python3 scripts/test_single_turn_pi.py --node target/macos-agent-package-tests/AgentRuntime/Node/node --evidence target/acceptance/pre-alpha.4/development/r43/readonly-single-turn-pi",
+  "OPENMATH_SINGLE_TURN_FIXTURE=$PWD/target/debug/examples/single_turn_fixture target/macos-agent-package-tests/AgentRuntime/Node/node --test agent/test/*.test.mjs",
+  "target/macos-agent-package-tests/AgentRuntime/Node/node app/node_modules/typescript/bin/tsc --noEmit --strict --skipLibCheck --target es2024 --module nodenext --allowImportingTsExtensions agent/src/main.ts",
+  "bash macos/Scripts/test-agent-package.sh",
+  "bash macos/Scripts/test-agent-package.sh /Users/hert/Projects/openmath/target/macos-agent-package-tests/AgentRuntime",
+  "bash macos/Scripts/test-agent-package.sh '/Users/hert/Projects/openmath/target/macos-native/Build/Products/Release/OpenMath Preview.app/Contents/Resources/AgentRuntime' '/Users/hert/Projects/openmath/target/macos-native/Build/Products/Release/OpenMath Preview.app'",
+  "PATH=$PWD/target/macos-agent-package-tests/AgentRuntime/Node:$PATH bash macos/Scripts/test-agent-protocol.sh",
+  "bash macos/Scripts/test-session-ledger.sh",
+  "CARGO_PROFILE_DEV_DEBUG=0 CARGO_PROFILE_TEST_DEBUG=0 cargo run -p om-host-service --example source_store_contract --locked > <task-evidence>/readonly-ledger-plans-profile.json",
+  "cmp target/macos-storage-tests/session-ledger-plans.json <task-evidence>/readonly-ledger-plans-profile.json",
+  "python3 macos/native-package/build-helper.py --output macos/OpenMathNative/Resources/AgentRuntime",
+  "xcodebuild -project macos/OpenMathNative.xcodeproj -scheme OpenMathNative -configuration Release -derivedDataPath target/macos-native -destination 'platform=macOS,arch=arm64' build",
+  "codesign --verify --deep --strict 'target/macos-native/Build/Products/Release/OpenMath Preview.app'",
+  "python3 scripts/check_pre_alpha_4_plan.py --check"
+]

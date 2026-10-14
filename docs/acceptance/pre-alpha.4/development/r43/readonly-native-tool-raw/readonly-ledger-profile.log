@@ -1,0 +1,3 @@
+   Compiling om-host-service v0.1.0-pre-alpha.3 (/Users/hert/Projects/openmath/crates/om-host-service)
+    Finished `dev` profile [unoptimized] target(s) in 4.88s
+     Running `target/debug/examples/source_store_contract`

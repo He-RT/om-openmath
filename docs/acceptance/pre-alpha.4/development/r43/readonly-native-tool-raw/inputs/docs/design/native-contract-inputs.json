@@ -1,0 +1,42 @@
+{
+  "schema_version": 1,
+  "inputs": [
+    {
+      "path": "docs/design/macos-host-state.schema.json",
+      "sha256": "c85326ab2ee5e9589162d59930cc53908c64764dbdfe86feaaf97038b1a2e720"
+    },
+    {
+      "path": "docs/design/macos-editor-rendering.schema.json",
+      "sha256": "431d5e481450c773a1ecc735dad83285fbe604d97de41f34139cecf9cac5bda1"
+    },
+    {
+      "path": "docs/design/native-host-wire.schema.json",
+      "sha256": "400c34d1a93c5b41ff740978b17f2397c177dadbe47b520bb8a3128719a06330"
+    },
+    {
+      "path": "docs/design/native-source-store.schema.json",
+      "sha256": "17a3dcc8582a50d9e38352c220ab837fff489bd56b60e9e83fb8d37db84aa0db"
+    },
+    {
+      "path": "docs/design/native-preview.schema.json",
+      "sha256": "d316d0f00a6797be91c9e53de3900c48382ca2386757a9613c70aca9464d639c"
+    },
+    {
+      "path": "docs/design/native-kernel-store.schema.json",
+      "sha256": "3d9c6d091fdc82d490f3e945150b27f8cc109836023419e9848a881524bae7a4"
+    },
+    {
+      "path": "docs/design/native-result-store.schema.json",
+      "sha256": "89569d4ca0fda51b379f2a7b8626f9ff9ca06fb581b987b9e44462ae1ea99cd1"
+    },
+    {
+      "path": "docs/design/native-agent.schema.json",
+      "sha256": "a58c631ab601d7f5351f8da867bb5769022a70464fc991ce35a41ca38fecd5e4"
+    },
+    {
+      "path": "docs/design/native-model-codec.schema.json",
+      "sha256": "abd34061a53aa2d738196737dcf0f82256ba02826054ae6d8a476e0d739815c2"
+    }
+  ],
+  "generated_dto_count": 377
+}

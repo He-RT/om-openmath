@@ -1,0 +1,13 @@
+Traceback (most recent call last):
+  File "/Users/hert/Projects/openmath/scripts/check_pre_alpha_4_plan.py", line 218, in <module>
+    main()
+    ~~~~^^
+  File "/Users/hert/Projects/openmath/scripts/check_pre_alpha_4_plan.py", line 204, in main
+    links, optional = local_links(paths)
+                      ~~~~~~~~~~~^^^^^^^
+  File "/Users/hert/Projects/openmath/scripts/check_pre_alpha_4_plan.py", line 89, in local_links
+    require(target.exists(), f'链接文件不存在：{path.name} → {url}')
+    ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/hert/Projects/openmath/scripts/check_pre_alpha_4_plan.py", line 30, in require
+    raise ValueError(message)
+ValueError: 链接文件不存在：PRE_ALPHA_4_PROGRESS.md → ../acceptance/pre-alpha.4/development/r43/readonly-native-tool.json

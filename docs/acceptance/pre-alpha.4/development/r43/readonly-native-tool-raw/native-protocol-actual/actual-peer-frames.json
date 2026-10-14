@@ -1,0 +1,286 @@
+{
+  "fixture": true,
+  "framework": "synthetic-private-peer",
+  "environment_keys": [
+    "PATH",
+    "__CF_USER_TEXT_ENCODING"
+  ],
+  "observed": [
+    {
+      "direction": "host",
+      "frame": {
+        "agent_session_id": "pipe-session",
+        "connection_generation": 1,
+        "connection_id": "connection-651047e1-1a51-446c-a0f8-755f63d44c42",
+        "document_generation": 1,
+        "document_id": "00000000-0000-0000-0000-000000000431",
+        "message_id": "hello-06c6f505-f22b-4941-b4cd-6d86cb30a8a4",
+        "payload": {
+          "adapter_version": "adapter-1",
+          "core_version": "1.0.4",
+          "schema_hash": "a58c631ab601d7f5351f8da867bb5769022a70464fc991ce35a41ca38fecd5e4"
+        },
+        "protocol_version": 1,
+        "reply_to": null,
+        "runtime_instance_id": "99489091-33b6-4446-af02-886a6cebd728",
+        "sequence": 1,
+        "task_generation": 1,
+        "task_id": "task-d883a9e1-6cab-4828-be9f-7fc7d55241f9",
+        "type": "hello"
+      }
+    },
+    {
+      "direction": "peer",
+      "frame": {
+        "agent_session_id": "pipe-session",
+        "connection_generation": 1,
+        "connection_id": "connection-651047e1-1a51-446c-a0f8-755f63d44c42",
+        "document_generation": 1,
+        "document_id": "00000000-0000-0000-0000-000000000431",
+        "message_id": "peer-1",
+        "payload": {
+          "adapter_version": "adapter-1",
+          "core_version": "1.0.4",
+          "schema_hash": "a58c631ab601d7f5351f8da867bb5769022a70464fc991ce35a41ca38fecd5e4"
+        },
+        "protocol_version": 1,
+        "reply_to": "hello-06c6f505-f22b-4941-b4cd-6d86cb30a8a4",
+        "runtime_instance_id": "99489091-33b6-4446-af02-886a6cebd728",
+        "sequence": 1,
+        "task_generation": 1,
+        "task_id": "task-d883a9e1-6cab-4828-be9f-7fc7d55241f9",
+        "type": "ready"
+      }
+    },
+    {
+      "direction": "peer",
+      "frame": {
+        "agent_session_id": "pipe-session",
+        "connection_generation": 1,
+        "connection_id": "connection-651047e1-1a51-446c-a0f8-755f63d44c42",
+        "document_generation": 1,
+        "document_id": "00000000-0000-0000-0000-000000000431",
+        "message_id": "peer-2",
+        "payload": {
+          "event_id": "pipe-proposal",
+          "source_sequence": 1,
+          "message": {
+            "record_type": "canonical_agent_message",
+            "message_version": 1,
+            "message_id": "pipe-message",
+            "role": "assistant",
+            "agent_turn_id": "pipe-turn",
+            "task_id": "task-d883a9e1-6cab-4828-be9f-7fc7d55241f9",
+            "parts": [
+              {
+                "kind": "text",
+                "part_id": "text",
+                "text": "完整原文 中文🙂 / é"
+              },
+              {
+                "kind": "tool_call",
+                "part_id": "call",
+                "tool_call_id": "model-call",
+                "name": "read_notebook",
+                "arguments_json": "{}"
+              }
+            ]
+          }
+        },
+        "protocol_version": 1,
+        "reply_to": null,
+        "runtime_instance_id": "99489091-33b6-4446-af02-886a6cebd728",
+        "sequence": 2,
+        "task_generation": 1,
+        "task_id": "task-d883a9e1-6cab-4828-be9f-7fc7d55241f9",
+        "type": "transcript_event"
+      }
+    },
+    {
+      "direction": "host",
+      "frame": {
+        "agent_session_id": "pipe-session",
+        "connection_generation": 1,
+        "connection_id": "connection-651047e1-1a51-446c-a0f8-755f63d44c42",
+        "document_generation": 1,
+        "document_id": "00000000-0000-0000-0000-000000000431",
+        "message_id": "agent-operation-ff4b78f167aae112d136c757a7214c6b",
+        "payload": {
+          "event_id": "pipe-proposal",
+          "event_sequence": 1,
+          "receipt_hash": "2de9e2bd20af9e6930f219b99067c2f43cfdc5b04726ae73562d3ff926919c1c"
+        },
+        "protocol_version": 1,
+        "reply_to": "peer-2",
+        "runtime_instance_id": "99489091-33b6-4446-af02-886a6cebd728",
+        "sequence": 2,
+        "task_generation": 1,
+        "task_id": "task-d883a9e1-6cab-4828-be9f-7fc7d55241f9",
+        "type": "ack"
+      }
+    },
+    {
+      "direction": "host",
+      "frame": {
+        "agent_session_id": "pipe-session",
+        "connection_generation": 1,
+        "connection_id": "connection-651047e1-1a51-446c-a0f8-755f63d44c42",
+        "document_generation": 1,
+        "document_id": "00000000-0000-0000-0000-000000000431",
+        "message_id": "agent-operation-ff4b78f167aae112d136c757a7214c6b",
+        "payload": {
+          "event_id": "pipe-proposal",
+          "event_sequence": 1,
+          "receipt_hash": "2de9e2bd20af9e6930f219b99067c2f43cfdc5b04726ae73562d3ff926919c1c"
+        },
+        "protocol_version": 1,
+        "reply_to": "peer-2",
+        "runtime_instance_id": "99489091-33b6-4446-af02-886a6cebd728",
+        "sequence": 2,
+        "task_generation": 1,
+        "task_id": "task-d883a9e1-6cab-4828-be9f-7fc7d55241f9",
+        "type": "ack"
+      }
+    },
+    {
+      "direction": "peer",
+      "frame": {
+        "agent_session_id": "pipe-session",
+        "connection_generation": 1,
+        "connection_id": "connection-651047e1-1a51-446c-a0f8-755f63d44c42",
+        "document_generation": 1,
+        "document_id": "00000000-0000-0000-0000-000000000431",
+        "message_id": "peer-3",
+        "payload": {
+          "agent_turn_id": "pipe-turn",
+          "tool_call_id": "model-call",
+          "proposal_event_ref": "pipe-proposal"
+        },
+        "protocol_version": 1,
+        "reply_to": null,
+        "runtime_instance_id": "99489091-33b6-4446-af02-886a6cebd728",
+        "sequence": 3,
+        "task_generation": 1,
+        "task_id": "task-d883a9e1-6cab-4828-be9f-7fc7d55241f9",
+        "type": "tool_call"
+      }
+    },
+    {
+      "direction": "peer",
+      "frame": {
+        "agent_session_id": "pipe-session",
+        "connection_generation": 1,
+        "connection_id": "connection-651047e1-1a51-446c-a0f8-755f63d44c42",
+        "document_generation": 1,
+        "document_id": "00000000-0000-0000-0000-000000000431",
+        "message_id": "peer-4",
+        "payload": {
+          "agent_turn_id": "pipe-turn",
+          "request_id": "model-request"
+        },
+        "protocol_version": 1,
+        "reply_to": null,
+        "runtime_instance_id": "99489091-33b6-4446-af02-886a6cebd728",
+        "sequence": 4,
+        "task_generation": 1,
+        "task_id": "task-d883a9e1-6cab-4828-be9f-7fc7d55241f9",
+        "type": "prepare_request"
+      }
+    },
+    {
+      "direction": "host",
+      "frame": {
+        "agent_session_id": "pipe-session",
+        "connection_generation": 1,
+        "connection_id": "connection-651047e1-1a51-446c-a0f8-755f63d44c42",
+        "document_generation": 1,
+        "document_id": "00000000-0000-0000-0000-000000000431",
+        "message_id": "native-frame-763c8a5e-e1ec-411c-9355-44e63e5c94e1",
+        "payload": {
+          "agent_turn_id": "pipe-turn",
+          "context_ref": "fixture-context",
+          "model_config_ref": "fixture-config",
+          "request_id": "model-request"
+        },
+        "protocol_version": 1,
+        "reply_to": null,
+        "runtime_instance_id": "99489091-33b6-4446-af02-886a6cebd728",
+        "sequence": 3,
+        "task_generation": 1,
+        "task_id": "task-d883a9e1-6cab-4828-be9f-7fc7d55241f9",
+        "type": "model_request"
+      }
+    },
+    {
+      "direction": "peer",
+      "frame": {
+        "agent_session_id": "pipe-session",
+        "connection_generation": 1,
+        "connection_id": "connection-651047e1-1a51-446c-a0f8-755f63d44c42",
+        "document_generation": 1,
+        "document_id": "00000000-0000-0000-0000-000000000431",
+        "message_id": "peer-5",
+        "payload": {
+          "agent_turn_id": "pipe-turn",
+          "context_ref": "fixture-context",
+          "model_config_ref": "fixture-config",
+          "request_id": "model-request"
+        },
+        "protocol_version": 1,
+        "reply_to": null,
+        "runtime_instance_id": "99489091-33b6-4446-af02-886a6cebd728",
+        "sequence": 5,
+        "task_generation": 1,
+        "task_id": "task-d883a9e1-6cab-4828-be9f-7fc7d55241f9",
+        "type": "model_request"
+      }
+    },
+    {
+      "direction": "host",
+      "frame": {
+        "agent_session_id": "pipe-session",
+        "connection_generation": 1,
+        "connection_id": "connection-651047e1-1a51-446c-a0f8-755f63d44c42",
+        "document_generation": 1,
+        "document_id": "00000000-0000-0000-0000-000000000431",
+        "message_id": "native-frame-3dba48f7-dd4d-4905-a9cd-857baa820149",
+        "payload": {
+          "agent_turn_id": "pipe-turn",
+          "byte_offset": 0,
+          "canonical_message": null,
+          "phase": "failed",
+          "request_id": "model-request",
+          "text": ""
+        },
+        "protocol_version": 1,
+        "reply_to": null,
+        "runtime_instance_id": "99489091-33b6-4446-af02-886a6cebd728",
+        "sequence": 4,
+        "task_generation": 1,
+        "task_id": "task-d883a9e1-6cab-4828-be9f-7fc7d55241f9",
+        "type": "model_event"
+      }
+    },
+    {
+      "direction": "peer",
+      "frame": {
+        "agent_session_id": "pipe-session",
+        "connection_generation": 1,
+        "connection_id": "connection-651047e1-1a51-446c-a0f8-755f63d44c42",
+        "document_generation": 1,
+        "document_id": "00000000-0000-0000-0000-000000000431",
+        "message_id": "peer-6",
+        "payload": {
+          "reason": "loop_stopped"
+        },
+        "protocol_version": 1,
+        "reply_to": null,
+        "runtime_instance_id": "99489091-33b6-4446-af02-886a6cebd728",
+        "sequence": 6,
+        "task_generation": 1,
+        "task_id": "task-d883a9e1-6cab-4828-be9f-7fc7d55241f9",
+        "type": "settled"
+      }
+    }
+  ]
+}

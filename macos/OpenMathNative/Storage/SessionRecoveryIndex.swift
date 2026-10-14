@@ -106,8 +106,14 @@ final class SessionRecoveryIndex {
     }
     var result:[NativeSessionEvent]=[]
     for id in ids {result.append(try fetch(id))}
-    for parent in parents {result += try children(session:input.session,parent:parent,fetch:fetch)}
+    for parent in parents {result += try children(session:input.session,parent:parent,fetch:fetch);result += try readonlyResults(session:input.session,parent:parent,fetch:fetch)}
     return result.sorted{$0.event_sequence<$1.event_sequence}
+  }
+  func readonlyResults(session:String,parent:String,fetch:(String)throws->NativeSessionEvent)throws->[NativeSessionEvent] {
+    var ids:[String]=[]
+    try db.statement("SELECT event_id FROM session_event_links WHERE session_id=? AND parent_event_id=? AND event_kind='recovery' ORDER BY event_sequence LIMIT 33",[.text(session),.text(parent)]) {ids.append(try SQLColumn.text($0,0))}
+    guard ids.count<=32 else {throw StorageError.corruptIdentity}
+    return try ids.map {id in let event=try fetch(id);guard event.agent_session_id==session,event.parent_event_id.value==parent,event.event_kind == .recovery else {throw StorageError.corruptIdentity};return event}
   }
   struct ToolRow {let call:String,proposal:String,sequence:UInt64,admission:String?}
   struct RequestRow {let context:String,plan:String,sequence:UInt64,latest:String}

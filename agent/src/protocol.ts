@@ -9,6 +9,7 @@ export const MAX_JSON_DEPTH = 64;
 export const MAX_JSON_NODES = 32768;
 const schemaBytes = readFileSync(new URL('../../docs/design/native-agent.schema.json', import.meta.url));
 const schema = JSON.parse(schemaBytes.toString('utf8'));
+const toolSchema = JSON.parse(readFileSync(new URL('../../docs/design/agent-tools.schema.json', import.meta.url),'utf8'));
 export const schemaHash = createHash('sha256').update(schemaBytes).digest('hex');
 function fail(code: string): never { throw new Error(code); }
 function unicode(text: string): boolean {
@@ -80,16 +81,19 @@ export function strictJson(bytes: Uint8Array): Json {
   };
   const result = value(0); space(); if (cursor !== text.length) fail('IPC_INVALID_JSON'); return result;
 }
-function matches(value: Json, rule: any, depth = 0): boolean {
+function matches(value: Json, rule: any, depth = 0, root = schema): boolean {
   if (depth > 128) return false;
   if (rule.$ref) {
     if (!rule.$ref.startsWith('#/$defs/')) return false;
-    const target = schema.$defs[rule.$ref.slice(8)]; return target !== undefined && matches(value, target, depth + 1);
+    const target = root.$defs[rule.$ref.slice(8)]; return target !== undefined && matches(value, target, depth + 1,root);
   }
   if (Object.hasOwn(rule, 'const') && value !== rule.const) return false;
   if (rule.enum && !rule.enum.includes(value)) return false;
-  if (rule.oneOf && rule.oneOf.filter((r: any) => matches(value, r, depth + 1)).length !== 1) return false;
-  if (rule.anyOf && !rule.anyOf.some((r: any) => matches(value, r, depth + 1))) return false;
+  if (rule.oneOf && rule.oneOf.filter((r: any) => matches(value, r, depth + 1,root)).length !== 1) return false;
+  if (rule.anyOf && !rule.anyOf.some((r: any) => matches(value, r, depth + 1,root))) return false;
+  if (rule.allOf && !rule.allOf.every((r:any)=>matches(value,r,depth+1,root))) return false;
+  if (rule.not && matches(value,rule.not,depth+1,root)) return false;
+  if (rule.if) {const branch=matches(value,rule.if,depth+1,root)?rule.then:rule.else;if(branch&&!matches(value,branch,depth+1,root))return false;}
   if (rule.type) {
     const type = value === null ? 'null' : Array.isArray(value) ? 'array' : typeof value;
     if (rule.type === 'integer' ? typeof value !== 'number' || !Number.isSafeInteger(value) : type !== rule.type) return false;
@@ -102,15 +106,22 @@ function matches(value: Json, rule: any, depth = 0): boolean {
   if (typeof value === 'number' && (!Number.isFinite(value) || rule.minimum !== undefined && value < rule.minimum || rule.maximum !== undefined && value > rule.maximum)) return false;
   if (Array.isArray(value)) {
     if (rule.minItems !== undefined && value.length < rule.minItems || rule.maxItems !== undefined && value.length > rule.maxItems) return false;
-    if (rule.items && !value.every(v => matches(v, rule.items, depth + 1))) return false;
+    if (rule.items && !value.every(v => matches(v, rule.items, depth + 1,root))) return false;
   } else if (value !== null && typeof value === 'object') {
     if (rule.required?.some((key: string) => !Object.hasOwn(value, key))) return false;
     for (const [key, entry] of Object.entries(value)) {
-      if (rule.properties && Object.hasOwn(rule.properties, key)) { if (!matches(entry, rule.properties[key], depth + 1)) return false; }
+      if (rule.properties && Object.hasOwn(rule.properties, key)) { if (!matches(entry, rule.properties[key], depth + 1,root)) return false; }
       else if (rule.additionalProperties === false) return false;
     }
   }
   return true;
+}
+/** Data only, after native durability; no result may become a tool grant or source command. */
+export function decodeReadonlyResult(name:string,bytes:Uint8Array):{ok:boolean,status:'completed'|'failed'} {
+  if(!['read_notebook','search_functions','get_function_docs'].includes(name)||bytes.length>262144)fail('IPC_TOOL_RESULT_LIMIT');
+  const value=strictJson(bytes),rule=toolSchema.$defs[name+'_result'];
+  if(!matches(value,rule,0,toolSchema)||value===null||typeof value!=='object'||Array.isArray(value)||!['completed','failed'].includes(String(value.status)))fail('IPC_INVALID_TOOL_RESULT');
+  return value as unknown as {ok:boolean,status:'completed'|'failed'};
 }
 export function decodeFrame(bytes: Uint8Array): AgentIPCFrame {
   const value = strictJson(bytes);

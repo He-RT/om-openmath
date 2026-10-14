@@ -80,6 +80,9 @@ struct Retained {
 /// A successful page is data, not an admission or execution receipt.
 #[derive(Debug, Serialize)]
 pub struct ReadPage {
+    /// Original frozen source revision, for the native outer result envelope only.
+    #[serde(skip)]
+    pub source_revision: u64,
     /// Closed read_notebook_data shape.
     pub data: Value,
     /// Explicit truncation and an opaque cursor bound to this exact query.
@@ -395,6 +398,7 @@ impl ReadNotebookService {
         }
         let data = super::checked_data("read_notebook_data",json!({"snapshot_ref":reference,"is_current":is_current,"title":snapshot.source.file.title,"cells":cells,"symbols":symbols,"recent_transaction_refs":snapshot.recent_transaction_refs})).map_err(|_| ReadError::LimitExceeded)?;
         Ok(ReadPage {
+            source_revision: snapshot.source.revision.get(),
             data,
             pagination: json!({"truncated":cursor.is_some(),"next_cursor":cursor}),
         })

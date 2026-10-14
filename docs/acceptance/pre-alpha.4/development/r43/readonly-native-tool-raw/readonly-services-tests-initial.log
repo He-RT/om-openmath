@@ -1,0 +1,48 @@
+   Compiling om-host-service v0.1.0-pre-alpha.3 (/Users/hert/Projects/openmath/crates/om-host-service)
+    Finished `test` profile [unoptimized] target(s) in 6.03s
+     Running tests/readonly_catalog.rs (target/debug/deps/readonly_catalog-d23bfb83ce328c97)
+
+running 3 tests
+test actual_session_user_binding_precedes_builtin_alias_without_evaluating_docs ... ok
+test executable_docs_match_actual_callbacks_and_never_claim_example_verification ... ok
+test defaults_limits_categories_closed_fields_and_selector_nulls_are_strict ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.08s
+
+     Running tests/readonly_notebook.rs (target/debug/deps/readonly_notebook-65e9ab3aafc505d2)
+
+running 5 tests
+
+thread 'historical_source_is_explicit_and_authority_expiry_and_clock_are_enforced' (37274060) panicked at crates/om-host-service/tests/readonly_notebook.rs:84:68:
+called `Result::unwrap()` on an `Err` value: LimitExceeded
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+thread 'outline_is_bounded_and_full_source_exposure_never_upgrades_its_original_token' (37274061) panicked at crates/om-host-service/tests/readonly_notebook.rs:34:71:
+called `Result::unwrap()` on an `Err` value: LimitExceeded
+test historical_source_is_explicit_and_authority_expiry_and_clock_are_enforced ... FAILED
+test outline_is_bounded_and_full_source_exposure_never_upgrades_its_original_token ... FAILED
+
+thread 'closed_arguments_selection_and_query_bound_cursors_reject_forgery' (37274059) panicked at crates/om-host-service/tests/readonly_notebook.rs:72:91:
+called `Result::unwrap()` on an `Err` value: LimitExceeded
+test closed_arguments_selection_and_query_bound_cursors_reject_forgery ... FAILED
+
+thread 'symbols_and_status_are_actual_accepted_facts_with_stale_producer_and_no_random_mutation' (37274062) panicked at crates/om-host-service/tests/readonly_notebook.rs:118:117:
+called `Result::unwrap()` on an `Err` value: LimitExceeded
+test symbols_and_status_are_actual_accepted_facts_with_stale_producer_and_no_random_mutation ... FAILED
+
+thread 'unicode_fragments_reassemble_exact_source_and_final_fragment_still_is_not_full_cell' (37274063) panicked at crates/om-host-service/tests/readonly_notebook.rs:52:127:
+called `Result::unwrap()` on an `Err` value: LimitExceeded
+test unicode_fragments_reassemble_exact_source_and_final_fragment_still_is_not_full_cell ... FAILED
+
+failures:
+
+failures:
+    closed_arguments_selection_and_query_bound_cursors_reject_forgery
+    historical_source_is_explicit_and_authority_expiry_and_clock_are_enforced
+    outline_is_bounded_and_full_source_exposure_never_upgrades_its_original_token
+    symbols_and_status_are_actual_accepted_facts_with_stale_producer_and_no_random_mutation
+    unicode_fragments_reassemble_exact_source_and_final_fragment_still_is_not_full_cell
+
+test result: FAILED. 0 passed; 5 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.02s
+
+error: test failed, to rerun pass `-p om-host-service --test readonly_notebook`

@@ -155,7 +155,7 @@ actor AgentSessionService {
           }
           if reply.disposition == .tool_intent,let intent=reply.tool_intent.value {
             let key="tool-"+intent.operation_id
-            if dispatches[key]==nil {dispatches[key]=Task {await self.unavailableTool(intent)}}
+            if dispatches[key]==nil {dispatches[key]=Task {await self.dispatchTool(intent)}}
           }
 
         }
@@ -204,10 +204,42 @@ actor AgentSessionService {
       if let original=toolFrames[intent.operation_id],let pipe=privatePipe {
         let reply=try await host.agentCommand(.native_agent_send(.init(type:.agent_send,scope:s,frame_json:original)));updateSequence(reply);try await pipe.write(Data((original+"\n").utf8))
       } else {
-        let result=AgentToolResultPayload(agent_turn_id:intent.agent_turn_id,tool_call_id:intent.tool_call_id,operation_ref:.init(nil),result_ref:.init(nil),outcome:.unavailable)
+        let result=AgentToolResultPayload(agent_turn_id:intent.agent_turn_id,tool_call_id:intent.tool_call_id,operation_ref:.init(nil),result_ref:.init(nil),outcome:.unavailable,result_json:.init(nil))
         toolFrames[intent.operation_id]=try await send("tool_result",payload:JSONEncoder().encode(result))
       }
     } catch {if !Task.isCancelled {_ = try? await send("error",payload:JSONEncoder().encode(AgentErrorPayload(code:"NATIVE_TOOL_UNAVAILABLE",recoverable:false)))}}
+  }
+  /// Only three actual readonly producers are available. Other tools keep their unavailable path.
+  private func dispatchTool(_ intent:NativeAgentToolIntent) async {
+    guard [.read_notebook,.search_functions,.get_function_docs].contains(intent.name) else {await unavailableTool(intent);return}
+    do {
+      guard let s=scope,let ledger else {throw AgentSessionError.inactive}
+      let reply=try await host.agentCommand(.native_agent_read_tool(.init(type:.agent_read_tool,scope:s,operation_id:intent.operation_id)))
+      guard let result=reply.readonly_result.value,result.operation_id==intent.operation_id,result.tool_call_id==intent.tool_call_id,
+        result.agent_turn_id==intent.agent_turn_id,result.name==intent.name else {throw AgentSessionError.stale}
+      let bytes=Data(result.result_json.utf8)
+      guard bytes.count<=262144,KernelHashes.data(bytes)==result.result_hash else {throw AgentSessionError.invalidFrame}
+      let event="readonly-"+intent.operation_id,owner=BlobOwner(kind:.context,id:event)
+      let canonical=AgentCanonicalMessage(record_type:.canonical_agent_message,message_version:1,message_id:event,role:.tool,agent_turn_id:.init(intent.agent_turn_id),task_id:.init(s.task_id),parts:[.agent_tool_result_part(.init(kind:.tool_result,part_id:event,tool_call_id:intent.tool_call_id,operation_ref:.init(nil),result_ref:.init(result.result_ref),outcome:result.outcome == .completed ? .completed:.failed))])
+      let record=AgentReadonlyRecord(codecVersion:1,kind:"native_readonly_result",intent:intent,resultRef:result.result_ref,blobHash:result.result_hash,byteLength:UInt64(bytes.count),canonical:canonical)
+      let publication=try await storage.publishBlob(data:bytes,expectedHash:result.result_hash)
+      do {
+        _ = try await ledger.record(record,id:event,kind:.recovery,parent:intent.proposal_event_ref,turn:intent.agent_turn_id,task:s.task_id,resource:publication,resourceOwner:owner)
+        try await storage.releaseBlob(publication)
+      } catch {try? await storage.releaseBlob(publication);throw error}
+      // Independent SQLite event and referenced Blob readback precede the native confirmation.
+      guard let stored=try await storage.sessionEvent(s.agent_session_id,event:event),stored.event.payload_hash==KernelHashes.data(try RecoveryValidation.encode(record)),
+        stored.event.payload_inline_json.value.map({Data($0.utf8)}) == (try RecoveryValidation.encode(record)) else {throw AgentSessionError.ledgerMismatch}
+      let lease=try await storage.openReferencedBlob(owner:owner,hash:record.blobHash)
+      let original:Data
+      do {original=try await storage.readBlob(lease,offset:0,count:bytes.count);try await storage.closeBlob(lease)}
+      catch {try? await storage.closeBlob(lease);throw error}
+      guard original==bytes else {throw AgentSessionError.ledgerMismatch}
+      try Task.checkCancellation()
+      _ = try await host.agentCommand(.native_agent_confirm_tool(.init(type:.agent_confirm_tool,scope:s,operation_id:intent.operation_id,result_ref:result.result_ref,result_hash:result.result_hash,event_id:event,event_sequence:try HostSerial(stored.receipt.eventSequence),receipt_hash:stored.receipt.recordHash)))
+      let payload=AgentToolResultPayload(agent_turn_id:intent.agent_turn_id,tool_call_id:intent.tool_call_id,operation_ref:.init(nil),result_ref:.init(result.result_ref),outcome:result.outcome == .completed ? .completed:.failed,result_json:.init(String(decoding:original,as:UTF8.self)))
+      toolFrames[intent.operation_id]=try await send("tool_result",payload:JSONEncoder().encode(payload))
+    } catch {if !Task.isCancelled {_ = try? await send("error",payload:JSONEncoder().encode(AgentErrorPayload(code:"NATIVE_READONLY_RESULT_UNAVAILABLE",recoverable:false)))}}
   }
   private func stopDispatches() {for task in dispatches.values {task.cancel()};dispatches.removeAll()}
   func close() async {

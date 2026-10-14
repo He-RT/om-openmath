@@ -176,6 +176,12 @@ final class AgentSessionStore {
     return .init(events:all,complete:false)
   }
   private func verifyResources(_ input:SessionAppendInput,events:[NativeSessionEvent],reader:SQLiteDatabase,stored:Bool=false)throws {
+    if input.kind == .recovery,let record=try SessionSemantics.readonlyRecord(input.payload) {
+      var matched=false
+      try reader.statement("SELECT o.byte_length FROM blob_refs r JOIN blob_objects o USING(blob_hash) WHERE r.owner_kind='context' AND r.owner_id=? AND r.blob_hash=?",[.text(input.eventID),.text(record.blobHash)]) {row in
+        guard sqlite3_column_int64(row,0)==Int64(record.byteLength) else {throw StorageError.corruptIdentity};matched=true
+      };guard matched else {throw BlobError.missing}
+    }
     if stored,input.kind == .tool_admitted {
       let admission=try JSONDecoder().decode(SessionToolAdmission.self,from:input.payload)
       var actual:StoredSessionEvent?
@@ -244,6 +250,13 @@ final class AgentSessionStore {
         guard payload.callID==row.call,payload.proposalEvent==row.proposal else {throw StorageError.corruptIdentity};target=payload.target;phase = .tool_outcome_unknown
         let children=try view.children(session:session,parent:admissionID,fetch:fetch)
         if let result=children.first(where:{$0.event_kind == .tool_result}) {let value=try SessionValidation.payload(SessionToolResult.self,result);phase=value.outcome == .partial ? .partial : .completed;resultID=result.event_id}
+      }
+      let readonly=try view.readonlyResults(session:session,parent:row.proposal,fetch:fetch).filter{$0.event_sequence<=upper}
+      for event in readonly {
+        if let record=try SessionSemantics.readonlyRecord(event),record.intent.tool_call_id==row.call {
+          guard row.admission==nil,resultID==nil else {throw StorageError.corruptIdentity}
+          phase=try SessionSemantics.readonlyPhase(record);resultID=event.event_id
+        }
       }
       tools.append(.init(session:session,proposalEvent:row.proposal,callID:row.call,admissionEvent:row.admission,phase:phase,target:target,resultEvent:resultID))
     }

@@ -1,0 +1,24 @@
+   Compiling om-host-service v0.1.0-pre-alpha.3 (/Users/hert/Projects/openmath/crates/om-host-service)
+   Compiling om-apple-ffi v0.1.0-pre-alpha.3 (/Users/hert/Projects/openmath/crates/om-apple-ffi)
+    Finished `test` profile [unoptimized] target(s) in 4.28s
+     Running unittests src/lib.rs (target/debug/deps/om_apple_ffi-575611789755540d)
+
+running 9 tests
+test lifecycle_tests::concurrent_event_poll_submit_cancel_and_close_settle_without_stale_pointer_access ... ok
+test lifecycle_tests::malformed_submit_and_event_byte_limits_report_actual_failure_or_resync ... ok
+test tests::linking_probe_reports_the_real_desktop_kernel_catalog ... ok
+test lifecycle_tests::consumed_handles_never_alias_and_cancel_is_repeatable_without_rearming ... ok
+test lifecycle_tests::create_rejects_null_invalid_utf8_unknown_fields_and_overlimit_with_owned_errors ... ok
+test lifecycle_tests::real_math_borrowed_input_is_copied_and_all_returned_bytes_are_freed ... ok
+test registry::tests::finishing_waits_for_real_active_guard_and_stale_token_never_rebinds ... ok
+test ffi::tests::packet_and_integer_panics_do_not_cross_the_abi ... ok
+test lifecycle_tests::free_drops_only_owned_matching_allocation_and_empty_is_harmless ... ok
+
+test result: ok. 9 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.05s
+
+   Doc-tests om_apple_ffi
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+

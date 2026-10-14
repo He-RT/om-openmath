@@ -32,6 +32,8 @@ pub struct NativeAgentHostReply {
     pub tool_intent: Nullable<NativeAgentToolIntent>,
     /// Contract field `request_intent`.
     pub request_intent: Nullable<NativeAgentRequestIntent>,
+    /// Contract field `readonly_result`.
+    pub readonly_result: Nullable<NativeAgentReadonlyResult>,
 }
 impl std::fmt::Debug for NativeAgentHostReply {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {

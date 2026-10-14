@@ -14,6 +14,8 @@ pub struct AgentToolResultPayload {
     pub result_ref: Nullable<String>,
     /// Contract field `outcome`.
     pub outcome: AgentToolResultPayloadOutcome,
+    /// Contract field `result_json`.
+    pub result_json: Nullable<String>,
 }
 impl std::fmt::Debug for AgentToolResultPayload {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {

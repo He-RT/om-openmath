@@ -8,6 +8,8 @@ R4.3.02 以 Pi Core/AI 1.0.4、Node 26.11.1 darwin-arm64 组成真正可执行�
 
 规范消息与Pi state隔离。用户输入先经原生账本持久化，再在 user_input/steer/follow_up 帧同时传递完整 canonical message 和事件引用。Pi 的 custom streamFn 请求先经过 native prepare 绑定不可替换的context/model refs，再发送model_request。宿主 model_event 关联turn/request/UTF8 byte_offset；终结帧携带完整 canonical message。helper保留原始 arguments_json，与Pi参数转换对象分别存在，不以重新stringify后的参数代替原字节。
 
+三个只读工具由当前SourceEndpoint执行：agent_read_tool只接已映射operation_id，参数从已耐久ACK的原提案取回，调用方不能替换。宿主冻结完整闭合工具结果并返回result_ref/result_hash；Swift将原字节存为Library引用Blob，记录带规范tool消息的native_readonly_result恢复事实，再独立回读事件与Blob后agent_confirm_tool。tool_result帧的result_json只承载这份已确认的有界数据，规范消息只保存result_ref。原生侧核对原call/turn/task、结果哈希及当前scope；取消、过期或文档/编辑/定义绑定变化拒绝新投递和旧帧重放。helper校验工具结果契约，把数据交给Pi现有tool结果流程继续下一轮，不执行源码、不把读取冒充DocCommit/CAS效果。未实现工具仍以unavailable/null结果终止该批工具，恢复记录不会重新授予执行权限。
+
 beforeToolCall 等待真实 canonical ACK，工具顺序执行；后续模型请求等待完成的规范事件。十二工具声明来自固定机器契约，没有动态插件。尚未实现的宿主工具只返回 unavailable，日记中记录“未执行”事实，不捏造admission/operation receipt。没有配置模型adapter时发出明确错误并settled failed，不添加虚构assistant输出。模型codec、URLSession/SecretStore、真实工具handler和Agent UI分别属于后续任务。内部Pi模型carrier和零usage只是私有桥接数据，不是实际模型或计费指标。
 
 服务监督私有pipe握手、帧顺序、重放、取消、退出；握手超时5秒。取消不等待模型流结束，迟到callback由Rust当前scope/phase拒绝。实际SIGKILL测试表明helper关闭后同一文档/主内核仍输出4；独立Source/Kernel owner不因helper崩溃停用。

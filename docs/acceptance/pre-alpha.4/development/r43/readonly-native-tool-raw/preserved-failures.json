@@ -1,0 +1,25 @@
+{
+  "preserved": [
+    {
+      "log": "readonly-native-producer.log",
+      "cause": "Outer search/docs result initially omitted required pagination. Producer fixed; contract not relaxed."
+    },
+    {
+      "log": "readonly-node26-full-suite.log",
+      "cause": "Offline codec fixture env was missing from broad Node invocation; explicit fixture path supplied for final14 tests."
+    },
+    {
+      "log": "readonly-node26-corrected.log",
+      "cause": "Synthetic model_event in Node test included undefined extra keys; exact closed payload corrected; production signed-App two-turn path already passed."
+    },
+    {
+      "log": "readonly-pi-recovery.log",
+      "cause": "SessionRecoveryPage is intentionally not Encodable; fixture explicitly records its existing Codable tools/requests plus factual fields."
+    },
+    {
+      "log": "initial-storage-recovery/actual-readonly-recovery.json",
+      "cause": "Early projection kept completed readonly call at tool_not_started; typed readonly facts and resource verification now project readonly_completed/failed in both indexed/fallback paths."
+    }
+  ],
+  "initial_intermediate_source_snapshots": "Not individually captured for all failed attempts; exact final source copies and original failure outputs are preserved."
+}

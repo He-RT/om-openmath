@@ -1,0 +1,25 @@
+   Compiling om-host-service v0.1.0-pre-alpha.3 (/Users/hert/Projects/openmath/crates/om-host-service)
+   Compiling om-kernel v0.1.0-pre-alpha.3 (/Users/hert/Projects/openmath/crates/om-kernel)
+    Finished `test` profile [unoptimized] target(s) in 7.50s
+     Running tests/readonly_catalog.rs (target/debug/deps/readonly_catalog-d23bfb83ce328c97)
+
+running 3 tests
+test actual_session_user_binding_precedes_builtin_alias_without_evaluating_docs ... FAILED
+test executable_docs_match_actual_callbacks_and_never_claim_example_verification ... ok
+test defaults_limits_categories_closed_fields_and_selector_nulls_are_strict ... ok
+
+failures:
+
+---- actual_session_user_binding_precedes_builtin_alias_without_evaluating_docs stdout ----
+
+thread 'actual_session_user_binding_precedes_builtin_alias_without_evaluating_docs' (37260992) panicked at crates/om-host-service/tests/readonly_catalog.rs:36:45:
+assertion failed: context.known_functions.iter().any(|n| n == "sin")
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+
+failures:
+    actual_session_user_binding_precedes_builtin_alias_without_evaluating_docs
+
+test result: FAILED. 2 passed; 1 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.08s
+
+error: test failed, to rerun pass `-p om-host-service --test readonly_catalog`

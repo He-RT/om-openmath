@@ -1,0 +1,4 @@
+data: {"id":"provider-response","choices":[{"finish_reason":"tool_calls","delta":{"content":"中文🙂","role":"assistant","tool_calls":[{"id":"provider-call","type":"function","function":{"name":"read_notebook","arguments":"{ \"view\" : \"outline\" }"},"index":0}]},"index":0}],"model":"synthetic-served-alias"}
+
+data: [DONE]
+

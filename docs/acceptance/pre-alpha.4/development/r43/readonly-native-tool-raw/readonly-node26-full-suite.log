@@ -1,0 +1,43 @@
+✔ actual Pi bridge resolves immutable model refs and canonical ACK before unavailable tool hook (13.016916ms)
+✔ wrong connection and byte-identical hello replay cannot reset active helper scope (1.202667ms)
+✔ actual Pi consumes a complete native readonly result and continues to a second model turn (6.6035ms)
+✔ sealed own fixture bytes and real streaming UTF-8 boundaries (4.564667ms)
+✔ pinned Pi hooks await canonical ACK and tools execute sequentially before next model request (13.763917ms)
+✔ cancel while canonical ACK is pending prevents every tool effect (0.439875ms)
+✔ shell plugins and mismatched canonical user tasks are refused (0.213708ms)
+✔ all actual encoded UTF8 split points and multiple complete frames roundtrip (42.886375ms)
+✔ unknown credentials/URLs/Pi state, missing required null and unsafe counters are rejected (1.134ms)
+✔ duplicate members, invalid Unicode/UTF8, limits and incomplete EOF poison real connections (0.641708ms)
+node:internal/modules/run_main:111
+    triggerUncaughtException(
+    ^
+
+AssertionError [ERR_ASSERTION]: Run scripts/test_single_turn_pi.py to build the real Rust fixture first
+    at file:///Users/hert/Projects/openmath/agent/test/single-turn-codec.test.mjs:12:8
+    at ModuleJob.run (node:internal/modules/esm/module_job:569:25)
+    at async node:internal/modules/esm/loader:650:26
+    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:105:5) {
+  generatedMessage: false,
+  code: 'ERR_ASSERTION',
+  actual: undefined,
+  expected: true,
+  operator: '==',
+  diff: 'simple'
+}
+
+Node.js v26.11.1
+✖ agent/test/single-turn-codec.test.mjs (212.599459ms)
+ℹ tests 11
+ℹ suites 0
+ℹ pass 10
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 3217.054
+
+✖ failing tests:
+
+test at agent/test/single-turn-codec.test.mjs:1:1
+✖ agent/test/single-turn-codec.test.mjs (212.599459ms)
+  'test failed'

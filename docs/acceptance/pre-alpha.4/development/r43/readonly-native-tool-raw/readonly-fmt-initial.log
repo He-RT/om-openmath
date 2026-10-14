@@ -1,0 +1,1484 @@
+Diff in /Users/hert/Projects/openmath/crates/om-host-service/src/kernel/mod.rs:310:
+ fn cell_states(session: &Session) -> Vec<(String, om_kernel::protocol::CellStatus)> {
+     session.cell_statuses()
+ }
+-fn cell_states_size(base: usize, cells: &[(String, om_kernel::protocol::CellStatus)]) -> Option<usize> {
+-    cells.iter().try_fold(base, |n, (id, _)| n.checked_add(id.len())?.checked_add(std::mem::size_of::<(String, om_kernel::protocol::CellStatus)>()))
++fn cell_states_size(
++    base: usize,
++    cells: &[(String, om_kernel::protocol::CellStatus)],
++) -> Option<usize> {
++    cells.iter().try_fold(base, |n, (id, _)| {
++        n.checked_add(id.len())?
++            .checked_add(std::mem::size_of::<(String, om_kernel::protocol::CellStatus)>())
++    })
+ }
+ fn context_size(base: usize, context: &om_kernel::source::SourceExecutionContext) -> Option<usize> {
+     let n = context
+Diff in /Users/hert/Projects/openmath/crates/om-host-service/src/lib.rs:16:
+ pub mod agent;
+ /// Host-owned scoped immutable references and deadlines.
+ pub mod references;
+-/// Native readonly tool data services; execution/permission admission remains with the owner.
+-pub mod tools;
+ /// Immutable actual result ownership, scope-checked references and read-only projections.
+ pub mod results;
++/// Native readonly tool data services; execution/permission admission remains with the owner.
++pub mod tools;
+ 
+Diff in /Users/hert/Projects/openmath/crates/om-host-service/src/tools/catalog.rs:1:
+ //! Readonly actual callback metadata. Native accepted definition ownership takes precedence.
+ use serde::Deserialize;
+-use serde_json::{Value,json};
+-use std::{collections::BTreeMap,sync::OnceLock};
++use serde_json::{Value, json};
++use std::{collections::BTreeMap, sync::OnceLock};
+ 
+ /// A catalog query is data only and never authorizes evaluating an example.
+-#[derive(Clone,Debug,PartialEq,Eq)]
++#[derive(Clone, Debug, PartialEq, Eq)]
+ pub enum CatalogError {
+     /// Closed argument shape/range/selector invalid.
+     InvalidArgument,
+Diff in /Users/hert/Projects/openmath/crates/om-host-service/src/tools/catalog.rs:17:
+ }
+ #[derive(Deserialize)]
+ #[serde(deny_unknown_fields)]
+-struct Search {query:String,category:Option<String>,limit:Option<usize>}
++struct Search {
++    query: String,
++    category: Option<String>,
++    limit: Option<usize>,
++}
+ #[derive(Deserialize)]
+ #[serde(deny_unknown_fields)]
+-struct Docs {function_id:Option<String>,name:Option<String>,metadata_version:Option<u32>}
+-fn data()->&'static Value {
+-    static DATA:OnceLock<Value>=OnceLock::new();DATA.get_or_init(om_kernel::capabilities::function_documents)
++struct Docs {
++    function_id: Option<String>,
++    name: Option<String>,
++    metadata_version: Option<u32>,
+ }
+-fn input<T:serde::de::DeserializeOwned>(bytes:&[u8])->Result<T,CatalogError> {
+-    let value=om_agent_contract::json::strict_json_bounded(bytes,65536).map_err(|_|CatalogError::InvalidArgument)?;
+-    if !value.is_object() || value.as_object().is_some_and(|o|o.values().any(Value::is_null)) {return Err(CatalogError::InvalidArgument);}
+-    serde_json::from_value(value).map_err(|_|CatalogError::InvalidArgument)
++fn data() -> &'static Value {
++    static DATA: OnceLock<Value> = OnceLock::new();
++    DATA.get_or_init(om_kernel::capabilities::function_documents)
+ }
+-fn bounded(value:&str,max:usize)->bool {!value.is_empty() && value.chars().count()<=max && !value.chars().any(char::is_control)}
++fn input<T: serde::de::DeserializeOwned>(bytes: &[u8]) -> Result<T, CatalogError> {
++    let value = om_agent_contract::json::strict_json_bounded(bytes, 65536)
++        .map_err(|_| CatalogError::InvalidArgument)?;
++    if !value.is_object()
++        || value
++            .as_object()
++            .is_some_and(|o| o.values().any(Value::is_null))
++    {
++        return Err(CatalogError::InvalidArgument);
++    }
++    serde_json::from_value(value).map_err(|_| CatalogError::InvalidArgument)
++}
++fn bounded(value: &str, max: usize) -> bool {
++    !value.is_empty() && value.chars().count() <= max && !value.chars().any(char::is_control)
++}
+ /// Search only compiled callbacks. Filtering order is deterministic and never executes sources.
+-pub fn search(bytes:&[u8])->Result<Value,CatalogError> {
+-    let args:Search=input(bytes)?;let limit=args.limit.unwrap_or(8);
+-    if !bounded(&args.query,500) || !(1..=20).contains(&limit) || args.category.as_ref().is_some_and(|c|!bounded(c,128)) {return Err(CatalogError::InvalidArgument);}
+-    let query=args.query.to_lowercase();let mut matches=vec![];
++pub fn search(bytes: &[u8]) -> Result<Value, CatalogError> {
++    let args: Search = input(bytes)?;
++    let limit = args.limit.unwrap_or(8);
++    if !bounded(&args.query, 500)
++        || !(1..=20).contains(&limit)
++        || args.category.as_ref().is_some_and(|c| !bounded(c, 128))
++    {
++        return Err(CatalogError::InvalidArgument);
++    }
++    let query = args.query.to_lowercase();
++    let mut matches = vec![];
+     for f in data()["functions"].as_array().expect("actual catalog") {
+-        if args.category.as_ref().is_some_and(|c|!f["category"].as_str().unwrap_or("").eq_ignore_ascii_case(c)){continue;}
+-        let descriptor=&f["descriptor"];
+-        let mut names=vec![descriptor["name"].as_str().unwrap_or(""),descriptor["modern_name"].as_str().unwrap_or(""),descriptor["id"].as_str().unwrap_or("")];
+-        if let Some(aliases)=descriptor["aliases"].as_array() { names.extend(aliases.iter().filter_map(Value::as_str)); }
+-        let exact=names.iter().any(|n|n.eq_ignore_ascii_case(&args.query));
+-        let text=names.into_iter().chain(["signature","wolfram_signature","summary_zh","summary_en","category"].iter().filter_map(|key|f[*key].as_str())).collect::<Vec<_>>().join(" ").to_lowercase();
+-        if !exact && !text.contains(&query){continue;}
++        if args
++            .category
++            .as_ref()
++            .is_some_and(|c| !f["category"].as_str().unwrap_or("").eq_ignore_ascii_case(c))
++        {
++            continue;
++        }
++        let descriptor = &f["descriptor"];
++        let mut names = vec![
++            descriptor["name"].as_str().unwrap_or(""),
++            descriptor["modern_name"].as_str().unwrap_or(""),
++            descriptor["id"].as_str().unwrap_or(""),
++        ];
++        if let Some(aliases) = descriptor["aliases"].as_array() {
++            names.extend(aliases.iter().filter_map(Value::as_str));
++        }
++        let exact = names.iter().any(|n| n.eq_ignore_ascii_case(&args.query));
++        let text = names
++            .into_iter()
++            .chain(
++                [
++                    "signature",
++                    "wolfram_signature",
++                    "summary_zh",
++                    "summary_en",
++                    "category",
++                ]
++                .iter()
++                .filter_map(|key| f[*key].as_str()),
++            )
++            .collect::<Vec<_>>()
++            .join(" ")
++            .to_lowercase();
++        if !exact && !text.contains(&query) {
++            continue;
++        }
+         matches.push((!exact,descriptor["name"].as_str().unwrap_or("").to_owned(),json!({"function_id":descriptor["id"],"name":descriptor["name"],"signature":f["signature"],"support":descriptor["support"],"metadata_version":data()["metadata_version"]})));
+     }
+-    matches.sort_by(|a,b|(&a.0,&a.1).cmp(&(&b.0,&b.1)));
++    matches.sort_by(|a, b| (&a.0, &a.1).cmp(&(&b.0, &b.1)));
+     super::checked_data("search_functions_data",json!({"functions":matches.into_iter().take(limit).map(|(_,_,f)|f).collect::<Vec<_>>(),"metadata_version":data()["metadata_version"]})).map_err(|_|CatalogError::LimitExceeded)
+ }
+ /// Query actual accepted user ownership, not syntactic declarations from notebook text.
+Diff in /Users/hert/Projects/openmath/crates/om-host-service/src/tools/catalog.rs:52:
+ /// The caller must retain/check the accepted state binding and currentness before publication.
+-pub fn docs(bytes:&[u8],context:&om_kernel::source::SourceExecutionContext)->Result<Value,CatalogError> {
+-    let args:Docs=input(bytes)?;
+-    if args.function_id.is_some()==args.name.is_some() || args.function_id.as_ref().is_some_and(|s|!bounded(s,80)) || args.name.as_ref().is_some_and(|s|!bounded(s,128)){return Err(CatalogError::InvalidArgument);}
+-    if args.metadata_version==Some(0){return Err(CatalogError::InvalidArgument);}
+-    if args.metadata_version.is_some_and(|v|data()["metadata_version"].as_u64()!=Some(u64::from(v))){return Err(CatalogError::StaleMetadata);}
+-    if let Some(name)=&args.name {
+-        let owners=context.owned.iter().map(|o|(o.symbol.as_str(),o.cell_id.as_str())).collect::<BTreeMap<_,_>>();
+-        if let Some(cell)=owners.get(name.as_str()) {
++pub fn docs(
++    bytes: &[u8],
++    context: &om_kernel::source::SourceExecutionContext,
++) -> Result<Value, CatalogError> {
++    let args: Docs = input(bytes)?;
++    if args.function_id.is_some() == args.name.is_some()
++        || args.function_id.as_ref().is_some_and(|s| !bounded(s, 80))
++        || args.name.as_ref().is_some_and(|s| !bounded(s, 128))
++    {
++        return Err(CatalogError::InvalidArgument);
++    }
++    if args.metadata_version == Some(0) {
++        return Err(CatalogError::InvalidArgument);
++    }
++    if args
++        .metadata_version
++        .is_some_and(|v| data()["metadata_version"].as_u64() != Some(u64::from(v)))
++    {
++        return Err(CatalogError::StaleMetadata);
++    }
++    if let Some(name) = &args.name {
++        let owners = context
++            .owned
++            .iter()
++            .map(|o| (o.symbol.as_str(), o.cell_id.as_str()))
++            .collect::<BTreeMap<_, _>>();
++        if let Some(cell) = owners.get(name.as_str()) {
+             return super::checked_data("get_function_docs_data",json!({"function":{"kind":"user_binding","name":name,"callable":context.known_functions.contains(name),"cell_id":cell,"source":null,"source_complete":false,"support":"Current accepted Session user binding overrides builtin alias; read original cell for complete source."},"examples":[],"metadata_version":data()["metadata_version"]})).map_err(|_|CatalogError::LimitExceeded);
+         }
+     }
+Diff in /Users/hert/Projects/openmath/crates/om-host-service/src/tools/catalog.rs:64:
+-    let entries=data()["functions"].as_array().expect("actual catalog");
+-    let found=if let Some(id)=args.function_id {entries.iter().find(|f|f["descriptor"]["id"]==id)} else {
+-        let name=args.name.expect("one selector");
+-        entries.iter().find(|f|f["descriptor"]["name"]==name).or_else(||entries.iter().find(|f|name.chars().count()>=2 && (f["descriptor"]["modern_name"].as_str().is_some_and(|n|n.eq_ignore_ascii_case(&name)) || f["descriptor"]["aliases"].as_array().is_some_and(|a|a.iter().any(|v|v.as_str().is_some_and(|s|s.eq_ignore_ascii_case(&name)))))))
+-    }.ok_or(CatalogError::NotFound)?;
++    let entries = data()["functions"].as_array().expect("actual catalog");
++    let found = if let Some(id) = args.function_id {
++        entries.iter().find(|f| f["descriptor"]["id"] == id)
++    } else {
++        let name = args.name.expect("one selector");
++        entries
++            .iter()
++            .find(|f| f["descriptor"]["name"] == name)
++            .or_else(|| {
++                entries.iter().find(|f| {
++                    name.chars().count() >= 2
++                        && (f["descriptor"]["modern_name"]
++                            .as_str()
++                            .is_some_and(|n| n.eq_ignore_ascii_case(&name))
++                            || f["descriptor"]["aliases"].as_array().is_some_and(|a| {
++                                a.iter().any(|v| {
++                                    v.as_str().is_some_and(|s| s.eq_ignore_ascii_case(&name))
++                                })
++                            }))
++                })
++            })
++    }
++    .ok_or(CatalogError::NotFound)?;
+     super::checked_data("get_function_docs_data",json!({"function":found,"examples":found["examples"],"metadata_version":data()["metadata_version"]})).map_err(|_|CatalogError::LimitExceeded)
+ }
+ 
+Diff in /Users/hert/Projects/openmath/crates/om-host-service/src/tools/mod.rs:4:
+ 
+ fn schema() -> &'static serde_json::Value {
+     static SCHEMA: std::sync::OnceLock<serde_json::Value> = std::sync::OnceLock::new();
+-    SCHEMA.get_or_init(|| serde_json::from_str(include_str!("../../../../docs/design/agent-tools.schema.json")).expect("checked tools schema"))
++    SCHEMA.get_or_init(|| {
++        serde_json::from_str(include_str!(
++            "../../../../docs/design/agent-tools.schema.json"
++        ))
++        .expect("checked tools schema")
++    })
+ }
+ fn checked_data(name: &str, value: serde_json::Value) -> Result<serde_json::Value, ()> {
+-    crate::protocol::validation::validate(&value, &schema()["$defs"][name], schema()).map_err(|_| ())?;
+-    if serde_json::to_vec(&value).map_err(|_| ())?.len() > 256 * 1024 { return Err(()); }
++    crate::protocol::validation::validate(&value, &schema()["$defs"][name], schema())
++        .map_err(|_| ())?;
++    if serde_json::to_vec(&value).map_err(|_| ())?.len() > 256 * 1024 {
++        return Err(());
++    }
+     Ok(value)
+ }
+ 
+Diff in /Users/hert/Projects/openmath/crates/om-host-service/src/tools/read.rs:33:
+ }
+ #[derive(Clone, Copy, Debug, Default, PartialEq, Eq, Serialize, Deserialize)]
+ #[serde(rename_all = "snake_case")]
+-enum View { #[default] Outline, Cells, Symbols }
++enum View {
++    #[default]
++    Outline,
++    Cells,
++    Symbols,
++}
+ #[derive(Deserialize)]
+ #[serde(deny_unknown_fields)]
+ struct Args {
+Diff in /Users/hert/Projects/openmath/crates/om-host-service/src/tools/read.rs:40:
+-    view: Option<View>, cell_ids: Option<Vec<String>>, snapshot_ref: Option<String>,
+-    cursor: Option<String>, include_outputs: Option<bool>, limit: Option<usize>,
++    view: Option<View>,
++    cell_ids: Option<Vec<String>>,
++    snapshot_ref: Option<String>,
++    cursor: Option<String>,
++    include_outputs: Option<bool>,
++    limit: Option<usize>,
+ }
+ #[derive(Clone, Serialize)]
+ struct Cursor {
+Diff in /Users/hert/Projects/openmath/crates/om-host-service/src/tools/read.rs:45:
+-    snapshot: String, view: View, ids: Option<Vec<String>>, outputs: bool, limit: usize,
+-    index: usize, byte_offset: usize,
++    snapshot: String,
++    view: View,
++    ids: Option<Vec<String>>,
++    outputs: bool,
++    limit: usize,
++    index: usize,
++    byte_offset: usize,
+ }
+ #[derive(Clone, Serialize)]
+ struct Snapshot {
+Diff in /Users/hert/Projects/openmath/crates/om-host-service/src/tools/read.rs:56:
+     issued: u64,
+     expires: u64,
+ }
+-struct Retained { snapshot: Snapshot, bytes: usize }
++struct Retained {
++    snapshot: Snapshot,
++    bytes: usize,
++}
+ /// A successful page is data, not an admission or execution receipt.
+ #[derive(Debug, Serialize)]
+ pub struct ReadPage {
+Diff in /Users/hert/Projects/openmath/crates/om-host-service/src/tools/read.rs:74:
+ }
+ fn decode(bytes: &[u8]) -> Result<Args, ReadError> {
+     let root = super::schema();
+-    let value = om_agent_contract::json::strict_json_bounded(bytes, 65536).map_err(|_| ReadError::InvalidArgument)?;
+-    validation::validate(&value, &root["$defs"]["read_notebook_args"], root).map_err(|_| ReadError::InvalidArgument)?;
++    let value = om_agent_contract::json::strict_json_bounded(bytes, 65536)
++        .map_err(|_| ReadError::InvalidArgument)?;
++    validation::validate(&value, &root["$defs"]["read_notebook_args"], root)
++        .map_err(|_| ReadError::InvalidArgument)?;
+     serde_json::from_value(value).map_err(|_| ReadError::InvalidArgument)
+ }
+ fn same_authority(old: &ReferenceScope, current: &ReferenceScope) -> bool {
+Diff in /Users/hert/Projects/openmath/crates/om-host-service/src/tools/read.rs:82:
+-    old.can_read && current.can_read && old.runtime == current.runtime && old.document == current.document
+-        && old.generation == current.generation && old.task == current.task && old.task_generation == current.task_generation
+-        && old.grant_revision == current.grant_revision && old.metadata_revision == current.metadata_revision
++    old.can_read
++        && current.can_read
++        && old.runtime == current.runtime
++        && old.document == current.document
++        && old.generation == current.generation
++        && old.task == current.task
++        && old.task_generation == current.task_generation
++        && old.grant_revision == current.grant_revision
++        && old.metadata_revision == current.metadata_revision
+ }
+-fn capture(controller: &DocumentCommitController, coordinator: &SourceCoordinator, accepted: Option<&AcceptedKernelState>, scope: &ReferenceScope, now: u64) -> Result<Snapshot, ReadError> {
++fn capture(
++    controller: &DocumentCommitController,
++    coordinator: &SourceCoordinator,
++    accepted: Option<&AcceptedKernelState>,
++    scope: &ReferenceScope,
++    now: u64,
++) -> Result<Snapshot, ReadError> {
+     let source = controller.owner().snapshot().clone();
+     let mut statuses = BTreeMap::new();
+     let mut symbols = vec![];
+Diff in /Users/hert/Projects/openmath/crates/om-host-service/src/tools/read.rs:90:
+     if let Some(accepted) = accepted {
+-        let state = accepted.state(); let producer = state.binding();
+-        if producer.document_id != scope.document || producer.document_generation != scope.generation { return Err(ReadError::StaleSnapshot); }
+-        let fresh = producer.source_snapshot_hash == source.snapshot_hash && producer.execution_epoch == source.execution_epoch.get()
++        let state = accepted.state();
++        let producer = state.binding();
++        if producer.document_id != scope.document
++            || producer.document_generation != scope.generation
++        {
++            return Err(ReadError::StaleSnapshot);
++        }
++        let fresh = producer.source_snapshot_hash == source.snapshot_hash
++            && producer.execution_epoch == source.execution_epoch.get()
+             && accepted.receipt().producer.config_revision.get() == scope.config_revision;
+-        if fresh { for (id, status) in state.cell_states() { statuses.insert(id.clone(), json!(status)); } }
++        if fresh {
++            for (id, status) in state.cell_states() {
++                statuses.insert(id.clone(), json!(status));
++            }
++        }
+         for owner in &state.execution_context().owned {
+             symbols.push(json!({"name":owner.symbol,"cell_id":owner.cell_id,"callable":state.execution_context().known_functions.contains(&owner.symbol),"is_current":fresh,"producer":{"source_revision":producer.source_revision,"execution_epoch":producer.execution_epoch,"kernel_state_revision":producer.kernel_state_revision,"snapshot_hash":producer.source_snapshot_hash}}));
+         }
+Diff in /Users/hert/Projects/openmath/crates/om-host-service/src/tools/read.rs:99:
+-        symbols.sort_by(|a,b| (a["name"].as_str(),a["cell_id"].as_str()).cmp(&(b["name"].as_str(),b["cell_id"].as_str())));
++        symbols.sort_by(|a, b| {
++            (a["name"].as_str(), a["cell_id"].as_str())
++                .cmp(&(b["name"].as_str(), b["cell_id"].as_str()))
++        });
+     }
+-    Ok(Snapshot { scope:scope.clone(),source,coordinator:coordinator.clone(),statuses,symbols,complete:BTreeSet::new(),issued:now,expires:now.checked_add(TTL).filter(|n| *n <= crate::protocol::MAX_SERIAL).ok_or(ReadError::LimitExceeded)? })
++    Ok(Snapshot {
++        scope: scope.clone(),
++        source,
++        coordinator: coordinator.clone(),
++        statuses,
++        symbols,
++        complete: BTreeSet::new(),
++        issued: now,
++        expires: now
++            .checked_add(TTL)
++            .filter(|n| *n <= crate::protocol::MAX_SERIAL)
++            .ok_or(ReadError::LimitExceeded)?,
++    })
+ }
+ impl ReadNotebookService {
+     /// Fresh entropy is supplied by the trusted native host (deterministic only in own fixtures).
+Diff in /Users/hert/Projects/openmath/crates/om-host-service/src/tools/read.rs:105:
+-    pub fn new(host_key: [u8;32]) -> Self { Self { snapshots:BTreeMap::new(),bytes:0,cursors:ReferenceRegistry::new(host_key) } }
++    pub fn new(host_key: [u8; 32]) -> Self {
++        Self {
++            snapshots: BTreeMap::new(),
++            bytes: 0,
++            cursors: ReferenceRegistry::new(host_key),
++        }
++    }
+     fn prune(&mut self, scope: &ReferenceScope, now: u64) {
+-        self.snapshots.retain(|_,entry| { let keep = now < entry.snapshot.expires && same_authority(&entry.snapshot.scope,scope); if !keep { self.bytes -= entry.bytes; } keep });
++        self.snapshots.retain(|_, entry| {
++            let keep = now < entry.snapshot.expires && same_authority(&entry.snapshot.scope, scope);
++            if !keep {
++                self.bytes -= entry.bytes;
++            }
++            keep
++        });
+         self.cursors.retain_scope(scope);
+     }
+     fn retain(&mut self, reference: String, snapshot: Snapshot, bytes: usize) {
+Diff in /Users/hert/Projects/openmath/crates/om-host-service/src/tools/read.rs:111:
+         self.bytes += bytes;
+-        self.snapshots.insert(reference, Retained { snapshot,bytes });
++        self.snapshots
++            .insert(reference, Retained { snapshot, bytes });
+     }
+     /// Read only confirmed source. No evaluator/Session request, IO, source update or random draw.
+     /// Current complete cells receive a NEW real preview snapshot; old excerpts remain excerpts.
+Diff in /Users/hert/Projects/openmath/crates/om-host-service/src/tools/read.rs:116:
+-    pub fn read(&mut self, bytes: &[u8], controller: &mut DocumentCommitController, coordinator: &SourceCoordinator, accepted: Option<&AcceptedKernelState>, scope: &ReferenceScope, now: u64) -> Result<ReadPage, ReadError> {
++    pub fn read(
++        &mut self,
++        bytes: &[u8],
++        controller: &mut DocumentCommitController,
++        coordinator: &SourceCoordinator,
++        accepted: Option<&AcceptedKernelState>,
++        scope: &ReferenceScope,
++        now: u64,
++    ) -> Result<ReadPage, ReadError> {
+         let args = decode(bytes)?;
+         scope.validate().map_err(|_| ReadError::StaleSnapshot)?;
+-        if !scope.can_read { return Err(ReadError::PermissionDenied); }
++        if !scope.can_read {
++            return Err(ReadError::PermissionDenied);
++        }
+         let owner = controller.owner().snapshot();
+-        if scope.document != owner.document_id || scope.generation != controller.owner().generation().get()
+-            || scope.revision != owner.revision.get() || scope.execution_epoch != owner.execution_epoch.get() || scope.snapshot_hash != owner.snapshot_hash
+-            || scope.metadata_revision != u64::from(om_kernel::capabilities::function_catalog().metadata_version) { return Err(ReadError::StaleSnapshot); }
++        if scope.document != owner.document_id
++            || scope.generation != controller.owner().generation().get()
++            || scope.revision != owner.revision.get()
++            || scope.execution_epoch != owner.execution_epoch.get()
++            || scope.snapshot_hash != owner.snapshot_hash
++            || scope.metadata_revision
++                != u64::from(om_kernel::capabilities::function_catalog().metadata_version)
++        {
++            return Err(ReadError::StaleSnapshot);
++        }
+         self.prune(scope, now);
+         let query = if let Some(token) = &args.cursor {
+-            let original = self.cursors.resolve(token,ReferenceKind::Cursor,scope,now).map_err(|_| ReadError::InvalidReference)?;
+-            if args.snapshot_ref.as_ref().is_some_and(|s| s != &original.snapshot) || args.view.is_some_and(|v| v != original.view)
+-                || args.cell_ids.as_ref().is_some_and(|ids| Some(ids) != original.ids.as_ref()) || args.limit.is_some_and(|n| n != original.limit)
+-                || args.include_outputs.is_some_and(|b| b != original.outputs) { return Err(ReadError::InvalidArgument); }
++            let original = self
++                .cursors
++                .resolve(token, ReferenceKind::Cursor, scope, now)
++                .map_err(|_| ReadError::InvalidReference)?;
++            if args
++                .snapshot_ref
++                .as_ref()
++                .is_some_and(|s| s != &original.snapshot)
++                || args.view.is_some_and(|v| v != original.view)
++                || args
++                    .cell_ids
++                    .as_ref()
++                    .is_some_and(|ids| Some(ids) != original.ids.as_ref())
++                || args.limit.is_some_and(|n| n != original.limit)
++                || args.include_outputs.is_some_and(|b| b != original.outputs)
++            {
++                return Err(ReadError::InvalidArgument);
++            }
+             (*original).clone()
+         } else {
+             let view = args.view.unwrap_or_default();
+Diff in /Users/hert/Projects/openmath/crates/om-host-service/src/tools/read.rs:133:
+-            if (view == View::Cells) != args.cell_ids.is_some() { return Err(ReadError::InvalidArgument); }
+-            Cursor { snapshot:args.snapshot_ref.unwrap_or_default(), view,ids:args.cell_ids,outputs:args.include_outputs.unwrap_or(false),limit:args.limit.unwrap_or(20),index:0,byte_offset:0 }
++            if (view == View::Cells) != args.cell_ids.is_some() {
++                return Err(ReadError::InvalidArgument);
++            }
++            Cursor {
++                snapshot: args.snapshot_ref.unwrap_or_default(),
++                view,
++                ids: args.cell_ids,
++                outputs: args.include_outputs.unwrap_or(false),
++                limit: args.limit.unwrap_or(20),
++                index: 0,
++                byte_offset: 0,
++            }
+         };
+-        let mut snapshot = if query.snapshot.is_empty() { capture(controller,coordinator,accepted,scope,now)? } else {
+-            let retained = self.snapshots.get(&query.snapshot).ok_or(ReadError::InvalidReference)?;
+-            if now < retained.snapshot.issued { return Err(ReadError::InvalidReference); }
++        let mut snapshot = if query.snapshot.is_empty() {
++            capture(controller, coordinator, accepted, scope, now)?
++        } else {
++            let retained = self
++                .snapshots
++                .get(&query.snapshot)
++                .ok_or(ReadError::InvalidReference)?;
++            if now < retained.snapshot.issued {
++                return Err(ReadError::InvalidReference);
++            }
+             retained.snapshot.clone()
+         };
+         let is_current = snapshot.scope == *scope;
+Diff in /Users/hert/Projects/openmath/crates/om-host-service/src/tools/read.rs:142:
+-        let mut cells = vec![]; let mut symbols = vec![]; let mut complete = BTreeSet::new();
+-        let mut next = None; let mut source_continues = false;
++        let mut cells = vec![];
++        let mut symbols = vec![];
++        let mut complete = BTreeSet::new();
++        let mut next = None;
++        let mut source_continues = false;
+         if query.view == View::Symbols {
+             let end = (query.index + query.limit).min(snapshot.symbols.len());
+             symbols.extend_from_slice(&snapshot.symbols[query.index..end]);
+Diff in /Users/hert/Projects/openmath/crates/om-host-service/src/tools/read.rs:147:
+-            if end < snapshot.symbols.len() { next = Some(Cursor { index:end,..query.clone() }); }
++            if end < snapshot.symbols.len() {
++                next = Some(Cursor {
++                    index: end,
++                    ..query.clone()
++                });
++            }
+         } else {
+             let selected = if let Some(ids) = &query.ids {
+-                ids.iter().map(|id| snapshot.source.file.cells.iter().find(|c| &c.id == id).ok_or(ReadError::NotFound)).collect::<Result<Vec<_>,_>>()?
+-            } else { snapshot.source.file.cells.iter().collect() };
++                ids.iter()
++                    .map(|id| {
++                        snapshot
++                            .source
++                            .file
++                            .cells
++                            .iter()
++                            .find(|c| &c.id == id)
++                            .ok_or(ReadError::NotFound)
++                    })
++                    .collect::<Result<Vec<_>, _>>()?
++            } else {
++                snapshot.source.file.cells.iter().collect()
++            };
+             let mut remaining = PAGE_BYTES;
+-            for (index, cell) in selected.iter().enumerate().skip(query.index).take(query.limit) {
+-                let start = if index == query.index { query.byte_offset } else { 0 };
++            for (index, cell) in selected
++                .iter()
++                .enumerate()
++                .skip(query.index)
++                .take(query.limit)
++            {
++                let start = if index == query.index {
++                    query.byte_offset
++                } else {
++                    0
++                };
+                 let mut end = start;
+                 let source = if query.view == View::Cells {
+                     end = (start + remaining).min(cell.source.len());
+Diff in /Users/hert/Projects/openmath/crates/om-host-service/src/tools/read.rs:158:
+-                    while !cell.source.is_char_boundary(end) { end -= 1; }
++                    while !cell.source.is_char_boundary(end) {
++                        end -= 1;
++                    }
+                     remaining -= end - start;
+                     Some(&cell.source[start..end])
+-                } else { None };
++                } else {
++                    None
++                };
+                 let full = source.is_some() && start == 0 && end == cell.source.len();
+-                if full { complete.insert(cell.id.clone()); }
++                if full {
++                    complete.insert(cell.id.clone());
++                }
+                 let more_source = source.is_some() && end < cell.source.len();
+                 source_continues = more_source;
+-                if more_source { next = Some(Cursor { index,byte_offset:end,..query.clone() }); }
+-                else if index + 1 < selected.len() && (cells.len() + 1 == query.limit || remaining < 4) { next = Some(Cursor { index:index+1,byte_offset:0,..query.clone() }); }
+-                let revision = snapshot.source.cell_revisions.iter().find(|r| r.cell_id == cell.id).ok_or(ReadError::StaleSnapshot)?.revision;
++                if more_source {
++                    next = Some(Cursor {
++                        index,
++                        byte_offset: end,
++                        ..query.clone()
++                    });
++                } else if index + 1 < selected.len()
++                    && (cells.len() + 1 == query.limit || remaining < 4)
++                {
++                    next = Some(Cursor {
++                        index: index + 1,
++                        byte_offset: 0,
++                        ..query.clone()
++                    });
++                }
++                let revision = snapshot
++                    .source
++                    .cell_revisions
++                    .iter()
++                    .find(|r| r.cell_id == cell.id)
++                    .ok_or(ReadError::StaleSnapshot)?
++                    .revision;
+                 cells.push(json!({"cell_id":cell.id,"kind":cell.kind,"dialect":cell.dialect,"source_hash":format!("{:x}",Sha256::digest(cell.source.as_bytes())),"revision":revision,"status":snapshot.statuses.get(&cell.id).cloned().unwrap_or(json!("Stale")),"source":source,"source_complete":full,"source_cursor":null,"result_ref":null}));
+-                if next.is_some() { break; }
++                if next.is_some() {
++                    break;
++                }
+             }
+         }
+         // Never upgrade an earlier outline/fragment token. Snapshot IDs used by preview_source
+Diff in /Users/hert/Projects/openmath/crates/om-host-service/src/tools/read.rs:174:
+         // stay immutable, and a historical read cannot issue a current write capability.
+-        let needs_snapshot = query.snapshot.is_empty() || (is_current && !complete.is_subset(&snapshot.complete));
++        let needs_snapshot =
++            query.snapshot.is_empty() || (is_current && !complete.is_subset(&snapshot.complete));
+         let reference = if needs_snapshot {
+             snapshot.complete.extend(complete);
+-            let retained_bytes = serde_json::to_vec(&snapshot).map_err(|_| ReadError::LimitExceeded)?.len();
+-            if self.snapshots.len() >= 128 || self.bytes.checked_add(retained_bytes).is_none_or(|n| n > RETAIN_BYTES) { return Err(ReadError::LimitExceeded); }
+-            let reference = controller.snapshot(snapshot.coordinator.clone(),snapshot.complete.clone(),scope,now).map_err(|_| ReadError::LimitExceeded)?;
+-            self.retain(reference.clone(),snapshot.clone(),retained_bytes); reference
+-        } else { query.snapshot.clone() };
+-        let cursor = if let Some(mut value) = next { value.snapshot = reference.clone(); Some(self.cursors.issue(ReferenceKind::Cursor,scope.clone(),value,now,TTL).map_err(|_| ReadError::LimitExceeded)?) } else { None };
+-        if source_continues && let Some(last) = cells.last_mut() { last["source_cursor"] = json!(cursor); }
++            let retained_bytes = serde_json::to_vec(&snapshot)
++                .map_err(|_| ReadError::LimitExceeded)?
++                .len();
++            if self.snapshots.len() >= 128
++                || self
++                    .bytes
++                    .checked_add(retained_bytes)
++                    .is_none_or(|n| n > RETAIN_BYTES)
++            {
++                return Err(ReadError::LimitExceeded);
++            }
++            let reference = controller
++                .snapshot(
++                    snapshot.coordinator.clone(),
++                    snapshot.complete.clone(),
++                    scope,
++                    now,
++                )
++                .map_err(|_| ReadError::LimitExceeded)?;
++            self.retain(reference.clone(), snapshot.clone(), retained_bytes);
++            reference
++        } else {
++            query.snapshot.clone()
++        };
++        let cursor = if let Some(mut value) = next {
++            value.snapshot = reference.clone();
++            Some(
++                self.cursors
++                    .issue(ReferenceKind::Cursor, scope.clone(), value, now, TTL)
++                    .map_err(|_| ReadError::LimitExceeded)?,
++            )
++        } else {
++            None
++        };
++        if source_continues && let Some(last) = cells.last_mut() {
++            last["source_cursor"] = json!(cursor);
++        }
+         let data = super::checked_data("read_notebook_data",json!({"snapshot_ref":reference,"is_current":is_current,"title":snapshot.source.file.title,"cells":cells,"symbols":symbols,"recent_transaction_refs":[]})).map_err(|_| ReadError::LimitExceeded)?;
+-        Ok(ReadPage { data,pagination:json!({"truncated":cursor.is_some(),"next_cursor":cursor}) })
++        Ok(ReadPage {
++            data,
++            pagination: json!({"truncated":cursor.is_some(),"next_cursor":cursor}),
++        })
+     }
+ }
+ 
+Diff in /Users/hert/Projects/openmath/crates/om-host-service/tests/readonly_catalog.rs:1:
+ //! Actual callback catalog and current Session binding resolution; no model/tool execution.
+-use om_host_service::tools::catalog::{self,CatalogError};
+-use om_kernel::{KernelConfig,Session,protocol::{Request,Response,Dialect}};
+-use serde_json::{Value,json};
+-fn query(value:Value)->Vec<u8>{serde_json::to_vec(&value).unwrap()}
++use om_host_service::tools::catalog::{self, CatalogError};
++use om_kernel::{
++    KernelConfig, Session,
++    protocol::{Dialect, Request, Response},
++};
++use serde_json::{Value, json};
++fn query(value: Value) -> Vec<u8> {
++    serde_json::to_vec(&value).unwrap()
++}
+ #[test]
+ fn executable_docs_match_actual_callbacks_and_never_claim_example_verification() {
+-    let docs=om_kernel::capabilities::function_documents();let catalog=om_kernel::capabilities::function_catalog();
+-    assert_eq!(docs["functions"].as_array().unwrap().len(),catalog.functions.len());
++    let docs = om_kernel::capabilities::function_documents();
++    let catalog = om_kernel::capabilities::function_catalog();
++    assert_eq!(
++        docs["functions"].as_array().unwrap().len(),
++        catalog.functions.len()
++    );
+     for entry in docs["functions"].as_array().unwrap() {
+-        assert!(catalog.functions.iter().any(|f|f.name==entry["descriptor"]["name"]));
++        assert!(
++            catalog
++                .functions
++                .iter()
++                .any(|f| f.name == entry["descriptor"]["name"])
++        );
+         assert!(!entry["signature"].as_str().unwrap().is_empty());
+-        assert!(entry["examples"].as_array().unwrap().iter().all(|e|e["verification"]=="not_verified"));
++        assert!(
++            entry["examples"]
++                .as_array()
++                .unwrap()
++                .iter()
++                .all(|e| e["verification"] == "not_verified")
++        );
+     }
+-    let empty=om_kernel::source::SourceExecutionContext {known_functions:vec![],owned:vec![]};
+-    assert_eq!(catalog::docs(&query(json!({"name":"CertainlyPlannedNotACallback"})),&empty),Err(CatalogError::NotFound));
+-    let actual=catalog::docs(&query(json!({"name":"sin"})),&empty).unwrap();assert_eq!(actual["function"]["descriptor"]["name"],"Sin");
+-    assert_eq!(catalog::docs(&query(json!({"function_id":actual["function"]["descriptor"]["id"],"metadata_version":1})),&empty),Err(CatalogError::StaleMetadata));
++    let empty = om_kernel::source::SourceExecutionContext {
++        known_functions: vec![],
++        owned: vec![],
++    };
++    assert_eq!(
++        catalog::docs(
++            &query(json!({"name":"CertainlyPlannedNotACallback"})),
++            &empty
++        ),
++        Err(CatalogError::NotFound)
++    );
++    let actual = catalog::docs(&query(json!({"name":"sin"})), &empty).unwrap();
++    assert_eq!(actual["function"]["descriptor"]["name"], "Sin");
++    assert_eq!(
++        catalog::docs(
++            &query(
++                json!({"function_id":actual["function"]["descriptor"]["id"],"metadata_version":1})
++            ),
++            &empty
++        ),
++        Err(CatalogError::StaleMetadata)
++    );
+ }
+ #[test]
+ fn defaults_limits_categories_closed_fields_and_selector_nulls_are_strict() {
+Diff in /Users/hert/Projects/openmath/crates/om-host-service/tests/readonly_catalog.rs:22:
+-    let first=catalog::search(&query(json!({"query":"sin"}))).unwrap();assert!(first["functions"].as_array().unwrap().len()<=8);assert_eq!(first["functions"][0]["name"],"Sin");
+-    assert_eq!(first,catalog::search(&query(json!({"query":"sin"}))).unwrap());
+-    assert!(catalog::search(&query(json!({"query":"sin","category":"certainly-unknown"}))).unwrap()["functions"].as_array().unwrap().is_empty());
+-    assert_eq!(catalog::search(&query(json!({"query":"sin","limit":1}))).unwrap()["functions"].as_array().unwrap().len(),1);
+-    for value in [json!({}),json!({"query":""}),json!({"query":"sin","limit":0}),json!({"query":"sin","limit":21}),json!({"query":"sin","limit":1.5}),json!({"query":"sin","category":null}),json!({"query":"sin","unknown":true})] {assert_eq!(catalog::search(&query(value)),Err(CatalogError::InvalidArgument));}
+-    assert_eq!(catalog::search(br#"{"query":"sin","query":"cos"}"#),Err(CatalogError::InvalidArgument));
+-    let context=om_kernel::source::SourceExecutionContext {known_functions:vec![],owned:vec![]};
+-    for value in [json!({}),json!({"name":"sin","function_id":"x"}),json!({"name":"sin","metadata_version":0}),json!({"name":"sin","function_id":null}),json!({"name":"sin","unknown":true})] {assert_eq!(catalog::docs(&query(value),&context),Err(CatalogError::InvalidArgument));}
++    let first = catalog::search(&query(json!({"query":"sin"}))).unwrap();
++    assert!(first["functions"].as_array().unwrap().len() <= 8);
++    assert_eq!(first["functions"][0]["name"], "Sin");
++    assert_eq!(
++        first,
++        catalog::search(&query(json!({"query":"sin"}))).unwrap()
++    );
++    assert!(
++        catalog::search(&query(
++            json!({"query":"sin","category":"certainly-unknown"})
++        ))
++        .unwrap()["functions"]
++            .as_array()
++            .unwrap()
++            .is_empty()
++    );
++    assert_eq!(
++        catalog::search(&query(json!({"query":"sin","limit":1}))).unwrap()["functions"]
++            .as_array()
++            .unwrap()
++            .len(),
++        1
++    );
++    for value in [
++        json!({}),
++        json!({"query":""}),
++        json!({"query":"sin","limit":0}),
++        json!({"query":"sin","limit":21}),
++        json!({"query":"sin","limit":1.5}),
++        json!({"query":"sin","category":null}),
++        json!({"query":"sin","unknown":true}),
++    ] {
++        assert_eq!(
++            catalog::search(&query(value)),
++            Err(CatalogError::InvalidArgument)
++        );
++    }
++    assert_eq!(
++        catalog::search(br#"{"query":"sin","query":"cos"}"#),
++        Err(CatalogError::InvalidArgument)
++    );
++    let context = om_kernel::source::SourceExecutionContext {
++        known_functions: vec![],
++        owned: vec![],
++    };
++    for value in [
++        json!({}),
++        json!({"name":"sin","function_id":"x"}),
++        json!({"name":"sin","metadata_version":0}),
++        json!({"name":"sin","function_id":null}),
++        json!({"name":"sin","unknown":true}),
++    ] {
++        assert_eq!(
++            catalog::docs(&query(value), &context),
++            Err(CatalogError::InvalidArgument)
++        );
++    }
+ }
+ #[test]
+ fn actual_session_user_binding_precedes_builtin_alias_without_evaluating_docs() {
+Diff in /Users/hert/Projects/openmath/crates/om-host-service/tests/readonly_catalog.rs:33:
+-    let mut config=KernelConfig::default();config.general.reactive=false;
+-    let mut session=Session::new(config,None);
+-    let (reply,_)=session.handle(Request::Evaluate {cell_id:"definition".into(),source:"let sin=fn(x)=>x+1".into(),dialect:Dialect::Modern});
+-    let Response::Evaluated{output,..}=reply else {panic!("definition was not evaluated")};assert!(!output.messages.iter().any(|m|format!("{:?}",m.level)=="Error"));
+-    let context=session.execution_context();assert!(context.known_functions.iter().any(|n|n=="sin"),"actual context {context:?}; output {output:?}");
+-    let doc=catalog::docs(&query(json!({"name":"sin"})),&context).unwrap();assert_eq!(doc["function"]["kind"],"user_binding");assert_eq!(doc["function"]["cell_id"],"definition");assert_eq!(doc["function"]["source_complete"],false);assert!(doc["examples"].as_array().unwrap().is_empty());
+-    let after=session.execution_context();assert_eq!(context.known_functions,after.known_functions);assert_eq!(context.owned.iter().map(|o|(&o.symbol,&o.cell_id)).collect::<Vec<_>>(),after.owned.iter().map(|o|(&o.symbol,&o.cell_id)).collect::<Vec<_>>());
++    let mut config = KernelConfig::default();
++    config.general.reactive = false;
++    let mut session = Session::new(config, None);
++    let (reply, _) = session.handle(Request::Evaluate {
++        cell_id: "definition".into(),
++        source: "let sin=fn(x)=>x+1".into(),
++        dialect: Dialect::Modern,
++    });
++    let Response::Evaluated { output, .. } = reply else {
++        panic!("definition was not evaluated")
++    };
++    assert!(
++        !output
++            .messages
++            .iter()
++            .any(|m| format!("{:?}", m.level) == "Error")
++    );
++    let context = session.execution_context();
++    assert!(
++        context.known_functions.iter().any(|n| n == "sin"),
++        "actual context {context:?}; output {output:?}"
++    );
++    let doc = catalog::docs(&query(json!({"name":"sin"})), &context).unwrap();
++    assert_eq!(doc["function"]["kind"], "user_binding");
++    assert_eq!(doc["function"]["cell_id"], "definition");
++    assert_eq!(doc["function"]["source_complete"], false);
++    assert!(doc["examples"].as_array().unwrap().is_empty());
++    let after = session.execution_context();
++    assert_eq!(context.known_functions, after.known_functions);
++    assert_eq!(
++        context
++            .owned
++            .iter()
++            .map(|o| (&o.symbol, &o.cell_id))
++            .collect::<Vec<_>>(),
++        after
++            .owned
++            .iter()
++            .map(|o| (&o.symbol, &o.cell_id))
++            .collect::<Vec<_>>()
++    );
+ }
+ 
+Diff in /Users/hert/Projects/openmath/crates/om-host-service/tests/readonly_notebook.rs:1:
+ //! Real confirmed-source/preview services and actual worker checkpoints; no model or paid IO.
+ use om_host_service::{
+     document::{SourceDocument, commit::DocumentCommitController, coordinator::SourceCoordinator},
+-    kernel::{acceptance::{AcceptanceContext, AcceptedKernelState, FrozenKernelPlan}, worker::{KernelJob, KernelWorker}},
++    kernel::{
++        acceptance::{AcceptanceContext, AcceptedKernelState, FrozenKernelPlan},
++        worker::{KernelJob, KernelWorker},
++    },
+     protocol::{Serial, generated::*},
+     references::ReferenceScope,
+     tools::read::{ReadError, ReadNotebookService, ReadPage},
+Diff in /Users/hert/Projects/openmath/crates/om-host-service/tests/readonly_notebook.rs:10:
+ use om_num::ctx::Interrupt;
+ use serde_json::{Value, json};
+ use sha2::{Digest, Sha256};
+-use std::{sync::{Arc, atomic::AtomicBool}, time::Duration};
+-fn args(value: Value) -> Vec<u8> { serde_json::to_vec(&value).unwrap() }
++use std::{
++    sync::{Arc, atomic::AtomicBool},
++    time::Duration,
++};
++fn args(value: Value) -> Vec<u8> {
++    serde_json::to_vec(&value).unwrap()
++}
+ fn setup(sources: &[&str]) -> (DocumentCommitController, ReferenceScope) {
+-    let owner = SourceDocument::new("doc".into(),Serial::new(1).unwrap(),NativeSourceFile {
+-        version:1,title:"中文🙂".into(),cells:sources.iter().enumerate().map(|(i,source)| NativeSourceCell {id:format!("cell-{i}"),kind:NativeCellKind::Math,source:(*source).into(),dialect:Dialect::Modern}).collect()
+-    }).unwrap();
+-    let s=owner.snapshot();
+-    let scope=ReferenceScope { runtime:"runtime".into(),document:"doc".into(),generation:1,revision:s.revision.get(),execution_epoch:s.execution_epoch.get(),snapshot_hash:s.snapshot_hash.clone(),task:Some("task".into()),task_generation:1,grant_revision:1,config_revision:0,definition_revision:0,metadata_revision:26,editor_state_hash:String::new(),execution_mode:true,can_read:true,can_preview:true,can_write:true };
+-    (DocumentCommitController::new(owner,"runtime".into(),[7;32]),scope)
++    let owner = SourceDocument::new(
++        "doc".into(),
++        Serial::new(1).unwrap(),
++        NativeSourceFile {
++            version: 1,
++            title: "中文🙂".into(),
++            cells: sources
++                .iter()
++                .enumerate()
++                .map(|(i, source)| NativeSourceCell {
++                    id: format!("cell-{i}"),
++                    kind: NativeCellKind::Math,
++                    source: (*source).into(),
++                    dialect: Dialect::Modern,
++                })
++                .collect(),
++        },
++    )
++    .unwrap();
++    let s = owner.snapshot();
++    let scope = ReferenceScope {
++        runtime: "runtime".into(),
++        document: "doc".into(),
++        generation: 1,
++        revision: s.revision.get(),
++        execution_epoch: s.execution_epoch.get(),
++        snapshot_hash: s.snapshot_hash.clone(),
++        task: Some("task".into()),
++        task_generation: 1,
++        grant_revision: 1,
++        config_revision: 0,
++        definition_revision: 0,
++        metadata_revision: 26,
++        editor_state_hash: String::new(),
++        execution_mode: true,
++        can_read: true,
++        can_preview: true,
++        can_write: true,
++    };
++    (
++        DocumentCommitController::new(owner, "runtime".into(), [7; 32]),
++        scope,
++    )
+ }
+-fn read(service:&mut ReadNotebookService,controller:&mut DocumentCommitController,scope:&ReferenceScope,value:Value,now:u64)->Result<ReadPage,ReadError> {
+-    service.read(&args(value),controller,&SourceCoordinator::default(),None,scope,now)
++fn read(
++    service: &mut ReadNotebookService,
++    controller: &mut DocumentCommitController,
++    scope: &ReferenceScope,
++    value: Value,
++    now: u64,
++) -> Result<ReadPage, ReadError> {
++    service.read(
++        &args(value),
++        controller,
++        &SourceCoordinator::default(),
++        None,
++        scope,
++        now,
++    )
+ }
+-fn patch(controller:&mut DocumentCommitController,scope:&ReferenceScope,reference:&Value,source:&str)->bool {
+-    let data=args(json!({"snapshot_ref":reference,"input":{"kind":"patch","operations":[{"type":"update_cell","target":{"cell_id":"cell-0"},"expected_source_hash":format!("{:x}",Sha256::digest(source.as_bytes())),"source":"5+5"}]}}));
+-    controller.preview(&data,scope,10,"fixture-time".into()).is_ok()
++fn patch(
++    controller: &mut DocumentCommitController,
++    scope: &ReferenceScope,
++    reference: &Value,
++    source: &str,
++) -> bool {
++    let data = args(
++        json!({"snapshot_ref":reference,"input":{"kind":"patch","operations":[{"type":"update_cell","target":{"cell_id":"cell-0"},"expected_source_hash":format!("{:x}",Sha256::digest(source.as_bytes())),"source":"5+5"}]}}),
++    );
++    controller
++        .preview(&data, scope, 10, "fixture-time".into())
++        .is_ok()
+ }
+ #[test]
+ fn outline_is_bounded_and_full_source_exposure_never_upgrades_its_original_token() {
+Diff in /Users/hert/Projects/openmath/crates/om-host-service/tests/readonly_notebook.rs:32:
+-    let sources=vec!["2+2";27];let (mut controller,scope)=setup(&sources);let mut service=ReadNotebookService::new([9;32]);
+-    let before=serde_json::to_vec(controller.owner().snapshot()).unwrap();
+-    let outline=read(&mut service,&mut controller,&scope,json!({}),0).unwrap();
+-    assert_eq!(outline.data["cells"].as_array().unwrap().len(),20);
+-    assert_eq!(outline.pagination["truncated"],true);
+-    assert!(outline.data["cells"].as_array().unwrap().iter().all(|c|c["source"].is_null() && c["source_complete"]==false && c["result_ref"].is_null()));
+-    let second=read(&mut service,&mut controller,&scope,json!({"cursor":outline.pagination["next_cursor"]}),1).unwrap();
+-    assert_eq!(second.data["cells"].as_array().unwrap().len(),7);assert_eq!(second.pagination["truncated"],false);
+-    assert!(!patch(&mut controller,&scope,&outline.data["snapshot_ref"],"2+2"));
++    let sources = vec!["2+2"; 27];
++    let (mut controller, scope) = setup(&sources);
++    let mut service = ReadNotebookService::new([9; 32]);
++    let before = serde_json::to_vec(controller.owner().snapshot()).unwrap();
++    let outline = read(&mut service, &mut controller, &scope, json!({}), 0).unwrap();
++    assert_eq!(outline.data["cells"].as_array().unwrap().len(), 20);
++    assert_eq!(outline.pagination["truncated"], true);
++    assert!(
++        outline.data["cells"]
++            .as_array()
++            .unwrap()
++            .iter()
++            .all(|c| c["source"].is_null()
++                && c["source_complete"] == false
++                && c["result_ref"].is_null())
++    );
++    let second = read(
++        &mut service,
++        &mut controller,
++        &scope,
++        json!({"cursor":outline.pagination["next_cursor"]}),
++        1,
++    )
++    .unwrap();
++    assert_eq!(second.data["cells"].as_array().unwrap().len(), 7);
++    assert_eq!(second.pagination["truncated"], false);
++    assert!(!patch(
++        &mut controller,
++        &scope,
++        &outline.data["snapshot_ref"],
++        "2+2"
++    ));
+     let full=read(&mut service,&mut controller,&scope,json!({"view":"cells","cell_ids":["cell-0"],"snapshot_ref":outline.data["snapshot_ref"],"include_outputs":true}),2).unwrap();
+-    assert_eq!(full.data["cells"][0]["source"],"2+2");assert_eq!(full.data["cells"][0]["source_complete"],true);
+-    assert_ne!(full.data["snapshot_ref"],outline.data["snapshot_ref"]);
+-    assert!(patch(&mut controller,&scope,&full.data["snapshot_ref"],"2+2"));
+-    assert!(!patch(&mut controller,&scope,&outline.data["snapshot_ref"],"2+2"));
+-    assert_eq!(before,serde_json::to_vec(controller.owner().snapshot()).unwrap());
+-    println!("outline/full actual responses: {}",json!({"outline":outline,"tail":second,"full":full}));
++    assert_eq!(full.data["cells"][0]["source"], "2+2");
++    assert_eq!(full.data["cells"][0]["source_complete"], true);
++    assert_ne!(full.data["snapshot_ref"], outline.data["snapshot_ref"]);
++    assert!(patch(
++        &mut controller,
++        &scope,
++        &full.data["snapshot_ref"],
++        "2+2"
++    ));
++    assert!(!patch(
++        &mut controller,
++        &scope,
++        &outline.data["snapshot_ref"],
++        "2+2"
++    ));
++    assert_eq!(
++        before,
++        serde_json::to_vec(controller.owner().snapshot()).unwrap()
++    );
++    println!(
++        "outline/full actual responses: {}",
++        json!({"outline":outline,"tail":second,"full":full})
++    );
+ }
+ #[test]
+ fn unicode_fragments_reassemble_exact_source_and_final_fragment_still_is_not_full_cell() {
+Diff in /Users/hert/Projects/openmath/crates/om-host-service/tests/readonly_notebook.rs:51:
+-    let source=format!("/*{}*/ 2+2","中🙂e\u{301}".repeat(15000));let (mut controller,scope)=setup(&[&source,"6+6"]);let mut service=ReadNotebookService::new([9;32]);
+-    let mut page=read(&mut service,&mut controller,&scope,json!({"view":"cells","cell_ids":["cell-0","cell-1"],"limit":1}),0).unwrap();
+-    let mut reconstructed=String::new();let mut pages=0;
++    let source = format!("/*{}*/ 2+2", "中🙂e\u{301}".repeat(15000));
++    let (mut controller, scope) = setup(&[&source, "6+6"]);
++    let mut service = ReadNotebookService::new([9; 32]);
++    let mut page = read(
++        &mut service,
++        &mut controller,
++        &scope,
++        json!({"view":"cells","cell_ids":["cell-0","cell-1"],"limit":1}),
++        0,
++    )
++    .unwrap();
++    let mut reconstructed = String::new();
++    let mut pages = 0;
+     loop {
+-        let cell=&page.data["cells"][0];
+-        if cell["cell_id"]=="cell-0" { reconstructed.push_str(cell["source"].as_str().unwrap());assert_eq!(cell["source_complete"],false);assert!(!patch(&mut controller,&scope,&page.data["snapshot_ref"],&source)); }
+-        else { assert_eq!(cell["source"],"6+6");assert_eq!(cell["source_complete"],true); }
+-        pages+=1;if page.pagination["next_cursor"].is_null() {break;}
+-        page=read(&mut service,&mut controller,&scope,json!({"cursor":page.pagination["next_cursor"]}),pages).unwrap();
++        let cell = &page.data["cells"][0];
++        if cell["cell_id"] == "cell-0" {
++            reconstructed.push_str(cell["source"].as_str().unwrap());
++            assert_eq!(cell["source_complete"], false);
++            assert!(!patch(
++                &mut controller,
++                &scope,
++                &page.data["snapshot_ref"],
++                &source
++            ));
++        } else {
++            assert_eq!(cell["source"], "6+6");
++            assert_eq!(cell["source_complete"], true);
++        }
++        pages += 1;
++        if page.pagination["next_cursor"].is_null() {
++            break;
++        }
++        page = read(
++            &mut service,
++            &mut controller,
++            &scope,
++            json!({"cursor":page.pagination["next_cursor"]}),
++            pages,
++        )
++        .unwrap();
+     }
+-    assert_eq!(reconstructed,source);assert!(pages>3);assert_eq!(controller.owner().snapshot().revision.get(),0);
+-    println!("exact UTF8 reconstruction: {pages} pages / {} bytes / sha256 {:x}; final fragment never full",source.len(),Sha256::digest(source.as_bytes()));
++    assert_eq!(reconstructed, source);
++    assert!(pages > 3);
++    assert_eq!(controller.owner().snapshot().revision.get(), 0);
++    println!(
++        "exact UTF8 reconstruction: {pages} pages / {} bytes / sha256 {:x}; final fragment never full",
++        source.len(),
++        Sha256::digest(source.as_bytes())
++    );
+ }
+ #[test]
+ fn closed_arguments_selection_and_query_bound_cursors_reject_forgery() {
+Diff in /Users/hert/Projects/openmath/crates/om-host-service/tests/readonly_notebook.rs:66:
+-    let (mut controller,scope)=setup(&["2+2","3+3"]);let mut service=ReadNotebookService::new([9;32]);
+-    for value in [json!({"view":"cells"}),json!({"cell_ids":["cell-0"]}),json!({"view":"symbols","cell_ids":["cell-0"]}),json!({"view":null}),json!({"view":"unknown"}),json!({"view":"cells","cell_ids":[]}),json!({"view":"cells","cell_ids":["cell-0","cell-0"]}),json!({"limit":0}),json!({"limit":51}),json!({"limit":1.5}),json!({"include_outputs":null}),json!({"unknown":true})] {
+-        assert_eq!(read(&mut service,&mut controller,&scope,value.clone(),0).unwrap_err(),ReadError::InvalidArgument,"{value}");
++    let (mut controller, scope) = setup(&["2+2", "3+3"]);
++    let mut service = ReadNotebookService::new([9; 32]);
++    for value in [
++        json!({"view":"cells"}),
++        json!({"cell_ids":["cell-0"]}),
++        json!({"view":"symbols","cell_ids":["cell-0"]}),
++        json!({"view":null}),
++        json!({"view":"unknown"}),
++        json!({"view":"cells","cell_ids":[]}),
++        json!({"view":"cells","cell_ids":["cell-0","cell-0"]}),
++        json!({"limit":0}),
++        json!({"limit":51}),
++        json!({"limit":1.5}),
++        json!({"include_outputs":null}),
++        json!({"unknown":true}),
++    ] {
++        assert_eq!(
++            read(&mut service, &mut controller, &scope, value.clone(), 0).unwrap_err(),
++            ReadError::InvalidArgument,
++            "{value}"
++        );
+     }
+-    assert_eq!(service.read(br#"{"limit":1,"limit":2}"#,&mut controller,&SourceCoordinator::default(),None,&scope,0).unwrap_err(),ReadError::InvalidArgument);
+-    assert_eq!(read(&mut service,&mut controller,&scope,json!({"view":"cells","cell_ids":["missing"]}),0).unwrap_err(),ReadError::NotFound);
+-    let page=read(&mut service,&mut controller,&scope,json!({"limit":1,"cursor":null}),0).unwrap();let cursor=&page.pagination["next_cursor"];
+-    for value in [json!({"cursor":cursor,"limit":2}),json!({"cursor":cursor,"view":"symbols"}),json!({"cursor":cursor,"include_outputs":true}),json!({"cursor":cursor,"snapshot_ref":"snapshot-forged"})] {
+-        assert_eq!(read(&mut service,&mut controller,&scope,value,1).unwrap_err(),ReadError::InvalidArgument);
++    assert_eq!(
++        service
++            .read(
++                br#"{"limit":1,"limit":2}"#,
++                &mut controller,
++                &SourceCoordinator::default(),
++                None,
++                &scope,
++                0
++            )
++            .unwrap_err(),
++        ReadError::InvalidArgument
++    );
++    assert_eq!(
++        read(
++            &mut service,
++            &mut controller,
++            &scope,
++            json!({"view":"cells","cell_ids":["missing"]}),
++            0
++        )
++        .unwrap_err(),
++        ReadError::NotFound
++    );
++    let page = read(
++        &mut service,
++        &mut controller,
++        &scope,
++        json!({"limit":1,"cursor":null}),
++        0,
++    )
++    .unwrap();
++    let cursor = &page.pagination["next_cursor"];
++    for value in [
++        json!({"cursor":cursor,"limit":2}),
++        json!({"cursor":cursor,"view":"symbols"}),
++        json!({"cursor":cursor,"include_outputs":true}),
++        json!({"cursor":cursor,"snapshot_ref":"snapshot-forged"}),
++    ] {
++        assert_eq!(
++            read(&mut service, &mut controller, &scope, value, 1).unwrap_err(),
++            ReadError::InvalidArgument
++        );
+     }
+-    assert_eq!(read(&mut service,&mut controller,&scope,json!({"cursor":"cursor-forged"}),1).unwrap_err(),ReadError::InvalidReference);
+-    assert_eq!(read(&mut service,&mut controller,&scope,json!({"snapshot_ref":"snapshot-forged"}),1).unwrap_err(),ReadError::InvalidReference);
+-    let mut other=scope.clone();other.task_generation+=1;
+-    assert_eq!(read(&mut service,&mut controller,&other,json!({"snapshot_ref":page.data["snapshot_ref"]}),1).unwrap_err(),ReadError::InvalidReference);
++    assert_eq!(
++        read(
++            &mut service,
++            &mut controller,
++            &scope,
++            json!({"cursor":"cursor-forged"}),
++            1
++        )
++        .unwrap_err(),
++        ReadError::InvalidReference
++    );
++    assert_eq!(
++        read(
++            &mut service,
++            &mut controller,
++            &scope,
++            json!({"snapshot_ref":"snapshot-forged"}),
++            1
++        )
++        .unwrap_err(),
++        ReadError::InvalidReference
++    );
++    let mut other = scope.clone();
++    other.task_generation += 1;
++    assert_eq!(
++        read(
++            &mut service,
++            &mut controller,
++            &other,
++            json!({"snapshot_ref":page.data["snapshot_ref"]}),
++            1
++        )
++        .unwrap_err(),
++        ReadError::InvalidReference
++    );
+ }
+ #[test]
+ fn historical_source_is_explicit_and_authority_expiry_and_clock_are_enforced() {
+Diff in /Users/hert/Projects/openmath/crates/om-host-service/tests/readonly_notebook.rs:83:
+-    let (mut controller,scope)=setup(&["2+2"]);let mut service=ReadNotebookService::new([9;32]);
+-    let page=read(&mut service,&mut controller,&scope,json!({}),5).unwrap();let reference=&page.data["snapshot_ref"];
+-    assert_eq!(read(&mut service,&mut controller,&scope,json!({"snapshot_ref":reference}),4).unwrap_err(),ReadError::InvalidReference);
+-    let mut file=controller.owner().snapshot().file.clone();file.cells[0].source="8+8".into();
++    let (mut controller, scope) = setup(&["2+2"]);
++    let mut service = ReadNotebookService::new([9; 32]);
++    let page = read(&mut service, &mut controller, &scope, json!({}), 5).unwrap();
++    let reference = &page.data["snapshot_ref"];
++    assert_eq!(
++        read(
++            &mut service,
++            &mut controller,
++            &scope,
++            json!({"snapshot_ref":reference}),
++            4
++        )
++        .unwrap_err(),
++        ReadError::InvalidReference
++    );
++    let mut file = controller.owner().snapshot().file.clone();
++    file.cells[0].source = "8+8".into();
+     // Unit fixture substitutes a later confirmed owner; this is not storage acceptance evidence.
+-    let plan=controller.owner().prepare(file,"op".into(),"tx".into(),"event".into(),"time".into()).unwrap();
+-    let mut newer=scope.clone();newer.revision=plan.after.revision.get();newer.execution_epoch=plan.after.execution_epoch.get();newer.snapshot_hash=plan.after.snapshot_hash.clone();
+-    let owner=SourceDocument::restore(plan.after,Serial::new(1).unwrap()).unwrap();let mut changed=DocumentCommitController::new(owner,"runtime".into(),[7;32]);
+-    let history=read(&mut service,&mut changed,&newer,json!({"view":"cells","cell_ids":["cell-0"],"snapshot_ref":reference}),6).unwrap();
+-    assert_eq!(history.data["is_current"],false);assert_eq!(history.data["cells"][0]["source"],"2+2");assert!(!patch(&mut changed,&newer,reference,"2+2"));
+-    assert_eq!(read(&mut service,&mut changed,&newer,json!({"snapshot_ref":reference}),600005).unwrap_err(),ReadError::InvalidReference);
+-    let mut denied=newer.clone();denied.can_read=false;assert_eq!(read(&mut service,&mut changed,&denied,json!({}),7).unwrap_err(),ReadError::PermissionDenied);
+-    let mut stale=newer.clone();stale.revision=0;assert_eq!(read(&mut service,&mut changed,&stale,json!({}),7).unwrap_err(),ReadError::StaleSnapshot);
+-    println!("actual immutable history response: {}",json!(history));
++    let plan = controller
++        .owner()
++        .prepare(
++            file,
++            "op".into(),
++            "tx".into(),
++            "event".into(),
++            "time".into(),
++        )
++        .unwrap();
++    let mut newer = scope.clone();
++    newer.revision = plan.after.revision.get();
++    newer.execution_epoch = plan.after.execution_epoch.get();
++    newer.snapshot_hash = plan.after.snapshot_hash.clone();
++    let owner = SourceDocument::restore(plan.after, Serial::new(1).unwrap()).unwrap();
++    let mut changed = DocumentCommitController::new(owner, "runtime".into(), [7; 32]);
++    let history = read(
++        &mut service,
++        &mut changed,
++        &newer,
++        json!({"view":"cells","cell_ids":["cell-0"],"snapshot_ref":reference}),
++        6,
++    )
++    .unwrap();
++    assert_eq!(history.data["is_current"], false);
++    assert_eq!(history.data["cells"][0]["source"], "2+2");
++    assert!(!patch(&mut changed, &newer, reference, "2+2"));
++    assert_eq!(
++        read(
++            &mut service,
++            &mut changed,
++            &newer,
++            json!({"snapshot_ref":reference}),
++            600005
++        )
++        .unwrap_err(),
++        ReadError::InvalidReference
++    );
++    let mut denied = newer.clone();
++    denied.can_read = false;
++    assert_eq!(
++        read(&mut service, &mut changed, &denied, json!({}), 7).unwrap_err(),
++        ReadError::PermissionDenied
++    );
++    let mut stale = newer.clone();
++    stale.revision = 0;
++    assert_eq!(
++        read(&mut service, &mut changed, &stale, json!({}), 7).unwrap_err(),
++        ReadError::StaleSnapshot
++    );
++    println!("actual immutable history response: {}", json!(history));
+ }
+-fn receipt(p:&NativeKernelCommit)->NativeKernelReceipt {
+-    NativeKernelReceipt { protocol_version:1,store_id:p.store_id.clone(),document_id:p.producer.document_id.clone(),operation_id:p.operation_id.clone(),request_hash:p.request_hash.clone(),checkpoint_id:p.checkpoint_id.clone(),checkpoint_blob_hash:p.checkpoint_blob_hash.clone(),checkpoint_byte_length:p.checkpoint_byte_length,codec_version:1,producer:p.producer.clone(),accepted_source_revision:p.acceptance_source.revision,accepted_snapshot_hash:p.acceptance_source.snapshot_hash.clone(),kernel_state_revision:p.producer.kernel_state_revision,result_id:p.result_id.clone(),outbox_event_id:p.outbox_event_id.clone(),committed_at:"2026-10-14T00:00:00Z".into() }
++fn receipt(p: &NativeKernelCommit) -> NativeKernelReceipt {
++    NativeKernelReceipt {
++        protocol_version: 1,
++        store_id: p.store_id.clone(),
++        document_id: p.producer.document_id.clone(),
++        operation_id: p.operation_id.clone(),
++        request_hash: p.request_hash.clone(),
++        checkpoint_id: p.checkpoint_id.clone(),
++        checkpoint_blob_hash: p.checkpoint_blob_hash.clone(),
++        checkpoint_byte_length: p.checkpoint_byte_length,
++        codec_version: 1,
++        producer: p.producer.clone(),
++        accepted_source_revision: p.acceptance_source.revision,
++        accepted_snapshot_hash: p.acceptance_source.snapshot_hash.clone(),
++        kernel_state_revision: p.producer.kernel_state_revision,
++        result_id: p.result_id.clone(),
++        outbox_event_id: p.outbox_event_id.clone(),
++        committed_at: "2026-10-14T00:00:00Z".into(),
++    }
+ }
+-fn accepted(controller:&DocumentCommitController)->(AcceptedKernelState,KernelWorker) {
+-    let context=AcceptanceContext { runtime_instance_id:"runtime".into(),store_id:"store".into(),document_generation:Serial::new(1).unwrap(),source:controller.owner().snapshot().clone(),general:om_kernel::config::GeneralConfig::default(),config_revision:Serial::new(0).unwrap(),build:"readonly-fixture".into() };
+-    let worker=KernelWorker::new(64*1024*1024,8,CheckpointLimits::default()).unwrap();
+-    let boot=FrozenKernelPlan::bootstrap(&context,"bootstrap",&worker,CheckpointLimits::default(),&Interrupt::default()).unwrap();boot.enter_commit(&context,None).unwrap();
+-    let parent=boot.accept_receipt(&receipt(boot.plan())).unwrap();
+-    let candidate=worker.submit(KernelJob { runtime_instance_id:"runtime".into(),document_generation:Serial::new(1).unwrap(),operation_id:"produce".into(),parent_checkpoint_ref:parent.registry_ref().into(),source:context.source.clone(),general:context.general.clone(),config_revision:Serial::new(0).unwrap(),cell_id:"cell-0".into(),cancel:Arc::new(AtomicBool::new(false)) }).unwrap().recv_timeout(Duration::from_secs(10)).unwrap().unwrap();
+-    let plan=FrozenKernelPlan::candidate(candidate,&parent,&context,&worker).unwrap();plan.enter_commit(&context,Some(&parent)).unwrap();
++fn accepted(controller: &DocumentCommitController) -> (AcceptedKernelState, KernelWorker) {
++    let context = AcceptanceContext {
++        runtime_instance_id: "runtime".into(),
++        store_id: "store".into(),
++        document_generation: Serial::new(1).unwrap(),
++        source: controller.owner().snapshot().clone(),
++        general: om_kernel::config::GeneralConfig::default(),
++        config_revision: Serial::new(0).unwrap(),
++        build: "readonly-fixture".into(),
++    };
++    let worker = KernelWorker::new(64 * 1024 * 1024, 8, CheckpointLimits::default()).unwrap();
++    let boot = FrozenKernelPlan::bootstrap(
++        &context,
++        "bootstrap",
++        &worker,
++        CheckpointLimits::default(),
++        &Interrupt::default(),
++    )
++    .unwrap();
++    boot.enter_commit(&context, None).unwrap();
++    let parent = boot.accept_receipt(&receipt(boot.plan())).unwrap();
++    let candidate = worker
++        .submit(KernelJob {
++            runtime_instance_id: "runtime".into(),
++            document_generation: Serial::new(1).unwrap(),
++            operation_id: "produce".into(),
++            parent_checkpoint_ref: parent.registry_ref().into(),
++            source: context.source.clone(),
++            general: context.general.clone(),
++            config_revision: Serial::new(0).unwrap(),
++            cell_id: "cell-0".into(),
++            cancel: Arc::new(AtomicBool::new(false)),
++        })
++        .unwrap()
++        .recv_timeout(Duration::from_secs(10))
++        .unwrap()
++        .unwrap();
++    let plan = FrozenKernelPlan::candidate(candidate, &parent, &context, &worker).unwrap();
++    plan.enter_commit(&context, Some(&parent)).unwrap();
+     // Synthetic matching receipt tests the real checkpoint/coordinator; no SQLite proof claimed.
+-    (plan.accept_receipt(&receipt(plan.plan())).unwrap(),worker)
++    (plan.accept_receipt(&receipt(plan.plan())).unwrap(), worker)
+ }
+ #[test]
+ fn symbols_and_status_are_actual_accepted_facts_with_stale_producer_and_no_random_mutation() {
+Diff in /Users/hert/Projects/openmath/crates/om-host-service/tests/readonly_notebook.rs:113:
+-    let (mut controller,mut scope)=setup(&["seed_random(42); let sin=fn(x)=>x+1; let a=random()"]);
+-    let (accepted,_worker)=accepted(&controller);scope.definition_revision=accepted.state().binding().kernel_state_revision;
+-    let before=accepted.state().bytes().to_vec();let mut service=ReadNotebookService::new([9;32]);
+-    let page=service.read(&args(json!({"view":"symbols"})),&mut controller,&SourceCoordinator::default(),Some(&accepted),&scope,0).unwrap();
+-    assert!(page.data["symbols"].as_array().unwrap().iter().any(|s|s["name"]=="sin" && s["callable"]==true && s["is_current"]==true));
+-    let cells=service.read(&args(json!({})),&mut controller,&SourceCoordinator::default(),Some(&accepted),&scope,1).unwrap();assert_eq!(cells.data["cells"][0]["status"],"Done");
+-    let mut config=scope.clone();config.config_revision+=1;
+-    let stale=service.read(&args(json!({"view":"symbols"})),&mut controller,&SourceCoordinator::default(),Some(&accepted),&config,2).unwrap();
+-    assert!(stale.data["symbols"].as_array().unwrap().iter().all(|s|s["is_current"]==false));
+-    assert_eq!(before,accepted.state().bytes());
+-    println!("actual accepted symbols/current/stale: {}",json!({"symbols":page,"cells":cells,"stale":stale,"checkpoint_hash_unchanged":accepted.state().hash()}));
++    let (mut controller, mut scope) =
++        setup(&["seed_random(42); let sin=fn(x)=>x+1; let a=random()"]);
++    let (accepted, _worker) = accepted(&controller);
++    scope.definition_revision = accepted.state().binding().kernel_state_revision;
++    let before = accepted.state().bytes().to_vec();
++    let mut service = ReadNotebookService::new([9; 32]);
++    let page = service
++        .read(
++            &args(json!({"view":"symbols"})),
++            &mut controller,
++            &SourceCoordinator::default(),
++            Some(&accepted),
++            &scope,
++            0,
++        )
++        .unwrap();
++    assert!(
++        page.data["symbols"]
++            .as_array()
++            .unwrap()
++            .iter()
++            .any(|s| s["name"] == "sin" && s["callable"] == true && s["is_current"] == true)
++    );
++    let cells = service
++        .read(
++            &args(json!({})),
++            &mut controller,
++            &SourceCoordinator::default(),
++            Some(&accepted),
++            &scope,
++            1,
++        )
++        .unwrap();
++    assert_eq!(cells.data["cells"][0]["status"], "Done");
++    let mut config = scope.clone();
++    config.config_revision += 1;
++    let stale = service
++        .read(
++            &args(json!({"view":"symbols"})),
++            &mut controller,
++            &SourceCoordinator::default(),
++            Some(&accepted),
++            &config,
++            2,
++        )
++        .unwrap();
++    assert!(
++        stale.data["symbols"]
++            .as_array()
++            .unwrap()
++            .iter()
++            .all(|s| s["is_current"] == false)
++    );
++    assert_eq!(before, accepted.state().bytes());
++    println!(
++        "actual accepted symbols/current/stale: {}",
++        json!({"symbols":page,"cells":cells,"stale":stale,"checkpoint_hash_unchanged":accepted.state().hash()})
++    );
+ }
+ 
+Diff in /Users/hert/Projects/openmath/crates/om-kernel/src/capabilities.rs:65:
+ /// Actual callback help joined to executable metadata. Planned documentation is never a row.
+ /// Examples are source data only and carry no invented verification claim.
+ pub fn function_documents() -> serde_json::Value {
+-    let catalog=function_catalog();
+-    let specs=om_eval::Evaluator::all_specs().map(|s|(s.symbol.name(),s)).collect::<std::collections::BTreeMap<_,_>>();
++    let catalog = function_catalog();
++    let specs = om_eval::Evaluator::all_specs()
++        .map(|s| (s.symbol.name(), s))
++        .collect::<std::collections::BTreeMap<_, _>>();
+     serde_json::json!({"metadata_version":catalog.metadata_version,"functions":catalog.functions.iter().filter_map(|f|{
+         let spec=specs.get(f.name.as_str())?;let doc=&spec.doc;
+         let category=om_core::catalog::documentation()["functions"].as_array().and_then(|entries|entries.iter().find(|entry|entry["id"]==f.id)).and_then(|entry|entry["category"].as_str()).unwrap_or(doc.category);
+Diff in /Users/hert/Projects/openmath/crates/om-kernel/src/session/working.rs:125:
+ impl Session {
+     /// Actual cell states without cloning statement occurrence indexes or mathematical values.
+     pub fn cell_statuses(&self) -> Vec<(String, crate::protocol::CellStatus)> {
+-        self.notebook.cells.iter().map(|cell| (cell.id.clone(), cell.status)).collect()
++        self.notebook
++            .cells
++            .iter()
++            .map(|cell| (cell.id.clone(), cell.status))
++            .collect()
+     }
+     /// Read actual current result identities/statuses without evaluation or duplicating values.
+     pub fn current_result_cells(&self) -> Vec<crate::retained_results::CurrentResultCell> {

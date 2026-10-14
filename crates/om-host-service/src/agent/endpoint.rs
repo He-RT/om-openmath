@@ -1,4 +1,5 @@
 //! Trusted document-owned native control port. No transcript can recreate this authority.
+mod readonly;
 use super::{framing, ingress::*};
 use crate::protocol::{Nullable, generated::*, validation};
 use serde_json::{Value, json};
@@ -28,6 +29,7 @@ pub struct AgentEndpoint {
     replies: BTreeMap<String, NativeAgentHostReply>,
     sent: BTreeMap<String, (String, NativeAgentHostReply)>,
     last_receipt: Option<(String, String, String, u64, String)>,
+    readonly: BTreeMap<String, readonly::ReadonlyEntry>,
 }
 impl AgentEndpoint {
     /// Actual runtime/document facts are supplied by SourceEndpoint, not a helper frame.
@@ -67,6 +69,7 @@ impl AgentEndpoint {
             replies: BTreeMap::new(),
             last_receipt: None,
             sent: BTreeMap::new(),
+            readonly: BTreeMap::new(),
         };
         let frame = endpoint.outbound("hello", &command.hello_id, None, json!({"core_version":command.core_version,"adapter_version":command.adapter_version,"schema_hash":format!("{:x}",Sha256::digest(include_bytes!("../../../../docs/design/native-agent.schema.json")))}))?;
         let mut reply = endpoint.reply(NativeAgentHostReplyDisposition::Hello);
@@ -116,6 +119,7 @@ impl AgentEndpoint {
             source_sequence: Nullable(None),
             tool_intent: Nullable(None),
             request_intent: Nullable(None),
+            readonly_result: Nullable(None),
         }
     }
     fn outbound(
@@ -142,6 +146,7 @@ impl AgentEndpoint {
         &mut self,
         command: NativeAgentHostCommand,
         binding: &DocumentBinding,
+        read_scope: &crate::references::ReferenceScope,
     ) -> Result<NativeAgentHostReply, String> {
         let scope = match &command {
             NativeAgentHostCommand::NativeAgentActivate(_) => {
@@ -153,6 +158,8 @@ impl AgentEndpoint {
             NativeAgentHostCommand::NativeAgentCancel(c) => &c.scope,
             NativeAgentHostCommand::NativeAgentClose(c) => &c.scope,
             NativeAgentHostCommand::NativeAgentStatus(c) => &c.scope,
+            NativeAgentHostCommand::NativeAgentReadTool(c) => &c.scope,
+            NativeAgentHostCommand::NativeAgentConfirmTool(c) => &c.scope,
         };
         self.check(scope, binding)?;
         match command {
@@ -265,6 +272,10 @@ impl AgentEndpoint {
                     if original != &digest {
                         return Err("IPC_ID_CONFLICT".into());
                     }
+                    if let AgentIPCFrame::AgentToolResultFrame(f) = &frame {
+                        self.check_readonly_result(&f.payload, read_scope)
+                            .map_err(str::to_owned)?;
+                    }
                     return Ok(reply.clone());
                 }
                 if self.sent.len() >= 4096 {
@@ -296,7 +307,7 @@ impl AgentEndpoint {
                     }
                     AgentIPCFrame::AgentModelEventFrame(f) => self.ingress.model_event(&f.payload),
                     AgentIPCFrame::AgentToolResultFrame(f) => {
-                        self.ingress.unavailable_tool(&f.payload)
+                        self.check_readonly_result(&f.payload, read_scope)
                     }
                     AgentIPCFrame::AgentErrorFrame(_) => Ok(()),
                     _ => Err("IPC_WRONG_DIRECTION"),
@@ -312,6 +323,7 @@ impl AgentEndpoint {
             }
             NativeAgentHostCommand::NativeAgentCancel(c) => {
                 self.ingress.cancel();
+                self.readonly.clear();
                 let id = identity().map_err(str::to_owned)?;
                 let frame = self.outbound("cancel", &id, None, json!({"reason":c.reason}))?;
                 let mut reply = self.reply(NativeAgentHostReplyDisposition::Cancel);
@@ -324,6 +336,12 @@ impl AgentEndpoint {
             }
             NativeAgentHostCommand::NativeAgentStatus(_) => {
                 Ok(self.reply(NativeAgentHostReplyDisposition::Status))
+            }
+            NativeAgentHostCommand::NativeAgentConfirmTool(c) => {
+                self.confirm_readonly(c, read_scope)
+            }
+            NativeAgentHostCommand::NativeAgentReadTool(_) => {
+                Err("READONLY_PRODUCER_REQUIRED".into())
             }
             NativeAgentHostCommand::NativeAgentActivate(_) => unreachable!(),
         }
@@ -346,6 +364,7 @@ impl AgentEndpoint {
     /// Source rebind/close revokes ephemeral grants before physical owner joins.
     pub fn close(&mut self) {
         self.ingress.close();
+        self.readonly.clear();
         self.replies.clear();
         self.sent.clear();
         self.last_receipt = None;

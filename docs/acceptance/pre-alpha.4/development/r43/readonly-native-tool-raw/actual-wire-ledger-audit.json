@@ -1,0 +1,41 @@
+{
+  "frames": 20,
+  "host_frames": 11,
+  "helper_frames": 9,
+  "sqlite_events": 14,
+  "native_tool_payload_equals_closed_store_blob": true,
+  "second_native_http_body_tool_content_equals_same_result": true,
+  "original_result_hash_exact": true,
+  "native_operation_effect_events": 0,
+  "storage_only_recovery": {
+    "complete": true,
+    "host_or_helper_created": false,
+    "last_event_sequence": 14,
+    "requests": [
+      {
+        "contextID": "fixture-context-76368ac7-bb94-4198-a99c-56ddf4c25800",
+        "latestEvent": "provider-ac60704f58af7cca697e0edca7c2c4aaa4746259d8d92eb61fc60c79968ba728.finished",
+        "phase": "finished",
+        "planEvent": "provider-ac60704f58af7cca697e0edca7c2c4aaa4746259d8d92eb61fc60c79968ba728.planned",
+        "session": "production-task"
+      },
+      {
+        "contextID": "fixture-context-a310d21d-e635-4154-ab21-5c1eeddda30c",
+        "latestEvent": "provider-1421ebd19e9279591c166f0125a962d0e13e58821ecccf4179ca4d34d674a41f.finished",
+        "phase": "finished",
+        "planEvent": "provider-1421ebd19e9279591c166f0125a962d0e13e58821ecccf4179ca4d34d674a41f.planned",
+        "session": "production-task"
+      }
+    ],
+    "tools": [
+      {
+        "callID": "provider-call",
+        "phase": "readonly_completed",
+        "proposalEvent": "assistant-event-96e04584-38c4-4cc1-bd9b-38e5703b3dc5",
+        "resultEvent": "readonly-agent-operation-ecb235b3b9b4812ee6dde26ffd251b17",
+        "session": "production-task"
+      }
+    ]
+  },
+  "tool_result_ref": "agent-operation-bb1470d9bf274f2355df5754bed08dfd"
+}

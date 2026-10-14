@@ -18,6 +18,7 @@ pub struct SourceEndpoint {
     kernel: Option<crate::kernel::endpoint::KernelEndpoint>,
     results: Option<crate::results::runtime::ResultRuntime>,
     agent: Option<crate::agent::endpoint::AgentEndpoint>,
+    reads: Option<crate::tools::read::ReadNotebookService>,
     pending_result_state: Option<crate::kernel::acceptance::AcceptedKernelState>,
 }
 impl SourceEndpoint {
@@ -79,6 +80,7 @@ impl SourceEndpoint {
             results: None,
             pending_result_state: None,
             agent: None,
+            reads: None,
         })
     }
     /// Actual runtime/document binding for host readback and stale request checks.
@@ -109,13 +111,61 @@ impl SourceEndpoint {
                 self.scope.runtime.clone(),
                 binding,
             )?;
+            let mut read_key = [0; 32];
+            getrandom::fill(&mut read_key).map_err(|_| "ENTROPY_UNAVAILABLE")?;
+            self.reads = Some(crate::tools::read::ReadNotebookService::new(read_key));
             self.agent = Some(endpoint);
             return Ok(reply);
         }
-        self.agent
-            .as_mut()
+        let mut current = self.scope.clone();
+        let owner = self.controller.owner().snapshot();
+        current.revision = owner.revision.get();
+        current.execution_epoch = owner.execution_epoch.get();
+        current.snapshot_hash = owner.snapshot_hash.clone();
+        let current = self
+            .agent
+            .as_ref()
             .ok_or("AGENT_NOT_ACTIVE")?
-            .command(command, &binding)
+            .readonly_scope(current);
+        if let NativeAgentHostCommand::NativeAgentReadTool(c) = command {
+            let agent = self.agent.as_ref().expect("checked");
+            let (intent, args, cached) = agent.readonly_input(&c, &binding, &current)?;
+            if let Some(result) = cached {
+                return Ok(agent.readonly_reply(result));
+            }
+            let accepted = self.kernel.as_ref().and_then(|k| k.accepted_state());
+            let (json, success) = crate::tools::dispatch::execute(
+                &intent,
+                args.as_bytes(),
+                crate::tools::dispatch::ReadonlySource {
+                    controller: &mut self.controller,
+                    reads: self.reads.as_mut().ok_or("AGENT_NOT_ACTIVE")?,
+                    coordinator: &self.coordinator,
+                    accepted: accepted.as_ref(),
+                    scope: &current,
+                    now: self.clock.elapsed().as_millis() as u64,
+                },
+            )?;
+            return self
+                .agent
+                .as_mut()
+                .expect("checked")
+                .register_readonly(&intent, &current, json, success);
+        }
+        let closing = matches!(
+            &command,
+            NativeAgentHostCommand::NativeAgentClose(_)
+                | NativeAgentHostCommand::NativeAgentCancel(_)
+        );
+        let reply = self
+            .agent
+            .as_mut()
+            .expect("checked")
+            .command(command, &binding, &current);
+        if closing && reply.is_ok() {
+            self.reads = None;
+        }
+        reply
     }
     /// Direct cancellation does not queue behind SQLite, CAS or SourcePreview's physical IO.
     pub fn cancel(&mut self, operation: &str) -> Option<bool> {
@@ -231,6 +281,7 @@ impl SourceEndpoint {
     }
     /// Revoke work without joining mathematical threads while holding the source owner lock.
     pub fn close_kernel_begin(&mut self) {
+        self.reads = None;
         if let Some(agent) = self.agent.as_mut() {
             agent.close();
         }

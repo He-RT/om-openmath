@@ -1,0 +1,11 @@
+   Compiling om-host-service v0.1.0-pre-alpha.3 (/Users/hert/Projects/openmath/crates/om-host-service)
+    Finished `test` profile [unoptimized] target(s) in 4.15s
+     Running tests/readonly_catalog.rs (target/debug/deps/readonly_catalog-d23bfb83ce328c97)
+
+running 3 tests
+test actual_session_user_binding_precedes_builtin_alias_without_evaluating_docs ... ok
+test executable_docs_match_actual_callbacks_and_never_claim_example_verification ... ok
+test defaults_limits_categories_closed_fields_and_selector_nulls_are_strict ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.09s
+

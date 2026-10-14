@@ -34,3 +34,6 @@ docs/acceptance/pre-alpha.4/development/r43/readonly-services-raw/**/*.log -whit
 docs/acceptance/pre-alpha.4/development/r43/provider-timeout-race-raw/**/*.log -whitespace
 docs/acceptance/pre-alpha.4/development/r43/provider-timeout-race-raw/**/*.sse whitespace=blank-at-eol,space-before-tab,-blank-at-eof
 docs/acceptance/pre-alpha.4/development/r43/provider-timeout-race-raw/**/Blobs/sha256/** binary
+docs/acceptance/pre-alpha.4/development/r43/readonly-native-tool-raw/**/*.log -whitespace
+docs/acceptance/pre-alpha.4/development/r43/readonly-native-tool-raw/**/*.sse whitespace=blank-at-eol,space-before-tab,-blank-at-eof
+docs/acceptance/pre-alpha.4/development/r43/readonly-native-tool-raw/**/Blobs/sha256/** binary

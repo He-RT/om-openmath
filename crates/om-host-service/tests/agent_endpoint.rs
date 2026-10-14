@@ -72,6 +72,115 @@ fn ready(owner: &mut SourceEndpoint, hello: &Value, generation: u64) {
     );
 }
 #[test]
+fn actual_readonly_producer_requires_acked_original_arguments_and_durable_confirmation() {
+    for (name, args, expected) in [
+        (
+            "read_notebook",
+            "{ \"view\" : \"cells\", \"cell_ids\":[\"a\"] }",
+            "completed",
+        ),
+        ("search_functions", "{\"query\":\"sin\"}", "completed"),
+        ("get_function_docs", "{\"name\":\"sin\"}", "completed"),
+        ("read_notebook", "{\"limit\":0}", "failed"),
+        ("read_notebook", "{\"limit\":1,\"limit\":2}", "failed"),
+    ] {
+        let mut owner = endpoint();
+        let hello=command(&mut owner,json!({"type":"agent_activate","scope":scope(1),"hello_id":"hello","core_version":"1.0.4","adapter_version":"adapter-1","grants":[name],"readonly":true})).unwrap();
+        let hello: Value = serde_json::from_str(hello.outbound_json.0.as_ref().unwrap()).unwrap();
+        ready(&mut owner, &hello, 1);
+        let query = |operation: &str| json!({"type":"agent_read_tool","scope":scope(1),"operation_id":operation});
+        assert!(command(&mut owner, query("invented")).is_err());
+        let event = frame(
+            &hello,
+            "transcript_event",
+            2,
+            json!({"event_id":"proposal","source_sequence":1,"message":{"record_type":"canonical_agent_message","message_version":1,"message_id":"canonical","role":"assistant","agent_turn_id":"turn","task_id":"task","parts":[{"kind":"tool_call","part_id":"part","tool_call_id":"call","name":name,"arguments_json":args}]}}),
+        );
+        // Duplicate raw arguments cannot pass canonical framing. Test that rejection separately.
+        if args.contains("\"limit\":1") {
+            assert!(receive(&mut owner, &event, 1).is_err());
+            continue;
+        }
+        let pending = receive(&mut owner, &event, 1).unwrap();
+        let call = frame(
+            &hello,
+            "tool_call",
+            3,
+            json!({"agent_turn_id":"turn","tool_call_id":"call","proposal_event_ref":"proposal"}),
+        );
+        assert!(receive(&mut owner, &call, 1).is_err());
+        command(&mut owner,json!({"type":"agent_confirm","scope":scope(1),"message_id":"peer-2","event_id":"proposal","canonical_hash":format!("{:x}",Sha256::digest(pending.canonical_json.0.unwrap().as_bytes())),"event_sequence":1,"receipt_hash":"a".repeat(64)})).unwrap();
+        let intent = receive(&mut owner, &call, 1)
+            .unwrap()
+            .tool_intent
+            .0
+            .unwrap();
+        let mut overridden = query(&intent.operation_id);
+        overridden["arguments_json"] = json!("{}");
+        assert!(command(&mut owner, overridden).is_err());
+        assert_eq!(
+            intent.arguments_hash,
+            format!("{:x}", Sha256::digest(args.as_bytes()))
+        );
+        let read = command(&mut owner, query(&intent.operation_id))
+            .unwrap()
+            .readonly_result
+            .0
+            .unwrap();
+        assert_eq!(
+            read.result_json,
+            command(&mut owner, query(&intent.operation_id))
+                .unwrap()
+                .readonly_result
+                .0
+                .unwrap()
+                .result_json
+        );
+        let envelope: Value = serde_json::from_str(&read.result_json).unwrap();
+        assert_eq!(envelope["status"], expected);
+        assert!(envelope["operation_ref"].is_null());
+        if name == "read_notebook" && expected == "completed" {
+            assert_eq!(envelope["data"]["cells"][0]["source"], "2+2");
+        }
+        let payload = json!({"agent_turn_id":"turn","tool_call_id":"call","operation_ref":null,"result_ref":read.result_ref,"result_json":read.result_json,"outcome":expected});
+        let wire = frame(&hello, "tool_result", 3, payload);
+        let send = |owner: &mut SourceEndpoint, v: &Value| {
+            command(
+                owner,
+                json!({"type":"agent_send","scope":scope(1),"frame_json":serde_json::to_string(v).unwrap()}),
+            )
+        };
+        assert!(send(&mut owner, &wire).is_err());
+        let mut confirm = json!({"type":"agent_confirm_tool","scope":scope(1),"operation_id":intent.operation_id,"result_ref":read.result_ref,"result_hash":read.result_hash,"event_id":format!("readonly-{}",intent.operation_id),"event_sequence":2,"receipt_hash":"b".repeat(64)});
+        confirm["result_hash"] = json!("0".repeat(64));
+        assert!(command(&mut owner, confirm.clone()).is_err());
+        confirm["result_hash"] = json!(read.result_hash);
+        command(&mut owner, confirm.clone()).unwrap();
+        command(&mut owner, confirm).unwrap();
+        let mut forged = wire.clone();
+        forged["payload"]["result_json"] = json!("{}");
+        assert!(send(&mut owner, &forged).is_err());
+        let sent = send(&mut owner, &wire).unwrap();
+        assert_eq!(
+            sent.outbound_json.0,
+            send(&mut owner, &wire).unwrap().outbound_json.0
+        );
+        owner.command(serde_json::from_value(json!({"type":"source_editor_changed","state":{"runtime_instance_id":"actual-runtime","document_id":"actual-document","document_generation":1,"source_revision":0,"targets":[]}})).unwrap()).unwrap();
+        assert!(command(&mut owner, query(&intent.operation_id)).is_err());
+        assert!(send(&mut owner, &wire).is_err()); // exact already-sent frame cannot bypass changed scope
+        command(
+            &mut owner,
+            json!({"type":"agent_cancel","scope":scope(1),"reason":"user_stop"}),
+        )
+        .unwrap();
+        assert!(command(&mut owner, query(&intent.operation_id)).is_err());
+        println!(
+            "Actual readonly {name} original args={args}; result={}",
+            read.result_json
+        );
+    }
+}
+#[test]
 fn durable_confirmation_replay_and_document_close_revoke_real_owner_authority() {
     let mut owner = endpoint();
     let hello = activate(&mut owner, 1, false);
@@ -293,5 +402,5 @@ fn host_stream_has_exact_offsets_one_terminal_and_no_fabricated_tool_receipt() {
         send(&mut owner, finished).unwrap().outbound_json.0
     );
     assert!(send(&mut owner, delta(5, 4, "late")).is_err());
-    assert!(send(&mut owner,frame(&hello,"tool_result",5,json!({"agent_turn_id":"turn","tool_call_id":"invented","operation_ref":null,"result_ref":null,"outcome":"completed"}))).is_err());
+    assert!(send(&mut owner,frame(&hello,"tool_result",5,json!({"agent_turn_id":"turn","tool_call_id":"invented","operation_ref":null,"result_ref":null,"outcome":"completed","result_json":null}))).is_err());
 }

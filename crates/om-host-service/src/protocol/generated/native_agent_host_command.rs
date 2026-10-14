@@ -18,4 +18,8 @@ pub enum NativeAgentHostCommand {
     NativeAgentClose(NativeAgentClose),
     /// Variant `NativeAgentStatus`.
     NativeAgentStatus(NativeAgentStatus),
+    /// Variant `NativeAgentReadTool`.
+    NativeAgentReadTool(NativeAgentReadTool),
+    /// Variant `NativeAgentConfirmTool`.
+    NativeAgentConfirmTool(NativeAgentConfirmTool),
 }

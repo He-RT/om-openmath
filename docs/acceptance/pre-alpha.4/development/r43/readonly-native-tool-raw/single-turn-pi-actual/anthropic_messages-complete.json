@@ -1,0 +1,406 @@
+{
+  "scope": "development synthetic provider bytes/native unavailable tool; actual Rust codec and pinned Pi",
+  "trace": [
+    "prepare",
+    "codec:tool_calls",
+    "ack:canonical-0",
+    "beforeTool",
+    "nativeTool",
+    "afterTool",
+    "prepare",
+    "codec:complete",
+    "ack:canonical-1"
+  ],
+  "proof": [
+    {
+      "input": {
+        "request": {
+          "binding": {
+            "provider_ref": "provider-1",
+            "route_ref": "route-1",
+            "model_ref": "model-1",
+            "adapter_version": "single-turn-1",
+            "protocol": "anthropic_messages"
+          },
+          "api_model": "configured-alias",
+          "messages": [
+            {
+              "canonical": {
+                "record_type": "canonical_agent_message",
+                "message_version": 1,
+                "message_id": "user",
+                "role": "user",
+                "agent_turn_id": "input-turn",
+                "task_id": "task",
+                "parts": [
+                  {
+                    "kind": "text",
+                    "part_id": "text",
+                    "text": "读取当前笔记本🙂"
+                  }
+                ]
+              },
+              "replay": null
+            }
+          ],
+          "results": [],
+          "tools": [
+            {
+              "name": "read_notebook",
+              "description": "Native fixture unavailable",
+              "parameters": {
+                "type": "object",
+                "properties": {
+                  "view": {
+                    "type": "string"
+                  }
+                },
+                "additionalProperties": false
+              }
+            }
+          ],
+          "max_output_tokens": 128,
+          "temperature": null,
+          "stream": true
+        },
+        "message_id": "canonical-0",
+        "task_id": "task",
+        "turn_id": "turn-0",
+        "status": 200,
+        "response": "event: message_start\ndata: {\"type\":\"message_start\",\"message\":{\"id\":\"response-0\",\"model\":\"actual-provider-alias\",\"role\":\"assistant\",\"content\":[],\"usage\":{\"input_tokens\":7,\"output_tokens\":1}}}\n\nevent: content_block_start\ndata: {\"type\":\"content_block_start\",\"index\":0,\"content_block\":{\"type\":\"text\",\"text\":\"\"}}\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"text_delta\",\"text\":\"中文🙂\"}}\n\nevent: content_block_stop\ndata: {\"type\":\"content_block_stop\",\"index\":0}\n\nevent: content_block_start\ndata: {\"type\":\"content_block_start\",\"index\":1,\"content_block\":{\"type\":\"tool_use\",\"id\":\"original-call\",\"name\":\"read_notebook\",\"input\":{}}}\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":1,\"delta\":{\"type\":\"input_json_delta\",\"partial_json\":\"{ \\\"view\\\" : \\\"outline\\\" }\"}}\n\nevent: content_block_stop\ndata: {\"type\":\"content_block_stop\",\"index\":1}\n\nevent: message_delta\ndata: {\"type\":\"message_delta\",\"delta\":{\"stop_reason\":\"tool_use\"},\"usage\":{\"output_tokens\":9}}\n\nevent: message_stop\ndata: {\"type\":\"message_stop\"}\n\n"
+      },
+      "actual": {
+        "body": {
+          "max_tokens": 128,
+          "messages": [
+            {
+              "content": [
+                {
+                  "text": "读取当前笔记本🙂",
+                  "type": "text"
+                }
+              ],
+              "role": "user"
+            }
+          ],
+          "model": "configured-alias",
+          "stream": true,
+          "tools": [
+            {
+              "description": "Native fixture unavailable",
+              "input_schema": {
+                "additionalProperties": false,
+                "properties": {
+                  "view": {
+                    "type": "string"
+                  }
+                },
+                "type": "object"
+              },
+              "name": "read_notebook"
+            }
+          ]
+        },
+        "result": {
+          "finish": "tool_calls",
+          "message": {
+            "agent_turn_id": "turn-0",
+            "message_id": "canonical-0",
+            "message_version": 1,
+            "parts": [
+              {
+                "kind": "text",
+                "part_id": "text-0",
+                "text": "中文🙂"
+              },
+              {
+                "arguments_json": "{ \"view\" : \"outline\" }",
+                "kind": "tool_call",
+                "name": "read_notebook",
+                "part_id": "call-1",
+                "tool_call_id": "original-call"
+              }
+            ],
+            "record_type": "canonical_agent_message",
+            "role": "assistant",
+            "task_id": "task"
+          },
+          "partial_calls": [],
+          "provider_reason": "tool_use",
+          "replay": {
+            "assistant": [
+              {
+                "text": "中文🙂",
+                "type": "text"
+              },
+              {
+                "id": "original-call",
+                "input": {
+                  "view": "outline"
+                },
+                "name": "read_notebook",
+                "type": "tool_use"
+              }
+            ],
+            "binding": {
+              "adapter_version": "single-turn-1",
+              "model_ref": "model-1",
+              "protocol": "anthropic_messages",
+              "provider_ref": "provider-1",
+              "route_ref": "route-1"
+            },
+            "provider_model": "actual-provider-alias",
+            "response_id": "response-0"
+          },
+          "usage": {
+            "cache_read": null,
+            "cache_write": null,
+            "input": 7,
+            "output": 9,
+            "total": null
+          }
+        }
+      }
+    },
+    {
+      "input": {
+        "request": {
+          "binding": {
+            "provider_ref": "provider-1",
+            "route_ref": "route-1",
+            "model_ref": "model-1",
+            "adapter_version": "single-turn-1",
+            "protocol": "anthropic_messages"
+          },
+          "api_model": "configured-alias",
+          "messages": [
+            {
+              "canonical": {
+                "record_type": "canonical_agent_message",
+                "message_version": 1,
+                "message_id": "user",
+                "role": "user",
+                "agent_turn_id": "input-turn",
+                "task_id": "task",
+                "parts": [
+                  {
+                    "kind": "text",
+                    "part_id": "text",
+                    "text": "读取当前笔记本🙂"
+                  }
+                ]
+              },
+              "replay": null
+            },
+            {
+              "canonical": {
+                "agent_turn_id": "turn-0",
+                "message_id": "canonical-0",
+                "message_version": 1,
+                "parts": [
+                  {
+                    "kind": "text",
+                    "part_id": "text-0",
+                    "text": "中文🙂"
+                  },
+                  {
+                    "arguments_json": "{ \"view\" : \"outline\" }",
+                    "kind": "tool_call",
+                    "name": "read_notebook",
+                    "part_id": "call-1",
+                    "tool_call_id": "original-call"
+                  }
+                ],
+                "record_type": "canonical_agent_message",
+                "role": "assistant",
+                "task_id": "task"
+              },
+              "replay": {
+                "assistant": [
+                  {
+                    "text": "中文🙂",
+                    "type": "text"
+                  },
+                  {
+                    "id": "original-call",
+                    "input": {
+                      "view": "outline"
+                    },
+                    "name": "read_notebook",
+                    "type": "tool_use"
+                  }
+                ],
+                "binding": {
+                  "adapter_version": "single-turn-1",
+                  "model_ref": "model-1",
+                  "protocol": "anthropic_messages",
+                  "provider_ref": "provider-1",
+                  "route_ref": "route-1"
+                },
+                "provider_model": "actual-provider-alias",
+                "response_id": "response-0"
+              }
+            },
+            {
+              "canonical": {
+                "record_type": "canonical_agent_message",
+                "message_version": 1,
+                "message_id": "tool-result",
+                "role": "tool",
+                "agent_turn_id": "turn-0",
+                "task_id": "task",
+                "parts": [
+                  {
+                    "kind": "tool_result",
+                    "part_id": "result",
+                    "tool_call_id": "original-call",
+                    "outcome": "unavailable",
+                    "operation_ref": null,
+                    "result_ref": null
+                  }
+                ]
+              },
+              "replay": null
+            }
+          ],
+          "results": [
+            {
+              "message_id": "tool-result",
+              "tool_call_id": "original-call",
+              "text": "Native fixture unavailable; no tool effect.",
+              "is_error": true
+            }
+          ],
+          "tools": [
+            {
+              "name": "read_notebook",
+              "description": "Native fixture unavailable",
+              "parameters": {
+                "type": "object",
+                "properties": {
+                  "view": {
+                    "type": "string"
+                  }
+                },
+                "additionalProperties": false
+              }
+            }
+          ],
+          "max_output_tokens": 128,
+          "temperature": null,
+          "stream": true
+        },
+        "message_id": "canonical-1",
+        "task_id": "task",
+        "turn_id": "turn-1",
+        "status": 200,
+        "response": "event: message_start\ndata: {\"type\":\"message_start\",\"message\":{\"id\":\"response-1\",\"model\":\"actual-provider-alias\",\"role\":\"assistant\",\"content\":[],\"usage\":{\"input_tokens\":7,\"output_tokens\":1}}}\n\nevent: content_block_start\ndata: {\"type\":\"content_block_start\",\"index\":0,\"content_block\":{\"type\":\"text\",\"text\":\"\"}}\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"text_delta\",\"text\":\"工具不可用，未读取。\"}}\n\nevent: content_block_stop\ndata: {\"type\":\"content_block_stop\",\"index\":0}\n\nevent: message_delta\ndata: {\"type\":\"message_delta\",\"delta\":{\"stop_reason\":\"end_turn\"},\"usage\":{\"output_tokens\":9}}\n\nevent: message_stop\ndata: {\"type\":\"message_stop\"}\n\n"
+      },
+      "actual": {
+        "body": {
+          "max_tokens": 128,
+          "messages": [
+            {
+              "content": [
+                {
+                  "text": "读取当前笔记本🙂",
+                  "type": "text"
+                }
+              ],
+              "role": "user"
+            },
+            {
+              "content": [
+                {
+                  "text": "中文🙂",
+                  "type": "text"
+                },
+                {
+                  "id": "original-call",
+                  "input": {
+                    "view": "outline"
+                  },
+                  "name": "read_notebook",
+                  "type": "tool_use"
+                }
+              ],
+              "role": "assistant"
+            },
+            {
+              "content": [
+                {
+                  "content": "Native fixture unavailable; no tool effect.",
+                  "is_error": true,
+                  "tool_use_id": "original-call",
+                  "type": "tool_result"
+                }
+              ],
+              "role": "user"
+            }
+          ],
+          "model": "configured-alias",
+          "stream": true,
+          "tools": [
+            {
+              "description": "Native fixture unavailable",
+              "input_schema": {
+                "additionalProperties": false,
+                "properties": {
+                  "view": {
+                    "type": "string"
+                  }
+                },
+                "type": "object"
+              },
+              "name": "read_notebook"
+            }
+          ]
+        },
+        "result": {
+          "finish": "complete",
+          "message": {
+            "agent_turn_id": "turn-1",
+            "message_id": "canonical-1",
+            "message_version": 1,
+            "parts": [
+              {
+                "kind": "text",
+                "part_id": "text-0",
+                "text": "工具不可用，未读取。"
+              }
+            ],
+            "record_type": "canonical_agent_message",
+            "role": "assistant",
+            "task_id": "task"
+          },
+          "partial_calls": [],
+          "provider_reason": "end_turn",
+          "replay": {
+            "assistant": [
+              {
+                "text": "工具不可用，未读取。",
+                "type": "text"
+              }
+            ],
+            "binding": {
+              "adapter_version": "single-turn-1",
+              "model_ref": "model-1",
+              "protocol": "anthropic_messages",
+              "provider_ref": "provider-1",
+              "route_ref": "route-1"
+            },
+            "provider_model": "actual-provider-alias",
+            "response_id": "response-1"
+          },
+          "usage": {
+            "cache_read": null,
+            "cache_write": null,
+            "input": 7,
+            "output": 9,
+            "total": null
+          }
+        }
+      }
+    }
+  ]
+}

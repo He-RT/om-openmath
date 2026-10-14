@@ -1,0 +1,4 @@
+    Blocking waiting for file lock on build directory
+   Compiling om-host-service v0.1.0-pre-alpha.3 (/Users/hert/Projects/openmath/crates/om-host-service)
+    Checking om-kernel v0.1.0-pre-alpha.3 (/Users/hert/Projects/openmath/crates/om-kernel)
+    Finished `dev` profile [unoptimized] target(s) in 10.24s

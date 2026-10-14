@@ -31,12 +31,12 @@
     },
     {
       "path": "docs/design/native-agent.schema.json",
-      "sha256": "fe150a9e03ff36953865fb7799a41016519f3fb39b71e2e760a0f933c4acf34a"
+      "sha256": "a58c631ab601d7f5351f8da867bb5769022a70464fc991ce35a41ca38fecd5e4"
     },
     {
       "path": "docs/design/native-model-codec.schema.json",
       "sha256": "abd34061a53aa2d738196737dcf0f82256ba02826054ae6d8a476e0d739815c2"
     }
   ],
-  "generated_dto_count": 371
+  "generated_dto_count": 377
 }

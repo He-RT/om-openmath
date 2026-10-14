@@ -1,0 +1,14 @@
+   Compiling om-llm v0.1.0-pre-alpha.3 (/Users/hert/Projects/openmath/crates/om-llm)
+    Finished `dev` profile [unoptimized] target(s) in 0.92s
+✔ chat_completions real single-turn codec drives Pi; incomplete=false (1034.248166ms)
+✔ chat_completions real single-turn codec drives Pi; incomplete=true (3.9205ms)
+✔ anthropic_messages real single-turn codec drives Pi; incomplete=false (9.294042ms)
+✔ anthropic_messages real single-turn codec drives Pi; incomplete=true (4.722125ms)
+ℹ tests 4
+ℹ suites 0
+ℹ pass 4
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 1318.458875

@@ -1,0 +1,45 @@
+{
+  "codec_version": 1,
+  "document_id": "00000000-0000-0000-0000-000000000409",
+  "revision": 0,
+  "execution_epoch": 0,
+  "file": {
+    "version": 1,
+    "title": "真实耐久计算🙂",
+    "cells": [
+      {
+        "id": "a",
+        "kind": "Math",
+        "source": "let a=2",
+        "dialect": "Modern"
+      },
+      {
+        "id": "b",
+        "kind": "Math",
+        "source": "a+1",
+        "dialect": "Modern"
+      },
+      {
+        "id": "error",
+        "kind": "Math",
+        "source": "partial=7; loop:=loop; loop; never=8",
+        "dialect": "Wolfram"
+      }
+    ]
+  },
+  "cell_revisions": [
+    {
+      "cell_id": "a",
+      "revision": 0
+    },
+    {
+      "cell_id": "b",
+      "revision": 0
+    },
+    {
+      "cell_id": "error",
+      "revision": 0
+    }
+  ],
+  "snapshot_hash": "7783f91ec3a5937519ad24556a2a8224a35f4cab6eaaca60022cedb4e1a7a530"
+}

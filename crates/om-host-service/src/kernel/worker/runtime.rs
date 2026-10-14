@@ -14,6 +14,7 @@ impl Clock for HostClock {
 }
 struct Message {
     job: KernelJob,
+    require_ready: bool,
     parent: Arc<KernelState>,
     reply: mpsc::SyncSender<Result<KernelCandidate, KernelWorkerError>>,
     lifecycle: Arc<Lifecycle>,
@@ -63,7 +64,7 @@ impl KernelWorker {
                     let outcome = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
                         message.lifecycle.start();
                         execute(
-                            message.job,
+                            (message.job, message.require_ready),
                             message.lifecycle,
                             message.parent,
                             &states,
@@ -128,6 +129,19 @@ impl KernelWorker {
         &self,
         job: KernelJob,
     ) -> Result<mpsc::Receiver<Result<KernelCandidate, KernelWorkerError>>, KernelWorkerError> {
+        self.submit_with_readiness(job, false)
+    }
+    pub(crate) fn submit_planned(
+        &self,
+        job: KernelJob,
+    ) -> Result<mpsc::Receiver<Result<KernelCandidate, KernelWorkerError>>, KernelWorkerError> {
+        self.submit_with_readiness(job, true)
+    }
+    fn submit_with_readiness(
+        &self,
+        job: KernelJob,
+        require_ready: bool,
+    ) -> Result<mpsc::Receiver<Result<KernelCandidate, KernelWorkerError>>, KernelWorkerError> {
         let mut admissions = self
             .admissions
             .lock()
@@ -163,6 +177,7 @@ impl KernelWorker {
         sender
             .try_send(Message {
                 job,
+                require_ready,
                 parent,
                 reply,
                 lifecycle: lifecycle.clone(),

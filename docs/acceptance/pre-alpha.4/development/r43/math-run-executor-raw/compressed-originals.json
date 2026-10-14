@@ -1,0 +1,266 @@
+[
+  {
+    "source": "target/acceptance/pre-alpha.4/development/r43/run-executor-clippy.log",
+    "archive": "logs/run-executor-clippy.log.gz",
+    "original_bytes": 352,
+    "original_sha256": "dc2e5d0e406dea11bc0229a8898cbb00b705c6e71afea7d2b51418ec0a4605c4"
+  },
+  {
+    "source": "target/acceptance/pre-alpha.4/development/r43/run-executor-contracts-final.log",
+    "archive": "logs/run-executor-contracts-final.log.gz",
+    "original_bytes": 26,
+    "original_sha256": "27db80d41fda3ebde26386236ce903c10bfa7fe1c2b483edd34bf9b9ba7b6118"
+  },
+  {
+    "source": "target/acceptance/pre-alpha.4/development/r43/run-executor-contracts.log",
+    "archive": "logs/run-executor-contracts.log.gz",
+    "original_bytes": 26,
+    "original_sha256": "27db80d41fda3ebde26386236ce903c10bfa7fe1c2b483edd34bf9b9ba7b6118"
+  },
+  {
+    "source": "target/acceptance/pre-alpha.4/development/r43/run-executor-diff-check.log",
+    "archive": "logs/run-executor-diff-check.log.gz",
+    "original_bytes": 0,
+    "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "source": "target/acceptance/pre-alpha.4/development/r43/run-executor-final.log",
+    "archive": "logs/run-executor-final.log.gz",
+    "original_bytes": 67167,
+    "original_sha256": "b2e9d84789dea9be5efed6e396a5e28ccdfee404aa5111a9300b9e406f1e6ebb"
+  },
+  {
+    "source": "target/acceptance/pre-alpha.4/development/r43/run-executor-fmt.log",
+    "archive": "logs/run-executor-fmt.log.gz",
+    "original_bytes": 0,
+    "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "source": "target/acceptance/pre-alpha.4/development/r43/run-executor-harness-inventory.log",
+    "archive": "logs/run-executor-harness-inventory.log.gz",
+    "original_bytes": 61,
+    "original_sha256": "4e994558a272858bb54e39681cb0d35472e3c5b65639f51e6719fe36f08e07b3"
+  },
+  {
+    "source": "target/acceptance/pre-alpha.4/development/r43/run-executor-initial.log",
+    "archive": "logs/run-executor-initial.log.gz",
+    "original_bytes": 55037,
+    "original_sha256": "425e533f1086cb7e2b0c8ab5c04ca82dfd711c4b21f8033ebd9a5b38bc512102"
+  },
+  {
+    "source": "target/acceptance/pre-alpha.4/development/r43/run-executor-native-kernel.log",
+    "archive": "logs/run-executor-native-kernel.log.gz",
+    "original_bytes": 1098,
+    "original_sha256": "c66bd9e9941e625476db8588b5e56386514ed321ad1e1f19619e498c2db4c027"
+  },
+  {
+    "source": "target/acceptance/pre-alpha.4/development/r43/run-executor-plan-final.log",
+    "archive": "logs/run-executor-plan-final.log.gz",
+    "original_bytes": 826,
+    "original_sha256": "b3797daedb006c862fc58de4f886cc37d7aa652c6115647909f8066b384a9eea"
+  },
+  {
+    "source": "target/acceptance/pre-alpha.4/development/r43/run-executor-plan-verified.log",
+    "archive": "logs/run-executor-plan-verified.log.gz",
+    "original_bytes": 754,
+    "original_sha256": "77be4acefe985380ff12ced4812f5c6f14dc1d9a1ea5285305de142deb470605"
+  },
+  {
+    "source": "target/acceptance/pre-alpha.4/development/r43/run-executor-plan.log",
+    "archive": "logs/run-executor-plan.log.gz",
+    "original_bytes": 757,
+    "original_sha256": "29b54cdd09943f67fed934e80dceda30a7d6fd041fc3bd1937051ed2f1ee01ee"
+  },
+  {
+    "source": "target/acceptance/pre-alpha.4/development/r43/run-executor-project-corrected.log",
+    "archive": "logs/run-executor-project-corrected.log.gz",
+    "original_bytes": 28,
+    "original_sha256": "ca55b28856588cf9edb70a7c263525c44d7a1075fbd066bea564a8ecb50402c5"
+  },
+  {
+    "source": "target/acceptance/pre-alpha.4/development/r43/run-executor-project.log",
+    "archive": "logs/run-executor-project.log.gz",
+    "original_bytes": 236,
+    "original_sha256": "b4199a6102c7b125dd7e7497a18bb2cda4874b0e5477c17f22b0d6797ad9f30e"
+  },
+  {
+    "source": "target/acceptance/pre-alpha.4/development/r43/run-executor-python-corrected.log",
+    "archive": "logs/run-executor-python-corrected.log.gz",
+    "original_bytes": 2835,
+    "original_sha256": "ecfa729c42f49b588c97da1cc498ee918de1857341e1ef575b10685054abaad3"
+  },
+  {
+    "source": "target/acceptance/pre-alpha.4/development/r43/run-executor-python.log",
+    "archive": "logs/run-executor-python.log.gz",
+    "original_bytes": 1579,
+    "original_sha256": "5a625f3606b8b3f7b18be9dc1186c10b311f2e028412f318bf1580d38f0f5fb8"
+  },
+  {
+    "source": "target/acceptance/pre-alpha.4/development/r43/run-executor-real-facts.log",
+    "archive": "logs/run-executor-real-facts.log.gz",
+    "original_bytes": 69550,
+    "original_sha256": "978c73ebb434d8c810630c9bef0af423d425fb99a47b4898e756cb1e85bc2802"
+  },
+  {
+    "source": "target/acceptance/pre-alpha.4/development/r43/run-executor-regression.log",
+    "archive": "logs/run-executor-regression.log.gz",
+    "original_bytes": 50945,
+    "original_sha256": "0130582dfa3a2f5dc02a25554b7e4ca7c0a21103530ca1c55e0b26682a5f4479"
+  },
+  {
+    "source": "target/acceptance/pre-alpha.4/development/r43/run-executor-harness-inventory.jsonl",
+    "archive": "harness-inventory.jsonl.gz",
+    "original_bytes": 239880,
+    "original_sha256": "40ffef3204bc9a08436ebf3bcbf2c201b3df58a499fd5f70fcf4a87295d041fc"
+  },
+  {
+    "source": "target/macos-storage-tests/kernel-runtime-eDq5op/Blobs/sha256/3d/3d73f3b3172bc288c2613e7f58c07a4f0440757b069e5d4d606dc75c49c7b0e1",
+    "archive": "native-kernel-original/Blobs/sha256/3d/3d73f3b3172bc288c2613e7f58c07a4f0440757b069e5d4d606dc75c49c7b0e1.gz",
+    "original_bytes": 20935,
+    "original_sha256": "3d73f3b3172bc288c2613e7f58c07a4f0440757b069e5d4d606dc75c49c7b0e1"
+  },
+  {
+    "source": "target/macos-storage-tests/kernel-runtime-eDq5op/Blobs/sha256/4a/4a3d121901b2ac72bab057d3ccf72033853664fb88d9db1f60036c1557fd4d47",
+    "archive": "native-kernel-original/Blobs/sha256/4a/4a3d121901b2ac72bab057d3ccf72033853664fb88d9db1f60036c1557fd4d47.gz",
+    "original_bytes": 19215,
+    "original_sha256": "4a3d121901b2ac72bab057d3ccf72033853664fb88d9db1f60036c1557fd4d47"
+  },
+  {
+    "source": "target/macos-storage-tests/kernel-runtime-eDq5op/Blobs/sha256/58/5830a441e349eaa6d2a78f01e3a6ccb6541c6c10d41efa50b75b22ced0263ae6",
+    "archive": "native-kernel-original/Blobs/sha256/58/5830a441e349eaa6d2a78f01e3a6ccb6541c6c10d41efa50b75b22ced0263ae6.gz",
+    "original_bytes": 18613,
+    "original_sha256": "5830a441e349eaa6d2a78f01e3a6ccb6541c6c10d41efa50b75b22ced0263ae6"
+  },
+  {
+    "source": "target/macos-storage-tests/kernel-runtime-eDq5op/Blobs/sha256/59/59e5fa5dada42707a4f11885ffc57dfcf1412f25f2f93f92a3deb27c89df0e14",
+    "archive": "native-kernel-original/Blobs/sha256/59/59e5fa5dada42707a4f11885ffc57dfcf1412f25f2f93f92a3deb27c89df0e14.gz",
+    "original_bytes": 18171,
+    "original_sha256": "59e5fa5dada42707a4f11885ffc57dfcf1412f25f2f93f92a3deb27c89df0e14"
+  },
+  {
+    "source": "target/macos-storage-tests/kernel-runtime-eDq5op/Blobs/sha256/65/6547dd8f786b436862116af4d0ca16ad651c8d72c1d0d6457895d818adbb3d0d",
+    "archive": "native-kernel-original/Blobs/sha256/65/6547dd8f786b436862116af4d0ca16ad651c8d72c1d0d6457895d818adbb3d0d.gz",
+    "original_bytes": 19396,
+    "original_sha256": "6547dd8f786b436862116af4d0ca16ad651c8d72c1d0d6457895d818adbb3d0d"
+  },
+  {
+    "source": "target/macos-storage-tests/kernel-runtime-eDq5op/Blobs/sha256/6a/6adcc55f0508a281065a11bf8366a6d187862aaa237d43e8d00de63bbd5558e9",
+    "archive": "native-kernel-original/Blobs/sha256/6a/6adcc55f0508a281065a11bf8366a6d187862aaa237d43e8d00de63bbd5558e9.gz",
+    "original_bytes": 19297,
+    "original_sha256": "6adcc55f0508a281065a11bf8366a6d187862aaa237d43e8d00de63bbd5558e9"
+  },
+  {
+    "source": "target/macos-storage-tests/kernel-runtime-eDq5op/Blobs/sha256/89/89e61b8550b6dfda88a07b8a856585ce1e2ba2ba42d73155f881ed366f1bb977",
+    "archive": "native-kernel-original/Blobs/sha256/89/89e61b8550b6dfda88a07b8a856585ce1e2ba2ba42d73155f881ed366f1bb977.gz",
+    "original_bytes": 19504,
+    "original_sha256": "89e61b8550b6dfda88a07b8a856585ce1e2ba2ba42d73155f881ed366f1bb977"
+  },
+  {
+    "source": "target/macos-storage-tests/kernel-runtime-eDq5op/Blobs/sha256/a9/a9a3fc9040426c3e4b80c3b7529dc410feb17b5aaa308c446f15603387aedd20",
+    "archive": "native-kernel-original/Blobs/sha256/a9/a9a3fc9040426c3e4b80c3b7529dc410feb17b5aaa308c446f15603387aedd20.gz",
+    "original_bytes": 20567,
+    "original_sha256": "a9a3fc9040426c3e4b80c3b7529dc410feb17b5aaa308c446f15603387aedd20"
+  },
+  {
+    "source": "target/macos-storage-tests/kernel-runtime-eDq5op/Blobs/sha256/b5/b540eb6e63449e4239647e10ee928562ce8ee529d85134de79910d33fafa5557",
+    "archive": "native-kernel-original/Blobs/sha256/b5/b540eb6e63449e4239647e10ee928562ce8ee529d85134de79910d33fafa5557.gz",
+    "original_bytes": 19120,
+    "original_sha256": "b540eb6e63449e4239647e10ee928562ce8ee529d85134de79910d33fafa5557"
+  },
+  {
+    "source": "target/macos-storage-tests/kernel-runtime-eDq5op/Blobs/sha256/cc/cc10b4adcb155b2b877536c4119ffb7b6a31353aae57fb6a62a474f088f98dae",
+    "archive": "native-kernel-original/Blobs/sha256/cc/cc10b4adcb155b2b877536c4119ffb7b6a31353aae57fb6a62a474f088f98dae.gz",
+    "original_bytes": 20183,
+    "original_sha256": "cc10b4adcb155b2b877536c4119ffb7b6a31353aae57fb6a62a474f088f98dae"
+  },
+  {
+    "source": "target/macos-storage-tests/kernel-runtime-eDq5op/Blobs/sha256/d1/d192704574ea923271ff9fbf598b6d6e0d93efa9eaeff1b6cde2f47f41cb29c6",
+    "archive": "native-kernel-original/Blobs/sha256/d1/d192704574ea923271ff9fbf598b6d6e0d93efa9eaeff1b6cde2f47f41cb29c6.gz",
+    "original_bytes": 19312,
+    "original_sha256": "d192704574ea923271ff9fbf598b6d6e0d93efa9eaeff1b6cde2f47f41cb29c6"
+  },
+  {
+    "source": "target/macos-storage-tests/kernel-runtime-eDq5op/Blobs/sha256/da/da39631d465a9cbe4ceedfadab34d1d293a8a5f26f9cd62cb65e69d8e627f423",
+    "archive": "native-kernel-original/Blobs/sha256/da/da39631d465a9cbe4ceedfadab34d1d293a8a5f26f9cd62cb65e69d8e627f423.gz",
+    "original_bytes": 19680,
+    "original_sha256": "da39631d465a9cbe4ceedfadab34d1d293a8a5f26f9cd62cb65e69d8e627f423"
+  },
+  {
+    "source": "target/macos-storage-tests/kernel-runtime-eDq5op/Blobs/sha256/e5/e5a30e35c92a0a25e3b4a89daaea6b83c3f56964f44b3d9553658e0d1af802d5",
+    "archive": "native-kernel-original/Blobs/sha256/e5/e5a30e35c92a0a25e3b4a89daaea6b83c3f56964f44b3d9553658e0d1af802d5.gz",
+    "original_bytes": 19040,
+    "original_sha256": "e5a30e35c92a0a25e3b4a89daaea6b83c3f56964f44b3d9553658e0d1af802d5"
+  },
+  {
+    "source": "target/macos-storage-tests/kernel-runtime-eDq5op/Blobs/sha256/e7/e78153a09562bf0d0dd6c0561127cd32d9f05d15e8602495995df756a1803464",
+    "archive": "native-kernel-original/Blobs/sha256/e7/e78153a09562bf0d0dd6c0561127cd32d9f05d15e8602495995df756a1803464.gz",
+    "original_bytes": 19599,
+    "original_sha256": "e78153a09562bf0d0dd6c0561127cd32d9f05d15e8602495995df756a1803464"
+  },
+  {
+    "source": "target/macos-storage-tests/kernel-runtime-eDq5op/Blobs/sha256/fb/fb33575dee2ef467360effb41102c874de97033d7615b2673e87f24623085b45",
+    "archive": "native-kernel-original/Blobs/sha256/fb/fb33575dee2ef467360effb41102c874de97033d7615b2673e87f24623085b45.gz",
+    "original_bytes": 20081,
+    "original_sha256": "fb33575dee2ef467360effb41102c874de97033d7615b2673e87f24623085b45"
+  },
+  {
+    "source": "target/macos-storage-tests/kernel-runtime-eDq5op/Documents/00000000-0000-0000-0000-000000000409/Generations/000001/authority.sqlite",
+    "archive": "native-kernel-original/Documents/00000000-0000-0000-0000-000000000409/Generations/000001/authority.sqlite.gz",
+    "original_bytes": 458752,
+    "original_sha256": "ea2deb91c2c04c4258b00023dd38f919f7d7d36191504d972504e25ee55b0b0c"
+  },
+  {
+    "source": "target/macos-storage-tests/kernel-runtime-eDq5op/Documents/00000000-0000-0000-0000-000000000409/Generations/000001/authority.sqlite-shm",
+    "archive": "native-kernel-original/Documents/00000000-0000-0000-0000-000000000409/Generations/000001/authority.sqlite-shm.gz",
+    "original_bytes": 32768,
+    "original_sha256": "3e52f6cfd798586f99581b7d80badc2533e82d34f4bee1da86c9147953580810"
+  },
+  {
+    "source": "target/macos-storage-tests/kernel-runtime-eDq5op/Documents/00000000-0000-0000-0000-000000000409/Generations/000001/authority.sqlite-wal",
+    "archive": "native-kernel-original/Documents/00000000-0000-0000-0000-000000000409/Generations/000001/authority.sqlite-wal.gz",
+    "original_bytes": 0,
+    "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "source": "target/macos-storage-tests/kernel-runtime-eDq5op/Documents/00000000-0000-0000-0000-000000000409/active.json",
+    "archive": "native-kernel-original/Documents/00000000-0000-0000-0000-000000000409/active.json.gz",
+    "original_bytes": 166,
+    "original_sha256": "f818a6979706b36e4cb377d390e95c2a24dc8e79ec8a7076e4a67c4b6e481cd5"
+  },
+  {
+    "source": "target/macos-storage-tests/kernel-runtime-eDq5op/Library/Generations/000001/library.sqlite",
+    "archive": "native-kernel-original/Library/Generations/000001/library.sqlite.gz",
+    "original_bytes": 122880,
+    "original_sha256": "17ce11bf3fb1b3c914ded80049f089a94d593923f9a6facf023fcbd94eadce72"
+  },
+  {
+    "source": "target/macos-storage-tests/kernel-runtime-eDq5op/Library/Generations/000001/library.sqlite-shm",
+    "archive": "native-kernel-original/Library/Generations/000001/library.sqlite-shm.gz",
+    "original_bytes": 32768,
+    "original_sha256": "589cbe234a787a28c329535c5135cd00b9e8c8bd9e8eee8000cebf70a6215370"
+  },
+  {
+    "source": "target/macos-storage-tests/kernel-runtime-eDq5op/Library/Generations/000001/library.sqlite-wal",
+    "archive": "native-kernel-original/Library/Generations/000001/library.sqlite-wal.gz",
+    "original_bytes": 0,
+    "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "source": "target/macos-storage-tests/kernel-runtime-eDq5op/Library/active.json",
+    "archive": "native-kernel-original/Library/active.json.gz",
+    "original_bytes": 166,
+    "original_sha256": "479a6906f7a14b3ad11b0c7242f3d42b364964ece7dd046decbac6f088576acd"
+  },
+  {
+    "source": "target/macos-storage-tests/kernel-runtime-eDq5op/store.json",
+    "archive": "native-kernel-original/store.json.gz",
+    "original_bytes": 97,
+    "original_sha256": "0c97ece2dcbf29749d59488b62ef3dfa4eb76676b205a47f6bdd5cc1559b8270"
+  },
+  {
+    "source": "target/macos-storage-tests/kernel-runtime-eDq5op/store.lock",
+    "archive": "native-kernel-original/store.lock.gz",
+    "original_bytes": 0,
+    "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  }
+]

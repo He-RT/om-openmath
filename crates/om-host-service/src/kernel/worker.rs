@@ -138,7 +138,7 @@ fn identity(id: &str) -> bool {
     !id.is_empty() && id.len() <= 256 && !id.chars().any(char::is_control)
 }
 fn execute(
-    job: KernelJob,
+    job: (KernelJob, bool),
     lifecycle: Arc<Lifecycle>,
     parent: Arc<KernelState>,
     pool: &Mutex<KernelStatePool>,
@@ -146,6 +146,7 @@ fn execute(
     clock: Arc<dyn Clock>,
     closed: &AtomicBool,
 ) -> Result<KernelCandidate, KernelWorkerError> {
+    let (job, require_ready) = job;
     validate_snapshot(&job.source).map_err(|_| KernelWorkerError::Invalid)?;
     let old = parent.binding();
     let source = kernel_file(&job.source.file);
@@ -219,7 +220,7 @@ fn execute(
         .ok_or(KernelWorkerError::Invalid)?;
     let cell_source_hash = hash(cell.source.as_bytes());
     let boundary = work
-        .run_current_cell(&job.cell_id)
+        .run_current_cell_with_readiness(&job.cell_id, require_ready)
         .map_err(KernelWorkerError::Kernel)?;
     // A real failed/cancelled statement may have earlier effects. Freeze them exactly for reporting;
     // do not claim rollback. The independent operation flag still forbids later main acceptance.

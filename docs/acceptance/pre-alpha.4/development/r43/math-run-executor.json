@@ -1,0 +1,1537 @@
+{
+  "schema_version": 1,
+  "task": "R4.3.07",
+  "status": "in_progress",
+  "date": "2026-10-15",
+  "base_commit": "41d70e128662121c8268b97b0658632e27c56999",
+  "implementation": "Frozen actual read-issued plan -> explicit stable bootstrap/child admission boundary -> real main KernelEndpoint/KernelWorker -> original candidate/hash/final scope barrier/receipt chain. No RunAll, report rehydration, new-ID unknown replay or source-patch grant requirement.",
+  "verified": {
+    "rust_regression": {
+      "passed": 398,
+      "failed": 0,
+      "suites": 78
+    },
+    "executor_real_facts": {
+      "passed": 13,
+      "failed": 0,
+      "suites": 1
+    },
+    "clippy_all_targets": true,
+    "python_tests": 17,
+    "native_dtos": 389,
+    "existing_native_kernel_sqlite_regression": true,
+    "native_kernel_evidence_root": "target/macos-storage-tests/kernel-runtime-eDq5op",
+    "cache_cleanup": {
+      "schema_version": 1,
+      "kind": "successful_test_profile_ordinary_macho_executable_only",
+      "files": 75,
+      "logical_bytes": 2347068000,
+      "records": [
+        {
+          "path": "target/debug/deps/agent_endpoint-d36dd37a9b5931a7",
+          "bytes": 49999776,
+          "sha256": "049e973b0348a4ceffc7fa49230f05bb550fb0be6a747d250bccc4a86dd71e4c",
+          "inode": 54782684,
+          "device": 16777232
+        },
+        {
+          "path": "target/debug/deps/agent_framing-c076f1fc6540b593",
+          "bytes": 3682608,
+          "sha256": "dc18467da5f4ec702f88dabc1f5e88bd8f31552b12b9c84ea478e7cdc70873b8",
+          "inode": 54782519,
+          "device": 16777232
+        },
+        {
+          "path": "target/debug/deps/agent_ingress-d3825909258706cc",
+          "bytes": 4089920,
+          "sha256": "27c924fd51f786eea0074c058a3d3b0c794d40ef208c6007f39f543df927153b",
+          "inode": 54782516,
+          "device": 16777232
+        },
+        {
+          "path": "target/debug/deps/artifacts-c1b3b86ba9c65d48",
+          "bytes": 35087200,
+          "sha256": "6704196c1dbeb59d6d748cc6ecb1e6c201f8143f8149219d1b696dca51846b2c",
+          "inode": 54781809,
+          "device": 16777232
+        },
+        {
+          "path": "target/debug/deps/assistant-2ec30eb7f3655d5a",
+          "bytes": 35422768,
+          "sha256": "311abec6bc10d54b085e73e58560a88abbae089f2bc05331ee364356397a4a7c",
+          "inode": 54782134,
+          "device": 16777232
+        },
+        {
+          "path": "target/debug/deps/assistant_edges-9735ea538e81e4b7",
+          "bytes": 34884240,
+          "sha256": "2adee65423bca69878e4faf7391b2253b40e8cfa0176979df63543d8fccd476a",
+          "inode": 54781880,
+          "device": 16777232
+        },
+        {
+          "path": "target/debug/deps/capabilities-d29652875b9d773a",
+          "bytes": 39326640,
+          "sha256": "f35b5a7e85ee9260496e99ca690523f087e7a6045a14df633e4b98b2b237bdd7",
+          "inode": 54782024,
+          "device": 16777232
+        },
+        {
+          "path": "target/debug/deps/checkpoint-010dae9fc575b5ce",
+          "bytes": 39751264,
+          "sha256": "4a0b0a9e4512ddb84094b02c937f74f07e3541722fdf9fca2949808cc3f75a0a",
+          "inode": 54782245,
+          "device": 16777232
+        },
+        {
+          "path": "target/debug/deps/checkpoint_corpus-22022b0d0d662983",
+          "bytes": 40461840,
+          "sha256": "2889da3d48cc0462127db7c84b7b564a100a42eae3b50fe4ee2537b7aa6ef57f",
+          "inode": 54782188,
+          "device": 16777232
+        },
+        {
+          "path": "target/debug/deps/commit_owner-70b8f943d3909dc1",
+          "bytes": 20711568,
+          "sha256": "d8b761c2759a6d816cd8540a0840eb81eff2914f41d19d7076c19a48966a7899",
+          "inode": 54782522,
+          "device": 16777232
+        },
+        {
+          "path": "target/debug/deps/composition-5f701821f31c5d25",
+          "bytes": 38306320,
+          "sha256": "da5d7432f0b11c6e7e513b57ccbecd229aee30d5e9a19a636626efdd0f7c5d6e",
+          "inode": 54781968,
+          "device": 16777232
+        },
+        {
+          "path": "target/debug/deps/continuation-b53cbbeb7dfd38c0",
+          "bytes": 35045984,
+          "sha256": "c05a33ca057ffff44e167595ee6c36236ca0b430c7c9592dbc44ef7a81e91612",
+          "inode": 54782175,
+          "device": 16777232
+        },
+        {
+          "path": "target/debug/deps/contracts-5e58c382c2cbe2df",
+          "bytes": 3235968,
+          "sha256": "59d45baf45dd6c74f243f070a916d073e0296df34faa0d642b90eb116963a5ae",
+          "inode": 54782817,
+          "device": 16777232
+        },
+        {
+          "path": "target/debug/deps/document_source-8ae3969c8e74f3e2",
+          "bytes": 1330816,
+          "sha256": "0955479c5c561a9e9570275584fce1b6d70ed9800dbcb94a4b07c78401c27f51",
+          "inode": 54782802,
+          "device": 16777232
+        },
+        {
+          "path": "target/debug/deps/editor-d102964a54063c59",
+          "bytes": 35064816,
+          "sha256": "b2ffc1e01082ee368a967b21532de785fa40561789e0581662184c7bcbec3e26",
+          "inode": 54782078,
+          "device": 16777232
+        },
+        {
+          "path": "target/debug/deps/editor_edges-8655bfef54f745e0",
+          "bytes": 35075600,
+          "sha256": "7023a0388cadde966806959abbc2b3be97f072452638f75c9fbe28673e15bf13",
+          "inode": 54781807,
+          "device": 16777232
+        },
+        {
+          "path": "target/debug/deps/editor_latency-edb2287bf07c8b5b",
+          "bytes": 34911360,
+          "sha256": "68e2ce9e54c3e8000e2ac6d004ae9c8ae96c32def98ad9f5f12a507cd3b4fbe5",
+          "inode": 54781950,
+          "device": 16777232
+        },
+        {
+          "path": "target/debug/deps/editor_names-2e78678e74c76be7",
+          "bytes": 18037328,
+          "sha256": "f46193e280b95b482a143fe8b53f62e39bb61b7d2ce4aca3ffcd0d1e57f3679c",
+          "inode": 54782087,
+          "device": 16777232
+        },
+        {
+          "path": "target/debug/deps/explanation_selection-9b3c96076bd45ac0",
+          "bytes": 35357872,
+          "sha256": "5c8c9be2af83a50abb5334b7fb6093f2a460393cb4ba75c381a96dbca76a94c3",
+          "inode": 54781802,
+          "device": 16777232
+        },
+        {
+          "path": "target/debug/deps/explore-7320d8538b754c81",
+          "bytes": 35279728,
+          "sha256": "4c5193e0c08823b9e72b171134b526dbb37e96a6c71607c6415628bf874dbb05",
+          "inode": 54781889,
+          "device": 16777232
+        },
+        {
+          "path": "target/debug/deps/external_host-21ca616d48984c13",
+          "bytes": 34860896,
+          "sha256": "33ba7fb3a9b7462b7b51213f2a1e590e8347ae50c9b4ba68c76002c52a21bd91",
+          "inode": 54782149,
+          "device": 16777232
+        },
+        {
+          "path": "target/debug/deps/fixture_support-7fbf5b587fd933cd",
+          "bytes": 1395520,
+          "sha256": "e7ee7e2e9b0ffbc0a44229543d4c1eb601bbfcb791ad1bab57be02d96381e875",
+          "inode": 54782590,
+          "device": 16777232
+        },
+        {
+          "path": "target/debug/deps/inspection-ef22abcb20fd101c",
+          "bytes": 35383360,
+          "sha256": "bc89be7bd49469da4e67a84d1ea20dbe980514b0ab85c4f790332ad84c7cb977",
+          "inode": 54782140,
+          "device": 16777232
+        },
+        {
+          "path": "target/debug/deps/kernel_acceptance-8bb3ab23a72160a6",
+          "bytes": 41263456,
+          "sha256": "7d74d6e4bec240f3e587b131e847a03bb03d16013ad81e7183dc0e2e0d0c7f43",
+          "inode": 54782670,
+          "device": 16777232
+        },
+        {
+          "path": "target/debug/deps/kernel_endpoint-3afe3fc26a81c076",
+          "bytes": 44547392,
+          "sha256": "a9915b9b60f9d3fa2750bea331a7859de3a3bcf223dd4c693112ff2f5ae893e9",
+          "inode": 54782663,
+          "device": 16777232
+        },
+        {
+          "path": "target/debug/deps/kernel_states-d71ce1ef6511029d",
+          "bytes": 39619632,
+          "sha256": "4401f3cec0ecca5335ddee762af63ad56bd10c8c9d350fcd65d6f862939ba427",
+          "inode": 54782810,
+          "device": 16777232
+        },
+        {
+          "path": "target/debug/deps/kernel_worker-5908c8033cb30da7",
+          "bytes": 40706544,
+          "sha256": "7ea36a0eb9a2bfa28de9a828108ab8875e754385ea619e683cc5f15d2d3a0a86",
+          "inode": 54782556,
+          "device": 16777232
+        },
+        {
+          "path": "target/debug/deps/llm-8e4d2e54ab6fb085",
+          "bytes": 35421936,
+          "sha256": "df5c524c799c766c6ceafa547a5b0030ee509bf790c80f17a107a8b81909d818",
+          "inode": 54782238,
+          "device": 16777232
+        },
+        {
+          "path": "target/debug/deps/llm_edges-738140eb88d8f8e1",
+          "bytes": 35012384,
+          "sha256": "e935b01dc3f8f6b66296ee169cf2e8ee4514a7afe20bba3c660bf40de2a89759",
+          "inode": 54782227,
+          "device": 16777232
+        },
+        {
+          "path": "target/debug/deps/llm_native-96a1739878e946f8",
+          "bytes": 882160,
+          "sha256": "27239c1f3fd813ce8af6b3d86361ecde3a342e3ff15707e5df89da21afede8cc",
+          "inode": 54781832,
+          "device": 16777232
+        },
+        {
+          "path": "target/debug/deps/llm_tool_edges-f0f928d738f65dc4",
+          "bytes": 35046672,
+          "sha256": "e62b8c3a8be99a23a7768d3860eab6ebb2253daa35d4c26e118f45ae145a6e04",
+          "inode": 54781879,
+          "device": 16777232
+        },
+        {
+          "path": "target/debug/deps/math_inspect-c9d3f4b21073a6e9",
+          "bytes": 43363440,
+          "sha256": "ae39220f904ca44cc1a60ca7991630c6ebb18beb2e1437a24223e446af7a6a4a",
+          "inode": 54782697,
+          "device": 16777232
+        },
+        {
+          "path": "target/debug/deps/math_run_execution-b00ea7313dac6e99",
+          "bytes": 42959648,
+          "sha256": "b9839e52f38f5346d62c1b221b63e96bca7053ad8982d6b28cc72c54c2769e19",
+          "inode": 54782632,
+          "device": 16777232
+        },
+        {
+          "path": "target/debug/deps/math_run_plan-0cf27eddd4928c4f",
+          "bytes": 42803184,
+          "sha256": "c6bb5b0fe4dbbccfb1e61219c74ba77bffac6f344aed938fee13b5ffa74a5e5f",
+          "inode": 54782806,
+          "device": 16777232
+        },
+        {
+          "path": "target/debug/deps/math_scratch-0afe06e7acdb40a5",
+          "bytes": 44724512,
+          "sha256": "71f65075e25bca87d91a637e9b74462050943d0d2734246aed2d2a3c7e02dc1e",
+          "inode": 54782629,
+          "device": 16777232
+        },
+        {
+          "path": "target/debug/deps/model_codec-a8c71d266caa3fc5",
+          "bytes": 37977120,
+          "sha256": "d63e923d6a7533e64dc5505fd8e1d790295b07cc48bd0fb56fed4917dd1b86c3",
+          "inode": 54782599,
+          "device": 16777232
+        },
+        {
+          "path": "target/debug/deps/native_config-ca9461e0c2039122",
+          "bytes": 882160,
+          "sha256": "9e8119274fc89735d2fa840fbb6ffce6777b734fa027038e30f4e3dd94861c10",
+          "inode": 54781727,
+          "device": 16777232
+        },
+        {
+          "path": "target/debug/deps/native_config_edges-18b1e4300d843bc5",
+          "bytes": 882192,
+          "sha256": "bca85705ccb04fb0081b521f1ec97b05ec539c3bf015515d42571c3432413e5e",
+          "inode": 54781746,
+          "device": 16777232
+        },
+        {
+          "path": "target/debug/deps/om_apple_ffi-1de397b1ea7634b8",
+          "bytes": 37595840,
+          "sha256": "46c46dc97d5ad03aa8e2645da553b53a44343bd829b7a5afef3a1419729545e6",
+          "inode": 54782811,
+          "device": 16777232
+        },
+        {
+          "path": "target/debug/deps/om_host_service-d8f036e96cb96d62",
+          "bytes": 39958160,
+          "sha256": "47d84567d6b0dcb0b8b630f417ced1ec77e32b6862388617582d6e915796e55f",
+          "inode": 54782431,
+          "device": 16777232
+        },
+        {
+          "path": "target/debug/deps/om_kernel-433355ab878a9804",
+          "bytes": 34825552,
+          "sha256": "f3c6e3f83c0361e85fa7c20fbaf5697c5270fb8d51ee48632fea133d0a906dcb",
+          "inode": 54781266,
+          "device": 16777232
+        },
+        {
+          "path": "target/debug/deps/operation_cancel-63f685b96c62182d",
+          "bytes": 34861392,
+          "sha256": "9b2f20029e073d082cf91351bdea66ebd59895e110e70319dfb758370dfe711b",
+          "inode": 54781948,
+          "device": 16777232
+        },
+        {
+          "path": "target/debug/deps/output_packing-f9d3488353d16dba",
+          "bytes": 35464128,
+          "sha256": "489e75162b32591eb3f6ec0f345e258ee6d9c479d46740c8d5f32fc7c2dcb066",
+          "inode": 54782235,
+          "device": 16777232
+        },
+        {
+          "path": "target/debug/deps/output_steps-7dcce42053192128",
+          "bytes": 35020880,
+          "sha256": "542a4cedb1468ab50d8b9f701c4ca62b6f76623cb9e0f96174148f6ab085519f",
+          "inode": 54782031,
+          "device": 16777232
+        },
+        {
+          "path": "target/debug/deps/plot_edges-487124086008d10a",
+          "bytes": 35101264,
+          "sha256": "594aa4b3e74f0e051f417a88c48309920bbf2428397878557c27479e7e8f86bb",
+          "inode": 54781935,
+          "device": 16777232
+        },
+        {
+          "path": "target/debug/deps/plot_extensions-4980d4bfe9b80c5f",
+          "bytes": 35362784,
+          "sha256": "ee7c6c2f532e0f714d0ddde4b694276d8e0917859f1d65ef8b24d5d93af2e848",
+          "inode": 54782282,
+          "device": 16777232
+        },
+        {
+          "path": "target/debug/deps/plot_parameters-644dba63b195cf6a",
+          "bytes": 35774432,
+          "sha256": "6d82d580dbbfad97c8186ec09ba8a2e92280549816ac521795e4b96dd5353b5a",
+          "inode": 54781852,
+          "device": 16777232
+        },
+        {
+          "path": "target/debug/deps/plot_sampling-b0c4a66ced27c883",
+          "bytes": 35145648,
+          "sha256": "156792369232cb6fa47e435eb2b9b784168e83949e69058d91053f80ddfa56e7",
+          "inode": 54782048,
+          "device": 16777232
+        },
+        {
+          "path": "target/debug/deps/plot_transport_edges-3c0de8be21283482",
+          "bytes": 37585280,
+          "sha256": "4cb2127713450875e50d0e330e7b3d7ff6b54f62d206cfc40ffac6ee327adec1",
+          "inode": 54782302,
+          "device": 16777232
+        },
+        {
+          "path": "target/debug/deps/preview-a39cbb1a76dfc52f",
+          "bytes": 20430976,
+          "sha256": "26a64eca07f01f25389fd6e24d70940e56559018940fdff58c26ce6243bc4a52",
+          "inode": 54782705,
+          "device": 16777232
+        },
+        {
+          "path": "target/debug/deps/profile_draft-37e2eb1270c86a15",
+          "bytes": 35357952,
+          "sha256": "5cee715524cb2511d69418032325af0b228b2edca202db25ca1e5d2ed79caa68",
+          "inode": 54781811,
+          "device": 16777232
+        },
+        {
+          "path": "target/debug/deps/protocol-a3b6b4f1bb063775",
+          "bytes": 15555584,
+          "sha256": "ab274cd07e27284957a763f74f2264706944d0f1872ea635a7ddab62fa139cf0",
+          "inode": 54782319,
+          "device": 16777232
+        },
+        {
+          "path": "target/debug/deps/reactive-af70ae60d5829063",
+          "bytes": 35149568,
+          "sha256": "4d6b562c42c6d3575377eccab98e2a7126ef43696983f01592f20d349bc8212b",
+          "inode": 54782161,
+          "device": 16777232
+        },
+        {
+          "path": "target/debug/deps/reactive_edges-12926bc890eb926b",
+          "bytes": 35153648,
+          "sha256": "d490544a434ef0e7697dadb71ce158a552aac6d433010d16385664496362fb81",
+          "inode": 54782293,
+          "device": 16777232
+        },
+        {
+          "path": "target/debug/deps/readonly_catalog-3da551810cf47df9",
+          "bytes": 35588688,
+          "sha256": "7240cc128607db13d7a7525f97178a220e19c92ba8447b889e93cfe633992107",
+          "inode": 54782544,
+          "device": 16777232
+        },
+        {
+          "path": "target/debug/deps/readonly_notebook-9e86f58a672476b2",
+          "bytes": 42565456,
+          "sha256": "2930acaa41b7703538bf690fee8ed4255320aad74e313f0ff4451784903dfcf7",
+          "inode": 54782549,
+          "device": 16777232
+        },
+        {
+          "path": "target/debug/deps/recovery-6d760e8548f2e4ae",
+          "bytes": 34895568,
+          "sha256": "4054a52ec6b63434fb2d56e934243fd6e2eabd2eee06c8f0ec8519ebe4170dc8",
+          "inode": 54781984,
+          "device": 16777232
+        },
+        {
+          "path": "target/debug/deps/references-8c49b2600c8abe98",
+          "bytes": 1240544,
+          "sha256": "3d09e6911dc10f78d5508bcc7a4345949952150846ce107fc01289256c489fa2",
+          "inode": 54782687,
+          "device": 16777232
+        },
+        {
+          "path": "target/debug/deps/result_runtime-c8eca354e26a1319",
+          "bytes": 43906160,
+          "sha256": "752a1f3e4135744c016c8ca1feba121b44985c4227a24c7047590b51fac91b7f",
+          "inode": 54782731,
+          "device": 16777232
+        },
+        {
+          "path": "target/debug/deps/results-8abfd6a814591afd",
+          "bytes": 41190352,
+          "sha256": "799198484f05aa1500372241bac14cafecc844a594f60b6ab9dfe98c6b64c098",
+          "inode": 54782537,
+          "device": 16777232
+        },
+        {
+          "path": "target/debug/deps/retained_results-67234512f6419896",
+          "bytes": 35320032,
+          "sha256": "b32e82dea0958afee5d6eb2f746e3ba6af2732c352f1166da83bced04d93b3e6",
+          "inode": 54781949,
+          "device": 16777232
+        },
+        {
+          "path": "target/debug/deps/run_plan-80069407f4f581f4",
+          "bytes": 36544272,
+          "sha256": "db5124520790be54acd935bc11122137b6dbcd0222a89efb397b5d26bc4bdd5f",
+          "inode": 54781882,
+          "device": 16777232
+        },
+        {
+          "path": "target/debug/deps/scene3d-9dbb376e129ef47b",
+          "bytes": 35105888,
+          "sha256": "f41896fc98d08cf45f3ad0f27ef128d162a0dbdc570fa64e5b050ddbe969ce7e",
+          "inode": 54782248,
+          "device": 16777232
+        },
+        {
+          "path": "target/debug/deps/scene_graph-08d4378c7b04e321",
+          "bytes": 35134672,
+          "sha256": "0cea34265d8d4ddd07fdc418706d5ded6fef63e0c99f5269d979667df4640f3e",
+          "inode": 54781816,
+          "device": 16777232
+        },
+        {
+          "path": "target/debug/deps/scheduler-1dfffe09cb05d0ee",
+          "bytes": 37323952,
+          "sha256": "9354e1191997bd1ade97834fdb3acfc4a7f0405dc249695d611069807674e699",
+          "inode": 54782789,
+          "device": 16777232
+        },
+        {
+          "path": "target/debug/deps/session-8c24e343a22c282b",
+          "bytes": 37635072,
+          "sha256": "6448040c55c0ae8cde23e0498573698d0242a7ac78f28847d88b88c96964c937",
+          "inode": 54782070,
+          "device": 16777232
+        },
+        {
+          "path": "target/debug/deps/session_config-58d4511069366e7d",
+          "bytes": 38308896,
+          "sha256": "5dc267ff00032122898c42b02624053b6cf877b2ee37bcf2ba6d793eb7daf540",
+          "inode": 54782080,
+          "device": 16777232
+        },
+        {
+          "path": "target/debug/deps/solve_plot-1a57c9961bf136d5",
+          "bytes": 35021904,
+          "sha256": "48015e30d36dc84258954fec796e5da81b5c4e0e5e2cdd4e05ad9b8e9734fba2",
+          "inode": 54781805,
+          "device": 16777232
+        },
+        {
+          "path": "target/debug/deps/source_endpoint-e77a1eebaffdf46b",
+          "bytes": 23509680,
+          "sha256": "6dd8d99b1907e1992d70da6aad82e8cb0ff7220fc329489d9fbf20fa69738ea2",
+          "inode": 54782598,
+          "device": 16777232
+        },
+        {
+          "path": "target/debug/deps/source_operations-b119a4f560e2f39e",
+          "bytes": 19381200,
+          "sha256": "b188b368694378c7561ed14f5f4ae0d17207d953ff0caa471039e8f54a53e712",
+          "inode": 54782809,
+          "device": 16777232
+        },
+        {
+          "path": "target/debug/deps/source_transactions-f4e0cdc8b7a431e0",
+          "bytes": 35667344,
+          "sha256": "f55028a0f1683abfe6259a5a6ff124d1550d96a864ca4c8ae6d3d000ec724338",
+          "inode": 54782050,
+          "device": 16777232
+        },
+        {
+          "path": "target/debug/deps/ui_state-bccf8edfbb13c418",
+          "bytes": 34862464,
+          "sha256": "59028cfdee518d5b3c6b202071f5ad28c36b5e422b6a576e6bbc36c94d7e5dff",
+          "inode": 54782062,
+          "device": 16777232
+        },
+        {
+          "path": "target/debug/deps/undo_source-c4f23dd4fd144b85",
+          "bytes": 2113952,
+          "sha256": "37b1e91140b4fdcf713063802074c4eabb57e71decc6f9bbee3abe094086e199",
+          "inode": 54782831,
+          "device": 16777232
+        },
+        {
+          "path": "target/debug/deps/value_pages-2314022d40302719",
+          "bytes": 35181424,
+          "sha256": "d3e3a35eb10df45bca7621a0141590b5290f1ee034f9eee89d157d52580b9743",
+          "inode": 54781884,
+          "device": 16777232
+        },
+        {
+          "path": "target/debug/deps/working_session-50e989248322dafb",
+          "bytes": 35431568,
+          "sha256": "37024349df5d371f0f8fa2acc9e5666629cf7f05c556f1f003b1afee88a27742",
+          "inode": 54782156,
+          "device": 16777232
+        }
+      ],
+      "deleted": true,
+      "preserved": [
+        "all rlib/rmeta/static libraries and object caches",
+        "CLI/examples",
+        "release library/App/runtime",
+        "evidence and failed originals",
+        "user data and credentials"
+      ]
+    }
+  },
+  "cases": [
+    "required actual a2/b3/answer4 topological receipts/revisions, unrelated source not run",
+    "selected refuses unready real prerequisites with reactive=false and continue=true still runs independent branch",
+    "affected actual descendants rerun under a distinct model-call operation",
+    "real recursion error retains 2 successful statements in accepted main checkpoint; dependent blocked and independent follows original continue_on_error",
+    "stable AwaitingAdmission does no dispatch before native acknowledgment; wrong child rejected; cancel before acknowledgment never creates operation",
+    "actual cycle vs blocked descendant separate; independent scope follows original error policy",
+    "source head changed between real accepted child boundaries preserves original prefix and refuses next admission",
+    "final barrier rechecks live task/grant/editor/mode/source/config/definition",
+    "pre-barrier cancel discards; after physical boundary original receipt still retained",
+    "unknown is latched immediately including receipt-before-poll race, keeps original child and refuses later admissions; final original receipt may prove complete",
+    "duplicate original group cannot shadow bootstrap/children or invent a different child barrier"
+  ],
+  "limitations": [
+    "New RunExecutor Rust tests use matching synthetic IO receipt acknowledgments, explicitly labeled; they do not claim durable group, Swift/Pi execution or Agent result refs",
+    "Existing C ABI/Swift/SQLite regression uses real physical storage/receipt recovery; it exercises existing manual math entry points, not the still-unwired RunExecutor",
+    "Swift durable group/child admission-start/outcome records and recovery, actual original Agent producer/C ABI/Pi dispatch, Agent-scope result refs remain required",
+    "R4.3.07 Step1/2/4 and Done remain unchecked; overall34/98, 32final gates not_run, no candidate/ready/release; no subagents, OS input changes, local iOS simulator or paid API tests"
+  ],
+  "source_sha256": {
+    "CODEX_HANDOFF.md": "c9b178729847a717eceed1bdf997c6952642ca20ed918b3317d0847a29ee1684",
+    "Cargo.lock": "41cfc7f8b05f9da1e5c52d44321e6e20025938456a630492a82cdaf1c89b7b42",
+    "Cargo.toml": "223601b29d80be241066133db2ed48aaf2a94c8b0a5b2bd957e49546d999c1b2",
+    "crates/om-host-service/build.rs": "a860fa340164854a5056de6894a5eba0c7bb4a20f658781a8566379f76ffa867",
+    "crates/om-host-service/examples/kernel_store_contract.rs": "ea32d47a49c2a9fdd8b5983bf69edc1093860a3d629300988a31aeef112a71e5",
+    "crates/om-host-service/src/kernel/endpoint/commands.rs": "bcfc5aa9cb510e9b5447dc16ac68c354e8f308cd207cf11f7b034cf499e45349",
+    "crates/om-host-service/src/kernel/worker.rs": "b5b20e83b45e6748cc6f2e3cf229f4c3c9fc9ae1e979bc03504eb281f67ef36d",
+    "crates/om-host-service/src/kernel/worker/runtime.rs": "40dd7c533a19da2d9d07a9a71e39715c7118da2fd8999875e5072a72cef9740b",
+    "crates/om-host-service/src/tools/run.rs": "7e80786959ba4c6b597d88928e6f4dcb4f6499323126c9757b4ee43331567e00",
+    "crates/om-host-service/src/tools/run/execution.rs": "a87ef28c4a86e910aed80fd3e08ac54be3ac489c7ebe6916ff6a84b25a589708",
+    "crates/om-host-service/tests/math_run_execution.rs": "d38ba5fbbd194b08ac866874c24c928df545e0e50a5f5865e6141becb86fdc0d",
+    "crates/om-host-service/tests/math_run_plan.rs": "c55404f8ae8b09f17457e3630ad3c0213d8c5c875738351fdfb12df2035d16c8",
+    "crates/om-kernel/src/session/working.rs": "6af6f3822f669341350246434e82fe9b5389fa0dc79e72e94b2f7a92ca8bf067",
+    "docs/plan/PRE_ALPHA_4_PROGRESS.md": "abc596cc1ca3316d2cea2066995f518e9eba354aaa75097c073e3cc9735669a0",
+    "macos/OpenMathNative/Kernel/KernelCommitPort.swift": "67c4795ed34bc542b3c62ff0734bdd75078879930090fc1cb0eab35f20a3ef2e",
+    "macos/OpenMathNative/Storage/KernelStore.swift": "4e86a98cd06c22f5eb4ed6341b09213f686a1415a98d283789524d0144927e5c",
+    "macos/OpenMathNativeTests/KernelRuntimeFixtures/main.swift": "81dd593b8749215a4dbb02261f3bb480a4387e16569177b06e0e49e989e91331",
+    "macos/Scripts/test-kernel-runtime.sh": "bdc527267acb5fcc8631315d3730c09e339afbba419714813fbfaf077d917f66"
+  },
+  "commands_file": "math-run-executor-raw/commands.json",
+  "credential_scan": {
+    "read_only_exact_authorized_file": true,
+    "file_mode": "0600",
+    "directory_mode": "0700",
+    "files_scanned": 84,
+    "exact_key_matches": 0,
+    "key_not_copied": true
+  },
+  "ci_observation": {
+    "conclusion": "",
+    "jobs": [
+      {
+        "completedAt": "2026-10-14T19:28:47Z",
+        "conclusion": "success",
+        "databaseId": 116057508883,
+        "name": "dependencies",
+        "startedAt": "2026-10-14T19:26:55Z",
+        "status": "completed",
+        "steps": [
+          {
+            "completedAt": "2026-10-14T19:26:56Z",
+            "conclusion": "success",
+            "name": "Set up job",
+            "number": 1,
+            "startedAt": "2026-10-14T19:26:55Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-14T19:26:58Z",
+            "conclusion": "success",
+            "name": "Run actions/checkout@v4",
+            "number": 2,
+            "startedAt": "2026-10-14T19:26:56Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-14T19:27:07Z",
+            "conclusion": "success",
+            "name": "Install Rust toolchain",
+            "number": 3,
+            "startedAt": "2026-10-14T19:26:58Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-14T19:28:41Z",
+            "conclusion": "success",
+            "name": "Install cargo-deny",
+            "number": 4,
+            "startedAt": "2026-10-14T19:27:07Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-14T19:28:45Z",
+            "conclusion": "success",
+            "name": "Check dependencies",
+            "number": 5,
+            "startedAt": "2026-10-14T19:28:41Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-14T19:28:45Z",
+            "conclusion": "success",
+            "name": "Post Run actions/checkout@v4",
+            "number": 10,
+            "startedAt": "2026-10-14T19:28:45Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-14T19:28:45Z",
+            "conclusion": "success",
+            "name": "Complete job",
+            "number": 11,
+            "startedAt": "2026-10-14T19:28:45Z",
+            "status": "completed"
+          }
+        ],
+        "url": "https://github.com/He-RT/om-openmath/actions/runs/38623616989/job/116057508883"
+      },
+      {
+        "completedAt": "2026-10-14T19:39:39Z",
+        "conclusion": "success",
+        "databaseId": 116057509024,
+        "name": "frontend",
+        "startedAt": "2026-10-14T19:26:55Z",
+        "status": "completed",
+        "steps": [
+          {
+            "completedAt": "2026-10-14T19:26:56Z",
+            "conclusion": "success",
+            "name": "Set up job",
+            "number": 1,
+            "startedAt": "2026-10-14T19:26:55Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-14T19:26:59Z",
+            "conclusion": "success",
+            "name": "Run actions/checkout@v4",
+            "number": 2,
+            "startedAt": "2026-10-14T19:26:56Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-14T19:27:04Z",
+            "conclusion": "success",
+            "name": "Run actions/setup-node@v4",
+            "number": 3,
+            "startedAt": "2026-10-14T19:26:59Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-14T19:27:08Z",
+            "conclusion": "success",
+            "name": "Run npm ci",
+            "number": 4,
+            "startedAt": "2026-10-14T19:27:04Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-14T19:28:48Z",
+            "conclusion": "success",
+            "name": "Install WASM toolchain",
+            "number": 5,
+            "startedAt": "2026-10-14T19:27:08Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-14T19:28:52Z",
+            "conclusion": "success",
+            "name": "Run npm run lint",
+            "number": 6,
+            "startedAt": "2026-10-14T19:28:48Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-14T19:31:00Z",
+            "conclusion": "success",
+            "name": "Run npm test",
+            "number": 7,
+            "startedAt": "2026-10-14T19:28:52Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-14T19:31:12Z",
+            "conclusion": "success",
+            "name": "Run npm run build",
+            "number": 8,
+            "startedAt": "2026-10-14T19:31:00Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-14T19:31:32Z",
+            "conclusion": "success",
+            "name": "Run npx playwright install --with-deps chromium",
+            "number": 9,
+            "startedAt": "2026-10-14T19:31:12Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-14T19:33:41Z",
+            "conclusion": "success",
+            "name": "Run npm run test:e2e",
+            "number": 10,
+            "startedAt": "2026-10-14T19:31:32Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-14T19:35:33Z",
+            "conclusion": "success",
+            "name": "Test production static notebook",
+            "number": 11,
+            "startedAt": "2026-10-14T19:33:41Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-14T19:39:37Z",
+            "conclusion": "success",
+            "name": "Independently check all original production WASM math results",
+            "number": 12,
+            "startedAt": "2026-10-14T19:35:33Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-14T19:39:37Z",
+            "conclusion": "skipped",
+            "name": "Run actions/upload-artifact@v4",
+            "number": 13,
+            "startedAt": "2026-10-14T19:39:37Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-14T19:39:37Z",
+            "conclusion": "success",
+            "name": "Post Run actions/setup-node@v4",
+            "number": 25,
+            "startedAt": "2026-10-14T19:39:37Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-14T19:39:37Z",
+            "conclusion": "success",
+            "name": "Post Run actions/checkout@v4",
+            "number": 26,
+            "startedAt": "2026-10-14T19:39:37Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-14T19:39:37Z",
+            "conclusion": "success",
+            "name": "Complete job",
+            "number": 27,
+            "startedAt": "2026-10-14T19:39:37Z",
+            "status": "completed"
+          }
+        ],
+        "url": "https://github.com/He-RT/om-openmath/actions/runs/38623616989/job/116057509024"
+      },
+      {
+        "completedAt": "0001-01-01T00:00:00Z",
+        "conclusion": "",
+        "databaseId": 116057509279,
+        "name": "rust",
+        "startedAt": "2026-10-14T19:27:01Z",
+        "status": "in_progress",
+        "steps": [
+          {
+            "completedAt": "2026-10-14T19:27:02Z",
+            "conclusion": "success",
+            "name": "Set up job",
+            "number": 1,
+            "startedAt": "2026-10-14T19:27:01Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-14T19:27:07Z",
+            "conclusion": "success",
+            "name": "Run actions/checkout@v4",
+            "number": 2,
+            "startedAt": "2026-10-14T19:27:02Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-14T19:27:16Z",
+            "conclusion": "success",
+            "name": "Install Rust toolchain",
+            "number": 3,
+            "startedAt": "2026-10-14T19:27:07Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-14T19:29:07Z",
+            "conclusion": "success",
+            "name": "Install matching WASM bindings generator",
+            "number": 4,
+            "startedAt": "2026-10-14T19:27:16Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-14T19:29:15Z",
+            "conclusion": "success",
+            "name": "Run actions/setup-node@v4",
+            "number": 5,
+            "startedAt": "2026-10-14T19:29:07Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-14T19:29:19Z",
+            "conclusion": "success",
+            "name": "Install frontend dependencies",
+            "number": 6,
+            "startedAt": "2026-10-14T19:29:15Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-14T19:29:24Z",
+            "conclusion": "success",
+            "name": "Install pinned Agent Core/AI production dependencies",
+            "number": 7,
+            "startedAt": "2026-10-14T19:29:19Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-14T19:29:28Z",
+            "conclusion": "success",
+            "name": "Validate actual Pi canonical ACK and sequential hooks",
+            "number": 8,
+            "startedAt": "2026-10-14T19:29:24Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-14T19:29:28Z",
+            "conclusion": "success",
+            "name": "Validate private Agent canonical protocol streams",
+            "number": 9,
+            "startedAt": "2026-10-14T19:29:28Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-14T19:30:00Z",
+            "conclusion": "success",
+            "name": "Validate actual single-turn Rust codec driving pinned Pi",
+            "number": 10,
+            "startedAt": "2026-10-14T19:29:28Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-14T19:33:11Z",
+            "conclusion": "success",
+            "name": "Build frontend assets",
+            "number": 11,
+            "startedAt": "2026-10-14T19:30:00Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-14T19:33:15Z",
+            "conclusion": "success",
+            "name": "Check formatting",
+            "number": 12,
+            "startedAt": "2026-10-14T19:33:11Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-14T19:35:42Z",
+            "conclusion": "success",
+            "name": "Check lints",
+            "number": 13,
+            "startedAt": "2026-10-14T19:33:15Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-14T19:46:40Z",
+            "conclusion": "success",
+            "name": "Run tests",
+            "number": 14,
+            "startedAt": "2026-10-14T19:35:42Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "0001-01-01T00:00:00Z",
+            "conclusion": "",
+            "name": "Check generated kernel protocol",
+            "number": 15,
+            "startedAt": "2026-10-14T19:46:40Z",
+            "status": "in_progress"
+          },
+          {
+            "completedAt": "0001-01-01T00:00:00Z",
+            "conclusion": "",
+            "name": "Check workspace contracts",
+            "number": 16,
+            "startedAt": "0001-01-01T00:00:00Z",
+            "status": "pending"
+          },
+          {
+            "completedAt": "0001-01-01T00:00:00Z",
+            "conclusion": "",
+            "name": "Build WASM core",
+            "number": 17,
+            "startedAt": "0001-01-01T00:00:00Z",
+            "status": "pending"
+          },
+          {
+            "completedAt": "0001-01-01T00:00:00Z",
+            "conclusion": "",
+            "name": "Post Run actions/setup-node@v4",
+            "number": 33,
+            "startedAt": "0001-01-01T00:00:00Z",
+            "status": "pending"
+          },
+          {
+            "completedAt": "0001-01-01T00:00:00Z",
+            "conclusion": "",
+            "name": "Post Run actions/checkout@v4",
+            "number": 34,
+            "startedAt": "0001-01-01T00:00:00Z",
+            "status": "pending"
+          }
+        ],
+        "url": "https://github.com/He-RT/om-openmath/actions/runs/38623616989/job/116057509279"
+      },
+      {
+        "completedAt": "0001-01-01T00:00:00Z",
+        "conclusion": "",
+        "databaseId": 116057509479,
+        "name": "native_macos / native",
+        "startedAt": "2026-10-14T19:27:00Z",
+        "status": "in_progress",
+        "steps": [
+          {
+            "completedAt": "2026-10-14T19:27:01Z",
+            "conclusion": "success",
+            "name": "Set up job",
+            "number": 1,
+            "startedAt": "2026-10-14T19:27:00Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-14T19:27:06Z",
+            "conclusion": "success",
+            "name": "Run actions/checkout@v4",
+            "number": 2,
+            "startedAt": "2026-10-14T19:27:01Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-14T19:27:19Z",
+            "conclusion": "success",
+            "name": "显式选择 Xcode 27.0 和 macOS SDK 27",
+            "number": 3,
+            "startedAt": "2026-10-14T19:27:06Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-14T19:27:19Z",
+            "conclusion": "success",
+            "name": "安装固定 Rust 工具链",
+            "number": 4,
+            "startedAt": "2026-10-14T19:27:19Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-14T19:27:30Z",
+            "conclusion": "success",
+            "name": "Run actions/setup-node@v4",
+            "number": 5,
+            "startedAt": "2026-10-14T19:27:19Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-14T19:27:41Z",
+            "conclusion": "success",
+            "name": "安装锁定的helper构建依赖与签名校验工具",
+            "number": 6,
+            "startedAt": "2026-10-14T19:27:30Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-14T19:27:43Z",
+            "conclusion": "success",
+            "name": "校验原生协议和工程漂移",
+            "number": 7,
+            "startedAt": "2026-10-14T19:27:41Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-14T19:34:37Z",
+            "conclusion": "success",
+            "name": "实际 Release 静态库和 Swift App 链接",
+            "number": 8,
+            "startedAt": "2026-10-14T19:27:43Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-14T19:42:23Z",
+            "conclusion": "success",
+            "name": "Swift 实际 ABI 生命周期与 DTO 负例",
+            "number": 9,
+            "startedAt": "2026-10-14T19:34:37Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-14T19:43:09Z",
+            "conclusion": "success",
+            "name": "自有媒体、回环 HTTP 与实际 I/O 中断",
+            "number": 10,
+            "startedAt": "2026-10-14T19:42:23Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-14T19:45:32Z",
+            "conclusion": "success",
+            "name": "SQLite 实际同步、根锁和初始化中断",
+            "number": 11,
+            "startedAt": "2026-10-14T19:43:09Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "0001-01-01T00:00:00Z",
+            "conclusion": "",
+            "name": "Rust 原计划与 SQLite 幂等事务/独立回读",
+            "number": 12,
+            "startedAt": "2026-10-14T19:45:32Z",
+            "status": "in_progress"
+          },
+          {
+            "completedAt": "0001-01-01T00:00:00Z",
+            "conclusion": "",
+            "name": "Blob 真实字节、引用与发布中断",
+            "number": 13,
+            "startedAt": "0001-01-01T00:00:00Z",
+            "status": "pending"
+          },
+          {
+            "completedAt": "0001-01-01T00:00:00Z",
+            "conclusion": "",
+            "name": "冻结预览、引用与实际 SQLite 回执",
+            "number": 14,
+            "startedAt": "0001-01-01T00:00:00Z",
+            "status": "pending"
+          },
+          {
+            "completedAt": "0001-01-01T00:00:00Z",
+            "conclusion": "",
+            "name": "原生编辑屏障、真实源码提交与原 ID 回执恢复",
+            "number": 15,
+            "startedAt": "0001-01-01T00:00:00Z",
+            "status": "pending"
+          },
+          {
+            "completedAt": "0001-01-01T00:00:00Z",
+            "conclusion": "",
+            "name": "实际逆事务、重启回执及原生 UndoManager",
+            "number": 16,
+            "startedAt": "0001-01-01T00:00:00Z",
+            "status": "pending"
+          },
+          {
+            "completedAt": "0001-01-01T00:00:00Z",
+            "conclusion": "",
+            "name": "最近200源码历史、固定项与实际载荷裁减",
+            "number": 17,
+            "startedAt": "0001-01-01T00:00:00Z",
+            "status": "pending"
+          },
+          {
+            "completedAt": "0001-01-01T00:00:00Z",
+            "conclusion": "",
+            "name": "实际 CAS 检查点、同库 Blob 接纳与原回执恢复",
+            "number": 18,
+            "startedAt": "0001-01-01T00:00:00Z",
+            "status": "pending"
+          },
+          {
+            "completedAt": "0001-01-01T00:00:00Z",
+            "conclusion": "",
+            "name": "主运行 C ABI、共享文档门与实际取消和接纳",
+            "number": 19,
+            "startedAt": "0001-01-01T00:00:00Z",
+            "status": "pending"
+          },
+          {
+            "completedAt": "0001-01-01T00:00:00Z",
+            "conclusion": "",
+            "name": "包内真实Pi、完整资源与helper崩溃后手工计算",
+            "number": 20,
+            "startedAt": "0001-01-01T00:00:00Z",
+            "status": "pending"
+          },
+          {
+            "completedAt": "0001-01-01T00:00:00Z",
+            "conclusion": "",
+            "name": "新凭据引用、拒绝交互与锁定状态边界",
+            "number": 21,
+            "startedAt": "0001-01-01T00:00:00Z",
+            "status": "pending"
+          },
+          {
+            "completedAt": "0001-01-01T00:00:00Z",
+            "conclusion": "",
+            "name": "实际URLSession与Rust单轮通道、超时取消和并行CAS",
+            "number": 22,
+            "startedAt": "0001-01-01T00:00:00Z",
+            "status": "pending"
+          },
+          {
+            "completedAt": "0001-01-01T00:00:00Z",
+            "conclusion": "",
+            "name": "保存原始传输用例与超时事实（失败时同样保留）",
+            "number": 23,
+            "startedAt": "0001-01-01T00:00:00Z",
+            "status": "pending"
+          },
+          {
+            "completedAt": "0001-01-01T00:00:00Z",
+            "conclusion": "",
+            "name": "真实模型请求账本与五个耐久边界SIGKILL恢复",
+            "number": 24,
+            "startedAt": "0001-01-01T00:00:00Z",
+            "status": "pending"
+          },
+          {
+            "completedAt": "0001-01-01T00:00:00Z",
+            "conclusion": "",
+            "name": "私有Agent真实进程、耐久ACK与旧身份恢复隔离",
+            "number": 25,
+            "startedAt": "0001-01-01T00:00:00Z",
+            "status": "pending"
+          },
+          {
+            "completedAt": "0001-01-01T00:00:00Z",
+            "conclusion": "",
+            "name": "不可变结果 C ABI、完整源码分块和迟到回复",
+            "number": 26,
+            "startedAt": "0001-01-01T00:00:00Z",
+            "status": "pending"
+          },
+          {
+            "completedAt": "0001-01-01T00:00:00Z",
+            "conclusion": "",
+            "name": "原生文件快照、真实保存与进程中断回读",
+            "number": 27,
+            "startedAt": "0001-01-01T00:00:00Z",
+            "status": "pending"
+          },
+          {
+            "completedAt": "0001-01-01T00:00:00Z",
+            "conclusion": "",
+            "name": "原文档outbox、Library耐久投影与进程中断恢复",
+            "number": 28,
+            "startedAt": "0001-01-01T00:00:00Z",
+            "status": "pending"
+          },
+          {
+            "completedAt": "0001-01-01T00:00:00Z",
+            "conclusion": "",
+            "name": "原生IME草稿备份、晚回执和进程中断恢复",
+            "number": 29,
+            "startedAt": "0001-01-01T00:00:00Z",
+            "status": "pending"
+          },
+          {
+            "completedAt": "0001-01-01T00:00:00Z",
+            "conclusion": "",
+            "name": "规范会话、工具接纳与实际网络发送中断恢复",
+            "number": 30,
+            "startedAt": "0001-01-01T00:00:00Z",
+            "status": "pending"
+          },
+          {
+            "completedAt": "0001-01-01T00:00:00Z",
+            "conclusion": "",
+            "name": "全库备份、资源回收、新代次与只读回退隔离",
+            "number": 31,
+            "startedAt": "0001-01-01T00:00:00Z",
+            "status": "pending"
+          },
+          {
+            "completedAt": "0001-01-01T00:00:00Z",
+            "conclusion": "",
+            "name": "原生工作台宽度、真实运行与编辑器选区保留",
+            "number": 32,
+            "startedAt": "0001-01-01T00:00:00Z",
+            "status": "pending"
+          },
+          {
+            "completedAt": "0001-01-01T00:00:00Z",
+            "conclusion": "",
+            "name": "Exact native source indexes and TextKit2 editing",
+            "number": 33,
+            "startedAt": "0001-01-01T00:00:00Z",
+            "status": "pending"
+          },
+          {
+            "completedAt": "0001-01-01T00:00:00Z",
+            "conclusion": "",
+            "name": "Native input groups and actual marked-text protection",
+            "number": 34,
+            "startedAt": "0001-01-01T00:00:00Z",
+            "status": "pending"
+          },
+          {
+            "completedAt": "0001-01-01T00:00:00Z",
+            "conclusion": "",
+            "name": "Actual SwiftMath views, fonts, budgets and original 53 LaTeX",
+            "number": 35,
+            "startedAt": "0001-01-01T00:00:00Z",
+            "status": "pending"
+          },
+          {
+            "completedAt": "0001-01-01T00:00:00Z",
+            "conclusion": "",
+            "name": "Actual solution presentation, stale replies and isolated numeric projection",
+            "number": 36,
+            "startedAt": "0001-01-01T00:00:00Z",
+            "status": "pending"
+          },
+          {
+            "completedAt": "0001-01-01T00:00:00Z",
+            "conclusion": "",
+            "name": "Actual structured pages, precise copies and scientific origin",
+            "number": 37,
+            "startedAt": "0001-01-01T00:00:00Z",
+            "status": "pending"
+          },
+          {
+            "completedAt": "0001-01-01T00:00:00Z",
+            "conclusion": "",
+            "name": "Collect crashes from this task's native fixtures",
+            "number": 38,
+            "startedAt": "0001-01-01T00:00:00Z",
+            "status": "pending"
+          },
+          {
+            "completedAt": "0001-01-01T00:00:00Z",
+            "conclusion": "",
+            "name": "校验开发包签名和实际 ABI 符号",
+            "number": 39,
+            "startedAt": "0001-01-01T00:00:00Z",
+            "status": "pending"
+          },
+          {
+            "completedAt": "0001-01-01T00:00:00Z",
+            "conclusion": "",
+            "name": "Run actions/upload-artifact@v4",
+            "number": 40,
+            "startedAt": "0001-01-01T00:00:00Z",
+            "status": "pending"
+          },
+          {
+            "completedAt": "0001-01-01T00:00:00Z",
+            "conclusion": "",
+            "name": "Post Run actions/setup-node@v4",
+            "number": 79,
+            "startedAt": "0001-01-01T00:00:00Z",
+            "status": "pending"
+          },
+          {
+            "completedAt": "0001-01-01T00:00:00Z",
+            "conclusion": "",
+            "name": "Post Run actions/checkout@v4",
+            "number": 80,
+            "startedAt": "0001-01-01T00:00:00Z",
+            "status": "pending"
+          }
+        ],
+        "url": "https://github.com/He-RT/om-openmath/actions/runs/38623616989/job/116057509479"
+      },
+      {
+        "completedAt": "0001-01-01T00:00:00Z",
+        "conclusion": "",
+        "databaseId": 116057509531,
+        "name": "ios / native",
+        "startedAt": "2026-10-14T19:27:02Z",
+        "status": "in_progress",
+        "steps": [
+          {
+            "completedAt": "2026-10-14T19:27:04Z",
+            "conclusion": "success",
+            "name": "Set up job",
+            "number": 1,
+            "startedAt": "2026-10-14T19:27:03Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-14T19:27:09Z",
+            "conclusion": "success",
+            "name": "Run actions/checkout@v4",
+            "number": 2,
+            "startedAt": "2026-10-14T19:27:04Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "2026-10-14T19:27:13Z",
+            "conclusion": "success",
+            "name": "显式选择 Xcode 27.0 和 SDK 27",
+            "number": 3,
+            "startedAt": "2026-10-14T19:27:09Z",
+            "status": "completed"
+          },
+          {
+            "completedAt": "0001-01-01T00:00:00Z",
+            "conclusion": "",
+            "name": "Run rustup show active-toolchain",
+            "number": 4,
+            "startedAt": "2026-10-14T19:27:13Z",
+            "status": "in_progress"
+          },
+          {
+            "completedAt": "0001-01-01T00:00:00Z",
+            "conclusion": "",
+            "name": "Run bash ios/Scripts/build-kernel.sh",
+            "number": 5,
+            "startedAt": "0001-01-01T00:00:00Z",
+            "status": "pending"
+          },
+          {
+            "completedAt": "0001-01-01T00:00:00Z",
+            "conclusion": "",
+            "name": "校验可复现工程与资源",
+            "number": 6,
+            "startedAt": "0001-01-01T00:00:00Z",
+            "status": "pending"
+          },
+          {
+            "completedAt": "0001-01-01T00:00:00Z",
+            "conclusion": "",
+            "name": "验证 iPhone 原生单元与界面流程",
+            "number": 7,
+            "startedAt": "0001-01-01T00:00:00Z",
+            "status": "pending"
+          },
+          {
+            "completedAt": "0001-01-01T00:00:00Z",
+            "conclusion": "",
+            "name": "验证 iPad 原生流程",
+            "number": 8,
+            "startedAt": "0001-01-01T00:00:00Z",
+            "status": "pending"
+          },
+          {
+            "completedAt": "0001-01-01T00:00:00Z",
+            "conclusion": "",
+            "name": "真机 ARM64 编译和 XCFramework 链接",
+            "number": 9,
+            "startedAt": "0001-01-01T00:00:00Z",
+            "status": "pending"
+          },
+          {
+            "completedAt": "0001-01-01T00:00:00Z",
+            "conclusion": "",
+            "name": "打包公开移动产物",
+            "number": 10,
+            "startedAt": "0001-01-01T00:00:00Z",
+            "status": "pending"
+          },
+          {
+            "completedAt": "0001-01-01T00:00:00Z",
+            "conclusion": "",
+            "name": "Run actions/upload-artifact@v4",
+            "number": 11,
+            "startedAt": "0001-01-01T00:00:00Z",
+            "status": "pending"
+          },
+          {
+            "completedAt": "0001-01-01T00:00:00Z",
+            "conclusion": "",
+            "name": "Run actions/upload-artifact@v4",
+            "number": 12,
+            "startedAt": "0001-01-01T00:00:00Z",
+            "status": "pending"
+          },
+          {
+            "completedAt": "0001-01-01T00:00:00Z",
+            "conclusion": "",
+            "name": "Post Run actions/checkout@v4",
+            "number": 24,
+            "startedAt": "0001-01-01T00:00:00Z",
+            "status": "pending"
+          }
+        ],
+        "url": "https://github.com/He-RT/om-openmath/actions/runs/38623616989/job/116057509531"
+      }
+    ],
+    "status": "in_progress"
+  },
+  "raw_files_sha256": {
+    "archive-run-executor.py": "7918ecd17a4d2cefeeb563665a0626ea74313acb701ed8ec03920cedfc5dab7f",
+    "cache-cleanup.json": "33a1d78601126121f3b14a96e80ac5ff0c695f524b4b3c543d65f1b0955ef727",
+    "cleanup-run-executor.py": "bbdbd555102816ed4767b82d4abf16de714d62fa04d4839ebaaba8e56766356c",
+    "commands.json": "842b76b945610bf39171aea9f84c8b1f2c06bb2489d621e2f25bb1677e125fd9",
+    "compressed-originals.json": "9aa0d6080e11ebde65514950dbec54b4ce2bcd72ef80a3aa431beafa29ef29d2",
+    "harness-inventory.jsonl.gz": "37bb18dc2721bbfaf856324400b299e5b035cd4590e5c0917d9d55c2f297d58d",
+    "inputs/CODEX_HANDOFF.md": "c9b178729847a717eceed1bdf997c6952642ca20ed918b3317d0847a29ee1684",
+    "inputs/Cargo.lock": "41cfc7f8b05f9da1e5c52d44321e6e20025938456a630492a82cdaf1c89b7b42",
+    "inputs/Cargo.toml": "223601b29d80be241066133db2ed48aaf2a94c8b0a5b2bd957e49546d999c1b2",
+    "inputs/crates/om-host-service/build.rs": "a860fa340164854a5056de6894a5eba0c7bb4a20f658781a8566379f76ffa867",
+    "inputs/crates/om-host-service/examples/kernel_store_contract.rs": "ea32d47a49c2a9fdd8b5983bf69edc1093860a3d629300988a31aeef112a71e5",
+    "inputs/crates/om-host-service/src/kernel/endpoint/commands.rs": "bcfc5aa9cb510e9b5447dc16ac68c354e8f308cd207cf11f7b034cf499e45349",
+    "inputs/crates/om-host-service/src/kernel/worker/runtime.rs": "40dd7c533a19da2d9d07a9a71e39715c7118da2fd8999875e5072a72cef9740b",
+    "inputs/crates/om-host-service/src/kernel/worker.rs": "b5b20e83b45e6748cc6f2e3cf229f4c3c9fc9ae1e979bc03504eb281f67ef36d",
+    "inputs/crates/om-host-service/src/tools/run/execution.rs": "a87ef28c4a86e910aed80fd3e08ac54be3ac489c7ebe6916ff6a84b25a589708",
+    "inputs/crates/om-host-service/src/tools/run.rs": "7e80786959ba4c6b597d88928e6f4dcb4f6499323126c9757b4ee43331567e00",
+    "inputs/crates/om-host-service/tests/math_run_execution.rs": "d38ba5fbbd194b08ac866874c24c928df545e0e50a5f5865e6141becb86fdc0d",
+    "inputs/crates/om-host-service/tests/math_run_plan.rs": "c55404f8ae8b09f17457e3630ad3c0213d8c5c875738351fdfb12df2035d16c8",
+    "inputs/crates/om-kernel/src/session/working.rs": "6af6f3822f669341350246434e82fe9b5389fa0dc79e72e94b2f7a92ca8bf067",
+    "inputs/docs/plan/PRE_ALPHA_4_PROGRESS.md": "abc596cc1ca3316d2cea2066995f518e9eba354aaa75097c073e3cc9735669a0",
+    "inputs/macos/OpenMathNative/Kernel/KernelCommitPort.swift": "67c4795ed34bc542b3c62ff0734bdd75078879930090fc1cb0eab35f20a3ef2e",
+    "inputs/macos/OpenMathNative/Storage/KernelStore.swift": "4e86a98cd06c22f5eb4ed6341b09213f686a1415a98d283789524d0144927e5c",
+    "inputs/macos/OpenMathNativeTests/KernelRuntimeFixtures/main.swift": "81dd593b8749215a4dbb02261f3bb480a4387e16569177b06e0e49e989e91331",
+    "inputs/macos/Scripts/test-kernel-runtime.sh": "bdc527267acb5fcc8631315d3730c09e339afbba419714813fbfaf077d917f66",
+    "logs/run-executor-clippy.log.gz": "5c6b5d4ae7c83fe93beed22ec018b779adc8e02f461350c7599fa37d0ede43a2",
+    "logs/run-executor-contracts-final.log.gz": "cfa2d70f3d63c01034afcbe299515bb22dcac0eda4665db0a74d9bc591e5db18",
+    "logs/run-executor-contracts.log.gz": "cfa2d70f3d63c01034afcbe299515bb22dcac0eda4665db0a74d9bc591e5db18",
+    "logs/run-executor-diff-check.log.gz": "9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64",
+    "logs/run-executor-final.log.gz": "e895725b9433681aab4af87ddfa2babe65d3b7678d6ce3ee2cd4932f9c163444",
+    "logs/run-executor-fmt.log.gz": "9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64",
+    "logs/run-executor-harness-inventory.log.gz": "73189544e992597c2c5b580126618d56fa967e787044793dc8b69e7394676c07",
+    "logs/run-executor-initial.log.gz": "0ed748c9ac6e2d18a745e7809423c429decab7652424bdb0fa756c5dffec1f3e",
+    "logs/run-executor-native-kernel.log.gz": "c81797e50a3d285feed0f875777620c7ad3a958a7f197fae3f2d59be57e36c28",
+    "logs/run-executor-plan-final.log.gz": "d2d3c389157e93c34b92b7005a33e228335bc947281f29741d18d48693705c98",
+    "logs/run-executor-plan-verified.log.gz": "deb95334ed3891457d902a86ff7fa433e0572f9fdf5f6eec3a9dcf04362d6fb8",
+    "logs/run-executor-plan.log.gz": "a4aad4d4567ed13fe826625a1521cdbb807b271c6de9fe0221f3b6d8faa81bea",
+    "logs/run-executor-project-corrected.log.gz": "c4621e58e850677fc822913411a42796c18a6f501387733dd21fea5cad86e810",
+    "logs/run-executor-project.log.gz": "80bc7c4f0f4105286afe6beaaff60e086ec0a0dc47bae2b98960828f69c73e98",
+    "logs/run-executor-python-corrected.log.gz": "6bbb20b1afd7c3e46fc808701001bd068cea8440873eeec6b8155757f6238de4",
+    "logs/run-executor-python.log.gz": "d981d6871f690782d0beec24df53c4ac6fb5cb632a712ceba9c88db5ca4990aa",
+    "logs/run-executor-real-facts.log.gz": "197b7d77539aea80bdad2fe6261893173bf332b221dcc7898bbf4777722166cb",
+    "logs/run-executor-regression.log.gz": "b2915013a337c6d8cd1797d5ddce0351d5ba9cef8cf1f61c3e4f23be93b82a6b",
+    "native-kernel-original/Blobs/sha256/3d/3d73f3b3172bc288c2613e7f58c07a4f0440757b069e5d4d606dc75c49c7b0e1.gz": "e6b15bbf651bedf00188751ac6baa401022e04337d120193812c0eec3b779c3e",
+    "native-kernel-original/Blobs/sha256/4a/4a3d121901b2ac72bab057d3ccf72033853664fb88d9db1f60036c1557fd4d47.gz": "40993cada24cb546d5cbefe851d8b2533505af8e8cde136f90e7fa9910846560",
+    "native-kernel-original/Blobs/sha256/58/5830a441e349eaa6d2a78f01e3a6ccb6541c6c10d41efa50b75b22ced0263ae6.gz": "9050af375dda86339de919653fef4c33e5374ce0f2d35c9c423b780534cd6cfc",
+    "native-kernel-original/Blobs/sha256/59/59e5fa5dada42707a4f11885ffc57dfcf1412f25f2f93f92a3deb27c89df0e14.gz": "6a289cd6b6850121215c65ab3c07a7543b1d01e5fc1b3e3b06abfcea10653021",
+    "native-kernel-original/Blobs/sha256/65/6547dd8f786b436862116af4d0ca16ad651c8d72c1d0d6457895d818adbb3d0d.gz": "5c91e8be0e772f827b9f0a836e4e2e6c910a95c1f9a8f857cf1aed23ebb92e8b",
+    "native-kernel-original/Blobs/sha256/6a/6adcc55f0508a281065a11bf8366a6d187862aaa237d43e8d00de63bbd5558e9.gz": "996e17ecbc275938bbbffb8193f7cc79a013bfac59aa82a888a5cbe3c862616d",
+    "native-kernel-original/Blobs/sha256/89/89e61b8550b6dfda88a07b8a856585ce1e2ba2ba42d73155f881ed366f1bb977.gz": "dfc5aa4bfba69fde68947fb9e506a45310bc20f5c2d79b6a4f8883a449f38b6d",
+    "native-kernel-original/Blobs/sha256/a9/a9a3fc9040426c3e4b80c3b7529dc410feb17b5aaa308c446f15603387aedd20.gz": "e91b134051ba3888921f273bf80433068407b3d2ae0947ac796fd9ad105d9ac7",
+    "native-kernel-original/Blobs/sha256/b5/b540eb6e63449e4239647e10ee928562ce8ee529d85134de79910d33fafa5557.gz": "06ead1baf16bdda9bde4bfa18d7acb25af3ebb9449abf9abaad290f11992d028",
+    "native-kernel-original/Blobs/sha256/cc/cc10b4adcb155b2b877536c4119ffb7b6a31353aae57fb6a62a474f088f98dae.gz": "6ecf4585ee534b3a93e20c0ea33516d5132b02269baa037ab6bc64a83e27bb7d",
+    "native-kernel-original/Blobs/sha256/d1/d192704574ea923271ff9fbf598b6d6e0d93efa9eaeff1b6cde2f47f41cb29c6.gz": "d63a625dc4f49f1c5822920a7269e7328831f6be79a2f2fa1efafd38cb668369",
+    "native-kernel-original/Blobs/sha256/da/da39631d465a9cbe4ceedfadab34d1d293a8a5f26f9cd62cb65e69d8e627f423.gz": "cc3087c73f45d1ce2701d8f650e99b3508fd8e17235031c9e199f79062978fd5",
+    "native-kernel-original/Blobs/sha256/e5/e5a30e35c92a0a25e3b4a89daaea6b83c3f56964f44b3d9553658e0d1af802d5.gz": "d82817c7df304e48b8328de15f7af947062abed34c73fd7634eb4950caa17aa9",
+    "native-kernel-original/Blobs/sha256/e7/e78153a09562bf0d0dd6c0561127cd32d9f05d15e8602495995df756a1803464.gz": "e5a032f6b5d5f4802bbe218835b7847e61e4d745a1ed03795a9787339c571b47",
+    "native-kernel-original/Blobs/sha256/fb/fb33575dee2ef467360effb41102c874de97033d7615b2673e87f24623085b45.gz": "e278c4697e16d9df67f99e4c316eda5cf0e2e8b05c7989d73f875588058093aa",
+    "native-kernel-original/Documents/00000000-0000-0000-0000-000000000409/Generations/000001/authority.sqlite-shm.gz": "88353f4103d0f488fcac979007587c28efbf30cd60f5f2992c2a47d8f765608c",
+    "native-kernel-original/Documents/00000000-0000-0000-0000-000000000409/Generations/000001/authority.sqlite-wal.gz": "9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64",
+    "native-kernel-original/Documents/00000000-0000-0000-0000-000000000409/Generations/000001/authority.sqlite.gz": "fe5b9f4e263ff5f3535107cf8ed5491ec3aea01fe80803454cecbe9efb9fdba5",
+    "native-kernel-original/Documents/00000000-0000-0000-0000-000000000409/active.json.gz": "c478604d684012cdd094f0e1bdc86dcdf0079ab7077fa39449bf3947968825f6",
+    "native-kernel-original/Library/Generations/000001/library.sqlite-shm.gz": "06b17645eaf19210ad774aa3d3c33be579fe43cecefdf12a5ccd1ac0a15f13b1",
+    "native-kernel-original/Library/Generations/000001/library.sqlite-wal.gz": "9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64",
+    "native-kernel-original/Library/Generations/000001/library.sqlite.gz": "3b8f599d68db3dfb9379fb3b764438d12f373ea78d7927eaa11e6c5e4f0b24bd",
+    "native-kernel-original/Library/active.json.gz": "dfe2204fb9bad8ecedd9835bac2a67ee5b0770646c02253d2e3edd4de37f5774",
+    "native-kernel-original/store.json.gz": "7caee77e9857bce96595e6a022bf8c8dad6d894e82996d63f508d8056eb6076b",
+    "native-kernel-original/store.lock.gz": "9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64",
+    "native-kernel-source.json": "90467bfe2f18a799957c2f5d7152c5435ac727065d80fc56cb10ea23eb7c1ab7",
+    "run-base-ci.json": "529d3b00e66a3e7826657bddb3f67776efe1e0b15a54a6f85d4c50099c15fe2e",
+    "run-executor-final-inputs/crates/om-host-service/src/kernel/endpoint/commands.rs": "bcfc5aa9cb510e9b5447dc16ac68c354e8f308cd207cf11f7b034cf499e45349",
+    "run-executor-final-inputs/crates/om-host-service/src/kernel/worker/runtime.rs": "40dd7c533a19da2d9d07a9a71e39715c7118da2fd8999875e5072a72cef9740b",
+    "run-executor-final-inputs/crates/om-host-service/src/kernel/worker.rs": "b5b20e83b45e6748cc6f2e3cf229f4c3c9fc9ae1e979bc03504eb281f67ef36d",
+    "run-executor-final-inputs/crates/om-host-service/src/tools/run/execution.rs": "a87ef28c4a86e910aed80fd3e08ac54be3ac489c7ebe6916ff6a84b25a589708",
+    "run-executor-final-inputs/crates/om-host-service/src/tools/run.rs": "7e80786959ba4c6b597d88928e6f4dcb4f6499323126c9757b4ee43331567e00",
+    "run-executor-final-inputs/crates/om-host-service/tests/math_run_execution.rs": "d38ba5fbbd194b08ac866874c24c928df545e0e50a5f5865e6141becb86fdc0d",
+    "run-executor-final-inputs/crates/om-host-service/tests/math_run_plan.rs": "c55404f8ae8b09f17457e3630ad3c0213d8c5c875738351fdfb12df2035d16c8",
+    "run-executor-final-inputs/crates/om-kernel/src/session/working.rs": "6af6f3822f669341350246434e82fe9b5389fa0dc79e72e94b2f7a92ca8bf067",
+    "run-executor-initial-inputs/crates/om-host-service/src/kernel/endpoint/commands.rs": "bcfc5aa9cb510e9b5447dc16ac68c354e8f308cd207cf11f7b034cf499e45349",
+    "run-executor-initial-inputs/crates/om-host-service/src/kernel/worker/runtime.rs": "4ed551d404b033bdb1c513f8f74e7f5a3a8b5e01355f56537d3102f2420fe1fb",
+    "run-executor-initial-inputs/crates/om-host-service/src/kernel/worker.rs": "ad99440bfaacfc28925250898451e411a1ab0abd1275b1aba48356ca22ab51e1",
+    "run-executor-initial-inputs/crates/om-host-service/src/tools/run/execution.rs": "2a12cc7a518bd5e1552ac8931a9cbad4319b72ea4b93f74e29b3115ba4ba05d7",
+    "run-executor-initial-inputs/crates/om-host-service/src/tools/run.rs": "69664ea7e0683e8e1fb6fdbfadad1ff05755a0aa3cb900787e3838afb880bcdb",
+    "run-executor-initial-inputs/crates/om-host-service/tests/math_run_execution.rs": "cf8189ffa53107e3fbd6100d76a0c80868ba43fe5dd31db0fb986af644b7dafa",
+    "run-executor-initial-inputs/crates/om-kernel/src/session/working.rs": "6af6f3822f669341350246434e82fe9b5389fa0dc79e72e94b2f7a92ca8bf067"
+  }
+}

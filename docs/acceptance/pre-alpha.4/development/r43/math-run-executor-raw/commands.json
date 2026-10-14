@@ -1,0 +1,60 @@
+[
+  {
+    "command": "CARGO_PROFILE_DEV_DEBUG=0 CARGO_PROFILE_TEST_DEBUG=0 cargo test --locked -p om-host-service --test math_run_execution -- --nocapture",
+    "log": "logs/run-executor-initial.log.gz",
+    "exit": 0,
+    "original_inputs": "run-executor-initial-inputs",
+    "tests": 8
+  },
+  {
+    "command": "CARGO_PROFILE_DEV_DEBUG=0 CARGO_PROFILE_TEST_DEBUG=0 cargo test --locked -p om-host-service --test math_run_execution --test math_run_plan -- --nocapture",
+    "log": "logs/run-executor-final.log.gz",
+    "exit": 0,
+    "tests": 16,
+    "note": "intermediate 12 executor +4 planning tests; final unknown-race case added afterward"
+  },
+  {
+    "command": "CARGO_PROFILE_DEV_DEBUG=0 CARGO_PROFILE_TEST_DEBUG=0 cargo test --locked -p om-kernel -p om-host-service -p om-apple-ffi",
+    "log": "logs/run-executor-regression.log.gz",
+    "exit": 0
+  },
+  {
+    "command": "CARGO_PROFILE_DEV_DEBUG=0 CARGO_PROFILE_TEST_DEBUG=0 cargo test --locked -p om-host-service --test math_run_execution -- --nocapture",
+    "log": "logs/run-executor-real-facts.log.gz",
+    "exit": 0
+  },
+  {
+    "command": "CARGO_PROFILE_DEV_DEBUG=0 CARGO_PROFILE_TEST_DEBUG=0 cargo clippy --locked -p om-kernel -p om-host-service -p om-apple-ffi --all-targets -- -D warnings",
+    "log": "logs/run-executor-clippy.log.gz",
+    "exit": 0
+  },
+  {
+    "command": "CARGO_PROFILE_DEV_DEBUG=0 CARGO_PROFILE_TEST_DEBUG=0 bash macos/Scripts/test-kernel-runtime.sh",
+    "log": "logs/run-executor-native-kernel.log.gz",
+    "exit": 0,
+    "note": "actual existing C ABI/KernelCommitPort/SQLite regression; new RunExecutor is not yet wired to Swift/Pi"
+  },
+  {
+    "command": "python3 -X warn_default_encoding -W error::EncodingWarning -m unittest discover -s tests -v",
+    "log": "logs/run-executor-python-corrected.log.gz",
+    "exit": 0
+  },
+  {
+    "command": "python3 -m unittest discover -s scripts/tests",
+    "log": "logs/run-executor-python.log.gz",
+    "exit": 1,
+    "note": "wrong discovery directory; corrected command above"
+  },
+  {
+    "command": "python3 macos/Scripts/project.py --check",
+    "log": "logs/run-executor-project.log.gz",
+    "exit": 2,
+    "note": "wrong script path; corrected generate-project.py check passed"
+  },
+  {
+    "command": "python3 scripts/check_pre_alpha_4_plan.py --check --self-test",
+    "log": "logs/run-executor-plan-final.log.gz",
+    "exit": 1,
+    "note": "proof link written before its evidence file existed; final proof/check written after terminal checks"
+  }
+]

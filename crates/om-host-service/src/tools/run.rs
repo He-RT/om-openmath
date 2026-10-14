@@ -1,4 +1,5 @@
 //! Freeze original run arguments and plan from a real read-issued snapshot/actual accepted state.
+mod execution;
 use crate::{
     agent::ingress::ToolIntent,
     document::coordinator::kernel_file,
@@ -7,6 +8,7 @@ use crate::{
     references::ReferenceScope,
     tools::read::{ReadError, ReadNotebookService},
 };
+pub use execution::{RunAdmission, RunExecutor, RunPhase, RunReport, RunStoppedCell, RunUpdate};
 use om_kernel::{
     CellExecutionPlan, CellExecutionScope, KernelConfig, Session,
     checkpoint::{CheckpointLimits, CheckpointRestore},
@@ -29,20 +31,42 @@ struct Args {
 }
 /// Internal frozen planning input. It has no serialized constructor, evaluator or write callback.
 pub struct FrozenRunInput {
+    intent: ToolIntent,
     scope: ReferenceScope,
     source: NativeSourceSnapshot,
     general: GeneralConfig,
     parent: Option<Arc<KernelState>>,
     args: Args,
     allowed: BTreeSet<String>,
+    parent_receipt: Option<crate::protocol::generated::NativeKernelReceipt>,
 }
 /// Real plan and original policy. No state has been evaluated, published or accepted by planning.
 #[derive(Debug, serde::Serialize)]
 pub struct PreparedRun {
     /// Exact non-evaluating dependency plan from the isolated reconciled Session.
-    pub plan: CellExecutionPlan,
+    plan: CellExecutionPlan,
     /// Original requested cell-error policy; execution must not silently replace it.
-    pub continue_on_error: bool,
+    continue_on_error: bool,
+    #[serde(skip)]
+    binding: RunBinding,
+}
+impl PreparedRun {
+    /// Immutable actual dependency plan, never a caller-replaceable execution list.
+    pub fn plan(&self) -> &CellExecutionPlan {
+        &self.plan
+    }
+    /// Original error policy from the acknowledged arguments.
+    pub fn continue_on_error(&self) -> bool {
+        self.continue_on_error
+    }
+}
+#[derive(Debug)]
+struct RunBinding {
+    intent: ToolIntent,
+    scope: ReferenceScope,
+    source: NativeSourceSnapshot,
+    general_hash: String,
+    parent: Option<crate::protocol::generated::NativeKernelReceipt>,
 }
 fn abort(error: Abort) -> String {
     match error {
@@ -113,12 +137,14 @@ pub fn prepare(
         return Err("CONTEXT_NOT_READY".into());
     }
     Ok(FrozenRunInput {
+        intent: intent.clone(),
         scope: scope.clone(),
         source,
         general,
         parent,
         args,
         allowed,
+        parent_receipt: accepted.map(|a| a.receipt().clone()),
     })
 }
 impl FrozenRunInput {
@@ -130,6 +156,16 @@ impl FrozenRunInput {
     /// The accepted Arc/bytes remain unchanged; this function never invokes a cell evaluator.
     pub fn plan(self, ctx: &Interrupt) -> Result<PreparedRun, String> {
         ctx.tick().map_err(abort)?;
+        let binding = RunBinding {
+            intent: self.intent,
+            scope: self.scope,
+            general_hash: format!(
+                "{:x}",
+                Sha256::digest(serde_json::to_vec(&self.general).map_err(|_| "INVALID_ARGUMENT")?)
+            ),
+            source: self.source.clone(),
+            parent: self.parent_receipt,
+        };
         let source = kernel_file(&self.source.file);
         let session = if let Some(parent) = self.parent {
             let old = parent.binding();
@@ -181,6 +217,7 @@ impl FrozenRunInput {
         Ok(PreparedRun {
             plan,
             continue_on_error: self.args.continue_on_error,
+            binding,
         })
     }
 }

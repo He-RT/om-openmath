@@ -146,8 +146,8 @@ fn real_outline_token_plans_only_required_cells_off_owner_and_never_upgrades_sou
         .join()
         .unwrap()
         .unwrap();
-    assert_eq!(result.plan.ordered_cell_ids, ["a", "b", "answer"]);
-    assert!(!result.continue_on_error);
+    assert_eq!(result.plan().ordered_cell_ids, ["a", "b", "answer"]);
+    assert!(!result.continue_on_error());
     let patch=json!({"snapshot_ref":reference,"input":{"kind":"patch","operations":[{"type":"update_cell","target":{"cell_id":"a"},"expected_source_hash":format!("{:x}",Sha256::digest(b"let a=2;a")),"source":"8+8"}]}}).to_string();
     assert!(matches!(
         c.preview(patch.as_bytes(), &s, 7, "unit-time".into()),
@@ -212,7 +212,7 @@ fn acknowledged_argument_hash_closed_parameters_and_native_allowlist_are_authori
         frozen
             .plan(&Interrupt::default())
             .unwrap()
-            .continue_on_error
+            .continue_on_error()
     );
 }
 #[test]
@@ -328,7 +328,7 @@ fn actual_accepted_definition_skips_ready_prerequisite_and_checkpoint_bytes_rema
         .join()
         .unwrap()
         .unwrap();
-    assert_eq!(actual.plan.ordered_cell_ids, ["b", "answer"]);
+    assert_eq!(actual.plan().ordered_cell_ids, ["b", "answer"]);
     assert_eq!(before, accepted.state().bytes());
     assert_eq!(
         run::prepare(
@@ -430,7 +430,7 @@ fn actual_accepted_definition_skips_ready_prerequisite_and_checkpoint_bytes_rema
             .join()
             .unwrap()
             .unwrap();
-        assert_eq!(plan.plan.ordered_cell_ids, expected);
+        assert_eq!(plan.plan().ordered_cell_ids, expected);
         assert_eq!(before, accepted.state().bytes());
         println!(
             "actual source-change plan {index}={}",

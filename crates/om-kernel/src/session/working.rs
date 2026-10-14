@@ -56,6 +56,15 @@ impl WorkingSession {
     /// Execute exactly one current Math cell. Prerequisites must already be ready; no auto cascade.
     /// Errors keep actual statement/definition effects in this unaccepted working state.
     pub fn run_current_cell(&mut self, cell_id: &str) -> Result<CellBoundary, String> {
+        self.run_current_cell_with_readiness(cell_id, false)
+    }
+    /// Explicit Agent execution requires genuine prerequisites even when automatic reactive
+    /// scheduling is disabled. Evaluation/partial effects retain the ordinary Session semantics.
+    pub fn run_current_cell_with_readiness(
+        &mut self,
+        cell_id: &str,
+        require_ready: bool,
+    ) -> Result<CellBoundary, String> {
         let index = self
             .candidate
             .notebook
@@ -80,7 +89,7 @@ impl WorkingSession {
             self.candidate.config.general.constants,
             &names,
         )?;
-        if self.candidate.config.general.reactive
+        if (require_ready || self.candidate.config.general.reactive)
             && (analysis
                 .cycles
                 .iter()

@@ -104,65 +104,7 @@ impl KernelEndpoint {
                 );
                 self.status(&body.operation_id, ctx, source)
             }
-            NativeKernelHostCommand::KernelRunCell(body) => {
-                if source.operation(&body.operation_id).is_some() {
-                    return Err("DUPLICATE_OPERATION".into());
-                }
-                if let Some(entry) = self.operations.get(&body.operation_id) {
-                    if !matches!(&entry.identity,Identity::Cell {source,cell} if source==&body.expected_source_hash && cell==&body.cell_id)
-                    {
-                        return Err("DUPLICATE_OPERATION".into());
-                    }
-                    return self.status(&body.operation_id, ctx, source);
-                }
-                if self.closing {
-                    return Err("HOST_CLOSING".into());
-                }
-                if self.busy() || source.source_gate_busy() {
-                    return Err("OPERATION_IN_PROGRESS".into());
-                }
-                if self.operations.len() >= 4096 {
-                    return Err("BUDGET_EXCEEDED".into());
-                }
-                if body.expected_source_hash != ctx.source.snapshot_hash {
-                    return Err("STALE_SOURCE".into());
-                }
-                let active = self.active.as_ref().ok_or("CONTEXT_NOT_READY")?;
-                let cancel = Arc::new(AtomicBool::new(false));
-                let receiver = self
-                    .worker
-                    .submit(KernelJob {
-                        runtime_instance_id: ctx.runtime_instance_id.clone(),
-                        document_generation: ctx.document_generation,
-                        operation_id: body.operation_id.clone(),
-                        parent_checkpoint_ref: active.registry_ref().into(),
-                        source: ctx.source.clone(),
-                        general: ctx.general.clone(),
-                        config_revision: ctx.config_revision,
-                        cell_id: body.cell_id.clone(),
-                        cancel: cancel.clone(),
-                    })
-                    .map_err(error)?;
-                self.operations.insert(
-                    body.operation_id.clone(),
-                    Entry {
-                        identity: Identity::Cell {
-                            source: body.expected_source_hash,
-                            cell: body.cell_id,
-                        },
-                        phase: NativeKernelHostReplyPhase::Queued,
-                        receiver: Some(Receiver::Cell(receiver)),
-                        candidate: None,
-                        plan: None,
-                        receipt: None,
-                        error: None,
-                        cancel,
-                        seed_started: Arc::new(AtomicBool::new(false)),
-                        upload: None,
-                    },
-                );
-                self.status(&body.operation_id, ctx, source)
-            }
+            NativeKernelHostCommand::KernelRunCell(body) => self.run_cell(body, ctx, source, false),
             NativeKernelHostCommand::KernelStatus(body) => {
                 self.status(&body.operation_id, ctx, source)
             }
@@ -283,5 +225,83 @@ impl KernelEndpoint {
                 self.status(&body.operation_id, ctx, source)
             }
         }
+    }
+    /// Explicit native planned execution enforces readiness independently of reactive UI.
+    pub(crate) fn run_planned_cell(
+        &mut self,
+        body: KernelRunCell,
+        ctx: &AcceptanceContext,
+        source: &mut DocumentCommitController,
+    ) -> Result<NativeKernelHostReply, String> {
+        self.advance(ctx, source)?;
+        self.run_cell(body, ctx, source, true)
+    }
+    fn run_cell(
+        &mut self,
+        body: KernelRunCell,
+        ctx: &AcceptanceContext,
+        source: &mut DocumentCommitController,
+        require_ready: bool,
+    ) -> Result<NativeKernelHostReply, String> {
+        if source.operation(&body.operation_id).is_some() {
+            return Err("DUPLICATE_OPERATION".into());
+        }
+        if let Some(entry) = self.operations.get(&body.operation_id) {
+            if !matches!(&entry.identity,Identity::Cell {source,cell} if source==&body.expected_source_hash && cell==&body.cell_id)
+            {
+                return Err("DUPLICATE_OPERATION".into());
+            }
+            return self.status(&body.operation_id, ctx, source);
+        }
+        if self.closing {
+            return Err("HOST_CLOSING".into());
+        }
+        if self.busy() || source.source_gate_busy() {
+            return Err("OPERATION_IN_PROGRESS".into());
+        }
+        if self.operations.len() >= 4096 {
+            return Err("BUDGET_EXCEEDED".into());
+        }
+        if body.expected_source_hash != ctx.source.snapshot_hash {
+            return Err("STALE_SOURCE".into());
+        }
+        let active = self.active.as_ref().ok_or("CONTEXT_NOT_READY")?;
+        let cancel = Arc::new(AtomicBool::new(false));
+        let job = KernelJob {
+            runtime_instance_id: ctx.runtime_instance_id.clone(),
+            document_generation: ctx.document_generation,
+            operation_id: body.operation_id.clone(),
+            parent_checkpoint_ref: active.registry_ref().into(),
+            source: ctx.source.clone(),
+            general: ctx.general.clone(),
+            config_revision: ctx.config_revision,
+            cell_id: body.cell_id.clone(),
+            cancel: cancel.clone(),
+        };
+        let receiver = if require_ready {
+            self.worker.submit_planned(job)
+        } else {
+            self.worker.submit(job)
+        }
+        .map_err(error)?;
+        self.operations.insert(
+            body.operation_id.clone(),
+            Entry {
+                identity: Identity::Cell {
+                    source: body.expected_source_hash,
+                    cell: body.cell_id,
+                },
+                phase: NativeKernelHostReplyPhase::Queued,
+                receiver: Some(Receiver::Cell(receiver)),
+                candidate: None,
+                plan: None,
+                receipt: None,
+                error: None,
+                cancel,
+                seed_started: Arc::new(AtomicBool::new(false)),
+                upload: None,
+            },
+        );
+        self.status(&body.operation_id, ctx, source)
     }
 }

@@ -68,7 +68,7 @@
 | [ ] [R4.3.04](PRE_ALPHA_4.md#task-r4.3.04) | Swift URLSession和SecretStore传输 | in_progress | [真实请求账本/随包Pi/强杀恢复](../acceptance/pre-alpha.4/development/r43/provider-durable-request.json)、[过期计时回调修复](../acceptance/pre-alpha.4/development/r43/provider-timeout-race.json)；实际计时竞态RED→GREEN；物理锁屏仍未完成 | D052/本批D054 |
 | [x] [R4.3.05](PRE_ALPHA_4.md#task-r4.3.05) | 读取笔记本与真实函数资料工具 | completed | [只读基础](../acceptance/pre-alpha.4/development/r43/readonly-services-foundation.json)、[耐久工具/Pi](../acceptance/pre-alpha.4/development/r43/readonly-native-tool.json)、[实际输出/持久历史](../acceptance/pre-alpha.4/development/r43/readonly-outputs-history.json)；1297Rust/实际签名App两轮/重启history/独立worker | D053/D055/本批D056 |
 | [x] [R4.3.06](PRE_ALPHA_4.md#task-r4.3.06) | 预览与原子修改工具接入 | completed | [预览/Pi三轮](../acceptance/pre-alpha.4/development/r43/patch-preview-foundation.json)、[实际原子提交/Pi四轮](../acceptance/pre-alpha.4/development/r43/patch-atomic-apply.json)；1301Rust/38帧31事件/5真实边界/原回执恢复 | D057/本批D058 |
-| [ ] [R4.3.07](PRE_ALPHA_4.md#task-r4.3.07) | 执行、结果检查和隔离试算工具 | in_progress | [依赖规划](../acceptance/pre-alpha.4/development/r43/math-run-planning.json)、[实际结果检查/Pi](../acceptance/pre-alpha.4/development/r43/math-inspect-native.json)、[独立scratch/Pi](../acceptance/pre-alpha.4/development/r43/math-scratch-native.json)；真实run执行和组回执仍未完成 | D059/D060/本批D061 |
+| [ ] [R4.3.07](PRE_ALPHA_4.md#task-r4.3.07) | 执行、结果检查和隔离试算工具 | in_progress | [依赖规划](../acceptance/pre-alpha.4/development/r43/math-run-planning.json)、[实际结果检查/Pi](../acceptance/pre-alpha.4/development/r43/math-inspect-native.json)、[独立scratch/Pi](../acceptance/pre-alpha.4/development/r43/math-scratch-native.json)、[主run执行器](../acceptance/pre-alpha.4/development/r43/math-run-executor.json)；Rust逐格执行/原回执链已接通，Swift耐久组与Pi执行仍未完成 | D059/D060/D061/本批D062 |
 | [ ] [R4.3.08](PRE_ALPHA_4.md#task-r4.3.08) | 操作核对、撤销和Host停止控制 | planned | — | — |
 | [ ] [R4.3.09](PRE_ALPHA_4.md#task-r4.3.09) | 附件工具与宿主处理注册接口 | planned | — | — |
 | [ ] [R4.3.10](PRE_ALPHA_4.md#task-r4.3.10) | 全工具原生声明与provider严格schema转换 | planned | — | — |
@@ -712,3 +712,14 @@ standalone和签名App资源各实际5个四轮case：局部Set/Out/random、Sol
 只勾R4.3.07步骤3；仍须真实run_cells按selected/required/affected执行、组/子操作的真实executed/partial/unknown/结果ref/原回执恢复，步骤1/2/4和Task Done不勾，整体34/98。32最终gate仍not_run、candidate未分配、ready/released=false；完整98+32门禁+实际发行required。用户OS输入设置保持，真实候选/物理锁屏未验；无子代理/本机iOS模拟器/付费live，dev/no main/旧公开tag包不动。
 
 上一提交b6825f1 CI38616794772：Rust/frontend/dependencies成功；iPhone远端xcresult核对35/0失败，iPad在启动simctl bootstatus时由CoreSimulator devicePair内部断言abort134，尚未执行iPad测试，不算平台通过。原job完整日志、远端xcresult及本机仅xcresulttool读取摘要留存；未启动本机模拟器，未改验收断言或1秒门槛。Mac仍运行，完整本批CI待新提交单独核对。
+
+
+## D062 · 2026-10-15 显式计划的真实主计算执行器（R4.3.07进行中）
+
+- 冻结原RunCells intent/参数SHA、当前真实read-issued snapshot、scope、general SHA和实际accepted parent；PreparedRun只暴露不可变规划/原continue_on_error。新增RunExecutor使用现有KernelEndpoint/KernelWorker/WorkingSession，按真实selected/required/affected拓扑逐格执行，不调用RunAll。bootstrap及每child身份由原operation/原argsSHA/序号稳定派生；新的模型调用保留独立身份。
+- 新增AwaitingAdmission阶段：每个bootstrap/child先返回固定RunAdmission，未获trusted native acknowledgment之前不创建主kernel operation、不求值；后续Swift组admission/start持久ACK必须接到该边界，本批尚未实现该存储接线。报告不是可恢复grant，无法Deserialize重建执行器。
+- 真实候选仍需原Blob/hash、最终barrier和原receipt后才列入accepted_cells；bootstrap回执单列。只允许该运行组当前child进行physical command，barrier重查真实task/grant/editor/source/epoch/config/general/actual head，自己的回执可推进definition_revision；手工source改变停止后续admission。
+- 接受真实cell error的成功statement前缀；continue_on_error=true只可继续实际就绪的独立分支。关闭自动reactive时，计划执行仍使用WorkingSession原依赖分析/ready检查；原手工run_current_cell路径保持原配置语义。cycle、blocked和未接纳失败与accepted receipt分开。cancel停止后续并signal原token，已经physical commit获胜的原回执仍保留。
+- Unknown立即锁住后续admission，包括unknown和receipt先于下一poll的竞争；仅原ID回执/absence可settle。若原最后一个child实际已完整接纳，可由原receipt证明completed；还有未运行目标则保留partial，绝不新ID重放。
+- Rust全量398项/0失败/78套（新增13项真实执行器场景）；Host/Kernel/AppleFFI全targets Clippy-Dwarnings、17项Python、389 DTO、fmt/工程检查通过。Release库已重建，原生C ABI/KernelCommitPort/SQLite真实计算、部分错误、取消、lost ACK/fullsync unknown与原回执恢复全部通过；该项仅验证现有原生路径，不计作新RunExecutor的Swift/Pi联调。已按成功Cargo inventory清理75个普通test-profile Mach-O可执行缓存2,347,068,000bytes（约2.19GiB），保留libs/CLI/examples/Release/evidence/原失败/用户数据，逐项SHA/类型/路径和删除后缺失审计。
+- 验证与原始证据见math-run-executor.json/raw；Rust测试中的IO receipt明确是matching synthetic acknowledgment，不冒充Swift/SQLite/Pi联调。本批不改变R4.3.07步骤1/2/4及Task Done：Swift耐久run组/各child实际admission/start/receipt恢复、原Agent producer/C ABI/Pi dispatch、真正Agent scope结果refs仍需继续接通。整体34/98，32最终gate仍not_run，无candidate/发行。

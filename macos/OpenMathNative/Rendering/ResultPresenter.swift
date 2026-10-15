@@ -217,9 +217,12 @@ struct NativeValueRoute:Sendable {
   @Published private(set) var valueTrail:[NativeValueRoute]=[]
   @Published private(set) var valueRoute=NativeValueRoute(path:[],offset:0,columnOffset:0,label:"根结果",nature:nil)
   private let client:ResultClient
+  private let host:NativeHostClient
+  private var geometryOwner:NativeGeometryModel?
+  private var stepsOwner:NativeStepsModel?
   private var closing=false
   init(host:NativeHostClient,binding:ResultBinding,probes:ResultTransportProbes = .init()) {
-    original=binding;self.binding=binding;client=ResultClient(host:host,probes:probes)
+    original=binding;self.binding=binding;self.host=host;client=ResultClient(host:host,probes:probes)
   }
   private func decode<T:Decodable & Sendable>(_ payload:HostJSONValue,as type:T.Type)async throws->T {
     try await Task.detached {try JSONDecoder().decode(type,from:JSONEncoder().encode(payload))}.value
@@ -325,5 +328,13 @@ struct NativeValueRoute:Sendable {
       guard !closing,!Task.isCancelled else {return};originalValue = .init(input_form:source,modern_form:modern,latex:latex)
     } catch {if !closing,!Task.isCancelled {message="完整历史结果暂无法读取："+String(describing:error)}}
   }
-  func close()async {guard !closing else {return};closing=true;await client.close()}
+  func geometryModel()->NativeGeometryModel {
+    if let geometryOwner {return geometryOwner}
+    let owner=NativeGeometryModel(host:host,binding:original);geometryOwner=owner;return owner
+  }
+  func stepsModel()->NativeStepsModel {
+    if let stepsOwner {return stepsOwner}
+    let owner=NativeStepsModel(host:host,binding:original);stepsOwner=owner;return owner
+  }
+  func close()async {guard !closing else {return};closing=true;await geometryOwner?.close();await stepsOwner?.close();await client.close()}
 }

@@ -138,7 +138,7 @@ struct WorkspaceView:View {
     case .assistant: EmptyView()
     case .steps:
       if let cell=runtime.selectedCell,let result=runtime.results[cell],let binding=result.bindings.last(where:{$0.out_index.value>0 && $0.view_id.value != nil}) {
-        WorkbenchStepsPreview(host:session.host,binding:binding).id(binding.result_ref)
+        NativeStepsView(model:runtime.presenter(for:binding).stepsModel()).id(binding.result_ref)
       } else {Text("选择已运行的数学单元格，查看记录的步骤。").foregroundStyle(.secondary)}
     case .variables:
       if let error=runtime.projectionError {Text(error).foregroundStyle(.secondary)}
@@ -154,46 +154,6 @@ struct WorkspaceView:View {
     }
   }
 
-}
-
-private struct RecordedStepsPreview:Decodable,Sendable {
-  struct Entry:Decodable,Sendable {struct Step:Decodable,Sendable {let id:String;let rule_id:String;let before_latex:[String];let after_latex:[String]};let step:Step;let child_count:UInt32}
-  let recorded:Bool,total:UInt32,entries:[Entry]
-}
-/// Foundation-level destination uses real immutable steps. The paged tree/typesetter belongs to
-/// the later steps presentation task; an absent record never produces a synthetic explanation.
-private struct WorkbenchStepsPreview:View {
-  let host:NativeHostClient,binding:ResultBinding
-  @State private var page:RecordedStepsPreview?
-  @State private var error:String?
-  var body:some View {
-    Group {
-      if let page {
-        if !page.recorded {Text("本次计算没有记录步骤。").foregroundStyle(.secondary)}
-        else if page.total==0 {Text("本次计算记录中没有步骤。").foregroundStyle(.secondary)}
-        else {ScrollView {VStack(alignment:.leading,spacing:12) {
-          ForEach(page.entries,id:\.step.id) {entry in
-            VStack(alignment:.leading,spacing:4) {
-              Text(entry.step.rule_id).font(.headline)
-              ForEach(Array((entry.step.before_latex+entry.step.after_latex).enumerated()),id:\.offset) {_,source in Text(source).font(.system(.caption,design:.monospaced)).textSelection(.enabled)}
-              if entry.child_count>0 {Text("包含 \(entry.child_count) 个子步骤").font(.caption).foregroundStyle(.secondary)}
-            }
-          }
-          if page.total>UInt32(page.entries.count) {Text("显示前 \(page.entries.count) 项，共 \(page.total) 项。").font(.caption).foregroundStyle(.secondary)}
-        }}}
-      } else if let error {Text(error).foregroundStyle(.secondary)}
-      else {ProgressView("正在读取记录")}
-    }.task {
-      let reader=ResultClient(host:host)
-      do {
-        try reader.select(binding)
-        guard let reply=try await reader.inspect(.inspect_result_steps(.init(kind:.steps,parent_path:[],offset:0,limit:16))) else {throw ResultClientError.staleSelection}
-        let actual=try await Task.detached {try JSONDecoder().decode(RecordedStepsPreview.self,from:JSONEncoder().encode(reply.payload))}.value
-        if !Task.isCancelled {page=actual}
-      } catch {if !Task.isCancelled {self.error="步骤暂无法读取，可重新选择结果后核对。"}}
-      await reader.close()
-    }
-  }
 }
 
 private struct NativeWorkbenchSplit:NSViewRepresentable {

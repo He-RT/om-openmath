@@ -83,6 +83,26 @@ private func binding(_ manifest:NativeResultManifest)->ResultBinding {manifest.b
     let steps=try await client.inspect(.inspect_result_steps(.init(kind:.steps,parent_path:[],offset:0,limit:1)))!
     let stepBody=try object(steps.payload),entries=stepBody["entries"] as! [[String:Any]]
     precondition(stepBody["recorded"] as? Bool==true && entries.count==1 && (entries[0]["step"] as! [String:Any])["id"] as? String=="S1")
+    let stepsBefore=try await kernel.state()
+    let stepPresenter=ResultPresenter(host:host,binding:binding(solved)),stepModel=stepPresenter.stepsModel()
+    await stepModel.load()
+    let rawStep=entries[0]["step"] as! [String:Any],first=stepModel.page!.entries[0].step
+    precondition(stepModel.error==nil && first.id==rawStep["id"] as? String && first.before_latex==rawStep["before_latex"] as! [String] && first.after_latex==rawStep["after_latex"] as! [String] && first.params==rawStep["params"] as! [String:String],"step presentation changed original evidence")
+    var seen=Set<[UInt32]>()
+    while let actual=stepModel.page {
+      for entry in actual.entries {precondition(seen.insert(entry.path).inserted)}
+      if actual.offset+UInt32(actual.entries.count)>=actual.total {precondition(seen.count==Int(actual.total));break}
+      await stepModel.load(offset:actual.offset+NativeStepsModel.pageSize)
+      precondition(stepModel.error==nil)
+    }
+    await stepModel.load(offset:0)
+    if let branch=stepModel.page!.entries.first(where:{$0.child_count>0}) {
+      await stepModel.children(branch)
+      precondition(stepModel.error==nil && stepModel.page!.parent_path==branch.path && stepModel.page!.total==branch.child_count && stepModel.trail.count==1)
+      await stepModel.back(to:0);precondition(stepModel.page!.parent_path.isEmpty && stepModel.trail.isEmpty)
+    }
+    let stepsAfter=try await kernel.state();precondition(stepsBefore.kernel_state_revision.value==stepsAfter.kernel_state_revision.value)
+    await stepPresenter.close()
     let plot=try await kernel.runCell("plot",operation:"plot-result");try client.select(binding(try await client.manifest(plot.result_id.value!)))
     let geometry=try await client.inspect(.inspect_result_geometry(.init(kind:.geometry)))!;let geometryBody=try object(geometry.payload);precondition(geometryBody["available"] as? Bool==true)
     let samples=try await client.inspect(.inspect_result_geometry_page(.init(kind:.geometry_page,channel:.curve_points,object_index:0,segment_index:0,offset:0,limit:2)))!

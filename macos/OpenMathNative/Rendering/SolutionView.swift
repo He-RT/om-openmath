@@ -95,10 +95,22 @@ struct NativeResultView:View {
   let value:NotebookValueResult?
   let displayContext:NativeResultDisplayContext
   @State private var digits:UInt32=20
+  @State private var showingSteps=false
   var body:some View {
     Group {if presenter.summary?.statement.value?.suppressed != true {content}}
       .task {if presenter.summary==nil {await presenter.load()}}
       .accessibilityIdentifier("native-result-"+presenter.original.result_id)
+      .sheet(isPresented:$showingSteps) {
+        VStack(spacing:0) {
+          HStack {
+            Text("推导步骤").font(.headline)
+            Spacer()
+            Button("完成") {showingSteps=false}.keyboardShortcut(.cancelAction)
+          }.padding(20)
+          Divider()
+          ScrollView {NativeStepsView(model:presenter.stepsModel()).padding(24)}
+        }.frame(minWidth:600,idealWidth:760,minHeight:560)
+      }
   }
   private var content:some View {
     VStack(alignment:.leading,spacing:10) {
@@ -107,10 +119,13 @@ struct NativeResultView:View {
         if let statement=presenter.summary?.statement.value {Text(nature(statement.nature)).font(.caption).foregroundStyle(.secondary)}
         if presenter.busy {ProgressView().controlSize(.small)}
         Spacer()
+        if presenter.summary?.statement.value?.steps_recorded==true {
+          Button("步骤",systemImage:"list.number") {showingSteps=true}.buttonStyle(.borderless).help("查看实际记录的推导步骤")
+        }
         Menu("结果操作",systemImage:"ellipsis") {
           Button("核对结果") {Task {await presenter.load()}}
           Button("查看原输入") {Task {await presenter.readOriginalInput()}}
-          if presenter.original.out_index.value>0 {
+          if presenter.original.out_index.value>0,presenter.presentation?.kind != "geometry" {
             Divider()
             ForEach([UInt32(20),50,80],id:\.self) {precision in
               Button("数值投影 · \(precision) 位") {digits=precision;Task {await presenter.projectValue(digits:precision)}}
@@ -124,6 +139,7 @@ struct NativeResultView:View {
         }
       }
       if let page=presenter.valuePage {NativeStructuredValueView(presenter:presenter,page:page)}
+      if presenter.presentation?.kind=="geometry" {NativeGeometryView(model:presenter.geometryModel())}
       if let page=presenter.presentation?.solutions {NativeSolutionView(presenter:presenter,page:page)}
       else if presenter.presentation?.kind=="error" {
         Text(presenter.summary?.statement_count ?? 0>0 ? "后续计算有错误，已接纳的结果仍保留。" : "本次计算有错误，未产生成功结果。").font(.callout)
@@ -131,7 +147,7 @@ struct NativeResultView:View {
       }
       if presenter.presentation?.kind != "error",presenter.presentation?.kind != "suppressed" {
         if let actual=originalValue {
-          if presenter.presentation?.solutions != nil || presenter.valuePage != nil {DisclosureGroup("完整原结果") {expression(actual)}}
+          if presenter.presentation?.solutions != nil || presenter.valuePage != nil || presenter.presentation?.kind=="geometry" {DisclosureGroup("完整原结果") {expression(actual)}}
           else {expression(actual)}
           if presenter.original.out_index.value>0 {
             if let projected=presenter.numeric[Data("value/\(digits)".utf8)] {

@@ -59,7 +59,7 @@ pub struct RetainedGeometrySummary {
     pub kind: String,
     /// True only when real geometry was produced and retained.
     pub available: bool,
-    /// Small structured counts/ranges/styles, never point or triangle arrays.
+    /// Counts/ranges/styles and original solution annotations. Sampled arrays use pages.
     pub metadata: Value,
     /// Explicit absence/unsupported host reason.
     pub unavailable: Option<String>,
@@ -132,7 +132,7 @@ impl RetainedResult {
                 Ok(RetainedGeometrySummary {
                     kind: "plot2d".into(),
                     available: true,
-                    metadata: json!({"x_range":data.x_range,"y_range":data.y_range,"scale":data.scale,"curves":data.curves.iter().map(|c|json!({"label":c.label,"segments":c.segments.iter().map(Vec::len).collect::<Vec<_>>()})).collect::<Vec<_>>(),"tiles":geometry.map_or(0,|g|g.tiles.len()),"arrows":geometry.map_or(0,|g|g.arrows.len()),"points":geometry.map_or(0,|g|g.points.len()),"markers":geometry.map_or(0,|g|g.markers.len()),"labels":geometry.map_or(0,|g|g.labels.len()),"paths":geometry.map(|g|g.paths.iter().map(|p|json!({"points":p.points.len(),"color":p.color,"opacity":p.opacity,"width":p.width})).collect::<Vec<_>>()),"polygons":geometry.map(|g|g.polygons.iter().map(|p|json!({"points":p.points.len(),"color":p.color,"opacity":p.opacity})).collect::<Vec<_>>()),"skipped":geometry.map_or(0,|g|g.skipped),"color_range":geometry.and_then(|g|g.color_range)}),
+                    metadata: json!({"x_range":data.x_range,"y_range":data.y_range,"scale":data.scale,"highlights":data.highlights,"curves":data.curves.iter().map(|c|json!({"label":c.label,"segments":c.segments.iter().map(Vec::len).collect::<Vec<_>>()})).collect::<Vec<_>>(),"tiles":geometry.map_or(0,|g|g.tiles.len()),"arrows":geometry.map_or(0,|g|g.arrows.len()),"points":geometry.map_or(0,|g|g.points.len()),"markers":geometry.map_or(0,|g|g.markers.len()),"labels":geometry.map_or(0,|g|g.labels.len()),"paths":geometry.map(|g|g.paths.iter().map(|p|json!({"points":p.points.len(),"color":p.color,"opacity":p.opacity,"width":p.width})).collect::<Vec<_>>()),"polygons":geometry.map(|g|g.polygons.iter().map(|p|json!({"points":p.points.len(),"color":p.color,"opacity":p.opacity})).collect::<Vec<_>>()),"skipped":geometry.map_or(0,|g|g.skipped),"color_range":geometry.and_then(|g|g.color_range)}),
                     unavailable: None,
                 })
             }

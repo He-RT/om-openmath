@@ -250,15 +250,17 @@ struct NativeNotebookFileView:View {
           Button("删除单元格",role:.destructive) {Task {await workspace.deleteCell(cell.id)}}
         }.labelStyle(.iconOnly).menuStyle(.borderlessButton).menuIndicator(.hidden).fixedSize().disabled(!canChangeStructure).accessibilityIdentifier("notebook-cell-menu-"+cell.id)
       }.font(.callout).buttonStyle(.borderless).padding(.horizontal,10)
-      NativeSourceEditor(session:session,cell:cell)
-        .frame(height:editorHeight(cell))
-        .background(Color(nsColor:.controlBackgroundColor).opacity(0.55),in:RoundedRectangle(cornerRadius:6))
-        .overlay(alignment:.topLeading) {
-          if (session.drafts.overlay(cell.id)?.source ?? cell.source).isEmpty {
-            Text(cell.kind == .math ? "输入数学表达式，例如 2 + 2" : "在这里记录文字…")
-              .font(.system(size:16,design:cell.kind == .math ? .monospaced : .default)).foregroundStyle(.tertiary).padding(14).allowsHitTesting(false)
+      if cell.kind == .text {NativeNotebookTextCell(workspace:workspace,session:session,cell:cell)}
+      else {
+        NativeSourceEditor(session:session,cell:cell)
+          .frame(height:editorHeight(cell))
+          .background(Color(nsColor:.controlBackgroundColor).opacity(0.55),in:RoundedRectangle(cornerRadius:6))
+          .overlay(alignment:.topLeading) {
+            if (session.drafts.overlay(cell.id)?.source ?? cell.source).isEmpty {
+              Text("输入数学表达式，例如 2 + 2").font(.system(size:16,design:.monospaced)).foregroundStyle(.tertiary).padding(14).allowsHitTesting(false)
+            }
           }
-        }
+      }
       if cell.kind == .math {cellResults(cell)}
       if session.drafts.overlay(cell.id)?.requiresReview==true {
         VStack(alignment:.leading,spacing:8) {
@@ -320,4 +322,32 @@ struct NativeNotebookFileView:View {
 private struct NativeDraftBackupStatus:View {
   @ObservedObject var backup:NativeDraftBackup
   var body:some View {Text(backup.status).font(.caption).foregroundStyle(.secondary).accessibilityIdentifier("notebook-draft-backup-status")}
+}
+
+private struct NativeNotebookTextCell:View {
+  @ObservedObject var workspace:NativeFileWorkspace
+  let session:NativeDocumentSession,cell:NativeSourceCell
+  @State private var reading=false
+  @State private var message:String?
+  private var source:String {session.drafts.overlay(cell.id)?.source ?? cell.source}
+  var body:some View {
+    VStack(alignment:.leading,spacing:12) {
+      HStack {
+        Picker("文字视图",selection:Binding(get:{reading},set:{value in
+          if value && session.drafts.overlay(cell.id)?.composing==true {message="请先完成正在输入的文字。";return}
+          reading=value;message=nil
+        })) {Text("编辑").tag(false);Text("阅读").tag(true)}.pickerStyle(.segmented).labelsHidden().fixedSize().accessibilityIdentifier("notebook-text-mode-"+cell.id)
+        Spacer()
+        Button("复制 Markdown",systemImage:"doc.on.doc") {NSPasteboard.general.clearContents();NSPasteboard.general.setString(source,forType:.string)}.buttonStyle(.borderless).labelStyle(.iconOnly).help("复制完整 Markdown 原文")
+      }
+      if reading {NativeMarkdownView(source:source).padding(.horizontal,10)}
+      else {
+        NativeSourceEditor(session:session,cell:cell)
+          .frame(height:min(320,max(88,CGFloat(source.reduce(1){$1 == "\n" ? $0+1:$0})*23+24)))
+          .background(Color(nsColor:.controlBackgroundColor).opacity(0.55),in:RoundedRectangle(cornerRadius:6))
+          .overlay(alignment:.topLeading) {if source.isEmpty {Text("在这里记录文字或 Markdown…").foregroundStyle(.tertiary).padding(14).allowsHitTesting(false)}}
+      }
+      if let message {Text(message).font(.caption).foregroundStyle(.secondary)}
+    }
+  }
 }

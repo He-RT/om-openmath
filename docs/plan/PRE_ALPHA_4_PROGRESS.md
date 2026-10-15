@@ -8,7 +8,7 @@
 
 **实际状态：** 原完整规格35/98任务完成、63项未完成；这是历史功能账本，不再作为本版完成率。8项交付检查均not_run，candidate未分配，ready_to_publish=false，released_verified=false。Mac/Web可用构建和实测性能才是当前进度依据。
 
-**下一任务：** Mac Release与生产Web构建已可用，实际编辑/计算/保存、基础模型设置与真实Pi工具任务已接通，原撤销闭环和Web Quick fix失败已修。下一集中补原生Markdown、步骤和2D/基础3D展示，再完成原53/输入延迟/启动内存测量与三资产安装发行。当前UI重做及live结果见D066；完整统一停止和候选性能/安装仍待验证。保留系统输入设置。
+**下一任务：** Mac Release与生产Web构建已可用，实际编辑/计算/保存、基础模型设置与真实Pi工具任务已接通，原撤销闭环和Web Quick fix失败已修。下一集中补步骤和2D/基础3D展示，再完成原53/输入延迟/启动内存测量与三资产安装发行。当前UI重做及live结果见D066；完整统一停止和候选性能/安装仍待验证。保留系统输入设置。
 
 **测试策略：** 开发跑已有的受影响检查；新增测试只覆盖必要独立断言和实际缺陷。候选再集中完成8项实际验收，原53正确性、CLI200ms、Mac/Web1s及输入p95≤50ms门槛不降。历史32项最终门禁保留not_run参考，scope 2不再将其全部设为发行前置。
 
@@ -55,7 +55,7 @@
 | [ ] [R4.2.05](PRE_ALPHA_4.md#task-r4.2.05) | 本地snippets、希腊快捷、Fix和缩进 | planned | — | — |
 | [ ] [R4.2.06](PRE_ALPHA_4.md#task-r4.2.06) | 长笔记本布局、复用与scroll anchors | planned | — | — |
 | [x] [R4.2.07](PRE_ALPHA_4.md#task-r4.2.07) | SwiftMath原生公式和原式fallback | completed | [实际57回执/字体/原生附件](../acceptance/pre-alpha.4/development/r42/native-math.json) | 21355b3 |
-| [ ] [R4.2.08](PRE_ALPHA_4.md#task-r4.2.08) | Markdown AST、数学扫描与连续原生流 | planned | — | — |
+| [ ] [R4.2.08](PRE_ALPHA_4.md#task-r4.2.08) | Markdown AST、数学扫描与连续原生流 | in_progress | D067：原生阅读/表格/连续选取与源码复制；完整流式稳定块仍后续 | D067 |
 | [x] [R4.2.09](PRE_ALPHA_4.md#task-r4.2.09) | 结果状态、解条件Root与数值投影 | completed | [实际12型/引用/数值](../acceptance/pre-alpha.4/development/r42/native-results.json) | 40cc1cb |
 | [x] [R4.2.10](PRE_ALPHA_4.md#task-r4.2.10) | 矩阵、表格、记录与科学诊断 | completed | [真实21输入/分页/原式/科学来源](../acceptance/pre-alpha.4/development/r42/native-values.json) | 本批 |
 | [ ] [R4.2.11](PRE_ALPHA_4.md#task-r4.2.11) | 真实步骤、变量与独立讲解入口 | planned | — | — |
@@ -783,3 +783,12 @@ R4.3.07步骤1/2/4及Task Done满足并勾选，整体35/98，下一R4.3.08。32
 Release构建与strict签名通过；工作台现有实窗回归验证1042/861/640/1100宽度、五目的地、原选区/滚动、实际5/6及长CAS编辑停止。CUA实际输入/方程精确2和3/中文/添加删除撤销/保存及重开回读通过。发现独立Open面板偶发不显示，改为附着当前窗口的sheet，实窗重开自身保存文件且状态为已打开；Agent protocol相关编译及原ACK/取消检查通过。新Preview使用独立pre-alpha.4目录，早期原型存储不动。模型配置仅将新不透明引用写JSON，密钥走新Keychain命名空间；实际发现ad hoc包使用Data Protection Keychain返回-34018，改用macOS加密登录钥匙串，生产写入/原字节读取/删除自身合成项验证通过，锁屏仍未验证；实际模型经相同AssistantContext/ProviderTransport/私有Pi/KernelCommitPort完成read→preview→apply→重新read→run→inspect，原blob独立读回x→2/x→3，definitions_current=true。首次使用旧snapshot运行被拒，未重放修改；补明确引用刷新指令后完整成功。只用用户精确授权的外部API文件，未读取旧配置或输出密钥。live脚本显式opt-in，不进入默认CI。
 
 本批简要日志和自身测试文档保留target/plan-scope2，live成功attempt-5RlZQf，签名撤销attempt-JofR9w；不复制全套源码/数据库证据。清理104个已停止、可重建的普通测试Mach-O，释放1,877,383,392字节，现约39GiB可用。8项delivery_check仍not_run；原53/输入p95与实际三资产安装发布尚未整体验收，candidate未分配、ready/released=false，公开版本仍.3。
+
+
+## D067 · 2026-10-16 原生 Markdown 阅读与公式选择
+
+接入已锁定swift-markdown/cmark0.9.0及原revision，复用Xcode构建产物，不再建第二套依赖缓存。文字单元格提供编辑/阅读切换，保留原编辑器和输入合成；完成的助手回复复用阅读器，流式文字75ms合批。AST保留嵌套样式、标题、列表、代码、链接和表格。先保护代码/URL/图片/HTML范围，公式用不与原文碰撞的内部token及原UTF8 span；金额、转义和不完整公式保留文本。远程图片不加载、HTML不执行。完整Markdown与表格TSV可复制，附件复制恢复原定界符，不能精确映射的渲染范围显式unavailable，不据此编辑源码。
+
+实际修复两处缺陷：CommonMark吞掉未闭合\(前的反斜杠；NSTextTable迫使整个阅读视图退回TextKit1，导致高度只剩标题、内容覆盖相邻单元格。未闭合尾改为原文token，表格改独立NSTableView，正文继续TextKit2。小型实际窗口检查验证宽820高度288、窄300高度332、始终TextKit2、连续选取复制保留原公式、选择期间pin原投影及选取结束接纳新投影。最终Release实窗确认正文/表格/下一单元格不重叠，旁边实际运行Solve得到精确2和3。文档摘要在后台生成并在表格单元间复用，行高按真实宽度缓存。解析检查覆盖Unicode/嵌套样式/代码URLHTML/金额/表格/未闭合与1MiB预算。已有SwiftMath回归仍通过15字号/实际57结果与原式fallback。
+
+ba175307的CI依赖/Rust/生产Web通过，Mac保存fixture编译入口缺少新Models源码；已给saves/drafts/recovery补确切Models依赖；相关保存原断言、实际工厂/自动保存、rename/冲突和6个SIGKILL边界全部通过。全源原生fixture添加Markdown链接参数。完整R4.2.08和8项候选交付检查未宣称完成；后续继续步骤/2D/基础Metal、原53与输入性能、实际三资产安装发布。其他会话新增的.gitignore规则保留，不纳入本批提交。

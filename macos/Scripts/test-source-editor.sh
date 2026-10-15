@@ -6,6 +6,9 @@ mkdir -p target/macos-source-editor-tests
 cargo build -p om-apple-ffi --release --locked
 source macos/Scripts/native-math-dependencies.sh
 prepare_native_math_dependencies
+source macos/Scripts/native-markdown-dependencies.sh
+prepare_native_markdown_dependencies
+native_math_flags+=("${native_markdown_flags[@]}")
 sources=()
 while IFS= read -r file; do
   if [[ "$file" != macos/OpenMathNative/AppHost.swift ]]; then sources+=("$file"); fi

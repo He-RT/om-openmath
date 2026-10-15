@@ -34,6 +34,10 @@ jobs:
         run: |
           mkdir -p target/macos-ci-evidence
           bash macos/Scripts/build-native.sh > target/macos-ci-evidence/build.log 2>&1
+      - name: Markdown 数学边界与源码范围
+        run: |
+          bash macos/Scripts/test-markdown.sh > target/macos-ci-evidence/markdown.log 2>&1
+          bash macos/Scripts/test-markdown-layout.sh > target/macos-ci-evidence/markdown-layout.log 2>&1
       - name: Swift 实际 ABI 生命周期与 DTO 负例
         run: bash macos/Scripts/test-native-contracts.sh > target/macos-ci-evidence/contracts.log 2>&1
       - name: 自有媒体、回环 HTTP 与实际 I/O 中断

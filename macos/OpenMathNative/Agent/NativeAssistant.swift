@@ -26,6 +26,8 @@ struct AssistantLine:Identifiable {
   private var session="conversation-"+UUID().uuidString.lowercased()
   private var work:Task<Void,Never>?,adapter:ProviderAgentModelAdapter?,pipe:AgentPrivatePipe?
   private var closed=false
+  private var pendingText:[String:String]=[:],pendingTurns:[String]=[]
+  private var textFlush:Task<Void,Never>?
   init(host:NativeHostClient,storage:StorageService,agent:AgentSessionService) {
     self.host=host;self.storage=storage;self.agent=agent;settings=try? AssistantSettingsStore()
   }
@@ -85,6 +87,7 @@ struct AssistantLine:Identifiable {
     } catch {
       status=stopping || closed ? "已停止；已完成的修改会保留。":"请求未完成。请检查模型配置或网络；已提交的操作不会自动重做。"
     }
+    flushText()
     await adapter?.close();adapter=nil
     if let pipe {await pipe.close();self.pipe=nil}
     await agent.resetTask();await settled?()
@@ -92,10 +95,25 @@ struct AssistantLine:Identifiable {
   }
   private func updateTrace(_ values:[String]) {trace=values;status="正在执行任务"}
   private func receive(_ event:AgentModelEventPayload) {
-    guard !closed else {return}
+    guard !closed,!event.text.isEmpty else {return}
     let id=event.agent_turn_id
-    if let index=lines.firstIndex(where:{$0.id==id}) {lines[index].text+=event.text}
-    else if !event.text.isEmpty {lines.append(.init(id:id,role:"OpenMath",text:event.text))}
+    if pendingText[id]==nil {pendingTurns.append(id)}
+    pendingText[id,default:""]+=event.text
+    if textFlush==nil {textFlush=Task { [weak self] in
+      do {try await Task.sleep(for:.milliseconds(75))} catch {return}
+      self?.flushText()
+    }}
+  }
+  private func flushText() {
+    textFlush?.cancel();textFlush=nil
+    guard !pendingTurns.isEmpty else {return}
+    var next=lines
+    for id in pendingTurns {
+      guard let text=pendingText[id] else {continue}
+      if let index=next.firstIndex(where:{$0.id==id}) {next[index].text+=text}
+      else {next.append(.init(id:id,role:"OpenMath",text:text))}
+    }
+    pendingTurns=[];pendingText=[:];lines=next
   }
   func stop()async {
     guard busy,!stopping else {return};stopping=true;status="正在停止"

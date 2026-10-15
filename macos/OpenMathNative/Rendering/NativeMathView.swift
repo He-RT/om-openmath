@@ -158,8 +158,8 @@ private struct NativeMathDisplay:View {
   override nonisolated var fileType:String? {get {"org.openmath.native-math"} set {}}
   override nonisolated var contents:Data? {get {Data(request.originalLatex.utf8)} set {}}
   private static let registration:Void = {NSTextAttachment.registerViewProviderClass(NativeMathAttachmentProvider.self,forFileType:"org.openmath.native-math")}()
-  init(request:NativeMathRequest) {
-    var inline=request;inline.inline=true;self.request=inline
+  init(request:NativeMathRequest,display:Bool=false) {
+    var inline=request;inline.inline = !display;self.request=inline
     plan=MathRenderAdapter.prepare(inline)
     if plan.state == .ready {let measure=NativeMathContainer();measure.configure(plan);metrics=measure.metrics}
     else {let fallback=NativeMathFallbackLabel(request:inline,state:plan.state);metrics=fallback.metrics}
@@ -221,7 +221,7 @@ private struct NativeMathDisplay:View {
 /// AppKit supplies the real provider and attachment frame on each laid-out fragment, but the
 /// stock macOS text view does not insert our custom provider's view into its rendering surface.
 /// This host installs only the current viewport's native views at those exact TextKit2 frames.
-@MainActor final class NativeMathTextView:NSTextView {
+@MainActor class NativeMathTextView:NSTextView {
   private var mathViews:[ObjectIdentifier:NSView]=[:]
   private var mounting=false
   override func layout() {super.layout();mountMathAttachments()}

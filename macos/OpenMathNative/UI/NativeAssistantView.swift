@@ -19,7 +19,8 @@ struct NativeAssistantView:View {
             ForEach(assistant.lines) {line in
               VStack(alignment:.leading,spacing:4) {
                 Text(line.role).font(.caption).foregroundStyle(.secondary)
-                Text(line.text).textSelection(.enabled).frame(maxWidth:.infinity,alignment:.leading)
+                if line.role == "OpenMath",(!assistant.busy || line.id != assistant.lines.last?.id) {NativeMarkdownView(source:line.text,fontSize:14)}
+                else {Text(line.text).textSelection(.enabled).frame(maxWidth:.infinity,alignment:.leading)}
               }.id(line.id)
             }
           }

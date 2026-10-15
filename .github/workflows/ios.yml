@@ -1,6 +1,7 @@
 name: iOS 原生门禁
 on:
   workflow_call:
+  workflow_dispatch:
 permissions:
   contents: read
 jobs:

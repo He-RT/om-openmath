@@ -1,5 +1,7 @@
 # 项目接续提示词
 
+> **2026-10-15 scope 2优先：** 用户已明确要求优先Mac与Web、性能不能差、删除妨碍下个pre-alpha的形式工作。先读`docs/plan/PRE_ALPHA_4.md`第0节及进度顶部；当前只以8项delivery_check/3类资产为交付条件，旧98任务/32gate/九资产要求是历史参考，后文旧接续记录不得覆盖本修订。不机械TDD、不逐批全套回归/证据复制；相关测试开发时运行，候选集中验收；CLI原53<200ms、Mac整次/Web WASM<1s、输入p95≤50ms不降。保留当前未提交撤销实现；先修RunSource.editor_busy测试构造缺字段的编译阻断，把Mac Preview安装前移，同时修生产Web现有失败。dev/no main/旧tag不动，不启本地iOS模拟器，不改系统输入法，不读旧配置，不新增多Agent工作流。
+
 
 最新接续入口（2026-10-15，D065优先）：35/98，R4.3.08 in_progress、只步骤1完成。原ACKed GetOperationStatus参数/SHA→closed native lookup/observation（410DTO）→当前文档实际source/kernel receipt或Library claim/完整run snapshot→当前scope refs→耐久readonly canonical→真实包内Pi接通。未找到只报unknown/outcome_known=false/effect=null；查询completed不等于原操作completed。source/kernel/run scope与状态校验，bootstrap-only已写仍effect=true并列计数。新SourceEndpoint operations模块只查账无执行器；Agent/OperationStatusReader复用KernelCommitPort核对当前unknown原ID，允许本次readback推进defrevision但冻结文档/task/grant lifetime。
 

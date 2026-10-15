@@ -125,7 +125,8 @@ def inspect_plan(plan: str, progress: str, gates: dict, *, initial: bool = False
             require(gate in gate_ids, f'{match[1]} 使用未知gate：{gate}')
             contributions[gate].append(match[1])
     acyclic(task_deps)
-    require('R4.5.07' in task_deps['R4.5.05'], '汇总器必须先于候选冻结提交')
+    if gates['scope_version'] == 1:
+        require('R4.5.07' in task_deps['R4.5.05'], 'scope 1汇总器必须先于候选冻结提交')
     require(all(contributions.values()), '有gate没有任何贡献任务')
     ledger = re.findall(r'^\| \[([ x])\] \[(R4\.\d\.\d{2})\]', progress, re.M)
     require([task for _, task in ledger] == ids, '任务进度/主计划不一致')
@@ -147,14 +148,32 @@ def inspect_plan(plan: str, progress: str, gates: dict, *, initial: bool = False
         require(not gates['ready_to_publish'] and not gates['released_verified'], '初始计划不能标发行就绪')
         require(gates['candidate_sha'] == 'UNSET', '初始计划不能分配candidate')
         require(gates['current_runtime_version'] == '0.1.0-pre-alpha.3', '初始计划不切换运行版本')
-    require(sum(g['pre_publish_required'] for g in gates['gate']) == 31, '公开前gate数量错误')
-    require(sum(g['post_publish_required'] for g in gates['gate']) == 1, '公开后gate数量错误')
-    loader = importlib.util.spec_from_file_location('openmath_release_plan_check', ROOT / 'scripts/release.py')
-    require(loader is not None and loader.loader is not None, '无法加载资产命名函数')
-    release = importlib.util.module_from_spec(loader)
-    loader.loader.exec_module(release)
+    scope = gates['scope_version']
     assets = gates['asset_set']['expected_names']
-    require(len(set(assets)) == 9 and set(assets) == release.asset_names(gates['target_version']), '九资产命名漂移')
+    delivery = gates.get('delivery_check', [])
+    if scope == 2:
+        require(gates.get('release_platforms') == ['mac-native', 'web'], 'scope 2交付平台漂移')
+        require(gates.get('gate_catalog_role') == 'scope_1_reference_only', '旧gate必须标为参考目录')
+        require(all(not g['mandatory'] and not g['pre_publish_required'] and not g['post_publish_required']
+                    for g in gates['gate']), '旧32gate不能继续全部阻塞scope 2')
+        require([c['id'] for c in delivery] == [f'R4D{i:02}' for i in range(1, 9)], '必须有8项当前交付检查')
+        require(all(c['mandatory'] and c['acceptance'] and c['platforms'] for c in delivery), '交付检查缺少实际条件')
+        require(all(set(c['reference_gate_ids']) <= gate_ids for c in delivery), '交付检查引用未知旧gate')
+        require(all(c['check_status'] in {'not_run', 'passed', 'failed', 'blocked'} for c in delivery), '交付检查状态无效')
+        expected_assets = {f"OpenMath-web_{gates['target_version']}.zip",
+                           f"OpenMath_{gates['target_version']}_aarch64.dmg",
+                           f"OpenMath_{gates['target_version']}_macos_arm64.app.zip"}
+        require(len(assets) == 3 and set(assets) == expected_assets, 'Mac/Web三资产命名漂移')
+    else:
+        require(scope == 1, '未知范围版本')
+        require(sum(g['pre_publish_required'] for g in gates['gate']) == 31, '公开前gate数量错误')
+        require(sum(g['post_publish_required'] for g in gates['gate']) == 1, '公开后gate数量错误')
+        loader = importlib.util.spec_from_file_location('openmath_release_plan_check', ROOT / 'scripts/release.py')
+        require(loader is not None and loader.loader is not None, '无法加载资产命名函数')
+        release = importlib.util.module_from_spec(loader)
+        loader.loader.exec_module(release)
+        require(len(set(assets)) == 9 and set(assets) == release.asset_names(gates['target_version']), '九资产命名漂移')
+    require(gates['asset_set']['expected_count'] == len(assets), '资产数量不一致')
     final = plan[plan.index('### 18.2'):plan.index('### 18.3')]
     require(all(f'`{asset}`' in final for asset in assets), '最终交付缺资产')
     source_section = plan[plan.index('### 19.1'):plan.index('### 19.2')]
@@ -164,7 +183,9 @@ def inspect_plan(plan: str, progress: str, gates: dict, *, initial: bool = False
         require(digest(ROOT / 'docs/design' / source) == sha, f'设计来源已漂移：{source}')
         require(f'{section} ' in plan, f'缺少来源章节：{source}')
     return {'task_count': len(ids), 'phase_task_counts': dict(counts), 'gate_count': len(gate_ids),
-            'unique_case_count': len(case_ids), 'pre_publish_gate_count': 31, 'post_publish_gate_count': 1,
+            'unique_case_count': len(case_ids), 'scope_version': scope, 'delivery_check_count': len(delivery),
+            'pre_publish_gate_count': sum(g['pre_publish_required'] for g in gates['gate']),
+            'post_publish_gate_count': sum(g['post_publish_required'] for g in gates['gate']),
             'source_design_count': len(sources), 'asset_count': len(assets), 'task_dependency_dag_valid': True,
             'gate_dependency_dag_valid': True, 'all_tasks_and_gates_mapped': True}
 

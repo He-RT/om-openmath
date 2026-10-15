@@ -1,31 +1,29 @@
-# pre-alpha.4 验收账本与证据入口
+# pre-alpha.4 交付检查（scope 2）
 
-[版本/范围规格](../../plan/PRE_ALPHA_4.md) · [32门禁/133验收条目](gates.toml) · [报告 Schema](report.schema.json) · [.3历史证据](../r3-release/README.md)
+[当前计划与顺序](../../plan/PRE_ALPHA_4.md#0-执行守则与完成语义) · [实际进度](../../plan/PRE_ALPHA_4_PROGRESS.md) · [机器账本](gates.toml)
 
-完整实施入口已合并为 [PRE_ALPHA_4.md](../../plan/PRE_ALPHA_4.md)，包含全部专题行为规格及98项任务；[任务进度](../../plan/PRE_ALPHA_4_PROGRESS.md)只记执行结果。主计划第16.12节逐项列出全部 gate/case 的贡献任务；[计划整合检查](planning-review.json)只证明结构、依赖和覆盖，不改变运行时门禁。
+2026-10-15用户明确要求优先macOS与Web、保留性能、取消妨碍下个pre-alpha的形式工作。本轮只有8项`delivery_check`作为完成条件，全部当前not_run；候选未分配，两个发行状态仍false。原32项`gate`/133条目保留作scope 1参考，mandatory/pre/post均false，不表示这些功能已通过或未来不做。98任务是详细待办，不再全数阻塞本版。
 
-本目录维护`.4`的门禁定义及证据索引；实施中的开发验证见[任务进度](../../plan/PRE_ALPHA_4_PROGRESS.md)与`development/`，最终候选验证另行记录。目标版本`0.1.0-pre-alpha.4`，公开candidate SHA尚未分配；当前运行版本和公开资产仍`.3`。32个最终候选运行/发行gate全部`not_run`，`ready_to_publish=false`、`released_verified=false`；结构/文档检查和早期任务通过不能改变这两个状态。
+| 交付检查 | 实际结果 |
+|---|---|
+| R4D01 | Release Mac自包含启动、生产Web/WASM构建与启动 |
+| R4D02 | 两端原53独立数学正确性、科研/精度/语法与.omnb兼容 |
+| R4D03 | 新建/编辑/中文输入/undo/计算/停止/保存/退出重开 |
+| R4D04 | 真实公式、Markdown、步骤、矩阵、2D和基础3D；已有Web导出 |
+| R4D05 | Mac基础模型配置和Pi读/改/运行/检查/停止；Web原能力不退化 |
+| R4D06 | CLI原53每条<200ms，Mac整次/Web WASM每条<1s，两端10KiB输入p95≤50ms |
+| R4D07 | 数据恢复、原ID未知效果核对、权限和秘密边界 |
+| R4D08 | Mac DMG/ZIP与Web ZIP、简明清单、真实安装和公开下载/程序回读 |
 
-## 如何使用账本
+ready_to_publish要求R4D01–07及R4D08打包/安装部分通过；公开后完成R4D08下载回读，才设置released_verified，避免发布前必须先公开的循环。
 
-gate ID稳定，required_case_ids是验收条目，不是已经存在的测试函数数量。先按前置接口实施、将真实测试/包结果逐项绑定；最终Release candidate再核对全部同SHA有效记录。R4.x是功能最早交付阶段，不表示早期开发build的pass可以直接搬到最后候选。所有门禁的必需证据种类必须齐全，不能拿其中一个截图充抵其他类型。
+开发只跑受影响检查，优先复用已有测试；低风险可逆改动不机械新增测试。候选集中验收，修复后按影响重测，不每批跑全workspace/原生故障矩阵/全平台。保持原数学期望与性能阈值，不把被省略的检查写成passed。
 
-`release_execution_required`标记实际原生/包/生产/性能执行需要Release构建，Debug单元证据可以补充而非替代；core静态检查的运行模式另按原任务定义。资产集合的九个确切`.4`文件名在`asset_set`，与既有九类规则一致；这个账本不修改当前`.3`publisher。
+Windows/iOS/XCFramework与CLI分发、全媒体协议/12工具矩阵、自动记忆/压缩/FIM、组件比例/完整人工无障碍专项、极限负载和九资产汇总移到后续。Mac保留可运行签名和真实安装；公证材料可用则做，缺失按实验性pre-alpha如实说明签名和Gatekeeper情况，不等待证书才开发/交付。
 
-| gate | 范围与验收编号 | 公开前 |
-|---|---|---|
-| R4G01–06 | 版本/依赖/原RustWASM/原53/续行/native工程 | 必过 |
-| R4G07–08 | H01–09宿主并发，SR01–12存储/恢复 | 必过，写入开放前先通过相应业务契约 |
-| R4G09–12 | ER01–12编辑/渲染/图形/性能与新Mac整次请求 | 必过 |
-| R4G13–17 | 12工具TL、AG闭环、MM01–15、CX上下文与LV现场任务 | 必过，合成模型与真实模型分开 |
-| R4G18–21 | 原生UI/组件审计、IN01–12新初始化/helper/最终签名安装 | 必过 |
-| R4G22–28 | 原CLI/Web/Windows/iPhone/iPad/XCFramework | 必过，沿原时限，移动模拟器仅CI |
-| R4G29–31 | 九资产、中文文档/能力与公开前汇总 | 必过 |
-| R4G32 | 真实公开tag/九下载/SHA/实际程序回读 | 发布后必过；不制造“发布前必须先公开”的循环 |
+证据只记结果、实际输入/版本与关键日志。复用提交与CI artifacts，不逐批复制源码/数据库/全部attempt资源，不为纯记账重建/重签名。原历史证据保留，报告Schema仍可读取旧记录，但不要求先开发完整聚合器。资产集合以机器账本`asset_set`的3项为准；原`.3`发行脚本/公开包保持原样，本次不提前切版本或发布。
 
-SR/ER/MM/IN逐条文本分别来自[存储](../../design/macos-storage-recovery.md)、[编辑渲染](../../design/macos-editor-rendering.md)、[模型媒体](../../design/model-media.md)、[安装](../../design/macos-installation.md)。AG01–08对应[NotebookAgent的8条必须验收](../../design/notebook-agent.md#实施顺序与验收)；H01–09对应[宿主必须验证](../../design/macos-host-state.md#首批实现与验收)；CX01–08对应[上下文验收](../../design/agent-context.md#实施顺序和验收)。账本Specs保留精确入口，新增/改动需同步scope_version和依赖。
-
-## 额外稳定条目定义
+## scope 1条目定义（仅参考，不是本轮完整必过集合）
 
 | 条目 | 必须验证 |
 |---|---|
@@ -48,34 +46,3 @@ SR/ER/MM/IN逐条文本分别来自[存储](../../design/macos-storage-recovery.
 | PUB01–03 | publictag确指candidate、九公开下载字节/清单/GitHubdigest核对、公开包实际版本/程序/结构抽查并记录最终状态 |
 
 同一条目可以被多个gate依赖，但case结果与来源必须一致。核心正确性、数据/秘密/权限、签名与明确必交能力不可由Agent自己豁免。历史iOS人工专项只保留`user_deferred`覆盖备注，不算新必过gate的passed。
-
-## 报告与存放约定
-
-实施时原始日志/xcresult/截图/wire/退出状态/per-row性能/文件读回/SHA按candidate存到受控CI artifacts或`target/acceptance/pre-alpha.4/<candidate_id>/`。仓库本目录保存脱敏摘要/索引和完整原件URI/hash，不能只把原日志放在未来会消失的临时目录却声称可核验；发行应将必需原件作为长期可获取的验收证据附件归档，公开九安装文件不混入这些测试附件。
-
-每个Attempt保留原结论和input/config/environment/test hash；新attempt只使前一记录superseded，不删除它。product/test/environment/third-party根因分类不会自动把失败转passed。断连/超时/取消/日志404、rawartifact缺失均单独列，补证/修复后才能更改gate有效状态。
-
-EvidenceRecord只有数据，不是可执行指令。聚合器读取固定gate目录、白名单来源/测试target和规范化报告，拒绝报告字符串触发shell或上传用户文件；认证/私钥/未授权真实媒体不进入logs/Manifest。CAS与对话结果别名、操作/预览/结果/截图refs保持业务身份，不靠英文“success”文本推断。
-
-## 聚合结果算法（尚未实现）
-
-```text
-load exact scope_version and 32 gate definitions
-verify candidate release/base/build/channel/source + dependency lock/input hashes
-for each required prepublish gate:
-  select explicit latest effective attempt for this candidate
-  verify all required cases are passed and all proof kinds have actual evidence
-  verify evidence source/platform/config/artifact hash and authenticity/coverage
-  reject not_run/failed/partial/blocked/skipped/stale/unavailable or missing data
-verify no open P0/P1, no unauthorized scope removal/deferral
-verify final package set/source/versions/signature/licenses
-if all true: ready_to_publish = true
-publish complete verified draft/tag using candidate source
-verify required postpublish R4G32 with actual public downloads/program identity
-if postpublish pass: released_verified = true
-else: published_unverified, preserve failures and stop claiming completed release
-```
-
-JSON Schema只是上述数据形状。真实发行aggregator、`.4`版本冻结、最终签名包与同候选live门禁仍待完成；开发中的实际原生服务、CI和测试状态以任务进度为准。本目录绝不导入`.3`旧绿色结果或早期开发结果填新候选gate。
-
-本轮[实际设计检查](design-review.json)：32个稳定gate的前置DAG/133条目、SR12/ER12/MM15/IN12来源覆盖、31前置+1后置、九准确资产名、11个报告Schema正例与27反例均核对。已有6份设计Schema保持有效；设计checker找出的ER11/12性能gate原文来源遗漏已补齐。这些只是目录/形状/链接检查，`runtime_gate_checks_executed=0`、公开就绪为false。

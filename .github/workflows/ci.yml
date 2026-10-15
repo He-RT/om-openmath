@@ -3,7 +3,27 @@ name: CI
 on:
   push:
     branches: [dev, main]
+    paths-ignore:
+      - 'docs/plan/**'
+      - 'docs/acceptance/**'
+      - 'docs/README.md'
+      - 'CODEX_HANDOFF.md'
   pull_request:
+    paths-ignore:
+      - 'docs/plan/**'
+      - 'docs/acceptance/**'
+      - 'docs/README.md'
+      - 'CODEX_HANDOFF.md'
+  workflow_dispatch:
+    inputs:
+      full_suite:
+        description: '候选集中验收：完整原生回归及开发Web E2E'
+        type: boolean
+        default: false
+      run_ios:
+        description: '显式运行后续iOS回归（不阻塞本轮Mac/Web）'
+        type: boolean
+        default: false
 
 permissions:
   contents: read
@@ -15,8 +35,11 @@ concurrency:
 jobs:
   native_macos:
     uses: ./.github/workflows/macos-native.yml
+    with:
+      full_suite: ${{ github.event_name == 'workflow_dispatch' && inputs.full_suite }}
 
   ios:
+    if: github.event_name == 'workflow_dispatch' && inputs.run_ios
     uses: ./.github/workflows/ios.yml
 
   rust:
@@ -81,7 +104,9 @@ jobs:
       - run: npm test
       - run: npm run build
       - run: npx playwright install --with-deps chromium
-      - run: npm run test:e2e
+      - name: Development Web E2E (full suite)
+        if: inputs.full_suite
+        run: npm run test:e2e
       - name: Test production static notebook
         run: OPENMATH_PERFORMANCE=1 OPENMATH_E2E_PREVIEW=1 npm run test:e2e -- --workers=1
       - name: Independently check all original production WASM math results

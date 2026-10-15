@@ -1,8 +1,10 @@
-# OpenMath 0.1.0-pre-alpha.4 完整实施计划 —— 原生 Mac 与 Notebook Agent 同版发布
+# OpenMath 0.1.0-pre-alpha.4 实施计划 —— macOS 与 Web 优先交付
 
-> **给执行者：** 先完整读第0节，再按第13节任务及前置执行。本文是`.4`的“规格＋实施＋验收＋发行”唯一主入口，沿用旧[PLAN.md](PLAN.md)的Goal/Architecture/Tech Stack与Files/Interfaces/Steps/Done模式；旧计划作为数学和历史依据，其subagent、自动合main、默认无unsafe、禁止一切现场网络等旧执行指令不覆盖本版新裁决。
+> **当前范围：2026-10-15 / scope_version=2。先读第0节的本轮交付顺序。旧98任务/32门禁是详细规格与后续待办，不再全部阻塞本版；冲突以本节修订和机器账本的8项delivery_check为准。**
 
-**Goal（目标）：** 在现有`.3`共享Rust CAS上完成SwiftUI/AppKit原生Mac客户端、真实Pi Notebook Agent、供应商/模型/媒体与上下文管理、可恢复的文档事务和自包含安装。执行到最后得到**可下载并实际安装的Mac `0.1.0-pre-alpha.4` DMG/app ZIP，GitHub pre-release公开，公开tag/版本/字节/签名/数学/Agent结果回读通过**；不是停在原生空壳、设计草案或本机Debug窗口。
+> **给执行者：** 先完整读第0节，再按当前交付顺序选用第13节的相关任务。本文是`.4`的“规格＋实施＋验收＋发行”唯一主入口，沿用旧[PLAN.md](PLAN.md)的Goal/Architecture/Tech Stack与Files/Interfaces/Steps/Done模式；旧计划作为数学和历史依据，其subagent、自动合main、默认无unsafe、禁止一切现场网络等旧执行指令不覆盖本版新裁决。
+
+**Goal（目标）：** 基于现有共享Rust CAS，优先交付可实际安装使用的原生macOS应用和生产Web版`0.1.0-pre-alpha.4`。两端能编辑、计算、显示结果、保存和重开；Mac接通基础Pi助手；保留Web已有能力。原53数学正确性与原性能门槛不降。交付Mac DMG/app ZIP、Web ZIP及简明版本/hash清单，发布GitHub pre-release并实际下载、启动回读。完整多媒体、长会话系统、其他平台发行不阻塞本版。
 
 **Architecture（架构）：** Swift拥有UI/IME/文件/Keychain/URLSession/媒体/物理存储/进程；安全Rust host-service拥有权威文档/事务/操作账本/调度与数学候选接纳；KernelWorker复用现有求值器和CAS；独立C ABI管理跨语言句柄/字节；随包Node/Pi只负责模型工具循环。耗时数学、编辑分析、文档控制和网络互不堵队列。
 
@@ -12,7 +14,7 @@
 
 **基线与实施状态：** 公开`.3`源码`0889d34e4fce9926054025ca71ea328f6cc65b39`，完整科研/现代语言/二维/场景/九资产已发布；当前dev运行版本仍`.3`。本计划最初建立98项未完成任务，现已开始实施宿主、共享续行与部分存储；当前完成项、证据及下一任务以[任务进度](PRE_ALPHA_4_PROGRESS.md)和本文任务复选框为准。完整原生工作台、Pi Agent、媒体及公开发行尚未交付。目标`.4`确定，R4.5才统一运行版本并冻结候选。计划编写和开发任务通过均不等于实际包发布。
 
-**交付范围说明：** 主产品开发聚焦Mac。共享解析器/内核仍影响Windows/Web/CLI/iOS，因此已确定的同SHA九资产和原平台门禁保留；不在其他平台重写UI或增加新Agent。用户明确不需要旧版数据迁移，首次全新Registry/存储，不导入或删除旧配置/凭据/聊天。普通`.omnb`v1打开保存仍兼容。开发继续dev，不合main、不移动旧tag、不在本机启动iOS模拟器。
+**交付范围说明：** 当前同时聚焦macOS与Web。Windows、iOS及独立CLI安装包后置；CLI继续作为共享内核性能测量入口。原98项任务及32门禁保留稳定编号作追溯，不以全部完成作为本轮发布条件。普通`.omnb`v1兼容，旧版数据迁移不做，不自动导入旧配置/凭据/聊天。开发继续dev，不合main、不移动旧tag、不在本机启动iOS模拟器，不改系统输入法设置。
 
 ## 目录
 
@@ -41,29 +43,42 @@
 
 ## 0. 执行守则与完成语义
 
-1. **按任务前置连续推进。** 先读本节和[`.4`任务进度](PRE_ALPHA_4_PROGRESS.md)，找最早可执行任务。每任务有Files/Interfaces/Depends/Steps/Tests/Done/Gates；一次聚焦一个任务。当前会话由代理直接执行，不要求安装superpowers或使用子代理，也不因历史文档里的这类措辞停工。
-2. **需要行为证明的实现先写有效失败用例。** 文档/低风险可逆样式不机械TDD。原数学53期望/200ms/1s门槛不改；测试必须有独立数学/实际存储/真实wire/UI/资源证据，不能只镜像实现或给Mock“成功”字符串。新续行把原本非法输入变合法时仅按明确语言裁决更新相应语法正负例，记录根因。
-3. **旧执行规则不照搬。** 不自动快进main；核心仍forbid unsafe，必要unsafe仅独立C ABI；普通CI网络用fixture，必要的授权现场模型/Apple公证/公开下载由专门发行门禁真实执行。不要从旧无签名Tauri或旧只读聊天规则推断新Agent已完成。
-4. **区分阶段。** 接受请求、Preview合法、源码提交、结果接纳、文件保存、模型发出、GPU完成、呈现、安装与公开下载均有独立回执。UI动画/模型文字/Schema通过不创造业务成功。
-5. **接口单一来源。** 业务DTO/状态属于OpenMath，Pi/provider类型只在适配层。Schema约束/工具描述/实际handler/生成文档必须一致。必要的模块名、字段或依赖调整记录到DEVIATIONS并更新本计划/机器契约；常规实现裁决可自主处理，不每项向用户重新索权。
-6. **保护原生输入。** IME/未确认草稿/选区/undo/source identity不能被晚回复、主题、布局、虚拟化或Agent覆盖。真实冲突才展示具体原因和保留内容；同一个确定授权不反复确认。
-7. **取消是独立操作信号。** 不把stop排在CAS后面、不复用一个global flag；提交确定后stop只停后续，不伪称undo。未知效果先查原operation ID，不用新ID重放。
-8. **主数学不得重建伪状态。** Working checkpoint与主active引用分开；source/epoch/依赖/取消不符则输出、未接纳定义/history/random一起丢弃。不能重新执行全部let来“恢复”，更不能把readonly fork冒称主文档可写副本。
-9. **存储和秘密边界。** `.omnb`v1仅源码。提供商密钥仅Swift Keychain/明确transport；不进Pi、数据库、日志、上下文、笔记本或导出。新App不读取旧TOML/旧keyring/environment密钥，不扫描旧应用数据。
-10. **测试和检查按影响范围。** Rust改动跑fmt/相关单元与集成/Clippy/WASM/生成检查；原生改动跑Swift及真实UI/桥接；媒体/模型跑真实codec/wire fixtures。每批集成与最终candidate必须完整既有和新门禁，不因定向通过就说全平台绿。不为同一通过结果无理由反复跑重构建。
-11. **进度可续接。** 每任务实际Done后，同次提交更新本文复选框和PRE_ALPHA_4_PROGRESS记录结果/命令/证据。提交SHA在下一次记账，避免自引用。任务完成不等于gate通过；gate必须覆盖全部case/proof与最终candidate。
-12. **缺前置不伪完成。** 证书/SDK/现场凭据缺失如实记录，先做不依赖它的工作。签名材料应早预检；只有该材料真正需要且具体可复核产物已准备时请求补充，不能未经授权购买账号/暴露密钥，也不能把unsigned改名为公证包。
-13. **故障按证据定位。** 保存原失败/取消/超时和所有attempt，区别product/test/environment/provider。连续尝试无进展时记录问题与最小复现，继续独立任务，不靠放宽阈值/删除断言/增加无限重试抹错。
-14. **Git/安装。** 每个任务或相互依赖的可验证小批次提交到dev，最终publisher只在全部门禁就绪后公开`.4`。Preview使用独立app名/Bundle ID/存储/Keychain，不覆盖用户公开安装；公开tag/旧资产保持不动。
-15. **资源与环境。** 不在本机开iOS模拟器，移动端由CI。源码文件约600行以上按责任拆模块。磁盘不足时仅清本仓库已停止使用的可重建缓存，保留当前依赖、运行Release、所有发行包/源码/证据，不整删target或清其他目录。
-16. **真正终点。** 不能在“全部功能本地完成”“已生成DMG”“已创建draft”或“旧SHA测试成功”时结束计划；必须满足第18节公开Mac包与下载回读，最新gate数据为released_verified。
+### 本轮交付顺序（2026-10-15修订，优先于后文旧阶段顺序）
+
+| 顺序 | 实际交付 | 复用原任务 / 退出条件 |
+|---|---|---|
+| 1 | 先拿到能运行的Mac Preview与生产Web | 保留当前未提交实现，先修复已知编译阻断；将R4.5.06前移，不等R4.4全部完成。用现有构建入口得到独立Mac.app和Web dist，启动走通一条编辑→计算→保存→重开路径；Web已有CI失败先按最小复现修复。 |
+| 2 | 补齐用户看得见的主要功能 | 优先R4.2的编辑/结果/Markdown/2D/基础Metal/文件菜单/首启与R4.4.05、06、18的基础模型设置/对话；复用已有Agent读/改/运行/检查通道，完成当前撤销与停止所需最小接线。Web保留现有数学、图形、保存与模型入口，不为两端同版重写Web Agent。 |
+| 3 | 实测并修复性能 | 两端真实Release/生产路径测原53、输入和交互；定位主要耗时后优化，不能凭Rust实现或Debug单元通过声称快。性能不达标先修再打包。 |
+| 4 | 打包并交付下一个pre-alpha | 统一`.4`版本；前7项与第8项打包安装部分集中执行一次，公开后完成第8项下载回读；产出3类安装/分发包与简明清单，GitHub pre-release发布后下载并实跑Mac和Web。 |
+
+**本轮必须做到：** 原数学/精度/语法与`.omnb`兼容、实际原生Mac主UI、Web生产WASM、正常编辑/undo/计算/停止/保存/恢复、结果与基础图形、Mac基础助手的配置→对话→读取/修改/运行/检查→停止、源码和密钥边界、自包含安装与真实性能。未接通的功能不显示可用入口。
+
+**移到后续：** Windows EXE/MSI、iPhone/iPad及XCFramework发行；全部12工具/全部供应商协议/音视频PDF处理组合；自动记忆、历史压缩、FIM ghost；高级探索与极限负载；组件比例与完整人工无障碍审计；完整更新回退和九资产发行。已有Web功能不因此删除，实际发现的数学、数据或可见操作缺陷仍修复。日文IME/物理锁屏专项不阻塞基础交付，中文正常输入、保存、撤销仍需实际可用。
+
+**8项交付检查：** 构建启动、数学正确性、笔记本编辑保存、结果图形、基础助手、性能、数据与权限、真实分发。精确定义在[gates.toml](../acceptance/pre-alpha.4/gates.toml)的`delivery_check`；旧`gate`数组仅为scope 1参考目录，不能再要求所有旧case/proof齐备才发布。旧检查结果不改成passed，公开candidate与发行状态仍如实记录。
+
+### 测试与工作方式
+
+1. **按交付推进。** 一次完成一个用户可观察的功能切面；查第13节相关接口和依赖，尚未开放的后续能力不成为基础切面的前置。不新增多Agent工作流。
+2. **取消机械TDD。** 不要求每项实现先新增失败测试，不设测试数量/覆盖率增长目标。优先运行已有相关用例；新增测试只用于独立数学断言、已复现缺陷、数据/权限/并发回归或现有检查无法验证的行为，避免镜像实现和仅打印观察值的大套测试。
+3. **按改动验证。** 文档/计划变更只检查结构和链接；Rust跑相关crate/test及受影响契约；Swift跑实际链接和相关路径；Web跑类型/构建与受影响UI。无新改动、新失败或未解决疑点，不重复通过过的检查，不在本机和CI无理由重跑同一全套。
+4. **完整回归集中到候选。** 开发批次不再每次强制完整workspace、全部原生故障注入、所有平台与模型全矩阵。CI常规保留Mac Release/核心编辑保存与结果检查、生产Web含性能；`full_suite`显式触发完整原生/开发Web E2E，iOS另行手工触发。候选进行一次与8项交付检查对应的完整验收；修复后只重跑受影响检查，代码变化影响身份/包的部分须使用新包重新验证。共享核心变化仍检查真实WASM，不能只测native。
+5. **性能硬门槛。** 原53：CLI Release每条<200ms，生产Web WASM每条<1000ms，Mac从submit到MainActor接纳整次每条<1000ms；两端10KiB输入到可见绘制p95≤50ms。正常相机交互目标60Hz，记录帧时间并修复明显卡顿。记录启动/首帧/内存，压力负载另列。保持独立正确性断言，不改期望、不放宽阈值、不靠挑最好一次过关。
+6. **保留真实业务边界。** 主数学状态、取消、晚回复、IME草稿、原ID未知提交核对、只读权限和原子保存不退让。`.omnb`只存源码；密钥仅明确授权存储/transport，不进Pi、普通数据库、日志或导出。不扫描旧配置或用户应用数据。
+7. **证据从简。** 每个交付切面记实际结果、关键失败根因、命令和必要日志位置。已有提交可重建的源码不再逐批复制进证据目录，不复制全部数据库/每个attempt的全部资源，不为纯记账重新编译/签名。发布只需8项结果、实际包与版本/hash、关键日志；不先开发通用审计/聚合平台。原有历史证据保留。
+8. **签名与安装实用处理。** Mac保留可运行签名、完整性检查和实际安装；Developer ID/公证材料可用时正常使用。材料缺失不阻塞Preview/Web或明确说明签名身份的实验性pre-alpha包，不为此购买账号/等待证书；发布说明如实标明公证和Gatekeeper安装情况，不能把本地签名包称为已公证。
+9. **提交与资源。** 可验证小批次提交dev，不合main、不改旧tag/资产；Preview隔离app名/Bundle ID/存储/Keychain。只清理本仓库已停用、可重建的缓存，不整删target，不删除发行包、原件或正在使用的依赖/构建。
+10. **完成语义。** 目标是Mac与Web的下一个实际pre-alpha，不以98/98、32/32或证据文件数量代替交付。前7项及R4D08的打包/安装部分通过才ready_to_publish；公开后R4D08下载回读通过、全部8项满足才released_verified并称本版已交付；未做的后续项保留未完成。
+
+**研究依据与适用边界（2026-10-15查证）：** [Chen等，Rethinking the Value of Agent-Generated Tests，v2](https://arxiv.org/html/2602.07900v2)分析6模型在SWE-bench Verified的轨迹，并对4模型做提示干预。Table 8中GPT-5.2被鼓励新增测试后成功率仍71.8%，输出token增19.8%；抑制Kimi/DeepSeek新增测试使输入token降49.0%/32.9%，成功率分别降2.6/1.8个百分点，差异未达统计显著。结论是精简低收益新增测试与交互开销，不能推导为删掉已有回归必然提高成功率。[Mehta，Reasoning effort, not tool access，v2](https://arxiv.org/abs/2607.02436v2)的90次同应用观察实验中，浏览器测试工具成本增42–68%而功能分数未改善；任务、模型和实验设计限制其外推。这里采用的是工程取舍，Rust/WASM、数学、数据和实际性能仍用项目自身结果验证。
 
 ### 0.1 当前待满足的外部前置
 
 | 前置 | 已知状态 | 执行处理 |
 |---|---|---|
 | macOS/Xcode/架构 | 上轮只读核对macOS27.0、Xcode27.0、arm64 | 执行时再核对SDK/toolchain；缺SDK不降级 |
-| Developer ID Application | 上轮有效身份数0，只有本地Apple Development | 先完成Preview/签名准备，再配置真实发行材料；公开门禁必须通过 |
+| Developer ID Application | 上轮有效身份数0，只有本地Apple Development | 使用现有可运行签名先交付Preview；缺发行材料按本节实验性pre-alpha安装与说明处理，不阻塞主线 |
 | 现场模型/视觉路由 | 旧测试Key不自动导入新Registry，当前未接通新Agent | 完成受控设置与fixture后，用授权有效配置做真实任务；缺服务保留blocked，不伪成live通过 |
 | 最终candidate | 尚未分配，版本冻结未执行 | 不从历史`.3`或本次文档SHA取现成green填新gate |
 
@@ -73,12 +88,12 @@
 
 1. 先读第0节、任务进度和实际工作区，保留尚未提交的实现；已完成任务依据证据接续，不重置复选框。
 2. 第1.4–1.5节先看用户最终会得到的功能和需求覆盖；第3–12节查责任、接口、算法、失败行为及界面规格。
-3. 按第13节的`Depends`选择最早可执行任务，落实`Files / Interfaces / Steps / Tests / Done / Gates`。文档中的建议文件名可以随实际实现调整，但契约、调用者和验收须同步。
+3. 按第0节当前交付顺序选择第13节的相关任务，落实实际接口、实现与必要验证；后续待办不机械成为当前切面的前置。文档中的建议文件名可以随实际实现调整，但契约、调用者和验收须同步。
 4. 每项任务完成后更新进度与实现引用。任务级开发证据只证明该次实现，不自动填入最终候选门禁。
-5. 功能、构建及发行工具齐备后进入R4.5：统一版本，先提交汇总器，再冻结候选。依第14–16节测试同一候选、最终签名包与实际模型流程。
+5. 按本节交付顺序得到可用Mac/Web后统一版本，冻结候选；运行8项交付检查，不以通用汇总器或旧32项齐备作为前置。
 6. 最后执行R4.7和第18节：完整GitHub pre-release、公开下载、安装与程序回读。只有`released_verified=true`才交付“Mac `.4` 已发布”。
 
-本版不增加旧数据迁移任务；保留普通`.omnb`文件兼容和新原生数据的保存、恢复、备份。Mac以外的平台只保留已确定的共享回归与同版分发，不开展新的UI或Agent重写。
+本版不增加旧数据迁移任务；保留普通`.omnb`文件兼容和新原生数据可靠保存恢复。Mac与Web同版交付，其他平台发行后置。
 
 ## 1. 基线、调研和产品决策
 
@@ -5858,6 +5873,8 @@ flowchart LR
 
 ### 16.4 门禁账本与证据层级
 
+> 以下为scope 1完整规格参考。scope 2当前交付范围与完成条件以第0节和机器账本8项delivery_check为准；不要求旧98任务/32门禁/九资产全齐。
+
 [gates.toml](../acceptance/pre-alpha.4/gates.toml)是本版唯一机器门禁目录，稳定gate ID与目标/前置、验收编号/源码依据、平台、证据种类、阶段和mandatory属性统一维护。文档SR/ER/MM/IN保持原编号，每个条目必须被覆盖，新增要求追加，删除/降级必须有范围裁决，不能只从CI删job。
 
 | 证据层 | 能证明什么 | 不能替代 |
@@ -5966,6 +5983,8 @@ Mac主编辑/助手/所有`.3`展示按原生API实际文件审计，截图不�
 
 ### 16.12 32项门禁与全部case任务映射
 
+> 以下为scope 1完整规格参考。scope 2当前交付范围与完成条件以第0节和机器账本8项delivery_check为准；不要求旧98任务/32门禁/九资产全齐。
+
 此表从当前机器账本生成；每行case全部必需，早期任务只贡献其子集。完整gate定义/证据种类/来源/依赖仍保存在同一[gates.toml](../acceptance/pre-alpha.4/gates.toml)，不另造第二套门禁状态。
 
 | 门禁 | 名称 / 稳定case ID | 贡献任务 | 阶段 |
@@ -6023,38 +6042,30 @@ Mac主编辑/助手/所有`.3`展示按原生API实际文件审计，截图不�
 
 ## 18. Mac `.4`公开发行完成标准
 
+当前scope 2同时交付Mac与Web，不再要求原98任务/32门禁/九资产全部完成。
+
 ### 18.1 最终可交付物
 
-- 完整SwiftUI/AppKit工程、Rust host/FFI与Pi适配器/锁文件/本地构建安装流程，能在固定SDK27/Rust1.94环境重建。
-- 原生Mac ARM64/macOS27+自包含DMG与.app.zip；随包数学/Swift/字体/Node/Pi/许可、真实Developer ID/Hardened Runtime/secure timestamp/notary/stapled ticket；无需用户安装开发环境。
-- 中文安装/原生使用/模型/媒体/Agent/上下文/开发/发行/验收文档与实际截图/组件率/已知限制，普通`.omnb`v1仍可打开保存。
-- 保留跨端原分发能力，九种产品附件与包外`release-manifest.json`同版本/源码/最终字节散列。
+- 自包含原生Mac ARM64/macOS27+应用，实际可启动、安装、保存重开与配置基础助手；实际签名/公证身份如实标注，不要求用户安装Node/Rust/Xcode。
+- 生产Web资源与真实优化WASM，已有数学、结果、图形、文件与模型功能不退化。
+- 简明中文运行/已知限制说明、版本/source/hash清单；8项实际交付检查结果，必要关键日志可取得，不开发额外通用审计平台。
 
-### 18.2 九种资产的精确文件名
+### 18.2 三种资产的精确文件名
 
 | 资产文件 | 内容 |
 |---|---|
-| `OpenMath-web_0.1.0-pre-alpha.4.zip` | Web生产资源/实际WASM |
-| `OpenMathKernel_0.1.0-pre-alpha.4.xcframework.zip` | 真机ARM64＋模拟器ARM64 XCFramework |
-| `OpenMath_0.1.0-pre-alpha.4_aarch64.dmg` | 原生Mac DMG |
-| `OpenMath_0.1.0-pre-alpha.4_ios_simulator_arm64.app.zip` | iOS模拟器ARM64应用（CI） |
-| `OpenMath_0.1.0-pre-alpha.4_macos_arm64.app.zip` | 与DMG同封存原生Mac应用 |
-| `OpenMath_0.1.0-pre-alpha.4_x64-setup.exe` | Windows NSIS EXE |
-| `OpenMath_0.1.0-pre-alpha.4_x64_zh-CN.msi` | Windows中文WiX MSI |
-| `om-cli_0.1.0-pre-alpha.4_macos_arm64.zip` | Mac ARM64 CLI |
-| `om-cli_0.1.0-pre-alpha.4_windows_x64.zip` | Windows x64 CLI |
+| `OpenMath-web_0.1.0-pre-alpha.4.zip` | 生产Web资源和实际优化WASM |
+| `OpenMath_0.1.0-pre-alpha.4_aarch64.dmg` | 原生Mac安装包 |
+| `OpenMath_0.1.0-pre-alpha.4_macos_arm64.app.zip` | 与DMG一致的原生Mac应用 |
 
-清单记录每项bytes/SHA256与版本/tag/40字符source；不得用一份Tauri Mac包换上native文件名。新Mac.app与DMG内app的封存身份一致；签名/staple后再计算包外hash，无self-hash循环。
+另附`release-manifest.json`记录版本、完整source SHA、各包bytes/SHA256和实际签名方式。Windows/iOS/独立CLI包不在本轮资产集合，不改旧公开发行和旧标签。
 
 ### 18.3 完成清单
 
-- [ ] 所有98项任务实际Done，必交功能矩阵无planned缺项，中文文档/真实组件率有可核对文件和证据。
-- [ ] 所有31项公开前gate及133条目中对应前置case/proof同candidate真实通过，原数学/时限、全平台、live/视觉、最终签名/安装均具证据，无P0/P1或自授权豁免。
-- [ ] ready_to_publish=true；创建完整draft，tag指向该候选，九附件与清单核对后公开`v0.1.0-pre-alpha.4`为pre-release，保留旧`.1/.2/.3`且dev不合main。
-- [ ] R4G32公开tag/九下载/清单/digest/实际Mac包和CLI回读通过，published_unverified已排除；长期原件URI/hash可取得。
-- [ ] released_verified=true；向用户提供真实Release链接、Mac DMG/ZIP、版本/build/source、签名身份类别、SHA256/安装入口、实际原生组件率与已知限制。
-
-计划任务勾选仅在相应真实结果已满足后进行。当前设计编写不满足其中任何运行时完成项；最终交付不能停在“本机已安装”“draft已创建”或“全部代码提交”。
+- [ ] Mac与Web用户主要路径实际可用；8项delivery_check真实通过，数学/性能阈值不降，无已知错误数学、数据丢失、越权或核心操作阻断。
+- [ ] 同候选3类资产及简明清单核验后，GitHub公开`v0.1.0-pre-alpha.4`为pre-release；dev不合main，旧`.1/.2/.3`不动。
+- [ ] 公开Mac包下载、安装和程序身份/操作回读；公开Web包生产启动、WASM计算/保存和性能结果可核对。
+- [ ] 最终`ready_to_publish`、`released_verified`与实际分发前/后结果一致，提供真实下载链接与已知限制。暂缓能力继续标未完成，不阻塞这次范围已明确的交付。
 
 ## 19. 设计来源与机器契约清单
 

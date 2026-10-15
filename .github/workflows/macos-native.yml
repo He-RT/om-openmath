@@ -1,6 +1,10 @@
 name: macOS 原生宿主门禁
 on:
   workflow_call:
+    inputs:
+      full_suite:
+        type: boolean
+        default: false
 permissions:
   contents: read
 jobs:
@@ -33,33 +37,44 @@ jobs:
       - name: Swift 实际 ABI 生命周期与 DTO 负例
         run: bash macos/Scripts/test-native-contracts.sh > target/macos-ci-evidence/contracts.log 2>&1
       - name: 自有媒体、回环 HTTP 与实际 I/O 中断
+        if: inputs.full_suite
         run: bash macos/Scripts/test-fixtures.sh > target/macos-ci-evidence/fixtures.log 2>&1
       - name: SQLite 实际同步、根锁和初始化中断
+        if: inputs.full_suite
         run: bash macos/Scripts/test-storage.sh > target/macos-ci-evidence/storage.log 2>&1
       - name: Rust 原计划与 SQLite 幂等事务/独立回读
+        if: inputs.full_suite
         run: bash macos/Scripts/test-document-store.sh > target/macos-ci-evidence/document-store.log 2>&1
       - name: Blob 真实字节、引用与发布中断
+        if: inputs.full_suite
         run: bash macos/Scripts/test-blobs.sh > target/macos-ci-evidence/blobs.log 2>&1
       - name: 冻结预览、引用与实际 SQLite 回执
+        if: inputs.full_suite
         run: bash macos/Scripts/test-preview.sh > target/macos-ci-evidence/preview.log 2>&1
       - name: 原生编辑屏障、真实源码提交与原 ID 回执恢复
         run: bash macos/Scripts/test-commit-port.sh > target/macos-ci-evidence/commit-port.log 2>&1
       - name: 实际逆事务、重启回执及原生 UndoManager
+        if: inputs.full_suite
         run: bash macos/Scripts/test-undo.sh > target/macos-ci-evidence/undo.log 2>&1
       - name: 最近200源码历史、固定项与实际载荷裁减
+        if: inputs.full_suite
         run: bash macos/Scripts/test-history.sh > target/macos-ci-evidence/history.log 2>&1
       - name: 实际 CAS 检查点、同库 Blob 接纳与原回执恢复
+        if: inputs.full_suite
         run: bash macos/Scripts/test-kernel-store.sh > target/macos-ci-evidence/kernel-store.log 2>&1
       - name: 主运行 C ABI、共享文档门与实际取消和接纳
         run: bash macos/Scripts/test-kernel-runtime.sh > target/macos-ci-evidence/kernel-runtime.log 2>&1
       - name: 包内真实Pi、完整资源与helper崩溃后手工计算
+        if: inputs.full_suite
         run: bash macos/Scripts/test-agent-package.sh > target/macos-ci-evidence/agent-package.log 2>&1
       - name: 新凭据引用、拒绝交互与锁定状态边界
+        if: inputs.full_suite
         run: bash macos/Scripts/test-secret-store.sh > target/macos-ci-evidence/secret-store.log 2>&1
       - name: 实际URLSession与Rust单轮通道、超时取消和并行CAS
+        if: inputs.full_suite
         run: bash macos/Scripts/test-provider-transport.sh > target/macos-ci-evidence/provider-transport.log 2>&1
       - name: 保存原始传输用例与超时事实（失败时同样保留）
-        if: always()
+        if: always() && inputs.full_suite
         run: |
           python3 - <<'PY'
           from pathlib import Path
@@ -70,23 +85,30 @@ jobs:
                   shutil.copytree(source,output/source.name,dirs_exist_ok=True)
           PY
       - name: 真实模型请求账本与五个耐久边界SIGKILL恢复
+        if: inputs.full_suite
         run: bash macos/Scripts/test-provider-ledger.sh > target/macos-ci-evidence/provider-ledger.log 2>&1
       - name: 私有Agent真实进程、耐久ACK与旧身份恢复隔离
+        if: inputs.full_suite
         run: bash macos/Scripts/test-agent-protocol.sh > target/macos-ci-evidence/agent-protocol.log 2>&1
       - name: 不可变结果 C ABI、完整源码分块和迟到回复
+        if: inputs.full_suite
         run: bash macos/Scripts/test-results.sh > target/macos-ci-evidence/results.log 2>&1
       - name: 原生文件快照、真实保存与进程中断回读
         run: bash macos/Scripts/test-saves.sh > target/macos-ci-evidence/saves.log 2>&1
       - name: 原文档outbox、Library耐久投影与进程中断恢复
+        if: inputs.full_suite
         run: bash macos/Scripts/test-recovery.sh > target/macos-ci-evidence/recovery.log 2>&1
       - name: 原生IME草稿备份、晚回执和进程中断恢复
+        if: inputs.full_suite
         run: bash macos/Scripts/test-drafts.sh > target/macos-ci-evidence/drafts.log 2>&1
       - name: 规范会话、工具接纳与实际网络发送中断恢复
+        if: inputs.full_suite
         run: bash macos/Scripts/test-session-ledger.sh > target/macos-ci-evidence/session-ledger.log 2>&1
       - name: 真实运行组、子操作原回执与SIGKILL恢复
+        if: inputs.full_suite
         run: bash macos/Scripts/test-run-ledger.sh > target/macos-ci-evidence/run-ledger.log 2>&1
       - name: 保存运行组原始SQLite和中断事实
-        if: always()
+        if: always() && inputs.full_suite
         run: |
           python3 - <<'PY'
           from pathlib import Path
@@ -97,6 +119,7 @@ jobs:
                   shutil.copytree(source,output/source.name,dirs_exist_ok=True)
           PY
       - name: 全库备份、资源回收、新代次与只读回退隔离
+        if: inputs.full_suite
         run: bash macos/Scripts/test-maintenance.sh > target/macos-ci-evidence/maintenance.log 2>&1
       - name: 原生工作台宽度、真实运行与编辑器选区保留
         run: bash macos/Scripts/test-workbench.sh > target/macos-ci-evidence/workbench.log 2>&1

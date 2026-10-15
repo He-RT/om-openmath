@@ -93,6 +93,19 @@ struct Active {
     id: String,
     cell: Option<String>,
 }
+pub(super) fn child_operation(
+    intent: &crate::agent::ingress::ToolIntent,
+    ordinal: usize,
+) -> String {
+    let value = serde_json::to_vec(&(
+        "openmath/run-child/v1",
+        &intent.operation_id,
+        &intent.arguments_hash,
+        ordinal,
+    ))
+    .expect("string tuple");
+    format!("run-{:x}", Sha256::digest(value))
+}
 /// An execution capability can only be constructed from a real frozen/read-issued plan.
 /// A native adapter must durably claim the group and each child before calling poll; restoring
 /// a serialized RunReport can never construct this executor or restart its computation.
@@ -151,14 +164,11 @@ impl PreparedRun {
 impl RunExecutor {
     /// Stable original bootstrap/child IDs. No random bootstrap identity on resumption.
     pub fn child_operation(&self, ordinal: usize) -> String {
-        let value = serde_json::to_vec(&(
-            "openmath/run-child/v1",
-            &self.binding.intent.operation_id,
-            &self.binding.intent.arguments_hash,
-            ordinal,
-        ))
-        .expect("string tuple");
-        format!("run-{:x}", Sha256::digest(value))
+        child_operation(&self.binding.intent, ordinal)
+    }
+    /// Original planning scope, used only to validate this source owner's live activation.
+    pub fn scope(&self) -> &ReferenceScope {
+        &self.binding.scope
     }
     /// Frozen order for the durable native group admission. No model-supplied replacement plan.
     pub fn plan(&self) -> &om_kernel::CellExecutionPlan {

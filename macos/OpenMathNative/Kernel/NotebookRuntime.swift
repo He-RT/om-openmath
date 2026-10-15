@@ -46,7 +46,8 @@ struct NotebookCellResult:Sendable {
   @Published private(set) var projectionError:String?
   @Published var selectedCell:String?
   @Published private(set) var navigationSequence:UInt64=0
-  private let kernel:KernelCommitPort,host:NativeHostClient
+  let kernel:KernelCommitPort
+  private let host:NativeHostClient
   private var runTask:Task<Void,Never>?
   private var closing=false
   private var unknownCell:String?

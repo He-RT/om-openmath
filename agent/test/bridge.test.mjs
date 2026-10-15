@@ -65,3 +65,22 @@ test('actual Pi settles an unknown source effect without a second model request 
  await deliver(hello);let timer;try {await Promise.race([done.promise,new Promise((_,reject)=>{timer=setTimeout(()=>reject(Error('unknown Pi timeout')),3000)})]);}finally {clearTimeout(timer);}
  assert.equal(turn,1);assert.equal(observed.filter(f=>f.type==='tool_call').length,1);assert.equal(observed.at(-1).type,'settled');
 });
+
+// These host receipts are synthetic protocol inputs. The Swift package fixture verifies real
+// math/SQLite/Blob receipts through this exact packaged Pi bridge.
+for(const outcome of ['completed','partial','unknown'])test(`actual Pi consumes ${outcome} run receipt with original identity`,async()=>{
+ const observed=[];let bridge,sequence=1,turn=0;const done=Promise.withResolvers();
+ const deliver=f=>bridge.accept(f,raw(f));
+ const nativeResult={ok:outcome==='completed',status:outcome,request_ref:'run',operation_ref:'run',document:{id:'document',generation:1,revision:0},data:{run_ref:'run',run_outcome:outcome==='completed'?'completed':'partial',cells:[{cell_id:'a',source_hash:'a'.repeat(64),status:'done',result_ref:'retained-a',diagnostics:[]}],executed_cell_ids:['a']},error:outcome==='completed'?null:{code:outcome==='unknown'?'UNKNOWN_OUTCOME':'EXECUTION_FAILED',message:'Original prefix',recovery:outcome==='unknown'?'query_operation':'none',details:{}},pagination:{truncated:false,next_cursor:null}};
+ bridge=new AgentBridge(async bytes=>{
+  const frame=decodeFrame(bytes.slice(0,-1));observed.push(frame);
+  const reply=(kind,payload,reply_to=null)=>deliver(hostFrame(kind,++sequence,payload,reply_to));
+  if(frame.type==='ready')await reply('user_input',{event_ref:'input',message:user});
+  if(frame.type==='prepare_request'){turn++;await reply('model_request',{...frame.payload,context_ref:'context-'+turn,model_config_ref:'config'});}
+  if(frame.type==='model_request')await reply('model_event',{agent_turn_id:frame.payload.agent_turn_id,request_id:frame.payload.request_id,byte_offset:0,text:'',phase:'finished',canonical_message:{...user,message_id:'assistant-'+turn,role:'assistant',agent_turn_id:frame.payload.agent_turn_id,parts:turn===1?[{kind:'tool_call',part_id:'call',tool_call_id:'run-call',name:'run_cells',arguments_json:'{"snapshot_ref":"read-issued","cell_ids":["a"],"scope":"selected","continue_on_error":false}'}]:[{kind:'text',part_id:'text',text:'received original run'}]}});
+  if(frame.type==='transcript_event')await reply('ack',{event_id:frame.payload.event_id,event_sequence:turn,receipt_hash:'a'.repeat(64)},frame.message_id);
+  if(frame.type==='tool_call')await reply('tool_result',{agent_turn_id:frame.payload.agent_turn_id,tool_call_id:'run-call',operation_ref:'run',result_ref:'native-result',outcome,result_json:JSON.stringify(nativeResult)});
+ },()=>done.resolve());
+ await deliver(hello);let timer;try {await Promise.race([done.promise,new Promise((_,reject)=>{timer=setTimeout(()=>reject(Error('run Pi timeout')),3000)})]);}finally {clearTimeout(timer);await bridge.close();}
+ assert.equal(turn,outcome==='unknown'?1:2);assert.equal(observed.filter(f=>f.type==='tool_call').length,1);assert.equal(observed.at(-1).type,'settled');
+});

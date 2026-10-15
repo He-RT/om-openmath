@@ -783,3 +783,228 @@ fn host_stream_has_exact_offsets_one_terminal_and_no_fabricated_tool_receipt() {
     assert!(send(&mut owner, delta(5, 4, "late")).is_err());
     assert!(send(&mut owner,frame(&hello,"tool_result",5,json!({"agent_turn_id":"turn","tool_call_id":"invented","operation_ref":null,"result_ref":null,"outcome":"completed","result_json":null}))).is_err());
 }
+
+// The ACK hashes below are unit-test stand-ins. AgentPackageFixtures separately checks that
+// all four ACKs come from actual SQLite readback before entering this native port.
+fn run_intent(owner: &mut SourceEndpoint, extra: Value) -> NativeAgentToolIntent {
+    let hello = activate(owner, 1, false);
+    ready(owner, &hello, 1);
+    let mut sequence = 2;
+    let read = data_call(owner, &hello, &mut sequence, "read_notebook", json!({}));
+    let read: Value = serde_json::from_str(&read.result_json).unwrap();
+    let mut args = json!({"snapshot_ref":read["data"]["snapshot_ref"],"cell_ids":["a"],"scope":"required","continue_on_error":false});
+    for (key, value) in extra.as_object().unwrap() {
+        args[key] = value.clone();
+    }
+    mapped_call(owner, &hello, &mut sequence, "run_cells", args)
+}
+fn prepared_run(owner: &mut SourceEndpoint, id: &str, allowed: Value) -> NativeAgentHostReply {
+    let mut reply = command(owner, json!({"type":"agent_prepare_run","scope":scope(1),"operation_id":id,"allowed_cell_ids":allowed})).unwrap();
+    let deadline = std::time::Instant::now() + std::time::Duration::from_secs(10);
+    while reply.effect_result.0.is_none()
+        && reply
+            .run_progress
+            .0
+            .as_ref()
+            .unwrap()
+            .descriptor
+            .0
+            .is_none()
+    {
+        assert!(std::time::Instant::now() < deadline);
+        std::thread::sleep(std::time::Duration::from_millis(1));
+        reply = command(
+            owner,
+            json!({"type":"agent_poll_run","scope":scope(1),"operation_id":id}),
+        )
+        .unwrap();
+    }
+    reply
+}
+fn close_run_owner(owner: &mut SourceEndpoint) {
+    owner.close_kernel_begin();
+    for thread in owner.take_kernel_threads() {
+        thread.join().unwrap();
+    }
+}
+fn empty_main(owner: &mut SourceEndpoint) {
+    let state = owner
+        .kernel_command(serde_json::from_value(json!({"type":"kernel_state"})).unwrap())
+        .unwrap();
+    assert!(state.active_checkpoint_id.0.is_none());
+    assert_eq!(state.kernel_state_revision.get(), 0);
+}
+#[test]
+fn native_run_requires_original_acks_and_rejects_manual_child_bypass() {
+    let mut owner = endpoint();
+    let intent = run_intent(&mut owner, json!({}));
+    let reply = prepared_run(&mut owner, &intent.operation_id, Value::Null);
+    let progress = reply.run_progress.0.unwrap();
+    assert_eq!(progress.phase, NativeRunProgressPhase::AwaitingAdmission);
+    let descriptor = progress.descriptor.0.unwrap();
+    assert_eq!(descriptor.children.len(), 2); // bootstrap plus actual a
+    for _ in 0..8 {
+        let reply = command(
+            &mut owner,
+            json!({"type":"agent_poll_run","scope":scope(1),"operation_id":intent.operation_id}),
+        )
+        .unwrap();
+        assert_eq!(
+            reply.run_progress.0.unwrap().phase,
+            NativeRunProgressPhase::AwaitingAdmission
+        );
+    }
+    empty_main(&mut owner);
+    for (id, command_type) in [
+        (&intent.operation_id, "kernel_bootstrap"),
+        (&descriptor.children[0].operation_id, "kernel_bootstrap"),
+        (&descriptor.children[1].operation_id, "kernel_run_cell"),
+    ] {
+        let mut raw = json!({"type":command_type,"operation_id":id,"expected_source_hash":descriptor.source_snapshot_hash});
+        if command_type == "kernel_run_cell" {
+            raw["cell_id"] = json!("a");
+        }
+        assert_eq!(
+            owner
+                .kernel_command(serde_json::from_value(raw).unwrap())
+                .err()
+                .unwrap(),
+            "RUN_OPERATION_REQUIRED"
+        );
+    }
+    assert_eq!(owner.cancel(&intent.operation_id), Some(true));
+    let stopped = command(
+        &mut owner,
+        json!({"type":"agent_poll_run","scope":scope(1),"operation_id":intent.operation_id}),
+    )
+    .unwrap();
+    assert_eq!(
+        stopped.effect_result.0.unwrap().outcome,
+        NativeAgentEffectResultOutcome::Cancelled
+    );
+    empty_main(&mut owner);
+    close_run_owner(&mut owner);
+}
+#[test]
+fn native_run_ack_is_ordered_exact_and_bound_to_original_task() {
+    let mut owner = endpoint();
+    let intent = run_intent(&mut owner, json!({}));
+    let progress = prepared_run(&mut owner, &intent.operation_id, Value::Null)
+        .run_progress
+        .0
+        .unwrap();
+    let child = progress.next_operation_id.0.unwrap();
+    let ack = |id: String, seq: u64| json!({"event_id":id,"event_sequence":seq,"receipt_hash":"a".repeat(64)});
+    let original = json!({"type":"agent_acknowledge_run_child","scope":scope(1),"operation_id":intent.operation_id,"child_operation_id":child,
+        "group_admission":ack(format!("admit-{}",intent.operation_id),7),"group_started":ack(format!("run-started-{}",intent.operation_id),8),
+        "child_admission":ack(format!("run-admit-{child}"),9),"child_started":ack(format!("run-start-{child}"),10)});
+    let mut bad = original.clone();
+    bad["child_started"]["event_sequence"] = json!(8);
+    assert_eq!(
+        command(&mut owner, bad).err().unwrap(),
+        "IPC_LEDGER_RECEIPT_MISMATCH"
+    );
+    let mut bad = original.clone();
+    bad["scope"]["task_id"] = json!("other-task");
+    assert!(command(&mut owner, bad).is_err());
+    let mut bad = original.clone();
+    bad["child_admission"]["event_id"] = json!("different-admission");
+    assert_eq!(
+        command(&mut owner, bad).err().unwrap(),
+        "IPC_LEDGER_RECEIPT_MISMATCH"
+    );
+    empty_main(&mut owner);
+    command(&mut owner, original.clone()).unwrap();
+    command(&mut owner, original.clone()).unwrap(); // original exact duplicate, no fresh execution
+    let mut bad = original;
+    bad["child_started"]["receipt_hash"] = json!("b".repeat(64));
+    assert_eq!(
+        command(&mut owner, bad).err().unwrap(),
+        "IPC_LEDGER_RECEIPT_MISMATCH"
+    );
+    close_run_owner(&mut owner);
+    empty_main(&mut owner);
+}
+#[test]
+fn native_run_allowed_cells_and_closed_args_fail_before_any_main_effect() {
+    for (extra, allowed, code) in [
+        (json!({}), json!([]), "PERMISSION_DENIED"),
+        (
+            json!({"caller_plan": ["a"]}),
+            Value::Null,
+            "INVALID_ARGUMENT",
+        ),
+        (
+            json!({"snapshot_ref":"unissued"}),
+            Value::Null,
+            "INVALID_REFERENCE",
+        ),
+    ] {
+        let mut owner = endpoint();
+        let intent = run_intent(&mut owner, extra);
+        let result = prepared_run(&mut owner, &intent.operation_id, allowed)
+            .effect_result
+            .0
+            .unwrap();
+        let envelope: Value = serde_json::from_str(&result.result_json).unwrap();
+        assert_eq!(result.outcome, NativeAgentEffectResultOutcome::Failed);
+        assert!(result.operation_ref.0.is_none());
+        assert_eq!(envelope["error"]["code"], code);
+        empty_main(&mut owner);
+        close_run_owner(&mut owner);
+    }
+}
+
+#[test]
+fn native_run_bounds_full_report_with_retention_warnings_before_any_effect() {
+    let cells = (0..1000)
+        .map(|i| NativeSourceCell {
+            id: if i == 0 {
+                "a".into()
+            } else {
+                format!("cell-{i}")
+            },
+            kind: NativeCellKind::Math,
+            source: if i == 0 {
+                "let v0=0;v0".into()
+            } else {
+                format!("let v{i}=v{}+1;v{i}", i - 1)
+            },
+            dialect: Dialect::Modern,
+        })
+        .collect::<Vec<_>>();
+    let ids = cells.iter().map(|c| c.id.clone()).collect::<Vec<_>>();
+    let source = SourceDocument::new(
+        "actual-document".into(),
+        Serial::new(1).unwrap(),
+        NativeSourceFile {
+            version: 1,
+            title: "Actual report-byte admission bound".into(),
+            cells,
+        },
+    )
+    .unwrap();
+    let mut owner = SourceEndpoint::open(
+        source.snapshot().clone(),
+        "actual-store".into(),
+        "actual-runtime".into(),
+        Serial::new(1).unwrap(),
+        None,
+        Serial::new(0).unwrap(),
+    )
+    .unwrap();
+    let intent = run_intent(
+        &mut owner,
+        json!({"cell_ids":[ids.last().unwrap()],"scope":"required"}),
+    );
+    let result = prepared_run(&mut owner, &intent.operation_id, Value::Null)
+        .effect_result
+        .0
+        .unwrap();
+    let data: Value = serde_json::from_str(&result.result_json).unwrap();
+    assert_eq!(data["error"]["code"], "LIMIT_EXCEEDED");
+    assert_eq!(data["error"]["recovery"], "reduce_request");
+    assert!(result.operation_ref.0.is_none());
+    empty_main(&mut owner);
+    close_run_owner(&mut owner);
+}

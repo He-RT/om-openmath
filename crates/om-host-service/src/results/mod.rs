@@ -176,6 +176,68 @@ struct CurrentFacts {
     cells: Vec<om_kernel::retained_results::CurrentResultCell>,
 }
 impl ResultStore {
+    /// Exact original accepted run receipts, projected without reexecution. Cache absence is
+    /// explicit and can never substitute an older result from the same cell/source.
+    pub(crate) fn run_outputs(
+        &mut self,
+        receipts: &[NativeKernelReceipt],
+        scope: &ReferenceScope,
+        now: u64,
+        ctx: &Interrupt,
+    ) -> Result<serde_json::Value, ResultError> {
+        let mut output = serde_json::Map::new();
+        for receipt in receipts {
+            ctx.tick()
+                .map_err(|e| ResultError::Projection(e.to_string()))?;
+            let cell = receipt
+                .producer
+                .cell_id
+                .0
+                .as_ref()
+                .ok_or(ResultError::Invalid)?;
+            let record = receipt
+                .result_id
+                .0
+                .as_ref()
+                .and_then(|id| self.records.get(id))
+                .cloned();
+            let mut reference = None;
+            let mut diagnostics = Vec::new();
+            if let Some(record) = record {
+                if record.receipt.checkpoint_id != receipt.checkpoint_id
+                    || record.receipt.checkpoint_blob_hash != receipt.checkpoint_blob_hash
+                {
+                    return Err(ResultError::Invalid);
+                }
+                let summary = record.summary();
+                let tail = summary.statements.iter().rev().find(|s| !s.suppressed);
+                if let Some(last) = tail {
+                    reference = Some(self.issue(
+                        record.id(),
+                        last.out_index,
+                        Some(&last.view_id),
+                        scope.clone(),
+                        now,
+                    )?);
+                } else if summary.statements.is_empty()
+                    && summary.status == om_kernel::protocol::CellStatus::Error
+                {
+                    reference = Some(self.issue(record.id(), 0, None, scope.clone(), now)?);
+                }
+                if let Some(message) = record.value.messages().first() {
+                    diagnostics.push(serde_json::json!({"code":format!("{}::{}",message.symbol,message.tag).chars().take(80).collect::<String>(),
+                        "message":message.text.chars().take(256).collect::<String>(),"severity":match message.level {om_kernel::protocol::MsgLevel::Error=>"error",om_kernel::protocol::MsgLevel::Warning=>"warning",om_kernel::protocol::MsgLevel::Info=>"hint"},"cell_id":cell,"start_utf8":null,"end_utf8":null}));
+                }
+            } else if receipt.result_id.0.is_some() {
+                diagnostics.push(serde_json::json!({"code":"RESULT_NOT_AVAILABLE","message":"Original accepted result is outside the retained output budget","severity":"warning","cell_id":cell,"start_utf8":null,"end_utf8":null}));
+            }
+            output.insert(
+                cell.clone(),
+                serde_json::json!({"result_ref":reference,"diagnostics":diagnostics}),
+            );
+        }
+        Ok(serde_json::Value::Object(output))
+    }
     /// Latest retained real output per exact source cell, bounded by the read snapshot's accepted
     /// kernel revision. A later re-evaluation (including random output) cannot replace its history.
     pub fn notebook_references(

@@ -8,7 +8,7 @@ pub(super) struct PendingPatch {
     pub(super) plan: Arc<FrozenPreviewPlan>,
 }
 impl SourceEndpoint {
-    fn current_source_scope(&self) -> ReferenceScope {
+    pub(super) fn current_source_scope(&self) -> ReferenceScope {
         let mut current = self.scope.clone();
         let s = self.controller.owner().snapshot();
         current.revision = s.revision.get();

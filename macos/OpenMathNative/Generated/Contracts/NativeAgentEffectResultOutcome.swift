@@ -5,4 +5,5 @@ public enum NativeAgentEffectResultOutcome: String, Codable, Sendable {
   case `failed` = "failed"
   case `cancelled` = "cancelled"
   case `unknown` = "unknown"
+  case `partial` = "partial"
 }

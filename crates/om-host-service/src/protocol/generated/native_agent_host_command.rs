@@ -26,4 +26,10 @@ pub enum NativeAgentHostCommand {
     NativeAgentBindHistory(NativeAgentBindHistory),
     /// Variant `NativeAgentEffectTool`.
     NativeAgentEffectTool(NativeAgentEffectTool),
+    /// Variant `NativeAgentPrepareRun`.
+    NativeAgentPrepareRun(NativeAgentPrepareRun),
+    /// Variant `NativeAgentPollRun`.
+    NativeAgentPollRun(NativeAgentPollRun),
+    /// Variant `NativeAgentAcknowledgeRunChild`.
+    NativeAgentAcknowledgeRunChild(Box<NativeAgentAcknowledgeRunChild>),
 }

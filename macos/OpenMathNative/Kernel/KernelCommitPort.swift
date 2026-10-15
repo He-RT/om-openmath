@@ -12,6 +12,7 @@ actor KernelCommitPort {
   private let client:NativeHostClient
   private let storage:StorageService
   private let source:DocCommitPort
+  private let reconciliationFaults:StorageFaults
   private var closing=false
   private var inFlight=Set<String>()
   private var preparing=Set<String>()
@@ -19,7 +20,7 @@ actor KernelCommitPort {
   private var unknown:[String:NativeKernelCommit]=[:]
   private var groups:[String:Set<String>]=[:]
   private var seeds:[String:String]=[:]
-  init(client:NativeHostClient,storage:StorageService,source:DocCommitPort) {self.client=client;self.storage=storage;self.source=source}
+  init(client:NativeHostClient,storage:StorageService,source:DocCommitPort,reconciliationFaults:StorageFaults = .init()) {self.reconciliationFaults=reconciliationFaults;self.client=client;self.storage=storage;self.source=source}
   func state() async throws ->NativeKernelHostReply {try await client.kernelCommand(.kernel_state(.init(type:.kernel_state)))}
   func status(_ operation:String) async throws ->NativeKernelHostReply {try await client.kernelCommand(.kernel_status(.init(type:.kernel_status,operation_id:operation)))}
   private func admitted(_ operation:String) async throws {
@@ -59,6 +60,7 @@ actor KernelCommitPort {
   }
   /// Read original actual facts; never construct another ID or replay computation after lost ACK.
   func reconcile(_ operation:String) async throws ->NativeKernelReceipt? {
+    try reconciliationFaults.reach("before_kernel_reconciliation")
     let result=try await status(operation)
     if result.phase == .completed {
       guard let receipt=result.receipt.value else {throw NativeHostClientError.invalidReply}

@@ -23,10 +23,30 @@ struct AgentFrameBytes {
   mutating func finish()throws {guard !failed,pending.isEmpty else {failed=true;throw AgentSessionError.invalidFrame}}
 }
 
+/// Exit is registered before launch, so observing EOF/exit before close cannot miss completion.
+private final class AgentChildExit:@unchecked Sendable {
+  private let lock=NSLock()
+  private var finished=false,waiters:[CheckedContinuation<Void,Never>]=[]
+  func finish() {
+    let pending=lock.withLock {()->[CheckedContinuation<Void,Never>] in
+      guard !finished else {return []};finished=true
+      let pending=waiters;waiters.removeAll();return pending
+    }
+    for waiter in pending {waiter.resume()}
+  }
+  func wait()async {
+    await withCheckedContinuation {continuation in
+      let ready=lock.withLock {if finished {return true};waiters.append(continuation);return false}
+      if ready {continuation.resume()}
+    }
+  }
+}
+
 /// The native caller supplies the trusted executable. The child receives a private minimal
 /// environment, not app credentials, shell profiles or inherited provider settings.
 actor AgentPrivatePipe {
   private let process:Process,input:FileHandle,output:FileHandle,errors:FileHandle
+  private let exit:AgentChildExit
   private let ownedDirectory:URL?
   private var capture:(@Sendable (Data,Bool)async->Void)?
   private var closed=false,writing=false
@@ -35,15 +55,16 @@ actor AgentPrivatePipe {
   private var written:[UInt64:Data]=[:]
   private var inflight:(UInt64,Data)?
   private var pendingBytes=0,writtenBytes=0
-  private init(process:Process,input:FileHandle,output:FileHandle,errors:FileHandle,directory:URL?) {self.process=process;self.input=input;self.output=output;self.errors=errors;self.ownedDirectory=directory}
+  private init(process:Process,input:FileHandle,output:FileHandle,errors:FileHandle,exit:AgentChildExit,directory:URL?) {self.exit=exit;self.process=process;self.input=input;self.output=output;self.errors=errors;self.ownedDirectory=directory}
   static func launch(executable:URL,arguments:[String],directory:URL,environment:[String:String]=["PATH":"/usr/bin:/bin"],removeDirectoryOnClose:Bool=false) async throws->AgentPrivatePipe {
     try await Task.detached {
-      let process=Process(),stdin=Pipe(),stdout=Pipe(),stderr=Pipe()
+      let process=Process(),stdin=Pipe(),stdout=Pipe(),stderr=Pipe(),exit=AgentChildExit()
+      process.terminationHandler={_ in exit.finish()}
       process.executableURL=executable;process.arguments=arguments;process.currentDirectoryURL=directory
       process.environment=environment
       process.standardInput=stdin;process.standardOutput=stdout;process.standardError=stderr
       try process.run()
-      let pipe=AgentPrivatePipe(process:process,input:stdin.fileHandleForWriting,output:stdout.fileHandleForReading,errors:stderr.fileHandleForReading,directory:removeDirectoryOnClose ? directory:nil)
+      let pipe=AgentPrivatePipe(process:process,input:stdin.fileHandleForWriting,output:stdout.fileHandleForReading,errors:stderr.fileHandleForReading,exit:exit,directory:removeDirectoryOnClose ? directory:nil)
       Task {await pipe.drainErrors()}
       return pipe
     }.value
@@ -120,8 +141,7 @@ actor AgentPrivatePipe {
       try? await Task.sleep(for:.milliseconds(10))
     }
     if process.isRunning {_ = Darwin.kill(process.processIdentifier,SIGKILL)}
-    let child=process
-    await Task.detached {child.waitUntilExit()}.value
+    await exit.wait()
     try? input.close();try? output.close();try? errors.close()
     if let directory=ownedDirectory {try? FileManager.default.removeItem(at:directory)}
   }

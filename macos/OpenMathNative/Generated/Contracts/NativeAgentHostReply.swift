@@ -17,6 +17,7 @@ public struct NativeAgentHostReply: Codable, Sendable {
   public var request_intent: HostNullable<NativeAgentRequestIntent>
   public var readonly_result: HostNullable<NativeAgentReadonlyResult>
   public var effect_result: HostNullable<NativeAgentEffectResult>
+  public var run_progress: HostNullable<NativeRunProgress>
   private enum CodingKeys: String, CodingKey {
     case protocol_version
     case runtime_instance_id
@@ -34,10 +35,11 @@ public struct NativeAgentHostReply: Codable, Sendable {
     case request_intent
     case readonly_result
     case effect_result
+    case run_progress
   }
   public init(from decoder: Decoder) throws {
     let all = try decoder.container(keyedBy: HostCodingKey.self)
-    let allowed: Set<String> = ["protocol_version","runtime_instance_id","document_id","document_generation","scope","phase","disposition","outbound_json","canonical_json","peer_message_id","event_id","source_sequence","tool_intent","request_intent","readonly_result","effect_result"]
+    let allowed: Set<String> = ["protocol_version","runtime_instance_id","document_id","document_generation","scope","phase","disposition","outbound_json","canonical_json","peer_message_id","event_id","source_sequence","tool_intent","request_intent","readonly_result","effect_result","run_progress"]
     guard all.allKeys.allSatisfy({ allowed.contains($0.stringValue) }) else { throw DecodingError.dataCorrupted(.init(codingPath: decoder.codingPath, debugDescription: "Unknown native contract field")) }
     let c = try decoder.container(keyedBy: CodingKeys.self)
     self.protocol_version = try c.decode(UInt32.self, forKey: .protocol_version)
@@ -56,8 +58,9 @@ public struct NativeAgentHostReply: Codable, Sendable {
     self.request_intent = try c.decode(HostNullable<NativeAgentRequestIntent>.self, forKey: .request_intent)
     self.readonly_result = try c.decode(HostNullable<NativeAgentReadonlyResult>.self, forKey: .readonly_result)
     self.effect_result = try c.decode(HostNullable<NativeAgentEffectResult>.self, forKey: .effect_result)
+    self.run_progress = try c.decode(HostNullable<NativeRunProgress>.self, forKey: .run_progress)
   }
-  public init(protocol_version: UInt32, runtime_instance_id: String, document_id: String, document_generation: HostSerial, scope: NativeAgentControlScope, phase: NativeAgentHostReplyPhase, disposition: NativeAgentHostReplyDisposition, outbound_json: HostNullable<String>, canonical_json: HostNullable<String>, peer_message_id: HostNullable<String>, event_id: HostNullable<String>, source_sequence: HostNullable<HostSerial>, tool_intent: HostNullable<NativeAgentToolIntent>, request_intent: HostNullable<NativeAgentRequestIntent>, readonly_result: HostNullable<NativeAgentReadonlyResult>, effect_result: HostNullable<NativeAgentEffectResult>) {
+  public init(protocol_version: UInt32, runtime_instance_id: String, document_id: String, document_generation: HostSerial, scope: NativeAgentControlScope, phase: NativeAgentHostReplyPhase, disposition: NativeAgentHostReplyDisposition, outbound_json: HostNullable<String>, canonical_json: HostNullable<String>, peer_message_id: HostNullable<String>, event_id: HostNullable<String>, source_sequence: HostNullable<HostSerial>, tool_intent: HostNullable<NativeAgentToolIntent>, request_intent: HostNullable<NativeAgentRequestIntent>, readonly_result: HostNullable<NativeAgentReadonlyResult>, effect_result: HostNullable<NativeAgentEffectResult>, run_progress: HostNullable<NativeRunProgress>) {
     self.protocol_version = protocol_version
     self.runtime_instance_id = runtime_instance_id
     self.document_id = document_id
@@ -74,5 +77,6 @@ public struct NativeAgentHostReply: Codable, Sendable {
     self.request_intent = request_intent
     self.readonly_result = readonly_result
     self.effect_result = effect_result
+    self.run_progress = run_progress
   }
 }

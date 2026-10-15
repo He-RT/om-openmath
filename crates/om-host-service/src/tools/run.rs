@@ -4,7 +4,7 @@ use crate::{
     agent::ingress::ToolIntent,
     document::coordinator::kernel_file,
     kernel::{KernelState, acceptance::AcceptedKernelState},
-    protocol::generated::{AgentToolName, NativeSourceSnapshot},
+    protocol::{Nullable, Serial, generated::*},
     references::ReferenceScope,
     tools::read::{ReadError, ReadNotebookService},
 };
@@ -48,9 +48,86 @@ pub struct PreparedRun {
     /// Original requested cell-error policy; execution must not silently replace it.
     continue_on_error: bool,
     #[serde(skip)]
+    run_scope: CellExecutionScope,
+    #[serde(skip)]
     binding: RunBinding,
 }
 impl PreparedRun {
+    pub(crate) fn source(&self) -> &NativeSourceSnapshot {
+        &self.binding.source
+    }
+
+    /// Native frozen descriptor for durable group admission. No model/caller can replace it.
+    pub fn descriptor(&self) -> Result<NativeRunDescriptor, String> {
+        let b = &self.binding;
+        let mut children = Vec::new();
+        let id = |ordinal| execution::child_operation(&b.intent, ordinal);
+        if b.parent.is_none() && !self.plan.ordered_cell_ids.is_empty() {
+            children.push(NativeRunChild {
+                operation_id: id(0),
+                cell_id: Nullable(None),
+                cell_source_hash: Nullable(None),
+            });
+        }
+        for (index, cell) in self.plan.ordered_cell_ids.iter().enumerate() {
+            let source = b
+                .source
+                .file
+                .cells
+                .iter()
+                .find(|c| &c.id == cell)
+                .ok_or("INVALID_CELL_REFERENCE")?;
+            children.push(NativeRunChild {
+                operation_id: id(index + 1),
+                cell_id: Nullable(Some(cell.clone())),
+                cell_source_hash: Nullable(Some(format!(
+                    "{:x}",
+                    Sha256::digest(source.source.as_bytes())
+                ))),
+            });
+        }
+        let blocked_cells = self
+            .plan
+            .cycle_cell_ids
+            .iter()
+            .map(|id| (id, "DEPENDENCY_CYCLE"))
+            .chain(
+                self.plan
+                    .blocked_cell_ids
+                    .iter()
+                    .map(|id| (id, "DEPENDENCY_BLOCKED")),
+            )
+            .map(|(cell, code)| NativeRunStoppedCell {
+                cell_id: cell.clone(),
+                operation_id: Nullable(None),
+                code: code.into(),
+            })
+            .collect();
+        Ok(NativeRunDescriptor {
+            operation_id: b.intent.operation_id.clone(),
+            arguments_hash: b.intent.arguments_hash.clone(),
+            source_snapshot_hash: b.source.snapshot_hash.clone(),
+            run_scope: serde_json::from_value(
+                serde_json::to_value(self.run_scope).map_err(|_| "INVALID_ARGUMENT")?,
+            )
+            .map_err(|_| "INVALID_ARGUMENT")?,
+            requested_cell_ids: self.plan.requested_cell_ids.clone(),
+            children,
+            blocked_cells,
+            continue_on_error: self.continue_on_error,
+            document_generation: Serial::new(b.scope.generation)?,
+            source_revision: b.source.revision,
+            execution_epoch: b.source.execution_epoch,
+            config_revision: Serial::new(b.scope.config_revision)?,
+            kernel_build: crate::kernel::endpoint::KERNEL_BUILD_ID.into(),
+            general_hash: b.general_hash.clone(),
+            initial_checkpoint_id: Nullable(b.parent.as_ref().map(|p| p.checkpoint_id.clone())),
+            initial_checkpoint_hash: Nullable(
+                b.parent.as_ref().map(|p| p.checkpoint_blob_hash.clone()),
+            ),
+            initial_kernel_revision: Nullable(b.parent.as_ref().map(|p| p.kernel_state_revision)),
+        })
+    }
     /// Immutable actual dependency plan, never a caller-replaceable execution list.
     pub fn plan(&self) -> &CellExecutionPlan {
         &self.plan
@@ -113,6 +190,9 @@ pub fn prepare(
     }
     if !scope.execution_mode || !scope.can_read {
         return Err("PERMISSION_DENIED".into());
+    }
+    if !scope.editor_state_hash.is_empty() {
+        return Err("EDITING_BUSY".into());
     }
     let value = om_agent_contract::json::strict_json_bounded(arguments, 65536)
         .map_err(|_| "INVALID_ARGUMENT")?;
@@ -217,6 +297,7 @@ impl FrozenRunInput {
         Ok(PreparedRun {
             plan,
             continue_on_error: self.args.continue_on_error,
+            run_scope: self.args.scope,
             binding,
         })
     }

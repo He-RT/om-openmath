@@ -284,7 +284,7 @@ final class AgentSessionStore {
         if let record=try SessionSemantics.effectRecord(event),record.intent.tool_call_id==row.call {
           guard record.target==target,record.admissionEvent==row.admission else {throw StorageError.corruptIdentity}
           let effectPhase=try SessionSemantics.effectPhase(record)
-          if !(effectPhase == .tool_outcome_unknown && phase == .completed) {phase=effectPhase;resultID=event.event_id}
+          if !(effectPhase == .tool_outcome_unknown && [.completed,.partial].contains(phase)) {phase=effectPhase;resultID=event.event_id}
         }
         if let record=try SessionSemantics.readonlyRecord(event),record.intent.tool_call_id==row.call {
           guard row.admission==nil,resultID==nil else {throw StorageError.corruptIdentity}

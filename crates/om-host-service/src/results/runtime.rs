@@ -21,6 +21,12 @@ impl Clock for HostClock {
     }
 }
 enum Message {
+    RunOutputs {
+        id: String,
+        receipts: Vec<NativeKernelReceipt>,
+        scope: Box<ReferenceScope>,
+        token: Arc<AtomicBool>,
+    },
     Accepted(Box<AcceptedKernelState>),
     Read {
         command: Box<NativeResultHostCommand>,
@@ -236,6 +242,31 @@ impl ResultRuntime {
                                 }
                             }));
                         }
+                        Message::RunOutputs {
+                            id,
+                            receipts,
+                            scope,
+                            token,
+                        } => {
+                            let ctx = Interrupt {
+                                flag: token,
+                                clock: Some(clock.clone()),
+                                deadline_ms: Some(clock.now_ms() + 5000.),
+                                steps_left: std::cell::Cell::new(4 * 1024 * 1024),
+                            };
+                            let result =
+                                std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
+                                    store.run_outputs(
+                                        &receipts,
+                                        &scope,
+                                        clock.now_ms() as u64,
+                                        &ctx,
+                                    )
+                                }))
+                                .map_err(|_| "RESULT_WORKER_PANIC".to_owned())
+                                .and_then(|r| r.map(|v| (None, v)).map_err(|e| e.to_string()));
+                            finish(&replies, &id, result);
+                        }
                         Message::Inspect {
                             request,
                             scope,
@@ -332,6 +363,30 @@ impl ResultRuntime {
             .ok_or("HOST_CLOSING")?
             .try_send(Message::Accepted(Box::new(accepted)))
             .map_err(|_| "BUDGET_EXCEEDED".into())
+    }
+    /// Native original run receipts only; issued references use the actual current Agent scope.
+    pub(crate) fn run_outputs(
+        &self,
+        id: &str,
+        receipts: Vec<NativeKernelReceipt>,
+        scope: &ReferenceScope,
+    ) -> Result<NativeResultHostReply, String> {
+        let encoded = serde_json::to_vec(&receipts).map_err(|_| "INVALID_ARGUMENT")?;
+        self.enqueue(id, &encoded, scope, |token| Message::RunOutputs {
+            id: id.into(),
+            receipts,
+            scope: Box::new(scope.clone()),
+            token,
+        })
+        .map_err(|error| {
+            if error != "BUDGET_EXCEEDED" {
+                return error;
+            }
+            match self.state.lock() {
+                Ok(state) if state.entries.len() < 4096 => "RESULT_QUEUE_BUSY".into(),
+                _ => "RESULT_NOT_AVAILABLE".into(),
+            }
+        })
     }
     /// Queue a strictly validated readonly command or read its original bounded status.
     pub fn command(
@@ -520,4 +575,117 @@ pub fn decode_command(bytes: &[u8]) -> Result<NativeResultHostCommand, String> {
         .expect("checked result schema")
     });
     validation::decode(bytes, &root["$defs"]["NativeResultHostCommand"], root)
+}
+
+#[cfg(test)]
+mod run_output_backpressure_tests {
+    use super::*;
+    use std::sync::{Condvar, atomic::AtomicBool};
+    #[test]
+    fn original_projection_retries_queue_pressure_but_reports_exhausted_lifetime() {
+        let scope = ReferenceScope {
+            runtime: "runtime".into(),
+            document: "document".into(),
+            generation: 1,
+            revision: 0,
+            execution_epoch: 0,
+            snapshot_hash: "a".repeat(64),
+            task: Some("task".into()),
+            task_generation: 1,
+            grant_revision: 1,
+            config_revision: 0,
+            definition_revision: 0,
+            metadata_revision: 26,
+            editor_state_hash: String::new(),
+            execution_mode: true,
+            can_read: true,
+            can_preview: false,
+            can_write: false,
+        };
+        let (arrived, wait) = mpsc::sync_channel(1);
+        let gate = Arc::new((Mutex::new(false), Condvar::new()));
+        let gate2 = gate.clone();
+        let first = AtomicBool::new(true);
+        let runtime = ResultRuntime::with_probes(ResultWorkerProbes {
+            before_query: Some(Arc::new(move || {
+                if first.swap(false, Ordering::AcqRel) {
+                    arrived.send(()).unwrap();
+                    let (lock, condition) = &*gate2;
+                    let open = lock.lock().unwrap();
+                    let (_guard, timeout) = condition
+                        .wait_timeout_while(open, std::time::Duration::from_secs(10), |open| !*open)
+                        .unwrap();
+                    assert!(!timeout.timed_out());
+                }
+            })),
+        })
+        .unwrap();
+        let query = |id: &str| {
+            decode_command(&serde_json::to_vec(&json!({"type":"result_manifest","request_id":id,"root_result_id":"absent","offset":0,"limit":1})).unwrap()).unwrap()
+        };
+        runtime.command(query("held"), &scope).unwrap();
+        wait.recv_timeout(std::time::Duration::from_secs(5))
+            .unwrap();
+        for i in 0..4 {
+            runtime
+                .command(query(&format!("queued-{i}")), &scope)
+                .unwrap();
+        }
+        assert_eq!(
+            runtime
+                .run_outputs("original-projection", vec![], &scope)
+                .err()
+                .unwrap(),
+            "RESULT_QUEUE_BUSY"
+        );
+        assert!(!runtime.has_request("original-projection"));
+        let (lock, condition) = &*gate;
+        *lock.lock().unwrap() = true;
+        condition.notify_all();
+        let deadline = Instant::now() + std::time::Duration::from_secs(15);
+        let mut reply = loop {
+            match runtime.run_outputs("original-projection", vec![], &scope) {
+                Ok(reply) => break reply,
+                Err(error) => {
+                    assert_eq!(error, "RESULT_QUEUE_BUSY");
+                    assert!(Instant::now() < deadline);
+                    thread::yield_now();
+                }
+            }
+        };
+        let complete = |mut reply: NativeResultHostReply| {
+            while !terminal(&reply.phase) {
+                assert!(Instant::now() < deadline);
+                thread::yield_now();
+                reply = runtime
+                    .command(
+                        NativeResultHostCommand::ResultStatus(ResultStatus {
+                            r#type: ResultStatusType::ResultStatus,
+                            request_id: reply.request_id,
+                        }),
+                        &scope,
+                    )
+                    .unwrap();
+            }
+            reply
+        };
+        reply = complete(reply);
+        assert_eq!(reply.phase, NativeResultHostReplyPhase::Completed);
+        assert_eq!(reply.payload, json!({})); // Data-only empty projection, no evaluation callback.
+        for i in 6..4096 {
+            let reply = runtime
+                .run_outputs(&format!("lifetime-{i}"), vec![], &scope)
+                .unwrap();
+            assert_eq!(complete(reply).phase, NativeResultHostReplyPhase::Completed);
+        }
+        assert_eq!(
+            runtime
+                .run_outputs("lifetime-exhausted", vec![], &scope)
+                .err()
+                .unwrap(),
+            "RESULT_NOT_AVAILABLE"
+        );
+        assert!(!runtime.has_request("lifetime-exhausted"));
+        runtime.take_thread().unwrap().join().unwrap();
+    }
 }

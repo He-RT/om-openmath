@@ -13,7 +13,7 @@ enum SessionSemantics {
   }
   static func effectPhase(_ record:AgentEffectRecord)throws->RecoveredToolPhase {
     guard record.canonical.parts.count==1,case .agent_tool_result_part(let part)=record.canonical.parts[0] else {throw StorageError.corruptIdentity}
-    switch part.outcome {case .completed:return .completed;case .failed:return .failed;case .cancelled:return .cancelled;case .unknown:return .tool_outcome_unknown;default:throw StorageError.corruptIdentity}
+    switch part.outcome {case .completed:return .completed;case .partial:return .partial;case .failed:return .failed;case .cancelled:return .cancelled;case .unknown:return .tool_outcome_unknown;default:throw StorageError.corruptIdentity}
   }
   static func readonlyRecord(_ bytes:Data)throws->AgentReadonlyRecord? {
     guard let object=try JSONSerialization.jsonObject(with:bytes) as? [String:Any],object["kind"] as? String=="native_readonly_result" else {return nil}
@@ -111,7 +111,7 @@ enum SessionSemantics {
     case .recovery:
       if let record=try effectRecord(input.payload) {
         let intent=record.intent,message=record.canonical
-        guard record.codecVersion==1,intent.name == .apply_notebook_patch,
+        guard record.codecVersion==1,[.apply_notebook_patch,.run_cells].contains(intent.name),
           SourceValidation.identity(intent.operation_id),SourceValidation.identity(record.resultRef),KernelValidation.hash(record.blobHash),
           record.byteLength>0,record.byteLength<=262144,input.eventID=="effect-"+intent.operation_id,
           input.operation==record.target?.operationID,input.operationStore==record.target?.storeID,
@@ -132,12 +132,18 @@ enum SessionSemantics {
             admitted.task_id.value==input.task,admitted.agent_turn_id.value==input.turn else {throw SessionLedgerError.invalidTransition}
           let admission=try SessionValidation.payload(SessionToolAdmission.self,admitted)
           guard admission.target==target,admission.callID==intent.tool_call_id,admission.argumentsHash==intent.arguments_hash else {throw SessionLedgerError.invalidTransition}
-          if part.outcome == .completed {
+          if intent.name == .run_cells {
+            guard admission.run != nil,let resultID=record.outcomeEvent,
+              let result=events.first(where:{$0.event_id==resultID && $0.event_kind == .task_transition}),
+              result.operation_id.value==target.operationID,result.operation_store_id.value==target.storeID,
+              let run=try SessionRunSemantics.transition(result),run.groupAdmission==admittedID,run.kind == .run_finished,
+              let phase=run.phase,phase.rawValue==part.outcome.rawValue else {throw SessionLedgerError.invalidTransition}
+          } else if part.outcome == .completed {
             guard let resultID=record.outcomeEvent,let result=events.first(where:{$0.event_kind == .tool_result && $0.event_id==resultID && $0.parent_event_id.value==admittedID}),
               result.operation_id.value==target.operationID,result.operation_store_id.value==target.storeID,
               (try SessionValidation.payload(SessionToolResult.self,result)).outcome == .completed else {throw SessionLedgerError.invalidTransition}
           } else {guard record.outcomeEvent==nil else {throw SessionLedgerError.invalidTransition}}
-        } else {guard record.admissionEvent==nil,record.outcomeEvent==nil,part.outcome == .failed else {throw SessionLedgerError.invalidTransition}}
+        } else {guard record.admissionEvent==nil,record.outcomeEvent==nil,(part.outcome == .failed || intent.name == .run_cells && part.outcome == .cancelled) else {throw SessionLedgerError.invalidTransition}}
         for event in events where event.event_kind == .recovery {
           if let old=try effectRecord(event),old.intent.tool_call_id==intent.tool_call_id {throw SessionLedgerError.invalidTransition}
         }
@@ -201,7 +207,7 @@ enum SessionSemantics {
             if let record=try effectRecord(next),record.intent.tool_call_id==call.callID {
               guard record.target==admission?.target,record.admissionEvent==admissionEvent?.event_id else {throw StorageError.corruptIdentity}
               let effectPhase=try effectPhase(record)
-              if !(effectPhase == .tool_outcome_unknown && phase == .completed) {phase=effectPhase;resultID=next.event_id}
+              if !(effectPhase == .tool_outcome_unknown && [.completed,.partial].contains(phase)) {phase=effectPhase;resultID=next.event_id}
             }
             if let record=try readonlyRecord(next),record.intent.tool_call_id==call.callID {
               guard admissionEvent==nil,resultID==nil else {throw StorageError.corruptIdentity}

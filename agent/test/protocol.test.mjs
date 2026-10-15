@@ -81,3 +81,15 @@ test('duplicate members, invalid Unicode/UTF8, limits and incomplete EOF poison 
   assert.throws(() => decoder.finish(), /IPC_INCOMPLETE_EOF/);
   assert.throws(() => decoder.push(new TextEncoder().encode('}\n')), /IPC_CONNECTION_FAILED/);
 });
+
+test('run result keeps the original operation and accepts partial facts without becoming readonly',()=>{
+ const encode=v=>Buffer.from(JSON.stringify(v));
+ const result={ok:true,status:'completed',request_ref:'run',operation_ref:'run',document:{id:'doc',generation:1,revision:0},data:{run_ref:'run',run_outcome:'completed',cells:[{cell_id:'a',source_hash:'a'.repeat(64),status:'done',result_ref:'actual-result',diagnostics:[]}],executed_cell_ids:['a']},error:null,pagination:{truncated:false,next_cursor:null}};
+ assert.equal(decodeToolResult('run_cells',encode(result)).operation_ref,'run');
+ assert.throws(()=>decodeReadonlyResult('run_cells',encode(result)),/IPC_TOOL_RESULT_LIMIT/);
+ const partial={...result,ok:false,status:'partial',data:{...result.data,run_outcome:'partial'},error:{code:'EXECUTION_FAILED',message:'Original accepted prefix retained',recovery:'none',details:{}}};
+ assert.equal(decodeToolResult('run_cells',encode(partial)).status,'partial');
+ const unknown={...partial,status:'unknown',error:{code:'UNKNOWN_OUTCOME',message:'Read original operation',recovery:'query_operation',details:{}}};
+ assert.equal(decodeToolResult('run_cells',encode(unknown)).status,'unknown');
+ for(const bad of [{...result,operation_ref:'different-run'},{...result,data:{...result.data,source:'execute'}},{...partial,ok:true},{...unknown,operation_ref:null}])assert.throws(()=>decodeToolResult('run_cells',encode(bad)),/IPC_INVALID_TOOL_RESULT/);
+});

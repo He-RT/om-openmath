@@ -8,6 +8,28 @@ pub(super) struct EffectEntry {
     receipt: Option<(String, u64, String)>,
 }
 impl AgentEndpoint {
+    /// Only the original acknowledged RunCells call and the currently live activation authorize
+    /// main computation. Source-patch can_write is deliberately a separate grant.
+    pub fn run_input(
+        &self,
+        operation: &str,
+        binding: &DocumentBinding,
+        current: ReferenceScope,
+    ) -> Result<(ToolIntent, String, ReferenceScope), String> {
+        self.check_native_scope(&self.scope, binding)?;
+        let (intent, args) = self
+            .ingress
+            .original_tool(operation)
+            .map_err(str::to_owned)?;
+        let scope = self.ingress.read_scope(current);
+        if intent.name != AgentToolName::RunCells {
+            return Err("INVALID_AGENT_TOOL".into());
+        }
+        if !scope.execution_mode || !scope.can_read {
+            return Err("PERMISSION_DENIED".into());
+        }
+        Ok((intent, args, scope))
+    }
     /// Resolve original ACKed apply arguments under the currently live, write-enabled task.
     pub fn apply_input(
         &self,
@@ -69,7 +91,12 @@ impl AgentEndpoint {
             return Err("IPC_CALL_SCOPE_MISMATCH".into());
         }
         let envelope: Value = serde_json::from_str(&json).map_err(|_| "INVALID_TOOL_RESULT")?;
-        crate::tools::checked_data("apply_notebook_patch_result", envelope.clone())
+        let definition = match intent.name {
+            AgentToolName::ApplyNotebookPatch => "apply_notebook_patch_result",
+            AgentToolName::RunCells => "run_cells_result",
+            _ => return Err("INVALID_AGENT_TOOL".into()),
+        };
+        crate::tools::checked_data(definition, envelope.clone())
             .map_err(|_| "INVALID_TOOL_RESULT")?;
         let outcome = serde_json::from_value(envelope["status"].clone())
             .map_err(|_| "INVALID_TOOL_RESULT")?;

@@ -31,11 +31,11 @@ private actor ModelHold {
 }
 
 /// The actual native transport/C ABI/Library producer; only provider wire and route are synthetic.
-private func nativeProviderTurn(host:NativeHostClient,storage:StorageService,root:URL,input:AgentCanonicalMessage,intent:NativeAgentRequestIntent,task:String,session:String="production-task",preview:Bool=false,apply:Bool=false,inspect:String?=nil,scratchSource:String?=nil,scratchDialect:Dialect = .wolfram)async throws->ProviderPreparedTurn {
+private func nativeProviderTurn(host:NativeHostClient,storage:StorageService,root:URL,input:AgentCanonicalMessage,intent:NativeAgentRequestIntent,task:String,session:String="production-task",preview:Bool=false,apply:Bool=false,inspect:String?=nil,scratchSource:String?=nil,scratchDialect:Dialect = .wolfram,runCells:[String]?=nil,runScope:String="required",runContinue:Bool=false,runInspectCell:String?=nil)async throws->ProviderPreparedTurn {
   let stored=try await fixtureEvents(storage,session)
   let readonly=stored.compactMap {event->AgentReadonlyRecord? in guard let raw=event.event.payload_inline_json.value,let record=try? JSONDecoder().decode(AgentReadonlyRecord.self,from:Data(raw.utf8)),record.kind=="native_readonly_result" else {return nil};return record}
   let effects=stored.compactMap {event->AgentEffectRecord? in guard let raw=event.event.payload_inline_json.value,let record=try? JSONDecoder().decode(AgentEffectRecord.self,from:Data(raw.utf8)),record.kind=="native_effect_result" else {return nil};return record}
-  let count=readonly.count+effects.count,second = count>0,finishing = second && (!preview || readonly.count==2) && (!apply || effects.count==1) && (inspect==nil || readonly.count==(scratchSource==nil ? 2:3))
+  let count=readonly.count+effects.count,second = count>0,finishing = runCells != nil ? count>=(inspect==nil ? 2:3):second && (!preview || readonly.count==2) && (!apply || effects.count==1) && (inspect==nil || readonly.count==(scratchSource==nil ? 2:3))
   var messages:[[String:Any]] = [["canonical":try JSONSerialization.jsonObject(with:encoded(input)),"replay":NSNull()]],results:[[String:Any]]=[]
   // Preserve the actual durable event order: every assistant call is followed by its tool result
   // before the next assistant. The native codec rejects a reordered/dangling tool conversation.
@@ -69,7 +69,7 @@ private func nativeProviderTurn(host:NativeHostClient,storage:StorageService,roo
     precondition(data["valid"] as? Bool==true);tool="apply_notebook_patch"
     arguments=String(decoding:try JSONSerialization.data(withJSONObject:["preview_ref":data["preview_ref"]!],options:[.sortedKeys]),as:UTF8.self)
   }
-  if let inspect,readonly.count==1,scratchSource==nil {
+  if let inspect,readonly.count==1,scratchSource==nil,runCells==nil {
     let envelope=try JSONSerialization.jsonObject(with:Data((results[0]["text"] as! String).utf8)) as! [String:Any],data=envelope["data"] as! [String:Any],cell=(data["cells"] as! [[String:Any]])[0]
     precondition(cell["status"] as? String=="Done");tool="inspect_result"
     arguments=String(decoding:try JSONSerialization.data(withJSONObject:["result_ref":cell["result_ref"]!,"part":inspect,"limit":20],options:[.sortedKeys]),as:UTF8.self)
@@ -83,7 +83,17 @@ private func nativeProviderTurn(host:NativeHostClient,storage:StorageService,roo
     precondition(data["notebook_modified"] as? Bool==false && ["done","error"].contains(data["evaluation_status"] as? String ?? ""))
     tool="inspect_result";arguments=String(decoding:try JSONSerialization.data(withJSONObject:["result_ref":data["result_ref"]!,"part":inspect!,"limit":20],options:[.sortedKeys]),as:UTF8.self)
   }
-  let callID=scratchSource != nil ? (count==2 ? "inspect-scratch-call":second ? "scratch-call":"provider-call"):(count==2 ? "apply-call":second ? "preview-call":"provider-call")
+  if let runCells,count==1 {
+    let envelope=try JSONSerialization.jsonObject(with:Data((results[0]["text"] as! String).utf8)) as! [String:Any],data=envelope["data"] as! [String:Any]
+    tool="run_cells";arguments=String(decoding:try JSONSerialization.data(withJSONObject:["snapshot_ref":data["snapshot_ref"]!,"cell_ids":runCells,"scope":runScope,"continue_on_error":runContinue],options:[.sortedKeys]),as:UTF8.self)
+  }
+  if let runCells,count==2,inspect != nil {
+    let envelope=try JSONSerialization.jsonObject(with:Data((results[1]["text"] as! String).utf8)) as! [String:Any],data=envelope["data"] as! [String:Any],cells=data["cells"] as! [[String:Any]]
+    let cell=cells.first {$0["cell_id"] as? String==(runInspectCell ?? runCells.last!)}!
+    precondition(cell["result_ref"] as? String != nil,"actual run result reference missing")
+    tool="inspect_result";arguments=String(decoding:try JSONSerialization.data(withJSONObject:["result_ref":cell["result_ref"]!,"part":inspect ?? "value","limit":20],options:[.sortedKeys]),as:UTF8.self)
+  }
+  let callID=runCells != nil ? (count==2 ? "inspect-run-call":second ? "run-call":"provider-call"):scratchSource != nil ? (count==2 ? "inspect-scratch-call":second ? "scratch-call":"provider-call"):(count==2 ? "apply-call":second ? "preview-call":"provider-call")
   let delta:[String:Any] = finishing ? ["role":"assistant","content":"已读取真实笔记本🙂"]:["role":"assistant","content":"中文🙂","tool_calls":[["index":0,"id":callID,"type":"function","function":["name":tool,"arguments":arguments]]]]
   let chunk:[String:Any] = ["id":"provider-response-\(count+1)","model":"synthetic-served-alias","choices":[["index":0,"delta":delta,"finish_reason":finishing ? "stop":"tool_calls"]]]
   let sse=Data(("data: "+String(decoding:try JSONSerialization.data(withJSONObject:chunk),as:UTF8.self)+"\n\ndata: [DONE]\n\n").utf8)
@@ -91,6 +101,7 @@ private func nativeProviderTurn(host:NativeHostClient,storage:StorageService,roo
   if preview {tools.append(["name":"preview_source","description":"Inspect actual frozen source plan","parameters":["type":"object"]])}
   if apply {tools.append(["name":"apply_notebook_patch","description":"Commit the original frozen source plan","parameters":["type":"object"]])}
   if inspect != nil {tools.append(["name":"inspect_result","description":"Inspect original retained mathematical output","parameters":["type":"object"]])}
+  if runCells != nil {tools.append(["name":"run_cells","description":"Run actual selected cells and prerequisites","parameters":["type":"object"]])}
   if scratchSource != nil {tools.append(["name":"evaluate_scratch","description":"Evaluate an independent writable scratch without notebook changes","parameters":["type":"object"]])}
   let request:[String:Any] = ["binding":["provider_ref":"fixture-provider","route_ref":"fixture-route","model_ref":"fixture-model","adapter_version":"single-turn-1","protocol":"chat_completions"],"api_model":"synthetic-configured-alias","messages":messages,"results":results,"tools":tools,"max_output_tokens":128,"temperature":NSNull(),"stream":true]
   let bytes=try JSONSerialization.data(withJSONObject:request,options:[.sortedKeys]),context="fixture-context-"+UUID().uuidString.lowercased()
@@ -102,8 +113,170 @@ private func nativeProviderTurn(host:NativeHostClient,storage:StorageService,roo
   try bytes.write(to:root.appendingPathComponent("actual-native-model-input"+suffix+".json"));try model.body.write(to:root.appendingPathComponent("actual-native-http-body"+suffix+".json"));try sse.write(to:root.appendingPathComponent("actual-native-response"+suffix+".sse"))
   return owner.turn(route:route)
 }
-/// Four real read -> scratch -> inspect -> final turns, with an accepted main producer that
-/// remains unchanged. Scratch has its own retained origin and no main Kernel receipt.
+/// Real Agent read -> main execution -> optional inspection -> final, then storage-only recovery.
+private func nativeRunRoundTrip(package:URL,signatureRoot:URL?,root:URL)async throws {
+  let chain:[NativeSourceCell]=[.init(id:"answer",kind:.math,source:"b+1",dialect:.modern),.init(id:"unrelated",kind:.math,source:"seed_random(99);rand()",dialect:.modern),.init(id:"b",kind:.math,source:"let b=a+1;b",dialect:.modern),.init(id:"a",kind:.math,source:"let a=2;a",dialect:.modern)]
+  let errorCells:[NativeSourceCell]=[.init(id:"good",kind:.math,source:"2",dialect:.modern),.init(id:"boom",kind:.math,source:"seed=99;\nloop:=loop\nloop\nnever=5",dialect:.wolfram),.init(id:"independent",kind:.math,source:"7",dialect:.modern)]
+  let cases:[(name:String,cells:[NativeSourceCell],targets:[String],scope:String,keepGoing:Bool,allowed:[String]?,parent:[String],status:String,executed:[String],inspectCell:String?,part:String?,scalar:String?)]=[
+    ("required",chain,["answer"],"required",false,nil,[],"completed",["a","b","answer"],"answer","value","4"),
+    ("affected",chain,["a"],"affected",false,nil,["a","b","answer"],"completed",["a","b","answer"],"answer","value","4"),
+    ("selected-refused",chain,["answer"],"selected",false,nil,[],"failed",[],nil,nil,nil),
+    ("selected-partial",chain,["answer","unrelated"],"selected",true,nil,[],"partial",["unrelated"],"unrelated","summary",nil),
+    ("allowed-refused",chain,["answer"],"required",false,["answer"],[],"failed",[],nil,nil,nil),
+    ("error-stop",errorCells,["good","boom","independent"],"selected",false,nil,[],"partial",["good","boom"],"boom","summary",nil),
+    ("error-continue",errorCells,["good","boom","independent"],"selected",true,nil,[],"partial",["good","boom","independent"],"independent","value","7"),
+    ("solve",[.init(id:"solve",kind:.math,source:"solve(x^2-5*x+6==0,x)",dialect:.modern)],["solve"],"selected",false,nil,[],"completed",["solve"],"solve","summary",nil),
+    ("ode",[.init(id:"ode",kind:.math,source:"let curve=ode(fn(t,y)=>y,initial:1,t:0..1);curve",dialect:.modern)],["ode"],"selected",false,nil,[],"completed",["ode"],"ode","value",nil),
+    ("scene",[.init(id:"scene",kind:.math,source:"plot(x^2-y^2,x:-1..1,y:-1..1,view:\"surface\",mesh_points:8)",dialect:.modern)],["scene"],"selected",false,nil,[],"completed",["scene"],"scene","geometry",nil)
+  ]
+  for spec in cases {
+    let path=root.appendingPathComponent(spec.name),document="00000000-0000-0000-0000-000000000441",session="actual-run-task"
+    let (storage,_)=try await StorageService.open(paths:.init(root:path.appendingPathComponent("store"),channel:.preview))
+    let info=try await storage.openDocument(document)
+    var snapshot=NativeSourceSnapshot(codec_version:1,document_id:document,revision:try HostSerial(0),execution_epoch:try HostSerial(0),file:.init(version:1,title:"实际运行："+spec.name,cells:spec.cells),cell_revisions:spec.cells.map{.init(cell_id:$0.id,revision:try! HostSerial(0))},snapshot_hash:"")
+    snapshot.snapshot_hash=SourceHashes.snapshot(snapshot);_ = try await storage.initializeSource(snapshot)
+    let host=try await NativeHostClient.open(),opened=try await host.sourceCommand(.source_open(.init(type:.source_open,snapshot:snapshot,store_id:info.identity.storeID,calculation:.init(nil),config_revision:try HostSerial(0))))
+    let clock=SourceOwnerClock();clock.calibrate(opened.owner_time_ms.value)
+    let drafts=await MainActor.run {DraftStore(source:snapshot,runtime:host.runtimeInstanceID,generation:opened.document_generation.value,clock:{clock.now()})}
+    let source=DocCommitPort(client:host,storage:storage,drafts:drafts,clock:clock),kernel=KernelCommitPort(client:host,storage:storage,source:source)
+    for cell in spec.parent {_ = try await kernel.runCell(cell,operation:"actual-before-agent-"+cell)}
+    let service=AgentSessionService(host:host,storage:storage,document:document,generation:opened.document_generation.value,sourcePort:source,kernelPort:kernel,toolFailure:{tool,error in try? Data((tool.rawValue+":"+String(reflecting:error)).utf8).write(to:path.appendingPathComponent("actual-run-dispatch-error.txt"))})
+    let hello=try await service.activate(session:session,grants:[.read_notebook,.run_cells,.inspect_result],readonly:false,coreVersion:"1.0.4",adapterVersion:"openmath-adapter-1",allowedRunCells:spec.allowed)
+    let input=AgentCanonicalMessage(record_type:.canonical_agent_message,message_version:1,message_id:"run-input",role:.user,agent_turn_id:.init("input-turn"),task_id:.init(hello.scope.task_id),parts:[.agent_text_part(.init(kind:.text,part_id:"text",text:"验证原笔记本运行及真实回执："+spec.name))])
+    let adapter=ProviderAgentModelAdapter(transport:ProviderTransport(secrets:SecretStore()),factory:{intent in try await nativeProviderTurn(host:host,storage:storage,root:path,input:input,intent:intent,task:hello.scope.task_id,session:session,inspect:spec.part,runCells:spec.targets,runScope:spec.scope,runContinue:spec.keepGoing,runInspectCell:spec.inspectCell)})
+    let verified=try await AgentProcess.verified(package:package,signatureRoot:signatureRoot),pipe=try await verified.launch(),wire=WireCapture()
+    await pipe.setCapture {bytes,direction in await wire.append(bytes,toHelper:direction)}
+    let report:AgentPipeReport
+    do {report=try await service.run(pipe:pipe,hello:hello,modelPort:adapter.port(),input:input)} catch {
+      try await wire.save(path.appendingPathComponent("actual-run-failed-wire.json"))
+      let events=try await fixtureEvents(storage,session)
+      try JSONSerialization.data(withJSONObject:try events.map {try JSONSerialization.jsonObject(with:encoded($0.event))},options:[.sortedKeys]).write(to:path.appendingPathComponent("actual-run-failed-ledger.json"))
+      throw error
+    }
+    try await wire.save(path.appendingPathComponent("actual-run-wire.json"))
+    let hasInspect=spec.part != nil
+    precondition(report.frames==(hasInspect ? 17:13) && report.toolIntents.count==(hasInspect ? 3:2) && report.lastPhase == .awaiting_settlement,spec.name)
+    let events=try await fixtureEvents(storage,session)
+    let effects=events.compactMap {e->AgentEffectRecord? in guard let raw=e.event.payload_inline_json.value,let record=try? JSONDecoder().decode(AgentEffectRecord.self,from:Data(raw.utf8)),record.kind=="native_effect_result" else {return nil};return record}
+    precondition(effects.count==1 && effects[0].intent.name == .run_cells)
+    let effect=effects[0],lease=try await storage.openReferencedBlob(owner:.init(kind:.context,id:effect.canonical.message_id),hash:effect.blobHash)
+    let bytes=try await storage.readBlob(lease,offset:0,count:Int(effect.byteLength));try await storage.closeBlob(lease)
+    try bytes.write(to:path.appendingPathComponent("actual-run-result.json"))
+    let envelope=try JSONSerialization.jsonObject(with:bytes) as! [String:Any],data=envelope["data"] as? [String:Any]
+    precondition(envelope["status"] as? String==spec.status && (data?["executed_cell_ids"] as? [String] ?? [])==spec.executed,spec.name)
+    if let admission=effect.admissionEvent {
+      let run=try await storage.sessionRunSnapshot(session,admission:admission)
+      precondition(run.progress.acceptedCells==spec.executed.count && run.transition?.phase?.rawValue==spec.status)
+      precondition(Set(run.admission.run!.children.map(\.operationID)).count==run.admission.run!.children.count)
+      let noGroupReceipt=try await storage.kernelReceipt(document:document,operation:effect.intent.operation_id)
+      precondition(noGroupReceipt==nil)
+    } else {precondition(spec.name=="allowed-refused" && data==nil)}
+    var inspected=""
+    for event in events {
+      guard let raw=event.event.payload_inline_json.value,let record=try? JSONDecoder().decode(AgentReadonlyRecord.self,from:Data(raw.utf8)),record.kind=="native_readonly_result",record.intent.name == .inspect_result else {continue}
+      let lease=try await storage.openReferencedBlob(owner:.init(kind:.context,id:record.canonical.message_id),hash:record.blobHash)
+      let bytes=try await storage.readBlob(lease,offset:0,count:Int(record.byteLength));try await storage.closeBlob(lease)
+      try bytes.write(to:path.appendingPathComponent("actual-run-inspect.json"));inspected=String(decoding:bytes,as:UTF8.self)
+      let value=try JSONSerialization.jsonObject(with:bytes) as! [String:Any],resultData=value["data"] as! [String:Any],payload=resultData["payload"] as! [String:Any],binding=payload["binding"] as! [String:Any]
+      precondition(resultData["origin"] as? String=="notebook" && binding["acceptance"] as? String=="accepted" && binding["cell_id"] as? String==spec.inspectCell)
+      if let expected=spec.scalar {precondition(((payload["page"] as! [String:Any])["source"] as! [String:Any])["input_form"] as? String==expected)}
+      if spec.name=="solve" {let presentation=(payload["presentation"] as! [String:Any])["presentation"] as! [String:Any],solutions=presentation["solutions"] as! [[String:Any]];precondition(solutions.map{(($0["bindings"] as! [[String:Any]])[0])["input_form"] as! String}==["2","3"])}
+      if spec.name=="ode" {let rows=(payload["page"] as! [String:Any])["rows"] as! [[String:Any]],converged=rows.first{$0["label"] as? String=="converged"}!;let source=((converged["cells"] as! [[String:Any]])[0])["source"] as! [String:Any];precondition(source["input_form"] as? String=="True")}
+      if spec.name=="scene" {let page=payload["page"] as! [String:Any];precondition((page["total"] as! Int)==384 && (page["values"] as! [[Double]]).first==[-1,-1,0] && resultData["render_state"] as? String=="data_only")}
+      if spec.name=="error-stop" {precondition(payload["status"] as? String=="Error" && (payload["statement_count"] as! Int)>0)}
+    }
+    precondition(!hasInspect || !inspected.isEmpty)
+    let finalBody=try JSONSerialization.jsonObject(with:Data(contentsOf:path.appendingPathComponent("actual-native-http-body-\(hasInspect ? 4:3).json"))) as! [String:Any]
+    precondition((finalBody["messages"] as! [[String:Any]]).last?["content"] as? String==(hasInspect ? inspected:String(decoding:bytes,as:UTF8.self)))
+    let before=try await storage.committedSource(document)!,head=try await storage.acceptedKernelHead(document:document)
+    precondition(before.snapshot_hash==snapshot.snapshot_hash && (head?.kernel_state_revision.value ?? 0)==UInt64(spec.parent.count+spec.executed.count))
+    try JSONSerialization.data(withJSONObject:try events.map {try JSONSerialization.jsonObject(with:encoded($0.event))},options:[.sortedKeys]).write(to:path.appendingPathComponent("actual-run-ledger.json"))
+    await adapter.close();await service.close();await kernel.close();await source.close();try await host.close();try await storage.close()
+    let (reopened,_)=try await StorageService.open(paths:.init(root:path.appendingPathComponent("store"),channel:.preview));_ = try await reopened.openDocument(document)
+    let recovered=try await RecoveryService(storage:reopened).recoverSession(session,ledger:.init(storage:reopened,session:session))
+    precondition(recovered.tools.count==(hasInspect ? 3:2) && recovered.tools[1].phase.rawValue==spec.status)
+    if effect.admissionEvent != nil {precondition(recovered.tools[1].run?.acceptedCells==spec.executed.count)}
+    try JSONSerialization.data(withJSONObject:["case":spec.name,"tools":try JSONSerialization.jsonObject(with:RecoveryValidation.encode(recovered.tools)),"host_or_helper_created":false,"source_unchanged":true,"original_scope":"Agent run grant without source-patch grant"],options:[.sortedKeys]).write(to:path.appendingPathComponent("actual-run-recovery.json"))
+    try await reopened.close()
+  }
+}
+
+private final class RunBoundaryProbe:@unchecked Sendable {
+  let mode:String
+  private let lock=NSLock(),release=DispatchSemaphore(value:0)
+  private var commits=0,arrived=false,blocked=false
+  init(_ mode:String) {self.mode=mode}
+  func physical(_ point:String)throws {
+    let target=mode=="unknown" ? "kernel_committed":"before_kernel_commit"
+    guard point==target else {return}
+    let stop=lock.withLock {()->Bool in commits+=1;guard commits==2 else {return false};arrived=true;blocked=mode=="unknown";return true}
+    guard stop else {return}
+    if mode=="unknown" {throw StorageError.system(EIO,"lost first-cell physical receipt ACK")}
+    guard release.wait(timeout:.now()+10) == .success else {throw StorageError.system(ETIMEDOUT,"cancel fixture pause")}
+  }
+  func reconciliation(_ point:String)throws {
+    if point=="before_kernel_reconciliation",lock.withLock({blocked}) {throw StorageError.system(EIO,"original readback temporarily unavailable")}
+  }
+  func wait()async throws {for _ in 0..<500 {if lock.withLock({arrived}) {return};try await Task.sleep(for:.milliseconds(10))};throw AgentSessionError.busy}
+  func resume() {lock.withLock {blocked=false};release.signal()}
+}
+/// Real lost SQLite ACK with withheld readback, and real host cancellation at final SQL barrier.
+private func nativeRunBoundaries(package:URL,signatureRoot:URL?,root:URL)async throws {
+  for mode in ["unknown","cancel"] {
+    let path=root.appendingPathComponent(mode),probe=RunBoundaryProbe(mode),document="00000000-0000-0000-0000-000000000442",session="run-boundary-task"
+    let cells:[NativeSourceCell]=[.init(id:"a",kind:.math,source:"let a=2;a",dialect:.modern),.init(id:"b",kind:.math,source:"let b=a+1;b",dialect:.modern),.init(id:"answer",kind:.math,source:"b+1",dialect:.modern)]
+    var snapshot=NativeSourceSnapshot(codec_version:1,document_id:document,revision:try HostSerial(0),execution_epoch:try HostSerial(0),file:.init(version:1,title:"真实运行边界："+mode,cells:cells),cell_revisions:cells.map{.init(cell_id:$0.id,revision:try! HostSerial(0))},snapshot_hash:"")
+    snapshot.snapshot_hash=SourceHashes.snapshot(snapshot)
+    let (storage,_)=try await StorageService.open(paths:.init(root:path,channel:.preview)),info=try await storage.openDocument(document)
+    _ = try await storage.initializeSource(snapshot)
+    let host=try await NativeHostClient.open(),opened=try await host.sourceCommand(.source_open(.init(type:.source_open,snapshot:snapshot,store_id:info.identity.storeID,calculation:.init(nil),config_revision:try HostSerial(0))))
+    let clock=SourceOwnerClock();clock.calibrate(opened.owner_time_ms.value)
+    let drafts=await MainActor.run {DraftStore(source:snapshot,runtime:host.runtimeInstanceID,generation:opened.document_generation.value,clock:{clock.now()})}
+    let source=DocCommitPort(client:host,storage:storage,drafts:drafts,clock:clock)
+    let kernel=KernelCommitPort(client:host,storage:storage,source:source,reconciliationFaults:.init{try probe.reconciliation($0)})
+    let service=AgentSessionService(host:host,storage:storage,document:document,generation:opened.document_generation.value,sourcePort:source,kernelPort:kernel,runFaults:.init{try probe.physical($0)},toolFailure:{tool,error in try? Data((tool.rawValue+":"+String(reflecting:error)).utf8).write(to:path.appendingPathComponent("actual-boundary-dispatch-error.txt"))})
+    let hello=try await service.activate(session:session,grants:[.read_notebook,.run_cells],readonly:false,coreVersion:"1.0.4",adapterVersion:"openmath-adapter-1")
+    let input=AgentCanonicalMessage(record_type:.canonical_agent_message,message_version:1,message_id:"boundary-input",role:.user,agent_turn_id:.init("input-turn"),task_id:.init(hello.scope.task_id),parts:[.agent_text_part(.init(kind:.text,part_id:"text",text:"真实运行边界"))])
+    let adapter=ProviderAgentModelAdapter(transport:ProviderTransport(secrets:SecretStore()),factory:{intent in try await nativeProviderTurn(host:host,storage:storage,root:path,input:input,intent:intent,task:hello.scope.task_id,session:session,runCells:["answer"])})
+    let verified=try await AgentProcess.verified(package:package,signatureRoot:signatureRoot),pipe=try await verified.launch(),wire=WireCapture()
+    await pipe.setCapture {bytes,direction in await wire.append(bytes,toHelper:direction)}
+    let execution=Task {try await service.run(pipe:pipe,hello:hello,modelPort:adapter.port(),input:input)}
+    if mode=="cancel" {
+      try await probe.wait()
+      let events=try await fixtureEvents(storage,session),admit=events.first{$0.event.event_kind == .tool_admitted}!
+      _ = try await host.cancel(operation:admit.event.operation_id.value!);probe.resume()
+    }
+    let report:AgentPipeReport
+    do {report=try await execution.value} catch {probe.resume();try await wire.save(path.appendingPathComponent("actual-boundary-failed-wire.json"));throw error}
+    try await wire.save(path.appendingPathComponent("actual-boundary-wire.json"))
+    precondition(report.frames==10 && report.toolIntents.count==2 && report.lastPhase == .awaiting_settlement)
+    precondition(!FileManager.default.fileExists(atPath:path.appendingPathComponent("actual-native-http-body-3.json").path))
+    let events=try await fixtureEvents(storage,session),effect=events.compactMap {e->AgentEffectRecord? in guard let text=e.event.payload_inline_json.value,let value=try? JSONDecoder().decode(AgentEffectRecord.self,from:Data(text.utf8)),value.kind=="native_effect_result" else {return nil};return value}.first!
+    let run=try await storage.sessionRunSnapshot(session,admission:effect.admissionEvent!),active=run.summary.originalActiveOperation
+    precondition(run.progress.acceptedCells==0 && run.progress.nextChild==(mode=="unknown" ? 1:2) && run.transition?.phase?.rawValue==(mode=="unknown" ? "unknown":"cancelled"))
+    precondition(events.filter{$0.event.payload_inline_json.value?.contains("\"kind\":\"run_child_started\"")==true}.count==2)
+    let lease=try await storage.openReferencedBlob(owner:.init(kind:.context,id:effect.canonical.message_id),hash:effect.blobHash)
+    let bytes=try await storage.readBlob(lease,offset:0,count:Int(effect.byteLength));try await storage.closeBlob(lease)
+    try bytes.write(to:path.appendingPathComponent("actual-boundary-result.json"))
+    let envelope=try JSONSerialization.jsonObject(with:bytes) as! [String:Any],data=envelope["data"] as! [String:Any]
+    precondition(envelope["status"] as? String==(mode=="unknown" ? "unknown":"cancelled") && (data["executed_cell_ids"] as! [String]).isEmpty)
+    let nativeBefore=try await kernel.state(),physical=try await storage.acceptedKernelHead(document:document)!
+    precondition(nativeBefore.kernel_state_revision.value==0 && physical.kernel_state_revision.value==(mode=="unknown" ? 1:0))
+    probe.resume()
+    if mode=="unknown" {
+      let original=try await kernel.reconcile(active!);precondition(original?.operation_id==active && original?.producer.cell_id.value=="a")
+      try encoded(original).write(to:path.appendingPathComponent("actual-original-receipt-readback.json"))
+    }
+    try JSONSerialization.data(withJSONObject:try events.map {try JSONSerialization.jsonObject(with:encoded($0.event))},options:[.sortedKeys]).write(to:path.appendingPathComponent("actual-boundary-ledger.json"))
+    await adapter.close();await service.close();await kernel.close();await source.close();try await host.close();try await storage.close()
+    let (reopened,_)=try await StorageService.open(paths:.init(root:path,channel:.preview));_ = try await reopened.openDocument(document)
+    let recovered=try await RecoveryService(storage:reopened).recoverSession(session,ledger:.init(storage:reopened,session:session))
+    precondition(recovered.tools.count==2 && recovered.tools[1].phase.rawValue==(mode=="unknown" ? "partial":"cancelled") && recovered.tools[1].run?.acceptedCells==(mode=="unknown" ? 1:0))
+    try JSONSerialization.data(withJSONObject:["case":mode,"tools":try JSONSerialization.jsonObject(with:RecoveryValidation.encode(recovered.tools)),"host_or_helper_created":false,"fresh_id_replay":false],options:[.sortedKeys]).write(to:path.appendingPathComponent("actual-boundary-recovery.json"))
+    try await reopened.close()
+  }
+}
+
 private func nativeScratchRoundTrips(package:URL,signatureRoot:URL?,root:URL)async throws {
   let cases:[(String,String,Dialect,String)]=[("local","a=99; {a,Out[1],RandomUniform[]}",.wolfram,"value"),("solve","solve(x^2-5*x+6==0,x)",.modern,"summary"),("ode","let curve=ode(fn(t,y)=>y,initial:1,t:0..1);curve",.modern,"value"),("scene","plot(x^2-y^2,x:-1..1,y:-1..1,view:\"surface\",mesh_points:8)",.modern,"geometry"),("partial","a=99;\nloop:=loop\nloop\nnever=5",.wolfram,"value")]
   for (name,code,dialect,part) in cases {
@@ -461,6 +634,10 @@ private func nativeApplyBoundaries(root:URL)async throws {
 @main struct AgentPackageFixtures {
   static func main() async throws {
     let package=URL(fileURLWithPath:CommandLine.arguments[1],isDirectory:true),root=URL(fileURLWithPath:CommandLine.arguments[2],isDirectory:true)
+    for _ in 0..<32 {
+      let child=try await AgentPrivatePipe.launch(executable:URL(fileURLWithPath:"/usr/bin/true"),arguments:[],directory:root)
+      let end=try await child.read();precondition(end==nil);await child.close()
+    }
     let document="00000000-0000-0000-0000-000000000432"
     var snapshot=NativeSourceSnapshot(codec_version:1,document_id:document,revision:try HostSerial(0),execution_epoch:try HostSerial(0),file:.init(version:1,title:"包内Pi真实任务",cells:[.init(id:"a",kind:.math,source:"2+2",dialect:.modern)]),cell_revisions:[.init(cell_id:"a",revision:try HostSerial(0))],snapshot_hash:"")
     snapshot.snapshot_hash=SourceHashes.snapshot(snapshot)
@@ -600,6 +777,8 @@ private func nativeApplyBoundaries(root:URL)async throws {
     try await nativeApplyRoundTrip(package:package,signatureRoot:CommandLine.arguments.count>3 && !CommandLine.arguments[3].isEmpty ? URL(fileURLWithPath:CommandLine.arguments[3]):nil,root:root.appendingPathComponent("apply-task"))
     try await nativeApplyBoundaries(root:root.appendingPathComponent("apply-boundaries"))
     try await nativeInspectRoundTrips(package:package,signatureRoot:CommandLine.arguments.count>3 && !CommandLine.arguments[3].isEmpty ? URL(fileURLWithPath:CommandLine.arguments[3]):nil,root:root.appendingPathComponent("inspect-cases"))
+    try await nativeRunRoundTrip(package:package,signatureRoot:CommandLine.arguments.count>3 && !CommandLine.arguments[3].isEmpty ? URL(fileURLWithPath:CommandLine.arguments[3]):nil,root:root.appendingPathComponent("run-case"))
+    try await nativeRunBoundaries(package:package,signatureRoot:CommandLine.arguments.count>3 && !CommandLine.arguments[3].isEmpty ? URL(fileURLWithPath:CommandLine.arguments[3]):nil,root:root.appendingPathComponent("run-boundaries"))
     try await nativeScratchRoundTrips(package:package,signatureRoot:CommandLine.arguments.count>3 && !CommandLine.arguments[3].isEmpty ? URL(fileURLWithPath:CommandLine.arguments[3]):nil,root:root.appendingPathComponent("scratch-cases"))
     print(String(decoding:try JSONSerialization.data(withJSONObject:["production_core":"1.0.4","bundled_node":"26.11.1","actual_private_frames":report.frames,"canonical_events":events.count,"model_transport":"actual_urlsession_rust_cabi_durable_request_ledger","tool_outcome":"completed_actual_readonly_no_mutation","manual_after_sigkill":"4","system_node_fallback":false,"PATH":"empty","wrong_architecture":"rejected","missing_resource":"rejected","late_stdin":"rejected","unconfigured_model":"no_fake_message_or_effect","model_cancel_and_late_delta":"rejected","actual_macho_architecture":"rejected","evidence_root":root.path],options:[.sortedKeys]),as:UTF8.self))
   }

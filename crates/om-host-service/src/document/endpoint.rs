@@ -1,5 +1,6 @@
 //! Trusted host source bridge. Physical IO stays in Swift; controller methods are short owner steps.
 mod patch;
+mod run;
 use super::{SourceDocument, commit::DocumentCommitController, coordinator::SourceCoordinator};
 use crate::{
     protocol::{Nullable, Serial, generated::*, validation},
@@ -32,11 +33,19 @@ pub struct SourceEndpoint {
     pending_reads: std::collections::BTreeMap<String, PendingRead>,
     patches: std::collections::BTreeMap<String, patch::PendingPatch>,
     pending_result_state: Option<crate::kernel::acceptance::AcceptedKernelState>,
+    runs: std::collections::BTreeMap<String, run::PendingRun>,
+    run_threads: Vec<std::thread::JoinHandle<()>>,
 }
 impl SourceEndpoint {
     /// Native operation namespaces share cancellation; admission cannot shadow an existing ID.
     pub fn has_native_operation(&self, id: &str) -> bool {
-        self.controller.operation(id).is_some()
+        self.runs.contains_key(id)
+            || self.runs.values().any(|r| {
+                r.descriptor
+                    .as_ref()
+                    .is_some_and(|d| d.children.iter().any(|c| c.operation_id == id))
+            })
+            || self.controller.operation(id).is_some()
             || self.kernel.as_ref().is_some_and(|k| k.has_operation(id))
             || self.results.as_ref().is_some_and(|r| r.has_request(id))
     }
@@ -91,6 +100,8 @@ impl SourceEndpoint {
             kernel: None,
             results: None,
             pending_result_state: None,
+            runs: std::collections::BTreeMap::new(),
+            run_threads: Vec::new(),
             agent: None,
             reads: None,
             pending_reads: std::collections::BTreeMap::new(),
@@ -112,6 +123,14 @@ impl SourceEndpoint {
         command: NativeAgentHostCommand,
     ) -> Result<NativeAgentHostReply, String> {
         let binding = self.binding();
+        match command {
+            NativeAgentHostCommand::NativeAgentPrepareRun(c) => return self.prepare_agent_run(c),
+            NativeAgentHostCommand::NativeAgentPollRun(c) => return self.poll_agent_run(c),
+            NativeAgentHostCommand::NativeAgentAcknowledgeRunChild(c) => {
+                return self.acknowledge_agent_run(*c);
+            }
+            _ => (),
+        }
         if let NativeAgentHostCommand::NativeAgentActivate(c) = command {
             if self
                 .agent
@@ -125,6 +144,7 @@ impl SourceEndpoint {
                 self.scope.runtime.clone(),
                 binding,
             )?;
+            self.cancel_agent_runs();
             let mut read_key = [0; 32];
             getrandom::fill(&mut read_key).map_err(|_| "ENTROPY_UNAVAILABLE")?;
             self.reads = Some(crate::tools::read::ReadNotebookService::new(read_key));
@@ -378,6 +398,7 @@ impl SourceEndpoint {
             .expect("checked")
             .command(command, &binding, &current);
         if closing && reply.is_ok() {
+            self.cancel_agent_runs();
             for patch in self.patches.values() {
                 let _ = self
                     .controller
@@ -395,6 +416,9 @@ impl SourceEndpoint {
     }
     /// Direct cancellation does not queue behind SQLite, CAS or SourcePreview's physical IO.
     pub fn cancel(&mut self, operation: &str) -> Option<bool> {
+        if self.runs.contains_key(operation) {
+            return Some(self.cancel_agent_run(operation));
+        }
         if let Some(result) = self
             .results
             .as_ref()
@@ -418,6 +442,9 @@ impl SourceEndpoint {
         &mut self,
         command: NativeKernelHostCommand,
     ) -> Result<NativeKernelHostReply, String> {
+        if let Some(reply) = self.agent_run_physical(&command)? {
+            return Ok(reply);
+        }
         let id = match &command {
             NativeKernelHostCommand::KernelBootstrap(b) => Some(&b.operation_id),
             NativeKernelHostCommand::KernelRunCell(b) => Some(&b.operation_id),
@@ -508,6 +535,7 @@ impl SourceEndpoint {
     }
     /// Revoke work without joining mathematical threads while holding the source owner lock.
     pub fn close_kernel_begin(&mut self) {
+        self.cancel_agent_runs();
         self.pending_reads.clear();
         self.reads = None;
         if let Some(agent) = self.agent.as_mut() {
@@ -533,6 +561,7 @@ impl SourceEndpoint {
         {
             threads.push(thread);
         }
+        threads.append(&mut self.run_threads);
         threads
     }
     /// Reads/source/draft binding stay available while another operation waits for physical commit.

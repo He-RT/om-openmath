@@ -15,4 +15,7 @@ pub enum NativeAgentEffectResultOutcome {
     /// Contract value `unknown`.
     #[serde(rename = "unknown")]
     Unknown,
+    /// Contract value `partial`.
+    #[serde(rename = "partial")]
+    Partial,
 }

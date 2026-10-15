@@ -1,0 +1,74 @@
+[
+  {
+    "command": "python3 scripts/check_pre_alpha_4_plan.py --check --self-test",
+    "log": "logs/run-native-plan-completed.log.gz",
+    "exit": 0
+  },
+  {
+    "command": "CARGO_PROFILE_DEV_DEBUG=0 CARGO_PROFILE_TEST_DEBUG=0 cargo test --locked -p om-host-service -p om-apple-ffi --message-format=json",
+    "log": "logs/run-native-rust-verified.log.gz",
+    "exit": 0
+  },
+  {
+    "command": "CARGO_PROFILE_DEV_DEBUG=0 CARGO_PROFILE_TEST_DEBUG=0 cargo clippy --locked -p om-host-service -p om-apple-ffi --all-targets -- -D warnings",
+    "log": "logs/run-native-clippy-verified.log.gz",
+    "exit": 0
+  },
+  {
+    "command": "target/native-runtime/node-v26.11.1-darwin-arm64/bin/node --test agent/test/protocol.test.mjs agent/test/pi-runtime.test.mjs agent/test/bridge.test.mjs agent/test/fixtures.test.mjs",
+    "log": "logs/run-native-node-final.log.gz",
+    "exit": 0
+  },
+  {
+    "command": "python3 scripts/test_single_turn_pi.py --node target/native-runtime/node-v26.11.1-darwin-arm64/bin/node --evidence target/acceptance/pre-alpha.4/development/r43/run-native-single-turn-proof",
+    "log": "logs/run-native-single-turn-final.log.gz",
+    "exit": 0
+  },
+  {
+    "command": "bundled Node 26.11.1 app/node_modules/typescript/bin/tsc --noEmit --strict --skipLibCheck --target es2024 --module nodenext --allowImportingTsExtensions agent/src/main.ts",
+    "log": "logs/run-native-typescript-final.log.gz",
+    "exit": 0
+  },
+  {
+    "command": "CARGO_PROFILE_DEV_DEBUG=0 CARGO_PROFILE_TEST_DEBUG=0 bash macos/Scripts/build-native.sh",
+    "log": "logs/run-native-release-verified.log.gz",
+    "exit": 0
+  },
+  {
+    "command": "codesign --verify --deep --strict --verbose=2 target/macos-native/Build/Products/Release/OpenMath Preview.app",
+    "log": "logs/run-native-signature-verified.log.gz",
+    "exit": 0
+  },
+  {
+    "command": "bash macos/Scripts/test-agent-package.sh \"$APP/Contents/Resources/AgentRuntime\" \"$APP\" (APP=absolute Release bundle)",
+    "log": "logs/run-native-signed-verified.log.gz",
+    "exit": 0
+  },
+  {
+    "command": "Node 26.11.1 npm --prefix app run test:e2e -- --workers=1 e2e/settings.spec.ts",
+    "log": "logs/run-native-settings-e2e.log.gz",
+    "exit": 0
+  },
+  {
+    "command": "Node 26.11.1 npm --prefix app run lint; npm --prefix app run typecheck",
+    "logs": [
+      "logs/run-native-web-lint.log.gz",
+      "logs/run-native-web-typecheck.log.gz"
+    ],
+    "exit": 0
+  },
+  {
+    "command": "python3 -X warn_default_encoding -W error::EncodingWarning -m unittest discover -s tests -v",
+    "log": "logs/run-native-python.log.gz",
+    "exit": 0
+  },
+  {
+    "command": "python3 scripts/native_contracts.py --check; python3 macos/Scripts/generate-project.py --check; cargo fmt --all --check",
+    "logs": [
+      "logs/run-native-contracts-final.log.gz",
+      "logs/run-native-project.log.gz",
+      "logs/run-native-fmt-final.log.gz"
+    ],
+    "exit": 0
+  }
+]

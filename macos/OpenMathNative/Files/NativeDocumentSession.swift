@@ -40,8 +40,9 @@ actor NativeAppStorage {
     self.document=document;self.host=host;self.source=source;self.files=files;self.drafts=drafts;self.storage=storage
     self.undo=UndoCoordinator {transactions,group,operation in try await source.undo(transactions:transactions,group:group,operation:operation)}
     self.backup=NativeDraftBackup(storage:storage,store:drafts,owner:backupOwner)
-    self.agent=AgentSessionService(host:host,storage:storage,document:drafts.confirmed.document_id,generation:drafts.documentGeneration,sourcePort:source)
-    self.runtime=NotebookRuntime(host:host,storage:storage,source:source)
+    let actualRuntime=NotebookRuntime(host:host,storage:storage,source:source)
+    self.runtime=actualRuntime
+    self.agent=AgentSessionService(host:host,storage:storage,document:drafts.confirmed.document_id,generation:drafts.documentGeneration,sourcePort:source,kernelPort:actualRuntime.kernel)
     runtime.selectedCell=drafts.confirmed.file.cells.first?.id
     runtime.beforeRun={ [weak self] in
       guard let self,!closed else {throw StorageError.closing}

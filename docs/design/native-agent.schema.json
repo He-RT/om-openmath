@@ -2010,8 +2010,22 @@
         },
         {
           "$ref": "#/$defs/NativeAgentEffectTool"
+        },
+        {
+          "$ref": "#/$defs/NativeAgentPrepareRun"
+        },
+        {
+          "$ref": "#/$defs/NativeAgentPollRun"
+        },
+        {
+          "$ref": "#/$defs/NativeAgentAcknowledgeRunChild"
         }
-      ]
+      ],
+      "x-openmath-contract": {
+        "rust_boxed_variants": [
+          "NativeAgentAcknowledgeRunChild"
+        ]
+      }
     },
     "NativeAgentToolIntent": {
       "type": "object",
@@ -2203,6 +2217,16 @@
               "type": "null"
             }
           ]
+        },
+        "run_progress": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/NativeRunProgress"
+            },
+            {
+              "type": "null"
+            }
+          ]
         }
       },
       "required": [
@@ -2221,7 +2245,8 @@
         "tool_intent",
         "request_intent",
         "readonly_result",
-        "effect_result"
+        "effect_result",
+        "run_progress"
       ],
       "additionalProperties": false
     },
@@ -2399,7 +2424,8 @@
             "completed",
             "failed",
             "cancelled",
-            "unknown"
+            "unknown",
+            "partial"
           ]
         },
         "operation_ref": {
@@ -2460,6 +2486,1009 @@
         "failure_code"
       ],
       "additionalProperties": false
+    },
+    "NativeRunEventAck": {
+      "type": "object",
+      "properties": {
+        "event_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "event_sequence": {
+          "$ref": "#/$defs/Serial"
+        },
+        "receipt_hash": {
+          "$ref": "#/$defs/Sha256"
+        }
+      },
+      "required": [
+        "event_id",
+        "event_sequence",
+        "receipt_hash"
+      ],
+      "additionalProperties": false
+    },
+    "NativeRunChild": {
+      "type": "object",
+      "properties": {
+        "operation_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "cell_id": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Identity"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "cell_source_hash": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Sha256"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "operation_id",
+        "cell_id",
+        "cell_source_hash"
+      ],
+      "additionalProperties": false
+    },
+    "NativeRunStoppedCell": {
+      "type": "object",
+      "properties": {
+        "cell_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "operation_id": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Identity"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "code": {
+          "$ref": "#/$defs/Identity"
+        }
+      },
+      "required": [
+        "cell_id",
+        "operation_id",
+        "code"
+      ],
+      "additionalProperties": false
+    },
+    "NativeRunDescriptor": {
+      "type": "object",
+      "properties": {
+        "operation_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "arguments_hash": {
+          "$ref": "#/$defs/Sha256"
+        },
+        "source_snapshot_hash": {
+          "$ref": "#/$defs/Sha256"
+        },
+        "run_scope": {
+          "type": "string",
+          "enum": [
+            "selected",
+            "required",
+            "affected"
+          ]
+        },
+        "requested_cell_ids": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Identity"
+          },
+          "maxItems": 50
+        },
+        "children": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/NativeRunChild"
+          },
+          "maxItems": 1001
+        },
+        "blocked_cells": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/NativeRunStoppedCell"
+          },
+          "maxItems": 1000
+        },
+        "continue_on_error": {
+          "type": "boolean"
+        },
+        "document_generation": {
+          "$ref": "#/$defs/Serial"
+        },
+        "source_revision": {
+          "$ref": "#/$defs/Serial"
+        },
+        "execution_epoch": {
+          "$ref": "#/$defs/Serial"
+        },
+        "config_revision": {
+          "$ref": "#/$defs/Serial"
+        },
+        "kernel_build": {
+          "$ref": "#/$defs/Sha256"
+        },
+        "general_hash": {
+          "$ref": "#/$defs/Sha256"
+        },
+        "initial_checkpoint_id": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Identity"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "initial_checkpoint_hash": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Sha256"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "initial_kernel_revision": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Serial"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "operation_id",
+        "arguments_hash",
+        "source_snapshot_hash",
+        "run_scope",
+        "requested_cell_ids",
+        "children",
+        "blocked_cells",
+        "continue_on_error",
+        "document_generation",
+        "source_revision",
+        "execution_epoch",
+        "config_revision",
+        "kernel_build",
+        "general_hash",
+        "initial_checkpoint_id",
+        "initial_checkpoint_hash",
+        "initial_kernel_revision"
+      ],
+      "additionalProperties": false
+    },
+    "NativeRunProgress": {
+      "type": "object",
+      "properties": {
+        "operation_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "phase": {
+          "type": "string",
+          "enum": [
+            "planning",
+            "awaiting_admission",
+            "running",
+            "awaiting_acceptance",
+            "unknown",
+            "completed",
+            "partial",
+            "failed",
+            "cancelled"
+          ]
+        },
+        "descriptor": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/NativeRunDescriptor"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "next_child_index": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Serial"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "next_operation_id": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Identity"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "child": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/NativeKernelHostReply"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "accepted_cell_ids": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Identity"
+          },
+          "maxItems": 1000
+        },
+        "stopped_cells": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/NativeRunStoppedCell"
+          },
+          "maxItems": 1000
+        },
+        "stop_code": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Identity"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "outcome_was_unknown": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "operation_id",
+        "phase",
+        "descriptor",
+        "next_child_index",
+        "next_operation_id",
+        "child",
+        "accepted_cell_ids",
+        "stopped_cells",
+        "stop_code",
+        "outcome_was_unknown"
+      ],
+      "additionalProperties": false
+    },
+    "NativeAgentPrepareRun": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "const": "agent_prepare_run"
+        },
+        "scope": {
+          "$ref": "#/$defs/NativeAgentControlScope"
+        },
+        "operation_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "allowed_cell_ids": {
+          "anyOf": [
+            {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/Identity"
+              },
+              "maxItems": 1000
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "type",
+        "scope",
+        "operation_id",
+        "allowed_cell_ids"
+      ],
+      "additionalProperties": false
+    },
+    "NativeAgentPollRun": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "const": "agent_poll_run"
+        },
+        "scope": {
+          "$ref": "#/$defs/NativeAgentControlScope"
+        },
+        "operation_id": {
+          "$ref": "#/$defs/Identity"
+        }
+      },
+      "required": [
+        "type",
+        "scope",
+        "operation_id"
+      ],
+      "additionalProperties": false
+    },
+    "NativeAgentAcknowledgeRunChild": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "const": "agent_acknowledge_run_child"
+        },
+        "scope": {
+          "$ref": "#/$defs/NativeAgentControlScope"
+        },
+        "operation_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "child_operation_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "group_admission": {
+          "$ref": "#/$defs/NativeRunEventAck"
+        },
+        "group_started": {
+          "$ref": "#/$defs/NativeRunEventAck"
+        },
+        "child_admission": {
+          "$ref": "#/$defs/NativeRunEventAck"
+        },
+        "child_started": {
+          "$ref": "#/$defs/NativeRunEventAck"
+        }
+      },
+      "required": [
+        "type",
+        "scope",
+        "operation_id",
+        "child_operation_id",
+        "group_admission",
+        "group_started",
+        "child_admission",
+        "child_started"
+      ],
+      "additionalProperties": false
+    },
+    "NativeKernelHostReply": {
+      "type": "object",
+      "properties": {
+        "protocol_version": {
+          "const": 1
+        },
+        "phase": {
+          "$ref": "#/$defs/NativeKernelHostReplyPhase"
+        },
+        "operation_id": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Identity"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "document_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "document_generation": {
+          "$ref": "#/$defs/Serial"
+        },
+        "source_revision": {
+          "$ref": "#/$defs/Serial"
+        },
+        "execution_epoch": {
+          "$ref": "#/$defs/Serial"
+        },
+        "kernel_build": {
+          "type": "string",
+          "minLength": 64,
+          "maxLength": 64
+        },
+        "active_checkpoint_id": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Identity"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "kernel_state_revision": {
+          "$ref": "#/$defs/Serial"
+        },
+        "kernel_projection_revision": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Serial"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "definitions_current": {
+          "type": "boolean"
+        },
+        "pending_document_write": {
+          "type": "boolean"
+        },
+        "plan": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/NativeKernelCommit"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "receipt": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/NativeKernelReceipt"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "error_code": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 256
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "blob_offset": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Serial"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "blob_bytes": {
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 255
+          },
+          "maxItems": 65536
+        }
+      },
+      "required": [
+        "protocol_version",
+        "phase",
+        "operation_id",
+        "document_id",
+        "document_generation",
+        "source_revision",
+        "execution_epoch",
+        "kernel_build",
+        "active_checkpoint_id",
+        "kernel_state_revision",
+        "kernel_projection_revision",
+        "definitions_current",
+        "pending_document_write",
+        "plan",
+        "receipt",
+        "error_code",
+        "blob_offset",
+        "blob_bytes"
+      ],
+      "additionalProperties": false
+    },
+    "NativeKernelHostReplyPhase": {
+      "type": "string",
+      "enum": [
+        "state",
+        "queued",
+        "running",
+        "waiting_source",
+        "candidate",
+        "committing",
+        "unknown",
+        "completed",
+        "discarded",
+        "failed",
+        "blob"
+      ]
+    },
+    "NativeKernelCommit": {
+      "type": "object",
+      "properties": {
+        "protocol_version": {
+          "const": 1
+        },
+        "kind": {
+          "$ref": "#/$defs/NativeKernelCommitKind"
+        },
+        "store_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "runtime_instance_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "operation_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "request_hash": {
+          "$ref": "#/$defs/Sha256"
+        },
+        "checkpoint_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "expected_parent_checkpoint_id": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Identity"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "expected_kernel_state_revision": {
+          "$ref": "#/$defs/Serial"
+        },
+        "checkpoint_blob_hash": {
+          "$ref": "#/$defs/BlobHash"
+        },
+        "checkpoint_byte_length": {
+          "$ref": "#/$defs/Serial"
+        },
+        "codec_version": {
+          "const": 1
+        },
+        "producer": {
+          "$ref": "#/$defs/NativeKernelProducer"
+        },
+        "source": {
+          "$ref": "#/$defs/NativeSourceSnapshot"
+        },
+        "acceptance_source": {
+          "$ref": "#/$defs/NativeSourceSnapshot"
+        },
+        "result_id": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Identity"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "outbox_event_id": {
+          "$ref": "#/$defs/Identity"
+        }
+      },
+      "required": [
+        "protocol_version",
+        "kind",
+        "store_id",
+        "runtime_instance_id",
+        "operation_id",
+        "request_hash",
+        "checkpoint_id",
+        "expected_parent_checkpoint_id",
+        "expected_kernel_state_revision",
+        "checkpoint_blob_hash",
+        "checkpoint_byte_length",
+        "codec_version",
+        "producer",
+        "source",
+        "acceptance_source",
+        "result_id",
+        "outbox_event_id"
+      ],
+      "additionalProperties": false
+    },
+    "NativeKernelCommitKind": {
+      "type": "string",
+      "enum": [
+        "bootstrap",
+        "execute_cell"
+      ]
+    },
+    "BlobHash": {
+      "$ref": "#/$defs/Sha256"
+    },
+    "NativeKernelProducer": {
+      "type": "object",
+      "properties": {
+        "document_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "document_generation": {
+          "$ref": "#/$defs/Serial"
+        },
+        "source_revision": {
+          "$ref": "#/$defs/Serial"
+        },
+        "execution_epoch": {
+          "$ref": "#/$defs/Serial"
+        },
+        "kernel_state_revision": {
+          "$ref": "#/$defs/Serial"
+        },
+        "source_snapshot_hash": {
+          "$ref": "#/$defs/Sha256"
+        },
+        "kernel_build": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128
+        },
+        "config_revision": {
+          "$ref": "#/$defs/Serial"
+        },
+        "calculation": {
+          "$ref": "#/$defs/NativeCalculationSettings"
+        },
+        "general_hash": {
+          "$ref": "#/$defs/Sha256"
+        },
+        "cell_id": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/CellIdentity"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "cell_source_hash": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Sha256"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "terminal_status": {
+          "$ref": "#/$defs/NativeKernelTerminalStatus"
+        },
+        "successful_statements": {
+          "$ref": "#/$defs/Serial"
+        },
+        "out_index": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Serial"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "document_id",
+        "document_generation",
+        "source_revision",
+        "execution_epoch",
+        "kernel_state_revision",
+        "source_snapshot_hash",
+        "kernel_build",
+        "config_revision",
+        "calculation",
+        "general_hash",
+        "cell_id",
+        "cell_source_hash",
+        "terminal_status",
+        "successful_statements",
+        "out_index"
+      ],
+      "additionalProperties": false
+    },
+    "NativeCalculationSettings": {
+      "type": "object",
+      "properties": {
+        "dialect": {
+          "type": "string",
+          "enum": [
+            "auto",
+            "modern",
+            "wolfram"
+          ]
+        },
+        "constants": {
+          "type": "string",
+          "enum": [
+            "math",
+            "strict"
+          ]
+        },
+        "reactive": {
+          "type": "boolean"
+        },
+        "auto_run_dependents": {
+          "type": "boolean"
+        },
+        "show_steps": {
+          "type": "boolean"
+        },
+        "auto_plot": {
+          "type": "boolean"
+        },
+        "eval_timeout_ms": {
+          "$ref": "#/$defs/Serial"
+        }
+      },
+      "required": [
+        "dialect",
+        "constants",
+        "reactive",
+        "auto_run_dependents",
+        "show_steps",
+        "auto_plot",
+        "eval_timeout_ms"
+      ],
+      "additionalProperties": false
+    },
+    "CellIdentity": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 256,
+      "description": "源码单元格ID沿用.omnb v1的非空文本；按原UTF8区分，不作为路径或operation身份。"
+    },
+    "NativeKernelTerminalStatus": {
+      "type": "string",
+      "enum": [
+        "unexecuted",
+        "done",
+        "error"
+      ]
+    },
+    "NativeSourceSnapshot": {
+      "type": "object",
+      "properties": {
+        "codec_version": {
+          "const": 1
+        },
+        "document_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "revision": {
+          "$ref": "#/$defs/Serial"
+        },
+        "execution_epoch": {
+          "$ref": "#/$defs/Serial"
+        },
+        "file": {
+          "$ref": "#/$defs/NativeSourceFile"
+        },
+        "cell_revisions": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/NativeCellRevision"
+          },
+          "maxItems": 10000
+        },
+        "snapshot_hash": {
+          "$ref": "#/$defs/Sha256"
+        }
+      },
+      "required": [
+        "codec_version",
+        "document_id",
+        "revision",
+        "execution_epoch",
+        "file",
+        "cell_revisions",
+        "snapshot_hash"
+      ],
+      "additionalProperties": false
+    },
+    "NativeSourceFile": {
+      "type": "object",
+      "properties": {
+        "version": {
+          "const": 1
+        },
+        "title": {
+          "type": "string",
+          "maxLength": 16384
+        },
+        "cells": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/NativeSourceCell"
+          },
+          "maxItems": 10000
+        }
+      },
+      "required": [
+        "version",
+        "title",
+        "cells"
+      ],
+      "additionalProperties": false
+    },
+    "NativeSourceCell": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/CellIdentity"
+        },
+        "kind": {
+          "$ref": "#/$defs/NativeCellKind"
+        },
+        "source": {
+          "type": "string",
+          "maxLength": 2097152
+        },
+        "dialect": {
+          "$ref": "#/$defs/Dialect"
+        }
+      },
+      "required": [
+        "id",
+        "kind",
+        "source",
+        "dialect"
+      ],
+      "additionalProperties": false
+    },
+    "NativeCellKind": {
+      "type": "string",
+      "enum": [
+        "Math",
+        "Text",
+        "Ask"
+      ]
+    },
+    "Dialect": {
+      "type": "string",
+      "enum": [
+        "Modern",
+        "Wolfram",
+        "Auto"
+      ]
+    },
+    "NativeCellRevision": {
+      "type": "object",
+      "properties": {
+        "cell_id": {
+          "$ref": "#/$defs/CellIdentity"
+        },
+        "revision": {
+          "$ref": "#/$defs/Serial"
+        }
+      },
+      "required": [
+        "cell_id",
+        "revision"
+      ],
+      "additionalProperties": false
+    },
+    "NativeKernelReceipt": {
+      "type": "object",
+      "properties": {
+        "protocol_version": {
+          "const": 1
+        },
+        "store_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "document_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "operation_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "request_hash": {
+          "$ref": "#/$defs/Sha256"
+        },
+        "checkpoint_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "checkpoint_blob_hash": {
+          "$ref": "#/$defs/BlobHash"
+        },
+        "checkpoint_byte_length": {
+          "$ref": "#/$defs/Serial"
+        },
+        "codec_version": {
+          "const": 1
+        },
+        "producer": {
+          "$ref": "#/$defs/NativeKernelProducer"
+        },
+        "accepted_source_revision": {
+          "$ref": "#/$defs/Serial"
+        },
+        "accepted_snapshot_hash": {
+          "$ref": "#/$defs/Sha256"
+        },
+        "kernel_state_revision": {
+          "$ref": "#/$defs/Serial"
+        },
+        "result_id": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Identity"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "outbox_event_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "committed_at": {
+          "$ref": "#/$defs/Timestamp"
+        }
+      },
+      "required": [
+        "protocol_version",
+        "store_id",
+        "document_id",
+        "operation_id",
+        "request_hash",
+        "checkpoint_id",
+        "checkpoint_blob_hash",
+        "checkpoint_byte_length",
+        "codec_version",
+        "producer",
+        "accepted_source_revision",
+        "accepted_snapshot_hash",
+        "kernel_state_revision",
+        "result_id",
+        "outbox_event_id",
+        "committed_at"
+      ],
+      "additionalProperties": false
+    },
+    "Timestamp": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 64
     }
   },
   "x-openmath-contract": {

@@ -166,6 +166,9 @@ for (const width of [375, 1280])
     await page
       .getByRole("button", { name: "Save AI settings", exact: true })
       .click();
+    // configureLlm waits for actual set_config and get_config worker replies. Check the
+    // saved outcome after that asynchronous busy state, including on loaded CI workers.
+    await expect(page.getByRole("button", { name: "Saving…", exact: true })).toHaveCount(0, { timeout: 15_000 });
     await expect(page.getByRole("status").filter({ hasText: /^AI settings saved$/ })).toHaveText("AI settings saved");
     await page.getByRole("tab", { name: "AI models", exact: true }).click();
     await page.screenshot({

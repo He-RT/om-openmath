@@ -10,6 +10,7 @@ public struct NativeSourceHostReply: Codable, Sendable {
   public var reference: HostNullable<String>
   public var operation: HostNullable<NativeCommitState>
   public var owner_time_ms: HostSerial
+  public var undo_lookup: HostNullable<NativeAgentUndoLookup>
   private enum CodingKeys: String, CodingKey {
     case protocol_version
     case kind
@@ -20,10 +21,11 @@ public struct NativeSourceHostReply: Codable, Sendable {
     case reference
     case operation
     case owner_time_ms
+    case undo_lookup
   }
   public init(from decoder: Decoder) throws {
     let all = try decoder.container(keyedBy: HostCodingKey.self)
-    let allowed: Set<String> = ["protocol_version","kind","document_generation","snapshot","plan","preview","reference","operation","owner_time_ms"]
+    let allowed: Set<String> = ["protocol_version","kind","document_generation","snapshot","plan","preview","reference","operation","owner_time_ms","undo_lookup"]
     guard all.allKeys.allSatisfy({ allowed.contains($0.stringValue) }) else { throw DecodingError.dataCorrupted(.init(codingPath: decoder.codingPath, debugDescription: "Unknown native contract field")) }
     let c = try decoder.container(keyedBy: CodingKeys.self)
     self.protocol_version = try c.decode(UInt32.self, forKey: .protocol_version)
@@ -35,8 +37,9 @@ public struct NativeSourceHostReply: Codable, Sendable {
     self.reference = try c.decode(HostNullable<String>.self, forKey: .reference)
     self.operation = try c.decode(HostNullable<NativeCommitState>.self, forKey: .operation)
     self.owner_time_ms = try c.decode(HostSerial.self, forKey: .owner_time_ms)
+    self.undo_lookup = try c.decode(HostNullable<NativeAgentUndoLookup>.self, forKey: .undo_lookup)
   }
-  public init(protocol_version: UInt32, kind: NativeSourceHostReplyKind, document_generation: HostSerial, snapshot: HostNullable<NativeSourceSnapshot>, plan: HostNullable<NativeSourceCommit>, preview: HostNullable<HostJSONValue>, reference: HostNullable<String>, operation: HostNullable<NativeCommitState>, owner_time_ms: HostSerial) {
+  public init(protocol_version: UInt32, kind: NativeSourceHostReplyKind, document_generation: HostSerial, snapshot: HostNullable<NativeSourceSnapshot>, plan: HostNullable<NativeSourceCommit>, preview: HostNullable<HostJSONValue>, reference: HostNullable<String>, operation: HostNullable<NativeCommitState>, owner_time_ms: HostSerial, undo_lookup: HostNullable<NativeAgentUndoLookup>) {
     self.protocol_version = protocol_version
     self.kind = kind
     self.document_generation = document_generation
@@ -46,5 +49,6 @@ public struct NativeSourceHostReply: Codable, Sendable {
     self.reference = reference
     self.operation = operation
     self.owner_time_ms = owner_time_ms
+    self.undo_lookup = undo_lookup
   }
 }

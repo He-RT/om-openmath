@@ -121,10 +121,13 @@ private final class NativeDocumentSnapshot:@unchecked Sendable {
     guard response == .OK,let url=panel.url else {return nil}
     return try await saveNative(to:url)
   }
-  static func openWithPanel() async->URL? {
+  static func openWithPanel(window:NSWindow?=nil) async->URL? {
     NSApplication.shared.activate()
     let panel=NSOpenPanel();panel.allowedContentTypes=[.openMathNotebook];panel.allowsMultipleSelection=false;panel.canChooseDirectories=false
-    let response=await withCheckedContinuation {continuation in panel.begin{response in panel.orderOut(nil);continuation.resume(returning:response)}}
+    let response=await withCheckedContinuation {continuation in
+      if let window {panel.beginSheetModal(for:window){response in panel.orderOut(nil);continuation.resume(returning:response)}}
+      else {panel.begin{response in panel.orderOut(nil);continuation.resume(returning:response)}}
+    }
     return response == .OK ? panel.url : nil
   }
   override func save(_ sender:Any?) {

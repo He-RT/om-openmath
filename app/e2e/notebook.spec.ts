@@ -10,7 +10,10 @@ test("real notebook UI edits/runs Unicode, applies parser fixes and source-only 
     exact: true,
   });
   await editor.fill("# 🙂\nsolve(α^2==4, α");
-  await page.getByRole("button", { name: "Quick fix", exact: true }).click();
+  await page
+    .locator(".inline-diagnostics")
+    .getByRole("button", { name: "Quick fix", exact: true })
+    .click();
   await expect(editor).toContainText("solve(α^2==4, α)");
   await editor.press("ControlOrMeta+Enter");
   await expect(page.locator(".solution-list")).toContainText("α");

@@ -87,6 +87,7 @@ impl DocumentCommitController {
             )
             .map_err(|_| CommitError::Invalid)?;
         plan.commit.actor = DocumentCommitActor::Undo;
+        plan.commit.task_id = Nullable(scope.task.clone());
         let ids = requested_ids;
         plan.commit.undo_of = Nullable(ids.first().cloned());
         plan.undo_group = Some(NativeUndoGroup {

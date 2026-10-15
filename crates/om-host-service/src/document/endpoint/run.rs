@@ -110,6 +110,7 @@ impl SourceEndpoint {
             run::RunSource {
                 reads: self.reads.as_mut().ok_or("AGENT_NOT_ACTIVE")?,
                 scope: &scope,
+                editor_busy: self.editor_busy,
                 general: self.general.clone(),
                 accepted: accepted.as_ref(),
                 allowed,

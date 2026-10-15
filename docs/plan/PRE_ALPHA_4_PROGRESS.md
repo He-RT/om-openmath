@@ -8,15 +8,15 @@
 
 **实际状态：** 原完整规格35/98任务完成、63项未完成；这是历史功能账本，不再作为本版完成率。8项交付检查均not_run，candidate未分配，ready_to_publish=false，released_verified=false。Mac/Web可用构建和实测性能才是当前进度依据。
 
-**下一任务：** 保留R4.3.08未提交撤销接线，先修复当前RunSource新增editor_busy字段未补齐测试构造器造成的编译阻断；只做相关编译/回归。将R4.5.06 Preview安装前移，先生成可启动Mac.app和生产Web构建，接通实际编辑→计算→保存→重开；诊断现有Web CI失败。然后集中补原生结果/Markdown/图形与基础模型设置/助手UI。暂停扩充未开放工具、媒体全矩阵、逐批证据副本与完整故障注入。系统输入法设置保留，中文基础输入仍要可用。
+**下一任务：** Mac Release与生产Web构建已可用，实际编辑/计算/保存、基础模型设置与真实Pi工具任务已接通，原撤销闭环和Web Quick fix失败已修。下一集中补原生Markdown、步骤和2D/基础3D展示，再完成原53/输入延迟/启动内存测量与三资产安装发行。当前UI重做及live结果见D066；完整统一停止和候选性能/安装仍待验证。保留系统输入设置。
 
 **测试策略：** 开发跑已有的受影响检查；新增测试只覆盖必要独立断言和实际缺陷。候选再集中完成8项实际验收，原53正确性、CLI200ms、Mac/Web1s及输入p95≤50ms门槛不降。历史32项最终门禁保留not_run参考，scope 2不再将其全部设为发行前置。
 
 ## 已知外部前置
 
-- 原生宿主、事件恢复和首代/source物理存储已运行；DocCommitPort已通过实际跨语言验证；完整工作台、checkpoint及Agent尚未接通，运行源码版本仍`.3`。
+- 原生宿主、事件恢复和首代/source物理存储已运行；DocCommitPort已通过实际跨语言验证；工作台、checkpoint及基础Agent工具任务已接通，运行源码版本仍`.3`。
 - 上轮只读预检没有Developer ID Application材料；执行阶段复核并按R4.0.11准备接口，本轮按主计划第0节如实标记签名/公证身份并验证真实安装，不以证书准备阻塞开发与实验性pre-alpha。
-- 用户已于2026-10-13提供4Router端点及两个模型的测试授权；仓库外私有文件保存凭据，目录/短文本均200。仅开发smoke，不代表新Registry/Pi/工具/媒体或完整live gate；不自动读取旧Key/环境/profile。当前live gate未运行。
+- 用户已于2026-10-13提供4Router端点及两个模型的测试授权；仓库外私有文件保存凭据，目录/短文本均200。仅开发smoke，不代表新Registry/Pi/工具/媒体或完整live gate；不自动读取旧Key/环境/profile。D066已实际调用gpt-6.1-sol完成读/改/运行/结果核对；这不是完整候选live验收。
 
 ## 任务账本
 
@@ -73,7 +73,7 @@
 | [x] [R4.3.05](PRE_ALPHA_4.md#task-r4.3.05) | 读取笔记本与真实函数资料工具 | completed | [只读基础](../acceptance/pre-alpha.4/development/r43/readonly-services-foundation.json)、[耐久工具/Pi](../acceptance/pre-alpha.4/development/r43/readonly-native-tool.json)、[实际输出/持久历史](../acceptance/pre-alpha.4/development/r43/readonly-outputs-history.json)；1297Rust/实际签名App两轮/重启history/独立worker | D053/D055/本批D056 |
 | [x] [R4.3.06](PRE_ALPHA_4.md#task-r4.3.06) | 预览与原子修改工具接入 | completed | [预览/Pi三轮](../acceptance/pre-alpha.4/development/r43/patch-preview-foundation.json)、[实际原子提交/Pi四轮](../acceptance/pre-alpha.4/development/r43/patch-atomic-apply.json)；1301Rust/38帧31事件/5真实边界/原回执恢复 | D057/本批D058 |
 | [x] [R4.3.07](PRE_ALPHA_4.md#task-r4.3.07) | 执行、结果检查和隔离试算工具 | completed | [依赖规划](../acceptance/pre-alpha.4/development/r43/math-run-planning.json)、[inspect/Pi](../acceptance/pre-alpha.4/development/r43/math-inspect-native.json)、[scratch/Pi](../acceptance/pre-alpha.4/development/r43/math-scratch-native.json)、[运行组](../acceptance/pre-alpha.4/development/r43/math-run-ledger.json)及[真实运行闭环](../acceptance/pre-alpha.4/development/r43/math-run-native.json)：签名包10场景+取消/unknown真实边界、原回执恢复、实际Solve/ODE/scene；180 Rust/23 Node/Pi/17 Python/402 DTO | D059–D064 |
-| [ ] [R4.3.08](PRE_ALPHA_4.md#task-r4.3.08) | 操作核对、撤销和Host停止控制 | in_progress | [原操作耐久查账/Pi](../acceptance/pre-alpha.4/development/r43/operation-query-native.json)：18签名场景、当前unknown原ID回读/真实屏障释放、重启新授权；仅步骤1完成，撤销与统一停止仍未完成 | D065 |
+| [ ] [R4.3.08](PRE_ALPHA_4.md#task-r4.3.08) | 操作核对、撤销和Host停止控制 | in_progress | [原操作耐久查账/Pi](../acceptance/pre-alpha.4/development/r43/operation-query-native.json)：18签名场景、当前unknown原ID回读/真实屏障释放、重启新授权；步骤1/2完成，统一停止仍未完成 | D065–D066 |
 | [ ] [R4.3.09](PRE_ALPHA_4.md#task-r4.3.09) | 附件工具与宿主处理注册接口 | planned | — | — |
 | [ ] [R4.3.10](PRE_ALPHA_4.md#task-r4.3.10) | 全工具原生声明与provider严格schema转换 | planned | — | — |
 | [ ] [R4.3.11](PRE_ALPHA_4.md#task-r4.3.11) | 实际Pi合成provider编辑运行修正闭环 | planned | — | — |
@@ -772,3 +772,14 @@ R4.3.07步骤1/2/4及Task Done满足并勾选，整体35/98，下一R4.3.08。32
 - 新增不可用用例初版误引用RecoveredTool.call而编译拒，已改实际callID/原canonical映射；编译日志及原输入保留。初始Rust prototype误用producer不存在的runtime字段也保留。最终exact key扫描0命中，私有配置仅仓库外0600原文件。清理本批184成功测试inventory中的27普通Mach-O harness，779,742,864 bytes约744MiB；库/CLI/examples/App/runtime/证据/用户数据保留。
 
 只勾R4.3.08步骤1，整体35/98。下一必须接原ACKed undo_transaction→当前snapshot/ref/获准事务→真实merge_group/DocCommitPort/耐久effect/Pi，检验重复undo/手工冲突；再统一Host stop实际模型/Pi/CAS/媒体及后续admission，检验完成vs停止/任务隔离。当前Agent undo仍unavailable，统一TaskControl/UI未完成。32最终gate仍not_run、candidate未分配、ready/released=false；完整98+32gates+实际发行继续。dev/公开.3、不合main/旧公开包不动、无子代理/本机iOS模拟器，OS输入设置保持不重问。
+
+
+## D066 · 2026-10-15 Mac/Web可用构建、原撤销闭环与原生UI重做
+
+按scope 2直接推进产品：修复RunSource.editor_busy测试构造器与clean编辑器被误判busy；Agent undo复用当前scope/snapshot和实际获准事务、真实逆计划及耐久原回执。38项相关Rust检查、Clippy、Node bridge/protocol、7组签名包撤销场景通过；R4.3.08只勾步骤2，统一停止未宣称完成。Web Quick fix在两个合法按钮间定位不唯一，限定inline diagnostics；生产构建及实际Unicode编辑/修复/运行/下载测试通过，原断言保留。
+
+用Computer Use实际查看计算器、文本编辑、活动监视器五分类、系统设置通用/外观/无障碍，以及App Store探索/工作/分类/详情；没有更改系统设置或安装应用。Mac改统一原生工具栏、安静欢迎页、主笔记区、可收目录和直接助手入口；公式复制/字号/投影移到菜单，数学语义保留。添加/删除通过真实source事务，撤销恢复原中文内容；保留原TextKit编辑器、滚动和选区。移除始终运行的隐藏scratch，空事件不再发布UI更新；实窗进程空闲CPU读数从旧版约24.7%降至0.0%，不代替候选性能门槛。
+
+Release构建与strict签名通过；工作台现有实窗回归验证1042/861/640/1100宽度、五目的地、原选区/滚动、实际5/6及长CAS编辑停止。CUA实际输入/方程精确2和3/中文/添加删除撤销/保存及重开回读通过。发现独立Open面板偶发不显示，改为附着当前窗口的sheet，实窗重开自身保存文件且状态为已打开；Agent protocol相关编译及原ACK/取消检查通过。新Preview使用独立pre-alpha.4目录，早期原型存储不动。模型配置仅将新不透明引用写JSON，密钥走新Keychain命名空间；实际发现ad hoc包使用Data Protection Keychain返回-34018，改用macOS加密登录钥匙串，生产写入/原字节读取/删除自身合成项验证通过，锁屏仍未验证；实际模型经相同AssistantContext/ProviderTransport/私有Pi/KernelCommitPort完成read→preview→apply→重新read→run→inspect，原blob独立读回x→2/x→3，definitions_current=true。首次使用旧snapshot运行被拒，未重放修改；补明确引用刷新指令后完整成功。只用用户精确授权的外部API文件，未读取旧配置或输出密钥。live脚本显式opt-in，不进入默认CI。
+
+本批简要日志和自身测试文档保留target/plan-scope2，live成功attempt-5RlZQf，签名撤销attempt-JofR9w；不复制全套源码/数据库证据。清理104个已停止、可重建的普通测试Mach-O，释放1,877,383,392字节，现约39GiB可用。8项delivery_check仍not_run；原53/输入p95与实际三资产安装发布尚未整体验收，candidate未分配、ready/released=false，公开版本仍.3。

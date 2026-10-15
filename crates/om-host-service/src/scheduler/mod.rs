@@ -253,6 +253,7 @@ impl NativeHost {
                 document_generation: *generation,
                 snapshot: Nullable(Some(body.snapshot)),
                 plan: Nullable(None),
+                undo_lookup: Nullable(None),
                 preview: Nullable(None),
                 reference: Nullable(None),
                 operation: Nullable(None),

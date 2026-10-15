@@ -166,8 +166,9 @@ impl AgentIngress {
         current.task = Some(self.scope.task.clone());
         current.task_generation = self.scope.task_generation.get();
         current.execution_mode &= !self.readonly;
-        current.can_write &=
-            !self.readonly && self.grants.contains(&AgentToolName::ApplyNotebookPatch);
+        current.can_write &= !self.readonly
+            && (self.grants.contains(&AgentToolName::ApplyNotebookPatch)
+                || self.grants.contains(&AgentToolName::UndoTransaction));
         current.can_preview &= self.grants.contains(&AgentToolName::PreviewSource);
         current
     }

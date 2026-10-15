@@ -105,22 +105,23 @@ struct NativeMathView:View {
   private var current:NativeMathRequest {var value=request;value.fontSize=size;value.dark=scheme == .dark;return value}
   var body:some View {
     let actual=current
-    VStack(alignment:.leading,spacing:6) {
-      NativeMathDisplay(request:actual)
-      HStack(spacing:8) {
-        Button("原式") {showOriginal.toggle()}.popover(isPresented:$showOriginal) {
+    HStack(alignment:.top,spacing:12) {
+      NativeMathDisplay(request:actual).frame(maxWidth:.infinity,alignment:.leading)
+      Menu("公式操作",systemImage:"ellipsis") {
+        Button("复制 LaTeX") {copy(request.originalLatex)}
+        Button("复制 Wolfram 源式") {copy(request.wolfram)}.disabled(request.wolfram.isEmpty)
+        Button("复制 Modern 源式") {if let modern=request.modern {copy(modern)}}.disabled(request.modern==nil)
+        Divider()
+        Button("查看原始 LaTeX…") {showOriginal=true}
+        Divider()
+        Text("字号 \(Int(size)) pt")
+        Button("放大字号") {size=min(96,size+2)}.disabled(size>=96)
+        Button("缩小字号") {size=max(8,size-2)}.disabled(size<=8)
+        Button("恢复默认字号") {size=request.fontSize}
+      }.labelStyle(.iconOnly).menuStyle(.borderlessButton).menuIndicator(.hidden).fixedSize().foregroundStyle(.secondary)
+        .popover(isPresented:$showOriginal) {
           VStack(alignment:.leading,spacing:10) {Text("原始 LaTeX").font(.headline);NativeMathOriginalSource(source:request.originalLatex);Button("复制原始 LaTeX") {copy(request.originalLatex)}}.padding(16).frame(width:480)
         }
-        Menu("复制公式") {
-          Button("原始 LaTeX") {copy(request.originalLatex)}
-          Button("Wolfram 源式") {copy(request.wolfram)}.disabled(request.wolfram.isEmpty)
-          Button("Modern 源式") {if let modern=request.modern {copy(modern)}}.disabled(request.modern==nil)
-        }
-        Spacer()
-        Button("缩小字号",systemImage:"textformat.size.smaller") {size=max(8,size-2)}.labelStyle(.iconOnly).disabled(size<=8)
-        Text(size.isFinite ? "\(Int(size)) pt" : "字号不可用").font(.caption).foregroundStyle(.secondary)
-        Button("放大字号",systemImage:"textformat.size.larger") {size=min(96,size+2)}.labelStyle(.iconOnly).disabled(size>=96)
-      }.font(.caption)
     }.onAppear {size=request.fontSize}
       .accessibilityElement(children:.contain).accessibilityIdentifier("notebook-formula-"+request.identity)
       .contextMenu {
@@ -139,7 +140,6 @@ private struct NativeMathDisplay:View {
       if let plan,plan.request==request {
         if plan.state == .ready {
           ScrollView(.horizontal) {NativeMathSurface(plan:plan).fixedSize(horizontal:true,vertical:true)}
-          if plan.transformedOperators>0 {Text("名称使用直立字体；原始 LaTeX 可复制。").font(.caption).foregroundStyle(.secondary)}
         } else {
           Text(plan.state.reason).font(.caption).foregroundStyle(.secondary)
           NativeMathOriginalSource(source:request.originalLatex).id(request.identity)

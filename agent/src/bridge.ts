@@ -75,7 +75,7 @@ export class AgentBridge {
    case 'tool_result':{
     const p=frame.payload,pending=this.#tools.get(p.tool_call_id);if(!pending||pending.turn!==p.agent_turn_id)throw new Error('IPC_TOOL_RECEIPT_REQUIRED');
     if(p.outcome==='unavailable'){if(p.operation_ref!==null||p.result_ref!==null||p.result_json!==null)throw new Error('IPC_TOOL_RECEIPT_REQUIRED');}
-    else {if(!p.result_ref||p.result_json===null)throw new Error('IPC_TOOL_RECEIPT_REQUIRED');const envelope=decodeToolResult(pending.name,Buffer.from(p.result_json));if(envelope.status!==p.outcome||envelope.ok!==(p.outcome==='completed')||envelope.operation_ref!==p.operation_ref||(!['apply_notebook_patch','run_cells'].includes(pending.name)&&p.operation_ref!==null))throw new Error('IPC_TOOL_RESULT_MISMATCH');}
+    else {if(!p.result_ref||p.result_json===null)throw new Error('IPC_TOOL_RECEIPT_REQUIRED');const envelope=decodeToolResult(pending.name,Buffer.from(p.result_json));if(envelope.status!==p.outcome||envelope.ok!==(p.outcome==='completed')||envelope.operation_ref!==p.operation_ref||(!['apply_notebook_patch','run_cells','undo_transaction'].includes(pending.name)&&p.operation_ref!==null))throw new Error('IPC_TOOL_RESULT_MISMATCH');}
     this.#tools.delete(frame.payload.tool_call_id);pending.resolve(frame.payload);break;
    }
    case 'cancel':this.#cancelled=true;this.#rejectPending(new Error('AGENT_CANCELLED'));this.#runtime!.abort();if(!this.#active)await this.#stop('cancelled');break;

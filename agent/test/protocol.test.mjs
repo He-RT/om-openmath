@@ -99,3 +99,13 @@ test('operation query may complete while its target remains unknown; it grants n
  assert.equal(decodeReadonlyResult('get_operation_status',Buffer.from(JSON.stringify(result))).status,'completed');
  for(const value of [{...result,operation_ref:'fake-side-effect'},{...result,data:{...result.data,execute:true}},{...result,data:{...result.data,operation_state:'not_found'}}])assert.throws(()=>decodeToolResult('get_operation_status',Buffer.from(JSON.stringify(value))),/IPC_INVALID_TOOL_RESULT/);
 });
+
+test('undo result carries the original inverse operation and saved=false without readonly authority',()=>{
+ const value={ok:true,status:'completed',request_ref:'original-undo-call',operation_ref:'original-undo-operation',document:{id:'doc',generation:1,revision:3},data:{undo_transaction_ref:'new-inverse-transaction',snapshot_ref:'actual-current-source',changed_cell_ids:['a'],invalidated_cell_ids:['a'],saved:false},error:null,pagination:{truncated:false,next_cursor:null}};
+ const encode=x=>Buffer.from(JSON.stringify(x));
+ assert.equal(decodeToolResult('undo_transaction',encode(value)).operation_ref,'original-undo-operation');
+ assert.throws(()=>decodeReadonlyResult('undo_transaction',encode(value)),/IPC_TOOL_RESULT_LIMIT/);
+ const unknown={...value,ok:false,status:'unknown',data:null,error:{code:'UNKNOWN_OUTCOME',message:'Query original undo operation',recovery:'query_operation',details:{}}};
+ assert.equal(decodeToolResult('undo_transaction',encode(unknown)).status,'unknown');
+ for(const changed of [{...value,data:{...value.data,saved:true}},{...value,data:{...value.data,source:'run code'}},{...unknown,operation_ref:null}])assert.throws(()=>decodeToolResult('undo_transaction',encode(changed)),/IPC_INVALID_TOOL_RESULT/);
+});

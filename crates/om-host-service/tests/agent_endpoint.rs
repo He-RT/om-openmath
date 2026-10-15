@@ -1140,3 +1140,241 @@ fn native_run_query_preserves_unknown_with_a_known_prefix_and_rejects_impossible
     empty_main(&mut owner);
     close_run_owner(&mut owner);
 }
+
+// Native original-record inputs here carry matching synthetic IO acknowledgements. The Swift
+// fixture separately verifies actual SQLite undo receipts, original admission and Pi replay.
+fn agent_undo_fixture() -> (SourceEndpoint, Value, u64, NativeStoredSourceTransaction) {
+    use om_host_service::protocol::Nullable;
+    let mut file = NativeSourceFile {
+        version: 1,
+        title: "Original inverse".into(),
+        cells: vec![NativeSourceCell {
+            id: "a".into(),
+            kind: NativeCellKind::Math,
+            source: "2+2".into(),
+            dialect: Dialect::Modern,
+        }],
+    };
+    let original = SourceDocument::new(
+        "actual-document".into(),
+        Serial::new(1).unwrap(),
+        file.clone(),
+    )
+    .unwrap();
+    file.cells[0].source = "3+3".into();
+    let plan = original
+        .prepare(
+            file,
+            "original-source-op".into(),
+            "original-source-txn".into(),
+            "original-source-event".into(),
+            "time".into(),
+        )
+        .unwrap();
+    let r = NativeDurableSourceReceipt {
+        protocol_version: 1,
+        receipt: OperationReceipt {
+            record_type: OperationReceiptRecordType::OperationReceipt,
+            store_id: "actual-store".into(),
+            document_id: Nullable(Some("actual-document".into())),
+            operation_id: plan.commit.operation_id.clone(),
+            operation_kind: OperationReceiptOperationKind::SourceEdit,
+            request_hash: plan.commit.request_hash.clone(),
+            phase: OperationReceiptPhase::Completed,
+            transaction_id: Nullable(Some(plan.commit.transaction_id.clone())),
+            committed_revision: Nullable(Some(plan.after.revision)),
+            accepted_result_ids: vec![],
+            details_blob_hash: Nullable(None),
+            details_retention: OperationReceiptDetailsRetention::Full,
+            error_code: Nullable(None),
+            updated_at: "time".into(),
+        },
+        snapshot_hash: plan.after.snapshot_hash.clone(),
+        inverse_plan_hash: plan.before.snapshot_hash.clone(),
+        execution_epoch: plan.after.execution_epoch,
+        outbox_event_id: plan.commit.outbox_event_id.clone(),
+    };
+    let record = NativeStoredSourceTransaction {
+        store_id: "actual-store".into(),
+        transaction_id: plan.commit.transaction_id.clone(),
+        plan: plan.clone(),
+        receipt: r,
+    };
+    let mut owner = SourceEndpoint::open(
+        plan.after.clone(),
+        "actual-store".into(),
+        "actual-runtime".into(),
+        Serial::new(1).unwrap(),
+        None,
+        Serial::new(0).unwrap(),
+    )
+    .unwrap();
+    let hello=command(&mut owner,json!({"type":"agent_activate","scope":scope(1),"hello_id":"hello","core_version":"1.0.4","adapter_version":"adapter-1","grants":["read_notebook","undo_transaction"],"readonly":false})).unwrap();
+    let hello: Value = serde_json::from_str(hello.outbound_json.0.as_ref().unwrap()).unwrap();
+    ready(&mut owner, &hello, 1);
+    command(&mut owner,json!({"type":"agent_bind_history","scope":scope(1),"expected_snapshot_hash":plan.after.snapshot_hash,"transaction_refs":[record.transaction_id]})).unwrap();
+    (owner, hello, 2, record)
+}
+fn original_undo_call(
+    owner: &mut SourceEndpoint,
+    hello: &Value,
+    seq: &mut u64,
+    transactions: Value,
+) -> NativeAgentToolIntent {
+    let read = data_call(owner, hello, seq, "read_notebook", json!({}));
+    let value: Value = serde_json::from_str(&read.result_json).unwrap();
+    mapped_call(
+        owner,
+        hello,
+        seq,
+        "undo_transaction",
+        json!({"snapshot_ref":value["data"]["snapshot_ref"],"transaction_refs":transactions}),
+    )
+}
+fn prepare_native_undo(
+    owner: &mut SourceEndpoint,
+    intent: &NativeAgentToolIntent,
+    records: Value,
+    allowed: Value,
+) -> Result<NativeSourceHostReply, String> {
+    source_command(
+        owner,
+        json!({"type":"source_begin_agent_undo","operation_id":intent.operation_id,"records":records,"allowed_transaction_refs":allowed,"failure_code":null}),
+    )
+}
+#[test]
+fn agent_undo_is_bound_to_current_read_history_and_original_task_without_patch_grant() {
+    let (mut owner, hello, mut seq, record) = agent_undo_fixture();
+    let intent = original_undo_call(&mut owner, &hello, &mut seq, json!([record.transaction_id]));
+    let lookup = prepare_native_undo(&mut owner, &intent, Value::Null, Value::Null)
+        .unwrap()
+        .undo_lookup
+        .0
+        .unwrap();
+    assert_eq!(
+        lookup.transaction_refs,
+        std::slice::from_ref(&record.transaction_id)
+    );
+    assert_eq!(lookup.operation_id, intent.operation_id);
+    let mut forged = serde_json::to_value(&record).unwrap();
+    forged["receipt"]["receipt"]["request_hash"] = json!("0".repeat(64));
+    assert_eq!(
+        prepare_native_undo(&mut owner, &intent, json!([forged]), Value::Null)
+            .err()
+            .unwrap(),
+        "INVALID_UNDO_RECORD"
+    );
+    assert_eq!(owner.binding().document_revision.get(), 1);
+    let raw = serde_json::to_value(&record).unwrap();
+    let original = prepare_native_undo(&mut owner, &intent, json!([raw]), Value::Null).unwrap();
+    let plan = original.plan.0.as_ref().unwrap();
+    assert_eq!(plan.commit.actor, DocumentCommitActor::Undo);
+    assert_eq!(plan.commit.task_id.0.as_deref(), Some("task"));
+    assert_eq!(plan.before.revision.get(), 1);
+    assert_eq!(plan.after.revision.get(), 2);
+    assert_eq!(plan.after.file.cells[0].source, "2+2");
+    assert_eq!(
+        plan.undo_group.as_ref().unwrap().transaction_ids,
+        [record.transaction_id]
+    );
+    let duplicate = prepare_native_undo(&mut owner, &intent, Value::Null, Value::Null).unwrap();
+    assert_eq!(
+        serde_json::to_vec(&duplicate.plan).unwrap(),
+        serde_json::to_vec(&original.plan).unwrap()
+    );
+    assert!(
+        source_command(
+            &mut owner,
+            json!({"type":"source_begin_agent","operation_id":intent.operation_id})
+        )
+        .is_err()
+    );
+    assert_eq!(owner.binding().document_revision.get(), 1); // A frozen inverse is not a committed edit.
+    close_run_owner(&mut owner);
+}
+#[test]
+fn agent_undo_unexposed_or_host_disallowed_history_fails_before_any_plan() {
+    for restricted in [false, true] {
+        let (mut owner, hello, mut seq, record) = agent_undo_fixture();
+        let requested = if restricted {
+            record.transaction_id
+        } else {
+            "unissued-txn".into()
+        };
+        let intent = original_undo_call(&mut owner, &hello, &mut seq, json!([requested]));
+        let response = prepare_native_undo(
+            &mut owner,
+            &intent,
+            Value::Null,
+            if restricted { json!([]) } else { Value::Null },
+        )
+        .unwrap();
+        assert!(response.plan.0.is_none() && response.undo_lookup.0.is_none());
+        let result=command(&mut owner,json!({"type":"agent_effect_tool","scope":scope(1),"operation_id":intent.operation_id,"failure_code":null})).unwrap().effect_result.0.unwrap();
+        let value: Value = serde_json::from_str(&result.result_json).unwrap();
+        assert_eq!(value["error"]["code"], "PERMISSION_DENIED");
+        assert!(result.operation_ref.0.is_none());
+        assert_eq!(owner.binding().document_revision.get(), 1);
+        close_run_owner(&mut owner);
+    }
+}
+#[test]
+fn agent_undo_current_snapshot_is_rechecked_after_physical_history_readback() {
+    let (mut owner, hello, mut seq, record) = agent_undo_fixture();
+    let intent = original_undo_call(&mut owner, &hello, &mut seq, json!([record.transaction_id]));
+    prepare_native_undo(&mut owner, &intent, Value::Null, Value::Null).unwrap();
+    source_command(&mut owner,json!({"type":"source_editor_changed","state":{"runtime_instance_id":"actual-runtime","source_revision":1,"document_id":"actual-document","document_generation":1,"targets":[{"cell_id":"a","editor_generation":1,"draft_sequence":1,"base_cell_revision":1,"source_hash":format!("{:x}",Sha256::digest(b"3+3")),"is_composing":true,"is_dirty":false}]}})).unwrap();
+    let reply = prepare_native_undo(
+        &mut owner,
+        &intent,
+        json!([serde_json::to_value(record).unwrap()]),
+        Value::Null,
+    )
+    .unwrap();
+    assert!(reply.plan.0.is_none());
+    let result=command(&mut owner,json!({"type":"agent_effect_tool","scope":scope(1),"operation_id":intent.operation_id,"failure_code":null})).unwrap().effect_result.0.unwrap();
+    let value: Value = serde_json::from_str(&result.result_json).unwrap();
+    assert_eq!(value["error"]["code"], "STALE_SNAPSHOT");
+    assert_eq!(owner.binding().document_revision.get(), 1);
+    close_run_owner(&mut owner);
+}
+
+#[test]
+fn undo_final_physical_barrier_uses_original_agent_scope_and_cancel_token() {
+    for cancel in [false, true] {
+        let (mut owner, hello, mut seq, record) = agent_undo_fixture();
+        let intent =
+            original_undo_call(&mut owner, &hello, &mut seq, json!([record.transaction_id]));
+        let prepared = prepare_native_undo(
+            &mut owner,
+            &intent,
+            json!([serde_json::to_value(record).unwrap()]),
+            Value::Null,
+        )
+        .unwrap();
+        let plan = prepared.plan.0.unwrap();
+        let operation = &plan.commit.operation_id;
+        source_command(&mut owner,json!({"type":"source_admitted","operation_id":operation,"admission":{"protocol_version":1,"document_id":"actual-document","operation_id":operation,"request_hash":plan.commit.request_hash,"phase":"accepted","created_by_runtime":"actual-runtime","receipt":null}})).unwrap();
+        let now = prepared.owner_time_ms.get();
+        let fence = json!({"protocol_version":1,"fence_id":"undo-fence","runtime_instance_id":"actual-runtime","document_id":"actual-document","document_generation":1,"source_revision":1,"source_snapshot_hash":plan.before.snapshot_hash,"issued_ms":now,"expires_ms":now+2000,"targets":[{"cell_id":"a","editor_generation":1,"draft_sequence":0,"base_cell_revision":1,"source_hash":format!("{:x}",Sha256::digest(b"3+3")),"is_composing":false,"is_dirty":false}]});
+        source_command(
+            &mut owner,
+            json!({"type":"source_fenced","operation_id":operation,"fence":fence}),
+        )
+        .unwrap();
+        if cancel {
+            command(
+                &mut owner,
+                json!({"type":"agent_cancel","scope":scope(1),"reason":"user_stop"}),
+            )
+            .unwrap();
+        }
+        let barrier = source_command(
+            &mut owner,
+            json!({"type":"source_barrier","operation_id":operation,"fence_id":"undo-fence"}),
+        );
+        assert_eq!(barrier.is_ok(), !cancel);
+        assert_eq!(owner.binding().document_revision.get(), 1);
+        close_run_owner(&mut owner);
+    }
+}

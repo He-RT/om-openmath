@@ -12,17 +12,26 @@ struct NativeSolutionView:View {
       if page.solution_kind == .finite,page.solutions.contains(where:{$0.condition_latex.value != nil}) {Text("以下条件须同时成立。").font(.caption).foregroundStyle(.secondary)}
       ForEach(page.groups,id:\.index) {group in
         VStack(alignment:.leading,spacing:8) {
-          Text("解 \(group.firstIndex+1)").font(.caption).foregroundStyle(.secondary)
+          HStack {
+            Text("解 \(group.firstIndex+1)").font(.caption).foregroundStyle(.secondary)
+            Spacer()
+            Menu("解的操作",systemImage:"number") {
+              ForEach(Array(group.entry.bindings.enumerated()),id:\.offset) {index,value in
+                Button("\(value.variable) · 数值投影（20 位）") {Task {await presenter.projectSolution(index:page.offset+UInt32(group.index),binding:index,source:value.input_form)}}
+              }
+            }.labelStyle(.iconOnly).menuStyle(.borderlessButton).menuIndicator(.hidden).fixedSize().disabled(presenter.busy).help("查看解的数值近似")
+          }
           if group.firstIndex<page.offset {Text("此页包含该解的重复记录。").font(.caption).foregroundStyle(.secondary)}
           ForEach(Array(group.entry.bindings.enumerated()),id:\.offset) {index,value in
             VStack(alignment:.leading,spacing:6) {
-              Text(value.variable+" =").font(.system(.callout,design:.monospaced)).textSelection(.enabled)
+              HStack(alignment:.center,spacing:12) {
+                Text(value.variable+" =").font(.system(size:20,design:.serif)).textSelection(.enabled)
+                NativeMathView(request:.init(identity:identity(group.index,index),originalLatex:value.latex,wolfram:value.input_form,modern:value.modern_form))
+              }
               if let root=value.root_index {Text("精确代数根 · 根序 \(root)").font(.caption).foregroundStyle(.secondary)}
-              NativeMathView(request:.init(identity:identity(group.index,index),originalLatex:value.latex,wolfram:value.input_form,modern:value.modern_form))
               if let radicals=value.radicals {
                 DisclosureGroup("内核提供的根式") {NativeMathView(request:.init(identity:identity(group.index,index)+"-radicals",originalLatex:radicals.latex,wolfram:radicals.input_form,modern:radicals.modern_form.value))}
               }
-              Button("数值投影（20 位）") {Task {await presenter.projectSolution(index:page.offset+UInt32(group.index),binding:index,source:value.input_form)}}.disabled(presenter.busy)
               let key=ResultPresenter.solutionNumericKey(index:page.offset+UInt32(group.index),binding:index,source:value.input_form)
               if let numeric=presenter.numeric[key] {
                 Text("数值投影 · 原精确式保持").font(.caption).foregroundStyle(.secondary)
@@ -73,7 +82,7 @@ struct NativeSolutionView:View {
     case .none:return "无解"
     case .all:return "所有取值均成立"
     case .region:return "解区域"
-    case .finite:return "有限解 · 按重数计 \(page.total_solutions) 个解"
+    case .finite:return "\(page.total_solutions) 个解（按重数计）"
     }
   }
   private func identity(_ row:Int,_ binding:Int)->String {presenter.original.result_ref+"/\(page.offset+UInt32(row))/\(binding)"}
@@ -95,12 +104,21 @@ struct NativeResultView:View {
     VStack(alignment:.leading,spacing:10) {
       HStack {
         Text(status).font(.caption).foregroundStyle(.secondary)
+        if let statement=presenter.summary?.statement.value {Text(nature(statement.nature)).font(.caption).foregroundStyle(.secondary)}
         if presenter.busy {ProgressView().controlSize(.small)}
         Spacer()
-        Button("核对结果") {Task {await presenter.load()}}.disabled(presenter.busy)
+        Menu("结果操作",systemImage:"ellipsis") {
+          Button("核对结果") {Task {await presenter.load()}}
+          Button("查看原输入") {Task {await presenter.readOriginalInput()}}
+          if presenter.original.out_index.value>0 {
+            Divider()
+            ForEach([UInt32(20),50,80],id:\.self) {precision in
+              Button("数值投影 · \(precision) 位") {digits=precision;Task {await presenter.projectValue(digits:precision)}}
+            }
+          }
+        }.labelStyle(.iconOnly).menuStyle(.borderlessButton).menuIndicator(.hidden).fixedSize().disabled(presenter.busy)
       }
       if let summary=presenter.summary {
-        if let statement=summary.statement.value {Text(nature(statement.nature)).font(.caption).foregroundStyle(.secondary)}
         ForEach(Array(summary.messages.enumerated()),id:\.offset) {_,message in
           Text(message.symbol+"::"+message.tag+"："+message.text).font(.callout).textSelection(.enabled)
         }
@@ -116,10 +134,6 @@ struct NativeResultView:View {
           if presenter.presentation?.solutions != nil || presenter.valuePage != nil {DisclosureGroup("完整原结果") {expression(actual)}}
           else {expression(actual)}
           if presenter.original.out_index.value>0 {
-            HStack {
-              Picker("投影位数",selection:$digits) {ForEach([UInt32(20),50,80],id:\.self) {Text("\($0) 位").tag($0)}}.frame(width:160)
-              Button("查看数值投影") {Task {await presenter.projectValue(digits:digits)}}.disabled(presenter.busy)
-            }
             if let projected=presenter.numeric[Data("value/\(digits)".utf8)] {
               Text("只读数值投影 · 不是新的精确结果或误差证书").font(.caption).foregroundStyle(.secondary)
               expression(projected.value,suffix:"-numeric-\(digits)")
@@ -135,7 +149,6 @@ struct NativeResultView:View {
           Button("读取完整历史结果") {Task {await presenter.readOriginalValue()}}.disabled(presenter.busy)
         }
       }
-      Button("查看原输入") {Task {await presenter.readOriginalInput()}}.disabled(presenter.busy)
       if let input=presenter.originalInput {
         Text(String(input.prefix(4096))).font(.system(.callout,design:.monospaced)).textSelection(.enabled)
         if input.count>4096 {Text("此处为输入预览，可复制完整原输入。").font(.caption).foregroundStyle(.secondary)}
@@ -153,7 +166,7 @@ struct NativeResultView:View {
     if displayContext == .sourceChanged {return "上次结果 · 源码已修改，需要核对"}
     if displayContext == .history || presenter.binding.acceptance == .history_only {return "历史结果 · 计算版本 \(presenter.original.kernel_state_revision.value) / 源码版本 \(presenter.original.source_revision.value)"}
     switch presenter.binding.freshness {
-    case .current:return "已接纳结果"
+    case .current:return "结果"
     case .stale:return "历史结果 · 来源已过期"
     case .refreshing:return "上次结果 · 正在重算"
     case .partial:return presenter.summary?.statement_count ?? 0>0 ? "部分结果 · 查看实际消息" : "计算有错误 · 未产生成功结果"

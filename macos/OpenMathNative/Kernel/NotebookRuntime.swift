@@ -12,7 +12,7 @@ enum WorkbenchDestination:String,CaseIterable,Identifiable {
 /// Document-owned navigation survives hiding, popovers and reconstruction of the workspace view.
 @MainActor final class WorkbenchNavigation:ObservableObject {
   @Published var outlineVisible=true
-  @Published var inspectorVisible=true
+  @Published var inspectorVisible=false
   @Published var layout:WorkbenchLayout = .three
   @Published var inspector:WorkbenchDestination = .document
 }
@@ -136,6 +136,13 @@ struct NotebookCellResult:Sendable {
       await reader.close()
       guard !closing else {return};accept(.init(receipt:receipt,bindings:bindings,values:values),cell:cell)
     } catch {await reader.close();throw error}
+  }
+  func displayAgentReceipts(_ receipts:[NativeKernelReceipt]) async {
+    for receipt in receipts {
+      guard !closing,receipt.producer.cell_id.value != nil,results[receipt.producer.cell_id.value!]?.receipt.operation_id != receipt.operation_id else {continue}
+      do {try await display(receipt)}
+      catch {if let cell=receipt.producer.cell_id.value {accept(.init(receipt:receipt,bindings:[],values:[]),cell:cell)}}
+    }
   }
   func stop() async {
     guard let operation,!cancelPending else {return};cancelPending=true

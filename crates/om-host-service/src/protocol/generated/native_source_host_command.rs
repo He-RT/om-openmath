@@ -38,4 +38,6 @@ pub enum NativeSourceHostCommand {
     SourceRecoverUndo(SourceRecoverUndo),
     /// Variant `SourceBeginAgent`.
     SourceBeginAgent(SourceBeginAgent),
+    /// Variant `SourceBeginAgentUndo`.
+    SourceBeginAgentUndo(Box<SourceBeginAgentUndo>),
 }

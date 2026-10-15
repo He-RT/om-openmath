@@ -119,15 +119,15 @@ function matches(value: Json, rule: any, depth = 0, root = schema): boolean {
 }
 /** Data only, after native durability; no result may become a tool grant or source command. */
 export function decodeReadonlyResult(name:string,bytes:Uint8Array):{ok:boolean,status:'completed'|'failed'} {
-  if(['apply_notebook_patch','run_cells'].includes(name))fail('IPC_TOOL_RESULT_LIMIT');
+  if(['apply_notebook_patch','run_cells','undo_transaction'].includes(name))fail('IPC_TOOL_RESULT_LIMIT');
   return decodeToolResult(name,bytes) as {ok:boolean,status:'completed'|'failed'};
 }
 /** All native tool data stays closed; effects additionally carry a real operation identity. */
 export function decodeToolResult(name:string,bytes:Uint8Array):{ok:boolean,status:string,operation_ref:string|null} {
-  if(!['read_notebook','search_functions','get_function_docs','preview_source','apply_notebook_patch','run_cells','inspect_result','evaluate_scratch','get_operation_status'].includes(name)||bytes.length>262144)fail('IPC_TOOL_RESULT_LIMIT');
+  if(!['read_notebook','search_functions','get_function_docs','preview_source','apply_notebook_patch','run_cells','inspect_result','evaluate_scratch','get_operation_status','undo_transaction'].includes(name)||bytes.length>262144)fail('IPC_TOOL_RESULT_LIMIT');
   const value=strictJson(bytes),rule=toolSchema.$defs[name+'_result'];
-  const phases=name==='run_cells'?['completed','partial','failed','cancelled','unknown']:name==='apply_notebook_patch'?['completed','failed','cancelled','unknown']:['completed','failed'];
-  if(!matches(value,rule,0,toolSchema)||value===null||typeof value!=='object'||Array.isArray(value)||!phases.includes(String(value.status))||(!['apply_notebook_patch','run_cells'].includes(name)&&value.operation_ref!==null))fail('IPC_INVALID_TOOL_RESULT');
+  const phases=name==='run_cells'?['completed','partial','failed','cancelled','unknown']:['apply_notebook_patch','undo_transaction'].includes(name)?['completed','failed','cancelled','unknown']:['completed','failed'];
+  if(!matches(value,rule,0,toolSchema)||value===null||typeof value!=='object'||Array.isArray(value)||!phases.includes(String(value.status))||(!['apply_notebook_patch','run_cells','undo_transaction'].includes(name)&&value.operation_ref!==null))fail('IPC_INVALID_TOOL_RESULT');
   if(name==='run_cells'&&value.data!==null&&(value.data as Record<string,Json>).run_ref!==value.operation_ref)fail('IPC_INVALID_TOOL_RESULT');
   return value as unknown as {ok:boolean,status:string,operation_ref:string|null};
 }

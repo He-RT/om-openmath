@@ -5,29 +5,34 @@ import SwiftUI
 @main struct OpenMathNativeApp:App {
   @NSApplicationDelegateAdaptor(NativeApplicationDelegate.self) private var delegate
   @StateObject private var workspace=NativeFileWorkspace()
-  @StateObject private var scratch=NotebookViewModel()
   @State private var showingRecovery=false
   @State private var showingSessionRecovery=false
   var body:some Scene {
     Window("OpenMath Preview",id:"workspace") {
-      VStack(spacing:0) {
-        HStack {
-          Button("新建笔记本",systemImage:"doc.badge.plus") {Task {await workspace.newDocument()}}.disabled(workspace.busy).accessibilityIdentifier("notebook-new")
-          Button("打开笔记本",systemImage:"folder") {Task {await workspace.openPanel()}}.disabled(workspace.busy).accessibilityIdentifier("notebook-open")
-          Button("恢复本地记录") {showingRecovery=true;Task {await workspace.refreshRecoverableDocuments()}}.disabled(workspace.busy).accessibilityIdentifier("notebook-recovery-menu")
-          Button("会话恢复") {showingSessionRecovery=true;Task {await workspace.refreshRecoverableSessions()}}.disabled(workspace.busy).accessibilityIdentifier("session-recovery-menu")
-          Spacer()
-        }.padding(12)
-        Divider()
+      Group {
         if let session=workspace.session {WorkspaceView(workspace:workspace,session:session)}
-        else {HostScratchView(model:scratch);if let error=workspace.errorText {Text(error).foregroundStyle(.red).padding(8)}}
+        else {welcome}
       }.frame(minWidth:640,minHeight:560)
         .background(NativeWindowAttachment(workspace:workspace).frame(width:0,height:0))
-        .task {delegate.attach(workspace,scratch:scratch);await scratch.start();await workspace.refreshRecoverableDocuments()}
+        .toolbar {
+          ToolbarItemGroup(placement:.automatic) {
+            Button("新建笔记本",systemImage:"square.and.pencil") {Task {await workspace.newDocument()}}.disabled(workspace.busy).help("新建笔记本（⌘N）").accessibilityIdentifier("notebook-new")
+            Menu("文件",systemImage:"folder") {
+              Button("打开笔记本…") {Task {await workspace.openPanel()}}.accessibilityIdentifier("notebook-open")
+              Divider()
+              Button("另存为…") {Task {await workspace.save(asNew:true)}}.disabled(workspace.session==nil)
+              Button("核对保存状态") {Task {await workspace.reconcile()}}.disabled(workspace.session==nil)
+              Divider()
+              Button("恢复本地笔记本…") {showingRecovery=true;Task {await workspace.refreshRecoverableDocuments()}}.accessibilityIdentifier("notebook-recovery-menu")
+              Button("恢复助手会话…") {showingSessionRecovery=true;Task {await workspace.refreshRecoverableSessions()}}.accessibilityIdentifier("session-recovery-menu")
+              Divider()
+              Button("关闭笔记本") {Task {_ = await workspace.closeDocument()}}.disabled(workspace.session==nil)
+            }.disabled(workspace.busy).help("打开、保存与恢复")
+          }
+        }
         .sheet(isPresented:$showingRecovery) {NativeRecoveryList(workspace:workspace,isPresented:$showingRecovery)}
         .sheet(isPresented:$showingSessionRecovery) {NativeSessionRecoveryList(workspace:workspace,isPresented:$showingSessionRecovery)}
-        .onDisappear {Task {await scratch.close()}}
-    }.defaultSize(width:1100,height:780).commands {
+    }.defaultSize(width:1180,height:800).windowToolbarStyle(.unified).commands {
       CommandGroup(replacing:.newItem) {
         Button("新建笔记本") {Task {await workspace.newDocument()}}.keyboardShortcut("n").disabled(workspace.busy)
         Button("打开笔记本…") {Task {await workspace.openPanel()}}.keyboardShortcut("o").disabled(workspace.busy)
@@ -37,6 +42,21 @@ import SwiftUI
         Button("另存为…") {Task {await workspace.save(asNew:true)}}.keyboardShortcut("s",modifiers:[.command,.shift]).disabled(workspace.session==nil || workspace.busy)
       }
     }
+  }
+  private var welcome:some View {
+    VStack(spacing:24) {
+      Image(systemName:"function").font(.system(size:46,weight:.light)).foregroundStyle(.tint)
+      VStack(spacing:8) {
+        Text("OpenMath").font(.system(size:30,weight:.semibold))
+        Text("在笔记本中计算、推导与记录。").font(.title3).foregroundStyle(.secondary)
+      }
+      HStack(spacing:12) {
+        Button("新建笔记本") {Task {await workspace.newDocument()}}.buttonStyle(.borderedProminent).keyboardShortcut(.defaultAction)
+        Button("打开笔记本…") {Task {await workspace.openPanel()}}.buttonStyle(.bordered)
+      }.controlSize(.large).disabled(workspace.busy)
+      if workspace.busy {ProgressView().controlSize(.small)}
+      if let error=workspace.errorText {Text(error).foregroundStyle(.red).textSelection(.enabled).frame(maxWidth:480)}
+    }.frame(maxWidth:.infinity,maxHeight:.infinity).background(Color(nsColor:.textBackgroundColor))
   }
 }
 private struct NativeRecoveryList:View {
@@ -66,42 +86,5 @@ private struct NativeRecoveryList:View {
         Spacer();Button("关闭") {isPresented=false}.keyboardShortcut(.cancelAction).disabled(workspace.busy)
       }
     }.padding(20).frame(width:600,height:420)
-  }
-}
-private struct HostScratchView:View {
-  @ObservedObject var model:NotebookViewModel
-  var body:some View {
-    VStack(alignment:.leading,spacing:16) {
-      HStack {
-        Label("OpenMath",systemImage:"function").font(.title)
-        Spacer()
-        Text("开发预览").foregroundStyle(.secondary)
-      }
-      Text("试算").font(.headline)
-      TextEditor(text:$model.draft).font(.system(.body,design:.monospaced))
-        .frame(minHeight:120,maxHeight:240).padding(4)
-        .overlay(RoundedRectangle(cornerRadius:8).stroke(.quaternary))
-        .accessibilityLabel("数学源码").accessibilityIdentifier("scratch-source")
-        .onChange(of:model.draft) { model.noteDraft() }
-      HStack {
-        Button("运行",systemImage:"play.fill") { Task { await model.run() } }
-          .keyboardShortcut(.return,modifiers:[.command])
-          .disabled(model.projection?.hostPhase != .ready || model.operationID != nil)
-          .accessibilityIdentifier("scratch-run")
-        Button("停止",systemImage:"stop.fill") { Task { await model.stop() } }
-          .disabled(model.operationID==nil || model.cancelPending).accessibilityIdentifier("scratch-stop")
-        Text(model.message).foregroundStyle(.secondary).accessibilityIdentifier("scratch-status")
-        Spacer()
-        if model.isStale { Label("源码已修改",systemImage:"clock").foregroundStyle(.secondary) }
-      }
-      Divider()
-      ScrollView {
-        Text(model.output.isEmpty ? "输入表达式后运行，结果将显示在这里。" : model.output)
-          .font(.system(.body,design:.monospaced)).textSelection(.enabled)
-          .frame(maxWidth:.infinity,alignment:.leading).accessibilityIdentifier("scratch-output")
-      }.frame(maxWidth:.infinity,maxHeight:.infinity)
-      Text(model.storageMessage).font(.footnote).foregroundStyle(.secondary)
-      Text("此处为隔离试算。使用上方新建或打开入口编辑和保存笔记本。").font(.footnote).foregroundStyle(.secondary)
-    }.padding(24).tint(.green)
   }
 }

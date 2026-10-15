@@ -201,6 +201,34 @@ impl ReadNotebookService {
         }
         Ok(retained.snapshot.source.clone())
     }
+    /// Undo authority is current read-issued source plus the exact exposed durable history set.
+    pub(crate) fn undo_transactions(
+        &mut self,
+        reference: &str,
+        transactions: &[String],
+        scope: &ReferenceScope,
+        now: u64,
+    ) -> Result<NativeSourceSnapshot, ReadError> {
+        let source = self.current_math_snapshot(reference, scope, now)?;
+        let original = &self
+            .snapshots
+            .get(reference)
+            .ok_or(ReadError::InvalidReference)?
+            .snapshot;
+        if transactions.is_empty()
+            || transactions.len() > 32
+            || transactions.iter().collect::<BTreeSet<_>>().len() != transactions.len()
+        {
+            return Err(ReadError::InvalidArgument);
+        }
+        if transactions
+            .iter()
+            .any(|id| !original.recent_transaction_refs.contains(id))
+        {
+            return Err(ReadError::PermissionDenied);
+        }
+        Ok(source)
+    }
     /// Fresh entropy is supplied by the trusted native host (deterministic only in own fixtures).
     pub fn new(host_key: [u8; 32]) -> Self {
         Self {

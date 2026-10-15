@@ -84,3 +84,20 @@ for(const outcome of ['completed','partial','unknown'])test(`actual Pi consumes 
  await deliver(hello);let timer;try {await Promise.race([done.promise,new Promise((_,reject)=>{timer=setTimeout(()=>reject(Error('run Pi timeout')),3000)})]);}finally {clearTimeout(timer);await bridge.close();}
  assert.equal(turn,outcome==='unknown'?1:2);assert.equal(observed.filter(f=>f.type==='tool_call').length,1);assert.equal(observed.at(-1).type,'settled');
 });
+
+// Synthetic native receipt data exercises the actual Pi bridge; physical inverse receipts are
+// separately proved by the native package fixture, including no second edit after lost ACK.
+for(const outcome of ['completed','unknown'])test(`actual Pi receives ${outcome} original undo receipt`,async()=>{
+ const observed=[];let bridge,sequence=1,turn=0;const done=Promise.withResolvers();const deliver=f=>bridge.accept(f,raw(f));
+ const result={ok:outcome==='completed',status:outcome,request_ref:'undo',operation_ref:'undo',document:{id:'document',generation:1,revision:2},data:outcome==='completed'?{undo_transaction_ref:'inverse',snapshot_ref:'current',changed_cell_ids:['a'],invalidated_cell_ids:['a'],saved:false}:null,error:outcome==='completed'?null:{code:'UNKNOWN_OUTCOME',message:'Query original',recovery:'query_operation',details:{}},pagination:{truncated:false,next_cursor:null}};
+ bridge=new AgentBridge(async bytes=>{
+  const frame=decodeFrame(bytes.slice(0,-1));observed.push(frame);const reply=(type,payload,reply_to=null)=>deliver(hostFrame(type,++sequence,payload,reply_to));
+  if(frame.type==='ready')await reply('user_input',{event_ref:'input',message:user});
+  if(frame.type==='prepare_request'){turn++;await reply('model_request',{...frame.payload,context_ref:'context-'+turn,model_config_ref:'config'});}
+  if(frame.type==='model_request')await reply('model_event',{agent_turn_id:frame.payload.agent_turn_id,request_id:frame.payload.request_id,byte_offset:0,text:'',phase:'finished',canonical_message:{...user,message_id:'assistant-'+turn,role:'assistant',agent_turn_id:frame.payload.agent_turn_id,parts:turn===1?[{kind:'tool_call',part_id:'call',tool_call_id:'undo-call',name:'undo_transaction',arguments_json:'{"snapshot_ref":"current","transaction_refs":["original"]}'}]:[{kind:'text',part_id:'text',text:'received inverse receipt'}]}});
+  if(frame.type==='transcript_event')await reply('ack',{event_id:frame.payload.event_id,event_sequence:turn,receipt_hash:'a'.repeat(64)},frame.message_id);
+  if(frame.type==='tool_call')await reply('tool_result',{agent_turn_id:frame.payload.agent_turn_id,tool_call_id:'undo-call',operation_ref:'undo',result_ref:'native-result',outcome,result_json:JSON.stringify(result)});
+ },()=>done.resolve());
+ await deliver(hello);let timer;try{await Promise.race([done.promise,new Promise((_,reject)=>{timer=setTimeout(()=>reject(Error('undo Pi timeout')),3000)})]);}finally{clearTimeout(timer);await bridge.close();}
+ assert.equal(turn,outcome==='unknown'?1:2);assert.equal(observed.filter(f=>f.type==='tool_call').length,1);assert.equal(observed.at(-1).type,'settled');
+});

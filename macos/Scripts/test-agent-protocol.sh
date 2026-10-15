@@ -9,7 +9,7 @@ swiftc -whole-module-optimization -swift-version 6 -parse-as-library -target arm
   -L target/release -lom_apple_ffi macos/OpenMathNative/Generated/HostContractSupport.swift \
   macos/OpenMathNative/Generated/Contracts/*.swift macos/OpenMathNative/Storage/*.swift \
   macos/OpenMathNative/Kernel/KernelCommitPort.swift \
-  macos/OpenMathNative/NativeHostClient.swift macos/OpenMathNative/AppEventRouter.swift macos/OpenMathNative/DraftStore.swift macos/OpenMathNative/Agent/*.swift \
+  macos/OpenMathNative/NativeHostClient.swift macos/OpenMathNative/AppEventRouter.swift macos/OpenMathNative/DraftStore.swift macos/OpenMathNative/Agent/*.swift macos/OpenMathNative/Models/*.swift \
   macos/OpenMathNativeTests/AgentProtocolFixtures/main.swift -o target/macos-agent-protocol-tests/fixtures
 attempt_root=$(mktemp -d "$root/target/macos-agent-protocol-tests/attempt-XXXXXX")
 target/macos-agent-protocol-tests/fixtures "$root" "$attempt_root" "$(command -v node)"

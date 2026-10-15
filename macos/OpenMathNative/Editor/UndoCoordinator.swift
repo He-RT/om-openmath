@@ -41,6 +41,7 @@ private final class DocumentUndoManager:UndoManager {
   private(set) var phase:Phase = .ready
   private(set) var lastOperation:String?
   private(set) var error:String?
+  var changed:(@MainActor ()->Void)?
   var manager:UndoManager {native}
   init(perform:@escaping @Sendable ([String],String,String) async throws ->NativeCommitState) {
     self.perform=perform;native.owner=self;native.groupsByEvent=false;native.levelsOfUndo=200
@@ -101,6 +102,7 @@ private final class DocumentUndoManager:UndoManager {
         self.native.consume(pending.direction)
         self.confirmedInverse=nil;self.pending=nil;self.phase = .ready
         try self.flushQueued()
+        self.changed?()
       } catch CommitPortError.unknownOutcome {
         guard let self,self.alive else {return};self.phase = .unknown;self.error="撤销结果待核对"
       } catch {

@@ -4,7 +4,7 @@ use crate::{agent::ingress::ToolIntent, document::preview::FrozenPreviewPlan};
 use serde_json::{Value, json};
 use std::sync::Arc;
 pub(super) struct PendingPatch {
-    intent: ToolIntent,
+    pub(super) intent: ToolIntent,
     pub(super) plan: Arc<FrozenPreviewPlan>,
 }
 impl SourceEndpoint {
@@ -23,14 +23,17 @@ impl SourceEndpoint {
     ) -> Result<(), String> {
         let binding = self.binding();
         let agent = self.agent.as_ref().ok_or("AGENT_NOT_ACTIVE")?;
-        let (intent, args) = agent.apply_input(id, &binding)?;
+        let (intent, args) = agent.source_effect_input(id, &binding)?;
+        if intent.name != AgentToolName::ApplyNotebookPatch {
+            return Err("INVALID_AGENT_TOOL".into());
+        }
         let current = agent.readonly_scope(self.current_source_scope());
         if agent.cached_effect(id, &current)?.is_some() {
             return Ok(());
         }
         if let Some(p) = self.patches.get(id) {
             // Same original intent can be read back. No second authority or source regeneration.
-            agent.apply_scope(id, &binding, self.current_source_scope())?;
+            agent.source_effect_scope(id, &binding, self.current_source_scope())?;
             reply.plan = Nullable(Some(p.plan.commit.clone()));
             reply.operation = Nullable(
                 self.controller
@@ -116,7 +119,7 @@ impl SourceEndpoint {
             return Ok(current);
         };
         let agent = self.agent.as_ref().ok_or("AGENT_NOT_ACTIVE")?;
-        let scope = agent.apply_scope(&p.intent.operation_id, &self.binding(), current)?;
+        let scope = agent.source_effect_scope(&p.intent.operation_id, &self.binding(), current)?;
         if scope.task != p.plan.scope.task || scope.task_generation != p.plan.scope.task_generation
         {
             return Err("STALE_AGENT_SCOPE".into());
@@ -130,7 +133,7 @@ impl SourceEndpoint {
         current: ReferenceScope,
     ) -> Result<NativeAgentHostReply, String> {
         let agent = self.agent.as_ref().ok_or("AGENT_NOT_ACTIVE")?;
-        agent.apply_input(id, &self.binding())?;
+        agent.source_effect_input(id, &self.binding())?;
         if let Some(cached) = agent.cached_effect(id, &current)? {
             return Ok(cached);
         }
@@ -160,11 +163,14 @@ impl SourceEndpoint {
                         self.clock.elapsed().as_millis() as u64,
                     )
                     .map_err(|_| "SNAPSHOT_NOT_AVAILABLE")?;
-                (
-                    "completed",
-                    json!({"transaction_ref":p.plan.commit.commit.transaction_id,"snapshot_ref":ref_id,"changed_cell_ids":p.plan.commit.commit.changed_cell_ids,"invalidated_cell_ids":p.plan.invalidation.affected_cells,"plan_hash":p.plan.plan_hash,"saved":false}),
-                    None,
-                )
+                let mut data = json!({"snapshot_ref":ref_id,"changed_cell_ids":p.plan.commit.commit.changed_cell_ids,"invalidated_cell_ids":p.plan.invalidation.affected_cells,"saved":false});
+                if intent.name == AgentToolName::UndoTransaction {
+                    data["undo_transaction_ref"] = json!(p.plan.commit.commit.transaction_id);
+                } else {
+                    data["transaction_ref"] = json!(p.plan.commit.commit.transaction_id);
+                    data["plan_hash"] = json!(p.plan.plan_hash);
+                }
+                ("completed", data, None)
             }
             NativeCommitStatePhase::Failed => {
                 let code = match failure {
@@ -192,7 +198,7 @@ impl SourceEndpoint {
         )
     }
 }
-fn envelope(
+pub(super) fn envelope(
     intent: &ToolIntent,
     current: &ReferenceScope,
     operation: Option<&str>,

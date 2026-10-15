@@ -22,6 +22,8 @@ pub struct NativeSourceHostReply {
     pub operation: Nullable<NativeCommitState>,
     /// Contract field `owner_time_ms`.
     pub owner_time_ms: Serial,
+    /// Contract field `undo_lookup`.
+    pub undo_lookup: Nullable<NativeAgentUndoLookup>,
 }
 impl std::fmt::Debug for NativeSourceHostReply {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {

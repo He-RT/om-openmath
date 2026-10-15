@@ -13,7 +13,7 @@ private final class QueryCapture: @unchecked Sendable {
     precondition(object[kSecMatchLimit] as? String == kSecMatchLimitOne as String)
     precondition((object[kSecUseAuthenticationContext] as? LAContext)?.interactionNotAllowed == true)
     precondition(object[kSecAttrSynchronizable] as? Bool == false)
-    precondition(object[kSecUseDataProtectionKeychain] as? Bool == true)
+    precondition(object[kSecUseDataProtectionKeychain] as? Bool == false)
     lock.lock(); count += 1; lock.unlock()
   }
   var calls: Int { lock.lock(); defer { lock.unlock() }; return count }
@@ -70,6 +70,13 @@ private final class QueryCapture: @unchecked Sendable {
     catch ProviderSecretError.missing { }
     catch ProviderSecretError.locked { }
     catch ProviderSecretError.unavailable { }
+    // Exercise the production writer and reader using only a fresh, nonsecret test account.
+    let own="fixture-roundtrip-"+UUID().uuidString.lowercased()
+    try SecretStore.insert(reference:own,bytes:Data("synthetic-roundtrip".utf8))
+    defer {SecretStore.remove(reference:own)}
+    let roundtrip=try await actual.read(reference:own)
+    precondition(roundtrip.authenticationHeader(.bearer)["Authorization"]=="Bearer synthetic-roundtrip")
+    print("Actual encrypted macOS login-keychain writer/read roundtrip passed; fresh fixture account removed on exit.")
     print("New namespace/exact account, no UI/legacy fallback; three locked/auth statuses denied; header injection rejected; actual system missing-reference lookup completed. Physical lock screen not exercised.")
   }
 }

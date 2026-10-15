@@ -34,7 +34,7 @@ import SwiftUI
   }
   func openPanel() async {
     guard !busy else {return};busy=true;defer {busy=false}
-    guard let url=await NativeDocument.openWithPanel() else {return}
+    guard let url=await NativeDocument.openWithPanel(window:window) else {return}
     _ = await replaceReserved(url)
   }
   func newDocument() async {_ = await replace(nil)}
@@ -82,6 +82,18 @@ import SwiftUI
   func reviewDraft(_ cell:String,keep:Bool) {
     guard let session else {return}
     do {try session.reviewDraft(cell,keep:keep);errorText=nil} catch {errorText="草稿确认失败，内容已保留："+error.localizedDescription}
+  }
+  func insertCell(_ kind:NativeCellKind,after:String?) async {
+    guard !busy,let session,session.runtime.operation==nil,!session.assistant.busy else {return}
+    busy=true;defer {busy=false;objectWillChange.send()}
+    do {try await session.insertCell(kind,after:after);errorText=nil}
+    catch {errorText="未能添加单元格："+error.localizedDescription}
+  }
+  func deleteCell(_ id:String) async {
+    guard !busy,let session,session.runtime.operation==nil,!session.assistant.busy else {return}
+    busy=true;defer {busy=false;objectWillChange.send()}
+    do {try await session.deleteCell(id);errorText=nil}
+    catch {errorText="未能删除单元格："+error.localizedDescription}
   }
   func open(_ url:URL) async->Bool {await replace(url)}
   private func replace(_ url:URL?) async->Bool {
@@ -141,6 +153,7 @@ import SwiftUI
     Task {if await closeDocument() {allowingClose=true;sender.performClose(nil)}}
     return false
   }
+  func windowWillReturnUndoManager(_ window:NSWindow)->UndoManager? {session?.undo.manager}
 }
 
 @MainActor final class NativeApplicationDelegate:NSObject,NSApplicationDelegate {
@@ -148,7 +161,7 @@ import SwiftUI
   private weak var scratch:NotebookViewModel?
   private var pending:[URL]=[]
   private var terminating=false
-  func attach(_ workspace:NativeFileWorkspace,scratch:NotebookViewModel) {
+  func attach(_ workspace:NativeFileWorkspace,scratch:NotebookViewModel?=nil) {
     self.workspace=workspace;self.scratch=scratch
     if let url=pending.first {pending=[];Task {let opened=await workspace.open(url);NSApplication.shared.reply(toOpenOrPrint:opened ? .success : .failure)}}
   }
@@ -178,82 +191,123 @@ struct NativeWindowAttachment:NSViewRepresentable {
   func updateNSView(_ nsView:NSView,context:Context) {if let window=nsView.window {workspace.attachWindow(window)}}
 }
 
-/// Basic file editing path; rich notebook layout/results are implemented by R4.2. Editors are
-/// retained by the document session so SwiftUI redraws cannot replace marked input or selection.
+/// The notebook is the primary surface. Document-owned editors retain native input and undo.
 struct NativeNotebookFileView:View {
   @ObservedObject var workspace:NativeFileWorkspace
   let session:NativeDocumentSession
   @ObservedObject private var runtime:NotebookRuntime
-  init(workspace:NativeFileWorkspace,session:NativeDocumentSession) {self.workspace=workspace;self.session=session;_runtime=ObservedObject(wrappedValue:session.runtime)}
+  @ObservedObject private var assistant:NativeAssistant
+  init(workspace:NativeFileWorkspace,session:NativeDocumentSession) {self.workspace=workspace;self.session=session;_runtime=ObservedObject(wrappedValue:session.runtime);_assistant=ObservedObject(wrappedValue:session.assistant)}
   var body:some View {
-    VStack(alignment:.leading,spacing:12) {
-      HStack {Text(session.document.fileURL?.lastPathComponent ?? "未命名笔记本").font(.title2);Spacer();Text(session.document.statusText).foregroundStyle(.secondary).accessibilityIdentifier("notebook-file-status")}
-      NativeDraftBackupStatus(backup:session.backup)
-      if let error=workspace.errorText {Text(error).foregroundStyle(.red).textSelection(.enabled)}
-      if let warning=workspace.libraryWarning {Text(warning).foregroundStyle(.secondary).textSelection(.enabled)}
-      ForEach(Array(session.recoveryMessages.enumerated()),id:\.offset) {_,message in Text(message).font(.caption).foregroundStyle(.secondary).textSelection(.enabled)}
+    ScrollViewReader {proxy in
+      ScrollView {
+        VStack(alignment:.leading,spacing:28) {
+          header
+          LazyVStack(alignment:.leading,spacing:24) {
+            ForEach(Array(session.drafts.confirmed.file.cells.enumerated()),id:\.element.id) {index,cell in
+              cellView(cell,index:index).id(cell.id)
+            }
+          }
+          HStack(spacing:16) {
+            Button("数学",systemImage:"plus") {Task {await workspace.insertCell(.math,after:session.drafts.confirmed.file.cells.last?.id)}}.accessibilityIdentifier("notebook-add-math")
+            Button("文字",systemImage:"text.alignleft") {Task {await workspace.insertCell(.text,after:session.drafts.confirmed.file.cells.last?.id)}}.accessibilityIdentifier("notebook-add-text")
+            Spacer()
+            Text("⌘↩ 运行").font(.caption).foregroundStyle(.tertiary)
+          }.buttonStyle(.borderless).disabled(!canChangeStructure).padding(.top,4)
+          recoveryDetails
+        }.frame(maxWidth:820,alignment:.leading).padding(.horizontal,32).padding(.vertical,30).frame(maxWidth:.infinity,alignment:.top)
+      }.background(Color(nsColor:.textBackgroundColor))
+        .onChange(of:runtime.navigationSequence) {if let cell=runtime.selectedCell {proxy.scrollTo(cell,anchor:.top)}}
+    }
+  }
+  private var header:some View {
+    VStack(alignment:.leading,spacing:8) {
+      Text(session.document.fileURL?.deletingPathExtension().lastPathComponent ?? session.drafts.confirmed.file.title).font(.system(size:27,weight:.semibold)).textSelection(.enabled)
+      HStack(spacing:12) {
+        Text("\(session.drafts.confirmed.file.cells.count) 个单元格").font(.callout).foregroundStyle(.secondary)
+        NativeDraftBackupStatus(backup:session.backup)
+      }
+      if let error=workspace.errorText {Label(error,systemImage:"exclamationmark.circle").font(.callout).foregroundStyle(.red).textSelection(.enabled)}
+      if let warning=workspace.libraryWarning {Text(warning).font(.callout).foregroundStyle(.secondary).textSelection(.enabled)}
+      ForEach(Array(session.recoveryMessages.enumerated()),id:\.offset) {_,message in Text(message).font(.callout).foregroundStyle(.secondary).textSelection(.enabled)}
       if session.recoveryHistoryCursor != nil {Button("继续核对历史") {Task {await session.reconcileRecoveryHistory()}}}
-      HStack {
-        Button("保存",systemImage:"square.and.arrow.down") {Task {await workspace.save()}}.disabled(workspace.busy).accessibilityIdentifier("notebook-save")
-        Button("另存为") {Task {await workspace.save(asNew:true)}}.disabled(workspace.busy)
-        Button("核对保存") {Task {await workspace.reconcile()}}.disabled(workspace.busy)
+    }
+  }
+  private var canChangeStructure:Bool {!workspace.busy && runtime.operation==nil && !session.assistant.busy}
+  private func cellView(_ cell:NativeSourceCell,index:Int)->some View {
+    VStack(alignment:.leading,spacing:12) {
+      HStack(spacing:8) {
+        Text(String(format:"%02d",index+1)).monospacedDigit().foregroundStyle(.tertiary)
+        Text(cell.kind == .math ? "数学" : "文字").foregroundStyle(.secondary)
         Spacer()
-        Button("关闭笔记本") {Task {_ = await workspace.closeDocument()}}.disabled(workspace.busy)
-      }
-      ScrollViewReader {proxy in ScrollView {
-        LazyVStack(alignment:.leading,spacing:14) {
-          ForEach(session.drafts.confirmed.file.cells,id:\.id) {cell in
-            VStack(alignment:.leading,spacing:5) {
-              Text(cell.kind == .math ? "数学" : "文字").font(.caption).foregroundStyle(.secondary)
-              NativeSourceEditor(session:session,cell:cell).frame(minHeight:110).border(.quaternary)
-              if cell.kind == .math {
-                HStack {
-                  Button("运行此单元格",systemImage:"play.fill") {runtime.run(cell.id)}.disabled(!runtime.canRun || workspace.busy)
-                    .accessibilityIdentifier("notebook-run-"+cell.id)
-                  if let result=runtime.results[cell.id] {
-                    let stale=result.receipt.producer.execution_epoch.value != session.drafts.confirmed.execution_epoch.value || session.drafts.confirmed.file.cells.filter{$0.kind == .math}.contains{(session.drafts.overlay($0.id)?.source.utf8 ?? $0.source.utf8).elementsEqual($0.source.utf8)==false}
-                    Text(runtime.operationCell==cell.id ? "上次结果 · 正在重算" : stale ? "历史结果 · 源码已修改" : result.receipt.producer.terminal_status == .done ? "已接纳" : "计算有错误").font(.caption).foregroundStyle(.secondary)
-                  }
-                }
-                if let result=runtime.results[cell.id] {
-                  ForEach(result.bindings,id:\.result_ref) {binding in
-                    NativeResultView(presenter:runtime.presenter(for:binding),value:result.values.first{$0.binding.result_ref==binding.result_ref},displayContext:context(result,cell:cell.id))
-                      .accessibilityIdentifier("notebook-result-"+cell.id)
-                  }
-                  if result.bindings.isEmpty {Text("计算已接纳，结果暂无法读取。原操作 \(result.receipt.operation_id) 已保留。").font(.caption).foregroundStyle(.secondary)}
-                }
-                let history=runtime.history.filter{$0.receipt.producer.cell_id.value==cell.id}
-                if !history.isEmpty {
-                  DisclosureGroup("本会话的历史运行（\(history.count)）") {
-                    ForEach(history,id:\.receipt.operation_id) {previous in
-                      Text("历史计算 · 版本 \(previous.receipt.producer.kernel_state_revision.value) / 源码版本 \(previous.receipt.producer.source_revision.value)").font(.caption).textSelection(.enabled)
-                      ForEach(previous.bindings,id:\.result_ref) {binding in
-                        NativeResultView(presenter:runtime.presenter(for:binding),value:nil,displayContext:.history)
-                      }
-                    }
-                  }
-                }
-              }
-              if session.drafts.overlay(cell.id)?.requiresReview==true {
-                HStack {
-                  Text("恢复的草稿尚未确认").font(.caption)
-                  Button("使用恢复草稿") {workspace.reviewDraft(cell.id,keep:true)}
-                  Button("使用已确认源码") {workspace.reviewDraft(cell.id,keep:false)}
-                }
-              }
-            }.id(cell.id)
+        if cell.kind == .math {
+          Button("运行此单元格",systemImage:"play.fill") {runtime.run(cell.id)}.labelStyle(.iconOnly).help("运行此单元格（⌘↩）").disabled(!runtime.canRun || workspace.busy || session.assistant.busy).accessibilityIdentifier("notebook-run-"+cell.id)
+        }
+        Menu("单元格操作",systemImage:"ellipsis") {
+          Button("在下方添加数学") {Task {await workspace.insertCell(.math,after:cell.id)}}
+          Button("在下方添加文字") {Task {await workspace.insertCell(.text,after:cell.id)}}
+          Divider()
+          Button("删除单元格",role:.destructive) {Task {await workspace.deleteCell(cell.id)}}
+        }.labelStyle(.iconOnly).menuStyle(.borderlessButton).menuIndicator(.hidden).fixedSize().disabled(!canChangeStructure).accessibilityIdentifier("notebook-cell-menu-"+cell.id)
+      }.font(.callout).buttonStyle(.borderless).padding(.horizontal,10)
+      NativeSourceEditor(session:session,cell:cell)
+        .frame(height:editorHeight(cell))
+        .background(Color(nsColor:.controlBackgroundColor).opacity(0.55),in:RoundedRectangle(cornerRadius:6))
+        .overlay(alignment:.topLeading) {
+          if (session.drafts.overlay(cell.id)?.source ?? cell.source).isEmpty {
+            Text(cell.kind == .math ? "输入数学表达式，例如 2 + 2" : "在这里记录文字…")
+              .font(.system(size:16,design:cell.kind == .math ? .monospaced : .default)).foregroundStyle(.tertiary).padding(14).allowsHitTesting(false)
           }
         }
-      }.onChange(of:runtime.navigationSequence) {if let cell=runtime.selectedCell {proxy.scrollTo(cell,anchor:.top)}}}
-      if runtime.historyOmitted>0 {Text("本会话显示最近32次历史运行；\(runtime.historyOmitted) 次更早记录不在此内存列表中，原耐久回执未删除。").font(.caption).foregroundStyle(.secondary)}
-      if !session.drafts.recoveredOrphans.isEmpty {
-        DisclosureGroup("已删除单元格的恢复草稿") {
-          ForEach(Array(session.drafts.recoveredOrphans.enumerated()),id:\.offset) {_,draft in
-            Text(String(decoding:draft.sourceUTF8,as:UTF8.self)).font(.system(.body,design:.monospaced)).textSelection(.enabled)
+      if cell.kind == .math {cellResults(cell)}
+      if session.drafts.overlay(cell.id)?.requiresReview==true {
+        VStack(alignment:.leading,spacing:8) {
+          Text("恢复的草稿尚未确认").font(.callout)
+          HStack {
+            Button("使用恢复草稿") {workspace.reviewDraft(cell.id,keep:true)}
+            Button("使用已确认源码") {workspace.reviewDraft(cell.id,keep:false)}
           }
         }
       }
-    }.padding(20)
+      Divider().padding(.top,8)
+    }.padding(.leading,12).overlay(alignment:.topLeading) {
+      RoundedRectangle(cornerRadius:2).fill(runtime.selectedCell==cell.id ? Color.accentColor : .clear).frame(width:3,height:24)
+    }
+  }
+  private func editorHeight(_ cell:NativeSourceCell)->CGFloat {
+    let source=session.drafts.overlay(cell.id)?.source ?? cell.source
+    let lines=source.reduce(1) {$1 == "\n" ? $0+1 : $0}
+    return min(240,max(66,CGFloat(lines)*23+24))
+  }
+  @ViewBuilder private func cellResults(_ cell:NativeSourceCell)->some View {
+    if let result=runtime.results[cell.id] {
+      VStack(alignment:.leading,spacing:12) {
+        ForEach(result.bindings,id:\.result_ref) {binding in
+          NativeResultView(presenter:runtime.presenter(for:binding),value:result.values.first{$0.binding.result_ref==binding.result_ref},displayContext:context(result,cell:cell.id))
+            .accessibilityIdentifier("notebook-result-"+cell.id)
+        }
+        if result.bindings.isEmpty {Text("计算完成，结果暂无法读取。可在详情中核对。").font(.callout).foregroundStyle(.secondary)}
+      }.padding(.horizontal,10)
+    }
+    let history=runtime.history.filter{$0.receipt.producer.cell_id.value==cell.id}
+    if !history.isEmpty {
+      DisclosureGroup("历史运行 · \(history.count)") {
+        ForEach(history,id:\.receipt.operation_id) {previous in
+          Text("历史计算 · 版本 \(previous.receipt.producer.kernel_state_revision.value)").font(.caption).foregroundStyle(.secondary)
+          ForEach(previous.bindings,id:\.result_ref) {binding in NativeResultView(presenter:runtime.presenter(for:binding),value:nil,displayContext:.history)}
+        }
+      }.font(.callout).padding(.horizontal,10)
+    }
+  }
+  @ViewBuilder private var recoveryDetails:some View {
+    if runtime.historyOmitted>0 {Text("显示本会话最近 32 次历史运行；更早的回执仍保留在本地记录中。").font(.caption).foregroundStyle(.secondary)}
+    if !session.drafts.recoveredOrphans.isEmpty {
+      DisclosureGroup("已删除单元格的恢复草稿") {
+        ForEach(Array(session.drafts.recoveredOrphans.enumerated()),id:\.offset) {_,draft in
+          Text(String(decoding:draft.sourceUTF8,as:UTF8.self)).font(.system(.body,design:.monospaced)).textSelection(.enabled)
+        }
+      }
+    }
   }
   private func context(_ result:NotebookCellResult,cell:String)->NativeResultDisplayContext {
     if runtime.operationCell==cell {return .refreshing}

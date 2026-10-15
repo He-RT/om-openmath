@@ -25,6 +25,8 @@ import SwiftUI
     let services=NativeAppStorage(paths:.init(root:root.appendingPathComponent("storage"),channel:.preview))
     let workspace=NativeFileWorkspace(storage:services)
     guard await workspace.open(url),let session=workspace.session else {fatalError("actual fixture notebook did not open")}
+    // The product opens with the notebook dominant; this fixture explicitly exercises all panes.
+    session.runtime.navigation.inspectorVisible=true
     let window=NSWindow(contentRect:NSRect(x:0,y:0,width:1100,height:780),styleMask:[.titled,.closable,.resizable],backing:.buffered,defer:false)
     window.title="OpenMath Workbench Fixture"
     let host=NSHostingView(rootView:WorkspaceView(workspace:workspace,session:session));window.contentView=host

@@ -4245,7 +4245,7 @@ UpdateService只读受控官方GitHub Releases/发行清单（预发行不可用
 **Steps：**
 
 - [x] 1. 真实旧operation/receipt查账，跨重启重新授权查refs。
-- [ ] 2. 撤销检查当前快照和真实逆计划。
+- [x] 2. 撤销检查当前快照和真实逆计划。
 - [ ] 3. Hoststop取消模型/Pi/实际CAS/媒体及后续admission，不等模型找ID。
 - [ ] 4. 执行下面Tests，核对真实输出/失败，更新任务账本与证据后提交本批次。
 

@@ -1,0 +1,60 @@
+import SwiftUI
+
+struct NativeAssistantView:View {
+  @ObservedObject var assistant:NativeAssistant
+  var body:some View {
+    VStack(alignment:.leading,spacing:10) {
+      HStack {
+        Text("助手").font(.headline)
+        Spacer()
+        Button("新对话",systemImage:"square.and.pencil") {assistant.newConversation()}.labelStyle(.iconOnly).disabled(assistant.busy)
+        Button("模型设置",systemImage:"gearshape") {assistant.showSettings=true}.labelStyle(.iconOnly).disabled(assistant.busy).accessibilityIdentifier("assistant-settings")
+      }
+      if assistant.lines.isEmpty {
+        Text("用实际内核核对数学，协助阅读和修改当前笔记本。").font(.callout).foregroundStyle(.secondary)
+      }
+      ScrollViewReader {reader in
+        ScrollView {
+          LazyVStack(alignment:.leading,spacing:16) {
+            ForEach(assistant.lines) {line in
+              VStack(alignment:.leading,spacing:4) {
+                Text(line.role).font(.caption).foregroundStyle(.secondary)
+                Text(line.text).textSelection(.enabled).frame(maxWidth:.infinity,alignment:.leading)
+              }.id(line.id)
+            }
+          }
+        }.onChange(of:assistant.lines.last?.text) {if let id=assistant.lines.last?.id {reader.scrollTo(id,anchor:.bottom)}}
+      }.frame(minHeight:100,maxHeight:.infinity)
+      if !assistant.trace.isEmpty {
+        DisclosureGroup("工具记录（\(assistant.trace.count)）") {
+          ScrollView {VStack(alignment:.leading,spacing:4) {ForEach(Array(assistant.trace.enumerated()),id:\.offset) {_,line in Text(line).font(.caption).textSelection(.enabled)}}}.frame(maxHeight:120)
+        }.font(.caption)
+      }
+      Divider()
+      Toggle("允许修改并运行笔记本",isOn:$assistant.allowsChanges).font(.caption).disabled(assistant.busy).accessibilityIdentifier("assistant-allow-changes")
+      TextEditor(text:$assistant.draft).font(.body).frame(minHeight:70,maxHeight:110).scrollContentBackground(.hidden)
+        .padding(5).background(.background,in:RoundedRectangle(cornerRadius:6)).overlay(RoundedRectangle(cornerRadius:6).stroke(.quaternary))
+        .overlay(alignment:.topLeading) {if assistant.draft.isEmpty {Text("询问当前笔记本…").foregroundStyle(.tertiary).padding(10).allowsHitTesting(false)}}
+        .accessibilityLabel("给助手的问题").accessibilityIdentifier("assistant-input").disabled(assistant.busy)
+      HStack {
+        Text(assistant.status).font(.caption).foregroundStyle(.secondary).lineLimit(3).accessibilityIdentifier("assistant-status")
+        Spacer()
+        if assistant.busy {Button("停止",systemImage:"stop.fill") {Task {await assistant.stop()}}.disabled(assistant.stopping).accessibilityIdentifier("assistant-stop")}
+        else {Button("发送",systemImage:"arrow.up") {assistant.send()}.disabled(assistant.draft.trimmingCharacters(in:.whitespacesAndNewlines).isEmpty).accessibilityIdentifier("assistant-send")}
+      }
+    }.task {await assistant.load()}.sheet(isPresented:$assistant.showSettings) {settings}
+  }
+  private var settings:some View {
+    VStack(alignment:.leading,spacing:16) {
+      Text("模型设置").font(.title2)
+      Text("连接兼容 Chat Completions 的 HTTPS 服务。密钥保存在系统钥匙串中。").font(.callout).foregroundStyle(.secondary)
+      Form {
+        TextField("API 基础地址",text:$assistant.baseURL,prompt:Text("https://example.com/v1")).accessibilityIdentifier("assistant-base-url")
+        TextField("模型名称",text:$assistant.model).accessibilityIdentifier("assistant-model")
+        SecureField(assistant.configured ? "API Key（留空保留现有密钥）":"API Key",text:$assistant.apiKey).accessibilityIdentifier("assistant-api-key")
+      }
+      Text(assistant.status).font(.caption).foregroundStyle(.secondary)
+      HStack {Spacer();Button("取消") {assistant.apiKey="";assistant.showSettings=false}.keyboardShortcut(.cancelAction);Button("保存") {Task {await assistant.saveSettings()}}.keyboardShortcut(.defaultAction).accessibilityIdentifier("assistant-save-settings")}
+    }.padding(24).frame(width:500)
+  }
+}

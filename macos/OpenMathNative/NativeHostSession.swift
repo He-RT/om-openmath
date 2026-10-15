@@ -130,7 +130,9 @@ actor NativeHostSession {
               resolve(result)
             }
           }
-          publish()
+          // Empty long-poll batches carry no UI delta. Publishing them continuously redraws
+          // an otherwise idle window, even when its scratch host is hidden.
+          if !batch.events.isEmpty {publish()}
         }
       } catch {
         if closing || Task.isCancelled { break }

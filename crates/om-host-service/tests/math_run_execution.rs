@@ -158,6 +158,7 @@ impl Fixture {
             RunSource {
                 reads: &mut self.reads,
                 scope: &self.scope,
+                editor_busy: false,
                 general: self.ctx.general.clone(),
                 accepted: accepted.as_ref(),
                 allowed: self

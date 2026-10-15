@@ -15,7 +15,7 @@
     },
     {
       "path": "docs/design/native-source-store.schema.json",
-      "sha256": "32451f0f3659813fe0b139f00a510457e98a0dd944c245274697b5651f532af4"
+      "sha256": "5c3519082c75c7b077a4254736e12d52b40ada516a89a4367022584ff8c50804"
     },
     {
       "path": "docs/design/native-preview.schema.json",
@@ -38,5 +38,5 @@
       "sha256": "abd34061a53aa2d738196737dcf0f82256ba02826054ae6d8a476e0d739815c2"
     }
   ],
-  "generated_dto_count": 411
+  "generated_dto_count": 415
 }

@@ -111,7 +111,7 @@ enum SessionSemantics {
     case .recovery:
       if let record=try effectRecord(input.payload) {
         let intent=record.intent,message=record.canonical
-        guard record.codecVersion==1,[.apply_notebook_patch,.run_cells].contains(intent.name),
+        guard record.codecVersion==1,[.apply_notebook_patch,.run_cells,.undo_transaction].contains(intent.name),
           SourceValidation.identity(intent.operation_id),SourceValidation.identity(record.resultRef),KernelValidation.hash(record.blobHash),
           record.byteLength>0,record.byteLength<=262144,input.eventID=="effect-"+intent.operation_id,
           input.operation==record.target?.operationID,input.operationStore==record.target?.storeID,

@@ -18,8 +18,10 @@ actor AgentSessionService {
   private let host:NativeHostClient,storage:StorageService,document:String,generation:UInt64
   private let sourcePort:DocCommitPort?
   private let kernelPort:KernelCommitPort?
+  private let sourceFaults:StorageFaults
   private let runFaults:StorageFaults
   private let toolFailure:(@Sendable(AgentToolName,any Error)->Void)?
+  private var allowedUndoTransactions:[String]?
   private var allowedRunCells:[String]?
   private var scope:NativeAgentControlScope?
   private var ledger:SessionLedgerPort?
@@ -31,13 +33,17 @@ actor AgentSessionService {
   private var dispatches:[String:Task<Void,Never>]=[:]
   private var readyConnection:String?
   private var toolFrames:[String:String]=[:]
-  init(host:NativeHostClient,storage:StorageService,document:String,generation:UInt64,sourcePort:DocCommitPort?=nil,kernelPort:KernelCommitPort?=nil,runFaults:StorageFaults = .init(),toolFailure:(@Sendable(AgentToolName,any Error)->Void)?=nil) {
-    self.runFaults=runFaults;self.toolFailure=toolFailure
+  private var acceptedKernelReceipts:[NativeKernelReceipt]=[]
+  func currentKernelReceipts()->[NativeKernelReceipt] {acceptedKernelReceipts}
+  private func recordKernelReceipt(_ receipt:NativeKernelReceipt) {acceptedKernelReceipts.append(receipt)}
+  init(host:NativeHostClient,storage:StorageService,document:String,generation:UInt64,sourcePort:DocCommitPort?=nil,kernelPort:KernelCommitPort?=nil,runFaults:StorageFaults = .init(),sourceFaults:StorageFaults = .init(),toolFailure:(@Sendable(AgentToolName,any Error)->Void)?=nil) {
+    self.sourceFaults=sourceFaults;self.runFaults=runFaults;self.toolFailure=toolFailure
     self.host=host;self.storage=storage;self.document=document;self.generation=generation;self.sourcePort=sourcePort;self.kernelPort=kernelPort ?? sourcePort.map {KernelCommitPort(client:host,storage:storage,source:$0)}
   }
   /// Fresh explicit activation. Persisted messages are data and never recreate grants.
-  func activate(session:String,grants:[AgentToolName],readonly:Bool,coreVersion:String,adapterVersion:String,allowedRunCells:[String]?=nil) async throws->NativeAgentHostReply {
+  func activate(session:String,grants:[AgentToolName],readonly:Bool,coreVersion:String,adapterVersion:String,allowedRunCells:[String]?=nil,allowedUndoTransactions:[String]?=nil) async throws->NativeAgentHostReply {
     try await acquire();defer {release()}
+    acceptedKernelReceipts=[]
     guard scope==nil else {throw AgentSessionError.busy}
     guard taskGeneration<HostSerial.maximum,connectionGeneration<HostSerial.maximum else {throw AgentSessionError.stale}
     // Reserve activation before any suspension, including an unavailable Library.
@@ -46,7 +52,7 @@ actor AgentSessionService {
     let s=NativeAgentControlScope(agent_session_id:session,task_id:"task-"+UUID().uuidString.lowercased(),task_generation:try HostSerial(taskGeneration+1),connection_id:"connection-"+UUID().uuidString.lowercased(),connection_generation:try HostSerial(connectionGeneration+1),document_generation:try HostSerial(generation))
     let reply=try await host.agentCommand(.native_agent_activate(.init(type:.agent_activate,scope:s,hello_id:"hello-"+UUID().uuidString.lowercased(),core_version:coreVersion,adapter_version:adapterVersion,grants:grants,readonly:readonly)))
     guard !closed,reply.document_id==document else {_ = try? await host.agentCommand(.native_agent_close(.init(type:.agent_close,scope:s)));throw AgentSessionError.stale}
-    self.allowedRunCells=allowedRunCells
+    self.allowedRunCells=allowedRunCells;self.allowedUndoTransactions=allowedUndoTransactions
     scope=s;taskGeneration=s.task_generation.value;connectionGeneration=s.connection_generation.value
     ledger=SessionLedgerPort(storage:storage,session:session);outgoingSequence=1;inputFrames.removeAll();toolFrames.removeAll()
     return reply
@@ -218,7 +224,7 @@ actor AgentSessionService {
   }
   /// Readonly source/catalog/preview producers require actual native results and durable readback.
   private func dispatchTool(_ intent:NativeAgentToolIntent) async {
-    if intent.name == .apply_notebook_patch {await dispatchPatch(intent);return}
+    if intent.name == .apply_notebook_patch || intent.name == .undo_transaction {await dispatchPatch(intent);return}
     if intent.name == .run_cells {await dispatchRun(intent);return}
     guard [.read_notebook,.search_functions,.get_function_docs,.preview_source,.inspect_result,.evaluate_scratch,.get_operation_status].contains(intent.name) else {await unavailableTool(intent);return}
     do {
@@ -276,7 +282,18 @@ actor AgentSessionService {
   private func dispatchPatch(_ intent:NativeAgentToolIntent)async {
     do {
       guard let s=scope,let ledger,let sourcePort else {await unavailableTool(intent);return}
-      let prepared=try await host.sourceCommand(.source_begin_agent(.init(type:.source_begin_agent,operation_id:intent.operation_id)))
+      var prepared:NativeSourceHostReply
+      if intent.name == .undo_transaction {
+        prepared=try await host.sourceCommand(.source_begin_agent_undo(.init(type:.source_begin_agent_undo,operation_id:intent.operation_id,records:.init(nil),allowed_transaction_refs:.init(allowedUndoTransactions),failure_code:.init(nil))))
+        if let lookup=prepared.undo_lookup.value {
+          guard lookup.operation_id==intent.operation_id,lookup.arguments_hash==intent.arguments_hash,lookup.document_id==document else {throw AgentSessionError.stale}
+          let identity=try await storage.documentIdentity(document);guard identity.storeID==lookup.store_id else {throw AgentSessionError.stale}
+          let records:[NativeStoredSourceTransaction]?
+          do {records=try await storage.sourceTransactions(document:document,ids:lookup.transaction_refs)} catch {records=nil}
+          prepared=try await host.sourceCommand(.source_begin_agent_undo(.init(type:.source_begin_agent_undo,operation_id:intent.operation_id,records:.init(records),allowed_transaction_refs:.init(allowedUndoTransactions),failure_code:.init(records==nil ? .not_available:nil))))
+        }
+      } else {prepared=try await host.sourceCommand(.source_begin_agent(.init(type:.source_begin_agent,operation_id:intent.operation_id)))}
+      let originalPrepared=prepared
       var target:SessionOperationTarget?,admissionID:String?,outcomeID:String?,failure:NativeAgentEffectToolFailureCode?
       if let plan=prepared.plan.value {
         let info=try await storage.documentIdentity(document)
@@ -286,8 +303,8 @@ actor AgentSessionService {
         let admission=SessionToolAdmission(codecVersion:1,callID:intent.tool_call_id,proposalEvent:intent.proposal_event_ref,toolName:intent.name.rawValue,argumentsHash:intent.arguments_hash,target:actual)
         let tool=SessionToolPort(storage:storage,ledger:ledger)
         do {
-          _ = try await tool.perform(admission:admission,admissionID:admitted,startedID:"started-"+intent.operation_id,resultID:result,turn:intent.agent_turn_id,task:s.task_id,execute:{
-            let state=try await sourcePort.applyPrepared(prepared)
+          _ = try await tool.perform(admission:admission,admissionID:admitted,startedID:"started-"+intent.operation_id,resultID:result,turn:intent.agent_turn_id,task:s.task_id,execute:{[sourceFaults] in
+            let state=try await sourcePort.applyPrepared(originalPrepared,faults:sourceFaults)
             guard state.phase == .completed else {throw state.phase == .cancelled ? CommitPortError.cancelled:CommitPortError.sourceConflict}
           })
           outcomeID=result
@@ -304,7 +321,7 @@ actor AgentSessionService {
       try Task.checkCancellation()
       let reply=try await host.agentCommand(.native_agent_effect_tool(.init(type:.agent_effect_tool,scope:s,operation_id:intent.operation_id,failure_code:.init(failure))))
       try await deliverEffect(intent,reply:reply,target:target,admissionID:admissionID,outcomeID:outcomeID)
-    } catch {if !Task.isCancelled {_ = try? await send("error",payload:JSONEncoder().encode(AgentErrorPayload(code:"NATIVE_PATCH_RESULT_UNAVAILABLE",recoverable:false)))}}
+    } catch {toolFailure?(intent.name,error);if !Task.isCancelled {_ = try? await send("error",payload:JSONEncoder().encode(AgentErrorPayload(code:"NATIVE_PATCH_RESULT_UNAVAILABLE",recoverable:false)))}}
   }
   private func deliverEffect(_ intent:NativeAgentToolIntent,reply:NativeAgentHostReply,target:SessionOperationTarget?,admissionID:String?,outcomeID:String?)async throws {
     guard let s=scope,let ledger else {throw AgentSessionError.inactive}
@@ -375,7 +392,7 @@ actor AgentSessionService {
                 }
                 _ = try await host.agentCommand(.native_agent_acknowledge_run_child(.init(type:.agent_acknowledge_run_child,scope:s,operation_id:intent.operation_id,child_operation_id:childID,
                   group_admission:try await ack(admitted),group_started:try await ack("run-started-"+intent.operation_id),child_admission:try await ack("run-admit-"+childID),child_started:try await ack("run-start-"+childID))))
-                do {_ = try await kernelPort.finishExecution(childID,faults:runFaults);return .accepted}
+                do {let receipt=try await kernelPort.finishExecution(childID,faults:runFaults);await self.recordKernelReceipt(receipt);return .accepted}
                 catch {
                   let original=try await kernelPort.status(childID)
                   if original.phase == .failed || original.phase == .discarded {return .stopped(original.error_code.value ?? "NOT_ACCEPTED")}
@@ -415,10 +432,11 @@ actor AgentSessionService {
     }
   }
   private func stopDispatches() {for task in dispatches.values {task.cancel()};dispatches.removeAll()}
-  func close() async {
-    closed=true;stopDispatches()
+  func resetTask() async {
+    stopDispatches()
     if let s=scope { _ = try? await host.agentCommand(.native_agent_close(.init(type:.agent_close,scope:s))) }
-    scope=nil;ledger=nil
+    scope=nil;ledger=nil;readyConnection=nil;inputFrames.removeAll();toolFrames.removeAll()
     if let pipe=privatePipe {await pipe.close();privatePipe=nil}
   }
+  func close() async {closed=true;await resetTask()}
 }

@@ -123,6 +123,7 @@ fn source<'a>(
     RunSource {
         reads,
         scope,
+        editor_busy: false,
         general: GeneralConfig::default(),
         accepted,
         allowed,

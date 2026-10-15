@@ -160,6 +160,8 @@ pub struct RunSource<'a> {
     pub reads: &'a mut ReadNotebookService,
     /// Current trusted native document/task/editor/config binding.
     pub scope: &'a ReferenceScope,
+    /// Actual native dirty/composing state; a clean editor provenance hash may be nonempty.
+    pub editor_busy: bool,
     /// Actual current nonsecret mathematical configuration.
     pub general: GeneralConfig,
     /// Current genuinely accepted checkpoint, if one exists.
@@ -178,6 +180,7 @@ pub fn prepare(
     let RunSource {
         reads,
         scope,
+        editor_busy,
         general,
         accepted,
         allowed,
@@ -191,7 +194,7 @@ pub fn prepare(
     if !scope.execution_mode || !scope.can_read {
         return Err("PERMISSION_DENIED".into());
     }
-    if !scope.editor_state_hash.is_empty() {
+    if editor_busy {
         return Err("EDITING_BUSY".into());
     }
     let value = om_agent_contract::json::strict_json_bounded(arguments, 65536)

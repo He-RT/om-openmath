@@ -46,6 +46,9 @@ struct ProviderSecretResponseGuard:Sendable,CustomStringConvertible,CustomDebugS
 /// Registry candidate creation/replacement is a separate R4.4.01 transaction.
 actor SecretStore {
   static let service = "org.openmath.NativeMacPreview.provider-secrets.r4.v1"
+  // The native macOS app uses the encrypted login keychain. Data Protection keychain
+  // requires an application entitlement unavailable to experimental ad hoc builds.
+  static let useDataProtectionKeychain=false
   typealias Reader = @Sendable (CFDictionary) -> (OSStatus, Data?)
   private let reader: Reader
 
@@ -59,12 +62,24 @@ actor SecretStore {
   /// Test-only status injection exercises the exact production query and failure policy.
   init(testReader: @escaping Reader) { reader = testReader }
 
+  static func insert(reference:String,bytes:Data)throws {
+    guard validReference(reference) else {throw ProviderSecretError.invalidReference}
+    _ = try ProviderSecret(bytes)
+    let query:[String:Any]=[kSecClass as String:kSecClassGenericPassword,kSecAttrService as String:service,kSecAttrAccount as String:reference,kSecValueData as String:bytes,kSecAttrAccessible as String:kSecAttrAccessibleWhenUnlockedThisDeviceOnly,kSecAttrSynchronizable as String:false,kSecUseDataProtectionKeychain as String:useDataProtectionKeychain]
+    guard SecItemAdd(query as CFDictionary,nil)==errSecSuccess else {throw ProviderSecretError.unavailable}
+  }
+  static func remove(reference:String) {
+    guard validReference(reference) else {return}
+    SecItemDelete([kSecClass as String:kSecClassGenericPassword,kSecAttrService as String:service,kSecAttrAccount as String:reference,kSecAttrSynchronizable as String:false,kSecUseDataProtectionKeychain as String:useDataProtectionKeychain] as CFDictionary)
+  }
+  private static func validReference(_ reference:String)->Bool {
+    !reference.isEmpty && reference.utf8.count<=256 && reference.utf8.enumerated().allSatisfy {index,byte in
+      (65...90).contains(byte) || (97...122).contains(byte) || (48...57).contains(byte) || (index>0 && [46,95,58,45].contains(byte))
+    }
+  }
+
   func read(reference: String) throws -> ProviderSecret {
-    guard !reference.isEmpty, reference.utf8.count <= 256,
-      reference.utf8.enumerated().allSatisfy({ index, byte in
-        (65...90).contains(byte) || (97...122).contains(byte) || (48...57).contains(byte)
-          || (index > 0 && [46, 95, 58, 45].contains(byte))
-      }) else { throw ProviderSecretError.invalidReference }
+    guard Self.validReference(reference) else {throw ProviderSecretError.invalidReference}
     let authentication = LAContext()
     authentication.interactionNotAllowed = true
     let query: [String: Any] = [
@@ -75,7 +90,7 @@ actor SecretStore {
       kSecMatchLimit as String: kSecMatchLimitOne,
       kSecReturnData as String: true,
       kSecAttrSynchronizable as String: false,
-      kSecUseDataProtectionKeychain as String: true,
+      kSecUseDataProtectionKeychain as String: Self.useDataProtectionKeychain,
       kSecUseAuthenticationContext as String: authentication,
     ]
     let (status, bytes) = reader(query as CFDictionary)

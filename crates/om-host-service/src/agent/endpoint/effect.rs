@@ -31,7 +31,7 @@ impl AgentEndpoint {
         Ok((intent, args, scope))
     }
     /// Resolve original ACKed apply arguments under the currently live, write-enabled task.
-    pub fn apply_input(
+    pub fn source_effect_input(
         &self,
         operation: &str,
         binding: &DocumentBinding,
@@ -41,19 +41,22 @@ impl AgentEndpoint {
             .ingress
             .original_tool(operation)
             .map_err(str::to_owned)?;
-        if intent.name != AgentToolName::ApplyNotebookPatch {
+        if !matches!(
+            intent.name,
+            AgentToolName::ApplyNotebookPatch | AgentToolName::UndoTransaction
+        ) {
             return Err("INVALID_AGENT_TOOL".into());
         }
         Ok((intent, args))
     }
     /// A final physical barrier can use only this live activation's actual grants.
-    pub fn apply_scope(
+    pub fn source_effect_scope(
         &self,
         operation: &str,
         binding: &DocumentBinding,
         current: ReferenceScope,
     ) -> Result<ReferenceScope, String> {
-        self.apply_input(operation, binding)?;
+        self.source_effect_input(operation, binding)?;
         let scope = self.ingress.read_scope(current);
         if !scope.execution_mode || !scope.can_write {
             return Err("PERMISSION_DENIED".into());
@@ -94,6 +97,7 @@ impl AgentEndpoint {
         let definition = match intent.name {
             AgentToolName::ApplyNotebookPatch => "apply_notebook_patch_result",
             AgentToolName::RunCells => "run_cells_result",
+            AgentToolName::UndoTransaction => "undo_transaction_result",
             _ => return Err("INVALID_AGENT_TOOL".into()),
         };
         crate::tools::checked_data(definition, envelope.clone())

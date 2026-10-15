@@ -61,6 +61,10 @@ impl DocumentCommitController {
     pub fn owner(&self) -> &SourceDocument {
         &self.owner
     }
+    /// Exact already prepared operation; this grants no execution/admission and performs no merge.
+    pub(crate) fn frozen_operation(&self, id: &str) -> Option<Arc<FrozenPreviewPlan>> {
+        self.pending.get(id).and_then(|p| p.plan.clone())
+    }
     /// Recent genuinely confirmed transactions retained by this live owner, never pending plans.
     pub fn recent_transaction_refs(&self) -> Vec<String> {
         let mut receipts = self

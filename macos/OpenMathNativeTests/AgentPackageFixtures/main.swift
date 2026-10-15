@@ -31,11 +31,11 @@ private actor ModelHold {
 }
 
 /// The actual native transport/C ABI/Library producer; only provider wire and route are synthetic.
-private func nativeProviderTurn(host:NativeHostClient,storage:StorageService,root:URL,input:AgentCanonicalMessage,intent:NativeAgentRequestIntent,task:String,session:String="production-task",preview:Bool=false,apply:Bool=false,inspect:String?=nil,scratchSource:String?=nil,scratchDialect:Dialect = .wolfram,runCells:[String]?=nil,runScope:String="required",runContinue:Bool=false,runInspectCell:String?=nil,operationRef:String?=nil)async throws->ProviderPreparedTurn {
+private func nativeProviderTurn(host:NativeHostClient,storage:StorageService,root:URL,input:AgentCanonicalMessage,intent:NativeAgentRequestIntent,task:String,session:String="production-task",preview:Bool=false,apply:Bool=false,inspect:String?=nil,scratchSource:String?=nil,scratchDialect:Dialect = .wolfram,runCells:[String]?=nil,runScope:String="required",runContinue:Bool=false,runInspectCell:String?=nil,operationRef:String?=nil,undoTransactions:[String]?=nil)async throws->ProviderPreparedTurn {
   let stored=try await fixtureEvents(storage,session)
   let readonly=stored.compactMap {event->AgentReadonlyRecord? in guard let raw=event.event.payload_inline_json.value,let record=try? JSONDecoder().decode(AgentReadonlyRecord.self,from:Data(raw.utf8)),record.kind=="native_readonly_result" else {return nil};return record}
   let effects=stored.compactMap {event->AgentEffectRecord? in guard let raw=event.event.payload_inline_json.value,let record=try? JSONDecoder().decode(AgentEffectRecord.self,from:Data(raw.utf8)),record.kind=="native_effect_result" else {return nil};return record}
-  let count=readonly.count+effects.count,second = count>0,finishing = operationRef != nil ? count>=(inspect==nil ? 2:3):runCells != nil ? count>=(inspect==nil ? 2:3):second && (!preview || readonly.count==2) && (!apply || effects.count==1) && (inspect==nil || readonly.count==(scratchSource==nil ? 2:3))
+  let count=readonly.count+effects.count,second = count>0,finishing = undoTransactions != nil ? count>=2:operationRef != nil ? count>=(inspect==nil ? 2:3):runCells != nil ? count>=(inspect==nil ? 2:3):second && (!preview || readonly.count==2) && (!apply || effects.count==1) && (inspect==nil || readonly.count==(scratchSource==nil ? 2:3))
   var messages:[[String:Any]] = [["canonical":try JSONSerialization.jsonObject(with:encoded(input)),"replay":NSNull()]],results:[[String:Any]]=[]
   // Preserve the actual durable event order: every assistant call is followed by its tool result
   // before the next assistant. The native codec rejects a reordered/dangling tool conversation.
@@ -83,6 +83,10 @@ private func nativeProviderTurn(host:NativeHostClient,storage:StorageService,roo
     precondition(data["notebook_modified"] as? Bool==false && ["done","error"].contains(data["evaluation_status"] as? String ?? ""))
     tool="inspect_result";arguments=String(decoding:try JSONSerialization.data(withJSONObject:["result_ref":data["result_ref"]!,"part":inspect!,"limit":20],options:[.sortedKeys]),as:UTF8.self)
   }
+  if let undoTransactions,count==1 {
+    let envelope=try JSONSerialization.jsonObject(with:Data((results[0]["text"] as! String).utf8)) as! [String:Any],data=envelope["data"] as! [String:Any]
+    tool="undo_transaction";arguments=String(decoding:try JSONSerialization.data(withJSONObject:["snapshot_ref":data["snapshot_ref"]!,"transaction_refs":undoTransactions],options:[.sortedKeys]),as:UTF8.self)
+  }
   if operationRef != nil,count==2,let inspect {
     let envelope=try JSONSerialization.jsonObject(with:Data((results[1]["text"] as! String).utf8)) as! [String:Any],data=envelope["data"] as! [String:Any],reference=(data["result_refs"] as! [String]).first!
     tool="inspect_result";arguments=String(decoding:try JSONSerialization.data(withJSONObject:["result_ref":reference,"part":inspect,"limit":20],options:[.sortedKeys]),as:UTF8.self)
@@ -106,6 +110,7 @@ private func nativeProviderTurn(host:NativeHostClient,storage:StorageService,roo
   if preview {tools.append(["name":"preview_source","description":"Inspect actual frozen source plan","parameters":["type":"object"]])}
   if apply {tools.append(["name":"apply_notebook_patch","description":"Commit the original frozen source plan","parameters":["type":"object"]])}
   if inspect != nil {tools.append(["name":"inspect_result","description":"Inspect original retained mathematical output","parameters":["type":"object"]])}
+  if undoTransactions != nil {tools.append(["name":"undo_transaction","description":"Undo original durable transactions against the current snapshot","parameters":["type":"object"]])}
   if operationRef != nil {tools.append(["name":"get_operation_status","description":"Query the original durable operation without replay","parameters":["type":"object"]])}
   if runCells != nil {tools.append(["name":"run_cells","description":"Run actual selected cells and prerequisites","parameters":["type":"object"]])}
   if scratchSource != nil {tools.append(["name":"evaluate_scratch","description":"Evaluate an independent writable scratch without notebook changes","parameters":["type":"object"]])}
@@ -743,12 +748,96 @@ private func nativeOperationQueries(package:URL,signatureRoot:URL?,root:URL)asyn
   await fresh.close();try await newHost.close();try await reopened.close()
 }
 
+private func nativeUndoRoundTrips(package:URL,signatureRoot:URL?,root:URL)async throws {
+  for mode in ["normal","group","independent","conflict","restricted","unissued","lost-source-ack"] {
+    let path=root.appendingPathComponent(mode),document="00000000-0000-0000-0000-000000000444",session="actual-undo-task"
+    var snapshot=NativeSourceSnapshot(codec_version:1,document_id:document,revision:try HostSerial(0),execution_epoch:try HostSerial(0),file:.init(version:1,title:"真实Agent撤销："+mode,cells:[.init(id:"a",kind:.math,source:"2+2",dialect:.modern),.init(id:"b",kind:.math,source:"9",dialect:.modern)]),cell_revisions:["a","b"].map{.init(cell_id:$0,revision:try! HostSerial(0))},snapshot_hash:"")
+    snapshot.snapshot_hash=SourceHashes.snapshot(snapshot)
+    let (storage,_)=try await StorageService.open(paths:.init(root:path,channel:.preview)),info=try await storage.openDocument(document)
+    _ = try await storage.initializeSource(snapshot)
+    let host=try await NativeHostClient.open(),opened=try await host.sourceCommand(.source_open(.init(type:.source_open,snapshot:snapshot,store_id:info.identity.storeID,calculation:.init(nil),config_revision:try HostSerial(0))))
+    let clock=SourceOwnerClock();clock.calibrate(opened.owner_time_ms.value)
+    let drafts=await MainActor.run {DraftStore(source:snapshot,runtime:host.runtimeInstanceID,generation:opened.document_generation.value,clock:{clock.now()})}
+    let source=DocCommitPort(client:host,storage:storage,drafts:drafts,clock:clock),kernel=KernelCommitPort(client:host,storage:storage,source:source)
+    func edit(_ cell:String,_ before:String,_ after:String)async throws->NativeCommitState {
+      let p=try await source.preview(.preview_patch_input(.init(kind:.patch,operations:[.preview_update_cell(.init(type:.update_cell,target:.init(cell_id:cell),expected_source_hash:KernelHashes.data(Data(before.utf8)),source:after))])))
+      return try await source.apply(p.preview_ref.value!)
+    }
+    let initial=try await edit("a","2+2","3+3"),transaction=initial.receipt.value!.receipt.transaction_id.value!
+    var undoTransactions=[transaction]
+    if mode=="group" {let next=try await edit("b","9","11");undoTransactions.append(next.receipt.value!.receipt.transaction_id.value!)}
+    if mode=="independent" {_ = try await edit("b","9","11")}
+    if mode=="conflict" {_ = try await edit("a","3+3","9+9")}
+    let before=try await storage.committedSource(document)!
+    let noWrite=["conflict","restricted","unissued"].contains(mode)
+    let sourceFaults=StorageFaults {point in if mode=="lost-source-ack" && point=="source_committed" {throw StorageError.system(EIO,"lost original inverse commit ACK")}}
+    let service=AgentSessionService(host:host,storage:storage,document:document,generation:opened.document_generation.value,sourcePort:source,kernelPort:kernel,sourceFaults:sourceFaults,toolFailure:{tool,error in try? Data((tool.rawValue+":"+String(reflecting:error)).utf8).write(to:path.appendingPathComponent("actual-undo-dispatch-error.txt"))})
+    let targets=mode=="unissued" ? ["unissued-transaction"]:undoTransactions
+    let rounds=noWrite ? 1:2
+    for round in 0..<rounds {
+      let folder=path.appendingPathComponent("round-\(round+1)");try FileManager.default.createDirectory(at:folder,withIntermediateDirectories:true)
+      let hello=try await service.activate(session:session+"-\(round)",grants:[.read_notebook,.undo_transaction],readonly:false,coreVersion:"1.0.4",adapterVersion:"openmath-adapter-1",allowedUndoTransactions:mode=="restricted" ? []:nil)
+      let input=AgentCanonicalMessage(record_type:.canonical_agent_message,message_version:1,message_id:"undo-input",role:.user,agent_turn_id:.init("input-turn"),task_id:.init(hello.scope.task_id),parts:[.agent_text_part(.init(kind:.text,part_id:"text",text:"撤销指定原事务，保留后续手工内容"))])
+      let adapter=ProviderAgentModelAdapter(transport:ProviderTransport(secrets:SecretStore()),factory:{intent in try await nativeProviderTurn(host:host,storage:storage,root:folder,input:input,intent:intent,task:hello.scope.task_id,session:session+"-\(round)",undoTransactions:targets)})
+      let verified=try await AgentProcess.verified(package:package,signatureRoot:signatureRoot),pipe=try await verified.launch(),wire=WireCapture()
+      await pipe.setCapture {bytes,direction in await wire.append(bytes,toHelper:direction)}
+      let report:AgentPipeReport
+      do {report=try await service.run(pipe:pipe,hello:hello,modelPort:adapter.port(),input:input)}catch{try await wire.save(folder.appendingPathComponent("actual-undo-failed-wire.json"));throw error}
+      precondition(report.frames==13 && report.toolIntents.count==2 && report.lastPhase == .awaiting_settlement)
+      try await wire.save(folder.appendingPathComponent("actual-undo-wire.json"))
+      let events=try await fixtureEvents(storage,session+"-\(round)"),effects=events.compactMap{e->AgentEffectRecord? in guard let text=e.event.payload_inline_json.value,let record=try? JSONDecoder().decode(AgentEffectRecord.self,from:Data(text.utf8)),record.kind=="native_effect_result" else{return nil};return record}
+      precondition(effects.count==1 && effects[0].intent.name == .undo_transaction)
+      let effect=effects[0],lease=try await storage.openReferencedBlob(owner:.init(kind:.context,id:effect.canonical.message_id),hash:effect.blobHash)
+      let bytes=try await storage.readBlob(lease,offset:0,count:Int(effect.byteLength));try await storage.closeBlob(lease)
+      try bytes.write(to:folder.appendingPathComponent("actual-undo-result.json"))
+      let envelope=try JSONSerialization.jsonObject(with:bytes) as! [String:Any],shouldWrite=round==0 && !noWrite
+      precondition(envelope["status"] as? String==(shouldWrite ? "completed":"failed"))
+      let after=try await storage.committedSource(document)!
+      if shouldWrite {
+        let data=envelope["data"] as! [String:Any];precondition(data["saved"] as? Bool==false && data["undo_transaction_ref"] as? String != transaction && Set(data["changed_cell_ids"] as! [String])==Set(mode=="group" ? ["a","b"]:["a"]))
+        precondition(after.revision.value==before.revision.value+1 && after.file.cells[0].source=="2+2" && after.file.cells[1].source==(mode=="independent" ? "11":"9"))
+        let receipt=try await storage.sourceReceipt(document:document,operation:effect.target!.operationID)!,metadata=try await storage.sourceUndoMetadata(document:document,operation:effect.target!.operationID)!
+        precondition(receipt.receipt.operation_kind == .undo && Set(metadata.transaction_ids)==Set(undoTransactions) && receipt.receipt.transaction_id.value==data["undo_transaction_ref"] as? String)
+        try encoded(receipt).write(to:folder.appendingPathComponent("actual-inverse-receipt.json"));try encoded(metadata).write(to:folder.appendingPathComponent("actual-inverse-metadata.json"))
+      } else {
+        let code=(envelope["error"] as! [String:Any])["code"] as! String
+        precondition(code==(mode=="restricted" || mode=="unissued" ? "PERMISSION_DENIED":"UNDO_CONFLICT"))
+        precondition(after.revision.value==before.revision.value+(noWrite ? 0:1))
+        precondition(effect.target==nil && effect.admissionEvent==nil)
+      }
+      let math=try await kernel.state(),physical=try await storage.acceptedKernelHead(document:document)
+      precondition(math.active_checkpoint_id.value==nil && physical==nil)
+      let final=try JSONSerialization.jsonObject(with:Data(contentsOf:folder.appendingPathComponent("actual-native-http-body-3.json"))) as! [String:Any]
+      precondition((final["messages"] as! [[String:Any]]).last?["content"] as? String==String(decoding:bytes,as:UTF8.self))
+      try JSONSerialization.data(withJSONObject:try events.map{try JSONSerialization.jsonObject(with:encoded($0.event))},options:[.sortedKeys]).write(to:folder.appendingPathComponent("actual-undo-ledger.json"))
+      await adapter.close()
+    }
+    let final=try await storage.committedSource(document)!
+    await service.close();await kernel.close();await source.close();try await host.close();try await storage.close()
+    let(reopened,_)=try await StorageService.open(paths:.init(root:path,channel:.preview));_ = try await reopened.openDocument(document)
+    var recovered:[[String:Any]]=[]
+    for round in 0..<rounds {
+      let page=try await RecoveryService(storage:reopened).recoverSession(session+"-\(round)",ledger:.init(storage:reopened,session:session+"-\(round)"))
+      precondition(page.complete && page.tools.count==2 && page.tools[1].phase == (round==0 && !noWrite ? .completed:.failed))
+      recovered.append(["round":round+1,"tools":try JSONSerialization.jsonObject(with:RecoveryValidation.encode(page.tools))])
+    }
+    let unchanged=try await reopened.committedSource(document)!
+    precondition(unchanged.snapshot_hash==final.snapshot_hash)
+    try JSONSerialization.data(withJSONObject:["case":mode,"rounds":recovered,"source_revision":unchanged.revision.value,"host_or_helper_created":false,"computation_started":false,"file_saved":false],options:[.sortedKeys]).write(to:path.appendingPathComponent("actual-undo-recovery.json"))
+    try await reopened.close()
+  }
+}
+
 @main struct AgentPackageFixtures {
   static func main() async throws {
     let package=URL(fileURLWithPath:CommandLine.arguments[1],isDirectory:true),root=URL(fileURLWithPath:CommandLine.arguments[2],isDirectory:true)
     for _ in 0..<32 {
       let child=try await AgentPrivatePipe.launch(executable:URL(fileURLWithPath:"/usr/bin/true"),arguments:[],directory:root)
       let end=try await child.read();precondition(end==nil);await child.close()
+    }
+    if ProcessInfo.processInfo.environment["OPENMATH_PACKAGE_FIXTURE_MODE"]=="undo" {
+      try await nativeUndoRoundTrips(package:package,signatureRoot:CommandLine.arguments.count>3 && !CommandLine.arguments[3].isEmpty ? URL(fileURLWithPath:CommandLine.arguments[3]):nil,root:root.appendingPathComponent("undo-cases"))
+      print("Actual native undo roundtrips passed; evidence_root="+root.path);return
     }
     if ProcessInfo.processInfo.environment["OPENMATH_PACKAGE_FIXTURE_MODE"]=="operations" {
       try await nativeOperationQueries(package:package,signatureRoot:CommandLine.arguments.count>3 && !CommandLine.arguments[3].isEmpty ? URL(fileURLWithPath:CommandLine.arguments[3]):nil,root:root.appendingPathComponent("operation-queries"))
@@ -897,6 +986,7 @@ private func nativeOperationQueries(package:URL,signatureRoot:URL?,root:URL)asyn
     try await nativeRunBoundaries(package:package,signatureRoot:CommandLine.arguments.count>3 && !CommandLine.arguments[3].isEmpty ? URL(fileURLWithPath:CommandLine.arguments[3]):nil,root:root.appendingPathComponent("run-boundaries"))
     try await nativeScratchRoundTrips(package:package,signatureRoot:CommandLine.arguments.count>3 && !CommandLine.arguments[3].isEmpty ? URL(fileURLWithPath:CommandLine.arguments[3]):nil,root:root.appendingPathComponent("scratch-cases"))
     try await nativeOperationQueries(package:package,signatureRoot:CommandLine.arguments.count>3 && !CommandLine.arguments[3].isEmpty ? URL(fileURLWithPath:CommandLine.arguments[3]):nil,root:root.appendingPathComponent("operation-queries"))
+    try await nativeUndoRoundTrips(package:package,signatureRoot:CommandLine.arguments.count>3 && !CommandLine.arguments[3].isEmpty ? URL(fileURLWithPath:CommandLine.arguments[3]):nil,root:root.appendingPathComponent("undo-cases"))
     print(String(decoding:try JSONSerialization.data(withJSONObject:["production_core":"1.0.4","bundled_node":"26.11.1","actual_private_frames":report.frames,"canonical_events":events.count,"model_transport":"actual_urlsession_rust_cabi_durable_request_ledger","tool_outcome":"completed_actual_readonly_no_mutation","manual_after_sigkill":"4","system_node_fallback":false,"PATH":"empty","wrong_architecture":"rejected","missing_resource":"rejected","late_stdin":"rejected","unconfigured_model":"no_fake_message_or_effect","model_cancel_and_late_delta":"rejected","actual_macho_architecture":"rejected","evidence_root":root.path],options:[.sortedKeys]),as:UTF8.self))
   }
 }

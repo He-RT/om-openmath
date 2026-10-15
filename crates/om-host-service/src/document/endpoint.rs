@@ -2,6 +2,7 @@
 mod operations;
 mod patch;
 mod run;
+mod undo;
 use super::{SourceDocument, commit::DocumentCommitController, coordinator::SourceCoordinator};
 use crate::{
     protocol::{Nullable, Serial, generated::*, validation},
@@ -23,6 +24,7 @@ enum PendingReadKind {
 pub struct SourceEndpoint {
     controller: DocumentCommitController,
     scope: ReferenceScope,
+    editor_busy: bool,
     store: String,
     clock: Instant,
     coordinator: SourceCoordinator,
@@ -36,6 +38,7 @@ pub struct SourceEndpoint {
     pending_result_state: Option<crate::kernel::acceptance::AcceptedKernelState>,
     runs: std::collections::BTreeMap<String, run::PendingRun>,
     run_threads: Vec<std::thread::JoinHandle<()>>,
+    undo_lookups: std::collections::BTreeMap<String, undo::PendingUndo>,
     operation_queries: std::collections::BTreeMap<String, operations::PendingOperationQuery>,
 }
 impl SourceEndpoint {
@@ -95,6 +98,7 @@ impl SourceEndpoint {
         Ok(Self {
             controller: DocumentCommitController::new(owner, runtime, key),
             scope,
+            editor_busy: false,
             store,
             clock: Instant::now(),
             coordinator,
@@ -104,6 +108,7 @@ impl SourceEndpoint {
             pending_result_state: None,
             runs: std::collections::BTreeMap::new(),
             run_threads: Vec::new(),
+            undo_lookups: std::collections::BTreeMap::new(),
             operation_queries: std::collections::BTreeMap::new(),
             agent: None,
             reads: None,
@@ -156,6 +161,7 @@ impl SourceEndpoint {
             self.reads = Some(crate::tools::read::ReadNotebookService::new(read_key));
             self.pending_reads.clear();
             self.operation_queries.clear();
+            self.undo_lookups.clear();
             self.patches.clear();
             self.agent = Some(endpoint);
             return Ok(reply);
@@ -418,6 +424,7 @@ impl SourceEndpoint {
             }
             self.pending_reads.clear();
             self.operation_queries.clear();
+            self.undo_lookups.clear();
             self.reads = None;
         }
         reply
@@ -586,6 +593,7 @@ impl SourceEndpoint {
             owner_time_ms: Serial::new(now)?,
             snapshot: Nullable(None),
             plan: Nullable(None),
+            undo_lookup: Nullable(None),
             preview: Nullable(None),
             reference: Nullable(None),
             operation: Nullable(None),
@@ -609,6 +617,9 @@ impl SourceEndpoint {
                     self.controller.recover_undo(&body.receipt).map_err(error)?,
                 ));
             }
+            NativeSourceHostCommand::SourceBeginAgentUndo(body) => {
+                self.begin_agent_undo(*body, &mut reply)?;
+            }
             NativeSourceHostCommand::SourcePrepareUndo(body) => {
                 if self
                     .results
@@ -621,38 +632,7 @@ impl SourceEndpoint {
                 {
                     return Err("DUPLICATE_OPERATION".into());
                 }
-                for record in &body.records {
-                    let receipt = &record.receipt;
-                    let plan = &record.plan;
-                    super::validate_commit(plan).map_err(|_| "INVALID_UNDO_RECORD")?;
-                    if record.store_id != self.store
-                        || record.transaction_id != plan.commit.transaction_id
-                        || plan.commit.document_id != self.scope.document
-                        || plan.calculation_change.0.is_some()
-                        || receipt.protocol_version != 1
-                        || receipt.receipt.store_id != self.store
-                        || receipt.receipt.document_id.0.as_ref() != Some(&self.scope.document)
-                        || receipt.receipt.transaction_id.0.as_ref() != Some(&record.transaction_id)
-                        || receipt.receipt.operation_id != plan.commit.operation_id
-                        || receipt.receipt.request_hash != plan.commit.request_hash
-                        || receipt.receipt.phase != OperationReceiptPhase::Completed
-                        || receipt.receipt.committed_revision.0 != Some(plan.after.revision)
-                        || receipt.receipt.error_code.0.is_some()
-                        || !receipt.receipt.accepted_result_ids.is_empty()
-                        || receipt.receipt.operation_kind
-                            != if plan.commit.actor == DocumentCommitActor::Undo {
-                                OperationReceiptOperationKind::Undo
-                            } else {
-                                OperationReceiptOperationKind::SourceEdit
-                            }
-                        || receipt.snapshot_hash != plan.after.snapshot_hash
-                        || receipt.inverse_plan_hash != plan.before.snapshot_hash
-                        || receipt.execution_epoch != plan.after.execution_epoch
-                        || receipt.outbox_event_id != plan.commit.outbox_event_id
-                    {
-                        return Err("INVALID_UNDO_RECORD".into());
-                    }
-                }
+                self.validate_undo_records(&body.records)?;
                 let operation = body.operation_id.clone();
                 reply.plan = Nullable(
                     self.controller
@@ -829,6 +809,11 @@ impl SourceEndpoint {
                 {
                     return Err("STALE_DOCUMENT".into());
                 }
+                self.editor_busy = body
+                    .state
+                    .targets
+                    .iter()
+                    .any(|t| t.is_dirty || t.is_composing);
                 self.scope.editor_state_hash = format!(
                     "{:x}",
                     Sha256::digest(

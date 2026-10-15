@@ -31,11 +31,11 @@ private actor ModelHold {
 }
 
 /// The actual native transport/C ABI/Library producer; only provider wire and route are synthetic.
-private func nativeProviderTurn(host:NativeHostClient,storage:StorageService,root:URL,input:AgentCanonicalMessage,intent:NativeAgentRequestIntent,task:String,session:String="production-task",preview:Bool=false,apply:Bool=false,inspect:String?=nil,scratchSource:String?=nil,scratchDialect:Dialect = .wolfram,runCells:[String]?=nil,runScope:String="required",runContinue:Bool=false,runInspectCell:String?=nil)async throws->ProviderPreparedTurn {
+private func nativeProviderTurn(host:NativeHostClient,storage:StorageService,root:URL,input:AgentCanonicalMessage,intent:NativeAgentRequestIntent,task:String,session:String="production-task",preview:Bool=false,apply:Bool=false,inspect:String?=nil,scratchSource:String?=nil,scratchDialect:Dialect = .wolfram,runCells:[String]?=nil,runScope:String="required",runContinue:Bool=false,runInspectCell:String?=nil,operationRef:String?=nil)async throws->ProviderPreparedTurn {
   let stored=try await fixtureEvents(storage,session)
   let readonly=stored.compactMap {event->AgentReadonlyRecord? in guard let raw=event.event.payload_inline_json.value,let record=try? JSONDecoder().decode(AgentReadonlyRecord.self,from:Data(raw.utf8)),record.kind=="native_readonly_result" else {return nil};return record}
   let effects=stored.compactMap {event->AgentEffectRecord? in guard let raw=event.event.payload_inline_json.value,let record=try? JSONDecoder().decode(AgentEffectRecord.self,from:Data(raw.utf8)),record.kind=="native_effect_result" else {return nil};return record}
-  let count=readonly.count+effects.count,second = count>0,finishing = runCells != nil ? count>=(inspect==nil ? 2:3):second && (!preview || readonly.count==2) && (!apply || effects.count==1) && (inspect==nil || readonly.count==(scratchSource==nil ? 2:3))
+  let count=readonly.count+effects.count,second = count>0,finishing = operationRef != nil ? count>=(inspect==nil ? 2:3):runCells != nil ? count>=(inspect==nil ? 2:3):second && (!preview || readonly.count==2) && (!apply || effects.count==1) && (inspect==nil || readonly.count==(scratchSource==nil ? 2:3))
   var messages:[[String:Any]] = [["canonical":try JSONSerialization.jsonObject(with:encoded(input)),"replay":NSNull()]],results:[[String:Any]]=[]
   // Preserve the actual durable event order: every assistant call is followed by its tool result
   // before the next assistant. The native codec rejects a reordered/dangling tool conversation.
@@ -69,7 +69,7 @@ private func nativeProviderTurn(host:NativeHostClient,storage:StorageService,roo
     precondition(data["valid"] as? Bool==true);tool="apply_notebook_patch"
     arguments=String(decoding:try JSONSerialization.data(withJSONObject:["preview_ref":data["preview_ref"]!],options:[.sortedKeys]),as:UTF8.self)
   }
-  if let inspect,readonly.count==1,scratchSource==nil,runCells==nil {
+  if let inspect,readonly.count==1,scratchSource==nil,runCells==nil,operationRef==nil {
     let envelope=try JSONSerialization.jsonObject(with:Data((results[0]["text"] as! String).utf8)) as! [String:Any],data=envelope["data"] as! [String:Any],cell=(data["cells"] as! [[String:Any]])[0]
     precondition(cell["status"] as? String=="Done");tool="inspect_result"
     arguments=String(decoding:try JSONSerialization.data(withJSONObject:["result_ref":cell["result_ref"]!,"part":inspect,"limit":20],options:[.sortedKeys]),as:UTF8.self)
@@ -83,6 +83,11 @@ private func nativeProviderTurn(host:NativeHostClient,storage:StorageService,roo
     precondition(data["notebook_modified"] as? Bool==false && ["done","error"].contains(data["evaluation_status"] as? String ?? ""))
     tool="inspect_result";arguments=String(decoding:try JSONSerialization.data(withJSONObject:["result_ref":data["result_ref"]!,"part":inspect!,"limit":20],options:[.sortedKeys]),as:UTF8.self)
   }
+  if operationRef != nil,count==2,let inspect {
+    let envelope=try JSONSerialization.jsonObject(with:Data((results[1]["text"] as! String).utf8)) as! [String:Any],data=envelope["data"] as! [String:Any],reference=(data["result_refs"] as! [String]).first!
+    tool="inspect_result";arguments=String(decoding:try JSONSerialization.data(withJSONObject:["result_ref":reference,"part":inspect,"limit":20],options:[.sortedKeys]),as:UTF8.self)
+  }
+  if let operationRef,count==1 {tool="get_operation_status";arguments=String(decoding:try JSONSerialization.data(withJSONObject:["operation_ref":operationRef],options:[.sortedKeys]),as:UTF8.self)}
   if let runCells,count==1 {
     let envelope=try JSONSerialization.jsonObject(with:Data((results[0]["text"] as! String).utf8)) as! [String:Any],data=envelope["data"] as! [String:Any]
     tool="run_cells";arguments=String(decoding:try JSONSerialization.data(withJSONObject:["snapshot_ref":data["snapshot_ref"]!,"cell_ids":runCells,"scope":runScope,"continue_on_error":runContinue],options:[.sortedKeys]),as:UTF8.self)
@@ -101,6 +106,7 @@ private func nativeProviderTurn(host:NativeHostClient,storage:StorageService,roo
   if preview {tools.append(["name":"preview_source","description":"Inspect actual frozen source plan","parameters":["type":"object"]])}
   if apply {tools.append(["name":"apply_notebook_patch","description":"Commit the original frozen source plan","parameters":["type":"object"]])}
   if inspect != nil {tools.append(["name":"inspect_result","description":"Inspect original retained mathematical output","parameters":["type":"object"]])}
+  if operationRef != nil {tools.append(["name":"get_operation_status","description":"Query the original durable operation without replay","parameters":["type":"object"]])}
   if runCells != nil {tools.append(["name":"run_cells","description":"Run actual selected cells and prerequisites","parameters":["type":"object"]])}
   if scratchSource != nil {tools.append(["name":"evaluate_scratch","description":"Evaluate an independent writable scratch without notebook changes","parameters":["type":"object"]])}
   let request:[String:Any] = ["binding":["provider_ref":"fixture-provider","route_ref":"fixture-route","model_ref":"fixture-model","adapter_version":"single-turn-1","protocol":"chat_completions"],"api_model":"synthetic-configured-alias","messages":messages,"results":results,"tools":tools,"max_output_tokens":128,"temperature":NSNull(),"stream":true]
@@ -197,6 +203,9 @@ private func nativeRunRoundTrip(package:URL,signatureRoot:URL?,root:URL)async th
     precondition(recovered.tools.count==(hasInspect ? 3:2) && recovered.tools[1].phase.rawValue==spec.status)
     if effect.admissionEvent != nil {precondition(recovered.tools[1].run?.acceptedCells==spec.executed.count)}
     try JSONSerialization.data(withJSONObject:["case":spec.name,"tools":try JSONSerialization.jsonObject(with:RecoveryValidation.encode(recovered.tools)),"host_or_helper_created":false,"source_unchanged":true,"original_scope":"Agent run grant without source-patch grant"],options:[.sortedKeys]).write(to:path.appendingPathComponent("actual-run-recovery.json"))
+    if effect.admissionEvent != nil {
+      try await queryRestoredRun(package:package,signatureRoot:signatureRoot,root:path.appendingPathComponent("operation-status-restart"),storage:reopened,document:document,reference:effect.intent.operation_id,state:spec.status,committed:events.contains{$0.event.payload_inline_json.value?.contains("\"kind\":\"run_child_result\"")==true})
+    }
     try await reopened.close()
   }
 }
@@ -262,8 +271,14 @@ private func nativeRunBoundaries(package:URL,signatureRoot:URL?,root:URL)async t
     precondition(envelope["status"] as? String==(mode=="unknown" ? "unknown":"cancelled") && (data["executed_cell_ids"] as! [String]).isEmpty)
     let nativeBefore=try await kernel.state(),physical=try await storage.acceptedKernelHead(document:document)!
     precondition(nativeBefore.kernel_state_revision.value==0 && physical.kernel_state_revision.value==(mode=="unknown" ? 1:0))
+    if mode=="unknown" {
+      _ = try await nativeQueryRoundTrip(package:package,signatureRoot:signatureRoot,root:path.appendingPathComponent("operation-status-unavailable"),host:host,storage:storage,service:service,reference:effect.intent.operation_id,session:"query-held-original-readback",state:"unknown",committed:nil,queryError:"NOT_AVAILABLE")
+      let stillUnknown=try await kernel.state();precondition(stillUnknown.kernel_state_revision.value==0 && stillUnknown.pending_document_write)
+    }
     probe.resume()
     if mode=="unknown" {
+      _ = try await nativeQueryRoundTrip(package:package,signatureRoot:signatureRoot,root:path.appendingPathComponent("operation-status-live"),host:host,storage:storage,service:service,reference:effect.intent.operation_id,session:"query-current-unknown-run",state:"partial",committed:true,inspect:"value",runRef:effect.intent.operation_id,inspectedOperation:active,inspectedValue:"2")
+      let settled=try await kernel.state();precondition(settled.kernel_state_revision.value==1 && settled.active_checkpoint_id.value==physical.checkpoint_id && settled.pending_document_write==false)
       let original=try await kernel.reconcile(active!);precondition(original?.operation_id==active && original?.producer.cell_id.value=="a")
       try encoded(original).write(to:path.appendingPathComponent("actual-original-receipt-readback.json"))
     }
@@ -273,6 +288,7 @@ private func nativeRunBoundaries(package:URL,signatureRoot:URL?,root:URL)async t
     let recovered=try await RecoveryService(storage:reopened).recoverSession(session,ledger:.init(storage:reopened,session:session))
     precondition(recovered.tools.count==2 && recovered.tools[1].phase.rawValue==(mode=="unknown" ? "partial":"cancelled") && recovered.tools[1].run?.acceptedCells==(mode=="unknown" ? 1:0))
     try JSONSerialization.data(withJSONObject:["case":mode,"tools":try JSONSerialization.jsonObject(with:RecoveryValidation.encode(recovered.tools)),"host_or_helper_created":false,"fresh_id_replay":false],options:[.sortedKeys]).write(to:path.appendingPathComponent("actual-boundary-recovery.json"))
+    try await queryRestoredRun(package:package,signatureRoot:signatureRoot,root:path.appendingPathComponent("operation-status-restart"),storage:reopened,document:document,reference:effect.intent.operation_id,state:mode=="unknown" ? "partial":"cancelled",committed:true)
     try await reopened.close()
   }
 }
@@ -631,12 +647,112 @@ private func nativeApplyBoundaries(root:URL)async throws {
   }
   try JSONSerialization.data(withJSONObject:reports,options:[.sortedKeys]).write(to:root.appendingPathComponent("actual-boundaries.json"))
 }
+private func nativeQueryRoundTrip(package:URL,signatureRoot:URL?,root:URL,host:NativeHostClient,storage:StorageService,service:AgentSessionService,reference:String,session:String,state:String,committed:Bool?,inspect:String?=nil,transaction:String?=nil,runRef:String?=nil,inspectedOperation:String?=nil,inspectedValue:String="6",queryError:String?=nil)async throws->NativeAgentControlScope {
+  try FileManager.default.createDirectory(at:root,withIntermediateDirectories:true)
+  let hello=try await service.activate(session:session,grants:[.read_notebook,.get_operation_status,.inspect_result],readonly:true,coreVersion:"1.0.4",adapterVersion:"openmath-adapter-1")
+  let input=AgentCanonicalMessage(record_type:.canonical_agent_message,message_version:1,message_id:"query-input",role:.user,agent_turn_id:.init("input-turn"),task_id:.init(hello.scope.task_id),parts:[.agent_text_part(.init(kind:.text,part_id:"text",text:"仅核对原操作，不重放："+reference))])
+  let adapter=ProviderAgentModelAdapter(transport:ProviderTransport(secrets:SecretStore()),factory:{intent in try await nativeProviderTurn(host:host,storage:storage,root:root,input:input,intent:intent,task:hello.scope.task_id,session:session,inspect:inspect,operationRef:reference)})
+  let verified=try await AgentProcess.verified(package:package,signatureRoot:signatureRoot),pipe=try await verified.launch(),wire=WireCapture()
+  await pipe.setCapture {bytes,direction in await wire.append(bytes,toHelper:direction)}
+  let report:AgentPipeReport
+  do {report=try await service.run(pipe:pipe,hello:hello,modelPort:adapter.port(),input:input)} catch {
+    try await wire.save(root.appendingPathComponent("actual-query-failed-wire.json"));throw error
+  }
+  precondition(report.frames==(inspect==nil ? 13:17) && report.toolIntents.count==(inspect==nil ? 2:3) && report.lastPhase == .awaiting_settlement)
+  try await wire.save(root.appendingPathComponent("actual-query-wire.json"))
+  let events=try await fixtureEvents(storage,session)
+  let records=events.compactMap {event->AgentReadonlyRecord? in guard let raw=event.event.payload_inline_json.value,let record=try? JSONDecoder().decode(AgentReadonlyRecord.self,from:Data(raw.utf8)),record.kind=="native_readonly_result" else {return nil};return record}
+  precondition(records.map(\.intent.name)==(inspect==nil ? [.read_notebook,.get_operation_status]:[.read_notebook,.get_operation_status,.inspect_result]))
+  for record in records where record.intent.name != .read_notebook {
+    let lease=try await storage.openReferencedBlob(owner:.init(kind:.context,id:record.canonical.message_id),hash:record.blobHash)
+    let bytes=try await storage.readBlob(lease,offset:0,count:Int(record.byteLength));try await storage.closeBlob(lease)
+    precondition(KernelHashes.data(bytes)==record.blobHash)
+    try bytes.write(to:root.appendingPathComponent("actual-"+record.intent.name.rawValue+".json"))
+    let envelope=try JSONSerialization.jsonObject(with:bytes) as! [String:Any]
+    if record.intent.name == .get_operation_status,let queryError {
+      precondition(envelope["status"] as? String=="failed" && envelope["data"] is NSNull && (envelope["error"] as! [String:Any])["code"] as? String==queryError)
+      continue
+    }
+    let data=envelope["data"] as! [String:Any]
+    precondition(envelope["status"] as? String=="completed")
+    if record.intent.name == .get_operation_status {
+      precondition(data["operation_state"] as? String==state && data["outcome_known"] as? Bool==(!["queued","running","unknown"].contains(state)))
+      if let committed {precondition(data["effect_committed"] as? Bool==committed)} else {precondition(data["effect_committed"] is NSNull)}
+      precondition((data["transaction_ref"] as? String)==transaction && (data["run_ref"] as? String)==runRef)
+      if inspect != nil {precondition((data["result_refs"] as! [String]).count>0)}
+    } else {
+      let payload=data["payload"] as! [String:Any],binding=payload["binding"] as! [String:Any]
+      precondition(binding["operation_id"] as? String==(inspectedOperation ?? reference) && binding["acceptance"] as? String=="accepted")
+      precondition(((payload["page"] as! [String:Any])["source"] as! [String:Any])["input_form"] as? String==inspectedValue)
+    }
+  }
+  let final=try JSONSerialization.jsonObject(with:Data(contentsOf:root.appendingPathComponent("actual-native-http-body-\(inspect==nil ? 3:4).json"))) as! [String:Any]
+  let lastRecord=records.last!,lease=try await storage.openReferencedBlob(owner:.init(kind:.context,id:lastRecord.canonical.message_id),hash:lastRecord.blobHash)
+  let lastBytes=try await storage.readBlob(lease,offset:0,count:Int(lastRecord.byteLength));try await storage.closeBlob(lease)
+  precondition((final["messages"] as! [[String:Any]]).last?["content"] as? String==String(decoding:lastBytes,as:UTF8.self))
+  let recovery=try await storage.sessionRecovery(session,limit:32)
+  let failedCall=queryError==nil ? nil:records.first{$0.intent.name == .get_operation_status}!.intent.tool_call_id
+  precondition(recovery.complete && recovery.tools.count==records.count && recovery.tools.allSatisfy{$0.phase == ($0.callID==failedCall ? .readonly_failed:.readonly_completed) && $0.target==nil && $0.admissionEvent==nil})
+  try JSONSerialization.data(withJSONObject:try events.map {try JSONSerialization.jsonObject(with:encoded($0.event))},options:[.sortedKeys]).write(to:root.appendingPathComponent("actual-query-ledger.json"))
+  try JSONSerialization.data(withJSONObject:["tools":try JSONSerialization.jsonObject(with:RecoveryValidation.encode(recovery.tools)),"query_creates_no_effect":true,"original_reference":reference],options:[.sortedKeys]).write(to:root.appendingPathComponent("actual-query-recovery.json"))
+  await adapter.close();return hello.scope
+}
+private func queryRestoredRun(package:URL,signatureRoot:URL?,root:URL,storage:StorageService,document:String,reference:String,state:String,committed:Bool)async throws {
+  let source=try await storage.committedSource(document)!,head=try await storage.acceptedKernelHead(document:document),info=try await storage.documentIdentity(document)
+  let host=try await NativeHostClient.open(),opened=try await host.sourceCommand(.source_open(.init(type:.source_open,snapshot:source,store_id:info.storeID,calculation:.init(nil),config_revision:try HostSerial(0))))
+  let service=AgentSessionService(host:host,storage:storage,document:document,generation:opened.document_generation.value,toolFailure:{tool,error in try? Data((tool.rawValue+":"+String(reflecting:error)).utf8).write(to:root.appendingPathComponent("actual-query-dispatch-error.txt"))})
+  _ = try await nativeQueryRoundTrip(package:package,signatureRoot:signatureRoot,root:root,host:host,storage:storage,service:service,reference:reference,session:"query-original-run",state:state,committed:committed,runRef:reference)
+  let math=try await host.kernelCommand(.kernel_state(.init(type:.kernel_state))),after=try await storage.acceptedKernelHead(document:document),unchanged=try await storage.committedSource(document)!
+  precondition(math.active_checkpoint_id.value==nil && math.kernel_state_revision.value==0 && head?.checkpoint_id==after?.checkpoint_id && unchanged.snapshot_hash==source.snapshot_hash)
+  await service.close();try await host.close()
+}
+private func nativeOperationQueries(package:URL,signatureRoot:URL?,root:URL)async throws {
+  let document="00000000-0000-0000-0000-000000000443"
+  var snapshot=NativeSourceSnapshot(codec_version:1,document_id:document,revision:try HostSerial(0),execution_epoch:try HostSerial(0),file:.init(version:1,title:"真实原操作查账",cells:[.init(id:"a",kind:.math,source:"2+2",dialect:.modern)]),cell_revisions:[.init(cell_id:"a",revision:try HostSerial(0))],snapshot_hash:"")
+  snapshot.snapshot_hash=SourceHashes.snapshot(snapshot)
+  let (storage,_)=try await StorageService.open(paths:.init(root:root,channel:.preview)),info=try await storage.openDocument(document)
+  _ = try await storage.initializeSource(snapshot)
+  let host=try await NativeHostClient.open(),opened=try await host.sourceCommand(.source_open(.init(type:.source_open,snapshot:snapshot,store_id:info.identity.storeID,calculation:.init(nil),config_revision:try HostSerial(0))))
+  let clock=SourceOwnerClock();clock.calibrate(opened.owner_time_ms.value)
+  let drafts=await MainActor.run {DraftStore(source:snapshot,runtime:host.runtimeInstanceID,generation:opened.document_generation.value,clock:{clock.now()})}
+  let source=DocCommitPort(client:host,storage:storage,drafts:drafts,clock:clock),kernel=KernelCommitPort(client:host,storage:storage,source:source)
+  let preview=try await source.preview(.preview_patch_input(.init(kind:.patch,operations:[.preview_update_cell(.init(type:.update_cell,target:.init(cell_id:"a"),expected_source_hash:KernelHashes.data(Data("2+2".utf8)),source:"3+3"))])))
+  let applied=try await source.apply(preview.preview_ref.value!),sourceReceipt=applied.receipt.value!
+  let kernelReceipt=try await kernel.runCell("a",operation:"actual-kernel-before-query")
+  try encoded(sourceReceipt).write(to:root.appendingPathComponent("actual-original-source-receipt.json"));try encoded(kernelReceipt).write(to:root.appendingPathComponent("actual-original-kernel-receipt.json"))
+  let before=try await storage.committedSource(document)!,checkpoint=try await storage.acceptedKernelHead(document:document)!
+  let service=AgentSessionService(host:host,storage:storage,document:document,generation:opened.document_generation.value,toolFailure:{tool,error in try? Data((tool.rawValue+":"+String(reflecting:error)).utf8).write(to:root.appendingPathComponent("actual-query-dispatch-error.txt"))})
+  _ = try await nativeQueryRoundTrip(package:package,signatureRoot:signatureRoot,root:root.appendingPathComponent("source-live"),host:host,storage:storage,service:service,reference:sourceReceipt.receipt.operation_id,session:"query-source-live",state:"completed",committed:true,transaction:sourceReceipt.receipt.transaction_id.value)
+  _ = try await nativeQueryRoundTrip(package:package,signatureRoot:signatureRoot,root:root.appendingPathComponent("kernel-live"),host:host,storage:storage,service:service,reference:kernelReceipt.operation_id,session:"query-kernel-live",state:"completed",committed:true,inspect:"value")
+  let oldScope=try await nativeQueryRoundTrip(package:package,signatureRoot:signatureRoot,root:root.appendingPathComponent("missing-live"),host:host,storage:storage,service:service,reference:"never-issued-operation",session:"query-missing-live",state:"unknown",committed:nil)
+  let after=try await storage.committedSource(document)!,head=try await storage.acceptedKernelHead(document:document)!
+  precondition(after.snapshot_hash==before.snapshot_hash && head.checkpoint_id==checkpoint.checkpoint_id)
+  await service.close();await kernel.close();await source.close();try await host.close();try await storage.close()
+  let (reopened,_)=try await StorageService.open(paths:.init(root:root,channel:.preview));_ = try await reopened.openDocument(document)
+  let committed=try await reopened.committedSource(document)!,newHost=try await NativeHostClient.open()
+  let newOpen=try await newHost.sourceCommand(.source_open(.init(type:.source_open,snapshot:committed,store_id:info.identity.storeID,calculation:.init(nil),config_revision:try HostSerial(0))))
+  do {_ = try await newHost.agentCommand(.native_agent_query_operation(.init(type:.agent_query_operation,scope:oldScope,operation_id:"old-query",observation:.init(nil),failure_code:.init(nil))));fatalError("old query scope restored an operation grant")}catch NativeHostClientError.rejected { }
+  let fresh=AgentSessionService(host:newHost,storage:reopened,document:document,generation:newOpen.document_generation.value)
+  _ = try await nativeQueryRoundTrip(package:package,signatureRoot:signatureRoot,root:root.appendingPathComponent("source-restart"),host:newHost,storage:reopened,service:fresh,reference:sourceReceipt.receipt.operation_id,session:"query-source-restart",state:"completed",committed:true,transaction:sourceReceipt.receipt.transaction_id.value)
+  _ = try await nativeQueryRoundTrip(package:package,signatureRoot:signatureRoot,root:root.appendingPathComponent("kernel-restart"),host:newHost,storage:reopened,service:fresh,reference:kernelReceipt.operation_id,session:"query-kernel-restart",state:"completed",committed:true)
+  let math=try await newHost.kernelCommand(.kernel_state(.init(type:.kernel_state)))
+  precondition(math.active_checkpoint_id.value==nil && math.kernel_state_revision.value==0)
+  let unchanged=try await reopened.committedSource(document)!,physical=try await reopened.acceptedKernelHead(document:document)!
+  precondition(unchanged.snapshot_hash==before.snapshot_hash && physical.checkpoint_id==checkpoint.checkpoint_id)
+  try JSONSerialization.data(withJSONObject:["old_scope":"rejected before fresh activation","source_unchanged":true,"original_kernel_checkpoint_unchanged":true,"native_kernel_not_restored_or_evaluated_by_query":true],options:[.sortedKeys]).write(to:root.appendingPathComponent("actual-query-proof.json"))
+  await fresh.close();try await newHost.close();try await reopened.close()
+}
+
 @main struct AgentPackageFixtures {
   static func main() async throws {
     let package=URL(fileURLWithPath:CommandLine.arguments[1],isDirectory:true),root=URL(fileURLWithPath:CommandLine.arguments[2],isDirectory:true)
     for _ in 0..<32 {
       let child=try await AgentPrivatePipe.launch(executable:URL(fileURLWithPath:"/usr/bin/true"),arguments:[],directory:root)
       let end=try await child.read();precondition(end==nil);await child.close()
+    }
+    if ProcessInfo.processInfo.environment["OPENMATH_PACKAGE_FIXTURE_MODE"]=="operations" {
+      try await nativeOperationQueries(package:package,signatureRoot:CommandLine.arguments.count>3 && !CommandLine.arguments[3].isEmpty ? URL(fileURLWithPath:CommandLine.arguments[3]):nil,root:root.appendingPathComponent("operation-queries"))
+      print("Actual native operation queries passed; evidence_root="+root.path);return
     }
     let document="00000000-0000-0000-0000-000000000432"
     var snapshot=NativeSourceSnapshot(codec_version:1,document_id:document,revision:try HostSerial(0),execution_epoch:try HostSerial(0),file:.init(version:1,title:"包内Pi真实任务",cells:[.init(id:"a",kind:.math,source:"2+2",dialect:.modern)]),cell_revisions:[.init(cell_id:"a",revision:try HostSerial(0))],snapshot_hash:"")
@@ -780,6 +896,7 @@ private func nativeApplyBoundaries(root:URL)async throws {
     try await nativeRunRoundTrip(package:package,signatureRoot:CommandLine.arguments.count>3 && !CommandLine.arguments[3].isEmpty ? URL(fileURLWithPath:CommandLine.arguments[3]):nil,root:root.appendingPathComponent("run-case"))
     try await nativeRunBoundaries(package:package,signatureRoot:CommandLine.arguments.count>3 && !CommandLine.arguments[3].isEmpty ? URL(fileURLWithPath:CommandLine.arguments[3]):nil,root:root.appendingPathComponent("run-boundaries"))
     try await nativeScratchRoundTrips(package:package,signatureRoot:CommandLine.arguments.count>3 && !CommandLine.arguments[3].isEmpty ? URL(fileURLWithPath:CommandLine.arguments[3]):nil,root:root.appendingPathComponent("scratch-cases"))
+    try await nativeOperationQueries(package:package,signatureRoot:CommandLine.arguments.count>3 && !CommandLine.arguments[3].isEmpty ? URL(fileURLWithPath:CommandLine.arguments[3]):nil,root:root.appendingPathComponent("operation-queries"))
     print(String(decoding:try JSONSerialization.data(withJSONObject:["production_core":"1.0.4","bundled_node":"26.11.1","actual_private_frames":report.frames,"canonical_events":events.count,"model_transport":"actual_urlsession_rust_cabi_durable_request_ledger","tool_outcome":"completed_actual_readonly_no_mutation","manual_after_sigkill":"4","system_node_fallback":false,"PATH":"empty","wrong_architecture":"rejected","missing_resource":"rejected","late_stdin":"rejected","unconfigured_model":"no_fake_message_or_effect","model_cancel_and_late_delta":"rejected","actual_macho_architecture":"rejected","evidence_root":root.path],options:[.sortedKeys]),as:UTF8.self))
   }
 }

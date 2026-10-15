@@ -125,6 +125,7 @@ impl AgentEndpoint {
             readonly_result: Nullable(None),
             effect_result: Nullable(None),
             run_progress: Nullable(None),
+            operation_query: Nullable(None),
         }
     }
     fn outbound(
@@ -170,6 +171,7 @@ impl AgentEndpoint {
             NativeAgentHostCommand::NativeAgentPrepareRun(c) => &c.scope,
             NativeAgentHostCommand::NativeAgentPollRun(c) => &c.scope,
             NativeAgentHostCommand::NativeAgentAcknowledgeRunChild(c) => &c.scope,
+            NativeAgentHostCommand::NativeAgentQueryOperation(c) => &c.scope,
         };
         self.check(scope, binding)?;
         match command {
@@ -364,7 +366,8 @@ impl AgentEndpoint {
             NativeAgentHostCommand::NativeAgentEffectTool(_) => {
                 Err("EFFECT_PRODUCER_REQUIRED".into())
             }
-            NativeAgentHostCommand::NativeAgentPrepareRun(_)
+            NativeAgentHostCommand::NativeAgentQueryOperation(_)
+            | NativeAgentHostCommand::NativeAgentPrepareRun(_)
             | NativeAgentHostCommand::NativeAgentPollRun(_)
             | NativeAgentHostCommand::NativeAgentAcknowledgeRunChild(_) => {
                 Err("RUN_PRODUCER_REQUIRED".into())

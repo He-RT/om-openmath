@@ -6,7 +6,7 @@
 
 **当前状态：** 35任务完成（全部R4.0与R4.1、R4.2.01–02、07及09–10、R4.3.01–03及05–07）；其余63任务尚未完成；32最终运行/发行gate全部not_run；candidate未分配，ready_to_publish=false，released_verified=false。设计/HTML/Schema通过不填运行时pass。
 
-**下一任务：** 用户选择保留系统输入法设置、先做其他任务；R4.2.03真实候选窗口仍未验收。R4.3.05三个只读工具已完成实际输出引用与持久事务历史，R4.3.06原子修改已完成实际四轮/耐久effect回执/冲突与未知状态；R4.3.07执行/结果检查/独立scratch已完成真实Agent/C ABI/Swift/Pi闭环；继续R4.3.08原操作核对、撤销与Host停止控制；R4.3.04物理锁屏验收仍未完成，原依赖满足后再接非求值编辑分析/长笔记本/Markdown。存储维护、备份、新代次、配额和GC已通过实际验证；日末备份触发/数据管理UI仍在R4.2.18接线，完整Pi/provider/上下文/Agent界面仍继续R4.3–4.4，不能将存储Done当产品完成。保持同candidate完整门禁，R4.5.07在R4.5.05冻结前完成。
+**下一任务：** 用户选择保留系统输入法设置、先做其他任务；R4.2.03真实候选窗口仍未验收。R4.3.05三个只读工具已完成实际输出引用与持久事务历史，R4.3.06原子修改已完成实际四轮/耐久effect回执/冲突与未知状态；R4.3.07执行/结果检查/独立scratch已完成真实Agent/C ABI/Swift/Pi闭环；R4.3.08原操作核对已完成当前批次；继续真实逆计划撤销与统一Host停止控制；R4.3.04物理锁屏验收仍未完成，原依赖满足后再接非求值编辑分析/长笔记本/Markdown。存储维护、备份、新代次、配额和GC已通过实际验证；日末备份触发/数据管理UI仍在R4.2.18接线，完整Pi/provider/上下文/Agent界面仍继续R4.3–4.4，不能将存储Done当产品完成。保持同candidate完整门禁，R4.5.07在R4.5.05冻结前完成。
 
 ## 已知外部前置
 
@@ -69,7 +69,7 @@
 | [x] [R4.3.05](PRE_ALPHA_4.md#task-r4.3.05) | 读取笔记本与真实函数资料工具 | completed | [只读基础](../acceptance/pre-alpha.4/development/r43/readonly-services-foundation.json)、[耐久工具/Pi](../acceptance/pre-alpha.4/development/r43/readonly-native-tool.json)、[实际输出/持久历史](../acceptance/pre-alpha.4/development/r43/readonly-outputs-history.json)；1297Rust/实际签名App两轮/重启history/独立worker | D053/D055/本批D056 |
 | [x] [R4.3.06](PRE_ALPHA_4.md#task-r4.3.06) | 预览与原子修改工具接入 | completed | [预览/Pi三轮](../acceptance/pre-alpha.4/development/r43/patch-preview-foundation.json)、[实际原子提交/Pi四轮](../acceptance/pre-alpha.4/development/r43/patch-atomic-apply.json)；1301Rust/38帧31事件/5真实边界/原回执恢复 | D057/本批D058 |
 | [x] [R4.3.07](PRE_ALPHA_4.md#task-r4.3.07) | 执行、结果检查和隔离试算工具 | completed | [依赖规划](../acceptance/pre-alpha.4/development/r43/math-run-planning.json)、[inspect/Pi](../acceptance/pre-alpha.4/development/r43/math-inspect-native.json)、[scratch/Pi](../acceptance/pre-alpha.4/development/r43/math-scratch-native.json)、[运行组](../acceptance/pre-alpha.4/development/r43/math-run-ledger.json)及[真实运行闭环](../acceptance/pre-alpha.4/development/r43/math-run-native.json)：签名包10场景+取消/unknown真实边界、原回执恢复、实际Solve/ODE/scene；180 Rust/23 Node/Pi/17 Python/402 DTO | D059–D064 |
-| [ ] [R4.3.08](PRE_ALPHA_4.md#task-r4.3.08) | 操作核对、撤销和Host停止控制 | planned | — | — |
+| [ ] [R4.3.08](PRE_ALPHA_4.md#task-r4.3.08) | 操作核对、撤销和Host停止控制 | in_progress | [原操作耐久查账/Pi](../acceptance/pre-alpha.4/development/r43/operation-query-native.json)：18签名场景、当前unknown原ID回读/真实屏障释放、重启新授权；仅步骤1完成，撤销与统一停止仍未完成 | D065 |
 | [ ] [R4.3.09](PRE_ALPHA_4.md#task-r4.3.09) | 附件工具与宿主处理注册接口 | planned | — | — |
 | [ ] [R4.3.10](PRE_ALPHA_4.md#task-r4.3.10) | 全工具原生声明与provider严格schema转换 | planned | — | — |
 | [ ] [R4.3.11](PRE_ALPHA_4.md#task-r4.3.11) | 实际Pi合成provider编辑运行修正闭环 | planned | — | — |
@@ -753,3 +753,18 @@ D063文档检查修正：实施说明曾加入冻结macos-storage-recovery.md而
 - 精确授权key扫描5679个证据输入（含清理清单）0命中，凭据仅仓库外0600原文件。按成功180测试的Cargo inventory删除27个普通Mach-O测试harness共779,138,624字节（约743MiB）；库、CLI、examples、应用、运行时、证据和用户数据保留。
 
 R4.3.07步骤1/2/4及Task Done满足并勾选，整体35/98，下一R4.3.08。32最终gate继续全部not_run，candidate未分配、ready/released=false；运行/公开仍.3，完整98任务+32门禁+实际发行仍required。保留系统输入设置，不重问候选窗口授权；物理锁屏仍未验，无子代理/本机iOS模拟器/付费live、不合main或改旧公开包。
+
+
+## D065 · 2026-10-15 原操作耐久查账与当前未知回执核对（R4.3.08步骤1完成）
+
+证据：[operation-query-native.json](../acceptance/pre-alpha.4/development/r43/operation-query-native.json)及压缩原件，最终签名根`attempt-BRiJIf`；只完成查账步骤，Task Done与撤销/Host停止步骤仍不勾选。
+
+- 新tools/operations.rs、closed agent_query_operation/lookup/observation，共410同源DTO。目标只来自原ACKed GetOperationStatus原字节/SHA，当前native文档/store/task/grants确定范围；模型不能提供路径、receipt、运行事实或执行计划。Swift查真实source/kernel receipt及Library索引claim/完整run snapshot，Rust核对身份/状态语义后返回，matching原结果由独立ResultRuntime重签当前scope引用。
+- 查询自身completed与被查操作的completed/partial/failed/cancelled/unknown分开。未找到完整事实保持unknown、outcome_known=false、effect_committed=null，不能推断从未发生；实际source/kernel receipt及run prefix给真实结论。只有bootstrap提交的失败/取消组仍明确effect_committed=true，hint列出实际accepted cells/checkpoint effects，组不伪造aggregate Kernel receipt。
+- 签名包18真实查账：源码/计算实时与重启、缺失unknown、9个原selected/required/affected/error/Solve/ODE/scene组的重启状态、实际cancel/unknown边界恢复、当前unknown回读暂不可用与解除后的原ID核对。实时计算引用inspect实际6；current unknown先NOT_AVAILABLE且native rev0/屏障保留，再只回读原child使native head等于原物理checkpoint rev1、屏障释放，并由新scope引用inspect实际2。没有新ID或重新计算。
+- OperationStatusReader复用原KernelCommitPort进行当前进程原回执核对；查账冻结的是文档/task/grant lifetime，允许自己的原事实回读推进definition revision。重启旧scope在新激活前拒绝，用户显式新read/get-operation授权后才查旧稳定引用；新宿主查询不restore/evaluate CAS，物理head与源码SHA不变。暂不可用返回闭合NOT_AVAILABLE且不虚构目标结论。
+- 原efb36c1e CI38729867121前端/Rust/依赖/iOS成功，macOS私有协议脚本漏编KernelCommitPort而失败；原日志/25个CI证据保留，本批补实际IO adapter依赖。查账协调器移至Agent，通用Storage只保留claim数据类型，其他存储测试不会额外依赖Kernel运行层。复跑另抓到合成peer早退：失败根attempt-yf5Kyh只有assistant_end，原成功根有两事件；改peer等待实际tool_result与模型terminal两条件再settled，保留两条耐久事件断言，原入口现已通过。没有改数学或性能阈值。
+- 184 Host/FFI Rust/30 suites、全targets Clippy -D warnings、20 Node协议/Pi+4真实Rust codec/Pi、strict自身TS(skipLibCheck)、17 Python、410DTO/生成工程/fmt、SDK27 arm64 Release、deep strict及launcher实际signatureRoot全部通过。完整原10 run/2 cancel-unknown/4 inspect/5 scratch/原子修改/private protocol回归亦通过；provider字节/route为合成测试输入，所有数学、transport/codec/Node/Pi/SQLite/Blob/receipts/recovery真实，无付费live。
+- 新增不可用用例初版误引用RecoveredTool.call而编译拒，已改实际callID/原canonical映射；编译日志及原输入保留。初始Rust prototype误用producer不存在的runtime字段也保留。最终exact key扫描0命中，私有配置仅仓库外0600原文件。清理本批184成功测试inventory中的27普通Mach-O harness，779,742,864 bytes约744MiB；库/CLI/examples/App/runtime/证据/用户数据保留。
+
+只勾R4.3.08步骤1，整体35/98。下一必须接原ACKed undo_transaction→当前snapshot/ref/获准事务→真实merge_group/DocCommitPort/耐久effect/Pi，检验重复undo/手工冲突；再统一Host stop实际模型/Pi/CAS/媒体及后续admission，检验完成vs停止/任务隔离。当前Agent undo仍unavailable，统一TaskControl/UI未完成。32最终gate仍not_run、candidate未分配、ready/released=false；完整98+32gates+实际发行继续。dev/公开.3、不合main/旧公开包不动、无子代理/本机iOS模拟器，OS输入设置保持不重问。

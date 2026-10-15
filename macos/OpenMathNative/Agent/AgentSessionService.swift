@@ -220,19 +220,32 @@ actor AgentSessionService {
   private func dispatchTool(_ intent:NativeAgentToolIntent) async {
     if intent.name == .apply_notebook_patch {await dispatchPatch(intent);return}
     if intent.name == .run_cells {await dispatchRun(intent);return}
-    guard [.read_notebook,.search_functions,.get_function_docs,.preview_source,.inspect_result,.evaluate_scratch].contains(intent.name) else {await unavailableTool(intent);return}
+    guard [.read_notebook,.search_functions,.get_function_docs,.preview_source,.inspect_result,.evaluate_scratch,.get_operation_status].contains(intent.name) else {await unavailableTool(intent);return}
     do {
       guard let s=scope,let ledger else {throw AgentSessionError.inactive}
       if intent.name == .read_notebook {
         let (head,entries)=try await storage.readNotebookHistory(document:document)
         _ = try await host.agentCommand(.native_agent_bind_history(.init(type:.agent_bind_history,scope:s,expected_snapshot_hash:head.snapshot_hash,transaction_refs:entries.map(\.transaction))))
       }
-      var reply=try await host.agentCommand(.native_agent_read_tool(.init(type:.agent_read_tool,scope:s,operation_id:intent.operation_id)))
+      var reply:NativeAgentHostReply
+      if intent.name == .get_operation_status {
+        reply=try await host.agentCommand(.native_agent_query_operation(.init(type:.agent_query_operation,scope:s,operation_id:intent.operation_id,observation:.init(nil),failure_code:.init(nil))))
+        if let lookup=reply.operation_query.value {
+          guard lookup.operation_id==intent.operation_id,lookup.arguments_hash==intent.arguments_hash,lookup.document_id==document else {throw AgentSessionError.stale}
+          let observation:NativeOperationObservation?
+          do {observation=try await OperationStatusReader(storage:storage,kernel:kernelPort).read(lookup)} catch {
+            observation=nil
+            reply=try await host.agentCommand(.native_agent_query_operation(.init(type:.agent_query_operation,scope:s,operation_id:intent.operation_id,observation:.init(nil),failure_code:.init(.not_available))))
+          }
+          if let observation {reply=try await host.agentCommand(.native_agent_query_operation(.init(type:.agent_query_operation,scope:s,operation_id:intent.operation_id,observation:.init(observation),failure_code:.init(nil))))}
+        }
+      } else {reply=try await host.agentCommand(.native_agent_read_tool(.init(type:.agent_read_tool,scope:s,operation_id:intent.operation_id)))}
       let deadline=ContinuousClock.now.advanced(by:.seconds(10))
       while reply.disposition == .pending {
         try Task.checkCancellation();guard ContinuousClock.now<deadline else {throw AgentSessionError.busy}
         try await Task.sleep(for:.milliseconds(10))
-        reply=try await host.agentCommand(.native_agent_read_tool(.init(type:.agent_read_tool,scope:s,operation_id:intent.operation_id)))
+        if intent.name == .get_operation_status {reply=try await host.agentCommand(.native_agent_query_operation(.init(type:.agent_query_operation,scope:s,operation_id:intent.operation_id,observation:.init(nil),failure_code:.init(nil))))}
+        else {reply=try await host.agentCommand(.native_agent_read_tool(.init(type:.agent_read_tool,scope:s,operation_id:intent.operation_id)))}
       }
       guard let result=reply.readonly_result.value,result.operation_id==intent.operation_id,result.tool_call_id==intent.tool_call_id,
         result.agent_turn_id==intent.agent_turn_id,result.name==intent.name else {throw AgentSessionError.stale}
@@ -258,7 +271,7 @@ actor AgentSessionService {
       _ = try await host.agentCommand(.native_agent_confirm_tool(.init(type:.agent_confirm_tool,scope:s,operation_id:intent.operation_id,result_ref:result.result_ref,result_hash:result.result_hash,event_id:event,event_sequence:try HostSerial(stored.receipt.eventSequence),receipt_hash:stored.receipt.recordHash)))
       let payload=AgentToolResultPayload(agent_turn_id:intent.agent_turn_id,tool_call_id:intent.tool_call_id,operation_ref:.init(nil),result_ref:.init(result.result_ref),outcome:result.outcome == .completed ? .completed:.failed,result_json:.init(String(decoding:original,as:UTF8.self)))
       toolFrames[intent.operation_id]=try await send("tool_result",payload:JSONEncoder().encode(payload))
-    } catch {if !Task.isCancelled {_ = try? await send("error",payload:JSONEncoder().encode(AgentErrorPayload(code:"NATIVE_READONLY_RESULT_UNAVAILABLE",recoverable:false)))}}
+    } catch {toolFailure?(intent.name,error);if !Task.isCancelled {_ = try? await send("error",payload:JSONEncoder().encode(AgentErrorPayload(code:"NATIVE_READONLY_RESULT_UNAVAILABLE",recoverable:false)))}}
   }
   private func dispatchPatch(_ intent:NativeAgentToolIntent)async {
     do {

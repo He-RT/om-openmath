@@ -417,6 +417,11 @@ actor StorageService {
     guard closeTask==nil,let library else {throw StorageError.closing};return try await library.sessionCall {try $0.recover(session,cursor:cursor,limit:limit)}
   }
   /// Original immutable group/child facts only. This API has no execution callback.
+  func operationClaim(document:String,store:String,operation:String)async throws->SessionOperationClaim? {
+    try beginOperation();defer {endOperation()}
+    guard closeTask==nil,let library,documents[document] != nil else {throw StorageError.closing}
+    return try await library.sessionCall {try $0.operationClaim(document:document,store:store,operation:operation)}
+  }
   func sessionRunSnapshot(_ session:String,admission:String) async throws->SessionRunSnapshot {
     try beginOperation();defer {endOperation()}
     guard closeTask==nil,let library else {throw StorageError.closing}

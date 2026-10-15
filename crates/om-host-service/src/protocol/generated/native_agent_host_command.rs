@@ -32,4 +32,6 @@ pub enum NativeAgentHostCommand {
     NativeAgentPollRun(NativeAgentPollRun),
     /// Variant `NativeAgentAcknowledgeRunChild`.
     NativeAgentAcknowledgeRunChild(Box<NativeAgentAcknowledgeRunChild>),
+    /// Variant `NativeAgentQueryOperation`.
+    NativeAgentQueryOperation(Box<NativeAgentQueryOperation>),
 }

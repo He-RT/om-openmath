@@ -38,6 +38,8 @@ pub struct NativeAgentHostReply {
     pub effect_result: Nullable<NativeAgentEffectResult>,
     /// Contract field `run_progress`.
     pub run_progress: Nullable<NativeRunProgress>,
+    /// Contract field `operation_query`.
+    pub operation_query: Nullable<NativeOperationLookup>,
 }
 impl std::fmt::Debug for NativeAgentHostReply {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {

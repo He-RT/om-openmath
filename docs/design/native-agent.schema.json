@@ -2019,11 +2019,15 @@
         },
         {
           "$ref": "#/$defs/NativeAgentAcknowledgeRunChild"
+        },
+        {
+          "$ref": "#/$defs/NativeAgentQueryOperation"
         }
       ],
       "x-openmath-contract": {
         "rust_boxed_variants": [
-          "NativeAgentAcknowledgeRunChild"
+          "NativeAgentAcknowledgeRunChild",
+          "NativeAgentQueryOperation"
         ]
       }
     },
@@ -2227,6 +2231,16 @@
               "type": "null"
             }
           ]
+        },
+        "operation_query": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/NativeOperationLookup"
+            },
+            {
+              "type": "null"
+            }
+          ]
         }
       },
       "required": [
@@ -2246,7 +2260,8 @@
         "request_intent",
         "readonly_result",
         "effect_result",
-        "run_progress"
+        "run_progress",
+        "operation_query"
       ],
       "additionalProperties": false
     },
@@ -3489,6 +3504,422 @@
       "type": "string",
       "minLength": 1,
       "maxLength": 64
+    },
+    "NativeDurableSourceReceipt": {
+      "type": "object",
+      "properties": {
+        "protocol_version": {
+          "const": 1
+        },
+        "receipt": {
+          "$ref": "#/$defs/OperationReceipt"
+        },
+        "snapshot_hash": {
+          "$ref": "#/$defs/Sha256"
+        },
+        "inverse_plan_hash": {
+          "$ref": "#/$defs/Sha256"
+        },
+        "execution_epoch": {
+          "$ref": "#/$defs/Serial"
+        },
+        "outbox_event_id": {
+          "$ref": "#/$defs/Identity"
+        }
+      },
+      "required": [
+        "protocol_version",
+        "receipt",
+        "snapshot_hash",
+        "inverse_plan_hash",
+        "execution_epoch",
+        "outbox_event_id"
+      ],
+      "additionalProperties": false
+    },
+    "OperationReceipt": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "record_type": {
+          "const": "operation_receipt"
+        },
+        "store_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "document_id": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Identity"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "operation_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "operation_kind": {
+          "type": "string",
+          "enum": [
+            "source_edit",
+            "undo",
+            "run_cells",
+            "scratch",
+            "media_prepare",
+            "save_file"
+          ]
+        },
+        "request_hash": {
+          "$ref": "#/$defs/Sha256"
+        },
+        "phase": {
+          "type": "string",
+          "enum": [
+            "accepted",
+            "queued",
+            "running",
+            "cancelling",
+            "completed",
+            "partial",
+            "failed",
+            "cancelled",
+            "unknown"
+          ]
+        },
+        "transaction_id": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Identity"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "committed_revision": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Serial"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "accepted_result_ids": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Identity"
+          },
+          "uniqueItems": true
+        },
+        "details_blob_hash": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/BlobHash"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "details_retention": {
+          "type": "string",
+          "enum": [
+            "full",
+            "tombstone"
+          ]
+        },
+        "error_code": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Identity"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "updated_at": {
+          "$ref": "#/$defs/Timestamp"
+        }
+      },
+      "required": [
+        "record_type",
+        "store_id",
+        "document_id",
+        "operation_id",
+        "operation_kind",
+        "request_hash",
+        "phase",
+        "transaction_id",
+        "committed_revision",
+        "accepted_result_ids",
+        "details_blob_hash",
+        "details_retention",
+        "error_code",
+        "updated_at"
+      ],
+      "description": "幂等事实保留；终止状态转移、操作归属及参数散列由宿主验证，不以 expired token 代替 ledger ID。",
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "operation_kind": {
+                "enum": [
+                  "source_edit",
+                  "undo"
+                ]
+              },
+              "phase": {
+                "const": "completed"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "document_id": {
+                "$ref": "#/$defs/Identity"
+              },
+              "transaction_id": {
+                "$ref": "#/$defs/Identity"
+              },
+              "committed_revision": {
+                "$ref": "#/$defs/Serial"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "details_retention": {
+                "const": "tombstone"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "details_blob_hash": {
+                "type": "null"
+              }
+            }
+          }
+        }
+      ],
+      "x-implementation-status": "partial: actual source transactions; other operations/admission/grants registered later"
+    },
+    "NativeOperationLookup": {
+      "type": "object",
+      "properties": {
+        "operation_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "arguments_hash": {
+          "$ref": "#/$defs/Sha256"
+        },
+        "operation_ref": {
+          "$ref": "#/$defs/Identity"
+        },
+        "document_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "store_id": {
+          "$ref": "#/$defs/Identity"
+        }
+      },
+      "required": [
+        "operation_id",
+        "arguments_hash",
+        "operation_ref",
+        "document_id",
+        "store_id"
+      ],
+      "additionalProperties": false
+    },
+    "NativeOperationRunObservation": {
+      "type": "object",
+      "properties": {
+        "phase": {
+          "type": "string",
+          "enum": [
+            "queued",
+            "running",
+            "completed",
+            "partial",
+            "failed",
+            "cancelled",
+            "unknown"
+          ]
+        },
+        "accepted_cells": {
+          "$ref": "#/$defs/Serial"
+        },
+        "accepted_effects": {
+          "$ref": "#/$defs/Serial"
+        },
+        "original_active_operation": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Identity"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "event": {
+          "$ref": "#/$defs/NativeRunEventAck"
+        },
+        "kernel_receipts": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/NativeKernelReceipt"
+          },
+          "maxItems": 32
+        }
+      },
+      "required": [
+        "phase",
+        "accepted_cells",
+        "accepted_effects",
+        "original_active_operation",
+        "event",
+        "kernel_receipts"
+      ],
+      "additionalProperties": false
+    },
+    "NativeOperationClaimObservation": {
+      "type": "object",
+      "properties": {
+        "phase": {
+          "type": "string",
+          "enum": [
+            "queued",
+            "running",
+            "unknown"
+          ]
+        },
+        "event": {
+          "$ref": "#/$defs/NativeRunEventAck"
+        }
+      },
+      "required": [
+        "phase",
+        "event"
+      ],
+      "additionalProperties": false
+    },
+    "NativeOperationObservation": {
+      "type": "object",
+      "properties": {
+        "operation_ref": {
+          "$ref": "#/$defs/Identity"
+        },
+        "document_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "store_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "source_receipt": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/NativeDurableSourceReceipt"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "kernel_receipt": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/NativeKernelReceipt"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "run": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/NativeOperationRunObservation"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "claim": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/NativeOperationClaimObservation"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "operation_ref",
+        "document_id",
+        "store_id",
+        "source_receipt",
+        "kernel_receipt",
+        "run",
+        "claim"
+      ],
+      "additionalProperties": false
+    },
+    "NativeAgentQueryOperation": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "const": "agent_query_operation"
+        },
+        "scope": {
+          "$ref": "#/$defs/NativeAgentControlScope"
+        },
+        "operation_id": {
+          "$ref": "#/$defs/Identity"
+        },
+        "observation": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/NativeOperationObservation"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "failure_code": {
+          "anyOf": [
+            {
+              "enum": [
+                "not_available"
+              ],
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "type",
+        "scope",
+        "operation_id",
+        "observation",
+        "failure_code"
+      ],
+      "additionalProperties": false
     }
   },
   "x-openmath-contract": {

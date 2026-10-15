@@ -93,3 +93,9 @@ test('run result keeps the original operation and accepts partial facts without 
  assert.equal(decodeToolResult('run_cells',encode(unknown)).status,'unknown');
  for(const bad of [{...result,operation_ref:'different-run'},{...result,data:{...result.data,source:'execute'}},{...partial,ok:true},{...unknown,operation_ref:null}])assert.throws(()=>decodeToolResult('run_cells',encode(bad)),/IPC_INVALID_TOOL_RESULT/);
 });
+
+test('operation query may complete while its target remains unknown; it grants no effect',()=>{
+ const result={ok:true,status:'completed',request_ref:'query',operation_ref:null,document:{id:'doc',generation:2,revision:7},data:{operation_state:'unknown',outcome_known:false,effect_committed:null,transaction_ref:null,run_ref:null,result_refs:[],recovery_hint:'Original receipt is unavailable; never replay'},error:null,pagination:{truncated:false,next_cursor:null}};
+ assert.equal(decodeReadonlyResult('get_operation_status',Buffer.from(JSON.stringify(result))).status,'completed');
+ for(const value of [{...result,operation_ref:'fake-side-effect'},{...result,data:{...result.data,execute:true}},{...result,data:{...result.data,operation_state:'not_found'}}])assert.throws(()=>decodeToolResult('get_operation_status',Buffer.from(JSON.stringify(value))),/IPC_INVALID_TOOL_RESULT/);
+});

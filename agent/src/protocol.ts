@@ -124,7 +124,7 @@ export function decodeReadonlyResult(name:string,bytes:Uint8Array):{ok:boolean,s
 }
 /** All native tool data stays closed; effects additionally carry a real operation identity. */
 export function decodeToolResult(name:string,bytes:Uint8Array):{ok:boolean,status:string,operation_ref:string|null} {
-  if(!['read_notebook','search_functions','get_function_docs','preview_source','apply_notebook_patch','run_cells','inspect_result','evaluate_scratch'].includes(name)||bytes.length>262144)fail('IPC_TOOL_RESULT_LIMIT');
+  if(!['read_notebook','search_functions','get_function_docs','preview_source','apply_notebook_patch','run_cells','inspect_result','evaluate_scratch','get_operation_status'].includes(name)||bytes.length>262144)fail('IPC_TOOL_RESULT_LIMIT');
   const value=strictJson(bytes),rule=toolSchema.$defs[name+'_result'];
   const phases=name==='run_cells'?['completed','partial','failed','cancelled','unknown']:name==='apply_notebook_patch'?['completed','failed','cancelled','unknown']:['completed','failed'];
   if(!matches(value,rule,0,toolSchema)||value===null||typeof value!=='object'||Array.isArray(value)||!phases.includes(String(value.status))||(!['apply_notebook_patch','run_cells'].includes(name)&&value.operation_ref!==null))fail('IPC_INVALID_TOOL_RESULT');

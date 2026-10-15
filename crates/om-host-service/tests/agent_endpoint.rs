@@ -1008,3 +1008,135 @@ fn native_run_bounds_full_report_with_retention_warnings_before_any_effect() {
     empty_main(&mut owner);
     close_run_owner(&mut owner);
 }
+
+fn operation_query_intent(owner: &mut SourceEndpoint, args: Value) -> NativeAgentToolIntent {
+    let activation=command(owner,json!({"type":"agent_activate","scope":scope(1),"hello_id":"hello","core_version":"1.0.4","adapter_version":"adapter-1","grants":["get_operation_status"],"readonly":true})).unwrap();
+    let hello: Value = serde_json::from_str(activation.outbound_json.0.as_ref().unwrap()).unwrap();
+    ready(owner, &hello, 1);
+    mapped_call(owner, &hello, &mut 2, "get_operation_status", args)
+}
+fn query_original(
+    owner: &mut SourceEndpoint,
+    intent: &NativeAgentToolIntent,
+    observation: Value,
+    failure: Value,
+) -> Result<NativeAgentHostReply, String> {
+    command(
+        owner,
+        json!({"type":"agent_query_operation","scope":scope(1),"operation_id":intent.operation_id,"observation":observation,"failure_code":failure}),
+    )
+}
+fn unknown_observation() -> Value {
+    json!({"operation_ref":"old-operation","document_id":"actual-document","store_id":"actual-store","source_receipt":null,"kernel_receipt":null,"run":null,"claim":null})
+}
+#[test]
+fn actual_native_operation_query_absence_is_unknown_not_no_effect_and_cached_query_is_immutable() {
+    let mut owner = endpoint();
+    let intent = operation_query_intent(&mut owner, json!({"operation_ref":"old-operation"}));
+    let lookup = query_original(&mut owner, &intent, Value::Null, Value::Null)
+        .unwrap()
+        .operation_query
+        .0
+        .unwrap();
+    assert_eq!(lookup.operation_ref, "old-operation");
+    assert_eq!(lookup.document_id, "actual-document");
+    assert_eq!(lookup.store_id, "actual-store");
+    let result = query_original(&mut owner, &intent, unknown_observation(), Value::Null)
+        .unwrap()
+        .readonly_result
+        .0
+        .unwrap();
+    let value: Value = serde_json::from_str(&result.result_json).unwrap();
+    assert_eq!(value["status"], "completed");
+    assert_eq!(value["data"]["operation_state"], "unknown");
+    assert_eq!(value["data"]["outcome_known"], false);
+    assert!(value["data"]["effect_committed"].is_null());
+    assert_eq!(value["data"]["result_refs"], json!([]));
+    assert!(value["operation_ref"].is_null());
+    let repeated = query_original(&mut owner, &intent, Value::Null, Value::Null)
+        .unwrap()
+        .readonly_result
+        .0
+        .unwrap();
+    assert_eq!(repeated.result_hash, result.result_hash);
+    assert_eq!(repeated.result_ref, result.result_ref);
+    empty_main(&mut owner);
+    close_run_owner(&mut owner);
+}
+#[test]
+fn actual_native_operation_query_requires_current_original_intent_and_closed_args() {
+    let mut owner = endpoint();
+    let intent = operation_query_intent(
+        &mut owner,
+        json!({"operation_ref":"old-operation","execute":true}),
+    );
+    let result = query_original(&mut owner, &intent, Value::Null, Value::Null)
+        .unwrap()
+        .readonly_result
+        .0
+        .unwrap();
+    let value: Value = serde_json::from_str(&result.result_json).unwrap();
+    assert_eq!(value["error"]["code"], "INVALID_ARGUMENT");
+    assert!(value["data"].is_null());
+    assert!(command(&mut owner,json!({"type":"agent_query_operation","scope":scope(2),"operation_id":intent.operation_id,"observation":null,"failure_code":null})).is_err());
+    empty_main(&mut owner);
+    close_run_owner(&mut owner);
+}
+#[test]
+fn actual_native_operation_query_rejects_foreign_observations_and_reports_unavailable_without_inventing_target_state()
+ {
+    for field in ["operation_ref", "document_id", "store_id"] {
+        let mut owner = endpoint();
+        let intent = operation_query_intent(&mut owner, json!({"operation_ref":"old-operation"}));
+        query_original(&mut owner, &intent, Value::Null, Value::Null).unwrap();
+        let mut bad = unknown_observation();
+        bad[field] = json!("foreign");
+        assert_eq!(
+            query_original(&mut owner, &intent, bad, Value::Null)
+                .err()
+                .unwrap(),
+            "IPC_LEDGER_RECEIPT_MISMATCH"
+        );
+        let result = query_original(&mut owner, &intent, Value::Null, json!("not_available"))
+            .unwrap()
+            .readonly_result
+            .0
+            .unwrap();
+        let value: Value = serde_json::from_str(&result.result_json).unwrap();
+        assert_eq!(value["error"]["code"], "NOT_AVAILABLE");
+        assert!(value["data"].is_null());
+        empty_main(&mut owner);
+        close_run_owner(&mut owner);
+    }
+}
+#[test]
+fn native_run_query_preserves_unknown_with_a_known_prefix_and_rejects_impossible_completed_empty_group()
+ {
+    // These are synthetic IO observations. Real durable run rows are verified separately by Swift.
+    let mut owner = endpoint();
+    let intent = operation_query_intent(&mut owner, json!({"operation_ref":"old-operation"}));
+    let mut observation = unknown_observation();
+    observation["run"] = json!({"phase":"completed","accepted_cells":0,"accepted_effects":0,"original_active_operation":null,"event":{"event_id":"old-group-result","event_sequence":9,"receipt_hash":"a".repeat(64)},"kernel_receipts":[]});
+    assert_eq!(
+        query_original(&mut owner, &intent, observation.clone(), Value::Null)
+            .err()
+            .unwrap(),
+        "IPC_LEDGER_RECEIPT_MISMATCH"
+    );
+    observation["run"]["phase"] = json!("unknown");
+    observation["run"]["accepted_cells"] = json!(1);
+    observation["run"]["accepted_effects"] = json!(2);
+    observation["run"]["original_active_operation"] = json!("original-child");
+    let result = query_original(&mut owner, &intent, observation, Value::Null)
+        .unwrap()
+        .readonly_result
+        .0
+        .unwrap();
+    let value: Value = serde_json::from_str(&result.result_json).unwrap();
+    assert_eq!(value["data"]["operation_state"], "unknown");
+    assert_eq!(value["data"]["outcome_known"], false);
+    assert_eq!(value["data"]["effect_committed"], true);
+    assert_eq!(value["data"]["run_ref"], "old-operation");
+    empty_main(&mut owner);
+    close_run_owner(&mut owner);
+}

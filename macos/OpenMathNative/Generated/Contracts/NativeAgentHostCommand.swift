@@ -15,6 +15,7 @@ public enum NativeAgentHostCommand: Codable, Sendable {
   case native_agent_prepare_run(NativeAgentPrepareRun)
   case native_agent_poll_run(NativeAgentPollRun)
   case native_agent_acknowledge_run_child(NativeAgentAcknowledgeRunChild)
+  case native_agent_query_operation(NativeAgentQueryOperation)
   public init(from decoder: Decoder) throws {
     let c = try decoder.singleValueContainer()
     if let v = try? c.decode(NativeAgentActivate.self) { self = .native_agent_activate(v); return }
@@ -31,6 +32,7 @@ public enum NativeAgentHostCommand: Codable, Sendable {
     if let v = try? c.decode(NativeAgentPrepareRun.self) { self = .native_agent_prepare_run(v); return }
     if let v = try? c.decode(NativeAgentPollRun.self) { self = .native_agent_poll_run(v); return }
     if let v = try? c.decode(NativeAgentAcknowledgeRunChild.self) { self = .native_agent_acknowledge_run_child(v); return }
+    if let v = try? c.decode(NativeAgentQueryOperation.self) { self = .native_agent_query_operation(v); return }
     throw DecodingError.dataCorrupted(.init(codingPath: decoder.codingPath, debugDescription: "Unknown native union variant"))
   }
   public func encode(to encoder: Encoder) throws {
@@ -49,6 +51,7 @@ public enum NativeAgentHostCommand: Codable, Sendable {
     case .native_agent_prepare_run(let v): try v.encode(to: encoder)
     case .native_agent_poll_run(let v): try v.encode(to: encoder)
     case .native_agent_acknowledge_run_child(let v): try v.encode(to: encoder)
+    case .native_agent_query_operation(let v): try v.encode(to: encoder)
     }
   }
 }

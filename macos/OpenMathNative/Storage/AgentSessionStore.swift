@@ -373,4 +373,30 @@ final class AgentSessionStore {
       records.append(.init(id:id,createdAt:actual.createdAt,eventCount:UInt64(count)))
     };return records
   }
+  /// Indexed immutable claim lookup, restricted to the actual document/store supplied by native.
+  func operationClaim(document:String,store:String,operation:String)throws->SessionOperationClaim? {
+    guard SourceValidation.identity(document),SourceValidation.identity(store),SourceValidation.identity(operation) else {throw StorageError.corruptIdentity}
+    let reader=try SQLiteDatabase(url:url,readonly:true);defer {try? reader.close()}
+    var original:(String,String)?
+    try reader.statement("SELECT session_id,event_id FROM session_operation_claims WHERE store_id=? AND operation_id=?",[.text(store),.text(operation)]) {row in
+      guard original==nil else {throw StorageError.corruptIdentity};original=(try SQLColumn.text(row,0),try SQLColumn.text(row,1))
+    }
+    guard let original else {return nil}
+    guard let actual=try read(original.0,event:original.1,reader:reader) else {throw StorageError.corruptIdentity}
+    let event=actual.event
+    let target:SessionOperationTarget,group:String?
+    if event.event_kind == .tool_admitted {
+      let admission=try SessionValidation.payload(SessionToolAdmission.self,event);target=admission.target;group=admission.run==nil ? nil:event.event_id
+    } else {
+      guard let child=try SessionRunSemantics.transition(event),child.kind == .run_child_admitted,let index=child.childIndex,
+        let parent=try read(original.0,event:child.groupAdmission,reader:reader) else {throw StorageError.corruptIdentity}
+      let admission=try SessionValidation.payload(SessionToolAdmission.self,parent.event)
+      target=try SessionRunSemantics.target(admission,index:index);group=nil
+    }
+    try SessionValidation.target(target)
+    guard target.documentID==document,target.storeID==store,target.operationID==operation else {throw SessionLedgerError.wrongSourceEffect}
+    try db.confirmCommittedBytes()
+    return .init(event:actual,target:target,runAdmission:group)
+  }
+
 }

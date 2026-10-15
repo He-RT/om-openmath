@@ -1,6 +1,7 @@
 //! Actual native tool data services, independent of model loops and host IO.
 pub mod catalog;
 pub mod dispatch;
+pub mod operations;
 pub mod patch;
 pub mod read;
 pub mod results;

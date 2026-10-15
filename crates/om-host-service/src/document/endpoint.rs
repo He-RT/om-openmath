@@ -1,4 +1,5 @@
 //! Trusted host source bridge. Physical IO stays in Swift; controller methods are short owner steps.
+mod operations;
 mod patch;
 mod run;
 use super::{SourceDocument, commit::DocumentCommitController, coordinator::SourceCoordinator};
@@ -35,6 +36,7 @@ pub struct SourceEndpoint {
     pending_result_state: Option<crate::kernel::acceptance::AcceptedKernelState>,
     runs: std::collections::BTreeMap<String, run::PendingRun>,
     run_threads: Vec<std::thread::JoinHandle<()>>,
+    operation_queries: std::collections::BTreeMap<String, operations::PendingOperationQuery>,
 }
 impl SourceEndpoint {
     /// Native operation namespaces share cancellation; admission cannot shadow an existing ID.
@@ -102,6 +104,7 @@ impl SourceEndpoint {
             pending_result_state: None,
             runs: std::collections::BTreeMap::new(),
             run_threads: Vec::new(),
+            operation_queries: std::collections::BTreeMap::new(),
             agent: None,
             reads: None,
             pending_reads: std::collections::BTreeMap::new(),
@@ -124,6 +127,9 @@ impl SourceEndpoint {
     ) -> Result<NativeAgentHostReply, String> {
         let binding = self.binding();
         match command {
+            NativeAgentHostCommand::NativeAgentQueryOperation(c) => {
+                return self.query_agent_operation(*c);
+            }
             NativeAgentHostCommand::NativeAgentPrepareRun(c) => return self.prepare_agent_run(c),
             NativeAgentHostCommand::NativeAgentPollRun(c) => return self.poll_agent_run(c),
             NativeAgentHostCommand::NativeAgentAcknowledgeRunChild(c) => {
@@ -149,6 +155,7 @@ impl SourceEndpoint {
             getrandom::fill(&mut read_key).map_err(|_| "ENTROPY_UNAVAILABLE")?;
             self.reads = Some(crate::tools::read::ReadNotebookService::new(read_key));
             self.pending_reads.clear();
+            self.operation_queries.clear();
             self.patches.clear();
             self.agent = Some(endpoint);
             return Ok(reply);
@@ -410,6 +417,7 @@ impl SourceEndpoint {
                 }
             }
             self.pending_reads.clear();
+            self.operation_queries.clear();
             self.reads = None;
         }
         reply
@@ -537,6 +545,7 @@ impl SourceEndpoint {
     pub fn close_kernel_begin(&mut self) {
         self.cancel_agent_runs();
         self.pending_reads.clear();
+        self.operation_queries.clear();
         self.reads = None;
         if let Some(agent) = self.agent.as_mut() {
             agent.close();

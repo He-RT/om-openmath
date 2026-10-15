@@ -2,7 +2,13 @@
 import fs from 'node:fs';
 import {FrameDecoder,encodeFrame} from '../../../agent/src/protocol.ts';
 const decoder=new FrameDecoder(),observed=[],mode=process.argv[3]??'valid';
-let hello,original,ack,stage=0;
+let hello,original,ack,stage=0,toolFinished=false,modelFinished=false,settled=false;
+function finish(){
+ if(settled||!toolFinished||!modelFinished)return;settled=true;
+ emit('settled',6,{reason:'loop_stopped'});
+ fs.writeFileSync(process.argv[2],JSON.stringify({fixture:true,framework:'synthetic-private-peer',environment_keys:Object.keys(process.env),observed},null,2)+'\n');
+ process.stdout.write('',()=>process.exit(0));
+}
 function emit(type,sequence,payload,reply_to=null){const f={...hello,type,sequence,message_id:`peer-${sequence}`,reply_to,payload};const bytes=encodeFrame(f);observed.push({direction:'peer',frame:f});process.stdout.write(bytes);return bytes;}
 for await(const chunk of process.stdin){for(const frame of decoder.push(chunk)){
  observed.push({direction:'host',frame});
@@ -32,9 +38,9 @@ for await(const chunk of process.stdin){for(const frame of decoder.push(chunk)){
   emit('prepare_request',4,{agent_turn_id:'pipe-turn',request_id:'model-request'});
  }else if(frame.type==='model_request'){
   emit('model_request',5,frame.payload);
+ }else if(frame.type==='tool_result'){
+  toolFinished=true;finish();
  }else if(frame.type==='model_event'){
-  emit('settled',6,{reason:'loop_stopped'});
-  fs.writeFileSync(process.argv[2],JSON.stringify({fixture:true,framework:'synthetic-private-peer',environment_keys:Object.keys(process.env),observed},null,2)+'\n');
-  process.stdout.write('',()=>process.exit(0));
+  modelFinished=frame.payload.phase!=='delta';finish();
  }
 }}

@@ -1,6 +1,15 @@
 # 项目接续提示词
 
 
+最新接续入口（2026-10-15，D065优先）：35/98，R4.3.08 in_progress、只步骤1完成。原ACKed GetOperationStatus参数/SHA→closed native lookup/observation（410DTO）→当前文档实际source/kernel receipt或Library claim/完整run snapshot→当前scope refs→耐久readonly canonical→真实包内Pi接通。未找到只报unknown/outcome_known=false/effect=null；查询completed不等于原操作completed。source/kernel/run scope与状态校验，bootstrap-only已写仍effect=true并列计数。新SourceEndpoint operations模块只查账无执行器；Agent/OperationStatusReader复用KernelCommitPort核对当前unknown原ID，允许本次readback推进defrevision但冻结文档/task/grant lifetime。
+
+最终签名attempt-BRiJIf有18查询：实时source/kernel（真6）、重启新授权/旧scope拒绝/不restore或eval、missing unknown、9组重启+cancel/unknown恢复、current unknown暂拒回读时NOT_AVAILABLE/原rev0与屏障保留，解除后原child receipt激活原物理checkpoint rev1/屏障释放，新scope inspect真2，无新ID/重算。原10run/2边界/4inspect/5scratch/原子修改全回归；184Rust/30suite、Clippy、20+4Node/Pi、17Python、strict TS/410DTO/工程/fmt、Release/strict签名通过。证据operation-query-native.json/raw，provider wire与route显式synthetic，其余transport/CABI/Pi/math/Blob/SQLite/receipts真实。
+
+efb36c1e CI38729867121前端/Rust/deps/iOS成功，macOS独立test-agent-protocol.sh漏KernelCommitPort依赖编译失败；已加确切IO adapter文件，StatusReader移Agent以免所有Storage测试依赖Kernel。复跑又抓合成peer早退race（yf5Kyh仅assistant_end），改等实际tool_result+模型terminal，保留2条耐久事件断言并已pass。原CI logs/artifacts、该红根、prototype runtime字段与新fixture call字段编译错原输入全保留。原库/CLI/examples/App/runtime/证据/用户数据保留，清理27成功普通Mach-O harness 779742864 bytes约744MiB。凭据仍仓库外0600，exact key0，不读取旧profile/env/key。
+
+**下一步仍required：** Agent undo_transaction尚unavailable，必须复用当前read-issued snapshot/ref和实际获准transaction/merge_group/DocCommitPort（原can_write只Apply需审计Undo授权）→原session admission/start/receipt→native effect/Pi；重复undo/后手动修改冲突真实验。之后TaskControl统一Host stop模型/Pi/CAS/媒体/future admission及任务隔离，当前无统一TaskControl/UI。不能以查账完成勾Task Done/步骤2–4；35/98、32gate not_run/candidate unset/ready=released=false，完整98+32门禁+实际发行目标继续。运行公开.3/dev/no main/旧tag包不动/no子代理/no本机iOSsim/no付费live，OS输入设置保持。冻结设计来源SHA不改，实施事实只写账本/证据。
+
+
 最新接续入口（2026-10-15，D064优先）：R4.3.07已完成，35/98，下一R4.3.08原操作核对/撤销/Host停止。真实ACKed Agent intent→后台冻结/metadata字节预算→closed C ABI 402DTO→Swift耐久group/child四ACK→原KernelCommitPort Blob/最终barrier/SQLite→原receipt→当前scope resultrefs→canonical effect耐久回读确认→包内Pi现已接通；source can_write非run grant。生产复用NotebookRuntime.kernel；Pi放行真实run effect并核对operation_ref/run_ref、partial。签名最终attempt-p1maHz，10场景selected/required/affected/allowlist/error stop+continue/Solve2,3/ODE True/scene384；2真实边界cancel最终SQL屏障与SQL已commit丢ACK+暂拒回读的unknown，无第三模型请求/新ID重算，原receipt后storage-only partial1恢复。原4inspect/5scratch回归通过。
 
 结果query暂满重试原ID，4096生命周期耗尽诚实null refs；retention警告+完整报告预算在单目标1000格依赖闭包执行前拒绝。metadata/hash/预算在规划线程。发现实际helper已退出但Foundation waitUntilExit挂起，采样/根保留；改启动前注册记忆terminationHandler，32真实EOF-before-close通过。原Pi validator拒run ref、Swift初始fixture初始化、let_underscore_lock/Clippy与50请求格误用失败均留证据。180Rust/30suite、Clippy、19+4Node/Pi、17Python、402DTO/工程/fmt、Web lint/typecheck及设置4e2e、Release/strict签名均通过。证据math-run-native.json/raw（5679gzip输入约9.3MiB，精确key0）；凭据仍仓库外0600，不输出/提交。清理27成功普通测试harness 779,138,624 bytes约743MiB，保留库/CLI/examples/App/runtime/证据/用户数据。

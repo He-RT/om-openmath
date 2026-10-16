@@ -847,7 +847,7 @@ CUA完整应用现在可正常回看，已实际运行方程、打开推导步�
 D071后续实际推进：安装版通过CUA点击运行中“停止”，原任务终态CANCELLED；随后同格改2+2得到精确4，保存退出且v1源码文件独立读回。当前689的CLI/Mac/Web全部53输出由原独立旧验证器通过。Web WASM最长249ms、输入p95=33.700ms/max38.700ms；Mac本轮6条超过1秒、输入p95=67.006ms，保留失败。测量时机器swap约7.5GiB并有明显外部后台负载，不能据此宣布性能通过或覆盖失败。Pi七类撤销/重启加阶段日志复测全部通过，原group后inUse尚未解释。实际sol本轮第三模型流失败，luna在preview_source错误参数后任务失败，未修改成功；保留两个根，继续定位上下文/工具错误反馈，不以旧live成功替代当前失败。简要状态acceptance-current-status.json及全部原日志留689目录；没有新增全源证据归档或重复浏览应用。
 
 
-## D072 · 2026-10-16 助手参数错误回路与求根热点修复（验收中）
+## D072 · 2026-10-16 助手参数错误回路与求根热点修复
 
 从真实luna失败定位到Pi本地schema校验发生在beforeToolCall之前：错误参数使原canonical已保存、宿主却未收到tool_call，Pi自行生成的错误未进入原账本，下一模型准备缺失配对工具结果。桥接内部仅承载已有严格UTF8/JSON边界内的object，参数完整校验继续由原Rust宿主完成，并耐久返回INVALID_ARGUMENT；实际供应商仍收到完整工具schema。相关真实Pi桥接回归新增错误参数→原canonical/宿主失败结果→修正下一调用，23项Node/Pi/protocol检查全部通过。AssistantContext改用既有目录的真实说明和参数示例，修复泛化工具描述；初次Swift闭包隔离编译错已改普通循环，Release通过。实际授权sol任务args-fixed-sol完成read→read→preview→apply→read→run→inspect，保存的原结果Blob核SHA读回精确x→2/3，definitions_current=true，密钥精确匹配0。
 
@@ -860,3 +860,17 @@ D072追加：当前新CLI/FFI Release已重建，原53每条<200ms、最长166.7
 
 
 D072最终测量入口修复：单独异步Swift main仅运行CFRunLoop，未处理AppKit输入/激活，故此前foreground尝试无法激活或退出0却没有结果；全部保留且不算通过。入口改用正常NSApplication.run事件循环，异步测量在其内执行，foreground模式逐条/逐次要求真实active app及key window。CUA已实际观察正在计算原第17条的工作区与停止按钮。第一次完成的AppKit前台测量foreground-appkit-12jjx46n，53条全部<1秒、最长813.040ms；10KiB100次输入p95=49.621ms、max83.137ms，仍以两显示同步帧作上界、50ms门槛未改。首工作区帧909.113ms、峰值RSS188547072字节，未冒称发行应用完整冷启动。原生数学输出再送原独立旧验证器核对；纯测量生命周期修复不改生产算法或已发布包。
+
+
+D072候选收束：e1d6afd11a48dec807b0c6cce09938adaeeffdd6已push并生成同源DMG/appZIP/WebZIP与manifest。实际新DMG安装严格签名通过，About读回.4/完整e1d；中文撤销/重做、精确2/3、运行中手动停止显示已停止、随后2+2、保存退出再打开源码v1均通过。实际包内资源及真实授权sol完成七工具链，原Blob核SHA读回当前accepted x→2/3。5603个当前候选/安装文件的授权密钥精确扫描0匹配。新Web ZIP解压1310文件逐字节一致，其35项生产检查与原53独立旧验证器均通过；浏览器设置实际显示.4、Rust .4及完整e1d。WASMmax229ms/往返231ms，输入p95=31.600ms/max51.700ms，FCP148ms、SwiftShader Vulkan。Mac独立原53亦全部通过。
+
+当前Release对象的实际KernelRuntime回归通过早停回滚、晚停已提交前缀、丢ACK、fullsync未知提交按原ID核对、长CAS期间编辑和无废弃定义泄漏。候选冻结为e1d，R4D01–07passed，R4D08本地三资产/安装已验证，ready=true；公开tag/下载/程序回读尚未完成，released=false。简明结论集中在[delivery-summary.md](../acceptance/pre-alpha.4/delivery-summary.md)，不重跑旧98/32或新增证据框架。
+
+
+## D073 · 2026-10-16 公开交付并从公开资产反向安装核对
+
+已公开[0.1.0-pre-alpha.4](https://github.com/He-RT/om-openmath/releases/tag/v0.1.0-pre-alpha.4)，tag精确指向e1d6afd11a48dec807b0c6cce09938adaeeffdd6。三个Mac/Web资产与manifest均从公开URL无认证下载，大小/SHA256与候选/公开清单一致。公开DMG另装新目录，strict签名和实际可执行路径核对通过，About读回.4/完整e1d；实际打开自己的中文源码v1并得到精确2/3/4。公开app ZIP解压4224文件与DMG安装逐一一致。公开Web ZIP解压启动HTTP，界面实际计算得到精确−3/1，设置显示.4、运行中Rust .4及完整e1d。
+
+R4D01–08全部passed、ready=true、released_verified=true，仅代表当前scope2八项；旧98任务/32gate仍按原事实保留。中文发行指南明确macOS27/Apple Silicon、自包含Node/Pi、Web需HTTP、ad hoc未公证和后置能力。设计参考统一文档、接续入口与当前交付摘要已固化，不再重复泛看App或重跑无关全矩阵。清理本轮已停止的ZIP比较临时解压235579847字节，保留公开资产/原失败/独立数学验证器；另停止旧4174，仅保留实际公开Web包4175。
+
+D073最终：精确候选CI38906287178的frontend/dependencies/Rust/native_macos全部success，iOS按scope跳过；无新增产品修改。只提交当前交付记录，不重编发行包。

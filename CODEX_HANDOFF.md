@@ -1,66 +1,48 @@
 # OpenMath 当前接续入口
 
-更新：2026-10-16，scope 2；只推进原生 Mac 与生产 Web 的下一个 pre-alpha。历史事实见 `docs/plan/PRE_ALPHA_4_PROGRESS.md`，旧接续文本可由 Git 查看，不在此重复叠加。
+更新：2026-10-16，scope 2；只推进原生 Mac 与生产 Web 的下一个 pre-alpha。历史在 Git 与 `docs/plan/PRE_ALPHA_4_PROGRESS.md`，这里不叠加失效的下一步。
 
-## 先读与禁止重复
+## 先读，避免重复
 
-1. `docs/plan/PRE_ALPHA_4.md` 第0节：8项 delivery_check / 三资产交付；旧98任务、32gate只作详细规格和后续参考。
-2. `docs/plan/UI_REFERENCE_LOG.md`：已看应用、页面、采用理由和实现状态。**已看页面不重新遍历；只有具体未解问题才补看。** D066–D069旧记录已汇总，本轮补齐快捷指令、地图、磁盘工具。
-3. 进度末尾 D069–D071 与工作区，继续下列实际交付工作。纯文档不用重新编译签名，不新增形式门禁。
+1. `docs/plan/PRE_ALPHA_4.md` 第0节：本版只使用8项 delivery_check，旧98任务/32gate是参考。
+2. `docs/plan/UI_REFERENCE_LOG.md`：已看应用、确切页面、采用理由、已实现状态。**不要再次泛看已看页面**；只为具体未解产品问题补看。
+3. `docs/acceptance/pre-alpha.4/delivery-summary.md`：当前候选验收与限制；`docs/acceptance/pre-alpha.4/gates.toml`是发行状态。
 
 ## 不变约束
 
-- 用户明确要求单代理；不用子代理、不在本机启动 iOS 模拟器、不合 main、不移动旧 tag / 旧发行资产。dev 推送及本版实际 GitHub pre-release 已授权。
-- 不改系统输入法、安全或权限设置，不再询问日文输入法；不扫描旧 OpenMath profile、env、密钥或用户数据。
-- 仅允许精确读取 `/Users/hert/.config/openmath/testing/pre-alpha-4-api.json` 的授权 API；权限目录0700/文件0600，模型 gpt-6.1-sol / gpt-6-luna。不得输出密钥、HTTP认证头或提交凭据；泄漏扫描只输出精确匹配计数。
-- 冻结的13份 `docs/design/` 来源及 baseline SHA 不改；新观察写 UI_REFERENCE_LOG / 进度。
-- 外部 `.gitignore` 的 `ui-concept-demo/` 规则保留且不 stage、不检查该无关目录。`test-results/` 新出现，未确认归属前不清理或提交。
-- 只清理本仓库已停止、可重建的自有缓存；保留源码、独立数学验证器、原失败、发行包、依赖与正在使用的构建。约36GiB物理可用，暂不需要大清理。
-- Rust使用 CARGO_PROFILE_DEV_DEBUG=0 / CARGO_PROFILE_TEST_DEBUG=0。build.rs散列全部.rs，**编译期间不改Rust或测试输入**；只轮询确切存活句柄，不因观察超时重启。
+- 用户要求单代理；不用子代理、不启动本机iOS模拟器、不合main、不移动旧tag/旧发行资产。dev push和本版实际GitHub pre-release已授权。
+- 不改系统输入法、安全或权限设置，不再问日文输入法；不扫描旧OpenMath配置、env、密钥或用户数据。
+- 只允许精确读取 `/Users/hert/.config/openmath/testing/pre-alpha-4-api.json` 的授权API，目录0700/文件0600；模型gpt-6.1-sol / gpt-6-luna。不得输出密钥或认证头，泄漏检查只报告精确计数。
+- 冻结13份 `docs/design/` 来源和baseline SHA不改。外部 `.gitignore` 的 `ui-concept-demo/` 规则保留、不stage、不检查该目录；未知归属 `test-results/` 不stage/不删。
+- 仅清理自有、已停止、可重建缓存；不删独立数学验证器、失败根、发行包、依赖或当前构建。本轮已清5个旧fixture约256MiB，约32GiB空闲，暂不大清理。
+- Rust `CARGO_PROFILE_DEV_DEBUG=0 CARGO_PROFILE_TEST_DEBUG=0`；build.rs散列全部.rs，编译期间不改Rust/测试输入。不因观察超时重启确切存活句柄。
 
-## 当前源码与安装包
+## 唯一当前候选
 
-- dev / origin 最后生产提交 `689169f981bc8143501746a0225f32a8d869e08d`（原生菜单撤销路由）；前提交4865842e统一 `.4` 版本与三资产打包，c68d7280完成atan/提交竞争修复及界面精简。
-- 源码运行 `.4`，公开仍 `.3`。Root1 / Library4 / Doc5 / .omnb1 不变。candidate UNSET，8checks not_run，ready / released=false；不能直接将开发记录改成发布完成。
-- 当前包目录见 `target/plan-scope2/current-release-assets.txt`，实际为 `target/pre-alpha.4/689169f981bc8143501746a0225f32a8d869e08d/release-assets`。DMG / appZIP / WebZIP均已构建，689 manifest尚待生成。
-- 新安装：`/Users/hert/Applications/OpenMath pre-alpha.4 verified/OpenMath Preview.app`；签名严格校验通过，自带Node26.11.1 / Pi。实际About显示 `.4`、完整689 SHA与OM图标；中文撤销 / 重做、精确2/3、保存、退出重开已实看。自建文件 `target/plan-scope2/安装验收-689169f9.omnb`。
-- 首个486包发现真实默认菜单Undo/Redo灰置，689已经修复并实测本地/提交后逆事务，旧包不发。既有spctl显示security disabled override，不是标准Gatekeeper或公证证明；未改安全设置，指南如实说明ad-hoc / 未公证。
+- `dev/origin`生产与测量入口提交：`e1d6afd11a48dec807b0c6cce09938adaeeffdd6`。前提交baa075d7修复助手参数错误回路、完整模型工具说明、求根候选热点和状态轮询。
+- 当前 `.4`，Root1/Library4/Doc5/.omnb1不变。R4D01–08全部通过；已公开、匿名下载三资产和manifest、实际安装/程序读回，ready=true/released=true。
+- 包目录：`target/pre-alpha.4/e1d6afd11a48dec807b0c6cce09938adaeeffdd6/release-assets`；三个包和manifest齐备，勿用689/486旧包。
+- 实际DMG安装：`/Users/hert/Applications/OpenMath pre-alpha.4 e1d6afd1/OpenMath Preview.app`，严格签名、包内Node26.11.1/Pi通过。实际About `.4`/完整e1d；中文撤销重做、精确2/3、运行中手动停止后2+2、保存退出重开均通过。自己的文件 `target/plan-scope2/新包验收-e1d6afd1.omnb`；此候选副本已退出；当前运行公开下载副本，见下文。
+- Web从实际ZIP解压目录 `.../e1d.../web-installed` 提供127.0.0.1:4174（旧句柄88871已停止；当前公开包4175句柄99745）。原35项生产检查与独立原53全部通过，浏览器设置读回 `.4`/Rust `.4`/完整e1d。
+- 当前安装资源live `.../e1d.../live-installed`：sol七工具 read/read/preview/apply/read/run/inspect成功，原Blob核SHA独立读回当前已接纳x→2/3。当前候选5603文件密钥精确匹配0。不要无故再次调用收费模型。
 
-## 已完成事实，不要重跑无关全套
+## 已有有效验收，勿重跑全矩阵
 
-- Markdown AST / SwiftMath / 独立NSTableView表格、步骤子树、CoreGraphics2D、Metal真实网格及按需帧均已接生产；见D067–D069。
-- c68原53由优化前独立二进制验证器核SHA后检查全部高精度期望：CLI最长125.995ms，Mac submit→MainActor整次最长832.382ms，Web WASM231ms / 往返232.5ms；10KiB各100次输入p95约33ms（Mac max82.151ms如实保留）。普通7936三角形约60Hz、静止0新增帧。
-- 独立旧验证器身份在 `target/plan-scope2/pre-optimization-oracle.json`，保留并先核SHA。当前 `.4` CLI/Mac/Web原53已由同一独立旧验证器全部通过；性能本轮CLI第17条240.822ms超标，Mac6条超1秒、输入p95=67.006ms，失败保留在689目录cli-acceptance / mac-acceptance，尚不通过性能交付检查。测量时约7.5GiB swap、mihomo约226% CPU及mediaanalysisd约74%；这只是环境事实，不用来抹掉失败或降低门槛。
-- 689 Web ZIP已解压到 `.../689.../web-installed`，逐文件字节比较通过；从该目录运行的35项已有生产E2E **全部通过**，日志 / wasm-corpus.json / web-input.json 在 `.../689.../web-acceptance`。当前Web输出经独立旧验证器通过53；WASM max249ms，输入p95=33.700ms / max38.700ms，FCP144ms，SwiftShader Vulkan。
-- Web本地服务已在4174运行，确切exec句柄78460；从实际unzip目录提供文件，不重复开服务。当前原生应用已保存并正常退出；随后实看运行中的停止按钮并点击，终态CANCELLED，修改为2+2得到精确4并保存退出。源码文件读回已确认，不依赖自动超时作为停止证明。
-- 早期真实助手成功记录 `target/macos-live-assistant/attempt-5RlZQf`（实际read→preview→apply→read→run→inspect，原blob x→2/3）；当前689包内助手验收继续，不据旧记录直接宣称新包全部通过。
+- 原53 CLImax166.721292ms、Mac submit→MainActor整次max813.039833ms、WASMmax229ms/往返231ms。原精度/误差/正确性由优化前独立验证器核SHA验证，三端全通过。
+- Mac正常AppKit前台，100次10KiB输入p95=49.620792ms/max83.137458ms；Webp95=31.600000ms/max51.700000ms。原50ms门槛未改；旧超标/未完成根保留，没有重测挑最快。
+- 原生首workspace909.1125ms/RSS188547072字节不是整个应用冷启动。WebFCP148ms，实际SwiftShader Vulkan。未变的普通相机7936三角形约60Hz、静止0新帧。
+- 原生Markdown/SwiftMath/表格/步骤/CoreGraphics2D/Metal3D完整应用视觉已经通过。参考记录已固化，不再泛看应用。
+- 当前真实内核回归已通过早停回滚、晚停前缀、丢ACK、真实unknown原ID核对、长CAS编辑；入口 `target/plan-scope2/current-kernel-regression.txt`。
+- 23 Node/Pi/protocol与om-poly138项/20suites、Clippy已通过。旧Pi完整fixture最后group恢复inUse原失败保留；独立七类撤销/重启及50次实际Storage close/reopen通过，未改锁，勿再发明故障平台。
 
-## 当前助手测量入口与失败
+## 交付已完成
 
-- `target/pre-alpha4-acceptance/{performance,live,pi}`链接689生产Release -O对象与当前.4 Rust库；临时entry用@testable内部接口，跨模块actor let访问已补await，本身未改产品输入。字体资源齐备。
-- Pi第一次module attempt在StorageService新root内预先放run.log，正确触发recoveryRequired；第二attempt-empty-root确切句柄2901已结束，exit -5 / StorageError.inUse。全部前置真实结果已生成，失败在undo group的两轮结果之后。临时pi-diagnostic入口只加阶段打印，mode=undo新root七类/重启全部通过；原inUse原因仍未定，不以重试覆盖原失败，也不放宽存储锁。诊断日志attempt-undo-diagnostic。
-- 日志与fresh工作root必须分开；live以授权API文件、实际installed app、空workroot和gpt-6.1-sol为参数，3分钟watchdog。仅使用原授权文件，输出不能含key。
-- 安装UI停止现已实际通过：factorial百万运行时截图可见停止，立即点击得到CANCELLED；随后2+2得4，已保存退出。map百万列表Native返回INTERNAL_ERROR（CLI能完成）的极端负载失败仍保留。
+- 公开发行：https://github.com/He-RT/om-openmath/releases/tag/v0.1.0-pre-alpha.4；新tag精确e1d，旧tag/资产未改。
+- 三个公开资产与manifest匿名下载，字节/SHA全部相同；原始文件/核对/实际UI证据 `.../e1d.../public-download/`。公开DMG安装至 `/Users/hert/Applications/OpenMath pre-alpha.4 public download/OpenMath Preview.app`，当前实际运行此路径，About .4/完整e1d，中文文件及实际2/3/4通过。公开appZIP4224文件与DMG安装逐一一致。
+- 当前公开Web解压目录 `.../e1d.../public-download/web-installed` 在127.0.0.1:4175（确切句柄99745），实际−3/1、.4/Rust .4/完整e1d已读回。浏览器绑定finalWebPreview为用户保留。旧4174已停止。
+- 删除本轮已停止的ZIP比较临时解压235579847字节；保留原下载资产、失败与独立验证器。
+- CI38906287178已全部成功：frontend、dependencies、Rust、native_macos；iOS按本轮范围跳过。当前候选8项交付已有实际证明。后续只按真实新问题或用户新目标推进，不重新启动旧98/32工作或遍历参考应用。
 
-## 当前最新覆盖（D072优先）
+## CUA
 
-- 最新生产修复baa075d78c1f4f8e9b18d102d822e982ee673264已push：Pi内部不再先拒模型参数而漏掉原生耐久错误结果，完整参数校验仍由Rust宿主；实际模型拿到完整schema及既有目录说明/示例。23 Node/Pi/protocol通过。真实sol根 `target/macos-live-assistant/args-fixed-sol` 七工具链成功，原inspect Blob核SHA确切x→2/3，密钥精确匹配0。
-- 原53 CLI当前新求根候选迭代：最长166.721ms，五次Root条约90ms；旧独立验证器全部通过。om-poly138项/20suite与Clippy通过，最终证书/精度/半径不变。实际CLI/FFI已重建，后续不得在编译中改.rs。
-- 原生状态轮询改1ms起步退避到10ms、UI已知取消显示已停止。当前生产对象Release已构建。
-- Mac测量已修正常AppKit事件循环，过去只有CFRunLoop无法处理鼠标激活/前台，数个未生成结果的foreground尝试全部保留。**第一次完整正常AppKit前台运行** `target/macos-performance/foreground-appkit-12jjx46n`：53整次max813.040ms、全foreground；10KiB100次input p95=49.621ms / max83.137ms；首workspace909.113ms / RSS188547072。原生独立53读回正在终结，不能复跑挑更好成绩。
-- 实际StorageService50次close/immediate reopen通过，没重现原Pi group后inUse；未改锁、未把原失败覆盖为成功。七类撤销已单独通过。不要为了未定位的旧全套尾端失败再开发一个通用故障平台；基本真实助手、原ID/原子边界继续按scope2检查。
-- baa CI38904687799在跑，iOS按scope跳过。当前未提交只有测量AppKit生命周期修复和这段记录；提交后以新SHA打包。689包已经过时，不用于发布。
-- **下一优先：提交测量入口/记录→生成新SHA同源Mac三资产/Web WASM→解压版相关Web检查及独立53→实际新包安装/助手/程序版本读回→8项结果→发布并公开下载。** 不重复泛看App或旧完整矩阵。candidate仍UNSET / ready=false / released=false。
-
-## 历史下一步（以上最新覆盖优先）
-
-1. 把本轮参考固化并停止泛看应用；修正接续入口，避免压缩后重复。
-2. 定位Pi inUse的真实原因并确认当前.4 live助手。sol本轮在第三请求流开始后失败；luna完成第三流但preview_source参数错误（snapshot_ref误放input内、混入额外kind/dialect）后任务失败，无修改成功。原根分别live-acceptance/attempt-shipped与attempt-luna，精确key扫描均须计数；不能伪称live通过。AssistantContext当前仅传“OpenMath toolName”泛化描述，已有catalog含真实描述和参数示例，优先检查这处产品上下文缺失及错误反馈。
-3. 定位当前CLI / Mac超标，先解决实际耗时或明确负载影响，不盲重跑挑最好成绩；正确性53三端已经通过，Web35项/性能也通过。相机无新改动，无理由不重测。
-4. 查看689 CI紧凑结论。结合原保存/恢复/权限回归，记录8项实际结果；仅修新发现的具体问题。必要产品变更会生成新源码候选与相应包。
-5. 冻结实际候选，三资产manifest / 中文指南；确认新tag不存在，发布本版GitHub pre-release，再下载三资产核hash，实际安装 / Web启动与程序版本读回。未做公开下载前released_verified必须false。
-6. 最后按真实状态更新账本并完成goal；不能因文档或测试数量结束。
-
-## CUA 使用经验
-
-UI只用cua_repl；压缩后先rewriteDocumentation。getAXState可能自动重启已退出app，验证退出用精确ps路径。截图后若按AX index操作需重新完整取树；disableDiffing会重新编号。中文typeText / 初次focus可能不生效，使用paste / setValue并读回，不把未输入误判成IME bug。不要用Shell / AppleScript控制UI。
+压缩后先rewriteDocumentation。当前公开原生绑定publicMac，Web绑定finalWebPreview；公开实际截图在当前e1d根public-download/mac-result.png及web-result.png。getAXState可能自动重启已退出app，退出验证用精确ps。截图后取fresh AX再用index；中文用paste/setValue且读回。UI只用CUA，禁止Shell/AppleScript控制。

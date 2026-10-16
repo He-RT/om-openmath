@@ -51,6 +51,7 @@ settings = {
     'ENABLE_HARDENED_RUNTIME': 'YES', 'CODE_SIGN_STYLE': 'Manual', 'CODE_SIGN_IDENTITY': '-',
     'PRODUCT_NAME': 'OpenMath Preview', 'EXECUTABLE_NAME': 'OpenMathNative',
     'PRODUCT_BUNDLE_IDENTIFIER': 'org.openmath.OpenMath.NativeMacPreview',
+    'OPENMATH_SOURCE_REVISION': 'development',
     'GENERATE_INFOPLIST_FILE': 'NO', 'INFOPLIST_FILE': 'OpenMathNative/Info.plist',
     'SWIFT_INCLUDE_PATHS': '$(inherited) $(PROJECT_DIR)/Headers',
     'LIBRARY_SEARCH_PATHS': '$(inherited) $(PROJECT_DIR)/../target/release',

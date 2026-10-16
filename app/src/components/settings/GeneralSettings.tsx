@@ -1,6 +1,8 @@
 import type { KernelConfig } from "../../kernel/generated/KernelConfig";
 import type { NotebookController } from "../../state/notebookStore";
 import type { Messages } from "../../i18n";
+import { useEffect, useState } from "react";
+import { buildInfo } from "../../buildInfo";
 export function GeneralSettings({
   config,
   controller,
@@ -14,6 +16,14 @@ export function GeneralSettings({
   theme: string;
   onTheme: (theme: string) => void;
 }) {
+  const [kernelVersion, setKernelVersion] = useState<string | null>(null);
+  useEffect(() => {
+    let current = true;
+    void controller.kernel.request({ type: "get_capabilities", platform: controller.kernel.kind === "wasm" ? "web" : "desktop" })
+      .then((response) => { if (current && response.type === "capabilities") setKernelVersion(response.capabilities.kernel_version); })
+      .catch(() => {});
+    return () => { current = false; };
+  }, [controller]);
   return (
     <div className="preferences-fields">
       <label>
@@ -132,6 +142,11 @@ export function GeneralSettings({
           }
         />
       </label>
+      <details className="build-info" data-testid="openmath-build-info">
+        <summary>OpenMath {buildInfo.version}</summary>
+        {kernelVersion && <p>Rust {kernelVersion}</p>}
+        <code aria-label="Source revision">{buildInfo.revision}</code>
+      </details>
     </div>
   );
 }

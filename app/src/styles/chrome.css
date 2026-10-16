@@ -266,6 +266,9 @@
   display: grid;
   gap: 18px;
 }
+.build-info { margin-top: 12px; padding-top: 14px; border-top: 1px solid var(--line); color: var(--muted); font-size: 12px; }
+.build-info summary { cursor: pointer; }
+.build-info code { overflow-wrap: anywhere; }
 .preferences-fields label {
   display: flex;
   gap: 16px;

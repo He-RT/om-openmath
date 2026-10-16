@@ -33,6 +33,15 @@ import SwiftUI
         .sheet(isPresented:$showingRecovery) {NativeRecoveryList(workspace:workspace,isPresented:$showingRecovery)}
         .sheet(isPresented:$showingSessionRecovery) {NativeSessionRecoveryList(workspace:workspace,isPresented:$showingSessionRecovery)}
     }.defaultSize(width:1180,height:800).windowToolbarStyle(.unified).commands {
+      CommandGroup(replacing:.appInfo) {
+        Button("关于 OpenMath Preview") {
+          let bundle=Bundle.main
+          NSApp.orderFrontStandardAboutPanel(options:[
+            .applicationVersion:bundle.object(forInfoDictionaryKey:"OpenMathReleaseVersion") as? String ?? "未知版本",
+            .version:"源码 "+(bundle.object(forInfoDictionaryKey:"OpenMathSourceRevision") as? String ?? "development")
+          ])
+        }
+      }
       CommandGroup(replacing:.newItem) {
         Button("新建笔记本") {Task {await workspace.newDocument()}}.keyboardShortcut("n").disabled(workspace.busy)
         Button("打开笔记本…") {Task {await workspace.openPanel()}}.keyboardShortcut("o").disabled(workspace.busy)

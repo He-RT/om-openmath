@@ -8,7 +8,7 @@ import tomllib
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-VERSION = "0.1.0-pre-alpha.3"
+VERSION = "0.1.0-pre-alpha.4"
 
 
 def verify_version(root: Path, tag: str) -> str:
@@ -26,14 +26,18 @@ def verify_version(root: Path, tag: str) -> str:
     if any(version != VERSION for version in versions):
         raise ValueError("版本不一致，请同步 Cargo/npm/Tauri 及锁文件")
     ios = plistlib.loads((root / "ios/OpenMath/Info.plist").read_bytes())
+    macos = plistlib.loads((root / "macos/OpenMathNative/Info.plist").read_bytes())
     build = VERSION.rsplit(".", 1)[1]
     base = VERSION.split("-", 1)[0]
     windows = json.loads((root / "app/src-tauri/tauri.windows.conf.json").read_text(encoding="utf-8"))
     if (ios.get("OpenMathReleaseVersion") != VERSION
             or ios.get("CFBundleShortVersionString") != base
             or ios.get("CFBundleVersion") != build
+            or macos.get("OpenMathReleaseVersion") != VERSION
+            or macos.get("CFBundleShortVersionString") != base
+            or macos.get("CFBundleVersion") != build
             or windows["bundle"]["windows"]["wix"]["version"] != f"{base}.{build}"):
-        raise ValueError("iOS 版本或 Windows 数字产品版本与发行版不一致")
+        raise ValueError("原生Mac/iOS版本或Windows数字产品版本与发行版不一致")
     catalog = tomllib.loads((root / "docs/reference/functions.toml").read_text(encoding="utf-8"))
     if catalog["current_version"] != VERSION:
         raise ValueError("函数目录版本与内核发行版不一致")
@@ -42,15 +46,9 @@ def verify_version(root: Path, tag: str) -> str:
 
 def asset_names(version: str) -> set[str]:
     return {
-        f"OpenMath_{version}_x64-setup.exe",
-        f"OpenMath_{version}_x64_zh-CN.msi",
         f"OpenMath_{version}_aarch64.dmg",
         f"OpenMath_{version}_macos_arm64.app.zip",
-        f"om-cli_{version}_windows_x64.zip",
-        f"om-cli_{version}_macos_arm64.zip",
         f"OpenMath-web_{version}.zip",
-        f"OpenMath_{version}_ios_simulator_arm64.app.zip",
-        f"OpenMathKernel_{version}.xcframework.zip",
     }
 
 

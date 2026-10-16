@@ -7,10 +7,11 @@
 <key>CFBundleDisplayName</key><string>OpenMath Preview</string>
 <key>CFBundlePackageType</key><string>APPL</string>
 <key>CFBundleShortVersionString</key><string>0.1.0</string>
-<key>CFBundleVersion</key><string>1</string>
-<key>OpenMathReleaseVersion</key><string>0.1.0-pre-alpha.3</string>
+<key>CFBundleVersion</key><string>4</string>
+<key>OpenMathReleaseVersion</key><string>0.1.0-pre-alpha.4</string>
 <key>OpenMathTargetVersion</key><string>0.1.0-pre-alpha.4</string>
 <key>OpenMathChannel</key><string>developer_preview</string>
+<key>OpenMathSourceRevision</key><string>$(OPENMATH_SOURCE_REVISION)</string>
 <key>LSMinimumSystemVersion</key><string>27.0</string>
 <key>NSHighResolutionCapable</key><true/>
 <key>NSPrincipalClass</key><string>NSApplication</string>

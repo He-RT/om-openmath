@@ -29,6 +29,15 @@ private actor ModelHold {
   func wait() async throws {for _ in 0..<500 {if arrived {return};try await Task.sleep(for:.milliseconds(10))};throw AgentSessionError.inactive}
   func late(_ event:AgentModelEventPayload) {continuation?.yield(event);continuation?.finish()}
 }
+private actor ActionObservation {
+  var running=Set<String>(),returned=Set<String>()
+  func accept(_ messages:[AssistantMessage]) {
+    for action in messages.flatMap(\.actions) {
+      if action.status == .running {running.insert(action.callID)} else {returned.insert(action.callID)}
+    }
+  }
+  func paired(_ ids:Set<String>)->Bool {ids.isSubset(of:running) && ids.isSubset(of:returned)}
+}
 
 /// The actual native transport/C ABI/Library producer; only provider wire and route are synthetic.
 private func nativeProviderTurn(host:NativeHostClient,storage:StorageService,root:URL,input:AgentCanonicalMessage,intent:NativeAgentRequestIntent,task:String,session:String="production-task",preview:Bool=false,apply:Bool=false,inspect:String?=nil,scratchSource:String?=nil,scratchDialect:Dialect = .wolfram,runCells:[String]?=nil,runScope:String="required",runContinue:Bool=false,runInspectCell:String?=nil,operationRef:String?=nil,undoTransactions:[String]?=nil)async throws->ProviderPreparedTurn {
@@ -176,6 +185,11 @@ private func nativeRunRoundTrip(package:URL,signatureRoot:URL?,root:URL)async th
     if spec.name=="solve" {precondition(outcome.products.first?.count==2 && outcome.products.first?.verified==true)}
     if spec.name=="scene" {precondition(outcome.products.first?.kind == .scene3d && (outcome.products.first?.count ?? 0)>0)}
     if spec.name=="plot" {precondition(outcome.products.first?.kind == .plot && outcome.products.first?.count==2)}
+    let transcript=try await service.transcript(session:session),actions=transcript.flatMap(\.actions)
+    precondition(actions.count==(hasInspect ? 3:2) && Set(actions.map(\.id)).count==actions.count)
+    precondition(actions.map(\.tool)==(hasInspect ? ["read_notebook","run_cells","inspect_result"]:["read_notebook","run_cells"]))
+    precondition(actions.allSatisfy{$0.status != .running})
+    try JSONEncoder().encode(transcript).write(to:path.appendingPathComponent("actual-assistant-transcript.json"))
     let effects=events.compactMap {e->AgentEffectRecord? in guard let raw=e.event.payload_inline_json.value,let record=try? JSONDecoder().decode(AgentEffectRecord.self,from:Data(raw.utf8)),record.kind=="native_effect_result" else {return nil};return record}
     precondition(effects.count==1 && effects[0].intent.name == .run_cells)
     let effect=effects[0],lease=try await storage.openReferencedBlob(owner:.init(kind:.context,id:effect.canonical.message_id),hash:effect.blobHash)
@@ -488,9 +502,11 @@ private func nativeApplyRoundTrip(package:URL,signatureRoot:URL?,root:URL)async 
   let hello=try await service.activate(session:session,grants:[.read_notebook,.preview_source,.apply_notebook_patch],readonly:false,coreVersion:"1.0.4",adapterVersion:"openmath-adapter-1")
   let input=AgentCanonicalMessage(record_type:.canonical_agent_message,message_version:1,message_id:"apply-input",role:.user,agent_turn_id:.init("input-turn"),task_id:.init(hello.scope.task_id),parts:[.agent_text_part(.init(kind:.text,part_id:"text",text:"读取实际源码，预览后提交原冻结修改，不运行不保存"))])
   let adapter=ProviderAgentModelAdapter(transport:ProviderTransport(secrets:SecretStore()),factory:{intent in try await nativeProviderTurn(host:host,storage:storage,root:root,input:input,intent:intent,task:hello.scope.task_id,session:session,preview:true,apply:true)})
+  let observation=ActionObservation()
+  await service.observeTranscript {try? await observation.accept(service.transcript(session:session))}
   let verified=try await AgentProcess.verified(package:package,signatureRoot:signatureRoot),pipe=try await verified.launch(),wire=WireCapture()
   await pipe.setCapture {bytes,direction in await wire.append(bytes,toHelper:direction)}
-  let report=try await service.run(pipe:pipe,hello:hello,modelPort:adapter.port(),input:input)
+  let report=try await service.run(pipe:pipe,hello:hello,modelPort:adapter.port(),input:input,inputPresentation:.init(model:"synthetic-model",mode:"execute"))
   try await wire.save(root.appendingPathComponent("actual-apply-wire.json"))
   try JSONSerialization.data(withJSONObject:["helper_frames":report.frames,"tool_operation_ids":report.toolIntents,"last_phase":report.lastPhase.rawValue],options:[.sortedKeys]).write(to:root.appendingPathComponent("actual-apply-report.json"))
   precondition(report.frames==17 && report.toolIntents.count==3 && report.lastPhase == .awaiting_settlement)
@@ -512,6 +528,12 @@ private func nativeApplyRoundTrip(package:URL,signatureRoot:URL?,root:URL)async 
   let outcome=TurnOutcome.assemble(task:hello.scope.task_id,reason:.modelFinished,facts:facts,saved:false,durationMs:0)
   precondition(outcome.changedCells==[.init(cellID:"a",kind:.edited,transactionRef:history[0].transaction)])
   precondition(outcome.ranCells.isEmpty && outcome.staleAfterEdit==["a"] && outcome.modelRequests==4)
+  let transcript=try await service.transcript(session:session),actions=transcript.flatMap(\.actions)
+  precondition(actions.map(\.tool)==["read_notebook","preview_source","apply_notebook_patch"] && actions.allSatisfy{$0.status == .ok})
+  precondition(actions.last?.transactionRef==history[0].transaction && actions.last?.object=="修改单元格 1")
+  precondition(transcript.allSatisfy{$0.context?.model=="synthetic-model" && $0.context?.mode=="execute"})
+  let paired=await observation.paired(Set(actions.map(\.callID)));precondition(paired)
+  try JSONEncoder().encode(transcript).write(to:root.appendingPathComponent("actual-assistant-transcript.json"))
   let noRun=try await storage.acceptedKernelHead(document:document);precondition(noRun==nil)
   let fourth=try JSONSerialization.jsonObject(with:Data(contentsOf:root.appendingPathComponent("actual-native-http-body-4.json"))) as! [String:Any],messages=fourth["messages"] as! [[String:Any]]
   precondition(messages.contains{$0["tool_call_id"] as? String=="apply-call" && $0["content"] as? String==String(decoding:bytes,as:UTF8.self)})

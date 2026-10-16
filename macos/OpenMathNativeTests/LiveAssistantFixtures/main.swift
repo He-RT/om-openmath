@@ -31,7 +31,7 @@ import Security
     let tools:[AgentToolName]=[.read_notebook,.search_functions,.get_function_docs,.preview_source,.apply_notebook_patch,.run_cells,.inspect_result,.get_operation_status]
     let hello=try await service.activate(session:session,grants:tools,readonly:false,coreVersion:"1.0.4",adapterVersion:"openmath-adapter-1")
     let process=try await AgentProcess.verified(package:app.appendingPathComponent("Contents/Resources/AgentRuntime"),signatureRoot:app)
-    let context=AssistantContext(host:host,storage:storage,session:session,task:hello.scope.task_id,configuration:.init(baseURL:base,model:model,credentialReference:"authorized-live-api"),mode:.execute,tools:tools,schema:process.spec.root.appendingPathComponent("Agent/docs/design/agent-tools.schema.json"),changed:{values in print(values.last ?? "Preparing model")})
+    let context=AssistantContext(host:host,storage:storage,session:session,task:hello.scope.task_id,configuration:.init(baseURL:base,model:model,credentialReference:"authorized-live-api"),mode:.execute,tools:tools,schema:process.spec.root.appendingPathComponent("Agent/docs/design/agent-tools.schema.json"))
     let transport=ProviderTransport(secrets:SecretStore(testReader:{_ in (errSecSuccess,secret)}))
     let adapter=ProviderAgentModelAdapter(transport:transport,factory:{try await context.prepare($0)})
     let pipe=try await process.launch()

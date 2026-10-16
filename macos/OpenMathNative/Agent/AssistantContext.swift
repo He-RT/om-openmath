@@ -5,9 +5,8 @@ import Foundation
 actor AssistantContext {
   private let host:NativeHostClient,storage:StorageService,session:String,task:String
   private let configuration:AssistantConfiguration,mode:AssistantMode,tools:[AgentToolName],schema:URL
-  private let changed:@Sendable ([String])async->Void
-  init(host:NativeHostClient,storage:StorageService,session:String,task:String,configuration:AssistantConfiguration,mode:AssistantMode,tools:[AgentToolName],schema:URL,changed:@escaping @Sendable ([String])async->Void) {
-    self.host=host;self.storage=storage;self.session=session;self.task=task;self.configuration=configuration;self.mode=mode;self.tools=tools;self.schema=schema;self.changed=changed
+  init(host:NativeHostClient,storage:StorageService,session:String,task:String,configuration:AssistantConfiguration,mode:AssistantMode,tools:[AgentToolName],schema:URL) {
+    self.host=host;self.storage=storage;self.session=session;self.task=task;self.configuration=configuration;self.mode=mode;self.tools=tools;self.schema=schema
   }
   private func events()async throws->[StoredSessionEvent] {
     var all:[StoredSessionEvent]=[],after:UInt64=0
@@ -22,7 +21,7 @@ actor AssistantContext {
   }
   func prepare(_ intent:NativeAgentRequestIntent)async throws->ProviderPreparedTurn {
     let system=AgentCanonicalMessage(record_type:.canonical_agent_message,message_version:1,message_id:"assistant-instructions-v1",role:.system,agent_turn_id:.init(nil),task_id:.init(nil),parts:[.agent_text_part(.init(kind:.text,part_id:"instructions",text:SystemPrompt.render(mode:mode,version:SystemPrompt.releaseVersion)))])
-    var messages:[[String:Any]]=[["canonical":try object(system),"replay":NSNull()]],results:[[String:Any]]=[],trace:[String]=[]
+    var messages:[[String:Any]]=[["canonical":try object(system),"replay":NSNull()]],results:[[String:Any]]=[]
     for stored in try await events() {
       guard let text=stored.event.payload_inline_json.value else {continue}
       let bytes=Data(text.utf8)
@@ -34,14 +33,12 @@ actor AssistantContext {
         var message=try JSONDecoder().decode(AgentCanonicalMessage.self,from:Data(original.canonicalJSON.utf8))
         if stored.event.task_id.value != task {message.parts=message.parts.filter{if case .agent_text_part = $0 {return true};return false}}
         if !message.parts.isEmpty {messages.append(["canonical":try object(message),"replay":NSNull()])}
-        if stored.event.task_id.value==task {trace+=original.calls.map{"调用 "+$0.toolName}}
       } else if stored.event.task_id.value==task,let result=try? JSONDecoder().decode(AgentReadonlyRecord.self,from:bytes),result.kind=="native_readonly_result" {
-        try await append(result.canonical,intent:result.intent,hash:result.blobHash,length:result.byteLength,messages:&messages,results:&results,trace:&trace)
+        try await append(result.canonical,intent:result.intent,hash:result.blobHash,length:result.byteLength,messages:&messages,results:&results)
       } else if stored.event.task_id.value==task,let result=try? JSONDecoder().decode(AgentEffectRecord.self,from:bytes) {
-        try await append(result.canonical,intent:result.intent,hash:result.blobHash,length:result.byteLength,messages:&messages,results:&results,trace:&trace)
+        try await append(result.canonical,intent:result.intent,hash:result.blobHash,length:result.byteLength,messages:&messages,results:&results)
       }
     }
-    await changed(trace)
     let catalog=try JSONSerialization.jsonObject(with:Data(contentsOf:schema)) as! [String:Any],definitions=catalog["$defs"] as! [String:Any]
     guard let catalogTools=(catalog["x-openmath-catalog"] as? [String:Any])?["model_tools"] as? [[String:Any]] else {throw AssistantSetupError.invalid}
     var declared:[[String:Any]]=[]
@@ -63,7 +60,7 @@ actor AssistantContext {
     return ProviderRequestLedger(storage:storage,ledger:SessionLedgerPort(storage:storage,session:session),model:model).turn(route:route)
   }
   private func object<T:Encodable>(_ value:T)throws->Any {try JSONSerialization.jsonObject(with:JSONEncoder().encode(value))}
-  private func append(_ canonical:AgentCanonicalMessage,intent:NativeAgentToolIntent,hash:String,length:UInt64,messages:inout [[String:Any]],results:inout [[String:Any]],trace:inout [String])async throws {
+  private func append(_ canonical:AgentCanonicalMessage,intent:NativeAgentToolIntent,hash:String,length:UInt64,messages:inout [[String:Any]],results:inout [[String:Any]])async throws {
     let lease=try await storage.openReferencedBlob(owner:.init(kind:.context,id:canonical.message_id),hash:hash)
     let bytes:Data
     do {bytes=try await storage.readBlob(lease,offset:0,count:Int(length))} catch {try? await storage.closeBlob(lease);throw error}
@@ -71,7 +68,6 @@ actor AssistantContext {
     guard KernelHashes.data(bytes)==hash,let value=try JSONSerialization.jsonObject(with:bytes) as? [String:Any],let ok=value["ok"] as? Bool else {throw AgentSessionError.ledgerMismatch}
     messages.append(["canonical":try object(canonical),"replay":NSNull()])
     results.append(["message_id":canonical.message_id,"tool_call_id":intent.tool_call_id,"text":String(decoding:bytes,as:UTF8.self),"is_error":!ok])
-    trace.append(intent.name.rawValue+(ok ? " · 已返回结果":" · 未返回有效结果"))
   }
   private func expand(_ value:Any,definitions:[String:Any],depth:Int)throws->Any {
     guard depth<=64 else {throw AssistantSetupError.invalid}

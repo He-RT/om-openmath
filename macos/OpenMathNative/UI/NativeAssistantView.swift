@@ -10,27 +10,19 @@ struct NativeAssistantView:View {
         Button("新对话",systemImage:"square.and.pencil") {assistant.newConversation()}.labelStyle(.iconOnly).disabled(assistant.busy)
         Button("模型设置",systemImage:"gearshape") {assistant.showSettings=true}.labelStyle(.iconOnly).disabled(assistant.busy).accessibilityIdentifier("assistant-settings")
       }
-      if assistant.lines.isEmpty {
+      if assistant.messages.isEmpty {
         Text("用实际内核核对数学，协助阅读和修改当前笔记本。").font(.callout).foregroundStyle(.secondary)
       }
       ScrollViewReader {reader in
         ScrollView {
           LazyVStack(alignment:.leading,spacing:16) {
-            ForEach(assistant.lines) {line in
-              VStack(alignment:.leading,spacing:4) {
-                Text(line.role).font(.caption).foregroundStyle(.secondary)
-                if line.role == "OpenMath",(!assistant.busy || line.id != assistant.lines.last?.id) {NativeMarkdownView(source:line.text,fontSize:14)}
-                else {Text(line.text).textSelection(.enabled).frame(maxWidth:.infinity,alignment:.leading)}
-              }.id(line.id)
+            ForEach(assistant.messages) {message in
+              NativeAssistantMessageBody(message:message,streaming:assistant.busy && message.id==assistant.messages.last?.id).id(message.id)
             }
           }
-        }.onChange(of:assistant.lines.last?.text) {if let id=assistant.lines.last?.id {reader.scrollTo(id,anchor:.bottom)}}
+        }.onChange(of:assistant.messages.last) {if let id=assistant.messages.last?.id {reader.scrollTo(id,anchor:.bottom)}}
       }.frame(minHeight:100,maxHeight:.infinity)
-      if !assistant.trace.isEmpty {
-        DisclosureGroup("工具记录（\(assistant.trace.count)）") {
-          ScrollView {VStack(alignment:.leading,spacing:4) {ForEach(Array(assistant.trace.enumerated()),id:\.offset) {_,line in Text(line).font(.caption).textSelection(.enabled)}}}.frame(maxHeight:120)
-        }.font(.caption)
-      }
+      if let error=assistant.transcriptError {Text(error).font(.caption).foregroundStyle(.secondary)}
       Divider()
       Toggle("允许修改并运行笔记本",isOn:$assistant.allowsChanges).font(.caption).disabled(assistant.busy).accessibilityIdentifier("assistant-allow-changes")
       TextEditor(text:$assistant.draft).font(.body).frame(minHeight:70,maxHeight:110).scrollContentBackground(.hidden)

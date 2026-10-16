@@ -8,7 +8,13 @@ struct SessionCanonicalAssistant:Codable,Sendable {
   let peerMessageID:String,connectionID:String,sourceSequence:UInt64
 }
 struct AgentPipeReport:Sendable {var frames=0;var loopReason:AgentSettledPayloadReason?;var lastPhase:NativeAgentHostReplyPhase = .starting;var toolIntents:[String]=[];var requestIntents:[String]=[]}
-struct SessionCanonicalInput:Codable,Sendable {let codecVersion:Int,delivery:String,message:AgentCanonicalMessage}
+struct SessionCanonicalInput:Codable,Sendable {
+  let codecVersion:Int,delivery:String,message:AgentCanonicalMessage
+  let presentation:AssistantMessageContext?
+  init(codecVersion:Int,delivery:String,message:AgentCanonicalMessage,presentation:AssistantMessageContext?=nil) {
+    self.codecVersion=codecVersion;self.delivery=delivery;self.message=message;self.presentation=presentation
+  }
+}
 
 struct AgentToolUnavailable:Codable,Sendable {let codecVersion:Int,kind:String,intent:NativeAgentToolIntent}
 
@@ -35,6 +41,11 @@ actor AgentSessionService {
   private var toolFrames:[String:String]=[:]
   private var acceptedKernelReceipts:[NativeKernelReceipt]=[]
   private var modelFailure:TurnEndReason?
+  private var transcriptChanged:(@Sendable ()async->Void)?
+  func observeTranscript(_ changed:(@Sendable ()async->Void)?) {transcriptChanged=changed}
+  func transcript(session:String)async throws->[AssistantMessage] {
+    try await AssistantTranscriptReader(storage:storage,document:document).read(session:session)
+  }
   func currentKernelReceipts()->[NativeKernelReceipt] {acceptedKernelReceipts}
   func outcomeFacts(session:String,task:String)async throws->[TurnFact] {
     try await AssistantTurnReader(storage:storage,document:document).read(session:session,task:task)
@@ -96,21 +107,22 @@ actor AgentSessionService {
       try JSONDecoder().decode(SessionCanonicalAssistant.self,from:Data(payload.utf8)).canonicalJSON==canonical else {throw AgentSessionError.ledgerMismatch}
     // No ACK can be emitted from a mere append callback or helper's claimed persistence.
     let ack=try await host.agentCommand(.native_agent_confirm(.init(type:.agent_confirm,scope:s,message_id:peer,event_id:event,canonical_hash:KernelHashes.data(Data(canonical.utf8)),event_sequence:try HostSerial(actual.receipt.eventSequence),receipt_hash:actual.receipt.recordHash)))
-    updateSequence(ack);return ack
+    updateSequence(ack);await transcriptChanged?();return ack
   }
   /// User/steer/follow-up input is durable before the helper receives its event reference.
-  func input(_ message:AgentCanonicalMessage,delivery:String="user_input",event:String="input-"+UUID().uuidString.lowercased(),faults:StorageFaults = .init()) async throws->NativeAgentHostReply {
+  func input(_ message:AgentCanonicalMessage,delivery:String="user_input",event:String="input-"+UUID().uuidString.lowercased(),presentation:AssistantMessageContext?=nil,faults:StorageFaults = .init()) async throws->NativeAgentHostReply {
     try await acquire();defer {release()}
     guard let s=scope,let ledger else {throw AgentSessionError.inactive}
     guard ["user_input","steer","follow_up"].contains(delivery),message.role == .user,message.task_id.value==s.task_id else {throw AgentSessionError.invalidFrame}
     try Self.validateInput(message)
-    _ = try await ledger.record(SessionCanonicalInput(codecVersion:1,delivery:delivery,message:message),id:event,kind:.user_message,turn:message.agent_turn_id.value,task:s.task_id,faults:faults)
+    _ = try await ledger.record(SessionCanonicalInput(codecVersion:1,delivery:delivery,message:message,presentation:presentation),id:event,kind:.user_message,turn:message.agent_turn_id.value,task:s.task_id,faults:faults)
     let value:[String:Any]=["protocol_version":1,"runtime_instance_id":host.runtimeInstanceID,"document_id":document,"document_generation":generation,"agent_session_id":s.agent_session_id,"task_id":s.task_id,"task_generation":s.task_generation.value,"connection_id":s.connection_id,"connection_generation":s.connection_generation.value,"message_id":"input-frame-"+UUID().uuidString.lowercased(),"sequence":outgoingSequence+1,"reply_to":NSNull(),"type":delivery,"payload":["event_ref":event,"message":try JSONSerialization.jsonObject(with:JSONEncoder().encode(message))]]
     let bytes=try JSONSerialization.data(withJSONObject:value,options:[.sortedKeys,.withoutEscapingSlashes])
     let raw=inputFrames[event] ?? String(decoding:bytes,as:UTF8.self);inputFrames[event]=raw
     let reply=try await host.agentCommand(.native_agent_send(.init(type:.agent_send,scope:s,frame_json:raw)))
     updateSequence(reply)
     if let pipe=privatePipe,let outbound=reply.outbound_json.value {try await pipe.write(Data((outbound+"\n").utf8))}
+    await transcriptChanged?()
     return reply
   }
   private func acquire() async throws {
@@ -150,7 +162,7 @@ actor AgentSessionService {
     return reply
   }
   /// Actual private subprocess/pipe. Production Pi packaging is a separate adapter task.
-  func run(pipe:AgentPrivatePipe,hello:NativeAgentHostReply,modelPort:AgentNativeModelPort?=nil,input:AgentCanonicalMessage?=nil) async throws->AgentPipeReport {
+  func run(pipe:AgentPrivatePipe,hello:NativeAgentHostReply,modelPort:AgentNativeModelPort?=nil,input:AgentCanonicalMessage?=nil,inputPresentation:AssistantMessageContext?=nil) async throws->AgentPipeReport {
     guard !closed,scope != nil,privatePipe==nil,let initial=hello.outbound_json.value else {throw AgentSessionError.inactive}
     privatePipe=pipe
     let connection=scope!.connection_id
@@ -167,7 +179,7 @@ actor AgentSessionService {
           if let intent=reply.tool_intent.value {report.toolIntents.append(intent.operation_id)}
           if let intent=reply.request_intent.value {report.requestIntents.append(intent.operation_id)}
           if let outbound=reply.outbound_json.value {try await pipe.write(Data((outbound+"\n").utf8))}
-          if reply.disposition == .ready,let input,!delivered {delivered=true;_ = try await self.input(input)}
+          if reply.disposition == .ready,let input,!delivered {delivered=true;_ = try await self.input(input,presentation:inputPresentation)}
           let decoded=try JSONDecoder().decode(AgentIPCFrame.self,from:frame)
           if case .agent_settled_frame(let settled)=decoded {report.loopReason=settled.payload.reason}
           if reply.disposition == .request_intent,let intent=reply.request_intent.value {
@@ -228,6 +240,7 @@ actor AgentSessionService {
     do {
       guard let s=scope,let ledger else {throw AgentSessionError.inactive}
       _ = try await ledger.record(AgentToolUnavailable(codecVersion:1,kind:"native_tool_unavailable",intent:intent),id:"unavailable-"+intent.operation_id,kind:.recovery,turn:intent.agent_turn_id,task:s.task_id)
+      await transcriptChanged?()
       try Task.checkCancellation()
       if let original=toolFrames[intent.operation_id],let pipe=privatePipe {
         let reply=try await host.agentCommand(.native_agent_send(.init(type:.agent_send,scope:s,frame_json:original)));updateSequence(reply);try await pipe.write(Data((original+"\n").utf8))
@@ -290,6 +303,7 @@ actor AgentSessionService {
       guard original==bytes else {throw AgentSessionError.ledgerMismatch}
       try Task.checkCancellation()
       _ = try await host.agentCommand(.native_agent_confirm_tool(.init(type:.agent_confirm_tool,scope:s,operation_id:intent.operation_id,result_ref:result.result_ref,result_hash:result.result_hash,event_id:event,event_sequence:try HostSerial(stored.receipt.eventSequence),receipt_hash:stored.receipt.recordHash)))
+      await transcriptChanged?()
       let payload=AgentToolResultPayload(agent_turn_id:intent.agent_turn_id,tool_call_id:intent.tool_call_id,operation_ref:.init(nil),result_ref:.init(result.result_ref),outcome:result.outcome == .completed ? .completed:.failed,result_json:.init(String(decoding:original,as:UTF8.self)))
       toolFrames[intent.operation_id]=try await send("tool_result",payload:JSONEncoder().encode(payload))
     } catch {toolFailure?(intent.name,error);if !Task.isCancelled {_ = try? await send("error",payload:JSONEncoder().encode(AgentErrorPayload(code:"NATIVE_READONLY_RESULT_UNAVAILABLE",recoverable:false)))}}
@@ -362,6 +376,7 @@ actor AgentSessionService {
       guard original==bytes else {throw AgentSessionError.ledgerMismatch}
       try Task.checkCancellation()
       _ = try await host.agentCommand(.native_agent_confirm_tool(.init(type:.agent_confirm_tool,scope:s,operation_id:intent.operation_id,result_ref:result.result_ref,result_hash:result.result_hash,event_id:event,event_sequence:try HostSerial(stored.receipt.eventSequence),receipt_hash:stored.receipt.recordHash)))
+      await transcriptChanged?()
       let payload=AgentToolResultPayload(agent_turn_id:intent.agent_turn_id,tool_call_id:intent.tool_call_id,operation_ref:result.operation_ref,result_ref:.init(result.result_ref),outcome:outcome,result_json:.init(String(decoding:original,as:UTF8.self)))
       toolFrames[intent.operation_id]=try await send("tool_result",payload:JSONEncoder().encode(payload))
   }
@@ -468,6 +483,7 @@ actor AgentSessionService {
   }
   func resetTask() async {
     await stopDispatches()
+    transcriptChanged=nil
     if let s=scope { _ = try? await host.agentCommand(.native_agent_close(.init(type:.agent_close,scope:s))) }
     scope=nil;ledger=nil;readyConnection=nil;inputFrames.removeAll();toolFrames.removeAll()
     if let pipe=privatePipe {await pipe.close();privatePipe=nil}

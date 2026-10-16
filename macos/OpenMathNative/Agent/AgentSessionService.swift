@@ -34,7 +34,16 @@ actor AgentSessionService {
   private var readyConnection:String?
   private var toolFrames:[String:String]=[:]
   private var acceptedKernelReceipts:[NativeKernelReceipt]=[]
+  private var modelFailure:TurnEndReason?
   func currentKernelReceipts()->[NativeKernelReceipt] {acceptedKernelReceipts}
+  func outcomeFacts(session:String,task:String)async throws->[TurnFact] {
+    try await AssistantTurnReader(storage:storage,document:document).read(session:session,task:task)
+  }
+  func endReason(_ reason:AgentSettledPayloadReason?,stopped:Bool)->TurnEndReason {
+    if stopped || reason == .cancelled {return .stopped}
+    if let modelFailure {return modelFailure}
+    return reason == .loop_stopped ? .modelFinished:.failed(reason == .interrupted ? "连接中断":"模型或工具请求未正常结束")
+  }
   private func recordKernelReceipt(_ receipt:NativeKernelReceipt) {acceptedKernelReceipts.append(receipt)}
   init(host:NativeHostClient,storage:StorageService,document:String,generation:UInt64,sourcePort:DocCommitPort?=nil,kernelPort:KernelCommitPort?=nil,runFaults:StorageFaults = .init(),sourceFaults:StorageFaults = .init(),toolFailure:(@Sendable(AgentToolName,any Error)->Void)?=nil) {
     self.sourceFaults=sourceFaults;self.runFaults=runFaults;self.toolFailure=toolFailure
@@ -44,6 +53,7 @@ actor AgentSessionService {
   func activate(session:String,grants:[AgentToolName],readonly:Bool,coreVersion:String,adapterVersion:String,allowedRunCells:[String]?=nil,allowedUndoTransactions:[String]?=nil) async throws->NativeAgentHostReply {
     try await acquire();defer {release()}
     acceptedKernelReceipts=[]
+    modelFailure=nil
     guard scope==nil else {throw AgentSessionError.busy}
     guard taskGeneration<HostSerial.maximum,connectionGeneration<HostSerial.maximum else {throw AgentSessionError.stale}
     // Reserve activation before any suspension, including an unavailable Library.
@@ -175,11 +185,11 @@ actor AgentSessionService {
       }
       try decoder.finish()
       guard report.lastPhase == .awaiting_settlement else {throw AgentSessionError.invalidFrame}
-      stopDispatches();await pipe.close();privatePipe=nil
+      await stopDispatches();await pipe.close();privatePipe=nil
       if let s=scope {_ = try? await host.agentCommand(.native_agent_close(.init(type:.agent_close,scope:s)))}
       scope=nil;ledger=nil;return report
     } catch {
-      stopDispatches();await pipe.close();privatePipe=nil
+      await stopDispatches();await pipe.close();privatePipe=nil
       if let s=scope { _ = try? await host.agentCommand(.native_agent_close(.init(type:.agent_close,scope:s))) }
       scope=nil;ledger=nil;throw error
     }
@@ -203,9 +213,14 @@ actor AgentSessionService {
         _ = try await send("model_request",payload:JSONEncoder().encode(AgentModelRequestPayload(agent_turn_id:intent.agent_turn_id,request_id:intent.request_id,context_ref:prepared.context,model_config_ref:prepared.model)))
       } else {
         let stream=try await port.stream(intent)
-        for try await event in stream {try Task.checkCancellation();_ = try await send("model_event",payload:JSONEncoder().encode(event))}
+        for try await event in stream {
+          try Task.checkCancellation()
+          if event.phase == .failed {modelFailure = .failed("模型未返回完整回复")}
+          _ = try await send("model_event",payload:JSONEncoder().encode(event))
+        }
       }
     } catch {
+      if !Task.isCancelled {modelFailure=Self.failureReason(error)}
       if !Task.isCancelled {_ = try? await send("error",payload:JSONEncoder().encode(AgentErrorPayload(code:"NATIVE_MODEL_UNAVAILABLE",recoverable:false)))}
     }
   }
@@ -431,9 +446,28 @@ actor AgentSessionService {
       if !Task.isCancelled {_ = try? await send("error",payload:JSONEncoder().encode(AgentErrorPayload(code:"NATIVE_RUN_RESULT_UNAVAILABLE",recoverable:false)))}
     }
   }
-  private func stopDispatches() {for task in dispatches.values {task.cancel()};dispatches.removeAll()}
+  private func stopDispatches()async {
+    let pending=Array(dispatches.values);dispatches.removeAll()
+    for task in pending {task.cancel()}
+    for task in pending {await task.value}
+  }
+  private static func failureReason(_ error:any Error)->TurnEndReason {
+    if let setup=error as? AssistantSetupError,case .contextLimit=setup {return .budget(.context)}
+    let transport=(error as? ProviderTransportFailure)?.reason ?? (error as? ProviderTransportReason)
+    switch transport {
+    case .totalTimeout:return .budget(.time)
+    case .secret:return .failed("无法读取模型密钥")
+    case .http:
+      let status=(error as? ProviderTransportFailure)?.httpStatus
+      return .failed(status.map{"模型服务返回 HTTP \($0)"} ?? "模型服务拒绝请求")
+    case .connectionTimeout,.firstResponseTimeout,.idleTimeout:return .failed("模型连接超时")
+    case .network:return .failed("无法连接模型服务")
+    case .invalidRoute:return .failed("模型地址或配置无效")
+    default:return .failed("模型请求未正常结束，请检查配置或网络")
+    }
+  }
   func resetTask() async {
-    stopDispatches()
+    await stopDispatches()
     if let s=scope { _ = try? await host.agentCommand(.native_agent_close(.init(type:.agent_close,scope:s))) }
     scope=nil;ledger=nil;readyConnection=nil;inputFrames.removeAll();toolFrames.removeAll()
     if let pipe=privatePipe {await pipe.close();privatePipe=nil}

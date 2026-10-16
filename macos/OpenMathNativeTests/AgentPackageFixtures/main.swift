@@ -138,7 +138,8 @@ private func nativeRunRoundTrip(package:URL,signatureRoot:URL?,root:URL)async th
     ("error-continue",errorCells,["good","boom","independent"],"selected",true,nil,[],"partial",["good","boom","independent"],"independent","value","7"),
     ("solve",[.init(id:"solve",kind:.math,source:"solve(x^2-5*x+6==0,x)",dialect:.modern)],["solve"],"selected",false,nil,[],"completed",["solve"],"solve","summary",nil),
     ("ode",[.init(id:"ode",kind:.math,source:"let curve=ode(fn(t,y)=>y,initial:1,t:0..1);curve",dialect:.modern)],["ode"],"selected",false,nil,[],"completed",["ode"],"ode","value",nil),
-    ("scene",[.init(id:"scene",kind:.math,source:"plot(x^2-y^2,x:-1..1,y:-1..1,view:\"surface\",mesh_points:8)",dialect:.modern)],["scene"],"selected",false,nil,[],"completed",["scene"],"scene","geometry",nil)
+    ("scene",[.init(id:"scene",kind:.math,source:"plot(x^2-y^2,x:-1..1,y:-1..1,view:\"surface\",mesh_points:8)",dialect:.modern)],["scene"],"selected",false,nil,[],"completed",["scene"],"scene","geometry",nil),
+    ("plot",[.init(id:"plot",kind:.math,source:"plot([sin(x),cos(x)],x:-pi..pi)",dialect:.modern)],["plot"],"selected",false,nil,[],"completed",["plot"],"plot","geometry",nil)
   ]
   for spec in cases {
     let path=root.appendingPathComponent(spec.name),document="00000000-0000-0000-0000-000000000441",session="actual-run-task"
@@ -168,6 +169,13 @@ private func nativeRunRoundTrip(package:URL,signatureRoot:URL?,root:URL)async th
     let hasInspect=spec.part != nil
     precondition(report.frames==(hasInspect ? 17:13) && report.toolIntents.count==(hasInspect ? 3:2) && report.lastPhase == .awaiting_settlement,spec.name)
     let events=try await fixtureEvents(storage,session)
+    let facts=try await service.outcomeFacts(session:session,task:hello.scope.task_id)
+    let outcome=TurnOutcome.assemble(task:hello.scope.task_id,reason:.modelFinished,facts:facts,saved:false,durationMs:0)
+    precondition(Set(outcome.ranCells.map(\.cellID))==Set(spec.executed),"durable run facts: "+spec.name)
+    precondition(outcome.changedCells.isEmpty && outcome.modelRequests==(hasInspect ? 4:3),"request facts: "+spec.name)
+    if spec.name=="solve" {precondition(outcome.products.first?.count==2 && outcome.products.first?.verified==true)}
+    if spec.name=="scene" {precondition(outcome.products.first?.kind == .scene3d && (outcome.products.first?.count ?? 0)>0)}
+    if spec.name=="plot" {precondition(outcome.products.first?.kind == .plot && outcome.products.first?.count==2)}
     let effects=events.compactMap {e->AgentEffectRecord? in guard let raw=e.event.payload_inline_json.value,let record=try? JSONDecoder().decode(AgentEffectRecord.self,from:Data(raw.utf8)),record.kind=="native_effect_result" else {return nil};return record}
     precondition(effects.count==1 && effects[0].intent.name == .run_cells)
     let effect=effects[0],lease=try await storage.openReferencedBlob(owner:.init(kind:.context,id:effect.canonical.message_id),hash:effect.blobHash)
@@ -500,6 +508,10 @@ private func nativeApplyRoundTrip(package:URL,signatureRoot:URL?,root:URL)async 
   precondition(receipt.receipt.transaction_id.value==data["transaction_ref"] as? String && receipt.receipt.request_hash==target.expectedHash)
   let (head,history)=try await storage.readNotebookHistory(document:document)
   precondition(head.revision.value==1 && head.file.cells[0].source=="3+3" && history.count==1)
+  let facts=try await service.outcomeFacts(session:session,task:hello.scope.task_id)
+  let outcome=TurnOutcome.assemble(task:hello.scope.task_id,reason:.modelFinished,facts:facts,saved:false,durationMs:0)
+  precondition(outcome.changedCells==[.init(cellID:"a",kind:.edited,transactionRef:history[0].transaction)])
+  precondition(outcome.ranCells.isEmpty && outcome.staleAfterEdit==["a"] && outcome.modelRequests==4)
   let noRun=try await storage.acceptedKernelHead(document:document);precondition(noRun==nil)
   let fourth=try JSONSerialization.jsonObject(with:Data(contentsOf:root.appendingPathComponent("actual-native-http-body-4.json"))) as! [String:Any],messages=fourth["messages"] as! [[String:Any]]
   precondition(messages.contains{$0["tool_call_id"] as? String=="apply-call" && $0["content"] as? String==String(decoding:bytes,as:UTF8.self)})
@@ -831,6 +843,12 @@ private func nativeUndoRoundTrips(package:URL,signatureRoot:URL?,root:URL)async 
 @main struct AgentPackageFixtures {
   static func main() async throws {
     let package=URL(fileURLWithPath:CommandLine.arguments[1],isDirectory:true),root=URL(fileURLWithPath:CommandLine.arguments[2],isDirectory:true)
+    if ProcessInfo.processInfo.environment["OPENMATH_PACKAGE_FIXTURE_MODE"]=="turn-outcome" {
+      let signatureRoot=CommandLine.arguments.count>3 && !CommandLine.arguments[3].isEmpty ? URL(fileURLWithPath:CommandLine.arguments[3]):nil
+      try await nativeApplyRoundTrip(package:package,signatureRoot:signatureRoot,root:root.appendingPathComponent("apply"))
+      try await nativeRunRoundTrip(package:package,signatureRoot:signatureRoot,root:root.appendingPathComponent("run"))
+      print("Turn outcome durable apply/run/inspection roundtrips passed");return
+    }
     for _ in 0..<32 {
       let child=try await AgentPrivatePipe.launch(executable:URL(fileURLWithPath:"/usr/bin/true"),arguments:[],directory:root)
       let end=try await child.read();precondition(end==nil);await child.close()

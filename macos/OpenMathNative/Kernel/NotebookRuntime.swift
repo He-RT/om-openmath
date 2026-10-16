@@ -103,7 +103,7 @@ struct NotebookCellResult:Sendable {
         runObserved?("kernel_received")
         guard !closing else {return}
         // A late stop cannot overwrite an actual committed result.
-        phase = .completed;message=receipt.producer.terminal_status == .done ? "已完成" : "计算结束，有错误"
+        phase = .completed;message=receipt.producer.terminal_status == .done ? "计算结束" : "计算结束，有错误"
         do {try await display(receipt)}
         catch {if !closing {accept(.init(receipt:receipt,bindings:[],values:[]),cell:cell);message="计算已提交，结果暂无法读取："+String(describing:error)}}
         runObserved?("result_read")

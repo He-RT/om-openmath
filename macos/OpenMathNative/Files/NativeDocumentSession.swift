@@ -61,6 +61,11 @@ actor NativeAppStorage {
       await runtime.displayAgentReceipts(agent.currentKernelReceipts())
       document.changed?();await runtime.refreshProjection()
     }
+    assistant.savedState={ [weak self] in
+      guard let self,!closed else {throw StorageError.closing}
+      let state=try await files.state()
+      return state.head != nil && !state.dirty && state.unknownOperation==nil
+    }
     runtime.selectedCell=drafts.confirmed.file.cells.first?.id
     editorFocus=runtime.selectedCell
     runtime.beforeRun={ [weak self] in

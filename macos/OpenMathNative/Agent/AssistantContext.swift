@@ -71,7 +71,7 @@ actor AssistantContext {
     guard KernelHashes.data(bytes)==hash,let value=try JSONSerialization.jsonObject(with:bytes) as? [String:Any],let ok=value["ok"] as? Bool else {throw AgentSessionError.ledgerMismatch}
     messages.append(["canonical":try object(canonical),"replay":NSNull()])
     results.append(["message_id":canonical.message_id,"tool_call_id":intent.tool_call_id,"text":String(decoding:bytes,as:UTF8.self),"is_error":!ok])
-    trace.append(intent.name.rawValue+(ok ? " · 已完成":" · 未完成"))
+    trace.append(intent.name.rawValue+(ok ? " · 已返回结果":" · 未返回有效结果"))
   }
   private func expand(_ value:Any,definitions:[String:Any],depth:Int)throws->Any {
     guard depth<=64 else {throw AssistantSetupError.invalid}

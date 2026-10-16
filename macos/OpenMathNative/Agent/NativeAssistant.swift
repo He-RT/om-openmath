@@ -59,12 +59,12 @@ struct AssistantLine:Identifiable {
       try await prepare?()
       guard !stopping,!closed else {throw CancellationError()}
       let process=try await AgentProcess.bundled()
-      let read:[AgentToolName]=[.read_notebook,.search_functions,.get_function_docs,.inspect_result,.get_operation_status]
-      let tools=edits ? read+[.preview_source,.apply_notebook_patch,.run_cells,.evaluate_scratch,.undo_transaction]:read
+      let read:[AgentToolName]=[.read_notebook,.search_functions,.get_function_docs,.inspect_result,.evaluate_scratch,.get_operation_status]
+      let tools=edits ? read+[.preview_source,.apply_notebook_patch,.run_cells,.undo_transaction]:read
       let hello=try await agent.activate(session:session,grants:tools,readonly:!edits,coreVersion:"1.0.4",adapterVersion:"openmath-adapter-1")
       guard !stopping,!closed else {throw CancellationError()}
       let scope=hello.scope
-      let context=AssistantContext(host:host,storage:storage,session:session,task:scope.task_id,configuration:configuration,tools:tools,schema:process.spec.root.appendingPathComponent("Agent/docs/design/agent-tools.schema.json"),changed:{[weak self] values in await self?.updateTrace(values)})
+      let context=AssistantContext(host:host,storage:storage,session:session,task:scope.task_id,configuration:configuration,mode:edits ? .execute:.discuss,tools:tools,schema:process.spec.root.appendingPathComponent("Agent/docs/design/agent-tools.schema.json"),changed:{[weak self] values in await self?.updateTrace(values)})
       let transport=ProviderAgentModelAdapter(transport:ProviderTransport(secrets:SecretStore()),factory:{try await context.prepare($0)})
       adapter=transport
       let underlying=transport.port()

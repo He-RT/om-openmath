@@ -4,10 +4,10 @@ import Foundation
 /// The helper supplies neither the provider route nor a replacement conversation history.
 actor AssistantContext {
   private let host:NativeHostClient,storage:StorageService,session:String,task:String
-  private let configuration:AssistantConfiguration,tools:[AgentToolName],schema:URL
+  private let configuration:AssistantConfiguration,mode:AssistantMode,tools:[AgentToolName],schema:URL
   private let changed:@Sendable ([String])async->Void
-  init(host:NativeHostClient,storage:StorageService,session:String,task:String,configuration:AssistantConfiguration,tools:[AgentToolName],schema:URL,changed:@escaping @Sendable ([String])async->Void) {
-    self.host=host;self.storage=storage;self.session=session;self.task=task;self.configuration=configuration;self.tools=tools;self.schema=schema;self.changed=changed
+  init(host:NativeHostClient,storage:StorageService,session:String,task:String,configuration:AssistantConfiguration,mode:AssistantMode,tools:[AgentToolName],schema:URL,changed:@escaping @Sendable ([String])async->Void) {
+    self.host=host;self.storage=storage;self.session=session;self.task=task;self.configuration=configuration;self.mode=mode;self.tools=tools;self.schema=schema;self.changed=changed
   }
   private func events()async throws->[StoredSessionEvent] {
     var all:[StoredSessionEvent]=[],after:UInt64=0
@@ -21,7 +21,7 @@ actor AssistantContext {
     }
   }
   func prepare(_ intent:NativeAgentRequestIntent)async throws->ProviderPreparedTurn {
-    let system=AgentCanonicalMessage(record_type:.canonical_agent_message,message_version:1,message_id:"assistant-instructions-v1",role:.system,agent_turn_id:.init(nil),task_id:.init(nil),parts:[.agent_text_part(.init(kind:.text,part_id:"instructions",text:"你是OpenMath笔记本助手。用中文清楚作答。数学必须用实际内核核对。先read_notebook，只有cells视图明确给出的完整源码才能修改；修改先preview_source再apply_notebook_patch。apply_notebook_patch成功后旧snapshot_ref立即失效，必须重新read_notebook获取新的snapshot_ref，再用run_cells以required范围运行依赖，之后inspect_result核对结果。INVALID_REFERENCE表示引用过期时，只读重新获取引用后继续；不要重放已完成的修改。引用只在当前任务有效，旧任务的引用必须重新读取。尊重只读模式；停止或未知提交后不重放。不要声称未执行或未完成的计算、修改、保存已成功。"))])
+    let system=AgentCanonicalMessage(record_type:.canonical_agent_message,message_version:1,message_id:"assistant-instructions-v1",role:.system,agent_turn_id:.init(nil),task_id:.init(nil),parts:[.agent_text_part(.init(kind:.text,part_id:"instructions",text:SystemPrompt.render(mode:mode,version:SystemPrompt.releaseVersion)))])
     var messages:[[String:Any]]=[["canonical":try object(system),"replay":NSNull()]],results:[[String:Any]]=[],trace:[String]=[]
     for stored in try await events() {
       guard let text=stored.event.payload_inline_json.value else {continue}

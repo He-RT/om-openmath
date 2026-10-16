@@ -84,7 +84,7 @@ Windows、iOS 发行；音频、视频处理；长对话记忆压缩；提示词
 1. 在 `notebook-operation.md` 的“模型操作说明”一节前后加标记 `<!-- prompt:operation:begin -->` / `<!-- prompt:operation:end -->`。
 2. 新建 `agent/prompts/identity.zh.md`（身份与边界，含 `{{mode}}`、`{{version}}` 占位）、`agent/prompts/task-rules.zh.md`（设计 7.8 第 5 层三条规则，原文照抄）、`agent/prompts/language-card.zh.md`、`agent/prompts/examples.zh.md`（A2 产出）。
 3. 新建 `scripts/build_prompts.py`：读取上述文件和标记段，按顺序拼成 `agent/prompts/generated/system.zh.md`，写入 SHA256；`--check` 模式检查生成文件与源一致（防止漂移）。
-4. Mac：把 `generated/system.zh.md` 作为 App 资源打包（更新 `generate-project.py` 的资源列表）。
+4. Mac：生成 `Agent/SystemPromptText.swift`（原始字符串常量）直接编进应用。没有走资源打包：助手运行包 `AgentRuntime` 有逐文件哈希的严格清单，往里加文件要重建整个运行包；生成 Swift 源码沿用现有 `Generated/` 的做法，`--check` 能检出漂移。
 5. 修改 `AssistantContext.prepare`：删除第 24 行的硬编码字符串，改为读取资源、替换 `{{mode}}` `{{version}}` `{{date}}`，按模式追加一行（执行：可用全部工具；讨论：只能读取、检查和临时计算）。原硬编码里关于 `snapshot_ref` 失效、`INVALID_REFERENCE` 重读的规则，挪进 `task-rules.zh.md`，不能丢。
 6. 估算长度（字符数 ÷ 1.6 约等于中文 token），超过 6k 时删减示例并报告。
 7. 新增 Swift 单元测试：拼装结果包含操作指引段的 SHA、模式行正确、不含未替换的占位符。
@@ -570,8 +570,8 @@ Mac S1–S8（两个模型）、Web S1–S6（一个模型）在候选包上各�
 
 | 任务 | 状态 | 提交 |
 |---|---|---|
-| [ ] A1 提示词分层拼装 | | |
-| [ ] A2 语言卡与已验证示例 | | |
+| [x] A1 提示词分层拼装 | 完成 | 见下一条记录 |
+| [x] A2 语言卡与已验证示例 | 完成 | 与 A1 同一提交 |
 | [ ] A3 本轮结果与状态用语 | | |
 | [ ] A4 按消息的操作记录数据 | | |
 | [ ] A5 真实模型场景（Mac） | | |
@@ -611,4 +611,12 @@ Mac S1–S8（两个模型）、Web S1–S6（一个模型）在候选包上各�
 
 ### 记录
 
-（按时间顺序追加。）
+**A1 + A2（2026-10-17）**
+
+- 做了什么：`agent/prompts/` 5 层源文件 + `scripts/build_prompts.py`（拼装、`--check`、长度上限）+ `scripts/check_prompt_examples.py`（用真实 CLI 验证示例和语言卡）；`SystemPrompt.swift` / 生成的 `SystemPromptText.swift`；`AssistantContext` 不再有硬编码提示词，按模式渲染；`NativeAssistant` 传入模式。操作指引按标题从 `docs/design/prompts/notebook-operation.md` 提取，**没有修改该文件**（它是冻结校验的 13 份设计源之一）。
+- 讨论模式的工具集改为读取、查阅、检查、核对 + `evaluate_scratch`（设计 7.7）；执行模式在此基础上加预览、修改、运行、撤销。原来 `evaluate_scratch` 只在执行模式开放。宿主侧只读模式本来就允许它（`scratch.rs` 只要求 `can_read`）。
+- 测了什么：`build_prompts.py --check` 通过（4032 字符，约 2.5k tokens，远低于 6k）；`check_prompt_examples.py` 8 个示例 + 9 条语言说法全部通过；`macos/Scripts/test-prompt.sh` 通过；Release 构建通过；`LiveAssistantFixtures` 类型检查通过。
+- 与计划不同的地方：(1) 提示词以生成的 Swift 源码形式编入，而不是 App 资源（原因见 A1 步骤 4）；(2) 没有注入 `{{date}}`，保持提示词稳定以利于缓存，只注入版本号和模式；(3) `.3` 时代“等号后直接换行报 E022”的限制在 `.4` 已不存在，语言卡改为“等号后可以直接换行”（已用 CLI 验证）。
+- 发现，留给后面的任务：内核对 `solve(k*x = 1, x)` 返回的 `condition_latex` 是空的，没有给出 `k ≠ 0`。设计草案里“有条件成立”的例子是示意；C 阶段做结果状态时要先找一个内核真实会给出条件的输入来构造该状态。
+- 没做：未在真实模型上验证（A5 才做）。
+

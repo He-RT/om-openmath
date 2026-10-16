@@ -55,11 +55,21 @@ private final class BusyCommitOnce:@unchecked Sendable {
   }
 }
 @main struct PerformanceFixtures {
-  @MainActor static func main() async throws {
-    let launched=DispatchTime.now().uptimeNanoseconds
+  @MainActor static func main() {
     let requireForeground=CommandLine.arguments.contains("--foreground")
     let app=NSApplication.shared;app.setActivationPolicy(requireForeground ? .regular:.accessory)
-    if requireForeground {app.finishLaunching()}
+    Task {
+      do {try await measure();exit(0)}
+      catch {FileHandle.standardError.write(Data(("Measurement failed: "+String(describing:error)+"\n").utf8));exit(1)}
+    }
+    // A CFRunLoop alone delivers timers but does not dispatch native input/activation events.
+    // Use the same AppKit event loop as a normal application before measuring foreground paint.
+    app.run()
+  }
+  @MainActor static func measure() async throws {
+    let launched=DispatchTime.now().uptimeNanoseconds
+    let requireForeground=CommandLine.arguments.contains("--foreground")
+    let app=NSApplication.shared
     let root=URL(fileURLWithPath:CommandLine.arguments[1],isDirectory:true)
     try FileManager.default.createDirectory(at:root,withIntermediateDirectories:true)
     let corpusBytes=try Data(contentsOf:URL(fileURLWithPath:CommandLine.arguments[2]))
@@ -145,6 +155,7 @@ private final class BusyCommitOnce:@unchecked Sendable {
       if firstFrame==nil {
         firstFrame=milliseconds(launched)
         if requireForeground {
+          app.activate()
           print("Activate the visible measurement window to start the foreground run.")
           let activationDeadline=ContinuousClock.now.advanced(by:.seconds(60))
           while !app.isActive || !window.isKeyWindow {

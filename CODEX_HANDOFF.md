@@ -42,7 +42,17 @@
 - 日志与fresh工作root必须分开；live以授权API文件、实际installed app、空workroot和gpt-6.1-sol为参数，3分钟watchdog。仅使用原授权文件，输出不能含key。
 - 安装UI停止现已实际通过：factorial百万运行时截图可见停止，立即点击得到CANCELLED；随后2+2得4，已保存退出。map百万列表Native返回INTERNAL_ERROR（CLI能完成）的极端负载失败仍保留。
 
-## 下一步（按此推进）
+## 当前最新覆盖（D072优先）
+
+- 最新生产修复baa075d78c1f4f8e9b18d102d822e982ee673264已push：Pi内部不再先拒模型参数而漏掉原生耐久错误结果，完整参数校验仍由Rust宿主；实际模型拿到完整schema及既有目录说明/示例。23 Node/Pi/protocol通过。真实sol根 `target/macos-live-assistant/args-fixed-sol` 七工具链成功，原inspect Blob核SHA确切x→2/3，密钥精确匹配0。
+- 原53 CLI当前新求根候选迭代：最长166.721ms，五次Root条约90ms；旧独立验证器全部通过。om-poly138项/20suite与Clippy通过，最终证书/精度/半径不变。实际CLI/FFI已重建，后续不得在编译中改.rs。
+- 原生状态轮询改1ms起步退避到10ms、UI已知取消显示已停止。当前生产对象Release已构建。
+- Mac测量已修正常AppKit事件循环，过去只有CFRunLoop无法处理鼠标激活/前台，数个未生成结果的foreground尝试全部保留。**第一次完整正常AppKit前台运行** `target/macos-performance/foreground-appkit-12jjx46n`：53整次max813.040ms、全foreground；10KiB100次input p95=49.621ms / max83.137ms；首workspace909.113ms / RSS188547072。原生独立53读回正在终结，不能复跑挑更好成绩。
+- 实际StorageService50次close/immediate reopen通过，没重现原Pi group后inUse；未改锁、未把原失败覆盖为成功。七类撤销已单独通过。不要为了未定位的旧全套尾端失败再开发一个通用故障平台；基本真实助手、原ID/原子边界继续按scope2检查。
+- baa CI38904687799在跑，iOS按scope跳过。当前未提交只有测量AppKit生命周期修复和这段记录；提交后以新SHA打包。689包已经过时，不用于发布。
+- **下一优先：提交测量入口/记录→生成新SHA同源Mac三资产/Web WASM→解压版相关Web检查及独立53→实际新包安装/助手/程序版本读回→8项结果→发布并公开下载。** 不重复泛看App或旧完整矩阵。candidate仍UNSET / ready=false / released=false。
+
+## 历史下一步（以上最新覆盖优先）
 
 1. 把本轮参考固化并停止泛看应用；修正接续入口，避免压缩后重复。
 2. 定位Pi inUse的真实原因并确认当前.4 live助手。sol本轮在第三请求流开始后失败；luna完成第三流但preview_source参数错误（snapshot_ref误放input内、混入额外kind/dialect）后任务失败，无修改成功。原根分别live-acceptance/attempt-shipped与attempt-luna，精确key扫描均须计数；不能伪称live通过。AssistantContext当前仅传“OpenMath toolName”泛化描述，已有catalog含真实描述和参数示例，优先检查这处产品上下文缺失及错误反馈。

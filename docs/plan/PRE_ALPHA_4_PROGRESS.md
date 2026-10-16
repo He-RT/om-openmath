@@ -857,3 +857,6 @@ CLI第17条本轮诊断仍约231ms，不以重测覆盖超标。采样定位到�
 
 
 D072追加：当前新CLI/FFI Release已重建，原53每条<200ms、最长166.721ms，独立旧验证器全部通过。实际StorageService 50次关闭/立即重开均通过，未复现原inUse，不据此擅改flock。Mac输入旧66ms分布提示前台条件未记录；测量入口新增显式foreground模式并在每条/每次输入检查真实NSApp与key window状态，原1秒/50ms及两显示帧测法不变。首个foreground尝试未完成NSApplication启动，CUA无法激活而超时，原根foreground-final-fr9xgmvz保留；补finishLaunching后重新进行真实前台测量。该失败不是产品计算性能结论，也不覆盖旧超标记录。
+
+
+D072最终测量入口修复：单独异步Swift main仅运行CFRunLoop，未处理AppKit输入/激活，故此前foreground尝试无法激活或退出0却没有结果；全部保留且不算通过。入口改用正常NSApplication.run事件循环，异步测量在其内执行，foreground模式逐条/逐次要求真实active app及key window。CUA已实际观察正在计算原第17条的工作区与停止按钮。第一次完成的AppKit前台测量foreground-appkit-12jjx46n，53条全部<1秒、最长813.040ms；10KiB100次输入p95=49.621ms、max83.137ms，仍以两显示同步帧作上界、50ms门槛未改。首工作区帧909.113ms、峰值RSS188547072字节，未冒称发行应用完整冷启动。原生数学输出再送原独立旧验证器核对；纯测量生命周期修复不改生产算法或已发布包。

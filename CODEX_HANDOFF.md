@@ -30,23 +30,23 @@
 
 - Markdown AST / SwiftMath / 独立NSTableView表格、步骤子树、CoreGraphics2D、Metal真实网格及按需帧均已接生产；见D067–D069。
 - c68原53由优化前独立二进制验证器核SHA后检查全部高精度期望：CLI最长125.995ms，Mac submit→MainActor整次最长832.382ms，Web WASM231ms / 往返232.5ms；10KiB各100次输入p95约33ms（Mac max82.151ms如实保留）。普通7936三角形约60Hz、静止0新增帧。
-- 独立旧验证器身份在 `target/plan-scope2/pre-optimization-oracle.json`，保留并先核SHA。当前 `.4` 原53与性能还需对当前生产对象执行；不得修改原期望 / 门槛或挑最好一次。
-- 689 Web ZIP已解压到 `.../689.../web-installed`，逐文件字节比较通过；从该目录运行的35项已有生产E2E **全部通过**，日志 / wasm-corpus.json / web-input.json 在 `.../689.../web-acceptance`。当前Web输出仍待独立旧验证器读回与简要指标记录。
-- Web本地服务已在4174运行，确切exec句柄78460；从实际unzip目录提供文件，不重复开服务。当前原生应用没有遗留运行：factorial(1000000)已真实超时结束，不计为手动Stop通过。
+- 独立旧验证器身份在 `target/plan-scope2/pre-optimization-oracle.json`，保留并先核SHA。当前 `.4` CLI/Mac/Web原53已由同一独立旧验证器全部通过；性能本轮CLI第17条240.822ms超标，Mac6条超1秒、输入p95=67.006ms，失败保留在689目录cli-acceptance / mac-acceptance，尚不通过性能交付检查。测量时约7.5GiB swap、mihomo约226% CPU及mediaanalysisd约74%；这只是环境事实，不用来抹掉失败或降低门槛。
+- 689 Web ZIP已解压到 `.../689.../web-installed`，逐文件字节比较通过；从该目录运行的35项已有生产E2E **全部通过**，日志 / wasm-corpus.json / web-input.json 在 `.../689.../web-acceptance`。当前Web输出经独立旧验证器通过53；WASM max249ms，输入p95=33.700ms / max38.700ms，FCP144ms，SwiftShader Vulkan。
+- Web本地服务已在4174运行，确切exec句柄78460；从实际unzip目录提供文件，不重复开服务。当前原生应用已保存并正常退出；随后实看运行中的停止按钮并点击，终态CANCELLED，修改为2+2得到精确4并保存退出。源码文件读回已确认，不依赖自动超时作为停止证明。
 - 早期真实助手成功记录 `target/macos-live-assistant/attempt-5RlZQf`（实际read→preview→apply→read→run→inspect，原blob x→2/3）；当前689包内助手验收继续，不据旧记录直接宣称新包全部通过。
 
 ## 当前助手测量入口与失败
 
 - `target/pre-alpha4-acceptance/{performance,live,pi}`链接689生产Release -O对象与当前.4 Rust库；临时entry用@testable内部接口，跨模块actor let访问已补await，本身未改产品输入。字体资源齐备。
-- Pi第一次module attempt在StorageService新root内预先放run.log，正确触发recoveryRequired；第二attempt-empty-root确切句柄2901已结束，exit -5 / StorageError.inUse。先检查入口 / root释放位置 / 同root进程，不盲目重跑或放宽存储锁。
+- Pi第一次module attempt在StorageService新root内预先放run.log，正确触发recoveryRequired；第二attempt-empty-root确切句柄2901已结束，exit -5 / StorageError.inUse。全部前置真实结果已生成，失败在undo group的两轮结果之后。临时pi-diagnostic入口只加阶段打印，mode=undo新root七类/重启全部通过；原inUse原因仍未定，不以重试覆盖原失败，也不放宽存储锁。诊断日志attempt-undo-diagnostic。
 - 日志与fresh工作root必须分开；live以授权API文件、实际installed app、空workroot和gpt-6.1-sol为参数，3分钟watchdog。仅使用原授权文件，输出不能含key。
-- 安装UI停止尚未通过：map百万列表Native返回INTERNAL_ERROR（CLI能完成）记录保留；factorial百万自动timeout，CUA稳定等待错过按钮不能算手动停止。先用已有长计算路径实际按停止，再验证正常小计算 / 源码保存。
+- 安装UI停止现已实际通过：factorial百万运行时截图可见停止，立即点击得到CANCELLED；随后2+2得4，已保存退出。map百万列表Native返回INTERNAL_ERROR（CLI能完成）的极端负载失败仍保留。
 
 ## 下一步（按此推进）
 
 1. 把本轮参考固化并停止泛看应用；修正接续入口，避免压缩后重复。
-2. 定位Pi inUse的测试入口问题，确认真实包内Pi确定性链与当前.4 live助手；补实际UI停止 / 正常恢复。
-3. 对689当前CLI / Mac生产对象测原53与输入，复用已通过Web原35项输出做独立数学读回；记录诚实性能与环境。相机无新改动，无理由不重测。
+2. 定位Pi inUse的真实原因并确认当前.4 live助手。sol本轮在第三请求流开始后失败；luna完成第三流但preview_source参数错误（snapshot_ref误放input内、混入额外kind/dialect）后任务失败，无修改成功。原根分别live-acceptance/attempt-shipped与attempt-luna，精确key扫描均须计数；不能伪称live通过。AssistantContext当前仅传“OpenMath toolName”泛化描述，已有catalog含真实描述和参数示例，优先检查这处产品上下文缺失及错误反馈。
+3. 定位当前CLI / Mac超标，先解决实际耗时或明确负载影响，不盲重跑挑最好成绩；正确性53三端已经通过，Web35项/性能也通过。相机无新改动，无理由不重测。
 4. 查看689 CI紧凑结论。结合原保存/恢复/权限回归，记录8项实际结果；仅修新发现的具体问题。必要产品变更会生成新源码候选与相应包。
 5. 冻结实际候选，三资产manifest / 中文指南；确认新tag不存在，发布本版GitHub pre-release，再下载三资产核hash，实际安装 / Web启动与程序版本读回。未做公开下载前released_verified必须false。
 6. 最后按真实状态更新账本并完成goal；不能因文档或测试数量结束。

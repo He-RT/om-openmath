@@ -31,6 +31,8 @@ font_catalog = add('font-catalog', 'isa = PBXFileReference; lastKnownFileType = 
 font_catalog_build = add('font-catalog-build', f'isa = PBXBuildFile; fileRef = {font_catalog};')
 agent_runtime = add('agent-runtime', 'isa = PBXFileReference; lastKnownFileType = folder; path = OpenMathNative/Resources/AgentRuntime; sourceTree = "<group>";')
 agent_runtime_build = add('agent-runtime-build', f'isa = PBXBuildFile; fileRef = {agent_runtime};')
+icon = add('app-icon', 'isa = PBXFileReference; lastKnownFileType = image.icns; path = ../app/src-tauri/icons/icon.icns; sourceTree = "<group>";')
+icon_build = add('app-icon-build', f'isa = PBXBuildFile; fileRef = {icon};')
 math_package = add('swiftmath-package', 'isa = XCRemoteSwiftPackageReference; repositoryURL = "https://github.com/mgriebling/SwiftMath.git"; requirement = {kind = revision; revision = fa8244ed032f4a1ade4cb0571bf87d2f1a9fd2d7;};')
 math_product = add('swiftmath-product', f'isa = XCSwiftPackageProductDependency; package = {math_package}; productName = SwiftMath;')
 math_build = add('swiftmath-link', f'isa = PBXBuildFile; productRef = {math_product};')
@@ -40,9 +42,9 @@ markdown_product = add('markdown-product', f'isa = XCSwiftPackageProductDependen
 markdown_build = add('markdown-link', f'isa = PBXBuildFile; productRef = {markdown_product};')
 product = add('app-product', 'isa = PBXFileReference; explicitFileType = wrapper.application; path = "OpenMath Preview.app"; sourceTree = BUILT_PRODUCTS_DIR;')
 products = add('products', f'isa = PBXGroup; children = {array([product])}; name = Products; sourceTree = "<group>";')
-main_group = add('main-group', f'isa = PBXGroup; children = {array([ref for ref, _ in sources] + [resources, font_catalog, agent_runtime, products])}; sourceTree = "<group>";')
+main_group = add('main-group', f'isa = PBXGroup; children = {array([ref for ref, _ in sources] + [resources, font_catalog, agent_runtime, icon, products])}; sourceTree = "<group>";')
 source_phase = add('source-phase', f'isa = PBXSourcesBuildPhase; buildActionMask = 2147483647; files = {array([build for _, build in sources])}; runOnlyForDeploymentPostprocessing = 0;')
-resource_phase = add('resource-phase', f'isa = PBXResourcesBuildPhase; buildActionMask = 2147483647; files = {array([resource_build,font_catalog_build,agent_runtime_build])}; runOnlyForDeploymentPostprocessing = 0;')
+resource_phase = add('resource-phase', f'isa = PBXResourcesBuildPhase; buildActionMask = 2147483647; files = {array([resource_build,font_catalog_build,agent_runtime_build,icon_build])}; runOnlyForDeploymentPostprocessing = 0;')
 framework_phase = add('framework-phase', f'isa = PBXFrameworksBuildPhase; buildActionMask = 2147483647; files = {array([math_build,markdown_build])}; runOnlyForDeploymentPostprocessing = 0;')
 settings = {
     'SDKROOT': 'macosx', 'SUPPORTED_PLATFORMS': 'macosx', 'ARCHS': 'arm64',

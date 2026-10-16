@@ -50,6 +50,10 @@ import SwiftUI
         Button("保存") {Task {await workspace.save()}}.keyboardShortcut("s").disabled(workspace.session==nil || workspace.busy)
         Button("另存为…") {Task {await workspace.save(asNew:true)}}.keyboardShortcut("s",modifiers:[.command,.shift]).disabled(workspace.session==nil || workspace.busy)
       }
+      CommandGroup(replacing:.undoRedo) {
+        Button("撤销") {workspace.undo()}.keyboardShortcut("z").disabled(!workspace.canUndo)
+        Button("重做") {workspace.redo()}.keyboardShortcut("z",modifiers:[.command,.shift]).disabled(!workspace.canRedo)
+      }
     }
   }
   private var welcome:some View {

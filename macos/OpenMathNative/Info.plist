@@ -6,6 +6,7 @@
 <key>CFBundleName</key><string>OpenMath Preview</string>
 <key>CFBundleDisplayName</key><string>OpenMath Preview</string>
 <key>CFBundlePackageType</key><string>APPL</string>
+<key>CFBundleIconFile</key><string>icon.icns</string>
 <key>CFBundleShortVersionString</key><string>0.1.0</string>
 <key>CFBundleVersion</key><string>4</string>
 <key>OpenMathReleaseVersion</key><string>0.1.0-pre-alpha.4</string>

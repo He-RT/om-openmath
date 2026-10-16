@@ -154,6 +154,16 @@ import SwiftUI
     return false
   }
   func windowWillReturnUndoManager(_ window:NSWindow)->UndoManager? {session?.undo.manager}
+  // SwiftUI's app-level default undo commands do not discover the embedded TextKit
+  // editor's routed manager. Resolve the actual responder before falling back to the document.
+  private var commandUndoManager:UndoManager? {
+    guard !busy,window?.attachedSheet==nil,session?.assistant.busy != true else {return nil}
+    return (window?.firstResponder as? NSTextView)?.undoManager ?? session?.undo.manager
+  }
+  var canUndo:Bool {commandUndoManager?.canUndo==true}
+  var canRedo:Bool {commandUndoManager?.canRedo==true}
+  func undo() {if let manager=commandUndoManager,manager.canUndo {manager.undo();objectWillChange.send()}}
+  func redo() {if let manager=commandUndoManager,manager.canRedo {manager.redo();objectWillChange.send()}}
 }
 
 @MainActor final class NativeApplicationDelegate:NSObject,NSApplicationDelegate {

@@ -1,0 +1,614 @@
+# pre-alpha.5 实施计划：工作台 v2 与助手修复（Mac + Web）
+
+2026-10-16 · 设计依据 [workbench-v2.md](../design/workbench-v2.md) · 交互草案 [workbench-v2.html](../design/prototypes/workbench-v2.html) · 上一版记录 [PRE_ALPHA_4_PROGRESS.md](PRE_ALPHA_4_PROGRESS.md)（D074 是缺陷来源）
+
+目标版本 `0.1.0-pre-alpha.5`：交付 Mac DMG、Mac app ZIP、Web ZIP。界面按工作台 v2 重做，助手行为按第 A 阶段修复。`.4` 的公开 tag 和资产不动。
+
+---
+
+## 0. 开始任何任务前先读
+
+1. 本文第 1–2 节（目标、守则）。
+2. [workbench-v2.md](../design/workbench-v2.md) 中与当前任务对应的章节（每个任务都写了章节号）。
+3. 在浏览器打开 [workbench-v2.html](../design/prototypes/workbench-v2.html)，切到任务对应的状态再动手。
+4. 上下文压缩后，**重新执行第 1–3 步**，然后读第 6 节进度表找到下一项。
+
+不需要再浏览其他 App；已有观察在 [UI_REFERENCE_LOG.md](UI_REFERENCE_LOG.md)。Telegram 的参考已整理进设计文档第 11 节，只在遇到具体问题时查本地 `/Users/hert/Documents/ChatGPT/ui-learning/` 的对应条目。
+
+## 1. 目标与完成定义
+
+### 1.1 交付物
+
+| 交付物 | 内容 |
+|---|---|
+| Mac 应用 | 工作台 v2 界面（第 C、D 阶段），修复后的助手（第 A 阶段），模型设置（D6） |
+| Web 应用 | 同一设计的 React 实现（第 E 阶段），Web 助手（第 F 阶段） |
+| 安装包 | `OpenMath_0.1.0-pre-alpha.5_aarch64.dmg`、`…_macos_arm64.app.zip`、`OpenMath-web_0.1.0-pre-alpha.5.zip` + manifest |
+| 文档 | 发行说明（如实写签名、公证、已知限制）、本计划的进度记录 |
+
+### 1.2 完成条件（全部满足才能说“pre-alpha.5 已交付”）
+
+1. **设计验收**：Mac 和 Web 都按设计文档第 12 节的 20 项检查表逐项对照草案截图，全部为“是”；不是“是”的项目要有用户书面同意的例外。
+2. **助手场景**：第 A5 节 8 个场景在 Mac 上用真实模型通过；Web 通过 S1–S6。
+3. **数学与性能不退步**：原 53 条正确性全部通过；CLI 每条 < 200 ms；Mac、Web 整次每条 < 1 s；10 KiB 输入到可见绘制 p95 ≤ 50 ms（Mac、Web 各测一次）。
+4. **数据安全**：现有存储、保存、恢复、撤销回归脚本通过（只跑第 G3 节列出的那几个）。
+5. **安装回读**：从公开下载的三个资产安装或解压，打开示例笔记本，算出 2、3，版本显示 `.5`。
+
+**不能**自己新定义更宽松的完成条件，也不能把“回合结束”“测试通过”说成“计划完成”。某一条做不到时，停下来写明原因并问用户。
+
+### 1.3 不在本版
+
+Windows、iOS 发行；音频、视频处理；长对话记忆压缩；提示词管理界面（只做只读的“查看本轮完整输入”）；多窗口；多预设和思考强度的完整编辑器；语法高亮。
+
+## 2. 执行守则
+
+这些规则来自 `.4` 会话的教训（详见 D074），每条都要遵守：
+
+1. **先对照设计再写代码。** 每个界面任务开工前打开草案对应状态；完成后在相同尺寸截图并排比较，把结果写进进度记录（3–5 行，不贴大量证据）。
+2. **只陈述事实。** 进度记录写“做了什么、测了什么、结果如何、还差什么”。没测的写“未测”。
+3. **测试按改动跑。** 改哪里跑哪里的已有测试；只为新逻辑加测试（状态映射、操作记录配对、提示词拼装、发送条件、过期判定）。不建新的证据框架，不复制源码到证据目录。
+4. **真实模型调用有预算。** 只在 A5、F5、G2 调用；本版总计不超过 60 次任务运行。只用 `/Users/hert/.config/openmath/testing/pre-alpha-4-api.json` 中授权的端点和模型，不输出密钥。
+5. **单一执行者。** 不开子代理；不改系统输入法、安全、权限设置；不在本机启动 iOS 模拟器。
+6. **磁盘。** 只清理自己产生的、已停止的、可重建的缓存；不删发行包、依赖、失败记录。
+7. **提交。** 每个任务完成后一个提交，推送到 `dev`；不合并 `main`，不移动旧 tag。
+8. **遇到设计没写的情况**：按设计原则（第 3 节）选最简单的做法，在进度记录里注明“设计未覆盖，采用 X”，阶段结束时汇总给用户确认。
+
+## 3. 阶段总览与顺序
+
+单人顺序执行。先修助手行为（在现有界面上就能验证，价值最高），再做令牌，然后 Mac 界面，最后 Web。
+
+| 阶段 | 内容 | 预计 | 依赖 |
+|---|---|---|---|
+| A | 助手行为：提示词、结果语义、操作记录数据、真实场景 | 3–4 天 | — |
+| B | 设计令牌、字体、文案键（Mac + Web） | 1–2 天 | — |
+| C | Mac 工作台：窗口、目录、单元格、结果、文字单元格、代码块、图形、检查器 | 6–8 天 | B |
+| D | Mac 助手界面：对话、操作记录、本轮结果、输入框、附件、设置 | 5–7 天 | A、B、C1 |
+| E | Web 工作台 | 4–6 天 | B |
+| F | Web 助手 | 5–7 天 | A、E |
+| G | 验收、打包、发布 | 2–3 天 | 全部 |
+
+每个阶段结束，向用户发一段简短的阶段汇报：完成了什么、和草案的差异、需要用户决定的事。
+
+---
+
+## 阶段 A：助手行为修复
+
+### A1 提示词分层拼装（设计 7.8）
+
+**目标**：运行时 system 消息按设计 7.8 的 6 层拼装，操作指引来自唯一源文件。
+
+**涉及**：`docs/design/prompts/notebook-operation.md`、新 `agent/prompts/`、`scripts/`（新提取脚本）、`macos/OpenMathNative/Agent/AssistantContext.swift:24`、Mac 资源打包脚本 `macos/Scripts/package-native.sh`、`macos/Scripts/generate-project.py`。
+
+**步骤**：
+
+1. 在 `notebook-operation.md` 的“模型操作说明”一节前后加标记 `<!-- prompt:operation:begin -->` / `<!-- prompt:operation:end -->`。
+2. 新建 `agent/prompts/identity.zh.md`（身份与边界，含 `{{mode}}`、`{{version}}` 占位）、`agent/prompts/task-rules.zh.md`（设计 7.8 第 5 层三条规则，原文照抄）、`agent/prompts/language-card.zh.md`、`agent/prompts/examples.zh.md`（A2 产出）。
+3. 新建 `scripts/build_prompts.py`：读取上述文件和标记段，按顺序拼成 `agent/prompts/generated/system.zh.md`，写入 SHA256；`--check` 模式检查生成文件与源一致（防止漂移）。
+4. Mac：把 `generated/system.zh.md` 作为 App 资源打包（更新 `generate-project.py` 的资源列表）。
+5. 修改 `AssistantContext.prepare`：删除第 24 行的硬编码字符串，改为读取资源、替换 `{{mode}}` `{{version}}` `{{date}}`，按模式追加一行（执行：可用全部工具；讨论：只能读取、检查和临时计算）。原硬编码里关于 `snapshot_ref` 失效、`INVALID_REFERENCE` 重读的规则，挪进 `task-rules.zh.md`，不能丢。
+6. 估算长度（字符数 ÷ 1.6 约等于中文 token），超过 6k 时删减示例并报告。
+7. 新增 Swift 单元测试：拼装结果包含操作指引段的 SHA、模式行正确、不含未替换的占位符。
+
+**验收**：`python3 scripts/build_prompts.py --check` 通过；Mac Release 构建通过；在助手里发一条消息，用“查看本轮完整输入”（D4 之前先用调试日志）确认 system 内容与生成文件一致。
+
+### A2 语言卡与已验证示例（设计 7.8 第 3–4 层）
+
+**步骤**：
+
+1. 用当前 Release CLI 实跑以下源码，记录返回类型和诊断（结果写入 `target/plan-5/prompt-examples.json`，不入库）：
+   - `solve(x^2 - 5x + 6 = 0, x)`
+   - `let square(v) = v^2; map(fn(v) => square(v), [1, 2, 3])`
+   - `plot([sin(x), cos(x)], x: -pi..pi)`
+   - 简化西瓜：`scene([translate(parametric_plot([1.25*cos(u)*sin(v), sin(u)*sin(v), cos(v)], u: 0..2*pi, v: 0..pi, mesh_points: 24, color: fn(p,u,v) => [0.06, 0.34 + 0.14*cos(12*u), 0.1]), [-2,0,0]), translate(scale(disk([0,0,0], 0.91, color: "#ed4a55"), [1.25,1,1]), [2,0,0])], dimensions: 3)`
+   - 错误对照：`let f(x) =` 换行写右侧 → 记录 E022；同一行开括号的写法 → 正常。
+2. 把实际通过的源码和“返回：Solutions / List / Plot / Scene3D”写进 `examples.zh.md`。跑不通的示例不写，改用能通过的写法。
+3. `language-card.zh.md` 写设计 7.8 第 3 层列出的要点，每条一行。
+4. 重新生成 system，检查长度。
+
+**验收**：示例 JSON 中每条 `diagnostics` 为空（错误对照除外）；`--check` 通过。
+
+### A3 本轮结果与状态用语（设计 7.4、7.9）
+
+**目标**：去掉 `loop_stopped → 已完成`，回合结束时生成基于宿主事实的 `TurnOutcome`。
+
+**涉及**：`macos/OpenMathNative/Agent/NativeAssistant.swift:86–88`、`Agent/AgentSessionService.swift`、`Storage/AgentSessionStore.swift`（读本回合事件）。
+
+**步骤**：
+
+1. 定义 `TurnOutcome { endReason: modelFinished|stopped|failed(reason)|budget(kind), changedCells:[(cellID, kind:new|edited|deleted, transactionRef)], ranCells:[(cellID, status)], products:[ProductFact], staleAfterEdit:[cellID], saved:Bool, durationMs, modelRequests }`。`ProductFact` 取自本回合 `inspect_result` 的返回（解、表达式、二维图曲线数、三维三角形数）。
+2. 从本回合的耐久事件（工具 effect 结果、运行回执）组装，不读模型文本。修改后未再运行的单元格放进 `staleAfterEdit`。
+3. 状态文字只用设计 7.9 的文案键。新建 `UIStrings.swift`，集中放这些中文文案。
+4. 讨论模式不生成 `TurnOutcome` 的修改、运行行。
+5. 单元测试：四种结束原因各一个；“修改后未运行”能被识别；空回合（只读）不出现修改行。
+
+**验收**：测试通过；现有 UI 上状态行不再出现“已完成”（`rg -n '"已完成"' macos/OpenMathNative` 无结果）。
+
+### A4 按消息的操作记录数据（设计 7.3）
+
+**目标**：用 `AgentAction` 列表取代 `trace: [String]`，每个动作挂在所属的助手消息上。
+
+**涉及**：`Agent/AssistantContext.swift`（现在拼 `trace` 的循环）、`Agent/NativeAssistant.swift:20,52,96`。
+
+**步骤**：
+
+1. 定义 `AgentAction`（字段见设计 7.3），`NativeAssistant` 发布 `messages: [AssistantMessage]`，每条助手消息含 `parts: [text | actions]`，按事件顺序排列。
+2. 配对规则：同一 `call_id` 的调用与结果合并为一个动作；只有调用没有结果为 `running`；宿主返回错误为 `failed`（保存错误码和一句说明）；未知提交为 `unknown`。
+3. `verb` 和 `object` 由工具名和参数、结果生成，映射表放在一个函数里（设计 7.3 表格）。对象中的单元格写“单元格 N”（N 为当前顺序号），同时保存稳定 `cell_id` 用于定位。
+4. 修改类动作保存 `transaction_ref`，给 D2 的“查看差异”“撤销”使用。
+5. 单元测试：调用/结果配对、失败、未知、连续读取合并（3 个以上合并成一行）。
+
+**验收**：测试通过；现有界面临时用简单列表显示新数据，确认顺序正确。
+
+### A5 真实模型场景（Mac，现有界面即可）
+
+用 `gpt-6.1-sol` 和 `gpt-6-luna` 各跑一次。每个场景记录：通过与否、动作序列摘要、失败原因。失败时先改提示词或工具错误反馈，再只重跑失败的场景。
+
+| # | 用户输入（执行模式，除非注明） | 通过标准 |
+|---|---|---|
+| S1 | 先有 `let a = 2` 和 `a + 1`（结果 3）。“把 a 改成 5 并更新结果。” | `a` 单元格改为 5；依赖单元格重算为 6；本轮结果列出修改和运行 |
+| S2 | 空笔记本。“在笔记本里画一个切开的西瓜，确认图形真的生成了。” | 新增**数学**单元格，含 `scene`；运行无诊断；`inspect_result` 返回几何；没有用文字单元格或 emoji 代替 |
+| S3 | “画出 sin x 和 cos x，x 从 −π 到 π。” | 一个 `plot` 单元格，两条曲线，运行无诊断 |
+| S4 | 有一个 `let f(x) =` 后换行的单元格（E022）。“修复这个错误。” | 改成合法写法，运行通过，结果与原意一致 |
+| S5 | “用 OpenMath 的 NIntegrate 和 Method 选项算 ∫₀¹ sin(x²) dx。” | 先查函数目录；说明没有该接口，给出实际可用的写法（如数值积分）并运行；不伪造函数 |
+| S6 | 讨论模式。“如果把 a 改成 5，a+1 是多少？” | 只用临时计算，笔记本无任何修改；回答 6 |
+| S7 | 让它运行一个长计算时按“停止” | 显示“已停止”；已提交的修改如实列出；不再请求模型 |
+| S8 | S2 之后，点“撤销本轮修改” | 西瓜单元格被移除，其他内容不变；再撤销无副作用 |
+
+**验收**：两个模型都通过 S1–S8；结果写进进度记录（每个场景一行）。
+
+---
+
+## 阶段 B：设计令牌与基础
+
+### B1 Mac 令牌与字体（设计 4.1–4.4）
+
+**涉及**：`macos/OpenMathNative/Assets.xcassets`（如无则新建）、新 `macos/OpenMathNative/UI/Theme.swift`、`generate-project.py`。
+
+**步骤**：
+
+1. 在资产目录加颜色：`Well`、`LineStrong`、`Verified`（即 AccentColor）、`Agent`、`Conditional`、`CodeBackground`、`Plot1`、`Plot2`、`SceneBackground`，每个带深色变体（值取设计 4.1）。能用系统色的（paper、chrome、ink、ink-2、ink-3、red、separator）直接用系统色，不建资产。
+2. `Theme.swift`：`Theme.Color.*`、`Theme.Font.paperTitle/paperBody/paperH2`（`.system(size:design:.serif)`，并通过 `NSFontDescriptor` 的 cascade list 回退 Songti SC）、`Theme.Font.source`（`.monospaced`）、`Theme.Space`（4/8/12/16/20/24/32）、`Theme.Radius`（well 8、code 6、bubble 14、composer 14、menu 11）。
+3. 把 SF Symbols 名称按设计 4.4 集中到 `Theme.Symbol`。
+
+**验收**：Release 构建通过；写一个调试用的令牌预览视图（只在 Debug 构建出现），深浅色截图与设计 4.1 色值核对。
+
+### B2 Web 令牌与字体
+
+**涉及**：`app/src/styles/theme.css`、`app/public/fonts/`、`licenses/`、`THIRD_PARTY_NOTICES.md`。
+
+**步骤**：
+
+1. 用设计 4.1 的令牌重写 `theme.css` 的变量（保留旧变量名的别名一段时间，避免一次改坏所有组件；E 阶段结束后删除别名）。
+2. 下载 STIX Two Text 的 woff2（400、600、400 italic，OFL 1.1），放进 `app/public/fonts/`，用 `@font-face` 引用；在 `licenses/` 加 OFL 原文，`THIRD_PARTY_NOTICES.md` 加一条。
+3. 定义 `--font-ui`、`--font-mono`、`--font-paper`。
+
+**验收**：`npm run build --prefix app` 通过；现有 35 项生产 E2E 仍通过（只是变色，选择器不变）。
+
+### B3 共用文案键（设计 7.9）
+
+**步骤**：
+
+1. Web：在 `app/src/i18n/index.ts` 中文和英文各加设计 7.9 的键。
+2. Mac：`UIStrings.swift`（A3 已建）补齐同一组键；键名与 Web 相同，方便核对。
+3. 新增一个小脚本 `scripts/check_ui_strings.py`：比较两端中文文案是否一致。
+
+**验收**：脚本通过。
+
+---
+
+## 阶段 C：Mac 工作台
+
+每个任务完成后，按第 2 节守则 1 截图对照草案“Mac 窗口”。
+
+### C1 窗口结构与工具栏（设计 5.1）
+
+**涉及**：`Views/WorkspaceView.swift`（整个文件）、`NativeFileWorkspace.swift`。
+
+**步骤**：
+
+1. **先做半天验证**：在 Debug 中用 `NavigationSplitView`（sidebar: 目录，detail: 笔记本）加 `.inspector(isPresented:)`（检查器）搭一个窗口，运行现有 `macos/Scripts/test-workbench.sh` 中的宽度、滚动、选区检查（1042/861/640/1100、滚动 100 pt 保持、编辑选区保持）。
+2. 全部通过则采用；任何一项失败，保留 `WorkbenchSplitView`，只按设计调整样式。把结论写进进度记录。
+3. 工具栏：左侧目录开关；`navigationTitle` 为文稿名，`navigationSubtitle` 为状态（文案键 doc.* / kernel.* / cell.running）；右侧“运行/停止”、添加单元格菜单、检查器开关。删除“保存”“助手”“详情”三个按钮（保存走 ⌘S 和文件菜单，助手和详情合并到检查器）。
+4. 删除底部状态栏 `HStack`（第 18–25 行），状态信息移到副标题和单元格。
+5. 键盘：⌘1 目录，⌥⌘0 检查器，⌥⌘1/2/3 切换检查器分段。
+
+**验收**：`test-workbench.sh` 通过；截图对照检查表第 1、2 项。
+
+### C2 目录（设计 5.1、5.5）
+
+**步骤**：
+
+1. 目录数据：遍历单元格；文字单元格的第一个 H1/H2（用现有 `MarkdownRenderDocument` 解析）作为分组标题；数学单元格显示源码首行（等宽，单行截断）。
+2. 每行左侧状态圆点（设计 5.2 表的“目录圆点”列）；助手最近修改的单元格加靛蓝环。
+3. 选中与笔记本当前单元格双向同步；点按滚动到单元格但不抢编辑焦点。
+4. 底部一行“N 个单元格”。
+
+**验收**：截图对照；点按定位正确；长源码截断不换行。
+
+### C3 单元格结构与左轨（设计 5.2）
+
+**涉及**：`NativeFileWorkspace.swift:205` 的 `NativeNotebookFileView` 及单元格子视图。
+
+**步骤**：
+
+1. 把单元格拆成 `CellRail` + `SourceWell` + `ResultArea` 三部分；`SourceWell` 包住现有 TextKit 编辑器，不改编辑器本身。
+2. 新建 `CellPresentationState`（pending / running / verified / exact / numeric / conditional / stale(reason) / error / unevaluated / stopped，加 `byAgent: Bool`），由 `NotebookRuntime` 的结果、草稿和 A4 的操作记录推导。推导函数写单元测试（覆盖设计 5.2 表的每一行）。
+3. `CellRail`：按状态画 3 pt 轨道；运行中用 `TimelineView` 做流动虚线，`accessibilityReduceMotion` 时为静态；`byAgent` 时顶端 18 pt 靛蓝。
+4. 单元格工具（运行、更多）只在悬停、选中或聚焦时显示；全键盘访问时始终可达。
+5. 去掉现有的“01 数学”序号标签和每个解的大块布局。
+
+**验收**：推导函数测试通过；7 种左轨状态都能在实际应用里构造出来并截图（进度记录里列出构造方法）。
+
+### C4 结果紧凑化（设计 5.3）
+
+**涉及**：`Rendering/SolutionView.swift`、`Rendering/ResultPresenter.swift`、`Rendering/NativeMathView.swift`、`Rendering/ValueTableView.swift`。
+
+**步骤**：
+
+1. `SolutionLine`：≤ 4 个解时一行排版（解之间用逗号和 2 em 间距），> 4 个时用表格（序号、精确值、近似值）；重根标“重数 2”。
+2. 条件：琥珀芯片“成立条件 〈公式〉”。
+3. 状态行：图标 + 状态文字 + 摘要（解的个数）+ 用时；右侧文字按钮“步骤”“绘图”“复制⌄”（复制菜单：源码、LaTeX、数值）。
+4. Root：原式加“≈ 数值”，数值精度菜单沿用现有 20/50/80 位。
+5. 删除原“完整原结果”展开在主视图中的位置，移到“⋯ → 查看完整结果”的弹出框。
+
+**验收**：现有 `test-results.sh`、`test-result-presenter.sh`、`test-math-render.sh` 通过；截图对照检查表第 3、5 项。
+
+### C5 过期、运行、出错（设计 5.2、5.4）
+
+**步骤**：
+
+1. 过期：结果 42% 不透明；下方一行原因 + “运行以更新”。原因来自 `CellPresentationState.stale(reason)`：源码被编辑，或依赖的定义变了（依赖信息来自内核已有的 owner/依赖关系）。
+2. 运行中：保留旧结果半透明；副标题“正在运行单元格 N”；工具栏按钮变“停止”。
+3. 出错：红色诊断框，位置“行:列”（等宽）+ 一句说明 + “定位”（把光标放到出错位置）。有上次有效结果时在诊断框下方保留并标“上次结果”。
+4. 停止：单元格写“已停止”；已接纳的部分结果照常显示。
+
+**验收**：`test-kernel-runtime.sh` 通过；截图对照检查表第 6 项。
+
+### C6 文字单元格（设计 5.5）
+
+**涉及**：`NativeFileWorkspace.swift:340–353`、`Rendering/NativeMarkdownView.swift`。
+
+**步骤**：
+
+1. `reading` 默认改为 `true`；删除“文字视图”分段选择器。
+2. 双击正文或按“编辑”进入编辑态；Esc、⌘↩ 或失去焦点回到阅读态；新建文字单元格默认编辑态。
+3. 阅读态正文用 `Theme.Font.paperBody`，H1/H2 用纸面字体，最大行宽约 64 字符。
+4. 编辑态背景用 Well 色，等宽字体。
+
+**验收**：`test-markdown.sh`、`test-markdown-layout.sh` 通过；截图对照检查表第 7 项。
+
+### C7 代码块（设计 5.6）
+
+**涉及**：`Rendering/MarkdownRenderDocument.swift:78–80,200–203`、`Rendering/NativeMarkdownView.swift`。
+
+**步骤**：
+
+1. `MarkdownRenderDocument` 的输出从“文字段列表”改为“块列表”：`paragraph(runs)`、`heading`、`list`、`table`、`codeBlock(language, code, sourceRange)`、`mathBlock`。`InlineCode` 仍是行内样式（等宽 + 浅底）。
+2. `NativeMarkdownView` 按块排版：普通块继续用 TextKit 2；`codeBlock` 用独立视图——头部（语言名、复制、OpenMath 代码才有“插入为单元格”）+ 水平 `NSScrollView` 内的等宽文本，不换行。
+3. 复制整篇 Markdown 时代码块保留原围栏；源码映射（`sourceRange`）保留，供以后定位。
+4. 同一个渲染器给文字单元格和助手回复共用。
+5. 测试：在 `test-markdown.sh` 中加用例：含 ASCII 图的代码块不换行、宽度超出时可横向滚动、复制得到原文。
+
+**验收**：测试通过；用 D074 截图里的那段助手回复重现，代码块显示为单个容器。
+
+### C8 图形外观（设计 5.3）
+
+**涉及**：`Rendering/NativePlotView.swift`、`Rendering/NativeMetalSceneView.swift`、`Rendering/NativeGeometryView.swift`。
+
+**步骤**：
+
+1. 二维：画布占满结果宽度，高 250；图例移到画布下方；缩放、复位按钮放进右上角的浮动小条，悬停或聚焦时出现。序列颜色用 Plot1、Plot2…（不用绿色）。
+2. 三维：高约 400；复位、全屏在右上；左下提示“拖动旋转，滚动缩放”，首次交互后隐藏；背景跟随主题（深色用深灰，不再是浅色方块）。
+3. “图形信息”展开项放采样点数、三角形数、坐标范围、限制说明。
+
+**验收**：`test-geometry.sh` 通过；相机 60 Hz 测量沿用 `.4` 的入口复测一次。
+
+### C9 检查器：步骤与变量（设计 6）
+
+**步骤**：
+
+1. 检查器顶部用 `Picker(.segmented)`：助手、步骤、变量。各分段保留滚动位置。
+2. 步骤：重排 `Rendering/NativeStepsView.swift`：序号、规则名、公式、说明、子步骤缩进可折叠；标题写“单元格 N 的推导步骤”和源码。
+3. 变量：Mac 目前没有数据来源。在 `om-host-service` 新增只读查询 `list_definitions`：从当前已接纳 checkpoint 读出定义名、值摘要（最多 120 字符的 InputForm）、所属单元格 ID、是否过期；不求值。通过现有结果 worker 的只读通道返回。Swift 侧表格显示，点按定位。
+4. 文稿信息（文件位置、保存状态、版本）移到标题弹出菜单。
+
+**验收**：新增 Rust 只读查询的单元测试（定义存在、过期、出错三种）；截图对照检查表第 10 项。
+
+---
+
+## 阶段 D：Mac 助手界面
+
+### D1 对话视图（设计 7.1、7.2）
+
+**涉及**：`UI/NativeAssistantView.swift`（重写）、`Agent/NativeAssistant.swift`。
+
+**步骤**：
+
+1. 头部：对话标题（第一条用户消息前 20 字）、历史对话菜单（列出本文稿的历史会话，来自现有会话存储）、新对话。
+2. 用户消息：右对齐气泡，附件缩略图在上方。
+3. 助手消息：署名行（“助手”靛蓝 + 模型名 + 模式）；正文用 C7 的 Markdown 渲染器；`parts` 中的文本和操作记录按顺序排列。
+4. 流式：沿用 75 ms 合批；已结束的块不重排；删除现在“流式时用 Text、结束后换 Markdown”的切换。
+5. 滚动：在底部时跟随；向上翻阅时不跟随，显示“新消息”小药丸。删除现在每次尾文变化就 `scrollTo` 的逻辑（第 27 行）。
+
+**验收**：截图对照检查表第 11 项；向上翻阅时新内容不抢滚动（手动验证并记录）。
+
+### D2 操作记录界面（设计 7.3）
+
+**步骤**：
+
+1. `AgentActionList`：摘要行（可折叠）+ 动作行（图标、动词、对象、状态图标）；失败行显示原因。运行中的回复始终展开；> 6 个动作时默认折叠。
+2. “定位”：调用工作台导航到 `cell_id`，滚动并靛蓝闪框（减少动态效果时只滚动）。
+3. “查看差异”：用 `transaction_ref` 从源码历史取前后源码，行级差异，等宽显示在行下。
+4. “撤销”：调用现有 Agent undo（`undo_transaction` 的宿主实现）撤销这一笔；结果写回该行（“已撤销”）。
+
+**验收**：A5 的 S2 运行后，点“定位”“查看差异”“撤销”都正确；截图对照检查表第 12 项。
+
+### D3 本轮结果（设计 7.4）
+
+**步骤**：
+
+1. 用 A3 的 `TurnOutcome` 渲染“本轮结果”块：事实行、按钮（撤销本轮修改、定位单元格 N）、结束行。
+2. “撤销本轮修改”：把本回合所有事务作为一组提交给撤销协调器（`Editor/UndoCoordinator.swift` 已支持事务组），成功后块内显示“已撤销”和“重做”。
+3. 讨论模式不显示此块。
+
+**验收**：A5 的 S1、S2、S7、S8 截图；检查表第 13 项。
+
+### D4 输入框（设计 7.6、7.7）
+
+**步骤**：
+
+1. 正文编辑器用 `NSTextView`（参照 `Editor/DraftTextViewAdapter.swift` 的接线方式），自动增高到助手栏高度 35%，之后内部滚动；外框圆角 14，聚焦时绿色描边。
+2. Enter 发送，⇧Enter 换行；`hasMarkedText()` 为真时 Enter 不发送。设置中可改为 ⌘↩ 发送。
+3. 附件行和单元格引用芯片（“＋ → 引用单元格”弹出单元格列表；在笔记本单元格的更多菜单里也可“在助手中引用”）。
+4. 模式菜单：执行、讨论（取代“允许修改并运行笔记本”复选框）。模式决定传给 Pi 的工具集合（设计 7.7）。
+5. 模型菜单：`popover` 内搜索框 + 按供应商分组的列表，数据来自 D6 的模型配置；执行模式下无工具能力的模型禁用并说明；“管理模型…”打开 Settings。
+6. 上下文圆环：估算 = 本轮将发送的字符数 ÷ 1.6（标“预估”），上限取模型配置；上一轮实际用量取供应商返回的 usage。上限未知时虚线圆环。弹出框按设计 7.6 列出各项，并提供“查看本轮完整输入”（只读文本窗口，显示 A1 拼装的 system 和本轮消息）。
+7. 发送：宿主接受冻结消息后才清空草稿和附件；失败保留。运行中发送键变停止（⌘. 同效）。
+
+**验收**：中文输入法合成期间按 Enter 不发送（手动验证）；检查表第 14–17 项。
+
+### D5 附件（设计 7.6 附件）
+
+**步骤**：
+
+1. 入口：⌘V（图片数据、Finder 文件 URL）、拖入、“＋ → 文件或图片”。全部进入现有 `Storage/BlobStore.swift`。
+2. 图片：生成缩略图；发送给支持图片的模型（模型配置中的能力标记）。不支持时卡片标“当前模型不能读取图片”，发送前提示切换模型或移除。
+3. PDF：用 PDFKit 提取文字（保留页码），作为文本附件发送；扫描件（提取为空）标“没有可提取的文字”。
+4. 其他格式：保留卡片，标“暂不能发送给模型”。
+5. 附件不写入 `.omnb`。
+
+**验收**：图片和 PDF 各一次真实发送（计入模型预算）；未知格式不丢失、不发送。
+
+### D6 模型设置（设计 8）
+
+**步骤**：
+
+1. 新建 `Settings` 场景，五个标签：通用、编辑与计算、模型、助手、数据。本版“编辑与计算”“数据”放现有选项，没有的先不建。
+2. 模型页：左侧供应商列表（添加、删除）；右侧表单：显示名、API 地址、API Key（现有 `Models/SecretStore.swift`）、模型列表（API 名称、显示名、工具调用、图片输入、上下文上限），“测试连接”调用一次模型目录或最小请求。
+3. 配置持久化：新文件 `Models/ModelRegistry.swift`（JSON，存在应用支持目录；密钥只在钥匙串）。从当前 `NativeAssistant` 的单模型配置读一次作为初始值（同一应用的新数据，不是旧版迁移）。
+4. 删除 `NativeAssistantView` 中的设置 sheet。
+
+**验收**：`test-secret-store.sh` 通过；添加两个模型后，D4 的模型菜单正确列出。
+
+---
+
+## 阶段 E：Web 工作台
+
+每个任务完成后截图对照草案“Web 桌面”和“Web 手机”。
+
+### E1 布局外壳（设计 5.1）
+
+**涉及**：`app/src/App.tsx`、`components/TopBar.tsx`、`components/Notebook.tsx`、`components/Inspector.tsx`、`styles/chrome.css`、`styles/responsive.css`。
+
+**步骤**：
+
+1. 三栏 grid：新 `components/Outline.tsx`（侧栏，顶部 ∑ OpenMath）、笔记本、检查器。断点 1100 / 760。
+2. `TopBar`：目录开关、文稿名、状态、“手动/自动运行”菜单、绿色“运行”、添加单元格菜单、检查器开关、“⋯”（新建、打开、保存、导出、设置）。
+3. 手机：单栏；右下“助手”按钮；检查器作为底部面板（高 90%，带抓手和关闭）。
+4. 检查器分段改为“助手、步骤、变量”；现有“文档”（函数文档）移到命令面板 ⌘K 和“⋯ → 函数目录”。
+
+**验收**：`npm run lint`、`typecheck`、单元测试通过；更新受影响的 E2E 选择器（不改数学断言）；三种宽度截图对照。
+
+### E2 单元格与结果（设计 5.2–5.4）
+
+**涉及**：`components/Cell.tsx`、`components/output/*`（`SolutionCards.tsx` → 新 `SolutionLine.tsx`）、`styles/notebook.css`、`styles/output.css`。
+
+**步骤**：
+
+1. 单元格结构：左轨、源码槽（CodeMirror 外层样式）、结果、状态行。状态推导函数 `cellPresentation()` 与 Mac 的 C3 对应，写单元测试（同一组用例）。
+2. 解集一行、条件芯片、>4 个解用表格、状态行与动作按钮。
+3. 过期、运行、出错的显示同 C5。
+4. 去掉现有的解卡片网格和“75 ms”单独一行。
+
+**验收**：`OutputView.test.tsx`、`ValueView.test.tsx` 更新后通过；E2E `output.spec.ts`、`notebook.spec.ts`、`steps.spec.ts` 通过。
+
+### E3 文字单元格与代码块（设计 5.5、5.6）
+
+**涉及**：`components/TextCell.tsx`。
+
+**步骤**：
+
+1. 默认阅读态，衬线正文；双击或“编辑”进入编辑；Esc / Ctrl+Enter 退出。
+2. 新 `components/CodeBlock.tsx`：头部语言名、复制、插入为单元格；`pre` 不换行，横向滚动。助手回复复用。
+
+**验收**：`TextCell.test.tsx` 加用例（默认阅读态、代码块不换行）。
+
+### E4 图形外观（设计 5.3）
+
+**涉及**：`components/plot/PlotView.tsx`、`components/scene/*`、`styles/plot.css`。
+
+**步骤**：同 C8：图例在下方，控制浮在右上，序列颜色不用绿色，三维背景跟随主题，“图形信息”展开项。
+
+**验收**：`plot.spec.ts`、`scene.spec.ts` 通过。
+
+### E5 步骤与变量（设计 6）
+
+**涉及**：`components/steps/StepsPanel.tsx`、`components/Inspector.tsx`。
+
+**步骤**：按设计重排步骤列表；变量表三列，点按定位（已有 `get_variables`）。
+
+**验收**：`StepsPanel.test.tsx` 通过；截图对照。
+
+### E6 E2E 与性能
+
+**步骤**：
+
+1. 新增 2 个 E2E：编辑依赖后结果变过期并可“运行以更新”；文字单元格阅读/编辑切换。
+2. 跑 `performance.spec.ts`（原 53 条 WASM < 1 s、输入 p95 ≤ 50 ms）。
+
+**验收**：全部 E2E 通过；性能数字写进进度记录。
+
+---
+
+## 阶段 F：Web 助手
+
+### F1 运行方式验证（1 天内决定）
+
+Web 已有 `app/src/kernel/llmDriver.ts`：WASM 内核里的 Rust 编解码器发出 `llm_http` 事件，TS 用 `fetch` 执行。验证路线：
+
+1. 在 Web Worker 中加载 `@earendil-works/pi-agent-core`。已核对：它自身没有 Node 内置模块导入，但运行时从 `@earendil-works/pi-ai` 主入口导入 `EventStream`、`validateToolArguments`、`toToolDeclaration` 等工具函数（`agent.js`、`agent-loop.js`）；`pi-ai` 依赖 Node HTTP 代理和多家供应商 SDK。要验证 Vite 打包进 Worker 时这些依赖能被摇树去掉，或用空模块别名替代后仍能运行。
+2. 给 Pi 写一个模型适配器，走现有 `llmDriver`（WASM 编解码 + fetch），模型请求不经 `pi-ai` 的供应商代码。
+3. 用一个回环假服务（或一次真实模型调用）跑通“读取笔记本 → 回复”。
+
+成立则采用；不成立则写一个最小 TS 循环（同一工具 schema、同一事件结构），不引入新依赖。结论写进进度记录。
+
+### F2 Web 工具宿主
+
+**步骤**：
+
+1. 在 Worker 侧实现工具：`read_notebook`、`search_functions`、`get_function_docs`、`preview_source`、`apply_notebook_patch`、`run_cells`、`inspect_result`、`evaluate_scratch`、`undo_transaction`、`get_operation_status`。参数和返回使用现有生成的 TS 类型与 `agent-tools.schema.json` 的闭合 schema 校验。
+2. 文档写入走 `state/notebookStore.ts` 的同一入口，每次 `apply_notebook_patch` 生成一笔事务（前后源码 + id），撤销用这笔事务的逆操作；后续手工编辑冲突时拒绝撤销并说明。
+3. 运行与检查走现有 `WasmClient`。
+4. 会话和操作记录存 IndexedDB（每个文稿一份）；不写入 `.omnb`。
+5. 提示词使用 A1 生成的同一个 `system.zh.md`（构建时复制进 `app/public/` 或作为模块导入）。
+
+**验收**：每个工具一个单元测试（正常、参数错误、引用过期）；S1 在 Web 上用回环服务跑通。
+
+### F3 Web 助手界面
+
+**步骤**：与 D1–D4 相同的结构，React 实现：`Transcript.tsx`、`ActionLog.tsx`、`TurnOutcome.tsx`、`Composer.tsx`（textarea 自动增高到 35%，`compositionstart/end` 期间不发送）、模式与模型菜单（键盘可用）、上下文圆环。替换 `components/assistant/AssistantPanel.tsx` 的旧问答式面板；旧的 `AskCell` 保留兼容（只读显示）。
+
+**验收**：`assistant.test.tsx` 改写后通过；截图对照“Web 桌面”和“Web 手机”的助手状态。
+
+### F4 Web 设置
+
+**步骤**：`components/settings/` 改为五组；模型页同 D6；API Key 存浏览器本地并在首次保存时说明位置（现有 `PrivacyPrompt.tsx`）；测试连接区分 CORS 失败和认证失败。
+
+**验收**：`settings.spec.ts` 通过。
+
+### F5 Web 真实场景
+
+用 `gpt-6.1-sol` 跑 S1–S6（Web 没有附件以外的媒体）。
+
+**验收**：全部通过，记录在进度中。
+
+---
+
+## 阶段 G：验收与发布
+
+### G1 设计验收
+
+Mac 和 Web 各按设计第 12 节 20 项检查表，在规定尺寸和主题下截图对照草案。结果表格写进进度记录；截图放 `target/plan-5/fidelity/`，只把最终 4 张对照图提交到 `docs/acceptance/pre-alpha.5/`。
+
+### G2 助手场景复测
+
+Mac S1–S8（两个模型）、Web S1–S6（一个模型）在候选包上各跑一次。只重跑失败项。
+
+### G3 数学、性能与数据回归
+
+只跑这些：
+
+- `cargo test` 中受改动影响的 crate（C9 的 host-service），`scripts/measure-native-cli.py` 原 53 条。
+- Mac：`macos/Scripts/measure-performance.sh`（53 条整次 < 1 s、输入 p95 ≤ 50 ms，前台 AppKit 事件循环模式）。
+- Mac 数据：`test-storage.sh`、`test-saves.sh`、`test-recovery.sh`、`test-undo.sh`、`test-kernel-runtime.sh`。
+- Web：`npm run test:e2e --prefix app`（含 `performance.spec.ts`）。
+
+### G4 打包与发布
+
+1. 统一版本号到 `0.1.0-pre-alpha.5`（沿用 `.4` 的版本同步方式）。
+2. `macos/Scripts/package-native.sh` 生成 DMG 和 app ZIP；Web 生产构建打 ZIP；生成 manifest。
+3. 安装 DMG 到新目录、解压 Web ZIP，打开 `docs/examples/watermelon.omnb`，确认 2、3 与西瓜图形、版本 `.5`。
+4. 用户确认后创建 GitHub pre-release（不移动旧 tag）。公开后匿名下载三个资产，核对 SHA，再安装一次读回。
+5. 发行说明如实写：ad hoc 签名或公证情况、需要 macOS 27 和 Apple Silicon、Web 需要 HTTP 和 CORS、本版不含的功能（第 1.3 节）。
+
+---
+
+## 4. 需要用户决定的事
+
+开始执行前请确认（可以全部接受默认）：
+
+| 问题 | 默认 |
+|---|---|
+| 版本号 | `0.1.0-pre-alpha.5` |
+| 工作台 v2 的视觉方向（草案） | 按草案执行；用户看过草案后可提出修改，修改先改草案再改代码 |
+| Mac 窗口结构 | C1 验证后决定：`NavigationSplitView` 能保住编辑状态就用它 |
+| Web 助手 | F1 验证 Pi 在浏览器中运行；不成立就用最小 TS 循环 |
+| 附件范围 | Mac：图片 + PDF 文字；Web：图片；其他格式保留但不发送 |
+| 真实模型预算 | 本版总计 ≤ 60 次任务运行 |
+
+## 5. 与 pre-alpha.4 任务账本的对应
+
+本版覆盖的 `.4` 旧任务（完成后在 `.4` 账本中注明“由 pre-alpha.5 某任务实现”，不改 `.4` 的历史状态）：
+
+| `.4` 任务 | 本版任务 |
+|---|---|
+| R4.2.08 Markdown AST、数学扫描与连续原生流 | C6、C7 |
+| R4.2.11 真实步骤、变量与独立讲解入口 | C9 |
+| R4.2.12 / R4.2.13 二维、三维 | C8 |
+| R4.2.16 原生主题、可访问语义 | B1、C3 |
+| R4.2.17 首启、欢迎与助手空态 | C3（空笔记本）、D1 |
+| R4.3.12 Agent 任务状态、模式和预算 | A3、D4 |
+| R4.4.05 原生供应商和模型管理界面 | D6 |
+| R4.4.06 用途映射、本次模型选择 | D4、D6（子集） |
+| R4.4.07 / R4.4.08 粘贴、拖入、图片与 PDF | D5 |
+| R4.4.13 PromptRegistry 分层 | A1（最小实现） |
+| R4.4.18 原生助手对话、固定输入与工具轨迹 | D1–D4 |
+
+## 6. 进度表
+
+每完成一项，勾选并在下方“记录”里加一段（3–5 行：做了什么、测了什么、和草案的差异、还差什么）。
+
+| 任务 | 状态 | 提交 |
+|---|---|---|
+| [ ] A1 提示词分层拼装 | | |
+| [ ] A2 语言卡与已验证示例 | | |
+| [ ] A3 本轮结果与状态用语 | | |
+| [ ] A4 按消息的操作记录数据 | | |
+| [ ] A5 真实模型场景（Mac） | | |
+| [ ] B1 Mac 令牌与字体 | | |
+| [ ] B2 Web 令牌与字体 | | |
+| [ ] B3 共用文案键 | | |
+| [ ] C1 窗口结构与工具栏 | | |
+| [ ] C2 目录 | | |
+| [ ] C3 单元格结构与左轨 | | |
+| [ ] C4 结果紧凑化 | | |
+| [ ] C5 过期、运行、出错 | | |
+| [ ] C6 文字单元格 | | |
+| [ ] C7 代码块 | | |
+| [ ] C8 图形外观 | | |
+| [ ] C9 检查器：步骤与变量 | | |
+| [ ] D1 对话视图 | | |
+| [ ] D2 操作记录界面 | | |
+| [ ] D3 本轮结果 | | |
+| [ ] D4 输入框 | | |
+| [ ] D5 附件 | | |
+| [ ] D6 模型设置 | | |
+| [ ] E1 布局外壳 | | |
+| [ ] E2 单元格与结果 | | |
+| [ ] E3 文字单元格与代码块 | | |
+| [ ] E4 图形外观 | | |
+| [ ] E5 步骤与变量 | | |
+| [ ] E6 E2E 与性能 | | |
+| [ ] F1 运行方式验证 | | |
+| [ ] F2 Web 工具宿主 | | |
+| [ ] F3 Web 助手界面 | | |
+| [ ] F4 Web 设置 | | |
+| [ ] F5 Web 真实场景 | | |
+| [ ] G1 设计验收 | | |
+| [ ] G2 助手场景复测 | | |
+| [ ] G3 数学、性能与数据回归 | | |
+| [ ] G4 打包与发布 | | |
+
+### 记录
+
+（按时间顺序追加。）

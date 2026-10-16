@@ -874,3 +874,14 @@ D072候选收束：e1d6afd11a48dec807b0c6cce09938adaeeffdd6已push并生成同�
 R4D01–08全部passed、ready=true、released_verified=true，仅代表当前scope2八项；旧98任务/32gate仍按原事实保留。中文发行指南明确macOS27/Apple Silicon、自包含Node/Pi、Web需HTTP、ad hoc未公证和后置能力。设计参考统一文档、接续入口与当前交付摘要已固化，不再重复泛看App或重跑无关全矩阵。清理本轮已停止的ZIP比较临时解压235579847字节，保留公开资产/原失败/独立数学验证器；另停止旧4174，仅保留实际公开Web包4175。
 
 D073最终：精确候选CI38906287178的frontend/dependencies/Rust/native_macos全部success，iOS按scope跳过；无新增产品修改。只提交当前交付记录，不重编发行包。
+
+
+## D074 · 2026-10-16 用户现场复核纠正完成声明
+
+用户提供实际Mac截图：要求画西瓜，助手向文字格写emoji，代码块逐行灰底破碎，输入框/操作轨迹与既有设计偏离。此前“计划完成”结论过度：发布下载/安装/原53/性能/基础事务闭环的测试结果成立，但这些没有证明原产品设计和普通任务体验完成。减测试门禁没有授权忽略可见产品效果，责任在实施与验收选择。R4D04/R4D05改failed、ready/released_verified=false；公开发布状态单独保留，不移动tag/旧资产。
+
+源码核对：NativeAssistantView.swift仅固定70–110高TextEditor、授权复选框、发送/停止和全局字符串轨迹；模型/执行讨论选择不在输入框，轨迹没有按消息关联操作/定位。AssistantContext.swift第24行只注入短system，没有加载既有prompts/notebook-operation.md及其已验证语言/场景示例；工具schema虽完整，不等于模型已得到产品操作指引。NativeAssistant.swift第86行把loop_stopped直接映成已完成；循环结束不是用户绘图目标被验证。AssistantContext轨迹把调用与结果分别追加，UI字符串数不是实际操作数。
+
+MarkdownRenderDocument把CodeBlock和InlineCode都压成code=true的文本run；NativeMarkdownView按文字range涂背景，没有设计要求的独立代码块/水平滚动，ASCII图易碎。文字单元格默认reading=false解释截图中的##及围栏源码；这不代表没有Markdown解析器，但自动插入内容的阅读体验没有做好。流式回复使用普通Text、结束再切Markdown，且每次尾文变化强制scrollTo，缺稳定block和用户滚动保护。
+
+截图的正在执行/停止只能证明当时仍busy，不能单凭静态图断言死锁；代码状态只粗略反映trace/整个循环，尚未单独复现其真实结束延迟。没有读取用户数据库/密钥或停止其任务，也没有把源码诊断冒称修复。当前更正限于事实、缺陷和验收状态，产品修复尚未执行。原有跨领域参考已足够，不需要再泛看应用。

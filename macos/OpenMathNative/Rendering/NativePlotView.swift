@@ -18,6 +18,16 @@ struct NativePlotView:NSViewRepresentable {
   override var isFlipped:Bool {true}
   override var acceptsFirstResponder:Bool {true}
   private var plotRect:NSRect {bounds.insetBy(dx:44,dy:30)}
+  // Tick placement is only a viewport decoration; producer coordinates remain untouched.
+  private func ticks(_ lo:Double,_ hi:Double)->[Double] {
+    let raw=(hi-lo)/6
+    guard lo.isFinite,hi.isFinite,raw.isFinite,raw>0 else {return []}
+    let magnitude=pow(10,floor(log10(raw))),fraction=raw/magnitude
+    let step=(fraction<=1 ? 1.0:fraction<=2 ? 2.0:fraction<=5 ? 5.0:10.0)*magnitude
+    guard step.isFinite,step>0 else {return []}
+    let first=ceil(lo/step)*step
+    return (0..<12).map{first+Double($0)*step}.filter{$0.isFinite && $0>=lo && $0<=hi}
+  }
   func configure(_ model:NativeGeometryModel,data:NativePlotData) {
     let changed=self.model !== model || camera != model.camera2D
     self.model=model;self.data=data;camera=model.camera2D
@@ -36,6 +46,9 @@ struct NativePlotView:NSViewRepresentable {
       let px=area.minX+(x-camera.x0)/(camera.x1-camera.x0)*area.width,py=area.maxY-(y-camera.y0)/(camera.y1-camera.y0)*area.height
       guard px.isFinite,py.isFinite else {return nil};return NSPoint(x:px,y:py)
     }
+    let xTicks=ticks(camera.x0,camera.x1),yTicks=ticks(camera.y0,camera.y1)
+    func xPosition(_ value:Double)->CGFloat {area.minX+(value-camera.x0)/(camera.x1-camera.x0)*area.width}
+    func yPosition(_ value:Double)->CGFloat {area.maxY-(value-camera.y0)/(camera.y1-camera.y0)*area.height}
     context.saveGState();context.clip(to:area)
     if let highlights=data.metadata.highlights {
       NSColor.systemBlue.withAlphaComponent(0.10).setFill()
@@ -57,9 +70,16 @@ struct NativePlotView:NSViewRepresentable {
       for p in polygon.points {guard let p=point(p) else {continue};if started {path.line(to:p)} else {path.move(to:p);started=true}}
       path.close();polygon.color.opacity(polygon.opacity).native.setFill();path.fill()
     }
-    NSColor.separatorColor.withAlphaComponent(0.5).setStroke()
+    NSColor.separatorColor.withAlphaComponent(0.24).setStroke()
     let grid=NSBezierPath();grid.lineWidth=0.5
-    for index in 0...5 {let x=area.minX+area.width*CGFloat(index)/5,y=area.minY+area.height*CGFloat(index)/5;grid.move(to:.init(x:x,y:area.minY));grid.line(to:.init(x:x,y:area.maxY));grid.move(to:.init(x:area.minX,y:y));grid.line(to:.init(x:area.maxX,y:y))};grid.stroke()
+    for value in xTicks {let x=xPosition(value);grid.move(to:.init(x:x,y:area.minY));grid.line(to:.init(x:x,y:area.maxY))}
+    for value in yTicks {let y=yPosition(value);grid.move(to:.init(x:area.minX,y:y));grid.line(to:.init(x:area.maxX,y:y))}
+    grid.stroke()
+    NSColor.secondaryLabelColor.withAlphaComponent(0.4).setStroke()
+    let axes=NSBezierPath();axes.lineWidth=0.8
+    if !logX,camera.x0<=0,camera.x1>=0 {let x=xPosition(0);axes.move(to:.init(x:x,y:area.minY));axes.line(to:.init(x:x,y:area.maxY))}
+    if !logY,camera.y0<=0,camera.y1>=0 {let y=yPosition(0);axes.move(to:.init(x:area.minX,y:y));axes.line(to:.init(x:area.maxX,y:y))}
+    axes.stroke()
     for curve in data.paths {
       let path=NSBezierPath();path.lineWidth=CGFloat(max(0.2,min(32,curve.width)));var started=false
       for p in curve.points {guard let p=point(p) else {started=false;continue};if started {path.line(to:p)} else {path.move(to:p);started=true}}
@@ -86,11 +106,13 @@ struct NativePlotView:NSViewRepresentable {
     NSColor.separatorColor.setStroke();let border=NSBezierPath(rect:area);border.lineWidth=0.7;border.stroke()
     let attrs:[NSAttributedString.Key:Any]=[.font:NSFont.monospacedDigitSystemFont(ofSize:10,weight:.regular),.foregroundColor:NSColor.secondaryLabelColor]
     func tick(_ value:Double,log:Bool)->String {log ? String(format:"10^%.3g",value):String(format:"%.4g",value)}
-    for index in 0...5 {
-      let fraction=Double(index)/5,x=camera.x0+(camera.x1-camera.x0)*fraction,y=camera.y0+(camera.y1-camera.y0)*fraction
-      let xs=tick(x,log:logX) as NSString,ys=tick(y,log:logY) as NSString
-      xs.draw(at:.init(x:area.minX+area.width*fraction-xs.size(withAttributes:attrs).width/2,y:area.maxY+6),withAttributes:attrs)
-      ys.draw(at:.init(x:max(0,area.minX-ys.size(withAttributes:attrs).width-6),y:area.maxY-area.height*fraction-6),withAttributes:attrs)
+    for value in xTicks {
+      let text=tick(value,log:logX) as NSString
+      text.draw(at:.init(x:xPosition(value)-text.size(withAttributes:attrs).width/2,y:area.maxY+6),withAttributes:attrs)
+    }
+    for value in yTicks {
+      let text=tick(value,log:logY) as NSString
+      text.draw(at:.init(x:max(0,area.minX-text.size(withAttributes:attrs).width-6),y:yPosition(value)-6),withAttributes:attrs)
     }
     if window?.firstResponder === self {NSColor.controlAccentColor.setStroke();let focus=NSBezierPath(roundedRect:bounds.insetBy(dx:1,dy:1),xRadius:5,yRadius:5);focus.lineWidth=1;focus.stroke()}
   }

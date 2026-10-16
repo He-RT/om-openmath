@@ -45,6 +45,18 @@ impl Ball {
             return Self::from_bounds(-hi.clone().with_rounding::<Down>(), hi, self.prec);
         }
         let prec = self.prec.saturating_add(32);
+        if self.rad <= BigFloat::from_parts(Integer::ONE, -(self.prec as isize / 2)) {
+            // |atan'(x)| <= 1 on the real line. For a narrow input, one certified
+            // midpoint evaluation widened by the exact input radius encloses both
+            // endpoints; no second nearly identical transcendental evaluation is needed.
+            return repack(
+                &widen(
+                    &atan_point(self.mid.clone(), prec),
+                    self.rad.clone().with_rounding::<Up>(),
+                ),
+                self.prec,
+            );
+        }
         let (lo, hi) = self.bounds(work_precision(prec));
         let lower = atan_point(lo.with_rounding::<HalfEven>(), prec)
             .bounds(work_precision(prec))
@@ -145,11 +157,12 @@ fn atan_point(x: BigFloat, prec: u32) -> Ball {
 fn atan_reduced(x: &Ball) -> Ball {
     let mut reduced = x.clone();
     let one = integer(1, x.prec);
-    // Two half-angle reductions map [-1,1] strictly inside [-1/4,1/4].
-    for _ in 0..2 {
+    // Four half-angle reductions put |x| below 1/16. At high precision this
+    // saves many directed series operations; the same certified tail bound applies.
+    for _ in 0..4 {
         reduced = reduced.div(&one.add(&one.add(&reduced.square()).sqrt()));
     }
-    atan_series(&reduced).mul(&integer(4, x.prec))
+    atan_series(&reduced).mul(&integer(16, x.prec))
 }
 
 fn atan_series(x: &Ball) -> Ball {
@@ -252,4 +265,41 @@ fn trig_series(x: &Ball, cosine: bool) -> Ball {
 fn clamp_unit(b: &Ball) -> Ball {
     let (lo, hi) = b.bounds(work_precision(b.prec));
     Ball::from_bounds(lo.max(Lower::NEG_ONE), hi.min(Upper::ONE), b.prec)
+}
+
+#[cfg(test)]
+mod atan_enclosure_tests {
+    use super::*;
+
+    #[test]
+    fn narrow_arctangent_overlaps_independent_high_precision_endpoint_enclosures() {
+        for bits in [64_u32, 128, 512] {
+            for (n, d) in [(-100, 1), (-3, 5), (0, 1), (3, 5), (1, 1), (100, 1)] {
+                let input = Ball {
+                    mid: Rational::from_parts(Integer::from(n), (d as u64).into())
+                        .to_float(bits as usize)
+                        .value(),
+                    rad: BigFloat::from_parts(Integer::ONE, -(bits as isize) + 4),
+                    prec: bits,
+                };
+                let actual = input.atan();
+                let (alo, ahi) = actual.bounds(work_precision(bits + 96));
+                let (lo, hi) = input.bounds(work_precision(bits + 96));
+                let lower = atan_point(lo.with_rounding::<HalfEven>(), bits + 96)
+                    .bounds(work_precision(bits + 96));
+                let upper = atan_point(hi.with_rounding::<HalfEven>(), bits + 96)
+                    .bounds(work_precision(bits + 96));
+                // At zero a reference's rounding enclosure can extend beyond the exact
+                // Lipschitz bound [-radius,radius]. Compare enclosures by overlap rather
+                // than requiring the new bound to include that reference overestimate.
+                assert!(alo <= lower.1 && ahi >= lower.0, "{n}/{d}, {bits} bits");
+                assert!(alo <= upper.1 && ahi >= upper.0, "{n}/{d}, {bits} bits");
+                assert!(actual.rad < BigFloat::from_parts(Integer::ONE, -(bits as isize) + 8));
+            }
+            let angle = Ball::exact(&Rational::ONE, bits).atan();
+            let error = angle.mul(&integer(4, bits)).sub(&Ball::pi(bits));
+            assert!(error.contains_zero());
+            assert!(error.rad < BigFloat::from_parts(Integer::ONE, -(bits as isize) + 8));
+        }
+    }
 }

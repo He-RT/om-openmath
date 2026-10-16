@@ -54,6 +54,7 @@ struct NotebookCellResult:Sendable {
   private var presenters:[String:ResultPresenter]=[:]
   var beforeRun:(@MainActor () async throws->Void)?
   var changed:(@MainActor ()->Void)?
+  var runObserved:(@MainActor (String)->Void)?
   let navigation=WorkbenchNavigation()
   init(host:NativeHostClient,storage:StorageService,source:DocCommitPort) {
     self.host=host;kernel=KernelCommitPort(client:host,storage:storage,source:source)
@@ -94,15 +95,18 @@ struct NotebookCellResult:Sendable {
           try? await Task.sleep(for:.milliseconds(100))
         }
       }
-      defer {polling.cancel();if operation==id {operation=nil;operationCell=nil;cancelPending=false};changed?()}
+      defer {polling.cancel();if operation==id {operation=nil;operationCell=nil;cancelPending=false};changed?();runObserved?("finished")}
       do {
         try await beforeRun?()
+        runObserved?("source_synchronized")
         let receipt=try await kernel.runCell(cell,operation:id)
+        runObserved?("kernel_received")
         guard !closing else {return}
         // A late stop cannot overwrite an actual committed result.
         phase = .completed;message=receipt.producer.terminal_status == .done ? "已完成" : "计算结束，有错误"
         do {try await display(receipt)}
         catch {if !closing {accept(.init(receipt:receipt,bindings:[],values:[]),cell:cell);message="计算已提交，结果暂无法读取："+String(describing:error)}}
+        runObserved?("result_read")
       } catch KernelPortError.unknownOutcome {unknownOperation=id;unknownCell=cell;phase = .unknown;message="运行结果待核对"}
       catch {if !closing {message="运行未完成："+String(describing:error)}}
       await refreshProjection()

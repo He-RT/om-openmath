@@ -16,8 +16,8 @@ import SwiftUI
         .background(NativeWindowAttachment(workspace:workspace).frame(width:0,height:0))
         .toolbar {
           ToolbarItemGroup(placement:.automatic) {
-            Button("新建笔记本",systemImage:"square.and.pencil") {Task {await workspace.newDocument()}}.disabled(workspace.busy).help("新建笔记本（⌘N）").accessibilityIdentifier("notebook-new")
             Menu("文件",systemImage:"folder") {
+              Button("新建笔记本") {Task {await workspace.newDocument()}}.accessibilityIdentifier("notebook-new")
               Button("打开笔记本…") {Task {await workspace.openPanel()}}.accessibilityIdentifier("notebook-open")
               Divider()
               Button("另存为…") {Task {await workspace.save(asNew:true)}}.disabled(workspace.session==nil)

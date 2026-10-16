@@ -87,8 +87,7 @@ actor KernelCommitPort {
     do {
       let bytes=try await actualBytes(plan)
       publication=try await storage.publishBlob(data:bytes,expectedHash:plan.checkpoint_blob_hash,faults:faults)
-      let barrier=try await client.kernelBarrier(operation:plan.operation_id)
-      let receipt=try await storage.commitKernel(plan,publication:publication!,controls:.init(ownerBarrier:barrier),faults:faults)
+      let receipt=try await commitCandidate(plan,publication:publication!,faults:faults)
       let accepted=try await client.kernelCommand(.kernel_completed(.init(type:.kernel_completed,operation_id:plan.operation_id,receipt:receipt)))
       guard accepted.phase == .completed,accepted.receipt.value?.request_hash==plan.request_hash else {throw NativeHostClientError.invalidReply}
       if let publication {try await storage.releaseBlob(publication)}
@@ -111,6 +110,22 @@ actor KernelCommitPort {
       }
       if let publication {try? await storage.releaseBlob(publication)}
       throw actualError
+    }
+  }
+  private func commitCandidate(_ plan:NativeKernelCommit,publication:BlobPublication,faults:StorageFaults) async throws ->NativeKernelReceipt {
+    let deadline=ContinuousClock.now.advanced(by:.milliseconds(100))
+    while true {
+      if stopped.contains(plan.operation_id) || Task.isCancelled {throw KernelPortError.cancelled}
+      let barrier=try await client.kernelBarrier(operation:plan.operation_id)
+      do {return try await storage.commitKernel(plan,publication:publication,controls:.init(ownerBarrier:barrier),faults:faults)}
+      catch let original as NativeHostClientError {
+        guard case .rejected(let error)=original,error.code == .editing_busy,error.retryable,error.outcome_known,error.operation_ref.value==nil,ContinuousClock.now<deadline else {throw original}
+        // A busy try-lock rejects before the owner barrier and SQL rolls back. Reuse only
+        // this exact still-candidate plan/blob; no CAS, new operation or unknown write retry.
+        let current=try await status(plan.operation_id)
+        guard current.phase == .candidate,current.plan.value?.request_hash==plan.request_hash else {throw original}
+        try await Task.sleep(for:.milliseconds(2))
+      }
     }
   }
   /// Source barrier completes first; restore/calculation never happens on MainActor or this actor.

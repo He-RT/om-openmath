@@ -126,12 +126,16 @@ jobs:
         if: inputs.full_suite
         run: bash macos/Scripts/test-maintenance.sh > target/macos-ci-evidence/maintenance.log 2>&1
       - name: 原生工作台宽度、真实运行与编辑器选区保留
+        if: inputs.full_suite
         run: bash macos/Scripts/test-workbench.sh > target/macos-ci-evidence/workbench.log 2>&1
       - name: Exact native source indexes and TextKit2 editing
+        if: inputs.full_suite
         run: bash macos/Scripts/test-source-editor.sh > target/macos-ci-evidence/source-editor.log 2>&1
       - name: Native input groups and actual marked-text protection
+        if: inputs.full_suite
         run: bash macos/Scripts/test-composition.sh > target/macos-ci-evidence/composition.log 2>&1
       - name: Actual SwiftMath views, fonts, budgets and original 53 LaTeX
+        if: inputs.full_suite
         run: |
           bash macos/Scripts/test-math-render.sh > target/macos-ci-evidence/math-render.log 2>&1
           python3 - <<'PY'
@@ -146,6 +150,7 @@ jobs:
           PY
           python3 macos/Scripts/verify-math-resources.py 'target/macos-native/Build/Products/Release/OpenMath Preview.app' --output target/macos-ci-evidence/math-resources.json
       - name: Actual solution presentation, stale replies and isolated numeric projection
+        if: inputs.full_suite
         run: |
           bash macos/Scripts/test-result-presenter.sh > target/macos-ci-evidence/result-presenter.log 2>&1
           python3 - <<'PY'
@@ -159,6 +164,7 @@ jobs:
           shutil.copyfile(source,'target/macos-ci-evidence/actual-result-presentations.json')
           PY
       - name: Actual structured pages, precise copies and scientific origin
+        if: inputs.full_suite
         run: |
           bash macos/Scripts/test-value-presenter.sh > target/macos-ci-evidence/value-presenter.log 2>&1
           python3 - <<'PY'

@@ -132,6 +132,18 @@ fn all_authority_rows_pass_native_release_performance_and_correctness() {
 fn production_wasm_results_match_all_original_authority_rows() {
     let path = std::path::Path::new(env!("CARGO_MANIFEST_DIR"))
         .join("../../target/pre-alpha/wasm-corpus.json");
+    validate_external_results(&path);
+}
+
+#[test]
+#[ignore = "requires OPENMATH_CORPUS_OUTPUT from an actual host measurement"]
+fn measured_host_results_match_all_original_authority_rows() {
+    let path =
+        std::env::var_os("OPENMATH_CORPUS_OUTPUT").expect("explicit measurement output path");
+    validate_external_results(std::path::Path::new(&path));
+}
+
+fn validate_external_results(path: &std::path::Path) {
     let outputs: serde_json::Value = serde_json::from_slice(&std::fs::read(path).unwrap()).unwrap();
     let outputs = outputs.as_array().unwrap();
     let cases = support::corpus();

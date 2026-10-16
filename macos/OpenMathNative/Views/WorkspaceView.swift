@@ -38,9 +38,9 @@ struct WorkspaceView:View {
         }.disabled(!canChangeStructure).help("在当前单元格下方添加内容")
         Button("保存",systemImage:"square.and.arrow.down") {Task {await workspace.save()}}.disabled(workspace.busy).help("保存笔记本（⌘S）").accessibilityIdentifier("notebook-save")
         if runtime.operation != nil {
-          Button("停止",systemImage:"stop.fill") {Task {await runtime.stop()}}.disabled(!runtime.canStop).accessibilityIdentifier("workspace-stop")
+          Button("停止",systemImage:"stop.fill") {Task {await runtime.stop()}}.labelStyle(.titleAndIcon).disabled(!runtime.canStop).accessibilityIdentifier("workspace-stop")
         } else {
-          Button("运行",systemImage:"play.fill") {runSelected()}.disabled(!canRun).keyboardShortcut(.return,modifiers:[.command]).help("运行当前单元格（⌘↩）").accessibilityIdentifier("workspace-run")
+          Button("运行",systemImage:"play.fill") {runSelected()}.labelStyle(.titleAndIcon).foregroundStyle(.tint).disabled(!canRun).keyboardShortcut(.return,modifiers:[.command]).help("运行当前单元格（⌘↩）").accessibilityIdentifier("workspace-run")
         }
         Button("助手",systemImage:"bubble.left.and.bubble.right") {
           if navigation.layout != .compact,navigation.inspectorVisible,navigation.inspector == .assistant {navigation.inspectorVisible=false}
@@ -99,11 +99,14 @@ struct WorkspaceView:View {
         NativeAssistantView(assistant:session.assistant).padding(16)
       } else {
         HStack {
-          Text(navigation.inspector.title).font(.headline)
+          Picker("查看",selection:Binding(get:{navigation.inspector},set:{show($0)})) {
+            ForEach(WorkbenchDestination.allCases.filter{$0 != .assistant && $0 != .variables}) {destination in
+              Text(destination.title).tag(destination)
+            }
+          }.pickerStyle(.menu).labelsHidden().accessibilityIdentifier("workspace-inspector-destination")
           Spacer()
-          Menu("查看",systemImage:"ellipsis") {
-            ForEach(WorkbenchDestination.allCases) {destination in Button(destination.title) {show(destination)}}
-          }.labelStyle(.iconOnly).menuStyle(.borderlessButton).menuIndicator(.hidden).fixedSize().accessibilityIdentifier("workspace-inspector-destination")
+          Button("关闭详情",systemImage:"xmark") {navigation.inspectorVisible=false;inspectorPopover=false}
+            .labelStyle(.iconOnly).buttonStyle(.borderless).help("关闭详情")
         }.padding(16)
         Divider()
         ScrollView {

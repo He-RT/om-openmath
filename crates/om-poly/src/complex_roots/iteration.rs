@@ -1,5 +1,5 @@
 //! Simultaneous Aberth-Ehrlich updates; their midpoints are proposals, not enclosures.
-use super::arithmetic::{evaluate, finite, point, upper_norm};
+use super::arithmetic::{point, upper_norm};
 use om_num::{
     Ball, BigFloat, CBall, Integer, Rational,
     ctx::{Abort, Interrupt},
@@ -39,38 +39,120 @@ pub(super) fn step(
     bits: u32,
     ctx: &Interrupt,
 ) -> Result<Option<(Vec<CBall>, BigFloat)>, Abort> {
-    let one = CBall::exact(&Rational::ONE, &Rational::ZERO, bits);
-    let zero = CBall::exact(&Rational::ZERO, &Rational::ZERO, bits);
+    let one = Proposal {
+        re: BigFloat::ONE.with_precision(bits as usize).value(),
+        im: BigFloat::ZERO,
+    };
+    let zero = Proposal {
+        re: BigFloat::ZERO,
+        im: BigFloat::ZERO,
+    };
+    let coefficients: Vec<_> = coefficients.iter().map(Proposal::from).collect();
+    let centers: Vec<_> = centers.iter().map(Proposal::from).collect();
     let mut next = Vec::with_capacity(centers.len());
     let mut max = BigFloat::ZERO;
     for (j, z) in centers.iter().enumerate() {
         ctx.tick()?;
-        let (value, derivative) = evaluate(coefficients, z, ctx)?;
-        let newton = value.div(&derivative);
-        if !finite(&newton) {
-            return Ok(None);
+        let mut value = coefficients
+            .last()
+            .expect("invariant: nonempty polynomial coefficients")
+            .clone();
+        let mut derivative = zero.clone();
+        for c in coefficients[..coefficients.len() - 1].iter().rev() {
+            ctx.tick()?;
+            derivative = derivative.mul(z).add(&value);
+            value = value.mul(z).add(c);
         }
+        let Some(newton) = value.div(&derivative) else {
+            return Ok(None);
+        };
         let mut interactions = zero.clone();
         for (k, other) in centers.iter().enumerate() {
             ctx.tick()?;
             if j != k {
-                let inverse = one.div(&z.sub(other));
-                if !finite(&inverse) {
+                let Some(inverse) = one.div(&z.sub(other)) else {
                     return Ok(None);
-                }
+                };
                 interactions = interactions.add(&inverse);
             }
         }
-        let correction = newton.div(&one.sub(&newton.mul(&interactions)));
-        let Some(norm) = upper_norm(&correction) else {
+        let Some(correction) = newton.div(&one.sub(&newton.mul(&interactions))) else {
+            return Ok(None);
+        };
+        let Some(norm) = upper_norm(&correction.ball(bits)) else {
             return Ok(None);
         };
         max = max.max(norm.with_rounding::<dashu::float::round::mode::HalfEven>());
         let center = z.sub(&correction);
-        if !finite(&center) {
+        if !center.finite() {
             return Ok(None);
         }
-        next.push(point(&center, bits));
+        next.push(center.ball(bits));
     }
     Ok(Some((next, max)))
+}
+
+/// Iteration only proposes centers; the separate directed-ball certificate still proves every
+/// returned disk and its radius. Carrying interval radii through these discarded proposals
+/// multiplies arbitrary-precision work without strengthening that final certificate.
+#[derive(Clone)]
+struct Proposal {
+    re: BigFloat,
+    im: BigFloat,
+}
+impl From<&CBall> for Proposal {
+    fn from(z: &CBall) -> Self {
+        Self {
+            re: z.re.mid.clone(),
+            im: z.im.mid.clone(),
+        }
+    }
+}
+impl Proposal {
+    fn add(&self, other: &Self) -> Self {
+        Self {
+            re: &self.re + &other.re,
+            im: &self.im + &other.im,
+        }
+    }
+    fn sub(&self, other: &Self) -> Self {
+        Self {
+            re: &self.re - &other.re,
+            im: &self.im - &other.im,
+        }
+    }
+    fn mul(&self, other: &Self) -> Self {
+        Self {
+            re: &self.re * &other.re - &self.im * &other.im,
+            im: &self.re * &other.im + &self.im * &other.re,
+        }
+    }
+    fn div(&self, other: &Self) -> Option<Self> {
+        let denominator = &other.re * &other.re + &other.im * &other.im;
+        if denominator == BigFloat::ZERO || !denominator.repr().is_finite() {
+            return None;
+        }
+        let value = Self {
+            re: (&self.re * &other.re + &self.im * &other.im) / &denominator,
+            im: (&self.im * &other.re - &self.re * &other.im) / denominator,
+        };
+        value.finite().then_some(value)
+    }
+    fn finite(&self) -> bool {
+        self.re.repr().is_finite() && self.im.repr().is_finite()
+    }
+    fn ball(&self, bits: u32) -> CBall {
+        CBall {
+            re: Ball {
+                mid: self.re.clone(),
+                rad: BigFloat::ZERO,
+                prec: bits,
+            },
+            im: Ball {
+                mid: self.im.clone(),
+                rad: BigFloat::ZERO,
+                prec: bits,
+            },
+        }
+    }
 }

@@ -26,6 +26,7 @@ actor ResultTransport {
     active.insert(id);defer {active.remove(id)}
     if Task.isCancelled {throw ResultClientError.failed("CANCELLED")}
     var reply=try await host.resultCommand(command)
+    var pollDelay=1
     while true {
       guard reply.request_id==id else {throw ResultClientError.invalidReply}
       switch reply.phase {
@@ -35,7 +36,10 @@ actor ResultTransport {
       case .failed,.cancelled:throw ResultClientError.failed(reply.error_code.value ?? "RESULT_NOT_AVAILABLE")
       default:
         if Task.isCancelled || closing {_ = try? await host.cancel(operation:id)}
-        try? await Task.sleep(for:.milliseconds(10))
+        // Small readonly projections normally finish before a display frame. Start promptly,
+        // then back off for expensive views instead of adding 10ms to every source/summary read.
+        try? await Task.sleep(for:.milliseconds(pollDelay))
+        pollDelay=min(pollDelay*2,10)
         reply=try await host.resultCommand(.result_status(.init(type:.result_status,request_id:id)))
       }
     }

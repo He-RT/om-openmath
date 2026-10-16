@@ -43,9 +43,17 @@ actor AssistantContext {
     }
     await changed(trace)
     let catalog=try JSONSerialization.jsonObject(with:Data(contentsOf:schema)) as! [String:Any],definitions=catalog["$defs"] as! [String:Any]
-    let declared=try tools.map {tool->[String:Any] in
-      guard let args=definitions[tool.rawValue+"_args"] else {throw AssistantSetupError.invalid}
-      return ["name":tool.rawValue,"description":"OpenMath "+tool.rawValue,"parameters":try expand(args,definitions:definitions,depth:0)]
+    guard let catalogTools=(catalog["x-openmath-catalog"] as? [String:Any])?["model_tools"] as? [[String:Any]] else {throw AssistantSetupError.invalid}
+    var declared:[[String:Any]]=[]
+    for tool in tools {
+      guard let args=definitions[tool.rawValue+"_args"],
+        let entry=catalogTools.first(where:{$0["name"] as? String==tool.rawValue}),
+        let description=entry["description"] as? String else {throw AssistantSetupError.invalid}
+      var help=description
+      if let example=entry["example_arguments"] {
+        help+="\n参数示例（引用须换成本次读取取得的值）："+String(decoding:try JSONSerialization.data(withJSONObject:example,options:[.sortedKeys,.withoutEscapingSlashes]),as:UTF8.self)
+      }
+      declared.append(["name":tool.rawValue,"description":help,"parameters":try expand(args,definitions:definitions,depth:0)])
     }
     let request:[String:Any]=["binding":["provider_ref":"native-assistant","route_ref":"native-assistant-chat","model_ref":"native-assistant-model","adapter_version":"single-turn-1","protocol":"chat_completions"],"api_model":configuration.model,"messages":messages,"results":results,"tools":declared,"max_output_tokens":2048,"temperature":NSNull(),"stream":true]
     let data=try JSONSerialization.data(withJSONObject:request,options:[.sortedKeys,.withoutEscapingSlashes])

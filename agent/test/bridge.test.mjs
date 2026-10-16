@@ -31,6 +31,26 @@ test('wrong connection and byte-identical hello replay cannot reset active helpe
  await bridge.accept(hello,raw(hello));await bridge.accept(hello,raw(hello));assert.equal(frames.length,1);
  const old={...hostFrame('cancel',2,{reason:'user_stop'}),connection_generation:2};await assert.rejects(bridge.accept(old,raw(old)),/STALE_AGENT_SCOPE/);await bridge.close();
 });
+test('invalid original arguments reach native validation and its durable error permits correction',async()=>{
+ const observed=[];let bridge,sequence=1,turn=0;const done=Promise.withResolvers();
+ const malformed='{"input":{"snapshot_ref":"read-issued","kind":"patch","operations":[]}}';
+ const corrected='{"snapshot_ref":"read-issued","input":{"kind":"source","source":"2+2","dialect":"Modern"}}';
+ const deliver=f=>bridge.accept(f,raw(f));
+ const failure={ok:false,status:'failed',request_ref:'invalid-preview',operation_ref:null,document:{id:'document',generation:1,revision:0},data:null,error:{code:'INVALID_ARGUMENT',message:'INVALID_ARGUMENT',recovery:'none',details:{}},pagination:{truncated:false,next_cursor:null}};
+ bridge=new AgentBridge(async bytes=>{
+  const frame=decodeFrame(bytes.slice(0,-1));observed.push(frame);
+  const reply=(kind,payload,reply_to=null)=>deliver(hostFrame(kind,++sequence,payload,reply_to));
+  if(frame.type==='ready')await reply('user_input',{event_ref:'input',message:user});
+  if(frame.type==='prepare_request'){turn++;await reply('model_request',{...frame.payload,context_ref:'context-'+turn,model_config_ref:'config'});}
+  if(frame.type==='model_request')await reply('model_event',{agent_turn_id:frame.payload.agent_turn_id,request_id:frame.payload.request_id,byte_offset:0,text:'',phase:'finished',canonical_message:{...user,message_id:'assistant-'+turn,role:'assistant',agent_turn_id:frame.payload.agent_turn_id,parts:turn<=2?[{kind:'tool_call',part_id:'call',tool_call_id:'preview-'+turn,name:'preview_source',arguments_json:turn===1?malformed:corrected}]:[{kind:'text',part_id:'text',text:'Received native validation results'}]}});
+  if(frame.type==='transcript_event')await reply('ack',{event_id:frame.payload.event_id,event_sequence:turn,receipt_hash:'a'.repeat(64)},frame.message_id);
+  if(frame.type==='tool_call')await reply('tool_result',{agent_turn_id:frame.payload.agent_turn_id,tool_call_id:frame.payload.tool_call_id,operation_ref:null,result_ref:'native-result-'+turn,outcome:'failed',result_json:JSON.stringify({...failure,request_ref:'preview-'+turn})});
+ },()=>done.resolve());
+ await deliver(hello);let timer;try{await Promise.race([done.promise,new Promise((_,reject)=>{timer=setTimeout(()=>reject(Error('invalid argument recovery timeout')),3000)})]);}finally{clearTimeout(timer);await bridge.close();}
+ assert.equal(turn,3);assert.equal(observed.filter(f=>f.type==='tool_call').length,2);
+ assert.deepEqual(observed.filter(f=>f.type==='transcript_event').slice(0,2).map(f=>f.payload.message.parts[0].arguments_json),[malformed,corrected]);
+ assert.equal(observed.at(-1).payload.reason,'loop_stopped');
+});
 test('actual Pi consumes a complete native readonly result and continues to a second model turn',async()=>{
  const observed=[];let bridge,sequence=1,turn=0;const done=Promise.withResolvers();
  const deliver=f=>bridge.accept(f,raw(f));

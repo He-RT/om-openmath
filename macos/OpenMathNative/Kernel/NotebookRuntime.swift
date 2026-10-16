@@ -108,6 +108,8 @@ struct NotebookCellResult:Sendable {
         catch {if !closing {accept(.init(receipt:receipt,bindings:[],values:[]),cell:cell);message="计算已提交，结果暂无法读取："+String(describing:error)}}
         runObserved?("result_read")
       } catch KernelPortError.unknownOutcome {unknownOperation=id;unknownCell=cell;phase = .unknown;message="运行结果待核对"}
+      catch KernelPortError.cancelled {if !closing {message="已停止"}}
+      catch KernelPortError.failed("CANCELLED") {if !closing {message="已停止"}}
       catch {if !closing {message="运行未完成："+String(describing:error)}}
       await refreshProjection()
     }

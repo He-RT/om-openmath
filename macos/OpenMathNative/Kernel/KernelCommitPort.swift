@@ -27,6 +27,7 @@ actor KernelCommitPort {
     if stopped.contains(operation) {_ = try await client.cancel(operation:operation)}
   }
   private func waitForCandidate(_ operation:String) async throws ->NativeKernelHostReply {
+    var pollDelay=1
     while true {
       let result=try await status(operation)
       switch result.phase {
@@ -36,7 +37,8 @@ actor KernelCommitPort {
       default:
         if Task.isCancelled || stopped.contains(operation) {_ = try await client.cancel(operation:operation)}
         // Cancellation cannot abandon an actual owner/SQL outcome. Poll settles its original ID.
-        try? await Task.sleep(for:.milliseconds(10))
+        try? await Task.sleep(for:.milliseconds(pollDelay))
+        pollDelay=min(pollDelay*2,10)
       }
     }
   }

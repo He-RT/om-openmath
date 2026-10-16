@@ -14,17 +14,10 @@ const aiVersion=JSON.parse(readFileSync(new URL('../node_modules/@earendil-works
 export const ADAPTER_VERSION='openmath-adapter-1';
 const model:Model<Api>={id:'native-controlled',name:'Native transport carrier',api:'openai-completions',provider:'openmath-native',baseUrl:'',reasoning:false,input:['text'],cost:{input:0,output:0,cacheRead:0,cacheWrite:0},contextWindow:4096,maxTokens:256};
 const usage={input:0,output:0,cacheRead:0,cacheWrite:0,totalTokens:0,cost:{input:0,output:0,cacheRead:0,cacheWrite:0,total:0}};
-function argumentsSchema(name:string):TSchema {
- const expand=(value:any,depth=0):any=>{
-  if(depth>64)throw new Error('TOOL_SCHEMA_DEPTH');
-  if(value&&typeof value==='object'){
-   if(value.$ref)return expand(toolSchema.$defs[value.$ref.slice(8)],depth+1);
-   if(Array.isArray(value))return value.map(v=>expand(v,depth+1));
-   return Object.fromEntries(Object.entries(value).map(([k,v])=>[k,expand(v,depth+1)]));
-  }return value;
- };
- return expand(toolSchema.$defs[name+'_args']);
-}
+// The native provider receives the full tool schema. Pi only carries the original bounded
+// JSON object: its local validation must not skip beforeTool and invent an unjournaled error.
+// Native dispatch validates every argument and durably returns INVALID_ARGUMENT when needed.
+const nativeArguments={type:'object',additionalProperties:true} as TSchema;
 interface Pending {resolve:()=>void;reject:(error:Error)=>void;event:string}
 /** A single private helper activation. Canonical data stays authoritative in the native owner. */
 export class AgentBridge {
@@ -85,7 +78,7 @@ export class AgentBridge {
  }
  #validateInput(message:AgentCanonicalMessage){if(message.role!=='user'||message.task_id!==this.#hello!.task_id)throw new Error('STALE_AGENT_SCOPE');}
  #createRuntime(task:string):AgentRuntime{
-  const tools:AgentTool[]=toolSchema.properties.tool.enum.map((name:AgentToolName)=>({name,label:name,description:'Native '+name,parameters:argumentsSchema(name),replay:'never',execute:async(call:string)=>{
+  const tools:AgentTool[]=toolSchema.properties.tool.enum.map((name:AgentToolName)=>({name,label:name,description:'Native '+name,parameters:nativeArguments,replay:'never',execute:async(call:string)=>{
    const result=this.#results.get(call);if(!result)throw new Error('IPC_TOOL_NOT_ACKED');this.#results.delete(call);
    if(result.outcome==='unavailable')return {content:[{type:'text',text:'Native tool unavailable'}],details:{outcome:result.outcome},isError:true,terminate:true};
    if(name==='apply_notebook_patch')return notebookPatchResult(result);

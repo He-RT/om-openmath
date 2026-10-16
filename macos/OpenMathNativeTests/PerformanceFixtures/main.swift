@@ -57,7 +57,9 @@ private final class BusyCommitOnce:@unchecked Sendable {
 @main struct PerformanceFixtures {
   @MainActor static func main() async throws {
     let launched=DispatchTime.now().uptimeNanoseconds
-    let app=NSApplication.shared;app.setActivationPolicy(.accessory)
+    let requireForeground=CommandLine.arguments.contains("--foreground")
+    let app=NSApplication.shared;app.setActivationPolicy(requireForeground ? .regular:.accessory)
+    if requireForeground {app.finishLaunching()}
     let root=URL(fileURLWithPath:CommandLine.arguments[1],isDirectory:true)
     try FileManager.default.createDirectory(at:root,withIntermediateDirectories:true)
     let corpusBytes=try Data(contentsOf:URL(fileURLWithPath:CommandLine.arguments[2]))
@@ -140,7 +142,18 @@ private final class BusyCommitOnce:@unchecked Sendable {
     let diagnostic=CommandLine.arguments.count>4 && CommandLine.arguments[3]=="--case" ? CommandLine.arguments[4]:nil
     for row in corpus where diagnostic==nil || row.id==diagnostic {
       let (services,workspace,session,window)=try await opened("row-"+row.id,source:row.input)
-      if firstFrame==nil {firstFrame=milliseconds(launched)}
+      if firstFrame==nil {
+        firstFrame=milliseconds(launched)
+        if requireForeground {
+          print("Activate the visible measurement window to start the foreground run.")
+          let activationDeadline=ContinuousClock.now.advanced(by:.seconds(60))
+          while !app.isActive || !window.isKeyWindow {
+            guard ContinuousClock.now<activationDeadline else {throw MeasurementError.failed("foreground activation was not observed")}
+            try await Task.sleep(for:.milliseconds(10))
+          }
+        }
+      }
+      guard !requireForeground || app.isActive && window.isKeyWindow else {throw MeasurementError.failed("measurement window lost foreground activation")}
       let start=DispatchTime.now().uptimeNanoseconds
       var stages:[String:Double]=[:]
       session.runtime.runObserved={stage in stages[stage]=milliseconds(start)}
@@ -152,7 +165,7 @@ private final class BusyCommitOnce:@unchecked Sendable {
       }
       let duration=milliseconds(start)
       guard let actual=session.runtime.results["measure"],actual.receipt.producer.terminal_status == .done,let value=actual.values.last else {throw MeasurementError.failed("row "+row.id+": "+session.runtime.message)}
-      rows.append(["id":row.id,"input":row.input,"input_form":value.source,"timing_ms":duration,"stages_ms":stages,"operation":actual.receipt.operation_id,"kernel_revision":actual.receipt.producer.kernel_state_revision.value])
+      rows.append(["id":row.id,"input":row.input,"input_form":value.source,"timing_ms":duration,"stages_ms":stages,"operation":actual.receipt.operation_id,"kernel_revision":actual.receipt.producer.kernel_state_revision.value,"foreground_app":app.isActive])
       try write(rows,"mac-corpus.json")
       print("Mac #\(row.id): \(String(format:"%.3f",duration)) ms")
       if duration>=1000 {failures.append("Mac #\(row.id): \(duration)ms")}
@@ -168,6 +181,7 @@ private final class BusyCommitOnce:@unchecked Sendable {
     let clock=NativeFrameClock(view:editor)
     var samples:[Double]=[]
     for index in 0..<100 {
+      guard !requireForeground || app.isActive && window.isKeyWindow else {throw MeasurementError.failed("input measurement window lost foreground activation")}
       clock.arm()
       editor.insertText(index%4==0 ? "中":index%4==1 ? "🙂":"x",replacementRange:.init(location:NSNotFound,length:0))
       let deadline=ContinuousClock.now.advanced(by:.seconds(2))
@@ -180,7 +194,7 @@ private final class BusyCommitOnce:@unchecked Sendable {
     clock.stop()
     let ordered=samples.sorted(),p95=ordered[Int(ceil(Double(ordered.count)*0.95))-1]
     var usage=rusage();getrusage(RUSAGE_SELF,&usage)
-    try write(["source_bytes":10240,"samples_ms":samples,"p95_ms":p95,"max_ms":ordered.last!,"definition":"native insertText to second display-synchronized frame of the visible TextKit 2 view, bounding the first frame from above"],"mac-input.json")
+    try write(["source_bytes":10240,"samples_ms":samples,"p95_ms":p95,"max_ms":ordered.last!,"foreground_app":app.isActive,"foreground_required":requireForeground,"definition":"native insertText to second display-synchronized frame of the visible TextKit 2 view, bounding the first frame from above"],"mac-input.json")
     if p95>50 {failures.append("input p95 \(p95)ms")}
     try write(["corpus_sha256":SHA256.hash(data:corpusBytes).map{String(format:"%02x",$0)}.joined(),"first_workspace_draw_ms":firstFrame!,"peak_resident_bytes":usage.ru_maxrss,"failures":failures],"mac-summary.json")
     print("Native 10KiB input p95 \(p95) ms, max \(ordered.last!) ms; first workspace \(firstFrame!) ms; peak RSS \(usage.ru_maxrss) bytes")

@@ -845,3 +845,15 @@ CUA完整应用现在可正常回看，已实际运行方程、打开推导步�
 
 
 D071后续实际推进：安装版通过CUA点击运行中“停止”，原任务终态CANCELLED；随后同格改2+2得到精确4，保存退出且v1源码文件独立读回。当前689的CLI/Mac/Web全部53输出由原独立旧验证器通过。Web WASM最长249ms、输入p95=33.700ms/max38.700ms；Mac本轮6条超过1秒、输入p95=67.006ms，保留失败。测量时机器swap约7.5GiB并有明显外部后台负载，不能据此宣布性能通过或覆盖失败。Pi七类撤销/重启加阶段日志复测全部通过，原group后inUse尚未解释。实际sol本轮第三模型流失败，luna在preview_source错误参数后任务失败，未修改成功；保留两个根，继续定位上下文/工具错误反馈，不以旧live成功替代当前失败。简要状态acceptance-current-status.json及全部原日志留689目录；没有新增全源证据归档或重复浏览应用。
+
+
+## D072 · 2026-10-16 助手参数错误回路与求根热点修复（验收中）
+
+从真实luna失败定位到Pi本地schema校验发生在beforeToolCall之前：错误参数使原canonical已保存、宿主却未收到tool_call，Pi自行生成的错误未进入原账本，下一模型准备缺失配对工具结果。桥接内部仅承载已有严格UTF8/JSON边界内的object，参数完整校验继续由原Rust宿主完成，并耐久返回INVALID_ARGUMENT；实际供应商仍收到完整工具schema。相关真实Pi桥接回归新增错误参数→原canonical/宿主失败结果→修正下一调用，23项Node/Pi/protocol检查全部通过。AssistantContext改用既有目录的真实说明和参数示例，修复泛化工具描述；初次Swift闭包隔离编译错已改普通循环，Release通过。实际授权sol任务args-fixed-sol完成read→read→preview→apply→read→run→inspect，保存的原结果Blob核SHA读回精确x→2/3，definitions_current=true，密钥精确匹配0。
+
+CLI第17条本轮诊断仍约231ms，不以重测覆盖超标。采样定位到复根Aberth-Ehrlich候选迭代的CBall运算；该阶段只生成候选点，最终独立定向区间证书才证明每个根。迭代改用同工作精度BigFloat点运算，保留原初始化、精度升级、取消预算、目标半径和最终区间/不交/Rouche验证；不放宽精度或误差。om-poly原138项/20suite全部通过（含独立Q[i] Rouche、近碰撞、高精度与中断），Clippy通过；当前CLI/FFI重建进行中，性能与WASM尚未宣称通过。
+
+原生结果读取及候选状态查询改1ms起步、倍增到原10ms上限的等待，避免每份小结果固定增加10ms；只查原ID，不新增请求执行或修改取消/未知提交语义。已停止的已知CANCELLED在UI显示“已停止”，不再给用户显示failed枚举。后续按改动核对当前Release对象与实际包，不新增全矩阵或证据归档。原Pi group恢复inUse保留，正用实际StorageService关闭/立即重开探针定位，不先放宽锁。
+
+
+D072追加：当前新CLI/FFI Release已重建，原53每条<200ms、最长166.721ms，独立旧验证器全部通过。实际StorageService 50次关闭/立即重开均通过，未复现原inUse，不据此擅改flock。Mac输入旧66ms分布提示前台条件未记录；测量入口新增显式foreground模式并在每条/每次输入检查真实NSApp与key window状态，原1秒/50ms及两显示帧测法不变。首个foreground尝试未完成NSApplication启动，CUA无法激活而超时，原根foreground-final-fr9xgmvz保留；补finishLaunching后重新进行真实前台测量。该失败不是产品计算性能结论，也不覆盖旧超标记录。

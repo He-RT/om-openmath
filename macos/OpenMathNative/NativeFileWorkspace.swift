@@ -282,12 +282,14 @@ struct NativeNotebookFileView:View {
   }
   @ViewBuilder private func cellResults(_ cell:NativeSourceCell)->some View {
     if let result=runtime.results[cell.id] {
+      CellPresentationScope(session:session,cell:cell,workspace:workspace) {state in
       VStack(alignment:.leading,spacing:12) {
         ForEach(result.bindings,id:\.result_ref) {binding in
-          NativeResultView(presenter:runtime.presenter(for:binding),value:result.values.first{$0.binding.result_ref==binding.result_ref},displayContext:context(result,cell:cell.id))
+          NativeResultView(presenter:runtime.presenter(for:binding),value:result.values.first{$0.binding.result_ref==binding.result_ref},displayContext:context(result,cell:cell.id),cellState:state,durationMs:runtime.durationsMs[result.receipt.operation_id])
             .accessibilityIdentifier("notebook-result-"+cell.id)
         }
         if result.bindings.isEmpty {Text("计算完成，结果暂无法读取。可在详情中核对。").font(.callout).foregroundStyle(.secondary)}
+      }
       }
     }
     let history=runtime.history.filter{$0.receipt.producer.cell_id.value==cell.id}

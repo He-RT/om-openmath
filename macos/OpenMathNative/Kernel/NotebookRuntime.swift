@@ -60,6 +60,7 @@ struct NotebookCellResult:Sendable {
   @Published private(set) var navigationSequence:UInt64=0
   @Published private(set) var agentModifiedCells=Set<String>()
   @Published private(set) var stoppedCells=Set<String>()
+  @Published private(set) var durationsMs:[String:Double]=[:]
   let kernel:KernelCommitPort
   private let host:NativeHostClient
   private var runTask:Task<Void,Never>?
@@ -118,7 +119,10 @@ struct NotebookCellResult:Sendable {
       do {
         try await beforeRun?()
         runObserved?("source_synchronized")
+        let started=ContinuousClock.now
         let receipt=try await kernel.runCell(cell,operation:id)
+        let elapsed=started.duration(to:.now).components
+        durationsMs[receipt.operation_id]=Double(elapsed.seconds)*1000+Double(elapsed.attoseconds)/1e15
         runObserved?("kernel_received")
         guard !closing else {return}
         // A late stop cannot overwrite an actual committed result.

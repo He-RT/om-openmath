@@ -34,12 +34,12 @@ struct NotebookMathCell<Result:View,Tools:View>:View {
       VStack(alignment:.leading,spacing:Theme.Space.sm) {
         SourceWell(session:session,cell:cell,selected:session.runtime.selectedCell==cell.id,tools:tools)
         result.padding(.leading,14)
-        HStack(spacing:6) {
+        if session.runtime.results[cell.id]==nil {HStack(spacing:6) {
           if state.status == .running {ProgressView().controlSize(.mini)}
           else {Image(systemName:symbol(state)).frame(width:13)}
           Text(state.label)
           if state.byAgent {Text("· 助手修改").foregroundStyle(Theme.Color.agent)}
-        }.font(.system(size:12)).foregroundStyle(state.color).padding(.leading,14)
+        }.font(.system(size:12)).foregroundStyle(state.color).padding(.leading,14)}
       }.padding(.leading,20)
         .overlay(alignment:.leading) {CellRail(state:state)}
         .accessibilityElement(children:.contain)

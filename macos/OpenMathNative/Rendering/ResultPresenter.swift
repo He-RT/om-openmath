@@ -6,6 +6,13 @@ struct NativeExpressionProjection:Codable,Sendable {
   let input_form:String,modern_form:HostNullable<String>,latex:String
   init(input_form:String,modern_form:String?,latex:String) {self.input_form=input_form;self.modern_form = .init(modern_form);self.latex=latex}
 }
+enum NumericDisplay {
+  /// Precision annotations may occur on each component of a complex expression.
+  /// Preserve the rest of the expression, including its imaginary part and sign.
+  static func text(_ input:String)->String {
+    input.replacingOccurrences(of:"`[0-9]+(?:\\.[0-9]+)?",with:"",options:.regularExpression)
+  }
+}
 enum NativeVerification:Codable,Sendable {
   case exact,construction,numeric(UInt32),unverified
   private enum Key:String,CodingKey {case Numeric,digits}
@@ -72,7 +79,10 @@ struct NativeSolutionPage:Decodable,Sendable {
   let solution_multiplicities:[UInt32],solution_first_indices:[UInt32]
   var total:UInt32 {max(total_solutions,total_intervals)}
   var complete:Bool {offset==0 && solutions.count==Int(total_solutions) && intervals.count==Int(total_intervals)}
-  struct Group:Sendable {let index:Int,firstIndex:UInt32,entry:NativeSolutionEntry,multiplicity:UInt32}
+  struct Group:Sendable,Identifiable {
+    let index:Int,firstIndex:UInt32,entry:NativeSolutionEntry,multiplicity:UInt32
+    var id:Int {index}
+  }
   var groups:[Group] {
     // Global multiplicity/first ordinal are provided by the kernel from all real records.
     // Only display grouping within this page is local, with the same complete byte identity.
@@ -85,6 +95,13 @@ struct NativeSolutionPage:Decodable,Sendable {
       result.append(.init(index:index,firstIndex:solution_first_indices[index],entry:entry,multiplicity:solution_multiplicities[index]))
     }
     return result
+  }
+  var lineLatex:String {
+    groups.map {group in
+      let equations=group.entry.bindings.map{($0.var_latex ?? $0.variable)+" = "+$0.latex}
+      let joined=equations.joined(separator:",\\quad ")
+      return equations.count>1 ? "\\left\\{"+joined+"\\right\\}":joined
+    }.filter{!$0.isEmpty}.joined(separator:",\\qquad ")
   }
 }
 struct NativeResultMessage:Decodable,Sendable {let symbol:String,tag:String,text:String,level:String}
@@ -211,6 +228,9 @@ struct NativeValueRoute:Sendable {
   @Published private(set) var busy=false
   @Published private(set) var message:String?
   @Published private(set) var numeric:[Data:NativeNumericProjection]=[:]
+  @Published private(set) var valueDigits:UInt32=20
+  @Published private(set) var solutionDigits:UInt32=20
+  @Published private(set) var hasGeometry=false
   @Published private(set) var originalInput:String?
   @Published private(set) var originalValue:NativeExpressionProjection?
   @Published private(set) var valuePage:NativeValuePage?
@@ -237,6 +257,11 @@ struct NativeValueRoute:Sendable {
         actualSummary.statement.value.map({UInt64($0.out_index)==original.out_index.value && $0.view_id==original.view_id.value}) ?? (original.out_index.value==0) else {throw ResultClientError.invalidReply}
       guard let reply=try await client.inspect(.inspect_result_presentation(.init(kind:.presentation,offset:offset,limit:Self.pageSize))),let actual=reply.binding.value else {throw ResultClientError.staleSelection}
       let value=try await Task.detached {try NativeResultPresentation.decode(reply.payload,binding:actual,offset:offset,limit:Self.pageSize)}.value
+      var geometry=false
+      if value.kind=="solutions" || value.kind=="geometry" {
+        if let reply=try await client.inspect(.inspect_result_geometry(.init(kind:.geometry))),
+          case .object(let data)=reply.payload {geometry=data["available"] == .bool(true)}
+      }
       var structured:NativeValuePage?
       var structuredError:String?
       if let statement=actualSummary.statement.value,statement.value_kind != "scalar",!statement.suppressed,value.kind=="expression" {
@@ -253,6 +278,7 @@ struct NativeValueRoute:Sendable {
       }
       guard !closing,!Task.isCancelled else {return}
       binding=client.selection ?? actual;summary=actualSummary;presentation=value
+      hasGeometry=geometry
       valuePage=structured;valueTrail=[];valueRoute = .init(path:[],offset:0,columnOffset:0,label:"根结果",nature:nil)
       message=structuredError
     } catch {if !closing,!Task.isCancelled {message="结果暂无法核对："+String(describing:error)}}
@@ -290,18 +316,25 @@ struct NativeValueRoute:Sendable {
       return source
     } catch {if !closing,!Task.isCancelled {message="完整值源码暂无法读取："+String(describing:error)};return nil}
   }
-  static func solutionNumericKey(index:UInt32,binding:Int,source:String)->Data {
-    var data=Data("solution/\(index)/\(binding)/".utf8);data.append(contentsOf:source.utf8);return data
+  static func solutionNumericKey(index:UInt32,binding:Int,source:String,digits:UInt32=20)->Data {
+    var data=Data("solution/\(index)/\(binding)/".utf8);data.append(contentsOf:source.utf8)
+    if digits != 20 {data.append(contentsOf:"/digits/\(digits)".utf8)}
+    return data
   }
-  func projectSolution(index:UInt32,binding indexInRow:Int,source:String)async {
+  func projectSolution(index:UInt32,binding indexInRow:Int,source:String,digits:UInt32=20)async {
+    guard [20,50,80].contains(digits) else {return}
     guard let page=presentation?.solutions,index>=page.offset,Int(index-page.offset)<page.solutions.count,indexInRow>=0,
       indexInRow<page.solutions[Int(index-page.offset)].bindings.count,
       page.solutions[Int(index-page.offset)].bindings[indexInRow].input_form.utf8.elementsEqual(source.utf8) else {message="解的来源已改变，请重新核对。";return}
-    let key=Self.solutionNumericKey(index:index,binding:indexInRow,source:source)
-    await project(key:key,query:.inspect_result_expression(.init(kind:.readonly_expression,source:source,numeric:true)))
+    let key=Self.solutionNumericKey(index:index,binding:indexInRow,source:source,digits:digits)
+    let expression=digits==20 ? source : "N["+source+",\(digits)]"
+    await project(key:key,query:.inspect_result_expression(.init(kind:.readonly_expression,source:expression,numeric:digits==20)))
+    if numeric[key] != nil {solutionDigits=digits}
   }
   func projectValue(digits:UInt32=20)async {
+    guard [20,50,80].contains(digits) else {return}
     await project(key:Data("value/\(digits)".utf8),query:.inspect_result_numeric(.init(kind:.numeric,path:[],digits:digits)))
+    if numeric[Data("value/\(digits)".utf8)] != nil {valueDigits=digits}
   }
   private func project(key:Data,query:NativeResultQuery)async {
     guard !closing,!busy else {return};busy=true;message=nil;defer {busy=false}

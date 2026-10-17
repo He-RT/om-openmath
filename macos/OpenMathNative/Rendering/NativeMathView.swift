@@ -99,6 +99,7 @@ private struct NativeMathOriginalSource:View {
 
 struct NativeMathView:View {
   let request:NativeMathRequest
+  var showsControls=true
   @State private var size:CGFloat=22
   @State private var showOriginal=false
   @Environment(\.colorScheme) private var scheme
@@ -107,7 +108,7 @@ struct NativeMathView:View {
     let actual=current
     HStack(alignment:.top,spacing:12) {
       NativeMathDisplay(request:actual).frame(maxWidth:.infinity,alignment:.leading)
-      Menu("公式操作",systemImage:"ellipsis") {
+      if showsControls {Menu("公式操作",systemImage:"ellipsis") {
         Button("复制 LaTeX") {copy(request.originalLatex)}
         Button("复制 Wolfram 源式") {copy(request.wolfram)}.disabled(request.wolfram.isEmpty)
         Button("复制 Modern 源式") {if let modern=request.modern {copy(modern)}}.disabled(request.modern==nil)
@@ -121,7 +122,7 @@ struct NativeMathView:View {
       }.labelStyle(.iconOnly).menuStyle(.borderlessButton).menuIndicator(.hidden).fixedSize().foregroundStyle(.secondary)
         .popover(isPresented:$showOriginal) {
           VStack(alignment:.leading,spacing:10) {Text("原始 LaTeX").font(.headline);NativeMathOriginalSource(source:request.originalLatex);Button("复制原始 LaTeX") {copy(request.originalLatex)}}.padding(16).frame(width:480)
-        }
+        }}
     }.onAppear {size=request.fontSize}
       .accessibilityElement(children:.contain).accessibilityIdentifier("notebook-formula-"+request.identity)
       .contextMenu {

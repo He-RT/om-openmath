@@ -70,9 +70,26 @@ private actor PresenterDeliveryPause {
     let roots=owners["roots"]!,rootPage=roots.presentation!.solutions!
     check(rootPage.solutions.contains{$0.bindings.contains{$0.root_index != nil}})
     let rootValue=rootPage.solutions[0].bindings[0]
+    for entry in rootPage.solutions {
+      for binding in entry.bindings {
+        if let number=binding.numeric.value {
+          let displayed=NumericDisplay.text(number)
+          check(displayed.contains("I")==number.contains("I"),"complex numeric display lost its imaginary component")
+          check(displayed.contains("(-")==number.contains("(-"),"complex numeric display lost the imaginary sign")
+          check(!displayed.contains("`"),"numeric display retains precision annotations")
+        }
+      }
+    }
     await roots.projectSolution(index:0,binding:0,source:rootValue.input_form)
     let rootKey=ResultPresenter.solutionNumericKey(index:0,binding:0,source:rootValue.input_form)
     check(roots.numeric[rootKey] != nil,"real Root numeric projection missing")
+    for digits:UInt32 in [50,80] {
+      await roots.projectSolution(index:0,binding:0,source:rootValue.input_form,digits:digits)
+      let key=ResultPresenter.solutionNumericKey(index:0,binding:0,source:rootValue.input_form,digits:digits)
+      guard let projected=roots.numeric[key] else {fatalError("Root precision projection missing: \(digits)")}
+      check(projected.value.input_form.split(separator:"`").first!.count>=Int(digits),"Root precision lost digits")
+      check(roots.solutionDigits==digits)
+    }
     check(roots.presentation!.solutions!.solutions[0].bindings[0].input_form.utf8.elementsEqual(rootValue.input_form.utf8))
     let multiple=owners["multiple"]!;check(multiple.presentation!.solutions!.groups.count==1 && multiple.presentation!.solutions!.groups[0].multiplicity==20)
     await multiple.load(offset:16)
@@ -87,6 +104,7 @@ private actor PresenterDeliveryPause {
     // Pure grouping negative: same value/pretty label, distinct actual conditions and raw bytes.
     let conditionJSON=#"{"kind":"solutions","solution_kind":"finite","vars":["x"],"region_latex":null,"total_solutions":2,"total_intervals":0,"offset":0,"solution_multiplicities":[1,1],"solution_first_indices":[0,1],"intervals":[],"solutions":[{"bindings":[{"var":"x","latex":"1","input_form":"1","modern_form":"1","numeric":null}],"condition_latex":"a>0","verified":"Exact"},{"bindings":[{"var":"x","latex":"1","input_form":"1","modern_form":"1","numeric":null}],"condition_latex":"a<0","verified":"Exact"}]}"#
     let different=try JSONDecoder().decode(NativeSolutionPage.self,from:Data(conditionJSON.utf8));check(different.groups.count==2,"different conditions merged by display equality")
+    check(different.lineLatex=="x = 1,\\qquad x = 1","inline solution groups or spacing changed")
 
     let guardResult=session.runtime.results["guard"]!,guardBinding=guardResult.bindings.last!
     let inspect=ResultClient(host:session.host);try inspect.select(guardBinding)

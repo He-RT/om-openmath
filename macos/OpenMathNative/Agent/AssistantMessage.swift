@@ -89,7 +89,7 @@ enum AgentActionFormatter {
       let input=args["input"] as? [String:Any],ops=input?["operations"] as? [[String:Any]] ?? []
       let inserted=ops.filter{$0["type"] as? String=="insert_cell"}
       if !inserted.isEmpty {
-        let math=inserted.allSatisfy{$0["kind"] as? String=="math"}
+        let math=inserted.allSatisfy{($0["kind"] as? String)?.lowercased()=="math"}
         object="新增 \(inserted.count) 个"+(math ? "数学":"")+"单元格"
       } else {object=ops.isEmpty ? "源码检查":"\(ops.count) 处操作"}
       let diagnostics=data["diagnostics"] as? [Any]

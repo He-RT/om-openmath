@@ -27,7 +27,8 @@ CLAIMS = [
     ('records', 'let r = {a: 1, b: 2}; r.a + r.b', lambda d: d['items'][-1].get('modern_form') == '3' and not d['messages']),
     ('pipe', '[1, 2, 3] |> map(fn(x) => x^2)', lambda d: d['items'][-1].get('modern_form') == '[1, 4, 9]' and not d['messages']),
     ('numeric-integrate', 'integrate(exp(-x^2), x: -inf..inf, mode: "numeric")', lambda d: not d['messages']),
-    ('no-nintegrate-method', 'NIntegrate[Sin[x^2],{x,0,1},Method->"GaussKronrod"]', lambda d: bool(d['messages'])),
+    ('nintegrate-compatible-method', 'NIntegrate[Sin[x^2],{x,0,1},Method->"gauss_kronrod"]', lambda d: not d['messages']),
+    ('unsupported-wolfram-method-value', 'NIntegrate[Sin[x^2],{x,0,1},Method->"GaussKronrod"]', lambda d: bool(d['messages'])),
     ('dependent-cells', 'let a = 5; a^2 + 1', lambda d: d['items'][-1].get('modern_form') == '26' and not d['messages']),
 ]
 

@@ -4,7 +4,12 @@ import Security
 enum AssistantSetupError:Error {case invalid,notConfigured,contextLimit}
 struct AssistantConfiguration:Codable,Sendable {
   let baseURL:String,model:String,credentialReference:String
-  var endpoint:URL {URL(string:baseURL)!.appendingPathComponent("chat/completions")}
+  var endpoint:URL {
+    var url=URLComponents(string:baseURL)!
+    // Local HTTP uses a literal loopback address; it cannot follow a DNS change to a remote host.
+    if url.scheme=="http",url.host?.lowercased()=="localhost" {url.host="127.0.0.1"}
+    return url.url!.appendingPathComponent("chat/completions")
+  }
 }
 
 /// A small configuration for the first native assistant. Secrets remain in the exact new
@@ -46,8 +51,10 @@ actor AssistantSettingsStore {
   private static func remove(_ reference:String) {
     SecretStore.remove(reference:reference)
   }
-  private static func validate(_ base:String,model:String)throws {
-    guard let u=URLComponents(string:base),u.scheme=="https",u.host?.isEmpty==false,u.user==nil,u.password==nil,u.query==nil,u.fragment==nil,u.url != nil,u.port.map({(1...65535).contains($0)}) ?? true,
+  static func validate(_ base:String,model:String)throws {
+    guard let u=URLComponents(string:base),u.host?.isEmpty==false,
+      u.scheme=="https" || u.scheme=="http" && ["localhost","127.0.0.1","[::1]","::1"].contains(u.host?.lowercased() ?? ""),
+      u.user==nil,u.password==nil,u.query==nil,u.fragment==nil,u.url != nil,u.port.map({(1...65535).contains($0)}) ?? true,
       !model.isEmpty,model.utf8.count<=256,!model.contains(where:{$0.isNewline}) else {throw AssistantSetupError.invalid}
   }
 }

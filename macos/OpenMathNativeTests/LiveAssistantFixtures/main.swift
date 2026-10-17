@@ -16,7 +16,7 @@ import Security
     let root=URL(fileURLWithPath:CommandLine.arguments[3],isDirectory:true),model=CommandLine.arguments[4]
     let config=try JSONSerialization.jsonObject(with:Data(contentsOf:api)) as! [String:Any]
     guard let base=config["base_url"] as? String,let key=config["api_key"] as? String,
-      let models=config["models"] as? [String],models.contains(model),base=="https://4Router.net/v1" else {throw AssistantSetupError.invalid}
+      let models=config["models"] as? [String],models.contains(model),["https://4Router.net/v1","http://localhost:10100/v1"].contains(base) else {throw AssistantSetupError.invalid}
     let secret=Data(key.utf8),document=UUID().uuidString.lowercased(),session="live-assistant"
     let (storage,_)=try await StorageService.open(paths:.init(root:root,channel:.preview))
     let info=try await storage.openDocument(document)

@@ -56,7 +56,7 @@ actor AssistantContext {
     let data=try JSONSerialization.data(withJSONObject:request,options:[.sortedKeys,.withoutEscapingSlashes])
     guard data.count<=1024*1024 else {throw AssistantSetupError.contextLimit}
     let model=try await ProviderModelSession.prepare(host:host,requestJSON:String(decoding:data,as:UTF8.self),request:intent.request_id,context:"context-"+UUID().uuidString.lowercased(),task:task,turn:intent.agent_turn_id,message:"assistant-"+intent.agent_turn_id)
-    let route=try ProviderRoute(binding:model.binding,endpoint:configuration.endpoint,authentication:.bearer,credentialReference:configuration.credentialReference,timeouts:try ProviderTimeouts())
+    let route=try ProviderRoute(binding:model.binding,endpoint:configuration.endpoint,authentication:.bearer,credentialReference:configuration.credentialReference,timeouts:try ProviderTimeouts(),allowHTTPOnLiteralLoopback:configuration.endpoint.scheme=="http")
     return ProviderRequestLedger(storage:storage,ledger:SessionLedgerPort(storage:storage,session:session),model:model).turn(route:route)
   }
   private func object<T:Encodable>(_ value:T)throws->Any {try JSONSerialization.jsonObject(with:JSONEncoder().encode(value))}

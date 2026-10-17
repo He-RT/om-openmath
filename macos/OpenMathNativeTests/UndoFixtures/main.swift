@@ -120,6 +120,17 @@ private final class ReadPause:@unchecked Sendable {
     precondition(unknownNative.phase == .ready && unknownNative.lastOperation==originalUnknown)
     precondition(freshDrafts.confirmed.file.cells[0].source=="later native user input" && unknownNative.manager.canRedo)
     unknownNative.close();freshEditor.reflectAcknowledgedSource()
+    let buttonBefore=freshDrafts.confirmed.file.cells[0].source
+    let buttonChange=try await freshApply("let button_probe=11")
+    let buttonUndo=UndoCoordinator {ids,group,operation in try await freshPort.undo(transactions:ids,group:group,operation:operation)}
+    try buttonUndo.registerCommitted(buttonChange,group:"assistant-round",name:"助手修改")
+    try await buttonUndo.undoGroup("assistant-round")
+    precondition(freshDrafts.confirmed.file.cells[0].source==buttonBefore && buttonUndo.manager.canRedo)
+    let afterButton=freshDrafts.confirmed.snapshot_hash
+    do {try await buttonUndo.undoGroup("assistant-round");fatalError("same group was undone twice")}
+    catch CommitPortError.sourceConflict { }
+    precondition(freshDrafts.confirmed.snapshot_hash==afterButton)
+    buttonUndo.close();freshEditor.reflectAcknowledgedSource()
     let textUndo=UndoCoordinator {ids,group,operation in try await freshPort.undo(transactions:ids,group:group,operation:operation)}
     let binding=EditorCommitBinding(editor:freshEditor,port:freshPort,undo:textUndo)
     let textBefore=freshEditor.textView.string

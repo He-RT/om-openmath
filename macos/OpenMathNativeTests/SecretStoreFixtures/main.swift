@@ -21,6 +21,15 @@ private final class QueryCapture: @unchecked Sendable {
 
 @main struct SecretStoreFixtures {
   static func main() async throws {
+    for base in ["http://localhost:10100/v1","http://127.0.0.1:10100/v1","http://[::1]:10100/v1","https://api.example.com/v1"] {
+      try AssistantSettingsStore.validate(base,model:"configured-model")
+    }
+    for base in ["http://example.com/v1","http://localhost.example.com/v1","http://127.0.0.2/v1","https://user:pass@example.com/v1","http://localhost:10100/v1?key=secret"] {
+      do {try AssistantSettingsStore.validate(base,model:"configured-model");fatalError("non-loopback insecure or credential-bearing route accepted")}
+      catch AssistantSetupError.invalid { }
+    }
+    let local=AssistantConfiguration(baseURL:"http://localhost:10100/v1",model:"configured-model",credentialReference:"fixture")
+    precondition(local.endpoint.absoluteString=="http://127.0.0.1:10100/v1/chat/completions")
     let captured = QueryCapture()
     let store = SecretStore(testReader: { query in
       captured.check(query, account: "fixture-reference")

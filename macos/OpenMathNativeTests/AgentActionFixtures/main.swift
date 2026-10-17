@@ -21,6 +21,8 @@ import Foundation
     precondition(moved.cells==["stable-b"] && moved.object=="修改单元格 7")
     let cancelled=try action("run_cells",reply:["ok":false,"status":"cancelled"])
     precondition(cancelled.status == .cancelled)
+    let stopped=AgentActionFormatter.make(turn:"t",call:"c",tool:"run_cells",arguments:Data("{}".utf8),reply:nil,cellOrder:[:],fallback:.cancelled)
+    precondition(stopped.status == .cancelled)
     let invalid=try action("preview_source",reply:["ok":true,"status":"completed","data":["valid":false,"diagnostics":[["message":"表达式未完成"]]]])
     precondition(invalid.status == .failed && invalid.error?.message=="表达式未完成")
     let a=try action(call:"read-1",reply:["ok":true]),b=try action("get_function_docs",call:"read-2",reply:["ok":true],args:["name":"scene"]),c=try action("get_function_docs",call:"read-3",reply:["ok":true],args:["name":"disk"])

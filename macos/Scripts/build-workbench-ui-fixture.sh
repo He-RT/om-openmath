@@ -22,12 +22,20 @@ python3 - "$fixture_app" "$fixture_dir/data" <<'PY'
 from pathlib import Path
 import json,plistlib,sys
 app=Path(sys.argv[1]);root=Path(sys.argv[2]).resolve()
-info={'CFBundleExecutable':'WorkbenchUIFixture','CFBundleIdentifier':'org.openmath.OpenMath.WorkbenchUIFixture','CFBundleName':'OpenMath Workbench Fixture','CFBundlePackageType':'APPL','NSPrincipalClass':'NSApplication','LSMinimumSystemVersion':'27.0'}
+info={'CFBundleExecutable':'WorkbenchUIFixture','CFBundleIdentifier':'org.openmath.OpenMath.WorkbenchUIFixture','CFBundleName':'OpenMath Workbench Fixture','CFBundlePackageType':'APPL','NSPrincipalClass':'NSApplication','LSMinimumSystemVersion':'27.0','OpenMathReleaseVersion':plistlib.loads(Path('macos/OpenMathNative/Info.plist').read_bytes()).get('OpenMathReleaseVersion','development')}
 (app/'Contents/Info.plist').write_bytes(plistlib.dumps(info))
 (app/'Contents/Resources/FixtureRoot.txt').write_text(str(root)+'\n')
 (root/'fixture.omnb').write_text(json.dumps({'version':1,'title':'原生工作台验收','cells':[{'id':'a','kind':'Math','source':'let a=2 # 中文🙂','dialect':'Modern'},{'id':'b','kind':'Math','source':'a+1','dialect':'Modern'},{'id':'long','kind':'Math','source':'map(fn(k)=>sin(k),range(1,1000000))','dialect':'Modern'}]},ensure_ascii=False))
 PY
 install_native_math_resources "$fixture_app/Contents/Resources"
-if [[ $# -ge 2 ]]; then cp "$2" "$fixture_app/Contents/Resources/ActionTranscript.json"; fi
+if [[ $# -ge 2 && -n "$2" ]]; then cp "$2" "$fixture_app/Contents/Resources/ActionTranscript.json"; fi
+if [[ "${3:-}" == live ]]; then
+  python3 - "$fixture_app" <<'PY'
+from pathlib import Path
+import shutil,sys
+dest=Path(sys.argv[1])/'Contents/Resources/AgentRuntime'
+shutil.copytree(Path('macos/OpenMathNative/Resources/AgentRuntime'),dest,dirs_exist_ok=True)
+PY
+fi
 codesign --force --sign - "$fixture_app"
 printf '%s\n' "$fixture_app"

@@ -15,12 +15,18 @@ import SwiftUI
   @Published private(set) var messages:[AssistantMessage]=[]
   @Published private(set) var transcriptError:String?
   @Published private(set) var outcomes:[TurnOutcome]=[]
+  @Published private(set) var undoneTurns=Set<String>()
+  @Published private(set) var undoing=false
+  @Published private(set) var undoError:String?
   var prepare:(@MainActor ()async throws->Void)?
   var settled:(@MainActor ()async->Void)?
   var savedState:(@MainActor ()async throws->Bool)?
+  var outcomeReady:(@MainActor (TurnOutcome)async throws->Void)?
+  var undoOutcome:(@MainActor (String)async throws->Void)?
   private let host:NativeHostClient,storage:StorageService,agent:AgentSessionService
   private let settings:AssistantSettingsStore?
   private var configuration:AssistantConfiguration?
+  private var secrets=SecretStore()
   private var session="conversation-"+UUID().uuidString.lowercased()
   private var work:Task<Void,Never>?,adapter:ProviderAgentModelAdapter?,pipe:AgentPrivatePipe?
   private var closed=false
@@ -34,23 +40,38 @@ import SwiftUI
   }
   func load()async {
     guard !busy,configuration==nil else {return}
-    do {if let value=try await settings?.load() {configuration=value;baseURL=value.baseURL;model=value.model;configured=true;status="就绪"}}
+    do {if let value=try await settings?.load(),configuration==nil {configuration=value;baseURL=value.baseURL;model=value.model;configured=true;status="就绪"}}
     catch {status="模型配置无法读取，请重新配置。"}
   }
+  /// Trusted host selection (also used by isolated live fixtures); secrets are never serialized.
+  func configure(_ value:AssistantConfiguration,secrets:SecretStore?=nil)throws {
+    guard !busy,!undoing,!closed else {throw AgentSessionError.busy}
+    try AssistantSettingsStore.validate(value.baseURL,model:value.model)
+    configuration=value;baseURL=value.baseURL;model=value.model;configured=true
+    if let secrets {self.secrets=secrets}
+    status="模型已就绪"
+  }
+  func undoTurn(_ id:String)async {
+    guard !busy,!undoing,!undoneTurns.contains(id),let undoOutcome else {return}
+    undoing=true;undoError=nil;defer {undoing=false}
+    do {try await undoOutcome(id);undoneTurns.insert(id);status="已撤销本轮修改"}
+    catch CommitPortError.unknownOutcome {undoError="撤销结果待核对，未重复提交";status=undoError!}
+    catch {undoError="撤销未提交，请核对后续编辑或当前输入";status=undoError!}
+  }
   func saveSettings()async {
-    guard !busy,let settings else {return}
+    guard !busy,!undoing,let settings else {return}
     do {
       let value=try await settings.save(baseURL:baseURL,model:model,key:apiKey)
       configuration=value;apiKey="";baseURL=value.baseURL;model=value.model;configured=true;showSettings=false;status="模型配置已保存"
-    } catch {status="未保存。请检查HTTPS地址、模型名称和API Key；密钥需能写入已解锁的钥匙串。"}
+    } catch {status="未保存。请检查服务地址（远程HTTPS或本机HTTP）、模型名称和API Key；密钥需能写入已解锁的钥匙串。"}
   }
   func newConversation() {
-    guard !busy else {return};session="conversation-"+UUID().uuidString.lowercased()
+    guard !busy,!undoing else {return};session="conversation-"+UUID().uuidString.lowercased()
     messages=[];durableMessages=[];streamedText=[:];streamedOrder=[];pendingText=[:];pendingTurns=[];pendingInput=nil
-    streamedContexts=[:];streamedTasks=[:];outcomes=[];transcriptError=nil;status=configured ? "新对话":"请先配置模型"
+    streamedContexts=[:];streamedTasks=[:];outcomes=[];undoneTurns=[];undoError=nil;transcriptError=nil;status=configured ? "新对话":"请先配置模型"
   }
   func send() {
-    guard !closed,!busy else {return}
+    guard !closed,!busy,!undoing else {return}
     let text=draft.trimmingCharacters(in:.whitespacesAndNewlines)
     guard !text.isEmpty,text.utf8.count<=16384 else {status="请输入问题（最多16KiB）。";return}
     guard let configuration else {showSettings=true;return}
@@ -77,7 +98,7 @@ import SwiftUI
       taskID=scope.task_id;activeTask=scope.task_id
       await agent.observeTranscript { [weak self] in await self?.refreshMessages() }
       let context=AssistantContext(host:host,storage:storage,session:session,task:scope.task_id,configuration:configuration,mode:edits ? .execute:.discuss,tools:tools,schema:process.spec.root.appendingPathComponent("Agent/docs/design/agent-tools.schema.json"))
-      let transport=ProviderAgentModelAdapter(transport:ProviderTransport(secrets:SecretStore()),factory:{try await context.prepare($0)})
+      let transport=ProviderAgentModelAdapter(transport:ProviderTransport(secrets:secrets),factory:{try await context.prepare($0)})
       adapter=transport
       let underlying=transport.port()
       let visible=AgentNativeModelPort(prepare:underlying.prepare,stream:{[weak self] intent in
@@ -111,7 +132,9 @@ import SwiftUI
       do {
         let facts=try await agent.outcomeFacts(session:session,task:taskID)
         let saved=try await savedState?() ?? false
-        outcomes.append(.assemble(task:taskID,reason:reason,facts:facts,saved:saved,durationMs:duration))
+        let outcome=TurnOutcome.assemble(task:taskID,reason:reason,facts:facts,saved:saved,durationMs:duration)
+        outcomes.append(outcome)
+        do {try await outcomeReady?(outcome)} catch {undoError="本轮撤销记录暂无法读取，请保留当前笔记本"}
       } catch {
         // Missing evidence is explicit. Do not replace unreadable facts with a claim of no edits.
         var outcome=TurnOutcome.assemble(task:taskID,reason:reason,facts:[],saved:false,durationMs:duration)
@@ -119,6 +142,7 @@ import SwiftUI
       }
     }
     status=UIStrings.end(reason)
+    if case .failed=reason,draft.isEmpty {draft=text}
     if outcomes.last?.id==taskID,outcomes.last?.factsUnavailable==true {status+="；本轮操作事实暂时无法读取，请核对笔记本"}
     busy=false;stopping=false;work=nil
   }

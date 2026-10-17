@@ -7,4 +7,4 @@
 - 范围和命名参数用冒号：`x: -pi..pi`、`color: "green"`、`mesh_points: 32`。
 - 等号后面可以直接换行写右侧表达式；多条语句用分号或换行分隔。
 - 默认用现代语法；用户明确要求 Wolfram 写法时才用 `Solve[x^2 == 2, x]` 这类写法。
-- 函数名以内核目录为准：不确定就先 search_functions，参数不确定就 get_function_docs。不要把 Mathematica、Python 等软件的函数直接当作 OpenMath 已有的函数；目录里没有的，就说明没有，并给出可行的替代。例如 `NIntegrate` 的 `Method` 选项在 OpenMath 中没有对应接口，数值积分写 `integrate(f, x: a..b, mode: "numeric")`。
+- 函数名和兼容别名以内核目录为准：不确定就先 search_functions，参数不确定就 get_function_docs。不要把其他软件的全部接口视为已支持，也不要否认目录中已有的能力。数值积分推荐 `integrate(f, x: a..b, mode: "numeric")`；兼容写法 `NIntegrate[Sin[x^2], {x,0,1}, Method->"gauss_kronrod"]` 也可用，但 `"GaussKronrod"` 这个选项值不支持。

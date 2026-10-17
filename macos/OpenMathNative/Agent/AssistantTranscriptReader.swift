@@ -13,12 +13,18 @@ actor AssistantTranscriptReader {
     }
     let source=try await storage.committedSource(document)
     let order=Dictionary(uniqueKeysWithValues:(source?.file.cells ?? []).enumerated().map{($0.element.id,$0.offset+1)})
-    var replies:[String:Reply]=[:],unavailable=Set<String>(),contexts:[String:AssistantMessageContext]=[:]
+    var replies:[String:Reply]=[:],unavailable=Set<String>(),contexts:[String:AssistantMessageContext]=[:],stoppedRuns=Set<String>()
     func key(_ task:String,_ turn:String,_ call:String)->String {task+"\u{0}"+turn+"\u{0}"+call}
     for stored in events {
       let event=stored.event
       guard let text=event.payload_inline_json.value else {continue};let bytes=Data(text.utf8)
       if event.event_kind == .user_message,let input=try? JSONDecoder().decode(SessionCanonicalInput.self,from:bytes),let context=input.presentation,let task=event.task_id.value {contexts[task]=context}
+      if event.event_kind == .task_transition,let transition=try? JSONDecoder().decode(SessionRunTransition.self,from:bytes),
+        transition.kind == .run_child_stopped,transition.code=="CANCELLED",
+        let group=events.first(where:{$0.event.event_id==transition.groupAdmission}),
+        let admission=try? SessionValidation.payload(SessionToolAdmission.self,group.event) {
+        stoppedRuns.insert(key(event.task_id.value ?? "",event.agent_turn_id.value ?? "",admission.callID))
+      }
       if event.event_kind != .recovery {continue}
       let canonical:AgentCanonicalMessage,intent:NativeAgentToolIntent,hash:String,length:UInt64
       var changes:[String:TurnChangedCell.Kind]=[:]
@@ -62,7 +68,8 @@ actor AssistantTranscriptReader {
         case .agent_tool_proposal_part(let proposal):
           let identity=key(task,turn,proposal.tool_call_id),reply=replies[identity]
           let action=AgentActionFormatter.make(turn:turn,call:proposal.tool_call_id,tool:proposal.name.rawValue,
-            arguments:Data(proposal.arguments_json.utf8),reply:reply?.body,cellOrder:order,changes:reply?.changes ?? [:],fallback:unavailable.contains(identity) ? .failed:nil)
+            arguments:Data(proposal.arguments_json.utf8),reply:reply?.body,cellOrder:order,changes:reply?.changes ?? [:],
+            fallback:stoppedRuns.contains(identity) ? .cancelled:unavailable.contains(identity) ? .failed:nil)
           if let last=parts.last,case .actions(var actions)=last.value {actions.append(action);parts[parts.count-1].value = .actions(actions)}
           else {parts.append(.init(id:proposal.part_id,value:.actions([action])))}
         default:break

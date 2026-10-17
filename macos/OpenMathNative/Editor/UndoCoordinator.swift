@@ -37,6 +37,7 @@ private final class DocumentUndoManager:UndoManager {
   private var queued:[(NativeCommitState,String,String)]=[]
   private var pending:(entry:UndoEntry,direction:Direction,operation:String)?
   private var confirmedInverse:NativeCommitState?
+  private var groupCompletion:CheckedContinuation<Void,any Error>?
   private var alive=true
   private(set) var phase:Phase = .ready
   private(set) var lastOperation:String?
@@ -87,6 +88,20 @@ private final class DocumentUndoManager:UndoManager {
   }
   /// Unknown outcomes retry the original ID and let DocCommitPort read the actual stored receipt.
   func reconcile() {guard pending != nil,phase == .unknown else {return};start()}
+  /// A button and Cmd-Z consume the same registered group and original unknown operation ID.
+  func undoGroup(_ group:String)async throws {
+    guard alive,groupCompletion==nil else {throw CommitPortError.operationInProgress}
+    if let pending {
+      guard pending.entry.group==group,phase == .unknown else {throw CommitPortError.operationInProgress}
+      return try await withCheckedThrowingContinuation {groupCompletion=$0;reconcile()}
+    }
+    guard undoEntries.last?.group==group,permits(.undo) else {throw CommitPortError.sourceConflict}
+    try await withCheckedThrowingContinuation {groupCompletion=$0;request(.undo)}
+  }
+  private func finishGroup(_ error:(any Error)?=nil) {
+    let completion=groupCompletion;groupCompletion=nil
+    if let error {completion?.resume(throwing:error)} else {completion?.resume(returning:())}
+  }
   private func start() {
     guard let pending,phase != .pending else {return}
     phase = .pending;error=nil;lastOperation=pending.operation
@@ -96,18 +111,20 @@ private final class DocumentUndoManager:UndoManager {
         let actual=try await perform(transactions,group,operation)
         guard let self,self.alive,self.pending?.operation==operation else {return}
         guard actual.phase == .completed,actual.receipt.value?.receipt.transaction_id.value != nil else {
-          self.phase = .failed;self.error="撤销未提交";self.pending=nil;try? self.flushQueued();return
+          self.phase = .failed;self.error="撤销未提交";self.pending=nil;try? self.flushQueued();self.finishGroup(CommitPortError.sourceConflict);return
         }
         self.confirmedInverse=actual
         self.native.consume(pending.direction)
         self.confirmedInverse=nil;self.pending=nil;self.phase = .ready
         try self.flushQueued()
         self.changed?()
+        self.finishGroup()
       } catch CommitPortError.unknownOutcome {
-        guard let self,self.alive else {return};self.phase = .unknown;self.error="撤销结果待核对"
+        guard let self,self.alive else {return};self.phase = .unknown;self.error="撤销结果待核对";self.finishGroup(CommitPortError.unknownOutcome)
       } catch {
         guard let self,self.alive else {return};self.phase = .failed;self.error="撤销未提交，原内容保留";self.pending=nil
         try? self.flushQueued()
+        self.finishGroup(error)
       }
     }
   }
@@ -124,5 +141,5 @@ private final class DocumentUndoManager:UndoManager {
     let ready=queued;queued.removeAll()
     for (state,group,name) in ready {try registerCommitted(state,group:group,name:name)}
   }
-  func close() {alive=false;phase = .closed;native.removeAllActions();queued.removeAll();undoEntries.removeAll();redoEntries.removeAll()}
+  func close() {alive=false;phase = .closed;finishGroup(CommitPortError.sourceConflict);native.removeAllActions();queued.removeAll();undoEntries.removeAll();redoEntries.removeAll()}
 }

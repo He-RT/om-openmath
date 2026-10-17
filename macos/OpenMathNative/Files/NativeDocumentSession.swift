@@ -66,6 +66,23 @@ actor NativeAppStorage {
       let state=try await files.state()
       return state.head != nil && !state.dirty && state.unknownOperation==nil
     }
+    assistant.outcomeReady={ [weak self] outcome in
+      guard let self,!closed else {throw StorageError.closing}
+      let ids=Array(Set(outcome.changedCells.map(\.transactionRef)))
+      guard !ids.isEmpty else {return}
+      let transactions=try await storage.sourceTransactions(document:drafts.confirmed.document_id,ids:ids)
+      for transaction in transactions.sorted(by:{$0.plan.after.revision.value<$1.plan.after.revision.value}) {
+        let receipt=transaction.receipt
+        let actual=NativeCommitState(protocol_version:1,document_id:transaction.plan.commit.document_id,
+          operation_id:receipt.receipt.operation_id,request_hash:receipt.receipt.request_hash,phase:.completed,cancel_requested:false,receipt:.init(receipt))
+        try undo.registerCommitted(actual,group:outcome.id,name:"助手修改")
+      }
+    }
+    assistant.undoOutcome={ [weak self] group in
+      guard let self,!closed else {throw StorageError.closing}
+      try await undo.undoGroup(group)
+      await runtime.refreshProjection()
+    }
     runtime.selectedCell=drafts.confirmed.file.cells.first?.id
     editorFocus=runtime.selectedCell
     runtime.beforeRun={ [weak self] in

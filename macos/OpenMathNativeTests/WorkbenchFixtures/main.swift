@@ -17,6 +17,10 @@ import SwiftUI
     let app=NSApplication.shared;app.setActivationPolicy(.accessory)
     let root=URL(fileURLWithPath:CommandLine.arguments[1],isDirectory:true)
     try FileManager.default.createDirectory(at:root,withIntermediateDirectories:true)
+    if CommandLine.arguments.contains("--text-reading") {
+      try await textReading(root:root)
+      return
+    }
     if CommandLine.arguments.contains("--source-feedback") {
       try await sourceFeedback(root:root)
       return
@@ -214,6 +218,34 @@ import SwiftUI
     save(host,to:root.appendingPathComponent("source-error.png"))
     print("Real C ABI source feedback: a edit invalidates b only, reverting restores freshness, Unicode diagnostic \(position.line):\(position.column) locates exact native range, prior valid receipt retained")
     window.orderOut(nil);try await session.close();try await services.close()
+  }
+  @MainActor static func textReading(root:URL) async throws {
+    let file=NativeSourceFile(version:1,title:"文字阅读",cells:[.init(id:"text",kind:.text,source:"# 中文标题\n\n正文 $x$",dialect:.modern)])
+    let url=root.appendingPathComponent("text.omnb");try JSONEncoder().encode(file).write(to:url)
+    let services=NativeAppStorage(paths:.init(root:root.appendingPathComponent("storage"),channel:.preview))
+    let workspace=NativeFileWorkspace(storage:services)
+    guard await workspace.open(url),let session=workspace.session else {fatalError("text notebook missing")}
+    require(session.editingTextCells.isEmpty,"existing prose did not default to reading")
+    let window=NSWindow(contentRect:NSRect(x:0,y:0,width:1100,height:780),styleMask:[.titled,.closable,.resizable],backing:.buffered,defer:false)
+    let host=NSHostingView(rootView:WorkspaceView(workspace:workspace,session:session));window.contentView=host
+    window.makeKeyAndOrderFront(nil);window.displayIfNeeded()
+    session.beginTextEditing("text")
+    let editor=try session.editor("text").textView
+    try await until {editor.window===window}
+    window.makeFirstResponder(editor)
+    editor.setMarkedText("拼音",selectedRange:NSRange(location:0,length:2),replacementRange:NSRange(location:0,length:0))
+    require(editor.hasMarkedText() && !session.endTextEditing("text"),"reading switch discarded marked text")
+    editor.unmarkText()
+    let original=editor.string
+    guard let escape=NSEvent.keyEvent(with:.keyDown,location:.zero,modifierFlags:[],timestamp:0,windowNumber:window.windowNumber,context:nil,characters:"\u{1b}",charactersIgnoringModifiers:"\u{1b}",isARepeat:false,keyCode:53) else {fatalError()}
+    editor.keyDown(with:escape)
+    try await until {!session.editingTextCells.contains("text")}
+    require(editor.string==original,"reading switch rewrote source")
+    try await session.insertCell(.text,after:"text")
+    let new=session.drafts.confirmed.file.cells.last!.id
+    require(session.editingTextCells.contains(new),"new prose did not enter editing")
+    window.orderOut(nil);try await session.close();try await services.close()
+    print("Text reading: existing prose reads, real marked text blocks exit, Esc retains source, new prose edits immediately passed")
   }
 
   /// C1: use the production notebook/editor inside the proposed native container.

@@ -12,11 +12,14 @@ private final class NativeEditorScrollView:NSScrollView {
 struct NativeSourceEditor:NSViewRepresentable {
   let session:NativeDocumentSession
   let cell:NativeSourceCell
+  var finishReading:(()->Void)?=nil
   func makeNSView(context:Context)->NSScrollView {
     let scroll=NativeEditorScrollView();scroll.hasVerticalScroller=true;scroll.hasHorizontalScroller=false;scroll.drawsBackground=false
     do {
-      let native=try session.editor(cell.id).textView
-      native.font = cell.kind == .math ? Theme.Font.nsSource : .systemFont(ofSize:16)
+      let editor=try session.editor(cell.id),native=editor.textView
+      editor.didFinishReading=finishReading
+      editor.didLoseFocus=finishReading
+      native.font = Theme.Font.nsSource
       native.textContainerInset=NSSize(width:14,height:10)
       native.drawsBackground=false
       native.isVerticallyResizable=true;native.isHorizontallyResizable=false;native.autoresizingMask=[.width]
@@ -29,5 +32,7 @@ struct NativeSourceEditor:NSViewRepresentable {
     }
     return scroll
   }
-  func updateNSView(_ nsView:NSScrollView,context:Context) {}
+  func updateNSView(_ nsView:NSScrollView,context:Context) {
+    if let editor=try? session.editor(cell.id) {editor.didFinishReading=finishReading;editor.didLoseFocus=finishReading}
+  }
 }

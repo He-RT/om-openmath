@@ -15,8 +15,22 @@ private final class EditorUndoRouter:UndoManager {
   var inputBegan:(()->String)?
   var inputEnded:(()->Void)?
   var focusChanged:(()->Void)?
+  var finishReading:(()->Void)?
+  var focusLost:(()->Void)?
   var newline:()->String = {"\n"}
   override func becomeFirstResponder()->Bool {let accepted=super.becomeFirstResponder();if accepted {focusChanged?()};return accepted}
+  override func resignFirstResponder()->Bool {
+    let accepted=super.resignFirstResponder()
+    if accepted,!hasMarkedText() {focusLost?()}
+    return accepted
+  }
+  override func keyDown(with event:NSEvent) {
+    let commandReturn=event.keyCode==36 && event.modifierFlags.intersection([.command,.option,.control,.shift]) == .command
+    if finishReading != nil,!hasMarkedText(),event.keyCode==53 || commandReturn {
+      finishReading?();return
+    }
+    super.keyDown(with:event)
+  }
   var documentManager:UndoManager?
   let local=UndoManager()
   private let router=EditorUndoRouter()
@@ -96,6 +110,8 @@ private final class EditorUndoRouter:UndoManager {
   private var inComposition=false
   var didEdit:(()->Void)?
   var didFocus:(()->Void)?
+  var didFinishReading:(()->Void)? {didSet {(textView as? DraftTextView)?.finishReading=didFinishReading}}
+  var didLoseFocus:(()->Void)? {didSet {(textView as? DraftTextView)?.focusLost=didLoseFocus}}
   var inputGroup:String {group}
   private(set) var indexMap:SourceIndexMap
   init(store:DraftStore,cell:String,generation:UInt64) throws {

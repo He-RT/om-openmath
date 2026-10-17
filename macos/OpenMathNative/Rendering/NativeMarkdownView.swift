@@ -13,8 +13,14 @@ private extension NSAttributedString.Key {
   private var renderedSize:CGFloat=16
   private var renderedProjection=""
   private var renderedDigest=""
+  private var renderedPaper=false
+  var onDoubleClick:(()->Void)?
   private var installing=false
-  private var pending:(MarkdownRenderDocument,Bool,CGFloat)?
+  private var pending:(MarkdownRenderDocument,Bool,CGFloat,Bool)?
+  override func mouseDown(with event:NSEvent) {
+    if event.clickCount==2,let onDoubleClick {onDoubleClick();return}
+    super.mouseDown(with:event)
+  }
   func configure() {
     isEditable=false;isSelectable=true;isRichText=true;drawsBackground=false
     textContainerInset=NSSize(width:2,height:4);textContainer?.lineFragmentPadding=0
@@ -22,23 +28,23 @@ private extension NSAttributedString.Key {
     textContainer?.widthTracksTextView=true;delegate=self
     setAccessibilityLabel("Markdown 内容")
   }
-  func install(_ document:MarkdownRenderDocument,dark:Bool,fontSize:CGFloat=16) {
+  func install(_ document:MarkdownRenderDocument,dark:Bool,fontSize:CGFloat=16,paper:Bool=false) {
     let digest=document.sourceDigest.isEmpty ? SHA256.hash(data:Data(document.source.utf8)).map{String(format:"%02x",$0)}.joined():document.sourceDigest
-    guard renderedDigest != digest || renderedDark != dark || renderedSize != fontSize || renderedProjection != document.projectionID else {return}
+    guard renderedDigest != digest || renderedDark != dark || renderedSize != fontSize || renderedProjection != document.projectionID || renderedPaper != paper else {return}
     // Pin a selected projection; install the pending update after selection ends.
     // Original source and formula delimiters remain available throughout.
-    if selectedRange().length>0,renderedSource != nil {pending=(document,dark,fontSize);return}
+    if selectedRange().length>0,renderedSource != nil {pending=(document,dark,fontSize,paper);return}
     installing=true;defer {installing=false};pending=nil;renderedProjection=document.projectionID;renderedDigest=digest
-    original=document.source;renderedSource=document.source;renderedDark=dark;renderedSize=fontSize
+    original=document.source;renderedSource=document.source;renderedDark=dark;renderedSize=fontSize;renderedPaper=paper
     let output=NSMutableAttributedString(string:""),sourceBytes=Array(document.source.utf8),sourceHash=digest
     mappings=[]
     for run in document.runs {
       let style=run.style
-      let size=style.heading>0 ? max(fontSize,fontSize+CGFloat(7-min(style.heading,6))*2) : fontSize
-      var font=style.code ? NSFont.monospacedSystemFont(ofSize:size,weight:.regular) : NSFont.systemFont(ofSize:size,weight:style.bold ? .semibold:.regular)
+      let size=paper && style.heading>0 ? (style.heading==1 ? 30:style.heading==2 ? 21:18) : style.heading>0 ? max(fontSize,fontSize+CGFloat(7-min(style.heading,6))*2):fontSize
+      var font=style.code ? NSFont.monospacedSystemFont(ofSize:size,weight:.regular):paper ? Theme.Font.paper(size:size,weight:style.bold ? .semibold:.regular):NSFont.systemFont(ofSize:size,weight:style.bold ? .semibold:.regular)
       if style.bold,style.code {font=NSFontManager.shared.convert(font,toHaveTrait:.boldFontMask)}
       if style.italic {font=NSFontManager.shared.convert(font,toHaveTrait:.italicFontMask)}
-      let paragraph=NSMutableParagraphStyle();paragraph.lineSpacing=4;paragraph.paragraphSpacing=4
+      let paragraph=NSMutableParagraphStyle();paragraph.lineSpacing=paper ? 7:4;paragraph.paragraphSpacing=4
       paragraph.headIndent=CGFloat(style.indent)*18;paragraph.firstLineHeadIndent=paragraph.headIndent
       paragraph.tabStops=[NSTextTab(textAlignment:.left,location:paragraph.headIndent+20)]
       var attributes:[NSAttributedString.Key:Any]=[.font:font,.foregroundColor:style.quote>0 ? NSColor.secondaryLabelColor:NSColor.labelColor,.paragraphStyle:paragraph]
@@ -64,9 +70,9 @@ private extension NSAttributedString.Key {
     textStorage?.setAttributedString(output);setSelectedRange(NSRange(location:0,length:0));needsLayout=true
   }
   func textViewDidChangeSelection(_ notification:Notification) {
-    guard !installing,selectedRange().length==0,let (document,dark,size)=pending else {return}
+    guard !installing,selectedRange().length==0,let (document,dark,size,paper)=pending else {return}
     pending=nil
-    Task { [weak self] in self?.install(document,dark:dark,fontSize:size) }
+    Task { [weak self] in self?.install(document,dark:dark,fontSize:size,paper:paper) }
   }
   func measuredHeight(width:CGFloat)->CGFloat {
     guard width.isFinite,width>0 else {return 1}
@@ -96,9 +102,9 @@ private extension NSAttributedString.Key {
   }
 }
 private struct MarkdownNativeSurface:NSViewRepresentable {
-  let document:MarkdownRenderDocument,dark:Bool,fontSize:CGFloat
-  func makeNSView(context:Context)->MarkdownTextView {let view=MarkdownTextView(usingTextLayoutManager:true);view.configure();view.install(document,dark:dark,fontSize:fontSize);return view}
-  func updateNSView(_ view:MarkdownTextView,context:Context) {view.install(document,dark:dark,fontSize:fontSize)}
+  let document:MarkdownRenderDocument,dark:Bool,fontSize:CGFloat,paper:Bool,onDoubleClick:(()->Void)?
+  func makeNSView(context:Context)->MarkdownTextView {let view=MarkdownTextView(usingTextLayoutManager:true);view.configure();view.onDoubleClick=onDoubleClick;view.install(document,dark:dark,fontSize:fontSize,paper:paper);return view}
+  func updateNSView(_ view:MarkdownTextView,context:Context) {view.onDoubleClick=onDoubleClick;view.install(document,dark:dark,fontSize:fontSize,paper:paper)}
   func sizeThatFits(_ proposal:ProposedViewSize,nsView:MarkdownTextView,context:Context)->CGSize? {
     let width=proposal.width ?? 600;return CGSize(width:width,height:nsView.measuredHeight(width:width))
   }
@@ -106,6 +112,8 @@ private struct MarkdownNativeSurface:NSViewRepresentable {
 struct NativeMarkdownView:View {
   let source:String
   var fontSize:CGFloat=16
+  var paper=false
+  var onDoubleClick:(()->Void)?=nil
   @State private var parsed:MarkdownRenderDocument?
   @Environment(\.colorScheme) private var scheme
   var body:some View {
@@ -114,11 +122,11 @@ struct NativeMarkdownView:View {
         VStack(alignment:.leading,spacing:8) {
           if parsed.fallback {Text("内容较长或嵌套过深，显示原文。").font(.caption).foregroundStyle(.secondary)}
           ForEach(parsed.sections) {section in
-            if let text=section.text {MarkdownNativeSurface(document:text,dark:scheme == .dark,fontSize:fontSize)}
+            if let text=section.text {MarkdownNativeSurface(document:text,dark:scheme == .dark,fontSize:fontSize,paper:paper,onDoubleClick:onDoubleClick)}
             if let table=section.table {NativeMarkdownTableView(table:table,dark:scheme == .dark,fontSize:fontSize)}
           }
         }
-      } else {Text(source).font(.system(size:fontSize)).textSelection(.enabled).frame(maxWidth:.infinity,alignment:.leading)}
+      } else {Text(source).font(paper ? Theme.Font.paperBody:.system(size:fontSize)).textSelection(.enabled).frame(maxWidth:.infinity,alignment:.leading)}
     }.task(id:Data(source.utf8)) {
       let value=await Task.detached(priority:.userInitiated) {MarkdownRenderDocument.parse(source)}.value
       if !Task.isCancelled {parsed=value}

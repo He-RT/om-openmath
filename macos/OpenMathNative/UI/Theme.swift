@@ -36,7 +36,7 @@ enum Theme {
     static let nsPaperBody = paper(size: 16.5, weight: .regular)
     static let nsSource = NSFont.monospacedSystemFont(ofSize: 13.5, weight: .regular)
 
-    private static func paper(size: CGFloat, weight: NSFont.Weight) -> NSFont {
+    static func paper(size: CGFloat, weight: NSFont.Weight) -> NSFont {
       let system = NSFont.systemFont(ofSize: size, weight: weight)
       let serif = system.fontDescriptor.withDesign(.serif) ?? system.fontDescriptor
       let descriptor = serif.addingAttributes([

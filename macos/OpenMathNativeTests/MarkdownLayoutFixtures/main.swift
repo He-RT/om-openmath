@@ -11,6 +11,10 @@ import Foundation
     let sections=document.sections
     precondition(sections.count==3 && sections[1].table?.rows.count==3)
     let first=sections[0].text!
+    let paper=MarkdownTextView(usingTextLayoutManager:true);paper.configure();paper.install(first,dark:false,fontSize:16.5,paper:true)
+    let headline=paper.textStorage!.attribute(.font,at:0,effectiveRange:nil) as! NSFont
+    precondition(headline.pointSize==30,"paper heading did not use 30 pt title")
+    precondition(headline.fontDescriptor.object(forKey:.cascadeList) != nil,"Chinese paper font cascade missing")
     let view=MarkdownTextView(usingTextLayoutManager:true);view.configure();view.install(first,dark:true)
     guard view.textLayoutManager != nil else {fatalError("TextKit 2 unavailable")}
     let height=view.measuredHeight(width:820)

@@ -10,6 +10,7 @@ mkdir -p target/macos-markdown-tests
 swiftc -whole-module-optimization -swift-version 6 -parse-as-library -target arm64-apple-macos27.0 \
  "${native_math_flags[@]}" "${native_markdown_flags[@]}" \
  macos/OpenMathNative/Generated/Contracts/MarkdownSpanMapping.swift \
+ macos/OpenMathNative/UI/Theme.swift \
  macos/OpenMathNative/Rendering/MathRenderAdapter.swift macos/OpenMathNative/Rendering/NativeMathView.swift \
  macos/OpenMathNative/Rendering/MarkdownRenderDocument.swift macos/OpenMathNative/Rendering/NativeMarkdownView.swift macos/OpenMathNative/Rendering/NativeMarkdownTableView.swift \
  macos/OpenMathNativeTests/MarkdownLayoutFixtures/main.swift -o target/macos-markdown-tests/layout-fixtures

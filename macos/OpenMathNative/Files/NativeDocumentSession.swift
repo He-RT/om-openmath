@@ -21,7 +21,8 @@ actor NativeAppStorage {
 
 /// Actual opened source, native overlays and file presentation. Construction performs no CAS.
 /// Closing settles file/source work before releasing the original host and document writer.
-@MainActor final class NativeDocumentSession {
+@MainActor final class NativeDocumentSession:ObservableObject {
+  @Published private(set) var editingTextCells=Set<String>()
   let document:NativeDocument
   let host:NativeHostClient
   let source:DocCommitPort
@@ -144,6 +145,14 @@ actor NativeAppStorage {
   func claimEditorFocus(_ cell:String)->Bool {
     guard editorFocus==cell else {return false};editorFocus=nil;return true
   }
+  func beginTextEditing(_ cell:String) {
+    guard !closed,drafts.confirmed.file.cells.contains(where:{$0.id==cell && $0.kind == .text}) else {return}
+    editingTextCells.insert(cell);runtime.navigate(to:cell);focusEditor(cell)
+  }
+  @discardableResult func endTextEditing(_ cell:String)->Bool {
+    guard drafts.overlay(cell)?.composing != true else {return false}
+    editingTextCells.remove(cell);return true
+  }
   private func focusEditor(_ cell:String?) {
     editorFocus=cell
     if let cell,let view=editors[Data(cell.utf8)]?.textView,let window=view.window {window.makeFirstResponder(view);editorFocus=nil}
@@ -204,6 +213,7 @@ actor NativeAppStorage {
     guard preview.valid,let reference=preview.preview_ref.value,let cell=preview.assigned_cell_ids[key] else {throw CommitPortError.sourceConflict}
     let actual=try await source.apply(reference)
     try undo.registerCommitted(actual,group:key,name:"添加单元格")
+    if kind == .text {editingTextCells.insert(cell)}
     sourceDidChange();runtime.navigate(to:cell);focusEditor(cell)
   }
   func deleteCell(_ id:String) async throws {

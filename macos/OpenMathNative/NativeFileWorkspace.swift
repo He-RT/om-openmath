@@ -340,28 +340,38 @@ private struct NativeDraftBackupStatus:View {
 
 private struct NativeNotebookTextCell:View {
   @ObservedObject var workspace:NativeFileWorkspace
-  let session:NativeDocumentSession,cell:NativeSourceCell
-  @State private var reading=false
+  @ObservedObject var session:NativeDocumentSession
+  let cell:NativeSourceCell
   @State private var message:String?
   private var source:String {session.drafts.overlay(cell.id)?.source ?? cell.source}
+  private var reading:Bool {!session.editingTextCells.contains(cell.id)}
   var body:some View {
     VStack(alignment:.leading,spacing:12) {
-      HStack {
-        Picker("文字视图",selection:Binding(get:{reading},set:{value in
-          if value && session.drafts.overlay(cell.id)?.composing==true {message="请先完成正在输入的文字。";return}
-          reading=value;message=nil
-        })) {Text("编辑").tag(false);Text("阅读").tag(true)}.pickerStyle(.segmented).labelsHidden().fixedSize().accessibilityIdentifier("notebook-text-mode-"+cell.id)
-        Spacer()
-        Button("复制 Markdown",systemImage:"doc.on.doc") {NSPasteboard.general.clearContents();NSPasteboard.general.setString(source,forType:.string)}.buttonStyle(.borderless).labelStyle(.iconOnly).help("复制完整 Markdown 原文")
-      }
-      if reading {NativeMarkdownView(source:source).padding(.horizontal,10)}
-      else {
-        NativeSourceEditor(session:session,cell:cell)
-          .frame(height:min(320,max(88,CGFloat(source.reduce(1){$1 == "\n" ? $0+1:$0})*23+24)))
-          .background(Color(nsColor:.controlBackgroundColor).opacity(0.55),in:RoundedRectangle(cornerRadius:6))
-          .overlay(alignment:.topLeading) {if source.isEmpty {Text("在这里记录文字或 Markdown…").foregroundStyle(.tertiary).padding(14).allowsHitTesting(false)}}
+      if reading {
+        NativeMarkdownView(source:source,fontSize:16.5,paper:true,onDoubleClick:{session.beginTextEditing(cell.id)})
+          .frame(maxWidth:640,alignment:.leading)
+          .contextMenu {
+            Button("编辑") {session.beginTextEditing(cell.id)}
+          }
+        HStack(spacing:12) {
+          Button("编辑") {session.beginTextEditing(cell.id)}.accessibilityIdentifier("notebook-text-edit-"+cell.id)
+          Button("复制 Markdown",systemImage:Theme.Symbol.copy) {copy()}.labelStyle(.iconOnly).help("复制完整 Markdown 原文")
+        }.font(.system(size:12)).foregroundStyle(Theme.Color.ink2).buttonStyle(.borderless)
+      } else {
+        NativeSourceEditor(session:session,cell:cell,finishReading:{ [weak session,cell] in
+          Task { @MainActor [weak session] in _ = session?.endTextEditing(cell.id) }
+        })
+          .frame(height:min(320,max(88,CGFloat(source.reduce(1){$1 == "\n" ? $0+1:$0})*21.6+20)))
+          .background(Theme.Color.well,in:RoundedRectangle(cornerRadius:Theme.Radius.well))
+          .overlay(alignment:.topLeading) {if source.isEmpty {Text("在这里记录文字或 Markdown…").font(Theme.Font.source).foregroundStyle(Theme.Color.ink3).padding(14).allowsHitTesting(false)}}
+        HStack {
+          Text("Esc 或 ⌘↩ 阅读").foregroundStyle(Theme.Color.ink2)
+          Spacer()
+          Button("阅读") {if !session.endTextEditing(cell.id) {message="请先完成正在输入的文字。"}}
+        }.font(.system(size:12)).buttonStyle(.borderless)
       }
       if let message {Text(message).font(.caption).foregroundStyle(.secondary)}
-    }
+    }.frame(maxWidth:.infinity,alignment:.leading)
   }
+  private func copy() {NSPasteboard.general.clearContents();NSPasteboard.general.setString(source,forType:.string)}
 }

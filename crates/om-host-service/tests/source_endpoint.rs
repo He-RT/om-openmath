@@ -81,3 +81,57 @@ fn host_command_schema_is_closed_and_requires_the_restored_configuration_binding
     assert!(decode_source_command(br#"{"type":"source_read","unexpected":true}"#).is_err());
     assert!(decode_source_command(br#"{"type":"source_open","store_id":"store"}"#).is_err());
 }
+
+#[test]
+fn readonly_editor_analysis_preserves_source_and_uses_owner_parser_context() {
+    use om_host_service::document::analysis::SourceAnalysisInput;
+    for strict in [false, true] {
+        let mut owner = endpoint(strict);
+        let before = command(&mut owner, json!({"type":"source_read"}))
+            .snapshot
+            .0
+            .unwrap();
+        let mut file = before.file.clone();
+        file.cells[0].source = "let e=5".into();
+        file.cells.push(NativeSourceCell {
+            id: "broken".into(),
+            kind: NativeCellKind::Math,
+            source: "let f(x) =".into(),
+            dialect: Dialect::Modern,
+        });
+        let reply = owner
+            .analysis_context()
+            .analyze(SourceAnalysisInput {
+                document_id: before.document_id.clone(),
+                generation: Serial::new(1).unwrap(),
+                base_hash: before.snapshot_hash.clone(),
+                file,
+            })
+            .unwrap();
+        assert_eq!(
+            reply
+                .analysis
+                .edges
+                .contains(&("cell".into(), "dependent".into())),
+            strict
+        );
+        assert!(
+            !reply
+                .analysis
+                .cells
+                .iter()
+                .find(|c| c.cell_id == "broken")
+                .unwrap()
+                .diagnostics
+                .is_empty()
+        );
+        let after = command(&mut owner, json!({"type":"source_read"}))
+            .snapshot
+            .0
+            .unwrap();
+        assert_eq!(
+            serde_json::to_value(before).unwrap(),
+            serde_json::to_value(after).unwrap()
+        );
+    }
+}

@@ -1,4 +1,5 @@
 module OpenMathHost {
   header "OpenMathHost.h"
+  header "WorkbenchAnalysis.h"
   export *
 }

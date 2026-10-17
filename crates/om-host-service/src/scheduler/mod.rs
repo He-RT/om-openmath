@@ -212,6 +212,28 @@ impl NativeHost {
             .poll(wait_ms, max_bytes)
             .map_err(str::to_owned)
     }
+    /// Analyze native drafts against the actual owner configuration, outside the source lock.
+    pub fn analyze_source(
+        &self,
+        bytes: &[u8],
+    ) -> Result<crate::document::analysis::SourceAnalysisReply, String> {
+        if self.shared.closed.load(Ordering::Acquire) {
+            return Err("HOST_CLOSING".into());
+        }
+        if bytes.len() > crate::protocol::MAX_CONTROL_BYTES {
+            return Err("BUDGET_EXCEEDED".into());
+        }
+        let input = serde_json::from_slice(bytes).map_err(|_| "INVALID_ARGUMENT")?;
+        let context = self
+            .shared
+            .source
+            .lock()
+            .map_err(|_| "INTERNAL_ERROR")?
+            .as_ref()
+            .ok_or("SOURCE_NOT_OPEN")?
+            .analysis_context();
+        context.analyze(input)
+    }
     /// Host-internal source port: physical store/editor duties are isolated from model tools.
     pub fn source_command(&self, bytes: &[u8]) -> Result<NativeSourceHostReply, String> {
         if self.shared.closed.load(Ordering::Acquire) {

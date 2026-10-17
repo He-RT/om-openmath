@@ -41,9 +41,11 @@ extension NotebookRuntime {
     facts.byAgent=agentModifiedCells.contains(cell.id) && !changed
     facts.sourceChanged=changed
     if let result {
-      if result.receipt.producer.cell_source_hash.value != KernelHashes.data(Data(cell.source.utf8)) {
-        facts.sourceChanged=true
-      } else if result.receipt.producer.execution_epoch.value != session.drafts.confirmed.execution_epoch.value {
+      let currentSource=draft?.source ?? cell.source
+      facts.sourceChanged=result.receipt.producer.cell_source_hash.value != KernelHashes.data(Data(currentSource.utf8))
+      if let reason=staleReasons[cell.id] {
+        facts.staleReason=reason
+      } else if !hasResultSource(cell.id) && result.receipt.producer.execution_epoch.value != session.drafts.confirmed.execution_epoch.value {
         facts.staleReason="计算所用的源码或定义已改变"
       }
       facts.error=result.receipt.producer.terminal_status == .error

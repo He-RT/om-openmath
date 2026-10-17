@@ -34,6 +34,13 @@ struct NotebookMathCell<Result:View,Tools:View>:View {
       VStack(alignment:.leading,spacing:Theme.Space.sm) {
         SourceWell(session:session,cell:cell,selected:session.runtime.selectedCell==cell.id,tools:tools)
         result.padding(.leading,14)
+        if case .stale(let reason)=state.status {
+          HStack(spacing:8) {
+            Text(reason).foregroundStyle(Theme.Color.ink2)
+            Button("运行以更新") {session.runtime.run(cell.id)}.buttonStyle(.borderless)
+              .disabled(!session.runtime.canRun || session.assistant.busy)
+          }.font(.system(size:12)).padding(.leading,14)
+        }
         if session.runtime.results[cell.id]==nil {HStack(spacing:6) {
           if state.status == .running {ProgressView().controlSize(.mini)}
           else {Image(systemName:symbol(state)).frame(width:13)}

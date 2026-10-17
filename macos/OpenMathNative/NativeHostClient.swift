@@ -29,6 +29,7 @@ private enum NativeHostQueues {
   static let model = DispatchQueue(label: "org.openmath.native.model.codec", qos: .userInitiated)
   static let modelCancel = DispatchQueue(label: "org.openmath.native.model.cancel", qos: .userInitiated)
   static let results = DispatchQueue(label: "org.openmath.native.results.control", qos: .userInitiated)
+  static let analysis = DispatchQueue(label: "org.openmath.native.source.analysis", qos: .utility)
   static let cancel = DispatchQueue(label: "org.openmath.native.cancel", qos: .userInitiated)
   static let shutdown = DispatchQueue(label: "org.openmath.native.shutdown", qos: .utility)
 }
@@ -154,6 +155,17 @@ actor NativeHostClient {
       let packet=data.withUnsafeBytes {om_host_source_command(handle.pointer,$0.bindMemory(to:UInt8.self).baseAddress,$0.count)}
       let reply:NativeSourceHostReply=try Self.read(packet)
       guard reply.protocol_version==1 else {throw NativeHostClientError.incompatibleVersion}
+      return reply
+    }
+  }
+  func analyzeSource(_ input:NotebookAnalysisInput) async throws->NotebookAnalysisReply {
+    guard let handle else {throw NativeHostClientError.closing}
+    return try await Self.background(NativeHostQueues.analysis) {
+      let data=try JSONEncoder().encode(input)
+      guard data.count<=2*1024*1024 else {throw NativeHostClientError.invalidReply}
+      let packet=data.withUnsafeBytes {om_host_analyze_source(handle.pointer,$0.bindMemory(to:UInt8.self).baseAddress,$0.count)}
+      let reply:NotebookAnalysisReply=try Self.read(packet)
+      guard reply.protocol_version==1,reply.document_id==input.document_id,reply.generation.value==input.generation.value,reply.base_hash==input.base_hash else {throw NativeHostClientError.invalidReply}
       return reply
     }
   }

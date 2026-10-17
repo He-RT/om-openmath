@@ -58,6 +58,7 @@ actor NativeAppStorage {
       guard let self,!closed else {return}
       for editor in editors.values {editor.reflectAcknowledgedSource()}
       if assistantRevisionAtStart != drafts.confirmed.revision.value {document.noteEdit()}
+      await runtime.analyzeSourceNow(drafts)
       await runtime.displayAgentReceipts(agent.currentKernelReceipts())
       document.changed?();await runtime.refreshProjection()
     }
@@ -89,11 +90,13 @@ actor NativeAppStorage {
     runtime.beforeRun={ [weak self] in
       guard let self,!closed else {throw StorageError.closing}
       _ = try drafts.pendingEdits();try await flushSource()
+      await runtime.analyzeSourceNow(drafts)
     }
     runtime.changed={ [weak document] in document?.changed?() }
     document.beforeSave={ [weak self] in try await self?.backup.flush();try await self?.flushSource() }
     document.beforeClose={ [weak self] in try await self?.backup.flush() }
     document.draftsBackedUp={ [weak self] in self?.backup.isCurrent==true }
+    runtime.scheduleSourceAnalysis(drafts)
   }
   static func open(storage:StorageService,url:URL?=nil) async throws->NativeDocumentSession {
     let id=UUID().uuidString.lowercased(),physical=NativeFileService()
@@ -131,7 +134,10 @@ actor NativeAppStorage {
       return existing
     }
     let editor=try DraftTextViewAdapter(store:drafts,cell:cell,generation:1)
-    editor.bindDocumentUndo(undo.manager);editor.didEdit={ [weak document,weak runtime] in runtime?.markManualEdit(cell);document?.noteEdit() }
+    editor.bindDocumentUndo(undo.manager);editor.didEdit={ [weak self] in
+      guard let self else {return}
+      runtime.markManualEdit(cell);runtime.scheduleSourceAnalysis(drafts);document.noteEdit()
+    }
     editor.didFocus={ [weak runtime] in runtime?.selectedCell=cell }
     editors[key]=editor;return editor
   }
@@ -141,6 +147,14 @@ actor NativeAppStorage {
   private func focusEditor(_ cell:String?) {
     editorFocus=cell
     if let cell,let view=editors[Data(cell.utf8)]?.textView,let window=view.window {window.makeFirstResponder(view);editorFocus=nil}
+  }
+  func locateDiagnostic(_ cell:String,source:String,start:UInt32,end:UInt32) {
+    guard !closed,let editor=try? editor(cell),!editor.textView.hasMarkedText(),
+      editor.textView.string.utf8.elementsEqual(source.utf8),
+      let range=try? editor.indexMap.nativeRange(start:Int(start),end:Int(end)) else {return}
+    runtime.navigate(to:cell)
+    editor.textView.setSelectedRange(range);editor.textView.scrollRangeToVisible(range)
+    editor.textView.window?.makeFirstResponder(editor.textView)
   }
   /// Explicit native recovery selection. The local document identity is retained, runtime/grants
   /// are new, and no cell execution or model request is started by construction.
@@ -210,6 +224,7 @@ actor NativeAppStorage {
   private func sourceDidChange() {
     for editor in editors.values {editor.reflectAcknowledgedSource()}
     if let selected=runtime.selectedCell,!drafts.confirmed.file.cells.contains(where:{$0.id==selected}) {runtime.navigate(to:drafts.confirmed.file.cells.first?.id)}
+    runtime.scheduleSourceAnalysis(drafts)
     document.noteEdit();document.changed?()
   }
   func reconcileRecoveryHistory() async {

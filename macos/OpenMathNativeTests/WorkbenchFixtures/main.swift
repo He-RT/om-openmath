@@ -17,6 +17,10 @@ import SwiftUI
     let app=NSApplication.shared;app.setActivationPolicy(.accessory)
     let root=URL(fileURLWithPath:CommandLine.arguments[1],isDirectory:true)
     try FileManager.default.createDirectory(at:root,withIntermediateDirectories:true)
+    if CommandLine.arguments.contains("--source-feedback") {
+      try await sourceFeedback(root:root)
+      return
+    }
     if CommandLine.arguments.contains("--cell-states") {
       try await cellStates(root:root)
       return
@@ -169,6 +173,47 @@ import SwiftUI
     guard let bitmap=host.bitmapImageRepForCachingDisplay(in:host.bounds) else {return}
     host.cacheDisplay(in:host.bounds,to:bitmap)
     try? bitmap.representation(using:.png,properties:[:])?.write(to:url)
+  }
+  @MainActor static func sourceFeedback(root:URL) async throws {
+    let file=NativeSourceFile(version:1,title:"过期与诊断",cells:[
+      .init(id:"a",kind:.math,source:"let a=2",dialect:.modern),
+      .init(id:"b",kind:.math,source:"a+1",dialect:.modern),
+      .init(id:"independent",kind:.math,source:"7+1",dialect:.modern)])
+    let url=root.appendingPathComponent("feedback.omnb");try JSONEncoder().encode(file).write(to:url)
+    let services=NativeAppStorage(paths:.init(root:root.appendingPathComponent("storage"),channel:.preview))
+    let workspace=NativeFileWorkspace(storage:services)
+    guard await workspace.open(url),let session=workspace.session else {fatalError("feedback source did not open")}
+    let window=NSWindow(contentRect:NSRect(x:0,y:0,width:1200,height:780),styleMask:[.titled,.closable,.resizable],backing:.buffered,defer:false)
+    let host=NSHostingView(rootView:WorkspaceView(workspace:workspace,session:session));window.contentView=host
+    window.makeKeyAndOrderFront(nil);window.displayIfNeeded()
+    for cell in ["a","b","independent"] {session.runtime.run(cell);try await until {session.runtime.operation==nil}}
+    let editor=try session.editor("a").textView
+    editor.selectAll(nil);editor.insertText("let a=5",replacementRange:editor.selectedRange())
+    await session.runtime.analyzeSourceNow(session.drafts)
+    require(session.runtime.staleReasons["b"]=="依赖的定义 a 已改变","real host dependency did not invalidate b")
+    require(session.runtime.staleReasons["independent"]==nil,"unrelated result became stale")
+    save(host,to:root.appendingPathComponent("source-stale.png"))
+    editor.selectAll(nil);editor.insertText("let a=2",replacementRange:editor.selectedRange())
+    await session.runtime.analyzeSourceNow(session.drafts)
+    require(session.runtime.staleReasons.isEmpty,"reverted source stayed stale")
+    let broken="# 中文🙂\nlet f(x) ="
+    editor.selectAll(nil);editor.insertText(broken,replacementRange:editor.selectedRange())
+    await session.runtime.analyzeSourceNow(session.drafts)
+    guard let diagnostic=session.runtime.sourceDiagnostics["a"]?.first(where:{$0.severity=="Error"}) else {fatalError("real parser error missing")}
+    let map=try SourceIndexMap(source:broken,draftSequence:0)
+    let position=try map.position(forUTF8:Int(diagnostic.span.start))
+    require(position.line==2,"diagnostic line lost Unicode/newline")
+    session.locateDiagnostic("a",source:broken,start:diagnostic.span.start,end:diagnostic.span.end)
+    let expectedRange=try map.nativeRange(start:Int(diagnostic.span.start),end:Int(diagnostic.span.end))
+    require(editor.selectedRange()==expectedRange)
+    require(window.firstResponder===editor)
+    session.runtime.run("a");try await until {session.runtime.operation==nil}
+    require(session.runtime.results["a"]?.receipt.producer.terminal_status == .error)
+    require(session.runtime.history.last(where:{$0.receipt.producer.cell_id.value=="a"})?.receipt.producer.terminal_status == .done)
+    host.layoutSubtreeIfNeeded();try await Task.sleep(for:.milliseconds(100))
+    save(host,to:root.appendingPathComponent("source-error.png"))
+    print("Real C ABI source feedback: a edit invalidates b only, reverting restores freshness, Unicode diagnostic \(position.line):\(position.column) locates exact native range, prior valid receipt retained")
+    window.orderOut(nil);try await session.close();try await services.close()
   }
 
   /// C1: use the production notebook/editor inside the proposed native container.

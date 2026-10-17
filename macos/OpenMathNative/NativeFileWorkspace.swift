@@ -281,15 +281,25 @@ struct NativeNotebookFileView:View {
     }.font(.callout).buttonStyle(.borderless)
   }
   @ViewBuilder private func cellResults(_ cell:NativeSourceCell)->some View {
+    CellDiagnostics(session:session,cell:cell,workspace:workspace)
     if let result=runtime.results[cell.id] {
       CellPresentationScope(session:session,cell:cell,workspace:workspace) {state in
-      VStack(alignment:.leading,spacing:12) {
-        ForEach(result.bindings,id:\.result_ref) {binding in
-          NativeResultView(presenter:runtime.presenter(for:binding),value:result.values.first{$0.binding.result_ref==binding.result_ref},displayContext:context(result,cell:cell.id),cellState:state,durationMs:runtime.durationsMs[result.receipt.operation_id])
-            .accessibilityIdentifier("notebook-result-"+cell.id)
-        }
-        if result.bindings.isEmpty {Text("计算完成，结果暂无法读取。可在详情中核对。").font(.callout).foregroundStyle(.secondary)}
+        VStack(alignment:.leading,spacing:12) {
+          ForEach(result.bindings,id:\.result_ref) {binding in
+            NativeResultView(presenter:runtime.presenter(for:binding),value:result.values.first{$0.binding.result_ref==binding.result_ref},displayContext:context(result,cell:cell.id),cellState:state,durationMs:runtime.durationsMs[result.receipt.operation_id],hasSourceDiagnostics:runtime.sourceDiagnostics[cell.id]?.contains{$0.severity=="Error"} ?? false)
+              .accessibilityIdentifier("notebook-result-"+cell.id)
+          }
+          if result.bindings.isEmpty {Text("计算完成，结果暂无法读取。可在详情中核对。").font(.callout).foregroundStyle(.secondary)}
+        }.opacity(resultOpacity(state))
       }
+      if result.receipt.producer.terminal_status == .error,
+        let previous=runtime.history.last(where:{$0.receipt.producer.cell_id.value==cell.id && $0.receipt.producer.terminal_status == .done}) {
+        VStack(alignment:.leading,spacing:8) {
+          Text("上次结果").font(.system(size:12)).foregroundStyle(Theme.Color.ink2)
+          ForEach(previous.bindings,id:\.result_ref) {binding in
+            NativeResultView(presenter:runtime.presenter(for:binding),value:nil,displayContext:.history)
+          }
+        }.opacity(0.65)
       }
     }
     let history=runtime.history.filter{$0.receipt.producer.cell_id.value==cell.id}
@@ -301,6 +311,9 @@ struct NativeNotebookFileView:View {
         }
       }.font(.callout).padding(.horizontal,10)
     }
+  }
+  private func resultOpacity(_ state:CellPresentationState)->Double {
+    switch state.status {case .stale:return 0.42;case .running:return 0.5;default:return 1}
   }
   @ViewBuilder private var recoveryDetails:some View {
     if runtime.historyOmitted>0 {Text("显示本会话最近 32 次历史运行；更早的回执仍保留在本地记录中。").font(.caption).foregroundStyle(.secondary)}

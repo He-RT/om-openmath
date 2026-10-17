@@ -61,6 +61,13 @@ struct NotebookCellResult:Sendable {
   @Published private(set) var agentModifiedCells=Set<String>()
   @Published private(set) var stoppedCells=Set<String>()
   @Published private(set) var durationsMs:[String:Double]=[:]
+  @Published private(set) var staleReasons:[String:String]=[:]
+  @Published private(set) var sourceDiagnostics:[String:[NotebookSourceDiagnostic]]=[:]
+  @Published private(set) var sourceProjection:NotebookSourceProjection?
+  private var resultSources:[String:NotebookSourceProjection]=[:]
+  private var sourceAnalysisTask:Task<Void,Never>?
+  private var sourceAnalysisSerial:UInt64=0
+  private var analysisRequestSerial:UInt64=0
   let kernel:KernelCommitPort
   private let host:NativeHostClient
   private var runTask:Task<Void,Never>?
@@ -101,6 +108,44 @@ struct NotebookCellResult:Sendable {
     agentModifiedCells.formUnion(changed);agentModifiedCells.subtract(deleted)
   }
   func markManualEdit(_ cell:String) {if agentModifiedCells.contains(cell) {agentModifiedCells.remove(cell)}}
+  func scheduleSourceAnalysis(_ drafts:DraftStore) {
+    guard !closing else {return}
+    sourceAnalysisSerial+=1;let serial=sourceAnalysisSerial
+    sourceAnalysisTask?.cancel()
+    sourceAnalysisTask=Task { [weak self] in
+      do {try await Task.sleep(for:.milliseconds(150))} catch {return}
+      guard let self,!closing,sourceAnalysisSerial==serial else {return}
+      await analyzeSourceNow(drafts)
+    }
+  }
+  func analyzeSourceNow(_ drafts:DraftStore) async {
+    guard !closing else {return}
+    analysisRequestSerial+=1;let requestSerial=analysisRequestSerial
+    let confirmed=drafts.confirmed
+    var input=confirmed
+    for index in input.file.cells.indices {
+      if let draft=drafts.overlay(input.file.cells[index].id),!draft.composing {input.file.cells[index].source=draft.source}
+    }
+    let sequence=drafts.persistenceRevision
+    do {
+      let reply=try await host.analyzeSource(.init(document_id:confirmed.document_id,generation:try HostSerial(drafts.documentGeneration),base_hash:confirmed.snapshot_hash,file:input.file))
+      guard !closing,!Task.isCancelled,requestSerial==analysisRequestSerial,sequence==drafts.persistenceRevision,confirmed.snapshot_hash==drafts.confirmed.snapshot_hash else {return}
+      let projection=NotebookSourceProjection(source:input,analysis:reply.analysis)
+      sourceProjection=projection
+      sourceDiagnostics=Dictionary(uniqueKeysWithValues:reply.analysis.cells.map{($0.cell_id,$0.diagnostics)})
+      refreshStaleReasons(projection)
+    } catch { /* Existing source/result facts remain intact until another exact analysis is ready. */ }
+  }
+  private func refreshStaleReasons(_ current:NotebookSourceProjection) {
+    var reasons:[String:String]=[:],compared:[String:[String:String]]=[:]
+    for (cell,baseline) in resultSources {
+      let hash=baseline.source.snapshot_hash
+      if compared[hash]==nil {compared[hash]=current.staleReasons(since:baseline)}
+      reasons[cell]=compared[hash]?[cell]
+    }
+    staleReasons=reasons
+  }
+  func hasResultSource(_ cell:String)->Bool {resultSources[cell] != nil}
   func run(_ cell:String) {
     guard canRun else {return}
     stoppedCells.remove(cell)
@@ -118,6 +163,7 @@ struct NotebookCellResult:Sendable {
       defer {polling.cancel();if operation==id {operation=nil;operationCell=nil;cancelPending=false};changed?();runObserved?("finished")}
       do {
         try await beforeRun?()
+        let runProjection=sourceProjection
         runObserved?("source_synchronized")
         let started=ContinuousClock.now
         let receipt=try await kernel.runCell(cell,operation:id)
@@ -125,6 +171,10 @@ struct NotebookCellResult:Sendable {
         durationsMs[receipt.operation_id]=Double(elapsed.seconds)*1000+Double(elapsed.attoseconds)/1e15
         runObserved?("kernel_received")
         guard !closing else {return}
+        if let runProjection {
+          resultSources[cell]=runProjection
+          if let current=sourceProjection {refreshStaleReasons(current)}
+        }
         // A late stop cannot overwrite an actual committed result.
         phase = .completed;message=receipt.producer.terminal_status == .done ? "计算结束" : "计算结束，有错误"
         do {try await display(receipt)}
@@ -169,9 +219,13 @@ struct NotebookCellResult:Sendable {
   func displayAgentReceipts(_ receipts:[NativeKernelReceipt]) async {
     for receipt in receipts {
       guard !closing,receipt.producer.cell_id.value != nil,results[receipt.producer.cell_id.value!]?.receipt.operation_id != receipt.operation_id else {continue}
+      if let sourceProjection,sourceProjection.source.snapshot_hash==receipt.producer.source_snapshot_hash {
+        resultSources[receipt.producer.cell_id.value!]=sourceProjection
+      }
       do {try await display(receipt)}
       catch {if let cell=receipt.producer.cell_id.value {accept(.init(receipt:receipt,bindings:[],values:[]),cell:cell)}}
     }
+    if let sourceProjection {refreshStaleReasons(sourceProjection)}
   }
   func stop() async {
     guard let operation,!cancelPending else {return};cancelPending=true
@@ -194,6 +248,7 @@ struct NotebookCellResult:Sendable {
     guard !closing else {return};closing=true
     if let operation {await kernel.cancel(operation)}
     runTask?.cancel();await runTask?.value
+    sourceAnalysisTask?.cancel();sourceAnalysisTask=nil
     for owner in presenters.values {await owner.close()};presenters.removeAll()
     await kernel.close();runTask=nil
   }

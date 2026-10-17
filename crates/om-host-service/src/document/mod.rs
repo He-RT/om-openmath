@@ -1,4 +1,6 @@
 //! Pure authoritative source records and frozen persistence plans; no CAS execution or disk IO.
+/// Read-only parser/dependency projection for native presentation.
+pub mod analysis;
 /// Native editor/source admission and original-ID commit transitions.
 pub mod commit;
 /// Typed source batch validation and dependency invalidation.

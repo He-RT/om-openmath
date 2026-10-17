@@ -202,6 +202,23 @@ pub unsafe extern "C" fn om_host_source_command(
             .source_command(&unsafe { copied_input(json, len, protocol::MAX_CONTROL_BYTES) }?)
     })
 }
+/// Read-only native editor analysis; copies bytes and parses outside the source owner lock.
+/// # Safety
+/// `json` must point to len readable bytes during this call; NULL only for zero length.
+#[unsafe(no_mangle)]
+pub unsafe extern "C" fn om_host_analyze_source(
+    host: *mut OmHostHandle,
+    json: *const u8,
+    len: usize,
+) -> OmHostBuffer {
+    packet(|| {
+        let guard = registry::acquire(host, true).map_err(str::to_owned)?;
+        // SAFETY: bounded caller-readable input is copied before decoding.
+        guard
+            .host()
+            .analyze_source(&unsafe { copied_input(json, len, protocol::MAX_CONTROL_BYTES) }?)
+    })
+}
 /// Trusted kernel/source/physical-store port; bounded input is copied before safe Rust handles it.
 /// # Safety
 /// `json` must point to len readable bytes during this call; NULL only for zero length.

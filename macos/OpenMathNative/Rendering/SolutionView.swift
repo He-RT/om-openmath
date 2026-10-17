@@ -98,13 +98,17 @@ struct NativeResultView:View {
   let displayContext:NativeResultDisplayContext
   var cellState:CellPresentationState?=nil
   var durationMs:Double?=nil
+  var hasSourceDiagnostics=false
   @State private var showingSteps=false
   @State private var showingOriginal=false
   @State private var showingInput=false
   @State private var showingPlot=false
   var body:some View {
     Group {if presenter.summary?.statement.value?.suppressed != true {content}}
-      .task {if presenter.summary==nil {await presenter.load()}}
+      .task {
+        if presenter.summary==nil {await presenter.load()}
+        if displayContext == .history,value==nil,presenter.original.out_index.value>0,presenter.originalValue==nil {await presenter.readOriginalValue()}
+      }
       .accessibilityIdentifier("native-result-"+presenter.original.result_id)
       .sheet(isPresented:$showingSteps) {
         VStack(spacing:0) {
@@ -133,14 +137,25 @@ struct NativeResultView:View {
     VStack(alignment:.leading,spacing:10) {
       if let summary=presenter.summary {
         ForEach(Array(summary.messages.enumerated()),id:\.offset) {_,message in
+          if !(hasSourceDiagnostics && message.symbol=="Parse" && message.level.lowercased()=="error") {
+          if message.level.lowercased()=="error" {
+            Label(message.text,systemImage:Theme.Symbol.error).font(.callout).textSelection(.enabled)
+              .padding(12).frame(maxWidth:.infinity,alignment:.leading)
+              .background(Theme.Color.red.opacity(0.07),in:RoundedRectangle(cornerRadius:6))
+              .overlay(RoundedRectangle(cornerRadius:6).stroke(Theme.Color.red.opacity(0.35)))
+          } else {
           Text(message.symbol+"::"+message.tag+"："+message.text).font(.callout).textSelection(.enabled)
+          }
+          }
         }
       }
       if let page=presenter.valuePage {NativeStructuredValueView(presenter:presenter,page:page)}
       if presenter.presentation?.kind=="geometry" {NativeGeometryView(model:presenter.geometryModel())}
       if let page=presenter.presentation?.solutions {NativeSolutionView(presenter:presenter,page:page)}
       else if presenter.presentation?.kind=="error" {
-        Text(presenter.summary?.statement_count ?? 0>0 ? "后续计算有错误，已接纳的结果仍保留。":"本次计算有错误，未产生成功结果。").font(.callout)
+        if !hasSourceDiagnostics {
+          Text(presenter.summary?.statement_count ?? 0>0 ? "后续计算有错误，已接纳的结果仍保留。":"本次计算有错误，未产生成功结果。").font(.callout)
+        }
         if let error=presenter.presentation?.error {Text(error).textSelection(.enabled)}
       }
       if presenter.presentation?.kind != "error",presenter.presentation?.kind != "suppressed",presenter.presentation?.solutions==nil,presenter.valuePage==nil,presenter.presentation?.kind != "geometry" {

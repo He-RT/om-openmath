@@ -42,6 +42,16 @@ pub struct SourceEndpoint {
     operation_queries: std::collections::BTreeMap<String, operations::PendingOperationQuery>,
 }
 impl SourceEndpoint {
+    /// Freeze the current source/parser identity for analysis outside the owner lock.
+    pub fn analysis_context(&self) -> super::analysis::SourceAnalysisContext {
+        let source = self.controller.owner().snapshot();
+        super::analysis::SourceAnalysisContext {
+            document_id: source.document_id.clone(),
+            generation: self.controller.owner().generation(),
+            base_hash: source.snapshot_hash.clone(),
+            coordinator: self.coordinator.clone(),
+        }
+    }
     /// Native operation namespaces share cancellation; admission cannot shadow an existing ID.
     pub fn has_native_operation(&self, id: &str) -> bool {
         self.runs.contains_key(id)

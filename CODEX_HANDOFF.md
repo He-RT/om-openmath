@@ -2,7 +2,7 @@
 
 > **2026-10-16 起的下一版：pre-alpha.5。** 执行入口是 [docs/plan/PRE_ALPHA_5.md](docs/plan/PRE_ALPHA_5.md)，按它第 0 节先读 [工作台 v2 设计](docs/design/workbench-v2.md) 并打开 [交互草案](docs/design/prototypes/workbench-v2.html)，再看它第 6 节进度表。每个界面任务开工前、完成后都要对照草案截图。下面的 `.4` 内容只作历史参考。
 
-> **2026-10-17 状态：** A1–A4 已推送；A5 已完成并随本次任务提交。sol S1–S8、luna S1–S8 全部通过。luna S7 在 S7-10 通过：以耐久会话事件 `run_child_started`（childIndex 1）触发，实际按助手“停止”，界面“已停止，已完成的修改保留”，`run_child_stopped` 为 `CANCELLED`，6 次模型请求且停止后无新请求；S7-01–09 失败记录保留。账本 27/60，余 33 次。下一步 C2（目录）。端点 `https://4Router.net/v1`；不要点录屏提示上的“允许”。B 阶段已完成（Mac Release/Debug；Web 构建、33 项生产 E2E 与共享文案检查通过，2 项性能留 G3），C1 已完成：实际系统分栏最小宽度失败，按计划保留原分栏；精简工具栏与断点/编辑保持回归通过。C2–G 未开始；最小结果/撤销 UI 不等于 D3 完成。
+> **2026-10-17 状态：** A1–A4 已推送；A5 已完成并随本次任务提交。sol S1–S8、luna S1–S8 全部通过。luna S7 在 S7-10 通过：以耐久会话事件 `run_child_started`（childIndex 1）触发，实际按助手“停止”，界面“已停止，已完成的修改保留”，`run_child_stopped` 为 `CANCELLED`，6 次模型请求且停止后无新请求；S7-01–09 失败记录保留。账本 27/60，余 33 次。下一步 C3（单元格结构与左轨）。端点 `https://4Router.net/v1`；不要点录屏提示上的“允许”。B 阶段已完成（Mac Release/Debug；Web 构建、33 项生产 E2E 与共享文案检查通过，2 项性能留 G3），C1 已完成：实际系统分栏最小宽度失败，按计划保留原分栏；精简工具栏与断点/编辑保持回归通过。C2 已完成（分组目录与定位/焦点核对通过）。C3–G 未开始；最小结果/撤销 UI 不等于 D3 完成。
 
 接续临时资料在同机 `target/plan-5/`：`live-task-runs.jsonl` 是调用账本，`live_case.py` 准备隔离场景（不发模型请求），`live-ui/data/` 保存场景与宿主回读；不复制进新的证据框架。当前 Release 构建、提示词、操作记录、端点与撤销检查已通过。A5 完成后按 B→C→D→E→F→G 继续，不重做 A1–A4。`.5` 发布按新计划 G4：先完成可审阅安装包，用户确认后创建 GitHub pre-release。
 

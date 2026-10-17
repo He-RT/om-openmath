@@ -68,6 +68,7 @@ actor NativeAppStorage {
     }
     assistant.outcomeReady={ [weak self] outcome in
       guard let self,!closed else {throw StorageError.closing}
+      runtime.markAgentChanges(outcome.changedCells)
       let ids=Array(Set(outcome.changedCells.map(\.transactionRef)))
       guard !ids.isEmpty else {return}
       let transactions=try await storage.sourceTransactions(document:drafts.confirmed.document_id,ids:ids)
@@ -130,7 +131,7 @@ actor NativeAppStorage {
       return existing
     }
     let editor=try DraftTextViewAdapter(store:drafts,cell:cell,generation:1)
-    editor.bindDocumentUndo(undo.manager);editor.didEdit={ [weak document] in document?.noteEdit() }
+    editor.bindDocumentUndo(undo.manager);editor.didEdit={ [weak document,weak runtime] in runtime?.markManualEdit(cell);document?.noteEdit() }
     editor.didFocus={ [weak runtime] in runtime?.selectedCell=cell }
     editors[key]=editor;return editor
   }

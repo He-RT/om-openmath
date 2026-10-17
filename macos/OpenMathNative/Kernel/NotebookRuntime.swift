@@ -58,6 +58,7 @@ struct NotebookCellResult:Sendable {
   @Published private(set) var projectionError:String?
   @Published var selectedCell:String?
   @Published private(set) var navigationSequence:UInt64=0
+  @Published private(set) var agentModifiedCells=Set<String>()
   let kernel:KernelCommitPort
   private let host:NativeHostClient
   private var runTask:Task<Void,Never>?
@@ -94,6 +95,12 @@ struct NotebookCellResult:Sendable {
     } catch {if !closing {projectionError="定义状态暂无法核对；已有计算记录仍保留。"}}
   }
   func navigate(to cell:String?) {guard !closing,cell != selectedCell else {return};selectedCell=cell;navigationSequence+=1}
+  func markAgentChanges(_ cells:[TurnChangedCell]) {
+    for cell in cells {
+      if cell.kind == .deleted {agentModifiedCells.remove(cell.cellID)} else {agentModifiedCells.insert(cell.cellID)}
+    }
+  }
+  func markManualEdit(_ cell:String) {if agentModifiedCells.contains(cell) {agentModifiedCells.remove(cell)}}
   func run(_ cell:String) {
     guard canRun else {return}
     let id="notebook-run-"+UUID().uuidString.lowercased()

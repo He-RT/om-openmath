@@ -22,6 +22,24 @@ struct MarkdownRenderDocument:Sendable {
   let source:String,runs:[MarkdownRenderRun],fallback:Bool
   var projectionID=""
   var sourceDigest=""
+  /// Use parsed heading runs, so fenced code, escaped hashes and inline markup stay correct.
+  var firstOutlineHeading:String? {
+    var title="",level:Int?
+    for run in runs {
+      if level==nil {
+        guard run.style.heading==1 || run.style.heading==2 else {continue}
+        level=run.style.heading
+      }
+      guard run.style.heading==level else {break}
+      switch run.content {
+      case .text(let text):title+=text
+      case .math(_,let original,_):title+=original
+      }
+      if title.contains("\n") {break}
+    }
+    let trimmed=title.trimmingCharacters(in:.whitespacesAndNewlines)
+    return trimmed.isEmpty ? nil:trimmed
+  }
   static func parse(_ source:String)->Self {
     var result:Self
     if source.utf8.count>1024*1024 {result = .init(source:source,runs:[.init(content:.text(source),style:.init(code:true),source:0..<source.utf8.count)],fallback:true)}

@@ -62,19 +62,7 @@ struct WorkspaceView:View {
     return saved+"，"+UIStrings.text("kernel.ready")
   }
   private var outline:some View {
-    VStack(alignment:.leading,spacing:0) {
-      Text("笔记本").font(.headline).padding(.horizontal,16).padding(.top,20).padding(.bottom,10)
-      List(Array(session.drafts.confirmed.file.cells.enumerated()),id:\.element.id,selection:Binding(get:{runtime.selectedCell},set:{runtime.navigate(to:$0)})) {index,cell in
-        HStack(alignment:.top,spacing:10) {
-          Image(systemName:cell.kind == .math ? "function" : "text.alignleft").foregroundStyle(.secondary).frame(width:16)
-          VStack(alignment:.leading,spacing:4) {
-            Text(cell.source.split(whereSeparator:\.isNewline).first.map(String.init) ?? (cell.kind == .math ? "数学单元格" : "文字单元格")).lineLimit(2).font(.callout)
-            Text("\(index+1) · \(cell.kind == .math ? "数学" : "文字")").font(.caption).foregroundStyle(.secondary)
-          }
-        }.padding(.vertical,5).tag(cell.id)
-      }.listStyle(.sidebar).accessibilityIdentifier("workspace-outline")
-    }.frame(maxWidth:.infinity,maxHeight:.infinity,alignment:.topLeading)
-      .background(.bar)
+    NotebookOutline(workspace:workspace,session:session)
   }
   private var inspector:some View {
     VStack(alignment:.leading,spacing:0) {

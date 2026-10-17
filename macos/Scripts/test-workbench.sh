@@ -18,5 +18,8 @@ swiftc -O -whole-module-optimization -swift-version 6 -parse-as-library -target 
   "${native_math_flags[@]}" "${sources[@]}" macos/OpenMathNativeTests/WorkbenchFixtures/main.swift \
   -o target/macos-workbench-tests/workbench-fixtures
 install_native_math_resources "target/macos-workbench-tests"
+xcrun actool macos/OpenMathNative/Assets.xcassets --compile target/macos-workbench-tests \
+  --platform macosx --minimum-deployment-target 27.0 --accent-color AccentColor \
+  --output-format human-readable-text
 attempt_root=$(mktemp -d "$root/target/macos-workbench-tests/attempt-XXXXXX")
 target/macos-workbench-tests/workbench-fixtures "$attempt_root" "$@"

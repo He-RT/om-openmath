@@ -213,7 +213,7 @@ struct NativeNotebookFileView:View {
       ScrollView {
         VStack(alignment:.leading,spacing:28) {
           header
-          LazyVStack(alignment:.leading,spacing:24) {
+          LazyVStack(alignment:.leading,spacing:26) {
             ForEach(Array(session.drafts.confirmed.file.cells.enumerated()),id:\.element.id) {index,cell in
               cellView(cell,index:index).id(cell.id)
             }
@@ -225,14 +225,14 @@ struct NativeNotebookFileView:View {
             Text("⌘↩ 运行").font(.caption).foregroundStyle(.tertiary)
           }.buttonStyle(.borderless).disabled(!canChangeStructure).padding(.top,4)
           recoveryDetails
-        }.frame(maxWidth:820,alignment:.leading).padding(.horizontal,32).padding(.vertical,30).frame(maxWidth:.infinity,alignment:.top)
+        }.frame(maxWidth:800,alignment:.leading).padding(.horizontal,48).padding(.vertical,30).frame(maxWidth:.infinity,alignment:.top)
       }.background(Color(nsColor:.textBackgroundColor))
         .onChange(of:runtime.navigationSequence) {if let cell=runtime.selectedCell {proxy.scrollTo(cell,anchor:.top)}}
     }
   }
   private var header:some View {
     VStack(alignment:.leading,spacing:8) {
-      Text(session.document.fileURL?.deletingPathExtension().lastPathComponent ?? session.drafts.confirmed.file.title).font(.system(size:27,weight:.semibold)).textSelection(.enabled)
+      Text(session.document.fileURL?.deletingPathExtension().lastPathComponent ?? session.drafts.confirmed.file.title).font(Theme.Font.paperTitle).textSelection(.enabled)
       HStack(spacing:12) {
         Text("\(session.drafts.confirmed.file.cells.count) 个单元格").font(.callout).foregroundStyle(.secondary)
         NativeDraftBackupStatus(backup:session.backup)
@@ -244,34 +244,14 @@ struct NativeNotebookFileView:View {
     }
   }
   private var canChangeStructure:Bool {!workspace.busy && runtime.operation==nil && !session.assistant.busy}
-  private func cellView(_ cell:NativeSourceCell,index:Int)->some View {
+  @ViewBuilder private func cellView(_ cell:NativeSourceCell,index:Int)->some View {
     VStack(alignment:.leading,spacing:12) {
-      HStack(spacing:8) {
-        Text(String(format:"%02d",index+1)).monospacedDigit().foregroundStyle(.tertiary)
-        Text(cell.kind == .math ? "数学" : "文字").foregroundStyle(.secondary)
-        Spacer()
-        if cell.kind == .math {
-          Button("运行此单元格",systemImage:"play.fill") {runtime.run(cell.id)}.labelStyle(.iconOnly).help("运行此单元格（⌘↩）").disabled(!runtime.canRun || workspace.busy || session.assistant.busy).accessibilityIdentifier("notebook-run-"+cell.id)
-        }
-        Menu("单元格操作",systemImage:"ellipsis") {
-          Button("在下方添加数学") {Task {await workspace.insertCell(.math,after:cell.id)}}
-          Button("在下方添加文字") {Task {await workspace.insertCell(.text,after:cell.id)}}
-          Divider()
-          Button("删除单元格",role:.destructive) {Task {await workspace.deleteCell(cell.id)}}
-        }.labelStyle(.iconOnly).menuStyle(.borderlessButton).menuIndicator(.hidden).fixedSize().disabled(!canChangeStructure).accessibilityIdentifier("notebook-cell-menu-"+cell.id)
-      }.font(.callout).buttonStyle(.borderless).padding(.horizontal,10)
-      if cell.kind == .text {NativeNotebookTextCell(workspace:workspace,session:session,cell:cell)}
-      else {
-        NativeSourceEditor(session:session,cell:cell)
-          .frame(height:editorHeight(cell))
-          .background(Color(nsColor:.controlBackgroundColor).opacity(0.55),in:RoundedRectangle(cornerRadius:6))
-          .overlay(alignment:.topLeading) {
-            if (session.drafts.overlay(cell.id)?.source ?? cell.source).isEmpty {
-              Text("输入数学表达式，例如 2 + 2").font(.system(size:16,design:.monospaced)).foregroundStyle(.tertiary).padding(14).allowsHitTesting(false)
-            }
-          }
+      if cell.kind == .math {
+        NotebookMathCell(session:session,cell:cell,index:index,workspace:workspace,result:cellResults(cell),tools:cellTools(cell))
+      } else {
+        HStack {Spacer();cellTools(cell)}
+        NativeNotebookTextCell(workspace:workspace,session:session,cell:cell)
       }
-      if cell.kind == .math {cellResults(cell)}
       if session.drafts.overlay(cell.id)?.requiresReview==true {
         VStack(alignment:.leading,spacing:8) {
           Text("恢复的草稿尚未确认").font(.callout)
@@ -281,15 +261,24 @@ struct NativeNotebookFileView:View {
           }
         }
       }
-      Divider().padding(.top,8)
-    }.padding(.leading,12).overlay(alignment:.topLeading) {
-      RoundedRectangle(cornerRadius:2).fill(runtime.selectedCell==cell.id ? Color.accentColor : .clear).frame(width:3,height:24)
     }
   }
-  private func editorHeight(_ cell:NativeSourceCell)->CGFloat {
-    let source=session.drafts.overlay(cell.id)?.source ?? cell.source
-    let lines=source.reduce(1) {$1 == "\n" ? $0+1 : $0}
-    return min(240,max(66,CGFloat(lines)*23+24))
+  private func cellTools(_ cell:NativeSourceCell)->some View {
+    HStack(spacing:8) {
+      if cell.kind == .math {
+        Button("运行此单元格",systemImage:Theme.Symbol.run) {runtime.run(cell.id)}
+          .labelStyle(.iconOnly).help("运行此单元格（⌘↩）")
+          .disabled(!runtime.canRun || workspace.busy || session.assistant.busy)
+          .accessibilityIdentifier("notebook-run-"+cell.id)
+      }
+      Menu("单元格操作",systemImage:Theme.Symbol.more) {
+        Button("在下方添加数学") {Task {await workspace.insertCell(.math,after:cell.id)}}
+        Button("在下方添加文字") {Task {await workspace.insertCell(.text,after:cell.id)}}
+        Divider()
+        Button("删除单元格",role:.destructive) {Task {await workspace.deleteCell(cell.id)}}
+      }.labelStyle(.iconOnly).menuStyle(.borderlessButton).menuIndicator(.hidden).fixedSize()
+        .disabled(!canChangeStructure).accessibilityIdentifier("notebook-cell-menu-"+cell.id)
+    }.font(.callout).buttonStyle(.borderless)
   }
   @ViewBuilder private func cellResults(_ cell:NativeSourceCell)->some View {
     if let result=runtime.results[cell.id] {
@@ -299,7 +288,7 @@ struct NativeNotebookFileView:View {
             .accessibilityIdentifier("notebook-result-"+cell.id)
         }
         if result.bindings.isEmpty {Text("计算完成，结果暂无法读取。可在详情中核对。").font(.callout).foregroundStyle(.secondary)}
-      }.padding(.horizontal,10)
+      }
     }
     let history=runtime.history.filter{$0.receipt.producer.cell_id.value==cell.id}
     if !history.isEmpty {

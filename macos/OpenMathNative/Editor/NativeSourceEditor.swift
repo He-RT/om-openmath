@@ -16,8 +16,8 @@ struct NativeSourceEditor:NSViewRepresentable {
     let scroll=NativeEditorScrollView();scroll.hasVerticalScroller=true;scroll.hasHorizontalScroller=false;scroll.drawsBackground=false
     do {
       let native=try session.editor(cell.id).textView
-      native.font = cell.kind == .math ? .monospacedSystemFont(ofSize:16,weight:.regular) : .systemFont(ofSize:16)
-      native.textContainerInset=NSSize(width:10,height:10)
+      native.font = cell.kind == .math ? Theme.Font.nsSource : .systemFont(ofSize:16)
+      native.textContainerInset=NSSize(width:14,height:10)
       native.drawsBackground=false
       native.isVerticallyResizable=true;native.isHorizontallyResizable=false;native.autoresizingMask=[.width]
       native.textContainer?.widthTracksTextView=true

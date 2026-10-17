@@ -59,6 +59,7 @@ struct NotebookCellResult:Sendable {
   @Published var selectedCell:String?
   @Published private(set) var navigationSequence:UInt64=0
   @Published private(set) var agentModifiedCells=Set<String>()
+  @Published private(set) var stoppedCells=Set<String>()
   let kernel:KernelCommitPort
   private let host:NativeHostClient
   private var runTask:Task<Void,Never>?
@@ -95,14 +96,13 @@ struct NotebookCellResult:Sendable {
     } catch {if !closing {projectionError="定义状态暂无法核对；已有计算记录仍保留。"}}
   }
   func navigate(to cell:String?) {guard !closing,cell != selectedCell else {return};selectedCell=cell;navigationSequence+=1}
-  func markAgentChanges(_ cells:[TurnChangedCell]) {
-    for cell in cells {
-      if cell.kind == .deleted {agentModifiedCells.remove(cell.cellID)} else {agentModifiedCells.insert(cell.cellID)}
-    }
+  func markAgentChanges(changed:[String],deleted:[String]) {
+    agentModifiedCells.formUnion(changed);agentModifiedCells.subtract(deleted)
   }
   func markManualEdit(_ cell:String) {if agentModifiedCells.contains(cell) {agentModifiedCells.remove(cell)}}
   func run(_ cell:String) {
     guard canRun else {return}
+    stoppedCells.remove(cell)
     let id="notebook-run-"+UUID().uuidString.lowercased()
     selectedCell=cell;operation=id;operationCell=cell;phase=nil;message="正在提交运行请求";cancelPending=false
     runTask=Task { [weak self] in
@@ -127,8 +127,8 @@ struct NotebookCellResult:Sendable {
         catch {if !closing {accept(.init(receipt:receipt,bindings:[],values:[]),cell:cell);message="计算已提交，结果暂无法读取："+String(describing:error)}}
         runObserved?("result_read")
       } catch KernelPortError.unknownOutcome {unknownOperation=id;unknownCell=cell;phase = .unknown;message="运行结果待核对"}
-      catch KernelPortError.cancelled {if !closing {message="已停止"}}
-      catch KernelPortError.failed("CANCELLED") {if !closing {message="已停止"}}
+      catch KernelPortError.cancelled {if !closing {message="已停止";stoppedCells.insert(cell)}}
+      catch KernelPortError.failed("CANCELLED") {if !closing {message="已停止";stoppedCells.insert(cell)}}
       catch {if !closing {message="运行未完成："+String(describing:error)}}
       await refreshProjection()
     }

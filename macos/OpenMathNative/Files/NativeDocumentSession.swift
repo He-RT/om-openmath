@@ -68,7 +68,7 @@ actor NativeAppStorage {
     }
     assistant.outcomeReady={ [weak self] outcome in
       guard let self,!closed else {throw StorageError.closing}
-      runtime.markAgentChanges(outcome.changedCells)
+      runtime.markAgentChanges(changed:outcome.changedCells.filter{$0.kind != .deleted}.map(\.cellID),deleted:outcome.changedCells.filter{$0.kind == .deleted}.map(\.cellID))
       let ids=Array(Set(outcome.changedCells.map(\.transactionRef)))
       guard !ids.isEmpty else {return}
       let transactions=try await storage.sourceTransactions(document:drafts.confirmed.document_id,ids:ids)

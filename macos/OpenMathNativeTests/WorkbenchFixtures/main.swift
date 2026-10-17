@@ -17,6 +17,10 @@ import SwiftUI
     let app=NSApplication.shared;app.setActivationPolicy(.accessory)
     let root=URL(fileURLWithPath:CommandLine.arguments[1],isDirectory:true)
     try FileManager.default.createDirectory(at:root,withIntermediateDirectories:true)
+    if CommandLine.arguments.contains("--cell-states") {
+      try await cellStates(root:root)
+      return
+    }
     let file=NativeSourceFile(version:1,title:"原生工作台验收",cells:[
       .init(id:"a",kind:.math,source:"let a=2",dialect:.modern),
       .init(id:"b",kind:.math,source:"a+1",dialect:.modern),
@@ -63,6 +67,7 @@ import SwiftUI
     }
     session.runtime.run("a");try await until {session.runtime.operation==nil}
     require(session.runtime.results["a"]?.sources==["5"])
+    require(window.firstResponder===editor,"first result update lost the native editor focus")
     session.runtime.run("b");try await until {session.runtime.operation==nil}
     require(session.runtime.results["b"]?.sources==["6"])
     let notebookScroll=descendants(notebook).compactMap{$0 as? NSScrollView}.first {scroll in
@@ -111,6 +116,59 @@ import SwiftUI
     window.orderOut(nil)
     try await session.close();try await services.close()
     print("Actual native window 1042/861/640, same notebook view/editor/selection, physical kernel receipts 5/6, live CAS resize/edit/explicit stop and draft retention passed")
+  }
+
+  @MainActor static func cellStates(root:URL) async throws {
+    let sources:[(String,String)]=[
+      ("verified","solve(x^2 - 5x + 6 = 0, x)"),("conditional","solve(x/x = 1, x)"),
+      ("exact","2+2"),("numeric","numeric(pi,precision:20)"),("unevaluated","foo(x)"),
+      ("error","let f(x) ="),("pending","3+4"),("stale","let a=2"),
+      ("running","factor(x^10007 - 1)")]
+    let file=NativeSourceFile(version:1,title:"真实左轨状态",cells:sources.map{
+      NativeSourceCell(id:$0.0,kind:.math,source:$0.1,dialect:.modern)
+    })
+    let url=root.appendingPathComponent("states.omnb");try JSONEncoder().encode(file).write(to:url)
+    let services=NativeAppStorage(paths:.init(root:root.appendingPathComponent("storage"),channel:.preview))
+    let workspace=NativeFileWorkspace(storage:services)
+    guard await workspace.open(url),let session=workspace.session else {fatalError("state notebook did not open")}
+    let window=NSWindow(contentRect:NSRect(x:0,y:0,width:1200,height:780),styleMask:[.titled,.closable,.resizable],backing:.buffered,defer:false)
+    let host=NSHostingView(rootView:WorkspaceView(workspace:workspace,session:session));window.contentView=host
+    window.makeKeyAndOrderFront(nil);window.displayIfNeeded()
+    let expected:[String:CellPresentationState.Status]=["verified":.verified,"conditional":.conditional,"exact":.exact,"numeric":.numeric,"unevaluated":.unevaluated,"error":.error]
+    for (cell,_) in sources where expected[cell] != nil || cell=="stale" {
+      session.runtime.run(cell);try await until {session.runtime.operation==nil}
+      if let binding=session.runtime.results[cell]?.bindings.last {await session.runtime.presenter(for:binding).load()}
+      guard let actualCell=session.drafts.confirmed.file.cells.first(where:{$0.id==cell}) else {fatalError()}
+      let state=session.runtime.presentation(actualCell,session:session,presenter:session.runtime.results[cell]?.bindings.last.map{session.runtime.presenter(for:$0)})
+      if let expected=expected[cell] {require(state.status==expected,"\(cell) status was \(state.label)")}
+      session.runtime.navigate(to:cell);host.layoutSubtreeIfNeeded();try await Task.sleep(for:.milliseconds(100))
+      save(host,to:root.appendingPathComponent("state-"+cell+".png"))
+      print("Real state \(cell): \(state.label)")
+    }
+    let stale=try session.editor("stale").textView
+    stale.selectAll(nil);stale.insertText("let a=5",replacementRange:stale.selectedRange())
+    session.runtime.navigate(to:"stale");host.layoutSubtreeIfNeeded();try await Task.sleep(for:.milliseconds(100))
+    let staleCell=session.drafts.confirmed.file.cells.first{$0.id=="stale"}!
+    let staleState=session.runtime.presentation(staleCell,session:session,presenter:nil)
+    require(staleState.status == .stale("源码已修改"))
+    save(host,to:root.appendingPathComponent("state-stale.png"));print("Real state stale: \(staleState.label)")
+    session.runtime.run("running");try await until {session.runtime.phase == .running || session.runtime.operation==nil}
+    require(session.runtime.operation != nil)
+    let runningCell=session.drafts.confirmed.file.cells.first{$0.id=="running"}!
+    require(session.runtime.presentation(runningCell,session:session,presenter:nil).status == .running)
+    host.layoutSubtreeIfNeeded();window.displayIfNeeded();save(host,to:root.appendingPathComponent("state-running.png"))
+    await session.runtime.stop();try await until {session.runtime.operation==nil}
+    require(session.runtime.presentation(runningCell,session:session,presenter:nil).status == .stopped)
+    host.layoutSubtreeIfNeeded();try await Task.sleep(for:.milliseconds(100));save(host,to:root.appendingPathComponent("state-stopped.png"))
+    let pending=session.drafts.confirmed.file.cells.first{$0.id=="pending"}!
+    require(session.runtime.presentation(pending,session:session,presenter:nil).status == .pending)
+    print("Real pending/running/stopped states passed; screenshots: \(root.path)")
+    window.orderOut(nil);try await session.close();try await services.close()
+  }
+  @MainActor private static func save(_ host:NSView,to url:URL) {
+    guard let bitmap=host.bitmapImageRepForCachingDisplay(in:host.bounds) else {return}
+    host.cacheDisplay(in:host.bounds,to:bitmap)
+    try? bitmap.representation(using:.png,properties:[:])?.write(to:url)
   }
 
   /// C1: use the production notebook/editor inside the proposed native container.

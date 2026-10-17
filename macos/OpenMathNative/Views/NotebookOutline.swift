@@ -60,41 +60,13 @@ struct NotebookOutline:View {
     let source=session.drafts.overlay(cell.id)?.source ?? cell.source
     return source.split(whereSeparator:\.isNewline).first.map(String.init) ?? (cell.kind == .math ? "数学单元格":"文字单元格")
   }
-  @ViewBuilder private func dot(_ cell:NativeSourceCell)->some View {
-    let result=runtime.results[cell.id]
-    let dirty=session.drafts.overlay(cell.id).map{!$0.source.utf8.elementsEqual(cell.source.utf8)} ?? false
-    let stale=result.map{$0.receipt.producer.execution_epoch.value != session.drafts.confirmed.execution_epoch.value} ?? false
-    let running=runtime.operationCell==cell.id
-    let failed=result?.receipt.producer.terminal_status == .error
-    let agent=runtime.agentModifiedCells.contains(cell.id) && !dirty
-    if let binding=result?.bindings.last {
-      OutlineResultDot(presenter:runtime.presenter(for:binding),running:running,stale:stale || dirty,failed:failed,byAgent:agent)
-    } else {
-      OutlineDot(color:failed ? Theme.Color.red:running ? Theme.Color.verified:Theme.Color.ink3,
-        filled:failed || running,byAgent:agent,label:failed ? "计算出错":running ? "正在计算":"尚未运行")
+  private func dot(_ cell:NativeSourceCell)->some View {
+    CellPresentationScope(session:session,cell:cell,workspace:workspace) {state in
+      Circle().fill(state.muted ? Color.clear:state.color).frame(width:7,height:7)
+        .overlay(Circle().stroke(state.color,lineWidth:state.muted ? 1.5:0))
+        .frame(width:12,height:12)
+        .overlay(Circle().stroke(state.byAgent ? Theme.Color.agent:.clear,lineWidth:1.5))
+        .accessibilityLabel(state.label+(state.byAgent ? "，由助手修改":""))
     }
-  }
-}
-
-private struct OutlineResultDot:View {
-  @ObservedObject var presenter:ResultPresenter
-  let running:Bool,stale:Bool,failed:Bool,byAgent:Bool
-  private var conditional:Bool {
-    presenter.presentation?.solutions?.solutions.contains{$0.condition_latex.value != nil} ?? false
-  }
-  var body:some View {
-    OutlineDot(color:running ? Theme.Color.verified:stale ? Theme.Color.ink3:failed ? Theme.Color.red:conditional ? Theme.Color.conditional:Theme.Color.verified,
-      filled:running || !stale,byAgent:byAgent,
-      label:running ? "正在计算":stale ? "结果过期":failed ? "计算出错":conditional ? "有条件成立":"已有计算结果")
-  }
-}
-private struct OutlineDot:View {
-  let color:Color,filled:Bool,byAgent:Bool,label:String
-  var body:some View {
-    Circle().fill(filled ? color:.clear).frame(width:7,height:7)
-      .overlay(Circle().stroke(color,lineWidth:filled ? 0:1.5))
-      .frame(width:12,height:12)
-      .overlay(Circle().stroke(byAgent ? Theme.Color.agent:.clear,lineWidth:1.5))
-      .accessibilityLabel(label+(byAgent ? "，由助手修改":""))
   }
 }

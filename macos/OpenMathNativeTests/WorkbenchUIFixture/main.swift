@@ -95,6 +95,7 @@ private struct LiveWorkbenchObservation:View {
             }
           }
         }
-    }.defaultSize(width:transcript==nil ? 1042:400,height:780)
+    }.defaultSize(width:transcript==nil ? 1440:400,height:900)
+      .commands {WorkbenchCommands(workspace:workspace)}
   }
 }

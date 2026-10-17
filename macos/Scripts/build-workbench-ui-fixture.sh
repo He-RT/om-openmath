@@ -28,6 +28,9 @@ info={'CFBundleExecutable':'WorkbenchUIFixture','CFBundleIdentifier':'org.openma
 (root/'fixture.omnb').write_text(json.dumps({'version':1,'title':'原生工作台验收','cells':[{'id':'a','kind':'Math','source':'let a=2 # 中文🙂','dialect':'Modern'},{'id':'b','kind':'Math','source':'a+1','dialect':'Modern'},{'id':'long','kind':'Math','source':'map(fn(k)=>sin(k),range(1,1000000))','dialect':'Modern'}]},ensure_ascii=False))
 PY
 install_native_math_resources "$fixture_app/Contents/Resources"
+xcrun actool macos/OpenMathNative/Assets.xcassets --compile "$fixture_app/Contents/Resources" \
+  --platform macosx --minimum-deployment-target 27.0 --accent-color AccentColor \
+  --output-format human-readable-text
 if [[ $# -ge 2 && -n "$2" ]]; then cp "$2" "$fixture_app/Contents/Resources/ActionTranscript.json"; fi
 if [[ "${3:-}" == live ]]; then
   python3 - "$fixture_app" <<'PY'

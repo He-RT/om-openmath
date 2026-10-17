@@ -20,6 +20,7 @@ import SwiftUI
         .background(NativeWindowAttachment(workspace:workspace).frame(width:0,height:0))
         .toolbar {
           ToolbarItemGroup(placement:.automatic) {
+            if workspace.session==nil {
             Menu("文件",systemImage:"folder") {
               Button("新建笔记本") {Task {await workspace.newDocument()}}.accessibilityIdentifier("notebook-new")
               Button("打开笔记本…") {Task {await workspace.openPanel()}}.accessibilityIdentifier("notebook-open")
@@ -32,11 +33,13 @@ import SwiftUI
               Divider()
               Button("关闭笔记本") {Task {_ = await workspace.closeDocument()}}.disabled(workspace.session==nil)
             }.disabled(workspace.busy).help("打开、保存与恢复")
+            }
           }
         }
         .sheet(isPresented:$showingRecovery) {NativeRecoveryList(workspace:workspace,isPresented:$showingRecovery)}
         .sheet(isPresented:$showingSessionRecovery) {NativeSessionRecoveryList(workspace:workspace,isPresented:$showingSessionRecovery)}
     }.defaultSize(width:1180,height:800).windowToolbarStyle(.unified).commands {
+      WorkbenchCommands(workspace:workspace)
       CommandGroup(replacing:.appInfo) {
         Button("关于 OpenMath Preview") {
           let bundle=Bundle.main
@@ -53,6 +56,12 @@ import SwiftUI
       CommandGroup(replacing:.saveItem) {
         Button("保存") {Task {await workspace.save()}}.keyboardShortcut("s").disabled(workspace.session==nil || workspace.busy)
         Button("另存为…") {Task {await workspace.save(asNew:true)}}.keyboardShortcut("s",modifiers:[.command,.shift]).disabled(workspace.session==nil || workspace.busy)
+      }
+      CommandGroup(after:.saveItem) {
+        Button("核对保存状态") {Task {await workspace.reconcile()}}.disabled(workspace.session==nil)
+        Button("恢复本地笔记本…") {showingRecovery=true;Task {await workspace.refreshRecoverableDocuments()}}
+        Button("恢复助手会话…") {showingSessionRecovery=true;Task {await workspace.refreshRecoverableSessions()}}
+        Button("关闭笔记本") {Task {_ = await workspace.closeDocument()}}.disabled(workspace.session==nil)
       }
       CommandGroup(replacing:.undoRedo) {
         Button("撤销") {workspace.undo()}.keyboardShortcut("z").disabled(!workspace.canUndo)

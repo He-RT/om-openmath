@@ -14,7 +14,19 @@ enum WorkbenchDestination:String,CaseIterable,Identifiable {
   @Published var outlineVisible=true
   @Published var inspectorVisible=false
   @Published var layout:WorkbenchLayout = .three
-  @Published var inspector:WorkbenchDestination = .document
+  @Published var inspector:WorkbenchDestination = .assistant
+  @Published var outlinePopover=false
+  @Published var inspectorPopover=false
+  func toggleOutline() {
+    if layout == .three {outlineVisible.toggle()} else {outlinePopover.toggle()}
+  }
+  func toggleInspector() {
+    if layout == .compact {inspectorPopover.toggle()} else {inspectorVisible.toggle()}
+  }
+  func show(_ destination:WorkbenchDestination) {
+    inspector=destination
+    if layout == .compact {inspectorPopover=true} else {inspectorVisible=true}
+  }
 }
 
 struct NotebookValueResult:Sendable,Identifiable {

@@ -12,6 +12,19 @@ struct StartupDocumentRecord:Identifiable,Sendable {
 }
 struct StartupDocumentPage:Sendable {let records:[StartupDocumentRecord];let next:String?}
 enum StartupDocuments {
+  static func transaction(root:URL,document:String,id:String)throws->NativeStoredSourceTransaction {
+    guard UUID(uuidString:document) != nil,document==document.lowercased() else {throw StorageError.unsafePath}
+    let folder=root.appendingPathComponent("Documents/\(document)",isDirectory:true)
+    guard try ManagedFiles.check(folder,directory:true) else {throw StorageError.transactionUnavailable}
+    let selector=try ManagedFiles.readJSON(StoreSelector.self,folder.appendingPathComponent("active.json"),keys:StorageBootstrap.selectorKeys)
+    guard selector.formatVersion==1,selector.generation>0,selector.generation<=999999 else {throw StorageError.unsupportedVersion}
+    let url=folder.appendingPathComponent("Generations/\(String(format:"%06lld",selector.generation))/authority.sqlite")
+    let db=try SQLiteDatabase(url:url,readonly:true);defer {try? db.close()}
+    let header=try StorageBootstrap.readHeader(db);try StorageBootstrap.rejectQuarantine(db)
+    guard header.kind=="document",header.documentID==document,header.storeID==selector.storeID,
+      header.generation==selector.generation,try header.hash==selector.headerHash,(4...5).contains(header.storeVersion) else {throw StorageError.corruptIdentity}
+    guard let value=try DocumentStore.readTransactions([id],url:url,identity:header).first else {throw StorageError.transactionUnavailable};return value
+  }
   /// Reopening .omnb creates a fresh source owner. Link display-only conversation history through
   /// verified native file bindings, without resolving bookmarks or scanning user files. Requiring
   /// device, inode and exact file bytes prevents a same-content copy from inheriting the history.

@@ -58,6 +58,9 @@ struct NotebookCellResult:Sendable {
   @Published private(set) var projectionError:String?
   @Published var selectedCell:String?
   @Published private(set) var navigationSequence:UInt64=0
+  @Published private(set) var highlightedCell:String?
+  @Published private(set) var highlightOpacity:Double=0
+  private var highlightTask:Task<Void,Never>?
   @Published private(set) var agentModifiedCells=Set<String>()
   @Published private(set) var stoppedCells=Set<String>()
   @Published private(set) var durationsMs:[String:Double]=[:]
@@ -108,6 +111,16 @@ struct NotebookCellResult:Sendable {
     } catch {if !closing {projectionError="定义状态暂无法核对；已有计算记录仍保留。"}}
   }
   func navigate(to cell:String?,force:Bool=false) {guard !closing,force || cell != selectedCell else {return};selectedCell=cell;navigationSequence+=1}
+  func locate(_ cell:String,reducedMotion:Bool) {
+    navigate(to:cell,force:true);highlightTask?.cancel();highlightedCell=nil;highlightOpacity=0
+    guard !reducedMotion else {return}
+    highlightedCell=cell;highlightOpacity=1
+    highlightTask=Task { [weak self] in
+      do {try await Task.sleep(for:.milliseconds(20))} catch {return}
+      guard let self,!closing else {return}
+      withAnimation(.easeOut(duration:1)) {highlightOpacity=0}
+    }
+  }
   func refreshDefinitions(_ drafts:DraftStore) async {
     guard !closing else {return}
     definitionsRequestSerial+=1;let serial=definitionsRequestSerial
@@ -269,6 +282,7 @@ struct NotebookCellResult:Sendable {
   }
   func close() async {
     guard !closing else {return};closing=true
+    highlightTask?.cancel();highlightTask=nil
     if let operation {await kernel.cancel(operation)}
     runTask?.cancel();await runTask?.value
     sourceAnalysisTask?.cancel();sourceAnalysisTask=nil

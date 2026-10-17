@@ -603,10 +603,29 @@ actor StorageService {
     guard closeTask==nil,let writer=documents[document] else {throw StorageError.closing}
     return try await writer.sourceCall {try $0.transactions(ids,faults:faults)}
   }
+  /// Display history from a closed document without opening a writer, recovering it, or evaluating.
+  func sourceTransactionForDisplay(document:String,id:String)async throws->NativeStoredSourceTransaction {
+    try beginOperation();defer {endOperation()}
+    guard closeTask==nil,let lease else {throw StorageError.closing}
+    let root=paths.root
+    return try await Task.detached(priority:.utility) { [lease] in
+      _=lease;return try StartupDocuments.transaction(root:root,document:document,id:id)
+    }.value
+  }
   func sourceUndoMetadata(document:String,operation:String) async throws ->NativeUndoGroup? {
     try beginOperation();defer {endOperation()}
     guard closeTask==nil,let writer=documents[document] else {throw StorageError.closing}
     return try await writer.sourceCall {try $0.undoMetadata(operation)}
+  }
+  func sourceUndoFacts(document:String,ids:Set<String>)async throws->SourceUndoFacts {
+    try beginOperation();defer {endOperation()}
+    guard closeTask==nil,let writer=documents[document] else {throw StorageError.closing}
+    return try await writer.sourceCall {try $0.undoFacts(ids)}
+  }
+  func sourceUndoExpansion(document:String,ids:Set<String>,through upper:UInt64?=nil)async throws->[String] {
+    try beginOperation();defer {endOperation()}
+    guard closeTask==nil,let writer=documents[document] else {throw StorageError.closing}
+    return try await writer.sourceCall {try $0.undoExpansion(ids,through:upper)}
   }
   func sourceHistory(document:String) async throws ->[SourceHistoryEntry] {
     try beginOperation();defer {endOperation()}

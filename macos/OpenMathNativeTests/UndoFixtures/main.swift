@@ -131,6 +131,31 @@ private final class ReadPause:@unchecked Sendable {
     catch CommitPortError.sourceConflict { }
     precondition(freshDrafts.confirmed.snapshot_hash==afterButton)
     buttonUndo.close();freshEditor.reflectAcknowledgedSource()
+    let rowBefore=freshDrafts.confirmed.file.cells[0].source
+    let rowFirst=try await freshApply("let row_probe=20"),rowSecond=try await freshApply("let row_probe=21")
+    let rowFirstID=rowFirst.receipt.value!.receipt.transaction_id.value!,rowSecondID=rowSecond.receipt.value!.receipt.transaction_id.value!
+    let rowUndo=UndoCoordinator {ids,group,operation in try await freshPort.undo(transactions:ids,group:group,operation:operation)}
+    try rowUndo.registerCommitted(rowFirst,group:"row-original-group",name:"助手修改")
+    try rowUndo.registerCommitted(rowSecond,group:"row-original-group",name:"助手修改")
+    precondition(rowUndo.beginTargetedOperation("row-single-undo") && !rowUndo.manager.canUndo)
+    let single=try await freshPort.undo(transactions:[rowSecondID],group:"row-single-undo",operation:"row-single-undo")
+    try rowUndo.registerTargetedUndo(rowSecondID,inverse:single);rowUndo.endTargetedOperation("row-single-undo")
+    let singleFacts=try await reopened.sourceUndoFacts(document:initial.document_id,ids:[rowFirstID,rowSecondID])
+    precondition(singleFacts.undone==[rowSecondID] && freshDrafts.confirmed.file.cells[0].source=="let row_probe=20")
+    rowUndo.manager.undo();try await settle(rowUndo)
+    precondition(freshDrafts.confirmed.file.cells[0].source=="let row_probe=21")
+    let redoFacts=try await reopened.sourceUndoFacts(document:initial.document_id,ids:[rowFirstID,rowSecondID])
+    precondition(redoFacts.undone.isEmpty)
+    rowUndo.manager.undo();try await settle(rowUndo)
+    precondition(freshDrafts.confirmed.file.cells[0].source==rowBefore,"row undo/redo damaged the original grouped undo")
+    rowUndo.manager.redo();try await settle(rowUndo)
+    precondition(freshDrafts.confirmed.file.cells[0].source=="let row_probe=21")
+    rowUndo.manager.redo();try await settle(rowUndo)
+    precondition(freshDrafts.confirmed.file.cells[0].source=="let row_probe=20","redoing a row undo after grouped undo/redo used stale source versions")
+    rowUndo.manager.undo();try await settle(rowUndo)
+    rowUndo.manager.undo();try await settle(rowUndo)
+    precondition(freshDrafts.confirmed.file.cells[0].source==rowBefore)
+    rowUndo.close();freshEditor.reflectAcknowledgedSource()
     let textUndo=UndoCoordinator {ids,group,operation in try await freshPort.undo(transactions:ids,group:group,operation:operation)}
     let binding=EditorCommitBinding(editor:freshEditor,port:freshPort,undo:textUndo)
     let textBefore=freshEditor.textView.string

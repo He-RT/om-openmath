@@ -2,11 +2,19 @@ import Foundation
 
 /// Presentation metadata only. Reopening a message never restores tools, credentials or grants.
 struct AssistantMessageContext:Codable,Equatable,Sendable {let model:String,mode:String}
+struct AgentPreviewDisplay:Codable,Equatable,Sendable {
+  struct Cell:Codable,Equatable,Sendable {let id:String,title:String,before:String?,after:String?,notes:[String]}
+  let cells:[Cell],notes:[String]
+}
 struct AgentAction:Identifiable,Codable,Equatable,Sendable {
   enum Status:String,Codable,Sendable {case running,ok,failed,cancelled,unknown}
   struct Failure:Codable,Equatable,Sendable {let code:String,message:String,recovery:String}
   let id:String,turnID:String,callID:String,tool:String,verb:String,object:String
-  let status:Status,cells:[String],transactionRef:String?,error:Failure?
+  let status:Status,cells:[String]
+  var transactionRef:String?
+  let error:Failure?
+  var documentID:String?=nil
+  var preview:AgentPreviewDisplay?=nil
 }
 struct AssistantMessage:Identifiable,Codable,Equatable,Sendable {
   struct Part:Identifiable,Codable,Equatable,Sendable {
@@ -40,6 +48,23 @@ struct AgentActionGroup:Identifiable,Equatable,Sendable {
       else {flush();rows.append(.init(actions:[action]))}
     }
     flush();return rows
+  }
+  static func summary(_ actions:[AgentAction])->String {
+    var parts:[String]=[]
+    let edits=actions.filter{$0.tool=="apply_notebook_patch" && $0.status == .ok}.count
+    let runs=actions.filter{$0.tool=="run_cells"}.count,failed=actions.filter{$0.status == .failed}.count
+    let unknown=actions.filter{$0.status == .unknown}.count
+    if edits>0 {parts.append("修改 \(edits) 处")}
+    if runs>0 {parts.append("运行 \(runs) 次")}
+    if failed>0 {parts.append("\(failed) 次失败")}
+    if unknown>0 {parts.append("\(unknown) 次待核对")}
+    return "\(actions.count) 个操作"+(parts.isEmpty ? "":"："+parts.joined(separator:"，"))
+  }
+  static func expanded(_ actions:[AgentAction],streaming:Bool,preference:Bool?)->Bool {
+    streaming || actions.contains{$0.status == .running} || (preference ?? (actions.count<=6))
+  }
+  static func visible(_ actions:[AgentAction],expanded:Bool)->[AgentAction] {
+    expanded ? actions:actions.filter{$0.status == .failed || $0.status == .unknown}
   }
 }
 enum AssistantMessageProjection {

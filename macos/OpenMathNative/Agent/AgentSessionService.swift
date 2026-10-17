@@ -48,6 +48,17 @@ actor AgentSessionService {
   }
   func currentKernelReceipts()->[NativeKernelReceipt] {acceptedKernelReceipts}
   func conversations()async throws->[SessionConversationSummary] {try await storage.agentConversations(document:document)}
+  /// Explicit recovery can identify a legacy conversation through its verified native admissions.
+  /// This is a data read and never activates a helper, model, or old grants.
+  func recordedTranscript(session:String)async throws->[AssistantMessage] {
+    var cursor:SessionRecoveryCursor?,owners=Set<String>()
+    repeat {
+      let page=try await storage.sessionRecovery(session,cursor:cursor,limit:32)
+      owners.formUnion(page.tools.compactMap{$0.target?.documentID});cursor=page.nextCursor
+    } while cursor != nil
+    guard owners==[document] else {throw AgentSessionError.stale}
+    return try await transcript(session:session)
+  }
   func outcomeFacts(session:String,task:String)async throws->[TurnFact] {
     try await AssistantTurnReader(storage:storage,document:document).read(session:session,task:task)
   }

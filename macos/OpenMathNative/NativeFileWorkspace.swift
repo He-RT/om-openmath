@@ -216,6 +216,8 @@ struct NativeNotebookFileView:View {
           LazyVStack(alignment:.leading,spacing:26) {
             ForEach(Array(session.drafts.confirmed.file.cells.enumerated()),id:\.element.id) {index,cell in
               cellView(cell,index:index).id(cell.id)
+                .overlay(RoundedRectangle(cornerRadius:8).stroke(Theme.Color.agent,lineWidth:4)
+                  .opacity(runtime.highlightedCell==cell.id ? runtime.highlightOpacity:0).allowsHitTesting(false))
             }
           }
           HStack(spacing:16) {

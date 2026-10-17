@@ -39,6 +39,7 @@ private final class DocumentUndoManager:UndoManager {
   private var confirmedInverse:NativeCommitState?
   private var groupCompletion:CheckedContinuation<Void,any Error>?
   private var alive=true
+  private var externalOperation:String?
   private(set) var phase:Phase = .ready
   private(set) var lastOperation:String?
   private(set) var error:String?
@@ -57,7 +58,7 @@ private final class DocumentUndoManager:UndoManager {
     }
     if pending?.operation==state.operation_id {return}
     guard seen.count<4096 else {throw CommitPortError.sourceConflict}
-    if pending != nil {
+    if pending != nil || (externalOperation != nil && externalOperation != state.operation_id) {
       if queued.contains(where:{$0.0.operation_id==state.operation_id}) {return}
       guard queued.count<128 else {throw CommitPortError.operationInProgress}
       queued.append((state,group,name));return
@@ -80,7 +81,7 @@ private final class DocumentUndoManager:UndoManager {
     if initial {native.endUndoGrouping()}
   }
   fileprivate func permits(_ direction:Direction)->Bool {
-    alive && pending==nil && !(direction == .undo ? undoEntries : redoEntries).isEmpty
+    alive && pending==nil && externalOperation==nil && !(direction == .undo ? undoEntries : redoEntries).isEmpty
   }
   fileprivate func request(_ direction:Direction) {
     guard permits(direction),let entry=(direction == .undo ? undoEntries : redoEntries).last else {return}
@@ -98,6 +99,19 @@ private final class DocumentUndoManager:UndoManager {
     guard undoEntries.last?.group==group,permits(.undo) else {throw CommitPortError.sourceConflict}
     try await withCheckedThrowingContinuation {groupCompletion=$0;request(.undo)}
   }
+  /// A row undo is a new durable inverse. Keep the original group: Cmd-Z first undoes the row
+  /// action (restoring that edit), then can undo the original complete group in the right order.
+  func registerTargetedUndo(_ original:String,inverse:NativeCommitState)throws {
+    guard alive,pending==nil else {throw CommitPortError.operationInProgress}
+    guard SourceValidation.identity(original),inverse.receipt.value?.receipt.operation_kind == .undo else {throw CommitPortError.sourceConflict}
+    if seen[inverse.operation_id]==inverse.request_hash {return}
+    try registerCommitted(inverse,group:inverse.operation_id,name:"撤销助手修改")
+  }
+  func beginTargetedOperation(_ operation:String)->Bool {
+    guard alive,pending==nil,externalOperation==nil || externalOperation==operation else {return false}
+    externalOperation=operation;return true
+  }
+  func endTargetedOperation(_ operation:String) {if externalOperation==operation {externalOperation=nil;try? flushQueued()}}
   private func finishGroup(_ error:(any Error)?=nil) {
     let completion=groupCompletion;groupCompletion=nil
     if let error {completion?.resume(throwing:error)} else {completion?.resume(returning:())}

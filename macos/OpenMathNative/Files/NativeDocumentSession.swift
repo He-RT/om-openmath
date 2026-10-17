@@ -49,6 +49,34 @@ actor NativeAppStorage {
     let actualAgent=AgentSessionService(host:host,storage:storage,document:drafts.confirmed.document_id,generation:drafts.documentGeneration,sourcePort:source,kernelPort:actualRuntime.kernel)
     self.agent=actualAgent
     self.assistant=NativeAssistant(host:host,storage:storage,agent:actualAgent)
+    assistant.actionCellLabel={ [weak self] id in self?.drafts.confirmed.file.cells.firstIndex{$0.id==id}.map{"单元格 \($0+1)"} }
+    assistant.actionLocate={ [weak self] id,reduced in self?.runtime.locate(id,reducedMotion:reduced) }
+    assistant.actionTransaction={ [weak self] action in
+      guard let self,!closed,let transaction=action.transactionRef else {throw StorageError.transactionUnavailable}
+      return try await storage.sourceTransactionForDisplay(document:action.documentID ?? drafts.confirmed.document_id,id:transaction)
+    }
+    assistant.actionCanUndo={ [weak self] action in
+      guard let self,!closed else {return false};return action.documentID==nil || action.documentID==drafts.confirmed.document_id
+    }
+    assistant.actionUndoFacts={ [weak self] ids in
+      guard let self,!closed else {throw StorageError.closing}
+      return try await storage.sourceUndoFacts(document:drafts.confirmed.document_id,ids:ids)
+    }
+    assistant.undoActionTransaction={ [weak self] action,operation in
+      guard let self,!closed,runtime.operation==nil,let transaction=action.transactionRef,
+        action.documentID==nil || action.documentID==drafts.confirmed.document_id,
+        assistant.messages.flatMap(\.actions).contains(where:{$0.id==action.id && $0.transactionRef==transaction}) else {throw CommitPortError.sourceConflict}
+      do {try await flushSource()} catch {throw CommitPortError.editingBusy}
+      guard undo.beginTargetedOperation(operation) else {throw CommitPortError.operationInProgress}
+      do {
+        let inverse=try await source.undo(transactions:[transaction],group:operation,operation:operation)
+        try undo.registerTargetedUndo(transaction,inverse:inverse)
+        undo.endTargetedOperation(operation)
+        for id in action.cells {runtime.markManualEdit(id)}
+        sourceDidChange();await runtime.analyzeSourceNow(drafts);await runtime.refreshProjection()
+      } catch CommitPortError.unknownOutcome {throw CommitPortError.unknownOutcome}
+      catch {undo.endTargetedOperation(operation);throw error}
+    }
     assistant.insertCode={ [weak self] code,language in
       guard let self,!closed else {throw StorageError.closing}
       try await insertCell(.math,after:runtime.selectedCell,source:code,dialect:["wolfram","mathematica"].contains(language.lowercased()) ? .wolfram:.modern)
@@ -66,6 +94,7 @@ actor NativeAppStorage {
       await runtime.analyzeSourceNow(drafts)
       await runtime.displayAgentReceipts(agent.currentKernelReceipts())
       document.changed?();await runtime.refreshProjection()
+      await assistant.refreshActionFacts()
     }
     assistant.savedState={ [weak self] in
       guard let self,!closed else {throw StorageError.closing}
@@ -244,6 +273,7 @@ actor NativeAppStorage {
     if let selected=runtime.selectedCell,!drafts.confirmed.file.cells.contains(where:{$0.id==selected}) {runtime.navigate(to:drafts.confirmed.file.cells.first?.id)}
     runtime.scheduleSourceAnalysis(drafts)
     document.noteEdit();document.changed?()
+    Task { [weak self] in await self?.assistant.refreshActionFacts() }
   }
   func reconcileRecoveryHistory() async {
     do {

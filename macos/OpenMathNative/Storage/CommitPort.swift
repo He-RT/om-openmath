@@ -64,14 +64,20 @@ actor DocCommitPort {
   func undo(transactions:[String],group:String,operation:String,faults:StorageFaults = .init()) async throws ->NativeCommitState {
     try beginCall();defer {activeCalls-=1}
     guard !closing else {throw StorageError.closing}
+    guard !transactions.isEmpty,transactions.count<=32,Set(transactions).count==transactions.count,
+      transactions.allSatisfy(SourceValidation.identity) else {throw StorageError.idempotencyConflict}
     guard !inFlight.contains(operation),!preparing.contains(operation) else {throw CommitPortError.operationInProgress}
     preparing.insert(operation);defer {preparing.remove(operation)}
     let source=await drafts.confirmed
     if let actual=try await storage.sourceReceipt(document:source.document_id,operation:operation) {
       guard actual.receipt.operation_kind == .undo,actual.receipt.transaction_id.value != nil else {throw StorageError.idempotencyConflict}
       let metadata=try await storage.sourceUndoMetadata(document:source.document_id,operation:operation)
-      guard let metadata,metadata.group_id==group,
-        Set(metadata.transaction_ids)==Set(transactions),metadata.transaction_ids.count==transactions.count else {throw StorageError.idempotencyConflict}
+      guard let metadata,metadata.group_id==group else {throw StorageError.idempotencyConflict}
+      if Set(metadata.transaction_ids) != Set(transactions) || metadata.transaction_ids.count != transactions.count {
+        guard let revision=actual.receipt.committed_revision.value?.value,revision>0 else {throw StorageError.idempotencyConflict}
+        let expanded=try await storage.sourceUndoExpansion(document:source.document_id,ids:Set(transactions),through:revision-1)
+        guard Set(metadata.transaction_ids)==Set(expanded),metadata.transaction_ids.count==expanded.count else {throw StorageError.idempotencyConflict}
+      }
       let reply=try await client.sourceCommand(.source_recover_undo(.init(type:.source_recover_undo,receipt:actual)))
       guard let state=reply.operation.value else {throw NativeHostClientError.invalidReply}
       if let snapshot=reply.snapshot.value {try await drafts.acknowledge(snapshot)}
@@ -80,7 +86,20 @@ actor DocCommitPort {
       return state
     }
     try await synchronizeDrafts()
-    let records=try await storage.sourceTransactions(document:source.document_id,ids:transactions,faults:faults)
+    var records=try await storage.sourceTransactions(document:source.document_id,ids:transactions,faults:faults)
+    let current=await drafts.confirmed
+    let versions=Dictionary(uniqueKeysWithValues:current.cell_revisions.map{($0.cell_id,$0.revision.value)})
+    var checked=Set<String>(),advanced=false
+    for record in records {
+      let expected=Dictionary(uniqueKeysWithValues:record.plan.after.cell_revisions.map{($0.cell_id,$0.revision.value)})
+      for cell in record.plan.commit.changed_cell_ids where checked.insert(cell).inserted {
+        if versions[cell] != expected[cell] {advanced=true}
+      }
+    }
+    if advanced {
+      let expanded=try await storage.sourceUndoExpansion(document:source.document_id,ids:Set(transactions))
+      if Set(expanded) != Set(transactions) {records=try await storage.sourceTransactions(document:source.document_id,ids:expanded,faults:faults)}
+    }
     let reply=try await client.sourceCommand(.source_prepare_undo(.init(type:.source_prepare_undo,operation_id:operation,group_id:group,records:records)))
     guard let plan=reply.plan.value else {
       if let state=reply.operation.value {return state}

@@ -40,17 +40,22 @@ private struct AssistantTranscriptFixtureControls:View {
   }
   @MainActor static func descendants(_ view:NSView)->[NSView] { [view]+view.subviews.flatMap{descendants($0)} }
   @MainActor static func main() async throws {
-    let ui=CommandLine.arguments.contains("--assistant-ui") || Bundle.main.object(forInfoDictionaryKey:"OpenMathAssistantFixture") as? Bool==true
+    let actionUI=CommandLine.arguments.contains("--action-ui") || Bundle.main.object(forInfoDictionaryKey:"OpenMathActionFixture") as? Bool==true
+    let ui=actionUI || CommandLine.arguments.contains("--assistant-ui") || Bundle.main.object(forInfoDictionaryKey:"OpenMathAssistantFixture") as? Bool==true
     let app=NSApplication.shared;app.setActivationPolicy(ui ? .regular:.accessory)
     let rootBase=URL(fileURLWithPath:CommandLine.arguments.count>1 ? CommandLine.arguments[1]:Bundle.main.object(forInfoDictionaryKey:"OpenMathFixtureRoot") as! String,isDirectory:true)
     let root=ui ? rootBase.appendingPathComponent("run-"+UUID().uuidString.lowercased()):rootBase
     try FileManager.default.createDirectory(at:root,withIntermediateDirectories:true)
     if ui {
       Task {
-        do {try await assistantTranscript(root:root,hold:true)}
+        do {if actionUI {try await actionLog(root:root,hold:true)} else {try await assistantTranscript(root:root,hold:true)}}
         catch {FileHandle.standardError.write(Data(("Assistant UI fixture failed: \(error)\n").utf8));NSApp.terminate(nil)}
       }
       desktopLoop()
+      return
+    }
+    if CommandLine.arguments.contains("--action-log") {
+      try await actionLog(root:root,hold:false)
       return
     }
     if CommandLine.arguments.contains("--assistant-transcript") {
@@ -253,6 +258,104 @@ private struct AssistantTranscriptFixtureControls:View {
     let quit=NSMenuItem(title:"退出界面测试",action:#selector(NSApplication.terminate(_:)),keyEquivalent:"q");quit.target=NSApp
     application.addItem(quit);item.submenu=application;menu.addItem(item);NSApp.mainMenu=menu
     NSApp.run()
+  }
+  @MainActor static func actionLog(root:URL,hold:Bool)async throws {
+    let casePath=ProcessInfo.processInfo.environment["OPENMATH_ACTION_FIXTURE_CASE"] ?? Bundle.main.object(forInfoDictionaryKey:"OpenMathActionCase") as? String
+    guard let casePath else {throw StorageError.unsafePath}
+    let caseRoot=URL(fileURLWithPath:casePath,isDirectory:true)
+    let services=NativeAppStorage(paths:.init(root:caseRoot.appendingPathComponent("storage"),channel:.preview))
+    let storage=try await services.open(),workspace=NativeFileWorkspace(storage:services)
+    let documents=try await storage.startupDocuments(limit:32)
+    guard let document=documents.records.first?.id else {throw StorageError.corruptIdentity}
+    await workspace.recover(document)
+    guard let session=workspace.session else {throw StorageError.recoveryRequired}
+    session.assistant.prepare={throw AgentSessionError.inactive}
+    guard let conversation=try await storage.agentSessions(limit:32).first?.id else {throw StorageError.corruptIdentity}
+    let originalMessages=try await session.agent.recordedTranscript(session:conversation)
+    guard var unsubmitted=originalMessages.flatMap(\.actions).first(where:{$0.tool=="preview_source" && $0.status == .ok}) else {throw StorageError.corruptIdentity}
+    require(unsubmitted.preview?.cells.contains{$0.after?.contains("scene")==true}==true,"accepted S2 preview lost its original proposal")
+    unsubmitted.transactionRef=nil
+    await session.assistant.loadActionDiff(unsubmitted)
+    require(session.assistant.actionDiffs[unsubmitted.id]?.notes.contains("尚未提交的预览")==true,"unsubmitted preview depended on a later transaction")
+    if let submitted=originalMessages.flatMap(\.actions).first(where:{$0.id==unsubmitted.id}),submitted.transactionRef != nil {
+      require(session.assistant.actionDiff(submitted)==nil,"an unsubmitted preview cache was relabeled as a committed diff")
+      await session.assistant.loadActionDiff(submitted)
+      require(session.assistant.actionDiff(submitted)?.transaction==submitted.transactionRef)
+    }
+    let baseline="let a=2",baselineHash=KernelHashes.data(Data(baseline.utf8))
+    let proposal:[String:Any]=["input":["kind":"patch","operations":[["type":"update_cell","target":["cell_id":"a"],"expected_source_hash":baselineHash,"source":"let a=5"]]]]
+    let verified=AgentPreviewFormatter.make(arguments:proposal,result:["valid":true],snapshot:["cells":[["cell_id":"a","source_complete":true,"source":baseline,"source_hash":baselineHash]]])!
+    require(verified.cells[0].before==baseline && verified.cells[0].after=="let a=5")
+    let tampered=AgentPreviewFormatter.make(arguments:proposal,result:["valid":true],snapshot:["cells":[["cell_id":"a","source_complete":true,"source":"not the baseline","source_hash":baselineHash]]])!
+    require(tampered.cells.allSatisfy{$0.before==nil && $0.notes.contains(where:{$0.contains("完整基线")})},"preview rendered an unverified read as its baseline")
+    guard let action=originalMessages.flatMap(\.actions).first(where:{$0.tool=="apply_notebook_patch" && $0.status == .ok}),let transaction=action.transactionRef else {throw StorageError.corruptIdentity}
+    var facts=try await storage.sourceUndoFacts(document:document,ids:[transaction])
+    if facts.undone.contains(transaction) {
+      let history=try await storage.sourceHistory(document:document)
+      var restored=false
+      for entry in history where entry.retained {
+        let record=try await storage.sourceTransactions(document:document,ids:[entry.transaction])[0]
+        if record.plan.undo_group?.transaction_ids.contains(transaction)==true {
+          let status=try await storage.sourceUndoFacts(document:document,ids:[entry.transaction])
+          if !status.undone.contains(entry.transaction) {
+            _ = try await session.source.undo(transactions:[entry.transaction],group:"d2-restore",operation:"d2-restore-"+UUID().uuidString.lowercased())
+            restored=true;break
+          }
+        }
+      }
+      require(restored,"the actual S2 inverse was not available to restore")
+    }
+    try await session.assistant.restoreRecordedConversation(conversation)
+    facts=try await storage.sourceUndoFacts(document:document,ids:[transaction])
+    require(!facts.undone.contains(transaction))
+    let before=session.drafts.confirmed
+    await session.assistant.loadActionDiff(action)
+    guard let diff=session.assistant.actionDiffs[action.id] else {fatalError("actual S2 diff unavailable")}
+    require(diff.cells.contains{$0.lines.contains{$0.kind == .added && $0.text.contains("scene")}},"the S2 action did not read the actual geometry source diff")
+    let delta=SourceTransactionDiff.lines(before:"中文\na\nb\n",after:"中文\na\nc\n")
+    require(delta.filter{$0.kind == .removed}.map(\.text)==["b"] && delta.filter{$0.kind == .added}.map(\.text)==["c"])
+    let longDelta=SourceTransactionDiff.lines(before:String(repeating:"a\n",count:6000),after:String(repeating:"b\n",count:6000))
+    require(longDelta.count<15_000 && longDelta.contains{$0.kind == .omitted && $0.text.contains("复制完整源码")},"large source diff was not bounded")
+    if let cell=action.cells.first {
+      let sequence=session.runtime.navigationSequence;session.assistant.locate(cell,reducedMotion:true)
+      require(session.runtime.selectedCell==cell && session.runtime.navigationSequence>sequence && session.runtime.highlightedCell==nil)
+      session.assistant.locate(cell,reducedMotion:false)
+      require(session.runtime.highlightedCell==cell)
+    }
+    session.runtime.navigation.inspectorVisible=true;session.runtime.navigation.inspector = .assistant
+    let window=NSWindow(contentRect:NSRect(x:0,y:0,width:1400,height:780),styleMask:[.titled,.closable,.resizable],backing:.buffered,defer:false)
+    window.title="A5 S2 操作记录 · 不连接模型";window.appearance=NSAppearance(named:.aqua)
+    let host=NSHostingView(rootView:WorkspaceView(workspace:workspace,session:session));window.contentView=host;workspace.attachWindow(window)
+    window.makeKeyAndOrderFront(nil);window.displayIfNeeded()
+    if hold {while !Task.isCancelled {try await Task.sleep(for:.seconds(30))}}
+    await session.assistant.undoAction(action)
+    require(session.assistant.undoneActionTransactions.contains(transaction),"row undo was not confirmed by source history")
+    let after=session.drafts.confirmed
+    require(after.revision.value==before.revision.value+1)
+    await session.assistant.undoAction(action)
+    require(session.drafts.confirmed.revision.value==after.revision.value,"repeated row undo wrote another transaction")
+    session.undo.manager.undo();try await until {session.undo.phase != .pending}
+    await session.assistant.refreshActionFacts()
+    try await until {!session.assistant.undoneActionTransactions.contains(transaction)}
+    require(!session.assistant.undoneActionTransactions.contains(transaction),"Cmd-Z did not redo the explicit row undo")
+    require(session.drafts.confirmed.file.cells.map(\.source)==before.file.cells.map(\.source))
+    let actual=session.assistant.undoActionTransaction!
+    var lose=true
+    session.assistant.undoActionTransaction={action,operation in
+      try await actual(action,operation)
+      if lose {lose=false;throw CommitPortError.unknownOutcome}
+    }
+    await session.assistant.undoAction(action)
+    require(session.assistant.unknownActionUndo==action.id)
+    let uncertain=session.drafts.confirmed.revision.value
+    await session.assistant.undoAction(action)
+    require(session.assistant.unknownActionUndo==nil && session.drafts.confirmed.revision.value==uncertain,"unknown row undo did not reconcile the original ID")
+    print("Actual A5 S2 source action: verified original diff, reduced-motion locate, single transaction undo, repeat safety, native Cmd-Z redo, durable inverse graph and original-ID uncertain readback passed; no model calls")
+    window.orderOut(nil);try await session.close()
+    let archived=try await storage.sourceTransactionForDisplay(document:document,id:transaction)
+    require(archived.transaction_id==transaction && archived.plan.after.file.cells.map(\.source)==before.file.cells.map(\.source),"archived diff no longer matched the restored S2 source")
+    do {_ = try await storage.documentIdentity(document);fatalError("reading an archived diff opened a source writer")} catch StorageError.closing { }
+    try await services.close()
   }
   @MainActor static func inspector(root:URL) async throws {
     let definitions=(0..<40).map{"let v\($0)=\($0);"}.joined(separator:"\n")

@@ -67,8 +67,11 @@ final class DocumentStore {
     return current
   }
   private func receipt(_ operation:String,reader:SQLiteDatabase) throws ->NativeDurableSourceReceipt? {
+    try Self.receipt(operation,reader:reader,identity:identity)
+  }
+  private static func receipt(_ operation:String,reader:SQLiteDatabase,identity:StoreIdentity) throws ->NativeDurableSourceReceipt? {
     var receipt:NativeDurableSourceReceipt?
-    try reader.statement("SELECT o.request_hash,o.transaction_id,o.committed_revision,o.receipt,t.forward_plan,t.inverse_snapshot,t.inverse_hash,r.snapshot,r.snapshot_hash,e.payload,e.payload_hash,x.receipt_hash FROM operations o JOIN transactions t ON o.transaction_id=t.transaction_id AND o.document_id=t.document_id AND o.operation_id=t.operation_id AND o.request_hash=t.request_hash AND o.committed_revision=t.committed_revision JOIN document_revisions r ON o.document_id=r.document_id AND o.committed_revision=r.revision JOIN outbox e ON o.document_id=e.document_id AND o.operation_id=e.operation_id JOIN operation_transitions x ON o.document_id=x.document_id AND o.operation_id=x.operation_id AND x.sequence=1 WHERE o.document_id=? AND o.operation_id=?",[.text(identity.documentID!),.text(operation)]) { [self] row in
+    try reader.statement("SELECT o.request_hash,o.transaction_id,o.committed_revision,o.receipt,t.forward_plan,t.inverse_snapshot,t.inverse_hash,r.snapshot,r.snapshot_hash,e.payload,e.payload_hash,x.receipt_hash FROM operations o JOIN transactions t ON o.transaction_id=t.transaction_id AND o.document_id=t.document_id AND o.operation_id=t.operation_id AND o.request_hash=t.request_hash AND o.committed_revision=t.committed_revision JOIN document_revisions r ON o.document_id=r.document_id AND o.committed_revision=r.revision JOIN outbox e ON o.document_id=e.document_id AND o.operation_id=e.operation_id JOIN operation_transitions x ON o.document_id=x.document_id AND o.operation_id=x.operation_id AND x.sequence=1 WHERE o.document_id=? AND o.operation_id=?",[.text(identity.documentID!),.text(operation)]) { row in
       let bytes=try SQLColumn.data(row,3)
       let value=try JSONDecoder().decode(NativeDurableSourceReceipt.self,from:bytes)
       if (try SQLColumn.data(row,4)).isEmpty {
@@ -126,6 +129,13 @@ final class DocumentStore {
   }
   /// Real stored plans verified against the immutable source/receipt graph, newest first.
   func transactions(_ ids:[String],faults:StorageFaults = .init()) throws ->[NativeStoredSourceTransaction] {
+    let records=try Self.readTransactions(ids,url:url,identity:identity)
+    try faults.reach("source_transactions_readback")
+    try db.confirmCommittedBytes()
+    return records
+  }
+  /// Exactly the same source/receipt checks for historical display, with no writer construction.
+  static func readTransactions(_ ids:[String],url:URL,identity:StoreIdentity)throws->[NativeStoredSourceTransaction] {
     guard !ids.isEmpty,ids.count<=32,Set(ids).count==ids.count,ids.allSatisfy(SourceValidation.identity) else {throw StorageError.corruptIdentity}
     let read=try SQLiteDatabase(url:url,readonly:true);defer {try? read.close()}
     var records:[NativeStoredSourceTransaction]=[]
@@ -138,11 +148,9 @@ final class DocumentStore {
       }
       guard let plan,plan.commit.transaction_id==id else {throw StorageError.transactionUnavailable}
       try SourceValidation.commit(plan)
-      guard let actual=try receipt(plan.commit.operation_id,reader:read) else {throw StorageError.corruptIdentity}
+      guard plan.commit.document_id==identity.documentID,let actual=try receipt(plan.commit.operation_id,reader:read,identity:identity) else {throw StorageError.corruptIdentity}
       records.append(.init(store_id:identity.storeID,transaction_id:id,plan:plan,receipt:actual))
     }
-    try faults.reach("source_transactions_readback")
-    try db.confirmCommittedBytes()
     return records.sorted{$0.plan.after.revision.value>$1.plan.after.revision.value}
   }
   func undoMetadata(_ operation:String) throws ->NativeUndoGroup? {
@@ -157,6 +165,12 @@ final class DocumentStore {
   func historyEntries() throws ->[SourceHistoryEntry] {
     guard let history else {throw StorageError.unsupportedVersion}
     return try history.entries()
+  }
+  func undoFacts(_ ids:Set<String>)throws->SourceUndoFacts {
+    guard let history else {throw StorageError.unsupportedVersion};return try history.undoFacts(ids)
+  }
+  func undoExpansion(_ ids:Set<String>,through upper:UInt64?=nil)throws->[String] {
+    guard let history else {throw StorageError.unsupportedVersion};return try history.undoExpansion(ids,through:upper)
   }
   func pinTransaction(_ transaction:String,kind:String,owner:String,enabled:Bool) throws {
     guard let history else {throw StorageError.unsupportedVersion}

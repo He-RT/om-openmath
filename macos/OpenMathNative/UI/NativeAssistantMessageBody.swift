@@ -6,6 +6,9 @@ struct NativeAssistantMessageBody:View {
   var streaming=false
   var onInsertCode:((String,String)->Void)?=nil
   var maximumUserWidth:CGFloat=320
+  var actionModel:NativeAssistant?=nil
+  @State private var actionsExpanded:Bool?
+  private var expanded:Bool {AgentActionGroup.expanded(message.actions,streaming:streaming,preference:actionsExpanded)}
   var body:some View {
     Group {
       if message.role=="user" {
@@ -29,31 +32,22 @@ struct NativeAssistantMessageBody:View {
   }
   private var parts:some View {
     VStack(alignment:.leading,spacing:8) {
-      ForEach(Array(message.parts.enumerated()),id:\.offset) {_,part in
+      ForEach(Array(message.parts.enumerated()),id:\.offset) {index,part in
         switch part.value {
         case .text(let text):
           if message.role=="assistant" {NativeMarkdownView(source:text,fontSize:13.5,onInsertCode:onInsertCode)}
           else {Text(text).font(Theme.Font.conversation).textSelection(.enabled)}
         case .actions(let actions):
-          ForEach(AgentActionGroup.rows(actions)) {group in
-            if group.actions.count>1 {
-              DisclosureGroup(group.summary) {ForEach(group.actions) {action in actionRow(action)}}.font(.caption)
-            } else if let action=group.actions.first {actionRow(action)}
+          if index==message.parts.firstIndex(where:{if case .actions=$0.value {return true};return false}) {
+            Button {actionsExpanded = !expanded} label: {
+              HStack(spacing:6) {Image(systemName:expanded ? "chevron.down":"chevron.right");Text(AgentActionGroup.summary(message.actions)).multilineTextAlignment(.leading)}
+            }.font(.system(size:11.5)).buttonStyle(.plain).foregroundStyle(Theme.Color.ink2)
+              .disabled(streaming || message.actions.contains{$0.status == .running}).accessibilityIdentifier("agent-actions-toggle-"+message.id)
           }
+          let visible=AgentActionGroup.visible(actions,expanded:expanded)
+          if !visible.isEmpty {AgentActionList(actions:visible,model:actionModel,active:streaming)}
         }
       }
     }
-  }
-  private func actionRow(_ action:AgentAction)->some View {
-    VStack(alignment:.leading,spacing:3) {
-      HStack(alignment:.firstTextBaseline,spacing:6) {
-        Text(action.verb).fontWeight(.medium)
-        Text(action.object).foregroundStyle(.secondary)
-        Spacer(minLength:0)
-        let state=switch action.status {case .running:"进行中";case .ok:"已返回";case .failed:"失败";case .unknown:"待核对";case .cancelled:"已取消"}
-        Text(state).foregroundStyle(action.status == .failed ? Color.red:Color.secondary)
-      }
-      if let error=action.error {Text(error.code+"："+error.message+(error.recovery.isEmpty ? "":"；"+error.recovery)).foregroundStyle(action.status == .failed ? Color.red:Color.secondary)}
-    }.font(.caption).textSelection(.enabled).accessibilityIdentifier("agent-action-"+action.callID)
   }
 }

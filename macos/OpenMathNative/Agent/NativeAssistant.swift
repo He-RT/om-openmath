@@ -21,6 +21,20 @@ import SwiftUI
   @Published private(set) var conversations:[SessionConversationSummary]=[]
   @Published private(set) var historyError:String?
   @Published private(set) var historyLoading=false
+  @Published private(set) var actionDiffs:[String:SourceTransactionDiff]=[:]
+  @Published private(set) var actionErrors:[String:String]=[:]
+  @Published private(set) var loadingActions=Set<String>()
+  @Published private(set) var knownActionTransactions=Set<String>()
+  @Published private(set) var undoneActionTransactions=Set<String>()
+  @Published private(set) var unknownActionUndo:String?
+  @Published private(set) var actionUndoInProgress:String?
+  private var actionOperations:[String:String]=[:],actionFactsSerial:UInt64=0
+  var actionTransaction:(@MainActor (AgentAction)async throws->NativeStoredSourceTransaction)?
+  var undoActionTransaction:(@MainActor (AgentAction,String)async throws->Void)?
+  var actionUndoFacts:(@MainActor (Set<String>)async throws->SourceUndoFacts)?
+  var actionCanUndo:(@MainActor (AgentAction)->Bool)?
+  var actionCellLabel:(@MainActor (String)->String?)?
+  var actionLocate:(@MainActor (String,Bool)->Void)?
   var conversationID:String {session}
   var conversationTitle:String {messages.first(where:{$0.role=="user"}).map{String($0.text.trimmingCharacters(in:.whitespacesAndNewlines).prefix(20)).replacingOccurrences(of:"\n",with:" ")} ?? "新对话"}
   var prepare:(@MainActor ()async throws->Void)?
@@ -61,14 +75,21 @@ import SwiftUI
     catch {if !closed {historyError="历史对话暂无法读取"}}
   }
   func selectConversation(_ id:String)async {
-    guard !closed,!busy,!undoing,!historyLoading,conversations.contains(where:{$0.id==id}) else {return}
+    guard !closed,!busy,!undoing,!historyLoading,unknownActionUndo==nil,conversations.contains(where:{$0.id==id}) else {return}
     historyLoading=true;defer {historyLoading=false}
     do {
       let previous=try await agent.transcript(session:id)
       guard !closed else {return}
       resetConversation(id:id);durableMessages=previous;publishMessages();historyError=nil
       status=configured ? "就绪":"请先配置模型"
+      await refreshActionFacts()
     } catch {if !closed {historyError="这段对话暂无法读取，当前内容保留"}}
+  }
+  func restoreRecordedConversation(_ id:String)async throws {
+    guard !closed,!busy,!undoing,!historyLoading,unknownActionUndo==nil else {throw AgentSessionError.busy}
+    let records=try await agent.recordedTranscript(session:id)
+    guard !closed else {throw StorageError.closing}
+    resetConversation(id:id);durableMessages=records;publishMessages();await refreshActionFacts()
   }
   /// Trusted host selection (also used by isolated live fixtures); secrets are never serialized.
   func configure(_ value:AssistantConfiguration,secrets:SecretStore?=nil)throws {
@@ -79,11 +100,54 @@ import SwiftUI
     status="模型已就绪"
   }
   func undoTurn(_ id:String)async {
-    guard !busy,!undoing,!undoneTurns.contains(id),let undoOutcome else {return}
+    guard !busy,!undoing,unknownActionUndo==nil,!undoneTurns.contains(id),let undoOutcome else {return}
     undoing=true;undoError=nil;defer {undoing=false}
     do {try await undoOutcome(id);undoneTurns.insert(id);status="已撤销本轮修改"}
     catch CommitPortError.unknownOutcome {undoError="撤销结果待核对，未重复提交";status=undoError!}
     catch {undoError="撤销未提交，请核对后续编辑或当前输入";status=undoError!}
+  }
+  func locate(_ cell:String,reducedMotion:Bool) {guard actionCellLabel?(cell) != nil else {return};actionLocate?(cell,reducedMotion)}
+  func actionDiff(_ action:AgentAction)->SourceTransactionDiff? {
+    guard let diff=actionDiffs[action.id],diff.transaction==(action.transactionRef ?? action.id) else {return nil};return diff
+  }
+  func loadActionDiff(_ action:AgentAction)async {
+    guard !closed,!loadingActions.contains(action.id),let read=actionTransaction else {return}
+    if action.transactionRef==nil,let preview=action.preview {
+      let diff=await Task.detached(priority:.utility) {SourceTransactionDiff.make(preview:preview,identity:action.id)}.value
+      if !closed {actionDiffs[action.id]=diff};return
+    }
+    loadingActions.insert(action.id);actionErrors[action.id]=nil;defer {loadingActions.remove(action.id)}
+    do {
+      let record=try await read(action)
+      let difference=await Task.detached(priority:.utility) {SourceTransactionDiff.make(record)}.value
+      guard !closed,!Task.isCancelled else {return};actionDiffs[action.id]=difference
+    } catch {if !closed {actionErrors[action.id]="原始源码差异暂不可用；可能已超出历史保留期。"}}
+  }
+  func refreshActionFacts()async {
+    guard !closed,let read=actionUndoFacts else {return}
+    actionFactsSerial+=1;let serial=actionFactsSerial
+    let refs=Set(messages.flatMap(\.actions).compactMap(\.transactionRef))
+    guard !refs.isEmpty else {knownActionTransactions=[];undoneActionTransactions=[];return}
+    do {
+      var known=Set<String>(),undone=Set<String>()
+      let list=refs.sorted()
+      for offset in stride(from:0,to:list.count,by:512) {
+        let facts=try await read(Set(list[offset..<min(offset+512,list.count)]));known.formUnion(facts.known);undone.formUnion(facts.undone)
+      }
+      guard !closed,serial==actionFactsSerial else {return}
+      knownActionTransactions=known;undoneActionTransactions=undone
+    } catch {if !closed,serial==actionFactsSerial {knownActionTransactions=[]}}
+  }
+  func undoAction(_ action:AgentAction)async {
+    guard !closed,!busy,!undoing,!historyLoading,let transaction=action.transactionRef,
+      action.tool=="apply_notebook_patch",action.status == .ok,(!undoneActionTransactions.contains(transaction) || unknownActionUndo==action.id),
+      knownActionTransactions.contains(transaction),actionCanUndo?(action)==true,
+      unknownActionUndo==nil || unknownActionUndo==action.id,let perform=undoActionTransaction else {return}
+    undoing=true;actionUndoInProgress=action.id;actionErrors[action.id]=nil;defer {undoing=false;actionUndoInProgress=nil}
+    let operation=actionOperations[transaction] ?? "action-undo-"+UUID().uuidString.lowercased();actionOperations[transaction]=operation
+    do {try await perform(action,operation);unknownActionUndo=nil;actionOperations[transaction]=nil;status="已撤销这笔修改";await refreshActionFacts()}
+    catch CommitPortError.unknownOutcome {unknownActionUndo=action.id;status="撤销结果待核对";actionErrors[action.id]="撤销结果待核对；再次点按只核对原操作。"}
+    catch {actionOperations[transaction]=nil;actionErrors[action.id]="撤销未提交。请核对后续编辑或当前计算；原内容保留。"}
   }
   func saveSettings()async {
     guard !busy,!undoing,let settings else {return}
@@ -93,7 +157,7 @@ import SwiftUI
     } catch {status="未保存。请检查服务地址（远程HTTPS或本机HTTP）、模型名称和API Key；密钥需能写入已解锁的钥匙串。"}
   }
   func newConversation() {
-    guard !closed,!busy,!undoing,!historyLoading else {return}
+    guard !closed,!busy,!undoing,!historyLoading,unknownActionUndo==nil else {return}
     resetConversation(id:"conversation-"+UUID().uuidString.lowercased())
   }
   private func resetConversation(id:String) {
@@ -102,7 +166,7 @@ import SwiftUI
     streamedContexts=[:];streamedTasks=[:];outcomes=[];undoneTurns=[];undoError=nil;transcriptError=nil;status=configured ? "新对话":"请先配置模型"
   }
   func send() {
-    guard !closed,!busy,!undoing,!historyLoading else {return}
+    guard !closed,!busy,!undoing,!historyLoading,unknownActionUndo==nil else {return}
     let text=draft.trimmingCharacters(in:.whitespacesAndNewlines)
     guard !text.isEmpty,text.utf8.count<=16384 else {status="请输入问题（最多16KiB）。";return}
     guard let configuration else {showSettings=true;return}
@@ -177,6 +241,7 @@ import SwiftUI
     if outcomes.last?.id==taskID,outcomes.last?.factsUnavailable==true {status+="；本轮操作事实暂时无法读取，请核对笔记本"}
     busy=false;stopping=false;work=nil
     await refreshHistory()
+    await refreshActionFacts()
   }
   private func refreshMessages()async {
     let current=session

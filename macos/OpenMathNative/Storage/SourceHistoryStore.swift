@@ -11,6 +11,7 @@ struct SourceHistoryEntry:Sendable {
   let inputGroup:String?
 }
 struct SourceHistoryPrune:Sendable {let transactions:Int;let payloadBytes:Int;let retained:Int}
+struct SourceUndoFacts:Sendable {let known:Set<String>,undone:Set<String>}
 /// Version-2 document retention. Immutable facts stay after full source payloads are pruned.
 /// Only the queue-confined DocumentStore can perform mutations; this is not an Agent tool.
 final class SourceHistoryStore {
@@ -92,6 +93,51 @@ final class SourceHistoryStore {
         output.append(.init(transaction:try SQLColumn.text(row,0),operation:try SQLColumn.text(row,1),revision:UInt64(sqlite3_column_int64(row,2)),retained:sqlite3_column_int64(row,3)==1,pinned:sqlite3_column_int64(row,4)==1,inputGroup:summary.input_group_id))
       }
       return output
+  }
+  /// Compact durable inverse graph, starting at the oldest requested transaction. No source is
+  /// replayed; an inverse which was itself undone has no active effect on the original command.
+  func undoFacts(_ ids:Set<String>)throws->SourceUndoFacts {
+    guard !ids.isEmpty,ids.count<=512,ids.allSatisfy(SourceValidation.identity) else {throw StorageError.corruptIdentity}
+    let marks=Array(repeating:"?",count:ids.count).joined(separator:",")
+    var oldest:UInt64?,known=Set<String>()
+    try db.statement("SELECT transaction_id,revision FROM source_history WHERE document_id=? AND transaction_id IN (\(marks))",[.text(document)]+ids.sorted().map(SQLValue.text)) {row in
+      known.insert(try SQLColumn.text(row,0));let revision=sqlite3_column_int64(row,1)
+      guard revision>=0 else {throw StorageError.corruptIdentity};oldest=min(oldest ?? UInt64(revision),UInt64(revision))
+    }
+    guard let oldest else {return .init(known:[],undone:[])}
+    var disabled=Set<String>(),bytes=0
+    try db.statement("SELECT transaction_id,summary,summary_hash FROM source_history WHERE document_id=? AND revision>=? ORDER BY revision DESC",[.text(document),.integer(Int64(oldest))]) {row in
+      let data=try SQLColumn.data(row,1);bytes+=data.count
+      guard bytes<=8*1024*1024,DocumentStore.digest(data)==(try SQLColumn.text(row,2)) else {throw StorageError.transactionUnavailable}
+      let value=try JSONDecoder().decode(NativeSourceTransactionTombstone.self,from:data);try Self.validate(value)
+      let id=try SQLColumn.text(row,0)
+      guard value.commit.document_id==self.document,value.commit.transaction_id==id else {throw StorageError.corruptIdentity}
+      if !disabled.contains(id) {disabled.formUnion(value.undo_group?.transaction_ids ?? value.commit.undo_of.value.map{[$0]} ?? [])}
+    }
+    return .init(known:known,undone:disabled.intersection(ids))
+  }
+  /// Include real cancelling inverse/redo records when the original cell versions have advanced.
+  /// Rust still merges every stored record and rejects any unrelated intervening source edit.
+  func undoExpansion(_ ids:Set<String>,through upper:UInt64?=nil)throws->[String] {
+    guard !ids.isEmpty,ids.count<=32,ids.allSatisfy(SourceValidation.identity) else {throw StorageError.corruptIdentity}
+    var oldest:UInt64?,found=Set<String>()
+    let marks=Array(repeating:"?",count:ids.count).joined(separator:",")
+    try db.statement("SELECT transaction_id,revision FROM source_history WHERE document_id=? AND transaction_id IN (\(marks))",[.text(document)]+ids.sorted().map(SQLValue.text)) {row in
+      let revision=sqlite3_column_int64(row,1);guard revision>=0,upper==nil || UInt64(revision)<=upper! else {throw StorageError.idempotencyConflict}
+      found.insert(try SQLColumn.text(row,0));oldest=min(oldest ?? UInt64(revision),UInt64(revision))
+    }
+    guard found==ids,let oldest else {throw StorageError.transactionUnavailable}
+    var related=ids,bytes=0
+    try db.statement("SELECT transaction_id,summary,summary_hash FROM source_history WHERE document_id=? AND revision>=? AND revision<=? ORDER BY revision",[.text(document),.integer(Int64(oldest)),.integer(Int64(upper ?? HostSerial.maximum))]) {row in
+      let data=try SQLColumn.data(row,1);bytes+=data.count
+      guard bytes<=8*1024*1024,DocumentStore.digest(data)==(try SQLColumn.text(row,2)) else {throw StorageError.transactionUnavailable}
+      let value=try JSONDecoder().decode(NativeSourceTransactionTombstone.self,from:data);try Self.validate(value)
+      let id=try SQLColumn.text(row,0);guard value.commit.document_id==self.document,value.commit.transaction_id==id else {throw StorageError.corruptIdentity}
+      let targets=value.undo_group?.transaction_ids ?? value.commit.undo_of.value.map{[$0]} ?? []
+      if !related.isDisjoint(with:targets) {related.insert(id)}
+    }
+    guard related.count<=32 else {throw StorageError.transactionUnavailable}
+    return related.sorted()
   }
   /// Bounded physical compaction, original receipt bytes and all stable identities survive.
   /// Caller verifies each original healthy receipt before any payload is erased.

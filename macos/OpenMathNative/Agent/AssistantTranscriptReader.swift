@@ -4,7 +4,7 @@ import Foundation
 actor AssistantTranscriptReader {
   private let storage:StorageService,document:String
   init(storage:StorageService,document:String) {self.storage=storage;self.document=document}
-  private struct Reply {let body:Data;let changes:[String:TurnChangedCell.Kind]}
+  private struct Reply {let body:Data;let changes:[String:TurnChangedCell.Kind];let document:String?}
   func read(session:String)async throws->[AssistantMessage] {
     var events:[StoredSessionEvent]=[],after:UInt64=0
     while true {
@@ -27,12 +27,13 @@ actor AssistantTranscriptReader {
       }
       if event.event_kind != .recovery {continue}
       let canonical:AgentCanonicalMessage,intent:NativeAgentToolIntent,hash:String,length:UInt64
-      var changes:[String:TurnChangedCell.Kind]=[:]
+      var changes:[String:TurnChangedCell.Kind]=[:],owner:String?
       if let record=try SessionSemantics.readonlyRecord(event) {
         canonical=record.canonical;intent=record.intent;hash=record.blobHash;length=record.byteLength
       } else if let record=try SessionSemantics.effectRecord(event) {
         canonical=record.canonical;intent=record.intent;hash=record.blobHash;length=record.byteLength
-        if let target=record.target,target.kind == .source,let receipt=try await storage.sourceReceipt(document:document,operation:target.operationID),let id=receipt.receipt.transaction_id.value,
+        owner=record.target?.documentID
+        if let target=record.target,target.documentID==document,target.kind == .source,let receipt=try await storage.sourceReceipt(document:document,operation:target.operationID),let id=receipt.receipt.transaction_id.value,
           let transaction=try await storage.sourceTransactions(document:document,ids:[id]).first {
           let before=Set(transaction.plan.before.file.cells.map(\.id)),after=Set(transaction.plan.after.file.cells.map(\.id))
           for cell in transaction.plan.commit.changed_cell_ids {changes[cell] = !after.contains(cell) ? .deleted:before.contains(cell) ? .edited:.new}
@@ -49,7 +50,42 @@ actor AssistantTranscriptReader {
       do {body=try await storage.readBlob(lease,offset:0,count:Int(length));try await storage.closeBlob(lease)}
       catch {try? await storage.closeBlob(lease);throw error}
       guard UInt64(body.count)==length,KernelHashes.data(body)==hash else {throw AgentSessionError.ledgerMismatch}
-      replies[key(event.task_id.value ?? "",intent.agent_turn_id,intent.tool_call_id)] = .init(body:body,changes:changes)
+      replies[key(event.task_id.value ?? "",intent.agent_turn_id,intent.tool_call_id)] = .init(body:body,changes:changes,document:owner)
+    }
+    // A preview's committed diff is available only when the actual apply used that exact preview.
+    var appliedPreviews:[String:(String,String?)]=[:]
+    var snapshots:[String:[String:Any]]=[:]
+    for stored in events where stored.event.event_kind == .assistant_end {
+      guard let raw=stored.event.payload_inline_json.value else {continue}
+      let envelope=try JSONDecoder().decode(SessionCanonicalAssistant.self,from:Data(raw.utf8))
+      let canonical=try JSONDecoder().decode(AgentCanonicalMessage.self,from:Data(envelope.canonicalJSON.utf8))
+      let task=stored.event.task_id.value ?? "",turn=canonical.agent_turn_id.value ?? canonical.message_id
+      for part in canonical.parts {
+        guard case .agent_tool_proposal_part(let proposal)=part,proposal.name == .read_notebook,
+          let reply=replies[key(task,turn,proposal.tool_call_id)],let root=try JSONSerialization.jsonObject(with:reply.body) as? [String:Any],root["ok"] as? Bool==true,
+          let data=root["data"] as? [String:Any],let reference=data["snapshot_ref"] as? String else {continue}
+        let args=try JSONSerialization.jsonObject(with:Data(proposal.arguments_json.utf8)) as? [String:Any]
+        let parent=(args?["snapshot_ref"] as? String).flatMap{snapshots[task+"\u{0}"+$0]}
+        var merged=snapshots[task+"\u{0}"+reference] ?? parent ?? data
+        let known=merged["cells"] as? [[String:Any]] ?? []
+        let fresh=data["cells"] as? [[String:Any]] ?? []
+        // A paged read may finish cells from the same immutable reference later.
+        merged["cells"]=known.filter{cell in !fresh.contains{($0["cell_id"] as? String)==(cell["cell_id"] as? String) && $0["source_complete"] as? Bool==true}}+fresh
+        snapshots[task+"\u{0}"+reference]=merged
+      }
+    }
+    for stored in events where stored.event.event_kind == .assistant_end {
+      guard let raw=stored.event.payload_inline_json.value else {continue}
+      let envelope=try JSONDecoder().decode(SessionCanonicalAssistant.self,from:Data(raw.utf8))
+      let canonical=try JSONDecoder().decode(AgentCanonicalMessage.self,from:Data(envelope.canonicalJSON.utf8))
+      let task=stored.event.task_id.value ?? "",turn=canonical.agent_turn_id.value ?? canonical.message_id
+      for part in canonical.parts {
+        guard case .agent_tool_proposal_part(let proposal)=part,proposal.name == .apply_notebook_patch,
+          let args=try JSONSerialization.jsonObject(with:Data(proposal.arguments_json.utf8)) as? [String:Any],let preview=args["preview_ref"] as? String,
+          let reply=replies[key(task,turn,proposal.tool_call_id)],let root=try JSONSerialization.jsonObject(with:reply.body) as? [String:Any],root["ok"] as? Bool==true,
+          let data=root["data"] as? [String:Any],let transaction=data["transaction_ref"] as? String else {continue}
+        appliedPreviews[task+"\u{0}"+preview]=(transaction,reply.document)
+      }
     }
     var messages:[AssistantMessage]=[]
     for stored in events {
@@ -67,9 +103,18 @@ actor AssistantTranscriptReader {
         case .agent_text_part(let text):parts.append(.init(id:text.part_id,value:.text(text.text)))
         case .agent_tool_proposal_part(let proposal):
           let identity=key(task,turn,proposal.tool_call_id),reply=replies[identity]
-          let action=AgentActionFormatter.make(turn:turn,call:proposal.tool_call_id,tool:proposal.name.rawValue,
+          var action=AgentActionFormatter.make(turn:turn,call:proposal.tool_call_id,tool:proposal.name.rawValue,
             arguments:Data(proposal.arguments_json.utf8),reply:reply?.body,cellOrder:order,changes:reply?.changes ?? [:],
             fallback:stoppedRuns.contains(identity) ? .cancelled:unavailable.contains(identity) ? .failed:nil)
+          action.documentID=reply?.document
+          if proposal.name == .preview_source,let reply,
+            let root=try JSONSerialization.jsonObject(with:reply.body) as? [String:Any],root["ok"] as? Bool==true,
+            let data=root["data"] as? [String:Any],let args=try JSONSerialization.jsonObject(with:Data(proposal.arguments_json.utf8)) as? [String:Any] {
+            action.preview=AgentPreviewFormatter.make(arguments:args,result:data,snapshot:(args["snapshot_ref"] as? String).flatMap{snapshots[task+"\u{0}"+$0]})
+          }
+          if proposal.name == .preview_source,let reply,
+            let root=try JSONSerialization.jsonObject(with:reply.body) as? [String:Any],let data=root["data"] as? [String:Any],let preview=data["preview_ref"] as? String,
+            let applied=appliedPreviews[task+"\u{0}"+preview] {action.transactionRef=applied.0;action.documentID=applied.1}
           if let last=parts.last,case .actions(var actions)=last.value {actions.append(action);parts[parts.count-1].value = .actions(actions)}
           else {parts.append(.init(id:proposal.part_id,value:.actions([action])))}
         default:break

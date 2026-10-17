@@ -19,9 +19,9 @@ struct NativeAssistantView:View {
           Button("重新读取历史") {Task {await assistant.refreshHistory()}}
           Button("模型设置…") {assistant.showSettings=true}.accessibilityIdentifier("assistant-settings")
         }.labelStyle(.iconOnly).menuStyle(.borderlessButton).fixedSize()
-          .disabled(assistant.busy || assistant.undoing || assistant.historyLoading).accessibilityIdentifier("assistant-history")
+          .disabled(assistant.busy || assistant.undoing || assistant.historyLoading || assistant.unknownActionUndo != nil).accessibilityIdentifier("assistant-history")
         Button("新对话",systemImage:"square.and.pencil") {assistant.newConversation()}.labelStyle(.iconOnly)
-          .disabled(assistant.busy || assistant.undoing || assistant.historyLoading).accessibilityIdentifier("assistant-new-conversation")
+          .disabled(assistant.busy || assistant.undoing || assistant.historyLoading || assistant.unknownActionUndo != nil).accessibilityIdentifier("assistant-new-conversation")
       }.buttonStyle(.borderless).foregroundStyle(Theme.Color.ink2).padding(.horizontal,16).padding(.vertical,12)
       if let error=assistant.historyError {Text(error).font(.caption).foregroundStyle(.secondary).padding(.horizontal,16).padding(.bottom,8)}
       if assistant.messages.isEmpty {
@@ -31,7 +31,7 @@ struct NativeAssistantView:View {
         }.padding(.horizontal,16).padding(.vertical,12)
       }
       NativeAssistantTranscript(messages:assistant.messages,busy:assistant.busy,conversationID:assistant.conversationID,
-        onInsertCode:assistant.busy ? nil:{code,language in Task {await assistant.insertCodeBlock(code,language:language)}}) {message in
+        onInsertCode:assistant.busy ? nil:{code,language in Task {await assistant.insertCodeBlock(code,language:language)}},actionModel:assistant) {message in
         if let outcome=assistant.outcomes.first(where:{$0.id==message.taskID}),message.id==assistant.messages.last(where:{$0.taskID==message.taskID})?.id {
           NativeTurnOutcomeSummary(assistant:assistant,outcome:outcome)
         }
@@ -52,7 +52,7 @@ struct NativeAssistantView:View {
         Text(assistant.status).font(.caption).foregroundStyle(.secondary).lineLimit(3).accessibilityIdentifier("assistant-status")
         Spacer()
         if assistant.busy {Button("停止",systemImage:"stop.fill") {Task {await assistant.stop()}}.disabled(assistant.stopping).accessibilityIdentifier("assistant-stop")}
-        else {Button("发送",systemImage:"arrow.up") {assistant.send()}.disabled(assistant.undoing || assistant.historyLoading || assistant.draft.trimmingCharacters(in:.whitespacesAndNewlines).isEmpty).accessibilityIdentifier("assistant-send").keyboardShortcut(.return,modifiers:[.command,.shift])}
+        else {Button("发送",systemImage:"arrow.up") {assistant.send()}.disabled(assistant.undoing || assistant.historyLoading || assistant.unknownActionUndo != nil || assistant.draft.trimmingCharacters(in:.whitespacesAndNewlines).isEmpty).accessibilityIdentifier("assistant-send").keyboardShortcut(.return,modifiers:[.command,.shift])}
       }
     }
   }

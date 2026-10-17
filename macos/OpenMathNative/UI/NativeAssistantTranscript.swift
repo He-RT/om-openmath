@@ -3,6 +3,7 @@ import SwiftUI
 struct NativeAssistantTranscript<Footer:View>:View {
   let messages:[AssistantMessage],busy:Bool,conversationID:String
   var onInsertCode:((String,String)->Void)?=nil
+  var actionModel:NativeAssistant?=nil
   @ViewBuilder let footer:(AssistantMessage)->Footer
   @State private var scroll=AssistantTranscriptScrollState()
   @State private var userScrolling=false
@@ -13,7 +14,7 @@ struct NativeAssistantTranscript<Footer:View>:View {
           LazyVStack(alignment:.leading,spacing:20) {
             ForEach(messages) {message in
               NativeAssistantMessageBody(message:message,streaming:busy && message.id==messages.last?.id,
-                onInsertCode:onInsertCode,maximumUserWidth:max(1,(geometry.size.width-32)*0.88))
+                onInsertCode:onInsertCode,maximumUserWidth:max(1,(geometry.size.width-32)*0.88),actionModel:actionModel)
                 .id(message.id)
               footer(message)
             }

@@ -17,7 +17,9 @@ struct NativeAssistantView:View {
         ScrollView {
           LazyVStack(alignment:.leading,spacing:16) {
             ForEach(assistant.messages) {message in
-              NativeAssistantMessageBody(message:message,streaming:assistant.busy && message.id==assistant.messages.last?.id).id(message.id)
+              NativeAssistantMessageBody(message:message,streaming:assistant.busy && message.id==assistant.messages.last?.id,onInsertCode:assistant.busy ? nil:{code,language in
+                Task {await assistant.insertCodeBlock(code,language:language)}
+              }).id(message.id)
               if let outcome=assistant.outcomes.first(where:{$0.id==message.taskID}),message.id==assistant.messages.last(where:{$0.taskID==message.taskID})?.id {
                 NativeTurnOutcomeSummary(assistant:assistant,outcome:outcome)
               }

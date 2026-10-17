@@ -8,9 +8,10 @@ import Foundation
     let raw=try JSONSerialization.jsonObject(with:data) as! [String:Any]
     let cells=raw["cells"] as! [[String:Any]],source=cells[0]["source"] as! String
     let document=MarkdownRenderDocument.parse(source)
-    let sections=document.sections
-    precondition(sections.count==3 && sections[1].table?.rows.count==3)
-    let first=sections[0].text!
+    let sections=document.blocks
+    let table=sections.compactMap(\.table).first!
+    precondition(table.rows.count==3 && sections.contains{$0.code != nil})
+    let first=MarkdownRenderDocument(source:document.source,runs:sections.prefix(while:{$0.table==nil}).compactMap(\.text).flatMap(\.runs),fallback:false)
     let paper=MarkdownTextView(usingTextLayoutManager:true);paper.configure();paper.install(first,dark:false,fontSize:16.5,paper:true)
     let headline=paper.textStorage!.attribute(.font,at:0,effectiveRange:nil) as! NSFont
     precondition(headline.pointSize==30,"paper heading did not use 30 pt title")
@@ -38,7 +39,14 @@ import Foundation
     view.setSelectedRange(NSRange(location:0,length:0))
     try await Task.sleep(for:.milliseconds(20))
     precondition(view.string.contains("replacement"),"new projection was never installed after selection ended")
-    precondition(sections[1].table!.tsv.contains("第一个解\t$2$"))
+    precondition(table.tsv.contains("第一个解\t$2$"))
+    let code=NativeCodeScrollView(frame:NSRect(x:0,y:0,width:250,height:100))
+    let ascii="    ____________________________\n   /    o    o    o    o        \\\n  /_____________________________\\\n"+String(repeating:"wide_",count:80)
+    code.install(ascii);code.layoutSubtreeIfNeeded()
+    precondition(code.code.string==ascii && code.code.frame.width>code.contentSize.width)
+    precondition(code.code.textContainer?.widthTracksTextView==false && code.hasHorizontalScroller)
+    code.code.selectAll(nil);code.code.copy(nil)
+    precondition(board.string(forType:.string)==ascii,"code copy changed whitespace or wrapped lines")
     print("Actual TextKit 2 height \(attached), narrow \(narrow); continuous copy with original formulas, pending selection update and independent table segmentation passed.")
     window.orderOut(nil)
   }

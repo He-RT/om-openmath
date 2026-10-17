@@ -27,6 +27,13 @@ import Foundation
     """#
     let actual=MarkdownRenderDocument.parse(source)
     precondition(actual.firstOutlineHeading=="中文🙂 heading")
+    let fenced=actual.blocks.compactMap(\.code)
+    precondition(fenced.count==1 && fenced[0].language=="math" && fenced[0].code.contains("$literal$"))
+    if let span=fenced[0].sourceRange {
+      precondition(String(decoding:Array(source.utf8)[span],as:UTF8.self)==fenced[0].original)
+      precondition(fenced[0].original.contains("```math"),"code source mapping lost original fence")
+    } else {preconditionFailure("code source span missing")}
+    precondition(MarkdownRenderDocument.parse("```openmath\n2+2\n```\n").blocks.compactMap(\.code).first?.isOpenMath==true)
     precondition(MarkdownRenderDocument.parse("```\n# hidden\n```\n\n## **图形** 与 $x$\n正文\n# second").firstOutlineHeading=="图形 与 $x$")
     precondition(MarkdownRenderDocument.parse("### not a group\nplain").firstOutlineHeading==nil)
     precondition(!actual.fallback)

@@ -1,50 +1,6 @@
 import AppKit
 import SwiftUI
 
-struct MarkdownRenderTable:Sendable {
-  let id:Int,source:String,sourceDigest:String
-  let rows:[[[MarkdownRenderRun]]]
-  var columnCount:Int {rows.map(\.count).max() ?? 0}
-  var tsv:String {rows.map{$0.map{cell in cell.map{run in switch run.content {case .text(let value):value.trimmingCharacters(in:.newlines);case .math(_,let original,_):original}}.joined()}.joined(separator:"\t")}.joined(separator:"\n")}
-  func cell(_ row:Int,_ column:Int)->MarkdownRenderDocument {
-    let runs=row<rows.count && column<rows[row].count ? rows[row][column]:[]
-    return .init(source:source,runs:runs,fallback:false,projectionID:"table-\(id)/\(row)/\(column)",sourceDigest:sourceDigest)
-  }
-}
-struct MarkdownRenderSection:Identifiable,Sendable {
-  let id:String,text:MarkdownRenderDocument?,table:MarkdownRenderTable?
-}
-extension MarkdownRenderDocument {
-  var sections:[MarkdownRenderSection] {
-    var result:[MarkdownRenderSection]=[],prose:[MarkdownRenderRun]=[],tables:[Int:[[[MarkdownRenderRun]]]]=[:],current:Int?
-    func proseSection(_ runs:[MarkdownRenderRun],_ index:Int)->MarkdownRenderSection {
-      .init(id:"text-\(index)",text:.init(source:source,runs:runs,fallback:fallback,projectionID:"text-\(index)",sourceDigest:sourceDigest),table:nil)
-    }
-    for run in runs {
-      if let cell=run.style.table {
-        if current != cell.id {
-          if !prose.isEmpty {result.append(proseSection(prose,result.count));prose=[]}
-          if let current,let rows=tables[current] {result.append(.init(id:"table-\(current)",text:nil,table:.init(id:current,source:source,sourceDigest:sourceDigest,rows:rows)))}
-          current=cell.id
-        }
-        var rows=tables[cell.id] ?? []
-        while rows.count<=cell.row {rows.append([])}
-        while rows[cell.row].count<=cell.column {rows[cell.row].append([])}
-        var style=run.style;style.table=nil
-        if !(run.source==nil && {if case .text("\n")=run.content {return true};return false}()) {
-          rows[cell.row][cell.column].append(.init(content:run.content,style:style,source:run.source))
-        }
-        tables[cell.id]=rows
-      } else {
-        if let previous=current,let rows=tables[previous] {result.append(.init(id:"table-\(previous)",text:nil,table:.init(id:previous,source:source,sourceDigest:sourceDigest,rows:rows)));current=nil}
-        prose.append(run)
-      }
-    }
-    if let current,let rows=tables[current] {result.append(.init(id:"table-\(current)",text:nil,table:.init(id:current,source:source,sourceDigest:sourceDigest,rows:rows)))}
-    if !prose.isEmpty {result.append(proseSection(prose,result.count))}
-    return result
-  }
-}
 /// Tables use their own native table surface. NSTextTable would force the surrounding macOS
 /// text view into TextKit 1 and invalidate both formula providers and TextKit 2 height metrics.
 struct NativeMarkdownTableView:View {

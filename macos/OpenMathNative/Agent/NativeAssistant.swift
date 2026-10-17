@@ -23,6 +23,12 @@ import SwiftUI
   var savedState:(@MainActor ()async throws->Bool)?
   var outcomeReady:(@MainActor (TurnOutcome)async throws->Void)?
   var undoOutcome:(@MainActor (String)async throws->Void)?
+  var insertCode:(@MainActor (String,String)async throws->Void)?
+  func insertCodeBlock(_ code:String,language:String) async {
+    guard !busy,let insertCode else {return}
+    do {try await insertCode(code,language);status="已插入数学单元格，尚未运行"}
+    catch {status="未插入代码，原文已保留；请核对源码或当前笔记本状态。"}
+  }
   private let host:NativeHostClient,storage:StorageService,agent:AgentSessionService
   private let settings:AssistantSettingsStore?
   private var configuration:AssistantConfiguration?

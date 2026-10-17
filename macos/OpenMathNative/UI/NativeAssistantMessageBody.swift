@@ -4,13 +4,14 @@ import SwiftUI
 struct NativeAssistantMessageBody:View {
   let message:AssistantMessage
   var streaming=false
+  var onInsertCode:((String,String)->Void)?=nil
   var body:some View {
     VStack(alignment:.leading,spacing:4) {
       Text(message.role=="user" ? "你":"助手").font(.caption).foregroundStyle(.secondary)
       ForEach(message.parts) {part in
         switch part.value {
         case .text(let text):
-          if message.role=="assistant",!streaming {NativeMarkdownView(source:text,fontSize:14)}
+          if message.role=="assistant",!streaming {NativeMarkdownView(source:text,fontSize:14,onInsertCode:onInsertCode)}
           else {Text(text).textSelection(.enabled).frame(maxWidth:.infinity,alignment:.leading)}
         case .actions(let actions):
           ForEach(AgentActionGroup.rows(actions)) {group in

@@ -114,6 +114,7 @@ struct NativeMarkdownView:View {
   var fontSize:CGFloat=16
   var paper=false
   var onDoubleClick:(()->Void)?=nil
+  var onInsertCode:((String,String)->Void)?=nil
   @State private var parsed:MarkdownRenderDocument?
   @Environment(\.colorScheme) private var scheme
   var body:some View {
@@ -121,9 +122,10 @@ struct NativeMarkdownView:View {
       if let parsed,parsed.source.utf8.elementsEqual(source.utf8) {
         VStack(alignment:.leading,spacing:8) {
           if parsed.fallback {Text("内容较长或嵌套过深，显示原文。").font(.caption).foregroundStyle(.secondary)}
-          ForEach(parsed.sections) {section in
+          ForEach(parsed.blocks) {section in
             if let text=section.text {MarkdownNativeSurface(document:text,dark:scheme == .dark,fontSize:fontSize,paper:paper,onDoubleClick:onDoubleClick)}
             if let table=section.table {NativeMarkdownTableView(table:table,dark:scheme == .dark,fontSize:fontSize)}
+            if let code=section.code {NativeCodeBlockView(block:code,onInsert:onInsertCode)}
           }
         }
       } else {Text(source).font(paper ? Theme.Font.paperBody:.system(size:fontSize)).textSelection(.enabled).frame(maxWidth:.infinity,alignment:.leading)}

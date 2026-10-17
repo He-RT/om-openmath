@@ -49,6 +49,10 @@ actor NativeAppStorage {
     let actualAgent=AgentSessionService(host:host,storage:storage,document:drafts.confirmed.document_id,generation:drafts.documentGeneration,sourcePort:source,kernelPort:actualRuntime.kernel)
     self.agent=actualAgent
     self.assistant=NativeAssistant(host:host,storage:storage,agent:actualAgent)
+    assistant.insertCode={ [weak self] code,language in
+      guard let self,!closed else {throw StorageError.closing}
+      try await insertCell(.math,after:runtime.selectedCell,source:code,dialect:["wolfram","mathematica"].contains(language.lowercased()) ? .wolfram:.modern)
+    }
     undo.changed={ [weak self] in self?.sourceDidChange() }
     assistant.prepare={ [weak self] in
       guard let self,!closed else {throw StorageError.closing}
@@ -202,13 +206,13 @@ actor NativeAppStorage {
     if !drafts.confirmed.file.cells.contains(where:{drafts.overlay($0.id)?.requiresReview==true}) {recoveryMessages.removeAll{$0=="已恢复待确认草稿；请先查看并选择使用内容。"}}
     document.noteEdit()
   }
-  func insertCell(_ kind:NativeCellKind,after:String?) async throws {
+  func insertCell(_ kind:NativeCellKind,after:String?,source code:String="",dialect:Dialect = .modern) async throws {
     guard !closed else {throw SaveError.closing}
     try await flushSource()
     let key=UUID().uuidString.lowercased()
     let selector=after.map {PreviewCellSelector.preview_existing_cell(.init(cell_id:$0))}
     let preview=try await source.preview(.preview_patch_input(.init(kind:.patch,operations:[
-      .preview_insert_cell(.init(type:.insert_cell,client_key:key,after:.init(selector),kind:kind == .math ? .math : .text,dialect:.modern,source:""))
+      .preview_insert_cell(.init(type:.insert_cell,client_key:key,after:.init(selector),kind:kind == .math ? .math : .text,dialect:dialect,source:code))
     ])))
     guard preview.valid,let reference=preview.preview_ref.value,let cell=preview.assigned_cell_ids[key] else {throw CommitPortError.sourceConflict}
     let actual=try await source.apply(reference)

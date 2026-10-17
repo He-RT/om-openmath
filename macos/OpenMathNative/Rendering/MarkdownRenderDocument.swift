@@ -12,6 +12,31 @@ struct MarkdownTextStyle:Sendable {
   var heading=0,indent=0,quote=0
   var link:String?
   var table:MarkdownTableCell?
+  var blockID:Int?
+  var blockKind:MarkdownRenderBlock.Kind?
+  var fencedCode:MarkdownCodeBlock?
+}
+struct MarkdownCodeBlock:Sendable {
+  let language:String,code:String,sourceRange:Range<Int>?
+  let original:String
+  var isOpenMath:Bool {["openmath","om","modern","wolfram","mathematica"].contains(language.lowercased())}
+}
+struct MarkdownRenderTable:Sendable {
+  let id:Int,source:String,sourceDigest:String
+  let rows:[[[MarkdownRenderRun]]]
+  var columnCount:Int {rows.map(\.count).max() ?? 0}
+  var tsv:String {rows.map{$0.map{cell in cell.map{run in switch run.content {case .text(let value):value.trimmingCharacters(in:.newlines);case .math(_,let original,_):original}}.joined()}.joined(separator:"\t")}.joined(separator:"\n")}
+  func cell(_ row:Int,_ column:Int)->MarkdownRenderDocument {
+    let runs=row<rows.count && column<rows[row].count ? rows[row][column]:[]
+    return .init(source:source,runs:runs,fallback:false,projectionID:"table-\(id)/\(row)/\(column)",sourceDigest:sourceDigest)
+  }
+}
+struct MarkdownRenderBlock:Identifiable,Sendable {
+  enum Kind:Sendable {case paragraph,heading,list,table,codeBlock,mathBlock}
+  let id:String,kind:Kind
+  var text:MarkdownRenderDocument?=nil
+  var table:MarkdownRenderTable?=nil
+  var code:MarkdownCodeBlock?=nil
 }
 struct MarkdownTableCell:Sendable {let id:Int,row:Int,column:Int,columns:Int;let header:Bool}
 struct MarkdownRenderRun:Sendable {
@@ -22,6 +47,44 @@ struct MarkdownRenderDocument:Sendable {
   let source:String,runs:[MarkdownRenderRun],fallback:Bool
   var projectionID=""
   var sourceDigest=""
+  var blocks:[MarkdownRenderBlock] {
+    var result:[MarkdownRenderBlock]=[],prose:[MarkdownRenderRun]=[]
+    var currentBlock:Int?,tableID:Int?,rows:[[[MarkdownRenderRun]]]=[]
+    func flushText() {
+      guard !prose.isEmpty else {return}
+      var kind=prose.first?.style.blockKind ?? .paragraph
+      if prose.contains(where:{if case .math(_,_,true)=$0.content {return true};return false}) {kind = .mathBlock}
+      let id="text-\(result.count)"
+      result.append(.init(id:id,kind:kind,text:.init(source:source,runs:prose,fallback:fallback,projectionID:id,sourceDigest:sourceDigest)))
+      prose=[];currentBlock=nil
+    }
+    func flushTable() {
+      guard let tableID else {return}
+      result.append(.init(id:"table-\(tableID)",kind:.table,table:.init(id:tableID,source:source,sourceDigest:sourceDigest,rows:rows)))
+      rows=[]
+    }
+    for run in runs {
+      if let code=run.style.fencedCode {
+        flushText();flushTable();tableID=nil
+        result.append(.init(id:"code-\(result.count)",kind:.codeBlock,code:code));continue
+      }
+      if let cell=run.style.table {
+        flushText()
+        if tableID != cell.id {flushTable();tableID=cell.id}
+        while rows.count<=cell.row {rows.append([])}
+        while rows[cell.row].count<=cell.column {rows[cell.row].append([])}
+        if !(run.source==nil && {if case .text("\n")=run.content {return true};return false}()) {
+          var style=run.style;style.table=nil
+          rows[cell.row][cell.column].append(.init(content:run.content,style:style,source:run.source))
+        }
+      } else {
+        flushTable();tableID=nil
+        if !prose.isEmpty,currentBlock != run.style.blockID {flushText()}
+        currentBlock=run.style.blockID;prose.append(run)
+      }
+    }
+    flushText();flushTable();return result
+  }
   /// Use parsed heading runs, so fenced code, escaped hashes and inline markup stay correct.
   var firstOutlineHeading:String? {
     var title="",level:Int?
@@ -65,7 +128,7 @@ private struct MarkdownDocumentParser {
   private var replacements:[MarkdownReplacement]=[]
   private var masked="",maskedLines:[Int]=[],tokenPrefix=""
   private var runs:[MarkdownRenderRun]=[]
-  private var nodes=0,tableID=0,exceeded=false
+  private var nodes=0,tableID=0,blockID=0,exceeded=false
   init(source:String) {
     self.source=source;bytes=Array(source.utf8);lineStarts=[0]
     for (i,byte) in bytes.enumerated() where byte==10 {lineStarts.append(i+1)}
@@ -208,6 +271,10 @@ private struct MarkdownDocumentParser {
   private mutating func renderNode(_ node:any Markup,style:MarkdownTextStyle,depth:Int) {
     nodes+=1;guard depth<128,nodes<=20000 else {exceeded=true;return}
     var next=style
+    if next.blockID==nil,node is Paragraph || node is Heading || node is UnorderedList || node is OrderedList || node is BlockQuote || node is HTMLBlock || node is ThematicBreak {
+      blockID+=1;next.blockID=blockID
+      next.blockKind=node is Heading ? .heading:node is UnorderedList || node is OrderedList ? .list:.paragraph
+    }
     if let heading=node as? Heading {next.heading=heading.level;next.bold=true}
     if node is Strong {next.bold=true}
     if node is Emphasis {next.italic=true}
@@ -216,7 +283,14 @@ private struct MarkdownDocumentParser {
     if let link=node as? Markdown.Link {next.link=link.destination}
     if let value=node as? Markdown.Text {leaf(value.string,node:node,style:next);return}
     if let value=node as? InlineCode {next.code=true;text(value.code,style:next,source:originalRange(node));return}
-    if let value=node as? CodeBlock {next.code=true;text(value.code,style:next,source:originalRange(node));text("\n",style:next,source:nil);return}
+    if let value=node as? CodeBlock {
+      next.code=true
+      let span=originalRange(node)
+      let original=span.map{String(decoding:bytes[$0],as:UTF8.self)} ?? value.code
+      next.fencedCode = .init(language:value.language ?? "",code:value.code,sourceRange:span,original:original)
+      // Even an empty fenced block remains one structural block.
+      runs.append(.init(content:.text(value.code),style:next,source:span));return
+    }
     if let value=node as? InlineHTML {next.code=true;text(value.rawHTML,style:next,source:originalRange(node));return}
     if let value=node as? HTMLBlock {next.code=true;text(value.rawHTML+"\n",style:next,source:originalRange(node));return}
     if node is SoftBreak {text("\n",style:next,source:originalRange(node));return}

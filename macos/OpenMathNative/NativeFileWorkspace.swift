@@ -348,7 +348,12 @@ private struct NativeNotebookTextCell:View {
   var body:some View {
     VStack(alignment:.leading,spacing:12) {
       if reading {
-        NativeMarkdownView(source:source,fontSize:16.5,paper:true,onDoubleClick:{session.beginTextEditing(cell.id)})
+        NativeMarkdownView(source:source,fontSize:16.5,paper:true,onDoubleClick:{session.beginTextEditing(cell.id)},onInsertCode:{code,language in
+          Task {
+            do {try await session.insertCell(.math,after:cell.id,source:code,dialect:["wolfram","mathematica"].contains(language.lowercased()) ? .wolfram:.modern);message=nil}
+            catch {message="未插入代码，原文已保留；请核对源码或当前笔记本状态。"}
+          }
+        })
           .frame(maxWidth:640,alignment:.leading)
           .contextMenu {
             Button("编辑") {session.beginTextEditing(cell.id)}

@@ -4,25 +4,25 @@ import SwiftUI
 struct NativeStepsView:View {
   @ObservedObject var model:NativeStepsModel
   var body:some View {
-    VStack(alignment:.leading,spacing:16) {
-      if !model.trail.isEmpty {
-        ScrollView(.horizontal) {HStack(spacing:6) {
-          ForEach(Array(model.trail.enumerated()),id:\.offset) {index,route in
-            Button(route.label) {Task {await model.back(to:index)}}.disabled(model.busy)
-            Image(systemName:"chevron.right").font(.caption2).foregroundStyle(.tertiary)
-          }
-          Text(model.route.label).foregroundStyle(.secondary)
-        }.font(.caption)}.scrollIndicators(.hidden)
-      }
+    VStack(alignment:.leading,spacing:12) {
       if let page=model.page {
-        if !page.recorded {Text("本次计算没有记录步骤。").foregroundStyle(.secondary)}
+        if !page.recorded {Text("这个结果没有记录步骤").foregroundStyle(.secondary)}
         else if page.total==0 {Text("记录中没有步骤。").foregroundStyle(.secondary)}
         else {
           ForEach(page.entries,id:\.step.id) {entry in
-            NativeStepDetail(entry:entry,identity:model.original.result_ref) {
-              Task {await model.children(entry)}
-            }.disabled(model.busy)
             Divider()
+            NativeStepDetail(entry:entry,identity:model.original.result_ref)
+            if entry.child_count>0,entry.path.count<=128 {
+              DisclosureGroup(isExpanded:Binding(get:{model.expandedPaths.contains(entry.path)},set:{expanded in
+                if expanded {model.expandedPaths.insert(entry.path)} else {model.expandedPaths.remove(entry.path)}
+              })) {
+                if model.expandedPaths.contains(entry.path) {
+                  NativeStepsView(model:model.childModel(for:entry)).padding(.leading,18).padding(.top,8)
+                }
+              } label: {
+                Text("\(entry.child_count) 个子步骤").font(.system(size:12)).foregroundStyle(.secondary)
+              }.accessibilityIdentifier("step-children-"+entry.path.map(String.init).joined(separator:"-"))
+            }
           }
           if page.total>NativeStepsModel.pageSize {
             HStack {
@@ -47,17 +47,22 @@ struct NativeStepsView:View {
 }
 private struct NativeStepDetail:View {
   let entry:NativeStepEntry,identity:String
-  let showChildren:()->Void
   private static let textFields:Set<String>=["verification","method","reason","formula","sign","op","order","signs","label","symbol","tag","text","level"]
   var body:some View {
     VStack(alignment:.leading,spacing:10) {
       HStack(alignment:.firstTextBaseline,spacing:10) {
-        Text(entry.step.id).font(.caption.monospacedDigit()).foregroundStyle(.secondary)
-        Text(Self.titles[entry.step.rule_id] ?? entry.step.rule_id).font(.headline)
+        Text(entry.path.map{String($0+1)}.joined(separator:".")).font(.system(size:12).monospacedDigit()).foregroundStyle(.secondary)
+        Text(Self.titles[entry.step.rule_id] ?? entry.step.rule_id).font(.system(size:12.5,weight:.semibold))
       }
-      formulas(entry.step.before_latex,label:"变换前",key:"before")
-      if !entry.step.before_latex.isEmpty && !entry.step.after_latex.isEmpty {Image(systemName:"arrow.down").font(.caption).foregroundStyle(.secondary).accessibilityLabel("变为")}
-      formulas(entry.step.after_latex,label:"变换后",key:"after")
+      if !entry.step.after_latex.isEmpty {
+        formulas(entry.step.after_latex,label:"",key:"after")
+        if !entry.step.before_latex.isEmpty,entry.step.before_latex != entry.step.after_latex {
+          DisclosureGroup("变换前") {formulas(entry.step.before_latex,label:"",key:"before")}.font(.caption).foregroundStyle(.secondary)
+        }
+      } else {formulas(entry.step.before_latex,label:"",key:"before")}
+      if let explanation=entry.step.params["reason"] ?? entry.step.params["text"],!explanation.isEmpty {
+        Text(explanation).font(.system(size:12)).foregroundStyle(.secondary).textSelection(.enabled)
+      }
       if !entry.step.params.isEmpty {
         DisclosureGroup("参数与条件") {
           VStack(alignment:.leading,spacing:10) {
@@ -66,23 +71,20 @@ private struct NativeStepDetail:View {
                 Text(Self.parameterLabels[key] ?? key).font(.caption).foregroundStyle(.secondary)
                 if let value=entry.step.params[key] {
                   if Self.textFields.contains(key) {Text(value).font(.callout).textSelection(.enabled)}
-                  else {NativeMathView(request:.init(identity:identity+entry.step.id+"/param/"+key,originalLatex:value,wolfram:"",modern:nil))}
+                  else {NativeMathView(request:.init(identity:identity+entry.step.id+"/param/"+key,originalLatex:value,wolfram:"",modern:nil,fontSize:15),showsControls:false)}
                 }
               }
             }
           }.padding(.top,6)
         }.font(.caption)
       }
-      if entry.child_count>0 {
-        Button("查看 \(entry.child_count) 个子步骤",systemImage:"list.bullet.indent") {showChildren()}.buttonStyle(.link)
-      }
     }.frame(maxWidth:.infinity,alignment:.leading).padding(.vertical,4)
   }
   @ViewBuilder private func formulas(_ values:[String],label:String,key:String)->some View {
     if !values.isEmpty {
-      Text(label).font(.caption).foregroundStyle(.secondary)
+      if !label.isEmpty {Text(label).font(.caption).foregroundStyle(.secondary)}
       ForEach(Array(values.enumerated()),id:\.offset) {index,latex in
-        NativeMathView(request:.init(identity:identity+entry.step.id+"/"+key+"/\(index)",originalLatex:latex,wolfram:"",modern:nil))
+        NativeMathView(request:.init(identity:identity+entry.step.id+"/"+key+"/\(index)",originalLatex:latex,wolfram:"",modern:nil,fontSize:15),showsControls:false)
       }
     }
   }

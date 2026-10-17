@@ -99,6 +99,7 @@ struct NativeResultView:View {
   var cellState:CellPresentationState?=nil
   var durationMs:Double?=nil
   var hasSourceDiagnostics=false
+  var onShowSteps:(()->Void)?=nil
   @State private var showingSteps=false
   @State private var showingOriginal=false
   @State private var showingInput=false
@@ -198,7 +199,9 @@ struct NativeResultView:View {
   }
   private var actions:some View {
     HStack(spacing:12) {
-      if presenter.summary?.statement.value?.steps_recorded==true {Button("步骤") {showingSteps=true}.help("查看实际记录的推导步骤")}
+      if presenter.summary?.statement.value?.steps_recorded==true {Button("步骤") {
+        if let onShowSteps {onShowSteps()} else {showingSteps=true}
+      }.help("查看实际记录的推导步骤")}
       if presenter.hasGeometry {Button("绘图") {showingPlot=true}.help("打开当前结果的图形视图")}
       Menu("复制") {
         Button("源码（Modern）") {copySource(.modern)}

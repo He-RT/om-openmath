@@ -9,7 +9,7 @@ cargo build -p om-apple-ffi --release --locked
 swiftc -swift-version 6 -parse-as-library -target arm64-apple-macos27.0 -I macos/Headers \
   -L target/release -lom_apple_ffi macos/OpenMathNative/Generated/HostContractSupport.swift \
   macos/OpenMathNative/Generated/Contracts/*.swift macos/OpenMathNative/Storage/*.swift \
-  macos/OpenMathNative/NativeHostClient.swift macos/OpenMathNative/AppEventRouter.swift \
+  macos/OpenMathNative/NativeHostClient.swift macos/OpenMathNative/Kernel/NotebookAnalysis.swift macos/OpenMathNative/Kernel/NotebookDefinitions.swift macos/OpenMathNative/AppEventRouter.swift \
   macos/OpenMathNative/SourceIndexMap.swift macos/OpenMathNative/DraftStore.swift macos/OpenMathNative/Editor/DraftTextViewAdapter.swift \
   macos/OpenMathNativeTests/CommitFixtures/main.swift -o target/macos-storage-tests/commit-fixtures
 attempt_root=$(mktemp -d "$root/target/macos-storage-tests/commit-XXXXXX")

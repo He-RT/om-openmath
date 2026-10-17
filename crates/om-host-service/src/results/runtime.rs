@@ -21,6 +21,12 @@ impl Clock for HostClock {
     }
 }
 enum Message {
+    Definitions {
+        input: crate::document::analysis::SourceAnalysisInput,
+        accepted: Option<Box<AcceptedKernelState>>,
+        general: Box<om_kernel::config::GeneralConfig>,
+        reply: mpsc::SyncSender<Result<super::definitions::DefinitionsReply, String>>,
+    },
     RunOutputs {
         id: String,
         receipts: Vec<NativeKernelReceipt>,
@@ -179,8 +185,30 @@ impl ResultRuntime {
             .name("openmath-result-worker".into())
             .spawn(move || {
                 let clock: Arc<dyn Clock> = Arc::new(HostClock(Instant::now()));
+                let mut definitions = super::definitions::DefinitionsCache::default();
                 while let Ok(message) = receiver.recv() {
                     match message {
+                        Message::Definitions {
+                            input,
+                            accepted,
+                            general,
+                            reply,
+                        } => {
+                            let context = Interrupt {
+                                clock: Some(clock.clone()),
+                                deadline_ms: Some(clock.now_ms() + 5000.),
+                                ..Interrupt::default()
+                            };
+                            let result =
+                                std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
+                                    if closed.load(Ordering::Acquire) {
+                                        return Err("HOST_CLOSING".into());
+                                    }
+                                    definitions.list(input, accepted.as_deref(), &general, &context)
+                                }))
+                                .unwrap_or_else(|_| Err("RESULT_WORKER_PANIC".into()));
+                            let _ = reply.send(result);
+                        }
                         Message::ScratchReady {
                             id,
                             scope,
@@ -350,6 +378,31 @@ impl ResultRuntime {
             closing,
             owner: Mutex::new(Some(owner)),
         })
+    }
+    /// Queue a compact current-checkpoint projection on the existing result owner.
+    pub fn list_definitions(
+        &self,
+        input: crate::document::analysis::SourceAnalysisInput,
+        accepted: Option<AcceptedKernelState>,
+        general: om_kernel::config::GeneralConfig,
+    ) -> Result<mpsc::Receiver<Result<super::definitions::DefinitionsReply, String>>, String> {
+        if self.closing.load(Ordering::Acquire) {
+            return Err("HOST_CLOSING".into());
+        }
+        let (reply, receiver) = mpsc::sync_channel(1);
+        self.sender
+            .lock()
+            .map_err(|_| "INTERNAL_ERROR")?
+            .as_ref()
+            .ok_or("HOST_CLOSING")?
+            .try_send(Message::Definitions {
+                input,
+                accepted: accepted.map(Box::new),
+                general: Box::new(general),
+                reply,
+            })
+            .map_err(|_| "RESULT_QUEUE_BUSY")?;
+        Ok(receiver)
     }
     /// Retain an actual just-accepted snapshot on the independent worker; no source replay/IO here.
     pub fn accepted(&self, accepted: AcceptedKernelState) -> Result<(), String> {

@@ -55,15 +55,15 @@
 | [ ] [R4.2.05](PRE_ALPHA_4.md#task-r4.2.05) | 本地snippets、希腊快捷、Fix和缩进 | planned | — | — |
 | [ ] [R4.2.06](PRE_ALPHA_4.md#task-r4.2.06) | 长笔记本布局、复用与scroll anchors | planned | — | — |
 | [x] [R4.2.07](PRE_ALPHA_4.md#task-r4.2.07) | SwiftMath原生公式和原式fallback | completed | [实际57回执/字体/原生附件](../acceptance/pre-alpha.4/development/r42/native-math.json) | 21355b3 |
-| [ ] [R4.2.08](PRE_ALPHA_4.md#task-r4.2.08) | Markdown AST、数学扫描与连续原生流 | in_progress | D067：原生阅读/表格/连续选取与源码复制；完整流式稳定块仍后续 | D067 |
+| [ ] [R4.2.08](PRE_ALPHA_4.md#task-r4.2.08) | Markdown AST、数学扫描与连续原生流 | in_progress | D067；本版阅读和代码块由 pre-alpha.5 C6/C7 实现，流式稳定块继续 D1；历史状态保留 | D067 |
 | [x] [R4.2.09](PRE_ALPHA_4.md#task-r4.2.09) | 结果状态、解条件Root与数值投影 | completed | [实际12型/引用/数值](../acceptance/pre-alpha.4/development/r42/native-results.json) | 40cc1cb |
 | [x] [R4.2.10](PRE_ALPHA_4.md#task-r4.2.10) | 矩阵、表格、记录与科学诊断 | completed | [真实21输入/分页/原式/科学来源](../acceptance/pre-alpha.4/development/r42/native-values.json) | 本批 |
-| [ ] [R4.2.11](PRE_ALPHA_4.md#task-r4.2.11) | 真实步骤、变量与独立讲解入口 | in_progress | D068：实际步骤公式/参数/子树/分页；变量列表与独立讲解仍后续 | D068 |
-| [ ] [R4.2.12](PRE_ALPHA_4.md#task-r4.2.12) | CoreGraphics二维和实际采样控制 | in_progress | D068：原坐标/断点/样式/相机；主动重采样后续 | D068 |
-| [ ] [R4.2.13](PRE_ALPHA_4.md#task-r4.2.13) | Metal三维原生基础管线 | in_progress | D068–D069：原网格/实际drawable、完整应用回看和7936三角形相机约60Hz；完整范围仍后续 | D068–D069 |
+| [ ] [R4.2.11](PRE_ALPHA_4.md#task-r4.2.11) | 真实步骤、变量与独立讲解入口 | in_progress | D068；步骤/变量检查器由 pre-alpha.5 C9 实现，助手讲解仍按 D 阶段；历史状态保留 | D068 |
+| [ ] [R4.2.12](PRE_ALPHA_4.md#task-r4.2.12) | CoreGraphics二维和实际采样控制 | in_progress | D068；本版图形外观由 pre-alpha.5 C8 实现；主动重采样非本版任务，历史状态保留 | D068 |
+| [ ] [R4.2.13](PRE_ALPHA_4.md#task-r4.2.13) | Metal三维原生基础管线 | in_progress | D068–D069；本版场景外观/控制由 pre-alpha.5 C8 实现，7936 三角形相机实测 60.0006 fps；历史状态保留 | D068–D069 |
 | [ ] [R4.2.14](PRE_ALPHA_4.md#task-r4.2.14) | 参数探索、视窗保留和真实图形预览 | planned | — | — |
 | [ ] [R4.2.15](PRE_ALPHA_4.md#task-r4.2.15) | 原生菜单、命令、文件导出和复制 | planned | — | — |
-| [ ] [R4.2.16](PRE_ALPHA_4.md#task-r4.2.16) | 原生主题、可访问语义与初步组件审计 | planned | — | — |
+| [ ] [R4.2.16](PRE_ALPHA_4.md#task-r4.2.16) | 原生主题、可访问语义与初步组件审计 | planned | 本版主题与左轨语义由 pre-alpha.5 B1/C3 实现，完整审计留 G1；历史状态保留 | — |
 | [ ] [R4.2.17](PRE_ALPHA_4.md#task-r4.2.17) | 本地计算首启、欢迎恢复与助手空态 | planned | — | — |
 | [ ] [R4.2.18](PRE_ALPHA_4.md#task-r4.2.18) | 关于、手工更新、诊断与新数据管理 | planned | — | — |
 | [x] [R4.3.01](PRE_ALPHA_4.md#task-r4.3.01) | 规范Agent消息、任务与IPC身份 | completed | [真实source/CABI/私有进程与耐久ACK](../acceptance/pre-alpha.4/development/r43/agent-protocol-native.json)；357DTO、20Rust/3Node/实际SQLite恢复，合成helper无模型/工具执行 | 本批D045 |

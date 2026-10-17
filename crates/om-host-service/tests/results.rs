@@ -69,6 +69,18 @@ fn setup() -> (KernelWorker, AcceptanceContext, AcceptedKernelState) {
                     source: "[1/3,decimal(\"0.1\",precision:80),[\"中🙂\",4]]".into(),
                     dialect: Dialect::Modern,
                 },
+                NativeSourceCell {
+                    id: "broken".into(),
+                    kind: NativeCellKind::Math,
+                    source: "let broken = 2; solve(".into(),
+                    dialect: Dialect::Modern,
+                },
+                NativeSourceCell {
+                    id: "longdef".into(),
+                    kind: NativeCellKind::Math,
+                    source: format!("let label = \"{}\"", "中🙂".repeat(90)),
+                    dialect: Dialect::Modern,
+                },
             ],
         },
     )
@@ -147,6 +159,88 @@ fn scope(context: &AcceptanceContext, state: &AcceptedKernelState) -> ReferenceS
 }
 fn close(worker: &KernelWorker) {
     worker.begin_close().unwrap().unwrap().join().unwrap();
+}
+#[test]
+fn list_definitions_reads_accepted_values_dependencies_and_failed_declarations_without_evaluation()
+{
+    use om_host_service::{
+        document::analysis::SourceAnalysisInput, results::runtime::ResultRuntime,
+    };
+    let (worker, ctx, boot) = setup();
+    let a = run(&worker, &ctx, &boot, "a", "definitions-a");
+    let b = run(&worker, &ctx, &a, "b", "definitions-b");
+    let long = run(&worker, &ctx, &b, "longdef", "definitions-long");
+    let accepted = run(&worker, &ctx, &long, "broken", "definitions-broken");
+    assert_eq!(
+        accepted.receipt().producer.terminal_status,
+        NativeKernelTerminalStatus::Error
+    );
+    let runtime = ResultRuntime::new().unwrap();
+    let query = |file| SourceAnalysisInput {
+        document_id: ctx.source.document_id.clone(),
+        generation: s(1),
+        base_hash: ctx.source.snapshot_hash.clone(),
+        file,
+    };
+    let read = |file| {
+        runtime
+            .list_definitions(query(file), Some(accepted.clone()), ctx.general.clone())
+            .unwrap()
+            .recv_timeout(Duration::from_secs(10))
+            .unwrap()
+            .unwrap()
+    };
+    let hash = accepted.state().hash().to_owned();
+    let first = read(ctx.source.file.clone());
+    let item = |name: &str| first.items.iter().find(|row| row.name == name).unwrap();
+    assert_eq!(item("a").value.as_deref(), Some("2"));
+    assert_eq!(item("b").value.as_deref(), Some("3"));
+    assert_eq!(item("b").cell_id, "b");
+    assert!(!item("a").stale && !item("b").stale);
+    assert!(item("broken").error && item("broken").value.is_none());
+    let label = item("label").value.as_ref().unwrap();
+    assert_eq!(label.chars().count(), 120);
+    assert!(label.ends_with('…'));
+    let mut edited = ctx.source.file.clone();
+    edited.cells[0].source = "let a=5".into();
+    let changed = read(edited);
+    for name in ["a", "b"] {
+        let row = changed.items.iter().find(|r| r.name == name).unwrap();
+        assert!(row.stale, "dependent definition {name} was not stale");
+    }
+    assert_eq!(
+        changed
+            .items
+            .iter()
+            .find(|r| r.name == "b")
+            .unwrap()
+            .value
+            .as_deref(),
+        Some("3")
+    );
+    assert!(
+        !changed
+            .items
+            .iter()
+            .find(|r| r.name == "label")
+            .unwrap()
+            .stale
+    );
+    assert!(
+        !read(ctx.source.file.clone())
+            .items
+            .iter()
+            .find(|r| r.name == "a")
+            .unwrap()
+            .stale
+    );
+    assert_eq!(accepted.state().hash(), hash);
+    assert_eq!(
+        first.kernel_state_revision,
+        accepted.receipt().kernel_state_revision
+    );
+    runtime.take_thread().unwrap().join().unwrap();
+    close(&worker);
 }
 #[test]
 fn expired_and_restarted_result_tokens_require_fresh_grants_for_the_same_durable_result() {

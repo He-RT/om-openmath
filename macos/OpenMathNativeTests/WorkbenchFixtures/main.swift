@@ -17,6 +17,10 @@ import SwiftUI
     let app=NSApplication.shared;app.setActivationPolicy(.accessory)
     let root=URL(fileURLWithPath:CommandLine.arguments[1],isDirectory:true)
     try FileManager.default.createDirectory(at:root,withIntermediateDirectories:true)
+    if CommandLine.arguments.contains("--inspector") {
+      try await inspector(root:root)
+      return
+    }
     if CommandLine.arguments.contains("--text-reading") {
       try await textReading(root:root)
       return
@@ -126,6 +130,75 @@ import SwiftUI
     print("Actual native window 1042/861/640, same notebook view/editor/selection, physical kernel receipts 5/6, live CAS resize/edit/explicit stop and draft retention passed")
   }
 
+  @MainActor static func inspector(root:URL) async throws {
+    let definitions=(0..<40).map{"let v\($0)=\($0);"}.joined(separator:"\n")
+    let file=NativeSourceFile(version:1,title:"检查器验收",cells:[
+      .init(id:"definitions",kind:.math,source:definitions,dialect:.modern),
+      .init(id:"dependent",kind:.math,source:"let b=v0+1",dialect:.modern),
+      .init(id:"solve",kind:.math,source:"solve(x^4 - 5*x^2 + 4 = 0, x)",dialect:.modern),
+      .init(id:"independent",kind:.math,source:"let independent=7",dialect:.modern),
+      .init(id:"broken",kind:.math,source:"let broken=2; solve(",dialect:.modern)])
+    let url=root.appendingPathComponent("inspector.omnb");try JSONEncoder().encode(file).write(to:url)
+    let services=NativeAppStorage(paths:.init(root:root.appendingPathComponent("storage"),channel:.preview))
+    let workspace=NativeFileWorkspace(storage:services)
+    guard await workspace.open(url),let session=workspace.session else {fatalError("inspector notebook missing")}
+    let window=NSWindow(contentRect:NSRect(x:0,y:0,width:1400,height:780),styleMask:[.titled,.closable,.resizable],backing:.buffered,defer:false)
+    let host=NSHostingView(rootView:WorkspaceView(workspace:workspace,session:session));window.contentView=host
+    session.runtime.navigation.inspectorVisible=true
+    window.makeKeyAndOrderFront(nil);window.displayIfNeeded()
+    for cell in file.cells {session.runtime.run(cell.id);try await until {session.runtime.operation==nil}}
+    let before=try await session.runtime.kernel.state(),sourceBefore=session.drafts.confirmed.snapshot_hash
+    session.runtime.navigation.inspector = .variables
+    await session.runtime.refreshDefinitions(session.drafts)
+    try await until {session.runtime.definitions.count==43}
+    require(session.runtime.definitions.first{$0.name=="b"}?.value=="1")
+    require(session.runtime.definitions.first{$0.name=="broken"}?.error==true)
+    host.layoutSubtreeIfNeeded()
+    guard let split=descendants(host).compactMap({$0 as? WorkbenchSplitView}).first else {fatalError("split missing")}
+    try await until {descendants(split.inspector).compactMap{$0 as? NSTableView}.contains{$0.numberOfRows==43}}
+    let table=descendants(split.inspector).compactMap{$0 as? NSTableView}.first{$0.numberOfRows==43}!
+    table.scrollRowToVisible(30)
+    let tableScroll=table.enclosingScrollView!,tablePosition=table.enclosingScrollView!.contentView.bounds.origin
+    require(tablePosition.y>0,"variables table did not scroll")
+    session.runtime.navigate(to:"solve");session.runtime.navigation.inspector = .steps
+    let binding=session.runtime.results["solve"]!.bindings.last!,presenter=session.runtime.presenter(for:binding),model=presenter.stepsModel()
+    await model.load();await presenter.readOriginalInput(cellSource:true)
+    try await until {presenter.originalCellSource != nil}
+    require(presenter.originalCellSource==file.cells[2].source,"inspector header does not contain the original cell source")
+    if let branch=model.page?.entries.first(where:{$0.child_count>0}) {
+      model.expandedPaths.insert(branch.path);let child=model.childModel(for:branch);await child.load()
+      require(child.error==nil && child.page?.parent_path==branch.path)
+    }
+    try await until {descendants(split.inspector).compactMap{$0 as? NSScrollView}.contains {scroll in
+      scroll !== tableScroll && scroll.bounds.height>400 && (scroll.documentView?.bounds.height ?? 0)>scroll.contentSize.height+50
+    }}
+    let stepsScroll=descendants(split.inspector).compactMap{$0 as? NSScrollView}.first {scroll in
+      scroll !== tableScroll && scroll.bounds.height>400 && (scroll.documentView?.bounds.height ?? 0)>scroll.contentSize.height+50
+    }!
+    stepsScroll.contentView.scroll(to:NSPoint(x:0,y:90));stepsScroll.reflectScrolledClipView(stepsScroll.contentView)
+    let stepPosition=stepsScroll.contentView.bounds.origin
+    session.assistant.draft="切换分段后保留的草稿"
+    for destination in [WorkbenchDestination.assistant,.variables,.steps,.variables] {
+      session.runtime.navigation.inspector=destination;host.layoutSubtreeIfNeeded();try await Task.sleep(for:.milliseconds(80))
+      require(descendants(split.inspector).contains{$0===table} && tableScroll.contentView.bounds.origin==tablePosition,"variables scroll reset on tab change")
+      require(descendants(split.inspector).contains{$0===stepsScroll} && stepsScroll.contentView.bounds.origin==stepPosition,"steps scroll reset on tab change")
+      require(session.assistant.draft=="切换分段后保留的草稿")
+    }
+    require(session.drafts.confirmed.snapshot_hash==sourceBefore,"inspector reads committed editor source")
+    let editor=try session.editor("definitions").textView
+    let edited=definitions.replacingOccurrences(of:"let v0=0;",with:"let v0=9;")
+    editor.selectAll(nil);editor.insertText(edited,replacementRange:editor.selectedRange())
+    require(session.drafts.overlay("definitions")?.source==edited,"native edit did not reach the draft owner")
+    await session.runtime.analyzeSourceNow(session.drafts);await session.runtime.refreshDefinitions(session.drafts)
+    try await until {session.runtime.definitions.first{$0.name=="b"}?.stale==true || session.runtime.definitionsError != nil}
+    require(session.runtime.definitions.first{$0.name=="b"}?.stale==true,"dependent definition did not become stale: \(session.runtime.definitionsError ?? "no query error")")
+    require(session.runtime.definitions.first{$0.name=="b"}?.value=="1")
+    require(session.runtime.definitions.first{$0.name=="independent"}?.stale==false)
+    let after=try await session.runtime.kernel.state()
+    require(before.active_checkpoint_id.value==after.active_checkpoint_id.value && before.kernel_state_revision.value==after.kernel_state_revision.value,"inspector reads changed the accepted kernel")
+    print("Native inspector: accepted 43 definitions, failed declaration, dependent stale values, independent freshness, original step source, inline children and distinct table/steps scroll owners retained; no accepted checkpoint/source changed")
+    window.orderOut(nil);try await session.close();try await services.close()
+  }
   @MainActor static func cellStates(root:URL) async throws {
     let sources:[(String,String)]=[
       ("verified","solve(x^2 - 5x + 6 = 0, x)"),("conditional","solve(x/x = 1, x)"),

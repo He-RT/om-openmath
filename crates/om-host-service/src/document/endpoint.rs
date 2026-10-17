@@ -42,6 +42,32 @@ pub struct SourceEndpoint {
     operation_queries: std::collections::BTreeMap<String, operations::PendingOperationQuery>,
 }
 impl SourceEndpoint {
+    /// Freeze one readonly definition query under the source lock, without decoding/evaluation.
+    pub fn list_definitions(
+        &mut self,
+        input: super::analysis::SourceAnalysisInput,
+    ) -> Result<
+        std::sync::mpsc::Receiver<Result<crate::results::definitions::DefinitionsReply, String>>,
+        String,
+    > {
+        let context = self.analysis_context();
+        if input.document_id != context.document_id
+            || input.generation != context.generation
+            || input.base_hash != context.base_hash
+        {
+            return Err("STALE_SOURCE".into());
+        }
+        if self.results.is_none() {
+            self.results = Some(crate::results::runtime::ResultRuntime::new()?);
+        }
+        self.results.as_ref().expect("created").list_definitions(
+            input,
+            self.kernel
+                .as_ref()
+                .and_then(|kernel| kernel.accepted_state()),
+            self.general.clone(),
+        )
+    }
     /// Freeze the current source/parser identity for analysis outside the owner lock.
     pub fn analysis_context(&self) -> super::analysis::SourceAnalysisContext {
         let source = self.controller.owner().snapshot();

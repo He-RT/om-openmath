@@ -219,6 +219,23 @@ pub unsafe extern "C" fn om_host_analyze_source(
             .analyze_source(&unsafe { copied_input(json, len, protocol::MAX_CONTROL_BYTES) }?)
     })
 }
+/// Current accepted definition summaries, read on the independent result worker.
+/// # Safety
+/// `json` must point to len readable bytes during this call; NULL only for zero length.
+#[unsafe(no_mangle)]
+pub unsafe extern "C" fn om_host_list_definitions(
+    host: *mut OmHostHandle,
+    json: *const u8,
+    len: usize,
+) -> OmHostBuffer {
+    packet(|| {
+        let guard = registry::acquire(host, true).map_err(str::to_owned)?;
+        // SAFETY: bounded caller-readable bytes are copied before deferred use.
+        guard
+            .host()
+            .list_definitions(&unsafe { copied_input(json, len, protocol::MAX_CONTROL_BYTES) }?)
+    })
+}
 /// Trusted kernel/source/physical-store port; bounded input is copied before safe Rust handles it.
 /// # Safety
 /// `json` must point to len readable bytes during this call; NULL only for zero length.

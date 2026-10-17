@@ -14,12 +14,32 @@ struct WorkspaceView:View {
     NativeWorkbenchSplit(outline:AnyView(outline),notebook:AnyView(NativeNotebookFileView(workspace:workspace,session:session)),inspector:AnyView(inspector),navigation:navigation,notebookIdentity:ObjectIdentifier(session))
     .navigationTitle(documentTitle)
     .navigationSubtitle(subtitle)
+    .toolbar(removing:.title)
     .toolbar {
       ToolbarItem(placement:.navigation) {
         Button("目录",systemImage:Theme.Symbol.outline) {navigation.toggleOutline()}
           .help("显示或隐藏目录（⌘1）").accessibilityIdentifier("workspace-outline-toggle")
           .popover(isPresented:$navigation.outlinePopover) {outline.frame(width:240,height:480)}
       }
+      ToolbarItem(placement:.navigation) {
+        VStack(alignment:.leading,spacing:1) {
+          Menu {
+            Text(session.document.fileURL?.lastPathComponent ?? documentTitle)
+            Text(session.document.statusText)
+            if let url=session.document.fileURL {
+              Text(url.deletingLastPathComponent().path)
+              Button("在访达中显示") {NSWorkspace.shared.activateFileViewerSelecting([url])}
+            } else {Text("尚未保存到文件")}
+            Divider()
+            Text("OpenMath "+(Bundle.main.object(forInfoDictionaryKey:"OpenMathReleaseVersion") as? String ?? "开发版本"))
+            Text("源码版本 \(session.drafts.confirmed.revision.value)")
+          } label: {Text(documentTitle).font(.system(size:13,weight:.semibold)).foregroundStyle(.primary).lineLimit(1).truncationMode(.middle)}
+            .menuStyle(.borderlessButton).help("文稿位置、保存状态和版本")
+            .accessibilityLabel("文稿信息："+documentTitle).accessibilityIdentifier("workspace-document-title-menu")
+          Text(subtitle).font(.system(size:11)).foregroundStyle(.secondary).lineLimit(1)
+        }.frame(maxWidth:220,alignment:.leading).fixedSize(horizontal:false,vertical:true)
+      }.sharedBackgroundVisibility(.hidden)
+      ToolbarSpacer(.flexible,placement:.primaryAction)
       ToolbarItemGroup(placement:.primaryAction) {
         if runtime.operation != nil || assistant.busy {
           Button("停止",systemImage:Theme.Symbol.stop) {Task {if assistant.busy {await assistant.stop()} else {await runtime.stop()}}}
@@ -78,51 +98,22 @@ struct WorkspaceView:View {
           .opacity(navigation.inspector == .assistant ? 1:0)
           .allowsHitTesting(navigation.inspector == .assistant).accessibilityHidden(navigation.inspector != .assistant)
         ScrollView {
-          VStack(alignment:.leading,spacing:Theme.Space.md) {inspectorDetails}
-            .frame(maxWidth:.infinity,alignment:.leading).padding(Theme.Space.md)
-        }.opacity(navigation.inspector == .assistant ? 0:1)
-          .allowsHitTesting(navigation.inspector != .assistant).accessibilityHidden(navigation.inspector == .assistant)
+          steps.frame(maxWidth:.infinity,alignment:.leading).padding(Theme.Space.md)
+        }.accessibilityIdentifier("workspace-steps-scroll")
+          .opacity(navigation.inspector == .steps ? 1:0)
+          .allowsHitTesting(navigation.inspector == .steps).accessibilityHidden(navigation.inspector != .steps)
+        NativeVariablesView(runtime:runtime,session:session,active:navigation.inspector == .variables)
+          .opacity(navigation.inspector == .variables ? 1:0)
+          .allowsHitTesting(navigation.inspector == .variables).accessibilityHidden(navigation.inspector != .variables)
       }
     }.frame(maxWidth:.infinity,maxHeight:.infinity,alignment:.topLeading).background(Theme.Color.chrome)
   }
-  @ViewBuilder private var inspectorDetails:some View {
-    switch navigation.inspector {
-    case .document:
-      VStack(alignment:.leading,spacing:12) {
-        Text(session.document.fileURL?.lastPathComponent ?? session.drafts.confirmed.file.title).font(.title3).fontWeight(.medium)
-        LabeledContent("单元格",value:String(session.drafts.confirmed.file.cells.count))
-        LabeledContent("保存状态",value:session.document.statusText)
-        Text(session.backup.status).font(.callout).foregroundStyle(.secondary)
-        if let url=session.document.fileURL {Text(url.deletingLastPathComponent().path).font(.caption).foregroundStyle(.secondary).textSelection(.enabled)}
-      }
-      DisclosureGroup("记录详情") {
-        LabeledContent("源码版本",value:String(session.drafts.confirmed.revision.value)).font(.caption)
-      }
-    case .result:
-      if let cell=runtime.selectedCell,let result=runtime.results[cell] {
-        LabeledContent("状态",value:result.receipt.producer.terminal_status == .done ? "计算完成" : "计算有错误")
-        LabeledContent("完成语句",value:String(result.receipt.producer.successful_statements.value))
-        ForEach(Array(result.sources.enumerated()),id:\.offset) {_,text in
-          Text(String(text.prefix(2000))).font(.system(.callout,design:.monospaced)).textSelection(.enabled)
-        }
-      } else {Text("运行数学单元格后，在这里查看结果详情。").foregroundStyle(.secondary)}
-    case .assistant: EmptyView()
-    case .steps:
-      if let cell=runtime.selectedCell,let result=runtime.results[cell],let binding=result.bindings.last(where:{$0.out_index.value>0 && $0.view_id.value != nil}) {
-        NativeStepsView(model:runtime.presenter(for:binding).stepsModel()).id(binding.result_ref)
-      } else {Text("选择已运行的数学单元格，查看记录的步骤。").foregroundStyle(.secondary)}
-    case .variables:
-      if let error=runtime.projectionError {Text(error).foregroundStyle(.secondary)}
-      else if let actual=runtime.projection,actual.active_checkpoint_id.value != nil {
-        let current=actual.definitions_current && actual.execution_epoch.value==session.drafts.confirmed.execution_epoch.value && !session.drafts.confirmed.file.cells.contains {cell in
-          guard cell.kind == .math,let draft=session.drafts.overlay(cell.id) else {return false};return draft.composing || !draft.source.utf8.elementsEqual(cell.source.utf8)
-        }
-        Text(current ? "计算定义与当前源码一致" : "源码已修改，计算定义需要重新确认")
-        LabeledContent("计算版本",value:String(actual.kernel_state_revision.value))
-        Text("变量值列表尚不可用。").foregroundStyle(.secondary)
-      } else {Text("运行数学单元格后可确认定义状态。").foregroundStyle(.secondary)}
-      Button("核对定义状态") {Task {await runtime.refreshProjection()}}.accessibilityIdentifier("workspace-refresh-definitions")
-    }
+  @ViewBuilder private var steps:some View {
+    if let cell=runtime.selectedCell,let result=runtime.results[cell],
+      let binding=result.bindings.last(where:{$0.out_index.value>0 && $0.view_id.value != nil}),
+      let index=session.drafts.confirmed.file.cells.firstIndex(where:{$0.id==cell}) {
+      NativeStepsInspector(presenter:runtime.presenter(for:binding),ordinal:index+1).id(binding.result_ref)
+    } else {Text("选择已运行的数学单元格，查看记录的步骤。").foregroundStyle(.secondary)}
   }
 
 }

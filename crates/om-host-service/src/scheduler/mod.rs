@@ -234,6 +234,31 @@ impl NativeHost {
             .analysis_context();
         context.analyze(input)
     }
+    /// Freeze a current-checkpoint definition read and wait outside all source/acceptance locks.
+    pub fn list_definitions(
+        &self,
+        bytes: &[u8],
+    ) -> Result<crate::results::definitions::DefinitionsReply, String> {
+        if self.shared.closed.load(Ordering::Acquire) {
+            return Err("HOST_CLOSING".into());
+        }
+        if bytes.len() > crate::protocol::MAX_CONTROL_BYTES {
+            return Err("BUDGET_EXCEEDED".into());
+        }
+        let input = serde_json::from_slice(bytes).map_err(|_| "INVALID_ARGUMENT")?;
+        let receiver = self
+            .shared
+            .source
+            .lock()
+            .map_err(|_| "INTERNAL_ERROR")?
+            .as_mut()
+            .ok_or("SOURCE_NOT_OPEN")?
+            .list_definitions(input)?;
+        // The owner lock above has been released before waiting on the readonly result worker.
+        receiver
+            .recv_timeout(std::time::Duration::from_secs(6))
+            .map_err(|_| "RESULT_NOT_AVAILABLE")?
+    }
     /// Host-internal source port: physical store/editor duties are isolated from model tools.
     pub fn source_command(&self, bytes: &[u8]) -> Result<NativeSourceHostReply, String> {
         if self.shared.closed.load(Ordering::Acquire) {

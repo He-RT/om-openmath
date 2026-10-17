@@ -97,6 +97,12 @@ private func binding(_ manifest:NativeResultManifest)->ResultBinding {manifest.b
     }
     await stepModel.load(offset:0)
     if let branch=stepModel.page!.entries.first(where:{$0.child_count>0}) {
+      let child=stepModel.childModel(for:branch)
+      stepModel.expandedPaths.insert(branch.path)
+      await child.load()
+      precondition(child.error==nil && child.page?.parent_path==branch.path && child.page?.total==branch.child_count)
+      precondition(stepModel.childModel(for:branch) === child && stepModel.expandedPaths.contains(branch.path))
+      precondition(stepModel.page!.parent_path.isEmpty,"inline child replaced the parent steps")
       await stepModel.children(branch)
       precondition(stepModel.error==nil && stepModel.page!.parent_path==branch.path && stepModel.page!.total==branch.child_count && stepModel.trail.count==1)
       await stepModel.back(to:0);precondition(stepModel.page!.parent_path.isEmpty && stepModel.trail.isEmpty)

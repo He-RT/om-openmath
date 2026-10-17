@@ -22,10 +22,20 @@ struct NativeStepRoute:Sendable {
   @Published private(set) var route=NativeStepRoute(path:[],offset:0,label:"全部步骤")
   @Published private(set) var busy=false
   @Published private(set) var error:String?
+  @Published var expandedPaths:Set<[UInt32]>=[]
   private let client:ResultClient
+  private let host:NativeHostClient
+  private var childOwners:[[UInt32]:NativeStepsModel]=[:]
   private var closed=false
   nonisolated static let pageSize:UInt32=16
-  init(host:NativeHostClient,binding:ResultBinding) {original=binding;client=ResultClient(host:host)}
+  init(host:NativeHostClient,binding:ResultBinding,path:[UInt32]=[]) {
+    original=binding;self.host=host;client=ResultClient(host:host)
+    route = .init(path:path,offset:0,label:path.isEmpty ? "全部步骤":path.map{String($0+1)}.joined(separator:"."))
+  }
+  func childModel(for entry:NativeStepEntry)->NativeStepsModel {
+    if let owner=childOwners[entry.path] {return owner}
+    let owner=NativeStepsModel(host:host,binding:original,path:entry.path);childOwners[entry.path]=owner;return owner
+  }
   func load(offset:UInt32?=nil)async {await read(.init(path:route.path,offset:offset ?? route.offset,label:route.label),trail:trail)}
   func children(_ entry:NativeStepEntry)async {
     guard entry.child_count>0,entry.path.count<=128 else {return}
@@ -49,5 +59,5 @@ struct NativeStepRoute:Sendable {
       page=actual;route=next;self.trail=trail
     } catch {if !closed,!Task.isCancelled {self.error="步骤暂无法读取："+String(describing:error)}}
   }
-  func close()async {closed=true;await client.close()}
+  func close()async {closed=true;for child in childOwners.values {await child.close()};childOwners.removeAll();await client.close()}
 }

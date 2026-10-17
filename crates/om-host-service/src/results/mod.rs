@@ -1,4 +1,6 @@
 //! Result retention is independent from the active kernel pointer and never reexecutes source.
+/// Readonly current-checkpoint definition summaries for the workbench inspector.
+pub mod definitions;
 mod inspect;
 /// Dedicated native result worker and bounded request readback, independent from main CAS.
 pub mod runtime;

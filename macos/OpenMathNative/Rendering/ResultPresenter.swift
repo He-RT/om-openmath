@@ -232,6 +232,7 @@ struct NativeValueRoute:Sendable {
   @Published private(set) var solutionDigits:UInt32=20
   @Published private(set) var hasGeometry=false
   @Published private(set) var originalInput:String?
+  @Published private(set) var originalCellSource:String?
   @Published private(set) var originalValue:NativeExpressionProjection?
   @Published private(set) var valuePage:NativeValuePage?
   @Published private(set) var valueTrail:[NativeValueRoute]=[]
@@ -345,12 +346,13 @@ struct NativeValueRoute:Sendable {
       guard !closing,!Task.isCancelled else {return};binding=actual;numeric[key] = .init(binding:actual,target:key,value:value)
     } catch {if !closing,!Task.isCancelled {message="数值投影暂不可用："+String(describing:error)}}
   }
-  func readOriginalInput()async {
+  func readOriginalInput(cellSource:Bool=false)async {
     guard !closing,!busy else {return};busy=true;message=nil;defer {busy=false}
     do {
       try client.select(original)
-      guard let source=try await client.completeSource(format:original.out_index.value==0 ? .cell_source : .statement_input) else {throw ResultClientError.staleSelection}
-      guard !closing,!Task.isCancelled else {return};originalInput=source
+      guard let source=try await client.completeSource(format:cellSource || original.out_index.value==0 ? .cell_source : .statement_input) else {throw ResultClientError.staleSelection}
+      guard !closing,!Task.isCancelled else {return}
+      if cellSource {originalCellSource=source} else {originalInput=source}
     } catch {if !closing,!Task.isCancelled {message="原输入暂无法读取："+String(describing:error)}}
   }
   func readOriginalValue()async {

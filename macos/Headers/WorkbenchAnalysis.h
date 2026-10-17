@@ -6,6 +6,7 @@
 extern "C" {
 #endif
 om_host_buffer om_host_analyze_source(om_host_handle *host, const unsigned char *json, size_t len);
+om_host_buffer om_host_list_definitions(om_host_handle *host, const unsigned char *json, size_t len);
 #ifdef __cplusplus
 }
 #endif

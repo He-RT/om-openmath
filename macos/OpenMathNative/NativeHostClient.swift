@@ -170,6 +170,20 @@ actor NativeHostClient {
     }
   }
   /// Main mathematics uses a separate control queue; Rust still owns every source/acceptance fact.
+  func listDefinitions(_ input:NotebookAnalysisInput) async throws->NotebookDefinitionsReply {
+    guard let handle else {throw NativeHostClientError.closing}
+    return try await Self.background(NativeHostQueues.results) {
+      let data=try JSONEncoder().encode(input)
+      guard data.count<=2*1024*1024 else {throw NativeHostClientError.invalidReply}
+      let packet=data.withUnsafeBytes {om_host_list_definitions(handle.pointer,$0.bindMemory(to:UInt8.self).baseAddress,$0.count)}
+      let reply:NotebookDefinitionsReply=try Self.read(packet)
+      guard reply.protocol_version==1,reply.document_id==input.document_id,reply.generation.value==input.generation.value,
+        reply.base_hash==input.base_hash,Set(reply.items.map(\.name)).count==reply.items.count,
+        reply.items.allSatisfy({!$0.name.isEmpty && !$0.cell_id.isEmpty && ($0.value?.unicodeScalars.count ?? 0)<=120}) else {throw NativeHostClientError.invalidReply}
+      return reply
+    }
+  }
+  /// Main mathematics uses a separate control queue; Rust still owns every source/acceptance fact.
   func kernelCommand(_ command:NativeKernelHostCommand) async throws ->NativeKernelHostReply {
     guard let handle else {throw NativeHostClientError.closing}
     return try await Self.background(NativeHostQueues.kernel) {

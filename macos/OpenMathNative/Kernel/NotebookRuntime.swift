@@ -5,9 +5,9 @@ enum WorkbenchLayout:String {case three,two,compact
   static func forWidth(_ width:CGFloat)->Self {width>=1042 ? .three : width>=861 ? .two : .compact}
 }
 enum WorkbenchDestination:String,CaseIterable,Identifiable {
-  case document,result,assistant,steps,variables
+  case assistant,steps,variables
   var id:String {rawValue}
-  var title:String {switch self {case .document:"文档";case .result:"结果";case .assistant:"助手";case .steps:"步骤";case .variables:"变量"}}
+  var title:String {switch self {case .assistant:"助手";case .steps:"步骤";case .variables:"变量"}}
 }
 /// Document-owned navigation survives hiding, popovers and reconstruction of the workspace view.
 @MainActor final class WorkbenchNavigation:ObservableObject {
@@ -64,6 +64,10 @@ struct NotebookCellResult:Sendable {
   @Published private(set) var staleReasons:[String:String]=[:]
   @Published private(set) var sourceDiagnostics:[String:[NotebookSourceDiagnostic]]=[:]
   @Published private(set) var sourceProjection:NotebookSourceProjection?
+  @Published private(set) var definitions:[NotebookDefinition]=[]
+  @Published private(set) var definitionsError:String?
+  @Published private(set) var definitionsBusy=false
+  private var definitionsRequestSerial:UInt64=0
   private var resultSources:[String:NotebookSourceProjection]=[:]
   private var sourceAnalysisTask:Task<Void,Never>?
   private var sourceAnalysisSerial:UInt64=0
@@ -103,7 +107,26 @@ struct NotebookCellResult:Sendable {
       guard !closing else {return};projection=actual;projectionError=nil
     } catch {if !closing {projectionError="定义状态暂无法核对；已有计算记录仍保留。"}}
   }
-  func navigate(to cell:String?) {guard !closing,cell != selectedCell else {return};selectedCell=cell;navigationSequence+=1}
+  func navigate(to cell:String?,force:Bool=false) {guard !closing,force || cell != selectedCell else {return};selectedCell=cell;navigationSequence+=1}
+  func refreshDefinitions(_ drafts:DraftStore) async {
+    guard !closing else {return}
+    definitionsRequestSerial+=1;let serial=definitionsRequestSerial
+    let confirmed=drafts.confirmed,sequence=drafts.persistenceRevision
+    var file=confirmed.file
+    for index in file.cells.indices {
+      if let draft=drafts.overlay(file.cells[index].id),!draft.composing {file.cells[index].source=draft.source}
+    }
+    definitionsBusy=true
+    defer {if serial==definitionsRequestSerial {definitionsBusy=false}}
+    do {
+      let reply=try await host.listDefinitions(.init(document_id:confirmed.document_id,generation:try HostSerial(drafts.documentGeneration),base_hash:confirmed.snapshot_hash,file:file))
+      guard !closing,!Task.isCancelled,serial==definitionsRequestSerial,sequence==drafts.persistenceRevision,
+        confirmed.snapshot_hash==drafts.confirmed.snapshot_hash else {return}
+      // A newer accepted state is picked up by the next projection update, never relabel an old one.
+      if let checkpoint=projection?.active_checkpoint_id.value,checkpoint != reply.checkpoint_id {return}
+      definitions=reply.items;definitionsError=nil
+    } catch {if !closing,!Task.isCancelled,serial==definitionsRequestSerial {definitionsError="变量暂无法读取，可重新读取。"}}
+  }
   func markAgentChanges(changed:[String],deleted:[String]) {
     agentModifiedCells.formUnion(changed);agentModifiedCells.subtract(deleted)
   }

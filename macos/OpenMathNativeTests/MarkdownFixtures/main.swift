@@ -26,6 +26,12 @@ import Foundation
     OMMATHPLACEHOLDER0END costs $5 and $10. Escaped \$x\$; unfinished \(x.
     """#
     let actual=MarkdownRenderDocument.parse(source)
+    let prefix="首段 $x^2$。\n\n"
+    let streamingBefore=MarkdownRenderDocument.parse(prefix+"正在写"),streamingAfter=MarkdownRenderDocument.parse(prefix+"正在写下一段，还没有结束")
+    precondition(streamingBefore.blocks[0].text!.sourceDigest==streamingAfter.blocks[0].text!.sourceDigest,"appending reinstalled a stable Markdown block")
+    precondition(streamingBefore.blocks[1].text!.sourceDigest != streamingAfter.blocks[1].text!.sourceDigest,"changed tail did not invalidate its presentation")
+    let unresolved=MarkdownRenderDocument.parse("[说明][link]\n\n正文"),resolved=MarkdownRenderDocument.parse("[说明][link]\n\n正文\n\n[link]: https://example.com\n")
+    precondition(unresolved.blocks[0].text!.sourceDigest != resolved.blocks[0].text!.sourceDigest,"resolved link did not invalidate earlier semantics")
     precondition(actual.firstOutlineHeading=="中文🙂 heading")
     let fenced=actual.blocks.compactMap(\.code)
     precondition(fenced.count==1 && fenced[0].language=="math" && fenced[0].code.contains("$literal$"))

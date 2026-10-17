@@ -36,18 +36,47 @@ final class AgentSessionStore {
     try reader.statement("SELECT record,record_hash FROM agent_sessions WHERE session_id=?",[.text(id)]) {row in
       let bytes=try SQLColumn.data(row,0);guard KernelHashes.data(bytes)==(try SQLColumn.text(row,1)) else {throw StorageError.corruptIdentity}
       let value=try JSONDecoder().decode(AgentSessionIdentity.self,from:bytes)
-      guard value.codecVersion==1,value.id==id,SourceValidation.identity(value.id),!value.createdAt.isEmpty else {throw StorageError.corruptIdentity};result=value
+      guard value.codecVersion==1,value.id==id,SourceValidation.identity(value.id),!value.createdAt.isEmpty,
+        value.documentID.map(SourceValidation.identity) ?? true,(value.title?.utf8.count ?? 0)<=16384,
+        (value.documentIDs?.count ?? 0)<=10000,(value.documentIDs ?? []).allSatisfy(SourceValidation.identity) else {throw StorageError.corruptIdentity};result=value
     };return result
   }
-  func create(_ id:String,faults:StorageFaults)throws->AgentSessionIdentity {
-    guard SourceValidation.identity(id) else {throw StorageError.corruptIdentity}
-    if let existing=try session(id,reader:db) {try db.confirmCommittedBytes();return existing}
-    let value=AgentSessionIdentity(codecVersion:1,id:id,createdAt:ISO8601DateFormatter().string(from:Date())),bytes=try RecoveryValidation.encode(value)
+  func create(_ id:String,documentID:String?=nil,title:String?=nil,faults:StorageFaults)throws->AgentSessionIdentity {
+    guard SourceValidation.identity(id),documentID.map(SourceValidation.identity) ?? true,(title?.utf8.count ?? 0)<=16384 else {throw StorageError.corruptIdentity}
+    if let existing=try session(id,reader:db) {
+      guard existing.documentID==nil || documentID==nil || existing.owners.contains(documentID!) else {throw StorageError.corruptIdentity}
+      try db.confirmCommittedBytes();return existing
+    }
+    let value=AgentSessionIdentity(codecVersion:1,id:id,createdAt:ISO8601DateFormatter().string(from:Date()),documentID:documentID,title:title.map{String($0.trimmingCharacters(in:.whitespacesAndNewlines).prefix(20)).replacingOccurrences(of:"\n",with:" ")}),bytes=try RecoveryValidation.encode(value)
     try db.transaction {
       try db.statement("INSERT INTO agent_sessions VALUES(?,?,?)",[.text(id),.blob(bytes),.text(KernelHashes.data(bytes))]);try faults.reach("agent_session_before_commit")
     }
     do {try faults.reach("agent_session_committed");let reader=try SQLiteDatabase(url:url,readonly:true);defer {try? reader.close()};guard let actual=try session(id,reader:reader) else {throw StorageError.corruptIdentity};try db.confirmCommittedBytes();return actual}
     catch {throw StorageError.unknownCommit(EIO)}
+  }
+  /// Called only after the service has verified this document's current history association.
+  /// Associate on explicit activation, keeping read-only history browsing free of writes.
+  func associate(_ id:String,document:String)throws->AgentSessionIdentity {
+    try associate([id],document:document)
+    guard let value=try session(id,reader:db) else {throw StorageError.corruptIdentity};return value
+  }
+  /// One metadata transaction for a verified file open; canonical events remain untouched.
+  func associate(_ ids:[String],document:String)throws {
+    guard SourceValidation.identity(document) else {throw StorageError.corruptIdentity}
+    var updates:[(String,Data)]=[]
+    for id in Set(ids).sorted() {
+      guard let existing=try session(id,reader:db),let original=existing.documentID else {throw StorageError.corruptIdentity}
+      if existing.owners.contains(document) {continue}
+      guard existing.owners.count<10000 else {throw StorageError.recoveryRequired}
+      let owners=existing.owners.union([document]).subtracting([original]).sorted()
+      let value=AgentSessionIdentity(codecVersion:existing.codecVersion,id:id,createdAt:existing.createdAt,documentID:original,title:existing.title,documentIDs:owners)
+      updates.append((id,try RecoveryValidation.encode(value)))
+    }
+    guard !updates.isEmpty else {return}
+    try db.transaction {
+      for (id,bytes) in updates {try db.statement("UPDATE agent_sessions SET record=?,record_hash=? WHERE session_id=?",[.blob(bytes),.text(KernelHashes.data(bytes)),.text(id)])}
+    }
+    try db.confirmCommittedBytes()
   }
   private func decode(_ row:OpaquePointer)throws->StoredSessionEvent {
     let record=try SQLColumn.data(row,6),receiptBytes=try SQLColumn.data(row,8)
@@ -372,6 +401,17 @@ final class AgentSessionStore {
       guard count>=0,count<=Int64(HostSerial.maximum),let actual=try self.session(id,reader:reader) else {throw StorageError.corruptIdentity}
       records.append(.init(id:id,createdAt:actual.createdAt,eventCount:UInt64(count)))
     };return records
+  }
+  /// Read compact verified session identities only; never scan tool payloads or activate a task.
+  func conversations(document:String?=nil)throws->[SessionConversationSummary] {
+    guard document.map(SourceValidation.identity) ?? true else {throw StorageError.corruptIdentity}
+    let reader=try SQLiteDatabase(url:url,readonly:true);defer {try? reader.close()}
+    var records:[SessionConversationSummary]=[]
+    try reader.statement("SELECT session_id FROM agent_sessions") { [self] row in
+      guard let value=try session(SQLColumn.text(row,0),reader:reader),let owner=value.documentID,document==nil || value.owners.contains(document!) else {return}
+      records.append(.init(id:value.id,documentID:owner,title:value.title?.isEmpty==false ? value.title!:"新对话",createdAt:value.createdAt,documents:value.owners))
+    }
+    return records.sorted {($0.createdAt,$0.id)>($1.createdAt,$1.id)}
   }
   /// Indexed immutable claim lookup, restricted to the actual document/store supplied by native.
   func operationClaim(document:String,store:String,operation:String)throws->SessionOperationClaim? {

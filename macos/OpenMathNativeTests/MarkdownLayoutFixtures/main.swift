@@ -40,6 +40,13 @@ import Foundation
     try await Task.sleep(for:.milliseconds(20))
     precondition(view.string.contains("replacement"),"new projection was never installed after selection ended")
     precondition(table.tsv.contains("第一个解\t$2$"))
+    let stableBefore=MarkdownRenderDocument.parse("首段 $x^2$。\n\n正在写"),stableAfter=MarkdownRenderDocument.parse("首段 $x^2$。\n\n正在写下一段")
+    let stable=MarkdownTextView(usingTextLayoutManager:true);stable.configure();stable.install(stableBefore.blocks[0].text!,dark:false)
+    var attachment:AnyObject?,location=0
+    stable.textStorage!.enumerateAttribute(.attachment,in:NSRange(location:0,length:stable.textStorage!.length)) {value,range,_ in if let value {attachment=value as AnyObject;location=range.location}}
+    precondition(attachment != nil)
+    stable.install(stableAfter.blocks[0].text!,dark:false)
+    precondition(stable.textStorage!.attribute(.attachment,at:location,effectiveRange:nil) as AnyObject? === attachment,"appending a later paragraph replaced a stable native formula attachment")
     let code=NativeCodeScrollView(frame:NSRect(x:0,y:0,width:250,height:100))
     let ascii="    ____________________________\n   /    o    o    o    o        \\\n  /_____________________________\\\n"+String(repeating:"wide_",count:80)
     code.install(ascii);code.layoutSubtreeIfNeeded()

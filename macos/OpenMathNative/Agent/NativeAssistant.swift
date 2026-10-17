@@ -18,6 +18,11 @@ import SwiftUI
   @Published private(set) var undoneTurns=Set<String>()
   @Published private(set) var undoing=false
   @Published private(set) var undoError:String?
+  @Published private(set) var conversations:[SessionConversationSummary]=[]
+  @Published private(set) var historyError:String?
+  @Published private(set) var historyLoading=false
+  var conversationID:String {session}
+  var conversationTitle:String {messages.first(where:{$0.role=="user"}).map{String($0.text.trimmingCharacters(in:.whitespacesAndNewlines).prefix(20)).replacingOccurrences(of:"\n",with:" ")} ?? "新对话"}
   var prepare:(@MainActor ()async throws->Void)?
   var settled:(@MainActor ()async->Void)?
   var savedState:(@MainActor ()async throws->Bool)?
@@ -45,9 +50,25 @@ import SwiftUI
     self.host=host;self.storage=storage;self.agent=agent;settings=try? AssistantSettingsStore()
   }
   func load()async {
+    await refreshHistory()
     guard !busy,configuration==nil else {return}
     do {if let value=try await settings?.load(),configuration==nil {configuration=value;baseURL=value.baseURL;model=value.model;configured=true;status="就绪"}}
     catch {status="模型配置无法读取，请重新配置。"}
+  }
+  func refreshHistory()async {
+    guard !closed else {return}
+    do {let records=try await agent.conversations();guard !closed else {return};conversations=records;historyError=nil}
+    catch {if !closed {historyError="历史对话暂无法读取"}}
+  }
+  func selectConversation(_ id:String)async {
+    guard !closed,!busy,!undoing,!historyLoading,conversations.contains(where:{$0.id==id}) else {return}
+    historyLoading=true;defer {historyLoading=false}
+    do {
+      let previous=try await agent.transcript(session:id)
+      guard !closed else {return}
+      resetConversation(id:id);durableMessages=previous;publishMessages();historyError=nil
+      status=configured ? "就绪":"请先配置模型"
+    } catch {if !closed {historyError="这段对话暂无法读取，当前内容保留"}}
   }
   /// Trusted host selection (also used by isolated live fixtures); secrets are never serialized.
   func configure(_ value:AssistantConfiguration,secrets:SecretStore?=nil)throws {
@@ -72,12 +93,16 @@ import SwiftUI
     } catch {status="未保存。请检查服务地址（远程HTTPS或本机HTTP）、模型名称和API Key；密钥需能写入已解锁的钥匙串。"}
   }
   func newConversation() {
-    guard !busy,!undoing else {return};session="conversation-"+UUID().uuidString.lowercased()
+    guard !closed,!busy,!undoing,!historyLoading else {return}
+    resetConversation(id:"conversation-"+UUID().uuidString.lowercased())
+  }
+  private func resetConversation(id:String) {
+    session=id
     messages=[];durableMessages=[];streamedText=[:];streamedOrder=[];pendingText=[:];pendingTurns=[];pendingInput=nil
     streamedContexts=[:];streamedTasks=[:];outcomes=[];undoneTurns=[];undoError=nil;transcriptError=nil;status=configured ? "新对话":"请先配置模型"
   }
   func send() {
-    guard !closed,!busy,!undoing else {return}
+    guard !closed,!busy,!undoing,!historyLoading else {return}
     let text=draft.trimmingCharacters(in:.whitespacesAndNewlines)
     guard !text.isEmpty,text.utf8.count<=16384 else {status="请输入问题（最多16KiB）。";return}
     guard let configuration else {showSettings=true;return}
@@ -98,7 +123,7 @@ import SwiftUI
       let process=try await AgentProcess.bundled()
       let read:[AgentToolName]=[.read_notebook,.search_functions,.get_function_docs,.inspect_result,.evaluate_scratch,.get_operation_status]
       let tools=edits ? read+[.preview_source,.apply_notebook_patch,.run_cells,.undo_transaction]:read
-      let hello=try await agent.activate(session:session,grants:tools,readonly:!edits,coreVersion:"1.0.4",adapterVersion:"openmath-adapter-1")
+      let hello=try await agent.activate(session:session,grants:tools,readonly:!edits,coreVersion:"1.0.4",adapterVersion:"openmath-adapter-1",conversationTitle:text)
       guard !stopping,!closed else {throw CancellationError()}
       let scope=hello.scope
       taskID=scope.task_id;activeTask=scope.task_id
@@ -151,6 +176,7 @@ import SwiftUI
     if case .failed=reason,draft.isEmpty {draft=text}
     if outcomes.last?.id==taskID,outcomes.last?.factsUnavailable==true {status+="；本轮操作事实暂时无法读取，请核对笔记本"}
     busy=false;stopping=false;work=nil
+    await refreshHistory()
   }
   private func refreshMessages()async {
     let current=session

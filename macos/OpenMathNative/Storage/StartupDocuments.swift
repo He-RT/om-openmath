@@ -12,6 +12,34 @@ struct StartupDocumentRecord:Identifiable,Sendable {
 }
 struct StartupDocumentPage:Sendable {let records:[StartupDocumentRecord];let next:String?}
 enum StartupDocuments {
+  /// Reopening .omnb creates a fresh source owner. Link display-only conversation history through
+  /// verified native file bindings, without resolving bookmarks or scanning user files. Requiring
+  /// device, inode and exact file bytes prevents a same-content copy from inheriting the history.
+  static func matchingFileOwners(root:URL,candidates:Set<String>,stamp:FileStamp)->Set<String> {
+    Set(candidates.filter {id in
+      guard UUID(uuidString:id) != nil,id==id.lowercased() else {return false}
+      do {
+        let folder=root.appendingPathComponent("Documents/\(id)",isDirectory:true)
+        guard try ManagedFiles.check(folder,directory:true) else {return false}
+        let selector=try ManagedFiles.readJSON(StoreSelector.self,folder.appendingPathComponent("active.json"),keys:StorageBootstrap.selectorKeys)
+        guard selector.formatVersion==1,selector.generation>0,selector.generation<=999999 else {return false}
+        let url=folder.appendingPathComponent("Generations/\(String(format:"%06lld",selector.generation))/authority.sqlite")
+        let db=try SQLiteDatabase(url:url,readonly:true);defer {try? db.close()}
+        let header=try StorageBootstrap.readHeader(db);try StorageBootstrap.rejectQuarantine(db)
+        guard header.kind=="document",header.documentID==id,header.storeID==selector.storeID,
+          header.generation==selector.generation,try header.hash==selector.headerHash,(4...5).contains(header.storeVersion) else {return false}
+        var found=false
+        try db.statement("SELECT record,record_hash FROM file_bindings WHERE document_id=?",[.text(id)]) {row in
+          let bytes=try SQLColumn.data(row,0)
+          guard KernelHashes.data(bytes)==(try SQLColumn.text(row,1)) else {throw StorageError.corruptIdentity}
+          let binding=try JSONDecoder().decode(FileBinding.self,from:bytes);try SaveValidation.binding(binding)
+          guard binding.documentID==id else {throw StorageError.corruptIdentity}
+          if let expected=binding.expected,expected.device==stamp.device,expected.inode==stamp.inode,expected.byteHash==stamp.byteHash {found=true}
+        }
+        return found
+      } catch {return false} // An unconfirmed old association is never used as current history.
+    })
+  }
   /// Only active selectors in this already locked managed root; no user-file scan, source
   /// evaluation, file bookmark resolution, implicit generation selection or database writer.
   static func page(root:URL,after:String?,limit:Int)throws->StartupDocumentPage {

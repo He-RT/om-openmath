@@ -94,7 +94,7 @@ struct WorkspaceView:View {
         .accessibilityIdentifier("workspace-inspector-destination")
       Divider()
       ZStack(alignment:.topLeading) {
-        NativeAssistantView(assistant:session.assistant).padding(Theme.Space.md)
+        NativeAssistantView(assistant:session.assistant)
           .opacity(navigation.inspector == .assistant ? 1:0)
           .allowsHitTesting(navigation.inspector == .assistant).accessibilityHidden(navigation.inspector != .assistant)
         ScrollView {

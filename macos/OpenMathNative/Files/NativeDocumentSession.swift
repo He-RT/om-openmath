@@ -124,7 +124,11 @@ actor NativeAppStorage {
       let backupOwner=try await storage.beginDraftOwner(document:id,owner:UUID().uuidString.lowercased(),runtime:client.runtimeInstanceID,generation:reply.document_generation.value)
       let source=DocCommitPort(client:client,storage:storage,drafts:drafts,clock:clock)
       let files=NativeFilePort(client:client,storage:storage,source:source,drafts:drafts,files:physical,document:id)
-      if let opened {_ = try await files.adoptOpened(opened)}
+      if let opened {
+        _ = try await files.adoptOpened(opened)
+        // Presentation-only associations never prevent a healthy notebook from opening.
+        try? await storage.attachConversationHistory(document:id)
+      }
       let native=NativeDocument();native.attach(files,opened:opened)
       return NativeDocumentSession(document:native,host:client,source:source,files:files,drafts:drafts,storage:storage,backupOwner:backupOwner)
     } catch {

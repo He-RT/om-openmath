@@ -359,9 +359,36 @@ actor StorageService {
     guard closeTask==nil,let library else {throw StorageError.closing}
     return try await library.effectCall {try $0.page(after:after,limit:limit)}
   }
-  func createAgentSession(_ id:String,faults:StorageFaults = .init()) async throws->AgentSessionIdentity {
+  func createAgentSession(_ id:String,documentID:String?=nil,title:String?=nil,faults:StorageFaults = .init()) async throws->AgentSessionIdentity {
     try beginOperation();defer {endOperation()}
-    guard closeTask==nil,let library else {throw StorageError.closing};return try await library.sessionCall {try $0.create(id,faults:faults)}
+    guard closeTask==nil,let library else {throw StorageError.closing}
+    if let documentID,try await agentConversations(document:documentID).contains(where:{$0.id==id}) {
+      return try await library.sessionCall {try $0.associate(id,document:documentID)}
+    }
+    return try await library.sessionCall {try $0.create(id,documentID:documentID,title:title,faults:faults)}
+  }
+  func agentConversations(document:String) async throws->[SessionConversationSummary] {
+    try beginOperation();defer {endOperation()}
+    guard closeTask==nil,let library else {throw StorageError.closing}
+    let records=try await library.sessionCall {try $0.conversations()}
+    var owners:Set<String>=[document]
+    if let writer=documents[document],let head=try await writer.saveCall({try $0.readHead()}),let stamp=head.binding.expected,let lease {
+      let candidates=records.reduce(into:Set<String>()){$0.formUnion($1.documents)}.subtracting(owners),root=paths.root
+      let sameFile=await Task.detached(priority:.utility) { [lease] in
+        _=lease;return StartupDocuments.matchingFileOwners(root:root,candidates:candidates,stamp:stamp)
+      }.value
+      owners.formUnion(sameFile)
+    }
+    return records.filter{!owners.isDisjoint(with:$0.documents)}
+  }
+  /// Opening an actual file registers its verified history with the fresh native source owner.
+  /// This survives a subsequent atomic save even when older conversations are never resumed.
+  func attachConversationHistory(document:String) async throws {
+    try beginOperation();defer {endOperation()}
+    guard closeTask==nil,let library else {throw StorageError.closing}
+    let records=try await agentConversations(document:document)
+    let ids=records.filter{!$0.documents.contains(document)}.map(\.id)
+    if !ids.isEmpty {try await library.sessionCall {try $0.associate(ids,document:document)}}
   }
   func appendSessionEvent(_ input:SessionAppendInput,faults:StorageFaults = .init()) async throws->SessionAppendReceipt {
     try beginOperation();defer {endOperation()}

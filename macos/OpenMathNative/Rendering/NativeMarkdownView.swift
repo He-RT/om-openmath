@@ -36,9 +36,17 @@ private extension NSAttributedString.Key {
     if selectedRange().length>0,renderedSource != nil {pending=(document,dark,fontSize,paper);return}
     installing=true;defer {installing=false};pending=nil;renderedProjection=document.projectionID;renderedDigest=digest
     original=document.source;renderedSource=document.source;renderedDark=dark;renderedSize=fontSize;renderedPaper=paper
+    let blockProjection=document.projectionID.hasPrefix("text-")
+    textContainerInset.height=blockProjection ? 0:4
+    var visibleRuns=document.runs[...]
+    if blockProjection {
+      // Each block already has SwiftUI spacing. Generated paragraph separators belong to the
+      // continuous source projection, and would create empty lines in every standalone block.
+      while let last=visibleRuns.last,last.source==nil,case .text(let text)=last.content,text.allSatisfy({$0=="\n"}) {visibleRuns=visibleRuns.dropLast()}
+    }
     let output=NSMutableAttributedString(string:""),sourceBytes=Array(document.source.utf8),sourceHash=digest
     mappings=[]
-    for run in document.runs {
+    for run in visibleRuns {
       let style=run.style
       let size=paper && style.heading>0 ? (style.heading==1 ? 30:style.heading==2 ? 21:18) : style.heading>0 ? max(fontSize,fontSize+CGFloat(7-min(style.heading,6))*2):fontSize
       var font=style.code ? NSFont.monospacedSystemFont(ofSize:size,weight:.regular):paper ? Theme.Font.paper(size:size,weight:style.bold ? .semibold:.regular):NSFont.systemFont(ofSize:size,weight:style.bold ? .semibold:.regular)
@@ -119,7 +127,7 @@ struct NativeMarkdownView:View {
   @Environment(\.colorScheme) private var scheme
   var body:some View {
     Group {
-      if let parsed,parsed.source.utf8.elementsEqual(source.utf8) {
+      if let parsed {
         VStack(alignment:.leading,spacing:8) {
           if parsed.fallback {Text("内容较长或嵌套过深，显示原文。").font(.caption).foregroundStyle(.secondary)}
           ForEach(parsed.blocks) {section in
@@ -128,7 +136,7 @@ struct NativeMarkdownView:View {
             if let code=section.code {NativeCodeBlockView(block:code,onInsert:onInsertCode)}
           }
         }
-      } else {Text(source).font(paper ? Theme.Font.paperBody:.system(size:fontSize)).textSelection(.enabled).frame(maxWidth:.infinity,alignment:.leading)}
+      } else {ProgressView("正在排版…").controlSize(.small)}
     }.task(id:Data(source.utf8)) {
       let value=await Task.detached(priority:.userInitiated) {MarkdownRenderDocument.parse(source)}.value
       if !Task.isCancelled {parsed=value}

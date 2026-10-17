@@ -55,7 +55,7 @@
 | [ ] [R4.2.05](PRE_ALPHA_4.md#task-r4.2.05) | 本地snippets、希腊快捷、Fix和缩进 | planned | — | — |
 | [ ] [R4.2.06](PRE_ALPHA_4.md#task-r4.2.06) | 长笔记本布局、复用与scroll anchors | planned | — | — |
 | [x] [R4.2.07](PRE_ALPHA_4.md#task-r4.2.07) | SwiftMath原生公式和原式fallback | completed | [实际57回执/字体/原生附件](../acceptance/pre-alpha.4/development/r42/native-math.json) | 21355b3 |
-| [ ] [R4.2.08](PRE_ALPHA_4.md#task-r4.2.08) | Markdown AST、数学扫描与连续原生流 | in_progress | D067；本版阅读和代码块由 pre-alpha.5 C6/C7 实现，流式稳定块继续 D1；历史状态保留 | D067 |
+| [ ] [R4.2.08](PRE_ALPHA_4.md#task-r4.2.08) | Markdown AST、数学扫描与连续原生流 | in_progress | D067；本版阅读、代码块、流式稳定块由 pre-alpha.5 C6/C7/D1 实现；历史状态保留 | D067 |
 | [x] [R4.2.09](PRE_ALPHA_4.md#task-r4.2.09) | 结果状态、解条件Root与数值投影 | completed | [实际12型/引用/数值](../acceptance/pre-alpha.4/development/r42/native-results.json) | 40cc1cb |
 | [x] [R4.2.10](PRE_ALPHA_4.md#task-r4.2.10) | 矩阵、表格、记录与科学诊断 | completed | [真实21输入/分页/原式/科学来源](../acceptance/pre-alpha.4/development/r42/native-values.json) | 本批 |
 | [ ] [R4.2.11](PRE_ALPHA_4.md#task-r4.2.11) | 真实步骤、变量与独立讲解入口 | in_progress | D068；步骤/变量检查器由 pre-alpha.5 C9 实现，助手讲解仍按 D 阶段；历史状态保留 | D068 |

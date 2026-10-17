@@ -1,6 +1,32 @@
 import AppKit
 import SwiftUI
 
+@MainActor private final class AssistantTranscriptFixtureController:ObservableObject {
+  let storage:StorageService,assistant:NativeAssistant,sessionID:String
+  var count=24
+  var changeAppearance:(()->Void)?
+  init(storage:StorageService,assistant:NativeAssistant,sessionID:String) {self.storage=storage;self.assistant=assistant;self.sessionID=sessionID}
+  func append()async {
+    do {
+      count+=1
+      try await WorkbenchFixtures.recordConversationPair(storage:storage,session:sessionID,index:count,
+        question:"新的界面测试问题 \(count)",answer:"第 \(count) 条新增回复。\n\n这是追加到真实会话存储中的测试内容，检查向上阅读时是否保留位置。$x^2 + 1$。")
+      await assistant.selectConversation(sessionID)
+    } catch {fatalError("fixture append failed: \(error)")}
+  }
+}
+private struct AssistantTranscriptFixtureControls:View {
+  @ObservedObject var controller:AssistantTranscriptFixtureController
+  var body:some View {
+    HStack {
+      Text("界面测试数据，不连接模型").foregroundStyle(.secondary)
+      Spacer()
+      Button("追加测试回复") {Task {await controller.append()}}.accessibilityIdentifier("fixture-append-message")
+      Button("切换窗口主题") {controller.changeAppearance?()}.accessibilityIdentifier("fixture-toggle-appearance")
+    }.font(.caption).padding(8)
+  }
+}
+
 @main struct WorkbenchFixtures {
   @MainActor static func require(_ condition:@autoclosure ()->Bool,_ message:String="actual workspace assertion failed",file:StaticString=#fileID,line:UInt=#line) {
     guard condition() else {
@@ -14,9 +40,23 @@ import SwiftUI
   }
   @MainActor static func descendants(_ view:NSView)->[NSView] { [view]+view.subviews.flatMap{descendants($0)} }
   @MainActor static func main() async throws {
-    let app=NSApplication.shared;app.setActivationPolicy(.accessory)
-    let root=URL(fileURLWithPath:CommandLine.arguments[1],isDirectory:true)
+    let ui=CommandLine.arguments.contains("--assistant-ui") || Bundle.main.object(forInfoDictionaryKey:"OpenMathAssistantFixture") as? Bool==true
+    let app=NSApplication.shared;app.setActivationPolicy(ui ? .regular:.accessory)
+    let rootBase=URL(fileURLWithPath:CommandLine.arguments.count>1 ? CommandLine.arguments[1]:Bundle.main.object(forInfoDictionaryKey:"OpenMathFixtureRoot") as! String,isDirectory:true)
+    let root=ui ? rootBase.appendingPathComponent("run-"+UUID().uuidString.lowercased()):rootBase
     try FileManager.default.createDirectory(at:root,withIntermediateDirectories:true)
+    if ui {
+      Task {
+        do {try await assistantTranscript(root:root,hold:true)}
+        catch {FileHandle.standardError.write(Data(("Assistant UI fixture failed: \(error)\n").utf8));NSApp.terminate(nil)}
+      }
+      desktopLoop()
+      return
+    }
+    if CommandLine.arguments.contains("--assistant-transcript") {
+      try await assistantTranscript(root:root,hold:false)
+      return
+    }
     if CommandLine.arguments.contains("--inspector") {
       try await inspector(root:root)
       return
@@ -130,6 +170,90 @@ import SwiftUI
     print("Actual native window 1042/861/640, same notebook view/editor/selection, physical kernel receipts 5/6, live CAS resize/edit/explicit stop and draft retention passed")
   }
 
+  static func recordConversationPair(storage:StorageService,session:String,index:Int,question:String,answer:String) async throws {
+    let task="fixture-task-\(index)",turn="fixture-turn-\(index)"
+    let ledger=SessionLedgerPort(storage:storage,session:session,sourceInstance:"fixture-writer-\(session)-\(index)")
+    let input=AgentCanonicalMessage(record_type:.canonical_agent_message,message_version:1,message_id:"fixture-user-\(index)",role:.user,agent_turn_id:.init(nil),task_id:.init(task),parts:[.agent_text_part(.init(kind:.text,part_id:"text",text:question))])
+    _ = try await ledger.record(SessionCanonicalInput(codecVersion:1,delivery:"user_input",message:input,presentation:.init(model:index%2==0 ? "gpt-6.1-sol":"gpt-6-luna",mode:index%2==0 ? "execute":"discuss")),id:"fixture-input-\(index)",kind:.user_message,task:task)
+    let message=AgentCanonicalMessage(record_type:.canonical_agent_message,message_version:1,message_id:"fixture-answer-\(index)",role:.assistant,agent_turn_id:.init(turn),task_id:.init(task),parts:[.agent_text_part(.init(kind:.text,part_id:"text",text:answer))])
+    _ = try await ledger.record(SessionCanonicalAssistant(codecVersion:1,messageID:message.message_id,textUTF8:Data(answer.utf8),calls:[],canonicalJSON:String(decoding:try JSONEncoder().encode(message),as:UTF8.self),peerMessageID:"fixture-peer-\(index)",connectionID:"fixture-connection",sourceSequence:UInt64(index+1)),id:"fixture-answer-event-\(index)",kind:.assistant_end,turn:turn,task:task)
+  }
+  @MainActor static func assistantTranscript(root:URL,hold:Bool)async throws {
+    let file=NativeSourceFile(version:1,title:"助手对话",cells:[.init(id:"math",kind:.math,source:"solve(x^2 - 5x + 6 = 0, x)",dialect:.modern)])
+    let url=root.appendingPathComponent("assistant.omnb");try JSONEncoder().encode(file).write(to:url)
+    let paths=NativeStoragePaths(root:root.appendingPathComponent("storage"),channel:.preview)
+    let services=NativeAppStorage(paths:paths),storage=try await services.open()
+    let workspace=NativeFileWorkspace(storage:services)
+    guard await workspace.open(url),let session=workspace.session else {fatalError("assistant document missing")}
+    session.assistant.prepare={throw AgentSessionError.inactive} // UI fixtures never contact a model.
+    let document=session.drafts.confirmed.document_id
+    let title="先求解二次方程，再说明每一步为什么成立，保留精确结果。"
+    _ = try await storage.createAgentSession("fixture-main",documentID:document,title:title)
+    _ = try await storage.createAgentSession("fixture-other",documentID:"another-document",title:"其他文稿")
+    _ = try await storage.createAgentSession("fixture-legacy")
+    _ = try await storage.createAgentSession("fixture-history",documentID:document,title:"另一段对话")
+    try await recordConversationPair(storage:storage,session:"fixture-history",index:100,question:"另一段对话",answer:"历史回复。")
+    for i in 0..<24 {
+      let answer=i==23 ? "两个根为 $x=2$、$x=3$。\n\n```openmath\nsolve(x^2 - 5x + 6 = 0, x)\n```\n\n代码只有主动插入后才会成为单元格。" : "第 \(i+1) 条回复：先整理原方程，再检查因子与候选解。\n\n将 $x=2$ 代回原式，得到 $2^2-5\\times2+6=0$。这段说明用于检查原生 Markdown 和阅读位置。"
+      try await recordConversationPair(storage:storage,session:"fixture-main",index:i,question:i==0 ? title:"第 \(i+1) 个问题：为什么需要代回原方程验证？",answer:answer)
+    }
+    await session.assistant.refreshHistory()
+    require(Set(session.assistant.conversations.map(\.id))==["fixture-main","fixture-history"],"conversation history crossed document scope")
+    require(session.assistant.conversations.first{$0.id=="fixture-main"}?.title==String(title.prefix(20)))
+    let countBefore=try await storage.agentSessions(limit:32).first{$0.id=="fixture-main"}!.eventCount
+    await session.assistant.selectConversation("fixture-main")
+    require(session.assistant.messages.count==48 && session.assistant.conversationTitle==String(title.prefix(20)))
+    require(session.assistant.messages.first(where:{$0.role=="assistant"})?.context?.mode=="execute")
+    let countAfter=try await storage.agentSessions(limit:32).first{$0.id=="fixture-main"}!.eventCount
+    require(countAfter==countBefore,"opening history wrote session events")
+    await session.assistant.selectConversation("fixture-other")
+    require(session.assistant.messages.count==48,"foreign conversation was opened")
+    session.runtime.navigation.inspectorVisible=true
+    session.runtime.navigation.inspector = .assistant
+    let controller=AssistantTranscriptFixtureController(storage:storage,assistant:session.assistant,sessionID:"fixture-main")
+    let window=NSWindow(contentRect:NSRect(x:0,y:0,width:1400,height:780),styleMask:[.titled,.closable,.resizable],backing:.buffered,defer:false)
+    window.title="助手对话 · 界面测试数据";window.appearance=NSAppearance(named:.aqua)
+    controller.changeAppearance={ [weak window] in guard let window else {return};window.appearance=NSAppearance(named:window.effectiveAppearance.bestMatch(from:[.aqua,.darkAqua]) == .darkAqua ? .aqua:.darkAqua)}
+    let host=NSHostingView(rootView:VStack(spacing:0) {WorkspaceView(workspace:workspace,session:session);AssistantTranscriptFixtureControls(controller:controller)})
+    window.contentView=host;workspace.attachWindow(window);window.makeKeyAndOrderFront(nil);window.displayIfNeeded()
+    try await until {descendants(host).compactMap{$0 as? MarkdownTextView}.count>0}
+    print("Document-scoped conversation history: 48 canonical messages, original model/mode, 20-character title, foreign/legacy exclusion and readonly reopening passed; no model calls")
+    if hold {while !Task.isCancelled {try await Task.sleep(for:.seconds(30))}}
+    window.orderOut(nil);try await session.close();try await services.close()
+    let (reopened,_)=try await StorageService.open(paths:paths)
+    let recovered=try await reopened.agentConversations(document:document)
+    require(Set(recovered.map(\.id))==["fixture-main","fixture-history"])
+    let reopenedSession=try await NativeDocumentSession.open(storage:reopened,url:url)
+    require(reopenedSession.drafts.confirmed.document_id != document,"ordinary file open reused a source authority")
+    await reopenedSession.assistant.refreshHistory()
+    require(Set(reopenedSession.assistant.conversations.map(\.id))==["fixture-main","fixture-history"],"reopening the actual file lost its bound history")
+    await reopenedSession.assistant.selectConversation("fixture-main")
+    require(reopenedSession.assistant.messages.count==48)
+    let fresh=try await reopenedSession.agent.activate(session:"fixture-main",grants:[.read_notebook],readonly:true,coreVersion:"fixture",adapterVersion:"fixture")
+    require(fresh.document_id==reopenedSession.drafts.confirmed.document_id,"history restored the old document grant")
+    await reopenedSession.agent.resetTask()
+    _ = try await reopenedSession.files.save(operation:"fixture-history-resave")
+    await reopenedSession.assistant.refreshHistory()
+    require(Set(reopenedSession.assistant.conversations.map(\.id))==["fixture-main","fixture-history"],"saving the reopened file lost older conversations")
+    try await reopenedSession.close()
+    let againSession=try await NativeDocumentSession.open(storage:reopened,url:url)
+    await againSession.assistant.refreshHistory()
+    require(Set(againSession.assistant.conversations.map(\.id))==["fixture-main","fixture-history"],"history was lost after resumed save and another open")
+    try await againSession.close()
+    let copy=root.appendingPathComponent("same-content-copy.omnb");try FileManager.default.copyItem(at:url,to:copy)
+    let copiedSession=try await NativeDocumentSession.open(storage:reopened,url:copy)
+    await copiedSession.assistant.refreshHistory()
+    require(copiedSession.assistant.conversations.isEmpty,"a same-content copy inherited another file's conversations")
+    try await copiedSession.close()
+    try await reopened.close()
+    print("Physical file reopen retained history through verified saved bindings, fresh activation used the new document owner, identical-content copy kept separate history")
+  }
+  @MainActor static func desktopLoop() {
+    let menu=NSMenu(),item=NSMenuItem(),application=NSMenu()
+    let quit=NSMenuItem(title:"退出界面测试",action:#selector(NSApplication.terminate(_:)),keyEquivalent:"q");quit.target=NSApp
+    application.addItem(quit);item.submenu=application;menu.addItem(item);NSApp.mainMenu=menu
+    NSApp.run()
+  }
   @MainActor static func inspector(root:URL) async throws {
     let definitions=(0..<40).map{"let v\($0)=\($0);"}.joined(separator:"\n")
     let file=NativeSourceFile(version:1,title:"检查器验收",cells:[

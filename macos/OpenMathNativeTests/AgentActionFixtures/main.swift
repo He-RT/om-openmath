@@ -2,6 +2,17 @@ import Foundation
 
 @main struct AgentActionFixtures {
   static func main() throws {
+    let viewport=CGSize(width:380,height:500)
+    var scroll=AssistantTranscriptScrollState()
+    scroll.observe(.init(offset:100,height:600,viewport:viewport),.init(offset:100,height:900,viewport:viewport),userScrolling:false)
+    precondition(scroll.following,"content growth disabled tail following")
+    scroll.observe(.init(offset:400,height:900,viewport:viewport),.init(offset:80,height:900,viewport:viewport),userScrolling:true)
+    scroll.contentChanged();precondition(!scroll.following && scroll.unseen,"reading older messages did not retain intent")
+    scroll.observe(.init(offset:80,height:900,viewport:viewport),.init(offset:80,height:1100,viewport:viewport),userScrolling:false)
+    precondition(!scroll.following && scroll.unseen,"late Markdown growth stole the reader's position")
+    scroll.observe(.init(offset:80,height:1100,viewport:viewport),.init(offset:600,height:1100,viewport:viewport),userScrolling:true)
+    precondition(scroll.following && !scroll.unseen)
+    scroll.contentChanged();precondition(!scroll.unseen)
     let order=["stable-a":1,"stable-b":2]
     func action(_ tool:String="read_notebook",call:String="call",reply:[String:Any]?=nil,args:[String:Any]=[:],changes:[String:TurnChangedCell.Kind]=[:])throws->AgentAction {
       AgentActionFormatter.make(turn:"turn",call:call,tool:tool,arguments:try JSONSerialization.data(withJSONObject:args),
@@ -38,6 +49,6 @@ import Foundation
     let merged=AssistantMessageProjection.merge(durable:[first,second],partial:[message],pendingInput:nil)
     precondition(merged.map(\.id)==["u1","turn","u2"])
     precondition(AssistantMessageProjection.merge(durable:[first,message,second],partial:[message],pendingInput:nil).count==3)
-    print("agent action fixtures passed: pairing identity, errors, unknown/cancelled outcomes, cell identity, transaction refs, consecutive reads, ordered message parts")
+    print("agent action fixtures passed: pairing identity, errors, unknown/cancelled outcomes, cell identity, transaction refs, consecutive reads, ordered message parts and transcript scroll intent")
   }
 }

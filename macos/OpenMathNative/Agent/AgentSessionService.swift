@@ -47,6 +47,7 @@ actor AgentSessionService {
     try await AssistantTranscriptReader(storage:storage,document:document).read(session:session)
   }
   func currentKernelReceipts()->[NativeKernelReceipt] {acceptedKernelReceipts}
+  func conversations()async throws->[SessionConversationSummary] {try await storage.agentConversations(document:document)}
   func outcomeFacts(session:String,task:String)async throws->[TurnFact] {
     try await AssistantTurnReader(storage:storage,document:document).read(session:session,task:task)
   }
@@ -61,14 +62,14 @@ actor AgentSessionService {
     self.host=host;self.storage=storage;self.document=document;self.generation=generation;self.sourcePort=sourcePort;self.kernelPort=kernelPort ?? sourcePort.map {KernelCommitPort(client:host,storage:storage,source:$0)}
   }
   /// Fresh explicit activation. Persisted messages are data and never recreate grants.
-  func activate(session:String,grants:[AgentToolName],readonly:Bool,coreVersion:String,adapterVersion:String,allowedRunCells:[String]?=nil,allowedUndoTransactions:[String]?=nil) async throws->NativeAgentHostReply {
+  func activate(session:String,grants:[AgentToolName],readonly:Bool,coreVersion:String,adapterVersion:String,allowedRunCells:[String]?=nil,allowedUndoTransactions:[String]?=nil,conversationTitle:String?=nil) async throws->NativeAgentHostReply {
     try await acquire();defer {release()}
     acceptedKernelReceipts=[]
     modelFailure=nil
     guard scope==nil else {throw AgentSessionError.busy}
     guard taskGeneration<HostSerial.maximum,connectionGeneration<HostSerial.maximum else {throw AgentSessionError.stale}
     // Reserve activation before any suspension, including an unavailable Library.
-    _ = try await storage.createAgentSession(session)
+    _ = try await storage.createAgentSession(session,documentID:document,title:conversationTitle)
     guard !closed else {throw AgentSessionError.inactive}
     let s=NativeAgentControlScope(agent_session_id:session,task_id:"task-"+UUID().uuidString.lowercased(),task_generation:try HostSerial(taskGeneration+1),connection_id:"connection-"+UUID().uuidString.lowercased(),connection_generation:try HostSerial(connectionGeneration+1),document_generation:try HostSerial(generation))
     let reply=try await host.agentCommand(.native_agent_activate(.init(type:.agent_activate,scope:s,hello_id:"hello-"+UUID().uuidString.lowercased(),core_version:coreVersion,adapter_version:adapterVersion,grants:grants,readonly:readonly)))

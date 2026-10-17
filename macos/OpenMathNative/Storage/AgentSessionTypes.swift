@@ -45,7 +45,20 @@ struct SessionEventReceipt:Codable,Sendable {
 }
 struct StoredSessionEvent:Sendable {let event:NativeSessionEvent;let receipt:SessionEventReceipt}
 struct SessionAppendReceipt:Sendable {let stored:StoredSessionEvent;let inserted:Bool}
-struct AgentSessionIdentity:Codable,Sendable {let codecVersion:Int,id:String;let createdAt:String}
+struct AgentSessionIdentity:Codable,Sendable {
+  let codecVersion:Int,id:String,createdAt:String
+  // Optional presentation metadata keeps existing Library records readable. It grants no tools.
+  let documentID:String?,title:String?
+  let documentIDs:[String]?
+  var owners:Set<String> {Set((documentID.map{[$0]} ?? [])+(documentIDs ?? []))}
+  init(codecVersion:Int,id:String,createdAt:String,documentID:String?=nil,title:String?=nil,documentIDs:[String]?=nil) {
+    self.codecVersion=codecVersion;self.id=id;self.createdAt=createdAt;self.documentID=documentID;self.title=title;self.documentIDs=documentIDs
+  }
+}
+struct SessionConversationSummary:Identifiable,Sendable {
+  let id:String,documentID:String,title:String,createdAt:String
+  let documents:Set<String>
+}
 
 struct SessionToolCall:Codable,Sendable {
   let callID:String

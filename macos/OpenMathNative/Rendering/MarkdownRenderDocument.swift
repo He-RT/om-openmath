@@ -55,12 +55,12 @@ struct MarkdownRenderDocument:Sendable {
       var kind=prose.first?.style.blockKind ?? .paragraph
       if prose.contains(where:{if case .math(_,_,true)=$0.content {return true};return false}) {kind = .mathBlock}
       let id="text-\(result.count)"
-      result.append(.init(id:id,kind:kind,text:.init(source:source,runs:prose,fallback:fallback,projectionID:id,sourceDigest:sourceDigest)))
+      result.append(.init(id:id,kind:kind,text:.init(source:source,runs:prose,fallback:fallback,projectionID:id,sourceDigest:Self.presentationDigest(prose))))
       prose=[];currentBlock=nil
     }
     func flushTable() {
       guard let tableID else {return}
-      result.append(.init(id:"table-\(tableID)",kind:.table,table:.init(id:tableID,source:source,sourceDigest:sourceDigest,rows:rows)))
+      result.append(.init(id:"table-\(tableID)",kind:.table,table:.init(id:tableID,source:source,sourceDigest:Self.presentationDigest(rows.flatMap{$0.flatMap{$0}}),rows:rows)))
       rows=[]
     }
     for run in runs {
@@ -84,6 +84,23 @@ struct MarkdownRenderDocument:Sendable {
       }
     }
     flushText();flushTable();return result
+  }
+  /// Appending to a message must not reinstall native text/formula attachments in earlier blocks.
+  /// Include rendered semantics (including resolved links), so later Markdown definitions still
+  /// invalidate a block when its actual presentation changes.
+  private static func presentationDigest(_ runs:[MarkdownRenderRun])->String {
+    var digest=SHA256()
+    func append(_ value:String) {let data=Data(value.utf8);digest.update(data:Data("\(data.count):".utf8));digest.update(data:data)}
+    for run in runs {
+      switch run.content {
+      case .text(let value):append("text");append(value)
+      case .math(let latex,let original,let display):append("math");append(latex);append(original);append(String(display))
+      }
+      let style=run.style
+      append("\(style.bold)/\(style.italic)/\(style.strike)/\(style.code)/\(style.heading)/\(style.indent)/\(style.quote)")
+      append(style.link ?? "");append(run.source.map{"\($0.lowerBound)/\($0.upperBound)"} ?? "none")
+    }
+    return digest.finalize().map{String(format:"%02x",$0)}.joined()
   }
   /// Use parsed heading runs, so fenced code, escaped hashes and inline markup stay correct.
   var firstOutlineHeading:String? {

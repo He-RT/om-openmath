@@ -1,63 +1,95 @@
 :root {
   color-scheme: light;
-  --background: #f6f7f4;
-  --surface: #fff;
-  --ink: #202924;
-  --muted: #64736b;
-  --accent: #286650;
-  --accent-soft: #e7f0e9;
-  --line: #e1e7e1;
-  --error: #b4433f;
-  --warning: #a37720;
-  --plot-1: #286650;
-  --plot-2: #476d9e;
-  --plot-3: #a87837;
-  --plot-4: #946b90;
-  --plot-5: #407f80;
-  --plot-6: #a7645f;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --paper: #FFFFFF;
+  --chrome: #F3F4F3;
+  --chrome-2: #E9ECEA;
+  --sidebar: rgba(239, 241, 240, 0.92);
+  --sidebar-edge: rgba(0, 0, 0, 0.06);
+  --well: #F4F5F4;
+  --line: #E2E5E3;
+  --line-strong: #CDD2CF;
+  --ink: #1B1E1D;
+  --ink-2: #5B6460;
+  --ink-3: #6F7873;
+  --green: #1D7550;
+  --green-soft: #E3F1EA;
+  --on-green: #FFFFFF;
+  --indigo: #5551CF;
+  --indigo-soft: #ECEBFB;
+  --amber: #9A5B00;
+  --amber-soft: #FBF0DD;
+  --red: #C23A2F;
+  --red-soft: #FBE7E4;
+  --select: rgba(0, 0, 0, 0.055);
+  --select-strong: rgba(29, 117, 80, 0.12);
+  --bubble: #EEF1EF;
+  --code-bg: #F2F4F3;
+  --pop: #FFFFFF;
+  --scene-bg: #F9FAF8;
+  --plot-1: #2F6BD8;
+  --plot-2: #C8641B;
+  --font-ui: -apple-system, BlinkMacSystemFont, "SF Pro Text", "PingFang SC", "Hiragino Sans GB", "Segoe UI", system-ui, sans-serif;
+  --font-mono: ui-monospace, "SF Mono", SFMono-Regular, Menlo, Consolas, monospace;
+  --font-paper: "New York", ui-serif, "STIX Two Text", "Songti SC", "Noto Serif SC", Georgia, serif;
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-7: 32px;
+  --radius-well: 8px;
+  --radius-code: 6px;
+  --radius-bubble: 14px;
+  --radius-composer: 14px;
+  --radius-menu: 11px;
+  /* Temporary legacy names. Remove after E migrates the remaining components. */
+  --background: var(--paper);
+  --surface: var(--chrome);
+  --muted: var(--ink-2);
+  --accent: var(--green);
+  --accent-soft: var(--green-soft);
+  --error: var(--red);
+  --warning: var(--amber);
+  /* Extra series retain distinct hues, away from status green and agent indigo. */
+  --plot-3: #916321;
+  --plot-4: #a04d7c;
+  --plot-5: #267d88;
+  --plot-6: #b14e45;
+  font-family: var(--font-ui);
   font-synthesis: none;
   text-rendering: optimizeLegibility;
-  line-height: 1.55;
-}
-:root[data-theme="dark"] {
-  color-scheme: dark;
-  --background: #151b18;
-  --surface: #1a221d;
-  --ink: #e3ebe6;
-  --muted: #9fafa6;
-  --accent: #8ac9a8;
-  --accent-soft: #273d31;
-  --line: #303c33;
-  --error: #ed9892;
-  --warning: #d9b469;
-  --plot-1: #8ac9a8;
-  --plot-2: #8cadd4;
-  --plot-3: #d6b175;
-  --plot-4: #c69cbd;
-  --plot-5: #88c0bf;
-  --plot-6: #dca19a;
+  line-height: 1.5;
 }
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
     color-scheme: dark;
-    --background: #151b18;
-    --surface: #1a221d;
-    --ink: #e3ebe6;
-    --muted: #9fafa6;
-    --accent: #8ac9a8;
-    --accent-soft: #273d31;
-    --line: #303c33;
-    --error: #ed9892;
-    --warning: #d9b469;
-    --plot-1: #8ac9a8;
-    --plot-2: #8cadd4;
-    --plot-3: #d6b175;
-    --plot-4: #c69cbd;
-    --plot-5: #88c0bf;
-    --plot-6: #dca19a;
+    --paper: #1E1F21; --chrome: #26282A; --chrome-2: #303234;
+    --sidebar: rgba(42, 44, 46, 0.9); --sidebar-edge: rgba(255, 255, 255, 0.07);
+    --well: #2A2C2F; --line: #36393B; --line-strong: #4A4E50;
+    --ink: #ECEEED; --ink-2: #A6ADAA; --ink-3: #868D8A;
+    --green: #56C891; --green-soft: #1F3B2D; --on-green: #0E1A14;
+    --indigo: #9A98FA; --indigo-soft: #2C2B4A; --amber: #E3A64A; --amber-soft: #3D2F17;
+    --red: #FF7468; --red-soft: #43231F; --select: rgba(255, 255, 255, 0.07); --select-strong: rgba(86, 200, 145, 0.16);
+    --bubble: #2F3234; --code-bg: #25282A; --pop: #2B2D2F; --scene-bg: #F4F6F3;
+    --plot-1: #7AA7F5; --plot-2: #F0A060;
+    --plot-3: #dcb477; --plot-4: #df95bf; --plot-5: #77c4d0; --plot-6: #e89b91;
   }
 }
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --paper: #1E1F21; --chrome: #26282A; --chrome-2: #303234;
+  --sidebar: rgba(42, 44, 46, 0.9); --sidebar-edge: rgba(255, 255, 255, 0.07);
+  --well: #2A2C2F; --line: #36393B; --line-strong: #4A4E50;
+  --ink: #ECEEED; --ink-2: #A6ADAA; --ink-3: #868D8A;
+  --green: #56C891; --green-soft: #1F3B2D; --on-green: #0E1A14;
+  --indigo: #9A98FA; --indigo-soft: #2C2B4A; --amber: #E3A64A; --amber-soft: #3D2F17;
+  --red: #FF7468; --red-soft: #43231F; --select: rgba(255, 255, 255, 0.07); --select-strong: rgba(86, 200, 145, 0.16);
+  --bubble: #2F3234; --code-bg: #25282A; --pop: #2B2D2F; --scene-bg: #F4F6F3;
+  --plot-1: #7AA7F5; --plot-2: #F0A060;
+  --plot-3: #dcb477; --plot-4: #df95bf; --plot-5: #77c4d0; --plot-6: #e89b91;
+}
+
 * {
   box-sizing: border-box;
 }
@@ -116,7 +148,7 @@ input {
 code,
 pre,
 .cm-editor {
-  font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+  font-family: var(--font-mono);
 }
 code {
   font-size: 0.88em;

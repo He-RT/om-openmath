@@ -62,3 +62,7 @@ SwiftMath 随附 `mathFonts.bundle` 作为未经修改的字体资源分发。�
 候选Node **26.11.1 darwin-arm64**的官方归档SHA256已与计划/官方清单核对，原执行文件严格签名校验通过；原始Node及内置第三方完整LICENSE保存于`macos/OpenMathNative/Resources/Licenses/Node-LICENSE.txt`。尚未验证OpenPGP发布签名、随包嵌入/重新签名或公证，不声称公开分发门禁已通过。最终用户包不包含npm/开发编译器，也不依赖系统Node。
 
 Mac复用SwiftMath1.7.3、swift-markdown/swift-cmark0.9.0精确提交；正文与数学字体MIT/OFL/GUST许可副本保存在同一Mac资源目录。完整mathFonts.bundle逐文件散列已登记，未修改字体资源。SDK实际SQLite为3.54.0、unix VFS；属于Apple系统库，不进入Rust核心或WASM图，FULL/fullfsync与崩溃耐久测试留待存储任务。
+
+## Web paper typography
+
+STIX Two Text (400 normal, 600 normal, 400 italic) is distributed as unmodified Google Fonts WOFF2 files under SIL OFL 1.1. Upstream: https://github.com/stipub/stixfonts and https://github.com/google/fonts/tree/main/ofl/stixtwotext. Original copyright and license are retained in `licenses/stix-two-text/OFL.txt`; `manifest.json` records each source URL and SHA256. Fonts load from the application package, without runtime requests to Google Fonts.

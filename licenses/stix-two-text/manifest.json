@@ -1,0 +1,115 @@
+{
+  "source": "https://fonts.googleapis.com/css2?family=STIX+Two+Text:ital,wght@0,400;0,600;1,400&display=swap",
+  "upstream": "https://github.com/google/fonts/tree/main/ofl/stixtwotext",
+  "license": "OFL-1.1",
+  "files": [
+    {
+      "file": "STIXTwoText-400-italic-cyrillic-ext.woff2",
+      "url": "https://fonts.gstatic.com/s/stixtwotext/v18/YA9Er02F12Xkf5whdwKf11l0p7uWhf8lJUzXZT2omsvbYR9kM2eGiStY4veH.woff2",
+      "sha256": "a9f3dc22b2c71b58e2e70858e06a43d0d22cb7f14c53db2bd357d7bd736986a3",
+      "bytes": 2144
+    },
+    {
+      "file": "STIXTwoText-400-italic-cyrillic.woff2",
+      "url": "https://fonts.gstatic.com/s/stixtwotext/v18/YA9Er02F12Xkf5whdwKf11l0p7uWhf8lJUzXZT2omsvbYRZkM2eGiStY4veH.woff2",
+      "sha256": "eff378963bb8e091cd587c5eac003c91722f6a33730241e8b2f12399ec1a8ab1",
+      "bytes": 11880
+    },
+    {
+      "file": "STIXTwoText-400-italic-greek.woff2",
+      "url": "https://fonts.gstatic.com/s/stixtwotext/v18/YA9Er02F12Xkf5whdwKf11l0p7uWhf8lJUzXZT2omsvbYRFkM2eGiStY4veH.woff2",
+      "sha256": "69b1376da6421a21260b50cac278b046bbf431015ca45ac78d0d3a3fb074c495",
+      "bytes": 10024
+    },
+    {
+      "file": "STIXTwoText-400-italic-vietnamese.woff2",
+      "url": "https://fonts.gstatic.com/s/stixtwotext/v18/YA9Er02F12Xkf5whdwKf11l0p7uWhf8lJUzXZT2omsvbYR1kM2eGiStY4veH.woff2",
+      "sha256": "fa2917367d1f7148967a25af833544bababee5c5a2a6c3f05df7e13e226d62c6",
+      "bytes": 6052
+    },
+    {
+      "file": "STIXTwoText-400-italic-latin-ext.woff2",
+      "url": "https://fonts.gstatic.com/s/stixtwotext/v18/YA9Er02F12Xkf5whdwKf11l0p7uWhf8lJUzXZT2omsvbYRxkM2eGiStY4veH.woff2",
+      "sha256": "6946bfd3d7a6e1abf468682c8a9118788c4492ca4c2d55c36b6f342c0ddfad44",
+      "bytes": 34232
+    },
+    {
+      "file": "STIXTwoText-400-italic-latin.woff2",
+      "url": "https://fonts.gstatic.com/s/stixtwotext/v18/YA9Er02F12Xkf5whdwKf11l0p7uWhf8lJUzXZT2omsvbYRJkM2eGiStY4g.woff2",
+      "sha256": "f76fb7797b835e6e9b3cd34b74dee746280bab27a710c3fce6d70d3356515d1e",
+      "bytes": 18212
+    },
+    {
+      "file": "STIXTwoText-400-normal-cyrillic-ext.woff2",
+      "url": "https://fonts.gstatic.com/s/stixtwotext/v18/YA9Vr02F12Xkf5whdwKf11l0p7OMi93T_dFUYw.woff2",
+      "sha256": "f0ff79a89ad868268a71b5138c4b21c150b7a6f4feb7eb5357722e95dec13b5f",
+      "bytes": 3144
+    },
+    {
+      "file": "STIXTwoText-400-normal-cyrillic.woff2",
+      "url": "https://fonts.gstatic.com/s/stixtwotext/v18/YA9Vr02F12Xkf5whdwKf11l0p7qMi93T_dFUYw.woff2",
+      "sha256": "459edfd8d40c3527844884b6cc024ef8f05bbd2c8a7dfd4ad8dcb68b89bac2e9",
+      "bytes": 17208
+    },
+    {
+      "file": "STIXTwoText-400-normal-greek.woff2",
+      "url": "https://fonts.gstatic.com/s/stixtwotext/v18/YA9Vr02F12Xkf5whdwKf11l0p72Mi93T_dFUYw.woff2",
+      "sha256": "250c068ab814fb5e5654799f660b720bfcc487c811223e2b5d0398e9c8bd1a5b",
+      "bytes": 15256
+    },
+    {
+      "file": "STIXTwoText-400-normal-vietnamese.woff2",
+      "url": "https://fonts.gstatic.com/s/stixtwotext/v18/YA9Vr02F12Xkf5whdwKf11l0p7GMi93T_dFUYw.woff2",
+      "sha256": "41a295eb087e35f07cb82dbade1d621f57678158033e06684cad599685ab598a",
+      "bytes": 9148
+    },
+    {
+      "file": "STIXTwoText-400-normal-latin-ext.woff2",
+      "url": "https://fonts.gstatic.com/s/stixtwotext/v18/YA9Vr02F12Xkf5whdwKf11l0p7CMi93T_dFUYw.woff2",
+      "sha256": "22cbe1d46c5c9de19c80d2d2b6eda896e3489a0013add5c1904cc61d013911e0",
+      "bytes": 54988
+    },
+    {
+      "file": "STIXTwoText-400-normal-latin.woff2",
+      "url": "https://fonts.gstatic.com/s/stixtwotext/v18/YA9Vr02F12Xkf5whdwKf11l0p76Mi93T_dE.woff2",
+      "sha256": "889d958dfc639d2b89fc1873ad3cf74e00c86551f133227c79357e829d4058c9",
+      "bytes": 28448
+    },
+    {
+      "file": "STIXTwoText-600-normal-cyrillic-ext.woff2",
+      "url": "https://fonts.gstatic.com/s/stixtwotext/v18/YA9Vr02F12Xkf5whdwKf11l0p7OMi93T_dFUYw.woff2",
+      "sha256": "f0ff79a89ad868268a71b5138c4b21c150b7a6f4feb7eb5357722e95dec13b5f",
+      "bytes": 3144
+    },
+    {
+      "file": "STIXTwoText-600-normal-cyrillic.woff2",
+      "url": "https://fonts.gstatic.com/s/stixtwotext/v18/YA9Vr02F12Xkf5whdwKf11l0p7qMi93T_dFUYw.woff2",
+      "sha256": "459edfd8d40c3527844884b6cc024ef8f05bbd2c8a7dfd4ad8dcb68b89bac2e9",
+      "bytes": 17208
+    },
+    {
+      "file": "STIXTwoText-600-normal-greek.woff2",
+      "url": "https://fonts.gstatic.com/s/stixtwotext/v18/YA9Vr02F12Xkf5whdwKf11l0p72Mi93T_dFUYw.woff2",
+      "sha256": "250c068ab814fb5e5654799f660b720bfcc487c811223e2b5d0398e9c8bd1a5b",
+      "bytes": 15256
+    },
+    {
+      "file": "STIXTwoText-600-normal-vietnamese.woff2",
+      "url": "https://fonts.gstatic.com/s/stixtwotext/v18/YA9Vr02F12Xkf5whdwKf11l0p7GMi93T_dFUYw.woff2",
+      "sha256": "41a295eb087e35f07cb82dbade1d621f57678158033e06684cad599685ab598a",
+      "bytes": 9148
+    },
+    {
+      "file": "STIXTwoText-600-normal-latin-ext.woff2",
+      "url": "https://fonts.gstatic.com/s/stixtwotext/v18/YA9Vr02F12Xkf5whdwKf11l0p7CMi93T_dFUYw.woff2",
+      "sha256": "22cbe1d46c5c9de19c80d2d2b6eda896e3489a0013add5c1904cc61d013911e0",
+      "bytes": 54988
+    },
+    {
+      "file": "STIXTwoText-600-normal-latin.woff2",
+      "url": "https://fonts.gstatic.com/s/stixtwotext/v18/YA9Vr02F12Xkf5whdwKf11l0p76Mi93T_dE.woff2",
+      "sha256": "889d958dfc639d2b89fc1873ad3cf74e00c86551f133227c79357e829d4058c9",
+      "bytes": 28448
+    }
+  ]
+}

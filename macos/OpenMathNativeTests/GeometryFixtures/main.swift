@@ -36,6 +36,7 @@ import SwiftUI
     let body=try JSONSerialization.jsonObject(with:JSONEncoder().encode(raw.payload)) as! [String:Any]
     let actual=body["values"] as! [[Double]]
     precondition(curve.plot!.paths[0].points.prefix(2).enumerated().allSatisfy {i,p in p.x==actual[i][0] && p.y==actual[i][1]},"plot replaced original coordinates")
+    precondition(curve.plot!.paths[0].seriesIndex==0)
     let broken=try await load("broken")
     precondition(broken.plot!.paths.count>1,"discontinuous curve was joined")
     let scene=try await load("sphere"),data=scene.scene!
@@ -64,6 +65,15 @@ import SwiftUI
     canvas.isHidden=true;scene.camera3D.rotate(0.1,0);canvas.configure(scene,data:data)
     try await Task.sleep(for:.milliseconds(100));precondition(canvas.submittedFrames==idle,"hidden scene submitted a frame")
     let after=try await kernel.state();precondition(before.kernel_state_revision.value==after.kernel_state_revision.value,"camera submitted computation")
+    canvas.isHidden=false;window.appearance=NSAppearance(named:.darkAqua)
+    canvas.appearance=NSAppearance(named:.darkAqua);canvas.needsDisplay=true
+    for _ in 0..<100 {if canvas.clearColor.red<0.3 {break};try await Task.sleep(for:.milliseconds(20))}
+    let dark=canvas.clearColor
+    // The actual drawable pass, not a CSS or metadata value, must clear to a dark background.
+    precondition(dark.red<0.3 && dark.green<0.3 && dark.blue<0.3,"dark scene retained a light background")
+    print("Actual dark Metal clear color: \(dark.red), \(dark.green), \(dark.blue)")
+    let event=NSEvent.mouseEvent(with:.leftMouseDown,location:NSPoint(x:20,y:20),modifierFlags:[],timestamp:0,windowNumber:window.windowNumber,context:nil,eventNumber:1,clickCount:1,pressure:1)!
+    canvas.mouseDown(with:event);precondition(scene.sceneInteracted,"first real scene interaction was not recorded")
     print("Actual curves \(curve.plot!.paths.reduce(0){$0+$1.points.count}) points; discontinuity \(broken.plot!.paths.count) segments; sphere \(data.meshes.reduce(0){$0+$1.triangles.count}) original triangles; \(canvas.presentedFrames) Metal presentations, idle/hidden no frames; kernel revision unchanged.")
     canvas.stopRendering();window.orderOut(nil)
     await curve.close();await broken.close();await scene.close();await client.close();await kernel.close();await source.close();try await host.close();try await storage.close()

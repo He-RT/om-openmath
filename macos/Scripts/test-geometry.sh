@@ -9,7 +9,7 @@ swiftc -whole-module-optimization -swift-version 6 -parse-as-library -target arm
  macos/OpenMathNative/Generated/Contracts/*.swift macos/OpenMathNative/Storage/*.swift macos/OpenMathNative/Kernel/*.swift \
  macos/OpenMathNative/Rendering/ResultClient.swift macos/OpenMathNative/Rendering/ResultPresenter.swift \
  macos/OpenMathNative/Rendering/NativeGeometryData.swift macos/OpenMathNative/Rendering/NativeGeometryModel.swift macos/OpenMathNative/Rendering/NativeStepsModel.swift \
- macos/OpenMathNative/Rendering/NativePlotView.swift macos/OpenMathNative/Rendering/NativeMetalSceneView.swift \
+ macos/OpenMathNative/UI/Theme.swift macos/OpenMathNative/Rendering/NativePlotView.swift macos/OpenMathNative/Rendering/NativeMetalSceneView.swift \
  macos/OpenMathNative/NativeHostClient.swift macos/OpenMathNative/AppEventRouter.swift macos/OpenMathNative/DraftStore.swift \
  macos/OpenMathNativeTests/GeometryFixtures/main.swift -o target/macos-geometry-tests/geometry-fixtures
 attempt_root=$(mktemp -d "$root/target/macos-geometry-tests/attempt-XXXXXX")

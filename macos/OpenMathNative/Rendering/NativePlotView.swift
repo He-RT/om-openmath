@@ -4,6 +4,17 @@ import SwiftUI
 extension GeometryColor {
   @MainActor var native:NSColor {NSColor(srgbRed:CGFloat(r),green:CGFloat(g),blue:CGFloat(b),alpha:CGFloat(a))}
 }
+/// Only automatically assigned series use theme colors; explicit producer styles remain intact.
+@MainActor func nativePlotSeriesColor(_ index:Int)->NSColor {
+  let slot=index%6
+  if slot<2,let color=NSColor(named:NSColor.Name(slot==0 ? "Plot1":"Plot2")) {return color}
+  let light:[UInt32]=[0x2F6BD8,0xC8641B,0x916321,0xA04D7C,0x267D88,0xB14E45]
+  let dark:[UInt32]=[0x7AA7F5,0xF0A060,0xDCB477,0xDF95BF,0x77C4D0,0xE89B91]
+  return NSColor(name:nil) {appearance in
+    let value=(appearance.bestMatch(from:[.aqua,.darkAqua]) == .darkAqua ? dark:light)[slot]
+    return NSColor(srgbRed:CGFloat((value>>16)&255)/255,green:CGFloat((value>>8)&255)/255,blue:CGFloat(value&255)/255,alpha:1)
+  }
+}
 struct NativePlotView:NSViewRepresentable {
   @ObservedObject var model:NativeGeometryModel
   let data:NativePlotData
@@ -17,6 +28,8 @@ struct NativePlotView:NSViewRepresentable {
   private var previous:NSPoint?
   override var isFlipped:Bool {true}
   override var acceptsFirstResponder:Bool {true}
+  override func becomeFirstResponder()->Bool {let accepted=super.becomeFirstResponder();if accepted {model?.plotFocused=true};return accepted}
+  override func resignFirstResponder()->Bool {let accepted=super.resignFirstResponder();if accepted {model?.plotFocused=false};return accepted}
   private var plotRect:NSRect {bounds.insetBy(dx:44,dy:30)}
   // Tick placement is only a viewport decoration; producer coordinates remain untouched.
   private func ticks(_ lo:Double,_ hi:Double)->[Double] {
@@ -83,7 +96,7 @@ struct NativePlotView:NSViewRepresentable {
     for curve in data.paths {
       let path=NSBezierPath();path.lineWidth=CGFloat(max(0.2,min(32,curve.width)));var started=false
       for p in curve.points {guard let p=point(p) else {started=false;continue};if started {path.line(to:p)} else {path.move(to:p);started=true}}
-      curve.color.opacity(curve.opacity).native.setStroke();path.stroke()
+      (curve.seriesIndex.map{nativePlotSeriesColor($0).withAlphaComponent(curve.opacity)} ?? curve.color.opacity(curve.opacity).native).setStroke();path.stroke()
     }
     NSColor.systemBlue.setStroke()
     for arrow in data.arrows {

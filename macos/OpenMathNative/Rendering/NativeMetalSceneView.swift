@@ -89,6 +89,8 @@ struct NativeMetalSceneView:NSViewRepresentable {
   private let labelOverlay=SceneLabelOverlay()
   private(set) var submittedFrames:UInt64=0,presentedFrames:UInt64=0
   override var acceptsFirstResponder:Bool {true}
+  override func becomeFirstResponder()->Bool {let accepted=super.becomeFirstResponder();if accepted {model?.sceneFocused=true};return accepted}
+  override func resignFirstResponder()->Bool {let accepted=super.resignFirstResponder();if accepted {model?.sceneFocused=false};return accepted}
   override init(frame:NSRect,device:MTLDevice?) {
     super.init(frame:frame,device:device);isPaused=true;enableSetNeedsDisplay=true;autoResizeDrawable=true
     colorPixelFormat = .bgra8Unorm;depthStencilPixelFormat = .depth32Float;framebufferOnly=true;delegate=self
@@ -158,8 +160,12 @@ struct NativeMetalSceneView:NSViewRepresentable {
     guard alive,window?.isVisible==true,!isHiddenOrHasHiddenAncestor,let pipelines,!batches.isEmpty else {return}
     guard inFlight<3 else {pendingFrame=true;return}
     guard let pass=currentRenderPassDescriptor,let drawable=currentDrawable,let buffer=pipelines.queue.makeCommandBuffer() else {return}
-    let background=NSColor.textBackgroundColor.usingColorSpace(.sRGB) ?? .black
-    pass.colorAttachments[0].clearColor = .init(red:Double(background.redComponent),green:Double(background.greenComponent),blue:Double(background.blueComponent),alpha:1)
+    var background=NSColor.black
+    effectiveAppearance.performAsCurrentDrawingAppearance {
+      background=NSColor.textBackgroundColor.usingColorSpace(.sRGB) ?? .black
+    }
+    clearColor = .init(red:Double(background.redComponent),green:Double(background.greenComponent),blue:Double(background.blueComponent),alpha:1)
+    pass.colorAttachments[0].clearColor=clearColor
     guard let encoder=buffer.makeRenderCommandEncoder(descriptor:pass) else {return}
     let aspect=Float(max(1,drawableSize.width)/max(1,drawableSize.height)),(mvp,normal)=nativeSceneMatrices(camera,aspect:aspect)
     let ratio=Float(max(1,drawableSize.width)/max(1,bounds.width)),current=generation
@@ -208,7 +214,7 @@ struct NativeMetalSceneView:NSViewRepresentable {
   }
   override func layout() {super.layout();labelOverlay.frame=bounds;updateLabels()}
   private func updateLabels() {labelOverlay.data=scene;labelOverlay.camera=camera;labelOverlay.needsDisplay=true}
-  override func mouseDown(with event:NSEvent) {window?.makeFirstResponder(self);previous=convert(event.locationInWindow,from:nil);if event.clickCount==2 {model?.reset()}}
+  override func mouseDown(with event:NSEvent) {model?.noteSceneInteraction();window?.makeFirstResponder(self);previous=convert(event.locationInWindow,from:nil);if event.clickCount==2 {model?.reset()}}
   override func mouseDragged(with event:NSEvent) {
     let p=convert(event.locationInWindow,from:nil);guard let old=previous,var camera=model?.camera3D else {return};previous=p
     let dx=Double(p.x-old.x),dy=Double(p.y-old.y)
@@ -216,10 +222,11 @@ struct NativeMetalSceneView:NSViewRepresentable {
     else {camera.rotate(dx*0.006,-dy*0.006)};model?.camera3D=camera
   }
   override func mouseUp(with event:NSEvent) {previous=nil}
-  override func scrollWheel(with event:NSEvent) {guard window?.firstResponder === self,var camera=model?.camera3D else {super.scrollWheel(with:event);return};camera.zoom(exp(max(-0.7,min(0.7,Double(event.scrollingDeltaY)*0.01))));model?.camera3D=camera}
-  override func magnify(with event:NSEvent) {guard var camera=model?.camera3D else {return};camera.zoom(exp(-Double(event.magnification)));model?.camera3D=camera}
+  override func scrollWheel(with event:NSEvent) {guard window?.firstResponder === self,var camera=model?.camera3D else {super.scrollWheel(with:event);return};model?.noteSceneInteraction();camera.zoom(exp(max(-0.7,min(0.7,Double(event.scrollingDeltaY)*0.01))));model?.camera3D=camera}
+  override func magnify(with event:NSEvent) {guard var camera=model?.camera3D else {return};model?.noteSceneInteraction();camera.zoom(exp(-Double(event.magnification)));model?.camera3D=camera}
   override func keyDown(with event:NSEvent) {
     guard var camera=model?.camera3D else {return}
+    model?.noteSceneInteraction()
     if event.keyCode==115 {model?.reset();return}
     if event.modifierFlags.contains(.shift),[123,124,125,126].contains(event.keyCode) {
       camera.panX+=event.keyCode==123 ? -0.1:event.keyCode==124 ? 0.1:0;camera.panY+=event.keyCode==126 ? 0.1:event.keyCode==125 ? -0.1:0

@@ -14,6 +14,10 @@ import SwiftUI
   @Published private(set) var error:String?
   @Published var camera2D:NativeCamera2D?
   @Published var camera3D=NativeCamera3D()
+  @Published var plotFocused=false
+  @Published var sceneFocused=false
+  @Published private(set) var sceneInteracted=false
+  func noteSceneInteraction() {if !sceneInteracted {sceneInteracted=true}}
   private let client:ResultClient
   private var charged=0,closed=false
   init(host:NativeHostClient,binding:ResultBinding) {original=binding;client=ResultClient(host:host)}
@@ -55,7 +59,7 @@ import SwiftUI
     let colors=[GeometryColor(0.15,0.53,0.91),.init(0.9,0.35,0.2),.init(0.35,0.65,0.35),.init(0.65,0.35,0.8)]
     for (i,curve) in meta.curves.enumerated() {for (segment,count) in curve.segments.enumerated() {
       let points:[GeometryPoint2]=try await read(.curve_points,count:count,object:i,segment:segment,as:GeometryPoint2.self,stride:48)
-      paths.append(.init(points:points,color:colors[i%colors.count],opacity:1,width:1.7,label:segment==0 ? curve.label:nil))
+      paths.append(.init(points:points,color:colors[i%colors.count],opacity:1,width:1.7,label:segment==0 ? curve.label:nil,seriesIndex:i))
     }}
     for (i,path) in (meta.paths ?? []).enumerated() {
       let points:[GeometryPoint2]=try await read(.path_points,count:path.points,object:i,as:GeometryPoint2.self,stride:48)

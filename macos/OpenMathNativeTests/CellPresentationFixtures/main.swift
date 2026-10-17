@@ -8,6 +8,9 @@ import Foundation
     f.stopped=false;f.hasResult=true;precondition(CellPresentationState.derive(f).status == .unconfirmed)
     f.hasMetadata=true;f.nature="exact";precondition(CellPresentationState.derive(f).status == .exact)
     for nature in ["machine","high_precision"] {f.nature=nature;precondition(CellPresentationState.derive(f).status == .numeric)}
+    f.outputKind="plot";precondition(CellPresentationState.derive(f).status == .geometry)
+    f.outputKind="scene3d";precondition(CellPresentationState.derive(f).status == .geometry)
+    f.outputKind=""
     f.nature="symbolic";f.unevaluated=true;precondition(CellPresentationState.derive(f).status == .unevaluated)
     f.unevaluated=false;f.verified=true;precondition(CellPresentationState.derive(f).status == .verified)
     f.conditional=true;precondition(CellPresentationState.derive(f).status == .conditional)

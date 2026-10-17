@@ -47,7 +47,10 @@ struct NativeSceneMetadata:Decodable,Sendable {
   struct Line:Decodable,Sendable {let positions:Int,colors:Int,width:Double}
   let bounds:[GeometryPoint3],sampled:Bool,skipped:Int,meshes:[Mesh],lines:[Line],points:Int,labels:Int
 }
-struct NativePlotPath:Sendable {let points:[GeometryPoint2],color:GeometryColor,opacity:Double,width:Double,label:String?}
+struct NativePlotPath:Sendable {
+  let points:[GeometryPoint2],color:GeometryColor,opacity:Double,width:Double,label:String?
+  var seriesIndex:Int?=nil
+}
 struct NativePlotTile:Decodable,Sendable {let bounds:[GeometryPoint2],value:Double,color:GeometryColor}
 struct NativePlotArrow:Decodable,Sendable {let start:GeometryPoint2,end:GeometryPoint2,value:GeometryPoint2}
 struct NativePlotMarker:Decodable,Sendable {let position:GeometryPoint2,color:GeometryColor,opacity:Double,radius:Double}

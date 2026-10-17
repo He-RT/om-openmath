@@ -7,12 +7,16 @@ import SwiftUI
   @StateObject private var workspace=NativeFileWorkspace()
   @State private var showingRecovery=false
   @State private var showingSessionRecovery=false
+  #if DEBUG
+  @Environment(\.openWindow) private var openWindow
+  #endif
   var body:some Scene {
     Window("OpenMath Preview",id:"workspace") {
       Group {
         if let session=workspace.session {WorkspaceView(workspace:workspace,session:session)}
         else {welcome}
       }.frame(minWidth:640,minHeight:560)
+        .tint(Theme.Color.verified)
         .background(NativeWindowAttachment(workspace:workspace).frame(width:0,height:0))
         .toolbar {
           ToolbarItemGroup(placement:.automatic) {
@@ -54,7 +58,17 @@ import SwiftUI
         Button("撤销") {workspace.undo()}.keyboardShortcut("z").disabled(!workspace.canUndo)
         Button("重做") {workspace.redo()}.keyboardShortcut("z",modifiers:[.command,.shift]).disabled(!workspace.canRedo)
       }
+      #if DEBUG
+      CommandMenu("开发") {
+        Button("工作台令牌预览") {openWindow(id:"theme-preview")}
+      }
+      #endif
     }
+    #if DEBUG
+    Window("工作台令牌预览",id:"theme-preview") {
+      ThemePreview()
+    }.defaultSize(width:760,height:720)
+    #endif
   }
   private var welcome:some View {
     VStack(spacing:24) {

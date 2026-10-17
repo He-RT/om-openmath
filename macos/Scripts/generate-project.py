@@ -33,6 +33,8 @@ agent_runtime = add('agent-runtime', 'isa = PBXFileReference; lastKnownFileType 
 agent_runtime_build = add('agent-runtime-build', f'isa = PBXBuildFile; fileRef = {agent_runtime};')
 icon = add('app-icon', 'isa = PBXFileReference; lastKnownFileType = image.icns; path = ../app/src-tauri/icons/icon.icns; sourceTree = "<group>";')
 icon_build = add('app-icon-build', f'isa = PBXBuildFile; fileRef = {icon};')
+assets = add('assets', 'isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = OpenMathNative/Assets.xcassets; sourceTree = "<group>";')
+assets_build = add('assets-build', f'isa = PBXBuildFile; fileRef = {assets};')
 math_package = add('swiftmath-package', 'isa = XCRemoteSwiftPackageReference; repositoryURL = "https://github.com/mgriebling/SwiftMath.git"; requirement = {kind = revision; revision = fa8244ed032f4a1ade4cb0571bf87d2f1a9fd2d7;};')
 math_product = add('swiftmath-product', f'isa = XCSwiftPackageProductDependency; package = {math_package}; productName = SwiftMath;')
 math_build = add('swiftmath-link', f'isa = PBXBuildFile; productRef = {math_product};')
@@ -42,9 +44,9 @@ markdown_product = add('markdown-product', f'isa = XCSwiftPackageProductDependen
 markdown_build = add('markdown-link', f'isa = PBXBuildFile; productRef = {markdown_product};')
 product = add('app-product', 'isa = PBXFileReference; explicitFileType = wrapper.application; path = "OpenMath Preview.app"; sourceTree = BUILT_PRODUCTS_DIR;')
 products = add('products', f'isa = PBXGroup; children = {array([product])}; name = Products; sourceTree = "<group>";')
-main_group = add('main-group', f'isa = PBXGroup; children = {array([ref for ref, _ in sources] + [resources, font_catalog, agent_runtime, icon, products])}; sourceTree = "<group>";')
+main_group = add('main-group', f'isa = PBXGroup; children = {array([ref for ref, _ in sources] + [resources, font_catalog, agent_runtime, icon, assets, products])}; sourceTree = "<group>";')
 source_phase = add('source-phase', f'isa = PBXSourcesBuildPhase; buildActionMask = 2147483647; files = {array([build for _, build in sources])}; runOnlyForDeploymentPostprocessing = 0;')
-resource_phase = add('resource-phase', f'isa = PBXResourcesBuildPhase; buildActionMask = 2147483647; files = {array([resource_build,font_catalog_build,agent_runtime_build,icon_build])}; runOnlyForDeploymentPostprocessing = 0;')
+resource_phase = add('resource-phase', f'isa = PBXResourcesBuildPhase; buildActionMask = 2147483647; files = {array([resource_build,font_catalog_build,agent_runtime_build,icon_build,assets_build])}; runOnlyForDeploymentPostprocessing = 0;')
 framework_phase = add('framework-phase', f'isa = PBXFrameworksBuildPhase; buildActionMask = 2147483647; files = {array([math_build,markdown_build])}; runOnlyForDeploymentPostprocessing = 0;')
 settings = {
     'SDKROOT': 'macosx', 'SUPPORTED_PLATFORMS': 'macosx', 'ARCHS': 'arm64',
@@ -58,12 +60,15 @@ settings = {
     'SWIFT_INCLUDE_PATHS': '$(inherited) $(PROJECT_DIR)/Headers',
     'LIBRARY_SEARCH_PATHS': '$(inherited) $(PROJECT_DIR)/../target/release',
     'OTHER_LDFLAGS': '$(inherited) -lom_apple_ffi -lsqlite3', 'ENABLE_TESTABILITY': 'YES',
+    'ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME': 'AccentColor',
 }
 config_ids = []
 for name in ['Debug', 'Release']:
     values = dict(settings)
     values['SWIFT_OPTIMIZATION_LEVEL'] = '-Onone' if name == 'Debug' else '-O'
     values['DEBUG_INFORMATION_FORMAT'] = 'dwarf' if name == 'Debug' else 'dwarf-with-dsym'
+    if name == 'Debug':
+        values['SWIFT_ACTIVE_COMPILATION_CONDITIONS'] = '$(inherited) DEBUG'
     if name == 'Release':
         values['SWIFT_COMPILATION_MODE'] = 'wholemodule'
     config_ids.append(add('config:' + name, 'isa = XCBuildConfiguration; buildSettings = {' + ''.join(f'{k} = {q(v)};' for k, v in values.items()) + f'}}; name = {name};'))

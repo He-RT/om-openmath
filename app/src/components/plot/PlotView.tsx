@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 import type { KernelClient } from "../../kernel/client";
 import type { PlotRequest } from "../../kernel/generated/PlotRequest";
 import type { PlotData } from "../../kernel/generated/PlotData";
@@ -11,9 +11,13 @@ import {
   formatCoordinate,
 } from "./scale";
 import { ArtifactButton } from "../output/ArtifactButton";
-import { PlotGeometry, margins, type Viewport } from "./geometry";
+import { PlotGeometry, margins, plotHeight, type Viewport } from "./geometry";
 import { usePlotSampler } from "./usePlotSampler";
+import { GraphFooter } from "../output/GraphFooter";
 import { Sliders } from "./sliders";
+import { ToolbarMenu } from "../ToolbarMenu";
+import { WorkbenchIcon } from "../WorkbenchIcon";
+import { plotCsvArtifact } from "./artifacts";
 export interface PlotProps {
   request: PlotRequest;
   data?: PlotData;
@@ -21,6 +25,7 @@ export interface PlotProps {
   t: Messages;
   active?: boolean;
   exportParameters?: Record<string,number>;
+  renderStatus?: ((actions: ReactNode) => ReactNode) | undefined;
 }
 const identities = new WeakMap<object, number>();
 let nextIdentity = 0;
@@ -49,6 +54,7 @@ function InteractivePlot({
   t,
   active = true,
   exportParameters = {},
+  renderStatus,
 }: PlotProps) {
   const initial: Viewport = {
     x: data?.x_range ?? request.x_range,
@@ -61,6 +67,7 @@ function InteractivePlot({
   const [params, setParams] = useState({ ...request.params }),
     paramsRef = useRef({ ...request.params });
   const [showData, setShowData] = useState(false);
+  const [exportStatus,setExportStatus] = useState<string|null>(null);
   const [cursor, setCursor] = useState<[number, number] | null>(null);
   const [width, setWidth] = useState(640);
   const root = useRef<HTMLElement>(null),
@@ -118,11 +125,11 @@ function InteractivePlot({
     return box && box.width > 0 && box.height > 0
       ? [
           ((clientX - box.left) / box.width) * width,
-          ((clientY - box.top) / box.height) * 320,
+          ((clientY - box.top) / box.height) * plotHeight,
         ]
-      : [width / 2, 160];
+      : [width / 2, plotHeight / 2];
   };
-  const zoom = (factor: number, p: [number, number] = [width / 2, 160]) => {
+  const zoom = (factor: number, p: [number, number] = [width / 2, plotHeight / 2]) => {
     const v = viewRef.current;
     const fx = Math.max(
         0,
@@ -135,7 +142,7 @@ function InteractivePlot({
         0,
         Math.min(
           1,
-          (320 - margins.bottom - p[1]) / (320 - margins.top - margins.bottom),
+          (plotHeight - margins.bottom - p[1]) / (plotHeight - margins.top - margins.bottom),
         ),
       );
     changeView({
@@ -148,7 +155,7 @@ function InteractivePlot({
     if (!active) return;
     e.preventDefault();
     const pixels =
-      e.deltaY * (e.deltaMode === 1 ? 16 : e.deltaMode === 2 ? 320 : 1);
+      e.deltaY * (e.deltaMode === 1 ? 16 : e.deltaMode === 2 ? plotHeight : 1);
     zoom(
       Math.exp(Math.max(-1.4, Math.min(1.4, pixels * 0.002))),
       point(e.clientX, e.clientY),
@@ -184,20 +191,24 @@ function InteractivePlot({
         axisScale(view.x, [margins.left, width - margins.right],logX).invert(
           cursor[0],
         ),
-        axisScale(view.y, [320 - margins.bottom, margins.top],logY).invert(
+        axisScale(view.y, [plotHeight - margins.bottom, margins.top],logY).invert(
           cursor[1],
         ),
       ]
     : null;
+  const geometry = sampler.data?.geometry;
+  const pointCount = (sampler.data?.curves.reduce((n,c)=>n+c.segments.reduce((m,s)=>m+s.length,0),0) ?? 0)
+    + (geometry?.points.length ?? 0) + (geometry?.markers?.length ?? 0)
+    + (geometry?.paths?.reduce((n,p)=>n+p.points.length,0) ?? 0)
+    + (geometry?.polygons?.reduce((n,p)=>n+p.points.length,0) ?? 0);
   return (
     <figure
       className={`plot-view sampled-preview ${sampler.pending || sampler.error ? "plot-pending" : ""}`}
       ref={root}
       aria-busy={sampler.pending}
     >
-      <div className="plot-toolbar">
-        <span>{t.plot}</span>
-        <div>
+      <div className="plot-stage">
+        <div className="graph-controls" role="group" aria-label={t.graphControls}>
           <button
             disabled={!active}
             aria-label={t.zoomIn}
@@ -212,20 +223,19 @@ function InteractivePlot({
           >
             −
           </button>
-          <button disabled={!active} onClick={reset}>
-            {t.resetView}
+          <button disabled={!active} onClick={reset} aria-label={t.resetView} title={t.resetView}>
+            <WorkbenchIcon name="reset" />
           </button>
         </div>
-      </div>
       <svg
         ref={svg}
         width="100%"
-        height="320"
-        viewBox={`0 0 ${width} 320`}
+        height={plotHeight}
+        viewBox={`0 0 ${width} ${plotHeight}`}
         role="img"
         aria-label={t.plot}
         tabIndex={active ? 0 : -1}
-        aria-description={t.plotControls}
+        aria-description={`${sampler.data?.curves.length ?? request.exprs.length} ${t.graphCurves}; x ${view.x.map(formatCoordinate).join(' … ')}. ${t.plotControls}`}
         onDoubleClick={reset}
         onPointerDown={(e) => {
           if (!active || e.button !== 0) return;
@@ -242,7 +252,7 @@ function InteractivePlot({
             p[0] >= margins.left &&
               p[0] <= width - margins.right &&
               p[1] >= margins.top &&
-              p[1] <= 320 - margins.bottom
+              p[1] <= plotHeight - margins.bottom
               ? p
               : null,
           );
@@ -256,7 +266,7 @@ function InteractivePlot({
             ),
             y: panRange(
               start.view.y,
-              (p[1] - start.point[1]) / (320 - margins.top - margins.bottom),
+              (p[1] - start.point[1]) / (plotHeight - margins.top - margins.bottom),
               logY,
             ),
           });
@@ -320,11 +330,6 @@ function InteractivePlot({
           cursor={cursor}
         />
       </svg>
-      <div className="plot-exports">
-        {(['svg','png'] as const).map(format=><ArtifactButton key={format} kernel={kernel} t={t} label={format==='svg'?t.exportSvg:t.exportPng}
-          title="OpenMath-plot" version={sampler.data} enabled={active&&!sampler.pending&&!sampler.error&&sampler.data!==null}
-          request={()=>sampler.data?{type:'export_plot',format,figure:{data:sampler.data,axis_x:request.kind==='Parametric'?'x':request.var_x,axis_y:request.var_y??'y',title:'OpenMath',color:request.options?.color??null,region:request.kind==='Region',parameters:{...paramsRef.current,...exportParameters},width:1000,height:600}}:undefined}/>)}
-      </div>
       <div className="plot-readout">
         <span>
           {t.coordinates}:{" "}
@@ -336,12 +341,13 @@ function InteractivePlot({
           {sampler.pending ? t.sampling : !active ? t.stale : ""}
         </span>
       </div>
+      </div>
       <figcaption className="plot-legend">
         {(
           sampler.data?.curves ?? request.exprs.map((label) => ({ label }))
         ).map((c, i) => (
           <span key={i}>
-            <i style={{ background: `var(--plot-${(i % 6) + 1})` }} />
+            <i style={{ background: request.options?.color ?? `var(--plot-${(i % 6) + 1})` }} />
             <code>{c.label}</code>
           </span>
         ))}
@@ -357,19 +363,24 @@ function InteractivePlot({
           </button>
         </div>
       )}
-      {sampler.data?.geometry && <p className="plot-approximation">
-        {request.kind !== "Data" && request.kind !== "Histogram" && request.kind !== "Scene" && <span>{t.plotApproximation}</span>}
-        {sampler.data.geometry.skipped > 0 && <span>{t.skippedSamples}: {sampler.data.geometry.skipped}</span>}
-      </p>}
-      <details onToggle={(event) => setShowData(event.currentTarget.open)}>
-        <summary>{t.plotData}</summary>
-        {showData && <pre className="plot-sample-data">{JSON.stringify({
-          scale: sampler.data?.scale ?? 'linear',
-          curves: sampler.data?.curves,
-          geometry: sampler.data?.geometry,
-          highlights: sampler.data?.highlights,
-        }, null, 2)}</pre>}
-      </details>
+      <GraphFooter t={t} renderStatus={renderStatus} status={exportStatus} information={<>
+            <p>{sampler.data?.curves.length ?? 0} {t.graphCurves} · {t.samplePoints}: {pointCount}</p>
+            {geometry && (geometry.tiles.length > 0 || geometry.arrows.length > 0) && <p>{t.graphTiles}: {geometry.tiles.length} · {t.graphVectors}: {geometry.arrows.length}</p>}
+            {sampler.data && <p>{t.graphRange}: x [{sampler.data.x_range.map(formatCoordinate).join(' … ')}], y [{sampler.data.y_range.map(formatCoordinate).join(' … ')}]</p>}
+            {request.kind !== "Data" && request.kind !== "Histogram" && request.kind !== "Scene" && <p>{t.plotApproximation}</p>}
+            {sampler.data?.geometry && <p>{t.skippedSamples}: {sampler.data.geometry.skipped}</p>}
+            <details onToggle={event=>setShowData(event.currentTarget.open)}>
+              <summary>{t.plotData}</summary>
+              {showData && <pre className="plot-sample-data">{JSON.stringify(sampler.data,null,2)}</pre>}
+            </details>
+        </>} exports={<ToolbarMenu label={t.graphExport} icon={<>{t.graphExport}<WorkbenchIcon name="chevron" /></>} className="graph-export">
+        {(['svg','png'] as const).map(format=><ArtifactButton key={format} onStatus={setExportStatus} kernel={kernel} t={t} label={format==='svg'?t.exportSvg:t.exportPng}
+          title="OpenMath-plot" version={sampler.data} enabled={active&&!sampler.pending&&!sampler.error&&sampler.data!==null}
+          request={()=>sampler.data?{type:'export_plot',format,figure:{data:sampler.data,axis_x:request.kind==='Parametric'?'x':request.var_x,axis_y:request.var_y??'y',title:'OpenMath',color:request.options?.color??null,region:request.kind==='Region',parameters:{...paramsRef.current,...exportParameters},width:1000,height:600}}:undefined}/>)}
+          <ArtifactButton onStatus={setExportStatus} kernel={kernel} t={t} title="OpenMath-plot" label={t.exportCsv}
+            version={sampler.data} enabled={active&&!sampler.pending&&!sampler.error&&sampler.data!==null}
+            createArtifact={()=>plotCsvArtifact(sampler.data!)} />
+        </ToolbarMenu>} />
       <Sliders
         request={request}
         values={params}

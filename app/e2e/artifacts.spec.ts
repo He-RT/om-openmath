@@ -12,12 +12,19 @@ test('real CSV/JSON exports every retained row, and PNG/SVG read back actual cur
  const json=await download(table.getByRole('button',{name:'Export JSON',exact:true}));expect(JSON.parse(json.bytes.toString()).rows).toHaveLength(40);expect(JSON.parse(json.bytes.toString()).rows[39]['说明']).toBe('中文🙂 39');
  await run('let a=99;explore(plot(a*x,x:0..1),controls:{a:0..4},initial:{a:2})');
  const explore=page.locator('.explore-view');const slider=explore.getByRole('slider',{name:'Explore parameter a'});await expect(slider).toBeEnabled();await slider.press('End');await expect(explore).toHaveAttribute('aria-busy','false');
- const plot=explore.locator('.plot-view');const svg=await download(plot.getByRole('button',{name:'Export SVG',exact:true}));
+ const plot=explore.locator('.plot-view');await plot.getByRole('button',{name:'Export',exact:true}).click();const svg=await download(plot.getByRole('button',{name:'Export SVG',exact:true}));
  const source=svg.bytes.toString();expect(source).toContain('<metadata>');const raw=source.match(/<metadata>(.*?)<\/metadata>/s)![1]!.replaceAll('&quot;','"').replaceAll('&lt;','<').replaceAll('&gt;','>').replaceAll('&apos;',"'").replaceAll('&amp;','&');const meta=JSON.parse(raw);expect(meta.figure.parameters.a).toBe(4);
  for(const [x,y]of meta.figure.data.curves[0].segments.flat())expect(y).toBeCloseTo(4*x,12);
- const png=await download(plot.getByRole('button',{name:'Export PNG',exact:true}));expect(png.bytes.subarray(0,8)).toEqual(Buffer.from([137,80,78,71,13,10,26,10]));
+ await plot.getByRole('button',{name:'Export',exact:true}).click();const png=await download(plot.getByRole('button',{name:'Export PNG',exact:true}));expect(png.bytes.subarray(0,8)).toEqual(Buffer.from([137,80,78,71,13,10,26,10]));
  const {inflateSync}=await import('node:zlib');let at=8,idat=Buffer.alloc(0);let metadata='';while(at<png.bytes.length){const n=png.bytes.readUInt32BE(at),kind=png.bytes.toString('ascii',at+4,at+8),data=png.bytes.subarray(at+8,at+8+n);if(kind==='IDAT')idat=Buffer.concat([idat,data]);if(kind==='iTXt')metadata=data.subarray(13).toString();at+=n+12;}
  expect(inflateSync(idat)).toHaveLength(600*4001);expect(JSON.parse(metadata).figure.parameters.a).toBe(4);
+ await plot.getByRole('button',{name:'Export',exact:true}).click();
+ const samples=await download(plot.getByRole('button',{name:'Export CSV',exact:true}));
+ await expect(plot.getByRole('button',{name:'Export',exact:true})).toHaveAttribute('aria-expanded','false');
+ await expect(plot.locator('.graph-export-status')).toContainText('Export CSV: Download started');
+ const rows=samples.bytes.toString().trimEnd().split('\r\n');expect(rows.shift()).toBe('kind,series,label,segment,index,x,y,details');
+ expect(rows.length).toBe(meta.figure.data.curves[0].segments.flat().length);
+ for(const row of rows){const values=row.split(',');expect(Number(values[6])).toBeCloseTo(4*Number(values[5]),12);}
  await page.screenshot({path:'test-results/plot-export.png',fullPage:true});
  await run('explore([[a,a^2]],controls:{a:0..4},initial:{a:3})');const matrix=await download(page.locator('.explore-data-export').getByRole('button',{name:'Export CSV',exact:true}));expect(matrix.bytes.toString()).toBe('3,9\r\n');
 });

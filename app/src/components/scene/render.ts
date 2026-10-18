@@ -52,10 +52,10 @@ export function createRenderer(canvas:HTMLCanvasElement,data:Scene3DData){
  const axisPoints:Vec3[]=[lo,[hi[0],lo[1],lo[2]],lo,[lo[0],hi[1],lo[2]],lo,[lo[0],lo[1],hi[2]]];
  batch(axisPoints,axisPoints.map(()=>[0,0,0]),[[.65,.25,.25,1],[.65,.25,.25,1],[.2,.5,.3,1],[.2,.5,.3,1],[.2,.35,.7,1],[.2,.35,.7,1]],null,gl.LINES,1);
  } catch(error){dispose();throw error;}
- const draw=(camera:Camera)=>{
+ const draw=(camera:Camera,background:readonly [number,number,number]=[.98,.99,.98])=>{
   const rect=canvas.getBoundingClientRect(),ratio=Math.min(2,window.devicePixelRatio||1),width=Math.max(1,Math.round(rect.width*ratio)),height=Math.max(1,Math.round(rect.height*ratio));
   if(canvas.width!==width||canvas.height!==height){canvas.width=width;canvas.height=height;}
-  gl.viewport(0,0,width,height);gl.clearColor(.98,.99,.98,1);gl.clear(gl.COLOR_BUFFER_BIT|gl.DEPTH_BUFFER_BIT);gl.enable(gl.DEPTH_TEST);gl.depthFunc(gl.LEQUAL);gl.disable(gl.CULL_FACE);gl.useProgram(program);
+  gl.viewport(0,0,width,height);gl.clearColor(...background,1);gl.clear(gl.COLOR_BUFFER_BIT|gl.DEPTH_BUFFER_BIT);gl.enable(gl.DEPTH_TEST);gl.depthFunc(gl.LEQUAL);gl.disable(gl.CULL_FACE);gl.useProgram(program);
   const m=matrices(camera,width/height);gl.uniformMatrix4fv(uniforms.mvp,false,m.mvp);gl.uniformMatrix3fv(uniforms.normal,false,m.normal);
   const depth=(b:Batch)=>b.positions.reduce((sum,p)=>sum+m.view[2]!*p[0]+m.view[6]!*p[1]+m.view[10]!*p[2],0)/Math.max(1,b.positions.length);
   const lineWidthRange=gl.getParameter(gl.ALIASED_LINE_WIDTH_RANGE) as Float32Array;

@@ -15,3 +15,19 @@ test('artifact export waits for actual bytes and persistence, while stale replie
  fireEvent.click(screen.getByRole('button',{name:'Export JSON'}));await act(async()=>done({type:'artifact',artifact:{mime:'application/json;charset=utf-8',extension:'json',byte_len:2,base64:'e30='}}));
  await waitFor(()=>expect(screen.getByText('Download started')).toBeTruthy());expect(saveArtifact).toHaveBeenCalledTimes(1);
 });
+test('a local canvas/CSV encoding failure is reported and a stale encoding result never saves', async()=>{
+ vi.mocked(saveArtifact).mockClear();
+ let finish!:(value:import('../../kernel/generated/Artifact').Artifact)=>void;
+ const onStatus=vi.fn();
+ const props={kernel:new MockKernel(),t:messages('en'),title:'graph',label:'Export PNG',version:'a',enabled:true,onStatus};
+ const view=render(<ArtifactButton {...props} createArtifact={()=>new Promise(resolve=>finish=resolve)}/>);
+ fireEvent.click(screen.getByRole('button',{name:'Export PNG'}));
+ view.rerender(<ArtifactButton {...props} enabled={false} createArtifact={()=>{throw new Error('PNG failed');}}/>);
+ await act(async()=>finish({mime:'image/png',extension:'png',byte_len:0,base64:''}));
+ expect(saveArtifact).not.toHaveBeenCalled();
+ view.rerender(<ArtifactButton {...props} createArtifact={()=>{throw new Error('PNG failed');}}/>);
+ fireEvent.click(screen.getByRole('button',{name:'Export PNG'}));
+ await waitFor(()=>expect(onStatus).toHaveBeenLastCalledWith('Export PNG: PNG failed'));
+ expect(screen.queryByRole('status')).toBeNull();
+ expect(saveArtifact).not.toHaveBeenCalled();
+});

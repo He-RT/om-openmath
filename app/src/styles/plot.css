@@ -1,31 +1,30 @@
 .plot-view {
-  margin: 18px 0;
+  margin: 12px 0 0;
   max-width: none;
   width: 100%;
 }
-.plot-toolbar {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 12px;
-  font-size: 11px;
-  color: var(--muted);
-  margin-bottom: 8px;
-}
-.plot-toolbar button {
-  font-size: 11px;
-  padding: 4px 7px;
-}
-.plot-view > svg {
-  display: block;
-  width: 100%;
-  height: 320px;
-  border-radius: 5px;
-  background: var(--surface);
-  touch-action: none;
-  user-select: none;
-  cursor: crosshair;
-}
+.plot-stage { position: relative; border: 1px solid var(--line); border-radius: 8px; background: var(--paper); }
+.plot-stage > svg { display: block; width: 100%; height: 250px; border-radius: 8px; touch-action: none; user-select: none; cursor: crosshair; }
+.plot-stage > svg:focus-visible, .scene-canvas-wrap canvas:focus-visible { outline: 2px solid var(--green); outline-offset: -2px; }
+.graph-controls { position: absolute; top: 8px; right: 8px; z-index: 2; display: flex; align-items: center; gap: 1px; padding: 2px; border-radius: 8px; background: var(--chrome); box-shadow: 0 0 0 1px var(--line); opacity: 0; pointer-events: none; transition: opacity 120ms; }
+.graph-controls > button, .graph-controls > .toolbar-menu > summary { width: 28px; height: 26px; padding: 4px; display: grid; place-items: center; color: var(--ink-2); font-size: 15px; }
+.graph-controls button:hover, .graph-controls > .toolbar-menu > summary:hover { color: var(--ink); background: var(--select); }
+.plot-stage:hover .graph-controls, .plot-stage:focus-within .graph-controls,
+.scene-canvas-wrap:hover .graph-controls, .scene-canvas-wrap:focus-within .graph-controls,
+.graph-error .graph-controls { opacity: 1; pointer-events: auto; }
+.graph-controls .workbench-icon { width: 16px; height: 16px; }
+.graph-footer { display: grid; grid-template-columns: auto auto; justify-content: end; align-items: start; gap: 8px; margin-top: 8px; color: var(--ink-2); font: 12px/1.6 var(--font-ui); }
+.graph-information { margin-top: 8px; font-size: 12px; overflow-wrap: anywhere; }
+.graph-information p { margin: 8px 0; }
+.graph-information details { margin-top: 8px; }
+.graph-information pre { font: 11px/1.6 var(--font-mono); max-width: 100%; overflow: auto; }
+.graph-export-status { margin: 6px 0 0; color: var(--ink-2); font: 12px/1.6 var(--font-ui); }
+.graph-export > summary { display: flex; align-items: center; gap: 4px; padding: 3px 6px; }
+.graph-export .workbench-icon { width: 12px; height: 12px; }
+.graph-export .artifact-action { display: contents; }
+.graph-export .artifact-action > span { display: block; padding: 4px 10px; }
+@media (hover: none) { .graph-controls { opacity: 1; pointer-events: auto; } }
+@media (prefers-reduced-motion: reduce) { .graph-controls { transition: none; } }
 .plot-grid line {
   stroke: var(--line);
   stroke-width: 1;
@@ -55,14 +54,14 @@
   stroke-linecap: round;
 }
 .plot-point-label {
-  fill: var(--accent);
+  fill: var(--plot-1);
   font:
     10px -apple-system,
     BlinkMacSystemFont,
     "Segoe UI",
     sans-serif;
   paint-order: stroke;
-  stroke: var(--surface);
+  stroke: var(--paper);
   stroke-width: 3px;
   stroke-linejoin: round;
 }
@@ -76,28 +75,23 @@
   opacity: 0.65;
 }
 .plot-shade {
-  fill: var(--accent-soft);
-  opacity: 0.7;
+  fill: var(--plot-1);
+  opacity: 0.12;
 }
-.plot-readout {
-  display: flex;
-  justify-content: space-between;
-  gap: 10px;
-  min-height: 23px;
-  margin-top: 7px;
-  font-size: 10px;
-  color: var(--muted);
-}
+.plot-readout { position: absolute; bottom: 1px; right: 6px; display: flex; gap: 8px; color: var(--ink-2); font: 10px/1.4 var(--font-ui); pointer-events: none; }
+.plot-stage:not(:hover):not(:focus-within) .plot-readout > span:first-child { visibility: hidden; }
+.plot-solution .solution-point { fill: var(--plot-1); stroke: var(--paper); }
 .plot-pending .plot-curve,
 .plot-pending .plot-solution {
   opacity: 0.5;
 }
-.plot-legend {
+.plot-view .plot-legend {
   display: flex;
   flex-wrap: wrap;
   gap: 8px 16px;
   font-size: 11px;
-  margin: 5px 0 12px;
+  margin: 8px 2px 0;
+  color: var(--ink-2);
 }
 .plot-legend > span {
   display: flex;
@@ -163,12 +157,11 @@
 .plot-exports, .explore-data-export { display:flex; flex-wrap:wrap; gap:12px; margin:8px 0; }
 .artifact-action { display:inline-flex; flex-wrap:wrap; gap:8px; align-items:center; font-size:.8rem; }
 .artifact-action span { color:var(--muted); }
-.scene-view { margin:12px 0; padding:12px 0; max-width:100%; }
-.scene-toolbar { display:flex; flex-wrap:wrap; align-items:center; gap:10px; margin-bottom:10px; font-size:.8rem; }
-.scene-canvas-wrap { position:relative; height:420px; overflow:hidden; border-radius:8px; }
-.scene-canvas-wrap canvas { width:100%; height:420px; touch-action:none; background:#fafcfa; }
-.scene-axis-label { position:absolute; pointer-events:none; font-size:.8rem; color:var(--muted); }
-.scene-summary, .scene-bounds { font-size:.8rem; color:var(--muted); }
-.scene-bounds { display:flex; flex-wrap:wrap; gap:16px; }
-.scene-view pre { max-height:320px; max-width:100%; overflow:auto; font-size:.75rem; }
-.scene-text-label { position:absolute; pointer-events:none; font-size:.8rem; white-space:pre-wrap; max-width:240px; }
+.scene-view { margin: 12px 0 0; padding: 0; max-width: 100%; }
+.scene-canvas-wrap { position: relative; height: 400px; overflow: hidden; border: 1px solid var(--line); border-radius: 8px; background: var(--scene-bg); }
+.scene-canvas-wrap canvas { display: block; width: 100%; height: 100%; border-radius: inherit; touch-action: none; background: var(--scene-bg); }
+.scene-canvas-wrap:fullscreen { width: 100vw; height: 100dvh; border: 0; border-radius: 0; }
+.scene-axis-label { position: absolute; pointer-events: none; font-size: 12px; color: var(--ink-2); background: var(--scene-bg); padding: 0 2px; border-radius: 2px; }
+.scene-hint { position: absolute; left: 10px; bottom: 8px; color: var(--ink-2); font: 11.5px/1.5 var(--font-ui); pointer-events: none; }
+.scene-view pre { max-height: 320px; max-width: 100%; overflow: auto; font-size: 11px; }
+.scene-text-label { position: absolute; pointer-events: none; font-size: 12px; white-space: pre-wrap; max-width: 240px; }

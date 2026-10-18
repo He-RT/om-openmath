@@ -8,6 +8,8 @@ const paths = {
   more: "M5 12h.01 M12 12h.01 M19 12h.01",
   close: "M6 6l12 12 M18 6L6 18",
   chat: "M4 4h16v12H9l-5 4z",
+  reset: "M4 10a8 8 0 1 1 1 8 M4 4v6h6",
+  expand: "M9 4H4v5 M15 4h5v5 M4 15v5h5 M20 15v5h-5",
 } as const;
 export function WorkbenchIcon({ name }: { name: keyof typeof paths }) {
   return <svg className="workbench-icon" viewBox="0 0 24 24" aria-hidden="true" fill={name === "play" || name === "stop" ? "currentColor" : "none"} stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round"><path d={paths[name]} /></svg>;

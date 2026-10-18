@@ -7,6 +7,7 @@ export interface Viewport {
   y: Range;
 }
 export const margins = { left: 50, right: 20, top: 18, bottom: 36 };
+export const plotHeight = 250;
 export function PlotGeometry({
   data,
   request,
@@ -23,7 +24,7 @@ export function PlotGeometry({
   const id = `plot-${useId().replace(/:/g, "")}`;
   const { left, right, top, bottom } = margins,
     edge = width - right,
-    floor = 320 - bottom;
+    floor = plotHeight - bottom;
   const scale=data?.scale ?? request.options?.scale ?? 'linear';
   const logX=scale==='log_x'||scale==='log_log',logY=scale==='log_y'||scale==='log_log';
   const x = axisScale(view.x, [left, edge],logX),
@@ -81,11 +82,11 @@ export function PlotGeometry({
         {data?.geometry?.arrows.map((arrow,i)=>{
           const a=[x.map(arrow.start[0]),y.map(arrow.start[1])],b=[x.map(arrow.end[0]),y.map(arrow.end[1])];
           const angle=Math.atan2(b[1]!-a[1]!,b[0]!-a[0]!);
-          return <g key={`vector${i}`} stroke={request.options?.color ?? "var(--accent)"} fill="none"><title>{`(${arrow.start}) → (${arrow.value})`}</title>
+          return <g key={`vector${i}`} stroke={request.options?.color ?? "var(--plot-1)"} fill="none"><title>{`(${arrow.start}) → (${arrow.value})`}</title>
             <path d={`M${a[0]} ${a[1]}L${b[0]} ${b[1]}M${b[0]} ${b[1]}L${b[0]!-5*Math.cos(angle-.45)} ${b[1]!-5*Math.sin(angle-.45)}M${b[0]} ${b[1]}L${b[0]!-5*Math.cos(angle+.45)} ${b[1]!-5*Math.sin(angle+.45)}`} />
           </g>;
         })}
-        {data?.geometry?.points.map(([a,b],i)=><circle key={`datum${i}`} cx={x.map(a)} cy={y.map(b)} r="3" fill={request.options?.color ?? "var(--accent)"}><title>{`(${a}, ${b})`}</title></circle>)}
+        {data?.geometry?.points.map(([a,b],i)=><circle key={`datum${i}`} cx={x.map(a)} cy={y.map(b)} r="3" fill={request.options?.color ?? "var(--plot-1)"}><title>{`(${a}, ${b})`}</title></circle>)}
         {highlights.shade.map(([lo, hi], i) => {
           const a = Math.max(lo, view.x[0]),
             b = Math.min(hi, view.x[1]);
@@ -171,7 +172,7 @@ export function PlotGeometry({
           </g>
         )}
       </g>
-      <text className="plot-axis-name" x={edge} y={313} textAnchor="end">
+      <text className="plot-axis-name" x={edge} y={plotHeight - 7} textAnchor="end">
         {request.kind === "Parametric" ? "x" : request.var_x}
       </text>
       <text className="plot-axis-name" x={left} y={12}>

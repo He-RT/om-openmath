@@ -44,7 +44,7 @@ for (const width of [375, 1280])
     await svg.scrollIntoViewIfNeeded();
     const box = await svg.boundingBox();
     if (!box) throw new Error("plot bounds");
-    expect(box.height).toBe(320);
+    expect(box.height).toBe(250);
     await page.mouse.move(box.x + box.width * 0.6, box.y + 160);
     await expect(plot.locator(".plot-crosshair line")).toHaveCount(2);
     await expect(plot.locator(".plot-readout")).toContainText("Coordinates: (");
@@ -162,7 +162,8 @@ test("real extended density, region, vectors, histograms and log coordinates exp
   await page.setViewportSize({width:390,height:900});
   const close=page.locator('.inspector').getByRole('button',{name:'Close',exact:true});
   if(await close.isVisible())await close.click();
-  await page.locator('.plot-view summary').click();
+  await page.locator('.plot-view').getByText('Graph information',{exact:true}).click();
+  await page.locator('.plot-view').getByText('Kernel sample data',{exact:true}).click();
   await expect(page.locator('.plot-sample-data')).toContainText('"log_log"');
   await expect(page.locator('.plot-sample-data')).toContainText('1000000');
   expect(await page.evaluate(()=>document.documentElement.scrollWidth <= innerWidth)).toBe(true);

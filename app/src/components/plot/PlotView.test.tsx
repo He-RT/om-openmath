@@ -188,8 +188,8 @@ test("extended tiles, vectors and data points render supplied geometry and expos
   expect(document.querySelector('rect[fill="#abcdef"] title')?.textContent).toBe('7');
   expect(document.querySelector('circle[r="3"] title')?.textContent).toBe('(2, 4)');
   expect(screen.getByText('Skipped nonfinite or out-of-domain samples: 3')).toBeTruthy();
-  fireEvent(document.querySelector('details')!,new Event('toggle'));
-  const details=document.querySelector('details')!;details.open=true;fireEvent(details,new Event('toggle'));
+  fireEvent.click(screen.getByText('Graph information'));
+  const details=screen.getByText('Kernel sample data').closest('details')!;details.open=true;fireEvent(details,new Event('toggle'));
   expect(document.querySelector('.plot-sample-data')?.textContent).toContain('"value": 7');
   expect(document.querySelector('.plot-sample-data')?.textContent).toContain('"arrows"');
 });

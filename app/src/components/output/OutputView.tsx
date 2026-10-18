@@ -54,7 +54,7 @@ export function OutputView({
         const renderStatus=(actions:ReactNode)=><CellStatusLine presentation={state} t={t} timing={i===output.items.length-1 ? output.timing_ms:undefined} onRun={onRun} actions={actions}/>;
         return (
         <div className="output-item" key={i}>
-          {item.type === "scene3_d" ? <SceneView item={item} kernel={kernel} t={t} language={language} active={!stale} cameraMemory={sceneCameraMemory}/> : item.type === "explore" ? <ExploreView key={`${cellId}:${item.out_index}:${item.view_id}`} item={item} cellId={cellId} fresh={!stale} kernel={kernel} t={t} language={language} onInsert={onInsert}/> : item.type === "expr" ? (
+          {item.type === "scene3_d" ? <SceneView item={item} kernel={kernel} t={t} language={language} active={!stale} cameraMemory={sceneCameraMemory} renderStatus={renderStatus}/> : item.type === "explore" ? <ExploreView key={`${cellId}:${item.out_index}:${item.view_id}`} item={item} cellId={cellId} fresh={!stale} kernel={kernel} t={t} language={language} onInsert={onInsert}/> : item.type === "expr" ? (
             item.presentation ? <ValueView key={`${item.out_index}:${item.presentation.view_id}`}
               initial={item.presentation} cellId={cellId} outIndex={item.out_index} value={item}
               fresh={!stale} kernel={kernel} language={language} t={t} onInsert={onInsert} renderStatus={renderStatus} /> : <ExprView
@@ -93,9 +93,10 @@ export function OutputView({
               t={t}
               active={!stale}
               exportParameters={exportParameters}
+              renderStatus={renderStatus}
             />
           )}
-          {item.type !== "solutions" && item.type !== "expr" && renderStatus(null)}
+          {item.type !== "solutions" && item.type !== "expr" && item.type !== "plot" && item.type !== "scene3_d" && renderStatus(null)}
         </div>
       );})}
       <OutputMessages items={output.messages} t={t} language={language} collapseErrors={output.messages.filter(message=>message.level==="Error").every(message=>output.items.some(item=>item.type==="error" && (item.message===message.text || item.message===`${message.tag}: ${message.text}`)))} />

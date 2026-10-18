@@ -7,7 +7,7 @@
   position: sticky;
   top: 0;
   z-index: 3;
-  background: var(--surface);
+  background: var(--chrome);
 }
 .settings-dialog [role="tablist"] {
   display: flex;
@@ -18,8 +18,8 @@
   font-size: 12px;
 }
 .settings-dialog [role="tab"][aria-selected="true"] {
-  background: var(--accent-soft);
-  color: var(--accent);
+  background: var(--green-soft);
+  color: var(--green);
 }
 .settings-toggle {
   display: flex;
@@ -48,8 +48,8 @@
   overflow-wrap: anywhere;
 }
 .profile-list [aria-selected="true"] {
-  color: var(--accent);
-  background: var(--accent-soft);
+  color: var(--green);
+  background: var(--green-soft);
 }
 .profile-list-actions {
   display: grid;
@@ -61,7 +61,7 @@
 .profile-list-actions button {
   font-size: 11px;
   text-align: left;
-  color: var(--muted);
+  color: var(--ink-2);
 }
 .profile-form {
   display: grid;
@@ -75,7 +75,7 @@
   display: grid;
   gap: 5px;
   font-size: 11px;
-  color: var(--muted);
+  color: var(--ink-2);
   min-width: 0;
 }
 .profile-form input:not([type="checkbox"]),
@@ -112,17 +112,17 @@
   width: fit-content;
   font-size: 10px;
   padding: 2px 0;
-  color: var(--accent);
+  color: var(--green);
 }
 .settings-hint,
 .settings-risk {
   font-size: 11px;
-  color: var(--muted);
+  color: var(--ink-2);
   margin: 0;
   line-height: 1.7;
 }
 .settings-risk {
-  color: var(--warning);
+  color: var(--amber);
 }
 .profile-probe {
   border-top: 1px solid var(--line);
@@ -130,7 +130,7 @@
 }
 .profile-probe button {
   font-size: 12px;
-  color: var(--accent);
+  color: var(--green);
 }
 .profile-probe [role="status"] {
   font-size: 11px;
@@ -149,8 +149,8 @@
   padding-top: 14px;
 }
 .settings-save button {
-  color: var(--surface);
-  background: var(--accent);
+  color: var(--chrome);
+  background: var(--green);
   font-size: 12px;
 }
 .model-settings > [role="status"],

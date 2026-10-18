@@ -46,7 +46,7 @@
 }
 .math-editor .cm-content {
   padding: 4px 0;
-  caret-color: var(--accent);
+  caret-color: var(--green);
 }
 .math-editor .cm-line {
   padding: 0 2px;
@@ -54,16 +54,16 @@
 .math-editor .cm-gutters {
   border: 0;
   background: transparent;
-  color: var(--error);
+  color: var(--red);
 }
 .math-editor .cm-cursor {
-  border-left-color: var(--accent);
+  border-left-color: var(--green);
 }
 .math-editor .cm-selectionBackground {
-  background: var(--accent-soft) !important;
+  background: var(--green-soft) !important;
 }
 .cm-tooltip {
-  background: var(--surface) !important;
+  background: var(--chrome) !important;
   color: var(--ink) !important;
   border: 1px solid var(--line) !important;
   font-family: inherit;
@@ -85,22 +85,22 @@
 }
 .syntax-builtin,
 .syntax-keyword {
-  color: var(--accent);
+  color: var(--green);
 }
 .syntax-comment {
-  color: var(--muted);
+  color: var(--ink-2);
   font-style: italic;
 }
 .syntax-string {
   color: #8e6b87;
 }
 .syntax-error {
-  color: var(--error);
+  color: var(--red);
 }
 .input-preview {
   padding: 10px 2px 6px;
   min-height: 34px;
-  color: var(--muted);
+  color: var(--ink-2);
   font-size: 14px;
   overflow-x: auto;
 }
@@ -109,7 +109,7 @@
 }
 .preview-empty {
   font-size: 12px;
-  color: var(--muted);
+  color: var(--ink-2);
 }
 .inline-diagnostics {
   font-size: 11px;
@@ -124,10 +124,10 @@
   gap: 8px;
 }
 .diagnostic.error {
-  color: var(--error);
+  color: var(--red);
 }
 .diagnostic.warning {
-  color: var(--warning);
+  color: var(--amber);
 }
 .diagnostic button {
   border: 1px solid currentColor;
@@ -141,14 +141,14 @@
 }
 .input-actions button {
   font-size: 11px;
-  color: var(--accent);
-  background: var(--accent-soft);
+  color: var(--green);
+  background: var(--green-soft);
 }
 .selection-tools {
   display: flex;
   gap: 2px;
   flex-wrap: wrap;
-  background: var(--surface);
+  background: var(--chrome);
   border: 1px solid var(--line);
   width: fit-content;
   margin: 0 0 6px;
@@ -193,7 +193,7 @@
 .timing.slow { color: var(--amber); }
 .output-error {
   font-size: 12px;
-  color: var(--error);
+  color: var(--red);
   white-space: pre-wrap;
 }
 .messages {
@@ -202,16 +202,16 @@
 }
 .messages summary {
   cursor: pointer;
-  color: var(--muted);
+  color: var(--ink-2);
 }
 .message {
   padding: 5px 0;
 }
 .message.error {
-  color: var(--error);
+  color: var(--red);
 }
 .message.warning {
-  color: var(--warning);
+  color: var(--amber);
 }
 .plot-summary {
   display: flex;
@@ -221,7 +221,7 @@
 }
 .suppressed-output {
   font-size: 11px;
-  color: var(--muted);
+  color: var(--ink-2);
 }
 .prose-editor {
   display: block;
@@ -292,7 +292,7 @@
   font-size: 11px;
   letter-spacing: 1.3px;
   text-transform: uppercase;
-  color: var(--accent);
+  color: var(--green);
 }
 .empty-notebook h1 {
   font-size: clamp(25px, 3vw, 36px);
@@ -303,7 +303,7 @@
 }
 .empty-notebook > p {
   font-size: 13px;
-  color: var(--muted);
+  color: var(--ink-2);
 }
 .empty-formula {
   font-size: 27px;
@@ -328,7 +328,7 @@
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  color: var(--muted);
+  color: var(--ink-2);
 }
 .add-cell-bar {
   display: flex;
@@ -339,17 +339,17 @@
   font-size: 12px;
 }
 .add-cell-bar button {
-  color: var(--muted);
+  color: var(--ink-2);
 }
 .add-cell-bar .add-math {
-  color: var(--accent);
+  color: var(--green);
 }
 .notebook-footer {
   display: flex;
   gap: 10px;
   justify-content: space-between;
   font-size: 10px;
-  color: var(--muted);
+  color: var(--ink-2);
   max-width: 900px;
   margin: 34px auto 0;
 }
@@ -378,6 +378,6 @@
 }
 .ghost-error {
   font-size: 10px;
-  color: var(--muted);
+  color: var(--ink-2);
   padding: 3px 2px;
 }

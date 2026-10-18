@@ -25,6 +25,29 @@ const config: KernelConfig = {
     profiles: [],
   },
 };
+for (const mode of ['success','failure','edit'] as const) test(`explicit update follows the kernel dependency order and stops on ${mode}`, async()=>{
+  const statuses=new Map<string,import('../kernel/generated/CellStatus').CellStatus>();
+  const kernel=new MockKernel(request=>{
+    if(request.type==='get_notebook_state')return {type:'notebook_state',state:{
+      file:controller.file(),cells:controller.store.getState().cells.map(cell=>({id:cell.id,status:statuses.get(cell.id)??'Stale',defines:cell.defines,uses:cell.uses})),
+      definition_order:['a','b','unrelated'],cycles:[],
+    }};
+    if(request.type==='evaluate'){
+      statuses.set(request.cell_id,mode==='failure'?'Error':'Done');
+      if(mode==='edit')controller.edit('target',{source:'b+2'});
+      return {type:'evaluated',cell_id:request.cell_id,output:{items:[],messages:mode==='failure'?[{level:'Error',symbol:'test',tag:'test',text:'definition failed'}]:[],timing_ms:0},reran:[]};
+    }
+    return {type:'ok'};
+  });
+  const controller:NotebookController=new NotebookController(kernel);
+  const rows=[['target','b+1',[],['b']],['b','let b=a+1',['b'],['a']],['unrelated','let other=99',['other'],[]],['a','let a=5',['a'],[]]] as const;
+  controller.store.setState({cells:rows.map(([id,source,defines,uses])=>({id,source,kind:'Math',dialect:'Modern',status:'Stale',revision:0,defines:[...defines],uses:[...uses]}))});
+  await controller.update('target');
+  expect(kernel.requests.filter(request=>request.type==='evaluate').map(request=>request.cell_id)).toEqual(mode==='success'?['a','b','target']:['a']);
+  expect(controller.store.getState().busy).toBe(false);
+  if(mode!=='success')expect(controller.store.getState().cells.find(cell=>cell.id==='target')?.status).toBe('Stale');
+  controller.dispose();
+});
 test("failed output keeps the last valid result and restart preserves only its stale presentation",async()=>{
   let input: import("../kernel/generated/CellInput").CellInput | null=null,failed=false;
   const good: import("../kernel/generated/CellOutput").CellOutput={items:[{type:"expr",out_index:1,input_form:"4",modern_form:"4",latex:"4",nature:"exact",unchanged:false}],messages:[],timing_ms:1};

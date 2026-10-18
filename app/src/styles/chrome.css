@@ -84,15 +84,15 @@ dialog::backdrop { background: #101a1466; }
   font-family: monospace;
   font-size: 11px;
   padding: 4px 5px;
-  color: var(--muted);
+  color: var(--ink-2);
 }
 .doc-picker .selected {
-  color: var(--accent);
-  background: var(--accent-soft);
+  color: var(--green);
+  background: var(--green-soft);
 }
 .function-doc .signature {
   display: block;
-  color: var(--accent);
+  color: var(--green);
   font-size: 11px;
   overflow-wrap: anywhere;
   margin-bottom: 24px;
@@ -135,7 +135,7 @@ dialog::backdrop { background: #101a1466; }
   left: 50%;
   transform: translateX(-50%);
   z-index: 40;
-  background: var(--surface);
+  background: var(--chrome);
   border: 1px solid var(--line);
   padding: 8px 10px;
   display: flex;
@@ -147,7 +147,7 @@ dialog::backdrop { background: #101a1466; }
   border-radius: 5px;
 }
 .notice-error {
-  color: var(--error);
+  color: var(--red);
   bottom: 62px;
 }
 .notice span {
@@ -165,7 +165,7 @@ dialog::backdrop { background: #101a1466; }
   backdrop-filter: blur(2px);
 }
 .preferences {
-  background: var(--surface);
+  background: var(--chrome);
   width: 420px;
   max-width: 100%;
   border: 1px solid var(--line);
@@ -188,7 +188,7 @@ dialog::backdrop { background: #101a1466; }
   display: grid;
   gap: 18px;
 }
-.build-info { margin-top: 12px; padding-top: 14px; border-top: 1px solid var(--line); color: var(--muted); font-size: 12px; }
+.build-info { margin-top: 12px; padding-top: 14px; border-top: 1px solid var(--line); color: var(--ink-2); font-size: 12px; }
 .build-info summary { cursor: pointer; }
 .build-info code { overflow-wrap: anywhere; }
 .preferences-fields label {
@@ -205,7 +205,7 @@ dialog::backdrop { background: #101a1466; }
   width: 130px;
 }
 .preferences-fields input[type="checkbox"] {
-  accent-color: var(--accent);
+  accent-color: var(--green);
 }
 .command-dialog {
   position: fixed;
@@ -215,7 +215,7 @@ dialog::backdrop { background: #101a1466; }
   z-index: 60;
   width: 480px;
   max-width: calc(100vw - 32px);
-  background: var(--surface);
+  background: var(--chrome);
   border: 1px solid var(--line);
   border-radius: 8px;
   padding: 10px;
@@ -245,15 +245,15 @@ dialog::backdrop { background: #101a1466; }
   cursor: pointer;
 }
 .command-dialog [cmdk-item][data-selected="true"] {
-  background: var(--accent-soft);
-  color: var(--accent);
+  background: var(--green-soft);
+  color: var(--green);
 }
 .command-dialog [cmdk-item][data-disabled="true"] {
   opacity: 0.45;
   cursor: default;
 }
 .command-dialog kbd {
-  color: var(--muted);
+  color: var(--ink-2);
   font-size: 11px;
 }
 .kernel-loading {
@@ -267,5 +267,5 @@ dialog::backdrop { background: #101a1466; }
 }
 .kernel-loading p {
   font-size: 13px;
-  color: var(--muted);
+  color: var(--ink-2);
 }

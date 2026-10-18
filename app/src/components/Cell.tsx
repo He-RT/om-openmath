@@ -141,7 +141,7 @@ export function Cell({
             cellId={cell.id}
             output={cell.output}
             presentation={presentation}
-            onRun={!busy ? ()=>void controller.run(cell.id):undefined}
+            onRun={!busy ? ()=>void controller.update(cell.id):undefined}
             source={cell.resultSource?.source ?? cell.source}
             onLocate={span=>setReveal(previous=>({...span,serial:(previous?.serial ?? 0)+1}))}
             stale={

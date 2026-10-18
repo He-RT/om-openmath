@@ -74,6 +74,7 @@ export class NotebookController {
   private epoch = 0;
   private operations = 0;
   private restarting: Promise<void> | undefined;
+  private updating = false;
   private revisions = new Map<string, number>();
   private pendingOutputs = new Map<
     string,
@@ -293,6 +294,44 @@ export class NotebookController {
         : effective.config;
     this.store.setState({ config });
     return config;
+  }
+  /** Explicit stale-result action: refresh required definitions using the kernel's graph order. */
+  async update(id: string) {
+    if (this.updating || this.store.getState().busy) return;
+    const epoch = this.epoch;
+    const revisions = new Map(this.store.getState().cells.map(cell => [cell.id, cell.revision]));
+    this.updating = true;
+    try {
+      await this.flush();
+      const response = await this.kernel.request({ type: 'get_notebook_state' });
+      if (epoch !== this.epoch || response.type !== 'notebook_state') return;
+      const snapshot = response.state, required = new Set<string>();
+      const visit = (cellId: string) => {
+        if (required.has(cellId)) return;
+        required.add(cellId);
+        const cell = snapshot.cells.find(cell => cell.id === cellId);
+        for (const name of cell?.uses ?? [])
+          for (const owner of snapshot.cells.filter(owner => owner.id !== cellId && owner.defines.includes(name))) visit(owner.id);
+      };
+      visit(id);
+      const unchanged = () => epoch === this.epoch && [...required].every(cellId => {
+        const cell = this.store.getState().cells.find(cell => cell.id === cellId);
+        const source = snapshot.file.cells.find(cell => cell.id === cellId);
+        return cell && source && cell.revision === revisions.get(cellId) && cell.source === source.source && cell.dialect === source.dialect;
+      });
+      if (!unchanged()) return;
+      if (snapshot.cycles.some(cellId => required.has(cellId))) throw new Error('Cannot update a result with cyclic definitions.');
+      this.metadata(snapshot, false);
+      const queue = [...snapshot.definition_order.filter(cellId => required.has(cellId) && cellId !== id), id];
+      for (const cellId of queue) {
+        if (!unchanged() || this.store.getState().busy) return;
+        const cell = this.store.getState().cells.find(cell => cell.id === cellId);
+        if (cellId !== id && cell?.status === 'Done') continue;
+        await this.run(cellId);
+        if (!unchanged() || this.store.getState().cells.find(cell => cell.id === cellId)?.status !== 'Done') return;
+      }
+    } catch (error) { if (epoch === this.epoch) this.fail(error); }
+    finally { this.updating = false; }
   }
   async run(id: string, mode: "stay" | "next" | "insert" = "stay") {
     const cell = this.store.getState().cells.find((c) => c.id === id);

@@ -43,14 +43,6 @@
   --radius-bubble: 14px;
   --radius-composer: 14px;
   --radius-menu: 11px;
-  /* Temporary legacy names. Remove after E migrates the remaining components. */
-  --background: var(--paper);
-  --surface: var(--chrome);
-  --muted: var(--ink-2);
-  --accent: var(--green);
-  --accent-soft: var(--green-soft);
-  --error: var(--red);
-  --warning: var(--amber);
   /* Extra series retain distinct hues, away from status green and agent indigo. */
   --plot-3: #916321;
   --plot-4: #a04d7c;
@@ -95,7 +87,7 @@
 }
 body {
   margin: 0;
-  background: var(--background);
+  background: var(--paper);
   color: var(--ink);
 }
 button,
@@ -116,8 +108,8 @@ button {
     color 0.15s;
 }
 button:hover {
-  background: var(--accent-soft);
-  color: var(--accent);
+  background: var(--green-soft);
+  color: var(--green);
 }
 button:disabled {
   opacity: 0.4;
@@ -127,7 +119,7 @@ button:focus-visible,
 input:focus-visible,
 select:focus-visible,
 textarea:focus-visible {
-  outline: 2px solid var(--accent);
+  outline: 2px solid var(--green);
   outline-offset: 2px;
 }
 input,
@@ -158,7 +150,7 @@ pre {
   overflow-wrap: anywhere;
 }
 .muted {
-  color: var(--muted);
+  color: var(--ink-2);
 }
 .sr-only {
   position: absolute;

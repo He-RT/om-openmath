@@ -1,4 +1,22 @@
 import { test, expect } from "@playwright/test";
+test('editing a dependency retains the old result until Run to update refreshes it',async({page})=>{
+  await page.goto('/');
+  await page.getByLabel('Run mode',{exact:true}).selectOption('manual');
+  await page.getByRole('button',{name:'＋ Math',exact:true}).click();
+  const first=page.getByRole('textbox',{name:'Math input 1',exact:true});
+  await first.fill('let a=2');await first.press('Shift+Enter');
+  const second=page.getByRole('textbox',{name:'Math input 2',exact:true});
+  await second.fill('a+1');await second.press('ControlOrMeta+Enter');await second.press('Escape');
+  const output=page.locator('.notebook-cell').nth(1);
+  await expect(output.locator('.cell-output .formula').first()).toHaveAttribute('aria-label','3');
+  await first.fill('let a=5');
+  await expect(output).toHaveAttribute('data-presentation','stale');
+  await expect(output.locator('.result-status')).toContainText('Source or dependency definitions changed');
+  await expect(output.locator('.cell-output .formula').first()).toHaveAttribute('aria-label','3');
+  await output.getByRole('button',{name:'Run to update',exact:true}).click();
+  await expect(output).toHaveAttribute('data-presentation','exact');
+  await expect(output.locator('.cell-output .formula').first()).toHaveAttribute('aria-label','6');
+});
 test("actual presentation facts drive verified, stale, conditional, numeric, unevaluated and error states",async({page})=>{
   await page.goto("/");await page.getByRole("button",{name:"＋ Math",exact:true}).click();
   const cell=page.locator(".notebook-cell").first(),editor=page.getByRole("textbox",{name:"Math input 1",exact:true});

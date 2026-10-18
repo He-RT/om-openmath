@@ -7,7 +7,7 @@
 }
 .ask-actions button,
 .repair-control > button {
-  color: var(--accent);
+  color: var(--green);
 }
 .suggestion-card {
   padding: 16px 0;
@@ -17,7 +17,7 @@
 }
 .suggestion-label {
   font-size: 10px;
-  color: var(--muted);
+  color: var(--ink-2);
 }
 .suggestion-card > .formula {
   display: block;
@@ -31,7 +31,7 @@
 }
 .suggestion-card p {
   font-size: 12px;
-  color: var(--muted);
+  color: var(--ink-2);
   overflow-wrap: anywhere;
 }
 .suggestion-actions {
@@ -39,14 +39,14 @@
   flex-wrap: wrap;
   gap: 4px;
   font-size: 11px;
-  color: var(--accent);
+  color: var(--green);
 }
 .ai-working {
   display: flex;
   align-items: center;
   flex-wrap: wrap;
   gap: 9px;
-  color: var(--muted);
+  color: var(--ink-2);
   font-size: 11px;
   margin: 12px 0;
 }
@@ -54,7 +54,7 @@
   display: block;
   width: 60px;
   height: 4px;
-  background: var(--accent-soft);
+  background: var(--green-soft);
   border-radius: 2px;
   animation: ai-pulse 1.2s ease-in-out infinite;
 }
@@ -71,7 +71,7 @@
 }
 .tool-call-card summary {
   cursor: pointer;
-  color: var(--accent);
+  color: var(--green);
 }
 .tool-call-card pre {
   font-size: 10px;
@@ -94,17 +94,17 @@
   padding-left: 12px;
 }
 .repair-diff > div:last-child {
-  border-left-color: var(--accent);
+  border-left-color: var(--green);
 }
 .repair-diff span {
   font-size: 10px;
-  color: var(--muted);
+  color: var(--ink-2);
 }
 .repair-diff pre {
   font-size: 12px;
 }
 .repair-suggestion p {
-  color: var(--muted);
+  color: var(--ink-2);
   font-size: 12px;
 }
 .assistant-header {
@@ -116,7 +116,7 @@
 }
 .assistant-header button {
   font-size: 10px;
-  color: var(--muted);
+  color: var(--ink-2);
 }
 .chat-turn {
   margin: 20px 0 28px;
@@ -135,7 +135,7 @@
 .chat-user > span,
 .chat-assistant > span {
   font-size: 9px;
-  color: var(--muted);
+  color: var(--ink-2);
 }
 .chat-composer {
   display: flex;
@@ -153,7 +153,7 @@
 .chat-composer button {
   align-self: flex-end;
   font-size: 11px;
-  color: var(--accent);
+  color: var(--green);
 }
 .ai-indicator {
   display: flex;
@@ -166,16 +166,16 @@
   width: 5px;
   height: 5px;
   border-radius: 50%;
-  background: var(--muted);
+  background: var(--ink-2);
 }
 .ai-ready .ai-status-dot {
-  background: var(--accent);
+  background: var(--green);
 }
 .ai-error .ai-status-dot {
-  background: var(--error);
+  background: var(--red);
 }
 .ai-working .ai-status-dot {
-  background: var(--accent);
+  background: var(--green);
   animation: ai-pulse 1s ease-in-out infinite;
 }
 
@@ -194,6 +194,6 @@
 .inspector-assistant .inspector-header {
   position: sticky;
   top: 0;
-  background: var(--surface);
+  background: var(--chrome);
   z-index: 2;
 }

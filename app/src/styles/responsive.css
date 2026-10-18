@@ -52,16 +52,16 @@
   }
 }
 .syntax-number {
-  color: var(--warning);
+  color: var(--amber);
 }
 .markdown a {
-  color: var(--accent);
+  color: var(--green);
 }
 .markdown blockquote {
   border-left: 2px solid var(--line);
   margin: 12px 0;
   padding-left: 16px;
-  color: var(--muted);
+  color: var(--ink-2);
 }
 .markdown-table {
   overflow-x: auto;

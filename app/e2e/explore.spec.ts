@@ -1,4 +1,5 @@
 import {test,expect} from '@playwright/test';
+import {workbenchMenu} from './workbenchMenu';
 test('real isolated worker slider computes, cancels superseded work, pans frozen plots and preserves notebook bindings',async({page})=>{
  await page.setViewportSize({width:1280,height:960});await page.goto('/');
  await page.getByRole('button',{name:'＋ Math',exact:true}).click();
@@ -14,7 +15,7 @@ test('real isolated worker slider computes, cancels superseded work, pans frozen
  await expect(slider).toBeEnabled();await slider.press('End');await expect(explore).toHaveAttribute('aria-busy','false');
  const plot=explore.locator('.plot-view'),svg=plot.getByRole('img',{name:'Plot',exact:true});
  await expect(plot).toHaveAttribute('aria-busy','false');await svg.press('ArrowRight');await expect(plot).toHaveAttribute('aria-busy','false');
- await plot.locator('summary').click();await expect(plot.locator('.plot-sample-data')).toContainText('4');
+ await plot.getByRole('button',{name:'Graph information',exact:true}).click();await plot.getByText('Kernel sample data',{exact:true}).click();await expect(plot.locator('.plot-sample-data')).toContainText('4');
  await page.screenshot({path:'test-results/explore-plot.png',fullPage:true});
  await page.getByRole('button',{name:'＋ Math',exact:true}).click();const probe=page.getByRole('textbox',{name:'Math input 2',exact:true});await probe.fill('a');await probe.press('ControlOrMeta+Enter');await probe.press('Escape');
  await expect(page.locator('.notebook-cell').nth(1).locator('.cell-output')).toContainText('99');
@@ -24,7 +25,7 @@ test('real isolated worker slider computes, cancels superseded work, pans frozen
  expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
  await page.screenshot({path:'test-results/explore-narrow.png',fullPage:true});
  await page.setViewportSize({width:1280,height:960});
- const download=page.waitForEvent('download');await page.getByRole('button',{name:'Save',exact:true}).first().click();
+ await workbenchMenu(page);const download=page.waitForEvent('download');await page.getByRole('button',{name:'Save',exact:true}).first().click();
  const file=await download;const path=await file.path();if(!path)throw new Error('no saved source');const {readFile}=await import('node:fs/promises');const saved=await readFile(path,'utf8');
  expect(saved).toContain('initial:');expect(saved).not.toContain('context');expect(saved).not.toContain('view_id');
 });

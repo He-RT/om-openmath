@@ -12,7 +12,7 @@
   margin-bottom: 4px;
 }
 .steps-header span {
-  color: var(--muted);
+  color: var(--ink-2);
   font-size: 11.5px;
 }
 .steps-header label {
@@ -20,11 +20,11 @@
   align-items: center;
   gap: 6px;
   font-size: 11.5px;
-  color: var(--muted);
+  color: var(--ink-2);
 }
 .explain-all,
 .step-why {
-  color: var(--accent);
+  color: var(--green);
   font-size: 11px;
 }
 .explanation-hint {
@@ -38,7 +38,7 @@
 .explanation-hint button {
   font-size: 11.5px;
   padding: 2px 0;
-  color: var(--accent);
+  color: var(--green);
 }
 .steps-source { margin: 6px 0 8px; max-height: 88px; overflow: auto; white-space: pre; font: 12px/1.65 var(--font-mono); color: var(--ink); }
 .step-timeline, .step-children { margin: 0; padding: 0; list-style: none; }
@@ -62,7 +62,7 @@
   margin: 6px 0;
 }
 .step-params dt {
-  color: var(--muted);
+  color: var(--ink-2);
 }
 .step-params dd {
   margin: 0;
@@ -83,7 +83,7 @@
   max-width: 100%;
 }
 .step-arrow {
-  color: var(--muted);
+  color: var(--ink-2);
   display: block;
   padding: 4px 0;
   font-size: 14px;
@@ -107,7 +107,7 @@
 }
 .step-reference {
   font: inherit;
-  color: var(--accent);
+  color: var(--green);
   padding: 0 2px;
   border-radius: 3px;
 }
@@ -117,10 +117,10 @@
   align-items: baseline;
   gap: 8px;
   font-size: 11.5px;
-  color: var(--muted);
+  color: var(--ink-2);
 }
 .explanation-status button {
-  color: var(--accent);
+  color: var(--green);
   font-size: 11.5px;
 }
 .step-highlight {
@@ -128,7 +128,7 @@
 }
 @keyframes step-highlight {
   from {
-    background: var(--accent-soft);
+    background: var(--green-soft);
   }
   to {
     background: transparent;
@@ -141,14 +141,14 @@
   gap: 12px;
   margin-bottom: 14px;
   font-size: 11px;
-  color: var(--muted);
+  color: var(--ink-2);
 }
 .privacy-dialog {
   width: min(420px, calc(100vw - 32px));
   max-height: calc(100dvh - 32px);
   overflow: auto;
   padding: 24px;
-  background: var(--surface);
+  background: var(--chrome);
   border: 1px solid var(--line);
   border-radius: 8px;
 }
@@ -163,14 +163,14 @@
 .privacy-destination {
   display: block;
   overflow-wrap: anywhere;
-  color: var(--accent);
+  color: var(--green);
 }
 .privacy-dialog label {
   display: flex;
   gap: 8px;
   align-items: baseline;
   font-size: 11px;
-  color: var(--muted);
+  color: var(--ink-2);
   margin: 22px 0;
 }
 .privacy-actions {
@@ -180,13 +180,13 @@
   font-size: 12px;
 }
 .privacy-actions button:last-child {
-  color: var(--surface);
-  background: var(--accent);
+  color: var(--chrome);
+  background: var(--green);
 }
 
 @media (prefers-reduced-motion: reduce) {
   .step-highlight {
     animation: none;
-    background: var(--accent-soft);
+    background: var(--green-soft);
   }
 }

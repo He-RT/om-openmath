@@ -33,10 +33,10 @@
   gap: 4px;
 }
 .copy-action [role="status"] {
-  color: var(--accent);
+  color: var(--green);
 }
 .copy-action [role="alert"] {
-  color: var(--error);
+  color: var(--red);
 }
 .copy-menu summary { min-height: 24px; height: auto; min-width: 0; padding: 3px 5px; gap: 3px; }
 .copy-menu > .toolbar-menu-items { top: 28px; }
@@ -74,7 +74,7 @@
 .number-line {
   margin: 12px 0;
   max-width: 600px;
-  color: var(--muted);
+  color: var(--ink-2);
 }
 .number-line svg {
   width: 100%;
@@ -88,26 +88,26 @@
 }
 .number-tick text,
 .axis-variable {
-  fill: var(--muted);
+  fill: var(--ink-2);
   font-size: 11px;
 }
 .interval-segment {
-  stroke: var(--accent);
+  stroke: var(--green);
   stroke-width: 5;
 }
 .endpoint-closed {
-  fill: var(--accent);
-  stroke: var(--accent);
+  fill: var(--green);
+  stroke: var(--green);
   stroke-width: 2;
 }
 .endpoint-open {
-  fill: var(--background);
-  stroke: var(--accent);
+  fill: var(--paper);
+  stroke: var(--green);
   stroke-width: 2;
 }
 .infinite-arrow {
   fill: none;
-  stroke: var(--accent);
+  stroke: var(--green);
   stroke-width: 2.5;
 }
 .interval-labels {
@@ -146,7 +146,7 @@
 .sampled-preview > svg {
   display: block;
   width: 100%;
-  background: var(--surface);
+  background: var(--chrome);
   border-radius: 6px;
 }
 .sampled-curve path {
@@ -155,32 +155,32 @@
   stroke-linejoin: round;
 }
 .solution-point {
-  fill: var(--accent);
-  stroke: var(--surface);
+  fill: var(--green);
+  stroke: var(--chrome);
   stroke-width: 1.5;
 }
 .plot-shade {
-  fill: var(--accent-soft);
+  fill: var(--green-soft);
 }
 .structured-value { max-width: 100%; font-size: .92em; }
 .value-heading { display: flex; flex-wrap: wrap; align-items: baseline; gap: 8px 16px; margin: 6px 0 12px; }
-.value-heading > span, .value-nature { color: var(--muted); font-size: .82em; }
+.value-heading > span, .value-nature { color: var(--ink-2); font-size: .82em; }
 .value-table-scroll { max-width: 100%; max-height: min(480px, 60vh); overflow: auto; border: 1px solid var(--line); border-radius: 6px; }
 .value-table { border-collapse: collapse; min-width: 100%; }
 .value-table th, .value-table td { padding: 10px 12px; border-bottom: 1px solid var(--line); text-align: left; vertical-align: top; min-width: 100px; }
-.value-table thead th { background: var(--surface); font-weight: 500; position: sticky; top: 0; z-index: 1; }
-.value-table tbody th { font-weight: 400; color: var(--muted); overflow-wrap: anywhere; max-width: 240px; }
+.value-table thead th { background: var(--chrome); font-weight: 500; position: sticky; top: 0; z-index: 1; }
+.value-table tbody th { font-weight: 400; color: var(--ink-2); overflow-wrap: anywhere; max-width: 240px; }
 .value-table tbody tr:last-child > * { border-bottom: 0; }
 .value-table td { max-width: 480px; }
 .value-scalar { display: flex; flex-direction: column; align-items: flex-start; gap: 6px; }
 .value-scalar > code { white-space: pre-wrap; overflow-wrap: anywhere; }
 .value-scalar > .formula { display: block; max-width: 100%; overflow-x: auto; }
-.value-expand { color: var(--accent); border: 1px solid var(--line); border-radius: 4px; padding: 10px 12px; min-height: 44px; text-align: left; white-space: normal; }
+.value-expand { color: var(--green); border: 1px solid var(--line); border-radius: 4px; padding: 10px 12px; min-height: 44px; text-align: left; white-space: normal; }
 .value-pagination, .value-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; margin: 12px 0; }
-.value-pagination > span { color: var(--muted); font-variant-numeric: tabular-nums; }
-.value-source { white-space: pre-wrap; overflow-wrap: anywhere; max-width: 100%; padding: 12px; background: var(--surface); border: 1px solid var(--line); border-radius: 4px; }
-.value-empty { color: var(--muted); }
-.value-cell-action { color: var(--muted); font-size: .85em; padding: 3px 0; }
+.value-pagination > span { color: var(--ink-2); font-variant-numeric: tabular-nums; }
+.value-source { white-space: pre-wrap; overflow-wrap: anywhere; max-width: 100%; padding: 12px; background: var(--chrome); border: 1px solid var(--line); border-radius: 4px; }
+.value-empty { color: var(--ink-2); }
+.value-cell-action { color: var(--ink-2); font-size: .85em; padding: 3px 0; }
 .value-selection { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; padding: 12px; border: 1px solid var(--line); border-radius: 4px; }
 .value-selection > code { width: 100%; overflow-wrap: anywhere; white-space: pre-wrap; }
 @media (pointer: coarse) { .value-actions button, .value-pagination button { min-height: 44px; padding: 8px; } }
@@ -190,5 +190,5 @@
   gap: 12px;
   margin-top: 8px;
   font-size: 10px;
-  color: var(--muted);
+  color: var(--ink-2);
 }

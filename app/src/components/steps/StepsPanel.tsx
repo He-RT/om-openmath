@@ -126,7 +126,7 @@ function RecordedSteps({
       if (node && !matchMedia("(prefers-reduced-motion: reduce)").matches)
         node.animate?.(
           [
-            { backgroundColor: "var(--accent-soft)" },
+            { backgroundColor: "var(--green-soft)" },
             { backgroundColor: "transparent" },
           ],
           { duration: 1200 },

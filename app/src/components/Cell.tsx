@@ -3,7 +3,7 @@ import type { NotebookController, UiCell } from "../state/notebookStore";
 import type { Messages, Locale } from "../i18n";
 import type { Dialect } from "../kernel/generated/Dialect";
 import { MathEditor } from "./editor/MathEditor";
-import { Markdown } from "./TextCell";
+import { TextCell } from "./TextCell";
 import { OutputView } from "./output/OutputView";
 import { AskCell } from "./AskCell";
 import { cellPresentation, presentationLabel } from "./cellPresentation";
@@ -72,14 +72,16 @@ export function Cell({
       className={`notebook-cell ${active ? "cell-active" : ""}`}
       data-cell-id={cell.id}
       data-status={cell.status}
+      data-kind={cell.kind}
       data-presentation={presentation.status}
-      aria-label={`${index + 1} · ${presentationLabel(presentation,t)}`}
+      aria-label={cell.kind==="Text" ? `${t.text} ${index+1}`:`${index + 1} · ${presentationLabel(presentation,t)}`}
       onMouseDown={() => controller.select(cell.id)}
+      onFocus={() => controller.select(cell.id)}
     >
       <div className={`cell-rail rail-${presentation.status}`} aria-hidden="true" />
       <div className="cell-body">
         <div className={cell.kind === "Math" ? `source-well ${preview ? "show-source-preview" : ""}` : "cell-source"}>
-          <span className="execution-count sr-only">[{cell.exec_count ?? " "}]</span>
+          {cell.kind==="Math" && <span className="execution-count sr-only">[{cell.exec_count ?? " "}]</span>}
           <div className="cell-toolbar">
             {cell.kind === "Math" && <button className="run-cell" aria-label={`${presentation.status === "running" ? t.stop : t.run} ${index+1}`} disabled={busy && presentation.status !== "running"} onClick={() => void (presentation.status === "running" ? controller.interrupt() : controller.run(cell.id))}><WorkbenchIcon name={presentation.status === "running" ? "stop" : "play"}/></button>}
             <ToolbarMenu className="cell-more" label={`${t.cellMore} ${index+1}`} icon={<WorkbenchIcon name="more"/>}>
@@ -130,21 +132,7 @@ export function Cell({
             busy={busy}
           />
         ) : (
-          <>
-            <textarea
-              className="prose-editor"
-              aria-label={`${t.textInput} ${index + 1}`}
-              placeholder={t.text}
-              value={cell.source}
-              onFocus={() => controller.select(cell.id)}
-              onChange={(e) =>
-                controller.edit(cell.id, { source: e.target.value })
-              }
-            />
-            {cell.kind === "Text" && cell.source && (
-              <Markdown source={cell.source} />
-            )}
-          </>
+          <TextCell source={cell.source} index={index} t={t} editing={cell.textEditing===true} onModeChange={editing=>controller.textMode(cell.id,editing)} onFocus={()=>controller.select(cell.id)} onChange={source=>controller.edit(cell.id,{source})} onInsertCode={(source,dialect)=>{const id=controller.add("Math",source,cell.id);controller.edit(id,{dialect});}}/>
         )}
         </div>
         {cell.kind === "Math" && !cell.output && <CellStatusLine presentation={presentation} t={t} />}

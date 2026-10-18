@@ -144,6 +144,7 @@ test("real editor completion, Greek Tab shorthand, Markdown and locale changes r
   await page
     .getByRole("textbox", { name: "Text input 3", exact: true })
     .fill("# Reasoning\n\n**Exact** and $x^2$.");
+  await page.getByRole("textbox",{name:"Text input 3",exact:true}).press("Escape");
   await expect(page.getByRole("heading", { name: "Reasoning" })).toBeVisible();
   await expect(page.locator(".markdown .katex")).toBeVisible();
   await workbenchMenu(page);

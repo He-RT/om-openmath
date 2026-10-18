@@ -155,7 +155,7 @@ export function AssistantPanel({
           {item.result && (
             <div className="chat-assistant">
               <span>{t.assistant}</span>
-              {item.result.text && <Markdown source={item.result.text} />}
+              {item.result.text && <Markdown source={item.result.text} t={t} onInsertCode={(source,dialect)=>{const id=controller.add("Math",source,controller.store.getState().active ?? undefined);controller.edit(id,{dialect});}}/>}
               <TaskState value={item.result} t={t} onCancel={task.cancel} />
               {item.result.tools.map((tool, i) => (
                 <ToolCallCard key={i} tool={tool} t={t} />

@@ -234,6 +234,21 @@
   padding: 4px 2px;
   line-height: 1.7;
 }
+.notebook-cell[data-kind="Text"] .cell-rail { visibility: hidden; }
+.text-cell .prose-editor { font: 13.5px/1.6 var(--font-mono); background: var(--well); border: 1px solid var(--line-strong); border-radius: 8px; padding: 12px 48px 12px 14px; min-height: 120px; max-height: 60dvh; }
+.text-cell .prose-editor:focus-visible { outline: 2px solid var(--green); outline-offset: 1px; }
+.text-cell-reading { padding-right: 34px; }
+.text-reading-content { min-height: 36px; }
+.text-cell .markdown { font-family: var(--font-paper); font-size: 16.5px; line-height: 1.68; padding: 0; max-width: 64ch; }
+.text-cell .markdown h2 { font-size: 21px; line-height: 1.3; font-weight: 600; }
+.text-cell .markdown h3 { font-size: 19px; line-height: 1.4; }
+.text-cell .markdown > :first-child { margin-top: 0; }
+.text-cell-actions { display: flex; align-items: center; justify-content: flex-end; gap: 10px; font: 11px/1.5 var(--font-ui); color: var(--ink-2); margin: 6px 0 0; }
+.text-cell-actions button { padding: 3px 7px; }
+.text-cell-reading .text-cell-actions { opacity: 0; }
+.cell-active .text-cell-actions, .text-cell:hover .text-cell-actions, .text-cell:focus-within .text-cell-actions { opacity: 1; }
+.text-empty { font: 13px/1.6 var(--font-ui); color: var(--ink-2); margin: 0; }
+@media(hover:none) { .text-cell-reading .text-cell-actions { opacity: 1; } }
 .markdown {
   font-size: 14px;
   padding: 4px 2px;
@@ -253,11 +268,15 @@
   font-size: 17px;
   font-weight: 500;
 }
-.markdown pre {
-  background: var(--accent-soft);
-  padding: 10px;
-  border-radius: 4px;
-}
+.markdown :not(pre) > code { font: .85em/1.6 var(--font-mono); background: var(--code-bg); border-radius: 4px; padding: 2px 4px; }
+.code-block { min-width: 0; max-width: 100%; background: var(--code-bg); border-radius: 6px; border-left: 3px solid var(--ink-3); overflow: hidden; margin: 14px 0; font-family: var(--font-ui); }
+.code-block[data-openmath="true"] { border-left-color: var(--green); }
+.code-block header { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 7px 11px 3px; font: 11.5px/1.5 var(--font-ui); color: var(--ink-2); }
+.code-language { font-weight: 600; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.code-block-actions { display: flex; align-items: center; gap: 5px; flex: none; }
+.code-block-actions button { padding: 3px 5px; font: inherit; color: inherit; }
+.code-block pre { white-space: pre; overflow-wrap: normal; overflow-x: auto; margin: 0; padding: 7px 11px 12px; border-radius: 0; background: transparent; font: 12.5px/1.6 var(--font-mono); }
+.code-block pre > code { font: inherit; white-space: inherit; color: var(--ink); background: transparent; padding: 0; }
 .markdown-bullet {
   padding-left: 14px;
 }

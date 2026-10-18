@@ -11,6 +11,7 @@ export function locale(
     : language;
 }
 const en = {
+  code: "Code", insertCodeCell: "Insert as cell", read: "Read", readShortcut: "Esc or ⌘/Ctrl Enter to read", emptyTextCell: "Double-click or choose Edit to write text.",
   bindingValue: "Value",
   numericProjection: "Showing numeric projection",
   copy: "Copy",
@@ -287,6 +288,7 @@ const en = {
   messages: "Messages",
 };
 const zh: typeof en = {
+  code: "代码", insertCodeCell: "插入为单元格", read: "阅读", readShortcut: "Esc 或 ⌘/Ctrl↩ 返回阅读", emptyTextCell: "双击或点编辑，开始文字记录。",
   bindingValue: "值",
   numericProjection: "显示数值投影",
   copy: "复制",

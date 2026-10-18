@@ -21,6 +21,7 @@ export interface UiCell extends CellInput {
   previousOutput?: CellOutput | undefined;
   stopped?: boolean;
   stopRequested?: boolean;
+  textEditing?: boolean;
 }
 export interface UiState {
   assistantTurns: ChatTurnView[];
@@ -142,6 +143,7 @@ export class NotebookController {
           ? "Modern"
           : "Auto";
     const cell = uiCell({ id, kind, source, dialect });
+    if(kind==="Text") cell.textEditing=true;
     let index = after
       ? state.cells.findIndex((c) => c.id === after) + 1
       : state.cells.length;
@@ -166,6 +168,7 @@ export class NotebookController {
       focus: state.focus + (focus ? 1 : 0),
     }));
   }
+  textMode(id:string,editing:boolean) {this.store.setState(state=>({cells:state.cells.map(cell=>cell.id===id ? {...cell,textEditing:editing}:cell)}));}
   edit(
     id: string,
     change: Partial<Pick<CellInput, "source" | "kind" | "dialect">>,
@@ -180,6 +183,7 @@ export class NotebookController {
       status: change.kind === "Text" ? ("Done" as const) : ("Stale" as const),
       stopped: false,
       stopRequested: false,
+      ...(change.kind==="Text" ? {textEditing:true}:{}),
     };
     this.store.setState({
       cells: state.cells.map((c) => (c.id === id ? next : c)),

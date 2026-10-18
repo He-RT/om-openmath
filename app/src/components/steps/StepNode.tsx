@@ -23,6 +23,7 @@ export function ExplanationView({
       {value.text && (
         <Markdown
           source={value.text}
+          t={t}
           stepReferences={{ knownIds, onReference, label: t.goToStep }}
         />
       )}

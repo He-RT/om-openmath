@@ -1,6 +1,10 @@
-import { useMemo, type ReactNode } from "react";
+import { useLayoutEffect, useMemo, useRef, type ReactNode } from "react";
 import { Marked, type Token, type Tokens } from "marked";
 import { Katex } from "./output/Katex";
+import { CodeBlock } from "./CodeBlock";
+import type { Dialect } from "../kernel/generated/Dialect";
+import { locale, messages, type Messages } from "../i18n";
+interface MarkdownActions {t:Messages;onInsertCode?:((source:string,dialect:Dialect)=>void)|undefined}
 const markdown = new Marked({
   gfm: true,
   extensions: [
@@ -66,11 +70,12 @@ function renderTokens(
   tokens: Token[],
   depth = 0,
   references?: StepReferences,
+  actions?: MarkdownActions,
 ): ReactNode[] {
   if (depth > 24) return [];
   return tokens.slice(0, 5000).map((token, index) => {
     const child = (tokens: Token[]) =>
-      renderTokens(tokens, depth + 1, references);
+      renderTokens(tokens, depth + 1, references, actions);
     switch (token.type) {
       case "space":
         return null;
@@ -118,9 +123,7 @@ function renderTokens(
         return <code key={index}>{(token as Tokens.Codespan).text}</code>;
       case "code":
         return (
-          <pre key={index}>
-            <code>{(token as Tokens.Code).text}</code>
-          </pre>
+          <CodeBlock key={index} code={(token as Tokens.Code).text} language={(token as Tokens.Code).lang ?? ""} t={actions?.t ?? messages(locale())} onInsert={actions?.onInsertCode}/>
         );
       case "blockquote":
         return (
@@ -183,7 +186,7 @@ function renderTokens(
             rel="noopener noreferrer"
             target={value.href.startsWith("#") ? undefined : "_blank"}
           >
-            {renderTokens(value.tokens, depth + 1)}
+            {renderTokens(value.tokens, depth + 1,undefined,actions)}
           </a>
         );
       }
@@ -216,12 +219,40 @@ function renderTokens(
 export function Markdown({
   source,
   stepReferences,
+  t=messages(locale()),
+  onInsertCode,
 }: {
   source: string;
   stepReferences?: StepReferences;
+  t?:Messages;
+  onInsertCode?:(source:string,dialect:Dialect)=>void;
 }) {
   const tokens = useMemo(() => markdown.lexer(source), [source]);
   return (
-    <div className="markdown">{renderTokens(tokens, 0, stepReferences)}</div>
+    <div className="markdown">{renderTokens(tokens, 0, stepReferences,{t,onInsertCode})}</div>
   );
+}
+export function TextCell({source,index,editing,onModeChange,onChange,onFocus,t,onInsertCode}:{source:string;index:number;editing:boolean;onModeChange:(editing:boolean)=>void;onChange:(source:string)=>void;onFocus:()=>void;t:Messages;onInsertCode:(source:string,dialect:Dialect)=>void}) {
+  const editor=useRef<HTMLTextAreaElement>(null),reading=useRef<HTMLDivElement>(null),selection=useRef({start:0,end:0}),composing=useRef(false),wasEditing=useRef(false);
+  useLayoutEffect(()=>{
+    if(editing){wasEditing.current=true;const element=editor.current;if(element){element.focus({preventScroll:true});element.setSelectionRange(Math.min(selection.current.start,source.length),Math.min(selection.current.end,source.length));}}
+    else if(wasEditing.current){wasEditing.current=false;reading.current?.focus({preventScroll:true});}
+    // Source changes during typing must not move the caret.
+  },[editing]);
+  useLayoutEffect(()=>{
+    const size=()=>{const element=editor.current;if(!element)return;const scroll=element.scrollTop;element.style.height="auto";element.style.height=`${Math.max(120,Math.min(element.scrollHeight,innerHeight*.6))}px`;element.scrollTop=scroll;};
+    if(!editing)return;size();window.addEventListener("resize",size);return()=>window.removeEventListener("resize",size);
+  },[source,editing]);
+  const finish=()=>{if(composing.current)return;if(editor.current)selection.current={start:editor.current.selectionStart,end:editor.current.selectionEnd};onModeChange(false);};
+  return <div className={`text-cell ${editing ? "text-cell-editing":"text-cell-reading"}`}>
+    {editing ? <>
+      <textarea ref={editor} className="prose-editor" aria-label={`${t.textInput} ${index+1}`} placeholder={t.text} value={source} onFocus={onFocus} onChange={event=>onChange(event.target.value)} onCompositionStart={()=>{composing.current=true;}} onCompositionEnd={()=>{composing.current=false;}} onKeyDown={event=>{if(event.nativeEvent.isComposing || composing.current || event.keyCode===229)return;if(event.key==="Escape" || event.key==="Enter" && (event.ctrlKey || event.metaKey)){event.preventDefault();event.stopPropagation();finish();}}}/>
+      <div className="text-cell-actions"><span>{t.readShortcut}</span><button onClick={finish}>{t.read}</button></div>
+    </> : <>
+      <div ref={reading} tabIndex={0} className="text-reading-content" aria-label={`${t.text} ${index+1}`} onDoubleClick={event=>{if(!(event.target as HTMLElement).closest(".code-block,button,a,pre,code,input,select,textarea"))onModeChange(true);}} onKeyDown={event=>{if(event.target===event.currentTarget && event.key==="Enter"){event.preventDefault();onModeChange(true);}}}>
+        {source ? <Markdown source={source} t={t} onInsertCode={onInsertCode}/>:<p className="text-empty">{t.emptyTextCell}</p>}
+      </div>
+      <div className="text-cell-actions"><button aria-label={`${t.edit} ${t.text} ${index+1}`} onClick={()=>onModeChange(true)}>{t.edit}</button></div>
+    </>}
+  </div>;
 }

@@ -56,7 +56,7 @@ test("actual Ask translation and error repair stay proposals until explicit inse
   );
   await expect(page.locator(".solution-result")).toHaveCount(0);
   await page.getByRole("button", { name: "Run 2", exact: true }).click();
-  await expect(page.locator(".solution-chip")).toHaveCount(2);
+  await expect(page.locator(".solution-entry")).toHaveCount(2);
   const math = page.getByRole("textbox", { name: "Math input 2", exact: true });
   await math.fill("solve(x^2==9,x");
   await math.press("ControlOrMeta+Enter");

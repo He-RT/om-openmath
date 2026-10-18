@@ -3320,6 +3320,7 @@ dependencies = [
  "console_error_panic_hook",
  "js-sys",
  "om-kernel",
+ "om-llm",
  "om-num",
  "serde",
  "serde_json",

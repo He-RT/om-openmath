@@ -601,7 +601,7 @@ Mac S1–S8（两个模型）、Web S1–S6（一个模型）在候选包上各�
 | [x] E4 图形外观 | 实现完成 | 本任务提交 |
 | [x] E5 步骤与变量 | 实现完成 | 本任务提交 |
 | [x] E6 E2E 与性能 | 完成 | 本任务提交 |
-| [ ] F1 运行方式验证 | | |
+| [x] F1 运行方式验证 | 采用Pi Worker，路线通过 | 本任务提交 |
 | [ ] F2 Web 工具宿主 | | |
 | [ ] F3 Web 助手界面 | | |
 | [ ] F4 Web 设置 | | |
@@ -612,6 +612,13 @@ Mac S1–S8（两个模型）、Web S1–S6（一个模型）在候选包上各�
 | [ ] G4 打包与发布 | | |
 
 ### 记录
+
+**F1（2026-10-19）**
+
+- 结论：采用Pi Worker，未走最小TS循环回退。固定pi-agent-core/pi-ai 1.0.4（与原生一致）；先用现有agent依赖做生产打包与真实Worker两轮工具探针，再把依赖固定进Web锁文件。最终验证Worker JS159526字节/gzip44.69KB，Node内置模块引用/外部空壳0；无需替代供应商SDK或放宽浏览器环境。初始探针与日志留`target/plan-5/f1-probe/`，不是新增交付门禁。
+- 新ModelCodec WASM绑定只包装现有om-llm::single_turn，保留原生同一body/解码/原始调用ID/replay/usage未知值；无端点、密钥、工具执行或循环。BrowserModelAdapter用既有LlmDriver执行实际fetch，Pi只调度；每轮输入冻结一次，终结/取消后释放，未完成调用片段不交给工具执行。Pi内部必要的0用量只作调度占位，产品事实保留Rust返回的null。没有改Rust数学算法、普通.omnb或存储版本。
+- Rust受影响3项通过（`f1-codec-rust.log`），现有driver/client7项通过（`f1-driver-regression.log`），WASM/类型/生产构建和lint通过（`f1-wasm-build.log`、`f1-production-build.log`、`f1-candidate-lint.log`）；新增类型错误修正记录保留。生产方式打包的实际Worker回环3场景通过（最终`f1-final-worker.log`）：两轮请求→一次读取真实Kernel笔记本→回复；下一请求中的assistant/tool保留provider-call-read-17、源码let a=2/a+1；缺失usage为null。截断/取消均0工具执行、无第二请求；未调用真实模型，预算27/60。
+- 本项只确认运行路线和模型适配器；生产工具宿主、会话/事务存储、真实提示词拼装与助手UI分别在F2/F3。F2接入时按默认采用独立Worker并延后启动，避免把Pi放进初始UI；当前主应用仍用旧助手界面，不冒称完整Web助手已交付。F–G未完成；G1/G2/G3待办与原型交互限制不变。自有生产5173仍pid31200/exec7390（先核对存活），旧用户4175未改。
 
 **E6（2026-10-19）**
 

@@ -8,6 +8,8 @@ use om_num::ctx::Clock;
 use serde::Serialize;
 use std::sync::Arc;
 use wasm_bindgen::prelude::*;
+mod model_codec;
+pub use model_codec::ModelCodec;
 struct BrowserClock;
 impl Clock for BrowserClock {
     fn now_ms(&self) -> f64 {

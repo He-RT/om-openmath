@@ -23,6 +23,8 @@ export function flattenSteps(steps: StepsView) {
 export interface StepsPanelProps {
   steps: StepsView;
   cellId: string;
+  cellNumber?: number;
+  source?: string;
   outIndex: number;
   current: boolean;
   config: KernelConfig | null;
@@ -56,6 +58,8 @@ export function StepsPanel(props: StepsPanelProps) {
 function RecordedSteps({
   steps,
   cellId,
+  cellNumber,
+  source,
   outIndex,
   current,
   config,
@@ -133,7 +137,8 @@ function RecordedSteps({
     <section className="steps-panel" ref={root} aria-label={t.steps}>
       <header className="steps-header">
         <div>
-          <h2>{t.steps}</h2>
+          <h2>{cellNumber ? t.cellSteps.replace('{n}',String(cellNumber)) : t.steps}</h2>
+          {source !== undefined && <pre className="steps-source">{source}</pre>}
           <span>
             {list.length} {t.stepsRecorded} · Out[{outIndex}]
           </span>
@@ -199,6 +204,7 @@ function RecordedSteps({
             highlight={highlight}
             onExplain={(id) => explain(id)}
             disabled={disabled}
+            showExplain={configured}
             disabledHint={hint}
             explanations={explanation.items}
             cancel={explanation.cancel}

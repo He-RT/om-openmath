@@ -12,6 +12,7 @@ test("workbench breakpoints retain the actual editor, selection and assistant dr
   const draft = page.getByRole("textbox", { name: "Message to assistant" });
   await draft.fill("unsent draft");
   await page.getByRole("tab", { name: "Variables", exact: true }).click();
+  expect(await page.locator('.inspector-host').evaluate(node=>node.getBoundingClientRect().height)).toBe(await page.locator('.workspace-layout').evaluate(node=>node.getBoundingClientRect().height));
   await page.getByRole("tab", { name: "Assistant", exact: true }).click();
   await expect(draft).toHaveValue("unsent draft");
   const editorNode = await editor.elementHandle(), draftNode = await draft.elementHandle();

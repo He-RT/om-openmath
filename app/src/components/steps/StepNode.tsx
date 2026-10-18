@@ -58,6 +58,7 @@ export function StepNode({
   cancel,
   knownIds,
   onReference,
+  showExplain = true,
 }: {
   step: StepView;
   t: Messages;
@@ -72,6 +73,7 @@ export function StepNode({
   cancel: (id: string) => void;
   knownIds: Set<string>;
   onReference: (id: string) => void;
+  showExplain?: boolean;
 }) {
   const open = expanded.has(step.id);
   return (
@@ -86,34 +88,28 @@ export function StepNode({
           onClick={() => onToggle(step.id)}
           aria-label={`${t.toggleStep} ${step.id}`}
         >
-          <span className="step-id">{step.id}</span>
+          <span className="step-id" title={step.id}>{step.id.replace(/^S/,'')}</span>
           <StepTitle step={step} language={language} />
           <span className="step-chevron">{open ? "−" : "＋"}</span>
         </button>
       </div>
       {open && (
         <div className="step-detail">
-          <StepParams step={step} language={language} />
           {(step.before_latex.length > 0 || step.after_latex.length > 0) && (
             <div className="step-transformation">
               <div>
-                {step.before_latex.map((latex, i) => (
-                  <Katex key={i} display latex={latex} />
-                ))}
-              </div>
-              {step.before_latex.length > 0 && step.after_latex.length > 0 && (
-                <span className="step-arrow" aria-label={t.becomes}>
-                  ↓
-                </span>
-              )}
-              <div>
-                {step.after_latex.map((latex, i) => (
+                {(step.after_latex.length ? step.after_latex : step.before_latex).map((latex, i) => (
                   <Katex key={i} display latex={latex} />
                 ))}
               </div>
             </div>
           )}
-          <button
+          {(Object.keys(step.params).length > 0 || step.after_latex.length > 0 && step.before_latex.length > 0) && <details className="step-evidence">
+            <summary>{t.stepEvidence}</summary>
+            <StepParams step={step} language={language} />
+            {step.after_latex.length > 0 && step.before_latex.map((latex,i)=><Katex key={i} display latex={latex}/>)}
+          </details>}
+          {showExplain && <button
             className="step-why"
             aria-label={`${t.why} ${step.id}`}
             title={disabled ? disabledHint : undefined}
@@ -121,7 +117,7 @@ export function StepNode({
             onClick={() => onExplain(step.id)}
           >
             {t.why}
-          </button>
+          </button>}
           <ExplanationView
             {...(explanations[step.id] ? { value: explanations[step.id] } : {})}
             t={t}
@@ -149,6 +145,7 @@ export function StepNode({
               cancel={cancel}
               knownIds={knownIds}
               onReference={onReference}
+              showExplain={showExplain}
             />
           ))}
         </ol>

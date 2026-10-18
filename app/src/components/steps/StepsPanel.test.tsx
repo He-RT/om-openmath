@@ -69,6 +69,8 @@ function mount(
       <StepsPanel
         steps={steps}
         cellId="c"
+        cellNumber={2}
+        source="solve(x^2-1=0,x)"
         outIndex={2}
         current
         config={cfg}
@@ -88,6 +90,12 @@ test("explicit keyless profiles enable explanation without treating an environme
 });
 test("actual step IDs, localized titles and expressions are shown; minor details collapse and expand", () => {
   mount(undefined, null);
+  expect(screen.getByRole('heading', { name: 'Derivation for cell 2' })).toBeTruthy();
+  expect(screen.getByText('solve(x^2-1=0,x)')).toBeTruthy();
+  const original = screen.getByLabelText('x^2-1').closest('details');
+  expect(original?.open).toBe(false);
+  fireEvent.click(screen.getByText('Parameters and original expressions'));
+  expect(original?.open).toBe(true);
   expect(screen.getByText("Factor the polynomial.")).toBeTruthy();
   expect(screen.getByLabelText("x^2-1")).toBeTruthy();
   expect(screen.queryByLabelText("1=1")).toBeNull();
@@ -119,7 +127,7 @@ test("empty records and missing browser credentials cannot start model requests"
     (screen.getByRole("button", { name: "Explain all" }) as HTMLButtonElement)
       .disabled,
   ).toBe(true);
-  expect(screen.getByText("No recorded steps for this cell.")).toBeTruthy();
+  expect(screen.getByText("No recorded steps for this result.")).toBeTruthy();
   r.rerender(
     <StepsPanel
       steps={steps}

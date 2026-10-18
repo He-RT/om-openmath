@@ -3,7 +3,7 @@ import type { NotebookController, UiState } from "../state/notebookStore";
 import { locale, type Messages } from "../i18n";
 import { StepsPanel } from "./steps/StepsPanel";
 import { AssistantPanel } from "./assistant/AssistantPanel";
-import type { HoverInfo } from "../kernel/generated/HoverInfo";
+import { VariablesPanel } from "./VariablesPanel";
 import { useResponsiveDialog } from "./useResponsiveDialog";
 import { WorkbenchIcon } from "./WorkbenchIcon";
 export function Inspector({
@@ -24,22 +24,6 @@ export function Inspector({
   const [lastPanel, setLastPanel] = useState<NonNullable<UiState["panel"]>>("assistant");
   useEffect(() => { if (state.panel) setLastPanel(state.panel); }, [state.panel]);
   const panel = state.panel ?? lastPanel;
-  const [values, setValues] = useState<
-    { name: string; info: HoverInfo | null }[]
-  >([]);
-  useEffect(() => {
-    let current = true;
-    void controller.kernel
-      .request({ type: "get_variables" })
-      .then((response) => {
-        if (current && response.type === "variables")
-          setValues(response.items.map(([name, info]) => ({ name, info })));
-      })
-      .catch(() => {});
-    return () => {
-      current = false;
-    };
-  }, [controller, state.cells, state.config?.general.language]);
   const cell = state.cells.find((c) => c.id === state.active);
   const results =
     cell?.output?.items.filter((i) => i.type === "solutions" && i.steps) ?? [];
@@ -90,17 +74,8 @@ export function Inspector({
         </button>
       </div>
       <div className="inspector-content" role="tabpanel" id="inspector-pane-variables" aria-labelledby="inspector-tab-variables" hidden={panel !== "variables"}>
-            <h2>{t.variables}</h2>
-            {values.length === 0 ? (
-              <p className="muted">{t.noVariables}</p>
-            ) : (
-              values.map(({ name, info }) => (
-                <div className="variable-row" key={name}>
-                  <code>{name}</code>
-                  <code>{info?.value ?? "—"}</code>
-                </div>
-              ))
-            )}
+        <VariablesPanel key={state.documentGeneration} cells={state.cells} controller={controller}
+          generation={state.documentGeneration} busy={state.busy} language={locale(state.config?.general.language)} t={t} phone={phone} />
       </div>
       <div className="inspector-content" role="tabpanel" id="inspector-pane-steps" aria-labelledby="inspector-tab-steps" hidden={panel !== "steps"}>
             {results.length > 1 && (
@@ -135,6 +110,8 @@ export function Inspector({
             {cell && selected?.type === "solutions" && selected.steps ? (
               <StepsPanel
                 cellId={cell.id}
+                cellNumber={state.cells.indexOf(cell)+1}
+                source={cell.resultSource?.source ?? cell.source}
                 outIndex={selected.out_index}
                 steps={selected.steps}
                 current={cell.status === "Done" && !state.busy}
@@ -146,8 +123,9 @@ export function Inspector({
               />
             ) : (
               <>
-                <h2>{t.steps}</h2>
-                <p className="muted">{t.selectResult}</p>
+                <h2>{cell ? t.cellSteps.replace('{n}',String(state.cells.indexOf(cell)+1)) : t.steps}</h2>
+                {cell && <pre className="steps-source">{cell.resultSource?.source ?? cell.source}</pre>}
+                <p className="muted">{cell ? t.noSteps : t.selectResult}</p>
               </>
             )}
       </div>

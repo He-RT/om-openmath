@@ -51,7 +51,7 @@ body { overflow: hidden; }
 .outline-status.status-unevaluated, .outline-status.status-unconfirmed, .outline-status.status-stopped { background: var(--ink-3); }
 .outline-status.status-stale { background: transparent; }
 .outline footer { border-top: 1px solid var(--line); color: var(--ink-2); font-size: 11px; padding: 14px 16px; }
-.inspector-host[open] { position: relative; display: block; background: var(--chrome); overflow: hidden; }
+.inspector-host[open] { position: relative; display: block; height: 100%; background: var(--chrome); overflow: hidden; }
 .inspector { height: 100%; min-height: 0; display: flex; flex-direction: column; border-left: 1px solid var(--line); background: var(--chrome); }
 .inspector-header, .inspector-assistant .inspector-header { display: flex; align-items: center; padding: 10px 12px; gap: 8px; border-bottom: 1px solid var(--line); flex: none; background: var(--chrome); position: static; }
 .inspector-header nav { display: flex; gap: 2px; padding: 2px; background: var(--chrome-2); border-radius: 8px; }
@@ -111,18 +111,24 @@ dialog::backdrop { background: #101a1466; }
 .doc-example code {
   overflow-wrap: anywhere;
 }
-.variable-row {
-  display: grid;
-  grid-template-columns: 60px minmax(0, 1fr);
-  gap: 12px;
-  border-bottom: 1px solid var(--line);
-  padding: 12px 0;
-  font-size: 12px;
-}
-.variable-row code:last-child {
-  overflow-wrap: anywhere;
-  color: var(--muted);
-}
+.variables-panel { font: 12.5px/1.6 var(--font-ui); }
+.inspector-content .inspector-description { margin: 0 0 12px; color: var(--ink-2); font-size: 11.5px; }
+.variables-table { width: 100%; border-collapse: collapse; table-layout: fixed; font-size: 12px; }
+.variables-table th, .variables-table td { padding: 7px 8px; border-bottom: 1px solid var(--line); vertical-align: top; text-align: left; overflow-wrap: anywhere; }
+.variables-table thead th { font-size: 11.5px; font-weight: 600; color: var(--ink-2); }
+.variables-table th:first-child { width: 25%; }
+.variables-table th:last-child { width: 26%; }
+.variables-table tbody th { font-weight: 400; font-family: var(--font-mono); }
+.variables-table tbody tr[tabindex] { cursor: pointer; }
+.variables-table tbody tr:hover { background: var(--select); }
+.variables-table tbody tr:focus-visible { outline: 2px solid var(--green); outline-offset: -2px; }
+.variables-table td:last-child { color: var(--ink-2); }
+.variable-value { display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+.variables-table small { display: block; font-size: 11px; }
+.variables-table [data-stale] { color: var(--ink-2); }
+.variables-table [data-missing] .variable-value { color: var(--red); }
+.variables-error { margin-top: 12px; color: var(--red); font-size: 12px; }
+.variables-error button { color: var(--green); padding-left: 0; }
 .notice {
   position: fixed;
   bottom: 18px;

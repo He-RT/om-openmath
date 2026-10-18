@@ -13,7 +13,7 @@ for (const width of [375, 1280])
       .getByRole("button", { name: /Steps/ })
       .click();
     await expect(page.locator(".step-node").first()).toBeVisible();
-    await expect(page.locator(".step-timeline")).toContainText("S1");
+    await expect(page.locator('[data-step-id="S1"]')).toBeVisible();
     await expect(
       page
         .locator(".steps-panel")
@@ -25,6 +25,13 @@ for (const width of [375, 1280])
     await expect(
       page.locator(".step-transformation .katex").first(),
     ).toBeVisible();
+    const pane=page.locator('#inspector-pane-steps'), original=await pane.elementHandle();
+    await pane.evaluate(node=>{node.scrollTop=90;});
+    const scroll=await pane.evaluate(node=>node.scrollTop);
+    await page.getByRole('tab',{name:'Variables',exact:true}).click();
+    await page.getByRole('tab',{name:'Steps',exact:true}).click();
+    expect(await pane.evaluate((node,old)=>node===old,original)).toBe(true);
+    expect(await pane.evaluate(node=>node.scrollTop)).toBe(scroll);
     expect(
       await page.evaluate(
         () => document.documentElement.scrollWidth <= innerWidth,

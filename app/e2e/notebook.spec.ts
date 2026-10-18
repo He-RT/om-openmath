@@ -60,7 +60,7 @@ test("real definition edits cascade, errors remain local and command palette run
   await second.fill("a+1");
   await second.press("ControlOrMeta+Enter");
   await expect(
-    page.locator(".notebook-cell").nth(1).locator(".cell-output"),
+    page.locator(".notebook-cell").nth(1).locator(".cell-body > .cell-output"),
   ).toContainText("3");
   const first = page.getByRole("textbox", {
     name: "Math input 1",
@@ -69,7 +69,7 @@ test("real definition edits cascade, errors remain local and command palette run
   await first.fill("let a=5");
   await first.press("ControlOrMeta+Enter");
   await expect(
-    page.locator(".notebook-cell").nth(1).locator(".cell-output"),
+    page.locator(".notebook-cell").nth(1).locator(".cell-body > .cell-output"),
   ).toContainText("6");
   await second.fill("solve(");
   await second.press("ControlOrMeta+Enter");
@@ -81,7 +81,7 @@ test("real definition edits cascade, errors remain local and command palette run
   await second.press("ControlOrMeta+k");
   await page.getByRole("option", { name: /^Run ⌘/ }).click();
   await expect(
-    page.locator(".notebook-cell").nth(1).locator(".cell-output"),
+    page.locator(".notebook-cell").nth(1).locator(".cell-body > .cell-output"),
   ).toContainText("4");
 });
 for (const width of [375, 720, 1280])
@@ -191,6 +191,7 @@ test("UI interruption keeps edits made while the real worker is computing and re
     page.getByRole("button", { name: "Run 2", exact: true }),
   ).toBeEnabled();
   await expect(notes).toHaveValue("latest edit survives");
+  await expect(page.locator(".notebook-cell").nth(1)).toHaveAttribute("data-presentation","stopped");
   await second.fill("a+1");
   await second.press("ControlOrMeta+Enter");
   await expect(

@@ -17,6 +17,10 @@ export interface UiCell extends CellInput {
   exec_count?: number;
   defines: string[];
   uses: string[];
+  resultSource?: { source: string; dialect: CellInput["dialect"] };
+  previousOutput?: CellOutput | undefined;
+  stopped?: boolean;
+  stopRequested?: boolean;
 }
 export interface UiState {
   assistantTurns: ChatTurnView[];
@@ -27,6 +31,7 @@ export interface UiState {
   focus: number;
   config: KernelConfig | null;
   busy: boolean;
+  stopping: boolean;
   initializing: boolean;
   error: string | null;
   notice: string | null;
@@ -43,6 +48,7 @@ const initial: UiState = {
   focus: 0,
   config: null,
   busy: false,
+  stopping: false,
   initializing: true,
   error: null,
   notice: null,
@@ -172,6 +178,8 @@ export class NotebookController {
       ...change,
       revision: cell.revision + 1,
       status: change.kind === "Text" ? ("Done" as const) : ("Stale" as const),
+      stopped: false,
+      stopRequested: false,
     };
     this.store.setState({
       cells: state.cells.map((c) => (c.id === id ? next : c)),
@@ -302,7 +310,7 @@ export class NotebookController {
       busy: true,
       error: null,
       cells: state.cells.map((c) =>
-        c.id === id ? { ...c, status: "Running" } : c,
+        c.id === id ? { ...c, status: "Running", stopped: false } : c,
       ),
     }));
     try {
@@ -348,7 +356,7 @@ export class NotebookController {
     for (const cell of this.store.getState().cells)
       this.revisions.set(cell.id, cell.revision);
     this.operations++;
-    this.store.setState({ busy: true, error: null });
+    this.store.setState(state => ({ busy: true, error: null, cells: state.cells.map(cell => ({ ...cell, stopped: false })) }));
     try {
       const response = await this.kernel.request({ type: "run_all" });
       if (epoch === this.epoch && response.type === "error")
@@ -370,6 +378,8 @@ export class NotebookController {
   }
   interrupt(): Promise<void> {
     if (this.restarting) return this.restarting;
+    const interrupted = new Map(this.store.getState().cells.filter(cell => cell.status === "Running" || cell.status === "Queued").map(cell => [cell.id, cell.revision]));
+    let stopConfirmed=false;
     const epoch = ++this.epoch;
     this.operations = 0;
     this.revisions.clear();
@@ -377,14 +387,16 @@ export class NotebookController {
     this.writes = Promise.resolve();
     this.store.setState((state) => ({
       busy: true,
+      stopping: true,
       cells: state.cells.map((c) =>
         c.status === "Running" || c.status === "Queued"
-          ? { ...c, status: "Stale" }
+          ? { ...c, status: "Stale", stopRequested: true }
           : c,
       ),
     }));
     this.restarting = (async () => {
       await this.kernel.interrupt();
+      stopConfirmed=true;
       if (this.closed) return;
       await this.kernel.request({
         type: "set_system_language",
@@ -433,7 +445,7 @@ export class NotebookController {
       })
       .finally(() => {
         this.restarting = undefined;
-        if (epoch === this.epoch) this.store.setState({ busy: false });
+        if (epoch === this.epoch) this.store.setState(state => ({ busy: false, stopping: false, cells: state.cells.map(cell => ({...cell,stopRequested:false,...(stopConfirmed && interrupted.get(cell.id) === cell.revision ? {stopped:true}:{})})) }));
       });
     return this.restarting;
   }
@@ -474,7 +486,7 @@ export class NotebookController {
             ...(meta.exec_count !== undefined
               ? { exec_count: meta.exec_count }
               : {}),
-            ...(output ? { output } : {}),
+            ...(output ? { output, resultSource: { source: source.source, dialect: source.dialect }, previousOutput: this.lastValid(cell, output) } : {}),
           };
         },
       ),
@@ -488,9 +500,14 @@ export class NotebookController {
         : "Done";
     this.store.setState((state) => ({
       cells: state.cells.map((c) =>
-        c.id === id ? { ...c, output, status } : c,
+        c.id === id ? { ...c, output, status, resultSource: { source: c.source, dialect: c.dialect }, previousOutput: this.lastValid(c, output) } : c,
       ),
     }));
+  }
+  private lastValid(cell: UiCell, output: CellOutput): CellOutput | undefined {
+    if (!output.items.some(item => item.type === "error") && !output.messages.some(message => message.level === "Error")) return undefined;
+    if (cell.output && !cell.output.items.some(item => item.type === "error") && !cell.output.messages.some(message => message.level === "Error")) return cell.output;
+    return cell.previousOutput;
   }
   private event(event: Event) {
     if (this.closed) return;
@@ -498,10 +515,9 @@ export class NotebookController {
       this.store.setState((state) => ({
         notice: event.message,
         cells: state.cells.map((c) => {
-          const { output: _, exec_count: __, ...rest } = c;
-          void _;
-          void __;
-          return { ...rest, status: c.kind === "Text" ? "Done" : "Stale" };
+          // Old bytes remain a visibly stale presentation. No retained handle or inspector
+          // is considered fresh after a worker restart.
+          return { ...c, status: c.kind === "Text" ? "Done" : "Stale" };
         }),
       }));
       return;
@@ -559,6 +575,7 @@ export class NotebookController {
       active: file.cells[0]?.id ?? null,
       dirty: false,
       busy: false,
+      stopping: false,
       notice: null,
     });
     await this.refresh();

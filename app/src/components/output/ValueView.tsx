@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, type ReactNode } from 'react';
 import type { KernelClient } from '../../kernel/client';
 import type { Locale, Messages } from '../../i18n';
 import type { ExpressionView } from '../../kernel/generated/ExpressionView';
@@ -9,15 +9,16 @@ import { ArtifactButton } from './ArtifactButton';
 import { SourceActions } from './Actions';
 import { fieldLabel, kindLabel, natureLabel, statusLabel } from './valueLabels';
 
-export function ValueView({ initial, cellId, outIndex, value, fresh, kernel, language, t, onInsert }: {
+export function ValueView({ initial, cellId, outIndex, value, fresh, kernel, language, t, onInsert, renderStatus }: {
   initial: ValuePage; cellId: string; outIndex: number; value: ExpressionView; fresh: boolean;
-  kernel: KernelClient; language: Locale; t: Messages; onInsert: (source: string) => void;
+  kernel: KernelClient; language: Locale; t: Messages; onInsert: (source: string) => void; renderStatus?: (actions: ReactNode) => ReactNode;
 }) {
   const [page, setPage] = useState(initial);
   const [trail, setTrail] = useState<ValuePage[]>([]);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [sourceVisible, setSourceVisible] = useState(false);
+  const [matrixDetails,setMatrixDetails]=useState(false);
   const [selectedValue, setSelectedValue] = useState<ExpressionView | null>(null);
   const sequence = useRef(0);
   const alive = useRef(true);
@@ -46,6 +47,8 @@ export function ValueView({ initial, cellId, outIndex, value, fresh, kernel, lan
   const shownSource = root ? value : page.source;
   const rowEnd = page.offset + page.rows.length;
   const columnEnd = page.column_offset + page.columns.length;
+  const smallMatrix=page.kind==='matrix' && page.row_count>0 && page.row_count<=8 && page.column_count>0 && page.column_count<=8 && page.rows.length===page.row_count && page.rows.every(row=>row.cells.length===page.column_count && row.cells.every(entry=>entry.source));
+  const matrixLatex=smallMatrix ? `\\begin{pmatrix}${page.rows.map(row=>row.cells.map(entry=>entry.source!.latex).join(' & ')).join(' \\\\ ')}\\end{pmatrix}`:'';
   const renderEntry = (entry: ValueEntry) => {
     if (entry.source) {
       const label = statusLabel(entry.source.input_form, language, authoritative);
@@ -61,6 +64,16 @@ export function ValueView({ initial, cellId, outIndex, value, fresh, kernel, lan
       {kindLabel(entry.kind, language)} · {entry.count} {text('项', 'items')}
     </button>;
   };
+  const actions=(<>
+      {(['csv','json'] as const).map(format=><ArtifactButton key={format} kernel={kernel} t={t} title="OpenMath-data" label={format==='csv'?t.exportCsv:t.exportJson}
+        version={`${initial.view_id}:${page.path.join('.')}`} enabled={fresh&&!busy&&!!cellId}
+        request={()=>({type:'export_value',format,query:{cell_id:cellId,out_index:outIndex,view_id:initial.view_id,path:page.path,offset:0,limit:32,column_offset:0,column_limit:8,include_source:false}})}/>)}
+
+      {shownSource && <SourceActions value={shownSource} t={t} onInsert={onInsert} />}
+      <button disabled={!root && (!fresh || busy || !cellId)} onClick={() => {
+        if (shownSource) setSourceVisible(previous => !previous); else load(page.path, page.offset, page.column_offset, true);
+      }}>{text('完整源码', 'Full source')}</button>
+  </>);
   return <section className="structured-value" aria-label={text('结构化计算结果', 'Structured result')} aria-busy={busy}>
     <div className="value-heading">
       <strong>{kindLabel(page.kind, language)}</strong>
@@ -71,7 +84,8 @@ export function ValueView({ initial, cellId, outIndex, value, fresh, kernel, lan
         sequence.current++; setPage(parent); setTrail(previous => previous.slice(0, -1)); setError(null); setSourceVisible(false); setSelectedValue(null);
       }}>{text('返回上层', 'Back')}</button>}
     </div>
-    {page.rows.length > 0 ? <div className="value-table-scroll" tabIndex={0} aria-label={text('表格，左右滚动查看', 'Table; scroll horizontally')}>
+    {smallMatrix && <div className="compact-matrix"><Katex display latex={matrixLatex} label={value.input_form}/><button onClick={()=>setMatrixDetails(shown=>!shown)} aria-expanded={matrixDetails}>{text('逐项查看','Inspect entries')}</button></div>}
+    {page.rows.length > 0 && (!smallMatrix || matrixDetails) ? <div className="value-table-scroll" tabIndex={0} aria-label={text('表格，左右滚动查看', 'Table; scroll horizontally')}>
       <table className="value-table"><thead><tr>
         <th scope="col">{page.kind === 'record' ? text('字段', 'Field') : '#'}</th>
         {page.columns.map((column, index) => <th scope="col" key={`${page.view_id}:${page.column_offset + index}`}>
@@ -83,7 +97,7 @@ export function ValueView({ initial, cellId, outIndex, value, fresh, kernel, lan
       </tr>)}</tbody></table>
     </div> : page.row_count === 0 && (page.kind === 'table' || page.kind === 'list' || page.kind === 'record')
       ? <p className="value-empty">{text('没有数据行', 'No data rows')}{page.columns.length > 0 && <span> · {page.columns.join(' · ')}</span>}</p>
-      : page.source && <pre className="value-source">{page.source.modern_form}</pre>}
+      : !smallMatrix && page.source && <pre className="value-source">{page.source.modern_form}</pre>}
     {(page.row_count > page.rows.length || page.column_count > page.columns.length) && <nav className="value-pagination" aria-label={text('结果分页', 'Result pages')}>
       <button disabled={!fresh || busy || page.offset === 0 || !cellId} onClick={() => load(page.path, Math.max(0, page.offset - 32), page.column_offset)}>{text('上一页', 'Previous')}</button>
       <span>{page.row_count === 0 ? 0 : page.offset + 1}–{rowEnd} / {page.row_count}</span>
@@ -94,16 +108,7 @@ export function ValueView({ initial, cellId, outIndex, value, fresh, kernel, lan
         <button disabled={!fresh || busy || columnEnd >= page.column_count || !cellId} onClick={() => load(page.path, page.offset, columnEnd)}>{text('后列', 'Next columns')}</button>
       </>}
     </nav>}
-    <div className="value-actions">
-      {(['csv','json'] as const).map(format=><ArtifactButton key={format} kernel={kernel} t={t} title="OpenMath-data" label={format==='csv'?t.exportCsv:t.exportJson}
-        version={`${initial.view_id}:${page.path.join('.')}`} enabled={fresh&&!busy&&!!cellId}
-        request={()=>({type:'export_value',format,query:{cell_id:cellId,out_index:outIndex,view_id:initial.view_id,path:page.path,offset:0,limit:32,column_offset:0,column_limit:8,include_source:false}})}/>)}
-
-      {shownSource && <SourceActions value={shownSource} t={t} onInsert={onInsert} />}
-      <button disabled={!root && (!fresh || busy || !cellId)} onClick={() => {
-        if (shownSource) setSourceVisible(previous => !previous); else load(page.path, page.offset, page.column_offset, true);
-      }}>{text('完整源码', 'Full source')}</button>
-    </div>
+    {renderStatus ? renderStatus(actions) : <div className="value-actions">{actions}</div>}
     {selectedValue && <div className="value-selection" role="group" aria-label={text('选中值操作', 'Selected value actions')}>
       <code>{selectedValue.modern_form}</code><SourceActions value={selectedValue} t={t} onInsert={onInsert} />
       <button onClick={() => setSelectedValue(null)}>{text('关闭', 'Close')}</button>

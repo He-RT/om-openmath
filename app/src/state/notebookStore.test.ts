@@ -25,6 +25,38 @@ const config: KernelConfig = {
     profiles: [],
   },
 };
+test("failed output keeps the last valid result and restart preserves only its stale presentation",async()=>{
+  let input: import("../kernel/generated/CellInput").CellInput | null=null,failed=false;
+  const good: import("../kernel/generated/CellOutput").CellOutput={items:[{type:"expr",out_index:1,input_form:"4",modern_form:"4",latex:"4",nature:"exact",unchanged:false}],messages:[],timing_ms:1};
+  const bad: import("../kernel/generated/CellOutput").CellOutput={items:[{type:"error",message:"incomplete",span:{start:0,end:1}}],messages:[],timing_ms:2};
+  const kernel=new MockKernel(request=>{
+    if(request.type==="get_config") return {type:"config",config};
+    if(request.type==="upsert_cell") {input=request.cell;return {type:"ok"};}
+    if(request.type==="evaluate") return {type:"evaluated",cell_id:request.cell_id,output:failed?bad:good,reran:[]};
+    if(request.type==="get_notebook_state") return {type:"notebook_state",state:{file:{version:1,title:"",cells:input?[input]:[]},cells:input?[{id:input.id,status:failed?"Error":"Done",defines:[],uses:[],exec_count:1}]:[],definition_order:[],cycles:[]}};
+    return {type:"ok"};
+  });
+  const controller=new NotebookController(kernel);await controller.initialize();
+  const id=controller.add("Math","2+2");await controller.run(id);
+  expect(controller.store.getState().cells[0]?.resultSource?.source).toBe("2+2");
+  failed=true;controller.edit(id,{source:"("});await controller.run(id);
+  const broken=controller.store.getState().cells[0]!;
+  expect(broken.status).toBe("Error");expect(broken.previousOutput).toEqual(good);expect(broken.output).toEqual(bad);
+  expect(controller.file().cells[0]).toEqual({id,kind:"Math",source:"(",dialect:"Modern"});
+  kernel.emit({type:"kernel_restarted",message:"worker restarted"});
+  expect(controller.store.getState().cells[0]?.status).toBe("Stale");expect(controller.store.getState().cells[0]?.previousOutput).toEqual(good);
+  controller.dispose();
+});
+test("an unconfirmed interruption never claims a cell has stopped",async()=>{
+  const kernel=new MockKernel(()=>({type:"ok"})),controller=new NotebookController(kernel);
+  const id=controller.add("Math","2+2");await controller.flush();
+  controller.store.setState(state=>({busy:true,cells:state.cells.map(cell=>({...cell,status:"Running"}))}));
+  kernel.interrupt=async()=>{throw new Error("interrupt unavailable");};
+  await controller.interrupt();
+  expect(controller.store.getState().cells.find(cell=>cell.id===id)?.stopped).not.toBe(true);
+  expect(controller.store.getState().stopping).toBe(false);expect(controller.store.getState().error).toContain("interrupt unavailable");
+  controller.dispose();
+});
 test("current source edits serialize before runs and obsolete results stay stale", async () => {
   const order: Request[] = [];
   let finish: ((response: Response) => void) | undefined;

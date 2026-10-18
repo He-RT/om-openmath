@@ -50,6 +50,8 @@ interface Props {
   language: Locale;
   focus: boolean;
   focusKey: number;
+  reveal?: { start: number; end: number; serial: number } | null;
+  acceptedErrors?: { message: string; span: {start:number;end:number}|null }[];
   onChange: (source: string) => void;
   onFocus: () => void;
   onRun: (mode: "stay" | "next" | "insert") => void;
@@ -385,6 +387,12 @@ export function MathEditor(props: Props) {
     if (props.focus) editor.current?.focus();
   }, [props.focusKey]);
   useEffect(() => {
+    const view=editor.current,range=props.reveal;
+    if (!view || !range) return;
+    const source=view.state.doc.toString(),anchor=fromByte(source,range.start),head=fromByte(source,range.end);
+    view.dispatch({selection:{anchor,head},effects:EditorView.scrollIntoView(anchor,{y:"center"})});view.focus();
+  }, [props.reveal]);
+  useEffect(() => {
     const request = ++generation.current;
     setPreview(null);
     const timer = setTimeout(() => {
@@ -517,7 +525,7 @@ export function MathEditor(props: Props) {
         <div className="inline-diagnostics">
           {currentPreview.diagnostics.map((d, i) => (
             <div key={i} className={`diagnostic ${d.severity.toLowerCase()}`}>
-              <span>
+              <span hidden={props.acceptedErrors?.some(error=>error.span?.start===d.span.start && error.span.end===d.span.end && (error.message===d.message || error.message===`${d.code}: ${d.message}`))}>
                 {d.code} · {diagnosticText(d, props.language)}
               </span>
               {d.fix && (

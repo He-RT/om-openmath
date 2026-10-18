@@ -25,7 +25,8 @@ it('uses actual snapshot pages, displays complete text and copies/inserts the se
   fireEvent.click(screen.getByRole('button',{name:'值操作 "中文🙂 long text"'}));
   const group = screen.getByRole('group',{name:'选中值操作'});
   const { within } = await import('@testing-library/react');
-  fireEvent.click(within(group).getByRole('button',{name:messages('zh-CN').insertResult}));
+  fireEvent.click(within(group).getByRole('button',{name:messages('zh-CN').copy}));
+  fireEvent.click(await within(group).findByRole('button',{name:messages('zh-CN').insertResult}));
   expect(insert).toHaveBeenCalledWith('"中文🙂 long text"');
 });
 it('does not promote authored records to certified results and exposes genuine producer labels', () => {
@@ -49,4 +50,12 @@ it('preserves empty table headers and reports a real failed page request', async
   const view=mount({...table,row_count:0,rows:[],columns:['中文列']});expect(screen.getByText('没有数据行')).toBeTruthy();expect(screen.getByText(/中文列/)).toBeTruthy();view.unmount();
   mount(table,new MockKernel(()=>({type:'error',message:'snapshot changed'})));
   fireEvent.click(screen.getByRole('button',{name:'下一页'}));expect((await screen.findByRole('alert')).textContent).toContain('snapshot changed');
+});
+it('renders a complete small matrix as math while retaining per-entry inspection',()=>{
+  const matrix:ValuePage={...table,kind:'matrix',row_count:2,column_count:2,columns:['1','2'],rows:[1,2].map(row=>({id:`r${row}`,label:String(row),cells:[1,2].map(column=>({...entry(String(row*2+column),String(row*2+column)),nature:'exact'}))}))};
+  mount(matrix);
+  expect(document.querySelector('.compact-matrix .katex')).toBeTruthy();
+  expect(screen.queryByRole('table')).toBeNull();
+  fireEvent.click(screen.getByRole('button',{name:'逐项查看'}));
+  expect(screen.getByRole('table').querySelectorAll('tbody tr')).toHaveLength(2);
 });

@@ -8,6 +8,7 @@ import type { Scene3DRequest } from "./Scene3DRequest";
 import type { SolutionSetView } from "./SolutionSetView";
 import type { Span } from "./Span";
 import type { StepsView } from "./StepsView";
+import type { ValueNature } from "./ValueNature";
 import type { ValuePage } from "./ValuePage";
 
 /**
@@ -69,7 +70,15 @@ latex: string,
 /**
  * Optional structured first page; omitted for original scalar wire outputs.
  */
-presentation?: ValuePage, } | { "type": "solutions",
+presentation?: ValuePage,
+/**
+ * Actual scalar representation; absence in older snapshots stays unknown.
+ */
+nature?: ValueNature,
+/**
+ * Whether evaluation returned the original expression unchanged.
+ */
+unchanged?: boolean, } | { "type": "solutions",
 /**
  * Output history index.
  */

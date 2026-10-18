@@ -9,6 +9,28 @@ fn solutions(o: &CellOutput) -> (&SolutionSetView, Option<&StepsView>) {
     }
 }
 #[test]
+fn scalar_presentation_reports_actual_precision_and_unchanged_expression() {
+    let mut session = sequential();
+    for (source, nature, unchanged) in [
+        ("2+2", ValueNature::Exact, false),
+        ("1.25", ValueNature::Machine, true),
+        ("N[Pi,30]", ValueNature::HighPrecision, false),
+        ("UnknownFunction[x]", ValueNature::Symbolic, true),
+    ] {
+        let result = output(&mut session, "facts", source, Dialect::Wolfram);
+        let OutputItem::Expr {
+            nature: actual,
+            unchanged: same,
+            ..
+        } = &result.items[0]
+        else {
+            panic!("expected scalar expression");
+        };
+        assert_eq!(*actual, Some(nature));
+        assert_eq!(*same, Some(unchanged));
+    }
+}
+#[test]
 fn real_exact_solution_cards_preserve_forms_indices_evidence_and_actual_step_tree() {
     let mut s = sequential();
     let o = output(&mut s, "solve", "Solve[x^2==9,x]", Dialect::Wolfram);

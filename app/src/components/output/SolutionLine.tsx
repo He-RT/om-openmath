@@ -5,10 +5,12 @@ import type { BindingView } from "../../kernel/generated/BindingView";
 import type { Verification } from "../../kernel/generated/Verification";
 import type { Messages } from "../../i18n";
 import { Katex } from "./Katex";
-import { CopyButton } from "./Actions";
+import { CopyMenu } from "./Actions";
 import { NumberLine } from "./NumberLine";
 import { PlotPreview } from "./PlotPreview";
 import type { KernelClient } from "../../kernel/client";
+import type { CellPresentation } from "../cellPresentation";
+import { CellStatusLine } from "../CellStatusLine";
 export function groupSolutions(solutions: SolutionView[]) {
   const groups = new Map<
     string,
@@ -49,7 +51,7 @@ function Binding({ binding: b, t }: { binding: BindingView; t: Messages }) {
         </span>
       )}
       <Katex
-        latex={`${b.var_latex ?? `\\text{${b.var.replace(/[{}\\]/g, "")}}`} = ${radical && b.radicals ? b.radicals.latex : b.root_index ? `\\operatorname{Root}_{${b.root_index}}` : b.latex}`}
+        latex={`${b.var_latex ?? `\\text{${b.var.replace(/[{}\\]/g, "")}}`} = ${radical && b.radicals ? b.radicals.latex : b.latex}`}
         label={`${b.var} = ${b.input_form}`}
       />
       {b.radicals && (
@@ -60,13 +62,16 @@ function Binding({ binding: b, t }: { binding: BindingView; t: Messages }) {
     </div>
   );
 }
-export function SolutionCards({
+export function SolutionLine({
   item,
   t,
   onInsert,
   onSteps,
   kernel,
   active = true,
+  presentation,
+  timing,
+  onRun,
 }: {
   item: Extract<OutputItem, { type: "solutions" }>;
   t: Messages;
@@ -74,6 +79,9 @@ export function SolutionCards({
   onSteps: () => void;
   kernel: KernelClient;
   active?: boolean;
+  presentation: CellPresentation;
+  timing?: number | undefined;
+  onRun?: (() => void) | undefined;
 }) {
   const [plotVisible, setPlotVisible] = useState(false);
   const { view } = item;
@@ -89,20 +97,18 @@ export function SolutionCards({
   const evidence =
     view.kind === "finite" && view.solutions.length > 0
       ? view.solutions.every((s) => verified(s.verified))
-        ? t.verified
+        ? view.solutions.every(s => s.verified === "Exact") ? null : t.byConstruction
         : view.solutions.every((s) => s.verified !== "Unverified")
           ? t.numericVerified
           : t.verificationIncomplete
       : null;
   return (
     <div className="solution-result">
-      <div className="solution-heading">
-        <strong>{heading}</strong>
-        {evidence && <span>{evidence}</span>}
-      </div>
       <div className="solution-list">
-        {groups.map(({ solution: s, multiplicity }, i) => (
-          <div className="solution-chip" key={i}>
+      {view.kind !== "finite" && <span className="solution-set-label">{heading}</span>}
+      {view.solutions.length > 4 ? <div className="solution-table-scroll" tabIndex={0}><table className="solution-table"><thead><tr><th>#</th><th>{view.solutions.every(row=>verified(row.verified)) ? t.exactValue:t.bindingValue}</th><th>{t.approximateValue}</th></tr></thead><tbody>{groups.map(({solution:s,multiplicity},index)=><tr key={index}><th scope="row">{index+1}{multiplicity>1 && <span className="multiplicity"> · {multiplicity===2 ? t.doubleRoot:`${t.multiplicity} ${multiplicity}`}</span>}</th><td>{s.bindings.map(b=><Binding key={b.var} binding={b} t={t}/>)}{s.condition_latex && <span className="solution-condition"><Katex latex={s.condition_display_latex ?? s.condition_latex}/></span>}</td><td>{s.bindings.map(b=><div key={b.var}><code>{b.numeric ? `${b.var} ≈ ${b.numeric.replace(/`[+-]?[\d.]+/g, "")}`:"—"}</code></div>)}</td></tr>)}</tbody></table></div> :
+        groups.map(({ solution: s, multiplicity }, i) => (
+          <div className="solution-entry" key={i}>
             {s.bindings.map((b) => (
               <Binding key={b.var} binding={b} t={t} />
             ))}
@@ -118,37 +124,7 @@ export function SolutionCards({
                 <Katex latex={s.condition_display_latex ?? s.condition_latex} />
               </div>
             )}
-            <span
-              className={`verification ${s.verified === "Unverified" ? "unverified" : ""}`}
-              title={
-                s.verified === "ByConstruction"
-                  ? t.byConstruction
-                  : typeof s.verified === "object"
-                    ? `${s.verified.Numeric.digits} ${t.digits}`
-                    : undefined
-              }
-            >
-              {verified(s.verified)
-                ? `✓ ${t.exact}`
-                : s.verified === "Unverified"
-                  ? t.unverified
-                  : `≈ ${t.numeric}`}
-            </span>
-            {s.bindings.length > 0 && (
-              <button
-                className="substitute"
-                onClick={() =>
-                  onInsert(
-                    `expr /. {${s.bindings.map((b) => `${b.var}->(${b.input_form})`).join(",")}}`.replace(
-                      /->\(([-\d]+)\)/g,
-                      "->$1",
-                    ),
-                  )
-                }
-              >
-                {t.substitute}
-              </button>
-            )}
+            {s.verified === "Unverified" && <span className="verification unverified">{t.unverified}</span>}
           </div>
         ))}
       </div>
@@ -162,8 +138,8 @@ export function SolutionCards({
           t={t}
         />
       )}
-      <div className="solution-actions">
-        {item.steps && <button onClick={onSteps}>{t.steps} ↗</button>}
+      <CellStatusLine presentation={presentation} t={t} timing={timing} onRun={onRun} summary={<>{view.kind === "finite" && <span className="solution-heading">{heading}</span>}{evidence && <span>{evidence}</span>}{view.solutions.some(s=>typeof s.verified === "object") && <span>{Math.min(...view.solutions.flatMap(s=>typeof s.verified === "object" ? [s.verified.Numeric.digits]:[]))} {t.digits}</span>}</>} actions={<span className="solution-actions">
+        {item.steps && <button onClick={onSteps} disabled={!active}>{t.steps} ↗</button>}
         {item.plot && (
           <button
             aria-expanded={plotVisible}
@@ -172,8 +148,11 @@ export function SolutionCards({
             {t.plot}
           </button>
         )}
-        <CopyButton label={t.copyAll} source={item.input_form} t={t} />
-      </div>
+        <CopyMenu value={item} t={t} all>
+          {groups.some(group=>group.solution.bindings.length>0) && <hr/>}
+          {groups.map(({solution},index)=>solution.bindings.length>0 && <button key={index} onClick={()=>onInsert(`expr /. {${solution.bindings.map(binding=>`${binding.var}->(${binding.input_form})`).join(",")}}`.replace(/->\(([-\d]+)\)/g,"->$1"))}>{t.substitute}{groups.length>1 ? ` ${index+1}`:""}</button>)}
+        </CopyMenu>
+      </span>} />
       {plotVisible && item.plot && (
         <PlotPreview
           request={item.plot}
@@ -185,7 +164,6 @@ export function SolutionCards({
       <details className="solution-source">
         <summary>{t.source}</summary>
         <pre className="source-result">{item.input_form}</pre>
-        <CopyButton label={t.copyModern} source={item.modern_form} t={t} />
       </details>
     </div>
   );

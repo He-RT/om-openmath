@@ -44,9 +44,11 @@ body { overflow: hidden; }
 .outline-row[aria-current] { background: var(--select-strong); }
 .outline-row.outline-heading { font: 600 11.5px/1.5 var(--font-ui); color: var(--ink-2); padding-top: 16px; }
 .outline-status { width: 6px; height: 6px; flex: none; border: 1px solid var(--ink-3); border-radius: 50%; }
-.outline-status.status-done { border-color: var(--green); background: var(--green); }
+.outline-status.status-verified, .outline-status.status-exact, .outline-status.status-numeric, .outline-status.status-geometry { border-color: var(--green); background: var(--green); }
+.outline-status.status-conditional { border-color: var(--amber); background: var(--amber); }
 .outline-status.status-error { border-color: var(--red); background: var(--red); }
-.outline-status.status-running, .outline-status.status-queued { border-color: var(--ink-2); }
+.outline-status.status-running { border-color: var(--green); background: var(--green); }
+.outline-status.status-unevaluated, .outline-status.status-unconfirmed, .outline-status.status-stopped { background: var(--ink-3); }
 .outline-status.status-stale { background: transparent; }
 .outline footer { border-top: 1px solid var(--line); color: var(--ink-2); font-size: 11px; padding: 14px 16px; }
 .inspector-host[open] { position: relative; display: block; background: var(--chrome); overflow: hidden; }

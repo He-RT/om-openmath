@@ -1,4 +1,4 @@
-import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { act, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 import { messages } from "../../i18n";
 import { MockKernel } from "../../test/mockKernel";
@@ -7,6 +7,10 @@ import { OutputView } from "./OutputView";
 import { messageText } from "../../i18n/messages";
 import { NumberLine } from "./NumberLine";
 const t = messages("en");
+async function copyAction(name:string) {
+  fireEvent.click(screen.getByRole("button",{name:"Copy"}));
+  fireEvent.click(await screen.findByRole("button",{name}));
+}
 const expr: Extract<OutputItem, { type: "expr" }> = {
   type: "expr",
   out_index: 1,
@@ -78,7 +82,8 @@ describe("actual output interactions", () => {
     };
     const view = mount(numeric);
     expect(screen.getByText("Numerically verified")).toBeTruthy();
-    expect(screen.getByText("≈ Numeric")).toBeTruthy();
+    expect(screen.getByText("Numerical approximation")).toBeTruthy();
+    expect(screen.getByText("20 verified digits")).toBeTruthy();
     view.unmount();
     render(
       <NumberLine
@@ -160,12 +165,10 @@ describe("actual output interactions", () => {
       ["Copy Wolfram", expr.input_form],
       ["Copy modern syntax", expr.modern_form],
     ] as const) {
-      fireEvent.click(screen.getByRole("button", { name }));
+      await copyAction(name);
       await waitFor(() => expect(copy).toHaveBeenLastCalledWith(value));
     }
-    fireEvent.click(
-      screen.getByRole("button", { name: "Insert into new cell" }),
-    );
+    await copyAction("Insert into new cell");
     expect(insert).toHaveBeenCalledWith("Sqrt[2]");
     fireEvent.click(screen.getByRole("button", { name: "Numeric ≈" }));
     await screen.findByLabelText("1.4142135623730950488");
@@ -181,7 +184,7 @@ describe("actual output interactions", () => {
       value: { writeText: vi.fn().mockRejectedValue(new Error("denied")) },
     });
     mount(expr);
-    fireEvent.click(screen.getByRole("button", { name: "Copy Wolfram" }));
+    await copyAction("Copy Wolfram");
     expect((await screen.findByRole("alert")).textContent).toContain(
       "Could not copy",
     );
@@ -196,11 +199,11 @@ describe("actual output interactions", () => {
     const insert = vi.fn();
     mount(solve, { insert });
     expect(screen.getByText("2 solutions")).toBeTruthy();
-    expect(document.querySelectorAll(".solution-chip")).toHaveLength(1);
+    expect(document.querySelectorAll(".solution-entry")).toHaveLength(1);
     expect(screen.getByText("double root")).toBeTruthy();
-    fireEvent.click(screen.getByRole("button", { name: "Copy all" }));
+    await copyAction("Copy all");
     await waitFor(() => expect(copy).toHaveBeenCalledWith(solve.input_form));
-    fireEvent.click(screen.getByRole("button", { name: "Substitute…" }));
+    await copyAction("Substitute…");
     expect(insert).toHaveBeenCalledWith("expr /. {x->1}");
   });
   it("never labels unverified evidence as verified and distinguishes All and None", () => {
@@ -260,4 +263,33 @@ describe("actual output interactions", () => {
     expect(svg.querySelectorAll(".endpoint-open")).toHaveLength(1);
     expect(svg.querySelectorAll(".infinite-arrow")).toHaveLength(2);
   });
+});
+it("more than four solutions use a table with exact and actual numeric values",()=>{
+  mount({...solve,view:{...solve.view,solutions:Array.from({length:5},(_,index)=>({...solve.view.solutions[0]!,bindings:[{...solve.view.solutions[0]!.bindings[0]!,input_form:String(index),latex:String(index),modern_form:String(index),numeric:`${index}.000`}]}))}});
+  expect(screen.getByRole("table").querySelectorAll("tbody tr")).toHaveLength(5);
+  expect(screen.getByRole("columnheader",{name:"Exact value"})).toBeTruthy();
+  expect(screen.getByRole("columnheader",{name:"Approximation"})).toBeTruthy();
+  expect(screen.getByText("x ≈ 4.000")).toBeTruthy();
+});
+it("a numerical-only solution table does not label its values as exact",()=>{
+  mount({...solve,view:{...solve.view,solutions:Array.from({length:5},(_,index)=>({...solve.view.solutions[0]!,verified:{Numeric:{digits:20}},bindings:[{...solve.view.solutions[0]!.bindings[0]!,input_form:String(index),latex:String(index),modern_form:String(index)}]}))}});
+  expect(screen.getByRole("columnheader",{name:"Value"})).toBeTruthy();
+  expect(screen.queryByRole("columnheader",{name:"Exact value"})).toBeNull();
+});
+it("a numeric projection arriving after the source becomes stale cannot repaint its result",async()=>{
+  let finish!:(value:import("../../kernel/client").Response)=>void;
+  const kernel=new MockKernel(()=>new Promise(resolve=>{finish=resolve;}));
+  const props={output:{items:[expr],messages:[],timing_ms:1},t,language:"en" as const,kernel,onInsert:vi.fn(),onSteps:vi.fn()};
+  const view=render(<OutputView {...props} stale={false}/>);
+  fireEvent.click(screen.getByRole("button",{name:"Numeric ≈"}));
+  view.rerender(<OutputView {...props} stale/>);
+  await act(async()=>{finish({type:"expression",value:{input_form:"1.414",modern_form:"1.414",latex:"1.414"}});});
+  expect(screen.getByLabelText(expr.input_form)).toBeTruthy();expect(screen.queryByLabelText("1.414")).toBeNull();
+  expect((screen.getByRole("button",{name:"Numeric ≈"}) as HTMLButtonElement).disabled).toBe(true);
+});
+it("error location uses the original UTF-8 span and is an explicit editor action",()=>{
+  const locate=vi.fn(),span={start:3,end:4};
+  render(<OutputView output={{items:[{type:"error",message:"incomplete",span}],messages:[],timing_ms:1}} stale={false} t={t} language="en" kernel={new MockKernel()} onInsert={vi.fn()} onSteps={vi.fn()} source="α +" onLocate={locate}/>);
+  expect(screen.getByRole("alert").textContent).toContain("1:3");
+  fireEvent.click(screen.getByRole("button",{name:"Locate"}));expect(locate).toHaveBeenCalledWith(span);
 });

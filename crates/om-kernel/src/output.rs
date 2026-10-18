@@ -96,6 +96,8 @@ pub(crate) fn pack(
         modern_form,
         latex: om_format::latex(&record.value),
         presentation,
+        nature: Some(values::nature(&record.value)),
+        unchanged: Some(record.input == record.value),
     })
 }
 

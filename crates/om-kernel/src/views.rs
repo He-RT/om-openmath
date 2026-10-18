@@ -472,6 +472,14 @@ pub enum OutputItem {
         #[serde(default, skip_serializing_if = "Option::is_none")]
         #[ts(optional)]
         presentation: Option<crate::value_views::ValuePage>,
+        /// Actual scalar representation; absence in older snapshots stays unknown.
+        #[serde(default, skip_serializing_if = "Option::is_none")]
+        #[ts(optional)]
+        nature: Option<crate::value_views::ValueNature>,
+        /// Whether evaluation returned the original expression unchanged.
+        #[serde(default, skip_serializing_if = "Option::is_none")]
+        #[ts(optional)]
+        unchanged: Option<bool>,
     },
     /// Solver output with actual derivation and an optional visualization.
     Solutions {

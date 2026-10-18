@@ -5,14 +5,16 @@ export function Messages({
   items,
   t,
   language,
+  collapseErrors=false,
 }: {
   items: Message[];
   t: Text;
   language: Locale;
+  collapseErrors?: boolean;
 }) {
   if (!items.length) return null;
   return (
-    <details className="messages" open={items.some((m) => m.level === "Error")}>
+    <details className="messages" open={!collapseErrors && items.some((m) => m.level === "Error")}>
       <summary>
         {items.length} {t.messages}
       </summary>

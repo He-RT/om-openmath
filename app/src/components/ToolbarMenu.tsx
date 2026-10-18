@@ -1,7 +1,20 @@
-import { useEffect, useRef, useState, type ReactNode } from "react";
+import { useEffect, useLayoutEffect, useRef, useState, type CSSProperties, type ReactNode } from "react";
 export function ToolbarMenu({ label, children, icon, className = "" }: { label: string; children: ReactNode; icon: ReactNode; className?: string }) {
   const root = useRef<HTMLDetailsElement>(null);
+  const items=useRef<HTMLDivElement>(null);
   const [expanded, setExpanded] = useState(false);
+  const [placement,setPlacement]=useState<CSSProperties>({});
+  useLayoutEffect(()=>{
+    if(!expanded) return;
+    const measure=()=>{
+      const anchor=root.current?.querySelector("summary")?.getBoundingClientRect(),content=items.current;
+      if(!anchor || !content) return;
+      const width=Math.min(230,innerWidth-24),height=Math.min(content.scrollHeight,innerHeight-24);
+      setPlacement({position:"fixed",right:"auto",left:Math.max(12,Math.min(anchor.right-width,innerWidth-width-12)),top:anchor.bottom+4+height>innerHeight-12 ? Math.max(12,anchor.top-height-4):anchor.bottom+4,width,maxHeight:innerHeight-24,zIndex:40});
+    };
+    measure();window.addEventListener("resize",measure);document.addEventListener("scroll",measure,true);
+    return ()=>{window.removeEventListener("resize",measure);document.removeEventListener("scroll",measure,true);};
+  },[expanded]);
   useEffect(() => {
     const outside = (event: PointerEvent) => { if (root.current && !root.current.contains(event.target as Node)) root.current.open = false; };
     document.addEventListener("pointerdown", outside);
@@ -10,6 +23,7 @@ export function ToolbarMenu({ label, children, icon, className = "" }: { label: 
   return <details className={`toolbar-menu ${className}`} ref={root} onToggle={event => setExpanded(event.currentTarget.open)} onKeyDown={(event) => {
     const menu = root.current;
     if (!menu) return;
+    if ((event.target as HTMLElement).closest("select,input,textarea")) return;
     if (event.key === "Escape") { event.preventDefault(); menu.open = false; setExpanded(false); menu.querySelector("summary")?.focus(); }
     if (["ArrowDown", "ArrowUp", "Home", "End"].includes(event.key)) {
       event.preventDefault(); menu.open = true; setExpanded(true);
@@ -24,7 +38,7 @@ export function ToolbarMenu({ label, children, icon, className = "" }: { label: 
     }
   }}>
     <summary role="button" aria-expanded={expanded} aria-label={label} title={label}>{icon}</summary>
-    <div className="toolbar-menu-items" hidden={!expanded} role="group" aria-label={label} onClick={(event) => {
+    <div className="toolbar-menu-items" ref={items} style={placement} hidden={!expanded} role="group" aria-label={label} onClick={(event) => {
       if ((event.target as HTMLElement).closest("button")) { if (root.current) {root.current.open = false;root.current.querySelector("summary")?.focus();} }
     }}>{children}</div>
   </details>;

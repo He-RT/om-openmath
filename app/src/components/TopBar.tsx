@@ -21,7 +21,7 @@ export function TopBar({ state, controller, t, outlineVisible, inspectorVisible,
     <button className="toolbar-icon" aria-label={t.outline} aria-expanded={outlineVisible} onClick={onOutline}><WorkbenchIcon name="outline" /></button>
     <div className="document-heading">
       <input className="notebook-title" aria-label={t.title} value={state.title} placeholder={t.untitled} onChange={event => controller.rename(event.target.value)} />
-      <span className="document-status" role="status">{state.busy ? t["cell.running"] : `${state.dirty ? t["doc.edited"] + " · " : ""}${t["kernel.ready"]}`}</span>
+      <span className="document-status" role="status">{state.stopping ? t.stopping : state.busy ? t["cell.running"] : `${state.dirty ? t["doc.edited"] + " · " : ""}${t["kernel.ready"]}`}</span>
     </div>
     <div className="top-actions">
       <label className="toolbar-run-mode" title={t.runModeHint}><span className="sr-only">{t.runMode}</span><select aria-label={t.runMode} disabled={state.busy} value={automatic ? "auto" : "manual"} onChange={event => void controller.configure({ auto_run_dependents: event.target.value === "auto", ...(event.target.value === "auto" ? { reactive: true } : {}) })}><option value="manual">{t.manualRun}</option><option value="auto">{t.automaticRun}</option></select></label>

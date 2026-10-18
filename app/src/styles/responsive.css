@@ -24,9 +24,9 @@
   .top-actions { gap: 3px; }
   .notebook { padding: 24px 14px 84px; }
   .notebook-heading h1 { font-size: 26px; }
-  .notebook-cell { grid-template-columns: 23px minmax(0, 1fr); gap: 4px; margin-bottom: 20px; }
-  .cell-body { padding-left: 8px; padding-right: 3px; }
-  .cell-toolbar { gap: 3px; font-size: 10px; flex-wrap: wrap; }
+  .notebook-cell { grid-template-columns: 3px minmax(0, 1fr); gap: 10px; margin-bottom: 24px; }
+  .cell-body { padding: 0; }
+  .cell-toolbar { gap: 2px; }
   .cell-toolbar select { font-size: 10px; }
   .cell-actions { opacity: 0.75; }
   .math-editor .cm-editor { font-size: 14px; }

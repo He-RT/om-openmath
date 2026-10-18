@@ -11,6 +11,12 @@ export function locale(
     : language;
 }
 const en = {
+  bindingValue: "Value",
+  numericProjection: "Showing numeric projection",
+  copy: "Copy",
+  stopping: "Stopping…",
+  locate: "Locate",
+  sourceChanged: "Source changed", definitionsChanged: "Source or dependency definitions changed", geometryReady: "Geometry generated", unevaluated: "The kernel left this expression unevaluated", resultUnconfirmed: "Result metadata unavailable", runToUpdate: "Run to update", previousResult: "Previous result", exactValue: "Exact value", approximateValue: "Approximation", cellMore: "Cell actions", resultDetails: "Result details",
   outline: "Outline", inspector: "Inspector", more: "More", functionCatalog: "Function catalog", searchFunction: "Function name", selectFunction: "Enter a supported function name to read its documentation.", cellCount: "cells", runMode: "Run mode", manualRun: "Manual run", automaticRun: "Automatic run", runModeHint: "Automatic run recomputes affected dependents after a cell runs.",
   "cell.pending": "Not run yet",
   "cell.running": "Calculating…",
@@ -281,6 +287,12 @@ const en = {
   messages: "Messages",
 };
 const zh: typeof en = {
+  bindingValue: "值",
+  numericProjection: "显示数值投影",
+  copy: "复制",
+  stopping: "正在停止…",
+  locate: "定位",
+  sourceChanged: "源码已修改", definitionsChanged: "源码或依赖定义已改变", geometryReady: "图形已生成", unevaluated: "内核没有化简这个表达式（原样保留）", resultUnconfirmed: "结果待核对", runToUpdate: "运行以更新", previousResult: "上次结果", exactValue: "精确值", approximateValue: "近似值", cellMore: "单元格操作", resultDetails: "结果详情",
   outline: "目录", inspector: "检查器", more: "更多", functionCatalog: "函数目录", searchFunction: "函数名", selectFunction: "输入支持的函数名查看说明。", cellCount: "个单元格", runMode: "运行方式", manualRun: "手动运行", automaticRun: "自动运行", runModeHint: "自动运行在单元格运行后重算受影响的依赖。",
   "cell.pending": "尚未运行",
   "cell.running": "正在计算…",

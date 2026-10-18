@@ -6,6 +6,10 @@ import { MathEditor } from "./editor/MathEditor";
 import { Markdown } from "./TextCell";
 import { OutputView } from "./output/OutputView";
 import { AskCell } from "./AskCell";
+import { cellPresentation, presentationLabel } from "./cellPresentation";
+import { CellStatusLine } from "./CellStatusLine";
+import { ToolbarMenu } from "./ToolbarMenu";
+import { WorkbenchIcon } from "./WorkbenchIcon";
 import { RepairControl } from "./assistant/RepairControl";
 interface Props {
   cell: UiCell;
@@ -35,6 +39,9 @@ export function Cell({
     dialect: Dialect;
   } | null>(null);
   const [variable, setVariable] = useState("x");
+  const [preview, setPreview] = useState(false);
+  const [reveal,setReveal]=useState<{start:number;end:number;serial:number}|null>(null);
+  const presentation = cellPresentation(cell, t);
   const selectedAction = (
     action: string,
     source: string,
@@ -65,81 +72,24 @@ export function Cell({
       className={`notebook-cell ${active ? "cell-active" : ""}`}
       data-cell-id={cell.id}
       data-status={cell.status}
+      data-presentation={presentation.status}
+      aria-label={`${index + 1} · ${presentationLabel(presentation,t)}`}
       onMouseDown={() => controller.select(cell.id)}
     >
-      <div className="cell-rail">
-        <span
-          className={`status-dot status-${cell.status.toLowerCase()}`}
-          title={t[cell.status]}
-        />
-        <span className="execution-count">
-          {cell.kind === "Math" ? `[${cell.exec_count ?? " "}]` : "✎"}
-        </span>
-      </div>
+      <div className={`cell-rail rail-${presentation.status}`} aria-hidden="true" />
       <div className="cell-body">
-        <div className="cell-toolbar">
-          <span className="cell-number">
-            {String(index + 1).padStart(2, "0")}
-          </span>
-          <select
-            aria-label={`${t.math} / ${t.text} ${index + 1}`}
-            value={cell.kind}
-            onChange={(e) =>
-              controller.edit(cell.id, {
-                kind: e.target.value as UiCell["kind"],
-              })
-            }
-          >
-            <option value="Math">{t.math}</option>
-            <option value="Text">{t.text}</option>
-            <option value="Ask">{t.ask}</option>
-          </select>
-          {cell.kind === "Math" && (
-            <select
-              className="cell-dialect"
-              aria-label={`${t.dialect} ${index + 1}`}
-              value={cell.dialect}
-              onChange={(e) =>
-                controller.edit(cell.id, { dialect: e.target.value as Dialect })
-              }
-            >
-              <option value="Auto">{t.auto}</option>
-              <option value="Modern">{t.modern}</option>
-              <option value="Wolfram">Wolfram</option>
-            </select>
-          )}
-          <span className="cell-status-label">{t[cell.status]}</span>
-          <div className="cell-actions">
-            {cell.kind === "Math" && (
-              <button
-                className="run-cell"
-                aria-label={`${t.run} ${index + 1}`}
-                onClick={() => void controller.run(cell.id)}
-                disabled={busy}
-              >
-                ▶
-              </button>
-            )}
-            <button
-              aria-label={`${t.moveUp} ${index + 1}`}
-              onClick={() => controller.move(cell.id, -1)}
-            >
-              ↑
-            </button>
-            <button
-              aria-label={`${t.moveDown} ${index + 1}`}
-              onClick={() => controller.move(cell.id, 1)}
-            >
-              ↓
-            </button>
-            <button
-              aria-label={`${t.delete} ${index + 1}`}
-              onClick={() => controller.remove(cell.id)}
-            >
-              ×
-            </button>
+        <div className={cell.kind === "Math" ? `source-well ${preview ? "show-source-preview" : ""}` : "cell-source"}>
+          <span className="execution-count sr-only">[{cell.exec_count ?? " "}]</span>
+          <div className="cell-toolbar">
+            {cell.kind === "Math" && <button className="run-cell" aria-label={`${presentation.status === "running" ? t.stop : t.run} ${index+1}`} disabled={busy && presentation.status !== "running"} onClick={() => void (presentation.status === "running" ? controller.interrupt() : controller.run(cell.id))}><WorkbenchIcon name={presentation.status === "running" ? "stop" : "play"}/></button>}
+            <ToolbarMenu className="cell-more" label={`${t.cellMore} ${index+1}`} icon={<WorkbenchIcon name="more"/>}>
+              <label>{t.math} / {t.text}<select aria-label={`${t.math} / ${t.text} ${index+1}`} value={cell.kind} onChange={event=>controller.edit(cell.id,{kind:event.target.value as UiCell["kind"]})}><option value="Math">{t.math}</option><option value="Text">{t.text}</option><option value="Ask">{t.ask}</option></select></label>
+              {cell.kind === "Math" && <><label>{t.dialect}<select aria-label={`${t.dialect} ${index+1}`} value={cell.dialect} onChange={event=>controller.edit(cell.id,{dialect:event.target.value as Dialect})}><option value="Auto">{t.auto}</option><option value="Modern">{t.modern}</option><option value="Wolfram">Wolfram</option></select></label><button aria-pressed={preview} onClick={()=>setPreview(value=>!value)}>{t.preview}</button></>}
+              <button aria-label={`${t.moveUp} ${index+1}`} disabled={index===0} onClick={()=>controller.move(cell.id,-1)}>{t.moveUp}</button>
+              <button aria-label={`${t.moveDown} ${index+1}`} disabled={index===controller.store.getState().cells.length-1} onClick={()=>controller.move(cell.id,1)}>{t.moveDown}</button>
+              <button aria-label={`${t.delete} ${index+1}`} onClick={()=>controller.remove(cell.id)}>{t.delete}</button>
+            </ToolbarMenu>
           </div>
-        </div>
         {cell.kind === "Math" ? (
           <MathEditor
             id={cell.id}
@@ -154,6 +104,8 @@ export function Cell({
             busy={busy}
             focus={active}
             focusKey={focusKey}
+            reveal={reveal}
+            acceptedErrors={cell.resultSource?.source===cell.source ? cell.output?.items.filter(item=>item.type==="error") ?? []:[]}
             onChange={(source) => controller.edit(cell.id, { source })}
             onFocus={() => controller.select(cell.id)}
             onRun={(mode) => void controller.run(cell.id, mode)}
@@ -194,10 +146,16 @@ export function Cell({
             )}
           </>
         )}
+        </div>
+        {cell.kind === "Math" && !cell.output && <CellStatusLine presentation={presentation} t={t} />}
         {cell.kind === "Math" && cell.output && (
           <OutputView
             cellId={cell.id}
             output={cell.output}
+            presentation={presentation}
+            onRun={!busy ? ()=>void controller.run(cell.id):undefined}
+            source={cell.resultSource?.source ?? cell.source}
+            onLocate={span=>setReveal(previous=>({...span,serial:(previous?.serial ?? 0)+1}))}
             stale={
               cell.status === "Stale" ||
               cell.status === "Running" ||
@@ -219,6 +177,7 @@ export function Cell({
             }}
           />
         )}
+        {cell.kind === "Math" && cell.previousOutput && <div className="previous-result"><p>{t.previousResult}</p><OutputView output={cell.previousOutput} stale t={t} language={language} kernel={controller.kernel} onInsert={source=>{const id=controller.add("Math",source,cell.id);controller.edit(id,{dialect:"Wolfram"});}} onSteps={()=>{}} presentation={{status:"stale",byAgent:false}} /></div>}
         {cell.kind === "Math" && cell.status === "Error" && (
           <RepairControl
             key={`${cell.id}:${cell.revision}`}

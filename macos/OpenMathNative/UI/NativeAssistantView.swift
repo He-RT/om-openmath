@@ -4,6 +4,7 @@ struct NativeAssistantView:View {
   @ObservedObject var assistant:NativeAssistant
   var documentSaved:Bool?=nil
   var body:some View {
+    GeometryReader {geometry in
     VStack(alignment:.leading,spacing:0) {
       HStack(spacing:12) {
         Text(assistant.conversationTitle).font(.system(size:12.5,weight:.medium)).lineLimit(1).truncationMode(.tail)
@@ -38,24 +39,8 @@ struct NativeAssistantView:View {
         }
       }.frame(minHeight:100,maxHeight:.infinity)
       if let error=assistant.transcriptError {Text(error).font(.caption).foregroundStyle(.secondary).padding(.horizontal,16)}
-      composer.padding(12)
-    }.task {await assistant.load()}.sheet(isPresented:$assistant.showSettings) {settings}
-  }
-  private var composer:some View {
-    VStack(alignment:.leading,spacing:10) {
-      Divider()
-      Toggle("允许修改并运行笔记本",isOn:$assistant.allowsChanges).font(.caption).disabled(assistant.busy).accessibilityIdentifier("assistant-allow-changes")
-      TextEditor(text:$assistant.draft).font(.body).frame(minHeight:70,maxHeight:110).scrollContentBackground(.hidden)
-        .padding(5).background(.background,in:RoundedRectangle(cornerRadius:6)).overlay(RoundedRectangle(cornerRadius:6).stroke(.quaternary))
-        .overlay(alignment:.topLeading) {if assistant.draft.isEmpty {Text("询问当前笔记本…").foregroundStyle(.tertiary).padding(10).allowsHitTesting(false)}}
-        .accessibilityLabel("给助手的问题").accessibilityIdentifier("assistant-input").disabled(assistant.busy)
-      HStack {
-        Text(assistant.status).font(.caption).foregroundStyle(.secondary).lineLimit(3).accessibilityIdentifier("assistant-status")
-        Spacer()
-        if assistant.busy {Button("停止",systemImage:"stop.fill") {Task {await assistant.stop()}}.disabled(assistant.stopping).accessibilityIdentifier("assistant-stop")}
-        else {Button("发送",systemImage:"arrow.up") {assistant.send()}.disabled(assistant.undoing || assistant.historyLoading || assistant.unknownActionUndo != nil || assistant.unknownRoundChange != nil || assistant.draft.trimmingCharacters(in:.whitespacesAndNewlines).isEmpty).accessibilityIdentifier("assistant-send").keyboardShortcut(.return,modifiers:[.command,.shift])}
-      }
-    }
+      NativeAssistantComposer(assistant:assistant,panelHeight:geometry.size.height).padding(12)
+    }}.task {await assistant.load()}.sheet(isPresented:$assistant.showSettings) {settings}
   }
   private var settings:some View {
     VStack(alignment:.leading,spacing:16) {

@@ -1,6 +1,33 @@
 import AppKit
 import SwiftUI
 
+private actor ComposerFixtureInputCapture {
+  var value:AssistantInputSnapshot?
+  func observe(_ value:AssistantInputSnapshot) {self.value=value}
+}
+@MainActor private final class ComposerFixtureController:ObservableObject {
+  weak var editor:AssistantComposerTextView?
+  let assistant:NativeAssistant
+  @Published var submissions=0
+  var changeAppearance:(()->Void)?
+  init(assistant:NativeAssistant) {self.assistant=assistant}
+  func composeMarked() {
+    guard let editor else {return};editor.window?.makeFirstResponder(editor)
+    editor.setMarkedText("中文拼音",selectedRange:NSRange(location:0,length:4),replacementRange:NSRange(location:0,length:0))
+  }
+}
+private struct ComposerFixtureControls:View {
+  @ObservedObject var controller:ComposerFixtureController
+  @ObservedObject var assistant:NativeAssistant
+  var body:some View {
+    HStack(spacing:12) {
+      Text("输入框测试，不连接模型 · Return 接收 \(controller.submissions) 次 · "+(assistant.composerMarked ? "合成中":"非合成"))
+      Spacer()
+      Button("准备合成文字") {controller.composeMarked()}.accessibilityIdentifier("fixture-compose-marked")
+      Button("切换窗口主题") {controller.changeAppearance?()}.accessibilityIdentifier("fixture-composer-appearance")
+    }.font(.caption).padding(8)
+  }
+}
 @MainActor private final class AssistantTranscriptFixtureController:ObservableObject {
   let storage:StorageService,assistant:NativeAssistant,sessionID:String
   var count=24
@@ -42,19 +69,21 @@ private struct AssistantTranscriptFixtureControls:View {
   @MainActor static func main() async throws {
     let actionUI=CommandLine.arguments.contains("--action-ui") || Bundle.main.object(forInfoDictionaryKey:"OpenMathActionFixture") as? Bool==true
     let outcomeUI=CommandLine.arguments.contains("--outcome-ui") || Bundle.main.object(forInfoDictionaryKey:"OpenMathOutcomeFixture") as? Bool==true
-    let ui=actionUI || outcomeUI || CommandLine.arguments.contains("--assistant-ui") || Bundle.main.object(forInfoDictionaryKey:"OpenMathAssistantFixture") as? Bool==true
+    let composerUI=CommandLine.arguments.contains("--composer-ui") || Bundle.main.object(forInfoDictionaryKey:"OpenMathComposerFixture") as? Bool==true
+    let ui=actionUI || outcomeUI || composerUI || CommandLine.arguments.contains("--assistant-ui") || Bundle.main.object(forInfoDictionaryKey:"OpenMathAssistantFixture") as? Bool==true
     let app=NSApplication.shared;app.setActivationPolicy(ui ? .regular:.accessory)
     let rootBase=URL(fileURLWithPath:CommandLine.arguments.count>1 ? CommandLine.arguments[1]:Bundle.main.object(forInfoDictionaryKey:"OpenMathFixtureRoot") as! String,isDirectory:true)
     let root=ui ? rootBase.appendingPathComponent("run-"+UUID().uuidString.lowercased()):rootBase
     try FileManager.default.createDirectory(at:root,withIntermediateDirectories:true)
     if ui {
       Task {
-        do {if outcomeUI {try await turnOutcome(root:root,hold:true)} else if actionUI {try await actionLog(root:root,hold:true)} else {try await assistantTranscript(root:root,hold:true)}}
+        do {if composerUI {try await composer(root:root,hold:true)} else if outcomeUI {try await turnOutcome(root:root,hold:true)} else if actionUI {try await actionLog(root:root,hold:true)} else {try await assistantTranscript(root:root,hold:true)}}
         catch {FileHandle.standardError.write(Data(("Assistant UI fixture failed: \(error)\n").utf8));NSApp.terminate(nil)}
       }
       desktopLoop()
       return
     }
+    if CommandLine.arguments.contains("--composer") {try await composer(root:root,hold:false);return}
     if CommandLine.arguments.contains("--turn-outcome") {try await turnOutcome(root:root,hold:false);return}
     if CommandLine.arguments.contains("--action-log") {
       try await actionLog(root:root,hold:false)
@@ -259,6 +288,10 @@ private struct AssistantTranscriptFixtureControls:View {
     let menu=NSMenu(),item=NSMenuItem(),application=NSMenu()
     let quit=NSMenuItem(title:"退出界面测试",action:#selector(NSApplication.terminate(_:)),keyEquivalent:"q");quit.target=NSApp
     application.addItem(quit);item.submenu=application;menu.addItem(item);NSApp.mainMenu=menu
+    let editItem=NSMenuItem(),edit=NSMenu(title:"编辑");editItem.submenu=edit;menu.addItem(editItem)
+    for (title,action,key) in [("撤销","undo:","z"),("剪切","cut:","x"),("复制","copy:","c"),("粘贴","paste:","v"),("全选","selectAll:","a")] {
+      edit.addItem(NSMenuItem(title:title,action:NSSelectorFromString(action),keyEquivalent:key))
+    }
     NSApp.run()
   }
   @MainActor static func actionLog(root:URL,hold:Bool)async throws {
@@ -436,6 +469,107 @@ private struct AssistantTranscriptFixtureControls:View {
       try await until {!session.assistant.undoneTurns.contains(verified.id)}
     }
     print("Actual native round: independently verified A5 facts, durable end metadata, grouped single-commit undo, repeat safety, redo and keyboard state tracking passed; model requests unchanged: \(verified.modelRequests)")
+    window.orderOut(nil);try await session.close();try await services.close()
+  }
+  @MainActor static func composer(root:URL,hold:Bool)async throws {
+    let file=NativeSourceFile(version:1,title:"输入框验收",cells:[.init(id:"math",kind:.math,source:"solve(x^2 - 5x + 6 = 0, x)",dialect:.modern)])
+    let url=root.appendingPathComponent("composer.omnb");try JSONEncoder().encode(file).write(to:url)
+    let services=NativeAppStorage(paths:.init(root:root.appendingPathComponent("storage"),channel:.preview))
+    let storage=try await services.open()
+    let workspace=NativeFileWorkspace(storage:services)
+    guard await workspace.open(url),let session=workspace.session else {throw StorageError.recoveryRequired}
+    let configuration=AssistantConfiguration(baseURL:"https://example.invalid/v1",model:"fixture-tool-model",credentialReference:"fixture-never-used")
+    try session.assistant.configure(configuration)
+    var registry=ModelRegistryDocument.current(configuration)
+    registry.providers[0].models.append(.init(id:"fixture-text",apiName:"fixture-text",displayName:"仅文字模型",tools:false,images:false,contextLimit:16000))
+    registry.providers[0].models.append(.init(id:"fixture-image",apiName:"fixture-image",displayName:"图片与工具模型",tools:true,images:true,contextLimit:32000))
+    let catalog=try ModelRegistry(file:root.appendingPathComponent("models.json"))
+    try await catalog.save(registry)
+    let reloaded=try await catalog.load()
+    require(reloaded==registry)
+    session.assistant.registry=registry
+    session.assistant.prepare={throw AgentSessionError.inactive}
+    let schemaRoot=Bundle.main.object(forInfoDictionaryKey:"OpenMathRepository") as? String ?? FileManager.default.currentDirectoryPath
+    let schema=URL(fileURLWithPath:schemaRoot).appendingPathComponent("docs/design/agent-tools.schema.json")
+    let previewSession="composer-preview-"+UUID().uuidString.lowercased(),previewTask="composer-preview-task"
+    _ = try await storage.createAgentSession(previewSession,documentID:session.drafts.confirmed.document_id,title:"只读输入检查")
+    let reference=session.assistant.referenceCandidates!()[0]
+    let message=AgentCanonicalMessage(record_type:.canonical_agent_message,message_version:1,message_id:"composer-preview-user",role:.user,agent_turn_id:.init(nil),task_id:.init(previewTask),parts:[
+      .agent_text_part(.init(kind:.text,part_id:"notebook-references",text:AssistantComposerRules.referencePart([reference]))),
+      .agent_text_part(.init(kind:.text,part_id:"question",text:"只读检查：中文与公式 x^2"))])
+    let capture=ComposerFixtureInputCapture()
+    let context=AssistantContext(host:session.host,storage:storage,session:previewSession,task:previewTask,configuration:configuration,mode:.discuss,tools:AssistantMode.discuss.tools,schema:schema,observed:{await capture.observe($0)})
+    let planned=try await context.preview(message)
+    require(planned.fullInput.contains("notebook-references") && planned.fullInput.contains(reference.sourceHash) && planned.estimatedTokens>0)
+    require(!planned.fullInput.contains("fixture-never-used") && !planned.fullInput.contains("\"name\":\"apply_notebook_patch\""))
+    let ledger=SessionLedgerPort(storage:storage,session:previewSession)
+    _ = try await ledger.record(SessionCanonicalInput(codecVersion:1,delivery:"user_input",message:message,presentation:.init(model:configuration.model,mode:"discuss",references:[reference])),id:"composer-preview-input",kind:.user_message,task:previewTask)
+    let frozen=try await context.prepare(.init(operation_id:"composer-freeze",agent_turn_id:"composer-freeze-turn",request_id:"composer-freeze-request"))
+    let observed=await capture.value
+    require(observed?.actual==true && observed?.fullInput==String(decoding:frozen.model.body,as:UTF8.self),"full-input observer did not receive the actual Rust wire body")
+    let wire=try JSONSerialization.jsonObject(with:frozen.model.body) as! [String:Any]
+    require(wire["model"] as? String==configuration.model && !observed!.fullInput.contains(configuration.credentialReference))
+    await frozen.model.cancel()
+    let previewEvents=try await storage.sessionEvents(previewSession,limit:32)
+    require(previewEvents.count==1,"reading or freezing input dispatched a model request")
+    session.runtime.navigation.inspectorVisible=true;session.runtime.navigation.inspector = .assistant
+    let controller=ComposerFixtureController(assistant:session.assistant)
+    let window=NSWindow(contentRect:NSRect(x:0,y:0,width:1400,height:780),styleMask:[.titled,.closable,.resizable],backing:.buffered,defer:false)
+    window.title="输入框 · 测试配置，不连接模型";window.appearance=NSAppearance(named:.aqua)
+    let host=NSHostingView(rootView:VStack(spacing:0) {WorkspaceView(workspace:workspace,session:session);if hold {ComposerFixtureControls(controller:controller,assistant:session.assistant)}});window.contentView=host;workspace.attachWindow(window);window.makeKeyAndOrderFront(nil)
+    try await until {descendants(host).contains{$0 is AssistantComposerTextView}}
+    let editor=descendants(host).compactMap{$0 as? AssistantComposerTextView}.first!
+    controller.editor=editor
+    controller.changeAppearance={ [weak window] in guard let window else {return};window.appearance=NSAppearance(named:window.effectiveAppearance.bestMatch(from:[.aqua,.darkAqua]) == .darkAqua ? .aqua:.darkAqua)}
+    let scroll=editor.enclosingScrollView as! AssistantComposerScrollView
+    window.makeFirstResponder(editor)
+    var sends=0;let submitted=editor.submit;editor.submit={sends+=1}
+    func key(_ modifiers:NSEvent.ModifierFlags=[])->NSEvent {NSEvent.keyEvent(with:.keyDown,location:.zero,modifierFlags:modifiers,timestamp:0,windowNumber:window.windowNumber,context:nil,characters:"\r",charactersIgnoringModifiers:"\r",isARepeat:false,keyCode:36)!}
+    editor.setMarkedText("中文拼音",selectedRange:NSRange(location:0,length:4),replacementRange:NSRange(location:0,length:0))
+    require(editor.hasMarkedText())
+    editor.keyDown(with:key());require(sends==0,"marked native Return submitted the message")
+    editor.unmarkText();editor.keyDown(with:key(.shift));require(sends==0 && editor.string.contains("\n"))
+    editor.shortcut = .enter;editor.keyDown(with:key());require(sends==1)
+    editor.shortcut = .commandReturn;editor.keyDown(with:key());require(sends==1)
+    _=editor.performKeyEquivalent(with:key(.command));require(sends==2)
+    editor.submit=submitted
+    editor.string=String(repeating:"中文与公式 x^2 + 1\n",count:80)
+    let measured=scroll.measure(width:340)
+    require(measured<=scroll.maximumHeight && scroll.hasVerticalScroller && editor.frame.height>measured)
+    session.assistant.composerMarked=false;session.assistant.draftEdited("保留失败时的输入")
+    session.assistant.addReference("math")
+    session.assistant.setMode(execute:true);session.assistant.selectModel("fixture-text")
+    require(session.assistant.selectedModelID != "fixture-text","execute mode selected a model without tools")
+    session.assistant.setMode(execute:false);session.assistant.selectModel("fixture-text")
+    require(session.assistant.selectedModelID=="fixture-text")
+    session.assistant.setMode(execute:true);require(!session.assistant.canSend)
+    session.assistant.selectModel("fixture-image");require(session.assistant.canSend)
+    session.assistant.send();require(session.assistant.draft=="保留失败时的输入","draft was cleared before native acceptance")
+    session.assistant.draftEdited("等待期间继续输入的新草稿")
+    try await until {!session.assistant.busy}
+    require(session.assistant.draft=="等待期间继续输入的新草稿" && session.assistant.references.count==1)
+    require(session.drafts.confirmed.file.cells[0].source==file.cells[0].source)
+    require(!session.document.isDocumentEdited,"a failed assistant preparation marked unchanged notebook source as edited")
+    require(session.assistant.messages.isEmpty,"preparation failure left an unsent message in the transcript")
+    session.assistant.prepare={
+      while !session.assistant.stopping {try await Task.sleep(for:.milliseconds(20))}
+      throw CancellationError()
+    }
+    session.assistant.send();try await until {session.assistant.busy}
+    require(editor.isEditable,"running assistant disabled the next draft")
+    session.assistant.selectModel("current-model")
+    require(session.assistant.modelChangeNote?.contains("从下一轮开始使用")==true)
+    session.assistant.draftEdited("运行期间保留的新草稿")
+    await session.assistant.stop();try await until {!session.assistant.busy}
+    require(session.assistant.status==UIStrings.end(.stopped) && session.assistant.draft=="运行期间保留的新草稿")
+    require(session.assistant.messages.isEmpty,"stopping before acceptance left an unsent message in the transcript")
+    session.assistant.prepare={throw AgentSessionError.inactive}
+    print("Native composer: marked Return blocked, Shift/newline and Cmd-Return verified, height capped with real scrolling, configured capability selection, reference chips and failed-send/new-draft retention passed; no model calls")
+    if hold {
+      session.assistant.newConversation()
+      editor.submit={controller.submissions+=1}
+      while !Task.isCancelled {try await Task.sleep(for:.seconds(30))}
+    }
     window.orderOut(nil);try await session.close();try await services.close()
   }
   @MainActor static func inspector(root:URL) async throws {

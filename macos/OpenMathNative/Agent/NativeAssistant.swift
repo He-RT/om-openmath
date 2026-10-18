@@ -7,6 +7,74 @@ import SwiftUI
   @Published var model="gpt-6.1-sol"
   @Published var apiKey=""
   @Published var allowsChanges=false
+  @Published var registry=ModelRegistryDocument()
+  @Published private(set) var selectedModelID:String?
+  @Published var references:[AssistantCellReference]=[] {didSet {draftSequence+=1;scheduleContextPreview()}}
+  @Published var composerMarked=false
+  @Published var sendShortcut:AssistantSendShortcut=AssistantSendShortcut(rawValue:UserDefaults.standard.string(forKey:"assistant.send-shortcut") ?? "") ?? .enter {
+    didSet {UserDefaults.standard.set(sendShortcut.rawValue,forKey:"assistant.send-shortcut")}
+  }
+  @Published private(set) var inputPreview:AssistantInputSnapshot?
+  @Published private(set) var lastRequestInput:AssistantInputSnapshot?
+  @Published private(set) var lastUsage:AssistantUsage?
+  @Published private(set) var contextError:String?
+  @Published private(set) var modelChangeNote:String?
+  var referenceCandidates:(@MainActor ()->[AssistantCellReference])?
+  var focusComposer:(@MainActor ()->Void)?
+  var addFilesRequested:(@MainActor ()->Void)?
+  private var previewTask:Task<Void,Never>?,previewSequence:UInt64=0
+  private var draftSequence:UInt64=0
+  private var pendingDraftSequence:UInt64=0
+  private var acceptedInputSequence:UInt64?
+  private var inputWasAccepted=false
+  var selectedModel:RegisteredModel? {registry.selection(selectedModelID)?.1}
+  var canSend:Bool {!busy && !undoing && !historyLoading && !composerMarked && unknownActionUndo==nil && unknownRoundChange==nil &&
+    !draft.trimmingCharacters(in:.whitespacesAndNewlines).isEmpty && (!allowsChanges || selectedModel?.tools != false)}
+  func addReference(_ id:String) {
+    guard let item=referenceCandidates?().first(where:{$0.id==id}),!references.contains(where:{$0.id==id}) else {return}
+    references.append(item);focusComposer?()
+  }
+  func selectModel(_ id:String) {
+    guard let (provider,model)=registry.selection(id),!allowsChanges || model.tools else {return}
+    selectedModelID=id;configuration = .init(baseURL:provider.baseURL,model:model.apiName,credentialReference:provider.credentialReference)
+    self.model=model.apiName;configured=true
+    modelChangeNote=busy ? model.displayName+" 从下一轮开始使用":nil;scheduleContextPreview()
+  }
+  func draftEdited(_ text:String) {draft=text;draftSequence+=1;scheduleContextPreview()}
+  func setMode(execute:Bool) {
+    allowsChanges=execute;modelChangeNote=busy ? (execute ? "执行":"讨论")+"模式从下一轮开始使用":nil
+    scheduleContextPreview()
+  }
+  func scheduleContextPreview() {
+    previewSequence+=1;let serial=previewSequence
+    previewTask?.cancel()
+    previewTask=Task { [weak self] in
+      do {try await Task.sleep(for:.milliseconds(350))} catch {return}
+      guard let self,!closed,serial==previewSequence,let configuration else {return}
+      let mode:AssistantMode=allowsChanges ? .execute:.discuss
+      guard let package=Bundle.main.url(forResource:"AgentRuntime",withExtension:nil) else {contextError="本轮输入预览暂不可用";return}
+      let scope=session
+      let canonical=frozenInput(text:draft,id:"draft-preview",task:"draft-preview",references:references)
+      let context=AssistantContext(host:host,storage:storage,session:scope,task:"draft-preview",configuration:configuration,mode:mode,tools:mode.tools,schema:package.appendingPathComponent("Agent/docs/design/agent-tools.schema.json"))
+      do {
+        let preview=try await context.preview(canonical)
+        guard !closed,!Task.isCancelled,scope==session,serial==previewSequence else {return}
+        inputPreview=preview;contextError=nil
+      } catch {if serial==previewSequence,!Task.isCancelled {contextError="本轮输入暂无法完整读取"}}
+    }
+  }
+  private func frozenInput(text:String,id:String,task:String,references:[AssistantCellReference])->AgentCanonicalMessage {
+    var parts:[AgentMessagePart]=[]
+    if !references.isEmpty {parts.append(.agent_text_part(.init(kind:.text,part_id:"notebook-references",text:AssistantComposerRules.referencePart(references))))}
+    parts.append(.agent_text_part(.init(kind:.text,part_id:"question",text:text)))
+    return .init(record_type:.canonical_agent_message,message_version:1,message_id:id,role:.user,agent_turn_id:.init(nil),task_id:.init(task),parts:parts)
+  }
+  private func acceptedDraft(sequence:UInt64,text:String,referenceIDs:Set<String>) {
+    inputWasAccepted=true
+    if draftSequence==sequence,draft.utf8.elementsEqual(text.utf8),!composerMarked {
+      draft="";references.removeAll{referenceIDs.contains($0.id)};acceptedInputSequence=draftSequence;scheduleContextPreview()
+    }
+  }
   @Published var showSettings=false
   @Published private(set) var configured=false
   @Published private(set) var busy=false
@@ -55,6 +123,7 @@ import SwiftUI
   }
   private let host:NativeHostClient,storage:StorageService,agent:AgentSessionService
   private let settings:AssistantSettingsStore?
+  private let modelRegistry:ModelRegistry?
   private var configuration:AssistantConfiguration?
   private var secrets=SecretStore()
   private var session="conversation-"+UUID().uuidString.lowercased()
@@ -66,12 +135,20 @@ import SwiftUI
   private var pendingInput:AssistantMessage?,activePresentation:AssistantMessageContext?,activeTask=""
   private var streamedContexts:[String:AssistantMessageContext]=[:],streamedTasks:[String:String]=[:]
   init(host:NativeHostClient,storage:StorageService,agent:AgentSessionService) {
-    self.host=host;self.storage=storage;self.agent=agent;settings=try? AssistantSettingsStore()
+    self.host=host;self.storage=storage;self.agent=agent;settings=try? AssistantSettingsStore();modelRegistry=try? ModelRegistry()
   }
   func load()async {
     await refreshHistory()
     guard !busy,configuration==nil else {return}
-    do {if let value=try await settings?.load(),configuration==nil {configuration=value;baseURL=value.baseURL;model=value.model;configured=true;status="就绪"}}
+    do {
+      let seed=try await settings?.load()
+      if let modelRegistry,configuration==nil {
+        registry=try await modelRegistry.load(seed:seed)
+        if let id=registry.defaultModelID {selectModel(id)}
+        if configured {status="就绪"}
+      }
+      scheduleContextPreview()
+    }
     catch {status="模型配置无法读取，请重新配置。"}
   }
   func refreshHistory()async {
@@ -103,8 +180,10 @@ import SwiftUI
     guard !busy,!undoing,!closed else {throw AgentSessionError.busy}
     try AssistantSettingsStore.validate(value.baseURL,model:value.model)
     configuration=value;baseURL=value.baseURL;model=value.model;configured=true
+    registry = .current(value);selectedModelID=registry.defaultModelID
     if let secrets {self.secrets=secrets}
     status="模型已就绪"
+    scheduleContextPreview()
   }
   func undoTurn(_ id:String)async {
     await changeTurn(id,redo:false)
@@ -148,16 +227,30 @@ import SwiftUI
   private func restoreConclusions(_ id:String)async {
     do {
       var after:UInt64=0,conclusions:[NativeTurnConclusion]=[]
+      var usageReference:(String,String,Int)?
       while true {
         let page=try await storage.sessionEvents(id,after:after,limit:32)
         for record in page where record.event.event_kind == .recovery {
-          guard let json=record.event.payload_inline_json.value,
+          guard let json=record.event.payload_inline_json.value else {continue}
+          if let body=try JSONSerialization.jsonObject(with:Data(json.utf8)) as? [String:Any],body["kind"] as? String=="provider_model_reply",
+            let hash=body["blobHash"] as? String,let length=body["byteLength"] as? Int,length>0,length<=2*1024*1024 {
+            usageReference=(record.event.event_id,hash,length)
+          }
+          guard
             let conclusion=try? JSONDecoder().decode(NativeTurnConclusion.self,from:Data(json.utf8)),
             conclusion.kind=="native_turn_conclusion",conclusion.codecVersion==1,
             conclusion.taskID==record.event.task_id.value,conclusion.mode=="execute",conclusion.durationMs>=0 else {continue}
           conclusions.append(conclusion)
         }
         guard let last=page.last else {break};after=last.event.event_sequence
+      }
+      if let (owner,hash,length)=usageReference {
+        let lease=try await storage.openReferencedBlob(owner:.init(kind:.context,id:owner),hash:hash)
+        let bytes:Data
+        do {bytes=try await storage.readBlob(lease,offset:0,count:length);try await storage.closeBlob(lease)}
+        catch {try? await storage.closeBlob(lease);throw error}
+        guard KernelHashes.data(bytes)==hash else {throw StorageError.corruptIdentity}
+        if let payload=try JSONSerialization.jsonObject(with:bytes) as? [String:Any],let usage=payload["usageJSON"] as? String {lastUsage=AssistantUsage(Data(usage.utf8))}
       }
       for conclusion in conclusions {
         var outcome:TurnOutcome
@@ -227,6 +320,8 @@ import SwiftUI
     do {
       let value=try await settings.save(baseURL:baseURL,model:model,key:apiKey)
       configuration=value;apiKey="";baseURL=value.baseURL;model=value.model;configured=true;showSettings=false;status="模型配置已保存"
+      registry = .current(value);selectedModelID=registry.defaultModelID
+      try await modelRegistry?.save(registry);scheduleContextPreview()
     } catch {status="未保存。请检查服务地址（远程HTTPS或本机HTTP）、模型名称和API Key；密钥需能写入已解锁的钥匙串。"}
   }
   func newConversation() {
@@ -238,18 +333,22 @@ import SwiftUI
     messages=[];durableMessages=[];streamedText=[:];streamedOrder=[];pendingText=[:];pendingTurns=[];pendingInput=nil
     streamedContexts=[:];streamedTasks=[:];outcomes=[];undoneTurns=[];undoError=nil;transcriptError=nil;status=configured ? "新对话":"请先配置模型"
     roundErrors=[:];roundOperations=[:];actionDiffs=[:];actionErrors=[:];knownActionTransactions=[];undoneActionTransactions=[]
+    lastUsage=nil;lastRequestInput=nil;inputPreview=nil;scheduleContextPreview()
+    modelChangeNote=nil
   }
   func send() {
-    guard !closed,!busy,!undoing,!historyLoading,unknownActionUndo==nil,unknownRoundChange==nil else {return}
-    let text=draft.trimmingCharacters(in:.whitespacesAndNewlines)
-    guard !text.isEmpty,text.utf8.count<=16384 else {status="请输入问题（最多16KiB）。";return}
+    guard !closed,canSend else {return}
+    let text=draft
+    guard !text.trimmingCharacters(in:.whitespacesAndNewlines).isEmpty,text.utf8.count<=16384 else {status="请输入问题（最多16KiB）。";return}
     guard let configuration else {showSettings=true;return}
-    busy=true;stopping=false;status="正在准备";transcriptError=nil
-    let edits=allowsChanges
-    let id="user-"+UUID().uuidString.lowercased(),presentation=AssistantMessageContext(model:configuration.model,mode:edits ? "execute":"discuss")
+    let candidates=Dictionary(uniqueKeysWithValues:(referenceCandidates?() ?? []).map{($0.id,$0)})
+    guard references.allSatisfy({candidates[$0.id] != nil}) else {status="引用的单元格已删除，请移除引用后再发送";return}
+    busy=true;stopping=false;status="正在准备";transcriptError=nil;modelChangeNote=nil
+    let edits=allowsChanges,refs=references.compactMap{candidates[$0.id]},sequence=draftSequence
+    let id="user-"+UUID().uuidString.lowercased(),presentation=AssistantMessageContext(model:configuration.model,mode:edits ? "execute":"discuss",references:refs)
     activePresentation=presentation
     pendingInput = .init(id:id,taskID:"",role:"user",context:presentation,parts:[.init(id:"question",value:.text(text))])
-    publishMessages();draft=""
+    publishMessages();pendingDraftSequence=sequence;acceptedInputSequence=nil;inputWasAccepted=false
     work=Task {await execute(text,id:id,configuration:configuration,edits:edits,presentation:presentation)}
   }
   private func execute(_ text:String,id:String,configuration:AssistantConfiguration,edits:Bool,presentation:AssistantMessageContext)async {
@@ -259,8 +358,7 @@ import SwiftUI
       try await prepare?()
       guard !stopping,!closed else {throw CancellationError()}
       let process=try await AgentProcess.bundled()
-      let read:[AgentToolName]=[.read_notebook,.search_functions,.get_function_docs,.inspect_result,.evaluate_scratch,.get_operation_status]
-      let tools=edits ? read+[.preview_source,.apply_notebook_patch,.run_cells,.undo_transaction]:read
+      let tools=(edits ? AssistantMode.execute:AssistantMode.discuss).tools
       let hello=try await agent.activate(session:session,grants:tools,readonly:!edits,coreVersion:"1.0.4",adapterVersion:"openmath-adapter-1",conversationTitle:text)
       guard !stopping,!closed else {throw CancellationError()}
       let scope=hello.scope
@@ -270,7 +368,7 @@ import SwiftUI
         publishMessages()
       }
       await agent.observeTranscript { [weak self] in await self?.refreshMessages() }
-      let context=AssistantContext(host:host,storage:storage,session:session,task:scope.task_id,configuration:configuration,mode:edits ? .execute:.discuss,tools:tools,schema:process.spec.root.appendingPathComponent("Agent/docs/design/agent-tools.schema.json"))
+      let context=AssistantContext(host:host,storage:storage,session:session,task:scope.task_id,configuration:configuration,mode:edits ? .execute:.discuss,tools:tools,schema:process.spec.root.appendingPathComponent("Agent/docs/design/agent-tools.schema.json"),observed:{[weak self] input in await self?.observeInput(input)},completed:{[weak self] usage in await self?.observeUsage(usage)})
       let transport=ProviderAgentModelAdapter(transport:ProviderTransport(secrets:secrets),factory:{try await context.prepare($0)})
       adapter=transport
       let underlying=transport.port()
@@ -287,8 +385,9 @@ import SwiftUI
       let actual=try await process.launch();pipe=actual
       guard !stopping,!closed else {throw CancellationError()}
       status="正在回复"
-      let input=AgentCanonicalMessage(record_type:.canonical_agent_message,message_version:1,message_id:id,role:.user,agent_turn_id:.init(nil),task_id:.init(scope.task_id),parts:[.agent_text_part(.init(kind:.text,part_id:"question",text:text))])
-      let report=try await agent.run(pipe:actual,hello:hello,modelPort:visible,input:input,inputPresentation:presentation)
+      let input=frozenInput(text:text,id:id,task:scope.task_id,references:presentation.references ?? [])
+      let sequence=pendingDraftSequence,referenceIDs=Set((presentation.references ?? []).map(\.id))
+      let report=try await agent.run(pipe:actual,hello:hello,modelPort:visible,input:input,inputPresentation:presentation,inputAccepted:{[weak self] in await self?.acceptedDraft(sequence:sequence,text:text,referenceIDs:referenceIDs)})
       reason=await agent.endReason(report.loopReason,stopped:stopping || closed)
     } catch {
       if taskID==nil,!stopping,!closed {reason = .failed("无法准备当前笔记本或助手运行环境")}
@@ -298,6 +397,7 @@ import SwiftUI
     await adapter?.close();adapter=nil
     if let pipe {await pipe.close();self.pipe=nil}
     await agent.resetTask();await settled?()
+    if !inputWasAccepted {pendingInput=nil}
     await refreshMessages()
     if edits,let taskID {
       let elapsed=started.duration(to:.now).components
@@ -318,12 +418,18 @@ import SwiftUI
       }
     }
     status=UIStrings.end(reason)
-    if case .failed=reason,draft.isEmpty {draft=text}
+    if case .failed=reason,draft.isEmpty,let acceptedInputSequence,draftSequence==acceptedInputSequence {
+      draft=text
+      for reference in presentation.references ?? [] where !references.contains(where:{$0.id==reference.id}) {references.append(reference)}
+      scheduleContextPreview()
+    }
     if outcomes.last?.id==taskID,outcomes.last?.factsUnavailable==true {status+="；本轮操作事实暂时无法读取，请核对笔记本"}
     busy=false;stopping=false;work=nil
     await refreshHistory()
     await refreshActionFacts()
   }
+  private func observeInput(_ input:AssistantInputSnapshot) {lastRequestInput=input;contextError=nil}
+  private func observeUsage(_ data:Data) {lastUsage=AssistantUsage(data)}
   private func refreshMessages()async {
     let current=session
     do {
@@ -367,6 +473,7 @@ import SwiftUI
       partial.append(.init(id:id,taskID:streamedTasks[id] ?? activeTask,role:"assistant",context:streamedContexts[id],parts:[.init(id:"stream-text",value:.text(text))]))
     }
     messages=AssistantMessageProjection.merge(durable:durableMessages,partial:partial,pendingInput:pendingInput)
+    scheduleContextPreview()
   }
   func stop()async {
     guard busy,!stopping else {return};stopping=true;status="正在停止"
@@ -374,5 +481,5 @@ import SwiftUI
     await adapter?.close()
     if let pipe {await pipe.close()}
   }
-  func close()async {closed=true;await stop();await work?.value}
+  func close()async {closed=true;previewTask?.cancel();await stop();await work?.value}
 }

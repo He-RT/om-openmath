@@ -2,6 +2,18 @@ import Foundation
 
 @main struct AgentActionFixtures {
   static func main() throws {
+    for shortcut in [AssistantSendShortcut.enter,.commandReturn] {
+      precondition(!AssistantComposerRules.shouldSend(marked:true,command:false,shift:false,otherModifiers:false,shortcut:shortcut))
+      precondition(!AssistantComposerRules.shouldSend(marked:false,command:false,shift:true,otherModifiers:false,shortcut:shortcut))
+      precondition(AssistantComposerRules.shouldSend(marked:false,command:shortcut == .commandReturn,shift:false,otherModifiers:false,shortcut:shortcut))
+    }
+    let usage=AssistantUsage(Data(#"{"input":100,"output":12,"cache_read":50,"cache_write":null}"#.utf8))!
+    precondition(usage.input==100 && usage.cacheRead==50 && usage.output==12 && usage.cacheWrite==nil)
+    precondition(AssistantUsage(Data(#"{"input":true,"output":-1}"#.utf8))==nil)
+    let preview=AssistantInputSnapshot(systemCharacters:80,conversationCharacters:80,attachmentCharacters:0,fullInput:"synthetic input",actual:false)
+    precondition(preview.estimatedTokens==100)
+    let readable=AssistantInputPresentation.readable(#"{"messages":[{"role":"system","content":"第一行\n第二行"},{"role":"user","content":"数学问题"}],"tools":[]}"#)
+    precondition(readable.contains("第一行\n第二行") && readable.contains("数学问题"))
     let viewport=CGSize(width:380,height:500)
     var scroll=AssistantTranscriptScrollState()
     scroll.observe(.init(offset:100,height:600,viewport:viewport),.init(offset:100,height:900,viewport:viewport),userScrolling:false)

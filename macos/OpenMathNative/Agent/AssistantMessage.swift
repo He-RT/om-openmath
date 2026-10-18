@@ -1,7 +1,10 @@
 import Foundation
 
 /// Presentation metadata only. Reopening a message never restores tools, credentials or grants.
-struct AssistantMessageContext:Codable,Equatable,Sendable {let model:String,mode:String}
+struct AssistantMessageContext:Codable,Equatable,Sendable {
+  let model:String,mode:String
+  var references:[AssistantCellReference]?=nil
+}
 struct AgentPreviewDisplay:Codable,Equatable,Sendable {
   struct Cell:Codable,Equatable,Sendable {let id:String,title:String,before:String?,after:String?,notes:[String]}
   let cells:[Cell],notes:[String]

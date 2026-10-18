@@ -49,6 +49,13 @@ actor NativeAppStorage {
     let actualAgent=AgentSessionService(host:host,storage:storage,document:drafts.confirmed.document_id,generation:drafts.documentGeneration,sourcePort:source,kernelPort:actualRuntime.kernel)
     self.agent=actualAgent
     self.assistant=NativeAssistant(host:host,storage:storage,agent:actualAgent)
+    assistant.referenceCandidates={ [weak self] in
+      guard let self,!closed else {return []}
+      return drafts.confirmed.file.cells.enumerated().map {index,cell in
+        let source=drafts.overlay(cell.id)?.source ?? cell.source
+        return .init(id:cell.id,ordinal:index+1,summary:String(source.split(separator:"\n").first ?? "").prefix(100).description,sourceHash:KernelHashes.data(Data(source.utf8)))
+      }
+    }
     assistant.actionCellLabel={ [weak self] id in self?.drafts.confirmed.file.cells.firstIndex{$0.id==id}.map{"单元格 \($0+1)"} }
     assistant.actionLocate={ [weak self] id,reduced in self?.runtime.locate(id,reducedMotion:reduced) }
     assistant.actionTransaction={ [weak self] action in
@@ -85,13 +92,14 @@ actor NativeAppStorage {
     undo.changed={ [weak self] in self?.sourceDidChange() }
     assistant.prepare={ [weak self] in
       guard let self,!closed else {throw StorageError.closing}
+      assistantRevisionAtStart=nil
       _ = try drafts.pendingEdits();try await flushSource()
       assistantRevisionAtStart=drafts.confirmed.revision.value
     }
     assistant.settled={ [weak self] in
       guard let self,!closed else {return}
       for editor in editors.values {editor.reflectAcknowledgedSource()}
-      if assistantRevisionAtStart != drafts.confirmed.revision.value {document.noteEdit()}
+      if let original=assistantRevisionAtStart,original != drafts.confirmed.revision.value {document.noteEdit()}
       await runtime.analyzeSourceNow(drafts)
       await runtime.displayAgentReceipts(agent.currentKernelReceipts())
       document.changed?();await runtime.refreshProjection()

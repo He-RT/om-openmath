@@ -175,7 +175,7 @@ actor AgentSessionService {
     return reply
   }
   /// Actual private subprocess/pipe. Production Pi packaging is a separate adapter task.
-  func run(pipe:AgentPrivatePipe,hello:NativeAgentHostReply,modelPort:AgentNativeModelPort?=nil,input:AgentCanonicalMessage?=nil,inputPresentation:AssistantMessageContext?=nil) async throws->AgentPipeReport {
+  func run(pipe:AgentPrivatePipe,hello:NativeAgentHostReply,modelPort:AgentNativeModelPort?=nil,input:AgentCanonicalMessage?=nil,inputPresentation:AssistantMessageContext?=nil,inputAccepted:(@Sendable ()async->Void)?=nil) async throws->AgentPipeReport {
     guard !closed,scope != nil,privatePipe==nil,let initial=hello.outbound_json.value else {throw AgentSessionError.inactive}
     privatePipe=pipe
     let connection=scope!.connection_id
@@ -192,7 +192,7 @@ actor AgentSessionService {
           if let intent=reply.tool_intent.value {report.toolIntents.append(intent.operation_id)}
           if let intent=reply.request_intent.value {report.requestIntents.append(intent.operation_id)}
           if let outbound=reply.outbound_json.value {try await pipe.write(Data((outbound+"\n").utf8))}
-          if reply.disposition == .ready,let input,!delivered {delivered=true;_ = try await self.input(input,presentation:inputPresentation)}
+          if reply.disposition == .ready,let input,!delivered {delivered=true;_ = try await self.input(input,presentation:inputPresentation);await inputAccepted?()}
           let decoded=try JSONDecoder().decode(AgentIPCFrame.self,from:frame)
           if case .agent_settled_frame(let settled)=decoded {report.loopReason=settled.payload.reason}
           if reply.disposition == .request_intent,let intent=reply.request_intent.value {

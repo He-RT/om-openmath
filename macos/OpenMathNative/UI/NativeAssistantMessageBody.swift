@@ -32,6 +32,9 @@ struct NativeAssistantMessageBody:View {
   }
   private var parts:some View {
     VStack(alignment:.leading,spacing:8) {
+      if message.role=="user",let references=message.context?.references,!references.isEmpty {
+        Text(references.map{"［"+$0.label+"］"}.joined(separator:" ")).font(.system(size:11.5)).foregroundStyle(Theme.Color.ink2)
+      }
       ForEach(Array(message.parts.enumerated()),id:\.offset) {index,part in
         switch part.value {
         case .text(let text):

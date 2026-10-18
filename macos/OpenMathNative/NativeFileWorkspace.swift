@@ -276,6 +276,7 @@ struct NativeNotebookFileView:View {
       Menu("单元格操作",systemImage:Theme.Symbol.more) {
         Button("在下方添加数学") {Task {await workspace.insertCell(.math,after:cell.id)}}
         Button("在下方添加文字") {Task {await workspace.insertCell(.text,after:cell.id)}}
+        Button("在助手中引用") {session.assistant.addReference(cell.id);runtime.navigation.show(.assistant)}
         Divider()
         Button("删除单元格",role:.destructive) {Task {await workspace.deleteCell(cell.id)}}
       }.labelStyle(.iconOnly).menuStyle(.borderlessButton).menuIndicator(.hidden).fixedSize()

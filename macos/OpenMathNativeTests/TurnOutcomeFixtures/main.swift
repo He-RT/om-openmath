@@ -25,6 +25,17 @@ import Foundation
     precondition(rerun.products.isEmpty && rerun.ranCells.count==1)
     let readonly=TurnOutcome.assemble(task:"t",reason:.modelFinished,facts:[.request("read")],saved:false,durationMs:1)
     precondition(readonly.changedCells.isEmpty && readonly.ranCells.isEmpty && readonly.staleAfterEdit.isEmpty)
+    let metadata=TurnOutcome.assemble(task:"metadata",reason:.modelFinished,facts:[.transaction("title-transaction")],saved:false,durationMs:20)
+    precondition(metadata.transactions==["title-transaction"] && metadata.changedCells.isEmpty)
+    let rows=TurnOutcomePresentation.lines(outcome,label:{["a":"单元格 1","b":"单元格 2"][$0]})
+    precondition(rows.contains{$0.text.contains("修改 1 个单元格（单元格 1）")})
+    precondition(rows.contains{$0.text=="运行 1 个单元格，没有诊断"})
+    precondition(rows.contains{$0.text.contains("x = 2") && $0.text.contains("已验证")})
+    precondition(rows.contains{$0.text.contains("单元格 1 修改后没有重新运行")})
+    let stopped=TurnOutcomePresentation.lines(outcome,stopped:["a"],label:{["a":"单元格 1"][$0]})
+    precondition(stopped.contains{$0.text.contains("运行已停止，没有新的有效结果")} && !stopped.contains{$0.text.contains("没有重新运行")})
+    precondition(TurnOutcomePresentation.lines(metadata,label:{_ in nil}).map(\.text)==["更新文稿信息"])
+    precondition(TurnOutcomePresentation.duration(250)=="250 毫秒" && TurnOutcomePresentation.duration(1200)=="1.2 秒")
 
     let binding:[String:Any]=["cell_id":"b","source_hash":"source","out_index":1,"view_id":"v","result_ref":"notebook-result"]
     func inspect(_ payload:[String:Any],current:Bool=true,origin:String="notebook",ok:Bool=true)throws->ProductFact? {
@@ -50,6 +61,9 @@ import Foundation
     let encoded=try JSONEncoder().encode(outcome)
     let decoded=try JSONDecoder().decode(TurnOutcome.self,from:encoded)
     precondition(decoded==outcome)
+    var legacy=try JSONSerialization.jsonObject(with:encoded) as! [String:Any];legacy.removeValue(forKey:"transactionRefs")
+    let old=try JSONDecoder().decode(TurnOutcome.self,from:JSONSerialization.data(withJSONObject:legacy))
+    precondition(old.transactions==["tx-1"],"legacy native outcomes became unreadable")
     print("turn outcome fixtures passed: end reasons, durable-fact ordering, stale edits, partial inspections, geometry, request count")
   }
 }

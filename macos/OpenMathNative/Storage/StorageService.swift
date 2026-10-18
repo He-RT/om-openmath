@@ -612,6 +612,13 @@ actor StorageService {
       _=lease;return try StartupDocuments.transaction(root:root,document:document,id:id)
     }.value
   }
+  func sourceOperationForDisplay(document:String,operation:String)async throws->NativeStoredSourceTransaction? {
+    try beginOperation();defer {endOperation()}
+    guard closeTask==nil,let lease else {throw StorageError.closing};let root=paths.root
+    return try await Task.detached(priority:.utility) { [lease] in
+      _=lease;return try StartupDocuments.sourceRecord(root:root,document:document,id:nil,operation:operation)
+    }.value
+  }
   func sourceUndoMetadata(document:String,operation:String) async throws ->NativeUndoGroup? {
     try beginOperation();defer {endOperation()}
     guard closeTask==nil,let writer=documents[document] else {throw StorageError.closing}
@@ -626,6 +633,11 @@ actor StorageService {
     try beginOperation();defer {endOperation()}
     guard closeTask==nil,let writer=documents[document] else {throw StorageError.closing}
     return try await writer.sourceCall {try $0.undoExpansion(ids,through:upper)}
+  }
+  func sourceRedoTransactions(document:String,ids:Set<String>)async throws->[String] {
+    try beginOperation();defer {endOperation()}
+    guard closeTask==nil,let writer=documents[document] else {throw StorageError.closing}
+    return try await writer.sourceCall {try $0.redoTransactions(ids)}
   }
   func sourceHistory(document:String) async throws ->[SourceHistoryEntry] {
     try beginOperation();defer {endOperation()}

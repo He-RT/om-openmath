@@ -155,7 +155,25 @@ private final class ReadPause:@unchecked Sendable {
     rowUndo.manager.undo();try await settle(rowUndo)
     rowUndo.manager.undo();try await settle(rowUndo)
     precondition(freshDrafts.confirmed.file.cells[0].source==rowBefore)
+    let roundRefs=try await reopened.sourceRedoTransactions(document:initial.document_id,ids:[rowFirstID,rowSecondID])
+    try await rowUndo.invertGroup(transactions:roundRefs,group:"round-redo",operation:"round-redo",name:"重做本轮修改")
+    precondition(freshDrafts.confirmed.file.cells[0].source=="let row_probe=21")
+    try await rowUndo.invertGroup(transactions:[rowFirstID,rowSecondID],group:"round-undo",operation:"round-undo",name:"撤销本轮修改")
+    precondition(freshDrafts.confirmed.file.cells[0].source==rowBefore)
     rowUndo.close();freshEditor.reflectAcknowledgedSource()
+    let roundLostChange=try await freshApply("let round_lost_ack=7"),roundOnce=FaultOnce()
+    let roundLostID=roundLostChange.receipt.value!.receipt.transaction_id.value!
+    let roundLost=UndoCoordinator {ids,group,operation in
+      let lose=await roundOnce.consume()
+      return try await freshPort.undo(transactions:ids,group:group,operation:operation,
+        faults:lose ? StorageFaults {point in if point=="source_committed" {throw StorageError.system(EIO,"round-source-ack-lost")} }:.init())
+    }
+    do {try await roundLost.invertGroup(transactions:[roundLostID],group:"round-lost",operation:"round-lost",name:"撤销本轮修改");fatalError("lost physical round ACK was accepted")} catch CommitPortError.unknownOutcome { }
+    precondition(!roundLost.manager.canUndo)
+    let physicalRevision=try await reopened.committedSource(initial.document_id)!.revision.value
+    try await roundLost.invertGroup(transactions:[roundLostID],group:"round-lost",operation:"round-lost",name:"撤销本轮修改")
+    precondition(freshDrafts.confirmed.revision.value==physicalRevision && roundLost.manager.canUndo)
+    roundLost.close();freshEditor.reflectAcknowledgedSource()
     let textUndo=UndoCoordinator {ids,group,operation in try await freshPort.undo(transactions:ids,group:group,operation:operation)}
     let binding=EditorCommitBinding(editor:freshEditor,port:freshPort,undo:textUndo)
     let textBefore=freshEditor.textView.string

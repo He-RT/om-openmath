@@ -48,6 +48,7 @@ actor AgentSessionService {
   }
   func currentKernelReceipts()->[NativeKernelReceipt] {acceptedKernelReceipts}
   func conversations()async throws->[SessionConversationSummary] {try await storage.agentConversations(document:document)}
+  func presentationDocumentID()->String {document}
   /// Explicit recovery can identify a legacy conversation through its verified native admissions.
   /// This is a data read and never activates a helper, model, or old grants.
   func recordedTranscript(session:String)async throws->[AssistantMessage] {

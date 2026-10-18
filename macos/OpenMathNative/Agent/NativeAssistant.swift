@@ -18,6 +18,11 @@ import SwiftUI
   @Published private(set) var undoneTurns=Set<String>()
   @Published private(set) var undoing=false
   @Published private(set) var undoError:String?
+  @Published private(set) var roundErrors:[String:String]=[:]
+  @Published private(set) var changingRound:String?
+  @Published private(set) var unknownRoundChange:String?
+  @Published private(set) var unknownRoundRedo=false
+  private var roundOperations:[String:(String,Bool)]=[:]
   @Published private(set) var conversations:[SessionConversationSummary]=[]
   @Published private(set) var historyError:String?
   @Published private(set) var historyLoading=false
@@ -41,7 +46,7 @@ import SwiftUI
   var settled:(@MainActor ()async->Void)?
   var savedState:(@MainActor ()async throws->Bool)?
   var outcomeReady:(@MainActor (TurnOutcome)async throws->Void)?
-  var undoOutcome:(@MainActor (String)async throws->Void)?
+  var changeOutcome:(@MainActor (TurnOutcome,Bool,String)async throws->Void)?
   var insertCode:(@MainActor (String,String)async throws->Void)?
   func insertCodeBlock(_ code:String,language:String) async {
     guard !busy,let insertCode else {return}
@@ -75,7 +80,7 @@ import SwiftUI
     catch {if !closed {historyError="历史对话暂无法读取"}}
   }
   func selectConversation(_ id:String)async {
-    guard !closed,!busy,!undoing,!historyLoading,unknownActionUndo==nil,conversations.contains(where:{$0.id==id}) else {return}
+    guard !closed,!busy,!undoing,!historyLoading,unknownActionUndo==nil,unknownRoundChange==nil,conversations.contains(where:{$0.id==id}) else {return}
     historyLoading=true;defer {historyLoading=false}
     do {
       let previous=try await agent.transcript(session:id)
@@ -83,13 +88,15 @@ import SwiftUI
       resetConversation(id:id);durableMessages=previous;publishMessages();historyError=nil
       status=configured ? "就绪":"请先配置模型"
       await refreshActionFacts()
+      await restoreConclusions(id)
     } catch {if !closed {historyError="这段对话暂无法读取，当前内容保留"}}
   }
   func restoreRecordedConversation(_ id:String)async throws {
-    guard !closed,!busy,!undoing,!historyLoading,unknownActionUndo==nil else {throw AgentSessionError.busy}
+    guard !closed,!busy,!undoing,!historyLoading,unknownActionUndo==nil,unknownRoundChange==nil else {throw AgentSessionError.busy}
     let records=try await agent.recordedTranscript(session:id)
     guard !closed else {throw StorageError.closing}
     resetConversation(id:id);durableMessages=records;publishMessages();await refreshActionFacts()
+    await restoreConclusions(id)
   }
   /// Trusted host selection (also used by isolated live fixtures); secrets are never serialized.
   func configure(_ value:AssistantConfiguration,secrets:SecretStore?=nil)throws {
@@ -100,11 +107,73 @@ import SwiftUI
     status="模型已就绪"
   }
   func undoTurn(_ id:String)async {
-    guard !busy,!undoing,unknownActionUndo==nil,!undoneTurns.contains(id),let undoOutcome else {return}
-    undoing=true;undoError=nil;defer {undoing=false}
-    do {try await undoOutcome(id);undoneTurns.insert(id);status="已撤销本轮修改"}
-    catch CommitPortError.unknownOutcome {undoError="撤销结果待核对，未重复提交";status=undoError!}
-    catch {undoError="撤销未提交，请核对后续编辑或当前输入";status=undoError!}
+    await changeTurn(id,redo:false)
+  }
+  func redoTurn(_ id:String)async {await changeTurn(id,redo:true)}
+  func canChangeTurn(_ outcome:TurnOutcome,redo:Bool)->Bool {
+    guard !busy,!undoing,!historyLoading,unknownActionUndo==nil,!outcome.factsUnavailable,changeOutcome != nil,
+      !outcome.transactions.isEmpty else {return false}
+    if let unknownRoundChange {return unknownRoundChange==outcome.id && unknownRoundRedo==redo}
+    guard Set(outcome.transactions).isSubset(of:knownActionTransactions) else {return false}
+    return redo ? undoneTurns.contains(outcome.id):!undoneTurns.contains(outcome.id)
+  }
+  private func changeTurn(_ id:String,redo:Bool)async {
+    guard let outcome=outcomes.first(where:{$0.id==id}),canChangeTurn(outcome,redo:redo),let changeOutcome else {return}
+    undoing=true;changingRound=id;roundErrors[id]=nil;defer {undoing=false;changingRound=nil}
+    let existing=roundOperations[id]
+    let operation=existing?.1==redo ? existing!.0:"round-change-"+UUID().uuidString.lowercased()
+    roundOperations[id]=(operation,redo)
+    do {
+      try await changeOutcome(outcome,redo,operation)
+      roundOperations[id]=nil;unknownRoundChange=nil
+      status=redo ? "已重做本轮修改":"已撤销本轮修改"
+      await refreshActionFacts()
+    } catch CommitPortError.unknownOutcome {
+      unknownRoundChange=id;unknownRoundRedo=redo
+      roundErrors[id]="操作结果待核对；再次点按只核对原操作。"
+    } catch {
+      if unknownRoundChange==id {roundErrors[id]="原操作暂无法核对，操作身份已保留；可再次核对。"}
+      else {roundOperations[id]=nil;roundErrors[id]="操作未提交。请核对后续编辑或当前计算；原内容保留。"}
+    }
+  }
+  func acceptOutcome(_ outcome:TurnOutcome)async {
+    outcomes.removeAll{$0.id==outcome.id};outcomes.append(outcome)
+    do {try await outcomeReady?(outcome)} catch {roundErrors[outcome.id]="撤销记录暂不可用，原文稿已保留"}
+    await refreshActionFacts()
+  }
+  func recordConclusion(_ outcome:TurnOutcome)async throws {
+    let conclusion=NativeTurnConclusion(kind:"native_turn_conclusion",codecVersion:1,documentID:await agent.presentationDocumentID(),taskID:outcome.id,mode:"execute",reason:outcome.endReason,durationMs:outcome.durationMs,saved:outcome.saved)
+    _ = try await storage.appendSessionEvent(.init(session:session,eventID:"turn-conclusion-"+outcome.id,sourceInstance:"turn-conclusion-"+outcome.id,sourceSequence:1,parentEvent:nil,turn:nil,task:outcome.id,kind:.recovery,payload:try RecoveryValidation.encode(conclusion),operation:nil,operationStore:nil))
+  }
+  private func restoreConclusions(_ id:String)async {
+    do {
+      var after:UInt64=0,conclusions:[NativeTurnConclusion]=[]
+      while true {
+        let page=try await storage.sessionEvents(id,after:after,limit:32)
+        for record in page where record.event.event_kind == .recovery {
+          guard let json=record.event.payload_inline_json.value,
+            let conclusion=try? JSONDecoder().decode(NativeTurnConclusion.self,from:Data(json.utf8)),
+            conclusion.kind=="native_turn_conclusion",conclusion.codecVersion==1,
+            conclusion.taskID==record.event.task_id.value,conclusion.mode=="execute",conclusion.durationMs>=0 else {continue}
+          conclusions.append(conclusion)
+        }
+        guard let last=page.last else {break};after=last.event.event_sequence
+      }
+      for conclusion in conclusions {
+        var outcome:TurnOutcome
+        do {
+          let facts=try await agent.outcomeFacts(session:id,task:conclusion.taskID)
+          outcome=TurnOutcome.assemble(task:conclusion.taskID,reason:conclusion.reason,facts:facts,saved:conclusion.saved,durationMs:conclusion.durationMs)
+        } catch {
+          outcome=TurnOutcome.assemble(task:conclusion.taskID,reason:conclusion.reason,facts:[],saved:conclusion.saved,durationMs:conclusion.durationMs)
+          outcome.factsUnavailable=true
+        }
+        guard !closed,session==id else {return}
+        // Historical display never registers old transactions into the current native undo stack.
+        outcomes.removeAll{$0.id==outcome.id};outcomes.append(outcome)
+      }
+      await refreshActionFacts()
+    } catch {if !closed,session==id {transcriptError="部分回合结论暂无法读取，原操作记录仍保留"}}
   }
   func locate(_ cell:String,reducedMotion:Bool) {guard actionCellLabel?(cell) != nil else {return};actionLocate?(cell,reducedMotion)}
   func actionDiff(_ action:AgentAction)->SourceTransactionDiff? {
@@ -126,8 +195,8 @@ import SwiftUI
   func refreshActionFacts()async {
     guard !closed,let read=actionUndoFacts else {return}
     actionFactsSerial+=1;let serial=actionFactsSerial
-    let refs=Set(messages.flatMap(\.actions).compactMap(\.transactionRef))
-    guard !refs.isEmpty else {knownActionTransactions=[];undoneActionTransactions=[];return}
+    let refs=Set(messages.flatMap(\.actions).compactMap(\.transactionRef)+outcomes.flatMap(\.transactions))
+    guard !refs.isEmpty else {knownActionTransactions=[];undoneActionTransactions=[];undoneTurns=[];return}
     do {
       var known=Set<String>(),undone=Set<String>()
       let list=refs.sorted()
@@ -136,18 +205,22 @@ import SwiftUI
       }
       guard !closed,serial==actionFactsSerial else {return}
       knownActionTransactions=known;undoneActionTransactions=undone
+      undoneTurns=Set(outcomes.filter{!$0.transactions.isEmpty && Set($0.transactions).isSubset(of:known) && Set($0.transactions).isSubset(of:undone)}.map(\.id))
     } catch {if !closed,serial==actionFactsSerial {knownActionTransactions=[]}}
   }
   func undoAction(_ action:AgentAction)async {
-    guard !closed,!busy,!undoing,!historyLoading,let transaction=action.transactionRef,
+    guard !closed,!busy,!undoing,!historyLoading,unknownRoundChange==nil,let transaction=action.transactionRef,
       action.tool=="apply_notebook_patch",action.status == .ok,(!undoneActionTransactions.contains(transaction) || unknownActionUndo==action.id),
-      knownActionTransactions.contains(transaction),actionCanUndo?(action)==true,
+      (knownActionTransactions.contains(transaction) || unknownActionUndo==action.id),actionCanUndo?(action)==true,
       unknownActionUndo==nil || unknownActionUndo==action.id,let perform=undoActionTransaction else {return}
     undoing=true;actionUndoInProgress=action.id;actionErrors[action.id]=nil;defer {undoing=false;actionUndoInProgress=nil}
     let operation=actionOperations[transaction] ?? "action-undo-"+UUID().uuidString.lowercased();actionOperations[transaction]=operation
     do {try await perform(action,operation);unknownActionUndo=nil;actionOperations[transaction]=nil;status="已撤销这笔修改";await refreshActionFacts()}
     catch CommitPortError.unknownOutcome {unknownActionUndo=action.id;status="撤销结果待核对";actionErrors[action.id]="撤销结果待核对；再次点按只核对原操作。"}
-    catch {actionOperations[transaction]=nil;actionErrors[action.id]="撤销未提交。请核对后续编辑或当前计算；原内容保留。"}
+    catch {
+      if unknownActionUndo==action.id {actionErrors[action.id]="原撤销暂无法核对，操作身份已保留；可再次核对。"}
+      else {actionOperations[transaction]=nil;actionErrors[action.id]="撤销未提交。请核对后续编辑或当前计算；原内容保留。"}
+    }
   }
   func saveSettings()async {
     guard !busy,!undoing,let settings else {return}
@@ -157,16 +230,17 @@ import SwiftUI
     } catch {status="未保存。请检查服务地址（远程HTTPS或本机HTTP）、模型名称和API Key；密钥需能写入已解锁的钥匙串。"}
   }
   func newConversation() {
-    guard !closed,!busy,!undoing,!historyLoading,unknownActionUndo==nil else {return}
+    guard !closed,!busy,!undoing,!historyLoading,unknownActionUndo==nil,unknownRoundChange==nil else {return}
     resetConversation(id:"conversation-"+UUID().uuidString.lowercased())
   }
   private func resetConversation(id:String) {
     session=id
     messages=[];durableMessages=[];streamedText=[:];streamedOrder=[];pendingText=[:];pendingTurns=[];pendingInput=nil
     streamedContexts=[:];streamedTasks=[:];outcomes=[];undoneTurns=[];undoError=nil;transcriptError=nil;status=configured ? "新对话":"请先配置模型"
+    roundErrors=[:];roundOperations=[:];actionDiffs=[:];actionErrors=[:];knownActionTransactions=[];undoneActionTransactions=[]
   }
   func send() {
-    guard !closed,!busy,!undoing,!historyLoading,unknownActionUndo==nil else {return}
+    guard !closed,!busy,!undoing,!historyLoading,unknownActionUndo==nil,unknownRoundChange==nil else {return}
     let text=draft.trimmingCharacters(in:.whitespacesAndNewlines)
     guard !text.isEmpty,text.utf8.count<=16384 else {status="请输入问题（最多16KiB）。";return}
     guard let configuration else {showSettings=true;return}
@@ -191,6 +265,10 @@ import SwiftUI
       guard !stopping,!closed else {throw CancellationError()}
       let scope=hello.scope
       taskID=scope.task_id;activeTask=scope.task_id
+      if let pendingInput {
+        self.pendingInput = .init(id:pendingInput.id,taskID:scope.task_id,role:pendingInput.role,context:pendingInput.context,parts:pendingInput.parts)
+        publishMessages()
+      }
       await agent.observeTranscript { [weak self] in await self?.refreshMessages() }
       let context=AssistantContext(host:host,storage:storage,session:session,task:scope.task_id,configuration:configuration,mode:edits ? .execute:.discuss,tools:tools,schema:process.spec.root.appendingPathComponent("Agent/docs/design/agent-tools.schema.json"))
       let transport=ProviderAgentModelAdapter(transport:ProviderTransport(secrets:secrets),factory:{try await context.prepare($0)})
@@ -228,12 +306,15 @@ import SwiftUI
         let facts=try await agent.outcomeFacts(session:session,task:taskID)
         let saved=try await savedState?() ?? false
         let outcome=TurnOutcome.assemble(task:taskID,reason:reason,facts:facts,saved:saved,durationMs:duration)
-        outcomes.append(outcome)
-        do {try await outcomeReady?(outcome)} catch {undoError="本轮撤销记录暂无法读取，请保留当前笔记本"}
+        await acceptOutcome(outcome)
+        do {
+          try await recordConclusion(outcome)
+        } catch {transcriptError="本轮结论暂未保存到历史；当前事实和文稿修改仍保留"}
       } catch {
         // Missing evidence is explicit. Do not replace unreadable facts with a claim of no edits.
         var outcome=TurnOutcome.assemble(task:taskID,reason:reason,facts:[],saved:false,durationMs:duration)
-        outcome.factsUnavailable=true;outcomes.append(outcome)
+        outcome.factsUnavailable=true;await acceptOutcome(outcome)
+        try? await recordConclusion(outcome)
       }
     }
     status=UIStrings.end(reason)

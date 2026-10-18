@@ -13,6 +13,9 @@ struct StartupDocumentRecord:Identifiable,Sendable {
 struct StartupDocumentPage:Sendable {let records:[StartupDocumentRecord];let next:String?}
 enum StartupDocuments {
   static func transaction(root:URL,document:String,id:String)throws->NativeStoredSourceTransaction {
+    guard let value=try sourceRecord(root:root,document:document,id:id,operation:nil) else {throw StorageError.transactionUnavailable};return value
+  }
+  static func sourceRecord(root:URL,document:String,id:String?,operation:String?)throws->NativeStoredSourceTransaction? {
     guard UUID(uuidString:document) != nil,document==document.lowercased() else {throw StorageError.unsafePath}
     let folder=root.appendingPathComponent("Documents/\(document)",isDirectory:true)
     guard try ManagedFiles.check(folder,directory:true) else {throw StorageError.transactionUnavailable}
@@ -23,7 +26,13 @@ enum StartupDocuments {
     let header=try StorageBootstrap.readHeader(db);try StorageBootstrap.rejectQuarantine(db)
     guard header.kind=="document",header.documentID==document,header.storeID==selector.storeID,
       header.generation==selector.generation,try header.hash==selector.headerHash,(4...5).contains(header.storeVersion) else {throw StorageError.corruptIdentity}
-    guard let value=try DocumentStore.readTransactions([id],url:url,identity:header).first else {throw StorageError.transactionUnavailable};return value
+    var transaction=id
+    if let operation {
+      guard SourceValidation.identity(operation) else {throw StorageError.corruptIdentity}
+      try db.statement("SELECT transaction_id FROM operations WHERE document_id=? AND operation_id=?",[.text(document),.text(operation)]) {row in transaction=try SQLColumn.text(row,0)}
+    }
+    guard let transaction else {return nil}
+    guard let value=try DocumentStore.readTransactions([transaction],url:url,identity:header).first else {throw StorageError.transactionUnavailable};return value
   }
   /// Reopening .omnb creates a fresh source owner. Link display-only conversation history through
   /// verified native file bindings, without resolving bookmarks or scanning user files. Requiring

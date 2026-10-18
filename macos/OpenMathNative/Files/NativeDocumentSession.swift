@@ -66,7 +66,8 @@ actor NativeAppStorage {
       guard let self,!closed,runtime.operation==nil,let transaction=action.transactionRef,
         action.documentID==nil || action.documentID==drafts.confirmed.document_id,
         assistant.messages.flatMap(\.actions).contains(where:{$0.id==action.id && $0.transactionRef==transaction}) else {throw CommitPortError.sourceConflict}
-      do {try await flushSource()} catch {throw CommitPortError.editingBusy}
+      let originalReceipt=try await storage.sourceReceipt(document:drafts.confirmed.document_id,operation:operation)
+      if originalReceipt==nil {do {try await flushSource()} catch {throw CommitPortError.editingBusy}}
       guard undo.beginTargetedOperation(operation) else {throw CommitPortError.operationInProgress}
       do {
         let inverse=try await source.undo(transactions:[transaction],group:operation,operation:operation)
@@ -104,7 +105,7 @@ actor NativeAppStorage {
     assistant.outcomeReady={ [weak self] outcome in
       guard let self,!closed else {throw StorageError.closing}
       runtime.markAgentChanges(changed:outcome.changedCells.filter{$0.kind != .deleted}.map(\.cellID),deleted:outcome.changedCells.filter{$0.kind == .deleted}.map(\.cellID))
-      let ids=Array(Set(outcome.changedCells.map(\.transactionRef)))
+      let ids=outcome.transactions
       guard !ids.isEmpty else {return}
       let transactions=try await storage.sourceTransactions(document:drafts.confirmed.document_id,ids:ids)
       for transaction in transactions.sorted(by:{$0.plan.after.revision.value<$1.plan.after.revision.value}) {
@@ -114,9 +115,22 @@ actor NativeAppStorage {
         try undo.registerCommitted(actual,group:outcome.id,name:"助手修改")
       }
     }
-    assistant.undoOutcome={ [weak self] group in
+    assistant.changeOutcome={ [weak self] outcome,redo,operation in
       guard let self,!closed else {throw StorageError.closing}
-      try await undo.undoGroup(group)
+      let originalReceipt=try await storage.sourceReceipt(document:drafts.confirmed.document_id,operation:operation)
+      // An actual lost ACK blocks new source writes. Reconcile its existing operation first,
+      // without trying to commit a newer draft before the original receipt is acknowledged.
+      if originalReceipt==nil {do {try await flushSource()} catch {throw CommitPortError.editingBusy}}
+      let originals=Set(outcome.transactions)
+      guard !originals.isEmpty else {throw CommitPortError.sourceConflict}
+      let facts=try await storage.sourceUndoFacts(document:drafts.confirmed.document_id,ids:originals)
+      guard facts.known==originals else {throw CommitPortError.sourceConflict}
+      let refs:[String]
+      if originalReceipt != nil {
+        guard let existing=try await storage.sourceUndoMetadata(document:drafts.confirmed.document_id,operation:operation),existing.group_id==outcome.id else {throw StorageError.idempotencyConflict};refs=existing.transaction_ids
+      } else if redo {refs=try await storage.sourceRedoTransactions(document:drafts.confirmed.document_id,ids:originals)}
+      else {refs=outcome.transactions}
+      try await undo.invertGroup(transactions:refs,group:outcome.id,operation:operation,name:redo ? "重做本轮修改":"撤销本轮修改")
       await runtime.refreshProjection()
     }
     runtime.selectedCell=drafts.confirmed.file.cells.first?.id

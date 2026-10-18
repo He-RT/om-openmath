@@ -172,6 +172,9 @@ final class DocumentStore {
   func undoExpansion(_ ids:Set<String>,through upper:UInt64?=nil)throws->[String] {
     guard let history else {throw StorageError.unsupportedVersion};return try history.undoExpansion(ids,through:upper)
   }
+  func redoTransactions(_ ids:Set<String>)throws->[String] {
+    guard let history else {throw StorageError.unsupportedVersion};return try history.redoTransactions(ids)
+  }
   func pinTransaction(_ transaction:String,kind:String,owner:String,enabled:Bool) throws {
     guard let history else {throw StorageError.unsupportedVersion}
     try history.pin(transaction:transaction,kind:kind,owner:owner,enabled:enabled)

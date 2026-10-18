@@ -139,6 +139,41 @@ final class SourceHistoryStore {
     guard related.count<=32 else {throw StorageError.transactionUnavailable}
     return related.sorted()
   }
+  /// Find active inverse records whose net provenance covers only this requested round. The
+  /// final inverse is still prepared by Rust against current source; mixed-round undo is refused.
+  func redoTransactions(_ ids:Set<String>)throws->[String] {
+    let facts=try undoFacts(ids)
+    guard facts.known==ids,facts.undone==ids else {throw StorageError.transactionUnavailable}
+    var oldest:UInt64?
+    for id in ids {try db.statement("SELECT revision FROM source_history WHERE document_id=? AND transaction_id=?",[.text(document),.text(id)]) {row in let n=sqlite3_column_int64(row,0);guard n>=0 else {throw StorageError.corruptIdentity};oldest=min(oldest ?? UInt64(n),UInt64(n))}}
+    guard let oldest else {throw StorageError.transactionUnavailable}
+    var nodes:[(String,[String])]=[],bytes=0
+    try db.statement("SELECT transaction_id,summary,summary_hash FROM source_history WHERE document_id=? AND revision>=? ORDER BY revision",[.text(document),.integer(Int64(oldest))]) {row in
+      let data=try SQLColumn.data(row,1);bytes+=data.count
+      guard bytes<=8*1024*1024,DocumentStore.digest(data)==(try SQLColumn.text(row,2)) else {throw StorageError.transactionUnavailable}
+      let value=try JSONDecoder().decode(NativeSourceTransactionTombstone.self,from:data);try Self.validate(value)
+      let id=try SQLColumn.text(row,0);guard value.commit.document_id==self.document,value.commit.transaction_id==id else {throw StorageError.corruptIdentity}
+      nodes.append((id,value.undo_group?.transaction_ids ?? value.commit.undo_of.value.map{[$0]} ?? []))
+    }
+    var disabled=Set<String>(),active=Set<String>()
+    for (id,targets) in nodes.reversed() where !disabled.contains(id) {active.insert(id);disabled.formUnion(targets)}
+    var basis:[String:[String:Int]]=[:],candidates:[(String,Set<String>)]=[]
+    for (id,targets) in nodes {
+      var effect:[String:Int]=[:]
+      if targets.isEmpty || ids.contains(id) {effect=[id:1]}
+      else {for target in targets {for (key,coefficient) in basis[target] ?? [target:1] {effect[key,default:0]-=coefficient}}}
+      effect=effect.filter{$0.value != 0};guard effect.count<=512 else {throw StorageError.transactionUnavailable};basis[id]=effect
+      if active.contains(id),!targets.isEmpty,!ids.contains(id),!effect.isEmpty,
+        Set(effect.keys).isSubset(of:ids),effect.values.allSatisfy({$0 == -1}) {candidates.append((id,Set(effect.keys)))}
+    }
+    var remaining=ids,result:[String]=[]
+    // Prefer the most recent complete inverse; otherwise combine independent row inverses.
+    for (id,effects) in candidates.reversed().sorted(by:{$0.1.count>$1.1.count}) where effects.isSubset(of:remaining) {
+      result.append(id);remaining.subtract(effects);if remaining.isEmpty {break}
+    }
+    guard remaining.isEmpty,!result.isEmpty,result.count<=32 else {throw StorageError.transactionUnavailable}
+    return result
+  }
   /// Bounded physical compaction, original receipt bytes and all stable identities survive.
   /// Caller verifies each original healthy receipt before any payload is erased.
   func compact(faults:StorageFaults,verify:(String)throws->Void) throws ->SourceHistoryPrune {

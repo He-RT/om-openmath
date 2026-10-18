@@ -41,19 +41,21 @@ private struct AssistantTranscriptFixtureControls:View {
   @MainActor static func descendants(_ view:NSView)->[NSView] { [view]+view.subviews.flatMap{descendants($0)} }
   @MainActor static func main() async throws {
     let actionUI=CommandLine.arguments.contains("--action-ui") || Bundle.main.object(forInfoDictionaryKey:"OpenMathActionFixture") as? Bool==true
-    let ui=actionUI || CommandLine.arguments.contains("--assistant-ui") || Bundle.main.object(forInfoDictionaryKey:"OpenMathAssistantFixture") as? Bool==true
+    let outcomeUI=CommandLine.arguments.contains("--outcome-ui") || Bundle.main.object(forInfoDictionaryKey:"OpenMathOutcomeFixture") as? Bool==true
+    let ui=actionUI || outcomeUI || CommandLine.arguments.contains("--assistant-ui") || Bundle.main.object(forInfoDictionaryKey:"OpenMathAssistantFixture") as? Bool==true
     let app=NSApplication.shared;app.setActivationPolicy(ui ? .regular:.accessory)
     let rootBase=URL(fileURLWithPath:CommandLine.arguments.count>1 ? CommandLine.arguments[1]:Bundle.main.object(forInfoDictionaryKey:"OpenMathFixtureRoot") as! String,isDirectory:true)
     let root=ui ? rootBase.appendingPathComponent("run-"+UUID().uuidString.lowercased()):rootBase
     try FileManager.default.createDirectory(at:root,withIntermediateDirectories:true)
     if ui {
       Task {
-        do {if actionUI {try await actionLog(root:root,hold:true)} else {try await assistantTranscript(root:root,hold:true)}}
+        do {if outcomeUI {try await turnOutcome(root:root,hold:true)} else if actionUI {try await actionLog(root:root,hold:true)} else {try await assistantTranscript(root:root,hold:true)}}
         catch {FileHandle.standardError.write(Data(("Assistant UI fixture failed: \(error)\n").utf8));NSApp.terminate(nil)}
       }
       desktopLoop()
       return
     }
+    if CommandLine.arguments.contains("--turn-outcome") {try await turnOutcome(root:root,hold:false);return}
     if CommandLine.arguments.contains("--action-log") {
       try await actionLog(root:root,hold:false)
       return
@@ -356,6 +358,85 @@ private struct AssistantTranscriptFixtureControls:View {
     require(archived.transaction_id==transaction && archived.plan.after.file.cells.map(\.source)==before.file.cells.map(\.source),"archived diff no longer matched the restored S2 source")
     do {_ = try await storage.documentIdentity(document);fatalError("reading an archived diff opened a source writer")} catch StorageError.closing { }
     try await services.close()
+  }
+  @MainActor static func turnOutcome(root:URL,hold:Bool)async throws {
+    struct NativeSummary:Decodable {let outcomes:[TurnOutcome]}
+    let casePath=ProcessInfo.processInfo.environment["OPENMATH_OUTCOME_FIXTURE_CASE"] ?? Bundle.main.object(forInfoDictionaryKey:"OpenMathOutcomeCase") as? String
+    guard let casePath else {throw StorageError.unsafePath}
+    let caseRoot=URL(fileURLWithPath:casePath,isDirectory:true)
+    let captured=try JSONDecoder().decode(NativeSummary.self,from:Data(contentsOf:caseRoot.appendingPathComponent("summary.json"))).outcomes[0]
+    let services=NativeAppStorage(paths:.init(root:caseRoot.appendingPathComponent("storage"),channel:.preview))
+    let storage=try await services.open(),workspace=NativeFileWorkspace(storage:services)
+    let documents=try await storage.startupDocuments(limit:32)
+    guard let document=documents.records.first?.id else {throw StorageError.corruptIdentity}
+    await workspace.recover(document)
+    guard let session=workspace.session,let conversation=try await storage.agentSessions(limit:32).first?.id else {throw StorageError.recoveryRequired}
+    session.assistant.prepare={throw AgentSessionError.inactive}
+    let facts=try await session.agent.outcomeFacts(session:conversation,task:captured.id)
+    let verified=TurnOutcome.assemble(task:captured.id,reason:captured.endReason,facts:facts,saved:captured.saved,durationMs:captured.durationMs)
+    require(verified.changedCells==captured.changedCells && verified.ranCells==captured.ranCells && verified.products==captured.products && verified.staleAfterEdit==captured.staleAfterEdit && verified.modelRequests==captured.modelRequests,"native A5 summary did not match independently reread host facts")
+    let refs=Set(verified.transactions)
+    if !refs.isEmpty {
+      let state=try await storage.sourceUndoFacts(document:document,ids:refs)
+      if state.undone==refs {
+        let inverse=try await storage.sourceRedoTransactions(document:document,ids:refs)
+        _ = try await session.source.undo(transactions:inverse,group:"d3-restore",operation:"d3-restore-"+UUID().uuidString.lowercased())
+      }
+    }
+    try await session.assistant.restoreRecordedConversation(conversation)
+    await session.assistant.acceptOutcome(verified)
+    try await session.assistant.recordConclusion(verified)
+    try await session.assistant.restoreRecordedConversation(conversation)
+    require(session.assistant.outcomes.first{$0.id==captured.id}?.products==captured.products,"stored native conclusion did not rebuild host products")
+    // A restored conclusion is read-only; explicitly registering this test round uses the same
+    // verified transaction group as the live completion path.
+    await session.assistant.acceptOutcome(verified)
+    let before=session.drafts.confirmed
+    session.runtime.navigation.inspectorVisible=true;session.runtime.navigation.inspector = .assistant
+    let window=NSWindow(contentRect:NSRect(x:0,y:0,width:1400,height:780),styleMask:[.titled,.closable,.resizable],backing:.buffered,defer:false)
+    window.title="A5 本轮结果 · 不连接模型";window.appearance=NSAppearance(named:.aqua)
+    let host=NSHostingView(rootView:WorkspaceView(workspace:workspace,session:session));window.contentView=host;workspace.attachWindow(window);window.makeKeyAndOrderFront(nil)
+    if hold {while !Task.isCancelled {try await Task.sleep(for:.seconds(30))}}
+    if !refs.isEmpty {
+      await session.assistant.undoTurn(verified.id)
+      require(session.assistant.roundErrors[verified.id]==nil,"round undo failed: \(session.assistant.roundErrors[verified.id] ?? "")")
+      try await until {session.assistant.undoneTurns.contains(verified.id)}
+      let undoneRevision=session.drafts.confirmed.revision.value
+      require(undoneRevision==before.revision.value+1,"round undo did not use one source commit")
+      await session.assistant.undoTurn(verified.id)
+      require(session.drafts.confirmed.revision.value==undoneRevision)
+      await session.assistant.redoTurn(verified.id)
+      require(session.assistant.roundErrors[verified.id]==nil,"round redo failed: \(session.assistant.roundErrors[verified.id] ?? "")")
+      try await until {!session.assistant.undoneTurns.contains(verified.id)}
+      require(session.drafts.confirmed.file.cells.map(\.source)==before.file.cells.map(\.source),"round redo changed unrelated source")
+      session.undo.manager.undo();try await until {session.undo.phase != .pending}
+      await session.assistant.refreshActionFacts();try await until {session.assistant.undoneTurns.contains(verified.id)}
+      session.undo.manager.undo();try await until {session.undo.phase != .pending}
+      await session.assistant.refreshActionFacts();try await until {!session.assistant.undoneTurns.contains(verified.id)}
+      let changing=session.assistant.changeOutcome!
+      var lose=true
+      session.assistant.changeOutcome={outcome,redo,operation in
+        try await changing(outcome,redo,operation)
+        if lose {lose=false;throw CommitPortError.unknownOutcome}
+      }
+      await session.assistant.undoTurn(verified.id)
+      require(session.assistant.unknownRoundChange==verified.id)
+      let unknownRevision=session.drafts.confirmed.revision.value
+      let readFacts=session.assistant.actionUndoFacts
+      session.assistant.actionUndoFacts={_ in throw StorageError.inaccessible}
+      await session.assistant.refreshActionFacts()
+      require(session.assistant.canChangeTurn(verified,redo:false),"unavailable cached facts disabled original-ID reconciliation")
+      session.assistant.changeOutcome={_,_,_ in throw StorageError.inaccessible}
+      await session.assistant.undoTurn(verified.id)
+      require(session.assistant.unknownRoundChange==verified.id)
+      session.assistant.changeOutcome=changing;session.assistant.actionUndoFacts=readFacts
+      await session.assistant.undoTurn(verified.id)
+      require(session.assistant.unknownRoundChange==nil && session.drafts.confirmed.revision.value==unknownRevision,"uncertain round result was not reconciled by the original ID")
+      await session.assistant.redoTurn(verified.id)
+      try await until {!session.assistant.undoneTurns.contains(verified.id)}
+    }
+    print("Actual native round: independently verified A5 facts, durable end metadata, grouped single-commit undo, repeat safety, redo and keyboard state tracking passed; model requests unchanged: \(verified.modelRequests)")
+    window.orderOut(nil);try await session.close();try await services.close()
   }
   @MainActor static func inspector(root:URL) async throws {
     let definitions=(0..<40).map{"let v\($0)=\($0);"}.joined(separator:"\n")

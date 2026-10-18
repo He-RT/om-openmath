@@ -112,6 +112,18 @@ private final class DocumentUndoManager:UndoManager {
     externalOperation=operation;return true
   }
   func endTargetedOperation(_ operation:String) {if externalOperation==operation {externalOperation=nil;try? flushQueued()}}
+  /// Explicit round controls are durable grouped source actions, and Cmd-Z reverses the same
+  /// inverse. Original groups remain available behind them in chronological order.
+  func invertGroup(transactions:[String],group:String,operation:String,name:String)async throws {
+    guard beginTargetedOperation(operation) else {throw CommitPortError.operationInProgress}
+    do {
+      let inverse=try await perform(transactions,group,operation)
+      guard inverse.phase == .completed,inverse.receipt.value?.receipt.transaction_id.value != nil else {throw CommitPortError.sourceConflict}
+      try registerCommitted(inverse,group:operation,name:name)
+      endTargetedOperation(operation);changed?()
+    } catch CommitPortError.unknownOutcome {throw CommitPortError.unknownOutcome}
+    catch {endTargetedOperation(operation);throw error}
+  }
   private func finishGroup(_ error:(any Error)?=nil) {
     let completion=groupCompletion;groupCompletion=nil
     if let error {completion?.resume(throwing:error)} else {completion?.resume(returning:())}

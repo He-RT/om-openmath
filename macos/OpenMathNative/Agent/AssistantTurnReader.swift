@@ -29,10 +29,11 @@ actor AssistantTurnReader {
       guard let text=event.payload_inline_json.value else {continue};let bytes=Data(text.utf8)
       if event.event_kind == .tool_admitted {
         let admission=try JSONDecoder().decode(SessionToolAdmission.self,from:bytes)
-        if admission.target.kind == .source,let receipt=try await storage.sourceReceipt(document:document,operation:admission.target.operationID),let transactionID=receipt.receipt.transaction_id.value {
-          let transactions=try await storage.sourceTransactions(document:document,ids:[transactionID])
-          guard let transaction=transactions.first,transaction.plan.commit.operation_id==admission.target.operationID,
+        if admission.target.kind == .source,let transaction=try await storage.sourceOperationForDisplay(document:admission.target.documentID,operation:admission.target.operationID) {
+          let transactionID=transaction.transaction_id
+          guard transaction.plan.commit.operation_id==admission.target.operationID,
             transaction.plan.commit.task_id.value==nil || transaction.plan.commit.task_id.value==task else {throw AgentSessionError.ledgerMismatch}
+          result.append(.transaction(transactionID))
           let plan=transaction.plan,before=Set(plan.before.file.cells.map(\.id)),after=Set(plan.after.file.cells.map(\.id))
           let changes=plan.commit.changed_cell_ids.map {id in
             TurnChangedCell(cellID:id,kind:!after.contains(id) ? .deleted:before.contains(id) ? .edited:.new,transactionRef:transactionID)

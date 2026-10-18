@@ -19,6 +19,7 @@ struct ProductFact:Equatable,Codable,Sendable {
   let kind:Kind,count:Int?,values:[String],verified:Bool
 }
 enum TurnFact:Sendable {
+  case transaction(String)
   case changed([TurnChangedCell],invalidated:[String],deleted:[String])
   case ran(TurnRanCell)
   case product(ProductFact)
@@ -30,12 +31,15 @@ struct TurnOutcome:Equatable,Codable,Sendable,Identifiable {
   let changedCells:[TurnChangedCell],ranCells:[TurnRanCell],products:[ProductFact],staleAfterEdit:[String]
   let saved:Bool,durationMs:Int,modelRequests:Int
   var factsUnavailable=false
+  var transactionRefs:[String]?=nil
+  var transactions:[String] {Array(Set((transactionRefs ?? [])+changedCells.map(\.transactionRef))).sorted()}
 
   static func assemble(task:String,reason:TurnEndReason,facts:[TurnFact],saved:Bool,durationMs:Int)->Self {
     var changes:[TurnChangedCell]=[],runs:[TurnRanCell]=[],products:[ProductFact]=[]
-    var stale=Set<String>(),requests=Set<String>()
+    var stale=Set<String>(),requests=Set<String>(),transactions=Set<String>()
     for fact in facts {
       switch fact {
+      case .transaction(let id):transactions.insert(id)
       case .changed(let cells,let invalidated,let deleted):
         changes+=cells;stale.formUnion(invalidated);stale.subtract(deleted)
         let affected=Set(invalidated+deleted)
@@ -51,8 +55,66 @@ struct TurnOutcome:Equatable,Codable,Sendable,Identifiable {
       case .request(let id):requests.insert(id)
       }
     }
-    return .init(id:task,endReason:reason,changedCells:changes,ranCells:runs,products:products,
+    var outcome=Self(id:task,endReason:reason,changedCells:changes,ranCells:runs,products:products,
       staleAfterEdit:stale.sorted(),saved:saved,durationMs:max(0,durationMs),modelRequests:requests.count)
+    outcome.transactionRefs=transactions.sorted();return outcome
+  }
+}
+
+/// Native end metadata complements immutable host facts. It is not a model-authored conclusion.
+struct NativeTurnConclusion:Codable,Sendable {
+  let kind:String,codecVersion:Int,documentID:String,taskID:String,mode:String
+  let reason:TurnEndReason,durationMs:Int,saved:Bool
+}
+struct TurnOutcomeLine:Sendable,Equatable {
+  enum Tone:Sendable {case verified,warning,secondary}
+  let icon:String,text:String,tone:Tone
+}
+enum TurnOutcomePresentation {
+  static func lines(_ outcome:TurnOutcome,stopped:Set<String>=[],label:(String)->String?)->[TurnOutcomeLine] {
+    if outcome.factsUnavailable {return [.init(icon:"exclamationmark.triangle",text:"本轮事实暂无法读取，请核对笔记本",tone:.warning)]}
+    var rows:[TurnOutcomeLine]=[]
+    for kind in [TurnChangedCell.Kind.new,.edited,.deleted] {
+      let cells=Array(Set(outcome.changedCells.filter{$0.kind==kind}.map(\.cellID))).sorted()
+      guard !cells.isEmpty else {continue}
+      let verb=switch kind {case .new:"新增";case .edited:"修改";case .deleted:"删除"}
+      let names=cells.compactMap(label)
+      rows.append(.init(icon:"checkmark",text:verb+" \(cells.count) 个单元格"+(names.isEmpty ? "":"（"+names.joined(separator:"、")+"）"),tone:.verified))
+    }
+    if !outcome.transactions.isEmpty,outcome.changedCells.isEmpty {rows.append(.init(icon:"checkmark",text:"更新文稿信息",tone:.verified))}
+    if !outcome.ranCells.isEmpty {
+      let errors=outcome.ranCells.filter{$0.status.lowercased()=="error"}
+      let count=outcome.ranCells.compactMap(\.diagnosticCount).reduce(0,+)
+      let known=outcome.ranCells.allSatisfy{$0.diagnosticCount != nil}
+      let issue=errors.isEmpty ? (known ? (count==0 ? "，没有诊断":"，\(count) 条诊断"):"，诊断尚未核实"):"，"+errors.map{label($0.cellID) ?? "一个单元格"}.joined(separator:"、")+"出错"
+      rows.append(.init(icon:errors.isEmpty && known && count==0 ? "checkmark":"exclamationmark.triangle",text:"运行 \(outcome.ranCells.count) 个单元格"+issue,tone:errors.isEmpty && known && count==0 ? .verified:.warning))
+    }
+    for product in outcome.products {
+      let text:String
+      switch product.kind {
+      case .scene3d:text="三维场景已生成"+(product.count.map{"，\($0) 个三角形"} ?? "")
+      case .plot:text="二维图已生成"+(product.count.map{"，\($0) 条曲线"} ?? "")
+      case .solutions:
+        text=(product.values.isEmpty ? product.count.map{"\($0) 个解"} ?? "解集已检查":"解 "+product.values.joined(separator:"，"))+(product.verified ? "，已验证":"")
+      case .expression:text=product.values.first.map{"已检查结果："+$0} ?? "表达式结果已检查"
+      }
+      rows.append(.init(icon:"checkmark",text:text,tone:.verified))
+    }
+    if !outcome.staleAfterEdit.isEmpty {
+      let interrupted=outcome.staleAfterEdit.filter{stopped.contains($0)},unrun=outcome.staleAfterEdit.filter{!stopped.contains($0)}
+      if !interrupted.isEmpty {
+        let names=interrupted.compactMap(label)
+        rows.append(.init(icon:"stop.circle",text:(names.isEmpty ? "\(interrupted.count) 个单元格":names.joined(separator:"、"))+"的运行已停止，没有新的有效结果",tone:.warning))
+      }
+      if !unrun.isEmpty {
+        let names=unrun.compactMap(label)
+        rows.append(.init(icon:"exclamationmark.triangle",text:(names.isEmpty ? "\(unrun.count) 个单元格":names.joined(separator:"、"))+" 修改后没有重新运行，结果过期",tone:.warning))
+      }
+    }
+    return rows
+  }
+  static func duration(_ milliseconds:Int)->String {
+    milliseconds<1000 ? "\(milliseconds) 毫秒":milliseconds<10_000 ? String(format:"%.1f 秒",Double(milliseconds)/1000):"\(milliseconds/1000) 秒"
   }
 }
 

@@ -73,7 +73,7 @@ private struct InteractiveAgentActionRow:View {
   private var hasUndo:Bool {action.tool=="apply_notebook_patch" && action.status == .ok && action.transactionRef != nil}
   private var canUndo:Bool {
     !model.busy && !model.undoing && !model.historyLoading && (!undone || model.unknownActionUndo==action.id) && model.actionCanUndo?(action)==true &&
-      action.transactionRef.map{model.knownActionTransactions.contains($0)}==true &&
+      (action.transactionRef.map{model.knownActionTransactions.contains($0)}==true || model.unknownActionUndo==action.id) &&
       (model.unknownActionUndo==nil || model.unknownActionUndo==action.id)
   }
   var body:some View {

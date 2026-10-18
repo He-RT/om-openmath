@@ -1,7 +1,9 @@
 //! Only compile one trusted snapshot into a protocol body. No credential/URL or tool loop.
 use super::*;
+use base64::{Engine, engine::general_purpose::STANDARD};
 use om_agent_contract::{
-    AgentCanonicalMessageRole as Role, AgentMessagePart as Part, AgentToolResultPartOutcome,
+    AgentCanonicalMessageRole as Role, AgentMediaPartSubmissionKind, AgentMessagePart as Part,
+    AgentToolResultPartOutcome,
 };
 use serde_json::{Value, json};
 use std::collections::{BTreeMap, BTreeSet};
@@ -43,6 +45,7 @@ fn portable(
                     .ok_or(Error::Input)?;
                 text.push_str(&resolved.text);
             }
+            Part::AgentMediaPart(_) => {}
             _ => return Err(Error::Unsupported),
         }
     }
@@ -92,6 +95,30 @@ pub fn build(request: &Request) -> std::result::Result<Wire, Error> {
         }
     }
     let mut messages = vec![];
+    let mut images = BTreeMap::new();
+    if request.images.len() > 16 {
+        return Err(Error::Limit);
+    }
+    for image in &request.images {
+        if !identity(&image.media_ref) || image.data.len() > 1024 * 1024 {
+            return Err(Error::Input);
+        }
+        let bytes = STANDARD.decode(&image.data).map_err(|_| Error::Input)?;
+        let valid = match image.media_type.as_str() {
+            "image/png" => bytes.starts_with(b"\x89PNG\r\n\x1a\n"),
+            "image/jpeg" => bytes.starts_with(&[0xff, 0xd8, 0xff]),
+            "image/webp" => bytes.starts_with(b"RIFF") && bytes.get(8..12) == Some(b"WEBP"),
+            _ => false,
+        };
+        if !valid
+            || images
+                .insert((image.message_id.as_str(), image.part_id.as_str()), image)
+                .is_some()
+        {
+            return Err(Error::Input);
+        }
+    }
+    let mut images_used = BTreeSet::new();
     let mut system = vec![];
     let mut pending = BTreeSet::new();
     let mut calls_seen = BTreeSet::new();
@@ -146,6 +173,19 @@ pub fn build(request: &Request) -> std::result::Result<Wire, Error> {
                     if m.role == Role::Tool {
                         return Err(Error::Input);
                     }
+                }
+                Part::AgentMediaPart(p) => {
+                    if m.role != Role::User
+                        || p.submission_kind != AgentMediaPartSubmissionKind::Image
+                    {
+                        return Err(Error::Unsupported);
+                    }
+                    let key = (m.message_id.as_str(), p.part_id.as_str());
+                    let image = images.get(&key).ok_or(Error::Unsupported)?;
+                    if image.media_ref != p.media_ref {
+                        return Err(Error::Input);
+                    }
+                    images_used.insert(key);
                 }
                 _ => return Err(Error::Unsupported),
             }
@@ -238,7 +278,21 @@ pub fn build(request: &Request) -> std::result::Result<Wire, Error> {
         match request.binding.protocol {
             Protocol::ChatCompletions => match m.role {
                 Role::System => messages.push(json!({"role":"system","content":text})),
-                Role::User => messages.push(json!({"role":"user","content":text})),
+                Role::User => {
+                    if m.parts.iter().any(|p| matches!(p, Part::AgentMediaPart(_))) {
+                        let content = m.parts.iter().map(|p| match p {
+                            Part::AgentTextPart(p) => Ok(json!({"type":"text","text":p.text})),
+                            Part::AgentMediaPart(p) => {
+                                let image = images[&(m.message_id.as_str(), p.part_id.as_str())];
+                                Ok(json!({"type":"image_url","image_url":{"url":format!("data:{};base64,{}", image.media_type, image.data)}}))
+                            }
+                            _ => Err(Error::Unsupported),
+                        }).collect::<std::result::Result<Vec<_>, Error>>()?;
+                        messages.push(json!({"role":"user","content":content}));
+                    } else {
+                        messages.push(json!({"role":"user","content":text}));
+                    }
+                }
                 Role::Assistant => {
                     let mut v = json!({"role":"assistant","content":text});
                     if !calls.is_empty() {
@@ -270,6 +324,7 @@ pub fn build(request: &Request) -> std::result::Result<Wire, Error> {
      Part::AgentTextPart(p)=>content.push(json!({"type":"text","text":p.text})),
      Part::AgentToolProposalPart(c)=>content.push(json!({"type":"tool_use","id":c.tool_call_id,"name":name(c),"input":om_agent_contract::json::strict_json(c.arguments_json.as_bytes()).map_err(|_|Error::Input)?})),
      Part::AgentToolResultPart(r)=>{let result=resolved[&(m.message_id.as_str(),r.tool_call_id.as_str())];content.push(json!({"type":"tool_result","tool_use_id":r.tool_call_id,"content":result.text,"is_error":result.is_error}));},
+     Part::AgentMediaPart(p)=>{let image=images[&(m.message_id.as_str(),p.part_id.as_str())];content.push(json!({"type":"image","source":{"type":"base64","media_type":image.media_type,"data":image.data}}));},
      _=>return Err(Error::Unsupported),
     }
                 }
@@ -284,7 +339,11 @@ pub fn build(request: &Request) -> std::result::Result<Wire, Error> {
             }
         }
     }
-    if !conversation || !pending.is_empty() || result_used.len() != resolved.len() {
+    if !conversation
+        || !pending.is_empty()
+        || result_used.len() != resolved.len()
+        || images_used.len() != images.len()
+    {
         return Err(Error::Input);
     }
     let mut body = json!({"model":request.api_model,"messages":messages,"stream":request.stream});

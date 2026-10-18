@@ -4,6 +4,7 @@ import Foundation
 struct AssistantMessageContext:Codable,Equatable,Sendable {
   let model:String,mode:String
   var references:[AssistantCellReference]?=nil
+  var attachments:[AssistantAttachment]?=nil
 }
 struct AgentPreviewDisplay:Codable,Equatable,Sendable {
   struct Cell:Codable,Equatable,Sendable {let id:String,title:String,before:String?,after:String?,notes:[String]}

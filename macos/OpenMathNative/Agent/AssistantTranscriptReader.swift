@@ -101,7 +101,7 @@ actor AssistantTranscriptReader {
       for part in canonical.parts {
         switch part {
         case .agent_text_part(let text):
-          if canonical.role != .user || text.part_id != "notebook-references" {parts.append(.init(id:text.part_id,value:.text(text.text)))}
+          if canonical.role != .user || (text.part_id != "notebook-references" && !text.part_id.hasPrefix("attachment-")) {parts.append(.init(id:text.part_id,value:.text(text.text)))}
         case .agent_tool_proposal_part(let proposal):
           let identity=key(task,turn,proposal.tool_call_id),reply=replies[identity]
           var action=AgentActionFormatter.make(turn:turn,call:proposal.tool_call_id,tool:proposal.name.rawValue,

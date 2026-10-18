@@ -24,6 +24,7 @@ private final class AssistantComposerUndoManager:UndoManager {
     string=text;localUndo.removeAllActions()
   }
   var submit:(()->Void)?,compositionChanged:((Bool)->Void)?,focusChanged:((Bool)->Void)?
+  var pasteAttachments:((NSPasteboard)->Bool)?
   var shortcut:AssistantSendShortcut = .enter
   private var markedReturn=false
   override func becomeFirstResponder()->Bool {let value=super.becomeFirstResponder();if value {focusChanged?(true)};return value}
@@ -31,7 +32,13 @@ private final class AssistantComposerUndoManager:UndoManager {
   override func insertText(_ string:Any,replacementRange:NSRange) {edit {super.insertText(string,replacementRange:replacementRange)}}
   override func deleteBackward(_ sender:Any?) {edit {super.deleteBackward(sender)}}
   override func deleteForward(_ sender:Any?) {edit {super.deleteForward(sender)}}
-  override func paste(_ sender:Any?) {edit {super.pasteAsPlainText(sender)}}
+  override func paste(_ sender:Any?) {if pasteAttachments?(.general) != true {edit {super.pasteAsPlainText(sender)}}}
+  override func draggingEntered(_ sender:any NSDraggingInfo)->NSDragOperation {
+    AssistantAttachmentInput.accepts(sender.draggingPasteboard) ? .copy:super.draggingEntered(sender)
+  }
+  override func performDragOperation(_ sender:any NSDraggingInfo)->Bool {
+    if pasteAttachments?(sender.draggingPasteboard)==true {return true};return super.performDragOperation(sender)
+  }
   override func insertNewline(_ sender:Any?) {edit {super.insertNewline(sender)}}
   override func setMarkedText(_ string:Any,selectedRange:NSRange,replacementRange:NSRange) {edit {super.setMarkedText(string,selectedRange:selectedRange,replacementRange:replacementRange)};compositionChanged?(hasMarkedText())}
   override func unmarkText() {super.unmarkText();if editingDepth==0,localUndo.groupingLevel>0 {localUndo.endUndoGrouping()};compositionChanged?(hasMarkedText())}
@@ -63,6 +70,7 @@ private final class AssistantComposerUndoManager:UndoManager {
     editor.textContainerInset=NSSize(width:0,height:5);editor.textContainer?.lineFragmentPadding=0
     editor.textContainer?.widthTracksTextView=true;editor.isVerticallyResizable=true;editor.isHorizontallyResizable=false
     documentView=editor;editor.setAccessibilityLabel("给助手的问题");editor.setAccessibilityIdentifier("assistant-input")
+    editor.registerForDraggedTypes([.fileURL,.png,.tiff])
   }
   required init?(coder:NSCoder) {fatalError("not used")}
   @discardableResult func measure(width:CGFloat)->CGFloat {
@@ -92,6 +100,8 @@ struct AssistantComposerEditor:NSViewRepresentable {
     let scroll=AssistantComposerScrollView();scroll.editor.delegate=context.coordinator
     scroll.editor.string=assistant.draft
     scroll.editor.submit={ [weak assistant] in assistant?.send() }
+    scroll.editor.pasteAttachments={ [weak assistant] board in guard let assistant else {return false};return AssistantAttachmentInput.read(board,assistant:assistant)}
+    assistant.addFilesRequested={ [weak scroll,weak assistant] in guard let assistant else {return};AssistantAttachmentInput.choose(window:scroll?.window,assistant:assistant)}
     scroll.editor.compositionChanged={ [weak assistant] marked in assistant?.composerMarked=marked }
     scroll.editor.focusChanged={value in focused=value}
     scroll.heightChanged={value in DispatchQueue.main.async {if abs(height-value)>0.5 {height=value}}}

@@ -1,5 +1,7 @@
 import AppKit
 import SwiftUI
+import PDFKit
+import ImageIO
 
 private actor ComposerFixtureInputCapture {
   var value:AssistantInputSnapshot?
@@ -83,7 +85,7 @@ private struct AssistantTranscriptFixtureControls:View {
       desktopLoop()
       return
     }
-    if CommandLine.arguments.contains("--composer") {try await composer(root:root,hold:false);return}
+    if CommandLine.arguments.contains("--composer") || CommandLine.arguments.contains("--attachments") {try await composer(root:root,hold:false);return}
     if CommandLine.arguments.contains("--turn-outcome") {try await turnOutcome(root:root,hold:false);return}
     if CommandLine.arguments.contains("--action-log") {
       try await actionLog(root:root,hold:false)
@@ -565,12 +567,77 @@ private struct AssistantTranscriptFixtureControls:View {
     require(session.assistant.messages.isEmpty,"stopping before acceptance left an unsent message in the transcript")
     session.assistant.prepare={throw AgentSessionError.inactive}
     print("Native composer: marked Return blocked, Shift/newline and Cmd-Return verified, height capped with real scrolling, configured capability selection, reference chips and failed-send/new-draft retention passed; no model calls")
+    var attachmentConversation:String?
+    if CommandLine.arguments.contains("--attachments") || Bundle.main.object(forInfoDictionaryKey:"OpenMathAttachmentFixture") as? Bool==true {attachmentConversation=try await attachments(root:root,session:session,storage:storage)}
     if hold {
       session.assistant.newConversation()
+      if let attachmentConversation {await session.assistant.refreshHistory();await session.assistant.selectConversation(attachmentConversation)}
       editor.submit={controller.submissions+=1}
       while !Task.isCancelled {try await Task.sleep(for:.seconds(30))}
     }
     window.orderOut(nil);try await session.close();try await services.close()
+  }
+  @MainActor static func attachments(root:URL,session:NativeDocumentSession,storage:StorageService)async throws->String {
+    let sourceURL=root.appendingPathComponent("composer.omnb"),originalSource=try Data(contentsOf:sourceURL)
+    let repository=Bundle.main.object(forInfoDictionaryKey:"OpenMathRepository") as? String ?? FileManager.default.currentDirectoryPath
+    let fixtures=URL(fileURLWithPath:repository).appendingPathComponent("macos/OpenMathNativeTests/Fixtures/Media")
+    let imageData=try Data(contentsOf:fixtures.appendingPathComponent("rgb-pattern.png"))
+    let board=NSPasteboard.withUniqueName();defer {board.releaseGlobally()}
+    board.setData(imageData,forType:.png)
+    require(AssistantAttachmentInput.read(board,assistant:session.assistant));try await until {session.assistant.attachments.count==1 && session.assistant.importingAttachments==0}
+    let unknown=root.appendingPathComponent("保留文件.xyz");try Data("unsupported bytes retained".utf8).write(to:unknown)
+    let scan=root.appendingPathComponent("扫描页.pdf")
+    var box=CGRect(x:0,y:0,width:240,height:320)
+    let pdf=CGContext(scan as CFURL,mediaBox:&box,nil)!
+    pdf.beginPDFPage(nil);pdf.setFillColor(CGColor(gray:0.6,alpha:1));pdf.fill(CGRect(x:20,y:20,width:50,height:30));pdf.endPDFPage();pdf.closePDF()
+    let finder=NSPasteboard.withUniqueName();defer {finder.releaseGlobally()}
+    finder.writeObjects([fixtures.appendingPathComponent("math-text.pdf") as NSURL,unknown as NSURL,scan as NSURL])
+    require(AssistantAttachmentInput.read(finder,assistant:session.assistant));try await until {session.assistant.attachments.count==4 && session.assistant.importingAttachments==0}
+    let items=session.assistant.attachments,image=items.first(where:{$0.kind == .image})!,text=items.first(where:{$0.text != nil})!
+    require(image.original.hash==KernelHashes.data(imageData) && image.thumbnail != nil && image.image != nil)
+    require(items.first(where:{$0.name==unknown.lastPathComponent})?.note=="暂不能发送给模型")
+    require(items.first(where:{$0.name==scan.lastPathComponent})?.note=="没有可提取的文字")
+    session.assistant.selectModel("current-model");require(!session.assistant.canSend && image.explanation(images:false)=="当前模型不能读取图片")
+    session.assistant.selectModel("fixture-image");require(session.assistant.canSend)
+    let textBytes=try await AssistantAttachmentStore.bytes(storage:storage,owner:text.owner,descriptor:text.text!,maximum:128*1024)
+    let extracted=String(decoding:textBytes,as:UTF8.self);require(extracted.contains("〔第 1 页〕") && extracted.contains("x^2+y^2=1"))
+    let doc=session.drafts.confirmed.document_id,scope=session.assistant.conversationID
+    let identity=try await storage.createAgentSession(scope,documentID:doc,title:"检查附件颜色和公式")
+    require(identity.title=="检查附件颜色和公式","attachment-only session lost its first question title")
+    for item in items {
+      let retained=try await AssistantAttachmentStore.bytes(storage:storage,owner:item.owner,descriptor:item.original,maximum:32*1024*1024)
+      require(KernelHashes.data(retained)==item.original.hash)
+    }
+    let contextSession="attachment-input-"+UUID().uuidString.lowercased(),task="attachment-freeze-task"
+    _ = try await storage.createAgentSession(contextSession,documentID:doc)
+    let input=AgentCanonicalMessage(record_type:.canonical_agent_message,message_version:1,message_id:"attachment-question",role:.user,agent_turn_id:.init(nil),task_id:.init(task),parts:[
+      .agent_media_part(.init(kind:.media,part_id:image.id,media_ref:image.id,submission_kind:.image)),
+      .agent_text_part(.init(kind:.text,part_id:text.id,text:extracted)),.agent_text_part(.init(kind:.text,part_id:"question",text:"检查图片和 PDF"))])
+    let configured=AssistantConfiguration(baseURL:"https://example.invalid/v1",model:"fixture-image",credentialReference:"never-used")
+    let context=AssistantContext(host:session.host,storage:storage,session:contextSession,task:task,configuration:configured,mode:.discuss,tools:AssistantMode.discuss.tools,schema:URL(fileURLWithPath:repository).appendingPathComponent("docs/design/agent-tools.schema.json"))
+    let preview=try await context.preview(input,attachments:[image,text]);require(preview.attachmentCharacters>0)
+    _ = try await SessionLedgerPort(storage:storage,session:contextSession).record(SessionCanonicalInput(codecVersion:1,delivery:"user_input",message:input,presentation:.init(model:configured.model,mode:"discuss",attachments:[image,text])),id:"attachment-input",kind:.user_message,task:task)
+    let prepared=try await context.prepare(.init(operation_id:"attachment-freeze",agent_turn_id:"attachment-turn",request_id:"attachment-request"))
+    let wire=try JSONSerialization.jsonObject(with:prepared.model.body) as! [String:Any]
+    let messages=wire["messages"] as! [[String:Any]],content=messages.last!["content"] as! [[String:Any]]
+    require((content[0]["image_url"] as? [String:Any])?["url"] as? String != nil)
+    let uri=(content[0]["image_url"] as! [String:Any])["url"] as! String
+    require(uri.hasPrefix("data:image/jpeg;base64,") && !uri.contains(fixtures.path))
+    let projected=Data(base64Encoded:String(uri.dropFirst("data:image/jpeg;base64,".count)))!
+    require(KernelHashes.data(projected)==image.image!.hash && CGImageSourceCreateWithData(projected as CFData,nil) != nil)
+    require((content[1]["text"] as? String)?.contains("x^2+y^2=1")==true)
+    await prepared.model.cancel()
+    let transcript=try await AssistantTranscriptReader(storage:storage,document:doc).read(session:contextSession)
+    require(transcript.last?.context?.attachments?.count==2 && transcript.last?.text=="检查图片和 PDF")
+    let before=session.assistant.attachments;session.assistant.send();try await until {!session.assistant.busy}
+    require(session.assistant.attachments==before,"failed preparation lost attachments")
+    session.assistant.send();session.assistant.removeAttachment(image.id);try await until {!session.assistant.busy}
+    require(!session.assistant.attachments.contains(where:{$0.id==image.id}),"failure resurrected an attachment explicitly removed from the next draft")
+    await session.assistant.addAttachmentData(imageData,name:"粘贴图片.png")
+    require(session.drafts.confirmed.file.cells.count==1 && !session.document.isDocumentEdited)
+    let unchanged=try Data(contentsOf:sourceURL);require(unchanged==originalSource,"attachments modified .omnb source bytes")
+    print("Native attachments: clipboard PNG and Finder URLs stored in BlobStore, JPEG/thumbnail decoded, PDF page text, scan/unknown retained, capability block, first-question title, canonical image/PDF -> actual Rust body, transcript cards and failure retention passed; no network")
+    return contextSession
   }
   @MainActor static func inspector(root:URL) async throws {
     let definitions=(0..<40).map{"let v\($0)=\($0);"}.joined(separator:"\n")

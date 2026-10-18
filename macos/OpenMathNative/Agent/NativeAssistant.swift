@@ -10,6 +10,9 @@ import SwiftUI
   @Published var registry=ModelRegistryDocument()
   @Published private(set) var selectedModelID:String?
   @Published var references:[AssistantCellReference]=[] {didSet {draftSequence+=1;scheduleContextPreview()}}
+  @Published private(set) var attachments:[AssistantAttachment]=[]
+  @Published private(set) var importingAttachments=0
+  @Published private(set) var attachmentError:String?
   @Published var composerMarked=false
   @Published var sendShortcut:AssistantSendShortcut=AssistantSendShortcut(rawValue:UserDefaults.standard.string(forKey:"assistant.send-shortcut") ?? "") ?? .enter {
     didSet {UserDefaults.standard.set(sendShortcut.rawValue,forKey:"assistant.send-shortcut")}
@@ -27,9 +30,35 @@ import SwiftUI
   private var pendingDraftSequence:UInt64=0
   private var acceptedInputSequence:UInt64?
   private var inputWasAccepted=false
+  private var removedAttachmentIDs=Set<String>()
   var selectedModel:RegisteredModel? {registry.selection(selectedModelID)?.1}
   var canSend:Bool {!busy && !undoing && !historyLoading && !composerMarked && unknownActionUndo==nil && unknownRoundChange==nil &&
-    !draft.trimmingCharacters(in:.whitespacesAndNewlines).isEmpty && (!allowsChanges || selectedModel?.tools != false)}
+    importingAttachments==0 && (!draft.trimmingCharacters(in:.whitespacesAndNewlines).isEmpty || attachments.contains(where:\.sendable)) &&
+    !attachments.contains(where:{$0.image != nil && selectedModel?.images != true}) && (!allowsChanges || selectedModel?.tools != false)}
+  func removeAttachment(_ id:String) {removedAttachmentIDs.insert(id);attachments.removeAll{$0.id==id};draftSequence+=1;scheduleContextPreview()}
+  func addAttachmentFiles(_ urls:[URL])async {
+    guard !closed else {return}
+    guard importingAttachments==0 else {attachmentError="正在准备附件，请稍候再加入";return}
+    let scope=session;attachmentError=nil
+    importingAttachments+=1;defer {importingAttachments-=1}
+    let document=await agent.presentationDocumentID()
+    for url in urls.prefix(16) {
+      guard attachments.count<16,!closed else {attachmentError="每条消息最多 16 个附件";break}
+      do {let item=try await attachmentStore.add(file:url,session:scope,document:document);if !closed {attachments.append(item);draftSequence+=1}}
+      catch {attachmentError="无法加入 \(url.lastPathComponent)，请检查文件是否可读及剩余空间"}
+    }
+    if urls.count>16 {attachmentError="附件已达上限；其余文件未加入，请分批处理"}
+    scheduleContextPreview()
+  }
+  func addAttachmentData(_ data:Data,name:String)async {
+    guard !closed else {return}
+    guard importingAttachments==0,attachments.count<16 else {attachmentError="请等待附件准备结束，或移除附件后再加入（最多 16 个）";return}
+    importingAttachments+=1;defer {importingAttachments-=1}
+    do {
+      let item=try await attachmentStore.add(data:data,name:name,session:session,document:agent.presentationDocumentID())
+      if !closed {attachments.append(item);draftSequence+=1;attachmentError=nil;scheduleContextPreview()}
+    } catch {attachmentError="图片无法加入，原有输入已保留"}
+  }
   func addReference(_ id:String) {
     guard let item=referenceCandidates?().first(where:{$0.id==id}),!references.contains(where:{$0.id==id}) else {return}
     references.append(item);focusComposer?()
@@ -54,23 +83,32 @@ import SwiftUI
       let mode:AssistantMode=allowsChanges ? .execute:.discuss
       guard let package=Bundle.main.url(forResource:"AgentRuntime",withExtension:nil) else {contextError="本轮输入预览暂不可用";return}
       let scope=session
-      let canonical=frozenInput(text:draft,id:"draft-preview",task:"draft-preview",references:references)
+      let items=attachments.filter(\.sendable)
       let context=AssistantContext(host:host,storage:storage,session:scope,task:"draft-preview",configuration:configuration,mode:mode,tools:mode.tools,schema:package.appendingPathComponent("Agent/docs/design/agent-tools.schema.json"))
       do {
-        let preview=try await context.preview(canonical)
+        let canonical=try await frozenInput(text:draft,id:"draft-preview",task:"draft-preview",references:references,attachments:items)
+        let preview=try await context.preview(canonical,attachments:items)
         guard !closed,!Task.isCancelled,scope==session,serial==previewSequence else {return}
         inputPreview=preview;contextError=nil
       } catch {if serial==previewSequence,!Task.isCancelled {contextError="本轮输入暂无法完整读取"}}
     }
   }
-  private func frozenInput(text:String,id:String,task:String,references:[AssistantCellReference])->AgentCanonicalMessage {
+  private func frozenInput(text:String,id:String,task:String,references:[AssistantCellReference],attachments:[AssistantAttachment]=[])async throws->AgentCanonicalMessage {
     var parts:[AgentMessagePart]=[]
     if !references.isEmpty {parts.append(.agent_text_part(.init(kind:.text,part_id:"notebook-references",text:AssistantComposerRules.referencePart(references))))}
+    for item in attachments {
+      if item.image != nil {parts.append(.agent_media_part(.init(kind:.media,part_id:item.id,media_ref:item.id,submission_kind:.image)))}
+      else if let text=item.text {
+        let bytes=try await AssistantAttachmentStore.bytes(storage:storage,owner:item.owner,descriptor:text,maximum:128*1024)
+        parts.append(.agent_text_part(.init(kind:.text,part_id:item.id,text:"附件：\(item.name)（PDF 提取文字）\n"+String(decoding:bytes,as:UTF8.self))))
+      }
+    }
     parts.append(.agent_text_part(.init(kind:.text,part_id:"question",text:text)))
     return .init(record_type:.canonical_agent_message,message_version:1,message_id:id,role:.user,agent_turn_id:.init(nil),task_id:.init(task),parts:parts)
   }
-  private func acceptedDraft(sequence:UInt64,text:String,referenceIDs:Set<String>) {
+  private func acceptedDraft(sequence:UInt64,text:String,referenceIDs:Set<String>,attachmentIDs:Set<String>) {
     inputWasAccepted=true
+    attachments.removeAll{attachmentIDs.contains($0.id)}
     if draftSequence==sequence,draft.utf8.elementsEqual(text.utf8),!composerMarked {
       draft="";references.removeAll{referenceIDs.contains($0.id)};acceptedInputSequence=draftSequence;scheduleContextPreview()
     }
@@ -122,6 +160,7 @@ import SwiftUI
     catch {status="未插入代码，原文已保留；请核对源码或当前笔记本状态。"}
   }
   private let host:NativeHostClient,storage:StorageService,agent:AgentSessionService
+  private let attachmentStore:AssistantAttachmentStore
   private let settings:AssistantSettingsStore?
   private let modelRegistry:ModelRegistry?
   private var configuration:AssistantConfiguration?
@@ -135,7 +174,7 @@ import SwiftUI
   private var pendingInput:AssistantMessage?,activePresentation:AssistantMessageContext?,activeTask=""
   private var streamedContexts:[String:AssistantMessageContext]=[:],streamedTasks:[String:String]=[:]
   init(host:NativeHostClient,storage:StorageService,agent:AgentSessionService) {
-    self.host=host;self.storage=storage;self.agent=agent;settings=try? AssistantSettingsStore();modelRegistry=try? ModelRegistry()
+    self.host=host;self.storage=storage;self.agent=agent;attachmentStore=AssistantAttachmentStore(storage:storage);settings=try? AssistantSettingsStore();modelRegistry=try? ModelRegistry()
   }
   func load()async {
     await refreshHistory()
@@ -339,13 +378,13 @@ import SwiftUI
   func send() {
     guard !closed,canSend else {return}
     let text=draft
-    guard !text.trimmingCharacters(in:.whitespacesAndNewlines).isEmpty,text.utf8.count<=16384 else {status="请输入问题（最多16KiB）。";return}
+    guard text.utf8.count<=16384 else {status="请输入问题（最多16KiB）。";return}
     guard let configuration else {showSettings=true;return}
     let candidates=Dictionary(uniqueKeysWithValues:(referenceCandidates?() ?? []).map{($0.id,$0)})
     guard references.allSatisfy({candidates[$0.id] != nil}) else {status="引用的单元格已删除，请移除引用后再发送";return}
     busy=true;stopping=false;status="正在准备";transcriptError=nil;modelChangeNote=nil
     let edits=allowsChanges,refs=references.compactMap{candidates[$0.id]},sequence=draftSequence
-    let id="user-"+UUID().uuidString.lowercased(),presentation=AssistantMessageContext(model:configuration.model,mode:edits ? "execute":"discuss",references:refs)
+    let id="user-"+UUID().uuidString.lowercased(),presentation=AssistantMessageContext(model:configuration.model,mode:edits ? "execute":"discuss",references:refs,attachments:attachments.filter(\.sendable))
     activePresentation=presentation
     pendingInput = .init(id:id,taskID:"",role:"user",context:presentation,parts:[.init(id:"question",value:.text(text))])
     publishMessages();pendingDraftSequence=sequence;acceptedInputSequence=nil;inputWasAccepted=false
@@ -385,9 +424,10 @@ import SwiftUI
       let actual=try await process.launch();pipe=actual
       guard !stopping,!closed else {throw CancellationError()}
       status="正在回复"
-      let input=frozenInput(text:text,id:id,task:scope.task_id,references:presentation.references ?? [])
+      let input=try await frozenInput(text:text,id:id,task:scope.task_id,references:presentation.references ?? [],attachments:presentation.attachments ?? [])
       let sequence=pendingDraftSequence,referenceIDs=Set((presentation.references ?? []).map(\.id))
-      let report=try await agent.run(pipe:actual,hello:hello,modelPort:visible,input:input,inputPresentation:presentation,inputAccepted:{[weak self] in await self?.acceptedDraft(sequence:sequence,text:text,referenceIDs:referenceIDs)})
+      let attachmentIDs=Set((presentation.attachments ?? []).map(\.id))
+      let report=try await agent.run(pipe:actual,hello:hello,modelPort:visible,input:input,inputPresentation:presentation,inputAccepted:{[weak self] in await self?.acceptedDraft(sequence:sequence,text:text,referenceIDs:referenceIDs,attachmentIDs:attachmentIDs)})
       reason=await agent.endReason(report.loopReason,stopped:stopping || closed)
     } catch {
       if taskID==nil,!stopping,!closed {reason = .failed("无法准备当前笔记本或助手运行环境")}
@@ -421,6 +461,10 @@ import SwiftUI
     if case .failed=reason,draft.isEmpty,let acceptedInputSequence,draftSequence==acceptedInputSequence {
       draft=text
       for reference in presentation.references ?? [] where !references.contains(where:{$0.id==reference.id}) {references.append(reference)}
+      scheduleContextPreview()
+    }
+    if case .failed=reason {
+      for item in presentation.attachments ?? [] where !removedAttachmentIDs.contains(item.id) && !attachments.contains(where:{$0.id==item.id}) {attachments.append(item)}
       scheduleContextPreview()
     }
     if outcomes.last?.id==taskID,outcomes.last?.factsUnavailable==true {status+="；本轮操作事实暂时无法读取，请核对笔记本"}

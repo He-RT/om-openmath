@@ -56,9 +56,16 @@ final class AgentSessionStore {
   }
   /// Called only after the service has verified this document's current history association.
   /// Associate on explicit activation, keeping read-only history browsing free of writes.
-  func associate(_ id:String,document:String)throws->AgentSessionIdentity {
+  func associate(_ id:String,document:String,title:String?=nil)throws->AgentSessionIdentity {
     try associate([id],document:document)
-    guard let value=try session(id,reader:db) else {throw StorageError.corruptIdentity};return value
+    guard var value=try session(id,reader:db),(title?.utf8.count ?? 0)<=16384 else {throw StorageError.corruptIdentity}
+    // Attachments can create an untitled draft session before its first actual question.
+    if value.title?.isEmpty != false,let title,!title.isEmpty {
+      value=AgentSessionIdentity(codecVersion:value.codecVersion,id:value.id,createdAt:value.createdAt,documentID:value.documentID,title:String(title.trimmingCharacters(in:.whitespacesAndNewlines).prefix(20)).replacingOccurrences(of:"\n",with:" "),documentIDs:value.documentIDs)
+      let bytes=try RecoveryValidation.encode(value)
+      try db.transaction {try db.statement("UPDATE agent_sessions SET record=?,record_hash=? WHERE session_id=?",[.blob(bytes),.text(KernelHashes.data(bytes)),.text(id)])};try db.confirmCommittedBytes()
+    }
+    return value
   }
   /// One metadata transaction for a verified file open; canonical events remain untouched.
   func associate(_ ids:[String],document:String)throws {

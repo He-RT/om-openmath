@@ -363,7 +363,7 @@ actor StorageService {
     try beginOperation();defer {endOperation()}
     guard closeTask==nil,let library else {throw StorageError.closing}
     if let documentID,try await agentConversations(document:documentID).contains(where:{$0.id==id}) {
-      return try await library.sessionCall {try $0.associate(id,document:documentID)}
+      return try await library.sessionCall {try $0.associate(id,document:documentID,title:title)}
     }
     return try await library.sessionCall {try $0.create(id,documentID:documentID,title:title,faults:faults)}
   }

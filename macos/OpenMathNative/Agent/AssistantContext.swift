@@ -40,24 +40,34 @@ actor AssistantContext {
       try await original.complete(result);await completed?(result.usageJSON)
     })
   }
-  func preview(_ input:AgentCanonicalMessage)async throws->AssistantInputSnapshot {
-    let data=try await requestData(pending:input)
+  func preview(_ input:AgentCanonicalMessage,attachments:[AssistantAttachment]=[])async throws->AssistantInputSnapshot {
+    let data=try await requestData(pending:input,pendingAttachments:attachments)
     return try inputSnapshot(data,fullInput:String(decoding:data,as:UTF8.self),actual:false)
   }
   private func inputSnapshot(_ data:Data,fullInput:String,actual:Bool)throws->AssistantInputSnapshot {
     guard let root=try JSONSerialization.jsonObject(with:data) as? [String:Any],let messages=root["messages"] as? [Any] else {throw AssistantSetupError.invalid}
     func count(_ value:Any)throws->Int {String(decoding:try JSONSerialization.data(withJSONObject:value,options:[.sortedKeys]),as:UTF8.self).count}
-    return .init(systemCharacters:try count(Array(messages.prefix(1)))+count(root["tools"] ?? []),conversationCharacters:try count(Array(messages.dropFirst()))+count(root["results"] ?? []),attachmentCharacters:0,fullInput:fullInput,actual:actual)
+    let canonical=messages.compactMap{($0 as? [String:Any])?["canonical"] as? [String:Any]}
+    let latest=canonical.last(where:{$0["role"] as? String=="user"})
+    var currentAttachments=0,allImages=0
+    for part in latest?["parts"] as? [[String:Any]] ?? [] where (part["part_id"] as? String)?.hasPrefix("attachment-")==true {currentAttachments+=(part["text"] as? String ?? "").count}
+    for image in root["images"] as? [[String:Any]] ?? [] {
+      let size=(image["data"] as? String ?? "").count;allImages+=size
+      if image["message_id"] as? String==latest?["message_id"] as? String {currentAttachments+=size}
+    }
+    let conversation=try count(Array(messages.dropFirst()))+count(root["results"] ?? [])+allImages
+    return .init(systemCharacters:try count(Array(messages.prefix(1)))+count(root["tools"] ?? []),conversationCharacters:max(0,conversation-currentAttachments),attachmentCharacters:currentAttachments,fullInput:fullInput,actual:actual)
   }
-  private func requestData(pending:AgentCanonicalMessage?=nil)async throws->Data {
+  private func requestData(pending:AgentCanonicalMessage?=nil,pendingAttachments:[AssistantAttachment]=[])async throws->Data {
     let system=AgentCanonicalMessage(record_type:.canonical_agent_message,message_version:1,message_id:"assistant-instructions-v1",role:.system,agent_turn_id:.init(nil),task_id:.init(nil),parts:[.agent_text_part(.init(kind:.text,part_id:"instructions",text:SystemPrompt.render(mode:mode,version:SystemPrompt.releaseVersion)))])
-    var messages:[[String:Any]]=[["canonical":try object(system),"replay":NSNull()]],results:[[String:Any]]=[]
+    var messages:[[String:Any]]=[["canonical":try object(system),"replay":NSNull()]],results:[[String:Any]]=[],images:[[String:Any]]=[]
     for stored in try await events() {
       guard let text=stored.event.payload_inline_json.value else {continue}
       let bytes=Data(text.utf8)
       if stored.event.event_kind == .user_message {
         let input=try JSONDecoder().decode(SessionCanonicalInput.self,from:bytes)
         messages.append(["canonical":try object(input.message),"replay":NSNull()])
+        try await appendImages(input.message,attachments:input.presentation?.attachments ?? [],images:&images)
       } else if stored.event.event_kind == .assistant_end {
         let original=try JSONDecoder().decode(SessionCanonicalAssistant.self,from:bytes)
         var message=try JSONDecoder().decode(AgentCanonicalMessage.self,from:Data(original.canonicalJSON.utf8))
@@ -69,7 +79,7 @@ actor AssistantContext {
         try await append(result.canonical,intent:result.intent,hash:result.blobHash,length:result.byteLength,messages:&messages,results:&results)
       }
     }
-    if let pending {messages.append(["canonical":try object(pending),"replay":NSNull()])}
+    if let pending {messages.append(["canonical":try object(pending),"replay":NSNull()]);try await appendImages(pending,attachments:pendingAttachments,images:&images)}
     let catalog=try JSONSerialization.jsonObject(with:Data(contentsOf:schema)) as! [String:Any],definitions=catalog["$defs"] as! [String:Any]
     guard let catalogTools=(catalog["x-openmath-catalog"] as? [String:Any])?["model_tools"] as? [[String:Any]] else {throw AssistantSetupError.invalid}
     var declared:[[String:Any]]=[]
@@ -83,10 +93,18 @@ actor AssistantContext {
       }
       declared.append(["name":tool.rawValue,"description":help,"parameters":try expand(args,definitions:definitions,depth:0)])
     }
-    let request:[String:Any]=["binding":["provider_ref":"native-assistant","route_ref":"native-assistant-chat","model_ref":"native-assistant-model","adapter_version":"single-turn-1","protocol":"chat_completions"],"api_model":configuration.model,"messages":messages,"results":results,"tools":declared,"max_output_tokens":2048,"temperature":NSNull(),"stream":true]
+    let request:[String:Any]=["binding":["provider_ref":"native-assistant","route_ref":"native-assistant-chat","model_ref":"native-assistant-model","adapter_version":"single-turn-1","protocol":"chat_completions"],"api_model":configuration.model,"messages":messages,"results":results,"images":images,"tools":declared,"max_output_tokens":2048,"temperature":NSNull(),"stream":true]
     let data=try JSONSerialization.data(withJSONObject:request,options:[.sortedKeys,.withoutEscapingSlashes])
     guard data.count<=1024*1024 else {throw AssistantSetupError.contextLimit}
     return data
+  }
+  private func appendImages(_ message:AgentCanonicalMessage,attachments:[AssistantAttachment],images:inout [[String:Any]])async throws {
+    for part in message.parts {
+      guard case .agent_media_part(let media)=part else {continue}
+      guard media.submission_kind == .image,let item=attachments.first(where:{$0.id==media.media_ref}),let image=item.image else {throw AssistantSetupError.invalid}
+      let bytes=try await AssistantAttachmentStore.bytes(storage:storage,owner:item.owner,descriptor:image,maximum:768*1024)
+      images.append(["message_id":message.message_id,"part_id":media.part_id,"media_ref":media.media_ref,"media_type":"image/jpeg","data":bytes.base64EncodedString()])
+    }
   }
   private func object<T:Encodable>(_ value:T)throws->Any {try JSONSerialization.jsonObject(with:JSONEncoder().encode(value))}
   private func append(_ canonical:AgentCanonicalMessage,intent:NativeAgentToolIntent,hash:String,length:UInt64,messages:inout [[String:Any]],results:inout [[String:Any]])async throws {

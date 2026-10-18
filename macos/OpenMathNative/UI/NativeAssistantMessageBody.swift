@@ -14,9 +14,15 @@ struct NativeAssistantMessageBody:View {
       if message.role=="user" {
         HStack(alignment:.top,spacing:0) {
           Spacer(minLength:0)
-          parts.padding(.horizontal,12).padding(.vertical,10)
-            .background(Theme.Color.well,in:RoundedRectangle(cornerRadius:Theme.Radius.bubble))
-            .frame(maxWidth:maximumUserWidth,alignment:.trailing)
+          VStack(alignment:.trailing,spacing:6) {
+            if let attachments=message.context?.attachments,!attachments.isEmpty {
+              ScrollView(.horizontal) {HStack(spacing:6) {ForEach(attachments) {item in AssistantAttachmentCard(attachment:item)}}}.scrollIndicators(.hidden).frame(height:48)
+            }
+            if !message.text.isEmpty || message.context?.references?.isEmpty==false {
+              parts.padding(.horizontal,12).padding(.vertical,10)
+                .background(Theme.Color.well,in:RoundedRectangle(cornerRadius:Theme.Radius.bubble))
+            }
+          }.frame(maxWidth:maximumUserWidth,alignment:.trailing)
         }
       } else {
         VStack(alignment:.leading,spacing:8) {

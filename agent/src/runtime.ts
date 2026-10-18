@@ -56,8 +56,10 @@ export class AgentRuntime {
     await pending; signal?.throwIfAborted();
   }
   #input(message: AgentCanonicalMessage) {
-    if (message.role !== 'user' || message.task_id !== this.#task || message.parts.some(p=>p.kind!=='text')) throw new Error('UNSUPPORTED_AGENT_INPUT');
-    return {role:'user' as const,content:message.parts.map(p=>({type:'text' as const,text:p.kind==='text'?p.text:''})),timestamp:Date.now()};
+    if (message.role !== 'user' || message.task_id !== this.#task || message.parts.some(p=>p.kind!=='text' && !(p.kind==='media' && p.submission_kind==='image'))) throw new Error('UNSUPPORTED_AGENT_INPUT');
+    // Pi schedules the loop with opaque image identities. The native prepare hook resolves
+    // exact canonical parts and Blob bytes into the actual provider body; Pi never opens media.
+    return {role:'user' as const,content:message.parts.map(p=>({type:'text' as const,text:p.kind==='text'?p.text:p.kind==='media'?`[原生图片引用 ${p.media_ref}]`:''})),timestamp:Date.now()};
   }
   prompt(message: AgentCanonicalMessage): Promise<void> {return this.#agent.prompt(this.#input(message));}
   steer(message: AgentCanonicalMessage): void {this.#agent.steer(this.#input(message));}

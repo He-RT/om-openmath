@@ -3237,6 +3237,7 @@ dependencies = [
 name = "om-llm"
 version = "0.1.0-pre-alpha.4"
 dependencies = [
+ "base64 0.23.1",
  "om-agent-contract",
  "om-format",
  "om-num",

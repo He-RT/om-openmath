@@ -78,6 +78,21 @@ pub struct ToolResult {
     /// Original host result outcome indicates error.
     pub is_error: bool,
 }
+/// Image bytes resolved by the native owner, never a model-selected URL or file path.
+#[derive(Clone, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct Image {
+    /// Exact canonical user message.
+    pub message_id: String,
+    /// Exact canonical part.
+    pub part_id: String,
+    /// Native attachment identity, matched against the canonical media part.
+    pub media_ref: String,
+    /// Supported prepared image type.
+    pub media_type: String,
+    /// Bounded base64 bytes. The codec never opens a file or URL.
+    pub data: String,
+}
 /// Exactly one immutable body request. No keys/headers/URL or loop state.
 #[derive(Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
@@ -90,6 +105,9 @@ pub struct Request {
     pub messages: Vec<Message>,
     /// Resolved tool results, one per canonical call result.
     pub results: Vec<ToolResult>,
+    /// Prepared user images. Missing in existing text-only requests.
+    #[serde(default)]
+    pub images: Vec<Image>,
     /// Actual enabled schemas; codec cannot grant them.
     pub tools: Vec<Tool>,
     /// Explicit output token budget.

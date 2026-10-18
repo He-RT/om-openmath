@@ -35,6 +35,7 @@ fn request(protocol: Protocol) -> Request {
             replay: None,
         }],
         results: vec![],
+        images: vec![],
         tools: vec![Tool {
             name: "read_notebook".into(),
             description: "读取当前已选笔记本".into(),
@@ -339,6 +340,50 @@ fn unsupported_media_opaque_server_tools_and_bad_part_identity_are_not_silently_
         Err(Error::Unsupported)
     ));
     let _unused = AgentToolResultPartOutcome::Unavailable;
+}
+
+#[test]
+fn native_images_preserve_part_order_and_require_exact_resolved_identity() {
+    for protocol in [Protocol::ChatCompletions, Protocol::AnthropicMessages] {
+        let mut req = request(protocol);
+        req.messages[0].canonical = message(
+            "user",
+            "u1",
+            json!([
+                {"kind":"text","part_id":"before","text":"看图："},
+                {"kind":"media","part_id":"picture","media_ref":"attachment-1","submission_kind":"image"},
+                {"kind":"text","part_id":"after","text":"描述颜色"}
+            ]),
+        );
+        // A complete native-prepared one-pixel PNG; no network or file reader in the codec.
+        req.images.push(Image {message_id:"u1".into(), part_id:"picture".into(), media_ref:"attachment-1".into(),
+            media_type:"image/png".into(), data:"iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+/lF8AAAAASUVORK5CYII=".into()});
+        let body: Value = serde_json::from_slice(&build(&req).unwrap().body).unwrap();
+        let content = &body["messages"][0]["content"];
+        assert_eq!(content[0]["text"], "看图：");
+        assert_eq!(content[2]["text"], "描述颜色");
+        if protocol == Protocol::ChatCompletions {
+            assert!(
+                content[1]["image_url"]["url"]
+                    .as_str()
+                    .unwrap()
+                    .starts_with("data:image/png;base64,")
+            );
+        } else {
+            assert_eq!(content[1]["source"]["data"], req.images[0].data);
+        }
+        req.images[0].media_ref = "different-attachment".into();
+        assert!(matches!(build(&req), Err(Error::Input)));
+        req.images[0].media_ref = "attachment-1".into();
+        req.images[0].data = "https://example.invalid/private.png".into();
+        assert!(matches!(build(&req), Err(Error::Input)));
+        req.images[0].data = "iVBORw0KGgo=".into();
+        req.images.push(req.images[0].clone());
+        assert!(matches!(build(&req), Err(Error::Input)));
+        req.images.pop();
+        req.images[0].part_id = "unreferenced".into();
+        assert!(build(&req).is_err());
+    }
 }
 
 #[test]

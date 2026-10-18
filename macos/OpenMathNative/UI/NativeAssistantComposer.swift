@@ -30,9 +30,11 @@ struct NativeAssistantComposer:View {
   var body:some View {
     VStack(alignment:.leading,spacing:6) {
       VStack(alignment:.leading,spacing:6) {
-        if !assistant.references.isEmpty {
+        if !assistant.references.isEmpty || !assistant.attachments.isEmpty {
           ScrollView(.horizontal) {
-            HStack(spacing:6) {ForEach(assistant.references) {reference in
+            HStack(spacing:6) {
+              ForEach(assistant.attachments) {item in AssistantAttachmentCard(attachment:item,images:assistant.selectedModel?.images==true,remove:{assistant.removeAttachment(item.id)})}
+              ForEach(assistant.references) {reference in
               HStack(spacing:5) {
                 Text(reference.label).lineLimit(1)
                 Button("移除"+reference.label,systemImage:"xmark") {assistant.references.removeAll{$0.id==reference.id}}
@@ -74,6 +76,8 @@ struct NativeAssistantComposer:View {
       if let note=assistant.modelChangeNote {Text(note).font(.system(size:11)).foregroundStyle(.secondary)}
       else if assistant.allowsChanges,assistant.selectedModel?.tools==false {Text("当前模型不支持工具调用，请切换模型或选择讨论").font(.system(size:11)).foregroundStyle(Theme.Color.conditional)}
       else if !assistant.allowsChanges {Text("讨论模式不会修改或运行笔记本").font(.system(size:11)).foregroundStyle(.secondary)}
+      if assistant.importingAttachments>0 {Text("正在保存和准备附件…").font(.system(size:11)).foregroundStyle(.secondary)}
+      if let error=assistant.attachmentError {Text(error).font(.system(size:11)).foregroundStyle(Theme.Color.conditional)}
       if assistant.busy || assistant.status.hasPrefix("请求失败") || assistant.status.hasPrefix("操作") || assistant.status.hasPrefix("撤销结果") {
         HStack(spacing:6) {if assistant.busy {ProgressView().controlSize(.mini)};Text(assistant.status).lineLimit(3)}.font(.system(size:11)).foregroundStyle(.secondary).accessibilityIdentifier("assistant-status")
       }
@@ -138,6 +142,7 @@ struct NativeAssistantComposer:View {
         LabeledContent("对话与工具结果（含草稿）",value:"约 \(Int(ceil(Double(preview.conversationCharacters)/1.6))) tokens")
         LabeledContent("本条附件",value:"\(preview.attachmentCharacters) 字符")
         Text("以上为字符数 ÷ 1.6 的预估").font(.caption).foregroundStyle(.secondary)
+        if assistant.attachments.contains(where:{$0.image != nil}) {Text("图片按编码数据字符数预估；实际用量以供应商返回为准").font(.caption).foregroundStyle(.secondary)}
       } else {Text(assistant.contextError ?? "正在读取本轮输入…").foregroundStyle(.secondary)}
       if let limit=assistant.selectedModel?.contextLimit {LabeledContent("上下文上限",value:"\(limit) tokens（模型配置）")}
       else {Text("上限未知").foregroundStyle(.secondary)}

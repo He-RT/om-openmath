@@ -29,3 +29,14 @@ test('shell plugins and mismatched canonical user tasks are refused',async()=>{
  assert.throws(()=>new AgentRuntime('task',model,[{name:'shell'}],port),/INVALID_AGENT_ADAPTER/);
  const runtime=new AgentRuntime('task',model,[],port);assert.throws(()=>runtime.prompt({...user,task_id:'old-task'}),/UNSUPPORTED_AGENT_INPUT/);
 });
+test('image-only canonical input reaches the native preparation hook with opaque refs; audio remains unsupported',async()=>{
+ let prepared=0,observed;
+ const runtime=new AgentRuntime('task',model,[],{canonical,prepare:async()=>{prepared++;},persist:async()=>{},beforeTool:async()=>{},afterTool:async()=>{},stream:(_model,context)=>{
+  observed=context.messages.find(m=>m.role==='user');
+  const stream=createAssistantMessageEventStream(),message=output([{type:'text',text:'native-owned image request'}],'stop');
+  stream.push({type:'done',reason:'stop',message});return stream;
+ }});
+ const image={...user,parts:[{kind:'media',part_id:'picture',media_ref:'native-image-ref',submission_kind:'image'}]};
+ await runtime.prompt(image);assert.equal(prepared,1);assert.deepEqual(observed.content,[{type:'text',text:'[原生图片引用 native-image-ref]'}]);
+ assert.throws(()=>runtime.prompt({...image,parts:[{...image.parts[0],submission_kind:'audio'}]}),/UNSUPPORTED_AGENT_INPUT/);
+});

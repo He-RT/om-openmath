@@ -6,6 +6,17 @@ struct AssistantCellReference:Identifiable,Codable,Equatable,Sendable {
   var label:String {"单元格 \(ordinal)"}
 }
 enum AssistantSendShortcut:String,CaseIterable {case enter,commandReturn}
+struct AssistantAttachment:Identifiable,Codable,Equatable,Sendable {
+  enum Kind:String,Codable,Sendable {case image,pdf,other}
+  let id:String,name:String,original:BlobDescriptor,mediaType:String,kind:Kind
+  var image:BlobDescriptor?,text:BlobDescriptor?,thumbnail:Data?,note:String?
+  var owner:BlobOwner {.init(kind:.attachment,id:id)}
+  var sendable:Bool {image != nil || text != nil}
+  func explanation(images:Bool)->String? {
+    if kind == .image,image != nil,!images {return "当前模型不能读取图片"}
+    return note
+  }
+}
 struct AssistantUsage:Sendable {
   let input:Int?,output:Int?,cacheRead:Int?,cacheWrite:Int?
   init?(_ bytes:Data) {
@@ -26,7 +37,19 @@ enum AssistantInputPresentation {
     for (index,entry) in messages.enumerated() {
       let message=entry["canonical"] as? [String:Any] ?? entry,role=message["role"] as? String ?? "message"
       var text=message["content"] as? String ?? ""
-      if let parts=message["parts"] as? [[String:Any]] {text=parts.compactMap{$0["text"] as? String}.joined(separator:"\n")}
+      if let parts=message["parts"] as? [[String:Any]] {
+        text=parts.compactMap {part in
+          if let text=part["text"] as? String {return text}
+          if let media=part["media_ref"] as? String {return "〔图片引用 \(media)：原始请求 JSON 包含完整编码〕"}
+          return nil
+        }.joined(separator:"\n")
+      }
+      if let content=message["content"] as? [[String:Any]] {
+        text=content.map {part in
+          if let text=part["text"] as? String {return text}
+          return "〔图片数据：可切换原始请求 JSON 查看完整编码〕"
+        }.joined(separator:"\n")
+      }
       if text.isEmpty {text=String(decoding:(try? JSONSerialization.data(withJSONObject:message,options:[.prettyPrinted,.sortedKeys,.withoutEscapingSlashes])) ?? Data(),as:UTF8.self)}
       sections.append("〔\(index+1) · \(role)〕\n"+text)
     }

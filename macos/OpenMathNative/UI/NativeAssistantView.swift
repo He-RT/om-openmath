@@ -2,6 +2,7 @@ import SwiftUI
 
 struct NativeAssistantView:View {
   @ObservedObject var assistant:NativeAssistant
+  @Environment(\.openSettings) private var openSettings
   var documentSaved:Bool?=nil
   var body:some View {
     GeometryReader {geometry in
@@ -40,19 +41,8 @@ struct NativeAssistantView:View {
       }.frame(minHeight:100,maxHeight:.infinity)
       if let error=assistant.transcriptError {Text(error).font(.caption).foregroundStyle(.secondary).padding(.horizontal,16)}
       NativeAssistantComposer(assistant:assistant,panelHeight:geometry.size.height).padding(12)
-    }}.task {await assistant.load()}.sheet(isPresented:$assistant.showSettings) {settings}
-  }
-  private var settings:some View {
-    VStack(alignment:.leading,spacing:16) {
-      Text("模型设置").font(.title2)
-      Text("连接兼容 Chat Completions 的服务；本机回环地址支持 HTTP，其他地址使用 HTTPS。密钥保存在系统钥匙串中。").font(.callout).foregroundStyle(.secondary)
-      Form {
-        TextField("API 基础地址",text:$assistant.baseURL,prompt:Text("https://example.com/v1")).accessibilityIdentifier("assistant-base-url")
-        TextField("模型名称",text:$assistant.model).accessibilityIdentifier("assistant-model")
-        SecureField(assistant.configured ? "API Key（留空保留现有密钥）":"API Key",text:$assistant.apiKey).accessibilityIdentifier("assistant-api-key")
-      }
-      Text(assistant.status).font(.caption).foregroundStyle(.secondary)
-      HStack {Spacer();Button("取消") {assistant.apiKey="";assistant.showSettings=false}.keyboardShortcut(.cancelAction);Button("保存") {Task {await assistant.saveSettings()}}.keyboardShortcut(.defaultAction).accessibilityIdentifier("assistant-save-settings")}
-    }.padding(24).frame(width:500)
+    }}.task {await assistant.load()}.onChange(of:assistant.showSettings) {
+      if assistant.showSettings {assistant.showSettings=false;UserDefaults.standard.set("models",forKey:"settings.section");openSettings()}
+    }
   }
 }

@@ -55,6 +55,6 @@ actor AssistantSettingsStore {
     guard let u=URLComponents(string:base),u.host?.isEmpty==false,
       u.scheme=="https" || u.scheme=="http" && ["localhost","127.0.0.1","[::1]","::1"].contains(u.host?.lowercased() ?? ""),
       u.user==nil,u.password==nil,u.query==nil,u.fragment==nil,u.url != nil,u.port.map({(1...65535).contains($0)}) ?? true,
-      !model.isEmpty,model.utf8.count<=256,!model.contains(where:{$0.isNewline}) else {throw AssistantSetupError.invalid}
+      !model.isEmpty,model.utf8.count<=256,!model.unicodeScalars.contains(where:CharacterSet.controlCharacters.contains) else {throw AssistantSetupError.invalid}
   }
 }

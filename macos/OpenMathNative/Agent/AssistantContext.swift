@@ -59,7 +59,8 @@ actor AssistantContext {
     return .init(systemCharacters:try count(Array(messages.prefix(1)))+count(root["tools"] ?? []),conversationCharacters:max(0,conversation-currentAttachments),attachmentCharacters:currentAttachments,fullInput:fullInput,actual:actual)
   }
   private func requestData(pending:AgentCanonicalMessage?=nil,pendingAttachments:[AssistantAttachment]=[])async throws->Data {
-    let system=AgentCanonicalMessage(record_type:.canonical_agent_message,message_version:1,message_id:"assistant-instructions-v1",role:.system,agent_turn_id:.init(nil),task_id:.init(nil),parts:[.agent_text_part(.init(kind:.text,part_id:"instructions",text:SystemPrompt.render(mode:mode,version:SystemPrompt.releaseVersion)))])
+    let capability=tools.isEmpty ? "\n\n本轮未提供工具。只能进行普通文字讨论，不能读取或核对当前笔记本，也不能临时计算；请明确说明这些限制，不声称已检查或执行。":""
+    let system=AgentCanonicalMessage(record_type:.canonical_agent_message,message_version:1,message_id:"assistant-instructions-v1",role:.system,agent_turn_id:.init(nil),task_id:.init(nil),parts:[.agent_text_part(.init(kind:.text,part_id:"instructions",text:SystemPrompt.render(mode:mode,version:SystemPrompt.releaseVersion)+capability))])
     var messages:[[String:Any]]=[["canonical":try object(system),"replay":NSNull()]],results:[[String:Any]]=[],images:[[String:Any]]=[]
     for stored in try await events() {
       guard let text=stored.event.payload_inline_json.value else {continue}

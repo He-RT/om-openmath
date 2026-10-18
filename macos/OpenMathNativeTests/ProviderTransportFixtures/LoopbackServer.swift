@@ -10,7 +10,7 @@ final class DelayedLoopbackServer:@unchecked Sendable {
   private var request=Data()
   var receivedBody:Bool {lock.withLock {received}}
   var requestBytes:Data {lock.withLock {request}}
-  init(response:Data,delay:Double)throws {
+  init(response:Data,delay:Double,contentType:String="text/event-stream")throws {
     let descriptor=Darwin.socket(AF_INET,SOCK_STREAM,0)
     guard descriptor>=0 else {throw LoopbackFixtureError.socket}
     var address=sockaddr_in();address.sin_len=UInt8(MemoryLayout<sockaddr_in>.size);address.sin_family=sa_family_t(AF_INET);address.sin_port=0;address.sin_addr.s_addr=inet_addr("127.0.0.1")
@@ -20,9 +20,9 @@ final class DelayedLoopbackServer:@unchecked Sendable {
     let named=withUnsafeMutablePointer(to:&address){pointer in pointer.withMemoryRebound(to:sockaddr.self,capacity:1){Darwin.getsockname(descriptor,$0,&size)}}
     guard named==0 else {Darwin.close(descriptor);throw LoopbackFixtureError.socket}
     self.descriptor=descriptor;port=UInt16(bigEndian:address.sin_port)
-    DispatchQueue.global(qos:.userInitiated).async {[self] in serve(response,delay)}
+    DispatchQueue.global(qos:.userInitiated).async {[self] in serve(response,delay,contentType)}
   }
-  private func serve(_ response:Data,_ delay:Double) {
+  private func serve(_ response:Data,_ delay:Double,_ contentType:String) {
     defer {Darwin.close(descriptor)}
     let peer=Darwin.accept(descriptor,nil,nil);guard peer>=0 else {return};defer {Darwin.close(peer)}
     var noSignal:Int32=1;_ = Darwin.setsockopt(peer,SOL_SOCKET,SO_NOSIGPIPE,&noSignal,socklen_t(MemoryLayout<Int32>.size))
@@ -32,12 +32,12 @@ final class DelayedLoopbackServer:@unchecked Sendable {
       let count=Darwin.recv(peer,&buffer,buffer.count,0);guard count>0 else {return};data.append(contentsOf:buffer.prefix(count))
       if let boundary=data.range(of:Data("\r\n\r\n".utf8)),let header=String(data:data[..<boundary.lowerBound],encoding:.utf8) {
         let length=header.components(separatedBy:"\r\n").first(where:{$0.lowercased().hasPrefix("content-length:")}).flatMap{Int($0.split(separator:":",maxSplits:1)[1].trimmingCharacters(in:.whitespaces))}
-        if let length,length>0,data.count-boundary.upperBound>=length {break}
+        if data.count-boundary.upperBound >= (length ?? 0) {break}
       }
     }
     lock.withLock {received=true;request=data}
     Thread.sleep(forTimeInterval:delay)
-    let head=Data("HTTP/1.1 200 OK\r\nContent-Type: text/event-stream\r\nContent-Length: \(response.count)\r\nConnection: close\r\n\r\n".utf8),wire=head+response
+    let head=Data("HTTP/1.1 200 OK\r\nContent-Type: \(contentType)\r\nContent-Length: \(response.count)\r\nConnection: close\r\n\r\n".utf8),wire=head+response
     wire.withUnsafeBytes {raw in
       var offset=0
       while offset<raw.count {let count=Darwin.send(peer,raw.baseAddress!.advanced(by:offset),raw.count-offset,0);if count<=0{return};offset+=count}

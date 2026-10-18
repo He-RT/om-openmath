@@ -75,6 +75,7 @@ struct NativeAssistantComposer:View {
         .background(RoundedRectangle(cornerRadius:17).stroke(Theme.Color.verified.opacity(focused ? 0.12:0),lineWidth:3).padding(-2))
       if let note=assistant.modelChangeNote {Text(note).font(.system(size:11)).foregroundStyle(.secondary)}
       else if assistant.allowsChanges,assistant.selectedModel?.tools==false {Text("当前模型不支持工具调用，请切换模型或选择讨论").font(.system(size:11)).foregroundStyle(Theme.Color.conditional)}
+      else if assistant.selectedModel?.tools==false {Text("当前模型没有工具能力，无法核对笔记本或临时计算").font(.system(size:11)).foregroundStyle(.secondary)}
       else if !assistant.allowsChanges {Text("讨论模式不会修改或运行笔记本").font(.system(size:11)).foregroundStyle(.secondary)}
       if assistant.importingAttachments>0 {Text("正在保存和准备附件…").font(.system(size:11)).foregroundStyle(.secondary)}
       if let error=assistant.attachmentError {Text(error).font(.system(size:11)).foregroundStyle(Theme.Color.conditional)}

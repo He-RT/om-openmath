@@ -3,10 +3,7 @@ import SwiftUI
 
 @MainActor final class NativeAssistant:ObservableObject {
   @Published var draft=""
-  @Published var baseURL=""
-  @Published var model="gpt-6.1-sol"
-  @Published var apiKey=""
-  @Published var allowsChanges=false
+  @Published var allowsChanges=UserDefaults.standard.string(forKey:"assistant.default-mode")=="execute"
   @Published var registry=ModelRegistryDocument()
   @Published private(set) var selectedModelID:String?
   @Published var references:[AssistantCellReference]=[] {didSet {draftSequence+=1;scheduleContextPreview()}}
@@ -32,6 +29,7 @@ import SwiftUI
   private var inputWasAccepted=false
   private var removedAttachmentIDs=Set<String>()
   var selectedModel:RegisteredModel? {registry.selection(selectedModelID)?.1}
+  var nextTools:[AgentToolName] {selectedModel?.tools==false ? []:(allowsChanges ? AssistantMode.execute:AssistantMode.discuss).tools}
   var canSend:Bool {!busy && !undoing && !historyLoading && !composerMarked && unknownActionUndo==nil && unknownRoundChange==nil &&
     importingAttachments==0 && (!draft.trimmingCharacters(in:.whitespacesAndNewlines).isEmpty || attachments.contains(where:\.sendable)) &&
     !attachments.contains(where:{$0.image != nil && selectedModel?.images != true}) && (!allowsChanges || selectedModel?.tools != false)}
@@ -66,8 +64,17 @@ import SwiftUI
   func selectModel(_ id:String) {
     guard let (provider,model)=registry.selection(id),!allowsChanges || model.tools else {return}
     selectedModelID=id;configuration = .init(baseURL:provider.baseURL,model:model.apiName,credentialReference:provider.credentialReference)
-    self.model=model.apiName;configured=true
+    configured=true
     modelChangeNote=busy ? model.displayName+" 从下一轮开始使用":nil;scheduleContextPreview()
+  }
+  func applyRegistry(_ document:ModelRegistryDocument,useDefault:Bool=false) {
+    let selection=useDefault ? document.defaultModelID:(document.selection(selectedModelID)==nil ? document.defaultModelID:selectedModelID)
+    registry=document;selectedModelID=selection
+    if let (provider,model)=document.selection(selection) {
+      configuration = .init(baseURL:provider.baseURL,model:model.apiName,credentialReference:provider.credentialReference);configured=true
+    } else {configuration=nil;configured=false}
+    if busy {modelChangeNote="模型配置从下一轮开始使用"}
+    scheduleContextPreview()
   }
   func draftEdited(_ text:String) {draft=text;draftSequence+=1;scheduleContextPreview()}
   func setMode(execute:Bool) {
@@ -84,7 +91,7 @@ import SwiftUI
       guard let package=Bundle.main.url(forResource:"AgentRuntime",withExtension:nil) else {contextError="本轮输入预览暂不可用";return}
       let scope=session
       let items=attachments.filter(\.sendable)
-      let context=AssistantContext(host:host,storage:storage,session:scope,task:"draft-preview",configuration:configuration,mode:mode,tools:mode.tools,schema:package.appendingPathComponent("Agent/docs/design/agent-tools.schema.json"))
+      let context=AssistantContext(host:host,storage:storage,session:scope,task:"draft-preview",configuration:configuration,mode:mode,tools:nextTools,schema:package.appendingPathComponent("Agent/docs/design/agent-tools.schema.json"))
       do {
         let canonical=try await frozenInput(text:draft,id:"draft-preview",task:"draft-preview",references:references,attachments:items)
         let preview=try await context.preview(canonical,attachments:items)
@@ -161,7 +168,6 @@ import SwiftUI
   }
   private let host:NativeHostClient,storage:StorageService,agent:AgentSessionService
   private let attachmentStore:AssistantAttachmentStore
-  private let settings:AssistantSettingsStore?
   private let modelRegistry:ModelRegistry?
   private var configuration:AssistantConfiguration?
   private var secrets=SecretStore()
@@ -174,16 +180,14 @@ import SwiftUI
   private var pendingInput:AssistantMessage?,activePresentation:AssistantMessageContext?,activeTask=""
   private var streamedContexts:[String:AssistantMessageContext]=[:],streamedTasks:[String:String]=[:]
   init(host:NativeHostClient,storage:StorageService,agent:AgentSessionService) {
-    self.host=host;self.storage=storage;self.agent=agent;attachmentStore=AssistantAttachmentStore(storage:storage);settings=try? AssistantSettingsStore();modelRegistry=try? ModelRegistry()
+    self.host=host;self.storage=storage;self.agent=agent;attachmentStore=AssistantAttachmentStore(storage:storage);modelRegistry=try? ModelRegistry()
   }
   func load()async {
     await refreshHistory()
     guard !busy,configuration==nil else {return}
     do {
-      let seed=try await settings?.load()
       if let modelRegistry,configuration==nil {
-        registry=try await modelRegistry.load(seed:seed)
-        if let id=registry.defaultModelID {selectModel(id)}
+        let document=try await modelRegistry.loadInitial();applyRegistry(document,useDefault:true)
         if configured {status="就绪"}
       }
       scheduleContextPreview()
@@ -218,7 +222,7 @@ import SwiftUI
   func configure(_ value:AssistantConfiguration,secrets:SecretStore?=nil)throws {
     guard !busy,!undoing,!closed else {throw AgentSessionError.busy}
     try AssistantSettingsStore.validate(value.baseURL,model:value.model)
-    configuration=value;baseURL=value.baseURL;model=value.model;configured=true
+    configuration=value;configured=true
     registry = .current(value);selectedModelID=registry.defaultModelID
     if let secrets {self.secrets=secrets}
     status="模型已就绪"
@@ -354,18 +358,11 @@ import SwiftUI
       else {actionOperations[transaction]=nil;actionErrors[action.id]="撤销未提交。请核对后续编辑或当前计算；原内容保留。"}
     }
   }
-  func saveSettings()async {
-    guard !busy,!undoing,let settings else {return}
-    do {
-      let value=try await settings.save(baseURL:baseURL,model:model,key:apiKey)
-      configuration=value;apiKey="";baseURL=value.baseURL;model=value.model;configured=true;showSettings=false;status="模型配置已保存"
-      registry = .current(value);selectedModelID=registry.defaultModelID
-      try await modelRegistry?.save(registry);scheduleContextPreview()
-    } catch {status="未保存。请检查服务地址（远程HTTPS或本机HTTP）、模型名称和API Key；密钥需能写入已解锁的钥匙串。"}
-  }
   func newConversation() {
     guard !closed,!busy,!undoing,!historyLoading,unknownActionUndo==nil,unknownRoundChange==nil else {return}
     resetConversation(id:"conversation-"+UUID().uuidString.lowercased())
+    allowsChanges=UserDefaults.standard.string(forKey:"assistant.default-mode")=="execute"
+    applyRegistry(registry,useDefault:true)
   }
   private func resetConversation(id:String) {
     session=id
@@ -388,16 +385,16 @@ import SwiftUI
     activePresentation=presentation
     pendingInput = .init(id:id,taskID:"",role:"user",context:presentation,parts:[.init(id:"question",value:.text(text))])
     publishMessages();pendingDraftSequence=sequence;acceptedInputSequence=nil;inputWasAccepted=false
-    work=Task {await execute(text,id:id,configuration:configuration,edits:edits,presentation:presentation)}
+    let tools=nextTools
+    work=Task {await execute(text,id:id,configuration:configuration,edits:edits,tools:tools,presentation:presentation)}
   }
-  private func execute(_ text:String,id:String,configuration:AssistantConfiguration,edits:Bool,presentation:AssistantMessageContext)async {
+  private func execute(_ text:String,id:String,configuration:AssistantConfiguration,edits:Bool,tools:[AgentToolName],presentation:AssistantMessageContext)async {
     let started=ContinuousClock.now
     var taskID:String?,reason:TurnEndReason = .failed("请求尚未开始")
     do {
       try await prepare?()
       guard !stopping,!closed else {throw CancellationError()}
       let process=try await AgentProcess.bundled()
-      let tools=(edits ? AssistantMode.execute:AssistantMode.discuss).tools
       let hello=try await agent.activate(session:session,grants:tools,readonly:!edits,coreVersion:"1.0.4",adapterVersion:"openmath-adapter-1",conversationTitle:text)
       guard !stopping,!closed else {throw CancellationError()}
       let scope=hello.scope

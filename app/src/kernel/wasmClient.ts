@@ -9,10 +9,11 @@ import type { Envelope } from "./generated/Envelope";
 import type { KernelConfig } from "./generated/KernelConfig";
 import type { NotebookFile } from "./generated/NotebookFile";
 import { LlmDriver } from "./llmDriver";
-import { sourceMutation, mergeConfig } from "./mirror";
+import { sourceMutation, mutatesSource, mergeConfig } from "./mirror";
 import { restoreConfig } from "../state/browserSettings";
+import type {MathWork,MathResult} from '../agent/hostTypes';
 type Packet =
-  | { response: Envelope<Response>; events: Envelope<Event>[] }
+  | { response: Envelope<Response|{type:'agent_math';value:MathResult}>; events: Envelope<Event>[] }
   | { type: "ready" }
   | { type: "error"; id?: number; message: string };
 export interface WorkerPort {
@@ -30,7 +31,7 @@ export class WasmClient implements KernelClient {
   private readyPromise: Promise<void>;
   private pending = new Map<
     number,
-    { resolve: (response: Response) => void; reject: (error: Error) => void }
+    { resolve: (response: unknown) => void; reject: (error: Error) => void }
   >();
   private nextId = 1;
   private generation = 0;
@@ -120,6 +121,9 @@ export class WasmClient implements KernelClient {
     }
   }
   private async raw(request: Request): Promise<Response> {
+    return this.send(id => ({ type: 'request', id, envelope: JSON.stringify({ id, body: request }) }));
+  }
+  private async send<T=Response>(packet: (id: number) => unknown): Promise<T> {
     if (this.closed) throw new Error("Kernel client disposed");
     await this.boot;
     if (this.failure) throw this.failure;
@@ -127,25 +131,35 @@ export class WasmClient implements KernelClient {
       throw new Error("Kernel request ID exhausted");
     const id = this.nextId++;
     return new Promise((resolve, reject) => {
-      this.pending.set(id, { resolve, reject });
+      this.pending.set(id, { resolve:value=>resolve(value as T), reject });
       try {
-        this.worker.postMessage({
-          type: "request",
-          id,
-          envelope: JSON.stringify({ id, body: request }),
-        });
+        this.worker.postMessage(packet(id));
       } catch {
         this.pending.delete(id);
         reject(new Error("Kernel request could not be sent"));
       }
     });
   }
+  async agentMath(work:MathWork):Promise<MathResult>{
+    await this.readyPromise;
+    const result=await this.send<{type:'agent_math';value:MathResult}|{type:'error';message:string}>(id=>({type:'agent-math',id,source:JSON.stringify(work)}));
+    if(result.type==='error')throw new Error(result.message);
+    return result.value;
+  }
+  async commitSourceFile(expected: NotebookFile, desired: NotebookFile): Promise<Response> {
+    await this.readyPromise;
+    const revision = ++this.revision;
+    const response = await this.send(id => ({ type: 'commit-source', id, expected: JSON.stringify(expected), desired: JSON.stringify(desired) }));
+    if (response.type === 'notebook_state' && this.revision === revision) this.file = structuredClone(response.state.file);
+    return response;
+  }
   async request(request: Request): Promise<Response> {
     await this.readyPromise;
     if (request.type === "llm_cancel") this.driver.cancel(request.request_id);
     const previous = this.file;
-    this.file = sourceMutation(this.file, request);
-    const revision = ++this.revision;
+    const changesSource = mutatesSource(request);
+    if (changesSource) this.file = sourceMutation(this.file, request);
+    const revision = changesSource ? ++this.revision : this.revision;
     const configRevision =
       request.type === "set_config" ? ++this.configRevision : undefined;
     if (request.type === "set_config")
@@ -154,7 +168,7 @@ export class WasmClient implements KernelClient {
         this.restoreConfig ?? this.config,
       );
     const response = await this.raw(request);
-    if (response.type === "error" && this.revision === revision)
+    if (response.type === "error" && changesSource && this.revision === revision)
       this.file = previous;
     if (request.type === "set_config") {
       if (response.type !== "error")

@@ -11,6 +11,10 @@ test('source synchronization preserves failed source, document ordering and excl
   const moved = sourceMutation(added, { type: 'move_cell', cell_id: 'b', to_index: 0 });
   expect(moved.cells.map(c => c.id)).toEqual(['b', 'a']);
   expect(sourceMutation(moved, { type: 'evaluate', cell_id: 'b', source: '2', dialect: 'Modern' }).cells[0]?.kind).toBe('Text');
+  expect(sourceMutation(moved,{type:'rename_notebook',title:'renamed'}).title).toBe('renamed');
+  expect(moved.title).toBe('keep');
+  const uiCell={...original.cells[0]!,status:'Done',revision:3,output:{private_runtime_value:true}};
+  expect(sourceMutation(original,{type:'upsert_cell',cell:uiCell}).cells[0]).toEqual(original.cells[0]);
 });
 test('secret masks preserve actual same-name in-memory credentials without writing a notebook file', () => {
   const config = { llm: { profiles: [{ name: 'same', api_key: 'synthetic-key' }] } } as KernelConfig;

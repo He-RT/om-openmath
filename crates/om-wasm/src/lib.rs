@@ -10,6 +10,10 @@ use std::sync::Arc;
 use wasm_bindgen::prelude::*;
 mod model_codec;
 pub use model_codec::ModelCodec;
+mod agent_math;
+mod source_commit;
+mod tool_schema;
+pub use tool_schema::{agent_tool_declarations, validate_agent_payload};
 struct BrowserClock;
 impl Clock for BrowserClock {
     fn now_ms(&self) -> f64 {
@@ -54,6 +58,15 @@ impl Kernel {
     /// Dispatch an actual typed JSON envelope and return its matching reply/events packet.
     pub fn request(&mut self, envelope: &str) -> Result<String, JsValue> {
         dispatch(&mut self.session, envelope).map_err(|e| js_error(&e))
+    }
+    /// Atomically accept a complete checked source change without evaluating any cells.
+    pub fn commit_source_file(&mut self, expected: &str, desired: &str) -> Result<String, JsValue> {
+        source_commit::commit(&mut self.session, expected, desired)
+            .map_err(|error| js_error(&error))
+    }
+    /// Internal host-owned bounded math work, distinct from model tool arguments.
+    pub fn agent_math(&mut self, source: &str) -> Result<String, JsValue> {
+        agent_math::execute(&mut self.session, source).map_err(|error| js_error(&error))
     }
 }
 fn dispatch(session: &mut Session, source: &str) -> Result<String, String> {

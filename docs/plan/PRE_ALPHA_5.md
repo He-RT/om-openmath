@@ -602,7 +602,7 @@ Mac S1–S8（两个模型）、Web S1–S6（一个模型）在候选包上各�
 | [x] E5 步骤与变量 | 实现完成 | 本任务提交 |
 | [x] E6 E2E 与性能 | 完成 | 本任务提交 |
 | [x] F1 运行方式验证 | 采用Pi Worker，路线通过 | 本任务提交 |
-| [ ] F2 Web 工具宿主 | | |
+| [x] F2 Web 工具宿主 | 实现完成；十工具/实际所有者S1回环通过 | 本任务提交 |
 | [ ] F3 Web 助手界面 | | |
 | [ ] F4 Web 设置 | | |
 | [ ] F5 Web 真实场景 | | |
@@ -612,6 +612,22 @@ Mac S1–S8（两个模型）、Web S1–S6（一个模型）在候选包上各�
 | [ ] G4 打包与发布 | | |
 
 ### 记录
+
+**F2（2026-10-19）**
+
+- 十个实际工具已在独立Worker的ToolHost接通，名称/完整参数/说明同源于agent-tools.schema.json；严格原始JSON校验、闭合字段、作用域引用/游标、文稿代次与源码/计算接纳状态校验先于执行。补齐共用schema校验器的not关键字，get_function_docs合法二选一不再误拒；目录/分类/签名/例子复用原生同一个回调过滤的function_documents与真实用户绑定，例子保留not_verified，不补造接口或验证。ModelRuntime直接导入A1生成system.zh.md/同源模式行，Pi只调度，实际HTTP仍走既有LlmDriver与Rust单轮codec；请求次数在真正dispatch驱动处计数，准备输入和dispatch事件分开持久化，未知usage仍为null。
+- 源码通过同一NotebookController写队列与Kernel.commit_source_file原子非求值提交；六种Patch按原始UTF-8 hash、唯一片段与新格client_key冻结，预览只解析、不提交/执行。源码片段预览不伪称创建单元格；整格覆盖要求完整曝光，长Unicode源码有有界游标，唯一replace可用已读取片段。ACK期间的手工源码/顺序保留，事务逆操作不覆盖后续手工修改。实际接纳源码的主线程回执缓存有32MiB/64项边界，未知提交先查原operation；冻结intent先耐久记录，已有ACK可只修复账本/事务引用，不重新写入；没有可核对ACK时继续unknown，不根据当前字节猜测成功。
+- 局部运行复用Rust实际依赖规划/工作会话和readiness检查，selected/required/affected不走RunAll。隔离scratch复用独立Evaluator状态，主源码/定义/随机/历史不接纳；值/诊断/步骤/几何来自实际输出，大值按有界JSON游标保留原始精度/条件，预览明确data_only。结果接纳有独立outputId，源码相同或历史序号重用也不鲜化旧结果，过期inspect返回STALE_RESULT。讨论模式不暴露/执行预览修改、提交、运行、撤销；IME目标保护，合成中的源码不完整曝光。只中断本任务已经接纳的主计算，不停止已有手动工作。**设计未覆盖的Web scratch硬停止策略采用有界排空**：已发出的试算等其5秒/步骤预算终态，界面须持续“正在停止”；不杀父Worker重放定义，以免改变父随机状态。
+- 独立IndexedDB按document/session保存连续原始事件、输入快照、操作回执及源码事务，不写.omnb/旧存储版本。严格事务写入、关闭重开、分页、跨文稿拒绝、不可变终态/原始内容及未知回执查询已接；输入快照白名单不含HTTP认证或图像字节，pending/transaction索引避免每次写入读取全部历史大源码（旧同版DB有游标兼容）。每工具一个正常/参数错/过期代次单元场景，另有丢ACK不重放/安全撤销、长源码/结果分页、手动计算不被助手停止等检查。最终45前端项通过（`f2-ready-unit.log`；源码确认补充18项`f2-receipts-final-unit.log`），类型/生产构建/lint通过（`f2-done-typecheck.log`、`f2-done-build.log`、`f2-done-lint.log`）；WASM/Rust6项、受影响原生目录3项通过（`f2-source-preview-rust.log`、`f2-native-catalog-regression.log`）。失败日志保留，未改原数学/性能门槛。
+- 最终生产方式实际浏览器7项通过（`f2-ready-browser.log`）：模型驱动正常/截断/取消、IndexedDB回读、十工具真实Kernel修改/运行/检查/撤销、**实际NotebookController↔消息端口↔Pi Worker的执行/讨论S1回环**。执行a=2→5、b=3→6且无关单元格/接纳ID不变；讨论试算6且父2/3不变；事务一笔、原始调用ID/完整同源system与实际工具声明/无认证日志均读回，dispatch数与HTTP回环次数一致。没有真实模型调用，预算27/60。F2按任务一笔提交推dev，下一项F3；生产AssistantPanel仍是旧界面，尚未宣称完整Web助手/整版交付。F3还需界面、会话选择/恢复绑定和附件输入；G1/G2/G3待办/原型交互限制不变，5173自有pid31200/exec7390，旧4175未动。
+
+**F2实施中（2026-10-19，本地未提交，不是任务完成）**
+
+- 已接WASM `Kernel.commit_source_file`，复用现有`apply_source_file_without_evaluation`，核对expected完整源码后一次提交；无中途DeleteCell级联/执行。客户端新增独立commit-source包并以ACK更新恢复镜像，普通读取不推进源码代次；源码镜像与add/undo请求现在只保留CellInput字段（初测发现UiCell元信息被克隆进去，已修正）。原子修改/拒绝无效批次/上游失效/无关结果与历史不变有Rust实际验证。
+- NotebookController.commitSource已接同一writes队列、权限/admission/代次/busy检查；ACK前用户继续编辑/移动/删除时保留新草稿，待原手工队列完成后再一次对齐内核顺序。`sourceTransaction.ts`只做源码投影，没有计算；原始hash/唯一replace/新格client_key/六种Patch及反向事务在`app/src/agent/patch.ts`，无关手工修改保留、触及内容或相对顺序冲突拒绝整笔撤销。尚未绑定实际工具处理器。
+- `tool_schema.rs`复用om-agent-contract的严格JSON与闭合schema校验，声明来自同一agent-tools.schema.json并展开引用；不会把目录规划工具自动注册。`AgentStore`提供独立IndexedDB documents/sessions/events/operations/transactions，严格写事务、连续事件序号、分页、重复操作回执、内容冲突/旧源码版本拒绝、终态回执不可改、事务不可覆盖；请求快照白名单不带HTTP头/图片字节。实际工具admission、source持久化/回执恢复的完整链路仍待接，不能把当前基础当成已开放Agent自动写入。
+- 当前Rust5项通过（`f2-schema-rust.log`），源码队列/恢复镜像/Patch25项通过（`f2-foundation-unit-current.log`），最终类型/生产构建/lint通过（`f2-foundation-build-current.log`、`f2-foundation-lint-current.log`）。生产方式实际Worker4项通过（`f2-foundation-browser.log`）：F1正常/截断/取消回归与IndexedDB关闭重开、顺序/分页、跨文稿、幂等、原始不可变内容、白名单/事务原源码回读。初测镜像字段/测试方言/UUID返回类型等失败日志保留，无真实模型请求；预算27/60。
+- **下一步仍F2**：实现10个实际handler及主线程NotebookController↔独立Agent Worker桥接、同源生成提示词、作用域引用/结果分页、真实局部运行和隔离scratch、durable admission/unknown核对/事务撤销，最后用回环服务跑S1。当前生产助手UI未换；本轮所有F2代码未提交，完成整个F2后按计划一笔提交推dev。自有5173仍pid31200/exec7390，旧用户4175未动；G1/G2/G3待办与原型交互限制不变。
 
 **F1（2026-10-19）**
 

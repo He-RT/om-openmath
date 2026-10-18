@@ -4,10 +4,17 @@ import type {Api,Model,AssistantMessage} from '@earendil-works/pi-ai';
 import init,{Kernel} from '../../src/kernel/wasm/om_wasm.js';
 import {BrowserModelAdapter} from '../../src/agent/modelAdapter';
 import type {AgentCanonicalMessage,CanonicalRecord,ModelInput,ModelResult} from '../../src/agent/modelTypes';
+import {AgentStore,type AgentOperationRecord} from '../../src/agent/store';
+import type {NotebookFile} from '../../src/kernel/generated/NotebookFile';
+import {toolHostProbe} from './tool-host';
 let agent:Agent|undefined;
 const textMessage=(id:string,role:'system'|'user',text:string):AgentCanonicalMessage=>({record_type:'canonical_agent_message',message_version:1,message_id:id,role,task_id:'task-fixture',agent_turn_id:null,parts:[{kind:'text',part_id:id+'-part',text}]});
 self.onmessage=event=>{
   if(event.data.type==='stop'){agent?.abort();return;}
+  if(event.data.type==='tools'){void toolHostProbe().then(result=>self.postMessage({type:'result',...result})).catch(error=>self.postMessage({type:'result',ok:false,error:String(error)}));return;}
+  if(event.data.type==='store'){
+    void storageProbe().then(result=>self.postMessage({type:'result',...result})).catch(()=>self.postMessage({type:'result',ok:false,error:'Storage fixture failed'}));return;
+  }
   void run(event.data.endpoint).catch(()=>self.postMessage({type:'result',ok:false,error:'Worker fixture failed'}));
 };
 async function run(endpoint:string){
@@ -45,4 +52,36 @@ async function run(endpoint:string){
     const last=agent.state.messages.at(-1),reason=last?.role==='assistant'?last.stopReason:null;
     self.postMessage({type:'result',ok:reason!=='error'&&reason!=='aborted'&&!agent.state.errorMessage,requests,reads,rounds,history,reason,error:agent.state.errorMessage??null});
   }finally{kernel.free();agent=undefined;}
+}
+async function storageProbe(){
+  const name='openmath.agent.test.'+crypto.randomUUID(),store=new AgentStore(name);
+  const source:NotebookFile={version:1,title:'store fixture',cells:[{id:'a',kind:'Math',dialect:'Modern',source:'2'}]};
+  const updated:NotebookFile={...source,cells:[{...source.cells[0]!,source:'5'}]};
+  const document={id:'doc-a',generation:1,revision:1,file:source,updatedAt:1};
+  await store.putDocument(document);await store.createSession('doc-a','session-a','Fixture');
+  const canonical=textMessage('store-user','user','original');
+  const saving=store.append('doc-a','session-a',{kind:'message',record:{canonical,replay:null}});
+  (canonical.parts[0] as {text:string}).text='mutated after append';await saving;
+  await Promise.all([1,2,3].map(index=>store.append('doc-a','session-a',{kind:'message',record:{canonical:textMessage('store-user-'+index,'user','message '+index),replay:null}})));
+  const input={binding:{provider_ref:'p',route_ref:'r',model_ref:'m',adapter_version:'v1',protocol:'chat_completions' as const},api_model:'loopback',messages:[],results:[],tools:[],max_output_tokens:1024,temperature:null,stream:true,headers:{Authorization:'synthetic-secret'},images:[{data:'synthetic-secret'}]};
+  await store.append('doc-a','session-a',{kind:'input',taskId:'task-a',turnId:'turn-a',input});
+  const operation:AgentOperationRecord={id:'operation-a',documentId:'doc-a',sessionId:'session-a',taskId:'task-a',tool:'apply_notebook_patch',inputHash:'a'.repeat(64),state:'prepared',effectCommitted:null,transactionRef:null,resultJson:null,resultRefs:[],updatedAt:1};
+  const first=await store.beginOperation(operation),duplicate=await store.beginOperation(operation);
+  let conflict=false;try{await store.beginOperation({...operation,inputHash:'b'.repeat(64)});}catch{conflict=true;}
+  const completed:AgentOperationRecord={...operation,state:'completed',effectCommitted:true,transactionRef:'transaction-a',resultJson:'committed-body',updatedAt:2};
+  const settling=store.settleOperation(completed,{id:'transaction-a',documentId:'doc-a',sessionId:'session-a',taskId:'task-a',before:source,after:updated,changedCellIds:['a'],createdAt:2,undoneBy:null},{...document,revision:2,file:updated,updatedAt:2});
+  completed.resultJson='mutated after settle';await settling;
+  const immutable=await store.settleOperation({...completed,state:'failed',resultJson:'incorrect'});
+  let foreign=false,stale=false;try{await store.events('doc-b','session-a');}catch{foreign=true;}
+  try{await store.putDocument(document);}catch{stale=true;}
+  const page=await store.events('doc-a','session-a',0,2),tail=await store.events('doc-a','session-a',page.next!,10);
+  const hidden=await store.operation('doc-b','operation-a');store.close();
+  const reopened=new AgentStore(name);
+  try{
+    const all=await reopened.events('doc-a','session-a'),receipt=await reopened.operation('doc-a','operation-a');
+    const persisted=await reopened.document('doc-a'),transaction=await reopened.sourceTransaction('doc-a','transaction-a');
+    return {ok:true,firstCreated:first.created,duplicateCreated:duplicate.created,conflict,foreign,stale,hidden:hidden===undefined,
+      sequences:all.items.map(event=>event.sequence),firstPayload:all.items[0]!.payload,metadataSafe:!JSON.stringify(all.items[4]!.payload).includes('synthetic-secret'),
+      pageNext:page.next,tailLength:tail.items.length,tailNext:tail.next,receipt,immutableState:immutable.state,source:persisted?.file,transaction};
+  }finally{reopened.close();}
 }

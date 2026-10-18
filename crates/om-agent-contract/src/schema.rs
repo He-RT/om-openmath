@@ -37,6 +37,7 @@ fn check(
                     | "const"
                     | "enum"
                     | "oneOf"
+                    | "not"
                     | "anyOf"
                     | "allOf"
                     | "if"
@@ -82,6 +83,11 @@ fn check(
         && !choices.contains(value)
     {
         return Err(format!("{path}: unknown enum value"));
+    }
+    if let Some(negated) = schema.get("not") {
+        if recurse(value, negated, path).is_ok() {
+            return Err(format!("{path}: forbidden by not condition"));
+        }
     }
     for kind in ["oneOf", "anyOf"] {
         if let Some(choices) = schema.get(kind).and_then(Value::as_array) {

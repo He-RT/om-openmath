@@ -10,10 +10,13 @@ import { locale } from "../i18n";
 import { observeKernel } from "../kernel/observedClient";
 import { mergeConfig } from "../kernel/mirror";
 import type { ChatTurnView } from "./assistant";
+import { projectAcceptedSource, sameSource, sameNotebookSource } from './sourceTransaction';
+import type {MathWork,MathResult} from '../agent/hostTypes';
 export interface UiCell extends CellInput {
   revision: number;
   status: CellStatus;
   output?: CellOutput;
+  outputId?: string;
   exec_count?: number;
   defines: string[];
   uses: string[];
@@ -75,10 +78,12 @@ export class NotebookController {
   private operations = 0;
   private restarting: Promise<void> | undefined;
   private updating = false;
+  private sourceReceipts=new Map<string,{generation:number;before:NotebookFile;after:NotebookFile;size:number}>();
+  private receiptBytes=0;
   private revisions = new Map<string, number>();
   private pendingOutputs = new Map<
     string,
-    { output: CellOutput; revision: number }
+    { output: CellOutput; revision: number; outputId?:string }
   >();
   private removed: { cell: UiCell; index: number } | undefined;
   constructor(kernel: KernelClient) {
@@ -134,6 +139,81 @@ export class NotebookController {
   flush() {
     return this.writes;
   }
+  async agentMath(work:MathWork,admit:()=>boolean,onStarted?:()=>void):Promise<MathResult>{
+    const epoch=this.epoch;
+    await this.flush();
+    if(this.closed||epoch!==this.epoch||!admit()||!sameNotebookSource(this.file(),work.expected))throw new Error('STALE_SNAPSHOT');
+    if(this.store.getState().busy)throw new Error('EDITING_BUSY');
+    if(!this.kernel.agentMath)throw new Error('NOT_SUPPORTED');
+    const running=work.command.type==='run'||work.command.type==='scratch';
+    const revisions=new Map(this.store.getState().cells.map(cell=>[cell.id,cell.revision]));
+    if(running){this.operations++;this.store.setState({busy:true});onStarted?.();}
+    try{
+      const result=await this.kernel.agentMath(work);
+      if(this.closed||epoch!==this.epoch)throw new Error('UNKNOWN_OUTCOME');
+      if(result.type==='ran'){
+        result.outputId=crypto.randomUUID();
+        const revision=revisions.get(result.cell_id);
+        if(result.output&&revision!==undefined&&this.valid(result.cell_id,revision))this.pendingOutputs.set(result.cell_id,{output:result.output,revision,outputId:result.outputId});
+        this.metadata(result.state,false);
+        this.pendingOutputs.delete(result.cell_id);
+      }
+      return result;
+    }finally{if(running&&epoch===this.epoch&&!this.closed){this.operations=Math.max(0,this.operations-1);this.store.setState({busy:this.operations>0});}}
+  }
+  /** Agent source changes share the manual write queue and never evaluate as a side effect. */
+  sourceWasAccepted(operationId:string,before:NotebookFile,after:NotebookFile){const receipt=this.sourceReceipts.get(operationId);return !!receipt&&receipt.generation===this.store.getState().documentGeneration&&sameNotebookSource(receipt.before,before)&&sameNotebookSource(receipt.after,after);}
+  async commitSource(expected: NotebookFile, desired: NotebookFile, admit: () => boolean, operationId?:string) {
+    const previousReceipt=operationId?this.sourceReceipts.get(operationId):undefined;
+    if(previousReceipt&&previousReceipt.generation===this.store.getState().documentGeneration){if(!sameNotebookSource(previousReceipt.before,expected)||!sameNotebookSource(previousReceipt.after,desired))throw new Error('PREVIEW_MISMATCH');return;}
+    const epoch = this.epoch;
+    let ownsBusy = false, synchronized: Promise<void> | undefined;
+    const operation = this.writes.then(async () => {
+      if (this.closed || epoch !== this.epoch || !admit() || !sameNotebookSource(this.file(), expected)) throw new Error('STALE_SNAPSHOT');
+      if (this.store.getState().busy) throw new Error('EDITING_BUSY');
+      const commit = this.kernel.commitSourceFile;
+      if (!commit) throw new Error('NOT_SUPPORTED');
+      ownsBusy = true; this.store.setState({ busy: true });
+      const response = await commit.call(this.kernel, expected, desired);
+      if (epoch !== this.epoch || this.closed) throw new Error('UNKNOWN_OUTCOME');
+      if (response.type === 'error') throw new Error(response.message);
+      if (response.type !== 'notebook_state') throw new Error('UNKNOWN_OUTCOME');
+      if (!sameNotebookSource(response.state.file, desired)) throw new Error('UNKNOWN_OUTCOME');
+      if(operationId){
+        const measure=(file:NotebookFile)=>256+2*file.title.length+file.cells.reduce((n,cell)=>n+128+2*(cell.id.length+cell.source.length),0);
+        const size=measure(expected)+measure(desired),old=this.sourceReceipts.get(operationId);if(old)this.receiptBytes-=old.size;
+        this.sourceReceipts.set(operationId,{generation:this.store.getState().documentGeneration,before:structuredClone(expected),after:structuredClone(desired),size});this.receiptBytes+=size;
+        while(this.sourceReceipts.size>64||this.receiptBytes>32*1024*1024){const [id,receipt]=this.sourceReceipts.entries().next().value!;this.sourceReceipts.delete(id);this.receiptBytes-=receipt.size;}
+      }
+      const merged = projectAcceptedSource(expected, desired, this.file());
+      this.store.setState(state => {
+        const previous = new Map(state.cells.map(cell => [cell.id, cell]));
+        const cells = merged.cells.map(source => {
+          const old = previous.get(source.id);
+          if (!old) return uiCell(source);
+          return sameSource(old, source) ? old : { ...old, ...source, revision: old.revision + 1, status: source.kind === 'Text' ? 'Done' as const : 'Stale' as const, stopped: false };
+        });
+        return { title: merged.title, cells, active: cells.some(cell => cell.id === state.active) ? state.active : cells[0]?.id ?? null, dirty: true };
+      });
+      // Edits queued while the source ACK was pending used the old visible order. Let them
+      // finish, then reconcile the source projection once; edits after this point use merged UI.
+      synchronized = this.writes.then(async () => {
+        if (this.closed || epoch !== this.epoch) throw new Error('UNKNOWN_OUTCOME');
+        const actual = await this.kernel.request({ type: 'get_notebook_state' });
+        if (actual.type !== 'notebook_state') throw new Error('UNKNOWN_OUTCOME');
+        const latest = this.file();
+        if (!sameNotebookSource(actual.state.file, latest)) {
+          const synced = await commit.call(this.kernel, actual.state.file, latest);
+          if (synced.type !== 'notebook_state') throw new Error('UNKNOWN_OUTCOME');
+        }
+        await this.refresh(false);
+      });
+      this.writes = synchronized.catch(() => {});
+    });
+    this.writes = operation.catch(() => {});
+    try { await operation; await synchronized; }
+    finally { if (ownsBusy && epoch === this.epoch && !this.closed) this.store.setState({ busy: this.operations > 0 }); }
+  }
   add(kind: CellInput["kind"] = "Math", source = "", after?: string) {
     const state = this.store.getState();
     const id = crypto.randomUUID();
@@ -157,7 +237,7 @@ export class NotebookController {
       focus: state.focus + 1,
       dirty: true,
     });
-    void this.write({ type: "upsert_cell", cell });
+    void this.write({ type: "upsert_cell", cell: { id, kind, source, dialect } });
     if (index < cells.length - 1)
       void this.write({ type: "move_cell", cell_id: id, to_index: index });
     return id;
@@ -234,7 +314,8 @@ export class NotebookController {
       notice: null,
       dirty: true,
     });
-    void this.write({ type: "upsert_cell", cell: previous.cell });
+    const {id,kind,source,dialect}=previous.cell;
+    void this.write({ type: "upsert_cell", cell: {id,kind,source,dialect} });
     void this.write({
       type: "move_cell",
       cell_id: previous.cell.id,
@@ -529,7 +610,7 @@ export class NotebookController {
             ...(meta.exec_count !== undefined
               ? { exec_count: meta.exec_count }
               : {}),
-            ...(output ? { output, resultSource: { source: source.source, dialect: source.dialect }, previousOutput: this.lastValid(cell, output) } : {}),
+            ...(output ? { output, outputId:pending?.outputId??crypto.randomUUID(), resultSource: { source: source.source, dialect: source.dialect }, previousOutput: this.lastValid(cell, output) } : {}),
           };
         },
       ),
@@ -543,7 +624,7 @@ export class NotebookController {
         : "Done";
     this.store.setState((state) => ({
       cells: state.cells.map((c) =>
-        c.id === id ? { ...c, output, status, resultSource: { source: c.source, dialect: c.dialect }, previousOutput: this.lastValid(c, output) } : c,
+        c.id === id ? { ...c, output, outputId:crypto.randomUUID(), status, resultSource: { source: c.source, dialect: c.dialect }, previousOutput: this.lastValid(c, output) } : c,
       ),
     }));
   }

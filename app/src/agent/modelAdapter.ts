@@ -13,7 +13,7 @@ const internalUsage = () => ({ input: 0, output: 0, cacheRead: 0, cacheWrite: 0,
 export class BrowserModelAdapter {
   private prepared: PreparedModelRound | undefined;
   private results = new WeakMap<AssistantMessage, ModelResult>();
-  constructor(private onResult: (result: ModelResult) => void, private fetcher?: typeof fetch) {}
+  constructor(private onResult: (result: ModelResult) => void, private fetcher?: typeof fetch,private onDispatch?: (round:PreparedModelRound)=>void) {}
   prepare(round: PreparedModelRound) {
     if (this.prepared) throw new Error('Previous model round was not dispatched');
     this.prepared = structuredClone(round);
@@ -60,6 +60,7 @@ export class BrowserModelAdapter {
           }, this.fetcher);
           abort = () => { decoder.cancel(); driver?.cancel(round.requestId); reject(new DOMException('Model request stopped', 'AbortError')); };
           signal?.addEventListener('abort', abort, { once: true });
+          this.onDispatch?.(round);
           driver.start(round.requestId, { method: 'POST', url: round.url, headers: round.headers, body: decoder.body(), stream: round.input.stream }, round.timeoutMs);
         });
         signal?.throwIfAborted();

@@ -1,0 +1,61 @@
+import {EditorView} from '@codemirror/view';
+import type {NotebookController} from '../state/notebookStore';
+import {NotebookToolPort} from './toolPort';
+import {bindToolPort} from './rpc';
+import type {AgentRuntimeEvent,BrowserAgentModel,BrowserAgentTask} from './runtimeTypes';
+import type {AgentCanonicalMessage} from './modelTypes';
+export interface AgentTaskHandle {taskId:string;accepted:Promise<AgentCanonicalMessage>;finished:Promise<Extract<AgentRuntimeEvent,{type:'settled'}>>}
+function deferred<T>(){let resolve!:(value:T)=>void,reject!:(error:Error)=>void;const promise=new Promise<T>((yes,no)=>{resolve=yes;reject=no;});return {promise,resolve,reject};}
+/** Lazy worker lifecycle; settings/credentials are frozen once and never exposed in UI events. */
+export class BrowserAgentService {
+  private binding:{generation:number;documentId:string;sessionId:string}|undefined;
+  private active:{taskId:string;worker:Worker;owner:NotebookToolPort;closePort:()=>void;handle:AgentTaskHandle}|undefined;
+  private listeners=new Set<(event:AgentRuntimeEvent)=>void>();
+  private compositions=new Set<Element>();
+  private compositionStart=(event:CompositionEvent)=>{if(event.target instanceof Element&&event.target.closest('.notebook-cell[data-cell-id]'))this.compositions.add(event.target);};
+  private compositionEnd=(event:CompositionEvent)=>{if(event.target instanceof Element)this.compositions.delete(event.target);};
+  constructor(private controller:NotebookController,private version:string){document.addEventListener('compositionstart',this.compositionStart,true);document.addEventListener('compositionend',this.compositionEnd,true);}
+  private composing(){
+    const ids=new Set<string>();
+    for(const target of this.compositions){if(!target.isConnected){this.compositions.delete(target);continue;}const cell=target.closest<HTMLElement>('.notebook-cell[data-cell-id]');if(cell?.dataset.cellId)ids.add(cell.dataset.cellId);}
+    for(const cell of document.querySelectorAll<HTMLElement>('.notebook-cell[data-cell-id]')){const editor=cell.querySelector<HTMLElement>('.cm-editor');if(editor&&EditorView.findFromDOM(editor)?.composing)ids.add(cell.dataset.cellId!);}
+    return [...ids];
+  }
+  onEvent(listener:(event:AgentRuntimeEvent)=>void){this.listeners.add(listener);return()=>{this.listeners.delete(listener);};}
+  private emit(event:AgentRuntimeEvent){for(const listener of [...this.listeners]){try{listener(event);}catch{/* An independent view cannot change task settlement. */}}}
+  get document(){
+    const generation=this.controller.store.getState().documentGeneration;
+    if(this.binding?.generation!==generation)this.binding={generation,documentId:'web-document-'+crypto.randomUUID(),sessionId:'session-'+crypto.randomUUID()};
+    return this.binding;
+  }
+  newConversation(){if(this.active)throw new Error('An agent task is running');this.document.sessionId='session-'+crypto.randomUUID();return this.document.sessionId;}
+  start(text:string,mode:'execute'|'discuss',model:BrowserAgentModel,sessionId=this.document.sessionId):AgentTaskHandle{
+    if(this.active)throw new Error('An agent task is running');
+    if(!text.trim())throw new Error('Message is empty');
+    if(mode==='execute'&&!model.supportsTools)throw new Error('This model does not support tools');
+    const binding=this.document,taskId='task-'+crypto.randomUUID();
+    const user:AgentCanonicalMessage={record_type:'canonical_agent_message',message_version:1,message_id:'user-'+crypto.randomUUID(),role:'user',task_id:taskId,agent_turn_id:null,parts:[{kind:'text',part_id:'user-text',text}]};
+    const accepted=deferred<AgentCanonicalMessage>(),finished=deferred<Extract<AgentRuntimeEvent,{type:'settled'}>>(),started=performance.now();
+    void accepted.promise.catch(()=>{});void finished.promise.catch(()=>{});
+    const handle={taskId,accepted:accepted.promise,finished:finished.promise};
+    const owner=new NotebookToolPort(this.controller,binding.documentId,binding.generation,mode==='execute',()=>this.composing());
+    const channel=new MessageChannel(),closePort=bindToolPort(channel.port1,owner);
+    let worker:Worker;
+    try{worker=new Worker(new URL('./worker.ts',import.meta.url),{type:'module'});}catch(error){closePort();owner.dispose();throw error;}
+    const task:BrowserAgentTask={taskId,sessionId,documentId:binding.documentId,generation:binding.generation,user,mode,version:this.version,model:structuredClone(model)};
+    const finish=(event:Extract<AgentRuntimeEvent,{type:'settled'}>)=>{
+      if(this.active?.taskId!==taskId)return;
+      this.active=undefined;closePort();owner.dispose();worker.terminate();
+      accepted.reject(new Error(event.error??'Agent input was not accepted'));finished.resolve(event);this.emit(event);
+    };
+    worker.onmessage=(event:MessageEvent<AgentRuntimeEvent>)=>{
+      if(event.data.taskId!==taskId||this.active?.taskId!==taskId)return;
+      if(event.data.type==='accepted')accepted.resolve(event.data.message);
+      if(event.data.type==='settled')finish(event.data);else this.emit(event.data);
+    };
+    worker.onerror=()=>{void owner.cancelOwnedWork().catch(()=>{}).then(()=>finish({type:'settled',taskId,reason:'failed',requests:null,tools:null,durationMs:performance.now()-started,error:'Agent worker failed; committed changes are retained'}));};
+    this.active={taskId,worker,owner,closePort,handle};worker.postMessage({type:'start',task,port:channel.port2},[channel.port2]);return handle;
+  }
+  async stop(){const active=this.active;if(!active)return;active.worker.postMessage({type:'stop',taskId:active.taskId});await active.owner.cancelOwnedWork();return active.handle.finished;}
+  async dispose(){try{await this.stop();}finally{document.removeEventListener('compositionstart',this.compositionStart,true);document.removeEventListener('compositionend',this.compositionEnd,true);this.compositions.clear();this.listeners.clear();}}
+}

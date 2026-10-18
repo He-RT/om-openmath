@@ -1,12 +1,16 @@
 import type { Request } from './generated/Request';
 import type { Response } from './generated/Response';
 import type { Event } from './generated/Event';
+import type { NotebookFile } from './generated/NotebookFile';
+import type {MathWork,MathResult} from '../agent/hostTypes';
 export type { Request, Response, Event };
 export type Unsubscribe = () => void;
 export interface KernelClient {
   readonly kind: 'wasm' | 'tauri';
   readonly ready: Promise<void>;
   request(request: Request): Promise<Response>;
+  commitSourceFile?(expected: NotebookFile, desired: NotebookFile): Promise<Response>;
+  agentMath?(work:MathWork):Promise<MathResult>;
   onEvent(callback: (event: Event) => void): Unsubscribe;
   interrupt(): Promise<void>;
   dispose(): void;

@@ -1,3 +1,4 @@
+import { workbenchMenu } from "./workbenchMenu";
 import { test, expect } from "@playwright/test";
 for (const width of [375, 1280])
   test(`real CAS slider intersections, wheel/pointer pan and crosshair work at ${width}px`, async ({
@@ -9,7 +10,7 @@ for (const width of [375, 1280])
     });
     await page.setViewportSize({ width, height: 900 });
     await page.goto("/");
-    if (width < 900)
+    if (await page.locator(".inspector-host").isVisible())
       await page
         .locator(".inspector")
         .getByRole("button", { name: "Close", exact: true })
@@ -79,6 +80,7 @@ for (const width of [375, 1280])
         () => document.documentElement.scrollWidth <= innerWidth,
       ),
     ).toBe(true);
+    await workbenchMenu(page);
     await page
       .getByRole("banner")
       .getByRole("button", { name: "Preferences", exact: true })

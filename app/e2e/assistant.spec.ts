@@ -160,9 +160,10 @@ for (const width of [375, 1280])
     });
     await math.fill("2+2");
     await math.press("ControlOrMeta+Enter");
+    if (width < 760) await page.getByRole("button", { name: "Assistant", exact: true }).click();
     await page
       .locator(".inspector-header")
-      .getByRole("button", { name: "Assistant", exact: true })
+      .getByRole("tab", { name: "Assistant", exact: true })
       .click();
     const input = page.getByRole("textbox", {
       name: "Message to assistant",
@@ -198,11 +199,11 @@ for (const width of [375, 1280])
     );
     await page
       .locator(".inspector-header")
-      .getByRole("button", { name: "Docs", exact: true })
+      .getByRole("tab", { name: "Variables", exact: true })
       .click();
     await page
       .locator(".inspector-header")
-      .getByRole("button", { name: "Assistant", exact: true })
+      .getByRole("tab", { name: "Assistant", exact: true })
       .click();
     await expect(page.locator(".chat-assistant")).toContainText("CAS returned");
     await page

@@ -1,142 +1,41 @@
+import { useStore } from "zustand";
 import type { UiState, NotebookController } from "../state/notebookStore";
 import type { Messages } from "../i18n";
-import { useStore } from "zustand";
 import { featureProfile } from "./assistant/profile";
+import { ToolbarMenu } from "./ToolbarMenu";
+import { WorkbenchIcon } from "./WorkbenchIcon";
 interface Props {
-  state: UiState;
-  controller: NotebookController;
-  t: Messages;
-  onSave: () => void;
-  onOpen: () => void;
-  onNew: () => void;
+  state: UiState; controller: NotebookController; t: Messages;
+  outlineVisible: boolean; inspectorVisible: boolean;
+  onOutline: () => void; onInspector: () => void;
+  onSave: () => void; onOpen: () => void; onNew: () => void;
   onExport: (format: "markdown" | "latex") => void;
-  onCommands: () => void;
-  onSettings: (ai?: boolean) => void;
+  onCommands: () => void; onSettings: (ai?: boolean) => void; onDocs: () => void;
 }
-export function TopBar({
-  state,
-  controller,
-  t,
-  onSave,
-  onOpen,
-  onNew,
-  onExport,
-  onCommands,
-  onSettings,
-}: Props) {
+export function TopBar({ state, controller, t, outlineVisible, inspectorVisible, onOutline, onInspector, onSave, onOpen, onNew, onExport, onCommands, onSettings, onDocs }: Props) {
   const ai = useStore(controller.ai.store);
-  const configured = (
-    ["translate", "explain", "chat", "complete", "fix"] as const
-  ).some((feature) => featureProfile(state.config?.llm, feature));
-  const aiState =
-    ai.active > 0
-      ? "working"
-      : ai.error
-        ? "error"
-        : configured
-          ? "ready"
-          : "unconfigured";
-  return (
-    <header className="topbar">
-      <div className="brand">
-        <span className="brand-symbol" aria-hidden>
-          ∑
-        </span>
-        <strong>OpenMath</strong>
-        <span className="brand-separator">/</span>
-      </div>
-      <input
-        className="notebook-title"
-        aria-label={t.title}
-        value={state.title}
-        placeholder={t.untitled}
-        onChange={(e) => controller.rename(e.target.value)}
-      />
-      <span className="save-dot" title={state.dirty ? t.dirty : t.ready}>
-        {state.dirty ? "•" : ""}
-      </span>
-      <div className="top-actions">
-        <label className="default-dialect">
-          <span className="sr-only">{t.dialect}</span>
-          <select
-            aria-label={t.dialect}
-            value={state.config?.general.dialect ?? "auto"}
-            onChange={(e) =>
-              void controller.configure({
-                dialect: e.target.value as "auto" | "modern" | "wolfram",
-              })
-            }
-          >
-            <option value="auto">{t.auto}</option>
-            <option value="modern">{t.modern}</option>
-            <option value="wolfram">Wolfram</option>
-          </select>
-        </label>
-        <button
-          className="run-all primary"
-          aria-label={t.runAll}
-          onClick={() => void controller.runAll()}
-          disabled={state.busy || !state.cells.some((c) => c.kind === "Math")}
-        >
-          ▶ <span>{t.runAll}</span>
-        </button>
-        {state.busy && (
-          <button
-            className="interrupt"
-            aria-label={t.stop}
-            onClick={() => void controller.interrupt()}
-            title="⌘."
-          >
-            {t.stop} ■
-          </button>
-        )}
-        <button className="toolbar-save" onClick={onSave} title="⌘S">
-          {t.save}
-        </button>
-        <button
-          className="command-trigger"
-          aria-label={t.commands}
-          onClick={onCommands}
-        >
-          ⌘K
-        </button>
-        <button
-          aria-label={t.settings}
-          title={t.settings}
-          onClick={() => onSettings()}
-        >
-          ☷
-        </button>
-        <button
-          className={`ai-indicator ai-${aiState}`}
-          aria-label={t.aiSettings}
-          title={
-            ai.error ??
-            (ai.active ? t.aiWorking : configured ? t.ready : t.configureAI)
-          }
-          onClick={() => onSettings(true)}
-        >
-          <span className="ai-status-dot" />
-          AI
-        </button>
-        <details className="file-menu">
-          <summary aria-label={t.open}>⋯</summary>
-          <div>
-            <button onClick={onNew}>{t.newNotebook}</button>
-            <button onClick={onOpen}>{t.open}</button>
-            <button onClick={onSave}>{t.save}</button>
-            <button onClick={() => onExport("markdown")}>{t.exportMarkdown}</button>
-            <button onClick={() => onExport("latex")}>{t.exportLatex}</button>
-            <button
-              onClick={() => void controller.runAll()}
-              disabled={state.busy}
-            >
-              {t.runAll}
-            </button>
-            <button onClick={onCommands}>{t.commands}</button>
-          </div>
-        </details>
-      </div>
-    </header>
-  );
+  const configured = (["translate", "explain", "chat", "complete", "fix"] as const).some(feature => featureProfile(state.config?.llm, feature));
+  const aiState = ai.active > 0 ? "working" : ai.error ? "error" : configured ? "ready" : "unconfigured";
+  const automatic = state.config?.general.reactive && state.config.general.auto_run_dependents;
+  return <header className="topbar">
+    <button className="toolbar-icon" aria-label={t.outline} aria-expanded={outlineVisible} onClick={onOutline}><WorkbenchIcon name="outline" /></button>
+    <div className="document-heading">
+      <input className="notebook-title" aria-label={t.title} value={state.title} placeholder={t.untitled} onChange={event => controller.rename(event.target.value)} />
+      <span className="document-status" role="status">{state.busy ? t["cell.running"] : `${state.dirty ? t["doc.edited"] + " · " : ""}${t["kernel.ready"]}`}</span>
+    </div>
+    <div className="top-actions">
+      <label className="toolbar-run-mode" title={t.runModeHint}><span className="sr-only">{t.runMode}</span><select aria-label={t.runMode} disabled={state.busy} value={automatic ? "auto" : "manual"} onChange={event => void controller.configure({ auto_run_dependents: event.target.value === "auto", ...(event.target.value === "auto" ? { reactive: true } : {}) })}><option value="manual">{t.manualRun}</option><option value="auto">{t.automaticRun}</option></select></label>
+      <button className={state.busy ? "run-all interrupt primary" : "run-all primary"} aria-label={state.busy ? t.stop : t.runAll} title={state.busy ? "⌘." : t.runAll} disabled={!state.busy && !state.cells.some(cell => cell.kind === "Math")} onClick={() => void (state.busy ? controller.interrupt() : controller.runAll())}><WorkbenchIcon name={state.busy ? "stop" : "play"} /><span>{state.busy ? t.stop : t.run}</span></button>
+      <ToolbarMenu className="toolbar-add" label={t.add} icon={<><WorkbenchIcon name="plus" /><WorkbenchIcon name="chevron" /></>}><button onClick={() => controller.add("Math", "", state.active ?? undefined)}>{t.math}</button><button onClick={() => controller.add("Text", "", state.active ?? undefined)}>{t.text}</button></ToolbarMenu>
+      <button className="toolbar-icon inspector-toggle" aria-label={t.inspector} aria-expanded={inspectorVisible} onClick={onInspector}><WorkbenchIcon name="inspector" /></button>
+      <ToolbarMenu className="file-menu" label={t.more} icon={<WorkbenchIcon name="more" />}>
+        <button onClick={onNew}>{t.newNotebook}</button><button onClick={onOpen}>{t.open}</button><button aria-label={t.save} onClick={onSave}>{t.save}<kbd>⌘S</kbd></button>
+        <button onClick={() => onExport("markdown")}>{t.exportMarkdown}</button><button onClick={() => onExport("latex")}>{t.exportLatex}</button>
+        <hr /><button className="mobile-menu-add" onClick={() => controller.add("Math")}>＋ {t.math}</button><button className="mobile-menu-add" onClick={() => controller.add("Text")}>＋ {t.text}</button>
+        <button onClick={onDocs}>{t.functionCatalog}</button><button aria-label={t.commands} onClick={onCommands}>{t.commands}<kbd>⌘K</kbd></button>
+        <hr /><button onClick={() => onSettings()}>{t.settings}</button>
+        <button className={`ai-indicator ai-${aiState}`} title={ai.error ?? (ai.active ? t.aiWorking : configured ? t.ready : t.configureAI)} onClick={() => onSettings(true)}><span className="ai-status-dot" />{t.aiSettings}</button>
+      </ToolbarMenu>
+    </div>
+  </header>;
 }

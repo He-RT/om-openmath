@@ -20,6 +20,7 @@ export function Notebook({
 }) {
   return (
     <main className="notebook" aria-label={state.title || t.untitled}>
+      {state.cells.length > 0 && <header className="notebook-heading"><h1>{state.title || t.untitled}</h1><p>{state.cells.length} {t.cellCount}</p></header>}
       {state.cells.length === 0 ? (
         <div className="empty-notebook">
           <span className="eyebrow">OpenMath</span>
@@ -68,12 +69,6 @@ export function Notebook({
         <button onClick={() => controller.add("Text")}>＋ {t.text}</button>
         <button onClick={() => controller.add("Ask")}>＋ {t.ask}</button>
       </div>
-      <footer className="notebook-footer">
-        <span>{t.shortcut}</span>
-        <span>
-          {controller.kernel.kind === "wasm" ? "Web · WASM" : "Desktop · Rust"}
-        </span>
-      </footer>
     </main>
   );
 }

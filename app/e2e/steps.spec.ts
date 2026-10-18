@@ -1,3 +1,4 @@
+import { workbenchMenu } from "./workbenchMenu";
 import { fixtureProfile } from "./profileFixture";
 import { test, expect } from "@playwright/test";
 for (const width of [375, 1280])
@@ -33,6 +34,7 @@ for (const width of [375, 1280])
       path: `test-results/steps-${width}-light.png`,
       fullPage: true,
     });
+    await workbenchMenu(page);
     await page
       .getByRole("banner")
       .getByRole("button", { name: "Preferences", exact: true })
@@ -43,6 +45,10 @@ for (const width of [375, 1280])
       .getByRole("dialog")
       .getByRole("button", { name: "关闭", exact: true })
       .click();
+    if (width < 760) {
+      await page.getByRole("button", { name: "助手", exact: true }).click();
+      await page.getByRole("tab", { name: "步骤", exact: true }).click();
+    }
     await expect(
       page.getByRole("checkbox", { name: "显示全部细节", exact: true }),
     ).toBeVisible();

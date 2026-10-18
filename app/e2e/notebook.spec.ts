@@ -1,3 +1,4 @@
+import { workbenchMenu } from "./workbenchMenu";
 import { test, expect } from "@playwright/test";
 test("real notebook UI edits/runs Unicode, applies parser fixes and source-only downloads", async ({
   page,
@@ -21,6 +22,7 @@ test("real notebook UI edits/runs Unicode, applies parser fixes and source-only 
     .getByRole("textbox", { name: "Notebook title" })
     .fill("Unicode equations");
   const downloaded = page.waitForEvent("download");
+  await workbenchMenu(page);
   await page.getByRole("button", { name: "Save", exact: true }).first().click();
   const file = await downloaded;
   expect(file.suggestedFilename()).toBe("Unicode equations.omnb");
@@ -102,6 +104,7 @@ for (const width of [375, 720, 1280])
         () => document.documentElement.scrollWidth <= innerWidth,
       ),
     ).toBe(true);
+    await workbenchMenu(page);
     await page
       .getByRole("button", { name: "Preferences", exact: true })
       .click();
@@ -143,6 +146,7 @@ test("real editor completion, Greek Tab shorthand, Markdown and locale changes r
     .fill("# Reasoning\n\n**Exact** and $x^2$.");
   await expect(page.getByRole("heading", { name: "Reasoning" })).toBeVisible();
   await expect(page.locator(".markdown .katex")).toBeVisible();
+  await workbenchMenu(page);
   await page.getByRole("button", { name: "Preferences", exact: true }).click();
   await page.getByLabel("Language", { exact: true }).selectOption("zh-CN");
   await page

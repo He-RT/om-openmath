@@ -12,6 +12,10 @@ import { locale, messages } from "./i18n";
 import { TopBar } from "./components/TopBar";
 import { Notebook } from "./components/Notebook";
 import { Inspector } from "./components/Inspector";
+import { Outline } from "./components/Outline";
+import { FunctionCatalog } from "./components/FunctionCatalog";
+import { WorkbenchIcon } from "./components/WorkbenchIcon";
+import { useMediaQuery } from "./components/useMediaQuery";
 import { Preferences } from "./components/Preferences";
 import { CommandPalette } from "./components/CommandPalette";
 import { exportNotebook, type ExportFormat } from "./state/export";
@@ -42,6 +46,17 @@ function Workspace({ controller }: { controller: NotebookController }) {
   const language = locale(state.config?.general.language);
   const t = messages(language);
   const [commands, setCommands] = useState(false);
+  const [catalog, setCatalog] = useState(false);
+  const wide = useMediaQuery("(min-width: 1100px)"), phone = useMediaQuery("(width < 760px)");
+  const [outlinePinned, setOutlinePinned] = useState(true), [outlineOverlay, setOutlineOverlay] = useState(false);
+  const outlineVisible = wide ? outlinePinned : outlineOverlay;
+  const lastPanel = useRef<NonNullable<typeof state.panel>>("assistant");
+  useEffect(() => { if (state.panel) lastPanel.current = state.panel; }, [state.panel]);
+  const toggleOutline = () => wide ? setOutlinePinned(value => !value) : setOutlineOverlay(value => !value);
+  const toggleInspector = () => controller.store.setState({ panel: state.panel ? null : lastPanel.current });
+  const openCatalog = () => { if (phone) controller.store.setState({ panel: null }); setOutlineOverlay(false); setCatalog(true); };
+  const openCommands = () => { if (phone) controller.store.setState({ panel: null }); setOutlineOverlay(false); setCommands(true); };
+  const openSettings = (ai = false) => { if (phone) controller.store.setState({ panel: null }); setOutlineOverlay(false); setPreferences(ai ? "models" : "general"); };
   const [preferences, setPreferences] = useState<"general" | "models" | null>(
     null,
   );
@@ -102,10 +117,10 @@ function Workspace({ controller }: { controller: NotebookController }) {
   useDesktopMenu(controller.kernel.kind, {
     "om-new": newNotebook, "om-open": open, "om-save": save, "om-save-as": save,
     "om-export-md": () => exportFile("markdown"), "om-export-tex": () => exportFile("latex"),
-    "om-settings": () => setPreferences("general"), "om-commands": () => setCommands(true),
-    "om-docs": () => controller.store.setState({ panel: "docs" }),
+    "om-settings": () => openSettings(), "om-commands": openCommands,
+    "om-docs": openCatalog,
     "om-assistant": () => controller.store.setState({ panel: "assistant" }),
-    "om-panel": () => controller.store.setState({ panel: controller.store.getState().panel ? null : "docs" }),
+    "om-panel": toggleInspector,
     "om-theme-light": () => changeTheme("light"), "om-theme-dark": () => changeTheme("dark"), "om-theme-system": () => changeTheme("system"),
   }, () => controller.store.setState({ error: t.fileError }));
   useEffect(() => {
@@ -114,8 +129,11 @@ function Workspace({ controller }: { controller: NotebookController }) {
       const key = event.key.toLowerCase();
       if (key === "k") {
         event.preventDefault();
-        setCommands((value) => !value);
+        if (commands) setCommands(false); else openCommands();
       }
+      if (key === "1" && !event.altKey) { event.preventDefault(); toggleOutline(); }
+      if (event.altKey && key === "0") { event.preventDefault(); toggleInspector(); }
+      if (event.altKey && ["1", "2", "3"].includes(key)) { event.preventDefault(); controller.store.setState({ panel: (["assistant", "steps", "variables"] as const)[Number(key) - 1]! }); }
       if (key === "s") {
         event.preventDefault();
         save();
@@ -162,7 +180,9 @@ function Workspace({ controller }: { controller: NotebookController }) {
       </div>
     );
   return (
-    <div className={`app-shell ${state.panel ? "with-panel" : ""}`}>
+    <div className={`app-shell ${state.panel ? "with-panel" : ""} ${wide && outlinePinned ? "with-outline" : ""}`}>
+      <Outline state={state} controller={controller} t={t} visible={outlineVisible} overlay={!wide} onClose={() => wide ? setOutlinePinned(false) : setOutlineOverlay(false)} />
+      <div className="workbench-main">
       <TopBar
         state={state}
         controller={controller}
@@ -171,8 +191,11 @@ function Workspace({ controller }: { controller: NotebookController }) {
         onOpen={open}
         onNew={newNotebook}
         onExport={exportFile}
-        onCommands={() => setCommands(true)}
-        onSettings={(ai) => setPreferences(ai ? "models" : "general")}
+        onCommands={openCommands}
+        onSettings={openSettings}
+        onDocs={openCatalog}
+        outlineVisible={outlineVisible} inspectorVisible={!!state.panel}
+        onOutline={toggleOutline} onInspector={toggleInspector}
       />
       <div className="workspace-layout">
         <Notebook
@@ -185,15 +208,17 @@ function Workspace({ controller }: { controller: NotebookController }) {
           state={state}
           controller={controller}
           t={t}
-          onSettings={() => setPreferences("models")}
+          onSettings={() => openSettings(true)}
+          phone={phone}
         />
       </div>
-      {!state.panel && (
+      </div>
+      {!state.panel && phone && (
         <button
           className="show-inspector"
-          onClick={() => controller.store.setState({ panel: "docs" })}
+          onClick={() => controller.store.setState({ panel: "assistant" })}
         >
-          {t.inspect} ↗
+          <WorkbenchIcon name="chat" />{t.assistant}
         </button>
       )}
       {state.error && (
@@ -275,17 +300,18 @@ function Workspace({ controller }: { controller: NotebookController }) {
           { label: t.newNotebook, run: newNotebook },
           { label: t.exportMarkdown, run: () => exportFile("markdown") },
           { label: t.exportLatex, run: () => exportFile("latex") },
-          { label: t.settings, run: () => setPreferences("general") },
+          { label: t.settings, run: () => openSettings() },
           {
             label: t.variables,
             run: () => controller.store.setState({ panel: "variables" }),
           },
           {
-            label: t.docs,
-            run: () => controller.store.setState({ panel: "docs" }),
+            label: t.functionCatalog,
+            run: openCatalog,
           },
         ]}
       />
+      <FunctionCatalog open={catalog} onClose={() => setCatalog(false)} controller={controller} t={t} />
       {preferences && state.config && (
         <Preferences
           config={state.config}

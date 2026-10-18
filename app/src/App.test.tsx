@@ -74,4 +74,14 @@ test("notebook controls use synchronized typed requests and keep source-only tit
     ).toBe(true),
   );
   expect(kernel.requests.some((r) => r.type === "evaluate")).toBe(false);
+  const assistantDraft = screen.getByRole("textbox", { name: "Message to assistant" });
+  fireEvent.change(assistantDraft, { target: { value: "draft remains" } });
+  fireEvent.click(screen.getByRole("tab", { name: "Variables" }));
+  fireEvent.click(screen.getByRole("tab", { name: "Assistant" }));
+  expect(screen.getByRole("textbox", { name: "Message to assistant" })).toBe(assistantDraft);
+  expect((assistantDraft as HTMLTextAreaElement).value).toBe("draft remains");
+  fireEvent.click(screen.getByRole("button", { name: "Inspector" }));
+  fireEvent.click(screen.getByRole("button", { name: "Inspector" }));
+  expect(screen.getByRole("textbox", { name: "Message to assistant" })).toBe(assistantDraft);
+  expect(screen.queryByRole("tab", { name: "Docs" })).toBeNull();
 });

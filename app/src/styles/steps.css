@@ -216,20 +216,7 @@
   color: var(--surface);
   background: var(--accent);
 }
-@media (max-width: 900px) {
-  .inspector.inspector-steps {
-    height: min(58dvh, 540px);
-  }
-  .inspector-steps .inspector-header {
-    position: sticky;
-    top: 0;
-    z-index: 2;
-    background: var(--surface);
-  }
-  .with-panel:has(.inspector-steps) .notebook {
-    padding-bottom: min(60dvh, 560px);
-  }
-}
+
 @media (prefers-reduced-motion: reduce) {
   .step-highlight {
     animation: none;

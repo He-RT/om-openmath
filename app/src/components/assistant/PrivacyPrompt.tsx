@@ -3,6 +3,7 @@ import { createPortal } from "react-dom";
 import type { KernelClient } from "../../kernel/client";
 import type { ProfileConfig } from "../../kernel/generated/ProfileConfig";
 import type { Messages } from "../../i18n";
+import { useResponsiveDialog } from "../useResponsiveDialog";
 const consent = new WeakMap<KernelClient, Set<string>>();
 export function destination(profile: ProfileConfig) {
   return `${profile.name}:${profile.base_url}:${profile.model}`;
@@ -33,7 +34,8 @@ export function PrivacyPrompt({
   disclosure?: string;
 }) {
   const [remember, setRemember] = useState(false);
-  const root = useRef<HTMLElement>(null);
+  const root = useRef<HTMLDialogElement>(null);
+  useResponsiveDialog(root, true, true);
   const close = useRef(onClose);
   close.current = onClose;
   useEffect(() => {
@@ -67,18 +69,18 @@ export function PrivacyPrompt({
     };
   }, []);
   return createPortal(
-    <div
-      className="modal-backdrop"
+    <dialog
+      className="privacy-modal"
+      aria-labelledby="privacy-title"
+      ref={root}
+      onCancel={event => { event.preventDefault(); onClose(); }}
       onMouseDown={(e) => {
-        if (e.target === e.currentTarget) onClose();
+        const bounds=e.currentTarget.getBoundingClientRect();
+        if (e.target === e.currentTarget && (e.clientX<bounds.left || e.clientX>bounds.right || e.clientY<bounds.top || e.clientY>bounds.bottom)) onClose();
       }}
     >
       <section
         className="privacy-dialog"
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby="privacy-title"
-        ref={root}
       >
         <h2 id="privacy-title">{t.aiPrivacy}</h2>
         <p>{disclosure ?? t.explainPrivacy}</p>
@@ -111,7 +113,7 @@ export function PrivacyPrompt({
           </button>
         </div>
       </section>
-    </div>,
+    </dialog>,
     document.body,
   );
 }

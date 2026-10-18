@@ -1,3 +1,4 @@
+import { workbenchMenu } from "./workbenchMenu";
 import { expect, test } from "@playwright/test";
 import { readFile } from "node:fs/promises";
 test("production exports contain actual CAS roots and exclude edited stale output", async ({ page }) => {
@@ -6,6 +7,7 @@ test("production exports contain actual CAS roots and exclude edited stale outpu
   await expect(page.locator(".solution-list")).toContainText("-3");
   await page.getByRole("textbox", { name: "Notebook title" }).fill("Export acceptance");
   async function download(label: string) {
+    await workbenchMenu(page);
     await page.getByRole("button", { name: "Command palette", exact: true }).click();
     const pending = page.waitForEvent("download");
     await page.getByRole("option", { name: label, exact: true }).click();

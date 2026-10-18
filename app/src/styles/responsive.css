@@ -1,147 +1,47 @@
-@media (max-width: 1100px) {
-  .with-panel .workspace-layout {
-    grid-template-columns: minmax(0, 1fr) 300px;
-  }
-  .inspector-content {
-    padding: 20px;
-  }
-  .topbar {
-    padding: 0 12px;
-  }
-  .notebook {
-    padding-left: 24px;
-    padding-right: 24px;
-  }
-  .notebook-title {
-    max-width: 170px;
-  }
+@media (760px <= width < 1100px) {
+  .app-shell.with-outline { grid-template-columns: minmax(0, 1fr); }
+  .with-panel .workspace-layout { grid-template-columns: minmax(0, 1fr) 360px; }
+  .topbar { padding: 0 10px; }
+  .notebook { padding: 32px 24px 20px; }
+  .document-heading { display: block; }
+  .notebook-title { width: 100%; max-width: 100%; }
+  .document-status { display: block; font-size: 10px; padding-left: 2px; }
 }
-@media (max-width: 900px) {
-  .with-panel .workspace-layout {
-    grid-template-columns: 1fr;
-  }
-  .inspector {
-    position: fixed;
-    top: auto;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    height: 230px;
-    z-index: 18;
-    border-left: 0;
-    border-top: 1px solid var(--line);
-    box-shadow: 0 -8px 30px #0001;
-  }
-  .inspector-content {
-    padding: 14px 22px;
-  }
-  .doc-picker {
-    margin-bottom: 14px;
-  }
-  .inspector-content h2 {
-    font-size: 18px;
-  }
-  .with-panel .notebook {
-    padding-bottom: 260px;
-  }
-  .notebook {
-    padding-top: 28px;
-  }
-  .empty-notebook {
-    margin-top: 18px;
-    padding-left: 20px;
-  }
-  .notebook-title {
-    max-width: none;
-  }
+@media (width < 1100px) {
+  .outline-host.outline-overlay[open] { position: fixed; inset: 0 auto 0 0; height: 100dvh; width: min(280px, 88vw); max-width: 88vw; z-index: 70; border: 0; box-shadow: 8px 0 32px #0002; }
 }
-@media (max-width: 480px) {
-  .topbar {
-    padding: 0 10px;
-    gap: 5px;
-  }
-  .brand strong {
-    font-size: 15px;
-  }
-  .brand-symbol {
-    font-size: 21px;
-  }
-  .brand-separator {
-    display: none;
-  }
-  .notebook-title {
-    font-size: 11px;
-  }
-  .default-dialect,
-  .run-all,
-  .toolbar-save,
-  .command-trigger {
-    display: none;
-  }
-  .top-actions {
-    gap: 1px;
-  }
-  .notebook {
-    padding: 20px 12px;
-  }
-  .notebook-cell {
-    grid-template-columns: 23px minmax(0, 1fr);
-    gap: 4px;
-    margin-bottom: 20px;
-  }
-  .cell-body {
-    padding-left: 8px;
-    padding-right: 3px;
-  }
-  .cell-toolbar {
-    gap: 3px;
-    font-size: 10px;
-    flex-wrap: wrap;
-  }
-  .cell-status-label {
-    display: none;
-  }
-  .cell-toolbar select {
-    font-size: 10px;
-  }
-  .cell-actions {
-    opacity: 0.75;
-  }
-  .math-editor .cm-editor {
-    font-size: 14px;
-  }
-  .empty-notebook {
-    padding-left: 6px;
-    margin: 16px 0 30px;
-  }
-  .empty-notebook h1 {
-    font-size: 28px;
-  }
-  .empty-formula {
-    font-size: 25px;
-  }
-  .example-list button {
-    grid-template-columns: 100px minmax(0, 1fr) 12px;
-    gap: 8px;
-    font-size: 11px;
-  }
-  .notebook-footer {
-    font-size: 9px;
-    flex-wrap: wrap;
-  }
-  .inspector {
-    height: 220px;
-  }
-  .variable-prompt {
-    flex-wrap: wrap;
-  }
-  .notice {
-    font-size: 11px;
-  }
-  .add-cell-bar {
-    gap: 2px;
-    font-size: 11px;
-  }
+@media (width < 760px) {
+  .app-shell.with-outline { grid-template-columns: minmax(0, 1fr); }
+  .with-panel .workspace-layout { grid-template-columns: minmax(0, 1fr); }
+  .topbar { height: 56px; padding: 0 10px; gap: 5px; }
+  .document-heading { display: block; }
+  .notebook-title { width: 100%; max-width: 100%; font-size: 12px; }
+  .document-status { display: block; font-size: 10px; padding-left: 2px; }
+  .toolbar-run-mode, .toolbar-add, .inspector-toggle { display: none; }
+  .toolbar-menu-items .mobile-menu-add { display: block; }
+  .run-all { min-height: 32px; padding: 6px 11px; }
+  .run-all > span { display: none; }
+  .top-actions { gap: 3px; }
+  .notebook { padding: 24px 14px 84px; }
+  .notebook-heading h1 { font-size: 26px; }
+  .notebook-cell { grid-template-columns: 23px minmax(0, 1fr); gap: 4px; margin-bottom: 20px; }
+  .cell-body { padding-left: 8px; padding-right: 3px; }
+  .cell-toolbar { gap: 3px; font-size: 10px; flex-wrap: wrap; }
+  .cell-toolbar select { font-size: 10px; }
+  .cell-actions { opacity: 0.75; }
+  .math-editor .cm-editor { font-size: 14px; }
+  .empty-notebook { padding-left: 6px; margin: 16px 0 30px; }
+  .empty-notebook h1 { font-size: 28px; }
+  .empty-formula { font-size: 25px; }
+  .example-list button { grid-template-columns: 90px minmax(0, 1fr) 12px; gap: 8px; font-size: 11px; }
+  .variable-prompt { flex-wrap: wrap; }
+  .notice { font-size: 11px; }
+  .add-cell-bar { gap: 2px; font-size: 11px; }
+  .inspector-host[open] { position: fixed; inset: auto 0 0; height: 90dvh; max-height: 90dvh; width: 100%; border-radius: 18px 18px 0 0; box-shadow: 0 -12px 40px #0003; z-index: 70; }
+  .inspector-host .inspector { height: 100%; border: 0; padding-bottom: env(safe-area-inset-bottom); }
+  .inspector-grabber { display: block; width: 36px; height: 4px; border-radius: 4px; background: var(--line-strong); margin: 7px auto 0; flex: none; }
+  .inspector-host .inspector-header { position: static; }
+  .inspector-content { padding: 14px; }
 }
 @media (prefers-reduced-motion: reduce) {
   *,

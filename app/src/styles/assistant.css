@@ -178,20 +178,7 @@
   background: var(--accent);
   animation: ai-pulse 1s ease-in-out infinite;
 }
-@media (max-width: 900px) {
-  .inspector.inspector-assistant {
-    height: min(58dvh, 540px);
-  }
-  .with-panel:has(.inspector-assistant) .notebook {
-    padding-bottom: min(60dvh, 560px);
-  }
-  .inspector-assistant .inspector-header {
-    position: sticky;
-    top: 0;
-    background: var(--surface);
-    z-index: 2;
-  }
-}
+
 @media (max-width: 480px) {
   .repair-diff {
     grid-template-columns: 1fr;

@@ -1,43 +1,32 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { NotebookController, UiState } from "../state/notebookStore";
 import { locale, type Messages } from "../i18n";
 import { StepsPanel } from "./steps/StepsPanel";
 import { AssistantPanel } from "./assistant/AssistantPanel";
 import type { HoverInfo } from "../kernel/generated/HoverInfo";
-import { toByte } from "./editor/positions";
+import { useResponsiveDialog } from "./useResponsiveDialog";
+import { WorkbenchIcon } from "./WorkbenchIcon";
 export function Inspector({
   state,
   controller,
   t,
   onSettings,
+  phone,
 }: {
   state: UiState;
   controller: NotebookController;
   t: Messages;
   onSettings: () => void;
+  phone: boolean;
 }) {
-  const [docs, setDocs] = useState<HoverInfo | null>(null);
-  const [functionName, setFunctionName] = useState("Solve");
+  const root = useRef<HTMLDialogElement>(null);
+  useResponsiveDialog(root, !!state.panel, phone);
+  const [lastPanel, setLastPanel] = useState<NonNullable<UiState["panel"]>>("assistant");
+  useEffect(() => { if (state.panel) setLastPanel(state.panel); }, [state.panel]);
+  const panel = state.panel ?? lastPanel;
   const [values, setValues] = useState<
     { name: string; info: HoverInfo | null }[]
   >([]);
-  useEffect(() => {
-    let current = true;
-    void controller.kernel
-      .request({
-        type: "hover",
-        source: functionName,
-        cursor: toByte(functionName, functionName.length),
-        dialect: "Wolfram",
-      })
-      .then((response) => {
-        if (current && response.type === "hover") setDocs(response.info);
-      })
-      .catch(() => {});
-    return () => {
-      current = false;
-    };
-  }, [controller, functionName, state.config?.general.language]);
   useEffect(() => {
     let current = true;
     void controller.kernel
@@ -51,7 +40,6 @@ export function Inspector({
       current = false;
     };
   }, [controller, state.cells, state.config?.general.language]);
-  if (!state.panel) return null;
   const cell = state.cells.find((c) => c.id === state.active);
   const results =
     cell?.output?.items.filter((i) => i.type === "solutions" && i.steps) ?? [];
@@ -65,16 +53,28 @@ export function Inspector({
             : undefined),
     ) ?? results.at(-1);
   return (
-    <aside
-      className={`inspector ${state.panel === "steps" ? "inspector-steps" : state.panel === "assistant" ? "inspector-assistant" : ""}`}
-    >
+    <dialog ref={root} className="inspector-host" role={phone ? "dialog" : "presentation"} aria-label={phone ? t.inspector : undefined} onCancel={event => { event.preventDefault(); controller.store.setState({ panel: null }); }}>
+    <aside className={`inspector inspector-${panel}`} aria-label={t.inspector}>
+      <div className="inspector-grabber" aria-hidden="true" />
       <div className="inspector-header">
-        <nav>
-          {(["docs", "variables", "steps", "assistant"] as const).map(
+        <nav role="tablist" aria-label={t.inspector}>
+          {(["assistant", "steps", "variables"] as const).map(
             (panel) => (
               <button
                 key={panel}
-                aria-pressed={state.panel === panel}
+                role="tab"
+                id={`inspector-tab-${panel}`}
+                aria-controls={`inspector-pane-${panel}`}
+                aria-selected={state.panel === panel}
+                tabIndex={state.panel === panel ? 0 : -1}
+                onKeyDown={event => {
+                  const tabs = ["assistant", "steps", "variables"] as const;
+                  if (["ArrowRight", "ArrowLeft", "Home", "End"].includes(event.key)) {
+                    event.preventDefault();
+                    const index = tabs.indexOf(panel), next = event.key === "Home" ? tabs[0] : event.key === "End" ? tabs[2] : tabs[(index + (event.key === "ArrowRight" ? 1 : 2)) % 3]!;
+                    controller.store.setState({ panel: next }); document.getElementById(`inspector-tab-${next}`)?.focus();
+                  }
+                }}
                 onClick={() => controller.store.setState({ panel })}
               >
                 {t[panel]}
@@ -86,59 +86,10 @@ export function Inspector({
           aria-label={t.close}
           onClick={() => controller.store.setState({ panel: null })}
         >
-          ×
+          <WorkbenchIcon name="close" />
         </button>
       </div>
-      <div className="inspector-content">
-        {state.panel === "docs" ? (
-          <>
-            <div className="doc-picker">
-              {[
-                "Solve",
-                "Factor",
-                "Simplify",
-                "Expand",
-                "Reduce",
-                "N",
-                "Plot",
-              ].map((name) => (
-                <button
-                  key={name}
-                  className={name === functionName ? "selected" : ""}
-                  onClick={() => setFunctionName(name)}
-                >
-                  {name}
-                </button>
-              ))}
-            </div>
-            {docs && (
-              <article className="function-doc">
-                <h2>{functionName}</h2>
-                <code className="signature">{docs.signature}</code>
-                <p>{docs.summary}</p>
-                {docs.examples.map((example) => (
-                  <button
-                    className="doc-example"
-                    key={example}
-                    onClick={() => {
-                      const id = controller.add(
-                        "Math",
-                        example,
-                        state.active ?? undefined,
-                      );
-                      controller.edit(id, { dialect: "Wolfram" });
-                      void controller.run(id);
-                    }}
-                  >
-                    <code>{example}</code>
-                    <span>↗</span>
-                  </button>
-                ))}
-              </article>
-            )}
-          </>
-        ) : state.panel === "variables" ? (
-          <>
+      <div className="inspector-content" role="tabpanel" id="inspector-pane-variables" aria-labelledby="inspector-tab-variables" hidden={panel !== "variables"}>
             <h2>{t.variables}</h2>
             {values.length === 0 ? (
               <p className="muted">{t.noVariables}</p>
@@ -150,9 +101,8 @@ export function Inspector({
                 </div>
               ))
             )}
-          </>
-        ) : state.panel === "steps" ? (
-          <>
+      </div>
+      <div className="inspector-content" role="tabpanel" id="inspector-pane-steps" aria-labelledby="inspector-tab-steps" hidden={panel !== "steps"}>
             {results.length > 1 && (
               <label className="steps-output-picker">
                 {t.allOutputs}
@@ -200,11 +150,11 @@ export function Inspector({
                 <p className="muted">{t.selectResult}</p>
               </>
             )}
-          </>
-        ) : (
-          <AssistantPanel state={state} controller={controller} t={t} />
-        )}
+      </div>
+      <div className="inspector-content" role="tabpanel" id="inspector-pane-assistant" aria-labelledby="inspector-tab-assistant" hidden={panel !== "assistant"}>
+        <AssistantPanel state={state} controller={controller} t={t} />
       </div>
     </aside>
+    </dialog>
   );
 }

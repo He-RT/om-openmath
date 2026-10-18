@@ -1,3 +1,4 @@
+import { workbenchMenu } from "./workbenchMenu";
 import { test, expect } from "@playwright/test";
 test.afterEach(async ({page}, info)=>{
   if(info.status===info.expectedStatus)return;
@@ -39,6 +40,7 @@ test("real draft connection test does not save; settings persist metadata and on
     });
   });
   await page.goto("/");
+  await workbenchMenu(page);
   await page.getByRole("button", { name: "AI settings", exact: true }).click();
   const dialog = page.getByRole("dialog");
   await expect(
@@ -57,6 +59,7 @@ test("real draft connection test does not save; settings persist metadata and on
   await expect(dialog.getByRole("status")).toContainText("pong");
   expect(calls).toBe(1);
   await dialog.getByRole("button", { name: "Close", exact: true }).click();
+  await workbenchMenu(page);
   await page.getByRole("button", { name: "AI settings", exact: true }).click();
   await expect(page.getByLabel("Base URL", { exact: true })).toHaveValue(
     "https://api.deepseek.com/v1",
@@ -78,6 +81,7 @@ test("real draft connection test does not save; settings persist metadata and on
   expect(stored).toContain("settings-provider.invalid");
   expect(stored).not.toContain("synthetic-settings-key");
   await page.reload();
+  await workbenchMenu(page);
   await page.getByRole("button", { name: "AI settings", exact: true }).click();
   await expect(page.getByLabel("Base URL", { exact: true })).toHaveValue(
     "https://settings-provider.invalid/v1",
@@ -100,11 +104,12 @@ test("real draft connection test does not save; settings persist metadata and on
     await page.evaluate(() => localStorage.getItem("openmath-settings-v1")),
   ).toContain("synthetic-settings-key");
   await page.reload();
+  await workbenchMenu(page);
   await page.getByRole("button", { name: "AI settings", exact: true }).click();
   await page
     .getByRole("button", { name: "Test connection", exact: true })
     .click();
-  await expect(page.getByRole("status")).toContainText("pong");
+  await expect(page.getByRole("dialog").getByRole("status")).toContainText("pong");
   await page
     .getByRole("checkbox", {
       name: "Remember credentials and advanced values in this browser",
@@ -125,6 +130,7 @@ for (const width of [375, 1280])
   }) => {
     await page.setViewportSize({ width, height: 900 });
     await page.goto("/");
+    await workbenchMenu(page);
     await page
       .getByRole("button", { name: "AI settings", exact: true })
       .click();
@@ -210,6 +216,7 @@ test("explicit keyless remote profile can be saved and used without disabling it
     });
   });
   await page.goto("/");
+  await workbenchMenu(page);
   await page.getByRole("button", { name: "AI settings", exact: true }).click();
   await page
     .getByLabel("Base URL", { exact: true })

@@ -31,7 +31,7 @@ export interface UiState {
   error: string | null;
   notice: string | null;
   dirty: boolean;
-  panel: "variables" | "docs" | "steps" | "assistant" | null;
+  panel: "variables" | "steps" | "assistant" | null;
   stepSelection: { cellId: string; outIndex: number } | null;
 }
 const initial: UiState = {
@@ -47,7 +47,7 @@ const initial: UiState = {
   error: null,
   notice: null,
   dirty: false,
-  panel: "docs",
+  panel: typeof window.matchMedia === "function" && window.matchMedia("(width < 760px)").matches ? null : "assistant",
   stepSelection: null,
 };
 const uiCell = (cell: CellInput): UiCell => ({

@@ -8,6 +8,7 @@ import type {BrowserAgentTask,AgentRuntimeEvent} from './runtimeTypes';
 import type {CanonicalRecord,AgentCanonicalMessage,ModelInput} from './modelTypes';
 import type {AgentMessagePart} from '../../../agent/src/generated/protocol';
 import {agentSystemPrompt} from './prompts';
+import {blobBase64} from './attachments';
 
 /** Pi owns scheduling; canonical records and host tool receipts own all business facts. */
 export class BrowserAgentRuntime{
@@ -21,7 +22,9 @@ export class BrowserAgentRuntime{
     const history:CanonicalRecord[]=[],results:ModelInput['results']=[],persisted=new Set<string>();
     let evidence=Promise.resolve();
     const recordEvidence=(payload:AgentEventPayload)=>{evidence=evidence.then(()=>store.append(task.documentId,task.sessionId,payload)).then(()=>{});void evidence.catch(()=>{});};
-    const adapter=new BrowserModelAdapter(result=>recordEvidence({kind:'model_result',result}),undefined,round=>{requests++;recordEvidence({kind:'dispatch',taskId:task.taskId,turnId:round.turnId,requestId:round.requestId,time:Date.now()});});
+    let deltaBuffer:{messageId:string;turnId:string;text:string}|undefined,deltaTimer:ReturnType<typeof setTimeout>|undefined;
+    const flushDelta=()=>{if(deltaTimer)clearTimeout(deltaTimer);deltaTimer=undefined;if(!deltaBuffer)return;const value=deltaBuffer;deltaBuffer=undefined;recordEvidence({kind:'delta',taskId:task.taskId,...value});emit({type:'delta',taskId:task.taskId,...value});};
+    const adapter=new BrowserModelAdapter(result=>{flushDelta();recordEvidence({kind:'model_result',result});},undefined,round=>{requests++;recordEvidence({kind:'dispatch',taskId:task.taskId,turnId:round.turnId,requestId:round.requestId,time:Date.now()});},(round,text)=>{if(deltaBuffer?.messageId!==round.messageId){flushDelta();deltaBuffer={messageId:round.messageId,turnId:round.turnId,text:''};}deltaBuffer.text+=text;if(!deltaTimer)deltaTimer=setTimeout(flushDelta,75);});
     const check=()=>{signal.throwIfAborted();};
     const persist=async(message:AssistantMessage)=>{
       if(message.stopReason==='error'||message.stopReason==='aborted')return;
@@ -55,8 +58,8 @@ export class BrowserAgentRuntime{
       if(history.some(record=>record.canonical.message_id===task.user.message_id))throw new Error('This user input has already been accepted');
       const system:AgentCanonicalMessage={record_type:'canonical_agent_message',message_version:1,message_id:'system-'+crypto.randomUUID(),role:'system',task_id:task.taskId,agent_turn_id:null,parts:[{kind:'text',part_id:'system-text',text:agentSystemPrompt(task.version,task.mode)}]};
       history.unshift({canonical:system,replay:null});
-      await store.append(task.documentId,task.sessionId,{kind:'message',record:{canonical:task.user,replay:null},modelId:task.model.apiModel,mode:task.mode});
-      history.push({canonical:task.user,replay:null});await store.append(task.documentId,task.sessionId,{kind:'turn',taskId:task.taskId,mode:task.mode,phase:'started',time:Date.now()});
+      check();await store.acceptInput(task.documentId,task.sessionId,task.user,task.model.apiModel,task.mode,task.presentation);
+      history.push({canonical:task.user,replay:null});
       emit({type:'accepted',taskId:task.taskId,message:task.user});
       const declarations=task.model.supportsTools?host.declarations():[];
       const agentTools:AgentTool[]=declarations.map(tool=>({name:tool.name,label:tool.label,description:tool.description,
@@ -78,7 +81,13 @@ export class BrowserAgentRuntime{
       this.agent=new Agent({initialState:{model,tools:agentTools},toolExecution:'sequential',getApiKey:()=>undefined,maxRetryDelayMs:0,streamFn:adapter.stream,
         prepareRequest:async()=>{
           check();if(requests>=limitRequests){budget=true;throw new Error('Agent model budget reached');}await evidence;const turnId='turn-'+crypto.randomUUID(),requestId='request-'+crypto.randomUUID();
-          const input:ModelInput={binding:task.model.binding,api_model:task.model.apiModel,messages:structuredClone(history),results:structuredClone(results),tools:declarations.map(({name,description,parameters})=>({name,description,parameters})),max_output_tokens:task.model.maxOutputTokens,temperature:null,stream:true};
+          const messages=history.map(record=>({canonical:task.model.supportsImages?record.canonical:{...record.canonical,parts:record.canonical.parts.map(part=>part.kind==='media'?{kind:'text' as const,part_id:part.part_id,text:'[Previous image omitted: this model does not support image input]'}:part)},replay:record.replay&&JSON.stringify(record.replay.binding)===JSON.stringify(task.model.binding)?record.replay:null}));
+          const images:NonNullable<ModelInput['images']>=[];
+          for(const record of messages)for(const part of record.canonical.parts)if(part.kind==='media'){
+            const attachment=await store.attachment(task.documentId,part.media_ref);if(!attachment?.image)throw new Error('A conversation image is unavailable; the message was retained');
+            images.push({message_id:record.canonical.message_id,part_id:part.part_id,media_ref:part.media_ref,media_type:attachment.image.mediaType,data:await blobBase64(attachment.image.blob)});
+          }
+          const input:ModelInput={binding:task.model.binding,api_model:task.model.apiModel,messages:structuredClone(messages),results:structuredClone(results),images,tools:declarations.map(({name,description,parameters})=>({name,description,parameters})),max_output_tokens:task.model.maxOutputTokens,temperature:null,stream:true};
           await store.append(task.documentId,task.sessionId,{kind:'input',taskId:task.taskId,turnId,input});
           signal.throwIfAborted();adapter.prepare({requestId,messageId:'assistant-'+crypto.randomUUID(),taskId:task.taskId,turnId,input,url:task.model.url,headers:task.model.headers,timeoutMs:task.model.timeoutMs});
         },beforeToolCall:async(context)=>{
@@ -93,8 +102,8 @@ export class BrowserAgentRuntime{
       if(last?.role==='assistant'&&(last.stopReason==='error'||last.stopReason==='aborted'))failure=last.errorMessage??'Agent model request failed';
     }catch(error){failure=error instanceof Error?error.message:String(error);}
     finally{
-      clearTimeout(timer);let reason:Extract<AgentRuntimeEvent,{type:'settled'}>['reason']=budget?'budget':signal.aborted?'stopped':failure?'failed':'ended';
-      try{await store.append(task.documentId,task.sessionId,{kind:'turn',taskId:task.taskId,mode:task.mode,phase:reason,time:Date.now()});}catch{failure='Could not persist final agent status';reason='failed';}
+      clearTimeout(timer);flushDelta();try{await evidence;}catch{failure='Could not persist the model response';}let reason:Extract<AgentRuntimeEvent,{type:'settled'}>['reason']=budget?'budget':signal.aborted?'stopped':failure?'failed':'ended';
+      try{await store.append(task.documentId,task.sessionId,{kind:'turn',taskId:task.taskId,mode:task.mode,phase:reason,time:Date.now()});await store.append(task.documentId,task.sessionId,{kind:'settled',taskId:task.taskId,mode:task.mode,reason,requests,tools,durationMs:performance.now()-started,error:failure});}catch{failure='Could not persist final agent status';reason='failed';}
       host.dispose();emit({type:'settled',taskId:task.taskId,reason,requests,tools,durationMs:performance.now()-started,error:failure});
     }
   }

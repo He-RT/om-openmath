@@ -3,6 +3,7 @@ import type { Response } from './generated/Response';
 import type { Event } from './generated/Event';
 import type { NotebookFile } from './generated/NotebookFile';
 import type {MathWork,MathResult} from '../agent/hostTypes';
+import type {BrowserAgentModel} from '../agent/runtimeTypes';
 export type { Request, Response, Event };
 export type Unsubscribe = () => void;
 export interface KernelClient {
@@ -11,6 +12,7 @@ export interface KernelClient {
   request(request: Request): Promise<Response>;
   commitSourceFile?(expected: NotebookFile, desired: NotebookFile): Promise<Response>;
   agentMath?(work:MathWork):Promise<MathResult>;
+  prepareAgentModel?(name:string):Promise<BrowserAgentModel>;
   onEvent(callback: (event: Event) => void): Unsubscribe;
   interrupt(): Promise<void>;
   dispose(): void;

@@ -1,230 +1,58 @@
-import { useEffect, useRef, useState } from "react";
-import type { NotebookController, UiState } from "../../state/notebookStore";
-import type { Messages } from "../../i18n";
-import type { LlmTaskView } from "../../state/assistant";
-import { conversationHistory, expandReferences } from "../../state/assistant";
-import { useLlmTask } from "./useLlmTask";
-import { featureProfile, configScope } from "./profile";
-import { hasConsent, PrivacyPrompt } from "./PrivacyPrompt";
-import { TaskState } from "./TaskState";
-import { SuggestionCard } from "./SuggestionCard";
-import { ToolCallCard } from "./ToolCallCard";
-import { Markdown } from "../TextCell";
-export function AssistantPanel({
-  state,
-  controller,
-  t,
-}: {
-  state: UiState;
-  controller: NotebookController;
-  t: Messages;
-}) {
-  const profile = featureProfile(state.config?.llm, "chat");
-  const scope = `${state.documentGeneration}:${configScope(state.config?.llm)}`;
-  const task = useLlmTask(controller.kernel, scope, t.aiRequestError);
-  const [input, setInput] = useState(""),
-    [error, setError] = useState<string | null>(null),
-    [privacy, setPrivacy] = useState<{ input: string; sent: string } | null>(
-      null,
-    );
-  const turn = useRef<string | null>(null),
-    latest = useRef<LlmTaskView | null>(null);
-  latest.current = task.value;
-  const mounted = useRef(true),
-    version = useRef(0),
-    sending = useRef(false);
-  useEffect(() => {
-    mounted.current = true;
-    return () => {
-      mounted.current = false;
-      version.current++;
-    };
-  }, []);
-  const dialect =
-    state.config?.general.dialect === "wolfram" ? "Wolfram" : "Modern";
-  useEffect(() => {
-    if (!task.value || !turn.current) return;
-    const id = turn.current;
-    controller.store.setState((s) => ({
-      assistantTurns: s.assistantTurns.map((item) =>
-        item.id === id ? { ...item, result: task.value! } : item,
-      ),
-    }));
-  }, [task.value, controller]);
-  useEffect(
-    () => () => {
-      const value = latest.current,
-        id = turn.current;
-      if (value?.status === "streaming" && id)
-        controller.store.setState((s) => ({
-          assistantTurns: s.assistantTurns.map((item) =>
-            item.id === id
-              ? { ...item, result: { ...value, status: "cancelled" } }
-              : item,
-          ),
-        }));
-    },
-    [controller, scope],
-  );
-  const send = async (candidate: { input: string; sent: string }) => {
-    if (sending.current) return;
-    sending.current = true;
-    const token = version.current;
-    setPrivacy(null);
-    setInput("");
-    setError(null);
-    await controller.flush();
-    sending.current = false;
-    const current = controller.store.getState(),
-      id = crypto.randomUUID();
-    if (
-      !mounted.current ||
-      token !== version.current ||
-      current.documentGeneration !== state.documentGeneration ||
-      configScope(current.config?.llm) !== configScope(state.config?.llm)
-    )
-      return;
-    try {
-      candidate = {
-        ...candidate,
-        sent: expandReferences(candidate.input, current.cells),
-      };
-    } catch {
-      setError(t.referenceError);
-      return;
+import {buildInfo} from '../../buildInfo';
+import {useCallback,useEffect,useRef,useState} from 'react';
+import type {NotebookController,UiState} from '../../state/notebookStore';
+import type {Dialect} from '../../kernel/generated/Dialect';
+import type {Messages} from '../../i18n';
+import type {ProfileConfig} from '../../kernel/generated/ProfileConfig';
+import {configuredModels,modelMetadata} from '../../agent/profileModel';
+import type {AgentEventPayload} from '../../agent/store';
+import type {ModelResult} from '../../agent/modelTypes';
+import {agentSystemPrompt} from '../../agent/prompts';
+import {hasConsent,PrivacyPrompt,destination} from './PrivacyPrompt';
+import {useAgentConversation} from './useAgentConversation';
+import {Composer,type ComposerInput} from './Composer';
+import {Transcript} from './Transcript';
+import {WorkbenchIcon} from '../WorkbenchIcon';
+import {useResponsiveDialog} from '../useResponsiveDialog';
+import {agentText as text} from './agentText';
+function AssistantDialog({title,onClose,children,closeLabel}:{title:string;onClose:()=>void;children:React.ReactNode;closeLabel:string}){
+  const root=useRef<HTMLDialogElement>(null);useResponsiveDialog(root,true,true);
+  return <dialog className="agent-dialog" ref={root} onCancel={event=>{event.preventDefault();onClose();}} aria-label={title}><header><h2>{title}</h2><button aria-label={closeLabel} onClick={onClose}><WorkbenchIcon name="close"/></button></header>{children}</dialog>;
+}
+export function AssistantPanel({state,controller,t,onSettings}:{state:UiState;controller:NotebookController;t:Messages;onSettings:()=>void}){
+  const agent=useAgentConversation(controller,state.documentGeneration),models=state.config?.llm.enabled?configuredModels(state.config.llm.profiles):[];
+  const [model,setModel]=useState(''),[mode,setMode]=useState<'execute'|'discuss'>('execute'),[historyOpen,setHistory]=useState(false),[contextOpen,setContext]=useState(false),[fullInput,setFullInput]=useState(false),[contextDraft,setContextDraft]=useState<ComposerInput>({text:'',files:[],references:[]});
+  const [input,setInput]=useState<Extract<AgentEventPayload,{kind:'input'}>|undefined>(),[usage,setUsage]=useState<ModelResult['usage']|undefined>();
+  const [privacy,setPrivacy]=useState<{profile:ProfileConfig;resolve:(value:boolean)=>void}|null>(null),pending=useRef<((value:boolean)=>void)|null>(null);
+  const selected=models.find(item=>item.name===model)??models.find(item=>item.name===state.config?.llm.chat)??models[0],selectedName=selected?.name??'',running=agent.phase!=='idle';
+  useEffect(()=>()=>{pending.current?.(false);pending.current=null;},[state.documentGeneration]);
+  const insert=useCallback((source:string,dialect:Dialect)=>{const id=controller.add('Math',source,controller.store.getState().active??undefined);controller.edit(id,{dialect});controller.select(id,true);},[controller]);
+  const locate=useCallback((id:string)=>{controller.select(id);const element=document.querySelector<HTMLElement>(`.notebook-cell[data-cell-id="${CSS.escape(id)}"]`);element?.scrollIntoView({block:'center',behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'instant':'smooth'});if(!matchMedia('(prefers-reduced-motion: reduce)').matches){element?.classList.remove('agent-located');requestAnimationFrame(()=>element?.classList.add('agent-located'));}},[controller]);
+  const send=async(candidate:ComposerInput)=>{
+    if(!selected)return false;
+    const profile=selected,generation=state.documentGeneration,scope='agent:notebook:'+mode;
+    if(!hasConsent(controller.kernel,profile,scope)){
+      const consent=await new Promise<boolean>(resolve=>{pending.current=resolve;setPrivacy({profile,resolve});});pending.current=null;setPrivacy(null);if(!consent)return false;
     }
-    turn.current = id;
-    const messages = conversationHistory(current.assistantTurns);
-    messages.push({
-      role: "user",
-      content: candidate.sent,
-      tool_calls: [],
-      tool_call_id: null,
-    });
-    controller.store.setState({
-      assistantTurns: [
-        ...current.assistantTurns,
-        { id, input: candidate.input, sent: candidate.sent },
-      ],
-    });
-    task.start({ type: "llm_chat", messages });
+    const current=controller.store.getState();
+    if(current.documentGeneration!==generation||destination(current.config?.llm.profiles.find(item=>item.name===profile.name)??profile)!==destination(profile)){agent.setError(text(t,'模型或文稿已改变，输入已保留','Model or document changed; input retained'));return false;}
+    return agent.send(candidate,mode,profile.name,t);
   };
-  const request = () => {
-    if (
-      !profile ||
-      state.busy ||
-      !input.trim() ||
-      task.value?.status === "streaming" ||
-      sending.current
-    )
-      return;
-    try {
-      const candidate = { input, sent: expandReferences(input, state.cells) };
-      if (hasConsent(controller.kernel, profile, "chat:references"))
-        void send(candidate);
-      else setPrivacy(candidate);
-    } catch {
-      setError(t.referenceError);
-    }
-  };
-  const insert = (source: string) => {
-    const id = controller.add("Math", source, state.active ?? undefined);
-    controller.edit(id, { dialect });
-    controller.select(id, true);
-  };
-  return (
-    <section className="assistant-panel">
-      <header className="assistant-header">
-        <h2>{t.assistant}</h2>
-        <button
-          onClick={() => {
-            task.cancel();
-            version.current++;
-            controller.store.setState({ assistantTurns: [] });
-          }}
-        >
-          {t.newConversation}
-        </button>
-      </header>
-      {state.assistantTurns.map((item) => (
-        <article className="chat-turn" key={item.id}>
-          <div className="chat-user">
-            <span>{t.you}</span>
-            <p>{item.input}</p>
-          </div>
-          {item.result && (
-            <div className="chat-assistant">
-              <span>{t.assistant}</span>
-              {item.result.text && <Markdown source={item.result.text} t={t} onInsertCode={(source,dialect)=>{const id=controller.add("Math",source,controller.store.getState().active ?? undefined);controller.edit(id,{dialect});}}/>}
-              <TaskState value={item.result} t={t} onCancel={task.cancel} />
-              {item.result.tools.map((tool, i) => (
-                <ToolCallCard key={i} tool={tool} t={t} />
-              ))}
-              {item.result.suggestions.map((s, i) => (
-                <SuggestionCard
-                  key={i}
-                  suggestion={s}
-                  dialect={dialect}
-                  t={t}
-                  onInsert={insert}
-                />
-              ))}
-            </div>
-          )}
-        </article>
-      ))}
-      {!profile && <p className="muted">{t.configureAI}</p>}
-      {error && (
-        <p role="alert" className="output-error">
-          {error}
-        </p>
-      )}
-      <form
-        className="chat-composer"
-        onSubmit={(e) => {
-          e.preventDefault();
-          request();
-        }}
-      >
-        <textarea
-          aria-label={t.chatInput}
-          placeholder={t.chatPlaceholder}
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-          onKeyDown={(e) => {
-            if (
-              e.key === "Enter" &&
-              !e.shiftKey &&
-              !e.nativeEvent.isComposing
-            ) {
-              e.preventDefault();
-              request();
-            }
-          }}
-        />
-        <button
-          disabled={
-            !profile ||
-            state.busy ||
-            !input.trim() ||
-            task.value?.status === "streaming"
-          }
-          type="submit"
-        >
-          {t.send}
-        </button>
-      </form>
-      {privacy && profile && (
-        <PrivacyPrompt
-          kernel={controller.kernel}
-          profile={profile}
-          scope="chat:references"
-          disclosure={t.chatPrivacy}
-          t={t}
-          onClose={() => setPrivacy(null)}
-          onSend={() => void send(privacy)}
-        />
-      )}
-    </section>
-  );
+  const openContext=(draft:ComposerInput)=>{setContextDraft(draft);setContext(true);setInput(undefined);setUsage(undefined);if(agent.turns.length)void Promise.all([agent.lastInput(),agent.lastUsage()]).then(([input,usage])=>{setInput(input);setUsage(usage);}).catch(error=>agent.setError(String(error)));};
+  const metadata=selected?modelMetadata(selected.name):{},systemEstimate=Math.ceil(agentSystemPrompt(buildInfo.version,mode).length/1.6),historyEstimate=Math.ceil((JSON.stringify(agent.turns.map(turn=>({user:turn.user,parts:turn.parts}))).length+contextDraft.text.length+contextDraft.references.reduce((n,id)=>n+(state.cells.find(cell=>cell.id===id)?.source.length??0),0))/1.6);
+  return <section className="assistant-panel" aria-label={t.assistant}>
+    <header className="assistant-header"><h2>{agent.turns[0]?.presentation?.text.slice(0,20)||agent.turns[0]?.user.parts.filter(part=>part.kind==='text').map(part=>part.text).join('').slice(0,20)||text(t,'新对话','New conversation')}</h2><div>
+      <button aria-label={text(t,'历史对话','Conversation history')} disabled={running||agent.controlling} onClick={()=>{setHistory(true);void agent.history();}}><WorkbenchIcon name="history"/></button>
+      <button aria-label={t.newConversation} disabled={running||agent.controlling} onClick={agent.newSession}><WorkbenchIcon name="new"/></button>
+    </div></header>
+    <div className="agent-conversation-body">
+      {agent.turns.length===0&&agent.phase==='idle'&&<div className="agent-empty"><p>{text(t,'可以一起求解、绘图，或修改当前笔记本。','Solve, plot, or edit the current notebook together.')}</p>{!selected&&<><p>{t.configureAI}</p><button onClick={onSettings}>{text(t,'添加模型…','Add a model…')}</button></>}</div>}
+      <Transcript turns={agent.turns} cells={state.cells} dirty={state.dirty||!state.savedSource} t={t} onUndo={agent.undo} onLocate={locate} onInsert={insert} loadPreview={agent.preview} loadAttachment={agent.attachment} running={running}/>
+    </div>
+    {agent.error&&<div className="agent-request-error" role="alert">{agent.error}<button aria-label={t.close} onClick={()=>agent.setError(null)}>×</button></div>}
+    <Composer models={models} model={selectedName} onModel={setModel} mode={mode} onMode={setMode} cells={state.cells} t={t} running={running} stopping={agent.phase==='stopping'} disabled={state.busy||agent.controlling} onSend={send} onStop={()=>void agent.stop()} onSettings={onSettings} onContext={openContext} incomingReferences={state.assistantReferences} onConsumeReferences={()=>controller.store.setState({assistantReferences:undefined})}/>
+    {privacy&&<PrivacyPrompt kernel={controller.kernel} profile={privacy.profile} scope={'agent:notebook:'+mode} t={t} disclosure={text(t,'将向下列地址发送当前对话、引用与可用附件，以及助手读取的笔记本内容和工具结果。执行模式可修改、运行笔记本，修改可撤销。','The conversation, references, supported attachments, notebook content read by the assistant, and tool results will be sent to this endpoint. Execute mode can edit and run the notebook; changes are undoable.')} onClose={()=>privacy.resolve(false)} onSend={()=>privacy.resolve(true)}/>}
+    {historyOpen&&<AssistantDialog closeLabel={t.close} title={text(t,'历史对话','Conversation history')} onClose={()=>setHistory(false)}><div className="agent-history">{agent.sessions.map(session=><button aria-current={session.id===agent.sessionId} key={session.id} onClick={()=>{setHistory(false);void agent.selectSession(session.id);}}><strong>{session.title||text(t,'新对话','New conversation')}</strong><time>{new Date(session.createdAt).toLocaleString()}</time></button>)}{agent.archives.length>0&&<><h3>{text(t,'保存在此浏览器的笔记本','Notebooks saved in this browser')}</h3><p>{text(t,'恢复助手最后记录的源码与对话；未记录的手工编辑不在此快照内。','Restore the last source and conversation recorded by the assistant. Later manual edits are not in this snapshot.')}</p>{agent.archives.map(({document,session})=><button key={document.id} onClick={()=>{if(state.cells.length&&!confirm(text(t,'恢复会替换当前笔记本，请先保存需要的内容。继续恢复？','Restore replaces the current notebook. Save any content you need first. Restore?')))return;setHistory(false);void agent.restore(document,session);}}><strong>{document.file.title||session.title}</strong><time>{new Date(document.updatedAt).toLocaleString()}</time><span>{text(t,'恢复笔记本与对话','Restore notebook and conversation')}</span></button>)}</>}{!agent.sessions.length&&<p>{text(t,'此笔记本还没有历史对话','No conversations for this notebook yet')}</p>}</div></AssistantDialog>}
+    {contextOpen&&<AssistantDialog closeLabel={t.close} title={text(t,'上下文用量','Context usage')} onClose={()=>{setContext(false);setFullInput(false);}}><dl className="agent-context-details"><dt>{text(t,'系统与工具说明','System and tools')}</dt><dd>{text(t,`系统文字预估 ${systemEstimate} tokens；工具说明另计`,`System text estimated ${systemEstimate} tokens; tools additional`)}</dd><dt>{text(t,'对话与工具结果','Conversation and tool results')}</dt><dd>{input?text(t,`对话与当前草稿预估 ${historyEstimate} tokens（不含图片）`,`Conversation and current draft estimated ${historyEstimate} tokens (excluding images)`):text(t,'尚无请求记录','No request recorded')}</dd><dt>{text(t,'本条附件','Attachments')}</dt><dd>{text(t,`${contextDraft.files.length} 个文件；图片 tokens 由供应商计量，发送前未知`,`${contextDraft.files.length} files; provider image tokens are unknown before sending`)}</dd><dt>{text(t,'上限及来源','Limit and source')}</dt><dd>{metadata.contextWindow?text(t,`${metadata.contextWindow} tokens · 模型设置`,`${metadata.contextWindow} tokens · Model settings`):text(t,'上限未知','Limit unknown')}</dd><dt>{text(t,'上一轮请求的实际用量','Actual usage of the last request')}</dt><dd>{usage?text(t,`输入 ${usage.input??'未知'} / 输出 ${usage.output??'未知'} tokens`,`Input ${usage.input??'unknown'} / output ${usage.output??'unknown'} tokens`):text(t,'未知','Unknown')}</dd></dl><button disabled={!input} onClick={()=>setFullInput(value=>!value)}>{text(t,'查看本轮完整输入','View full turn input')}</button>{fullInput&&input&&<pre className="agent-full-input" tabIndex={0}>{JSON.stringify(input.input,null,2)}</pre>}</AssistantDialog>}
+  </section>;
 }

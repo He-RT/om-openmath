@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { EditorState, Compartment } from "@codemirror/state";
+import { EditorState, Compartment, Annotation, Transaction } from "@codemirror/state";
 import {
   EditorView,
   keymap,
@@ -39,6 +39,7 @@ import { ghostExtension, type GhostCandidate } from "./ghostText";
 import { completionProfile } from "./ghostProfile";
 import { PrivacyPrompt, hasConsent } from "../assistant/PrivacyPrompt";
 import type { LlmConfig } from "../../kernel/generated/LlmConfig";
+const externalSource=Annotation.define<boolean>();
 interface Props {
   id: string;
   index: number;
@@ -337,7 +338,7 @@ export function MathEditor(props: Props) {
             };
           }),
           EditorView.updateListener.of((update) => {
-            if (update.docChanged)
+            if (update.docChanged&&!update.transactions.some(transaction=>transaction.annotation(externalSource)))
               latest.current.onChange(update.state.doc.toString());
             if (update.focusChanged && view.hasFocus) latest.current.onFocus();
             if (update.selectionSet || update.docChanged) {
@@ -369,6 +370,7 @@ export function MathEditor(props: Props) {
     if (view && view.state.doc.toString() !== props.source)
       view.dispatch({
         changes: { from: 0, to: view.state.doc.length, insert: props.source },
+        annotations:[externalSource.of(true),Transaction.addToHistory.of(false)],
       });
   }, [props.source]);
   useEffect(() => {

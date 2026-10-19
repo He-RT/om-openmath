@@ -21,17 +21,22 @@ export interface ToolPort {
   commit(snapshot:ToolSnapshot,desired:NotebookFile,operationId?:string):Promise<void>;
   sourceWasAccepted?(operationId:string,before:NotebookFile,after:NotebookFile):Promise<boolean>;
 }
+const clocks=new WeakMap<NotebookController,{generation:number;revision:number;last:NotebookFile}>();
+function sourceClock(controller:NotebookController){
+  let clock=clocks.get(controller);if(clock)return clock;
+  clock={generation:controller.store.getState().documentGeneration,revision:0,last:controller.file()};clocks.set(controller,clock);const current=clock;
+  controller.store.subscribe(()=>{const generation=controller.store.getState().documentGeneration,file=controller.file();if(current.generation!==generation){current.generation=generation;current.revision=0;current.last=file;}else if(!sameNotebookSource(current.last,file)){current.revision++;current.last=file;}});
+  return current;
+}
+export function observeNotebookSource(controller:NotebookController){sourceClock(controller);}
 /** Main-thread source owner. The Agent worker receives this closed RPC surface only. */
 export class NotebookToolPort implements ToolPort {
-  private revision=0;
-  private last:NotebookFile;
-  private off:()=>void;
+  private clock:ReturnType<typeof sourceClock>;
   private stopped=false;
   private ownsMath=false;
   private cancelled=false;
   constructor(private controller:NotebookController,private documentId:string,private generation:number,private mayWrite:boolean,private composing:()=>string[]=()=>[]){
-    this.last=controller.file();
-    this.off=controller.store.subscribe(()=>{const file=controller.file();if(!sameNotebookSource(this.last,file)){this.revision++;this.last=file;}});
+    this.clock=sourceClock(controller);
   }
   private current(){
     if(this.stopped||this.controller.store.getState().documentGeneration!==this.generation)throw new Error('STALE_SNAPSHOT');
@@ -39,14 +44,14 @@ export class NotebookToolPort implements ToolPort {
   async snapshot():Promise<ToolSnapshot>{
     this.current();await this.controller.flush();await this.controller.refresh(false);this.current();
     const state=this.controller.store.getState();if(!state.config)throw new Error('NOT_AVAILABLE');
-    return structuredClone({document:{id:this.documentId,generation:this.generation,revision:this.revision},file:this.controller.file(),general:state.config.general,
+    return structuredClone({document:{id:this.documentId,generation:this.generation,revision:this.clock.revision},file:this.controller.file(),general:state.config.general,
       cells:state.cells.map(({id,status,defines,uses,revision,exec_count,output,outputId,resultSource})=>({id,status,defines,uses,revision,...(exec_count===undefined?{}:{exec_count}),...(output?{output}:{}),...(outputId?{outputId}:{}),...(resultSource?{resultSource}:{})})),composing:this.composing(),busy:state.busy});
   }
   private admit(snapshot:ToolSnapshot){
     this.current();
     if(this.cancelled)return false;
     const state=this.controller.store.getState();
-    return snapshot.document.id===this.documentId&&snapshot.document.generation===this.generation&&snapshot.document.revision===this.revision
+    return snapshot.document.id===this.documentId&&snapshot.document.generation===this.generation&&snapshot.document.revision===this.clock.revision
       &&sameNotebookSource(this.controller.file(),snapshot.file)&&JSON.stringify(state.config?.general)===JSON.stringify(snapshot.general)
       &&sameMathState(snapshot,{...snapshot,cells:state.cells})&&this.composing().length===0;
   }
@@ -66,5 +71,5 @@ export class NotebookToolPort implements ToolPort {
     await this.controller.commitSource(snapshot.file,desired,()=>!this.stopped&&this.admit(snapshot),operationId);
   }
   async sourceWasAccepted(operationId:string,before:NotebookFile,after:NotebookFile){this.current();return this.controller.sourceWasAccepted(operationId,before,after);}
-  dispose(){this.stopped=true;this.off();}
+  dispose(){this.stopped=true;}
 }

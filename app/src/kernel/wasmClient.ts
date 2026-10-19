@@ -12,6 +12,7 @@ import { LlmDriver } from "./llmDriver";
 import { sourceMutation, mutatesSource, mergeConfig } from "./mirror";
 import { restoreConfig } from "../state/browserSettings";
 import type {MathWork,MathResult} from '../agent/hostTypes';
+import {prepareProfileModel} from '../agent/profileModel';
 type Packet =
   | { response: Envelope<Response|{type:'agent_math';value:MathResult}>; events: Envelope<Event>[] }
   | { type: "ready" }
@@ -146,6 +147,7 @@ export class WasmClient implements KernelClient {
     if(result.type==='error')throw new Error(result.message);
     return result.value;
   }
+  async prepareAgentModel(name:string){await this.readyPromise;const profile=this.config?.llm.profiles.find(profile=>profile.name===name);if(!profile)throw new Error('Configured model is unavailable');return prepareProfileModel(profile,this.configRevision);}
   async commitSourceFile(expected: NotebookFile, desired: NotebookFile): Promise<Response> {
     await this.readyPromise;
     const revision = ++this.revision;

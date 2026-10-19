@@ -29,7 +29,7 @@ export function cellPresentation(cell: UiCell, t: Messages): CellPresentation {
   return deriveCellPresentation({ ...f, running: !!cell.stopRequested || cell.status === "Running" || cell.status === "Queued", stopped: !!cell.stopped,
     sourceChanged: !!cell.resultSource && (cell.source !== cell.resultSource.source || cell.dialect !== cell.resultSource.dialect),
     ...(cell.status === "Stale" && cell.output ? { staleReason: cell.resultSource && (cell.source !== cell.resultSource.source || cell.dialect !== cell.resultSource.dialect) ? t.sourceChanged : t.definitionsChanged } : {}),
-    error: f.error || cell.status === "Error",
+    error: f.error || cell.status === "Error",byAgent:cell.byAgent===true,
   });
 }
 export function presentationLabel(p: CellPresentation, t: Messages) {

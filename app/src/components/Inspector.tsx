@@ -130,7 +130,7 @@ export function Inspector({
             )}
       </div>
       <div className="inspector-content" role="tabpanel" id="inspector-pane-assistant" aria-labelledby="inspector-tab-assistant" hidden={panel !== "assistant"}>
-        <AssistantPanel state={state} controller={controller} t={t} />
+        <AssistantPanel state={state} controller={controller} t={t} onSettings={onSettings} />
       </div>
     </aside>
     </dialog>

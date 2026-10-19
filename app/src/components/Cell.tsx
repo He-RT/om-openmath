@@ -78,17 +78,18 @@ export function Cell({
       onMouseDown={() => controller.select(cell.id)}
       onFocus={() => controller.select(cell.id)}
     >
-      <div className={`cell-rail rail-${presentation.status}`} aria-hidden="true" />
+      <div className={`cell-rail rail-${presentation.status} ${presentation.byAgent?'rail-by-agent':''}`} aria-hidden="true" />
       <div className="cell-body">
         <div className={cell.kind === "Math" ? `source-well ${preview ? "show-source-preview" : ""}` : "cell-source"}>
           {cell.kind==="Math" && <span className="execution-count sr-only">[{cell.exec_count ?? " "}]</span>}
           <div className="cell-toolbar">
             {cell.kind === "Math" && <button className="run-cell" aria-label={`${presentation.status === "running" ? t.stop : t.run} ${index+1}`} disabled={busy && presentation.status !== "running"} onClick={() => void (presentation.status === "running" ? controller.interrupt() : controller.run(cell.id))}><WorkbenchIcon name={presentation.status === "running" ? "stop" : "play"}/></button>}
             <ToolbarMenu className="cell-more" label={`${t.cellMore} ${index+1}`} icon={<WorkbenchIcon name="more"/>}>
-              <label>{t.math} / {t.text}<select aria-label={`${t.math} / ${t.text} ${index+1}`} value={cell.kind} onChange={event=>controller.edit(cell.id,{kind:event.target.value as UiCell["kind"]})}><option value="Math">{t.math}</option><option value="Text">{t.text}</option><option value="Ask">{t.ask}</option></select></label>
+              <label>{t.math} / {t.text}<select aria-label={`${t.math} / ${t.text} ${index+1}`} value={cell.kind} onChange={event=>controller.edit(cell.id,{kind:event.target.value as UiCell["kind"]})}><option value="Math">{t.math}</option><option value="Text">{t.text}</option>{cell.kind==='Ask'&&<option value="Ask" disabled>{t.ask}</option>}</select></label>
               {cell.kind === "Math" && <><label>{t.dialect}<select aria-label={`${t.dialect} ${index+1}`} value={cell.dialect} onChange={event=>controller.edit(cell.id,{dialect:event.target.value as Dialect})}><option value="Auto">{t.auto}</option><option value="Modern">{t.modern}</option><option value="Wolfram">Wolfram</option></select></label><button aria-pressed={preview} onClick={()=>setPreview(value=>!value)}>{t.preview}</button></>}
               <button aria-label={`${t.moveUp} ${index+1}`} disabled={index===0} onClick={()=>controller.move(cell.id,-1)}>{t.moveUp}</button>
               <button aria-label={`${t.moveDown} ${index+1}`} disabled={index===controller.store.getState().cells.length-1} onClick={()=>controller.move(cell.id,1)}>{t.moveDown}</button>
+              <button onClick={()=>controller.store.setState({panel:'assistant',assistantReferences:[cell.id]})}>{t.assistant==='助手'?'在助手中引用':'Reference in assistant'}</button>
               <button aria-label={`${t.delete} ${index+1}`} onClick={()=>controller.remove(cell.id)}>{t.delete}</button>
             </ToolbarMenu>
           </div>

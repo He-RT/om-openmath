@@ -25,6 +25,7 @@ export interface UiCell extends CellInput {
   stopped?: boolean;
   stopRequested?: boolean;
   textEditing?: boolean;
+  byAgent?: boolean;
 }
 export interface UiState {
   assistantTurns: ChatTurnView[];
@@ -40,6 +41,10 @@ export interface UiState {
   error: string | null;
   notice: string | null;
   dirty: boolean;
+  savedSource?: NotebookFile | undefined;
+  agentRunning?: boolean;
+  agentStopping?: boolean;
+  assistantReferences?: string[] | undefined;
   panel: "variables" | "steps" | "assistant" | null;
   stepSelection: { cellId: string; outIndex: number } | null;
 }
@@ -86,6 +91,10 @@ export class NotebookController {
     { output: CellOutput; revision: number; outputId?:string }
   >();
   private removed: { cell: UiCell; index: number } | undefined;
+  private agentControls: {stop:()=>Promise<unknown>;undo:(redo:boolean)=>void}|undefined;
+  registerAgentControls(controls:{stop:()=>Promise<unknown>;undo:(redo:boolean)=>void}){this.agentControls=controls;return()=>{if(this.agentControls===controls)this.agentControls=undefined;};}
+  async stopWork(){if(this.store.getState().agentRunning&&this.agentControls)await this.agentControls.stop();else await this.interrupt();}
+  undoDocument(redo=false){if(!redo&&this.removed){this.undo();return;}if(this.agentControls)this.agentControls.undo(redo);else if(!redo)this.undo();}
   constructor(kernel: KernelClient) {
     this.ai = observeKernel(kernel);
     this.kernel = this.ai.client;
@@ -190,8 +199,8 @@ export class NotebookController {
         const previous = new Map(state.cells.map(cell => [cell.id, cell]));
         const cells = merged.cells.map(source => {
           const old = previous.get(source.id);
-          if (!old) return uiCell(source);
-          return sameSource(old, source) ? old : { ...old, ...source, revision: old.revision + 1, status: source.kind === 'Text' ? 'Done' as const : 'Stale' as const, stopped: false };
+          if (!old) return {...uiCell(source),byAgent:true};
+          return sameSource(old, source) ? old : { ...old, ...source, byAgent:true, revision: old.revision + 1, status: source.kind === 'Text' ? 'Done' as const : 'Stale' as const, stopped: false };
         });
         return { title: merged.title, cells, active: cells.some(cell => cell.id === state.active) ? state.active : cells[0]?.id ?? null, dirty: true };
       });
@@ -257,9 +266,11 @@ export class NotebookController {
     const state = this.store.getState();
     const cell = state.cells.find((c) => c.id === id);
     if (!cell) return;
+    if(Object.entries(change).every(([key,value])=>cell[key as keyof CellInput]===value))return;
     const next = {
       ...cell,
       ...change,
+      byAgent:false,
       revision: cell.revision + 1,
       status: change.kind === "Text" ? ("Done" as const) : ("Stale" as const),
       stopped: false,
@@ -683,6 +694,7 @@ export class NotebookController {
     };
   }
   async load(file: NotebookFile) {
+    if(this.store.getState().agentRunning&&this.agentControls)await this.agentControls.stop();
     if (this.store.getState().busy) await this.interrupt();
     this.epoch++;
     this.operations = 0;
@@ -698,6 +710,7 @@ export class NotebookController {
       title: file.title,
       active: file.cells[0]?.id ?? null,
       dirty: false,
+      savedSource: structuredClone(file),
       busy: false,
       stopping: false,
       notice: null,
@@ -706,6 +719,7 @@ export class NotebookController {
   }
   markSaved(notice: string, expected?: NotebookFile) {
     this.store.setState({
+      savedSource: structuredClone(expected??this.file()),
       dirty: expected
         ? JSON.stringify(this.file()) !== JSON.stringify(expected)
         : false,

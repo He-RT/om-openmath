@@ -67,7 +67,6 @@ export function Notebook({
           ＋ {t.math}
         </button>
         <button onClick={() => controller.add("Text")}>＋ {t.text}</button>
-        <button onClick={() => controller.add("Ask")}>＋ {t.ask}</button>
       </div>
     </main>
   );

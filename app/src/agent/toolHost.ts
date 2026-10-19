@@ -194,6 +194,7 @@ export class ToolHost {
     const valid=!issues.some(item=>item.severity==='error');
     if(plan)plan.invalidatedCellIds=result.affected_cell_ids;
     const previewRef=valid&&plan?this.put({kind:'preview',snapshot,plan,operationId:reference('operation')}):null;
+    if(previewRef)await this.store.append(this.options.documentId,this.options.sessionId,{kind:'preview',reference:previewRef,before:plan.before,after:plan.after,changedCellIds:plan.changedCellIds});
     return this.envelope(snapshot,{preview_kind:input.kind,valid,preview_ref:previewRef,plan_hash:plan?.planHash??await sha256(JSON.stringify(file)),diagnostics:issues.slice(0,100),affected_cell_ids:[...new Set([...result.affected_cell_ids,...changed])],assigned_cell_ids:plan?.assignedCellIds??{}});
   }
   private async begin(tool:ToolName,args:unknown,callId:string,id?:string,intent?:AgentOperationRecord['intent']){
@@ -205,7 +206,7 @@ export class ToolHost {
     const transaction=record.intent?.transaction;
     if(!transaction||!await this.port.sourceWasAccepted?.(record.id,transaction.before,transaction.after))return record;
     const confirmed={...record,state:'completed' as const,effectCommitted:true,transactionRef:transaction.id,updatedAt:Date.now()};
-    return this.store.settleOperation(confirmed,undefined,{...snapshot.document,file:snapshot.file,updatedAt:Date.now()});
+    return this.store.settleOperation(confirmed,transaction,{...snapshot.document,file:snapshot.file,updatedAt:Date.now()});
   }
   private async pending(snapshot:ToolSnapshot){
     for(const record of await this.store.pendingOperations(this.options.documentId)){
@@ -218,8 +219,8 @@ export class ToolHost {
     if(record.resultJson)return JSON.parse(record.resultJson) as ToolReply;
     return {ok:false,status:'failed',request_ref:reference('request'),operation_ref:record.id,document:snapshot.document,data:null,error:{code:'NOT_AVAILABLE',message:'The operation is known; query its receipt instead of replaying it.',recovery:'query_operation',details:{}},pagination:{truncated:false,next_cursor:null}};
   }
-  private async sourceEffect(name:'apply_notebook_patch'|'undo_transaction',snapshot:ToolSnapshot,plan:PatchPlan,callId:string,id:string|undefined){
-    const transaction:AgentTransactionRecord={id:reference('transaction'),documentId:this.options.documentId,sessionId:this.options.sessionId,taskId:this.options.taskId,before:plan.before,after:plan.after,changedCellIds:plan.changedCellIds,createdAt:Date.now(),undoneBy:null};
+  private async sourceEffect(name:'apply_notebook_patch'|'undo_transaction',snapshot:ToolSnapshot,plan:PatchPlan,callId:string,id:string|undefined,undoes?:string[]){
+    const transaction:AgentTransactionRecord={id:reference('transaction'),documentId:this.options.documentId,sessionId:this.options.sessionId,taskId:this.options.taskId,before:plan.before,after:plan.after,changedCellIds:plan.changedCellIds,createdAt:Date.now(),undoneBy:null,...(undoes?{undoes}:{})};
     const pending=await this.pending(snapshot);if(pending)return this.unknown(snapshot,pending);
     const start=await this.begin(name,{plan_hash:plan.planHash},callId,id,{transaction,planHash:plan.planHash});
     if(!start.created)return this.recordedReply(snapshot,start.record);
@@ -320,10 +321,12 @@ export class ToolHost {
     let after=structuredClone(snapshot.file);const changed=new Set<string>();
     const transactions=await Promise.all(refs.map(id=>this.store.sourceTransaction(this.options.documentId,id)));
     if(transactions.some(tx=>!tx))throw new Error('INVALID_REFERENCE');
-    for(const tx of transactions.filter((tx):tx is AgentTransactionRecord=>!!tx).sort((a,b)=>b.createdAt-a.createdAt)){after=invertSourceTransaction(after,tx.before,tx.after);tx.changedCellIds.forEach(id=>changed.add(id));}
+    const active=transactions.filter((tx):tx is AgentTransactionRecord=>!!tx&&!tx.undoneBy);
+    if(!active.length)return this.envelope(snapshot,{undo_transaction_ref:transactions[0]!.undoneBy,snapshot_ref:args.snapshot_ref,changed_cell_ids:[],invalidated_cell_ids:[],saved:false});
+    for(const tx of active.sort((a,b)=>b.createdAt-a.createdAt)){after=invertSourceTransaction(after,tx.before,tx.after);tx.changedCellIds.forEach(id=>changed.add(id));}
     const assessed=await this.port.math(snapshot,{type:'preview',file:after});if(assessed.type!=='preview')throw new Error('NOT_AVAILABLE');
     const plan:PatchPlan={before:snapshot.file,after,assignedCellIds:{},changedCellIds:[...changed],invalidatedCellIds:assessed.affected_cell_ids,planHash:await sha256(JSON.stringify({before:snapshot.file,after,refs}))};
-    return this.sourceEffect('undo_transaction',snapshot,plan,callId,undefined);
+    return this.sourceEffect('undo_transaction',snapshot,plan,callId,undefined,active.map(tx=>tx.id));
   }
   private async operation(snapshot:ToolSnapshot,args:Record<string,unknown>){
     const saved=await this.store.operation(this.options.documentId,args.operation_ref as string);if(!saved)throw new Error('INVALID_REFERENCE');

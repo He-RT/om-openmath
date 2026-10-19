@@ -39,7 +39,7 @@ export function Outline({ state, controller, t, visible, overlay, onClose }: { s
           target?.scrollIntoView({ block: "nearest", behavior: "instant" });
           if (overlay) onClose();
         }}>
-          {!heading && <span className={`outline-status status-${presentation.status}`} aria-label={presentationLabel(presentation,t)} />}
+          {!heading && <span className={`outline-status status-${presentation.status} ${presentation.byAgent?'outline-by-agent':''}`} aria-label={presentationLabel(presentation,t)} />}
           <span>{label || `${t[cell.kind === "Text" ? "text" : cell.kind === "Ask" ? "ask" : "math"]} ${index + 1}`}</span>
         </button>;})}
       </nav>

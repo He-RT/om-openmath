@@ -140,15 +140,10 @@ function Workspace({ controller }: { controller: NotebookController }) {
       }
       if (key === ".") {
         event.preventDefault();
-        void controller.interrupt();
+        void controller.stopWork();
       }
-      if (key === "/" && state.active) {
-        event.preventDefault();
-        const cell = state.cells.find((c) => c.id === state.active);
-        if (cell)
-          controller.edit(cell.id, {
-            kind: cell.kind === "Ask" ? "Math" : "Ask",
-          });
+      if (key === "z" && !event.defaultPrevented && !(event.target instanceof Element && event.target.closest('input,textarea,[contenteditable="true"],.cm-editor'))) {
+        event.preventDefault(); controller.undoDocument(event.shiftKey);
       }
       if (event.shiftKey && state.active) {
         if (key === "arrowup" || key === "arrowdown") {
@@ -281,7 +276,7 @@ function Workspace({ controller }: { controller: NotebookController }) {
           {
             label: t.stop,
             shortcut: "⌘.",
-            run: () => void controller.interrupt(),
+            run: () => void controller.stopWork(),
           },
           {
             label: `＋ ${t.math}`,

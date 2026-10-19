@@ -13,7 +13,7 @@ const internalUsage = () => ({ input: 0, output: 0, cacheRead: 0, cacheWrite: 0,
 export class BrowserModelAdapter {
   private prepared: PreparedModelRound | undefined;
   private results = new WeakMap<AssistantMessage, ModelResult>();
-  constructor(private onResult: (result: ModelResult) => void, private fetcher?: typeof fetch,private onDispatch?: (round:PreparedModelRound)=>void) {}
+  constructor(private onResult: (result: ModelResult) => void, private fetcher?: typeof fetch,private onDispatch?: (round:PreparedModelRound)=>void,private onText?: (round:PreparedModelRound,text:string)=>void) {}
   prepare(round: PreparedModelRound) {
     if (this.prepared) throw new Error('Previous model round was not dispatched');
     this.prepared = structuredClone(round);
@@ -51,6 +51,7 @@ export class BrowserModelAdapter {
                   if (!text) { partial.content = [{ type: 'text', text: '' }]; stream.push({ type: 'start', partial }); stream.push({ type: 'text_start', contentIndex: 0, partial }); }
                   text += delta; partial.content = [{ type: 'text', text }];
                   stream.push({ type: 'text_delta', contentIndex: 0, delta, partial });
+                  this.onText?.(round,delta);
                 }
               } else {
                 resolve(JSON.parse(decoder.finish()) as ModelResult);

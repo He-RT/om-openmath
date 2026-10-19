@@ -1,5 +1,5 @@
 import { useEffect, useLayoutEffect, useRef, useState, type CSSProperties, type ReactNode } from "react";
-export function ToolbarMenu({ label, children, icon, className = "" }: { label: string; children: ReactNode; icon: ReactNode; className?: string }) {
+export function ToolbarMenu({ label, children, icon, className = "", menuRole='group' }: { label: string; children: ReactNode; icon: ReactNode; className?: string;menuRole?:'group'|'menu' }) {
   const root = useRef<HTMLDetailsElement>(null);
   const items=useRef<HTMLDivElement>(null);
   const [expanded, setExpanded] = useState(false);
@@ -38,7 +38,7 @@ export function ToolbarMenu({ label, children, icon, className = "" }: { label: 
     }
   }}>
     <summary role="button" aria-expanded={expanded} aria-label={label} title={label}>{icon}</summary>
-    <div className="toolbar-menu-items" ref={items} style={placement} hidden={!expanded} role="group" aria-label={label} onClick={(event) => {
+    <div className="toolbar-menu-items" ref={items} style={placement} hidden={!expanded} role={menuRole} aria-label={label} onClick={(event) => {
       if ((event.target as HTMLElement).closest("button")) { if (root.current) {root.current.open = false;root.current.querySelector("summary")?.focus();} }
     }}>{children}</div>
   </details>;

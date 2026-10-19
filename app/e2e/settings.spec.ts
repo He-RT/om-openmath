@@ -211,7 +211,7 @@ test("explicit keyless remote profile can be saved and used without disabling it
     await route.fulfill({
       status: 200,
       contentType: "text/event-stream",
-      body: `data: ${JSON.stringify({ choices: [{ index: 0, delta: { content: text }, finish_reason: "stop" }] })}\n\ndata: [DONE]\n\n`,
+      body: `data: ${JSON.stringify({id:"keyless-response",model:"fixture", choices: [{ index: 0, delta: { content: text }, finish_reason: "stop" }] })}\n\ndata: [DONE]\n\n`,
       headers: { "access-control-allow-origin": "*" },
     });
   });
@@ -234,15 +234,14 @@ test("explicit keyless remote profile can be saved and used without disabling it
     .getByRole("button", { name: "Close", exact: true })
     .click();
   await expect(page.locator(".ai-indicator")).toHaveClass(/ai-ready/);
-  await page.getByRole("button", { name: "＋ Ask AI", exact: true }).click();
   const input = page.getByRole("textbox", {
-    name: "Question input 1",
+    name: "Message to assistant",
     exact: true,
   });
   await input.fill("Solve x equals one.");
   await input.press("Enter");
   await page.getByRole("button", { name: "Send to AI", exact: true }).click();
-  await expect(page.locator(".suggestion-card")).toContainText(
+  await expect(page.locator(".agent-text")).toContainText(
     "Keyless source proposal",
   );
 });

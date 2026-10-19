@@ -18,7 +18,7 @@ for(const width of [1440,390])test(`v2 assistant uses real source tools, fact ou
   const input=page.getByRole('textbox',{name:'Message to assistant',exact:true});await input.fill('Please change a to 5 and update its dependent results.');await input.press('Enter');
   await expect(input).toHaveValue('Please change a to 5 and update its dependent results.');expect(bodies).toHaveLength(0);await accept(page);
   await expect(page.locator('.agent-end')).toContainText('Turn ended');await expect(input).toHaveValue('');
-  await expect(page.locator('.agent-outcome')).toContainText('Ran 2 cells, no diagnostics');await expect(page.locator('.agent-outcome')).toContainText('Not saved to a file');
+  await expect(page.locator('.agent-outcome')).toContainText('Ran 2 cells, no diagnostics');await expect(page.locator('.agent-outcome')).toContainText('Inspected result: 6');await expect(page.locator('.agent-outcome')).toContainText('Not saved to a file');
   await expect(page.locator('.agent-action[data-action-status=failed]')).toContainText('INVALID_ARGUMENT');await expect(page.locator('.action-summary')).toHaveAttribute('aria-expanded','false');
   await page.locator('.action-summary').click();await expect(page.locator('.agent-actions .agent-action')).toHaveCount(7);
   await page.screenshot({animations:'disabled',path:`../target/plan-5/f3-v2-${width}-light.png`});if(width===1440){await page.emulateMedia({colorScheme:'dark'});await page.screenshot({animations:'disabled',path:'../target/plan-5/f3-v2-1440-dark.png'});await page.emulateMedia({colorScheme:'light'});await page.setViewportSize({width:1000,height:900});await page.screenshot({animations:'disabled',path:'../target/plan-5/f3-v2-1000-light.png'});await page.setViewportSize({width,height:900});}

@@ -7,6 +7,7 @@ import type {CellOutput} from '../kernel/generated/CellOutput';
 import type {Dialect} from '../kernel/generated/Dialect';
 import type {Diagnostic} from '../kernel/generated/Diagnostic';
 import {sameNotebookSource} from '../state/sourceTransaction';
+import {productFacts} from './productFacts';
 import {sameMathState} from './fences';
 interface SnapshotRef {kind:'snapshot';snapshot:ToolSnapshot;exposed:Set<string>;readable?:Set<string>}
 interface PreviewRef {kind:'preview';snapshot:ToolSnapshot;plan:PatchPlan;operationId:string}
@@ -92,7 +93,7 @@ export class ToolHost {
         case 'preview_source':result=await this.preview(args);break;
         case 'apply_notebook_patch':result=await this.apply(args,callId);break;
         case 'run_cells':result=await this.run(args,callId);break;
-        case 'inspect_result':result=await this.inspect(args);break;
+        case 'inspect_result':result=await this.inspect(args,callId);break;
         case 'evaluate_scratch':result=await this.scratch(args);break;
         case 'undo_transaction':result=await this.undo(args,callId);break;
         case 'get_operation_status':result=await this.operation(snapshot,args);break;
@@ -287,11 +288,12 @@ export class ToolHost {
     const last=result.output.items.at(-1),unevaluated=last?.type==='expr'&&last.unchanged===true&&last.nature==='symbolic';
     return this.envelope(snapshot,{result_ref:ref,evaluation_status:result.status==='Error'?'error':unevaluated?'unevaluated':'done',output_summary:summary(result.output),diagnostics:diagnostics(result.output,null),notebook_modified:false});
   }
-  private async inspect(args:Record<string,unknown>){
+  private async inspect(args:Record<string,unknown>,callId:string){
     const refId=args.result_ref as string,ref=this.get(refId,'result'),current=await this.current(),part=(args.part as string|undefined)??'summary';
     const cell=ref.cellId?current.cells.find(cell=>cell.id===ref.cellId):undefined,source=ref.cellId?current.file.cells.find(cell=>cell.id===ref.cellId):undefined;
     const isCurrent=ref.origin==='scratch'||!!cell&&cell.status!=='Stale'&&cell.status!=='Running'&&cell.exec_count===ref.execCount&&(ref.outputId!==undefined?cell.outputId===ref.outputId:JSON.stringify(cell.output)===JSON.stringify(ref.output))&&source?.source===ref.sourceHash&&JSON.stringify(current.general)===JSON.stringify(ref.snapshot.general);
     if(!isCurrent)throw new Error('STALE_RESULT');
+    await this.store.append(this.options.documentId,this.options.sessionId,{kind:'product',taskId:this.options.taskId,callId,origin:ref.origin,items:productFacts(ref.output)});
     let payload:unknown=part==='summary'?summary(ref.output):part==='diagnostics'?[...ref.output.messages.map(message=>({type:'message',message})),...ref.output.items.filter(item=>item.type==='error')]:part==='steps'?ref.output.items.flatMap(item=>item.type==='solutions'&&item.steps?[{out_index:item.out_index,steps:item.steps}]:[]):part==='geometry'?ref.output.items.flatMap<unknown>(item=>item.type==='plot'?[{type:item.type,data:item.data}]:item.type==='scene3_d'?[{type:item.type,data:item.data}]:[]):part==='preview'?{available:false,reason:'No rendered image has been registered for this result'}:ref.output.items;
     let next:string|null=null;
     const limit=(args.limit as number|undefined)??20;

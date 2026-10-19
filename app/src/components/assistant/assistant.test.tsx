@@ -240,6 +240,13 @@ test('agent projection pairs original call IDs in order and uses receipts rather
 test('source diff preserves changed lines and bounded context without dropping whitespace',async()=>{
   const {sourceDiff}=await import('./SourceDiff');expect(sourceDiff('a\n  old\nz','a\n  new\nz')).toEqual([{kind:'context',line:'a'},{kind:'remove',line:'  old'},{kind:'add',line:'  new'},{kind:'context',line:'z'}]);expect(sourceDiff(undefined,'new')).toEqual([{kind:'add',line:'new'}]);
 });
+test('inspected exact values and complete geometry appear as products; incomplete chunks do not',async()=>{
+  const {inspectedProducts}=await import('./TurnOutcome');
+  expect(inspectedProducts([{type:'expr',input_form:'6'}])).toMatchObject([{type:'expr',input_form:'6'}]);
+  expect(inspectedProducts({items:[{type:'plot',geometry_exists:true,curves:2}]})).toMatchObject([{curves:2}]);
+  expect(inspectedProducts([{type:'scene3_d',data:{meshes:[{triangles:[[0,1,2],[1,2,3]]}]}}])).toMatchObject([{geometry_exists:true,triangles:2}]);
+  expect(inspectedProducts({representation:'json_chunks',json_chunk:'{"type":"scene3_d"',complete:false})).toEqual([]);
+});
 
 test('unknown source changes become facts only when the same operation receives a confirmed transaction',async()=>{
   const {projectConversation,turnTransactions}=await import('../../agent/conversation');const {actionStatus}=await import('./ActionLog');

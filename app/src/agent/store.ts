@@ -2,6 +2,7 @@ import type {NotebookFile} from '../kernel/generated/NotebookFile';
 import type {CanonicalRecord,ModelInput,ModelResult,AgentCanonicalMessage} from './modelTypes';
 import {sameNotebookSource} from '../state/sourceTransaction';
 import type {StoredAttachment,UserPresentation} from './attachments';
+import type {AgentProductFact} from './productFacts';
 export interface AgentDocumentRecord {id:string;generation:number;revision:number;file:NotebookFile;updatedAt:number}
 export interface AgentSessionRecord {id:string;documentId:string;title:string;createdAt:number;nextSequence:number}
 export type AgentEventPayload =
@@ -14,7 +15,8 @@ export type AgentEventPayload =
   | {kind:'preview';reference:string;before:NotebookFile;after:NotebookFile;changedCellIds:string[]}
   | {kind:'settled';taskId:string;mode:'execute'|'discuss';reason:'ended'|'stopped'|'failed'|'budget';requests:number|null;tools:number|null;durationMs:number;error:string|null}
   | {kind:'model_result';result:ModelResult}
-  | {kind:'user_input';taskId:string;presentation:UserPresentation};
+  | {kind:'user_input';taskId:string;presentation:UserPresentation}
+  | {kind:'product';taskId:string;callId:string;origin:'notebook'|'scratch';items:AgentProductFact[]};
 export interface AgentStoredEvent {id:string;documentId:string;sessionId:string;sequence:number;time:number;payload:AgentEventPayload}
 export interface AgentOperationRecord {
   id:string;documentId:string;sessionId:string;taskId:string;tool:string;inputHash:string;
@@ -136,7 +138,7 @@ export class AgentStore {
     if(!Number.isSafeInteger(after)||after<0||!Number.isInteger(limit)||limit<1||limit>500)return Promise.reject(new Error('Invalid event page'));
     return this.transaction(['sessions','events'],'readonly',(tx,set,fail)=>{const request=tx.objectStore('sessions').get(sessionId);request.onsuccess=()=>{
       const session=request.result as AgentSessionRecord|undefined;if(!session||session.documentId!==documentId){fail(new Error('Session belongs to another document'));return;}
-      const store=tx.objectStore('events'),kinds=['message','tool','turn','delta','settled','user_input'],items:AgentStoredEvent[]=[];
+      const store=tx.objectStore('events'),kinds=['message','tool','turn','delta','settled','user_input','product'],items:AgentStoredEvent[]=[];
       if(store.indexNames.contains('display')){let remaining=kinds.length;for(const kind of kinds){const page=store.index('display').getAll(IDBKeyRange.bound([sessionId,kind,after+1],[sessionId,kind,Number.MAX_SAFE_INTEGER]),limit+1);page.onsuccess=()=>{items.push(...page.result as AgentStoredEvent[]);if(--remaining===0){items.sort((a,b)=>a.sequence-b.sequence);set({items:items.slice(0,limit),next:items.length>limit?items[limit-1]!.sequence:null});}};}}
       else{const cursor=store.openCursor(IDBKeyRange.bound([sessionId,after+1],[sessionId,Number.MAX_SAFE_INTEGER]));cursor.onsuccess=()=>{const row=cursor.result;if(!row){set({items,next:null});return;}const event=row.value as AgentStoredEvent;if(kinds.includes(event.payload.kind))items.push(event);if(items.length>limit){set({items:items.slice(0,limit),next:items[limit-1]!.sequence});return;}row.continue();};}
     };});

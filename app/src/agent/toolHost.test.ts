@@ -112,3 +112,13 @@ test('inspect value honors row limits and reconstructs large exact JSON through 
     expect(JSON.parse(json)).toEqual(output.items);
   }finally{f.close();}
 });
+
+test('inspected products freeze complete host counts before geometry chunking and reject stale results',async()=>{
+  const f=await fixture();try{
+    f.evaluate('figure','plot([sin(x), cos(x)], x: -pi..pi)');
+    const read=await f.invoke('read_notebook',{view:'cells',cell_ids:['figure'],include_outputs:true}),ref=(read.data!.cells as {result_ref:string}[])[0]!.result_ref;
+    const inspected=await f.invoke('inspect_result',{result_ref:ref,part:'geometry'});expect(inspected.ok).toBe(true);expect(inspected.pagination.truncated).toBe(true);
+    const facts=()=>vi.mocked(f.store.append).mock.calls.map(call=>call[2]).filter(event=>event.kind==='product');expect(facts().at(-1)).toMatchObject({origin:'notebook',items:[{type:'plot',geometry_exists:true,curves:2}]});
+    const count=facts().length;f.evaluate('figure','1');expect((await f.invoke('inspect_result',{result_ref:ref})).error?.code).toBe('STALE_RESULT');expect(facts()).toHaveLength(count);
+  }finally{f.close();}
+});

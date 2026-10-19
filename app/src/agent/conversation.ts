@@ -2,8 +2,9 @@ import type {AgentStoredEvent,AgentTransactionRecord} from './store';
 import type {AgentRuntimeEvent} from './runtimeTypes';
 import type {AgentCanonicalMessage} from './modelTypes';
 import type {ToolReply,ToolName} from './toolTypes';
+import type {AgentProductFact} from './productFacts';
 import type {UserPresentation} from './attachments';
-export interface ConversationAction {id:string;messageId:string;name:ToolName;argumentsJson:string;reply?:ToolReply;cells?:string[];confirmed?:boolean;transaction?:AgentTransactionRecord;preview?:{before:AgentTransactionRecord['before'];after:AgentTransactionRecord['after'];changedCellIds:string[]}}
+export interface ConversationAction {id:string;messageId:string;name:ToolName;argumentsJson:string;reply?:ToolReply;cells?:string[];confirmed?:boolean;products?:{origin:'notebook'|'scratch';items:AgentProductFact[]};transaction?:AgentTransactionRecord;preview?:{before:AgentTransactionRecord['before'];after:AgentTransactionRecord['after'];changedCellIds:string[]}}
 export type ConversationPart={kind:'text';id:string;messageId:string;text:string;partial?:boolean}|{kind:'actions';id:string;actions:ConversationAction[]};
 export interface ConversationTurn {id:string;user:AgentCanonicalMessage;modelId:string;mode:'execute'|'discuss';parts:ConversationPart[];settled?:Omit<Extract<AgentRuntimeEvent,{type:'settled'}>,'durationMs'>&{durationMs:number|null};presentation?:UserPresentation;running:boolean}
 function appendMessage(turn:ConversationTurn,message:AgentCanonicalMessage){
@@ -46,6 +47,8 @@ export function projectConversation(events:AgentStoredEvent[],transactions=new M
       if(action.name==='inspect_result'){try{const id=results.get((JSON.parse(action.argumentsJson) as {result_ref:string}).result_ref);if(id)action.cells=[id];}catch{/* Invalid arguments are shown with their actual receipt. */}}
       const transaction=ref?transactions.get(ref):undefined;if(transaction)action.transaction=transaction;
       const preview=action.name==='preview_source'&&typeof data?.preview_ref==='string'?previews.get(data.preview_ref):undefined;if(preview)action.preview=preview;
+    }else if(payload.kind==='product'){
+      const action=actions.get(payload.callId);if(action)action.products={origin:payload.origin,items:payload.items};
     }else if(payload.kind==='turn'){
       const turn=byTask.get(payload.taskId);if(turn)turn.running=payload.phase==='started';
     }else if(payload.kind==='settled'){

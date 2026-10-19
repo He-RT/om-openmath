@@ -5,10 +5,26 @@ import type {UiCell} from '../../state/notebookStore';
 import type {Messages} from '../../i18n';
 import type {SolutionSetView} from '../../kernel/generated/SolutionSetView';
 import {agentText as text,cellLabel} from './agentText';
-interface Product {type:string;triangles?:number;curves?:number;geometry_exists?:boolean;view?:SolutionSetView;input_form?:string;scratch?:boolean}
+interface Product {type:string;triangles?:number;curves?:number;geometry_exists?:boolean;view?:SolutionSetView;input_form?:string;solution_kind?:SolutionSetView['kind'];solution_count?:number;verified?:boolean;conditional?:boolean;scratch?:boolean}
+/** Both summary and exact-value inspection are host receipts; chunk fragments are not complete products. */
+export function inspectedProducts(payload:unknown):Product[]{
+  const items=Array.isArray(payload)?payload:payload&&typeof payload==='object'&&'items' in payload&&Array.isArray(payload.items)?payload.items:[];
+  return items.flatMap((item:unknown)=>{
+    if(!item||typeof item!=='object'||!('type' in item)||typeof item.type!=='string')return [];
+    const product=item as Product&{data?:{meshes?:{triangles?:unknown[]}[];curves?:unknown[]}};
+    if(product.type==='scene3_d'&&Array.isArray(product.data?.meshes))return [{...product,geometry_exists:true,triangles:product.data.meshes.reduce((count,mesh)=>count+(mesh.triangles?.length??0),0)}];
+    if(product.type==='plot'&&Array.isArray(product.data?.curves))return [{...product,geometry_exists:true,curves:product.data.curves.length}];
+    return [product];
+  });
+}
 function productLabel(product:Product,t:Messages){
+  const kind=product.solution_kind??product.view?.kind;
+  if(product.type==='solutions'&&kind==='all')return text(t,'已核对：所选域内恒成立','Inspected solution set: holds throughout the selected domain');
+  if(product.type==='solutions'&&kind==='none')return text(t,'已核对：无解','Inspected solution set: no solutions');
+  if(product.type==='solutions'&&kind==='region')return text(t,'已核对：满足条件的解区域','Inspected solution region with conditions');
   if(product.type==='scene3_d'&&product.geometry_exists)return text(t,`三维场景已生成，${product.triangles??0} 个三角形`,`3D scene generated, ${product.triangles??0} triangles`);
   if(product.type==='plot'&&product.geometry_exists)return text(t,`二维图已生成，${product.curves??0} 条曲线`,`2D plot generated, ${product.curves??0} curves`);
+  if(product.type==='solutions'&&product.solution_count!==undefined)return text(t,`${product.solution_count} 个解${product.verified?'，已代入验证':''}${product.conditional?'，含成立条件':''}`,`${product.solution_count} solutions${product.verified?', verified by substitution':''}${product.conditional?', with conditions':''}`);
   if(product.type==='solutions'&&product.view){const rows=product.view.solutions,verified=rows.length>0&&rows.every(row=>row.verified==='Exact'),conditional=!!product.view.region_latex||rows.some(row=>!!row.condition_latex);return text(t,`${rows.length} 个解${verified?'，已代入验证':''}${conditional?'，含成立条件':''}`,`${rows.length} solutions${verified?', verified by substitution':''}${conditional?', with conditions':''}`);}
   if(product.type==='expr'&&product.input_form)return text(t,`已核对结果：${product.input_form.slice(0,80)}${product.input_form.length>80?'…':''}`,`Inspected result: ${product.input_form.slice(0,80)}${product.input_form.length>80?'…':''}`);
   return null;
@@ -20,7 +36,8 @@ export function TurnOutcome({turn,cells,dirty,t,onUndo,onLocate}:{turn:Conversat
   const runs=actions.filter(action=>action.name==='run_cells'&&action.reply?.data),ran=new Set(runs.flatMap(action=>Array.isArray(action.reply?.data?.executed_cell_ids)?action.reply.data.executed_cell_ids as string[]:[]));
   const runCells=runs.flatMap(action=>Array.isArray(action.reply?.data?.cells)?action.reply.data.cells as {status:string;diagnostics?:unknown[]}[]:[]),errors=runCells.filter(cell=>cell.status==='error').length;
   const noDiagnostics=runCells.length>0&&runCells.every(cell=>Array.isArray(cell.diagnostics)&&cell.diagnostics.length===0);
-  const products=actions.flatMap(action=>{if(action.name!=='inspect_result'||action.reply?.data?.is_current!==true)return [];const payload=action.reply.data.payload as {items?:Product[]}|null;return (payload?.items??[]).map(item=>({...item,scratch:action.reply?.data?.origin==='scratch'}));});
+  const seenProducts=new Set<string>();
+  const products=actions.flatMap(action=>{if(action.name!=='inspect_result'||!action.reply?.ok||action.reply.data?.is_current!==true)return [];let reference=action.id;try{reference=(JSON.parse(action.argumentsJson) as {result_ref:string}).result_ref;}catch{/* The receipt still has a unique call identity. */}if(seenProducts.has(reference))return [];seenProducts.add(reference);return (action.products?.items??inspectedProducts(action.reply.data.payload)).map(item=>({...item,scratch:(action.products?.origin??action.reply?.data?.origin)==='scratch'}));});
   const stale=[...changed].filter(id=>{const cell=cells.find(cell=>cell.id===id);if(!cell||cell.kind!=='Math')return false;const edit=actions.map(action=>!!action.transaction&&!action.transaction.undoneBy&&action.transaction.changedCellIds.includes(id)).lastIndexOf(true),run=actions.map(action=>action.name==='run_cells'&&Array.isArray(action.reply?.data?.executed_cell_ids)&&action.reply.data.executed_cell_ids.includes(id)).lastIndexOf(true);return edit>=0&&run<edit;});
   const currentlyStale=[...changed].filter(id=>!stale.includes(id)&&cells.some(cell=>cell.id===id&&cell.kind==='Math'&&cell.status==='Stale'));
   const undoable=transactions.filter(tx=>!tx.undoneBy).map(tx=>tx.id),redoable=[...new Set(transactions.flatMap(tx=>tx.undoneBy?[tx.undoneBy]:[]))],first=[...changed,...ran].find(id=>cells.some(cell=>cell.id===id));

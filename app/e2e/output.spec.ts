@@ -27,6 +27,7 @@ test("actual presentation facts drive verified, stale, conditional, numeric, une
   await editor.fill("solve(x^2==4,x)");await expect(cell).toHaveAttribute("data-presentation","stale");
   await expect(cell.locator(".result-status")).toContainText("Source changed");
   await cell.getByRole("button",{name:"Run to update",exact:true}).click();await expect(cell).toHaveAttribute("data-presentation","verified");
+  await run("solve(k*x==1,x)","conditional");await expect(cell.locator(".solution-condition")).toContainText("k");await expect(cell.locator(".solution-condition .katex-mathml annotation")).toContainText("0");
   await run("solve(x/x==1,x)","conditional");await expect(cell.locator(".solution-condition")).toContainText("x");
   await run("2+2","exact");await run("n(pi,30)","numeric");await run("UnknownFunction(x)","unevaluated");
   await run("solve(","error");await expect(cell.locator(".previous-result")).toContainText("Previous result");
@@ -35,7 +36,7 @@ test("actual presentation facts drive verified, stale, conditional, numeric, une
   await expect(cell.locator(".inline-diagnostics .diagnostic")).toHaveCount(1);
   await expect(cell.locator(".inline-diagnostics .diagnostic > span:visible")).toHaveCount(0);
   await expect(cell.locator(".cell-body > .cell-output > .messages")).not.toHaveAttribute("open");
-  await run("[[1,2],[3,4]]","exact");await expect(cell.locator(".compact-matrix .katex")).toBeVisible();
+  await run("[[1,2],[3,4]]","structured");await expect(cell.locator(".compact-matrix .katex")).toBeVisible();
   await run("solve((x-1)*(x-2)*(x-3)*(x-4)*(x-5)==0,x)","verified");await expect(cell.locator(".solution-table tbody tr")).toHaveCount(5);
 });
 test("real compact solutions retain repeated rules, use numeric CAS projection, copy and insert without executing", async ({

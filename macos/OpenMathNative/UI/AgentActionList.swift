@@ -52,7 +52,7 @@ private struct AgentActionRowLabel:View {
         Text("\(Text(action.verb).fontWeight(.medium))  \(Text(action.object).foregroundColor(Theme.Color.ink2))")
           .fixedSize(horizontal:false,vertical:true)
         Spacer(minLength:0)
-        if action.status == .running,active {ProgressView().controlSize(.mini).accessibilityLabel(state)}
+        if action.status == .running,active {WorkbenchProgress().controlSize(.mini).accessibilityLabel(state)}
         else {Image(systemName:stateIcon).font(.system(size:10)).foregroundStyle(action.status == .failed ? Theme.Color.red:action.status == .ok ? Theme.Color.verified:Theme.Color.ink2).accessibilityLabel(state)}
       }
       if let error=action.error {
@@ -68,7 +68,8 @@ private struct InteractiveAgentActionRow:View {
   @ObservedObject var model:NativeAssistant
   let active:Bool
   @State private var showDiff=false
-  @Environment(\.accessibilityReduceMotion) private var reducedMotion
+  @Environment(\.accessibilityReduceMotion) private var systemReducedMotion
+  private var reducedMotion:Bool {systemReducedMotion || WorkbenchMotion.fixtureReduced}
   private var undone:Bool {action.tool != "preview_source" && (action.transactionRef.map{model.undoneActionTransactions.contains($0)} ?? false)}
   private var hasUndo:Bool {action.tool=="apply_notebook_patch" && action.status == .ok && action.transactionRef != nil}
   private var canUndo:Bool {
@@ -93,7 +94,7 @@ private struct InteractiveAgentActionRow:View {
           }.accessibilityIdentifier("agent-diff-"+action.callID)
         }
         if hasUndo {
-          if model.actionUndoInProgress==action.id {ProgressView("正在撤销…").controlSize(.mini)}
+          if model.actionUndoInProgress==action.id {WorkbenchProgress("正在撤销…").controlSize(.mini)}
           else if undone,model.unknownActionUndo != action.id {Text("已撤销").foregroundStyle(Theme.Color.ink2).accessibilityIdentifier("agent-undone-"+action.callID)}
           else {
             Button(model.unknownActionUndo==action.id ? "核对撤销":"撤销") {Task {await model.undoAction(action)}}
@@ -109,7 +110,7 @@ private struct InteractiveAgentActionRow:View {
           else if model.actionErrors[action.id] != nil,!model.loadingActions.contains(action.id) {
             Button("重新读取差异") {Task {await model.loadActionDiff(action)}}.font(.caption).padding(.leading,20)
           }
-          else {ProgressView("正在读取原始差异…").controlSize(.small)}
+          else {WorkbenchProgress("正在读取原始差异…").controlSize(.small)}
         }.task(id:action.transactionRef ?? action.id) {
           if model.actionDiff(action)==nil,(action.transactionRef != nil || action.preview != nil) {await model.loadActionDiff(action)}
         }

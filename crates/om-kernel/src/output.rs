@@ -229,6 +229,11 @@ fn display_aliases(rows: &[Solution], vars: &[Expr]) -> Vec<(Expr, Expr)> {
 }
 fn condition(s: &Solution) -> Option<Expr> {
     let mut cond: Vec<_> = s.condition.iter().cloned().collect();
+    if let Some(required) = &s.required_condition {
+        if !cond.contains(required) {
+            cond.push(required.clone());
+        }
+    }
     cond.extend(s.constants.iter().map(|(c, d)| {
         Expr::call(
             B::ELEMENT,

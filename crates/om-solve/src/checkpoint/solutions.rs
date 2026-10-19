@@ -24,6 +24,8 @@ enum SetData {
 struct SolutionData {
     rules: Vec<(u32, u32)>,
     condition: Option<u32>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    required_condition: Option<u32>,
     constants: Vec<(u32, DomainData)>,
     multiplicity: u32,
     verification: VerificationData,
@@ -121,6 +123,11 @@ pub fn encode_solutions(
                     .as_ref()
                     .map(|c| put(roots, c, limits, ctx))
                     .transpose()?;
+                let required_condition = s
+                    .required_condition
+                    .as_ref()
+                    .map(|c| put(roots, c, limits, ctx))
+                    .transpose()?;
                 let constants = s
                     .constants
                     .iter()
@@ -152,6 +159,7 @@ pub fn encode_solutions(
                 stored.push(SolutionData {
                     rules,
                     condition,
+                    required_condition,
                     constants,
                     multiplicity: s.multiplicity,
                     verification,
@@ -216,6 +224,10 @@ pub fn decode_solutions(
                     .map(|(a, b)| Ok((get(roots, a, ctx)?, get(roots, b, ctx)?)))
                     .collect::<Result<_, EvidenceError>>()?;
                 let condition = s.condition.map(|id| get(roots, id, ctx)).transpose()?;
+                let required_condition = s
+                    .required_condition
+                    .map(|id| get(roots, id, ctx))
+                    .transpose()?;
                 let constants = s
                     .constants
                     .into_iter()
@@ -248,6 +260,7 @@ pub fn decode_solutions(
                 decoded.push(Solution {
                     rules,
                     condition,
+                    required_condition,
                     constants,
                     multiplicity: s.multiplicity,
                     verification,

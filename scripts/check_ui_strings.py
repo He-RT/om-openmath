@@ -23,7 +23,7 @@ native = entries(swift.split("static let values", 1)[1].split("static func text"
 english_source, chinese_source = web.split("const zh: typeof en =", 1)
 english, chinese = entries(english_source), entries(chinese_source)
 required = {
-    "cell.pending", "cell.running", "cell.verified", "cell.exact", "cell.numeric",
+    "cell.pending", "cell.running", "cell.verified", "cell.exact", "cell.numeric", "cell.structured",
     "cell.conditional", "cell.stale", "cell.error", "cell.stopped",
     "doc.edited", "doc.saved", "kernel.ready", "agent.turn_ended",
     "agent.stopped", "agent.failed", "agent.budget", "agent.next_turn",

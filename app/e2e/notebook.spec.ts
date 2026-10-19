@@ -158,9 +158,10 @@ test("real editor completion, Greek Tab shorthand, Markdown and locale changes r
     page.getByRole("button", { name: "全部运行", exact: true }).first(),
   ).toBeVisible();
 });
-test("UI interruption keeps edits made while the real worker is computing and restores only definitions", async ({
+test("UI interruption with reduced motion keeps edits made while the real worker is computing and restores only definitions", async ({
   page,
 }) => {
+  await page.emulateMedia({reducedMotion:"reduce"});
   const errors: string[] = [];
   page.on("console", (message) => {
     if (message.type() === "error") errors.push(message.text());
@@ -180,6 +181,7 @@ test("UI interruption keeps edits made while the real worker is computing and re
   await second.fill("factorial(1000000)");
   await second.press("ControlOrMeta+Enter");
   await expect(page.locator(".interrupt")).toBeVisible();
+  await expect(page.locator(".cell-rail.rail-running")).toHaveCSS("animation-name","none");
   await page.getByRole("button", { name: "＋ Text", exact: true }).click();
   const notes = page.getByRole("textbox", {
     name: "Text input 3",

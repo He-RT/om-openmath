@@ -480,8 +480,12 @@ private struct AssistantTranscriptFixtureControls:View {
     let storage=try await services.open()
     let workspace=NativeFileWorkspace(storage:services)
     guard await workspace.open(url),let session=workspace.session else {throw StorageError.recoveryRequired}
+    session.assistant.draftEdited("尚未配置时保留草稿")
+    require(!session.assistant.canSend,"an unconfigured composer must not accept a message")
     let configuration=AssistantConfiguration(baseURL:"https://example.invalid/v1",model:"fixture-tool-model",credentialReference:"fixture-never-used")
     try session.assistant.configure(configuration)
+    require(session.assistant.canSend,"a configured text model accepts the retained draft")
+    session.assistant.draftEdited("")
     var registry=ModelRegistryDocument.current(configuration)
     registry.providers[0].models.append(.init(id:"fixture-text",apiName:"fixture-text",displayName:"仅文字模型",tools:false,images:false,contextLimit:16000))
     registry.providers[0].models.append(.init(id:"fixture-image",apiName:"fixture-image",displayName:"图片与工具模型",tools:true,images:true,contextLimit:32000))

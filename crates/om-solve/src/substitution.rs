@@ -52,6 +52,7 @@ fn empty_solution() -> Solution {
     Solution {
         rules: vec![],
         condition: None,
+        required_condition: None,
         constants: vec![],
         multiplicity: 1,
         verification: Verification::Exact,

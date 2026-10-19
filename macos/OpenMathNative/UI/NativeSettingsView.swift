@@ -5,6 +5,7 @@ struct NativeSettingsView:View {
   @ObservedObject var model:NativeSettingsModel
   @ObservedObject var workspace:NativeFileWorkspace
   @AppStorage("settings.section") private var section="general"
+  @AppStorage("workbench.appearance") private var appearance="system"
   @AppStorage("assistant.send-shortcut") private var sendShortcut="enter"
   @AppStorage("assistant.default-mode") private var defaultMode="discuss"
   @State private var deletingProvider:String?
@@ -22,7 +23,7 @@ struct NativeSettingsView:View {
       if section=="models" || section=="assistant" {
         Divider()
         HStack(spacing:12) {
-          if model.saving || model.loading {ProgressView().controlSize(.small)}
+          if model.saving || model.loading {WorkbenchProgress().controlSize(.small)}
           VStack(alignment:.leading,spacing:3) {
             if let error=model.error {Text(error).foregroundStyle(Theme.Color.conditional)}
             else {Text(model.dirty ? "模型配置有未保存的修改":model.saveStatus ?? "密钥保存在系统钥匙串中").foregroundStyle(.secondary)}
@@ -46,6 +47,8 @@ struct NativeSettingsView:View {
     Form {
       LabeledContent("OpenMath",value:Bundle.main.object(forInfoDictionaryKey:"OpenMathReleaseVersion") as? String ?? "开发版")
       LabeledContent("平台",value:"Apple Silicon · macOS 27 或更新版本")
+      Picker("外观",selection:$appearance) {Text("跟随系统").tag("system");Text("浅色").tag("light");Text("深色").tag("dark")}
+        .accessibilityIdentifier("settings-appearance")
       Text("在本地笔记本中计算、推导与记录。").foregroundStyle(.secondary)
     }.formStyle(.grouped).padding(16)
   }
@@ -100,7 +103,7 @@ struct NativeSettingsView:View {
         TextField("API 地址",text:$model.providers[index].baseURL,prompt:Text("https://example.com/v1")).accessibilityIdentifier("settings-provider-url")
         SecureField(provider.credentialReference.isEmpty ? "API Key":"API Key（留空保留已存密钥）",text:$model.providers[index].key).accessibilityIdentifier("settings-provider-key")
         Text("本机回环地址支持 HTTP，其他地址使用 HTTPS。密钥仅写入系统钥匙串。").font(.caption).foregroundStyle(.secondary)
-        HStack {Button("测试连接") {Task {await model.testConnection(provider.id)}}.disabled(model.testingProvider != nil);if model.testingProvider==provider.id {ProgressView().controlSize(.small)}}
+        HStack {Button("测试连接") {Task {await model.testConnection(provider.id)}}.disabled(model.testingProvider != nil);if model.testingProvider==provider.id {WorkbenchProgress().controlSize(.small)}}
         if let status=model.connectionStatus[provider.id] {Text(status).font(.caption).foregroundStyle(.secondary)}
       }
       Section {

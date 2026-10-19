@@ -145,7 +145,7 @@ private struct NativeMathDisplay:View {
           Text(plan.state.reason).font(.caption).foregroundStyle(.secondary)
           NativeMathOriginalSource(source:request.originalLatex).id(request.identity)
         }
-      } else {ProgressView("正在准备公式").controlSize(.small)}
+      } else {WorkbenchProgress("正在准备公式").controlSize(.small)}
     }.task(id:request) {if !Task.isCancelled {plan=MathRenderAdapter.prepare(request)}}
   }
 }

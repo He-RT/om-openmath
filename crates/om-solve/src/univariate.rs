@@ -217,6 +217,7 @@ fn poly_uni_impl(
         solutions.push(Solution {
             rules: vec![(x.clone(), root.value)],
             condition: condition.clone(),
+            required_condition: None,
             constants: vec![],
             multiplicity: root.multiplicity,
             verification: Verification::ByConstruction,

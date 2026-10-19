@@ -115,6 +115,9 @@ pub struct Solution {
     pub rules: Vec<(Expr, Expr)>,
     /// Condition excluding the domains of generated parameters.
     pub condition: Option<Expr>,
+    /// Required generic validity condition retained when MaxExtraConditions omits it
+    /// from expression output. Presentation and checkpoints must preserve this evidence.
+    pub required_condition: Option<Expr>,
     /// Generated parameter expressions and their required domains.
     pub constants: Vec<(Expr, Domain)>,
     /// Positive root multiplicity; Wolfram output repeats the rule list this many times.

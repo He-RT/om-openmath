@@ -23,6 +23,17 @@ import SwiftUI
   func attachWindow(_ window:NSWindow) {
     guard self.window !== window else {return}
     self.window=window;window.delegate=self
+    // Full AppHost UI fixtures use a private bundle copy; shipping bundles omit these keys.
+    if Bundle.main.object(forInfoDictionaryKey:"OpenMathFixtureRoot") is String,
+       let fixture=Bundle.main.object(forInfoDictionaryKey:"OpenMathFixtureWindow") as? [String:Any] {
+      if let width=fixture["width"] as? Double,let height=fixture["height"] as? Double,
+         (640...2000).contains(width),(560...1600).contains(height) {
+        DispatchQueue.main.async {
+          let top=window.screen?.visibleFrame.maxY ?? window.frame.maxY
+          window.setFrame(NSRect(x:0,y:top-height,width:width,height:height),display:true)
+        }
+      }
+    }
     attachDocumentWindow()
   }
   private func attachDocumentWindow() {

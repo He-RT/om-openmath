@@ -10,7 +10,7 @@ struct NativeGeometryView:View {
   @Environment(\.colorScheme) private var scheme
   var body:some View {
     VStack(alignment:.leading,spacing:10) {
-      if model.loading {ProgressView("正在读取图形数据…").controlSize(.small)}
+      if model.loading {WorkbenchProgress("正在读取图形数据…").controlSize(.small)}
       if let plot=model.plot {
         NativePlotView(model:model,data:plot).frame(height:250)
           .clipShape(RoundedRectangle(cornerRadius:8))
@@ -64,7 +64,7 @@ struct NativeGeometryView:View {
   private func range(_ values:[Double])->String {values.map{$0.formatted(.number.precision(.significantDigits(6)))}.joined(separator:" … ")}
   private func sceneCanvas(_ scene:NativeSceneData,height:CGFloat,expanded:Bool)->some View {
     NativeMetalSceneView(model:model,data:scene).id(model.rendererAttempt).frame(height:height)
-      .overlay {if !model.rendererReady,model.renderError==nil {ProgressView("正在准备三维图形…").controlSize(.small)}}
+      .overlay {if !model.rendererReady,model.renderError==nil {WorkbenchProgress("正在准备三维图形…").controlSize(.small)}}
       .overlay(alignment:.topTrailing) {
         HStack(spacing:8) {
           controls(scene:true)

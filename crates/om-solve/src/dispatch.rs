@@ -263,7 +263,17 @@ fn run(
                         }
                     }
                     if let Some(j) = duplicate {
-                        union[j].multiplicity = union[j].multiplicity.max(root.multiplicity)
+                        let retained = &mut union[j];
+                        retained.multiplicity = retained.multiplicity.max(root.multiplicity);
+                        // Equal values from alternative branches keep their original set shape.
+                        // Their hidden validity conditions form a union; an unconditional
+                        // branch dominates. MaxExtraConditions still governs expression output.
+                        retained.required_condition =
+                            match (retained.required_condition.take(), root.required_condition) {
+                                (Some(a), Some(b)) if a == b => Some(a),
+                                (Some(a), Some(b)) => Some(Expr::call(B::OR, [a, b])),
+                                _ => None,
+                            };
                     } else {
                         union.push(root)
                     }

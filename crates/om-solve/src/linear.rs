@@ -360,6 +360,7 @@ fn run(
         SolutionSet::Finite(vec![Solution {
             rules,
             condition: conjunction(&conditions),
+            required_condition: None,
             constants: vec![],
             multiplicity: 1,
             verification: if exact {

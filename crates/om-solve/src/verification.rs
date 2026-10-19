@@ -17,6 +17,7 @@ pub(crate) fn empty() -> Solution {
     Solution {
         rules: vec![],
         condition: None,
+        required_condition: None,
         constants: vec![],
         multiplicity: 1,
         verification: Verification::Exact,
@@ -297,10 +298,21 @@ pub(crate) fn apply(
                 }
             }
         }
-        if expose {
-            for guard in &result.assumptions {
-                root.condition =
-                    domain::condition(root.condition.take(), guard.replace_all(&root.rules))
+        for guard in &result.assumptions {
+            let target = if expose {
+                &mut root.condition
+            } else {
+                &mut root.required_condition
+            };
+            *target = domain::condition(target.take(), guard.replace_all(&root.rules));
+        }
+        if let Some(c) = root.required_condition.take() {
+            let c = simplify_condition_in(&c, &root.constants, ctx)?;
+            if c.as_symbol() == Some(B::FALSE) {
+                continue;
+            }
+            if c.as_symbol() != Some(B::TRUE) {
+                root.required_condition = Some(c);
             }
         }
         if let Some(c) = root.condition.take() {

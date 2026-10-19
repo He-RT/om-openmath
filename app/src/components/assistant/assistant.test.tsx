@@ -257,3 +257,11 @@ test('unknown source changes become facts only when the same operation receives 
   expect(turnTransactions(projectConversation(events.slice(0,3))[0]!)).toHaveLength(0);
   const turn=projectConversation(events,new Map([['tx',transaction]]))[0]!,action=turn.parts.flatMap(part=>part.kind==='actions'?part.actions:[])[0]!;expect(actionStatus(action)).toBe('ok');expect(turnTransactions(turn)).toEqual([transaction]);expect(action.reply?.status).toBe('unknown');
 });
+
+test('the reply shows accepted run ownership and its own stop control',async()=>{
+  const {Transcript}=await import('./Transcript'),stop=vi.fn();
+  const turn:import('../../agent/conversation').ConversationTurn={id:'task',user:{record_type:'canonical_agent_message',message_version:1,message_id:'user',role:'user',task_id:'task',agent_turn_id:null,parts:[{kind:'text',part_id:'t',text:'Run this cell'}]},modelId:'configured',mode:'execute',parts:[],running:true};
+  const cells=[{id:'cell',source:'2+2',kind:'Math',dialect:'Modern',status:'Running',revision:0,defines:[],uses:[]}] as UiCell[];
+  const props={turns:[turn],cells,dirty:true,t,onUndo:async()=>{},onLocate:()=>{},onInsert:()=>{},loadPreview:async()=>undefined,loadAttachment:async()=>undefined,running:true,work:{kind:'run' as const,cellId:'cell'},onStop:stop};
+  const view=render(<Transcript {...props} stopping={false}/>);expect(screen.getByRole('status').textContent).toContain('Running Cell 1');fireEvent.click(screen.getByRole('button',{name:t.stop}));expect(stop).toHaveBeenCalledOnce();view.rerender(<Transcript {...props} stopping={true}/>);expect((screen.getByRole('button',{name:t.stopping}) as HTMLButtonElement).disabled).toBe(true);
+});

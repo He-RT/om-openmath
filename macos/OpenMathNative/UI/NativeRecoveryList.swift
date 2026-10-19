@@ -9,7 +9,7 @@ struct NativeRecoveryList:View {
       Text("选择本地笔记本恢复源码与草稿。不会自动执行单元格或发送模型请求。").font(.caption).foregroundStyle(.secondary)
       if let warning=workspace.libraryWarning {Text(warning).font(.caption).foregroundStyle(.secondary)}
       if let error=workspace.errorText {Text(error).font(.caption).foregroundStyle(.red).textSelection(.enabled)}
-      if workspace.busy {ProgressView("正在核对本地记录…")}
+      if workspace.busy {WorkbenchProgress("正在核对本地记录…")}
       List(workspace.recoverableDocuments) {record in
         HStack(alignment:.top) {
           VStack(alignment:.leading,spacing:4) {

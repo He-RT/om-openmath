@@ -10,7 +10,7 @@ struct NativeSessionRecoveryList:View {
       Text("查看历史并核对原操作。不会自动执行工具或重新发送模型请求。").font(.caption).foregroundStyle(.secondary)
       if let warning=workspace.libraryWarning {Text(warning).font(.caption).foregroundStyle(.secondary)}
       if let error=workspace.errorText {Text(error).font(.caption).foregroundStyle(.red).textSelection(.enabled)}
-      if workspace.busy {ProgressView("正在核对…")}
+      if workspace.busy {WorkbenchProgress("正在核对…")}
       HSplitView {
         List(workspace.recoverableSessions) {record in
           VStack(alignment:.leading,spacing:6) {

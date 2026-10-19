@@ -290,3 +290,13 @@ test("a late startup snapshot cannot replace source edited while initialization 
   expect(controller.store.getState().dirty).toBe(true);
   controller.dispose();
 });
+
+for(const kind of ['run','scratch'] as const)test(`accepted agent ${kind} reports owned work and clears it after a failure`,async()=>{
+  let release!:()=>void,start!:()=>void;const gate=new Promise<void>(resolve=>{release=resolve;}),started=new Promise<void>(resolve=>{start=resolve;});
+  const kernel:import('../kernel/client').KernelClient=new MockKernel(()=>({type:'ok'}));kernel.agentMath=async()=>{await gate;throw new Error('synthetic terminal');};
+  const controller=new NotebookController(kernel);controller.store.setState({config});const id=controller.add('Math','2+2');await controller.flush();const before=controller.file();
+  const command:import('../agent/hostTypes').MathCommand=kind==='run'?{type:'run',cell_id:id}:{type:'scratch',source:'2+2',dialect:'Modern',use_notebook_definitions:false};
+  const result=controller.agentMath({expected:before,general:config.general,command},()=>true,start);await started;
+  expect(controller.store.getState().agentWork).toEqual(kind==='run'?{kind:'run',cellId:id}:{kind:'scratch'});expect(controller.store.getState().cells[0]?.status).toBe(kind==='run'?'Running':'Stale');
+  release();await expect(result).rejects.toThrow('synthetic terminal');expect(controller.store.getState().agentWork).toBeNull();expect(controller.store.getState().busy).toBe(false);expect(controller.file()).toEqual(before);expect(controller.store.getState().cells[0]?.status).toBe('Stale');controller.dispose();
+});

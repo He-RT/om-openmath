@@ -46,6 +46,7 @@ export interface UiState {
   savedSource?: NotebookFile | undefined;
   agentRunning?: boolean;
   agentStopping?: boolean;
+  agentWork?:{kind:'run';cellId:string}|{kind:'scratch'}|null;
   assistantReferences?: string[] | undefined;
   panel: "variables" | "steps" | "assistant" | null;
   stepSelection: { cellId: string; outIndex: number } | null;
@@ -157,8 +158,9 @@ export class NotebookController {
     if(this.store.getState().busy)throw new Error('EDITING_BUSY');
     if(!this.kernel.agentMath)throw new Error('NOT_SUPPORTED');
     const running=work.command.type==='run'||work.command.type==='scratch';
+    const runningCell=work.command.type==='run'?work.command.cell_id:null,priorStatus=this.store.getState().cells.find(cell=>cell.id===runningCell)?.status;
     const revisions=new Map(this.store.getState().cells.map(cell=>[cell.id,cell.revision]));
-    if(running){this.operations++;this.store.setState({busy:true});onStarted?.();}
+    if(running){this.operations++;this.store.setState(state=>({busy:true,agentWork:runningCell?{kind:'run',cellId:runningCell}:{kind:'scratch'},cells:runningCell?state.cells.map(cell=>cell.id===runningCell?{...cell,status:'Running'}:cell):state.cells}));onStarted?.();}
     try{
       const result=await this.kernel.agentMath(work);
       if(this.closed||epoch!==this.epoch)throw new Error('UNKNOWN_OUTCOME');
@@ -170,7 +172,7 @@ export class NotebookController {
         this.pendingOutputs.delete(result.cell_id);
       }
       return result;
-    }finally{if(running&&epoch===this.epoch&&!this.closed){this.operations=Math.max(0,this.operations-1);this.store.setState({busy:this.operations>0});}}
+    }finally{if(running&&epoch===this.epoch&&!this.closed){this.operations=Math.max(0,this.operations-1);this.store.setState(state=>({busy:this.operations>0,agentWork:null,cells:state.cells.map(cell=>cell.id===runningCell&&cell.status==='Running'?{...cell,status:priorStatus??'Stale'}:cell)}));}}
   }
   /** Agent source changes share the manual write queue and never evaluate as a side effect. */
   sourceWasAccepted(operationId:string,before:NotebookFile,after:NotebookFile){const receipt=this.sourceReceipts.get(operationId);return !!receipt&&receipt.generation===this.store.getState().documentGeneration&&sameNotebookSource(receipt.before,before)&&sameNotebookSource(receipt.after,after);}
@@ -587,7 +589,7 @@ export class NotebookController {
       })
       .finally(() => {
         this.restarting = undefined;
-        if (epoch === this.epoch) this.store.setState(state => ({ busy: false, stopping: false, cells: state.cells.map(cell => ({...cell,stopRequested:false,...(stopConfirmed && interrupted.get(cell.id) === cell.revision ? {stopped:true}:{})})) }));
+        if (epoch === this.epoch) this.store.setState(state => ({ busy: false, stopping: false, agentWork:null, cells: state.cells.map(cell => ({...cell,stopRequested:false,...(stopConfirmed && interrupted.get(cell.id) === cell.revision ? {stopped:true}:{})})) }));
       });
     return this.restarting;
   }
@@ -720,6 +722,7 @@ export class NotebookController {
       savedSource: structuredClone(file),
       busy: false,
       stopping: false,
+      agentWork:null,
       notice: null,
     });
     await this.refresh();

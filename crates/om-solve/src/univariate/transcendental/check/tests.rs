@@ -15,6 +15,7 @@ fn family(n: usize) -> Solution {
             .map(|(i, v)| (e(v), Expr::call(B::C, [Expr::int(i as i64 + 1)])))
             .collect(),
         condition: None,
+        required_condition: None,
         constants: (1..=n)
             .map(|i| (Expr::call(B::C, [Expr::int(i as i64)]), Domain::Integers))
             .collect(),

@@ -35,7 +35,7 @@ struct NativeStepsView:View {
           }
         }
       }
-      if model.busy {ProgressView("正在读取步骤…").controlSize(.small)}
+      if model.busy {WorkbenchProgress("正在读取步骤…").controlSize(.small)}
       if let error=model.error {
         Text(error).font(.callout).foregroundStyle(.secondary)
         Button("重新读取") {Task {await model.load()}}.disabled(model.busy)

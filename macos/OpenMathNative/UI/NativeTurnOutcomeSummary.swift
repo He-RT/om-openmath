@@ -5,7 +5,8 @@ struct NativeTurnOutcomeSummary:View {
   @ObservedObject var assistant:NativeAssistant
   let outcome:TurnOutcome
   var documentSaved:Bool?=nil
-  @Environment(\.accessibilityReduceMotion) private var reducedMotion
+  @Environment(\.accessibilityReduceMotion) private var systemReducedMotion
+  private var reducedMotion:Bool {systemReducedMotion || WorkbenchMotion.fixtureReduced}
   private var discussion:Bool {assistant.messages.first{$0.taskID==outcome.id}?.context?.mode=="discuss"}
   private var undone:Bool {assistant.undoneTurns.contains(outcome.id)}
   private var saved:Bool {documentSaved ?? outcome.saved}
@@ -26,7 +27,7 @@ struct NativeTurnOutcomeSummary:View {
           .font(.system(size:12)).foregroundStyle(saved ? Theme.Color.verified:Theme.Color.ink2)
         HStack(spacing:12) {
           if !outcome.transactions.isEmpty,assistant.changeOutcome != nil {
-            if assistant.changingRound==outcome.id {ProgressView("正在核对修改…").controlSize(.mini)}
+            if assistant.changingRound==outcome.id {WorkbenchProgress("正在核对修改…").controlSize(.mini)}
             else if assistant.unknownRoundChange==outcome.id {
               Button(assistant.unknownRoundRedo ? "核对重做":"核对撤销") {
                 Task {if assistant.unknownRoundRedo {await assistant.redoTurn(outcome.id)} else {await assistant.undoTurn(outcome.id)}}

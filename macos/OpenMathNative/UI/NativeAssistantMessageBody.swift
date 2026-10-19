@@ -32,6 +32,7 @@ struct NativeAssistantMessageBody:View {
             Text(message.context.map{$0.mode=="execute" ? "执行":"讨论"} ?? "").foregroundStyle(Theme.Color.ink2)
           }.font(.system(size:11.5)).accessibilityIdentifier("assistant-message-signature-"+message.id)
           parts
+          if streaming,let actionModel {NativeAssistantLiveStatus(assistant:actionModel)}
         }.frame(maxWidth:.infinity,alignment:.leading)
       }
     }.accessibilityElement(children:.contain).accessibilityIdentifier("assistant-message-"+message.id)
@@ -58,5 +59,18 @@ struct NativeAssistantMessageBody:View {
         }
       }
     }
+  }
+}
+
+private struct NativeAssistantLiveStatus:View {
+  @ObservedObject var assistant:NativeAssistant
+  private var label:String {assistant.stopping ? "正在停止…":assistant.status.hasPrefix("运行 ") ? "正在"+assistant.status:assistant.status}
+  var body:some View {
+    HStack(spacing:6) {
+      WorkbenchProgress().controlSize(.mini)
+      Text(label).lineLimit(2).frame(maxWidth:.infinity,alignment:.leading)
+      Button("停止") {Task {await assistant.stop()}}.buttonStyle(.borderless).disabled(assistant.stopping)
+        .accessibilityIdentifier("assistant-live-stop")
+    }.font(.system(size:11.5)).foregroundStyle(Theme.Color.ink2).accessibilityIdentifier("assistant-live-status")
   }
 }

@@ -70,3 +70,20 @@ test("new text enters editing but reading-mode changes are UI-only and never eva
   controller.textMode(id,false);expect(controller.file()).toEqual(file);expect(controller.store.getState().cells[0]?.revision).toBe(revision);
   expect(kernel.requests.map(request=>request.type)).toEqual(["upsert_cell"]);expect(JSON.stringify(file)).not.toContain("textEditing");controller.dispose();
 });
+
+test('shared Markdown handles TeX delimiters and spacing while preserving code, escaped text and incomplete tails',()=>{
+  const source=String.raw`Inline \( a+1=6 \).
+
+\[
+\boxed{\int_0^1\sin(x^2)\,dx}
+\]
+
+`+'`'+String.raw`\(literal\)`+'`'+String.raw`
+
+unfinished \(x
+
+cost $5 and $10; escaped \\(literal\\)
+
+`+'```text\n'+String.raw`\[literal\]`+'\n```';
+  const {container}=render(<Markdown source={source}/>);expect(container.querySelectorAll('.katex')).toHaveLength(2);expect(container.querySelectorAll('.katex-display')).toHaveLength(1);expect(container.textContent).toContain(String.raw`unfinished \(x`);expect(container.textContent).toContain('cost $5 and $10');expect(container.querySelector('.code-block pre')?.textContent).toBe(String.raw`\[literal\]`);
+});

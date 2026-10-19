@@ -30,7 +30,7 @@ import SwiftUI
   private var removedAttachmentIDs=Set<String>()
   var selectedModel:RegisteredModel? {registry.selection(selectedModelID)?.1}
   var nextTools:[AgentToolName] {selectedModel?.tools==false ? []:(allowsChanges ? AssistantMode.execute:AssistantMode.discuss).tools}
-  var canSend:Bool {!busy && !undoing && !historyLoading && !composerMarked && unknownActionUndo==nil && unknownRoundChange==nil &&
+  var canSend:Bool {configured && !busy && !undoing && !historyLoading && !composerMarked && unknownActionUndo==nil && unknownRoundChange==nil &&
     importingAttachments==0 && (!draft.trimmingCharacters(in:.whitespacesAndNewlines).isEmpty || attachments.contains(where:\.sendable)) &&
     !attachments.contains(where:{$0.image != nil && selectedModel?.images != true}) && (!allowsChanges || selectedModel?.tools != false)}
   func removeAttachment(_ id:String) {removedAttachmentIDs.insert(id);attachments.removeAll{$0.id==id};draftSequence+=1;scheduleContextPreview()}

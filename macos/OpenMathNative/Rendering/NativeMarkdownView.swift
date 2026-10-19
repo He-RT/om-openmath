@@ -136,7 +136,7 @@ struct NativeMarkdownView:View {
             if let code=section.code {NativeCodeBlockView(block:code,onInsert:onInsertCode)}
           }
         }
-      } else {ProgressView("正在排版…").controlSize(.small)}
+      } else {WorkbenchProgress("正在排版…").controlSize(.small)}
     }.task(id:Data(source.utf8)) {
       let value=await Task.detached(priority:.userInitiated) {MarkdownRenderDocument.parse(source)}.value
       if !Task.isCancelled {parsed=value}

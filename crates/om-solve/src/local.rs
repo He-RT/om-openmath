@@ -266,6 +266,7 @@ fn run(
         Ok(SolutionSet::Finite(vec![Solution {
             rules,
             condition: None,
+            required_condition: None,
             constants: vec![],
             multiplicity: 1,
             verification: Verification::Numeric {

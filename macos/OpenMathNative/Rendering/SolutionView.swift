@@ -229,7 +229,7 @@ struct NativeResultView:View {
       if let value=originalValue {
         ScrollView {expression(value,suffix:"-original");Text(value.input_form).font(Theme.Font.source).textSelection(.enabled)}
         HStack {Button("复制源码") {copy(value.input_form)};Button("复制 LaTeX") {copy(value.latex)}}
-      } else {ProgressView("正在读取完整结果…")}
+      } else {WorkbenchProgress("正在读取完整结果…")}
     }.padding(20).frame(width:560,height:340)
   }
   private var originalValue:NativeExpressionProjection? {

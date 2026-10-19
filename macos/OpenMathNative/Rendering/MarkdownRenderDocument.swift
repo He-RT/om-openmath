@@ -215,7 +215,7 @@ private struct MarkdownDocumentParser {
       else if bytes[index]==36 {open=[36];close=open;display=false}
       else {index+=1;continue}
       let begin=index+open.count
-      guard begin<bytes.count,!white(bytes[begin]) || display else {index+=open.count;continue}
+      guard begin<bytes.count,!white(bytes[begin]) || display || open.first==92 else {index+=open.count;continue}
       let nextProtected=protectedIndex<protected.count ? protected[protectedIndex].lowerBound:bytes.count
       var end=begin
       while end<bytes.count {
@@ -226,7 +226,7 @@ private struct MarkdownDocumentParser {
       }
       let finish=end+close.count
       let valid=end>begin && matches(close,end) && end-begin<=16384 &&
-        (!white(bytes[end-1]) || display) &&
+        (!white(bytes[end-1]) || display || open.first==92) &&
         !(open==[36] && finish<bytes.count && (48...57).contains(bytes[finish])) &&
         (!display || standalone(index,finish))
       if !valid {

@@ -13,6 +13,11 @@ struct NativeStoragePaths:Sendable {
   let root:URL
   let channel:StorageChannel
   static func system(_ channel:StorageChannel) throws ->Self {
+    // An explicitly packaged UI fixture uses the full AppHost with isolated current data.
+    // Ordinary releases have no such bundle entry and keep the normal storage channel.
+    if let path=Bundle.main.object(forInfoDictionaryKey:"OpenMathFixtureRoot") as? String,path.hasPrefix("/"),!path.utf8.contains(0) {
+      return .init(root:URL(fileURLWithPath:path,isDirectory:true),channel:channel)
+    }
     let base=try FileManager.default.url(for:.applicationSupportDirectory,in:.userDomainMask,appropriateFor:nil,create:false)
     let channelRoot=base.appendingPathComponent("OpenMath",isDirectory:true).appendingPathComponent(channel == .preview ? "NativeMacPreview" : "NativeMac",isDirectory:true)
     // This release starts a fresh Preview workspace. Early prototype stores stay untouched.

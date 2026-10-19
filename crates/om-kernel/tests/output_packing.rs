@@ -290,3 +290,52 @@ fn multiplicities_and_generated_parameter_conditions_are_not_lost_in_cards() {
     }));
     assert!(v.solutions.iter().all(|r| r.bindings[0].numeric.is_none()));
 }
+
+#[test]
+fn generic_validity_condition_reaches_presentation_without_changing_solve_expression() {
+    let mut session = sequential();
+    let result = output(
+        &mut session,
+        "parameter",
+        "Solve[k*x==1,x]",
+        Dialect::Wolfram,
+    );
+    same(&expressions(&result)[0].1, "{{x->1/k}}");
+    let (view, _) = solutions(&result);
+    assert_eq!(view.solutions.len(), 1);
+    let expected = om_parse::parse_expr("k!=0", om_parse::Dialect::Wolfram).unwrap();
+    assert_eq!(
+        view.solutions[0].condition_latex,
+        Some(om_format::latex(&expected))
+    );
+    assert_eq!(
+        view.solutions[0].condition_display_latex,
+        Some(om_format::latex(&expected))
+    );
+}
+
+#[test]
+fn duplicate_branch_values_keep_the_original_set_and_union_validity() {
+    let mut session = sequential();
+    let result = output(
+        &mut session,
+        "branches",
+        "Solve[(k*x==k)||(x==1),x]",
+        Dialect::Wolfram,
+    );
+    let (view, _) = solutions(&result);
+    assert_eq!(view.solutions.len(), 1);
+    assert_eq!(view.solutions[0].condition_latex, None);
+    same(&expressions(&result)[0].1, "{{x->1}}");
+    let result = output(
+        &mut session,
+        "generic-branches",
+        "Solve[(k*x==k)||(m*x==m),x]",
+        Dialect::Wolfram,
+    );
+    let (view, _) = solutions(&result);
+    assert_eq!(view.solutions.len(), 1);
+    let condition = view.solutions[0].condition_latex.as_ref().unwrap();
+    assert!(condition.contains('k') && condition.contains('m') && condition.contains("\\lor"));
+    same(&expressions(&result)[0].1, "{{x->1}}");
+}

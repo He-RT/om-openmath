@@ -50,7 +50,7 @@ export function AssistantPanel({state,controller,t,onSettings}:{state:UiState;co
     </div></header>
     <div className="agent-conversation-body">
       {agent.turns.length===0&&agent.phase==='idle'&&<div className="agent-empty"><p>{text(t,'可以一起求解、绘图，或修改当前笔记本。','Solve, plot, or edit the current notebook together.')}</p>{!selected&&<><p>{t.configureAI}</p><button onClick={onSettings}>{text(t,'添加模型…','Add a model…')}</button></>}</div>}
-      <Transcript turns={agent.turns} cells={state.cells} dirty={state.dirty||!state.savedSource} t={t} onUndo={agent.undo} onLocate={locate} onInsert={insert} loadPreview={agent.preview} loadAttachment={agent.attachment} running={running}/>
+      <Transcript turns={agent.turns} cells={state.cells} dirty={state.dirty||!state.savedSource} t={t} onUndo={agent.undo} onLocate={locate} onInsert={insert} loadPreview={agent.preview} loadAttachment={agent.attachment} running={running} work={state.agentWork} stopping={agent.phase==='stopping'} onStop={()=>void agent.stop()}/>
     </div>
     {agent.error&&<div className="agent-request-error" role="alert">{agent.error}<button aria-label={t.close} onClick={()=>agent.setError(null)}>×</button></div>}
     <Composer models={models} model={selectedName} onModel={setModel} mode={mode} onMode={setMode} cells={state.cells} t={t} running={running} stopping={agent.phase==='stopping'} disabled={state.busy||agent.controlling} onSend={send} onStop={()=>void agent.stop()} onSettings={onSettings} onContext={openContext} shortcut={preferences.sendShortcut} incomingReferences={state.assistantReferences} onConsumeReferences={()=>controller.store.setState({assistantReferences:undefined})}/>

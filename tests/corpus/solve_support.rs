@@ -196,6 +196,7 @@ pub fn numeric_expr(case: &Case, expr: &Expr, original: &Expr) -> Result<(), Str
             rules,
             constants,
             condition: None,
+            required_condition: None,
             multiplicity: 1,
             verification: Verification::Unverified,
             numeric: None,

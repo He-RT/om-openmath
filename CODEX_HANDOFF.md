@@ -1,14 +1,39 @@
 # OpenMath 当前接续入口
 
-> **2026-10-16 起的下一版：pre-alpha.5。** 执行入口是 [docs/plan/PRE_ALPHA_5.md](docs/plan/PRE_ALPHA_5.md)，按它第 0 节先读 [工作台 v2 设计](docs/design/workbench-v2.md) 并打开 [交互草案](docs/design/prototypes/workbench-v2.html)，再看它第 6 节进度表。每个界面任务开工前、完成后都要对照草案截图。下面的 `.4` 内容只作历史参考。
+> **当前目标：pre-alpha.5。** 唯一实施入口 [PRE_ALPHA_5.md](docs/plan/PRE_ALPHA_5.md)，唯一视觉依据 [workbench-v2.md](docs/design/workbench-v2.md) 和四张原型截图。旧 `.4` 完成/发布授权不适用于 `.5`。按 A→G 顺序，G1已完成，下一项G2，不得宣称整版交付。
 
-> **2026-10-19 状态：** A–F 全部任务已实现；F5 真实 Web **S1–S6 首次全部通过**，下一项 **G1 设计验收与实用缺口修正**。F5 实际 gpt-6.1-sol 的模型请求数 S1/2/3/4/5/6=8/10/7/9/9/3；S1改a得5/6，S2半瓜12网格5312三角形，S3双曲线，S4补括号得10，S5先查目录再NIntegrate/Method算0.3102683017233811，S6只读read→scratch=6、未暴露写工具、前后源码相同。详情在计划最新记录，账本`target/plan-5/live-task-runs.jsonl`与`live-ui/data/F5-gpt-6.1-sol-S*-01/`。S6在工具会话中断后读回持久 ended/12秒/3请求，未重发。**预算33/60，余27：G2计划24+最多3重试**；不再为已过场景额外调用模型。
->
-> F5补齐产物事实：新`app/src/agent/productFacts.ts`、ToolHost成功inspect时分页前冻结product事件、Conversation按原call ID配对、TurnOutcome接数组/事实与结果去重；不改模型schema/响应、不依模型自述。25受影响单测、13实际生产Worker/助手回环、类型/构建/lint通过（`f5-ready-unit.log`、`f5-final-browser.log`、`f5-ready-build.log`、`f5-ready-lint.log`）。G1先修三处实际发现：Web共享Markdown的\(\)/\[\]排版；NIntegrate结构化数值记录泛称“精确值”（两端都核对）；运行中具体单元格/行内停止。然后按20项在Mac1440浅/深/1000/800、Web1440/1000/390对照，不减少原标准。G1真实中文候选窗口/原生拖放与横向附件手势仍待，不能用程序合成冒充；file://交互原型被工具阻止，未绕过、未获例外。G3的k*x==1缺成立条件亦待修复/复验，不在UI猜条件。
->
-> 最新授权私密文件`/Users/hert/.config/openmath/testing/pre-alpha-4-api.json`已按用户新信息更新端点http://localhost:10100/v1和对应密钥，0600，两个模型不变；不输出、不扫描其他配置。实际10100进程bun.exe15958用户服务不动。自有5173因工具会话中断确实退出，已核对缺失后启动新preview exec71369（先lsof核对），生产dist包含产物事实修正。CUA句柄重置后，IAB当前标签**1**的providerTabId为browser-use:e4322a1d-00fc-4042-94fc-7d0378f61461，是原测试页；不要靠旧标签2猜。先rewriteDocumentation再恢复句柄；当前恢复F5 S6历史，两格源码2/3尚未重跑，没有持久密钥，也没有活动模型任务。模板文件live_case.py已加可选stage参数F5复用原账本，不建新框架。旧4175未动。无关`.gitignore`、`.vscode/`、`test-results/`不stage/不删。版本仍.4留G4统一；G1–G4和整版交付未完成，创建GitHub pre-release须用户明确确认。
+## 2026-10-20 当前状态
 
-接续临时资料在同机 `target/plan-5/`：`live-task-runs.jsonl` 是调用账本，`live_case.py` 准备隔离场景（不发模型请求），`live-ui/data/` 保存场景与宿主回读；不复制进新的证据框架。当前 Release 构建、提示词、操作记录、端点与撤销检查已通过。A5 完成后按 B→C→D→E→F→G 继续，不重做 A1–A4。`.5` 发布按新计划 G4：先完成可审阅安装包，用户确认后创建 GitHub pre-release。
+- `dev`/origin已到 **bb05bebd（F5）**，A–F完成；**G1所有修正正在本任务一笔提交**，G1已勾选，G2–G4未勾选。每任务完成一笔提交推dev。无关 `.gitignore`、`.vscode/`、`test-results/` 不stage、不删；不合main、不移动旧tag。用户明确不开子代理、不改系统输入法/安全/权限、不启动iOS模拟器、不再看别的App。
+- **用户已书面同意原型浏览方式例外**：file://策略拒绝且禁止绕过，允许四张静态图+HTML源码。不要重复询问或改用HTTP/CDP绕过。其余标准保留。
+- **第16项真实中文候选已通过**：用户亲测Mac与Web均“只上屏，未开始发送”，2026-10-20已写计划。不要再问，不是模拟或豁免。
+- **两项最新已确认，勿再问（2026-10-20）**：用户真实拖入TXT后新增附件卡片；明确同意仅Mac截图高度使用本机808–860替代900，宽1440/1000/800、20项其余部分和数学/性能标准保留。G1的静态模式实测与最终4图已完成，下一项G2。
+
+## G1工作树与验证
+
+- 共享Markdown支持`\(…\)`/`\[…\]`（包括TeX内空白），代码/不完整表达式/货币保持原规则；Transcript同lexer。Mac解析/TextKit检查通过。
+- 两端数值积分等非标量输出显示“结构化结果”，不再泛称“精确值”；基于真实kernel输出kind。Web宿主owned `agentWork` 提供具体单元格/scratch运行提示和行内停止；Mac同样具体状态/停止。未配置Mac模型禁用发送，草稿保留，原生用例已通过。
+- Rust新增`Solution.required_condition`保留MaxExtraConditions默认隐藏的真实有效性条件；Kernel展示/检查点保留它，默认表达式格式不变。重复分支相同值仍去重，隐藏有效性条件取并集，无条件分支占优。补全部构造器包括`tests/corpus/solve_support.rs`。**最终相关135 suites：776 passed / 0 failed / 1原有ignored**，日志`g1-affected-rust-final.log`；ignored是另要求release手跑的旧微基准，不能当G3性能通过。
+- 最新原生实际图已有2/3解与`k≠0`芯片，编辑a的旧结果与“依赖的定义a已改变”真实过期；应用内设置已实际切浅/深，系统设置未改。
+- **减少动态效果已完成**：Theme.swift新WorkbenchProgress替代18处不定进度，系统减少动态效果或仅隔离fixture包Window.reduceMotion=true时用静态沙漏/原标签。最终Release`g1-motion-native-final-build.log`成功（exec43421已退出0），完整AppHost实际factor(x^10007-1)运行截图为静态轨道和沙漏，两个时点轨道2325像素差0，显式停止显示已停止（fidelity/g1-motion-frame-a/b.jpg）。系统设置未改，当前隔离G1包reduceMotion=true；正常发行包无该键。首次只读Environment transform编译失败保留，已改为只读系统值OR受保护fixture开关。
+
+- Web最新49受影响单测/lint、9结果/文字生产E2E、2助手真实Worker/事务回环、最终条件E2E1、减少动态效果真实Worker停止E2E1通过。日志`g1-ui-final-unit.log`、`g1-ui-final-lint.log`、`g1-final-output-browser.log`、`g1-assistant-fidelity-browser.log`、`g1-final-union-browser.log`、`g1-reduced-motion-browser.log`。合成供应商不冒充真实模型。
+- 原生`g1-native-composer-verified.log`通过（含新未配置门槛、marked Return、快捷键、35%和滚动、模型能力、引用、失败/新草稿保留）；`g1-native-window-regression.log`通过1042/861/640/1100保留宿主/编辑器/选区/滚动、真实5/6、长CAS编辑停止。**Swift功能fixture与Release不要并行**，共享cmark对象会被修改。`test-workbench.sh`已修Bash3空数组，功能编译用Onone，正式Release/性能脚本没改。旧EOF/共享产物/编译失败日志保留，不计通过。
+- 同一个已编译功能fixture可直接执行，避免反复编译全Swift：`target/macos-workbench-tests/workbench-fixtures FRESH_ROOT [--composer|--cell-states|…]`；真实模型限制不变，别运行--live。
+- 最新窗口截图`target/macos-workbench-tests/g1-final-nbG9LM/{mac-light,mac-dark,mac-1000,mac-800}.png`是实际宿主内容1440/1000/800×808；完整AppHost CUA为1440×860。**不是900**，本机被窗口系统限制；未改分辨率。最终4张并排比较在`docs/acceptance/pre-alpha.5/g1-{mac-light,mac-dark,web-desktop,web-phone}.png`，图已视觉核对，高度例外获用户同意；其中Mac浅色源图有CUA 2x空白填充，比较图仅裁掉空白，原图保留。最终可重新抓稳定图再生成，明确实际高度与不同输入场景。
+
+## 完整Mac隔离副本 / CUA
+
+- 自有完整AppHost：`target/plan-5/g1-ui/OpenMath Workbench G1.app`，bundleID `org.openmath.OpenMath.WorkbenchG1`，Info.OpenMathFixtureRoot=`g1-ui/storage`，Window键1440/900。它读普通完整AppHost/Settings/菜单，不是删减fixture。重建后先确认退出再ditto/改Info/adhoc签名。当前为最新成功Release（有条件/外观/静态忙碌指示），Window.reduceMotion=true，不要更新正在运行的副本。
+- 此前打开`g1-ui/二次方程与图形.omnb`验证2/3与条件；重启静态模式后当前是一个自有未命名格，factor(x^10007-1)已显式停止，无活动计算。模型目录只有public假元数据，10104无服务、钥匙串引用不存在，不会付费调用。此前9张TXT附件由原生OpenPanel导入，用户真实拖入后回读为10张；重启后输入草稿不持久，当前新文稿无附件。CUA `scroll()`未改变位置，但容器暴露的`performSecondaryAction(index,'Scroll Right')`实际从01/08移到07、再06/05，横向滚动已验证；图在fidelity。
+- CUA压缩后先`rewriteDocumentation`。现有绑定：g1Mac、g1Fs、g1State、g1Finder、e1Tab、e1Browser。Finder当前attachments目录，留给用户拖放，不碰其余文件。Mac新鲜完整AX会重编号；菜单ID易失，可同一次call读AX后按已观察文本提取index再click。OpenPanel选row再shift末row能多选；CmdA并未多选。CmdO面板慢可能CUA超时，先恢复已有面板，不重复开。
+- IAB browser2，tab1自有5173，providerTabId `browser-use:e4322a1d-00fc-4042-94fc-7d0378f61461`；tab2 about:blank。当前tab1是1440×900、13格设计本，仍已加载旧WASM；真实条件最终headless测试已通过，别据旧页面判新dist失败。Web本地回环供应商已通过UI把10103改为**无服务10104**以供人工IME，原授权F5配置没改。临时viewport收尾reset并每turn重新markHandoff。旧用户4175不动。
+
+## 真实模型与后续阶段
+
+- **预算33/60，余27**，仅A5/F5/G2可调用。F5生产Web gpt-6.1-sol S1–S6首次均通过，不重做；请求数8/10/7/9/9/3，真实S2半瓜12网格5312三角形，S5积分0.3102683017233811，S6只读scratch=6且源码未改。账本`target/plan-5/live-task-runs.jsonl`和`live-ui/data/F5-gpt-6.1-sol-S*-01/`。
+- 私密唯一文件`/Users/hert/.config/openmath/testing/pre-alpha-4-api.json`，最新授权localhost:10100/v1，0600；两个模型gpt-6.1-sol/gpt-6-luna。不得输出密钥、认证头或扫描其他配置。用户10100服务不动。自有5173需先lsof再复用/重启，当前dist最终union构建已成功。
+- G1的20项/例外/4图已完成并写计划。下一项G2候选Mac两模型S1–S8+Web一模型S1–S6（24次，3次重试余量）；G3只跑计划列脚本/原53正确性/严格性能；G4统一.5、打包、安装回读。版本目前仍.4等待G4同步。**公开GitHub pre-release必须准备具体可审阅包后等用户明确确认**；不要据旧.4授权发布。
 
 **以下均为 `.4` 的历史接续记录；其“当前候选”“已授权发布”及旧完成条件不适用于 `.5`。新设计、计划及本页顶部状态优先。**
 
@@ -64,3 +89,5 @@
 ## CUA
 
 压缩后先rewriteDocumentation。当前公开原生绑定publicMac，Web绑定finalWebPreview；公开实际截图在当前e1d根public-download/mac-result.png及web-result.png。getAXState可能自动重启已退出app，退出验证用精确ps。截图后取fresh AX再用index；中文用paste/setValue且读回。UI只用CUA，禁止Shell/AppleScript控制。
+
+G1补记：首次用map(fn(k)=>sin(k),range(1,1000000))在截图前已返回尚未运行，没有本轮验证其终止原因；改用factor长算显式停止完成静态模式检查。G3若涉及超时/失败状态需核对，不将首次map算成功。

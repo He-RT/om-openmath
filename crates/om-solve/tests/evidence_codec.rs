@@ -161,7 +161,7 @@ fn malformed_rules_forward_steps_and_missing_roots_cannot_forge_a_derivation() {
 #[test]
 fn actual_exact_numeric_and_region_solution_sets_preserve_full_metadata() {
     let ctx = Interrupt::default();
-    for source in ["x^2==2", "(x-1)^3==0", "x^2>1"] {
+    for source in ["x^2==2", "(x-1)^3==0", "x^2>1", "k*x==1"] {
         let expr = om_parse::parse_expr(source, om_parse::Dialect::Wolfram).unwrap();
         let actual = om_solve::solve(&expr, &[Expr::symbol("x")], &Default::default(), &ctx)
             .unwrap()
@@ -175,6 +175,9 @@ fn actual_exact_numeric_and_region_solution_sets_preserve_full_metadata() {
         )
         .unwrap();
         let saved = serde_json::to_value(&data).unwrap();
+        if source == "k*x==1" {
+            assert!(saved["set"]["Finite"][0]["required_condition"].is_u64());
+        }
         let restored =
             om_solve::checkpoint::decode_solutions(data, &roots, EvidenceLimits::default(), &ctx)
                 .unwrap();

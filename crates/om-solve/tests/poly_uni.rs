@@ -246,6 +246,7 @@ fn options_defaults_and_solution_set_wolfram_shapes() {
     let s = Solution {
         rules: vec![(e("x"), e("C[1]"))],
         condition: Some(e("a!=0")),
+        required_condition: None,
         constants: vec![(e("C[1]"), Domain::Integers)],
         multiplicity: 1,
         verification: Verification::ByConstruction,

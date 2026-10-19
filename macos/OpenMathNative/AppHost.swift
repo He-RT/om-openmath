@@ -8,6 +8,9 @@ import SwiftUI
   @StateObject private var settingsModel=NativeSettingsModel()
   @State private var showingRecovery=false
   @State private var showingSessionRecovery=false
+  @AppStorage("workbench.appearance") private var appearance="system"
+  private var selectedColorScheme:ColorScheme? {appearance=="light" ? .light:appearance=="dark" ? .dark:nil}
+  private func applyAppearance() {NSApp.appearance=selectedColorScheme.flatMap{NSAppearance(named:$0 == .dark ? .darkAqua:.aqua)}}
   #if DEBUG
   @Environment(\.openWindow) private var openWindow
   #endif
@@ -17,6 +20,8 @@ import SwiftUI
         if let session=workspace.session {WorkspaceView(workspace:workspace,session:session)}
         else {welcome}
       }.frame(minWidth:640,minHeight:560)
+        .preferredColorScheme(selectedColorScheme)
+        .onChange(of:appearance,initial:true) {applyAppearance()}
         .tint(Theme.Color.verified)
         .background(NativeWindowAttachment(workspace:workspace).frame(width:0,height:0))
         .toolbar {
@@ -75,7 +80,8 @@ import SwiftUI
       #endif
     }
     Settings {
-      NativeSettingsView(model:settingsModel,workspace:workspace)
+      NativeSettingsView(model:settingsModel,workspace:workspace).preferredColorScheme(selectedColorScheme)
+        .onChange(of:appearance,initial:true) {applyAppearance()}
     }
     #if DEBUG
     Window("工作台令牌预览",id:"theme-preview") {
@@ -94,7 +100,7 @@ import SwiftUI
         Button("新建笔记本") {Task {await workspace.newDocument()}}.buttonStyle(.borderedProminent).keyboardShortcut(.defaultAction)
         Button("打开笔记本…") {Task {await workspace.openPanel()}}.buttonStyle(.bordered)
       }.controlSize(.large).disabled(workspace.busy)
-      if workspace.busy {ProgressView().controlSize(.small)}
+      if workspace.busy {WorkbenchProgress().controlSize(.small)}
       if let error=workspace.errorText {Text(error).foregroundStyle(.red).textSelection(.enabled).frame(maxWidth:480)}
     }.frame(maxWidth:.infinity,maxHeight:.infinity).background(Color(nsColor:.textBackgroundColor))
   }

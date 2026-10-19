@@ -89,3 +89,32 @@ enum Theme {
     static let attachment = "plus"
   }
 }
+
+/// A reduced-motion busy state retains its label without an indeterminate animation.
+struct WorkbenchProgress:View {
+  private let label:String?
+  @Environment(\.accessibilityReduceMotion) private var systemReducedMotion
+  private var reducedMotion:Bool {systemReducedMotion || WorkbenchMotion.fixtureReduced}
+  init(_ label:String?=nil) {self.label=label}
+  var body:some View {
+    if reducedMotion {
+      HStack(spacing:6) {
+        Image(systemName:"hourglass").accessibilityHidden(true)
+        if let label {Text(label)}
+      }.accessibilityLabel(label ?? "正在处理").accessibilityIdentifier("workbench-progress-static")
+    } else {
+      Group {
+        if let label {ProgressView(label)} else {ProgressView()}
+      }.accessibilityIdentifier("workbench-progress-animated")
+    }
+  }
+}
+
+/// Private UI fixture bundles can exercise reduced motion without changing macOS preferences.
+/// Shipping bundles have neither key and always follow the system environment.
+enum WorkbenchMotion {
+  static var fixtureReduced:Bool {
+    Bundle.main.object(forInfoDictionaryKey:"OpenMathFixtureRoot") is String &&
+      (Bundle.main.object(forInfoDictionaryKey:"OpenMathFixtureWindow") as? [String:Any])?["reduceMotion"] as? Bool==true
+  }
+}

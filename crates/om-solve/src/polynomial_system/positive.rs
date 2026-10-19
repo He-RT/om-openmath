@@ -79,6 +79,7 @@ pub(super) fn solve(
     let mut roots = vec![Solution {
         rules: vec![],
         condition: None,
+        required_condition: None,
         constants: vec![],
         multiplicity: 1,
         verification: Verification::ByConstruction,

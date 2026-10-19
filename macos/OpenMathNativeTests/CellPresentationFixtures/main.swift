@@ -6,7 +6,7 @@ import Foundation
     f.running=true;precondition(CellPresentationState.derive(f).status == .running)
     f.running=false;f.stopped=true;precondition(CellPresentationState.derive(f).status == .stopped)
     f.stopped=false;f.hasResult=true;precondition(CellPresentationState.derive(f).status == .unconfirmed)
-    f.hasMetadata=true;f.nature="exact";precondition(CellPresentationState.derive(f).status == .exact)
+    f.hasMetadata=true;f.structured=true;precondition(CellPresentationState.derive(f).status == .structured);f.structured=false;f.nature="exact";precondition(CellPresentationState.derive(f).status == .exact)
     for nature in ["machine","high_precision"] {f.nature=nature;precondition(CellPresentationState.derive(f).status == .numeric)}
     f.outputKind="plot";precondition(CellPresentationState.derive(f).status == .geometry)
     f.outputKind="scene3d";precondition(CellPresentationState.derive(f).status == .geometry)

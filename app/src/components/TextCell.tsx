@@ -5,9 +5,27 @@ import { CodeBlock } from "./CodeBlock";
 import type { Dialect } from "../kernel/generated/Dialect";
 import { locale, messages, type Messages } from "../i18n";
 interface MarkdownActions {t:Messages;onInsertCode?:((source:string,dialect:Dialect)=>void)|undefined}
+function texDelimiter(source:string,display:boolean){
+  const open=display?'\\[':'\\(',close=display?'\\]':'\\)';if(!source.startsWith(open))return;
+  const limit=Math.min(source.length,16386);let end=2;
+  for(;end<limit;end++){
+    if(!display&&/[\r\n]/.test(source[end]!))break;
+    if(!source.startsWith(close,end))continue;
+    let slashes=0;for(let index=end-1;index>=0&&source[index]==='\\';index--)slashes++;
+    if(slashes%2===0){const suffix=display?/^[\t ]*(?:\n|$)/.exec(source.slice(end+2)):null;if(display&&!suffix)return;
+      return {type:display?'mathBlock':'mathInline',raw:source.slice(0,end+2+(suffix?.[0].length??0)),text:source.slice(2,end)};
+    }
+  }
+  if(!display)return {type:'text',raw:source.slice(0,end),text:source.slice(0,end)};
+}
 const markdown = new Marked({
   gfm: true,
   extensions: [
+    {name:'texMathBlock',level:'block',start:source=>source.indexOf('\\['),tokenizer:source=>texDelimiter(source,true)},
+    {name:'texMathInline',level:'inline',start:source=>{const a=source.indexOf('\\('),b=source.indexOf('\\[');return a<0?b:b<0?a:Math.min(a,b);},tokenizer:source=>{
+      const token=texDelimiter(source,false);if(token)return token;
+      if(source.startsWith('\\[')){const end=source.indexOf('\\]',2),raw=source.slice(0,end>=0?end+2:source.indexOf('\n')>=0?source.indexOf('\n'):source.length);return {type:'text',raw,text:raw};}
+    }},
     {
       name: "mathBlock",
       level: "block",
@@ -24,7 +42,7 @@ const markdown = new Marked({
       level: "inline",
       start: (source) => source.indexOf("$"),
       tokenizer: (source) => {
-        const match = /^\$([^$\n]+?)\$/.exec(source);
+        const match = /^\$([^\s$](?:[^$\n]*?[^\s$])?)\$(?!\d)/.exec(source);
         return match
           ? { type: "mathInline", raw: match[0], text: match[1] ?? "" }
           : undefined;
@@ -32,6 +50,7 @@ const markdown = new Marked({
     },
   ],
 });
+export function markdownBlocks(source:string){return markdown.lexer(source);}
 function safeUrl(href: string) {
   if (href.startsWith("#")) return href;
   try {

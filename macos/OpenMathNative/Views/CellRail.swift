@@ -2,7 +2,8 @@ import SwiftUI
 
 struct CellRail:View {
   let state:CellPresentationState
-  @Environment(\.accessibilityReduceMotion) private var reduceMotion
+  @Environment(\.accessibilityReduceMotion) private var systemReducedMotion
+  private var reduceMotion:Bool {systemReducedMotion || WorkbenchMotion.fixtureReduced}
   var body:some View {
     Group {
       if state.status == .running && !reduceMotion {

@@ -79,8 +79,8 @@ struct NativeAssistantComposer:View {
       else if !assistant.allowsChanges {Text("讨论模式不会修改或运行笔记本").font(.system(size:11)).foregroundStyle(.secondary)}
       if assistant.importingAttachments>0 {Text("正在保存和准备附件…").font(.system(size:11)).foregroundStyle(.secondary)}
       if let error=assistant.attachmentError {Text(error).font(.system(size:11)).foregroundStyle(Theme.Color.conditional)}
-      if assistant.busy || assistant.status.hasPrefix("请求失败") || assistant.status.hasPrefix("操作") || assistant.status.hasPrefix("撤销结果") {
-        HStack(spacing:6) {if assistant.busy {ProgressView().controlSize(.mini)};Text(assistant.status).lineLimit(3)}.font(.system(size:11)).foregroundStyle(.secondary).accessibilityIdentifier("assistant-status")
+      if assistant.busy && assistant.messages.last?.role != "assistant" || assistant.status.hasPrefix("请求失败") || assistant.status.hasPrefix("操作") || assistant.status.hasPrefix("撤销结果") {
+        HStack(spacing:6) {if assistant.busy {WorkbenchProgress().controlSize(.mini)};Text(assistant.status).lineLimit(3)}.font(.system(size:11)).foregroundStyle(.secondary).accessibilityIdentifier("assistant-status")
       }
     }.popover(isPresented:$showReferences,arrowEdge:.bottom) {referencePanel}
       .popover(isPresented:$showModels,arrowEdge:.bottom) {modelPanel}

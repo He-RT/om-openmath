@@ -89,6 +89,7 @@ pub(crate) fn solve(
     let mut root = Solution {
         rules,
         condition: None,
+        required_condition: None,
         constants,
         multiplicity: 1,
         verification: Verification::ByConstruction,

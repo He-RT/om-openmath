@@ -54,6 +54,7 @@ extension NotebookRuntime {
       facts.hasMetadata=true
       facts.nature=summary.statement.value?.nature ?? ""
       facts.outputKind=summary.statement.value?.output_kind ?? ""
+      if let statement=summary.statement.value {facts.structured=statement.value_kind != "scalar" && !["plot","scene3d","solutions"].contains(statement.output_kind)}
       if let page=presenter?.presentation?.solutions {
         facts.conditional=page.solutions.contains{$0.condition_latex.value != nil}
         facts.verified=page.complete && !page.solutions.isEmpty && page.solutions.allSatisfy{

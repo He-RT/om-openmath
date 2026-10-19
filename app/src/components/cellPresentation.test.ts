@@ -24,3 +24,8 @@ test("source/definition freshness and solver evidence are independent of represe
   const legacy=outputFacts({items:[{type:"expr",out_index:1,latex:"4",input_form:"4",modern_form:"4"}],messages:[],timing_ms:1});
   expect(deriveCellPresentation(legacy).status).toBe("unconfirmed");
 });
+
+test('structured records never claim exactness from mixed fields or arbitrary certificate labels',()=>{
+  const output={items:[{type:'expr' as const,out_index:1,latex:'record',input_form:'Record[]',modern_form:'Record[]',nature:'symbolic' as const,unchanged:false,presentation:{view_id:'1',path:[],kind:'record' as const,row_count:0,column_count:0,offset:0,column_offset:0,columns:[],rows:[],source:null,origin:null}}],messages:[],timing_ms:1};
+  expect(deriveCellPresentation(outputFacts(output)).status).toBe('structured');expect(outputFacts(output).verified).toBe(false);expect(deriveCellPresentation({...outputFacts(output),error:true}).status).toBe('error');
+});

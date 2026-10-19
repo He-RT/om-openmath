@@ -42,6 +42,7 @@ import Foundation
     precondition(MarkdownRenderDocument.parse("```openmath\n2+2\n```\n").blocks.compactMap(\.code).first?.isOpenMath==true)
     precondition(MarkdownRenderDocument.parse("```\n# hidden\n```\n\n## **图形** 与 $x$\n正文\n# second").firstOutlineHeading=="图形 与 $x$")
     precondition(MarkdownRenderDocument.parse("### not a group\nplain").firstOutlineHeading==nil)
+    precondition(math(.parse(#"\( x + 1 \)"#))==[" x + 1 "])
     precondition(!actual.fallback)
     precondition(math(actual)==["x^2",#"\frac{1}{2}"#,"\nx = 2\n","y"],"math delimiter/code/URL/image protection mismatch: \(math(actual))")
     precondition(actual.runs.contains{if case .text("both")=$0.content {return $0.style.bold && $0.style.italic};return false})

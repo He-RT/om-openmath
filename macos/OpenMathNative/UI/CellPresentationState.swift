@@ -2,7 +2,7 @@ import Foundation
 
 struct CellPresentationState:Equatable,Sendable {
   enum Status:Equatable,Sendable {
-    case pending,running,verified,exact,numeric,geometry,conditional,stale(String),error,unevaluated,stopped,unconfirmed
+    case pending,running,verified,exact,numeric,geometry,structured,conditional,stale(String),error,unevaluated,stopped,unconfirmed
   }
   struct Facts:Sendable {
     var running=false,stopped=false,hasResult=false,sourceChanged=false
@@ -10,6 +10,7 @@ struct CellPresentationState:Equatable,Sendable {
     var error=false,conditional=false,verified=false,unevaluated=false,hasMetadata=false
     var nature=""
     var outputKind=""
+    var structured=false
     var byAgent=false
   }
   let status:Status,byAgent:Bool
@@ -26,6 +27,7 @@ struct CellPresentationState:Equatable,Sendable {
     else if facts.conditional {status = .conditional}
     else if facts.verified {status = .verified}
     else if facts.unevaluated {status = .unevaluated}
+    else if facts.structured {status = .structured}
     else if ["machine","high_precision"].contains(facts.nature) {status = .numeric}
     else {status = .exact}
     return .init(status:status,byAgent:facts.byAgent)
@@ -38,6 +40,7 @@ struct CellPresentationState:Equatable,Sendable {
     case .exact:return "精确值"
     case .numeric:return "数值近似"
     case .geometry:return "图形已生成"
+    case .structured:return "结构化结果"
     case .conditional:return "有条件成立"
     case .stale(let reason):return "结果过期 · "+reason
     case .error:return "计算出错"

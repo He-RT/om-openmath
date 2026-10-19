@@ -42,7 +42,7 @@ struct NotebookMathCell<Result:View,Tools:View>:View {
           }.font(.system(size:12)).padding(.leading,14)
         }
         if session.runtime.results[cell.id]==nil {HStack(spacing:6) {
-          if state.status == .running {ProgressView().controlSize(.mini)}
+          if state.status == .running {WorkbenchProgress().controlSize(.mini)}
           else {Image(systemName:symbol(state)).frame(width:13)}
           Text(state.label)
           if state.byAgent {Text("· 助手修改").foregroundStyle(Theme.Color.agent)}

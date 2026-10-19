@@ -3,7 +3,7 @@ import Foundation
 enum UIStrings {
   static let values:[String:String]=[
     "cell.pending":"尚未运行","cell.running":"正在计算…","cell.verified":"精确解，已代入验证",
-    "cell.exact":"精确值","cell.numeric":"数值近似","cell.conditional":"有条件成立",
+    "cell.exact":"精确值","cell.numeric":"数值近似","cell.structured":"结构化结果","cell.conditional":"有条件成立",
     "cell.stale":"结果过期","cell.error":"计算出错","cell.stopped":"已停止",
     "doc.edited":"已编辑","doc.saved":"已保存","kernel.ready":"内核就绪",
     "agent.turn_ended":"回合结束","agent.stopped":"已停止，已完成的修改保留",

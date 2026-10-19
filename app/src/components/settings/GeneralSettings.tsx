@@ -9,23 +9,27 @@ export function GeneralSettings({
   t,
   theme,
   onTheme,
+  section="general",
 }: {
   config: KernelConfig;
   controller: NotebookController;
   t: Messages;
   theme: string;
   onTheme: (theme: string) => void;
+  section?:"general"|"editing";
 }) {
   const [kernelVersion, setKernelVersion] = useState<string | null>(null);
   useEffect(() => {
+    if(section!=="general")return;
     let current = true;
     void controller.kernel.request({ type: "get_capabilities", platform: controller.kernel.kind === "wasm" ? "web" : "desktop" })
       .then((response) => { if (current && response.type === "capabilities") setKernelVersion(response.capabilities.kernel_version); })
       .catch(() => {});
     return () => { current = false; };
-  }, [controller]);
+  }, [controller,section]);
   return (
     <div className="preferences-fields">
+      {section==="general"&&<>
       <label>
         {t.language}
         <select
@@ -54,6 +58,8 @@ export function GeneralSettings({
           <option value="dark">{t.dark}</option>
         </select>
       </label>
+      </>}
+      {section==="editing"&&<>
       <label>
         {t.constants}
         <select
@@ -142,11 +148,12 @@ export function GeneralSettings({
           }
         />
       </label>
-      <details className="build-info" data-testid="openmath-build-info">
+      </>}
+      {section==="general"&&<details className="build-info" data-testid="openmath-build-info">
         <summary>OpenMath {buildInfo.version}</summary>
         {kernelVersion && <p>Rust {kernelVersion}</p>}
         <code aria-label="Source revision">{buildInfo.revision}</code>
-      </details>
+      </details>}
     </div>
   );
 }

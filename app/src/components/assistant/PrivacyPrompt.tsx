@@ -24,6 +24,9 @@ export function PrivacyPrompt({
   onClose,
   scope = "explanation",
   disclosure,
+  title,
+  actionLabel,
+  allowRemember=true,
 }: {
   kernel: KernelClient;
   profile: ProfileConfig;
@@ -32,6 +35,7 @@ export function PrivacyPrompt({
   onClose: () => void;
   scope?: string;
   disclosure?: string;
+  title?:string;actionLabel?:string;allowRemember?:boolean;
 }) {
   const [remember, setRemember] = useState(false);
   const root = useRef<HTMLDialogElement>(null);
@@ -82,18 +86,18 @@ export function PrivacyPrompt({
       <section
         className="privacy-dialog"
       >
-        <h2 id="privacy-title">{t.aiPrivacy}</h2>
+        <h2 id="privacy-title">{title??t.aiPrivacy}</h2>
         <p>{disclosure ?? t.explainPrivacy}</p>
         <code className="privacy-destination">{profile.base_url}</code>
         <p>{profile.model}</p>
-        <label>
+        {allowRemember&&<label>
           <input
             type="checkbox"
             checked={remember}
             onChange={(e) => setRemember(e.target.checked)}
           />
           {t.rememberConsent}
-        </label>
+        </label>}
         <div className="privacy-actions">
           <button onClick={onClose}>{t.cancel}</button>
           <button
@@ -109,7 +113,7 @@ export function PrivacyPrompt({
               onSend();
             }}
           >
-            {t.sendAI}
+            {actionLabel??t.sendAI}
           </button>
         </div>
       </section>

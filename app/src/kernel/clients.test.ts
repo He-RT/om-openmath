@@ -86,3 +86,10 @@ test('disposing before Worker readiness rejects initialization instead of leavin
   const initialized = expect(client.ready).rejects.toThrow('disposed');
   client.dispose(); await initialized; expect(port.terminated).toBe(true);
 });
+
+test('a masked connection-test draft cannot carry the configured key to another endpoint',async()=>{
+  const {newProfile}=await import('../components/settings/presets');const previous=config.llm;
+  config.llm={...previous,profiles:[{...newProfile('provider-model'),base_url:'https://configured.invalid/v1',model:'configured-model',api_key:'synthetic-owner-key'}]};
+  const port=new Port(),client=new WasmClient(()=>port);
+  try{await client.ready;const response=await client.request({type:'llm_test_profile',request_id:'draft-new-endpoint',profile:'provider-model',config:{...config.llm.profiles[0]!,api_key:'***',base_url:'https://different.invalid/v1'}});expect(response).toEqual({type:'error',message:'Enter the API key again for this endpoint'});expect(port.sent.some(item=>item.body.type==='llm_test_profile')).toBe(false);}finally{client.dispose();config.llm=previous;}
+});

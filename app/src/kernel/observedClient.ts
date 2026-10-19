@@ -49,6 +49,7 @@ export function observeKernel(kernel: KernelClient) {
     ...(kernel.commitSourceFile ? { commitSourceFile: kernel.commitSourceFile.bind(kernel) } : {}),
     ...(kernel.agentMath ? {agentMath:kernel.agentMath.bind(kernel)}:{}),
     ...(kernel.prepareAgentModel?{prepareAgentModel:kernel.prepareAgentModel.bind(kernel)}:{}),
+    ...(kernel.configureModels?{configureModels:kernel.configureModels.bind(kernel)}:{}),
     request: async (request: Request) => {
       const start =
         [

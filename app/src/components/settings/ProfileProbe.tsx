@@ -2,6 +2,12 @@ import { useEffect, useRef, useState } from "react";
 import type { KernelClient } from "../../kernel/client";
 import type { ProfileConfig } from "../../kernel/generated/ProfileConfig";
 import type { Messages } from "../../i18n";
+export function probeFailure(message:string,t:Messages,browser:boolean){
+  const zh=t.assistant==='助手';
+  if(/\b(401|403)\b/.test(message))return (zh?'认证被拒绝。请检查 API Key、模型权限和服务地址。':'Authentication rejected. Check the API key, model access, and endpoint.')+' '+message;
+  if(browser&&/CORS|network|HTTP request or UTF-8|fetch/i.test(message))return (zh?'浏览器未收到可读取的响应（CORS 或网络错误）。请允许此网页来源，或检查网络；这不能证明密钥无效。':'The browser received no readable response (CORS or network error). Allow this origin or check the network; this does not establish an invalid key.')+' '+message;
+  return message;
+}
 export function ProfileProbe({
   profile,
   kernel,
@@ -128,8 +134,7 @@ export function ProfileProbe({
       <p className="settings-hint">{t.testPrivacy}</p>
       {value.error && (
         <p role="alert" className="output-error">
-          {value.error}
-          {kernel.kind === "wasm" && <span> {t.corsHint}</span>}
+          {probeFailure(value.error,t,kernel.kind==='wasm')}
         </p>
       )}
       {value.response !== undefined && (

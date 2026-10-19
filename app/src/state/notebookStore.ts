@@ -12,6 +12,8 @@ import { mergeConfig } from "../kernel/mirror";
 import type { ChatTurnView } from "./assistant";
 import { projectAcceptedSource, sameSource, sameNotebookSource } from './sourceTransaction';
 import type {MathWork,MathResult} from '../agent/hostTypes';
+import type {ModelSettingsChange} from './modelRegistry';
+import {rememberConfig,rememberedNames} from './browserSettings';
 export interface UiCell extends CellInput {
   revision: number;
   status: CellStatus;
@@ -360,6 +362,7 @@ export class NotebookController {
       return;
     }
     this.store.setState({ config });
+    if(this.kernel.kind==='wasm'){try{rememberConfig(config,rememberedNames());}catch{this.store.setState({error:'Could not save browser settings'});}}
   }
   private valid(id: string, revision: number) {
     return (
@@ -386,6 +389,10 @@ export class NotebookController {
         : effective.config;
     this.store.setState({ config });
     return config;
+  }
+  async configureModels(change:ModelSettingsChange){
+    await this.flush();if(!this.kernel.configureModels)throw new Error('Provider settings require the Web host');
+    const config=await this.kernel.configureModels(change);this.store.setState({config});return config;
   }
   /** Explicit stale-result action: refresh required definitions using the kernel's graph order. */
   async update(id: string) {

@@ -1,5 +1,6 @@
 import type { KernelConfig } from "../kernel/generated/KernelConfig";
 import type { ProfileConfig } from "../kernel/generated/ProfileConfig";
+import type {ModelRegistryDocument,AssistantPreferences} from './modelRegistry';
 export const storageKey = "openmath-settings-v1";
 export interface SettingsStorage {
   getItem: (key: string) => string | null;
@@ -14,7 +15,14 @@ interface Stored {
   routes: Record<string, string>;
   profiles: ProfileConfig[];
   remembered?: string[];
+  registry?:ModelRegistryDocument;
+  assistant?:AssistantPreferences;
 }
+export function publicSettings(storage:SettingsStorage=localStorage):{registry?:ModelRegistryDocument;assistant?:AssistantPreferences}{try{
+  const value=read(storage),registry=value?.registry;
+  const valid=registry?.version===1&&Array.isArray(registry.providers)&&registry.providers.every(provider=>typeof provider.id==='string'&&typeof provider.name==='string'&&typeof provider.baseURL==='string'&&typeof provider.kind==='string'&&Array.isArray(provider.models)&&provider.models.every(model=>typeof model.id==='string'&&typeof model.apiName==='string'&&typeof model.displayName==='string'&&typeof model.tools==='boolean'&&typeof model.images==='boolean'&&(model.contextLimit===null||Number.isSafeInteger(model.contextLimit)&&model.contextLimit>0)));
+  return {...(valid?{registry}:{}),...(value?.assistant?{assistant:value.assistant}:{})};
+}catch{return {};}}
 function read(storage: SettingsStorage): Stored | null {
   const text = storage.getItem(storageKey);
   if (!text) return null;
@@ -49,6 +57,7 @@ export function rememberConfig(
   config: KernelConfig,
   names: Set<string>,
   storage: SettingsStorage = localStorage,
+  publicState?:{registry:ModelRegistryDocument;assistant:AssistantPreferences},
 ) {
   let previous: Stored | null = null;
   try {
@@ -88,6 +97,7 @@ export function rememberConfig(
     routes,
     profiles,
     remembered: [...names],
+    ...(previous?.registry?{registry:previous.registry}:{}),...(previous?.assistant?{assistant:previous.assistant}:{}),...publicState,
   };
   storage.setItem(storageKey, JSON.stringify(value));
 }

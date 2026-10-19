@@ -62,7 +62,8 @@ export class BrowserModelAdapter {
           abort = () => { decoder.cancel(); driver?.cancel(round.requestId); reject(new DOMException('Model request stopped', 'AbortError')); };
           signal?.addEventListener('abort', abort, { once: true });
           this.onDispatch?.(round);
-          driver.start(round.requestId, { method: 'POST', url: round.url, headers: round.headers, body: decoder.body(), stream: round.input.stream }, round.timeoutMs);
+          const body=JSON.stringify({...JSON.parse(decoder.body()) as Record<string,unknown>,...round.extraBody});
+          driver.start(round.requestId, { method: 'POST', url: round.url, headers: round.headers, body, stream: round.input.stream }, round.timeoutMs);
         });
         signal?.throwIfAborted();
         this.onResult(result);

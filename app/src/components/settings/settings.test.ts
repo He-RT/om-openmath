@@ -114,3 +114,20 @@ test("preset switches and cloning cannot carry opaque provider credentials acros
   expect(removeProfile(config.llm, "p").profiles).toEqual([]);
   expect(removeProfile(config.llm, "p").translate).toBe("");
 });
+
+test('provider registry shares only an opaque credential reference, keeps independent model capabilities, and rejects protected input overrides',async()=>{
+  const {registryDraft,newModel,buildModelSettings,defaultAssistantPreferences,modelSettingsError}=await import('../../state/modelRegistry');
+  const providers=registryDraft({...config.llm,profiles:[{...config.llm.profiles[0]!,api_key:'***'}]},new Set(['p']));
+  providers[0]!.models.push({...newModel(),apiName:'second',displayName:'Second',tools:false,images:true,contextLimit:128000});
+  const value=buildModelSettings(config.llm,providers,{...defaultAssistantPreferences,defaultMode:'discuss',defaultModel:providers[0]!.models[1]!.id});
+  expect(value.inheritance).toEqual({p:'p',[providers[0]!.models[1]!.id]:'p'});expect(value.llm.profiles[1]).toMatchObject({model:'second',api_key:'***',supports_tools:false});
+  expect(JSON.stringify(value.registry)).not.toContain('***');expect(JSON.stringify(value.registry)).not.toContain('synthetic-key');expect(value.registry.providers[0]!.models[1]).toMatchObject({images:true,contextLimit:128000});expect(modelSettingsError(value)).toBeNull();
+  value.llm.profiles[1]!.extra_body={messages:[]};expect(modelSettingsError(value)).toContain('cannot replace');
+});
+
+test('metadata and assistant preferences survive general settings saves; auth failures are not mislabeled CORS',async()=>{
+  const {publicSettings}=await import('../../state/browserSettings');const {probeFailure}=await import('./ProfileProbe');const {messages}=await import('../../i18n');
+  const storage=new Memory(),assistant={sendShortcut:'command' as const,defaultMode:'discuss' as const,defaultModel:'p'},registry={version:1 as const,providers:[]};
+  rememberConfig(config,new Set(),storage,{registry,assistant});rememberConfig({...config,general:{...config.general,language:'zh-CN'}},new Set(),storage);expect(publicSettings(storage)).toEqual({registry,assistant});
+  expect(probeFailure('HTTP status 401',messages('en'),true)).toContain('Authentication rejected');expect(probeFailure('HTTP status 401',messages('en'),true)).not.toContain('CORS');expect(probeFailure('HTTP request or UTF-8 response failed',messages('en'),true)).toContain('CORS or network error');
+});

@@ -29,6 +29,6 @@ export function sourceMutation(file: NotebookFile, request: Request): NotebookFi
 /** Keep browser credentials in memory across a restart; masks never replace actual values. */
 export function mergeConfig(next: KernelConfig, previous?: KernelConfig): KernelConfig {
   const config = structuredClone(next);
-  for (const profile of config.llm.profiles) if (profile.api_key === '***') profile.api_key = previous?.llm.profiles.find(p => p.name === profile.name)?.api_key ?? null;
+  for (const profile of config.llm.profiles) if (profile.api_key === '***') profile.api_key = previous?.llm.profiles.find(p => p.name === profile.name&&p.kind===profile.kind&&p.base_url===profile.base_url)?.api_key ?? null;
   return config;
 }

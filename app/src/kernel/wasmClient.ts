@@ -10,7 +10,8 @@ import type { KernelConfig } from "./generated/KernelConfig";
 import type { NotebookFile } from "./generated/NotebookFile";
 import { LlmDriver } from "./llmDriver";
 import { sourceMutation, mutatesSource, mergeConfig } from "./mirror";
-import { restoreConfig } from "../state/browserSettings";
+import { restoreConfig,rememberConfig,storageKey } from "../state/browserSettings";
+import type {ModelSettingsChange} from '../state/modelRegistry';
 import type {MathWork,MathResult} from '../agent/hostTypes';
 import {prepareProfileModel} from '../agent/profileModel';
 type Packet =
@@ -148,6 +149,22 @@ export class WasmClient implements KernelClient {
     return result.value;
   }
   async prepareAgentModel(name:string){await this.readyPromise;const profile=this.config?.llm.profiles.find(profile=>profile.name===name);if(!profile)throw new Error('Configured model is unavailable');return prepareProfileModel(profile,this.configRevision);}
+  /** Resolve shared opaque credentials inside the owner, and publish one browser settings record. */
+  async configureModels(change:ModelSettingsChange):Promise<KernelConfig>{
+    await this.readyPromise;if(!this.config)throw new Error('Kernel configuration unavailable');
+    const next={...structuredClone(this.config),llm:structuredClone(change.llm)};
+    for(const profile of next.llm.profiles)if(profile.api_key==='***'){
+      const original=this.config.llm.profiles.find(item=>item.name===(change.inheritance[profile.name]??profile.name));
+      if(!original?.api_key||original.api_key==='***'||original.kind!==profile.kind||original.base_url!==profile.base_url)throw new Error('Enter the API key again for this provider');
+      profile.api_key=original.api_key;
+    }
+    const previous=localStorage.getItem(storageKey),memory=new Map<string,string>();
+    rememberConfig(next,new Set(change.remembered),{getItem:key=>memory.get(key)??localStorage.getItem(key),setItem:(key,value)=>{memory.set(key,value);},removeItem:key=>{memory.delete(key);}},{registry:change.registry,assistant:change.assistant});
+    const serialized=memory.get(storageKey);if(!serialized)throw new Error('Settings could not be prepared');
+    localStorage.setItem(storageKey,serialized);
+    try{const result=await this.request({type:'set_config',config:next});if(result.type==='error')throw new Error(result.message);const current=await this.request({type:'get_config'});if(current.type!=='config')throw new Error('Settings acknowledgement unavailable');return current.config;}
+    catch(error){if(localStorage.getItem(storageKey)===serialized){if(previous===null)localStorage.removeItem(storageKey);else localStorage.setItem(storageKey,previous);}throw error;}
+  }
   async commitSourceFile(expected: NotebookFile, desired: NotebookFile): Promise<Response> {
     await this.readyPromise;
     const revision = ++this.revision;
@@ -157,6 +174,10 @@ export class WasmClient implements KernelClient {
   }
   async request(request: Request): Promise<Response> {
     await this.readyPromise;
+    if(request.type==='llm_test_profile'&&request.config?.api_key==='***'){
+      const original=this.config?.llm.profiles.find(profile=>profile.name===request.config!.name);
+      if(!original||original.base_url!==request.config.base_url||original.kind!==request.config.kind)return {type:'error',message:'Enter the API key again for this endpoint'};
+    }
     if (request.type === "llm_cancel") this.driver.cancel(request.request_id);
     const previous = this.file;
     const changesSource = mutatesSource(request);

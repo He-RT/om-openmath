@@ -24,5 +24,5 @@ export interface ModelResult {
 /** A host-prepared immutable round. URL and authentication stay outside canonical history/codec input. */
 export interface PreparedModelRound {
   requestId: string; messageId: string; taskId: string; turnId: string;
-  input: ModelInput; url: string; headers: [string, string][]; timeoutMs: number;
+  input: ModelInput; url: string; headers: [string, string][]; timeoutMs: number;extraBody?:Record<string,unknown>;
 }

@@ -1,7 +1,7 @@
 import type {ModelBinding,AgentCanonicalMessage,ModelResult} from './modelTypes';
 import type {ToolReply,ToolName} from './toolTypes';
 import type {UserPresentation} from './attachments';
-export interface BrowserAgentModel {apiModel:string;displayName:string;supportsTools:boolean;supportsImages?:boolean;binding:ModelBinding;url:string;headers:[string,string][];maxOutputTokens:number;timeoutMs:number;contextWindow:number|null}
+export interface BrowserAgentModel {apiModel:string;displayName:string;supportsTools:boolean;supportsImages?:boolean;temperature?:number;extraBody?:Record<string,unknown>;binding:ModelBinding;url:string;headers:[string,string][];maxOutputTokens:number;timeoutMs:number;contextWindow:number|null}
 export interface BrowserAgentTask {
   taskId:string;sessionId:string;documentId:string;generation:number;user:AgentCanonicalMessage;mode:'execute'|'discuss';version:string;model:BrowserAgentModel;
   maxModelRequests?:number;maxToolCalls?:number;maxDurationMs?:number;

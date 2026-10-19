@@ -1,284 +1,57 @@
-import { useState } from "react";
-import type { KernelConfig } from "../../kernel/generated/KernelConfig";
-import type { NotebookController } from "../../state/notebookStore";
-import type { Messages } from "../../i18n";
-import {
-  newProfile,
-  uniqueName,
-  cloneProfile,
-  renameProfile,
-  removeProfile,
-  features,
-  validationError,
-} from "./presets";
-import { rememberConfig, rememberedNames } from "../../state/browserSettings";
-import { ProfileForm } from "./ProfileForm";
-export function ModelSettings({
-  config,
-  controller,
-  t,
-  featuresOnly = false,
-}: {
-  config: KernelConfig;
-  controller: NotebookController;
-  t: Messages;
-  featuresOnly?: boolean;
-}) {
-  const [llm, setLlm] = useState(() => structuredClone(config.llm)),
-    [selected, setSelected] = useState(0),
-    [remember, setRemember] = useState(() =>
-      controller.kernel.kind === "wasm" ? rememberedNames() : new Set<string>(),
-    ),
-    [error, setError] = useState<string | null>(null),
-    [saved, setSaved] = useState(false),
-    [saving, setSaving] = useState(false);
-  const [ids, setIds] = useState(() =>
-      config.llm.profiles.map(() => crypto.randomUUID()),
-    ),
-    [invalidFields, setInvalidFields] = useState<Record<string, boolean>>({});
-  const change = (next: typeof llm) => {
-    setLlm(next);
-    setSaved(false);
-    setError(null);
+import {useMemo,useState} from 'react';
+import type {KernelConfig} from '../../kernel/generated/KernelConfig';
+import type {NotebookController} from '../../state/notebookStore';
+import type {Messages} from '../../i18n';
+import {rememberedNames} from '../../state/browserSettings';
+import {assistantPreferences,registryDraft,newProvider,newModel,buildModelSettings,modelSettingsError,settingsChanged,jsonObject,type ProviderDraft,type ModelDraft} from '../../state/modelRegistry';
+import {ProfileProbe} from './ProfileProbe';
+import {PrivacyPrompt} from '../assistant/PrivacyPrompt';
+import {newProfile} from './presets';
+import {WorkbenchIcon} from '../WorkbenchIcon';
+export function ModelSettings({config,controller,t,featuresOnly=false}:{config:KernelConfig;controller:NotebookController;t:Messages;featuresOnly?:boolean}){
+  const zh=t.assistant==='助手',say=(cn:string,en:string)=>zh?cn:en;
+  const [providers,setProviders]=useState(()=>registryDraft(config.llm,rememberedNames())),[selected,setSelected]=useState(()=>providers[0]?.id??''),[preferences,setPreferences]=useState(assistantPreferences),[enabled,setEnabled]=useState(config.llm.enabled);
+  const [routes,setRoutes]=useState(()=>({explain:config.llm.explain,fix:config.llm.fix,complete:config.llm.complete,translate:config.llm.translate})),[context,setContext]=useState(config.llm.send_context),[probeId,setProbe]=useState('');
+  const [error,setError]=useState<string|null>(null),[saved,setSaved]=useState(false),[saving,setSaving]=useState(false),[notice,setNotice]=useState(false);
+  const changed=()=>{setSaved(false);setError(null);};
+  const provider=providers.find(item=>item.id===selected),model=provider?.models.find(item=>item.id===probeId)??provider?.models[0];
+  const patchProvider=(patch:Partial<ProviderDraft>)=>{changed();setProviders(providers.map(item=>item.id===selected?{...item,...patch}:item));};
+  const patchModel=(id:string,patch:Partial<ModelDraft>)=>{if(provider)patchProvider({models:provider.models.map(item=>item.id===id?{...item,...patch}:item)});};
+  const prepared=useMemo(()=>{try{const value=buildModelSettings({...config.llm,...routes,enabled,send_context:context},providers,preferences);return {value,error:modelSettingsError(value)};}catch{return {value:null,error:'Invalid JSON object'};}},[config.llm,routes,enabled,context,providers,preferences]);
+  const probe=useMemo(()=>{if(!provider||!model)return null;try{return buildModelSettings({...config.llm,translate:'',explain:'',fix:'',complete:'',chat:''},[{...provider,models:[model]}],preferences).llm.profiles[0]??null;}catch{return {...newProfile(model.id),base_url:provider.baseURL,model:model.apiName,api_key:provider.key};}},[provider,model,config.llm,preferences]);
+  const chatModels=prepared.value?.llm.profiles.filter(item=>['openai_chat','anthropic'].includes(item.kind))??[],allModels=providers.flatMap(provider=>provider.models.map(model=>({...model,providerName:provider.name,kind:provider.kind})));
+  const save=async(accepted=false)=>{
+    if(!prepared.value||prepared.error){setError(`${t.invalidSettings}: ${prepared.error??'Invalid settings'}`);return;}
+    if(!accepted&&providers.some(item=>item.remember)&&rememberedNames().size===0){setNotice(true);return;}
+    setNotice(false);setSaving(true);setError(null);
+    try{const effective=await controller.configureModels(prepared.value);setProviders(registryDraft(effective.llm,new Set(prepared.value.remembered)));setPreferences(prepared.value.assistant);setSaved(true);window.dispatchEvent(new Event(settingsChanged));}
+    catch(error){setError(error instanceof Error?error.message:t.aiRequestError);}finally{setSaving(false);}
   };
-  const profile = llm.profiles[selected];
-  const save = async () => {
-    const invalid = Object.values(invalidFields).some(Boolean)
-      ? "Invalid JSON fields"
-      : validationError(llm);
-    if (invalid) {
-      setError(`${t.invalidSettings}: ${invalid}`);
-      return;
-    }
-    setSaving(true);
-    setError(null);
-    try {
-      // Validate opaque key remembrance before native/browser state changes.
-      if (controller.kernel.kind === "wasm") {
-        const memory = new Map<string, string>();
-        const fake = {
-          getItem: (k: string) => memory.get(k) ?? localStorage.getItem(k),
-          setItem: (k: string, v: string) => {
-            memory.set(k, v);
-          },
-          removeItem: (k: string) => {
-            memory.delete(k);
-          },
-        };
-        rememberConfig({ ...config, llm }, remember, fake);
-      }
-      const effective = await controller.configureLlm(llm);
-      if (controller.kernel.kind === "wasm")
-        rememberConfig(effective, remember);
-      setLlm(structuredClone(effective.llm));
-      setSaved(true);
-    } catch (e) {
-      setError(e instanceof Error ? e.message : t.aiRequestError);
-    } finally {
-      setSaving(false);
-    }
-  };
-  return (
-    <div className="model-settings">
-      <label className="settings-toggle">
-        <input
-          type="checkbox"
-          checked={llm.enabled}
-          onChange={(e) => change({ ...llm, enabled: e.target.checked })}
-        />
-        {t.enableAI}
-      </label>
-      {featuresOnly ? (
-        <>
-          <div className="feature-mappings">
-            {features.map((f) => (
-              <label key={f}>
-                {
-                  t[
-                    f === "fix"
-                      ? "fixAI"
-                      : f === "complete"
-                        ? "completion"
-                        : f === "translate"
-                          ? "translation"
-                          : f === "explain"
-                            ? "explanation"
-                            : "assistant"
-                  ]
-                }
-                <select
-                  aria-label={`${t.featureProfile} ${f}`}
-                  value={llm[f]}
-                  onChange={(e) => change({ ...llm, [f]: e.target.value })}
-                >
-                  <option value="">{t.disabled}</option>
-                  {llm.profiles
-                    .filter(
-                      (p) =>
-                        f === "complete" ||
-                        (["openai_chat", "anthropic"].includes(p.kind) &&
-                          (f !== "chat" || p.supports_tools)),
-                    )
-                    .map((p) => (
-                      <option key={p.name} value={p.name}>
-                        {p.name}
-                      </option>
-                    ))}
-                </select>
-              </label>
-            ))}
-          </div>
-          <label className="settings-toggle">
-            <input
-              type="checkbox"
-              checked={llm.send_context}
-              onChange={(e) =>
-                change({ ...llm, send_context: e.target.checked })
-              }
-            />
-            {t.sendContext}
-          </label>
-        </>
-      ) : (
-        <div className="profile-layout">
-          <div className="profile-list" role="listbox" aria-label={t.profiles}>
-            {llm.profiles.map((p, i) => (
-              <button
-                type="button"
-                role="option"
-                aria-selected={i === selected}
-                key={i}
-                onClick={() => setSelected(i)}
-              >
-                {p.name || t.unnamedProfile}
-              </button>
-            ))}
-            <div className="profile-list-actions">
-              <button
-                type="button"
-                onClick={() => {
-                  change({
-                    ...llm,
-                    profiles: [
-                      ...llm.profiles,
-                      newProfile(uniqueName("model", llm.profiles)),
-                    ],
-                  });
-                  setIds((old) => [...old, crypto.randomUUID()]);
-                  setSelected(llm.profiles.length);
-                }}
-              >
-                {t.addProfile}
-              </button>
-              {profile && (
-                <>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      change({
-                        ...llm,
-                        profiles: [
-                          ...llm.profiles,
-                          cloneProfile(profile, llm.profiles),
-                        ],
-                      });
-                      setIds((old) => [...old, crypto.randomUUID()]);
-                      setSelected(llm.profiles.length);
-                    }}
-                  >
-                    {t.duplicateProfile}
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      change(removeProfile(llm, profile.name));
-                      setIds((old) => old.filter((_, i) => i !== selected));
-                      setInvalidFields((old) =>
-                        Object.fromEntries(
-                          Object.entries(old).filter(
-                            ([key]) => !key.startsWith(ids[selected] + ":"),
-                          ),
-                        ),
-                      );
-                      setSelected(Math.max(0, selected - 1));
-                    }}
-                  >
-                    {t.deleteProfile}
-                  </button>
-                </>
-              )}
-            </div>
-          </div>
-          {profile && (
-            <ProfileForm
-              key={ids[selected]}
-              invalid={Object.entries(invalidFields).some(
-                ([key, value]) => value && key.startsWith(ids[selected] + ":"),
-              )}
-              onValidity={(field, valid) =>
-                setInvalidFields((old) => {
-                  const key = ids[selected] + ":" + field;
-                  if (old[key] === !valid) return old;
-                  return { ...old, [key]: !valid };
-                })
-              }
-              profile={profile}
-              kernel={controller.kernel}
-              t={t}
-              remember={remember.has(profile.name)}
-              onRemember={(value) => {
-                setSaved(false);
-                setRemember((old) => {
-                  const next = new Set(old);
-                  if (value) next.add(profile.name);
-                  else next.delete(profile.name);
-                  return next;
-                });
-              }}
-              onRename={(name) => {
-                change(renameProfile(llm, profile.name, name));
-                setRemember((old) => {
-                  const next = new Set(old);
-                  if (next.delete(profile.name)) next.add(name);
-                  return next;
-                });
-              }}
-              onChange={(patch) => {
-                const next = {
-                  ...llm,
-                  profiles: llm.profiles.map((p, i) =>
-                    i === selected ? { ...p, ...patch } : p,
-                  ),
-                };
-                for (const feature of features) {
-                  const mapped = next.profiles.find(
-                    (p) => p.name === next[feature],
-                  );
-                  if (
-                    mapped &&
-                    feature !== "complete" &&
-                    (!["openai_chat", "anthropic"].includes(mapped.kind) ||
-                      (feature === "chat" && !mapped.supports_tools))
-                  )
-                    next[feature] = "";
-                }
-                change(next);
-              }}
-            />
-          )}
-        </div>
-      )}
-      {error && (
-        <p role="alert" className="output-error">
-          {error}
-        </p>
-      )}
-      {saved && <p role="status">{t.settingsSaved}</p>}
-      <div className="settings-save">
-        <button type="button" disabled={saving} onClick={() => void save()}>
-          {saving ? t.saving : t.saveSettings}
-        </button>
-      </div>
-    </div>
-  );
+  const jsonError=(source:string,headers=false)=>{try{jsonObject(source,headers);return false;}catch{return true;}};
+  return <div className="model-settings v2-model-settings">
+    <fieldset className="settings-draft" disabled={saving}>
+    <section className="settings-pane" id="settings-pane-models" role="tabpanel" aria-labelledby="settings-tab-models" hidden={featuresOnly}>
+      <h3>{say('模型','Models')}</h3><label className="settings-toggle"><input type="checkbox" checked={enabled} onChange={event=>{changed();setEnabled(event.target.checked);}}/>{t.enableAI}</label>
+      <div className="provider-layout"><div className="provider-accounts"><div role="listbox" aria-label={say('供应商','Providers')}>{providers.map((item,index)=><button key={item.id} role="option" aria-selected={selected===item.id} tabIndex={selected===item.id?0:-1} onClick={()=>setSelected(item.id)} onKeyDown={event=>{if(['ArrowUp','ArrowDown','Home','End'].includes(event.key)){event.preventDefault();const next=providers[event.key==='Home'?0:event.key==='End'?providers.length-1:(index+(event.key==='ArrowDown'?1:providers.length-1))%providers.length];if(next){setSelected(next.id);document.getElementById('provider-'+next.id)?.focus();}}}} id={'provider-'+item.id}>{item.name||say('新供应商','New provider')}<small>{item.models.length} {say('个模型','models')}</small></button>)}</div><div className="provider-account-actions"><button onClick={()=>{changed();const item=newProvider();setProviders([...providers,item]);setSelected(item.id);}}><WorkbenchIcon name="plus"/>{say('添加供应商','Add provider')}</button><button disabled={!provider} onClick={()=>{changed();const remaining=providers.filter(item=>item.id!==selected);setProviders(remaining);setSelected(remaining[0]?.id??'');}}>{say('删除供应商','Remove provider')}</button></div></div>
+      {provider?<div className="provider-form"><div className="provider-basics"><label>{say('供应商显示名','Provider display name')}<input value={provider.name} onChange={event=>patchProvider({name:event.target.value})}/></label><label>{t.providerType}<select aria-label={t.providerType} value={provider.kind} onChange={event=>{const kind=event.target.value as ProviderDraft['kind'],chat=['openai_chat','anthropic'].includes(kind);patchProvider({kind,key:null,sourceProfile:null,headersSource:'{}',models:provider.models.map(model=>({...model,tools:chat&&model.tools,images:chat&&model.images}))});}}>{(['openai_chat','anthropic','openai_fim','ollama_fim','mistral_fim'] as const).map(kind=><option key={kind} value={kind}>{t[kind]}</option>)}</select></label></div>
+        <label>Base URL<input spellCheck={false} value={provider.baseURL} placeholder="https://…/v1" onChange={event=>patchProvider({baseURL:event.target.value,key:null,sourceProfile:null,headersSource:'{}'})}/></label>
+        <label className="settings-toggle"><input type="checkbox" checked={provider.requiresKey} onChange={event=>patchProvider({requiresKey:event.target.checked,...(!event.target.checked?{key:null}: {})})}/>{t.requireKey}</label>
+        <label>API Key<input aria-label="API Key" type="password" autoComplete="new-password" value={provider.key==='***'?'':provider.key??''} placeholder={provider.key==='***'?say('已有可用密钥；输入以替换','A key is available; type to replace'):t.keyPlaceholder} onChange={event=>patchProvider({key:event.target.value||null})}/><button className="text-control" onClick={()=>patchProvider({key:null})}>{t.clearKey}</button></label>
+        <label className="settings-toggle"><input type="checkbox" checked={provider.remember} onChange={event=>patchProvider({remember:event.target.checked})}/>{say('在此浏览器记住密钥','Remember key in this browser')}</label><p className="settings-hint">{say('URL、协议和密钥由这个供应商的所有模型共用。','All models from this provider share its URL, protocol, and key.')}</p>
+        <div className="registered-models-header"><h4>{say('模型列表','Models')}</h4><button onClick={()=>patchProvider({models:[...provider.models,newModel()]})}><WorkbenchIcon name="plus"/>{say('添加模型','Add model')}</button></div>
+        {provider.models.map((item,index)=><fieldset className="registered-model" key={item.id} aria-label={say(`模型 ${index+1}`,`Model ${index+1}`)}><legend>{item.displayName||item.apiName||say(`模型 ${index+1}`,`Model ${index+1}`)}</legend><div className="model-fields"><label>{say('API 模型名称','API model name')}<input spellCheck={false} value={item.apiName} onChange={event=>patchModel(item.id,{apiName:event.target.value})}/></label><label>{say('显示名','Display name')}<input value={item.displayName} onChange={event=>patchModel(item.id,{displayName:event.target.value})}/></label></div><div className="model-capabilities"><label><input type="checkbox" checked={item.tools} disabled={!['openai_chat','anthropic'].includes(provider.kind)} onChange={event=>patchModel(item.id,{tools:event.target.checked})}/>{t.supportsTools}</label><label><input type="checkbox" checked={item.images} disabled={!['openai_chat','anthropic'].includes(provider.kind)} onChange={event=>patchModel(item.id,{images:event.target.checked})}/>{say('图片输入','Image input')}</label></div><label className="model-context-limit">{say('上下文上限（tokens）','Context limit (tokens)')}<input type="number" min="1" max="100000000" placeholder={say('未知','Unknown')} value={item.contextLimit??''} onChange={event=>patchModel(item.id,{contextLimit:event.target.value===''?null:Number(event.target.value)})}/></label>
+          <details className="model-advanced"><summary>{say('请求参数','Request parameters')}</summary><div className="profile-numbers"><label>{t.temperature}<input type="number" min="0" max={provider.kind==='anthropic'?1:2} step=".1" value={item.temperature} onChange={event=>patchModel(item.id,{temperature:Number(event.target.value)})}/></label><label>{t.maxTokens}<input type="number" min="1" value={item.maxTokens} onChange={event=>patchModel(item.id,{maxTokens:Number(event.target.value)})}/></label><label>{t.httpTimeout}<input type="number" min="1" value={item.timeoutMs} onChange={event=>patchModel(item.id,{timeoutMs:Number(event.target.value)})}/></label></div><label>{t.extraParameters}<textarea aria-label={t.extraParameters} spellCheck={false} value={item.parametersSource} onChange={event=>patchModel(item.id,{parametersSource:event.target.value})}/>{jsonError(item.parametersSource)&&<small role="alert">{t.invalidJson}</small>}</label></details><button className="remove-model" onClick={()=>patchProvider({models:provider.models.filter(model=>model.id!==item.id)})}>{say('移除模型','Remove model')}</button>
+        </fieldset>)}
+        <details className="provider-advanced"><summary>{t.extraHeaders}</summary><label>{t.extraHeaders}<textarea aria-label={t.extraHeaders} spellCheck={false} value={provider.headersSource} onChange={event=>patchProvider({headersSource:event.target.value})}/>{jsonError(provider.headersSource,true)&&<small role="alert">{t.invalidJson}</small>}</label></details>
+        {provider.models.length>1&&<label>{say('测试模型','Model to test')}<select aria-label={say('测试模型','Model to test')} value={model?.id??''} onChange={event=>setProbe(event.target.value)}>{provider.models.map(item=><option key={item.id} value={item.id}>{item.displayName||item.apiName||say('未命名模型','Unnamed model')}</option>)}</select></label>}
+        {probe&&<ProfileProbe profile={provider.key==='***'&&provider.sourceProfile?{...probe,name:provider.sourceProfile}:probe} kernel={controller.kernel} t={t} invalid={!!prepared.error||provider.requiresKey&&!provider.key}/>}<p className="settings-hint">{say('浏览器访问需要供应商允许 CORS。测试只发送最小请求，不发送笔记本，也不保存草稿。','The provider must permit browser CORS. Testing sends a minimal request, without notebook content or saving the draft.')}</p>
+      </div>:<div className="provider-empty"><p>{say('添加一个供应商，再填写你要使用的模型。','Add a provider, then enter the models you want to use.')}</p></div>}</div>
+    </section>
+    <section className="settings-pane" id="settings-pane-assistant" role="tabpanel" aria-labelledby="settings-tab-assistant" hidden={!featuresOnly}><h3>{say('助手','Assistant')}</h3><div className="preferences-fields"><label>{say('发送快捷键','Send shortcut')}<select aria-label={say('发送快捷键','Send shortcut')} value={preferences.sendShortcut} onChange={event=>{changed();setPreferences({...preferences,sendShortcut:event.target.value as 'enter'|'command'});}}><option value="enter">Enter</option><option value="command">⌘↩ / Ctrl↩</option></select></label><label>{say('默认模式','Default mode')}<select aria-label={say('默认模式','Default mode')} value={preferences.defaultMode} onChange={event=>{changed();setPreferences({...preferences,defaultMode:event.target.value as 'execute'|'discuss'});}}><option value="execute">{say('执行','Execute')}</option><option value="discuss">{say('讨论','Discuss')}</option></select></label><label>{say('默认模型','Default model')}<select aria-label={say('默认模型','Default model')} value={preferences.defaultModel} onChange={event=>{changed();setPreferences({...preferences,defaultModel:event.target.value});}}><option value="">{say('选择已配置模型','Choose a configured model')}</option>{allModels.filter(item=>['openai_chat','anthropic'].includes(item.kind)).map(item=><option key={item.id} value={item.id} disabled={preferences.defaultMode==='execute'&&!item.tools}>{item.providerName} · {item.displayName||item.apiName}{!item.tools?say('（仅讨论）',' (Discuss only)'):''}</option>)}</select></label></div><p className="settings-hint">{say('默认项在新对话中使用。保存后的发送快捷键立即生效，运行中的请求保持原来的模型和模式。','Defaults apply to new conversations. The saved shortcut applies immediately; running requests keep their original model and mode.')}</p>
+      <details className="assistant-feature-settings"><summary>{say('其他 AI 功能','Other AI features')}</summary><div className="feature-mappings">{(['explain','fix','complete'] as const).map(feature=><label key={feature}>{feature==='explain'?t.explanation:feature==='fix'?t.fixAI:t.completion}<select aria-label={`${t.featureProfile} ${feature}`} value={routes[feature]} onChange={event=>{changed();setRoutes({...routes,[feature]:event.target.value});}}><option value="">{t.disabled}</option>{(feature==='complete'?prepared.value?.llm.profiles??[]:chatModels).map(item=><option key={item.name} value={item.name}>{allModels.find(model=>model.id===item.name)?.displayName||item.model}</option>)}</select></label>)}</div><label className="settings-toggle"><input type="checkbox" checked={context} onChange={event=>{changed();setContext(event.target.checked);}}/>{t.sendContext}</label></details>
+    </section>
+    </fieldset>
+    {error&&<p role="alert" className="output-error">{error}</p>}{saved&&<p role="status">{t.settingsSaved}</p>}<div className="settings-save"><button disabled={saving} onClick={()=>void save()}>{saving?t.saving:t.saveSettings}</button></div>
+    {notice&&prepared.value?.llm.profiles[0]&&<PrivacyPrompt kernel={controller.kernel} profile={prepared.value.llm.profiles[0]} t={t} allowRemember={false} title={say('在此浏览器记住密钥？','Remember keys in this browser?')} actionLabel={say('保存并记住','Save and remember')} disclosure={say('勾选“记住密钥”的供应商密钥将保存在此浏览器的本地存储中，供以后打开时使用。同源网页脚本能够读取它们；不会写进笔记本文件。','Keys for providers with “Remember key” selected will be saved in this browser’s local storage for later visits. Scripts on this origin can read them. They are not written into notebook files.')} onClose={()=>setNotice(false)} onSend={()=>void save(true)}/>}
+  </div>;
 }

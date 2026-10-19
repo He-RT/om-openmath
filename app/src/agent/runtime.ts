@@ -87,9 +87,9 @@ export class BrowserAgentRuntime{
             const attachment=await store.attachment(task.documentId,part.media_ref);if(!attachment?.image)throw new Error('A conversation image is unavailable; the message was retained');
             images.push({message_id:record.canonical.message_id,part_id:part.part_id,media_ref:part.media_ref,media_type:attachment.image.mediaType,data:await blobBase64(attachment.image.blob)});
           }
-          const input:ModelInput={binding:task.model.binding,api_model:task.model.apiModel,messages:structuredClone(messages),results:structuredClone(results),images,tools:declarations.map(({name,description,parameters})=>({name,description,parameters})),max_output_tokens:task.model.maxOutputTokens,temperature:null,stream:true};
+          const input:ModelInput={binding:task.model.binding,api_model:task.model.apiModel,messages:structuredClone(messages),results:structuredClone(results),images,tools:declarations.map(({name,description,parameters})=>({name,description,parameters})),max_output_tokens:task.model.maxOutputTokens,temperature:task.model.temperature??null,stream:true};
           await store.append(task.documentId,task.sessionId,{kind:'input',taskId:task.taskId,turnId,input});
-          signal.throwIfAborted();adapter.prepare({requestId,messageId:'assistant-'+crypto.randomUUID(),taskId:task.taskId,turnId,input,url:task.model.url,headers:task.model.headers,timeoutMs:task.model.timeoutMs});
+          signal.throwIfAborted();adapter.prepare({requestId,messageId:'assistant-'+crypto.randomUUID(),taskId:task.taskId,turnId,input,url:task.model.url,headers:task.model.headers,timeoutMs:task.model.timeoutMs,extraBody:task.model.extraBody??{}});
         },beforeToolCall:async(context)=>{
           signal.throwIfAborted();await persist(context.assistantMessage);
           const result=adapter.result(context.assistantMessage);

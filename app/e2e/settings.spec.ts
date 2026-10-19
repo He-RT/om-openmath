@@ -1,247 +1,48 @@
-import { workbenchMenu } from "./workbenchMenu";
-import { test, expect } from "@playwright/test";
-test.afterEach(async ({page}, info)=>{
-  if(info.status===info.expectedStatus)return;
-  const snapshot=await page.evaluate(()=>{
-    const raw=localStorage.getItem('openmath-settings-v1');
-    const stored=raw?JSON.parse(raw):null;
-    return {dialog:!!document.querySelector('[role="dialog"]'),
-      statuses:[...document.querySelectorAll('[role="status"]')].map(e=>e.textContent),
-      alerts:[...document.querySelectorAll('[role="alert"]')].map(e=>e.textContent),
-      saved:stored?{routes:stored.routes,profiles:stored.profiles.map((p:{name:string;kind:string;model:string})=>({name:p.name,kind:p.kind,model:p.model}))}:null};
-  }).catch(e=>({unavailable:String(e)}));
-  console.info('Settings failure state:',JSON.stringify(snapshot));
-  await info.attach('settings-state',{body:JSON.stringify(snapshot),contentType:'application/json'});
-  await info.attach('settings-window',{body:await page.screenshot(),contentType:'image/png'});
-});
-function pong() {
-  return `data: ${JSON.stringify({ choices: [{ index: 0, delta: { content: "pong" }, finish_reason: "stop" }] })}\n\ndata: [DONE]\n\n`;
+import {workbenchMenu} from './workbenchMenu';
+import {test,expect,type Page} from '@playwright/test';
+async function openSettings(page:Page){await workbenchMenu(page);await page.getByRole('button',{name:'AI settings',exact:true}).click();}
+async function addProvider(page:Page,base='https://settings-provider.invalid/v1'){
+  await page.getByRole('button',{name:'Add provider',exact:true}).click();await page.getByLabel('Provider display name',{exact:true}).fill('Test service');await page.getByLabel('Base URL',{exact:true}).fill(base);await page.getByLabel('API model name',{exact:true}).fill('fixture');await page.getByLabel('Display name',{exact:true}).fill('My model');await page.getByLabel('API Key',{exact:true}).fill('synthetic-settings-key');
 }
-test("real draft connection test does not save; settings persist metadata and only opt-in credentials across reload", async ({
-  page,
-}) => {
-  let calls = 0;
-  await page.route("https://settings-provider.invalid/**", async (route) => {
-    calls++;
-    expect(route.request().headers().authorization).toBe(
-      "Bearer synthetic-settings-key",
-    );
-    const body = route.request().postDataJSON() as {
-      model: string;
-      max_tokens: number;
-    };
-    expect(body.model).toBe("fixture");
-    expect(body.max_tokens).toBe(8);
-    await route.fulfill({
-      status: 200,
-      contentType: "text/event-stream",
-      body: pong(),
-      headers: { "access-control-allow-origin": "*" },
-    });
-  });
-  await page.goto("/");
-  await workbenchMenu(page);
-  await page.getByRole("button", { name: "AI settings", exact: true }).click();
-  const dialog = page.getByRole("dialog");
-  await expect(
-    dialog.getByRole("tab", { name: "AI models", exact: true }),
-  ).toHaveAttribute("aria-selected", "true");
-  await dialog
-    .getByLabel("Base URL", { exact: true })
-    .fill("https://settings-provider.invalid/v1");
-  await dialog.getByLabel("Model", { exact: true }).fill("fixture");
-  await dialog
-    .getByLabel("API Key", { exact: true })
-    .fill("synthetic-settings-key");
-  await dialog
-    .getByRole("button", { name: "Test connection", exact: true })
-    .click();
-  await expect(dialog.getByRole("status")).toContainText("pong");
-  expect(calls).toBe(1);
-  await dialog.getByRole("button", { name: "Close", exact: true }).click();
-  await workbenchMenu(page);
-  await page.getByRole("button", { name: "AI settings", exact: true }).click();
-  await expect(page.getByLabel("Base URL", { exact: true })).toHaveValue(
-    "https://api.deepseek.com/v1",
-  );
-  await page
-    .getByLabel("Base URL", { exact: true })
-    .fill("https://settings-provider.invalid/v1");
-  await page.getByLabel("Model", { exact: true }).fill("fixture");
-  await page
-    .getByLabel("API Key", { exact: true })
-    .fill("synthetic-settings-key");
-  await page
-    .getByRole("button", { name: "Save AI settings", exact: true })
-    .click();
-  await expect(page.getByRole("status").filter({ hasText: /^AI settings saved$/ })).toHaveText("AI settings saved");
-  const stored = await page.evaluate(() =>
-    localStorage.getItem("openmath-settings-v1"),
-  );
-  expect(stored).toContain("settings-provider.invalid");
-  expect(stored).not.toContain("synthetic-settings-key");
-  await page.reload();
-  await workbenchMenu(page);
-  await page.getByRole("button", { name: "AI settings", exact: true }).click();
-  await expect(page.getByLabel("Base URL", { exact: true })).toHaveValue(
-    "https://settings-provider.invalid/v1",
-  );
-  await expect(page.getByLabel("API Key", { exact: true })).toHaveValue("");
-  await page
-    .getByLabel("API Key", { exact: true })
-    .fill("synthetic-settings-key");
-  await page
-    .getByRole("checkbox", {
-      name: "Remember credentials and advanced values in this browser",
-      exact: true,
-    })
-    .check();
-  await page
-    .getByRole("button", { name: "Save AI settings", exact: true })
-    .click();
-  await expect(page.getByRole("status").filter({ hasText: /^AI settings saved$/ })).toHaveText("AI settings saved");
-  expect(
-    await page.evaluate(() => localStorage.getItem("openmath-settings-v1")),
-  ).toContain("synthetic-settings-key");
-  await page.reload();
-  await workbenchMenu(page);
-  await page.getByRole("button", { name: "AI settings", exact: true }).click();
-  await page
-    .getByRole("button", { name: "Test connection", exact: true })
-    .click();
-  await expect(page.getByRole("dialog").getByRole("status")).toContainText("pong");
-  await page
-    .getByRole("checkbox", {
-      name: "Remember credentials and advanced values in this browser",
-      exact: true,
-    })
-    .uncheck();
-  await page
-    .getByRole("button", { name: "Save AI settings", exact: true })
-    .click();
-  await expect(page.getByRole("status").filter({ hasText: /^AI settings saved$/ })).toHaveText("AI settings saved");
-  expect(
-    await page.evaluate(() => localStorage.getItem("openmath-settings-v1")),
-  ).not.toContain("synthetic-settings-key");
+const pong=(text='pong')=>`data: ${JSON.stringify({id:'settings-test',model:'fixture',choices:[{index:0,delta:{content:text},finish_reason:'stop'}]})}\n\ndata: [DONE]\n\n`;
+const saved=(page:Page)=>expect(page.getByRole('status').filter({hasText:/^AI settings saved$/})).toBeVisible();
+
+test('five groups, actual draft connection, explicit key remembrance and opaque reuse for another model',async({page,context})=>{
+  let calls=0;const bodies:Record<string,unknown>[]=[];
+  await context.route('https://settings-provider.invalid/**',async route=>{calls++;expect(route.request().headers().authorization).toBe('Bearer synthetic-settings-key');const body=route.request().postDataJSON();bodies.push(body);await route.fulfill({status:200,contentType:'text/event-stream',body:pong(body.max_tokens===8?'pong':'A reply from the second configured model. $2+2=4$.')});});
+  await page.goto('/');await openSettings(page);await expect(page.getByRole('dialog',{name:'Preferences'}).getByRole('tab')).toHaveCount(5);await expect(page.getByRole('listbox',{name:'Providers'}).getByRole('option')).toHaveCount(0);await addProvider(page);
+  await page.getByRole('button',{name:'Test connection',exact:true}).click();await expect(page.getByRole('dialog').getByRole('status')).toContainText('pong');expect(calls).toBe(1);expect(bodies[0]!.max_tokens).toBe(8);
+  await page.locator('.v2-settings').getByRole('button',{name:'Close',exact:true}).click();await openSettings(page);await expect(page.getByRole('listbox',{name:'Providers'}).getByRole('option')).toHaveCount(0);
+  await addProvider(page);await page.getByRole('button',{name:'Save AI settings',exact:true}).click();await saved(page);expect(await page.evaluate(()=>localStorage.getItem('openmath-settings-v1'))).not.toContain('synthetic-settings-key');
+  await page.reload();await openSettings(page);await expect(page.getByLabel('API Key',{exact:true})).toHaveValue('');await expect(page.getByLabel('Base URL',{exact:true})).toHaveValue('https://settings-provider.invalid/v1');await page.getByLabel('API Key',{exact:true}).fill('synthetic-settings-key');await page.getByRole('checkbox',{name:'Remember key in this browser',exact:true}).check();await page.getByRole('button',{name:'Save AI settings',exact:true}).click();await expect(page.getByRole('dialog',{name:'Remember keys in this browser?'})).toContainText('local storage');await page.getByRole('button',{name:'Save and remember',exact:true}).click();await saved(page);
+  await page.reload();await openSettings(page);await expect(page.getByLabel('API Key',{exact:true})).toHaveValue('');await page.getByRole('button',{name:'Add model',exact:true}).click();const second=page.getByRole('group',{name:'Model 2',exact:true});await second.getByLabel('API model name',{exact:true}).fill('second-model');await second.getByLabel('Display name',{exact:true}).fill('Second display');await second.getByRole('checkbox',{name:'Image input',exact:true}).check();await second.getByLabel('Context limit (tokens)',{exact:true}).fill('128000');await second.locator('summary').click();await second.getByLabel('Extra request parameters (JSON)',{exact:true}).fill('{"reasoning_effort":"low"}');await page.getByRole('button',{name:'Save AI settings',exact:true}).click();await saved(page);
+  await page.locator('.v2-settings').getByRole('tab',{name:'Assistant',exact:true}).click();await page.getByLabel('Send shortcut',{exact:true}).selectOption('command');await page.getByLabel('Default mode',{exact:true}).selectOption('discuss');await page.getByLabel('Default model',{exact:true}).selectOption({label:'Test service · Second display'});await page.getByRole('button',{name:'Save AI settings',exact:true}).click();await saved(page);await page.locator('.v2-settings').getByRole('button',{name:'Close',exact:true}).click();await page.getByRole('button',{name:'New conversation',exact:true}).click();await expect(page.getByRole('button',{name:'Select model',exact:true})).toContainText('Second display');await expect(page.getByRole('button',{name:'Assistant mode',exact:true})).toContainText('Discuss');
+  const input=page.getByRole('textbox',{name:'Message to assistant',exact:true});await input.fill('configured second model');await input.press('Enter');expect(calls).toBe(1);await input.press('ControlOrMeta+Enter');await page.getByRole('button',{name:'Send to AI',exact:true}).click();await expect(page.locator('.agent-text')).toContainText('second configured model');expect(bodies.at(-1)!.model).toBe('second-model');expect(bodies.at(-1)!.temperature).toBeCloseTo(.2);expect(bodies.at(-1)!.reasoning_effort).toBe('low');await page.getByRole('button',{name:'Context usage',exact:true}).click();await expect(page.getByRole('dialog',{name:'Context usage',exact:true})).toContainText('128000 tokens');await page.getByRole('dialog',{name:'Context usage',exact:true}).getByRole('button',{name:'Close'}).click();
+  await openSettings(page);await page.getByRole('checkbox',{name:'Remember key in this browser',exact:true}).uncheck();await page.getByRole('button',{name:'Save AI settings',exact:true}).click();await saved(page);expect(await page.evaluate(()=>localStorage.getItem('openmath-settings-v1'))).not.toContain('synthetic-settings-key');
 });
-for (const width of [375, 1280])
-  test(`profile CRUD, JSON validation, preset examples and feature mapping work at ${width}px`, async ({
-    page,
-  }) => {
-    await page.setViewportSize({ width, height: 900 });
-    await page.goto("/");
-    await workbenchMenu(page);
-    await page
-      .getByRole("button", { name: "AI settings", exact: true })
-      .click();
-    await page
-      .getByRole("button", { name: "Duplicate profile", exact: true })
-      .click();
-    await expect(page.getByLabel("Profile name", { exact: true })).toHaveValue(
-      "deepseek-copy",
-    );
-    await page
-      .getByRole("button", { name: "Delete profile", exact: true })
-      .click();
-    await page.getByRole("option", { name: "deepseek", exact: true }).click();
-    await page.getByLabel("Preset", { exact: true }).selectOption("openai");
-    await expect(page.getByLabel("Base URL", { exact: true })).toHaveValue(
-      "https://api.openai.com/v1",
-    );
-    await expect(page.getByLabel("Model", { exact: true })).toHaveValue(
-      "gpt-4.1-mini",
-    );
-    await page
-      .getByLabel("Extra headers (JSON)", { exact: true })
-      .fill('{"x":');
-    await expect(page.getByRole("alert")).toContainText("JSON object");
-    await expect(
-      page.getByRole("button", { name: "Test connection", exact: true }),
-    ).toBeDisabled();
-    await page
-      .getByLabel("Extra headers (JSON)", { exact: true })
-      .fill('{"X-Synthetic":"one"}');
-    await expect(page.getByRole("alert")).toHaveCount(0);
-    await expect(page.getByRole("button",{name:"Test connection",exact:true})).toBeEnabled();
-    await page
-      .getByRole("tab", { name: "Feature mapping", exact: true })
-      .click();
-    await page
-      .getByLabel("Profile for complete", { exact: true })
-      .selectOption("");
-    await page
-      .getByRole("button", { name: "Save AI settings", exact: true })
-      .click();
-    // configureLlm waits for actual set_config and get_config worker replies. Check the
-    // saved outcome after that asynchronous busy state, including on loaded CI workers.
-    await expect(page.getByRole("button", { name: "Saving…", exact: true })).toHaveCount(0, { timeout: 15_000 });
-    await expect(page.getByRole("status").filter({ hasText: /^AI settings saved$/ })).toHaveText("AI settings saved");
-    await page.getByRole("tab", { name: "AI models", exact: true }).click();
-    await page.screenshot({
-      path: `test-results/settings-${width}-light.png`,
-      fullPage: true,
-    });
-    expect(
-      await page.evaluate(
-        () => document.documentElement.scrollWidth <= innerWidth,
-      ),
-    ).toBe(true);
-    await page.getByRole("tab", { name: "General", exact: true }).click();
-    await page.getByLabel("Theme", { exact: true }).selectOption("dark");
-    await page.getByLabel("Language", { exact: true }).selectOption("zh-CN");
-    await page.getByRole("tab", { name: "AI 模型", exact: true }).click();
-    await page.screenshot({
-      path: `test-results/settings-${width}-dark.png`,
-      fullPage: true,
-    });
-  });
-test("explicit keyless remote profile can be saved and used without disabling its mapped AI features", async ({
-  page,
-}) => {
-  await page.route("https://keyless-provider.invalid/**", async (route) => {
-    expect(route.request().headers().authorization).toBeUndefined();
-    const request = route.request().postDataJSON() as { max_tokens: number };
-    const text =
-      request.max_tokens === 8
-        ? "pong"
-        : JSON.stringify({
-            wolfram: "Solve[x==1,x]",
-            explanation: "Keyless source proposal",
-          });
-    await route.fulfill({
-      status: 200,
-      contentType: "text/event-stream",
-      body: `data: ${JSON.stringify({id:"keyless-response",model:"fixture", choices: [{ index: 0, delta: { content: text }, finish_reason: "stop" }] })}\n\ndata: [DONE]\n\n`,
-      headers: { "access-control-allow-origin": "*" },
-    });
-  });
-  await page.goto("/");
-  await workbenchMenu(page);
-  await page.getByRole("button", { name: "AI settings", exact: true }).click();
-  await page
-    .getByLabel("Base URL", { exact: true })
-    .fill("https://keyless-provider.invalid/v1");
-  await page.getByLabel("Model", { exact: true }).fill("fixture");
-  await page
-    .getByRole("checkbox", { name: "API key required", exact: true })
-    .uncheck();
-  await page
-    .getByRole("button", { name: "Save AI settings", exact: true })
-    .click();
-  await expect(page.getByRole("status").filter({ hasText: /^AI settings saved$/ })).toHaveText("AI settings saved");
-  await page
-    .getByRole("dialog")
-    .getByRole("button", { name: "Close", exact: true })
-    .click();
-  await expect(page.locator(".ai-indicator")).toHaveClass(/ai-ready/);
-  const input = page.getByRole("textbox", {
-    name: "Message to assistant",
-    exact: true,
-  });
-  await input.fill("Solve x equals one.");
-  await input.press("Enter");
-  await page.getByRole("button", { name: "Send to AI", exact: true }).click();
-  await expect(page.locator(".agent-text")).toContainText(
-    "Keyless source proposal",
-  );
+
+for(const width of [1440,390])test(`provider and model CRUD, invalid drafts, navigation and themes at ${width}px`,async({page})=>{
+  await page.setViewportSize({width,height:900});await page.goto('/');await openSettings(page);await addProvider(page);
+  await page.getByRole('button',{name:'Add model',exact:true}).click();let second=page.getByRole('group',{name:'Model 2',exact:true});await second.getByLabel('API model name',{exact:true}).fill('text-only');await second.getByLabel('Display name',{exact:true}).fill('Text only');await second.getByRole('checkbox',{name:'Supports tool calls',exact:true}).uncheck();
+  await page.locator('.provider-advanced > summary').click();await page.getByLabel('Extra headers (JSON)',{exact:true}).fill('{"x":');await expect(page.getByRole('alert')).toContainText('JSON object');await expect(page.getByRole('button',{name:'Test connection',exact:true})).toBeDisabled();await page.getByRole('button',{name:'Save AI settings',exact:true}).click();await expect(page.getByRole('alert').filter({hasText:/Invalid settings/})).toBeVisible();await expect(page.getByLabel('Provider display name')).toHaveValue('Test service');await page.getByLabel('Extra headers (JSON)',{exact:true}).fill('{}');
+  await page.getByRole('button',{name:'Save AI settings',exact:true}).click();await saved(page);await page.locator('#settings-pane-models h3').scrollIntoViewIfNeeded();await page.screenshot({animations:'disabled',path:`../target/plan-5/f4-settings-${width}-light.png`});
+  await page.locator('.v2-settings').getByRole('tab',{name:'General',exact:true}).click();await page.getByLabel('Theme',{exact:true}).selectOption('dark');await page.locator('.v2-settings').getByRole('tab',{name:'Editing & calculation',exact:true}).click();await expect(page.getByLabel('Dialect',{exact:true})).toBeVisible();await page.locator('.v2-settings').getByRole('tab',{name:'Models',exact:true}).click();await page.screenshot({animations:'disabled',path:`../target/plan-5/f4-settings-${width}-dark.png`});expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
+  await page.locator('.v2-settings').getByRole('tab',{name:'Models',exact:true}).press('ArrowDown');await expect(page.locator('.v2-settings').getByRole('tab',{name:'Assistant',exact:true})).toBeFocused();await page.locator('.v2-settings').getByRole('tab',{name:'Assistant',exact:true}).press('ArrowDown');await expect(page.locator('.v2-settings').getByRole('tab',{name:'Data',exact:true})).toBeFocused();await expect(page.getByRole('tabpanel',{name:'Data',exact:true})).toContainText('IndexedDB');
+  await page.locator('.v2-settings').getByRole('tab',{name:'Models',exact:true}).click();second=page.getByRole('group',{name:'Model 2',exact:true});await second.getByRole('button',{name:'Remove model',exact:true}).click();await expect(page.getByRole('group',{name:'Model 2',exact:true})).toHaveCount(0);await page.getByRole('button',{name:'Remove provider',exact:true}).click();await expect(page.getByRole('listbox',{name:'Providers'}).getByRole('option')).toHaveCount(0);
+});
+
+test('connection errors distinguish authentication status from CORS or unreadable network responses',async({page,context})=>{
+  let fail='auth';await context.route('https://settings-provider.invalid/**',async route=>{if(fail==='cors'){await route.abort('failed');return;}await route.fulfill({status:401,contentType:'application/json',body:JSON.stringify({error:{message:'Synthetic authentication rejected'}})});});
+  await page.goto('/');await openSettings(page);await addProvider(page);await page.getByRole('button',{name:'Test connection',exact:true}).click();await expect(page.getByRole('alert')).toContainText('Authentication rejected');expect(await page.getByRole('alert').textContent()).not.toContain('CORS');fail='cors';await page.getByRole('button',{name:'Test connection',exact:true}).click();await expect(page.getByRole('alert')).toContainText('CORS or network error');
+});
+
+test('explicit keyless provider is available to the assistant without an Authorization header',async({page,context})=>{
+  await context.route('https://settings-provider.invalid/**',async route=>{expect(route.request().headers().authorization).toBeUndefined();await route.fulfill({status:200,contentType:'text/event-stream',body:pong('Keyless reply')});});
+  await page.goto('/');await openSettings(page);await addProvider(page);await page.getByRole('checkbox',{name:'API key required',exact:true}).uncheck();await page.getByRole('button',{name:'Save AI settings',exact:true}).click();await saved(page);await page.locator('.v2-settings').getByRole('button',{name:'Close',exact:true}).click();const input=page.getByRole('textbox',{name:'Message to assistant'});await input.fill('Test keyless');await input.press('Enter');await page.getByRole('button',{name:'Send to AI',exact:true}).click();await expect(page.locator('.agent-text')).toContainText('Keyless reply');
+});
+
+test('a browser storage write failure preserves provider drafts and does not publish them',async({page})=>{
+  await page.goto('/');await openSettings(page);await addProvider(page);
+  await page.evaluate(()=>{const original=Storage.prototype.setItem;Storage.prototype.setItem=function(key,value){if(key==='openmath-settings-v1')throw new DOMException('Synthetic quota failure','QuotaExceededError');return original.call(this,key,value);};});
+  await page.getByRole('button',{name:'Save AI settings',exact:true}).click();await expect(page.getByRole('alert')).toContainText('Synthetic quota failure');await expect(page.getByLabel('API model name',{exact:true})).toHaveValue('fixture');await expect(page.getByLabel('API Key',{exact:true})).toHaveValue('synthetic-settings-key');expect(await page.evaluate(()=>localStorage.getItem('openmath-settings-v1'))).toBeNull();
 });

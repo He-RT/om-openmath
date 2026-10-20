@@ -21,7 +21,7 @@ struct NativeStoragePaths:Sendable {
     let base=try FileManager.default.url(for:.applicationSupportDirectory,in:.userDomainMask,appropriateFor:nil,create:false)
     let channelRoot=base.appendingPathComponent("OpenMath",isDirectory:true).appendingPathComponent(channel == .preview ? "NativeMacPreview" : "NativeMac",isDirectory:true)
     // This release starts a fresh Preview workspace. Early prototype stores stay untouched.
-    return .init(root:channel == .preview ? channelRoot.appendingPathComponent("pre-alpha.4",isDirectory:true) : channelRoot,channel:channel)
+    return .init(root:channel == .preview ? channelRoot.appendingPathComponent("pre-alpha.5",isDirectory:true) : channelRoot,channel:channel)
   }
 }
 struct StoreIdentity:Codable,Sendable,Equatable {

@@ -42,6 +42,7 @@
 - G3其余既有通过：host-service28 suites/181；storage/saves/recovery/undo/kernel-runtime五脚本；CLI53正确/max46.6965ms；Web生产55+开发核2补跑、输入p95=32.8/max34.2、53max87ms。相机原7936三角形60Hz/静止0新帧已在C8通过。G3提交测试入口app/e2e/performance.spec.ts、PerformanceFixtures及完成记录；G2提交含已验证输入路径优化。
 - GPT仅`/Users/hert/.config/openmath/testing/pre-alpha-4-api.json`，DeepSeek仅`/Users/hert/.config/openmath/testing/pre-alpha-5-deepseek-api.json`；0600、不输出密钥/认证头、不动用户10100服务。DeepSeek官方/默认thinking未禁用，reasoning_content replay已支持。
 - CUA压缩后rewriteDocumentation、精确路径绑定；fresh AX提数字再操作，`/^\s*\d+/`避focused重复行。GoToWindow需先getAX确认，再setValue PathTextField再Return，避免异步面板未就绪读到旧路径。当前g2Mac/g2State/g2ClickID/g2Fs，g2Db为只读sqlite连接。新对话会重置默认DeepSeek/执行，发媒体前显式选sol/讨论。CmdN保存确认选“关闭，保留本地修改”。截图invalid-size先核对文件和账本，避免重复调用。
+- G4构建状态：f226deab首个Mac两包构建成功（g4-native-package.log），Web首构建通过（g4-web-build.log）；尚非最终候选，查出Preview目录硬编码.4后现改为独立.5。需提交修正后重建Mac/Web并生成三包manifest；旧包保留不发布。当前无构建。
 - G4准备：Rust/npm/原生Info/目录/发行入口均.5，agent根版本同步且86依赖记录不变、pin lock SHA相应更新。现有release5测试与依赖审计通过；新发行说明docs/release-0.1.0-pre-alpha.5.md。需先提交准备源码（包脚本要求HEAD干净、包内记录精确SHA），再生成三包，本地验收后才问公开授权。
 - 不并行Swift功能fixture与Release/cmark，不在编译期间改输入；当前无构建。G4需统一.5、DMG/appZIP/WebZIP+manifest/发行说明；先本地三包验收，再请求用户明确确认公开pre-release，公开后匿名下载校SHA并安装回读；此前goal不能complete。
 

@@ -55,12 +55,24 @@ private final class BusyCommitOnce:@unchecked Sendable {
   }
 }
 @main struct PerformanceFixtures {
+  private static var arguments:[String] {
+    if CommandLine.arguments.count==1,
+       let values=Bundle.main.object(forInfoDictionaryKey:"OpenMathPerformanceArguments") as? [String],values.count>=2 {
+      return [CommandLine.arguments[0]]+values
+    }
+    return CommandLine.arguments
+  }
   @MainActor static func main() {
-    let requireForeground=CommandLine.arguments.contains("--foreground")
+    let requireForeground=arguments.contains("--foreground")
     let app=NSApplication.shared;app.setActivationPolicy(requireForeground ? .regular:.accessory)
     Task {
       do {try await measure();exit(0)}
-      catch {FileHandle.standardError.write(Data(("Measurement failed: "+String(describing:error)+"\n").utf8));exit(1)}
+      catch {
+        let failure=Data(("Measurement failed: "+String(describing:error)+"\n").utf8)
+        FileHandle.standardError.write(failure)
+        if arguments.count>1 {try? failure.write(to:URL(fileURLWithPath:arguments[1]).appendingPathComponent("failure.txt"),options:.atomic)}
+        exit(1)
+      }
     }
     // A CFRunLoop alone delivers timers but does not dispatch native input/activation events.
     // Use the same AppKit event loop as a normal application before measuring foreground paint.
@@ -68,15 +80,16 @@ private final class BusyCommitOnce:@unchecked Sendable {
   }
   @MainActor static func measure() async throws {
     let launched=DispatchTime.now().uptimeNanoseconds
-    let requireForeground=CommandLine.arguments.contains("--foreground")
+    let requireForeground=arguments.contains("--foreground")
     let app=NSApplication.shared
-    let root=URL(fileURLWithPath:CommandLine.arguments[1],isDirectory:true)
+    let root=URL(fileURLWithPath:arguments[1],isDirectory:true)
     try FileManager.default.createDirectory(at:root,withIntermediateDirectories:true)
-    let corpusBytes=try Data(contentsOf:URL(fileURLWithPath:CommandLine.arguments[2]))
+    let corpusBytes=try Data(contentsOf:URL(fileURLWithPath:arguments[2]))
     let corpus=try JSONDecoder().decode([CorpusRow].self,from:corpusBytes)
     precondition(corpus.count==53)
     func milliseconds(_ start:UInt64)->Double {Double(DispatchTime.now().uptimeNanoseconds-start)/1_000_000}
     func write(_ value:Any,_ name:String)throws {try JSONSerialization.data(withJSONObject:value,options:[.prettyPrinted,.sortedKeys]).write(to:root.appendingPathComponent(name),options:.atomic)}
+    var previousWindow:NSWindow?
     func opened(_ name:String,source:String,dialect:Dialect = .wolfram)async throws->(NativeAppStorage,NativeFileWorkspace,NativeDocumentSession,NSWindow) {
       let folder=root.appendingPathComponent(name,isDirectory:true);try FileManager.default.createDirectory(at:folder,withIntermediateDirectories:true)
       let file=folder.appendingPathComponent("measurement.omnb")
@@ -98,9 +111,10 @@ private final class BusyCommitOnce:@unchecked Sendable {
       let clock=NativeFrameClock(view:adapter.textView);clock.arm()
       while clock.measured==nil {guard ContinuousClock.now<deadline else {clock.stop();throw MeasurementError.failed("visible display link did not fire")};try await Task.sleep(for:.milliseconds(1))}
       clock.stop()
+      previousWindow?.orderOut(nil);previousWindow=nil
       return (services,workspace,session,window)
     }
-    if CommandLine.arguments.contains("--busy-commit") {
+    if arguments.contains("--busy-commit") {
       let (services,workspace,session,window)=try await opened("busy-commit",source:"2+2")
       let fault=BusyCommitOnce(),operation="same-original-operation"
       let receipt=try await session.runtime.kernel.runCell("measure",operation:operation,faults:.init {try fault.reach($0)})
@@ -114,7 +128,7 @@ private final class BusyCommitOnce:@unchecked Sendable {
       guard await workspace.shutdown() else {throw MeasurementError.failed(workspace.errorText ?? "close failed")};try await services.close()
       print("One pre-barrier contention: same original operation, exactly one accepted4, kernel revision1.");return
     }
-    if CommandLine.arguments.contains("--scene") {
+    if arguments.contains("--scene") {
       let source="scene([sphere([0,0,0],1),style(sphere([1.5,0,0],0.7),color:\"orange\",opacity:0.5)],dimensions:3,mesh_points:32)"
       let (services,workspace,session,window)=try await opened("camera",source:source,dialect:.modern)
       session.runtime.run("measure")
@@ -149,7 +163,7 @@ private final class BusyCommitOnce:@unchecked Sendable {
     }
     var rows:[[String:Any]]=[],failures:[String]=[]
     var firstFrame:Double?
-    let diagnostic=CommandLine.arguments.count>4 && CommandLine.arguments[3]=="--case" ? CommandLine.arguments[4]:nil
+    let diagnostic=arguments.count>4 && arguments[3]=="--case" ? arguments[4]:nil
     for row in corpus where diagnostic==nil || row.id==diagnostic {
       let (services,workspace,session,window)=try await opened("row-"+row.id,source:row.input)
       if firstFrame==nil {
@@ -164,7 +178,9 @@ private final class BusyCommitOnce:@unchecked Sendable {
           }
         }
       }
-      guard !requireForeground || app.isActive && window.isKeyWindow else {throw MeasurementError.failed("measurement window lost foreground activation")}
+      guard !requireForeground || app.isActive && window.isKeyWindow else {
+        throw MeasurementError.failed("measurement window lost foreground activation; active=\(app.isActive), key=\(window.isKeyWindow), front=\(NSWorkspace.shared.frontmostApplication?.bundleIdentifier ?? "unknown")")
+      }
       let start=DispatchTime.now().uptimeNanoseconds
       var stages:[String:Double]=[:]
       session.runtime.runObserved={stage in stages[stage]=milliseconds(start)}
@@ -180,7 +196,9 @@ private final class BusyCommitOnce:@unchecked Sendable {
       try write(rows,"mac-corpus.json")
       print("Mac #\(row.id): \(String(format:"%.3f",duration)) ms")
       if duration>=1000 {failures.append("Mac #\(row.id): \(duration)ms")}
-      window.orderOut(nil);window.contentView=nil
+      // The product changes documents within one visible window. Keep a visible window
+      // during this fixture's untimed session turnover so macOS does not deactivate it.
+      window.contentView=nil;previousWindow=window
       guard await workspace.shutdown() else {throw MeasurementError.failed(workspace.errorText ?? "close failed")};try await services.close()
     }
     if diagnostic != nil {return}
@@ -190,11 +208,15 @@ private final class BusyCommitOnce:@unchecked Sendable {
     window.makeFirstResponder(editor);editor.setSelectedRange(.init(location:editor.string.utf16.count,length:0));editor.scrollRangeToVisible(editor.selectedRange())
     try await Task.sleep(for:.milliseconds(100))
     let clock=NativeFrameClock(view:editor)
-    var samples:[Double]=[]
+    var samples:[Double]=[],insertCalls:[Double]=[]
     for index in 0..<100 {
-      guard !requireForeground || app.isActive && window.isKeyWindow else {throw MeasurementError.failed("input measurement window lost foreground activation")}
+      guard !requireForeground || app.isActive && window.isKeyWindow else {
+        throw MeasurementError.failed("input measurement window lost foreground activation at sample \(index); active=\(app.isActive), key=\(window.isKeyWindow), front=\(NSWorkspace.shared.frontmostApplication?.bundleIdentifier ?? "unknown")")
+      }
       clock.arm()
+      let insertStarted=DispatchTime.now().uptimeNanoseconds
       editor.insertText(index%4==0 ? "中":index%4==1 ? "🙂":"x",replacementRange:.init(location:NSNotFound,length:0))
+      insertCalls.append(milliseconds(insertStarted))
       let deadline=ContinuousClock.now.advanced(by:.seconds(2))
       while clock.measured==nil {
         guard ContinuousClock.now<deadline else {clock.stop();try write(samples,"mac-input-samples.json");throw MeasurementError.failed("native display link did not fire after input \(index)")}
@@ -205,7 +227,7 @@ private final class BusyCommitOnce:@unchecked Sendable {
     clock.stop()
     let ordered=samples.sorted(),p95=ordered[Int(ceil(Double(ordered.count)*0.95))-1]
     var usage=rusage();getrusage(RUSAGE_SELF,&usage)
-    try write(["source_bytes":10240,"samples_ms":samples,"p95_ms":p95,"max_ms":ordered.last!,"foreground_app":app.isActive,"foreground_required":requireForeground,"definition":"native insertText to second display-synchronized frame of the visible TextKit 2 view, bounding the first frame from above"],"mac-input.json")
+    try write(["source_bytes":10240,"samples_ms":samples,"insert_call_ms":insertCalls,"p95_ms":p95,"max_ms":ordered.last!,"foreground_app":app.isActive,"foreground_required":requireForeground,"definition":"native insertText to second display-synchronized frame of the visible TextKit 2 view, bounding the first frame from above"],"mac-input.json")
     if p95>50 {failures.append("input p95 \(p95)ms")}
     try write(["corpus_sha256":SHA256.hash(data:corpusBytes).map{String(format:"%02x",$0)}.joined(),"first_workspace_draw_ms":firstFrame!,"peak_resident_bytes":usage.ru_maxrss,"failures":failures],"mac-summary.json")
     print("Native 10KiB input p95 \(p95) ms, max \(ordered.last!) ms; first workspace \(firstFrame!) ms; peak RSS \(usage.ru_maxrss) bytes")

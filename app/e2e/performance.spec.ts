@@ -1,6 +1,6 @@
 import { test, expect } from "@playwright/test";
 import { execFileSync } from "node:child_process";
-import { mkdir, readdir, writeFile } from "node:fs/promises";
+import { mkdir, readFile, readdir, writeFile } from "node:fs/promises";
 import { resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 const projectRoot = fileURLToPath(new URL("../../", import.meta.url));
@@ -11,8 +11,11 @@ test("all53 original authority rows execute through cold production WASM workers
   expect(process.env.OPENMATH_E2E_PREVIEW).toBe("1");
   const cases = JSON.parse(execFileSync("python3", ["-c", "import json,tomllib,pathlib,sys;print(json.dumps([{'id':c['id'],'input':c['input']} for c in tomllib.loads(pathlib.Path(sys.argv[1]).read_text())['case']]))", resolve(projectRoot, "tests/corpus/solve.toml")], { encoding: "utf8" })) as { id: string; input: string }[];
   expect(cases).toHaveLength(53);
-  const worker = (await readdir(resolve(projectRoot,"app/dist/assets"))).find((name) => /^worker-.*\.js$/.test(name));
-  if (!worker) throw new Error("Missing production worker asset");
+  const assets = resolve(projectRoot,"app/dist/assets");
+  const candidates = await Promise.all((await readdir(assets)).filter(name => /^worker-.*\.js$/.test(name)).map(async name => ({ name, source: await readFile(resolve(assets,name),"utf8") })));
+  const kernels = candidates.filter(asset => asset.source.includes("Kernel initialization failed"));
+  expect(kernels, "Exactly one production math worker, excluding the agent worker").toHaveLength(1);
+  const worker = kernels[0]!.name;
   await page.goto("/");
   const rows = await page.evaluate(async ({ cases, worker }) => {
     const rows: { id: string; input_form: string; timing_ms: number; roundtrip_ms: number; startup_ms: number }[] = [];

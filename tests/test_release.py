@@ -19,13 +19,13 @@ class ReleaseTests(unittest.TestCase):
         spec.loader.exec_module(cls.release)
 
     def test_checked_in_versions_and_windows_installer_intent_agree(self):
-        version = self.release.verify_version(ROOT, "v0.1.0-pre-alpha.4")
-        self.assertEqual(version, "0.1.0-pre-alpha.4")
+        version = self.release.verify_version(ROOT, "v0.1.0-pre-alpha.5")
+        self.assertEqual(version, "0.1.0-pre-alpha.5")
         config = json.loads((ROOT / "app/src-tauri/tauri.windows.conf.json").read_text(encoding="utf-8"))
         self.assertEqual(set(config["bundle"]["targets"]), {"nsis", "msi"})
         windows = config["bundle"]["windows"]
         self.assertEqual(windows["wix"]["language"], "zh-CN")
-        self.assertEqual(windows["wix"]["version"], "0.1.0.4")
+        self.assertEqual(windows["wix"]["version"], "0.1.0.5")
         self.assertIn("SimpChinese", windows["nsis"]["languages"])
         self.assertEqual(windows["webviewInstallMode"]["type"], "embedBootstrapper")
 
@@ -34,22 +34,23 @@ class ReleaseTests(unittest.TestCase):
             self.release.verify_version(ROOT, "v0.2.0")
         with tempfile.TemporaryDirectory() as folder:
             root = Path(folder)
-            (root / "OpenMath_0.1.0-pre-alpha.4_x64-setup.exe").write_bytes(b"fixture")
+            (root / "OpenMath_0.1.0-pre-alpha.5_x64-setup.exe").write_bytes(b"fixture")
             with self.assertRaises(ValueError):
-                self.release.finalize(root, "v0.1.0-pre-alpha.4", "a" * 40)
+                self.release.finalize(root, "v0.1.0-pre-alpha.5", "a" * 40)
 
     def test_ios_windows_and_catalog_version_drift_is_rejected(self):
         with tempfile.TemporaryDirectory() as folder:
             root = Path(folder)
             paths = ["Cargo.toml", "Cargo.lock", "app/package.json", "app/package-lock.json",
                      "app/src-tauri/tauri.conf.json", "app/src-tauri/tauri.windows.conf.json",
-                     "ios/OpenMath/Info.plist", "macos/OpenMathNative/Info.plist", "docs/reference/functions.toml"]
+                     "ios/OpenMath/Info.plist", "macos/OpenMathNative/Info.plist", "docs/reference/functions.toml",
+                     "agent/package.json", "agent/package-lock.json"]
             for name in paths:
                 target = root / name
                 target.parent.mkdir(parents=True, exist_ok=True)
                 shutil.copyfile(ROOT / name, target)
-            self.release.verify_version(root, "v0.1.0-pre-alpha.4")
-            for name in [paths[5], *paths[-3:]]:
+            self.release.verify_version(root, "v0.1.0-pre-alpha.5")
+            for name in [paths[5], *paths[6:]]:
                 target = root / name
                 original = target.read_bytes()
                 if name.endswith(".plist"):
@@ -58,25 +59,28 @@ class ReleaseTests(unittest.TestCase):
                     target.write_bytes(plistlib.dumps(value))
                 elif name.endswith(".json"):
                     value = json.loads(original)
-                    value["bundle"]["windows"]["wix"]["version"] = "0.1.0.2"
+                    if "bundle" in value:
+                        value["bundle"]["windows"]["wix"]["version"] = "0.1.0.2"
+                    else:
+                        value["version"] = "0.1.0-pre-alpha.2"
                     target.write_text(json.dumps(value), encoding="utf-8")
                 else:
-                    target.write_text(original.decode("utf-8").replace('current_version = "0.1.0-pre-alpha.4"', 'current_version = "0.1.0-pre-alpha.2"'), encoding="utf-8")
+                    target.write_text(original.decode("utf-8").replace('current_version = "0.1.0-pre-alpha.5"', 'current_version = "0.1.0-pre-alpha.2"'), encoding="utf-8")
                 with self.assertRaises(ValueError):
-                    self.release.verify_version(root, "v0.1.0-pre-alpha.4")
+                    self.release.verify_version(root, "v0.1.0-pre-alpha.5")
                 target.write_bytes(original)
 
     def test_release_manifest_covers_exact_assets_with_byte_hashes(self):
         with tempfile.TemporaryDirectory() as folder:
             root = Path(folder)
             names = [
-                "OpenMath_0.1.0-pre-alpha.4_aarch64.dmg",
-                "OpenMath_0.1.0-pre-alpha.4_macos_arm64.app.zip",
-                "OpenMath-web_0.1.0-pre-alpha.4.zip",
+                "OpenMath_0.1.0-pre-alpha.5_aarch64.dmg",
+                "OpenMath_0.1.0-pre-alpha.5_macos_arm64.app.zip",
+                "OpenMath-web_0.1.0-pre-alpha.5.zip",
             ]
             for name in names:
                 (root / name).write_bytes(b"release-fixture")
-            self.release.finalize(root, "v0.1.0-pre-alpha.4", "a" * 40)
+            self.release.finalize(root, "v0.1.0-pre-alpha.5", "a" * 40)
             manifest = json.loads((root / "release-manifest.json").read_text(encoding="utf-8"))
             self.assertEqual({a["name"] for a in manifest["assets"]}, set(names))
             self.assertTrue(all(a["bytes"] == 15 for a in manifest["assets"]))
@@ -84,14 +88,14 @@ class ReleaseTests(unittest.TestCase):
             self.assertTrue(all(a["sha256"] == expected_hash for a in manifest["assets"]))
             self.assertEqual(manifest["revision"], "a" * 40)
             with self.assertRaises(ValueError):
-                self.release.finalize(root, "v0.1.0-pre-alpha.4", "short-sha")
+                self.release.finalize(root, "v0.1.0-pre-alpha.5", "short-sha")
             (root / names[0]).write_bytes(b"")
             with self.assertRaises(ValueError):
-                self.release.finalize(root, "v0.1.0-pre-alpha.4", "a" * 40)
+                self.release.finalize(root, "v0.1.0-pre-alpha.5", "a" * 40)
             (root / names[0]).write_bytes(b"release-fixture")
             (root / "config.toml").write_text("should not ship", encoding="utf-8")
             with self.assertRaises(ValueError):
-                self.release.finalize(root, "v0.1.0-pre-alpha.4", "a" * 40)
+                self.release.finalize(root, "v0.1.0-pre-alpha.5", "a" * 40)
 
     def test_installed_payload_allows_only_the_exact_tauri_bundle_stamp(self):
         marker = b"__TAURI_BUNDLE_TYPE_VAR_UNK"

@@ -2,8 +2,8 @@
 schema_version = 1
 metadata_version = 26
 validation_stage = "runtime_verified"
-current_version = "0.1.0-pre-alpha.4"
-target_version = "0.1.0-pre-alpha.4"
+current_version = "0.1.0-pre-alpha.5"
+target_version = "0.1.0-pre-alpha.5"
 
 [[categories]]
 id = "basics"

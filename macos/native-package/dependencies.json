@@ -40,7 +40,7 @@
       "structuredContent is not automatically model-visible"
     ],
     "model_requests_executed": 0,
-    "production_lock_sha256": "2ad7e038a3bdb98585d1c9ba1e990ab1561ffe7c2f63395dbef9f78e3db1d680",
+    "production_lock_sha256": "8c8da63ab8e32c5a92bacbbd04b2ae7df48bf614d916ea96489e835638ff362d",
     "production_package_count": 86,
     "native_addons_installed": [],
     "optional_kerberos_not_installed": true,

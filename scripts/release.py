@@ -8,7 +8,7 @@ import tomllib
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-VERSION = "0.1.0-pre-alpha.4"
+VERSION = "0.1.0-pre-alpha.5"
 
 
 def verify_version(root: Path, tag: str) -> str:
@@ -16,7 +16,7 @@ def verify_version(root: Path, tag: str) -> str:
     if tag != f"v{VERSION}":
         raise ValueError(f"发行标签必须是 v{VERSION}")
     versions = [tomllib.loads((root / "Cargo.toml").read_text(encoding="utf-8"))["workspace"]["package"]["version"]]
-    for name in ("app/package.json", "app/package-lock.json", "app/src-tauri/tauri.conf.json"):
+    for name in ("app/package.json", "app/package-lock.json", "agent/package.json", "agent/package-lock.json", "app/src-tauri/tauri.conf.json"):
         data = json.loads((root / name).read_text(encoding="utf-8"))
         versions.append(data["version"])
         if "packages" in data:

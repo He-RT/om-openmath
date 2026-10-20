@@ -613,6 +613,13 @@ Mac S1–S8（两个模型）、Web S1–S6（一个模型）在候选包上各�
 
 ### 记录
 
+**G4 候选安装与 CI 修复（2026-10-21）**
+
+- `5139465e` 的 DMG/appZIP/WebZIP 与 manifest 已构建，本地三包均通过：原生面板打开自有西瓜示例副本，实际生成三维图形并求出2/3；保存后由appZIP重新打开四格源码、重新计算通过。两Mac包4226文件逐字节一致，严格签名通过、无fixture键；Mac关于窗口与Web设置均显示.5及完整SHA。证据保留于`target/pre-alpha.5/5139465e8dd34ba85345887697ac8ef61cdc8242/local-acceptance/`。普通.omnb只保存源码，重新打开不自动运行。
+- 当前SHA的CI另报Rust两处collapsible_if、Linux Web测试的提示词读取边界、JSDOM缺ResizeObserver，以及新依赖审计告警。两处语义不变的let-chain、Vite显式允许app与同源agent/prompts、App测试补布局观察桩后，全部155个Web单测、lint/typecheck和全工作区all-targets Clippy通过。受影响Rust回归52项通过（宿主28、结果投影12、真实回环HTTP/流式12），发行5项通过；未修改原数学断言或性能标准。
+- 证书依赖精确升级rustls-webpki0.103.16/webpki-root-certs1.0.10，修复RUSTSEC-2026-0382/0383；cargo-deny通过。Linux keyring当前上游仍依赖zbus5，三个仅停维护告警逐项注明理由与notice，无漏洞豁免，Mac/WASM运行图不含它们。
+- 无视觉结构变化、无新增模型请求（仍69/80）。`5139465e`包保留但被修复候选替代，不发布；需从本次修复提交重新生成三包/manifest、安装回读及核对新SHA CI，随后才请求此次公开确认。公开下载回读仍未完成，G4保持未勾选。
+
 **G2 完成（2026-10-21）**
 
 - 2026-10-21 新会话接替原会话01a12ff3，已从只读goal和原始会话核实范围、67次授权及S3尚未发送，当前同目标active。继承已验证的设计/中文IME/拖入/高度例外，不重跑已过项目；luna S3复用原run通过，不新增start。

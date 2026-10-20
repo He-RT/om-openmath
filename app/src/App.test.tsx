@@ -1,8 +1,11 @@
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
-import { expect, test } from "vitest";
+import { expect, test, vi } from "vitest";
 import App from "./App";
 import { MockKernel } from "./test/mockKernel";
 import type { KernelConfig } from "./kernel/generated/KernelConfig";
+
+// JSDOM has no layout observer; real resizing is covered by browser tests.
+vi.stubGlobal("ResizeObserver", class { observe() {} unobserve() {} disconnect() {} });
 
 test("identifies OpenMath while the actual kernel is starting and has no active run controls", () => {
   render(<App />);

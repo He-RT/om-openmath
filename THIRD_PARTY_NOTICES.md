@@ -15,14 +15,16 @@ Their source and license text are available in those upstream repositories and t
 
 ## Maintenance notice
 
-`proc-macro-error 1.0.4` is an unmaintained build-time transitive dependency of Linux GTK/glib macros through Tauri. RUSTSEC-2024-0370 reports lack of maintenance, not a known vulnerability, and no safe upgrade is available within the current upstream chain. Only that advisory is excepted, with a reason, in `deny.toml`; all other advisories remain enforced.
+`proc-macro-error 1.0.4` is an unmaintained build-time transitive dependency of Linux GTK/glib macros through Tauri. RUSTSEC-2024-0370 reports lack of maintenance, not a known vulnerability, and no safe upgrade is available within the current upstream chain.
+
+`zvariant 5.15.0`, `zbus_names 4.3.4`, and `zvariant_derive 5.15.0` are Linux credential-store dependencies through keyring 4.2.0 → zbus-secret-service-keyring-store 1.0.1 → secret-service 5.2.0 → zbus 5.19.0. RUSTSEC-2026-0370/0371/0372 report that their code moved into zbus 6, not a known vulnerability. The current keyring/secret-service releases still require zbus 5, so no compatible upgrade is available. They are absent from the native Mac and WASM runtime graphs. These three maintenance advisories and the proc-macro-error maintenance advisory have individual, reasoned exceptions in `deny.toml`; vulnerability advisories remain enforced.
 
 Dependencies and their licensing are checked with `cargo deny check`. If algorithm source is adapted later, record its provenance and required license notice here before committing that adaptation.
 
 ## Native HTTPS certificate data
 
 The prescribed reqwest 0.13.5 `rustls` transport includes unmodified
-`webpki-root-certs 1.0.9` through rustls-platform-verifier on supported targets.
+`webpki-root-certs 1.0.10` through rustls-platform-verifier on supported targets.
 It contains Mozilla X.509 root certificate data under CDLA-Permissive-2.0.
 Only that package/version has a certificate-data exception in `deny.toml`.
 The upstream license text is preserved in `licenses/CDLA-Permissive-2.0.txt` and

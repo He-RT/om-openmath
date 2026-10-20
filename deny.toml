@@ -10,6 +10,9 @@ targets = [
 version = 2
 ignore = [
     { id = "RUSTSEC-2024-0370", reason = "Unmaintained-only proc-macro-error 1.0.4 in Tauri's Linux GTK/glib build macros; no upstream upgrade. See THIRD_PARTY_NOTICES.md." },
+    { id = "RUSTSEC-2026-0370", reason = "Unmaintained-only zvariant 5 in keyring 4.2 -> secret-service 5.2 -> zbus 5; current upstream chain has no zbus 6 migration. See THIRD_PARTY_NOTICES.md." },
+    { id = "RUSTSEC-2026-0371", reason = "Unmaintained-only zbus_names 4 in the same Linux keyring chain; no compatible upstream upgrade. See THIRD_PARTY_NOTICES.md." },
+    { id = "RUSTSEC-2026-0372", reason = "Unmaintained-only zvariant_derive 5 in the same Linux keyring chain; no compatible upstream upgrade. See THIRD_PARTY_NOTICES.md." },
 ]
 
 [licenses]
@@ -30,7 +33,7 @@ allow = [
 
 # Specific unmodified native transitive packages only; no global extra-license allowance.
 exceptions = [
-    { crate = "webpki-root-certs@1.0.9", allow = ["CDLA-Permissive-2.0"] },
+    { crate = "webpki-root-certs@1.0.10", allow = ["CDLA-Permissive-2.0"] },
     { crate = "cssparser@0.37.0", allow = ["MPL-2.0"] },
     { crate = "cssparser-macros@0.7.1", allow = ["MPL-2.0"] },
     { crate = "dtoa-short@0.3.5", allow = ["MPL-2.0"] },

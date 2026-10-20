@@ -2,6 +2,7 @@ import react from '@vitejs/plugin-react';
 import { defineConfig } from 'vitest/config';
 import wasm from 'vite-plugin-wasm';
 import { readFileSync } from 'node:fs';
+import { fileURLToPath } from 'node:url';
 
 const version = (JSON.parse(readFileSync(new URL('./package.json', import.meta.url), 'utf8')) as { version: string }).version;
 const revision = process.env.OPENMATH_SOURCE_REVISION ?? 'development';
@@ -15,7 +16,13 @@ export default defineConfig({
   }],
   define: { __OPENMATH_BUILD__: JSON.stringify(buildInfo) },
   clearScreen: false,
-  server: { host: '127.0.0.1', port: 5173, strictPort: true },
+  server: {
+    host: '127.0.0.1', port: 5173, strictPort: true,
+    fs: { allow: [
+      fileURLToPath(new URL('./', import.meta.url)),
+      fileURLToPath(new URL('../agent/prompts/', import.meta.url)),
+    ] },
+  },
   test: {
     exclude: ['e2e/**', 'node_modules/**'],
     environment: 'jsdom',

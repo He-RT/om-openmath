@@ -17,7 +17,7 @@ import SwiftUI
   var body:some Scene {
     Window("OpenMath Preview",id:"workspace") {
       Group {
-        if let session=workspace.session {WorkspaceView(workspace:workspace,session:session)}
+        if let session=workspace.session {WorkspaceView(workspace:workspace,session:session).id(ObjectIdentifier(session))}
         else {welcome}
       }.frame(minWidth:640,minHeight:560)
         .preferredColorScheme(selectedColorScheme)

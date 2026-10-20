@@ -10,7 +10,7 @@ const bridge=new AgentBridge(bytes=>new Promise<void>((resolve,reject)=>{
 try{
  for await(const chunk of process.stdin){
   if(stopping)break;
-  for(const {raw,frame} of decoder.pushRaw(chunk))await bridge.accept(frame,raw);
+  for(const {raw,frame} of decoder.pushTransportChunk(chunk))await bridge.accept(frame,raw);
  }
  if(!stopping)decoder.finish();
  await bridge.close();

@@ -49,6 +49,8 @@ import SwiftUI
     _ = await replaceReserved(url)
   }
   func newDocument() async {_ = await replace(nil)}
+  /// Settings share this installation lease even when no notebook has been opened yet.
+  func prepareStorage() async throws {_ = try await services.open()}
   func refreshRecoverableDocuments(more:Bool=false) async {
     guard !busy else {return};busy=true;defer {busy=false}
     do {
@@ -304,7 +306,7 @@ struct NativeNotebookFileView:View {
       CellPresentationScope(session:session,cell:cell,workspace:workspace) {state in
         VStack(alignment:.leading,spacing:12) {
           ForEach(result.bindings,id:\.result_ref) {binding in
-            NativeResultView(presenter:runtime.presenter(for:binding),value:result.values.first{$0.binding.result_ref==binding.result_ref},displayContext:context(result,cell:cell.id),cellState:state,durationMs:runtime.durationsMs[result.receipt.operation_id],hasSourceDiagnostics:runtime.sourceDiagnostics[cell.id]?.contains{$0.severity=="Error"} ?? false,onShowSteps:{runtime.navigate(to:cell.id);runtime.navigation.show(.steps)})
+            NativeResultView(presenter:runtime.presenter(for:binding),value:result.values.first{$0.binding.result_ref==binding.result_ref},displayContext:context(result,cell:cell.id),cellState:state,durationMs:runtime.durationsMs[result.receipt.operation_id],hasSourceDiagnostics:runtime.sourceDiagnostics[Data(cell.id.utf8)]?.contains{$0.severity=="Error"} ?? false,onShowSteps:{runtime.navigate(to:cell.id);runtime.navigation.show(.steps)})
               .accessibilityIdentifier("notebook-result-"+cell.id)
           }
           if result.bindings.isEmpty {Text("计算完成，结果暂无法读取。可在详情中核对。").font(.callout).foregroundStyle(.secondary)}

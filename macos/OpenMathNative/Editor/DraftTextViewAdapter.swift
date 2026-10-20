@@ -108,6 +108,7 @@ private final class EditorUndoRouter:UndoManager {
   private var lastInputNS:UInt64=0
   private var previousCaret:NSRange?
   private var inComposition=false
+  private var reflectingSource=false
   var didEdit:(()->Void)?
   var didFocus:(()->Void)?
   var didFinishReading:(()->Void)? {didSet {(textView as? DraftTextView)?.finishReading=didFinishReading}}
@@ -149,15 +150,23 @@ private final class EditorUndoRouter:UndoManager {
   func textDidChange(_ notification:Notification) {try? reportCurrentInput()}
   func textViewDidChangeSelection(_ notification:Notification) {try? reportCurrentInput()}
   func reportCurrentInput() throws {
+    guard !reflectingSource else {return}
     if textView.hasMarkedText() {inComposition=true}
     else if inComposition {inComposition=false;lastInputNS=DispatchTime.now().uptimeNanoseconds}
-    let before=store.overlay(cell)?.sequence
+    let draft=store.overlay(cell),before=draft?.sequence
+    var source=textView.string
+    source.makeContiguousUTF8()
     let selections=textView.selectedRanges.map{DraftTextRange($0.rangeValue)}
     let marked=textView.hasMarkedText() ? DraftTextRange(textView.markedRange()) : nil
-    var map=indexMap.source.utf8.elementsEqual(textView.string.utf8) ? indexMap : try SourceIndexMap(source:textView.string,draftSequence:before ?? 0)
+    if let draft,draft.editorGeneration==generation,draft.composing==textView.hasMarkedText(),
+       draft.selections==selections,draft.markedRange==marked,
+       draft.source.utf8.elementsEqual(source.utf8),indexMap.source.utf8.elementsEqual(source.utf8) {
+      indexMap.bindSequence(draft.sequence);return
+    }
+    var map=indexMap.source.utf8.elementsEqual(source.utf8) ? indexMap : try SourceIndexMap(source:source,draftSequence:before ?? 0)
     for range in selections {_ = try map.byteRange(for:range.native)}
     if let marked {_ = try map.byteRange(for:marked.native)}
-    try store.edited(cell:cell,generation:generation,source:textView.string,hasMarkedText:textView.hasMarkedText(),selections:selections,markedRange:marked)
+    try store.edited(cell:cell,generation:generation,source:source,hasMarkedText:textView.hasMarkedText(),selections:selections,markedRange:marked)
     map.bindSequence(store.overlay(cell)!.sequence);indexMap=map
     if store.overlay(cell)?.sequence != before {didEdit?()}
   }
@@ -165,9 +174,10 @@ private final class EditorUndoRouter:UndoManager {
   func reflectAcknowledgedSource() {
     guard !textView.hasMarkedText(),let overlay=store.overlay(cell),!overlay.conflict else {return}
     if overlay.source.utf8.elementsEqual(textView.string.utf8) {indexMap.bindSequence(overlay.sequence);(textView as? DraftTextView)?.acknowledged();return}
-    let selected=textView.selectedRanges
-    textView.string=overlay.source;textView.selectedRanges=selected
-    if let actual=try? SourceIndexMap(source:overlay.source,draftSequence:overlay.sequence) {indexMap=actual}
+    guard let actual=try? SourceIndexMap(source:overlay.source,draftSequence:overlay.sequence) else {return}
+    reflectingSource=true;defer {reflectingSource=false}
+    indexMap=actual
+    textView.string=overlay.source;textView.selectedRanges=overlay.selections.map{NSValue(range:$0.native)}
     (textView as? DraftTextView)?.acknowledged()
   }
 }

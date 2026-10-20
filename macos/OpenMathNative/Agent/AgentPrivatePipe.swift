@@ -5,6 +5,14 @@ import Darwin
 struct AgentFrameBytes {
   static let maximum=1024*1024
   private var pending=Data(),failed=false
+  mutating func pushTransportChunk(_ bytes:Data)throws->[Data] {
+    guard bytes.count<=128*1024 else {failed=true;throw AgentSessionError.invalidFrame}
+    var frames:[Data]=[]
+    for start in stride(from:0,to:bytes.count,by:4096) {
+      frames+=try push(bytes.subdata(in:start..<min(start+4096,bytes.count)))
+    }
+    return frames
+  }
   mutating func push(_ bytes:Data)throws->[Data] {
     guard !failed,bytes.count<=128*1024 else {failed=true;throw AgentSessionError.invalidFrame}
     var frames:[Data]=[]

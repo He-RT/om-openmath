@@ -11,6 +11,18 @@ struct DraftTextRange:Codable,Sendable,Equatable {
       String.Index(utf16Offset:location,in:text).samePosition(in:text.unicodeScalars) != nil,
       String.Index(utf16Offset:location+length,in:text).samePosition(in:text.unicodeScalars) != nil else {throw StorageError.corruptIdentity}
   }
+  /// Reposition a previously valid selection after a clean source replacement. This
+  /// never accepts malformed persisted ranges or changes a source edit's boundaries.
+  func clamped(to text:String)->DraftTextRange {
+    let count=text.utf16.count,start=min(max(0,location),count)
+    let end=start+min(max(0,length),count-start)
+    func boundary(_ offset:Int)->Int {
+      if offset>0,String.Index(utf16Offset:offset,in:text).samePosition(in:text.unicodeScalars)==nil {return offset-1}
+      return offset
+    }
+    let first=boundary(start),last=boundary(end)
+    return .init(NSRange(location:first,length:last-first))
+  }
 }
 struct DraftBackupCell:Codable,Sendable {
   let cellID:String

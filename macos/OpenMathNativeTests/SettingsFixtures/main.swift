@@ -23,6 +23,21 @@ import Combine
     guard !started else {return};started=true
     do {
       try FileManager.default.createDirectory(at:root,withIntermediateDirectories:true)
+      let firstRoot=root.appendingPathComponent("settings-before-notebook")
+      let firstServices=NativeAppStorage(paths:.init(root:firstRoot,channel:.preview))
+      let firstWorkspace=NativeFileWorkspace(storage:firstServices)
+      let firstRegistry=try ModelRegistry(file:firstRoot.appendingPathComponent("models.json"))
+      let firstModel=NativeSettingsModel(registry:firstRegistry)
+      firstModel.workspace=firstWorkspace;await firstModel.load();precondition(firstModel.loaded)
+      firstModel.addProvider();firstModel.providers[0].name="首次配置"
+      firstModel.providers[0].baseURL="http://127.0.0.1:10104/v1"
+      firstModel.providers[0].credentialReference="fixture-unused-first-run"
+      firstModel.addModel(firstModel.providers[0].id)
+      firstModel.providers[0].models[0].apiName="fixture-first-run"
+      await firstModel.save();precondition(firstModel.error==nil)
+      precondition(FileManager.default.fileExists(atPath:firstRoot.appendingPathComponent("store.json").path))
+      _ = try await firstServices.open();try await firstServices.close()
+      print("First launch: settings saved before any notebook, managed storage root remains openable; no credential or model request")
       let source=NativeSourceFile(version:1,title:"设置验收",cells:[.init(id:"math",kind:.math,source:"2 + 2",dialect:.modern)])
       let sourceURL=root.appendingPathComponent("设置验收.omnb"),original=try JSONEncoder().encode(source);try original.write(to:sourceURL)
       guard await workspace.open(sourceURL),let assistant=workspace.session?.assistant else {fatalError("fixture document failed to open")}

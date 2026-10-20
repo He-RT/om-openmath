@@ -153,6 +153,14 @@ export class FrameDecoder {
   #buffer = new Uint8Array(16384);
   #count = 0;
   #failed = false;
+  /** OS pipe reads may combine many individually valid frames. Decode bounded pieces
+   * while keeping the frame, per-decode batch and connection budgets unchanged. */
+  pushTransportChunk(chunk:Uint8Array): {raw:Uint8Array;frame:AgentIPCFrame}[] {
+    if(chunk.length>128*1024){this.#failed=true;fail('IPC_FRAME_SIZE');}
+    const frames:{raw:Uint8Array;frame:AgentIPCFrame}[]=[];
+    for(let start=0;start<chunk.length;start+=4096)frames.push(...this.pushRaw(chunk.subarray(start,start+4096)));
+    return frames;
+  }
   push(chunk: Uint8Array): AgentIPCFrame[] {return this.pushRaw(chunk).map(v=>v.frame);}
   pushRaw(chunk:Uint8Array): {raw:Uint8Array;frame:AgentIPCFrame}[] {
     if (this.#failed) fail('IPC_CONNECTION_FAILED');

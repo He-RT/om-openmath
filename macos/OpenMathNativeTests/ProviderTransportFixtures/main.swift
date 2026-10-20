@@ -253,6 +253,55 @@ private func failure(_ body:@Sendable ()async throws->ProviderModelResult)async 
       let observed=await trace.results;precondition(observed.count==1 && observed[0].finish==(reason=="stop" ? "complete":"incomplete"))
       await adapter.close()
     }
+    // Fast token fragments must survive a slower native message/ledger consumer.
+    // The byte limit, exact offsets and terminal canonical message still apply.
+    do {
+      let trace=Trace(),name="adapter-burst",parts=(0..<160).map{"\($0)中🙂"}
+      let adapter=ProviderAgentModelAdapter(transport:transport,factory:{_ in
+        let model=try await prepare(host,name)
+        return ProviderPreparedTurn(model:model,route:try route(model,normal),journal:await trace.journal(),complete:{await trace.complete($0)})
+      })
+      let port=adapter.port(),intent=NativeAgentRequestIntent(operation_id:"operation-"+name,agent_turn_id:"turn-"+name,request_id:"request-"+name)
+      var bytes=Data()
+      for part in parts {bytes.append(try chat(part).dropLast("data: [DONE]\n\n".utf8.count))}
+      // Only the final fragment ends this one response.
+      var events=String(decoding:bytes,as:UTF8.self).replacingOccurrences(of:"\"finish_reason\":\"stop\"",with:"\"finish_reason\":null")
+      events+=String(decoding:try chat("",reason:"stop"),as:UTF8.self)
+      FixtureProtocol.state.reset(Script(chunks:[Data(events.utf8)]))
+      _ = try await port.prepare(intent)
+      var text="",offset:UInt64=0,terminal:AgentModelEventPayload?
+      for try await event in try await port.stream(intent) {
+        precondition(event.byte_offset.value==offset)
+        if event.phase == .delta {text+=event.text;offset+=UInt64(event.text.utf8.count)} else {terminal=event}
+        try await Task.sleep(for:.milliseconds(20))
+      }
+      precondition(text==parts.joined() && terminal?.phase == .finished && terminal?.canonical_message.value != nil)
+      await adapter.close()
+      let fragmented=try await prepare(host,"transport-fragment-burst"),fragmentTrace=Trace()
+      let fragments=events.components(separatedBy:"\n\n").filter{!$0.isEmpty}.map{Data(($0+"\n\n").utf8)}
+      FixtureProtocol.state.reset(Script(chunks:fragments))
+      let result=try await transport.send(fragmented,route:route(fragmented,normal),journal:await fragmentTrace.journal(),onText:{
+        await fragmentTrace.append($0);try await Task.sleep(for:.milliseconds(20))
+      })
+      let received=await fragmentTrace.text
+      precondition(result.finish=="complete" && received==parts.joined())
+    }
+    do {
+      let trace=Trace(),name="adapter-cancel"
+      let adapter=ProviderAgentModelAdapter(transport:transport,factory:{_ in
+        let model=try await prepare(host,name)
+        return ProviderPreparedTurn(model:model,route:try route(model,normal),journal:await trace.journal(),complete:{await trace.complete($0)})
+      })
+      let port=adapter.port(),intent=NativeAgentRequestIntent(operation_id:"operation-"+name,agent_turn_id:"turn-"+name,request_id:"request-"+name)
+      FixtureProtocol.state.reset(Script(noFinish:true,heartbeat:true))
+      _ = try await port.prepare(intent)
+      let stream=try await port.stream(intent)
+      let consumer=Task {for try await _ in stream {}}
+      for _ in 0..<200 {if FixtureProtocol.state.count>0 {break};try await Task.sleep(for:.milliseconds(5))}
+      consumer.cancel()
+      do {try await consumer.value;fatalError("cancelled native stream kept waiting")} catch is CancellationError {} catch let error as ProviderTransportFailure {precondition(error.reason == .cancelled)}
+      await adapter.close()
+    }
     let closingHost=try await NativeHostClient.open(),closingModel=try await prepare(closingHost,"closing"),closingTrace=Trace()
     FixtureProtocol.state.reset(Script(noFinish:true,heartbeat:true))
     let closing=Task {try await transport.send(closingModel,route:route(closingModel,normal),journal:await closingTrace.journal(),onText:{_ in})}

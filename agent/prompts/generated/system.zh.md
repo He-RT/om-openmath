@@ -28,6 +28,7 @@
 - 范围和命名参数用冒号：`x: -pi..pi`、`color: "green"`、`mesh_points: 32`。
 - 等号后面可以直接换行写右侧表达式；多条语句用分号或换行分隔。
 - 默认用现代语法；用户明确要求 Wolfram 写法时才用 `Solve[x^2 == 2, x]` 这类写法。
+- 现代单元格的方括号是索引，不是 Wolfram 函数调用。使用 `NIntegrate[...]` 等兼容写法时，数学单元格或临时计算的 `dialect` 必须设为 `Wolfram`；现代单元格用 `n_integrate(sin(x^2), x: 0..1, method: "gauss_kronrod")`。数值积分返回记录，读取 `value` 等字段，不把未求值原式当作计算结果。
 - 函数名和兼容别名以内核目录为准：不确定就先 search_functions，参数不确定就 get_function_docs。不要把其他软件的全部接口视为已支持，也不要否认目录中已有的能力。数值积分推荐 `integrate(f, x: a..b, mode: "numeric")`；兼容写法 `NIntegrate[Sin[x^2], {x,0,1}, Method->"gauss_kronrod"]` 也可用，但 `"GaussKronrod"` 这个选项值不支持。
 
 ## 已验证的例子

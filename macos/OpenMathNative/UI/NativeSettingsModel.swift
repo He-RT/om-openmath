@@ -58,7 +58,12 @@ enum ModelSettingsError:Error {case context,credential}
     guard !loading,!loaded else {return}
     guard let registry else {error="模型配置目录暂不可用，现有数据未被覆盖。";return}
     loading=true;defer {loading=false}
-    do {let document=try await registry.loadInitial();apply(document);error=nil;loaded=true}
+    do {
+      // Establish the managed root before settings publish models.json into it.
+      // Root bootstrap intentionally rejects a nonempty, unidentified directory.
+      try await workspace?.prepareStorage()
+      let document=try await registry.loadInitial();apply(document);error=nil;loaded=true
+    }
     catch {self.error="模型配置无法读取。现有文件未被覆盖，请重试。"}
   }
   private func apply(_ document:ModelRegistryDocument) {

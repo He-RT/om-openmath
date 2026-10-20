@@ -11,7 +11,7 @@ struct CellDiagnostics:View {
   private var source:String {session.drafts.overlay(cell.id)?.source ?? cell.source}
   private var diagnostics:[NotebookSourceDiagnostic] {
     guard runtime.sourceProjection?.source.file.cells.first(where:{$0.id==cell.id})?.source.utf8.elementsEqual(source.utf8)==true else {return []}
-    return runtime.sourceDiagnostics[cell.id]?.filter{$0.severity=="Error"} ?? []
+    return runtime.sourceDiagnostics[Data(cell.id.utf8)]?.filter{$0.severity=="Error"} ?? []
   }
   var body:some View {
     if !diagnostics.isEmpty {

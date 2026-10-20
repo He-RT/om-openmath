@@ -111,10 +111,13 @@ struct DraftFence:Sendable {
       if let own {
         guard own.sequence<=draft.sequence else {throw CommitPortError.sourceConflict}
         draft.baseSource=actual;draft.baseRevision=source.cell_revisions[index].revision.value
-        if own.sequence==draft.sequence && !draft.composing {draft.source=actual;draft.conflict=false}
+        if own.sequence==draft.sequence && !draft.composing {
+          if !draft.source.utf8.elementsEqual(actual.utf8) {draft.selections=draft.selections.map{$0.clamped(to:actual)}}
+          draft.source=actual;draft.conflict=false
+        }
       } else if !actual.utf8.elementsEqual(draft.baseSource.utf8) {
         if !draft.source.utf8.elementsEqual(draft.baseSource.utf8) || draft.composing {draft.conflict=true}
-        else {draft.source=actual}
+        else {draft.source=actual;draft.selections=draft.selections.map{$0.clamped(to:actual)}}
         draft.baseSource=actual;draft.baseRevision=source.cell_revisions[index].revision.value
       }
       drafts[key]=draft

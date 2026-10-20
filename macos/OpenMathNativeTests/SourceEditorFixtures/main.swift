@@ -65,6 +65,35 @@ import CryptoKit
     precondition(session.drafts.confirmed.file.cells.count==1 && session.drafts.confirmed.revision.value==0)
     precondition(adapter.indexMap.draftSequence==session.drafts.overlay("a")!.sequence)
     try adapter.indexMap.validate(sourceHash:SHA256.hash(data:Data(editor.string.utf8)).map {String(format:"%02x",$0)}.joined(),draftSequence:session.drafts.overlay("a")!.sequence)
+    let unchangedSequence=session.drafts.overlay("a")!.sequence
+    try adapter.reportCurrentInput();try adapter.reportCurrentInput()
+    precondition(session.drafts.overlay("a")!.sequence==unchangedSequence)
+    editor.setMarkedText("中文",selectedRange:.init(location:2,length:0),replacementRange:.init(location:NSNotFound,length:0))
+    let marked=session.drafts.overlay("a")!,markedBytes=Data(editor.string.utf8)
+    precondition(marked.composing)
+    try adapter.reportCurrentInput()
+    precondition(session.drafts.overlay("a")!.sequence==marked.sequence)
+    editor.unmarkText()
+    precondition(Data(editor.string.utf8)==markedBytes && !session.drafts.overlay("a")!.composing && session.drafts.overlay("a")!.sequence>marked.sequence)
+    precondition(adapter.indexMap.draftSequence==session.drafts.overlay("a")!.sequence)
+    // A clean editor can be replaced by an agent while its old caret lies beyond the
+    // new source, or inside the new source's surrogate pair. Backup must stay valid
+    // even before AppKit has reflected the acknowledged text.
+    for caret in [raw.utf16.count,1] {
+      let replacement=DraftStore(source:session.drafts.confirmed,runtime:"selection-replacement",generation:1)
+      let replacementAdapter=try DraftTextViewAdapter(store:replacement,cell:"a",generation:1)
+      replacementAdapter.textView.setSelectedRange(.init(location:caret,length:0))
+      try replacementAdapter.reportCurrentInput()
+      var changed=replacement.confirmed
+      changed.file.cells[0].source="🙂x";changed.revision=try HostSerial(1)
+      changed.cell_revisions[0].revision=try HostSerial(1);changed.snapshot_hash=SourceHashes.snapshot(changed)
+      try replacement.acknowledge(changed)
+      let owner=DraftBackupOwner(ownerID:UUID().uuidString.lowercased(),storeID:UUID().uuidString.lowercased(),documentID:changed.document_id,leaseSerial:1,runtime:"selection-replacement",documentGeneration:1)
+      _ = try replacement.backupSnapshot(owner:owner,sequence:1)
+      replacementAdapter.reflectAcknowledgedSource()
+      precondition(replacementAdapter.textView.string=="🙂x")
+      _ = try replacement.backupSnapshot(owner:owner,sequence:2)
+    }
     print("Exact scalar roundtrips \(scalarCases); Chinese/emoji/NFD/ZWJ/flags/Tab/CRLF/EOF, invalid bytes/surrogates/ranges rejected; actual TextKit2 newline/plain paste and original bytes passed")
     window.orderOut(nil);try await session.close();try await services.close()
   }

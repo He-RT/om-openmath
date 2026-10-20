@@ -789,7 +789,7 @@ private struct AssistantTranscriptFixtureControls:View {
     let broken="# 中文🙂\nlet f(x) ="
     editor.selectAll(nil);editor.insertText(broken,replacementRange:editor.selectedRange())
     await session.runtime.analyzeSourceNow(session.drafts)
-    guard let diagnostic=session.runtime.sourceDiagnostics["a"]?.first(where:{$0.severity=="Error"}) else {fatalError("real parser error missing")}
+    guard let diagnostic=session.runtime.sourceDiagnostics[Data("a".utf8)]?.first(where:{$0.severity=="Error"}) else {fatalError("real parser error missing")}
     let map=try SourceIndexMap(source:broken,draftSequence:0)
     let position=try map.position(forUTF8:Int(diagnostic.span.start))
     require(position.line==2,"diagnostic line lost Unicode/newline")

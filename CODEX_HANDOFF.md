@@ -4,7 +4,7 @@
 
 ## 2026-10-20 当前状态
 
-- `dev`/origin已到 **bb05bebd（F5）**，A–F完成；**G1所有修正正在本任务一笔提交**，G1已勾选，G2–G4未勾选。每任务完成一笔提交推dev。无关 `.gitignore`、`.vscode/`、`test-results/` 不stage、不删；不合main、不移动旧tag。用户明确不开子代理、不改系统输入法/安全/权限、不启动iOS模拟器、不再看别的App。
+- `dev`/origin已到 **ef76f794（G1）**，A–G1完成；G2–G4未勾选。每任务完成一笔提交推dev。无关 `.gitignore`、`.vscode/`、`test-results/` 不stage、不删；不合main、不移动旧tag。用户明确不开子代理、不改系统输入法/安全/权限、不启动iOS模拟器、不再看别的App。
 - **用户已书面同意原型浏览方式例外**：file://策略拒绝且禁止绕过，允许四张静态图+HTML源码。不要重复询问或改用HTTP/CDP绕过。其余标准保留。
 - **第16项真实中文候选已通过**：用户亲测Mac与Web均“只上屏，未开始发送”，2026-10-20已写计划。不要再问，不是模拟或豁免。
 - **两项最新已确认，勿再问（2026-10-20）**：用户真实拖入TXT后新增附件卡片；明确同意仅Mac截图高度使用本机808–860替代900，宽1440/1000/800、20项其余部分和数学/性能标准保留。G1的静态模式实测与最终4图已完成，下一项G2。
@@ -29,11 +29,20 @@
 - CUA压缩后先`rewriteDocumentation`。现有绑定：g1Mac、g1Fs、g1State、g1Finder、e1Tab、e1Browser。Finder当前attachments目录，留给用户拖放，不碰其余文件。Mac新鲜完整AX会重编号；菜单ID易失，可同一次call读AX后按已观察文本提取index再click。OpenPanel选row再shift末row能多选；CmdA并未多选。CmdO面板慢可能CUA超时，先恢复已有面板，不重复开。
 - IAB browser2，tab1自有5173，providerTabId `browser-use:e4322a1d-00fc-4042-94fc-7d0378f61461`；tab2 about:blank。当前tab1是1440×900、13格设计本，仍已加载旧WASM；真实条件最终headless测试已通过，别据旧页面判新dist失败。Web本地回环供应商已通过UI把10103改为**无服务10104**以供人工IME，原授权F5配置没改。临时viewport收尾reset并每turn重新markHandoff。旧用户4175不动。
 
-## 真实模型与后续阶段
+## 当前 G2 / G3（2026-10-21，唯一最新进度）
 
-- **预算33/60，余27**，仅A5/F5/G2可调用。F5生产Web gpt-6.1-sol S1–S6首次均通过，不重做；请求数8/10/7/9/9/3，真实S2半瓜12网格5312三角形，S5积分0.3102683017233811，S6只读scratch=6且源码未改。账本`target/plan-5/live-task-runs.jsonl`和`live-ui/data/F5-gpt-6.1-sol-S*-01/`。
-- 私密唯一文件`/Users/hert/.config/openmath/testing/pre-alpha-4-api.json`，最新授权localhost:10100/v1，0600；两个模型gpt-6.1-sol/gpt-6-luna。不得输出密钥、认证头或扫描其他配置。用户10100服务不动。自有5173需先lsof再复用/重启，当前dist最终union构建已成功。
-- G1的20项/例外/4图已完成并写计划。下一项G2候选Mac两模型S1–S8+Web一模型S1–S6（24次，3次重试余量）；G3只跑计划列脚本/原53正确性/严格性能；G4统一.5、打包、安装回读。版本目前仍.4等待G4同步。**公开GitHub pre-release必须准备具体可审阅包后等用户明确确认**；不要据旧.4授权发布。
+- 同范围goal active。A–G1已推dev=ef76f794；**G2全部验收完成，准备本任务提交推dev**。G3实际数学/性能/数据回归均通过，待下一任务提交；G4未开始。不开子代理，不改输入法/安全/权限，不启动iOS模拟器，不看其他App找参考；不stage或删无关`.gitignore`、`.vscode/`、`test-results/`。
+- **用户上限80，账本69/80，全部finish，无活动模型任务。** `target/plan-5/live-task-runs.jsonl`为唯一账本。Mac gpt-6.1-sol、gpt-6-luna、DeepSeek S1–S8；Web sol S1–S6；Mac图片/PDF真实发送全部通过，不重跑。
+- DeepSeek：S1实际5/6；S2 retry02实际scene2592三角形、2数学格无诊断/完整回复（22请求222秒）；S3双曲线400点/−π..π（9请求16秒）；S4真实缺括号修复为f=x²+1/10（12请求21秒）；S5 retry02先查目录、Wolfram NIntegrate/gauss_kronrod/0.3102683017233811（13请求36秒）；S6讨论scratch6、原源码/接纳2/3标识不变；S7实际长算childIndex1 started后CANCELLED、源码保留无新有效结果（15秒6请求，后读仍6）；S8从S2-01整轮撤销回0格、无重复撤销按钮。旧失败全部保留。
+- Image-01真实请求有一个JPEG data URL，原128×96图片尺寸/颜色准备后对应，模型正常complete/stop返回绿色/棕色/棋盘纹，1请求。**象限位置描述不完全准确**，如实记录为模型视觉能力局限，不能声称空间识别准确。PDF-01真实PDFKit提取第1页文字，provider body含公式和页码，回复正确显示x²+y²=1、2+2=4及页1，2请求。讨论均无文稿修改。用户已回复“已处理”并手动处理当前签名钥匙串窗口；原任务延续、无重发、不再问旧提示。
+- 本轮生产修复：Settings先初始化同根再保存模型；切文稿按session/assistant身份绑定；Provider两层按字节合并而非32碎片限流，保留8MiB/UTF8 offset/canonical/取消；干净源码缩短/emoji替换合法收回选区、原子回写；诊断以Data(UTF8)索引防NFC/NFD ID冲突；两端transport按4096字节喂decoder防OS合并读取误触batch。分别现有Settings/ProviderTransport/SourceEditor/test-drafts(3真实SIGKILL)/Node protocol11+bridge10/native protocol通过。日志见计划。
+- S2-01与S5-01失败的确切终止点均为已32工具提案后新增提案撞原宿主上限。**未扩大32上限**；FFI将IPC_TASK_BUDGET归类BUDGET_EXCEEDED，Session显示步骤上限，停止优先。真实32→33拒绝/仅1耐久消息测试通过g2-proposal-budget-native-2.log；首轮fixture旧代次失败保留。语言卡补Modern方括号是索引、Wolfram兼容调用需正确dialect；生成输出和test-prompt通过。
+- 最新完整候选`target/plan-5/g2-ui/OpenMath Candidate G2.app`，bundle org.openmath.OpenMath.CandidateG2/root g2-ui/storage，revision ef76f794+G2-budget-dialect-fix，含全部修复；严格AgentRuntime+Release `g2-budget-dialect-native-build.log` exit0、签名已验。当前PDF讨论界面，无活动任务。替换前CUA正常退出，按Info.CFBundleExecutable核对确切PID为空，再ditto/保留fixture/bundle键/验签。
+- **G3实测通过**：fresh-root`target/macos-performance/g3-pipe-optimized-44tax98p`普通Finder打开，53全foreground=true、整次max270.150292ms；100次10KiB输入p95=33.315834ms/max68.01925ms，首workspace643.5145ms/RSS157581312。独立53正确性g3-native-pipe-correctness.log全过。旧65.417/66.473ms失败与无效前台尝试全保留，不挑最快、不放宽50ms。App已退出，勿getApp/截图重启覆写旧root。最后仅提示词/预算状态不影响计时路径。
+- G3其余既有通过：host-service28 suites/181；storage/saves/recovery/undo/kernel-runtime五脚本；CLI53正确/max46.6965ms；Web生产55+开发核2补跑、输入p95=32.8/max34.2、53max87ms。相机原7936三角形60Hz/静止0新帧已在C8通过。仅G3测试入口文件app/e2e/performance.spec.ts、PerformanceFixtures准备下一笔提交；G2提交含已验证输入路径优化。
+- GPT仅`/Users/hert/.config/openmath/testing/pre-alpha-4-api.json`，DeepSeek仅`/Users/hert/.config/openmath/testing/pre-alpha-5-deepseek-api.json`；0600、不输出密钥/认证头、不动用户10100服务。DeepSeek官方/默认thinking未禁用，reasoning_content replay已支持。
+- CUA压缩后rewriteDocumentation、精确路径绑定；fresh AX提数字再操作，`/^\s*\d+/`避focused重复行。GoToWindow需先getAX确认，再setValue PathTextField再Return，避免异步面板未就绪读到旧路径。当前g2Mac/g2State/g2ClickID/g2Fs，g2Db为只读sqlite连接。新对话会重置默认DeepSeek/执行，发媒体前显式选sol/讨论。CmdN保存确认选“关闭，保留本地修改”。截图invalid-size先核对文件和账本，避免重复调用。
+- 不并行Swift功能fixture与Release/cmark，不在编译期间改输入；当前无构建。G4需统一.5、DMG/appZIP/WebZIP+manifest/发行说明；先本地三包验收，再请求用户明确确认公开pre-release，公开后匿名下载校SHA并安装回读；此前goal不能complete。
 
 **以下均为 `.4` 的历史接续记录；其“当前候选”“已授权发布”及旧完成条件不适用于 `.5`。新设计、计划及本页顶部状态优先。**
 

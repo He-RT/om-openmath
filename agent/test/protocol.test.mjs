@@ -71,6 +71,16 @@ test('unknown credentials/URLs/Pi state, missing required null and unsafe counte
   const bad = structuredClone(sample); bad.sequence = 9007199254740992;
   assert.throws(() => decodeFrame(new TextEncoder().encode(JSON.stringify(bad))), /IPC_INVALID_SHAPE/);
 });
+test('coalesced OS reads preserve valid frames with unchanged per-decode batch bounds',()=>{
+ const line=encodeFrame(sample),chunk=Buffer.concat(Array.from({length:64},()=>line));
+ assert.throws(()=>new FrameDecoder().push(chunk),/IPC_BATCH_SIZE/);
+ for(const cut of [1,4095,4096,line.length+1,chunk.length]){
+  const decoder=new FrameDecoder();
+  const frames=[...decoder.pushTransportChunk(chunk.subarray(0,cut)),...decoder.pushTransportChunk(chunk.subarray(cut))];
+  assert.equal(frames.length,64);for(const {raw,frame} of frames){assert.deepEqual(JSON.parse(JSON.stringify(frame)),sample);assert.deepEqual(raw,line.subarray(0,-1));}decoder.finish();
+ }
+ assert.throws(()=>new FrameDecoder().pushTransportChunk(new Uint8Array(128*1024+1)),/IPC_FRAME_SIZE/);
+});
 test('duplicate members, invalid Unicode/UTF8, limits and incomplete EOF poison real connections', () => {
   for (const text of ['{"a":1,"a":2}', '{"a":{"x":1,"\\u0078":2}}', '"\\ud800"', '1e9999', '{} junk', '['.repeat(65) + '0' + ']'.repeat(65)]) {
     assert.throws(() => strictJson(new TextEncoder().encode(text)), /IPC_INVALID_JSON/);

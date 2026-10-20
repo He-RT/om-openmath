@@ -65,7 +65,7 @@ struct NotebookCellResult:Sendable {
   @Published private(set) var stoppedCells=Set<String>()
   @Published private(set) var durationsMs:[String:Double]=[:]
   @Published private(set) var staleReasons:[String:String]=[:]
-  @Published private(set) var sourceDiagnostics:[String:[NotebookSourceDiagnostic]]=[:]
+  @Published private(set) var sourceDiagnostics:[Data:[NotebookSourceDiagnostic]]=[:]
   @Published private(set) var sourceProjection:NotebookSourceProjection?
   @Published private(set) var definitions:[NotebookDefinition]=[]
   @Published private(set) var definitionsError:String?
@@ -168,7 +168,7 @@ struct NotebookCellResult:Sendable {
       guard !closing,!Task.isCancelled,requestSerial==analysisRequestSerial,sequence==drafts.persistenceRevision,confirmed.snapshot_hash==drafts.confirmed.snapshot_hash else {return}
       let projection=NotebookSourceProjection(source:input,analysis:reply.analysis)
       sourceProjection=projection
-      sourceDiagnostics=Dictionary(uniqueKeysWithValues:reply.analysis.cells.map{($0.cell_id,$0.diagnostics)})
+      sourceDiagnostics=Dictionary(uniqueKeysWithValues:reply.analysis.cells.map{(Data($0.cell_id.utf8),$0.diagnostics)})
       refreshStaleReasons(projection)
     } catch { /* Existing source/result facts remain intact until another exact analysis is ready. */ }
   }

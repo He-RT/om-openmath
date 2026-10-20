@@ -41,7 +41,7 @@ struct NativeAssistantView:View {
       }.frame(minHeight:100,maxHeight:.infinity)
       if let error=assistant.transcriptError {Text(error).font(.caption).foregroundStyle(.secondary).padding(.horizontal,16)}
       NativeAssistantComposer(assistant:assistant,panelHeight:geometry.size.height).padding(12)
-    }}.task {await assistant.load()}.onChange(of:assistant.showSettings) {
+    }}.task(id:ObjectIdentifier(assistant)) {await assistant.load()}.onChange(of:assistant.showSettings) {
       if assistant.showSettings {assistant.showSettings=false;UserDefaults.standard.set("models",forKey:"settings.section");openSettings()}
     }
   }

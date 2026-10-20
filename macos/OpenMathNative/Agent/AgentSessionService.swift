@@ -97,7 +97,12 @@ actor AgentSessionService {
     try await acquire();defer {release()}
     guard let s=scope,let ledger else {throw AgentSessionError.inactive}
     guard bytes.count<=AgentFrameBytes.maximum,let raw=String(data:bytes,encoding:.utf8) else {throw AgentSessionError.invalidFrame}
-    let reply=try await host.agentCommand(.native_agent_receive(.init(type:.agent_receive,scope:s,frame_json:raw)))
+    let reply:NativeAgentHostReply
+    do {reply=try await host.agentCommand(.native_agent_receive(.init(type:.agent_receive,scope:s,frame_json:raw)))}
+    catch {
+      if Self.isHostBudget(error) {modelFailure = .budget(.steps)}
+      throw error
+    }
     guard reply.document_id==document else {throw AgentSessionError.stale}
     guard reply.disposition == .transcript else {if reply.disposition == .ready {readyConnection=s.connection_id};updateSequence(reply);return reply}
     guard let canonical=reply.canonical_json.value,let event=reply.event_id.value,let peer=reply.peer_message_id.value,let sourceSequence=reply.source_sequence.value else {throw AgentSessionError.invalidFrame}
@@ -186,7 +191,7 @@ actor AgentSessionService {
       try await pipe.write(Data((initial+"\n").utf8))
       var decoder=AgentFrameBytes()
       while let chunk=try await pipe.read() {
-        for frame in try decoder.push(chunk) {
+        for frame in try decoder.pushTransportChunk(chunk) {
           let reply=try await receive(frame)
           report.frames+=1;report.lastPhase=reply.phase
           if let intent=reply.tool_intent.value {report.toolIntents.append(intent.operation_id)}
@@ -479,7 +484,12 @@ actor AgentSessionService {
     for task in pending {task.cancel()}
     for task in pending {await task.value}
   }
+  private static func isHostBudget(_ error:any Error)->Bool {
+    guard let native=error as? NativeHostClientError,case .rejected(let failure)=native else {return false}
+    return failure.code == .budget_exceeded
+  }
   private static func failureReason(_ error:any Error)->TurnEndReason {
+    if isHostBudget(error) {return .budget(.steps)}
     if let setup=error as? AssistantSetupError,case .contextLimit=setup {return .budget(.context)}
     let transport=(error as? ProviderTransportFailure)?.reason ?? (error as? ProviderTransportReason)
     switch transport {

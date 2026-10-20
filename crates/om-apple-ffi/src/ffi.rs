@@ -47,7 +47,7 @@ fn code(error: &str) -> HostErrorCode {
         "EDITING_BUSY" | "UNDO_CONFLICT" => HostErrorCode::EditingBusy,
         "OPERATION_IN_PROGRESS" => HostErrorCode::NotAvailable,
         "HOST_CLOSING" | "NOT_AVAILABLE" | "CONTEXT_NOT_READY" => HostErrorCode::NotAvailable,
-        "BUDGET_EXCEEDED" => HostErrorCode::BudgetExceeded,
+        "BUDGET_EXCEEDED" | "IPC_TASK_BUDGET" => HostErrorCode::BudgetExceeded,
         "CANCELLED" => HostErrorCode::Cancelled,
         "INTERNAL_ERROR" | "OWNER_PANIC" | "WORKER_PANIC" => HostErrorCode::InternalError,
         _ => HostErrorCode::InvalidArgument,

@@ -99,7 +99,7 @@ struct ProviderTransportJournal:Sendable {
   /// Original response bytes after the native auth-echo guard; no auth header is provided.
   let responseBytes:@Sendable (Data)async throws->Void
 }
-private enum ProviderHTTPEvent:Sendable {case headers(UInt16),bytes(Data)}
+private enum ProviderHTTPEvent:Sendable {case headers(UInt16),bytesAvailable}
 /// Trusted fixture scheduling at the actual timer wake/settlement boundary; never on the wire.
 struct ProviderTimeoutTestProbe:Sendable {
   let woke:@Sendable (ProviderTransportReason)async->Void
@@ -113,6 +113,7 @@ private final class ProviderHTTPPump:NSObject,URLSessionDataDelegate,@unchecked 
   private let timeouts:ProviderTimeouts
   private let testProbe:ProviderTimeoutTestProbe?
   private var closed=false,totalBytes=0,status:UInt16?,task:URLSessionDataTask?
+  private var pendingBytes=Data(),bytesSignalled=false
   private var connection:Task<Void,Never>?,stage:Task<Void,Never>?,total:Task<Void,Never>?
   private var timerIDs:[TimerLane:UUID]=[:]
   init(continuation:AsyncThrowingStream<ProviderHTTPEvent,any Error>.Continuation,timeouts:ProviderTimeouts,testProbe:ProviderTimeoutTestProbe?){self.continuation=continuation;self.timeouts=timeouts;self.testProbe=testProbe}
@@ -127,6 +128,10 @@ private final class ProviderHTTPPump:NSObject,URLSessionDataDelegate,@unchecked 
     self.task=task;connection=timer(timeouts.connection,.connectionTimeout,.connection);stage=timer(timeouts.firstResponse,.firstResponseTimeout,.stage);total=timer(timeouts.total,.totalTimeout,.total);lock.unlock();task.resume()
   }
   var observedStatus:UInt16? {lock.lock();defer {lock.unlock()};return status}
+  func takeBytes()->Data {
+    lock.lock();defer {lock.unlock()}
+    let bytes=pendingBytes;pendingBytes=Data();bytesSignalled=false;return bytes
+  }
   func stop(_ reason:ProviderTransportReason?) {
     settle(reason,ticket:nil)
   }
@@ -148,8 +153,13 @@ private final class ProviderHTTPPump:NSObject,URLSessionDataDelegate,@unchecked 
   }
   func urlSession(_ session:URLSession,dataTask:URLSessionDataTask,didReceive data:Data) {
     lock.lock();guard !closed else {lock.unlock();return};totalBytes+=data.count
-    let over=totalBytes>8*1024*1024;stage?.cancel();stage=timer(timeouts.idle,.idleTimeout,.stage);lock.unlock()
-    if over {stop(.limit)} else {yield(.bytes(data))}
+    let over=totalBytes>8*1024*1024
+    var signal=false
+    if !over {pendingBytes.append(data);signal = !bytesSignalled;bytesSignalled=true}
+    stage?.cancel();stage=timer(timeouts.idle,.idleTimeout,.stage);lock.unlock()
+    // At most one notification is queued; exact raw bytes remain byte bounded while
+    // the codec or durable native consumer is busy. URLSession fragments are arbitrary.
+    if over {stop(.limit)} else if signal {yield(.bytesAvailable)}
   }
   func urlSession(_ session:URLSession,task:URLSessionTask,didCompleteWithError error:(any Error)?) {
     stop(error==nil ? nil:((error as? URLError)?.code == .cancelled ? .cancelled:.network))
@@ -209,7 +219,8 @@ struct ProviderTransport:Sendable {
           case .headers(let status):
             try await journal.record(.init(phase:.responseStarted,request:prepared.request_ref,context:prepared.context_ref,status:status,outcome:.responseObserved))
             try await model.headers(status)
-          case .bytes(let bytes):
+          case .bytesAvailable:
+            let bytes=actualPump.takeBytes()
             let ready=try responseGuard?.feed(bytes) ?? bytes
             if !ready.isEmpty {try await journal.responseBytes(ready);for text in try await model.feed(ready) {try await onText(text)}}
           }

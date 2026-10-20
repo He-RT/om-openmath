@@ -95,6 +95,29 @@ private final class LedgerPause:@unchecked Sendable {
     // One-byte framing, truncated EOF and poison are tested on original UTF8 bytes.
     var decoder=AgentFrameBytes();var decodedFrames:[Data]=[]
     for byte in event+Data([10]) {decodedFrames+=try decoder.push(Data([byte]))};try decoder.finish();precondition(decodedFrames==[event])
+    let coalesced=Data((0..<64).flatMap{_ in Array(event)+[10]})
+    var transportDecoder=AgentFrameBytes()
+    let transported=try transportDecoder.pushTransportChunk(coalesced)
+    try transportDecoder.finish();precondition(transported.count==64 && transported.allSatisfy{$0==event})
+    // The existing 32-proposal task budget must remain closed and surface as a budget,
+    // rather than a generic connection/model failure. No provider or tool executes here.
+    await actualService.close()
+    let budgetHost=try await NativeHostClient.open()
+    let budgetOpen=try await budgetHost.sourceCommand(.source_open(.init(type:.source_open,snapshot:snapshot,store_id:info.identity.storeID,calculation:.init(nil),config_revision:try HostSerial(0))))
+    let budgetService=AgentSessionService(host:budgetHost,storage:storage,document:document,generation:budgetOpen.document_generation.value)
+    let budgetHello=try await budgetService.activate(session:"proposal-budget",grants:[],readonly:true,coreVersion:"1.0.4",adapterVersion:"adapter-1")
+    let bh=try JSONSerialization.jsonObject(with:Data(budgetHello.outbound_json.value!.utf8)) as! [String:Any]
+    _ = try await budgetService.receive(frame(budgetHello,kind:"ready",sequence:1,payload:bh["payload"] as! [String:Any],reply:bh["message_id"] as? String))
+    var budgetMessage=canonical;budgetMessage["task_id"]=budgetHello.scope.task_id;budgetMessage["message_id"]="budget-first"
+    budgetMessage["parts"]=(0..<32).map {i in ["kind":"tool_call","part_id":"call-\(i)","tool_call_id":"budget-call-\(i)","name":"read_notebook","arguments_json":"{}"]}
+    _ = try await budgetService.receive(frame(budgetHello,kind:"transcript_event",sequence:2,payload:["event_id":"budget-first-event","source_sequence":1,"message":budgetMessage]))
+    budgetMessage["message_id"]="budget-excess";budgetMessage["parts"]=[["kind":"tool_call","part_id":"call-33","tool_call_id":"budget-call-33","name":"read_notebook","arguments_json":"{}"]]
+    do {_ = try await budgetService.receive(frame(budgetHello,kind:"transcript_event",sequence:3,payload:["event_id":"budget-excess-event","source_sequence":2,"message":budgetMessage]));fatalError("33rd tool proposal exceeded task budget")}
+    catch NativeHostClientError.rejected(let failure) {precondition(failure.code == .budget_exceeded)}
+    let budgetReason=await budgetService.endReason(nil,stopped:false),cancelledBudgetReason=await budgetService.endReason(nil,stopped:true)
+    precondition(budgetReason == .budget(.steps) && cancelledBudgetReason == .stopped)
+    let budgetEvents=try await storage.sessionEvents("proposal-budget");precondition(budgetEvents.count==1)
+    await budgetService.close();try await budgetHost.close()
     var broken=AgentFrameBytes();_ = try broken.push(Data("{\"x\":".utf8));do {try broken.finish();fatalError("partial EOF accepted")} catch AgentSessionError.invalidFrame { }
     await actualService.close();try await pipeHost.close();try await storage.close()
     let (restored,_)=try await StorageService.open(paths:.init(root:root,channel:.preview));_ = try await restored.openDocument(document)

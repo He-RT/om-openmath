@@ -47,7 +47,7 @@ Windows、iOS 发行；音频、视频处理；长对话记忆压缩；提示词
 1. **先对照设计再写代码。** 每个界面任务开工前打开草案对应状态；完成后在相同尺寸截图并排比较，把结果写进进度记录（3–5 行，不贴大量证据）。
 2. **只陈述事实。** 进度记录写“做了什么、测了什么、结果如何、还差什么”。没测的写“未测”。
 3. **测试按改动跑。** 改哪里跑哪里的已有测试；只为新逻辑加测试（状态映射、操作记录配对、提示词拼装、发送条件、过期判定）。不建新的证据框架，不复制源码到证据目录。
-4. **真实模型调用有预算。** 只在 A5、F5、G2 调用；本版总计不超过 60 次任务运行。只用 `/Users/hert/.config/openmath/testing/pre-alpha-4-api.json` 中授权的端点和模型，不输出密钥。
+4. **真实模型调用有预算。** 只在 A5、F5、G2 调用；本版原上限为 60 次任务运行；2026-10-20 用户书面批准追加 DeepSeek S1–S8（7次模型任务，S8仅撤销），仅本次加测将总上限增至 **67次**；2026-10-21用户回复“80次”，当前整版总上限为 **80次**。GPT只用 `/Users/hert/.config/openmath/testing/pre-alpha-4-api.json`；追加DeepSeek只用 `/Users/hert/.config/openmath/testing/pre-alpha-5-deepseek-api.json` 的官方端点/model，均不输出密钥。
 5. **单一执行者。** 不开子代理；不改系统输入法、安全、权限设置；不在本机启动 iOS 模拟器。
 6. **磁盘。** 只清理自己产生的、已停止的、可重建的缓存；不删发行包、依赖、失败记录。
 7. **提交。** 每个任务完成后一个提交，推送到 `dev`；不合并 `main`，不移动旧 tag。
@@ -546,7 +546,7 @@ Mac S1–S8（两个模型）、Web S1–S6（一个模型）在候选包上各�
 | Mac 窗口结构 | C1 验证后决定：`NavigationSplitView` 能保住编辑状态就用它 |
 | Web 助手 | F1 验证 Pi 在浏览器中运行；不成立就用最小 TS 循环 |
 | 附件范围 | Mac：图片 + PDF 文字；Web：图片；其他格式保留但不发送 |
-| 真实模型预算 | 本版总计 ≤ 60 次任务运行 |
+| 真实模型预算 | 原60；2026-10-20追加DeepSeek为67；2026-10-21用户授权当前上限80次 |
 
 ## 5. 与 pre-alpha.4 任务账本的对应
 
@@ -607,11 +607,72 @@ Mac S1–S8（两个模型）、Web S1–S6（一个模型）在候选包上各�
 | [x] F4 Web 设置 | 实现完成；设置/助手回环通过 | 本任务提交 |
 | [x] F5 Web 真实场景 | S1–S6 真实 gpt-6.1-sol 通过 | 本任务提交 |
 | [x] G1 设计验收 | 20项按平台通过；两项书面例外已记 | 本任务提交 |
-| [ ] G2 助手场景复测 | | |
+| [x] G2 助手场景复测 | Mac两GPT及DeepSeek S1–S8、Web sol S1–S6、Mac图片/PDF真实发送通过；累计69/80 | 本任务提交 |
 | [ ] G3 数学、性能与数据回归 | | |
 | [ ] G4 打包与发布 | | |
 
 ### 记录
+
+**G2 完成（2026-10-21）**
+
+- 2026-10-21 新会话接替原会话01a12ff3，已从只读goal和原始会话核实范围、67次授权及S3尚未发送，当前同目标active。继承已验证的设计/中文IME/拖入/高度例外，不重跑已过项目；luna S3复用原run通过，不新增start。
+
+用户2026-10-20新增：GPT之后追加Mac deepseek-flash S1–S8，同样真实数学/图形/停止/撤销标准；官方根地址https://api.deepseek.com，工具/默认思考模式及reasoning_content回放按官方文档和现有共享codec处理，不擅自关闭思考。新私密配置0600，不进仓库/日志。历史67次授权保留；2026-10-21用户回复“80次”，当前总上限80，原GPT和数学/性能/发行标准保留。
+
+完整原生Release AppHost隔离候选与最新生产Web，真实授权localhost:10100/v1；不导入旧配置、不用合成供应商冒充真实模型。累计 **69/80** 次任务，全部结束；Mac两GPT及DeepSeek S1–S8、Web sol S1–S6、Mac图片/PDF真实发送均已通过，余11；所有失败/重试保留。账本`target/plan-5/live-task-runs.jsonl`；实际界面/截图保留在`live-ui/data/G2*-模型-S*-次数/`。
+
+| 场景 | Mac gpt-6.1-sol | Mac gpt-6-luna | Web gpt-6.1-sol |
+|---|---|---|---|
+| S1 | 通过：a2→5，实际5/6；8请求61秒；普通.omnb自动保存读回a5 | 通过：实际5/6，read参数错误经反馈自纠且可见；11请求67秒 | 通过：实际5/6，修改1/运行2/检查6；8请求31秒 |
+| S2 | 通过：空本新增scene，真实两半西瓜7344三角形/无诊断/实图；10请求295秒（含系统密钥等待） | 通过：scene真实1186三角形/无诊断，简化整瓜+分离红切面；10请求74秒 | 通过：半瓜含红瓤黑籽5248三角形/无诊断/实图；10请求77秒 |
+| S3 | 通过：plot两曲线各400采样点，无诊断；7请求38秒 | 通过：真实两曲线各400采样、无诊断；7请求32秒 | 通过：两曲线800采样点，无诊断；8请求35秒 |
+| S4 | 通过：真实缺括号修复，保持f=x²+1并实算10无诊断；9请求48秒 | 通过：修复真实缺括号，f=x²+1/结果10无诊断；9请求64秒 | retry02通过：补闭括号保留f=x²+1，实际10无诊断；9请求46秒 |
+| S5 | 通过：先查NIntegrate目录，真实记录展开0.3102683017233811、无诊断；10请求59秒 | retry03通过：先查NIntegrate，真实gauss_kronrod/0.3102683017233811、无诊断、完整终态；12请求60秒；前两次失败保留 | 通过：先查目录，NIntegrate/Method gauss_kronrod，0.3102683017233811；误差估计非严格界；9请求48秒 |
+| S6 | 通过：只读read/read/scratch/inspect，回答6，原源码和2/3接纳ID不变；讨论界面不显示时长/请求数，未推测 | 通过：讨论临时计算/检查得6，原源码及接纳2/3标识不变，无修改结果块 | 通过：只读+scratch6，原源码与接纳2/3不变，无修改结果块；3请求12秒 |
+| S7 | retry02通过：真实run_cells进行中立即停止，新增格保留、无新有效结果，后读仍5请求；31秒 | retry02通过：真实run_child_started后点击停止，CANCELLED、修改保留无新有效结果；7请求35秒；首轮观察器失误保留 | 本版不要求 |
+| S8 | 通过：S2整轮撤销回原0格；已撤销状态且无可重复撤销按钮，不花模型任务 | 通过：复用S2整轮撤销回0格、已撤销不可重复，无新模型任务 | 本版不要求 |
+
+- 2026-10-21两项已复现并修复、候选尚未重建：①旧生产对象跑新选区用例确抛StorageError.corruptIdentity；现仅在干净源码替换时重定位旧选区到合法UTF16标量边界，原生回写期间不报告中间态；现有SourceEditorFixtures已通过（g2-selection-backup-after.log），包括替换前后备份、旧光标超界/emoji半代理位置与原中文合成/原始字节回归。②旧传输fixture面对快碎片/慢消费者确失败ProviderTransportReason.limit；正文改按消费者拉取合并，HTTP只排一个字节就绪通知，两层保持8MiB上限、UTF8精确偏移、终态canonical与取消。现有test-provider-transport.sh完整通过（g2-stream-burst-after-2.log），覆盖快速token/网络碎片、慢消费和等待中取消；新Release候选S5-03已通过；首次helper未接纳输入/0模型请求，独立握手837ms后同run重试成功。新增原生恢复回归发现sourceDiagnostics以Swift规范化String为键导致NFC/NFD ID冲突，改用精确UTF8 Data索引；test-drafts.sh含3真实SIGKILL恢复边界全部通过（g2-selection-draft-safety-2.log），该诊断索引小修尚待最终Release集成。
+**追加 Mac DeepSeek（2026-10-21）**
+
+- 最新：S2 retry02通过，实际scene2592三角形、2数学格无诊断、完整回复（22请求222秒）；S3双曲线、S4修复为10亦通过。S5 retry02正确Wolfram积分通过（13请求36秒），S6只读scratch6、S7实际长算CANCELLED均通过。S5-01失败保留（56秒20请求）。S8已真实撤销回原0格且无重复撤销按钮。DeepSeek全场景通过，附件尚未完成。
+- 后续核对S2-01与S5-01均已32个耐久工具提案，下一提案被原宿主上限拒绝；S2 retry02在32提案后正常终结。保留原32上限，FFI将IPC_TASK_BUDGET映射BUDGET_EXCEEDED，Session显示步骤预算，真实32→33提案拒绝/仅1耐久消息/停止优先回归通过g2-proposal-budget-native-2.log。首轮fixture旧激活代次被拒绝已保留。语言卡补Modern方括号是索引、Wolfram调用需正确dialect，test-prompt通过g2-dialect-prompt.log。
+- 复现64个合法帧被OS合并读取后误触发32帧批量上限；两端按4096字节分块喂原decoder，原frame/batch/连接限额保留。现有Node protocol11、bridge10及原生protocol脚本均通过（g2-pipe-coalesced-node-2.log / g2-pipe-bridge-node.log / g2-pipe-coalesced-native.log）；已严格运行包+Release集成，S2 retry02通过；原S2-01终止点另已核对为32工具提案上限。
+
+
+| 场景 | deepseek-flash 官方端点 |
+|---|---|
+| S1 | 通过：实际5/6、宿主修改/运行/检查准确；10请求19秒，默认thinking未禁用 |
+| S2 | retry02通过：真实scene2592三角形、2数学格无诊断、完整回复；22请求222秒。run01失败保留 |
+| S3 | 通过：1个plot格，sin/cos各400采样点，−π..π，无诊断；9请求16秒 |
+| S4 | 通过：真实E023/E022缺括号修复为f(x)=x²+1，结果10无诊断；12请求21秒 |
+| S5 | retry02通过：先查目录，Wolfram NIntegrate/gauss_kronrod，实际0.3102683017233811无诊断，13请求36秒；run01失败保留 |
+| S6 | 通过：讨论临时计算6，原a2/a+1源码及接纳2/3标识不变，无修改结果块 |
+| S7 | 通过：实际长算子任务开始后取消，耐久CANCELLED/源码保留无新有效结果；15秒6请求，后读仍6 |
+| S8 | 通过：S2-01后真实整轮撤销回0格，无重复撤销按钮，无新任务 |
+
+- Mac sol S7-01自动化未赶上点击停止，内核先步骤预算中止（7请求50秒），如实保留失败；retry02真实停止通过。用户已回复“已允许本次访问”，仅本次Keychain，不改系统设置、不再问。
+- 图片/PDF均真实发送通过：Image-01实际provider body含1个JPEG data URL，准备后仍128×96且像素颜色对应原图；正常complete/stop回复，1请求。模型识别绿色/棕色/棋盘纹但象限位置描述不完全准确，如实记录为供应商视觉能力限制，不声称空间识别准确。PDF-01由PDFKit提取〔第1页〕和两公式，原文确在provider body，回复正确显示x²+y²=1和2+2=4及页1，2请求；讨论均未修改笔记本。用户已手动处理新签名钥匙串窗口，无重发、无权限设置修改。
+- Web S4-01在有效修复preview后供应商HTTP失败（5请求20秒、0修改），如实保留失败记录；只重跑此项，无成功项重跑。图片/PDF真实发送结果见上；模型能力勾选不充当端点验证。
+- G2发现并修复两项普通用户流程缺陷：①Settings先配置将models.json写进未初始化根，改为经同一NativeFileWorkspace/NativeAppStorage先建立根，保留未知非空目录拒绝；同目录配置功能回归通过。②换文稿沿用SwiftUI身份导致标题/模型加载串用，按session和assistant对象身份绑定；新Release及完整AppHost连续新建/保留草稿实测通过。修复待G2完成后一笔提交。
+- 原生OpenPanel选中有效.omnb但Open禁用，在已有纯AppKit FilePanelFixture对照也复现，原因未定；未放宽类型或安全设置。S2以正常新建→删除默认空格进入0格场景，后续通过普通编辑构造输入；不冒称面板问题已解决。S1确曾普通文件打开且自动保存通过。
+- Mac S2曾等待系统SecurityAgent；工具明确禁止读取/操作该系统App，已请求用户手动处理。之后实际任务继续并结束，未改系统设置，无须重复处理。goal已恢复active；G2/G3/G4和整版未完成，未公开发行。
+
+**G2 实施与原型差异**：修复首启配置、切文稿身份、快流式碎片、干净源码替换选区、规范等价ID诊断索引、合并读取及工具预算状态；未改变工作台v2的视觉结构。受影响现有回归和完整Release通过，所有真实场景记录见上。剩余G3提交与G4统一版本/三包验收/用户确认公开/匿名回读，整版未交付。
+
+**G3 独立回归进度（G2等待期间先执行，不提前勾选）**
+
+- **最新有效原生性能通过**：普通Finder打开生产对象链接的fresh-root `g3-pipe-optimized-44tax98p`，全程foreground=true；原53整次max270.150292ms，100次10KiB输入p95=33.315834ms/max68.01925ms（门槛未改）。独立原53正确性逐项通过 `g3-native-pipe-correctness.log`。原两次65.417/66.473ms失败与无效前台尝试全部保留。最新改动仅提示词/预算状态，尚待集成。
+
+- **原生输入性能仍失败，未勾选G3**：访达正常打开真实MachO应用包终于取得前台（无需用户手动激活）。第一次有效53全正确、整次max745.243834ms，但100次输入p95=65.417084ms；第二次仅增加同步insert调用耗时诊断，原53max821.902875ms，输入p95=66.472708ms，insert本身p50=7.805/p95=9.88375ms。两份失败保留，未挑最快。
+- 输入路径优化工作树：原生字符串一次取值/转连续UTF8，完全相同的已验证编辑状态不重复构建/校验索引，保持marked状态和编辑代次变化同步上报；标量表预留容量。现有SourceEditorFixtures补重复报告不增序列、同字节unmark仍推进状态/序列回归，中文/emoji/NFD/CRLF/标量边界全部通过（g3-editor-input-regression.log）。功能脚本改Onone，正式Release/计时标准没改。优化后的生产性能构建正在进行，**尚未重测/证明达标**。
+
+- host-service：28 suites，181 passed / 0 failed / 0 ignored（`g3-host-service.log`）。
+- 原生指定五脚本均通过：storage真实20次F_FULLFSYNC+六崩溃边界；saves实际文件/自动保存/身份、六SIGKILL与外部字节冲突；recovery五SIGKILL；undo实际UndoManager/原ID/lostACK；kernel-runtime真实2/3→5/6→9/10及停止、unknown、长CAS编辑。日志`g3-native-{storage,saves,recovery,undo,kernel-runtime}.log`。
+- Web全量第一次误以开发配置复用生产服务器：55通过、2性能显式skip、2开发源码导入失败，原日志保留为失败。仅对这2项使用正确dev服务补跑均通过（`g3-web-dev-kernel.log`）；未改测试标准或源码。
+- 当前CLI Release原53逐条实测全部<200ms，max46.6965ms；当前独立正确性验证器对实际53输出全部通过，日志`g3-cli-{performance,correctness}.log`。不以旧.4测量代替本候选。
+- 原生性能构建成功，但启动尚未取得真实前台激活；命令行尝试和两种应用包尝试均未产生数学/输入样本，未计为通过。保留`g3-foreground-nJ664A`、`g3-appkit-ea97305o`、`g3-direct-wr0itpt8`根；工具能读窗口，普通Raise未让app.isActive变true，坐标操作返回noWindowsAvailable。只对已有PerformanceFixtures增加从自身Info读取启动参数，方便正常MachO应用包启动；整次<1s、每条/每次前台检查和双显示帧p95≤50均未改。原生真实性能仍待完成。
+- Web严格生产输入100次p95 **32.8ms**、max34.2ms，通过≤50ms；原53生产WASM整次max **87ms**，全部<1s，实际53数学输出独立正确性全通过。第一次53脚本按basename误选了新增agent Worker，尚未数学计时即startup失败；只改既有performance.spec选择唯一数学Worker并对匹配数断言1，仅补跑该失败项，p95未重测。日志`g3-web-performance.log`（保留初始失败及p95通过）、`g3-web-corpus-performance.log`、`g3-web-correctness.log`；数据`g3-web-measurement/`。Web全量55项+正确dev2项+性能2项均已覆盖。
 
 **G1（2026-10-20）**
 

@@ -17,10 +17,12 @@ struct SourceIndexMap:Sendable {
     try self.init(source:source,draftSequence:draftSequence)
   }
   init(source:String,draftSequence:UInt64) throws {
-    guard source.utf8.count<=Int(UInt32.max),source.utf16.count<=Int(UInt32.max) else {throw SourceIndexError.tooLarge}
+    let byteCount=source.utf8.count,unitCount=source.utf16.count
+    guard byteCount<=Int(UInt32.max),unitCount<=Int(UInt32.max) else {throw SourceIndexError.tooLarge}
     self.source=source;self.draftSequence=draftSequence
     sourceHash=SHA256.hash(data:Data(source.utf8)).map {String(format:"%02x",$0)}.joined()
     var byte=0,unit=0,bytes=[0],units=[0],lines=[SourceLineStart(utf8:0,utf16:0)]
+    bytes.reserveCapacity(unitCount+1);units.reserveCapacity(unitCount+1)
     var wasCR=false,preference:String?
     for scalar in source.unicodeScalars {
       byte+=scalar.utf8.count;unit+=scalar.value>0xffff ? 2 : 1

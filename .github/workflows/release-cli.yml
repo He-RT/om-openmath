@@ -54,6 +54,7 @@ jobs:
           sparse-checkout: |
             crates
             app/src-tauri
+            docs/design
             docs/reference
             licenses
       - uses: actions/setup-python@v5

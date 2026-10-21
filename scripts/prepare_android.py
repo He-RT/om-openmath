@@ -35,6 +35,30 @@ subprojects {
 }
 '''
 build.write_text(text,encoding='utf-8')
+# API 35 enforces edge-to-edge. Keep system bars and the IME outside the Web workbench.
+activities=list((project/'app/src/main').rglob('MainActivity.kt'))
+assert len(activities)==1,'Expected one generated MainActivity'
+activities[0].write_text('''package org.openmath.openmath
+
+import android.os.Bundle
+import android.view.View
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
+
+class MainActivity : TauriActivity() {
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        val content = findViewById<View>(android.R.id.content)
+        ViewCompat.setOnApplyWindowInsetsListener(content) { view, insets ->
+            val bars = insets.getInsets(WindowInsetsCompat.Type.systemBars() or WindowInsetsCompat.Type.displayCutout())
+            val keyboard = insets.getInsets(WindowInsetsCompat.Type.ime())
+            view.setPadding(bars.left, bars.top, bars.right, maxOf(bars.bottom, keyboard.bottom))
+            WindowInsetsCompat.CONSUMED
+        }
+        ViewCompat.requestApplyInsets(content)
+    }
+}
+''',encoding='utf-8')
 tests=project/'app/src/androidTest/java/org/openmath/openmath'
 tests.mkdir(parents=True,exist_ok=True)
 shutil.copy2(tooling/'scripts/android/PackageSmokeTest.java',tests/'PackageSmokeTest.java')

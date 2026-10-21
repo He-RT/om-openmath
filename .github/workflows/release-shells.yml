@@ -205,6 +205,7 @@ jobs:
           test_apk=$(find app/src-tauri/gen/android/app/build/outputs/apk/androidTest -name '*.apk' | head -1)
           test -n "$test_apk"
           "$ANDROID_HOME/build-tools/35.0.0/apksigner" sign --ks "$RUNNER_TEMP/openmath-release.p12" --ks-key-alias openmath --ks-pass env:OPENMATH_ANDROID_KEY_PASSWORD --out "$RUNNER_TEMP/openmath-test.apk" "$test_apk"
+          cp "$RUNNER_TEMP/openmath-test.apk" package-evidence/android/instrumentation.apk
       - name: 启用临时 CI 虚拟机的 KVM 加速
         run: sudo chmod a+rw /dev/kvm
       - name: 运行实际签名 APK 的启动与计算检查
@@ -218,7 +219,10 @@ jobs:
           script: |
             adb install release-assets/OpenMath_0.1.0-pre-alpha.5_android.apk
             adb install -t "$RUNNER_TEMP/openmath-test.apk"
+            adb logcat -c
             adb shell am instrument -w org.openmath.openmath.test/androidx.test.runner.AndroidJUnitRunner | tee package-evidence/android/instrumentation.txt
+            adb logcat -d > package-evidence/android/instrumentation-logcat.txt
+            adb exec-out screencap -p > package-evidence/android/instrumentation-screen.png
             grep -q 'OK (1 test)' package-evidence/android/instrumentation.txt
             adb pull /sdcard/Android/data/org.openmath.openmath/files/package-smoke.json package-evidence/android/result.json
             adb pull /sdcard/Android/data/org.openmath.openmath/files/package-smoke.png package-evidence/android/window.png

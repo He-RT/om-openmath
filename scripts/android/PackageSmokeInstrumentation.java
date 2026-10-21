@@ -1,4 +1,4 @@
-package org.openmath.openmath;
+package org.openmath.openmath.test;
 
 import android.app.Activity;
 import android.app.Instrumentation;
@@ -7,8 +7,6 @@ import android.graphics.Bitmap;
 import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.WebView;
-import androidx.test.ext.junit.runners.AndroidJUnit4;
-import androidx.test.platform.app.InstrumentationRegistry;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.nio.charset.StandardCharsets;
@@ -17,13 +15,35 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 import org.json.JSONObject;
 import org.json.JSONTokener;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import static org.junit.Assert.*;
 
 /** Inspect the signed release APK without enabling debugging in the shipped application. */
-@RunWith(AndroidJUnit4.class)
-public class PackageSmokeTest {
+public class PackageSmokeInstrumentation extends Instrumentation {
+    @Override public void onCreate(android.os.Bundle arguments) {
+        super.onCreate(arguments);
+        start();
+    }
+    @Override public void onStart() {
+        android.os.Bundle output = new android.os.Bundle();
+        try {
+            signedPackageComputesTwoRoots();
+            output.putString("openmath", "passed");
+            finish(Activity.RESULT_OK, output);
+        } catch (Throwable error) {
+            output.putString("openmath", "failed");
+            output.putString("error", android.util.Log.getStackTraceString(error));
+            finish(Activity.RESULT_CANCELED, output);
+        }
+    }
+    private void assertTrue(String message, boolean condition) {
+        if (!condition) throw new AssertionError(message);
+    }
+    private void assertNotNull(Object value) { assertNotNull("Expected a value", value); }
+    private void assertNotNull(String message, Object value) {
+        if (value == null) throw new AssertionError(message);
+    }
+    private void assertEquals(String message, String expected, String actual) {
+        if (!expected.equals(actual)) throw new AssertionError(message);
+    }
     private WebView find(View view) {
         if (view instanceof WebView) return (WebView)view;
         if (view instanceof ViewGroup) {
@@ -39,8 +59,8 @@ public class PackageSmokeTest {
         assertTrue("WebView script callback",ready.await(10,TimeUnit.SECONDS));
         return value.get();
     }
-    @Test public void signedPackageComputesTwoRoots() throws Exception {
-        Instrumentation instrumentation=InstrumentationRegistry.getInstrumentation();
+    private void signedPackageComputesTwoRoots() throws Exception {
+        Instrumentation instrumentation=this;
         Intent intent=instrumentation.getTargetContext().getPackageManager().getLaunchIntentForPackage("org.openmath.openmath");
         assertNotNull(intent);
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);

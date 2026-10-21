@@ -20,6 +20,7 @@ import { Preferences } from "./components/Preferences";
 import { CommandPalette } from "./components/CommandPalette";
 import { exportNotebook, type ExportFormat } from "./state/export";
 import { useDesktopMenu } from "./state/desktopMenu";
+import { hasNativeFiles } from './platform';
 export default function App({ kernel }: { kernel?: KernelClient }) {
   const provided = useKernel();
   const client = kernel ?? provided.client;
@@ -91,7 +92,7 @@ function Workspace({ controller }: { controller: NotebookController }) {
       .catch(() => controller.store.setState({ error: t.fileError }));
   };
   const open = () => {
-    if (controller.kernel.kind === "wasm") {
+    if (!hasNativeFiles(controller.kernel.kind)) {
       fileInput.current?.click();
       return;
     }

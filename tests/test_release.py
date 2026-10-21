@@ -22,7 +22,7 @@ class ReleaseTests(unittest.TestCase):
         version = self.release.verify_version(ROOT, "v0.1.0-pre-alpha.5")
         self.assertEqual(version, "0.1.0-pre-alpha.5")
         config = json.loads((ROOT / "app/src-tauri/tauri.windows.conf.json").read_text(encoding="utf-8"))
-        self.assertEqual(set(config["bundle"]["targets"]), {"nsis", "msi"})
+        self.assertEqual(set(config["bundle"]["targets"]), {"msi"})
         windows = config["bundle"]["windows"]
         self.assertEqual(windows["wix"]["language"], "zh-CN")
         self.assertEqual(windows["wix"]["version"], "0.1.0.5")

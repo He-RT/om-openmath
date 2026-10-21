@@ -1,4 +1,5 @@
 import type { NotebookFile } from "../kernel/generated/NotebookFile";
+import { hasNativeFiles } from '../platform';
 export function decodeNotebook(text: string): NotebookFile {
   const file = JSON.parse(text) as Partial<NotebookFile>;
   if (
@@ -43,7 +44,7 @@ export async function saveNotebook(
     null,
     2,
   );
-  if (kind === "tauri") {
+  if (hasNativeFiles(kind)) {
     const { save } = await import("@tauri-apps/plugin-dialog");
     const { writeTextFile } = await import("@tauri-apps/plugin-fs");
     const path = await save({
@@ -78,7 +79,7 @@ export async function openNativeNotebook(): Promise<NotebookFile | null> {
 
 export async function saveTextArtifact(text: string, title: string, extension: "md" | "tex", kind: "wasm" | "tauri"): Promise<boolean> {
   const name = `${title.replace(/[/\\:*?"<>|]/g, "-")}.${extension}`;
-  if (kind === "tauri") {
+  if (hasNativeFiles(kind)) {
     const { save } = await import("@tauri-apps/plugin-dialog");
     const { writeTextFile } = await import("@tauri-apps/plugin-fs");
     const path = await save({ defaultPath: name, filters: [{ name: extension === "tex" ? "LaTeX" : "Markdown", extensions: [extension] }] });
@@ -104,7 +105,7 @@ export async function saveArtifact(artifact: import('../kernel/generated/Artifac
   if(bytes.length!==artifact.byte_len)throw new Error('Export byte length mismatch');
   const safe=[...(title||'OpenMath')].map(c=>c.codePointAt(0)!<32||'/\\:*?"<>|'.includes(c)?'-':c).join('');
   const name=`${safe}.${artifact.extension}`;
-  if(kind==='tauri'){
+  if(hasNativeFiles(kind)){
     const {save}=await import('@tauri-apps/plugin-dialog');const {writeFile,readFile}=await import('@tauri-apps/plugin-fs');
     const path=await save({defaultPath:name,filters:[{name:artifact.extension.toUpperCase(),extensions:[artifact.extension]}]});
     if(!path)return false;

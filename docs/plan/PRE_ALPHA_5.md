@@ -616,6 +616,11 @@ Mac S1–S8（两个模型）、Web S1–S6（一个模型）在候选包上各�
 
 ### 记录
 
+**G4 追加 Tauri Android / Windows MSI（2026-10-22，进行中）**
+
+- 用户明确选择Tauri2并要求构建、发布Android与Windows，Windows只MSI，Android SDK35。先复用已完成的Web/WASM功能，Tauri承担容器和系统文件；新包将独立记录构建SHA，原tag/已公开包不改。Android按compileSdk=35、targetSdk=35，保留minSdk24。
+- 已补Tauri移动库入口与平台条件、MSI-only、独立的WASM/原生文件路由；前端8项相关检查/typecheck、发行6项通过。新增专用构建，只检查实际安装包启动/版本/求根2/3；Android签名身份本地私有保存并配置CI秘密，不入库、不调用真实模型。平台构建及发布尚未完成。
+
 **G4 追加 CLI 补包（2026-10-21，完成）**
 
 - 用户在原版收尾后追加“先补上cli，macos，windows，不做没用的验证，不加助手”。范围仅 macOS ARM64 / Windows x64 的现有 CLI ZIP；原发行源码固定为`86da06206c1ce547921ff2fb6ada892c5b090b48`，不改产品代码、不接入笔记本助手。

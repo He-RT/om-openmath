@@ -1,0 +1,208 @@
+name: 构建 Android 与 Windows MSI
+run-name: Tauri packages ${{ github.sha }}
+on:
+  workflow_dispatch:
+    inputs:
+      platform:
+        description: 构建平台
+        type: choice
+        options: [all, windows, android]
+        default: all
+permissions:
+  contents: read
+concurrency:
+  group: release-shells-${{ inputs.platform }}
+  cancel-in-progress: false
+env:
+  OPENMATH_SOURCE_REVISION: ${{ github.sha }}
+  VITE_OPENMATH_WEB_SHELL: '1'
+  CARGO_TERM_COLOR: always
+
+jobs:
+  windows:
+    if: inputs.platform == 'all' || inputs.platform == 'windows'
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          sparse-checkout: |
+            app
+            agent
+            crates
+            docs/design
+            docs/reference
+            licenses
+            scripts
+            tests
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: app/.nvmrc
+          cache: npm
+          cache-dependency-path: app/package-lock.json
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - run: rustup show active-toolchain
+      - uses: Swatinem/rust-cache@v2
+        with:
+          key: windows-tauri-shell
+          cache-on-failure: true
+      - uses: actions/cache@v4
+        id: wasm-tools
+        with:
+          path: ~/.cargo/bin/wasm-bindgen*
+          key: windows-wasm-bindgen-0.2.129
+      - if: steps.wasm-tools.outputs.cache-hit != 'true'
+        run: cargo install wasm-bindgen-cli --version 0.2.129 --locked
+      - run: npm ci --prefix app
+      - name: 构建唯一 MSI 安装包
+        run: |
+          Enable-WindowsOptionalFeature -Online -FeatureName VBSCRIPT -NoRestart -ErrorAction Stop
+          npm run tauri --prefix app -- build --features web-shell --bundles msi -- --no-default-features
+          if ($LASTEXITCODE -ne 0) { throw 'MSI build failed' }
+          New-Item release-assets -ItemType Directory
+          Copy-Item target/release/bundle/msi/OpenMath_0.1.0-pre-alpha.5_x64_zh-CN.msi release-assets/
+      - name: 安装后启动实际 WebView2 并计算 2/3
+        run: |
+          $msi = (Get-Item 'release-assets/*.msi').FullName
+          $installDir = "$env:RUNNER_TEMP\OpenMath-MSI"
+          $install = Start-Process msiexec.exe -ArgumentList @('/i', $msi, '/qn', '/norestart', "INSTALLDIR=$installDir", '/l*v', "$env:RUNNER_TEMP\openmath-msi.log") -PassThru -Wait
+          if ($install.ExitCode -notin @(0,3010)) { throw "MSI install failed: $($install.ExitCode)" }
+          $saved = Get-ItemProperty 'HKCU:\Software\openmath\OpenMath' -Name InstallDir -ErrorAction SilentlyContinue
+          if ($saved) { $installDir = $saved.InstallDir }
+          $exe = Join-Path $installDir 'om-desktop.exe'
+          if (!(Test-Path $exe)) { throw "Installed executable not found: $exe" }
+          python scripts/release.py verify-payload --original target/release/om-desktop.exe --installed $exe --kind msi
+          if ($LASTEXITCODE -ne 0) { throw 'Installed payload differs' }
+          $policy = 'HKLM:\Software\Policies\Microsoft\Edge\WebView2\AdditionalBrowserArguments'
+          New-Item $policy -Force | Out-Null
+          New-ItemProperty $policy -Name 'om-desktop.exe' -Value '--remote-debugging-port=9222' -PropertyType String -Force | Out-Null
+          $appProcess = Start-Process $exe -PassThru
+          try {
+            $env:OPENMATH_PACKAGE_EVIDENCE = "$env:GITHUB_WORKSPACE\package-evidence\windows"
+            node app/scripts/check-installed-shell.mjs
+            if ($LASTEXITCODE -ne 0) { throw 'Installed package calculation failed' }
+          } finally {
+            Stop-Process -Id $appProcess.Id -Force -ErrorAction SilentlyContinue
+            Get-Process msedgewebview2 -ErrorAction SilentlyContinue | Stop-Process -Force
+            Remove-ItemProperty $policy -Name 'om-desktop.exe' -ErrorAction SilentlyContinue
+            $uninstall = Start-Process msiexec.exe -ArgumentList @('/x', $msi, '/qn', '/norestart') -PassThru -Wait
+            if ($uninstall.ExitCode -notin @(0,3010)) { throw 'MSI uninstall failed' }
+          }
+      - uses: actions/upload-artifact@v4
+        with:
+          name: tauri-windows-msi
+          path: release-assets/*.msi
+          if-no-files-found: error
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: tauri-windows-package-check
+          path: package-evidence/windows
+          if-no-files-found: ignore
+
+  android:
+    if: inputs.platform == 'all' || inputs.platform == 'android'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          sparse-checkout: |
+            app
+            agent
+            crates
+            docs/design
+            docs/reference
+            licenses
+            scripts
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: app/.nvmrc
+          cache: npm
+          cache-dependency-path: app/package-lock.json
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - uses: android-actions/setup-android@v3
+      - name: 安装 SDK 35 与固定 NDK
+        run: |
+          sdkmanager 'platforms;android-35' 'build-tools;35.0.0' 'ndk;28.2.13676358'
+          echo "NDK_HOME=$ANDROID_HOME/ndk/28.2.13676358" >> "$GITHUB_ENV"
+          rustup target add aarch64-linux-android x86_64-linux-android
+      - uses: Swatinem/rust-cache@v2
+        with:
+          key: android-tauri-shell
+          cache-on-failure: true
+      - uses: actions/cache@v4
+        id: wasm-tools
+        with:
+          path: ~/.cargo/bin/wasm-bindgen*
+          key: linux-wasm-bindgen-0.2.129
+      - if: steps.wasm-tools.outputs.cache-hit != 'true'
+        run: cargo install wasm-bindgen-cli --version 0.2.129 --locked
+      - run: npm ci --prefix app
+      - name: 初始化移动工程并固定 compile/target SDK 35
+        run: |
+          npm run tauri --prefix app -- android init --ci --skip-targets-install
+          python3 scripts/prepare_android.py
+      - name: 构建 APK
+        run: npm run tauri --prefix app -- android build --ci --apk --features web-shell --target aarch64 x86_64
+      - name: 签名 APK 并核对目标 SDK
+        env:
+          OPENMATH_ANDROID_KEYSTORE_BASE64: ${{ secrets.OPENMATH_ANDROID_KEYSTORE_BASE64 }}
+          OPENMATH_ANDROID_KEY_PASSWORD: ${{ secrets.OPENMATH_ANDROID_KEY_PASSWORD }}
+        run: |
+          python3 - <<'PY'
+          import base64,os
+          from pathlib import Path
+          os.umask(0o077)
+          Path(os.environ['RUNNER_TEMP'],'openmath-release.p12').write_bytes(base64.b64decode(os.environ['OPENMATH_ANDROID_KEYSTORE_BASE64']))
+          PY
+          mkdir -p release-assets package-evidence/android
+          unsigned=$(find app/src-tauri/gen/android/app/build/outputs/apk -name '*release*.apk' ! -path '*androidTest*' | head -1)
+          test -n "$unsigned"
+          "$ANDROID_HOME/build-tools/35.0.0/zipalign" -P 16 -f 4 "$unsigned" "$RUNNER_TEMP/aligned.apk"
+          "$ANDROID_HOME/build-tools/35.0.0/apksigner" sign --ks "$RUNNER_TEMP/openmath-release.p12" --ks-key-alias openmath --ks-pass env:OPENMATH_ANDROID_KEY_PASSWORD --out release-assets/OpenMath_0.1.0-pre-alpha.5_android.apk "$RUNNER_TEMP/aligned.apk"
+          "$ANDROID_HOME/build-tools/35.0.0/apksigner" verify --verbose --print-certs release-assets/*.apk > package-evidence/android/signature.txt
+          "$ANDROID_HOME/build-tools/35.0.0/aapt" dump badging release-assets/*.apk > package-evidence/android/badging.txt
+          grep -q "targetSdkVersion:'35'" package-evidence/android/badging.txt
+      - name: 构建只用于检查的 instrumentation APK
+        working-directory: app/src-tauri/gen/android
+        env:
+          OPENMATH_ANDROID_TEST_ONLY: '1'
+        run: ./gradlew :app:assembleUniversalReleaseAndroidTest
+      - name: 为检查 APK 使用同一签名
+        env:
+          OPENMATH_ANDROID_KEY_PASSWORD: ${{ secrets.OPENMATH_ANDROID_KEY_PASSWORD }}
+        run: |
+          test_apk=$(find app/src-tauri/gen/android/app/build/outputs/apk/androidTest -name '*.apk' | head -1)
+          test -n "$test_apk"
+          "$ANDROID_HOME/build-tools/35.0.0/apksigner" sign --ks "$RUNNER_TEMP/openmath-release.p12" --ks-key-alias openmath --ks-pass env:OPENMATH_ANDROID_KEY_PASSWORD --out "$RUNNER_TEMP/openmath-test.apk" "$test_apk"
+      - name: 运行实际签名 APK 的启动与计算检查
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 35
+          target: google_apis
+          arch: x86_64
+          emulator-options: -no-window -gpu swiftshader_indirect -no-snapshot -noaudio -no-boot-anim -camera-back none
+          disable-animations: true
+          script: |
+            adb install release-assets/OpenMath_0.1.0-pre-alpha.5_android.apk
+            adb install "$RUNNER_TEMP/openmath-test.apk"
+            adb shell am instrument -w org.openmath.openmath.test/androidx.test.runner.AndroidJUnitRunner | tee package-evidence/android/instrumentation.txt
+            grep -q 'OK (1 test)' package-evidence/android/instrumentation.txt
+            adb pull /sdcard/Android/data/org.openmath.openmath/files/package-smoke.json package-evidence/android/result.json
+            adb pull /sdcard/Android/data/org.openmath.openmath/files/package-smoke.png package-evidence/android/window.png
+            python3 -c 'import json,os; from pathlib import Path; r=json.loads(Path("package-evidence/android/result.json").read_text()); assert r["state"]=="passed" and r["version"]["revision"]==os.environ["OPENMATH_SOURCE_REVISION"]'
+      - uses: actions/upload-artifact@v4
+        with:
+          name: tauri-android-apk
+          path: release-assets/*.apk
+          if-no-files-found: error
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: tauri-android-package-check
+          path: package-evidence/android
+          if-no-files-found: ignore

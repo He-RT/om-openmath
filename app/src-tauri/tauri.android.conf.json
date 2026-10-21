@@ -1,0 +1,10 @@
+{
+  "$schema": "https://schema.tauri.app/config/2",
+  "identifier": "org.openmath.openmath",
+  "bundle": {
+    "android": { "minSdkVersion": 24, "versionCode": 1005 }
+  },
+  "app": {
+    "windows": [{ "label": "main", "title": "OpenMath", "fullscreen": false }]
+  }
+}

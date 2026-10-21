@@ -4,6 +4,7 @@
 
 ## 2026-10-21 最新发布与文档收尾
 
+- **2026-10-22追加Android/Windows图形包，进行中。** 用户要求Tauri2，Windows只MSI，Android SDK35，完成后公开发布。默认按已说明方案复用.5 Web/WASM工作台，Tauri负责容器与系统文件；新包独立清单记实际新SHA，不覆盖已公开tag/原包。已补移动入口、MSI-only、Android配置、WASM宿主选择与原生文件解耦，相关前端8项/typecheck及发行6项通过。专用release-shells.yml待派发真实双平台构建；不调用模型、不跑旧全矩阵。Android正式签名身份在本地`/Users/hert/.config/openmath/signing/openmath-android-release.p12`及同名JSON，0600，已配置两个GitHub signing secrets；不输出私钥或口令、不入Git。所有旧限制继续，尤其无关.gitignore/.vscode/test-results不stage。
 - **用户追加 CLI 补包已完成。** macOS ARM64 / Windows x64现有终端功能，不加助手、不重跑GUI或真实模型。专用run`39539290622`两平台构建、实际ZIP解压后的.5版本及求根2/3均通过；两包及独立`cli-release-manifest.json`追加到原.5 Release，产品源码仍`86da0620…`，原tag/三包/原清单不改。具体大小、哈希、最小检查与历史失败见[CLI补包记录](docs/acceptance/pre-alpha.5/cli-release.md)。发行清单6项通过，提交带skip ci避免无关全套回归；只显式派发CLI构建。真实调用仍69/80。
 - **发行源码`86da06206c1ce547921ff2fb6ada892c5b090b48`，已获用户明确批准并公开发布`v0.1.0-pre-alpha.5`。** 三包及manifest均上传成功，后续仅文档提交不改变包内revision。新增现代NSApplicationDelegate.application(_:open:)文件URL回调与根视图代理绑定；现有WorkbenchFixtures --file-events及完整AppHost Finder冷启动两包均通过，下方旧“欢迎页未处理”状态已过时。
 - 三包与manifest位于`target/pre-alpha.5/86da06206c1ce547921ff2fb6ada892c5b090b48/release-assets/`，具体哈希/安装位置/实测见`docs/acceptance/pre-alpha.5/local-install.md`。DMG/appZIP4226文件逐字节一致、严格验签、无fixture键；均真西瓜和2/3，ZIP保存→DMG读回重算通过。Mac关于窗口及Web设置均.5+完整SHA；原生两包已正常退出。OpenPanel间歇Open禁用仍保留已知限制，Finder可用；未改文件默认关联或系统权限。

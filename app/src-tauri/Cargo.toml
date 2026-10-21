@@ -6,22 +6,30 @@ rust-version.workspace = true
 license.workspace = true
 description = "OpenMath desktop frontend"
 
+[lib]
+crate-type = ["staticlib", "cdylib", "rlib"]
+
 [features]
+default = ["native-kernel"]
 custom-protocol = ["tauri/custom-protocol"]
+native-kernel = ["dep:om-kernel", "dep:om-num", "dep:om-llm", "dep:serde_json", "dep:tokio", "dep:reqwest"]
+web-shell = []
 
 [build-dependencies]
 tauri-build.workspace = true
 
 [dependencies]
-om-kernel = { workspace = true, features = ["native"] }
 tauri.workspace = true
-om-num.workspace = true
-om-llm = {workspace=true,features=["http"]}
-serde_json.workspace = true
-tokio.workspace = true
-reqwest.workspace = true
 tauri-plugin-dialog.workspace = true
 tauri-plugin-fs.workspace = true
+
+[target.'cfg(not(target_os = "android"))'.dependencies]
+om-kernel = { workspace = true, features = ["native"], optional = true }
+om-num = { workspace = true, optional = true }
+om-llm = { workspace = true, features = ["http"], optional = true }
+serde_json = { workspace = true, optional = true }
+tokio = { workspace = true, optional = true }
+reqwest = { workspace = true, optional = true }
 
 [dev-dependencies]
 wiremock.workspace = true

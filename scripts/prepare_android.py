@@ -2,6 +2,9 @@
 from pathlib import Path
 import argparse
 import re
+import shutil
+import subprocess
+import tempfile
 
 tooling=Path(__file__).resolve().parents[1]
 parser=argparse.ArgumentParser(description=__doc__)
@@ -59,4 +62,10 @@ class MainActivity : TauriActivity() {
     }
 }
 ''',encoding='utf-8')
+with tempfile.TemporaryDirectory(prefix='openmath-mobile-icons-') as icon_dir:
+    subprocess.run([
+        'node',str(root/'app/node_modules/@tauri-apps/cli/tauri.js'),
+        'icon',str(root/'app/src-tauri/icons/icon.png'),'--output',icon_dir,
+    ],cwd=root/'app',check=True)
+    shutil.copytree(Path(icon_dir)/'android',project/'app/src/main/res',dirs_exist_ok=True)
 print('Generated app compileSdk=35 targetSdk=35; libraries compileSdk=35; system bars and IME insets configured.')

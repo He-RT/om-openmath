@@ -45,6 +45,11 @@ def verify_version(root: Path, tag: str) -> str:
 
 
 def asset_names(version: str, scope: str = "app-web") -> set[str]:
+    if scope == "tauri":
+        return {
+            f"OpenMath_{version}_android.apk",
+            f"OpenMath_{version}_x64_zh-CN.msi",
+        }
     if scope == "cli":
         return {
             f"om-cli_{version}_macos_arm64.zip",
@@ -83,7 +88,8 @@ def finalize(root: Path, tag: str, revision: str, scope: str = "app-web") -> Non
     if not re.fullmatch(r"[0-9a-f]{40}", revision):
         raise ValueError("必须提供完整的 Git 提交 SHA")
     expected = asset_names(version, scope)
-    manifest_name = "cli-release-manifest.json" if scope == "cli" else "release-manifest.json"
+    manifest_name = {"app-web": "release-manifest.json", "cli": "cli-release-manifest.json",
+                     "tauri": "tauri-release-manifest.json"}[scope]
     actual = {path.name for path in root.iterdir()} - {manifest_name}
     if actual != expected:
         raise ValueError(f"发行资产不完整：缺失={sorted(expected - actual)}，额外={sorted(actual - expected)}")
@@ -105,7 +111,7 @@ def main() -> None:
     parser.add_argument("--tag")
     parser.add_argument("--root", type=Path, default=Path("release-assets"))
     parser.add_argument("--sha")
-    parser.add_argument("--scope", choices=["app-web", "cli"], default="app-web")
+    parser.add_argument("--scope", choices=["app-web", "cli", "tauri"], default="app-web")
     parser.add_argument("--original", type=Path)
     parser.add_argument("--installed", type=Path)
     parser.add_argument("--kind", choices=["nsis", "msi"])

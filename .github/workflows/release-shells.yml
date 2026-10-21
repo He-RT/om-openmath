@@ -1,8 +1,12 @@
 name: 构建 Android 与 Windows MSI
-run-name: Tauri packages ${{ github.sha }}
+run-name: Tauri packages ${{ inputs.source_sha }}
 on:
   workflow_dispatch:
     inputs:
+      source_sha:
+        description: 固定产品源码提交（打包脚本可独立修复）
+        required: true
+        default: 29481853927eb1603f94489426bb5781b38a1f86
       platform:
         description: 构建平台
         type: choice
@@ -14,7 +18,7 @@ concurrency:
   group: release-shells-${{ inputs.platform }}
   cancel-in-progress: false
 env:
-  OPENMATH_SOURCE_REVISION: ${{ github.sha }}
+  OPENMATH_SOURCE_REVISION: ${{ inputs.source_sha }}
   VITE_OPENMATH_WEB_SHELL: '1'
   CARGO_TERM_COLOR: always
 
@@ -25,6 +29,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
+          ref: ${{ inputs.source_sha }}
           sparse-checkout: |
             app
             agent
@@ -34,6 +39,12 @@ jobs:
             licenses
             scripts
             tests
+      - uses: actions/checkout@v4
+        with:
+          path: packaging
+          sparse-checkout: |
+            scripts
+            app/scripts
       - uses: actions/setup-node@v4
         with:
           node-version-file: app/.nvmrc
@@ -80,6 +91,7 @@ jobs:
           $appProcess = Start-Process $exe -PassThru
           try {
             $env:OPENMATH_PACKAGE_EVIDENCE = "$env:GITHUB_WORKSPACE\package-evidence\windows"
+            Copy-Item packaging/app/scripts/check-installed-shell.mjs,packaging/app/scripts/package-smoke.js app/scripts/ -Force
             node app/scripts/check-installed-shell.mjs
             if ($LASTEXITCODE -ne 0) { throw 'Installed package calculation failed' }
           } finally {
@@ -107,6 +119,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
+          ref: ${{ inputs.source_sha }}
           sparse-checkout: |
             app
             agent
@@ -115,6 +128,12 @@ jobs:
             docs/reference
             licenses
             scripts
+      - uses: actions/checkout@v4
+        with:
+          path: packaging
+          sparse-checkout: |
+            scripts
+            app/scripts
       - uses: actions/setup-node@v4
         with:
           node-version-file: app/.nvmrc
@@ -125,6 +144,8 @@ jobs:
           distribution: temurin
           java-version: '17'
       - uses: android-actions/setup-android@v3
+        with:
+          packages: platform-tools
       - name: 安装 SDK 35 与固定 NDK
         run: |
           sdkmanager 'platforms;android-35' 'build-tools;35.0.0' 'ndk;28.2.13676358'
@@ -145,7 +166,7 @@ jobs:
       - name: 初始化移动工程并固定 compile/target SDK 35
         run: |
           npm run tauri --prefix app -- android init --ci --skip-targets-install
-          python3 scripts/prepare_android.py
+          python3 packaging/scripts/prepare_android.py --root "$GITHUB_WORKSPACE"
       - name: 构建 APK
         run: npm run tauri --prefix app -- android build --ci --apk --features web-shell --target aarch64 x86_64
       - name: 签名 APK 并核对目标 SDK

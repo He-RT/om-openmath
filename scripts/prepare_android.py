@@ -1,9 +1,13 @@
 """Apply the requested SDK 35 and one release-APK check to Tauri's generated Android project."""
 from pathlib import Path
+import argparse
 import re
 import shutil
 
-root=Path(__file__).resolve().parents[1]
+tooling=Path(__file__).resolve().parents[1]
+parser=argparse.ArgumentParser(description=__doc__)
+parser.add_argument('--root',type=Path,default=tooling)
+root=parser.parse_args().root.resolve()
 project=root/'app/src-tauri/gen/android'
 app=project/'app/build.gradle.kts'
 text=app.read_text(encoding='utf-8')
@@ -33,8 +37,8 @@ subprojects {
 build.write_text(text,encoding='utf-8')
 tests=project/'app/src/androidTest/java/org/openmath/openmath'
 tests.mkdir(parents=True,exist_ok=True)
-shutil.copy2(root/'scripts/android/PackageSmokeTest.java',tests/'PackageSmokeTest.java')
+shutil.copy2(tooling/'scripts/android/PackageSmokeTest.java',tests/'PackageSmokeTest.java')
 assets=project/'app/src/androidTest/assets'
 assets.mkdir(parents=True,exist_ok=True)
-shutil.copy2(root/'app/scripts/package-smoke.js',assets/'package-smoke.js')
+shutil.copy2(tooling/'app/scripts/package-smoke.js',assets/'package-smoke.js')
 print('Generated app compileSdk=35 targetSdk=35; library compileSdk=35; release APK check configured.')

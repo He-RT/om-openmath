@@ -31,6 +31,7 @@
 
 ## 当前 G2 / G3（2026-10-21，唯一最新进度）
 
+- **最新覆盖**：f936f2e0的单Window onOpenURL亦未处理Finder文件，失败包保留。现按Apple现代NSApplicationDelegate.application(_:open:)接单file URL，移除视图onOpenURL，保留onAppear代理绑定；冷启动队列区分旧openFiles回执。已有WorkbenchFixtures新--file-events真实冷/热源码加载、非file/多URL拒绝、存储关闭全部过（g4-file-url-events-regression.log）；尚需提交、完整Release包及真实Finder验收。无活动原生包，Web旧f936自有4179，未公开，调用仍69/80。
 - **覆盖下条**：33617ee5已打三包/验签/4226文件一致，新Web西瓜/2/3/.5+SHA通过；Finder冷启动仍欢迎页，onAppear代理绑定尚不足以覆盖SwiftUI文件分发，现加根视图onOpenURL→同一workspace.open。需提交重建并真Finder验证，未算通过；当前运行ZIP路径`/Users/hert/Applications/OpenMath pre-alpha.5 ZIP 33617ee5/OpenMath Preview.app`欢迎页。所有旧失败/候选保留，不公开。
 - **最新G4发现**：7bc1e81d三包已构建、同SHA CI全绿（39488786752），Web与DMG西瓜/2/3/.5+SHA均通过。ZIP4226文件与DMG逐字节相同且验签过，但OpenPanel复现Open禁用；安装到Applications亦如此。Finder“打开方式→其他”指定ZIP app后仍欢迎页，实际代码AppHost声明delegate却无attach调用，外部打开事件一直pending。现补根视图onAppear绑定，需提交/重建/实际Finder验证；旧包保留不发布。当前ZIP运行路径`/Users/hert/Applications/OpenMath pre-alpha.5 ZIP 7bc1e81d/OpenMath Preview.app`，欢迎页；已关闭自身面板。不得修改系统权限或文件默认关联。
 - 同范围goal active。**G2已提交推dev=40dae357**；G3已提交推dev=f98be447。G4正在统一.5并准备包，尚未公开或请求公开确认。不开子代理，不改输入法/安全/权限，不启动iOS模拟器，不看其他App找参考；不stage或删无关`.gitignore`、`.vscode/`、`test-results/`。

@@ -186,17 +186,24 @@ import SwiftUI
 @MainActor final class NativeApplicationDelegate:NSObject,NSApplicationDelegate {
   weak var workspace:NativeFileWorkspace?
   private weak var scratch:NotebookViewModel?
-  private var pending:[URL]=[]
+  private var pending:(url:URL,reply:Bool)?
   private var terminating=false
   func attach(_ workspace:NativeFileWorkspace,scratch:NotebookViewModel?=nil) {
     self.workspace=workspace;self.scratch=scratch
-    if let url=pending.first {pending=[];Task {let opened=await workspace.open(url);NSApplication.shared.reply(toOpenOrPrint:opened ? .success : .failure)}}
+    if let request=pending {pending=nil;Task {let opened=await workspace.open(request.url);if request.reply {NSApplication.shared.reply(toOpenOrPrint:opened ? .success : .failure)}}}
+  }
+  // SwiftUI forwards file URLs through this modern callback, bypassing openFiles.
+  func application(_ sender:NSApplication,open urls:[URL]) {
+    guard urls.count==1,let url=urls.first,url.isFileURL else {return}
+    receive(url,sender:sender,reply:false)
   }
   func application(_ sender:NSApplication,openFiles filenames:[String]) {
     guard filenames.count==1,let filename=filenames.first else {sender.reply(toOpenOrPrint:.failure);return}
-    let url=URL(fileURLWithPath:filename)
-    if let workspace {Task {let opened=await workspace.open(url);sender.reply(toOpenOrPrint:opened ? .success : .failure)}}
-    else if pending.isEmpty {pending=[url]} else {sender.reply(toOpenOrPrint:.failure)}
+    receive(URL(fileURLWithPath:filename),sender:sender,reply:true)
+  }
+  private func receive(_ url:URL,sender:NSApplication,reply:Bool) {
+    if let workspace {Task {let opened=await workspace.open(url);if reply {sender.reply(toOpenOrPrint:opened ? .success : .failure)}}}
+    else if pending==nil {pending=(url,reply)} else if reply {sender.reply(toOpenOrPrint:.failure)}
   }
   func applicationShouldTerminate(_ sender:NSApplication)->NSApplication.TerminateReply {
     guard let workspace else {return .terminateNow}

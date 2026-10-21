@@ -111,6 +111,10 @@ private struct AssistantTranscriptFixtureControls:View {
       try await cellStates(root:root)
       return
     }
+    if CommandLine.arguments.contains("--file-events") {
+      try await fileEvents(root:root)
+      return
+    }
     let file=NativeSourceFile(version:1,title:"原生工作台验收",cells:[
       .init(id:"a",kind:.math,source:"let a=2",dialect:.modern),
       .init(id:"b",kind:.math,source:"a+1",dialect:.modern),
@@ -206,6 +210,30 @@ private struct AssistantTranscriptFixtureControls:View {
     window.orderOut(nil)
     try await session.close();try await services.close()
     print("Actual native window 1042/861/640, same notebook view/editor/selection, physical kernel receipts 5/6, live CAS resize/edit/explicit stop and draft retention passed")
+  }
+
+  @MainActor static func fileEvents(root:URL) async throws {
+    let file=NativeSourceFile(version:1,title:"系统文件事件",cells:[.init(id:"math",kind:.math,source:"2+2",dialect:.modern)])
+    let url=root.appendingPathComponent("file-event.omnb");try JSONEncoder().encode(file).write(to:url)
+    let services=NativeAppStorage(paths:.init(root:root.appendingPathComponent("storage"),channel:.preview))
+    let workspace=NativeFileWorkspace(storage:services),delegate=NativeApplicationDelegate()
+    delegate.application(NSApp,open:[URL(string:"https://example.invalid/file.omnb")!])
+    delegate.application(NSApp,open:[url,url])
+    delegate.attach(workspace)
+    require(workspace.session==nil,"non-file or multiple URLs created a document")
+    let cold=NativeApplicationDelegate()
+    cold.application(NSApp,open:[url])
+    cold.attach(workspace)
+    try await until {workspace.session != nil}
+    require(workspace.session!.drafts.confirmed.file.cells.map(\.source)==["2+2"],"pending file URL did not load actual source")
+    let first=workspace.session!
+    let closed=await workspace.closeDocument();require(closed,"file event document did not close")
+    cold.application(NSApp,open:[url])
+    try await until {workspace.session != nil}
+    require(workspace.session !== first,"warm file event did not create a fresh source owner")
+    require(workspace.session!.drafts.confirmed.file.cells.map(\.source)==["2+2"])
+    let stopped=await workspace.shutdown();require(stopped,"file event storage did not close")
+    print("Actual early/warm application URL events loaded source through the workspace; non-file/multiple URLs rejected and storage closed")
   }
 
   static func recordConversationPair(storage:StorageService,session:String,index:Int,question:String,answer:String) async throws {

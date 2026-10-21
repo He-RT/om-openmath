@@ -19,3 +19,5 @@ Web ZIP真实解压目录通过自有`127.0.0.1:4180`提供HTTP；浏览器导�
 实际AX、DOM、截图和包级核验记录位于同SHA目录的`local-acceptance/`。构建日志为`target/plan-5/g4-modern-file-events-{native-package,web-build}.log`。新增文件事件逻辑的现有WorkbenchFixtures入口`--file-events`已通过真实冷/热源码打开、非file与多URL拒绝、关闭存储；完整应用Finder验收亦通过。旧候选和失败记录保留。系统OpenPanel间歇出现有效.omnb的Open禁用仍是已知限制；本次Finder路径已验证可用，未改系统安全或权限。
 
 发布 tag 为 `v0.1.0-pre-alpha.5`，target 为上述完整源码 SHA；后续仅文档提交不改变包内 revision。2026-10-21 用户随后明确要求“不用验证了，同步更新readme等文档”，取消剩余公开资产匿名下载、哈希复核和重复安装回读。本记录中的哈希来自发布前本地资产核验，安装结果来自上述本地发行包；不将公开下载回读记为通过。G4 按用户本次调整后的范围完成，原第 1.2 节第 5 项公开回读部分记为用户取消。
+
+用户随后另行追加 macOS ARM64 / Windows x64 的现有 CLI ZIP，产品源码仍固定为上述完整 SHA；CLI 使用独立 `cli-release-manifest.json`，不改原三包和原清单，结果单列在 [CLI 补包记录](cli-release.md)。原三包的公开回读取消记录不变。

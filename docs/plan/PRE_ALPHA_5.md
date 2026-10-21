@@ -24,6 +24,7 @@
 | Mac 应用 | 工作台 v2 界面（第 C、D 阶段），修复后的助手（第 A 阶段），模型设置（D6） |
 | Web 应用 | 同一设计的 React 实现（第 E 阶段），Web 助手（第 F 阶段） |
 | 安装包 | `OpenMath_0.1.0-pre-alpha.5_aarch64.dmg`、`…_macos_arm64.app.zip`、`OpenMath-web_0.1.0-pre-alpha.5.zip` + manifest |
+| 用户追加 CLI 补包（2026-10-21） | macOS ARM64 / Windows x64 的现有 CLI ZIP + 独立`cli-release-manifest.json`；不加笔记本助手 |
 | 文档 | 发行说明（如实写签名、公证、已知限制）、本计划的进度记录 |
 
 ### 1.2 完成条件（全部满足才能说“pre-alpha.5 已交付”）
@@ -40,7 +41,7 @@
 
 ### 1.3 不在本版
 
-Windows、iOS 发行；音频、视频处理；长对话记忆压缩；提示词管理界面（只做只读的“查看本轮完整输入”）；多窗口；多预设和思考强度的完整编辑器；语法高亮。
+Windows 图形安装包、iOS 发行；音频、视频处理；长对话记忆压缩；提示词管理界面（只做只读的“查看本轮完整输入”）；多窗口；多预设和思考强度的完整编辑器；语法高亮。原范围未含CLI发行，2026-10-21用户单独追加macOS ARM64与Windows x64现有CLI补包，见第6节。
 
 ## 2. 执行守则
 
@@ -615,10 +616,11 @@ Mac S1–S8（两个模型）、Web S1–S6（一个模型）在候选包上各�
 
 ### 记录
 
-**G4 追加 CLI 补包（2026-10-21，进行中）**
+**G4 追加 CLI 补包（2026-10-21，完成）**
 
 - 用户在原版收尾后追加“先补上cli，macos，windows，不做没用的验证，不加助手”。范围仅 macOS ARM64 / Windows x64 的现有 CLI ZIP；原发行源码固定为`86da06206c1ce547921ff2fb6ada892c5b090b48`，不改产品代码、不接入笔记本助手。
-- 新增独立双平台打包流程，保留项目及Rust依赖许可、构建SHA与使用说明；只实跑ZIP解压后的版本与求根2/3。CLI两包用单独`cli-release-manifest.json`，原三包、原manifest和tag保留。发行清单6项检查及脚本语法已通过，真实平台构建／发布待完成。
+- 新增独立双平台打包流程，保留项目及Rust依赖许可、构建SHA与使用说明；专用[run39539290622](https://github.com/He-RT/om-openmath/actions/runs/39539290622)两平台均通过实际ZIP解压后的.5版本及求根2/3。Windows静态链接C运行库。两包及单独`cli-release-manifest.json`已追加原Release，原三包、原manifest和tag保留；发行清单6项检查通过。
+- 原Windows长路径、Cargo许可时间戳及稀疏检出漏Schema的失败记录保留，最终修复后构建均成功。没有重跑完整数学/性能/GUI或模型验收；没有新增模型调用（仍69/80）。中英文README、安装/发行指南、发行说明和交接已同步，哈希与详细范围见[CLI补包记录](../acceptance/pre-alpha.5/cli-release.md)。
 
 **G4 公开发布与文档收尾（2026-10-21，按用户调整后的范围完成）**
 

@@ -1,6 +1,6 @@
 # 安装指南
 
-当前版本为 [0.1.0-pre-alpha.5](https://github.com/He-RT/om-openmath/releases/tag/v0.1.0-pre-alpha.5)，提供原生 Mac 与 Web。Windows、独立 CLI 与 iOS 附件继续从 [pre-alpha.3](https://github.com/He-RT/om-openmath/releases/tag/v0.1.0-pre-alpha.3) 下载。本项目仍为实验性 pre-alpha；功能边界见[求解指南](solve.md)。
+当前版本为 [0.1.0-pre-alpha.5](https://github.com/He-RT/om-openmath/releases/tag/v0.1.0-pre-alpha.5)，提供原生 Mac、Web，以及 macOS ARM64 / Windows x64 CLI。Windows 图形安装包与 iOS 附件继续从 [pre-alpha.3](https://github.com/He-RT/om-openmath/releases/tag/v0.1.0-pre-alpha.3) 下载。本项目仍为实验性 pre-alpha；功能边界见[求解指南](solve.md)。
 
 ## macOS 27+ Apple Silicon
 
@@ -26,12 +26,13 @@ python3 -m http.server 8080
 
 ## 校验下载文件
 
-发行页的 `release-manifest.json` 列出同一源码提交构建的三个包、字节数和 SHA256。可自行计算下载文件的散列，与对应条目比较：
+发行页的 `release-manifest.json` 列出原 Mac/Web 三包，`cli-release-manifest.json` 列出补充的两个 CLI ZIP；均记录同一源码提交、字节数和 SHA256。可自行计算下载文件的散列，与对应条目比较：
 
 ```sh
 shasum -a 256 OpenMath_0.1.0-pre-alpha.5_aarch64.dmg
 shasum -a 256 OpenMath_0.1.0-pre-alpha.5_macos_arm64.app.zip
 shasum -a 256 OpenMath-web_0.1.0-pre-alpha.5.zip
+shasum -a 256 om-cli_0.1.0-pre-alpha.5_macos_arm64.zip
 ```
 
 本版发布前本地三包安装与同 SHA CI 已通过；发布后的匿名下载、哈希复核和重复安装回读按用户要求省略，未记为实测通过。详见[安装验收与发布记录](acceptance/pre-alpha.5/local-install.md)。
@@ -47,9 +48,11 @@ Get-FileHash .\OpenMath_0.1.0-pre-alpha.3_x64-setup.exe -Algorithm SHA256
 
 两种包包含 WebView2 引导程序；已有运行时直接使用，没有则需要联网下载。包尚未签名，Windows 可能显示“未知发布者”。不提供 Windows ARM64/32 位包。
 
-## 终端版（旧版 `.3` 资产或源码构建）
+## 终端版（`.5`）
 
-从 `.3` 发行页下载对应平台 `om-cli` ZIP，解压到固定目录；Windows 运行 `om.exe`，macOS 运行 `./om`，需要时加入 PATH。也可按[开发指南](development.md)构建当前源码。首次运行不需要 AI 密钥。
+从 [`.5` 发行页](https://github.com/He-RT/om-openmath/releases/tag/v0.1.0-pre-alpha.5) 下载 `om-cli_0.1.0-pre-alpha.5_macos_arm64.zip` 或 `om-cli_0.1.0-pre-alpha.5_windows_x64.zip`，解压到固定目录。Windows 在 PowerShell 中运行 `./om.exe`，macOS 运行 `./om`；需要在任意目录使用时，将解压目录加入 PATH。无需 Node、WebView2 或图形应用，也可按[开发指南](development.md)构建源码。
+
+ZIP 内附 `BUILD.json`、使用说明和依赖许可；`--version` 显示 `.5`。CLI 保留现有 REPL、脚本、JSON、导出及旧终端 AI 功能，没有增加 Mac/Web 的笔记本助手。普通计算不需要 API 密钥；没有新增 Developer ID／Authenticode 发行签名或 Apple 公证。
 
 ```sh
 om --no-config -e 'solve(x^2-5x+6=0,x)'

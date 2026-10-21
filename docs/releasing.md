@@ -1,6 +1,6 @@
 # 发布流程
 
-当前公开版本为 [0.1.0-pre-alpha.5](https://github.com/He-RT/om-openmath/releases/tag/v0.1.0-pre-alpha.5)，标签 `v0.1.0-pre-alpha.5`，发行源码为 `86da06206c1ce547921ff2fb6ada892c5b090b48`。本版仅发布原生 Mac DMG、app ZIP、Web ZIP 和 manifest；后续文档提交不改变包内 revision。完整实施与验收见 [PRE_ALPHA_5.md](plan/PRE_ALPHA_5.md)。
+当前公开版本为 [0.1.0-pre-alpha.5](https://github.com/He-RT/om-openmath/releases/tag/v0.1.0-pre-alpha.5)，标签 `v0.1.0-pre-alpha.5`，发行源码为 `86da06206c1ce547921ff2fb6ada892c5b090b48`。原版发布原生 Mac DMG、app ZIP、Web ZIP 和 manifest，随后追加 macOS ARM64 / Windows x64 CLI ZIP 及独立补充清单；后续文档提交不改变包内 revision。完整实施与验收见 [PRE_ALPHA_5.md](plan/PRE_ALPHA_5.md)。
 
 ## 版本与构建
 
@@ -50,6 +50,17 @@ gh workflow run release.yml --ref dev -f tag=v0.1.0-pre-alpha.5
 发行说明来自 [release-0.1.0-pre-alpha.5.md](release-0.1.0-pre-alpha.5.md)，如实说明 ad hoc 签名、未公证、macOS 27 / Apple Silicon、HTTP/CORS、独立 Preview 数据目录及已知限制。发布过程不使用真实模型密钥。
 
 本次用户已批准公开，Release 于 2026-10-21 创建成功。原计划的公开后匿名下载、核对哈希、重新安装回读，随后由用户明确要求“不用验证了，同步更新readme等文档”而取消；只记录已完成的本地验收，不将这部分标为实测通过。此调整仅适用于本次发行，不自动免除后续版本的验收。
+
+## CLI 补充发行
+
+[独立 CLI 工作流](../.github/workflows/release-cli.yml)从指定完整 SHA 检出源码，分别在 macOS 和 Windows 构建现有 `om-cli`，不构建图形应用或接入新助手。打包脚本保留运行文件、`BUILD.json`、使用说明、项目和 Rust 依赖许可，并在各平台解压 ZIP 后检查 `--version` 和求根 2/3。
+
+```sh
+gh workflow run release-cli.yml --ref dev -f source_sha=86da06206c1ce547921ff2fb6ada892c5b090b48 -f version=0.1.0-pre-alpha.5
+python3 scripts/release.py finalize --scope cli --tag v0.1.0-pre-alpha.5 --root CLI_ASSETS_DIRECTORY --sha 86da06206c1ce547921ff2fb6ada892c5b090b48
+```
+
+CLI 输出目录只放两个对应版本的 ZIP；清单命名为 `cli-release-manifest.json`。检查完成后追加这三个文件到原 Release，不覆盖原 `release-manifest.json`、三包或 tag。本次用户明确要求补两平台现有 CLI、不加助手、不做无关验证，因此仅执行新增清单逻辑及各平台实际 ZIP 的启动／版本／求根检查，不重复旧版图形或模型验收。
 
 ## 历史多平台发行
 

@@ -2,7 +2,7 @@
 
 项目默认使用中文；代码标识符、协议字段和许可证保留原文。
 
-当前公开版本为 [0.1.0-pre-alpha.5](https://github.com/He-RT/om-openmath/releases/tag/v0.1.0-pre-alpha.5)，提供原生 Mac 与 Web 工作台 v2。Windows、独立 CLI 与 iOS 沿用旧版公开资产。
+当前公开版本为 [0.1.0-pre-alpha.5](https://github.com/He-RT/om-openmath/releases/tag/v0.1.0-pre-alpha.5)，提供原生 Mac 与 Web 工作台 v2，以及补充的 macOS ARM64 / Windows x64 CLI ZIP。Windows 图形安装包与 iOS 沿用旧版公开资产。
 
 | 需要做什么 | 文档 |
 |---|---|

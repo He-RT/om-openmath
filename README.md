@@ -4,7 +4,7 @@
 
 OpenMath 是以方程求解为核心的开源计算机代数系统。终端、响应式浏览器笔记本、桌面应用和原生 iOS/iPadOS 客户端共享 Rust 内核，支持现代数学写法与 Wolfram 语言子集、精确解卡片、推导步骤、交互绘图和可配置 AI。
 
-已发布 [**0.1.0-pre-alpha.5**](https://github.com/He-RT/om-openmath/releases/tag/v0.1.0-pre-alpha.5)：原生 Mac 与 Web 工作台 v2，提供目录、纸面结果、助手／步骤／变量检查器，以及支持执行、讨论、操作记录和撤销的笔记本助手。本版发行 Mac DMG、app ZIP 和 Web ZIP；旧版公开资产继续保留。支持有资源边界的求解子集；无法支持的问题保留原表达式并给出诊断。兼容范围见[求解指南](docs/solve.md)。
+已发布 [**0.1.0-pre-alpha.5**](https://github.com/He-RT/om-openmath/releases/tag/v0.1.0-pre-alpha.5)：原生 Mac 与 Web 工作台 v2，提供目录、纸面结果、助手／步骤／变量检查器，以及支持执行、讨论、操作记录和撤销的笔记本助手。本版发行 Mac DMG、app ZIP、Web ZIP，并补充 macOS ARM64 / Windows x64 CLI ZIP；旧版公开资产继续保留。支持有资源边界的求解子集；无法支持的问题保留原表达式并给出诊断。兼容范围见[求解指南](docs/solve.md)。
 
 ```sh
 om -e 'solve(x^2 - 5x + 6 = 0, x)'
@@ -21,7 +21,7 @@ Mac 工作台 v2 的原型与实机验收对照；[Web 桌面](docs/acceptance/p
 
 ## 下载与安装
 
-在 [pre-alpha.5 发行页](https://github.com/He-RT/om-openmath/releases/tag/v0.1.0-pre-alpha.5) 下载本版 Mac/Web；Windows、独立 CLI 与 iOS 附件仍使用 [pre-alpha.3](https://github.com/He-RT/om-openmath/releases/tag/v0.1.0-pre-alpha.3)：
+在 [pre-alpha.5 发行页](https://github.com/He-RT/om-openmath/releases/tag/v0.1.0-pre-alpha.5) 下载本版 Mac/Web 和两平台 CLI；Windows 图形安装包与 iOS 附件仍使用 [pre-alpha.3](https://github.com/He-RT/om-openmath/releases/tag/v0.1.0-pre-alpha.3)：
 
 | 平台 | 文件 | 使用方式 |
 |---|---|---|
@@ -29,13 +29,14 @@ Mac 工作台 v2 的原型与实机验收对照；[Web 桌面](docs/acceptance/p
 | Windows 10/11 x64 | `OpenMath_0.1.0-pre-alpha.3_x64_zh-CN.msi` | MSI 安装包，适合系统管理员部署 |
 | macOS 27+ Apple Silicon | `OpenMath_0.1.0-pre-alpha.5_aarch64.dmg` | 打开后将 OpenMath Preview.app 拖入“应用程序” |
 | macOS 27+ Apple Silicon | `OpenMath_0.1.0-pre-alpha.5_macos_arm64.app.zip` | 解压得到 OpenMath Preview.app |
-| Windows / macOS | `om-cli_…_windows_x64.zip` / `om-cli_…_macos_arm64.zip` | 解压后运行 `om.exe` / `om`，可加入 PATH |
+| Windows x64 CLI | `om-cli_0.1.0-pre-alpha.5_windows_x64.zip` | 解压后在终端运行 `om.exe`，可加入 PATH |
+| macOS ARM64 CLI | `om-cli_0.1.0-pre-alpha.5_macos_arm64.zip` | 解压后在终端运行 `./om`，可加入 PATH |
 | iOS/iPadOS 27 | 原生 Xcode 工程、ARM64 模拟器应用及 XCFramework | 真机通过本机自动签名安装，见[移动端指南](docs/ios.md) |
 | 浏览器 | `OpenMath-web_0.1.0-pre-alpha.5.zip` | 解压到 HTTP(S) 站点根目录 |
 
 本版 Mac 为自包含原生应用，无需另装 Node、Rust 或 Xcode；使用 ad hoc 签名，尚无 Developer ID 签名或 Apple 公证。旧版 Windows 包未签名，携带 WebView2 引导程序；系统没有 WebView2 时，首次安装需要联网下载运行时。当前不提供 Intel Mac、Windows ARM64 或 Linux 安装包。详细步骤、卸载及校验见[安装指南](docs/install.md)。
 
-每个发行版提供 `release-manifest.json`，记录同一提交构建的文件大小和 SHA256。全部分发包保留相关第三方许可文本。
+`release-manifest.json` 记录原 Mac/Web 三包，`cli-release-manifest.json` 记录补充的两个 CLI ZIP；均对应发行源码 `86da0620…`，包含文件大小和 SHA256。CLI 保留现有终端功能，不接入笔记本助手，无需 Node 或图形界面运行时。全部分发包保留相关第三方许可文本。
 
 ## 开始使用
 

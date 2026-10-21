@@ -615,6 +615,7 @@ Mac S1–S8（两个模型）、Web S1–S6（一个模型）在候选包上各�
 
 **G4 候选安装与 CI 修复（2026-10-21）**
 
+- 修复候选`7bc1e81d`的三包已构建，当前SHA的Rust/frontend/dependencies/native CI全部通过（run39488786752）。新Web和DMG实算西瓜/2/3、.5+SHA通过；ZIP虽4226文件与DMG完全相同且验签通过，但本机OpenPanel再次选中有效.omnb而Open禁用，未算其界面通过。Finder精确指定ZIP应用仍留欢迎页，定位为AppHost声明NativeApplicationDelegate却从未调用attach，外部打开事件一直pending；补回根视图onAppear绑定。尚需新Release及Finder真实事件验证，不能把本次旧候选视为最终包。
 - `5139465e` 的 DMG/appZIP/WebZIP 与 manifest 已构建，本地三包均通过：原生面板打开自有西瓜示例副本，实际生成三维图形并求出2/3；保存后由appZIP重新打开四格源码、重新计算通过。两Mac包4226文件逐字节一致，严格签名通过、无fixture键；Mac关于窗口与Web设置均显示.5及完整SHA。证据保留于`target/pre-alpha.5/5139465e8dd34ba85345887697ac8ef61cdc8242/local-acceptance/`。普通.omnb只保存源码，重新打开不自动运行。
 - 当前SHA的CI另报Rust两处collapsible_if、Linux Web测试的提示词读取边界、JSDOM缺ResizeObserver，以及新依赖审计告警。两处语义不变的let-chain、Vite显式允许app与同源agent/prompts、App测试补布局观察桩后，全部155个Web单测、lint/typecheck和全工作区all-targets Clippy通过。受影响Rust回归52项通过（宿主28、结果投影12、真实回环HTTP/流式12），发行5项通过；未修改原数学断言或性能标准。
 - 证书依赖精确升级rustls-webpki0.103.16/webpki-root-certs1.0.10，修复RUSTSEC-2026-0382/0383；cargo-deny通过。Linux keyring当前上游仍依赖zbus5，三个仅停维护告警逐项注明理由与notice，无漏洞豁免，Mac/WASM运行图不含它们。

@@ -20,6 +20,7 @@ import SwiftUI
         if let session=workspace.session {WorkspaceView(workspace:workspace,session:session).id(ObjectIdentifier(session))}
         else {welcome}
       }.frame(minWidth:640,minHeight:560)
+        .onAppear {delegate.attach(workspace)}
         .preferredColorScheme(selectedColorScheme)
         .onChange(of:appearance,initial:true) {applyAppearance()}
         .tint(Theme.Color.verified)

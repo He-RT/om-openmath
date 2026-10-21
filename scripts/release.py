@@ -82,11 +82,15 @@ def verify_payload_bytes(original: bytes, installed: bytes, kind: str) -> dict:
     }
 
 
-def finalize(root: Path, tag: str, revision: str, scope: str = "app-web") -> None:
+def finalize(root: Path, tag: str, revision: str, scope: str = "app-web", packaging_revisions: dict[str, str] | None = None) -> None:
     """拒绝缺失、额外、空文件或链接；生成大小与 SHA256 清单。"""
     version = verify_version(ROOT, tag)
     if not re.fullmatch(r"[0-9a-f]{40}", revision):
         raise ValueError("必须提供完整的 Git 提交 SHA")
+    if packaging_revisions is not None and (scope != "tauri"
+            or set(packaging_revisions) != {"windows", "android"}
+            or any(not re.fullmatch(r"[0-9a-f]{40}", sha) for sha in packaging_revisions.values())):
+        raise ValueError("Tauri 打包来源必须包含 Windows 与 Android 的完整 SHA")
     expected = asset_names(version, scope)
     manifest_name = {"app-web": "release-manifest.json", "cli": "cli-release-manifest.json",
                      "tauri": "tauri-release-manifest.json"}[scope]
@@ -102,6 +106,8 @@ def finalize(root: Path, tag: str, revision: str, scope: str = "app-web") -> Non
             digest = hashlib.file_digest(stream, "sha256").hexdigest()
         assets.append({"name": name, "bytes": path.stat().st_size, "sha256": digest})
     manifest = {"version": version, "tag": tag, "revision": revision, "assets": assets}
+    if packaging_revisions is not None:
+        manifest["packaging_revisions"] = packaging_revisions
     (root / manifest_name).write_text(json.dumps(manifest, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
 
 
@@ -112,6 +118,8 @@ def main() -> None:
     parser.add_argument("--root", type=Path, default=Path("release-assets"))
     parser.add_argument("--sha")
     parser.add_argument("--scope", choices=["app-web", "cli", "tauri"], default="app-web")
+    parser.add_argument("--windows-packaging-sha")
+    parser.add_argument("--android-packaging-sha")
     parser.add_argument("--original", type=Path)
     parser.add_argument("--installed", type=Path)
     parser.add_argument("--kind", choices=["nsis", "msi"])
@@ -128,7 +136,12 @@ def main() -> None:
     else:
         if not args.sha:
             parser.error("finalize 需要 --sha")
-        finalize(args.root, args.tag, args.sha, args.scope)
+        packaging = None
+        if args.windows_packaging_sha or args.android_packaging_sha:
+            if not (args.windows_packaging_sha and args.android_packaging_sha):
+                parser.error("打包来源需要同时指定 --windows-packaging-sha 和 --android-packaging-sha")
+            packaging = {"windows": args.windows_packaging_sha, "android": args.android_packaging_sha}
+        finalize(args.root, args.tag, args.sha, args.scope, packaging)
 
 
 if __name__ == "__main__":

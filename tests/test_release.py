@@ -122,10 +122,14 @@ class ReleaseTests(unittest.TestCase):
             names = {"OpenMath_0.1.0-pre-alpha.5_android.apk", "OpenMath_0.1.0-pre-alpha.5_x64_zh-CN.msi"}
             for name in names:
                 (root / name).write_bytes(b"tauri-package")
-            self.release.finalize(root, "v0.1.0-pre-alpha.5", "b" * 40, "tauri")
+            packaging = {"windows": "c" * 40, "android": "d" * 40}
+            self.release.finalize(root, "v0.1.0-pre-alpha.5", "b" * 40, "tauri", packaging)
             manifest = json.loads((root / "tauri-release-manifest.json").read_text(encoding="utf-8"))
             self.assertEqual({a["name"] for a in manifest["assets"]}, names)
             self.assertEqual(manifest["revision"], "b" * 40)
+            self.assertEqual(manifest["packaging_revisions"], packaging)
+            with self.assertRaises(ValueError):
+                self.release.finalize(root, "v0.1.0-pre-alpha.5", "b" * 40, "tauri", {"android": "short"})
             (root / "OpenMath_0.1.0-pre-alpha.5_x64-setup.exe").write_bytes(b"unexpected")
             with self.assertRaises(ValueError):
                 self.release.finalize(root, "v0.1.0-pre-alpha.5", "b" * 40, "tauri")

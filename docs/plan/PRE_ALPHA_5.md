@@ -609,9 +609,15 @@ Mac S1–S8（两个模型）、Web S1–S6（一个模型）在候选包上各�
 | [x] G1 设计验收 | 20项按平台通过；两项书面例外已记 | 本任务提交 |
 | [x] G2 助手场景复测 | Mac两GPT及DeepSeek S1–S8、Web sol S1–S6、Mac图片/PDF真实发送通过；累计69/80 | 本任务提交 |
 | [x] G3 数学、性能与数据回归 | 原53三端正确、CLI46.697ms/Mac270.151ms/Web87ms最大；输入p95 Mac33.316/Web32.8ms；指定数据回归通过 | 本任务提交 |
-| [ ] G4 打包与发布 | | |
+| [ ] G4 打包与发布 | 86da0620三包本地安装、同SHA CI全部通过；待用户公开确认与匿名下载回读 | |
 
 ### 记录
+
+**G4 本地候选通过（2026-10-21，公开回读待完成）**
+
+- 发行源码`86da06206c1ce547921ff2fb6ada892c5b090b48`的DMG/appZIP/WebZIP及manifest齐全，三包SHA/大小复核一致；两Mac包4226文件逐字节相同、严格签名有效且无fixture键。实际Finder冷启动两种安装版均打开自有西瓜副本，运行真图和2/3；ZIP保存→DMG读回重算通过。Web真实ZIP解压目录HTTP实算同样通过，三端版本.5+完整SHA一致，原生已正常退出。
+- 修复AppHost遗漏的代理绑定，并接入现代application(_:open:)文件URL回调，保留原workspace.open校验和单文稿边界；原WorkbenchFixtures新入口--file-events冷/热读源码、拒绝非file/多URL、关闭存储通过，完整AppHost真实Finder验证通过。OpenPanel间歇Open禁用未冒称修复；已验证Finder普通打开路径。无产品视觉差异，无新增模型调用（69/80）。
+- 具体三包哈希、安装位置、截图/AX/DOM和已知限制见[本地安装记录](../acceptance/pre-alpha.5/local-install.md)。同SHA CI39533915333的Rust/frontend/dependencies/native全部通过（iOS按本版范围跳过）；具体发行文字已准备在该SHA目录release-body.md。等待用户确认公开，再匿名下载校SHA并安装回读。G4与整版仍未完成，不移动旧tag。
 
 **G4 候选安装与 CI 修复（2026-10-21）**
 

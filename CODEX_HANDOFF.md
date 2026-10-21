@@ -31,6 +31,7 @@
 
 ## 当前 G2 / G3（2026-10-21，唯一最新进度）
 
+- **覆盖下条**：33617ee5已打三包/验签/4226文件一致，新Web西瓜/2/3/.5+SHA通过；Finder冷启动仍欢迎页，onAppear代理绑定尚不足以覆盖SwiftUI文件分发，现加根视图onOpenURL→同一workspace.open。需提交重建并真Finder验证，未算通过；当前运行ZIP路径`/Users/hert/Applications/OpenMath pre-alpha.5 ZIP 33617ee5/OpenMath Preview.app`欢迎页。所有旧失败/候选保留，不公开。
 - **最新G4发现**：7bc1e81d三包已构建、同SHA CI全绿（39488786752），Web与DMG西瓜/2/3/.5+SHA均通过。ZIP4226文件与DMG逐字节相同且验签过，但OpenPanel复现Open禁用；安装到Applications亦如此。Finder“打开方式→其他”指定ZIP app后仍欢迎页，实际代码AppHost声明delegate却无attach调用，外部打开事件一直pending。现补根视图onAppear绑定，需提交/重建/实际Finder验证；旧包保留不发布。当前ZIP运行路径`/Users/hert/Applications/OpenMath pre-alpha.5 ZIP 7bc1e81d/OpenMath Preview.app`，欢迎页；已关闭自身面板。不得修改系统权限或文件默认关联。
 - 同范围goal active。**G2已提交推dev=40dae357**；G3已提交推dev=f98be447。G4正在统一.5并准备包，尚未公开或请求公开确认。不开子代理，不改输入法/安全/权限，不启动iOS模拟器，不看其他App找参考；不stage或删无关`.gitignore`、`.vscode/`、`test-results/`。
 - **用户上限80，账本69/80，全部finish，无活动模型任务。** `target/plan-5/live-task-runs.jsonl`为唯一账本。Mac gpt-6.1-sol、gpt-6-luna、DeepSeek S1–S8；Web sol S1–S6；Mac图片/PDF真实发送全部通过，不重跑。

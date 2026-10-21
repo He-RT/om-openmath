@@ -20,9 +20,9 @@
       throw new Error('Could not enter the source into the real editor');
     await new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
     document.querySelector('.run-cell').click();
-    await wait(() => document.querySelector('.notebook-cell[data-status="Done"] .solution-chip'), 'The packaged calculation did not finish');
-    const roots = [...document.querySelectorAll('.solution-chip')].map(node => node.textContent);
-    if (roots.length !== 2 || !roots.some(text => text.includes('2')) || !roots.some(text => text.includes('3')))
+    await wait(() => document.querySelector('.notebook-cell[data-status="Done"] .solution-entry'), 'The packaged calculation did not finish');
+    const roots = [...document.querySelectorAll('.solution-entry .formula')].map(node => node.getAttribute('aria-label'));
+    if (roots.length !== 2 || !roots.includes('x = 2') || !roots.includes('x = 3'))
       throw new Error('The packaged calculation did not produce roots 2 and 3: ' + JSON.stringify(roots));
     const version = await (await fetch(new URL('version.json', location.href))).json();
     if (version.version !== '0.1.0-pre-alpha.5') throw new Error('Wrong packaged version');

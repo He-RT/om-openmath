@@ -1,0 +1,68 @@
+name: 补充 CLI 发行包
+run-name: CLI ${{ inputs.source_sha }}
+
+on:
+  workflow_dispatch:
+    inputs:
+      source_sha:
+        description: 已发布版本的完整源码提交
+        required: true
+        default: 86da06206c1ce547921ff2fb6ada892c5b090b48
+      version:
+        description: CLI 版本
+        required: true
+        default: 0.1.0-pre-alpha.5
+
+permissions:
+  contents: read
+
+concurrency:
+  group: release-cli-${{ inputs.source_sha }}
+  cancel-in-progress: false
+
+jobs:
+  package:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - runner: macos-latest
+            platform: macos_arm64
+            target: aarch64-apple-darwin
+          - runner: windows-latest
+            platform: windows_x64
+            target: x86_64-pc-windows-msvc
+    runs-on: ${{ matrix.runner }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          path: packaging
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.source_sha }}
+          path: source
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - name: 构建现有 CLI
+        working-directory: source
+        shell: bash
+        env:
+          CLI_TARGET: ${{ matrix.target }}
+          CARGO_TERM_COLOR: always
+        run: |
+          rustup target add "$CLI_TARGET"
+          cargo build -p om-cli --release --locked --target "$CLI_TARGET"
+      - name: 打包并运行解压后的版本与求根检查
+        shell: bash
+        env:
+          CLI_PLATFORM: ${{ matrix.platform }}
+          CLI_VERSION: ${{ inputs.version }}
+          CLI_SOURCE_SHA: ${{ inputs.source_sha }}
+        run: |
+          python packaging/scripts/package_cli.py --source source --platform "$CLI_PLATFORM" --version "$CLI_VERSION" --sha "$CLI_SOURCE_SHA" --output release-assets
+      - uses: actions/upload-artifact@v4
+        with:
+          name: cli-${{ matrix.platform }}
+          path: release-assets/*.zip
+          if-no-files-found: error

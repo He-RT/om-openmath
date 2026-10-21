@@ -4,6 +4,7 @@
 
 ## 2026-10-21 最新发布与文档收尾
 
+- **用户追加 CLI 补包，正在执行。** 仅 macOS ARM64 / Windows x64 现有终端功能，不加助手、不重跑GUI或真实模型。新增`release-cli.yml`从原发行源码`86da0620…`分别构建，`package_cli.py`保留许可并只实跑解压后的版本及求根2/3；随后用`release.py finalize --scope cli`生成独立`cli-release-manifest.json`，追加到原.5 Release，不替换旧资产。当前仅发行清单6项检查与脚本语法通过，平台构建和上传尚未执行。提交信息带skip ci避免触发无关全套回归，随后显式派发CLI构建。
 - **发行源码`86da06206c1ce547921ff2fb6ada892c5b090b48`，已获用户明确批准并公开发布`v0.1.0-pre-alpha.5`。** 三包及manifest均上传成功，后续仅文档提交不改变包内revision。新增现代NSApplicationDelegate.application(_:open:)文件URL回调与根视图代理绑定；现有WorkbenchFixtures --file-events及完整AppHost Finder冷启动两包均通过，下方旧“欢迎页未处理”状态已过时。
 - 三包与manifest位于`target/pre-alpha.5/86da06206c1ce547921ff2fb6ada892c5b090b48/release-assets/`，具体哈希/安装位置/实测见`docs/acceptance/pre-alpha.5/local-install.md`。DMG/appZIP4226文件逐字节一致、严格验签、无fixture键；均真西瓜和2/3，ZIP保存→DMG读回重算通过。Mac关于窗口及Web设置均.5+完整SHA；原生两包已正常退出。OpenPanel间歇Open禁用仍保留已知限制，Finder可用；未改文件默认关联或系统权限。
 - 同SHA CI`39533915333`已完整success：Rust/frontend/dependencies/native全部通过，iOS按本版范围跳过；原始状态g4-final-ci-status.json。构建`g4-modern-file-events-native-package.log`/`g4-modern-file-events-web-build.log`均exit0。用户在发布成功后要求“不用验证了，同步更新readme等文档”，已取消匿名下载、哈希复核和公开包重复安装回读；不再继续验证或询问发布权限。计划保留原标准并明确记录本次用户调整，G4按调整后的范围完成，不声称原五项全部实测通过。

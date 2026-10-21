@@ -97,6 +97,25 @@ class ReleaseTests(unittest.TestCase):
             with self.assertRaises(ValueError):
                 self.release.finalize(root, "v0.1.0-pre-alpha.5", "a" * 40)
 
+    def test_cli_supplement_has_its_own_exact_asset_manifest(self):
+        with tempfile.TemporaryDirectory() as folder:
+            root = Path(folder)
+            names = {
+                "om-cli_0.1.0-pre-alpha.5_macos_arm64.zip",
+                "om-cli_0.1.0-pre-alpha.5_windows_x64.zip",
+            }
+            for name in names:
+                (root / name).write_bytes(b"cli-fixture")
+            self.release.finalize(root, "v0.1.0-pre-alpha.5", "a" * 40, "cli")
+            manifest = json.loads((root / "cli-release-manifest.json").read_text(encoding="utf-8"))
+            self.assertEqual({a["name"] for a in manifest["assets"]}, names)
+            self.assertTrue(all(a["bytes"] == 11 for a in manifest["assets"]))
+            self.assertTrue(all(a["sha256"] == hashlib.sha256(b"cli-fixture").hexdigest()
+                                for a in manifest["assets"]))
+            self.assertFalse((root / "release-manifest.json").exists())
+            with self.assertRaises(ValueError):
+                self.release.finalize(root, "v0.1.0-pre-alpha.5", "a" * 40)
+
     def test_installed_payload_allows_only_the_exact_tauri_bundle_stamp(self):
         marker = b"__TAURI_BUNDLE_TYPE_VAR_UNK"
         original = b"code-before\0" + marker + b"\0code-after"

@@ -615,6 +615,11 @@ Mac S1–S8（两个模型）、Web S1–S6（一个模型）在候选包上各�
 
 ### 记录
 
+**G4 追加 CLI 补包（2026-10-21，进行中）**
+
+- 用户在原版收尾后追加“先补上cli，macos，windows，不做没用的验证，不加助手”。范围仅 macOS ARM64 / Windows x64 的现有 CLI ZIP；原发行源码固定为`86da06206c1ce547921ff2fb6ada892c5b090b48`，不改产品代码、不接入笔记本助手。
+- 新增独立双平台打包流程，保留项目及Rust依赖许可、构建SHA与使用说明；只实跑ZIP解压后的版本与求根2/3。CLI两包用单独`cli-release-manifest.json`，原三包、原manifest和tag保留。发行清单6项检查及脚本语法已通过，真实平台构建／发布待完成。
+
 **G4 公开发布与文档收尾（2026-10-21，按用户调整后的范围完成）**
 
 - 用户明确“允许公开发布”后，已创建[公开 pre-release v0.1.0-pre-alpha.5](https://github.com/He-RT/om-openmath/releases/tag/v0.1.0-pre-alpha.5)，发行源码固定为`86da06206c1ce547921ff2fb6ada892c5b090b48`，DMG/appZIP/WebZIP及manifest均上传成功。后续文档提交不改变已发布包、manifest或包内revision。

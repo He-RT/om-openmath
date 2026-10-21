@@ -44,7 +44,14 @@ def verify_version(root: Path, tag: str) -> str:
     return VERSION
 
 
-def asset_names(version: str) -> set[str]:
+def asset_names(version: str, scope: str = "app-web") -> set[str]:
+    if scope == "cli":
+        return {
+            f"om-cli_{version}_macos_arm64.zip",
+            f"om-cli_{version}_windows_x64.zip",
+        }
+    if scope != "app-web":
+        raise ValueError(f"未知发行范围：{scope}")
     return {
         f"OpenMath_{version}_aarch64.dmg",
         f"OpenMath_{version}_macos_arm64.app.zip",
@@ -70,13 +77,14 @@ def verify_payload_bytes(original: bytes, installed: bytes, kind: str) -> dict:
     }
 
 
-def finalize(root: Path, tag: str, revision: str) -> None:
+def finalize(root: Path, tag: str, revision: str, scope: str = "app-web") -> None:
     """拒绝缺失、额外、空文件或链接；生成大小与 SHA256 清单。"""
     version = verify_version(ROOT, tag)
     if not re.fullmatch(r"[0-9a-f]{40}", revision):
         raise ValueError("必须提供完整的 Git 提交 SHA")
-    expected = asset_names(version)
-    actual = {path.name for path in root.iterdir()} - {"release-manifest.json"}
+    expected = asset_names(version, scope)
+    manifest_name = "cli-release-manifest.json" if scope == "cli" else "release-manifest.json"
+    actual = {path.name for path in root.iterdir()} - {manifest_name}
     if actual != expected:
         raise ValueError(f"发行资产不完整：缺失={sorted(expected - actual)}，额外={sorted(actual - expected)}")
     assets = []
@@ -88,7 +96,7 @@ def finalize(root: Path, tag: str, revision: str) -> None:
             digest = hashlib.file_digest(stream, "sha256").hexdigest()
         assets.append({"name": name, "bytes": path.stat().st_size, "sha256": digest})
     manifest = {"version": version, "tag": tag, "revision": revision, "assets": assets}
-    (root / "release-manifest.json").write_text(json.dumps(manifest, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    (root / manifest_name).write_text(json.dumps(manifest, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
 
 
 def main() -> None:
@@ -97,6 +105,7 @@ def main() -> None:
     parser.add_argument("--tag")
     parser.add_argument("--root", type=Path, default=Path("release-assets"))
     parser.add_argument("--sha")
+    parser.add_argument("--scope", choices=["app-web", "cli"], default="app-web")
     parser.add_argument("--original", type=Path)
     parser.add_argument("--installed", type=Path)
     parser.add_argument("--kind", choices=["nsis", "msi"])
@@ -113,7 +122,7 @@ def main() -> None:
     else:
         if not args.sha:
             parser.error("finalize 需要 --sha")
-        finalize(args.root, args.tag, args.sha)
+        finalize(args.root, args.tag, args.sha, args.scope)
 
 
 if __name__ == "__main__":

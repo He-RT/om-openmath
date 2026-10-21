@@ -89,7 +89,9 @@ def main():
             "This package ships the existing terminal features; no notebook assistant was added.\n"
             "No Developer ID / Authenticode distribution signature or Apple notarization is provided.\n"
             "Project and dependency notices accompany this executable.\n", encoding="utf-8")
-        with zipfile.ZipFile(archive, "x", compression=zipfile.ZIP_DEFLATED) as bundle:
+        # Cargo archives use epoch timestamps; ZIP starts at 1980.
+        with zipfile.ZipFile(archive, "x", compression=zipfile.ZIP_DEFLATED,
+                             strict_timestamps=False) as bundle:
             for path in sorted(stage.rglob("*")):
                 if path.is_file():
                     bundle.write(path, path.relative_to(stage).as_posix())

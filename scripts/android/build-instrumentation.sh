@@ -14,7 +14,7 @@ cat > "$openmath_test_root/AndroidManifest.xml" <<'XML'
   <instrumentation android:name="org.openmath.openmath.test.PackageSmokeInstrumentation" android:targetPackage="org.openmath.openmath" />
 </manifest>
 XML
-javac -source 8 -target 8 -bootclasspath "$ANDROID_HOME/platforms/android-35/android.jar" -d "$openmath_test_root/classes" "$openmath_tools_root/scripts/android/PackageSmokeInstrumentation.java"
+javac -source 8 -target 8 -classpath "$ANDROID_HOME/platforms/android-35/android.jar" -d "$openmath_test_root/classes" "$openmath_tools_root/scripts/android/PackageSmokeInstrumentation.java"
 jar --create --file "$openmath_test_root/classes.jar" -C "$openmath_test_root/classes" .
 "$openmath_android_tools/d8" --release --min-api 24 --lib "$ANDROID_HOME/platforms/android-35/android.jar" --output "$openmath_test_root/dex" "$openmath_test_root/classes.jar"
 "$openmath_android_tools/aapt" package -f -M "$openmath_test_root/AndroidManifest.xml" -I "$ANDROID_HOME/platforms/android-35/android.jar" -A "$openmath_test_root/assets" -F "$openmath_test_root/unsigned.apk"

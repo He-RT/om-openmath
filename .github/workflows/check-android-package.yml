@@ -1,0 +1,48 @@
+name: 检查已有 Android 正式包
+on:
+  workflow_dispatch:
+    inputs:
+      artifact_run:
+        description: 已签名 tauri-android-apk 的构建 run
+        required: true
+permissions:
+  contents: read
+  actions: read
+jobs:
+  installed-apk:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: android-actions/setup-android@v3
+        with:
+          packages: platform-tools
+      - uses: actions/download-artifact@v4
+        with:
+          name: tauri-android-apk
+          path: release-assets
+          run-id: ${{ inputs.artifact_run }}
+          github-token: ${{ github.token }}
+      - run: sudo chmod a+rw /dev/kvm
+      - uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 35
+          target: google_apis
+          arch: x86_64
+          emulator-options: -no-window -gpu swiftshader_indirect -no-snapshot -noaudio -no-boot-anim -camera-back none
+          disable-animations: true
+          script: |
+            mkdir -p package-evidence
+            adb install release-assets/OpenMath_0.1.0-pre-alpha.5_android.apk
+            adb logcat -c
+            adb shell am start -W -n org.openmath.openmath/.MainActivity
+            sleep 8
+            adb logcat -d > package-evidence/startup-logcat.txt
+            adb exec-out screencap -p > package-evidence/startup.png
+            adb shell uiautomator dump /sdcard/openmath-window.xml
+            adb pull /sdcard/openmath-window.xml package-evidence/window.xml
+            adb shell pidof org.openmath.openmath > package-evidence/app-pid.txt
+            test -s package-evidence/app-pid.txt
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: android-existing-package-check
+          path: package-evidence

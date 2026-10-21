@@ -1,5 +1,7 @@
 # 首个 pre-alpha 验收记录
 
+> 本页保留首版历史证据。当前 `.5` 的设计、真实助手、数学／性能与数据回归见 [PRE_ALPHA_5.md](plan/PRE_ALPHA_5.md)，安装和公开发布见[本版记录](acceptance/pre-alpha.5/local-install.md)，不要用本页旧版本或测试数量表示当前发行状态。
+
 [English](pre-alpha.en.md) · [发行说明](release-0.1.0-pre-alpha.1.md)
 
 M0–M13 已实现共享 CAS/内核、终端、原生及生产 WASM 笔记本、可配置 AI、源码文件和导出。本地首轮验收对应 `a40d325`；最终 CI 选择器修复 `84d9daf` 的 [CI 37126375546](https://github.com/He-RT/om-openmath/actions/runs/37126375546) 全部通过。下表记录此前已完成证据，发行构建在同一版本提交上重新执行门禁。

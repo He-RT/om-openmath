@@ -1,52 +1,56 @@
 # 发布流程
 
-当前版本 `0.1.0-pre-alpha.3`，标签 `v0.1.0-pre-alpha.3`。[工作流](../.github/workflows/release.yml)从同一提交构建 Windows、macOS、Web 与原生 iOS 产物；所有验证通过后发布预发行版。
+当前公开版本为 [0.1.0-pre-alpha.5](https://github.com/He-RT/om-openmath/releases/tag/v0.1.0-pre-alpha.5)，标签 `v0.1.0-pre-alpha.5`，发行源码为 `86da06206c1ce547921ff2fb6ada892c5b090b48`。本版仅发布原生 Mac DMG、app ZIP、Web ZIP 和 manifest；后续文档提交不改变包内 revision。完整实施与验收见 [PRE_ALPHA_5.md](plan/PRE_ALPHA_5.md)。
 
-## 版本与触发
+## 版本与构建
 
-同步根 `Cargo.toml` 的 workspace 包和内部依赖版本、`Cargo.lock`、npm 包及锁文件、Tauri 配置，以及发布脚本、测试和发行说明：
-
-MSI 内部产品版本只能是数字，Windows 配置将 `0.1.0-pre-alpha.3` 映射为 WiX `0.1.0.3`；展示版本、资产名、标签及其余元数据仍为完整预发行版本。升级时同步这一映射。
+同步 Rust workspace、内部依赖及 Cargo 锁文件、app/agent 的 npm 版本及锁文件、Tauri 配置、原生 Mac/iOS Info.plist、函数目录、发布脚本与发行说明。历史 Windows 配置的 WiX 数字版本映射也由版本检查覆盖，不表示本版发布 Windows。
 
 ```sh
-python3 scripts/release.py verify --tag v0.1.0-pre-alpha.3
-python3 -m unittest discover -s tests -v
+python3 scripts/release.py verify --tag v0.1.0-pre-alpha.5
 ```
 
-推送已验证的 `dev`，等待同一提交 CI 成功。首个发行版手动触发，标签在门禁通过后由 GitHub Release 创建：
+在固定源码提交上构建，记录完整 SHA。Mac 使用 Xcode 27 / macOS 27 SDK、Apple Silicon；Swift 功能 fixture 与 Release 构建不并行，避免共享 cmark 产物冲突。
 
 ```sh
-gh workflow run release.yml --ref dev -f tag=v0.1.0-pre-alpha.3
+bash macos/Scripts/package-native.sh release-assets
+npm ci --prefix app
+npm run build --prefix app
 ```
 
-也支持 `v*` 标签推送，但仍要求版本一致、同一提交 CI 成功。发布不合并 `main`。失败时修复、验证、提交后重新触发；不移动已公开标签。
+Web 将 `app/dist` 的内容直接打包为 `OpenMath-web_0.1.0-pre-alpha.5.zip`，保留许可文件；构建元数据记录源码 SHA。三包齐备后生成清单：
 
-## 门禁
+```sh
+python3 scripts/release.py finalize --tag v0.1.0-pre-alpha.5 --root release-assets --sha FULL_SOURCE_SHA
+```
 
-- Web：实际 WASM、lint、单元测试、开发与生产 UI，静态包包含许可。
-- macOS arm64：原生 app/DMG、fmt、Clippy、工作区测试、协议漂移、CLI 原始语料及性能、DMG 校验。
-- Windows x64：原生 EXE/MSI、Clippy、工作区测试；分别安装、启动真实中文窗口，验证精确根、步骤和响应式 3→6，以及完整西瓜的实际内核网格、WebGL2像素、旋转和复位，再卸载。
-- iOS：iPhone/iPad 全部 Swift 单元和界面流程（含数据/探索/导出/场景新增用例）、原 53 条计算/公式与每项 1 秒阈值；真机/模拟器 ARM64 构建、XCFramework 链接与许可资源。
-- 发布：确认同一 SHA 的 CI 成功，拒绝缺失、额外、空文件或链接资产，生成 SHA256 清单。
+`finalize` 拒绝缺失、额外、空文件或链接资产，并记录每包的大小和 SHA256。清单及包内 revision 必须对应构建提交，不能用后续文档提交替换。
 
-Windows 仅在 CI 设置 `WEBVIEW2_ADDITIONAL_BROWSER_ARGUMENTS=--remote-debugging-port=9222`，并为管理员 runner 临时设置 HKLM WebView2 调试策略（结束后清除），Playwright 连接安装后的实际 WebView2；应用默认不开放调试端口。独立配置使用 `OPENMATH_CONFIG_PATH`。截图及结果在 Actions 的 `windows-install-evidence` artifact 中。
+## CI 与本地验收
 
-## 发布资产
+[发行工作流](../.github/workflows/release.yml)仅通过 `workflow_dispatch` 构建 Mac/Web 并上传 Actions artifacts，不直接创建公开 Release，也不由 tag push 自动触发：
 
-九个安装/应用/CLI/Web/移动内核文件加 `release-manifest.json`，名称见 README。清单记录版本、标签、完整提交 SHA、字节数及 SHA256。
+```sh
+gh workflow run release.yml --ref dev -f tag=v0.1.0-pre-alpha.5
+```
 
-收齐、校验后创建完整 draft，再改为 pre-release；构建或安装测试失败不发布。说明来自 `docs/release-0.1.0-pre-alpha.3.md`；流程不使用真实模型密钥。
+该流程包含生产 WASM 原 53 条与性能检查、原生 Mac 打包及完整 manifest。产品提交还需核对 Rust、frontend、dependencies、native 各项实际结果，不能只看总体 green；Windows/iOS 不属于本版发行门禁。
 
-当前包未代码签名，macOS 未公证。说明保留架构、WebView2 联网要求和求解边界，后续签名使用 CI secret 管理证书。
+公开前按计划完成设计、真实助手场景、数学、性能、存储／保存／恢复／撤销回归，并从实际本地三包安装或解压，验证示例西瓜、求根 2/3、版本和完整 SHA。`.5` 的[源码 CI](https://github.com/He-RT/om-openmath/actions/runs/39533915333)与[本地三包验收](acceptance/pre-alpha.5/local-install.md)已通过。
 
-下一版原生Mac的自包含helper、通道、新数据初始化、inside-out签名/公证/staple顺序、首次启动与手工更新另见[安装发行设计](design/macos-installation.md)。它仍为planned门禁，没有改本文件记录的`.3`工作流/公开包；原生公开发行须同SHA证明新的实际app及完整资产，不能用旧Tauri成功替代。
+## 公开发布
 
-目标`.4`的范围/版本冻结、31个公开前门禁+公开后回读、证据层级/同候选身份与缺陷/暂缓规则见[统一规格](plan/PRE_ALPHA_4.md)及[机器账本](acceptance/pre-alpha.4/gates.toml)。当前运行版本和`release.py`仍`.3`，本轮没有实现新publisher/CI或触发Release；以后不能只检查workflow总体green而忽略缺失/skip的required job。
+用户明确批准具体源码提交与三包后，创建新 GitHub pre-release，上传以下四个文件；不合并 `main`，不移动已公开 tag 或替换旧版资产：
 
-WebView2 150+ 对管理员进程忽略环境变量/HKCU 参数；GitHub Windows runner 以管理员运行，所以 CI 临时设置仅针对 om-desktop.exe 的 HKLM AdditionalBrowserArguments，并在 always 清理。依据[微软 WebView2 权限说明](https://learn.microsoft.com/en-us/microsoft-edge/webview2/concepts/security#for-an-elevated-host-app-use-appropriate-override-flags)。分发程序不包含这项策略。
+- `OpenMath_0.1.0-pre-alpha.5_aarch64.dmg`
+- `OpenMath_0.1.0-pre-alpha.5_macos_arm64.app.zip`
+- `OpenMath-web_0.1.0-pre-alpha.5.zip`
+- `release-manifest.json`
 
-安装后程序逐字节核对各自构建输入，只允许 Tauri SDK 已记录的唯一 `__TAURI_BUNDLE_TYPE_VAR_UNK` 标记变为 NSIS 的 `NSS` 或 MSI 的 `MSI`，任何其他字节差异都拒绝。依据锁定 tauri-utils 2.10.0 的 platform.rs；两个实际安装文件已证明恰好只有这三字节变化。原始输入、安装后程序和散列报告保留为 Actions artifacts。
+发行说明来自 [release-0.1.0-pre-alpha.5.md](release-0.1.0-pre-alpha.5.md)，如实说明 ad hoc 签名、未公证、macOS 27 / Apple Silicon、HTTP/CORS、独立 Preview 数据目录及已知限制。发布过程不使用真实模型密钥。
 
-## 原生移动附件
+本次用户已批准公开，Release 于 2026-10-21 创建成功。原计划的公开后匿名下载、核对哈希、重新安装回读，随后由用户明确要求“不用验证了，同步更新readme等文档”而取消；只记录已完成的本地验收，不将这部分标为实测通过。此调整仅适用于本次发行，不自动免除后续版本的验收。
 
-复用 `ios.yml`，在官方 `xcode-27` 镜像显式选择 Xcode 27.0。SDK 缺失必须失败。完成 iPhone/iPad 测试及真机 ARM64 无签名链接检查后，打包模拟器 `.app.zip` 和 `OpenMathKernel.xcframework.zip`。Rust/Swift/字体许可随包保留。个人 `Local.xcconfig`、证书与真机签名应用不上传。`.3` 独立发布，保留 `.1/.2`。
+## 历史多平台发行
+
+`.3` 的 Windows EXE/MSI、独立 CLI、移动模拟器应用与 XCFramework 仍保留在[旧发行页](https://github.com/He-RT/om-openmath/releases/tag/v0.1.0-pre-alpha.3)。其 Windows WebView2、Tauri 安装类型标记和 iOS 签名流程属于历史多平台发行；当前 Mac 为 SwiftUI/AppKit 原生包，不能以旧 Tauri 包或旧移动门禁替代本版验收。历史细节见 [`.3` 发行说明](release-0.1.0-pre-alpha.3.md)、[`.4` 计划](plan/PRE_ALPHA_4.md)及 Git 历史。

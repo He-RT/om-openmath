@@ -1,6 +1,6 @@
-# pre-alpha.5 本地候选安装验收
+# pre-alpha.5 安装验收与发布记录
 
-2026-10-21。发行源码与包内 revision：`86da06206c1ce547921ff2fb6ada892c5b090b48`。三个包已本地验收，[同SHA的CI](https://github.com/He-RT/om-openmath/actions/runs/39533915333)全部通过（Rust、frontend、dependencies、native；iOS按本版范围跳过）；尚未公开，公开下载回读未完成。
+2026-10-21。发行源码与包内 revision：`86da06206c1ce547921ff2fb6ada892c5b090b48`。三个包已本地验收，[同SHA的CI](https://github.com/He-RT/om-openmath/actions/runs/39533915333)全部通过（Rust、frontend、dependencies、native；iOS按本版范围跳过）。用户明确回复“允许公开发布”后，已创建[公开 GitHub pre-release](https://github.com/He-RT/om-openmath/releases/tag/v0.1.0-pre-alpha.5)，发布时间 2026-10-21 11:03:20（Asia/Singapore），三个包及 manifest 均已上传。
 
 资产位于 `target/pre-alpha.5/86da06206c1ce547921ff2fb6ada892c5b090b48/release-assets/`。`release-manifest.json` SHA256：`de3823bcf07421131353634f221bb8ed7d2a1fe0538a3eccd9716f1f37dff26f`。
 
@@ -18,4 +18,4 @@ Web ZIP真实解压目录通过自有`127.0.0.1:4180`提供HTTP；浏览器导�
 
 实际AX、DOM、截图和包级核验记录位于同SHA目录的`local-acceptance/`。构建日志为`target/plan-5/g4-modern-file-events-{native-package,web-build}.log`。新增文件事件逻辑的现有WorkbenchFixtures入口`--file-events`已通过真实冷/热源码打开、非file与多URL拒绝、关闭存储；完整应用Finder验收亦通过。旧候选和失败记录保留。系统OpenPanel间歇出现有效.omnb的Open禁用仍是已知限制；本次Finder路径已验证可用，未改系统安全或权限。
 
-发布必须明确以源码`86da0620…`创建新tag，上传本清单的三个包及manifest；后续仅文档提交不改变包内revision。仍需用户明确确认公开pre-release，再匿名下载校验并安装回读，才能勾选G4及宣布整版交付。
+发布 tag 为 `v0.1.0-pre-alpha.5`，target 为上述完整源码 SHA；后续仅文档提交不改变包内 revision。2026-10-21 用户随后明确要求“不用验证了，同步更新readme等文档”，取消剩余公开资产匿名下载、哈希复核和重复安装回读。本记录中的哈希来自发布前本地资产核验，安装结果来自上述本地发行包；不将公开下载回读记为通过。G4 按用户本次调整后的范围完成，原第 1.2 节第 5 项公开回读部分记为用户取消。

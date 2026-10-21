@@ -2,6 +2,8 @@
 
 项目默认使用中文；代码标识符、协议字段和许可证保留原文。
 
+当前公开版本为 [0.1.0-pre-alpha.5](https://github.com/He-RT/om-openmath/releases/tag/v0.1.0-pre-alpha.5)，提供原生 Mac 与 Web 工作台 v2。Windows、独立 CLI 与 iOS 沿用旧版公开资产。
+
 | 需要做什么 | 文档 |
 |---|---|
 | 下载、安装、卸载或校验 | [安装指南](install.md) |
@@ -10,7 +12,8 @@
 | 在计算环境查询函数、选项和能力 | [帮助与能力查询](design/function-queries.md) |
 | 理解现代语法与统一接口设计 | [现代语言设计](design/modern-language.md) |
 | 查看下一版科研功能与Agent预留 | [下一版计划](plan/NEXT_RELEASE.md) |
-| 执行 `.4` Mac/Web优先交付，查看8项实际检查及下一任务 | [当前交付顺序与详细待办](plan/PRE_ALPHA_4.md)、[需求覆盖总表](plan/PRE_ALPHA_4.md#15-既有设计到实施任务的覆盖总表)、[任务进度](plan/PRE_ALPHA_4_PROGRESS.md)、[验收入口](acceptance/pre-alpha.4/README.md)、[8项交付检查／旧32项参考](acceptance/pre-alpha.4/gates.toml) |
+| 查看 `.5` 工作台设计、实施与验收 | [本版计划与完成记录](plan/PRE_ALPHA_5.md)、[工作台 v2](design/workbench-v2.md)、[安装与发布记录](acceptance/pre-alpha.5/local-install.md) |
+| 查阅 `.4` 历史实施与验收 | [历史计划](plan/PRE_ALPHA_4.md)、[历史进度](plan/PRE_ALPHA_4_PROGRESS.md)、[历史验收](acceptance/pre-alpha.4/README.md) |
 | 设计 Mac 右侧助手与可操作笔记本的 Pi Agent | [Notebook Agent 草案](design/notebook-agent.md) |
 | 将 Mac UI 完全原生化并与 Agent 整合 | [原生 Mac 客户端方案](design/macos-native-ui.md) |
 | 实施原生 Mac 宿主并统一 Swift Rust Pi 状态 | [宿主与状态契约](design/macos-host-state.md)、[状态 Schema](design/macos-host-state.schema.json) |
@@ -37,9 +40,9 @@
 | 编译、测试和贡献代码 | [开发指南](development.md) |
 | 开发内核客户端 | [JSON 协议](protocol.md) |
 | 构建与发布 GitHub Release | [发布流程](releasing.md) |
-| 了解此次版本和验收证据 | [发行说明](release-0.1.0-pre-alpha.3.md)、[验收记录](pre-alpha.md) |
+| 了解此次版本和验收证据 | [发行说明](release-0.1.0-pre-alpha.5.md)、[安装与发布记录](acceptance/pre-alpha.5/local-install.md)、[设计／助手／数学／性能记录](plan/PRE_ALPHA_5.md#6-进度表) |
 | iPhone / iPad 使用与构建 | [原生移动端指南](ios.md)、[移动验收](ios-acceptance.md) |
-| 接续开发 | [计划](plan/PLAN.md)、[进度](plan/PROGRESS.md)、[裁决](plan/DEVIATIONS.md)、[问题](plan/QUESTIONS.md) |
+| 接续开发 | [当前交接](../CODEX_HANDOFF.md)、[本版计划与进度](plan/PRE_ALPHA_5.md)、[历史总计划](plan/PLAN.md)、[历史进度](plan/PROGRESS.md)、[裁决](plan/DEVIATIONS.md)、[问题](plan/QUESTIONS.md) |
 
 [英文入口](../README.en.md)保留英文说明；历史设计条目保留，供核对实施过程。
 

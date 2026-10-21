@@ -1,12 +1,13 @@
 # OpenMath 当前接续入口
 
-> **当前目标：pre-alpha.5。** 唯一实施入口 [PRE_ALPHA_5.md](docs/plan/PRE_ALPHA_5.md)，唯一视觉依据 [workbench-v2.md](docs/design/workbench-v2.md) 和四张原型截图。旧 `.4` 完成/发布授权不适用于 `.5`。按 A→G 顺序，G1/G2/G3已完成，下一项G4，不得宣称整版交付。
+> **pre-alpha.5 已公开发布，按用户调整后的范围收尾。** [公开发行页](https://github.com/He-RT/om-openmath/releases/tag/v0.1.0-pre-alpha.5) · [计划与最终记录](docs/plan/PRE_ALPHA_5.md) · [安装与发布记录](docs/acceptance/pre-alpha.5/local-install.md)。A–G3及本地三包安装已通过；公开后验证由用户明确取消，不能记为实测通过。视觉依据仍为 [workbench-v2.md](docs/design/workbench-v2.md) 和四张原型截图。
 
-## 2026-10-21 最新 G4
+## 2026-10-21 最新发布与文档收尾
 
-- **发行候选源码`86da06206c1ce547921ff2fb6ada892c5b090b48`，本地三包安装全部通过，尚未公开。** 新增现代NSApplicationDelegate.application(_:open:)文件URL回调与根视图代理绑定；移除无效的单Window onOpenURL尝试。现有WorkbenchFixtures --file-events真实冷/热源码加载、拒绝非file/多URL及存储关闭通过；实际完整AppHost Finder冷启动已分别成功打开ZIP/DMG安装版，不能再沿用下方旧“欢迎页未处理”的状态。
+- **发行源码`86da06206c1ce547921ff2fb6ada892c5b090b48`，已获用户明确批准并公开发布`v0.1.0-pre-alpha.5`。** 三包及manifest均上传成功，后续仅文档提交不改变包内revision。新增现代NSApplicationDelegate.application(_:open:)文件URL回调与根视图代理绑定；现有WorkbenchFixtures --file-events及完整AppHost Finder冷启动两包均通过，下方旧“欢迎页未处理”状态已过时。
 - 三包与manifest位于`target/pre-alpha.5/86da06206c1ce547921ff2fb6ada892c5b090b48/release-assets/`，具体哈希/安装位置/实测见`docs/acceptance/pre-alpha.5/local-install.md`。DMG/appZIP4226文件逐字节一致、严格验签、无fixture键；均真西瓜和2/3，ZIP保存→DMG读回重算通过。Mac关于窗口及Web设置均.5+完整SHA；原生两包已正常退出。OpenPanel间歇Open禁用仍保留已知限制，Finder可用；未改文件默认关联或系统权限。
-- 当前SHA CI`39533915333`已完整success：Rust/frontend/dependencies/native全部通过，iOS按本版范围跳过；原始状态g4-final-ci-status.json。构建`g4-modern-file-events-native-package.log`/`g4-modern-file-events-web-build.log`均exit0。仅文档验收进度推dev后，请求用户具体SHA三包+manifest公开pre-release；**本次公开尚未获授权**。具体公开正文在候选SHA目录release-body.md。获允许后以候选源码SHA建新tag，匿名下载3包校SHA并安装回读，满足§1.2全部5项才goal complete。
+- 同SHA CI`39533915333`已完整success：Rust/frontend/dependencies/native全部通过，iOS按本版范围跳过；原始状态g4-final-ci-status.json。构建`g4-modern-file-events-native-package.log`/`g4-modern-file-events-web-build.log`均exit0。用户在发布成功后要求“不用验证了，同步更新readme等文档”，已取消匿名下载、哈希复核和公开包重复安装回读；不再继续验证或询问发布权限。计划保留原标准并明确记录本次用户调整，G4按调整后的范围完成，不声称原五项全部实测通过。
+- 中英文README、文档导航、安装/开发/模型配置/发行指南、发行说明与验收记录已同步到.5。公开GitHub发行正文同步对应说明；旧tag与资产不动，文档更新不重建或替换发行包。
 - 真实调用仍69/80，全部已结束，不重跑。用户旧钥匙串问题已回复“已处理”，不再问。不开子代理、不改系统设置、不启动iOS、不stage无关.gitignore/.vscode/test-results，不合main、不动旧tag。所有旧候选/失败保留。
 - CUA持久绑定g4FinalZip/g4FinalDmg已退出，勿getAX隐式重启；g4Web为真实解压Web HTTP4180（exec59778），当前无计算。g4Finder仍自有目录。g4NativeRun(app,n)可用；旧g4About闭包捕获7bc1e81d路径，不要复用：它把86da0620的about误存旧目录，已逐字核对并复制到正确86目录，旧目录about-capture-location.txt说明其归属，旧会话工具输出仍保留。后续截图保存应显式传当前root参数。旧自有4176/4177/4178/4179服务已精确停止，本轮DMG均已卸载，包/失败记录保留；旧用户4175不动。
 

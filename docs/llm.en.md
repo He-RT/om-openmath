@@ -1,5 +1,7 @@
 # LLM integration
 
+> This page describes the legacy desktop and CLI configuration. The `.5` native Mac/Web assistant has separate model settings, execution/discussion modes and tool actions; see the [current configuration guide](llm.md) and [`.5` release notes](release-0.1.0-pre-alpha.5.md).
+
 All three clients use the same kernel jobs and CAS source validator. Profiles are editable data and support OpenAI-compatible chat/FIM, Anthropic, DeepSeek FIM and Ollama FIM. Browser transport uses fetch; desktop and CLI use native HTTP. Models propose source; the CAS parses suggestions and executes only after an explicit action.
 
 API keys never belong in notebooks or logs. Native credentials resolve in the order configured environment variable, system vault, legacy plaintext fallback. The browser keeps credentials in memory unless the user explicitly chooses to remember them. Tests use synthetic credentials and loopback/intercepted HTTP.

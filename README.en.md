@@ -1,8 +1,10 @@
 # OpenMath
 
-[简体中文](README.md) · [Downloads](https://github.com/He-RT/om-openmath/releases) · [Installation](docs/install.md)
+[简体中文](README.md) · [Downloads](https://github.com/He-RT/om-openmath/releases/tag/v0.1.0-pre-alpha.5) · [Installation](docs/install.md)
 
-OpenMath [0.1.0-pre-alpha.3](https://github.com/He-RT/om-openmath/releases/tag/v0.1.0-pre-alpha.3) is a pre-alpha computer algebra system centered on equation solving. A shared Rust kernel powers the terminal, a reactive browser notebook, a Tauri desktop app and a native iOS/iPadOS client. Version .3 adds scientific computation and compositional syntax. It supports modern notation and a Wolfram Language subset, exact solution cards, recorded derivations, interactive plots and configurable AI assistance.
+OpenMath is a pre-alpha computer algebra system centered on equation solving. A shared Rust kernel powers the terminal, browser notebook, native Mac app and native iOS/iPadOS client. It supports modern notation and a Wolfram Language subset, exact solutions, recorded derivations, interactive plots and configurable AI assistance.
+
+[**0.1.0-pre-alpha.5**](https://github.com/He-RT/om-openmath/releases/tag/v0.1.0-pre-alpha.5) introduces workbench v2 for native Mac and Web: a notebook outline, source wells and paper results, explicit result states, and assistant/steps/variables inspectors. The assistant supports execution and discussion modes, per-message action records, source diffs, undo, attachments and stopping. Execution mode can edit and run the notebook through tools; discussion mode is read-only with temporary calculations. Credentials and conversations stay out of `.omnb` files.
 
 ```sh
 om -e 'solve(x^2 - 5x + 6 = 0, x)'
@@ -11,53 +13,51 @@ om -e 'Solve[x^2-5x+6==0,x]'
 om --json -e 'solve(x^2=2,x)'
 ```
 
-AI proposes source; the CAS parses it and handles mathematical solving and verification. Suggestions wait for an explicit insert/run action. Credentials and conversations stay out of notebook files.
+Scientific features include bounded symbolic calculus, machine quadrature, dense matrix decomposition, nonstiff ODE, local optimization/certified convex quadratics, QR/LM fitting, statistics, SI units and pure data formats. The [function catalog](docs/reference/README.md) records precision, platform and mathematical limits. [Earth–Moon L2 and watermelon notebooks](docs/examples/README.md) are included in the repository. Unsupported problems retain their source and diagnostics; support does not imply full Mathematica semantics.
 
-Scientific extensions include bounded symbolic calculus, machine quadrature, dense matrix decomposition, nonstiff ODE, local optimization/certified convex quadratics, QR/LM fitting, statistics, SI units and pure data formats. The [function catalog](docs/reference/README.md) records actual precision, platform and mathematical limits. 2D plots and isolated parameter exploration cover all clients; desktop/Web adds real WebGL2 scenes and OBJ. iOS preserves 3D source with an explicit unsupported-display message. [Earth–Moon L2 and full watermelon notebooks](docs/examples/README.md) include real acceptance evidence. Existing `.1/.2` releases remain available.
+## Download and use
 
-## Run from source
+The [`.5` release](https://github.com/He-RT/om-openmath/releases/tag/v0.1.0-pre-alpha.5) contains these three packages and `release-manifest.json` with their sizes, SHA256 hashes and full source revision:
 
-Use the pinned Rust 1.94.0 toolchain and Node 26.0.0 (`app/.nvmrc`).
+| Platform | Asset | Usage |
+|---|---|---|
+| macOS 27+, Apple Silicon | `OpenMath_0.1.0-pre-alpha.5_aarch64.dmg` | Drag OpenMath Preview.app to Applications |
+| macOS 27+, Apple Silicon | `OpenMath_0.1.0-pre-alpha.5_macos_arm64.app.zip` | Extract OpenMath Preview.app |
+| Browser | `OpenMath-web_0.1.0-pre-alpha.5.zip` | Extract and serve over HTTP(S) |
+
+The Mac application bundles Node, Pi and runtime resources. End users do not need Rust, Xcode, Node or npm. It is ad hoc signed and has no Developer ID signature or Apple notarization. This Preview uses its own `.5` data directory and does not automatically migrate `.4` settings, keys or sessions. Mac keys use the system keychain; browser keys are remembered only by explicit opt-in. Web providers must allow CORS.
+
+Open a [sample notebook](docs/examples/README.md) or enter `solve(x^2 - 5*x + 6 = 0, x)` in a math cell and run it to obtain 2 and 3. Notebook files store source, so reopening does not automatically recalculate. If the native file panel disables Open for a valid `.omnb`, use Finder → Open With → Other and select the installed OpenMath Preview.app; this path passed local cold-start and save/reopen checks.
+
+This release includes no new Windows, standalone CLI or iOS packages. Those assets remain available in [pre-alpha.3](https://github.com/He-RT/om-openmath/releases/tag/v0.1.0-pre-alpha.3), including Windows x64 EXE/MSI, CLI ZIPs and mobile development artifacts. Windows installers are unsigned and may download WebView2 when missing. No Intel Mac, Windows ARM64 or Linux installer is provided.
+
+The three `.5` packages passed local installation/extraction, actual watermelon rendering, solving for 2/3 and version checks; the source CI passed. At the user's request, anonymous public downloads and repeat installation/readback were omitted after publication. See the [release notes](docs/release-0.1.0-pre-alpha.5.md) and [installation and publication record](docs/acceptance/pre-alpha.5/local-install.md) for the exact scope and known limitations.
+
+## Run from source and build
+
+Use Rust 1.94.0 and Node 26.0.0 as pinned by the repository. Native Mac builds require Xcode 27 and the macOS 27 SDK; see the [Mac guide](macos/README.md) and [development guide](docs/development.md).
 
 ```sh
 cargo install --path crates/om-cli --locked
 cargo install wasm-bindgen-cli --version 0.2.129 --locked
 npm ci --prefix app
 npm run dev --prefix app             # browser notebook
-npm run tauri --prefix app -- dev    # desktop notebook
+bash macos/Scripts/build-native.sh   # native Mac app
 ```
 
-`om` opens the REPL. Use `om run FILE.om` or `om run FILE.omnb` for sequential scripts; `:help`, `:steps`, `:latex`, `:ask`, `:explain`, `:dialect` and `:clear` are available. `om config path|show|edit` manages native settings, and `om llm test PROFILE` probes an actual provider.
-
-## Build
-
 ```sh
-npm run build --prefix app
-npm run preview --prefix app
-npm run tauri --prefix app -- build --bundles app,dmg
+npm run build --prefix app           # static website in app/dist
+bash macos/Scripts/package-native.sh release-assets
 cargo build -p om-cli --release --locked
 ```
 
-The verified macOS arm64 build produces `target/release/bundle/macos/OpenMath.app` and `target/release/bundle/dmg/OpenMath_0.1.0-pre-alpha.3_aarch64.dmg`. These local pre-alpha packages are unsigned. `app/dist` is a deployable static site; serve it over HTTP(S) at the site root. Web providers must allow browser CORS; native HTTP has no browser CORS restriction. Windows x64 EXE/MSI installers are tested in the release workflow; Linux installers are outside this release.
+`om` opens the REPL. Use `om run FILE.om` or `om run FILE.omnb` for sequential scripts; `:help`, `:steps`, `:latex`, `:ask`, `:explain`, `:dialect` and `:clear` are available. `om config path|show|edit` manages CLI settings. The native `.5` Mac app has separate Preview settings.
 
-Native menus support notebook files, Markdown/LaTeX export, themes, panels and help. Exports include current mathematical results and omit stale output. General preferences and AI model/routing settings are available in both notebooks. Browser credentials are remembered only by explicit opt-in; native keys use environment variables or the system vault.
+## Documentation
 
-## Documentation and verification
+- [Input language and examples](docs/language.en.md), [solving semantics and limits](docs/solve.en.md)
+- [Current Mac/Web AI configuration and privacy](docs/llm.md), [CLI configuration in English](docs/llm.en.md)
+- [`.5` implementation and acceptance](docs/plan/PRE_ALPHA_5.md), [release process](docs/releasing.md), [protocol](docs/protocol.en.md)
+- [Native iOS/iPadOS development](docs/ios.md), [complete documentation index](docs/README.md)
 
-- [Input language and examples](docs/language.en.md)
-- [Solving semantics and limits](docs/solve.en.md)
-- [AI providers, privacy and CLI usage](docs/llm.en.md)
-- [Pre-alpha acceptance record](docs/pre-alpha.en.md)
-- [Implementation progress](docs/plan/PROGRESS.md), [protocol](docs/protocol.en.md)
-
-Run formatting, workspace Clippy/tests, workspace policy, WASM build and cargo-deny checks. Frontend verification uses `npm run lint`, `npm test`, `npm run build` and `npm run test:e2e` in `app`. Set `OPENMATH_E2E_PREVIEW=1` after building to exercise production assets. Two direct development-module worker tests remain in the development suite; all UI acceptance tests run against production. No tests contact a real provider.
-
-OpenMath implements a bounded solving subset, not all Mathematica semantics. Unsupported problems retain their source and diagnostics. See the solving guide for principal branches, original poles, exact/numeric verification and resource limits. This project is independent of Wolfram Mathematica and the OpenMath interchange standard.
-
-Dual-licensed under [MIT](LICENSE-MIT) or [Apache-2.0](LICENSE-APACHE). Builds retain dependency notices and a locked-package index in `licenses/`. [中文说明](README.zh-CN.md)
-
-## Windows downloads
-
-Use the Chinese NSIS `OpenMath_0.1.0-pre-alpha.3_x64-setup.exe` or MSI `OpenMath_0.1.0-pre-alpha.3_x64_zh-CN.msi` on Windows 10/11 x64. Installers embed the WebView2 bootstrapper; missing runtimes require an internet connection. Desktop packages are unsigned and macOS packages are not notarized. Release assets include macOS arm64 DMG/app ZIP, both CLI ZIPs, a Web ZIP and SHA256 manifest.
-
-The native iOS/iPadOS 27 client, ARM64 XCFramework and simulator application are documented in [the mobile guide](docs/ios.md). Physical devices use local Xcode automatic signing; no TestFlight/App Store release is included. The `.2` release remains under acceptance; `.1` stays available.
+This project is independent of Wolfram Mathematica and the OpenMath interchange standard. Dual-licensed under [MIT](LICENSE-MIT) or [Apache-2.0](LICENSE-APACHE). Builds retain [third-party notices](THIRD_PARTY_NOTICES.md) and dependency licenses.

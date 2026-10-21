@@ -2,6 +2,8 @@
 
 在 `dev` 分支接续，使用 Cargo workspace、npm 和锁文件。[CODEX_HANDOFF.md](../CODEX_HANDOFF.md) 给出交接约定。
 
+当前已发布 `.5` 的原生 Mac 与 Web，实施与验收记录统一在 [PRE_ALPHA_5.md](plan/PRE_ALPHA_5.md)。原生 Mac 使用 SwiftUI/AppKit，构建入口为 `bash macos/Scripts/build-native.sh`，自包含包入口为 `bash macos/Scripts/package-native.sh release-assets`；需要 Xcode 27 / macOS 27 SDK，详见 [macos/README.md](../macos/README.md)。Tauri 命令用于维护旧客户端，不生成本版原生 Mac 发行包。
+
 ## 环境与构建
 
 使用 Rust 1.94.0（`rust-toolchain.toml`）、Node 26.0.0（`app/.nvmrc`）、Python 3.11+。`wasm-bindgen-cli 0.2.129` 必须与锁定的 Rust 绑定库一致。macOS 桌面需要 Xcode Command Line Tools；Windows 需要 Visual Studio C++ 工具、Windows SDK 和 WebView2。MSI 构建需启用 VBScript 可选组件。参见 [Tauri 前置条件](https://v2.tauri.app/start/prerequisites/)。
@@ -48,8 +50,10 @@ PowerShell 使用 `$env:OPENMATH_E2E_PREVIEW = '1'`，再运行相同 npm 命令
 | `om-llm` | 请求构造、流解码和模型任务 |
 | `om-cli`、`om-wasm` | 终端及浏览器绑定 |
 | `app/src`、`app/src-tauri` | 共享前端及原生宿主 |
+| `macos/OpenMathNative`、`om-apple-ffi` | 原生 Mac 工作台、存储、助手与 Rust C ABI |
+| `agent`、`agent/prompts` | Pi 运行时适配及共用提示词源 |
 
-接口新增或与计划不同的选择记入 `docs/plan/DEVIATIONS.md`，任务及验证记入 `PROGRESS.md`。保留数学期望，库代码禁止 `unsafe`，保持 WASM 依赖方向与资源上限。TypeScript 协议以 Rust 生成，不手工修改。发行见[发布流程](releasing.md)。
+本版任务、验证与设计差异记入 [PRE_ALPHA_5.md](plan/PRE_ALPHA_5.md)；旧总账为 `PROGRESS.md` / `DEVIATIONS.md`。保留数学期望，库代码禁止 `unsafe`，保持 WASM 依赖方向与资源上限。TypeScript 协议以 Rust 生成，不手工修改。发行见[发布流程](releasing.md)。
 
 ## 原生移动端
 
@@ -84,6 +88,6 @@ python3 -X warn_default_encoding -W error::EncodingWarning -m unittest discover 
 CARGO_PROFILE_TEST_OPT_LEVEL=2 cargo test -p om-eval --test function_catalog --locked
 ```
 
-Rust审计穷尽真实DocEntry注册名并检查当前示例；Python检查目录/证据/稳定身份/生成一致性和未实现条目不冒充支持。副作用和Agent事务的运行时仍在后续阶段；不引入Pi/Rig类型到业务协议，不把Agent会话/日志/提示词/权限或凭据塞进.omnb。
+Rust审计穷尽真实DocEntry注册名并检查当前示例；Python检查目录/证据/稳定身份/生成一致性和未实现条目不冒充支持。Mac/Web助手已通过宿主工具接入实际源码事务、运行与撤销；函数目录中的副作用分类不能替代权限和事务校验。不引入Pi/Rig类型到业务协议，不把Agent会话/日志/提示词/权限或凭据塞进.omnb。
 
 `.3` dev 的共享图形导出在om-kernel/artifact：仅绘制已采样几何，PNG标签用固定OFL字体/Swash纯Rust，支持WASM和两个iOS ARM64切片，不需要系统字体路径/GPU/Python运行时。新纯导出请求的独立尺寸/字节/遍历预算及SVG/PNG规范、实际文件回读在[导出设计](design/artifact-export.md)；维护字体时用锁定生成脚本和licenses/plot-font/manifest.json验证，不更新库内任意精度数学算法。

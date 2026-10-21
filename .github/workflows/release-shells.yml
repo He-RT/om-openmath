@@ -68,7 +68,11 @@ jobs:
       - run: npm ci --prefix app
       - name: 构建唯一 MSI 安装包
         run: |
-          Enable-WindowsOptionalFeature -Online -FeatureName VBSCRIPT -NoRestart -ErrorAction Stop
+          # Runner images expose VBScript as a capability, not an optional feature.
+          $vbscript = Get-WindowsCapability -Online | Where-Object Name -Like 'VBSCRIPT*'
+          foreach ($capability in $vbscript) {
+            if ($capability.State -ne 'Installed') { Add-WindowsCapability -Online -Name $capability.Name -ErrorAction Stop | Out-Null }
+          }
           npm run tauri --prefix app -- build --features web-shell --bundles msi -- --no-default-features
           if ($LASTEXITCODE -ne 0) { throw 'MSI build failed' }
           New-Item release-assets -ItemType Directory

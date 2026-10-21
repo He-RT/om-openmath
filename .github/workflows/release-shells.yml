@@ -217,7 +217,7 @@ jobs:
           disable-animations: true
           script: |
             adb install release-assets/OpenMath_0.1.0-pre-alpha.5_android.apk
-            adb install "$RUNNER_TEMP/openmath-test.apk"
+            adb install -t "$RUNNER_TEMP/openmath-test.apk"
             adb shell am instrument -w org.openmath.openmath.test/androidx.test.runner.AndroidJUnitRunner | tee package-evidence/android/instrumentation.txt
             grep -q 'OK (1 test)' package-evidence/android/instrumentation.txt
             adb pull /sdcard/Android/data/org.openmath.openmath/files/package-smoke.json package-evidence/android/result.json

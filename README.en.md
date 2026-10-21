@@ -17,13 +17,15 @@ Scientific features include bounded symbolic calculus, machine quadrature, dense
 
 ## Download and use
 
-The [`.5` release](https://github.com/He-RT/om-openmath/releases/tag/v0.1.0-pre-alpha.5) contains the original three Mac/Web packages plus two CLI ZIPs. `release-manifest.json` covers Mac/Web; `cli-release-manifest.json` covers the CLI supplements. Both record sizes, SHA256 hashes and the same source revision:
+The [`.5` release](https://github.com/He-RT/om-openmath/releases/tag/v0.1.0-pre-alpha.5) contains Mac/Web packages, a Windows MSI, an Android APK and two CLI ZIPs. `release-manifest.json` covers the original Mac/Web packages and `cli-release-manifest.json` covers the CLI supplements at source revision `86da0620…`. `tauri-release-manifest.json` records the actual wrapper source revision, sizes and SHA256 hashes of the new MSI/APK. The original tag and published files are preserved.
 
 | Platform | Asset | Usage |
 |---|---|---|
 | macOS 27+, Apple Silicon | `OpenMath_0.1.0-pre-alpha.5_aarch64.dmg` | Drag OpenMath Preview.app to Applications |
 | macOS 27+, Apple Silicon | `OpenMath_0.1.0-pre-alpha.5_macos_arm64.app.zip` | Extract OpenMath Preview.app |
 | Browser | `OpenMath-web_0.1.0-pre-alpha.5.zip` | Extract and serve over HTTP(S) |
+| Windows 10/11 x64 | `OpenMath_0.1.0-pre-alpha.5_x64_zh-CN.msi` | Install the complete Tauri 2 workbench |
+| Android 7.0+, ARM64 / x86_64 | `OpenMath_0.1.0-pre-alpha.5_android.apk` | Install the release-signed APK; compileSdk / targetSdk 35 |
 | macOS ARM64 CLI | `om-cli_0.1.0-pre-alpha.5_macos_arm64.zip` | Extract, run `./om`, optionally add to PATH |
 | Windows x64 CLI | `om-cli_0.1.0-pre-alpha.5_windows_x64.zip` | Extract, run `om.exe`, optionally add to PATH |
 
@@ -31,7 +33,9 @@ The Mac application bundles Node, Pi and runtime resources. End users do not nee
 
 Open a [sample notebook](docs/examples/README.md) or enter `solve(x^2 - 5*x + 6 = 0, x)` in a math cell and run it to obtain 2 and 3. Notebook files store source, so reopening does not automatically recalculate. If the native file panel disables Open for a valid `.omnb`, use Finder → Open With → Other and select the installed OpenMath Preview.app; this path passed local cold-start and save/reopen checks.
 
-The CLI supplements retain the existing terminal features and do not add the notebook assistant. They need no Node or GUI runtime. This release includes no new Windows GUI installers or iOS packages; those remain available in [pre-alpha.3](https://github.com/He-RT/om-openmath/releases/tag/v0.1.0-pre-alpha.3). Windows installers are unsigned and may download WebView2 when missing. No Intel Mac, Windows ARM64 or Linux installer is provided.
+Windows and Android use Tauri 2 to bundle the complete Web workbench: local WASM computation, 2D/3D plots, the existing assistant, settings, image attachments and exports. Open/save operations use system file pickers. The assistant retains the Web provider/CORS requirements and opt-in WebView credential storage. The Windows MSI has no Authenticode signature and may download WebView2 when missing. Android uses a persistent release signing key and the system WebView. See the [Tauri package record](docs/acceptance/pre-alpha.5/tauri-release.md).
+
+The CLI supplements retain the existing terminal features and do not add the notebook assistant. They need no Node or GUI runtime. iOS development assets remain in [pre-alpha.3](https://github.com/He-RT/om-openmath/releases/tag/v0.1.0-pre-alpha.3). No Intel Mac, Windows ARM64 or Linux installer is provided.
 
 The original three `.5` packages passed local installation/extraction, actual watermelon rendering, solving for 2/3 and version checks; the source CI passed. At the user's request, anonymous public downloads and repeat installation/readback were omitted after publication. The CLI supplements separately passed extracted-ZIP version and 2/3 checks on each platform; see the [CLI record](docs/acceptance/pre-alpha.5/cli-release.md). See the [release notes](docs/release-0.1.0-pre-alpha.5.md) and [installation and publication record](docs/acceptance/pre-alpha.5/local-install.md) for the exact scope and known limitations.
 

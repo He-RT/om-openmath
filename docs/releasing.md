@@ -1,10 +1,10 @@
 # 发布流程
 
-当前公开版本为 [0.1.0-pre-alpha.5](https://github.com/He-RT/om-openmath/releases/tag/v0.1.0-pre-alpha.5)，标签 `v0.1.0-pre-alpha.5`，发行源码为 `86da06206c1ce547921ff2fb6ada892c5b090b48`。原版发布原生 Mac DMG、app ZIP、Web ZIP 和 manifest，随后追加 macOS ARM64 / Windows x64 CLI ZIP 及独立补充清单；后续文档提交不改变包内 revision。完整实施与验收见 [PRE_ALPHA_5.md](plan/PRE_ALPHA_5.md)。
+当前公开版本为 [0.1.0-pre-alpha.5](https://github.com/He-RT/om-openmath/releases/tag/v0.1.0-pre-alpha.5)，标签 `v0.1.0-pre-alpha.5`，原 Mac/Web 与 CLI 产品源码为 `86da06206c1ce547921ff2fb6ada892c5b090b48`。原版发布原生 Mac DMG、app ZIP、Web ZIP 和 manifest，随后追加两平台 CLI ZIP，以及 Tauri 2 Windows MSI / Android APK。各补包使用独立清单，Tauri 清单记录实际封装源码，不冒用原 tag SHA。完整实施与验收见 [PRE_ALPHA_5.md](plan/PRE_ALPHA_5.md)。
 
 ## 版本与构建
 
-同步 Rust workspace、内部依赖及 Cargo 锁文件、app/agent 的 npm 版本及锁文件、Tauri 配置、原生 Mac/iOS Info.plist、函数目录、发布脚本与发行说明。历史 Windows 配置的 WiX 数字版本映射也由版本检查覆盖，不表示本版发布 Windows。
+同步 Rust workspace、内部依赖及 Cargo 锁文件、app/agent 的 npm 版本及锁文件、Tauri 配置、原生 Mac/iOS Info.plist、函数目录、发布脚本与发行说明。Windows 的 WiX 数字版本映射也由版本检查覆盖。
 
 ```sh
 python3 scripts/release.py verify --tag v0.1.0-pre-alpha.5
@@ -34,7 +34,7 @@ python3 scripts/release.py finalize --tag v0.1.0-pre-alpha.5 --root release-asse
 gh workflow run release.yml --ref dev -f tag=v0.1.0-pre-alpha.5
 ```
 
-该流程包含生产 WASM 原 53 条与性能检查、原生 Mac 打包及完整 manifest。产品提交还需核对 Rust、frontend、dependencies、native 各项实际结果，不能只看总体 green；Windows/iOS 不属于本版发行门禁。
+该流程包含生产 WASM 原 53 条与性能检查、原生 Mac 打包及完整 manifest。产品提交还需核对 Rust、frontend、dependencies、native 各项实际结果，不能只看总体 green；后追加的 Windows / Android 使用下方独立流程，iOS 不属于本版发行门禁。
 
 公开前按计划完成设计、真实助手场景、数学、性能、存储／保存／恢复／撤销回归，并从实际本地三包安装或解压，验证示例西瓜、求根 2/3、版本和完整 SHA。`.5` 的[源码 CI](https://github.com/He-RT/om-openmath/actions/runs/39533915333)与[本地三包验收](acceptance/pre-alpha.5/local-install.md)已通过。
 
@@ -61,6 +61,21 @@ python3 scripts/release.py finalize --scope cli --tag v0.1.0-pre-alpha.5 --root 
 ```
 
 CLI 输出目录只放两个对应版本的 ZIP；清单命名为 `cli-release-manifest.json`。检查完成后追加这三个文件到原 Release，不覆盖原 `release-manifest.json`、三包或 tag。本次用户明确要求补两平台现有 CLI、不加助手、不做无关验证，因此仅执行新增清单逻辑及各平台实际 ZIP 的启动／版本／求根检查，不重复旧版图形或模型验收。
+
+## Tauri 2 Windows / Android 补充发行
+
+[独立封装工作流](../.github/workflows/release-shells.yml)从 `source_sha` 检出产品代码，并单独检出当前流程的打包与检查脚本；`OPENMATH_SOURCE_REVISION` 写入实际产品 SHA，允许仅修打包流程时不重建已通过的平台。`platform` 支持 `all`、`windows`、`android`。
+
+```sh
+gh workflow run release-shells.yml --ref dev -f platform=all -f source_sha=FULL_TAURI_SOURCE_SHA
+python3 scripts/release.py finalize --scope tauri --tag v0.1.0-pre-alpha.5 --root TAURI_ASSETS_DIRECTORY --sha FULL_TAURI_SOURCE_SHA --windows-packaging-sha FULL_WINDOWS_PACKAGING_SHA --android-packaging-sha FULL_ANDROID_PACKAGING_SHA
+```
+
+该目录仅含 `OpenMath_0.1.0-pre-alpha.5_x64_zh-CN.msi` 与 `OpenMath_0.1.0-pre-alpha.5_android.apk`，生成 `tauri-release-manifest.json`；`revision` 记录共享产品源码，`packaging_revisions` 记录两平台打包与生成工程源码。Windows 只构建 MSI，包内 WebView2 引导程序用于补装运行时。Android app 与所有库 compileSdk=35，targetSdk=35、minSdk=24；构建 ARM64 / x86_64 通用 APK，用 build-tools 35.0.0 `zipalign -P 16` 后签名。持久签名材料保存在受限本地目录和 GitHub Secrets，不放仓库或公开资产；后续更新必须沿用同一身份。
+
+实际包检查只覆盖新增封装：Windows 安装 MSI、核对安装载荷、启动安装版 WebView2 并实际计算；Android 安装同一正式签名 release APK，通过仅用于 CI 的 instrumentation APK 在 API 35 系统 WebView 内实际计算，发布包不启用调试。均核对 `.5`、完整产品 SHA 及双根 2/3。此补包不重复真实模型调用或原版完整性能／数学矩阵。已做检查及未测范围见[Tauri 补包记录](acceptance/pre-alpha.5/tauri-release.md)。
+
+用户已明确授权封装完成后公开发布。将两包和独立清单追加到原 `.5` Release；不使用 `--clobber`，不移动 tag、不覆盖原 Mac/Web/CLI 包或清单。同步安装文档与发行正文中的源码、签名、运行环境及 CORS 条件。
 
 ## 历史多平台发行
 

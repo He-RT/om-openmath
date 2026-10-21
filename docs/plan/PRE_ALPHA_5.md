@@ -25,6 +25,7 @@
 | Web 应用 | 同一设计的 React 实现（第 E 阶段），Web 助手（第 F 阶段） |
 | 安装包 | `OpenMath_0.1.0-pre-alpha.5_aarch64.dmg`、`…_macos_arm64.app.zip`、`OpenMath-web_0.1.0-pre-alpha.5.zip` + manifest |
 | 用户追加 CLI 补包（2026-10-21） | macOS ARM64 / Windows x64 的现有 CLI ZIP + 独立`cli-release-manifest.json`；不加笔记本助手 |
+| 用户追加 Tauri 2 封装（2026-10-22） | Windows x64 仅 MSI、Android 正式签名 APK（compileSdk / targetSdk 35），完整复用 Web 工作台及全部现有功能；独立 `tauri-release-manifest.json` |
 | 文档 | 发行说明（如实写签名、公证、已知限制）、本计划的进度记录 |
 
 ### 1.2 完成条件（全部满足才能说“pre-alpha.5 已交付”）
@@ -41,7 +42,7 @@
 
 ### 1.3 不在本版
 
-Windows 图形安装包、iOS 发行；音频、视频处理；长对话记忆压缩；提示词管理界面（只做只读的“查看本轮完整输入”）；多窗口；多预设和思考强度的完整编辑器；语法高亮。原范围未含CLI发行，2026-10-21用户单独追加macOS ARM64与Windows x64现有CLI补包，见第6节。
+iOS 发行；音频、视频处理；长对话记忆压缩；提示词管理界面（只做只读的“查看本轮完整输入”）；多窗口；多预设和思考强度的完整编辑器；语法高亮。原范围未含 CLI 或 Windows / Android 图形发行；用户于 2026-10-21 追加两平台现有 CLI，随后要求 Tauri 2 Windows MSI / Android SDK 35 并公开发布，明确“体验不能有任何差别，完整封装”。两次补包分别记录，不覆盖原 tag 与资产。
 
 ## 2. 执行守则
 
@@ -613,14 +614,17 @@ Mac S1–S8（两个模型）、Web S1–S6（一个模型）在候选包上各�
 | [x] G2 助手场景复测 | Mac两GPT及DeepSeek S1–S8、Web sol S1–S6、Mac图片/PDF真实发送通过；累计69/80 | 本任务提交 |
 | [x] G3 数学、性能与数据回归 | 原53三端正确、CLI46.697ms/Mac270.151ms/Web87ms最大；输入p95 Mac33.316/Web32.8ms；指定数据回归通过 | 本任务提交 |
 | [x] G4 打包与发布 | 86da0620三包本地安装、同SHA CI通过；.5已公开；公开后验证由用户取消，按调整范围完成 | 源码86da0620；文档见本次提交 |
+| [x] G4 用户追加 Tauri 2 补包 | Windows MSI / Android SDK35 APK 完整封装并已追加公开；实际安装、2/3、版本/SHA通过 | 产品29481853；各平台打包提交见补包记录 |
 
 ### 记录
 
-**G4 追加 Tauri Android / Windows MSI（2026-10-22，进行中）**
+**G4 追加 Tauri Android / Windows MSI（2026-10-22，完成）**
 
 - 用户明确选择Tauri2并要求构建、发布Android与Windows，Windows只MSI，Android SDK35。先复用已完成的Web/WASM功能，Tauri承担容器和系统文件；新包将独立记录构建SHA，原tag/已公开包不改。Android按compileSdk=35、targetSdk=35，保留minSdk24。
 - 用户进一步确认“体验不能有任何差别，完整封装”：保留完整工作台、计算、绘图、助手、设置、附件与导出，共用现有Web与Worker实现，不以裁剪功能换取打包。
-- 已补Tauri移动库入口与平台条件、MSI-only、独立的WASM/原生文件路由；前端8项相关检查/typecheck、发行6项通过。新增专用构建，只检查实际安装包启动/版本/求根2/3；Android签名身份本地私有保存并配置CI秘密，不入库、不调用真实模型。平台构建及发布尚未完成。
+- 已补Tauri移动库入口与平台条件、MSI-only、独立的WASM/原生文件路由；前端8项相关检查/typecheck、发行7项通过。产品源码固定29481853，Windows打包50b0ea98、Android打包b0118469；新清单同时记录产品与打包SHA，原tag及包不动。Android app/库compileSdk35、targetSdk35、minSdk24，持久RSA3072正式签名，生成工程处理系统栏/IME留白、文字对比度及既有OpenMath图标。
+- Windows [run39635714219](https://github.com/He-RT/om-openmath/actions/runs/39635714219)与Android [run39644931736](https://github.com/He-RT/om-openmath/actions/runs/39644931736)全部通过实际安装包启动/求根2和3/.5及完整SHA；Android运行环境为API35 x86_64模拟器，未测ARM64真机。两包与独立tauri-release-manifest.json已追加原Release。SDK环境、旧选择器、AndroidX测试入口缺类及镜像下载失败保留；最终使用纯系统Instrumentation测试包，不进入发行APK。
+- 中英文README、导航、安装/开发/模型/发布指南、发行说明与交接同步。未重新逐项验收全部Web功能，不重复模型/旧数学与性能全矩阵，真实调用仍69/80。哈希、签名、源码和具体边界见[Tauri补包记录](../acceptance/pre-alpha.5/tauri-release.md)。按用户要求清理已停止的Cargo与Xcode中间缓存，保留发行包/失败根/验收记录/独立验证器；本地空间已恢复。
 
 **G4 追加 CLI 补包（2026-10-21，完成）**
 

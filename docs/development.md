@@ -2,7 +2,7 @@
 
 在 `dev` 分支接续，使用 Cargo workspace、npm 和锁文件。[CODEX_HANDOFF.md](../CODEX_HANDOFF.md) 给出交接约定。
 
-当前已发布 `.5` 的原生 Mac 与 Web，实施与验收记录统一在 [PRE_ALPHA_5.md](plan/PRE_ALPHA_5.md)。原生 Mac 使用 SwiftUI/AppKit，构建入口为 `bash macos/Scripts/build-native.sh`，自包含包入口为 `bash macos/Scripts/package-native.sh release-assets`；需要 Xcode 27 / macOS 27 SDK，详见 [macos/README.md](../macos/README.md)。Tauri 命令用于维护旧客户端，不生成本版原生 Mac 发行包。
+当前 `.5` 包括原生 Mac、Web，以及 Tauri 2 完整封装 Web 的 Windows / Android，实施与验收记录统一在 [PRE_ALPHA_5.md](plan/PRE_ALPHA_5.md)。原生 Mac 使用 SwiftUI/AppKit，构建入口为 `bash macos/Scripts/build-native.sh`，自包含包入口为 `bash macos/Scripts/package-native.sh release-assets`；需要 Xcode 27 / macOS 27 SDK，详见 [macos/README.md](../macos/README.md)。Tauri 不生成本版原生 Mac 发行包。
 
 ## 环境与构建
 
@@ -16,6 +16,26 @@ npm run dev --prefix app
 ```
 
 `predev`、`pretest`、`prebuild` 编译实际 WASM，生成被 Git 忽略的绑定；不提交预编译内核。`npm run build --prefix app` 输出 `app/dist`，`postbuild` 复制上游许可。
+
+### Tauri 2 Windows / Android 封装
+
+设置 `VITE_OPENMATH_WEB_SHELL=1`，使用 `web-shell` Cargo feature。共享前端继续使用 WASM 计算和现有 Web 助手，Tauri 文件 API 独立提供系统打开、保存和导出。Windows 的构建命令（PowerShell）为：
+
+```powershell
+$env:VITE_OPENMATH_WEB_SHELL = '1'
+npm run tauri --prefix app -- build --features web-shell --bundles msi -- --no-default-features
+```
+
+Android 需要 JDK 17、Android SDK Platform 35、build-tools 35.0.0、NDK 28.2.13676358，以及 `aarch64-linux-android` / `x86_64-linux-android` Rust target。生成工程后由脚本统一 app 与库的 compileSdk=35，并固定 targetSdk=35、minSdk=24：
+
+```sh
+export VITE_OPENMATH_WEB_SHELL=1
+npm run tauri --prefix app -- android init --ci --skip-targets-install
+python3 scripts/prepare_android.py
+npm run tauri --prefix app -- android build --ci --apk --features web-shell --target aarch64 x86_64
+```
+
+发布 APK 需再 zipalign 和使用持久发行密钥签名；私钥和口令不入库。可复现构建入口、独立源码 SHA 和最小实际包检查见[发布流程](releasing.md)及[Tauri 补包记录](acceptance/pre-alpha.5/tauri-release.md)。
 
 ## 验证
 

@@ -2,11 +2,12 @@
 
 项目默认使用中文；代码标识符、协议字段和许可证保留原文。
 
-当前公开版本为 [0.1.0-pre-alpha.5](https://github.com/He-RT/om-openmath/releases/tag/v0.1.0-pre-alpha.5)，提供原生 Mac 与 Web 工作台 v2，以及补充的 macOS ARM64 / Windows x64 CLI ZIP。Windows 图形安装包与 iOS 沿用旧版公开资产。
+当前公开版本为 [0.1.0-pre-alpha.5](https://github.com/He-RT/om-openmath/releases/tag/v0.1.0-pre-alpha.5)，提供原生 Mac、Web 工作台 v2、完整封装 Web 的 Tauri 2 Windows MSI / Android SDK 35 APK，以及 macOS ARM64 / Windows x64 CLI ZIP。iOS 开发附件沿用旧版公开资产。
 
 | 需要做什么 | 文档 |
 |---|---|
 | 下载、安装、卸载或校验 | [安装指南](install.md) |
+| 查看 Windows MSI / Android APK 的源码、签名及检查范围 | [Tauri 补包记录](acceptance/pre-alpha.5/tauri-release.md) |
 | 写公式、使用笔记本或终端 | [输入语言](language.md) |
 | 查询全部功能族、当前支持和未来接口 | [全景功能目录](reference/README.md) |
 | 在计算环境查询函数、选项和能力 | [帮助与能力查询](design/function-queries.md) |

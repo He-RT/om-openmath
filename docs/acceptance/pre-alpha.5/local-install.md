@@ -1,5 +1,7 @@
 # pre-alpha.5 安装验收与发布记录
 
+2026-10-22 追加的 Tauri 2 Windows MSI / Android SDK 35 APK 使用独立源码与打包清单，见[Tauri 补包记录](tauri-release.md)；下文仍为原 Mac/Web 三包记录。
+
 2026-10-21。发行源码与包内 revision：`86da06206c1ce547921ff2fb6ada892c5b090b48`。三个包已本地验收，[同SHA的CI](https://github.com/He-RT/om-openmath/actions/runs/39533915333)全部通过（Rust、frontend、dependencies、native；iOS按本版范围跳过）。用户明确回复“允许公开发布”后，已创建[公开 GitHub pre-release](https://github.com/He-RT/om-openmath/releases/tag/v0.1.0-pre-alpha.5)，发布时间 2026-10-21 11:03:20（Asia/Singapore），三个包及 manifest 均已上传。
 
 资产位于 `target/pre-alpha.5/86da06206c1ce547921ff2fb6ada892c5b090b48/release-assets/`。`release-manifest.json` SHA256：`de3823bcf07421131353634f221bb8ed7d2a1fe0538a3eccd9716f1f37dff26f`。

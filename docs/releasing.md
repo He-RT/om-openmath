@@ -83,7 +83,7 @@ python3 scripts/release.py finalize --scope tauri --tag v0.1.0-pre-alpha.5 --roo
 
 ## 统一来源索引（后续构建）
 
-三个发行工作流在各平台构建和适用检查成功后，额外输出独立 `*-sources.json`。它记录实际检出的产品 SHA、打包/工作流 SHA、workflow 文件散列、构建参数、工具版本与 runner 镜像、依赖锁和工具链声明的散列、run/attempt URL、检查范围，以及原资产的大小和 SHA256。不可用工具明确记为 unavailable；托管镜像和外部下载并未全部固定，不保证字节级复现。签名私钥和密码不记录。
+三个发行工作流在各平台构建和适用检查成功后，额外输出独立 `*-sources.json`。它记录实际检出的产品 SHA、打包/工作流 SHA、workflow 文件散列、构建参数、工具版本与 runner 镜像、依赖锁和工具链声明的散列、run/attempt URL、检查范围，以及原资产的大小和 SHA256。工具版本在产品检出目录采集，使 rustup 使用对应的固定工具链。不可用工具明确记为 unavailable；托管镜像和外部下载并未全部固定，不保证字节级复现。签名私钥和密码不记录。
 
 Mac/Web 工作流在合并现有 manifest 后自动生成并验证 `release-sources.json`。CLI/Tauri 仍允许单独补构建某个平台；下载所选成功 run 的原资产及 source artifacts 后，在本地将所有包、原 manifest 和 source sidecars 放入同一目录，生成新的统一索引。例如仅汇总一次 CLI 补包：
 

@@ -41,6 +41,7 @@
 | 编译、测试和贡献代码 | [开发指南](development.md) |
 | 开发内核客户端 | [JSON 协议](protocol.md) |
 | 构建与发布 GitHub Release | [发布流程](releasing.md) |
+| Git 规则、整改及实际检查 | [管理规则](git-management.md) · [整改方案](git-remediation-plan.md) · [执行结果](git-remediation-results.md) |
 | 了解此次版本和验收证据 | [发行说明](release-0.1.0-pre-alpha.5.md)、[安装与发布记录](acceptance/pre-alpha.5/local-install.md)、[设计／助手／数学／性能记录](plan/PRE_ALPHA_5.md#6-进度表) |
 | iPhone / iPad 使用与构建 | [原生移动端指南](ios.md)、[移动验收](ios-acceptance.md) |
 | 接续开发 | [当前交接](../CODEX_HANDOFF.md)、[本版计划与进度](plan/PRE_ALPHA_5.md)、[历史总计划](plan/PLAN.md)、[历史进度](plan/PROGRESS.md)、[裁决](plan/DEVIATIONS.md)、[问题](plan/QUESTIONS.md) |

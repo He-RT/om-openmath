@@ -15,4 +15,7 @@ export default tseslint.config(
     languageOptions: { globals: globals.node },
   },
   { files: ['scripts/**/*.mjs', 'e2e/**/*.ts'], languageOptions: { globals: globals.node } },
+  { files: ['scripts/package-smoke.js'], languageOptions: { globals: globals.browser } },
+  // These callbacks execute in the installed WebView through Playwright.
+  { files: ['scripts/check-installed-shell.mjs'], languageOptions: { globals: { window: 'readonly' } } },
 );

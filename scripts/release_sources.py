@@ -6,6 +6,7 @@ import os
 import re
 import subprocess
 import sys
+import tomllib
 from pathlib import Path
 from urllib.parse import quote
 
@@ -56,7 +57,9 @@ def tools() -> dict:
               ('RUNNER_OS', 'RUNNER_ARCH', 'ImageOS', 'ImageVersion')}}
     commands = {'rustc': ['rustc', '-Vv'], 'cargo': ['cargo', '--version'],
                 'node': ['node', '--version'], 'npm': ['npm', '--version'],
-                'xcode': ['xcodebuild', '-version'], 'java': ['java', '-version']}
+                'xcode': ['xcodebuild', '-version'], 'java': ['java', '-version'],
+                'swift': ['swift', '--version'], 'clang': ['clang', '--version'],
+                'wasm-bindgen': ['wasm-bindgen', '--version']}
     for name, command in commands.items():
         try:
             # Windows npm uses a .cmd launcher; no shell interpolation of inputs.
@@ -96,6 +99,9 @@ def record(source: Path, packaging: Path, scope: str, platform: str, tag: str,
     from release import VERSION
     if tag != f'v{VERSION}' or not assets or len(set(assets)) != len(assets) or set(assets) != platform_assets(scope, platform, VERSION):
         raise ValueError('Wrong tag or unexpected/duplicate assets')
+    product_version = tomllib.loads(git(source, 'show', f'{product_sha}:Cargo.toml').decode())['workspace']['package']['version']
+    if tag != 'v' + product_version:
+        raise ValueError('Product source version differs from release tag')
     dependencies = {}
     for path in DEPENDENCIES:
         try:
@@ -143,6 +149,15 @@ def validate_record(value: dict, repo: Path) -> None:
     dependencies = value.get('dependency_sha256', {})
     if not dependencies or 'Cargo.lock' not in dependencies:
         raise ValueError('Missing dependency sources')
+    available = set()
+    for path in DEPENDENCIES:
+        try:
+            git(repo, 'show', f"{value['product_sha']}:{path}")
+            available.add(path)
+        except subprocess.CalledProcessError:
+            continue
+    if set(dependencies) != available:
+        raise ValueError('Incomplete or unexpected dependency sources')
     for path, expected in dependencies.items():
         if path not in DEPENDENCIES or hashlib.sha256(git(repo, 'show', f"{value['product_sha']}:{path}")).hexdigest() != expected:
             raise ValueError('Dependency digest mismatch')

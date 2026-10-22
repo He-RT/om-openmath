@@ -53,7 +53,7 @@ def write_new(path: Path, value: dict) -> None:
         stream.write(json.dumps(value, ensure_ascii=False, indent=2) + '\n')
 
 
-def tools() -> dict:
+def tools(root: Path) -> dict:
     result = {'python': sys.version, 'runner': {k: os.environ.get(k) for k in
               ('RUNNER_OS', 'RUNNER_ARCH', 'ImageOS', 'ImageVersion')}}
     commands = {'rustc': ['rustc', '-Vv'], 'cargo': ['cargo', '--version'],
@@ -66,7 +66,7 @@ def tools() -> dict:
             # Windows npm uses a .cmd launcher; no shell interpolation of inputs.
             if os.name == 'nt' and name == 'npm':
                 command = ['cmd', '/c', 'npm', '--version']
-            run = subprocess.run(command, capture_output=True, encoding='utf-8', errors='replace', timeout=30)
+            run = subprocess.run(command, cwd=root, capture_output=True, encoding='utf-8', errors='replace', timeout=30)
             result[name] = {'exit_code': run.returncode, 'version': (run.stdout + run.stderr).strip()}
         except (OSError, subprocess.TimeoutExpired):
             result[name] = {'unavailable': True}
@@ -136,7 +136,7 @@ def record(source: Path, packaging: Path, scope: str, platform: str, tag: str,
     value = {'schema': 1, 'repository': REPOSITORY, 'tag': tag, 'scope': scope, 'platform': platform,
              'product_sha': product_sha, 'packaging_sha': packaging_sha, 'capture': 'build',
              'workflow': {'path': workflow, 'sha': packaging_sha, 'sha256': workflow_hash},
-             'run_url': run_url, 'parameters': parameters, 'toolchains': tools(),
+             'run_url': run_url, 'parameters': parameters, 'toolchains': tools(source),
              'overlays': overlays,
              'dependency_sha256': dependencies, 'validation': validation,
              'reproducibility': 'Pinned sources and locks; runner images and external tool downloads may change.',

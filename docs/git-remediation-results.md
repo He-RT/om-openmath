@@ -33,11 +33,11 @@ CI 不再通过顶层 `paths-ignore` 消失。轻量检查始终执行；路径�
 
 ## R3：发行来源
 
-[PR #3](https://github.com/He-RT/om-openmath/pull/3)，集成提交 `f44a20183365c1693f5a105fa3db60abb7eb4c4c`。入口为 `python3 scripts/release.py sources {record,index,verify}`；具体操作见[发布流程](releasing.md#统一来源索引后续构建)。
+[PR #3](https://github.com/He-RT/om-openmath/pull/3)，集成提交 `f44a20183365c1693f5a105fa3db60abb7eb4c4c`；[PR #5](https://github.com/He-RT/om-openmath/pull/5) 后续修正版本采集的工作目录，集成为 `c855795577a48c63a5a6282dcab7c70fba5bcabe`。入口为 `python3 scripts/release.py sources {record,index,verify}`；具体操作见[发布流程](releasing.md#统一来源索引后续构建)。
 
 - Mac/Web、CLI、Tauri 成功构建后生成独立 source sidecars，记录实际产品/打包/工作流 SHA、参数、工具版本与镜像、依赖散列、run URL、检查范围及资产大小/散列；Windows 的两份外部检查脚本覆盖另记来源，未提交产品修改被拒绝。
 - 索引复用原 manifest，要求每个资产恰好一份来源；错误提交、缺失依赖、错平台/工作流/散列、重复来源、资产篡改和覆盖现有输出均拒绝。新版本将索引及引用的 sidecars/manifest 一起持久发布。
-- 29 项 Python 检查、工作流 actionlint 和相关 PR 的契约 CI 通过。新增记录步骤未重新派发平台打包，下一次构建再实际执行；不把静态检查描述为新安装验收或字节级可复现。
+- 29 项 Python 检查、工作流 actionlint 和相关 PR 的契约 CI 通过。工具版本在产品检出目录采集，以匹配 rustup 的实际工具链选择；该修复的 12 项相关检查及 [39817399687](https://github.com/He-RT/om-openmath/actions/runs/39817399687) 通过。新增记录步骤未重新派发平台打包，下一次构建再实际执行；不把静态检查描述为新安装验收或字节级可复现。
 - 现有 CLI 两包演练：从 origin 实际取回产品 `86da06206c1ce547921ff2fb6ada892c5b090b48` 和打包 `657d57aef33350d54ce122a67691c7170de64a59`，复用原 manifest 核对两包，并验证源工作流及依赖散列。演练索引在 `target/git-remediation/cli-source-replay/cli-sources-replay-index.json`，SHA256 为 `c42f1740541f105db57322de9a3dcfd46f902d06481adacb126ee8be770ac605`。旧工具信息来自原成功 run 日志，缺失的精确版本明确记为未知，不伪装为本轮构建时采集。
 
 `.1`–`.5` 标签和既有公开资产没有移动或改写；`.5` 仍为多提交来源。不重跑冻结发行、真实模型或本机 iOS 模拟器，不迁移/取消跟踪 R4 原始根，不改写历史。最终集成 SHA 的检查按其实际变更范围另有 dev push 结果；上表旧 SHA 的结果不冒充最终发行验收。

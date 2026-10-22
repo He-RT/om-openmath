@@ -67,7 +67,7 @@
 
 ### R3：统一下一次发行的输入与资产清单
 
-状态：完成，PR #3 经相关 CI 集成为 `f44a2018`。新增来源工具、三个工作流的 source sidecars 与统一索引；29 项 Python 检查及现有 CLI 两包的来源取回演练通过。既有 `.5` 事实和资产不变，新增记录步骤未重跑平台打包；详见 [执行结果](git-remediation-results.md#r3发行来源)。
+状态：完成，PR #3 经相关 CI 集成为 `f44a2018`。新增来源工具、三个工作流的 source sidecars 与统一索引；PR #5 补正从产品检出目录采集工具版本，相关 CI 通过；29 项 Python 检查及现有 CLI 两包的来源取回演练通过。既有 `.5` 事实和资产不变，新增记录步骤未重跑平台打包；详见 [执行结果](git-remediation-results.md#r3发行来源)。
 
 1. 在现有 [release.py](../scripts/release.py)、[CLI 工作流](../.github/workflows/release-cli.yml) 和 [Tauri 工作流](../.github/workflows/release-shells.yml) 上补齐来源索引，复用已有大小/SHA256 检查，不重复造包。
 2. 清单明确产品 SHA、每个平台打包脚本/工作流 SHA、构建参数、工具链/依赖版本、run URL、资产大小与 SHA256。引用确定提交，不能只写会移动的分支名；工具链/runner 中未完全固定的部分也如实记录，不声称字节级可复现。

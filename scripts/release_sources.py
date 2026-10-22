@@ -140,6 +140,9 @@ def validate_record(value: dict, repo: Path) -> None:
         raise ValueError('Source capture method is required')
     for name in ('product_sha', 'packaging_sha'):
         commit(repo, value.get(name))
+    product_version = tomllib.loads(git(repo, 'show', f"{value['product_sha']}:Cargo.toml").decode())['workspace']['package']['version']
+    if value['tag'] != 'v' + product_version:
+        raise ValueError('Product source version differs from release tag')
     workflow = value.get('workflow', {})
     if workflow.get('sha') != value['packaging_sha'] or workflow.get('path') != WORKFLOWS[scope]:
         raise ValueError('Workflow source mismatch')

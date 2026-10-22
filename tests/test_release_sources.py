@@ -49,7 +49,7 @@ class SourceTests(unittest.TestCase):
 
     def test_missing_sources_and_forged_commit_are_rejected(self):
         for key, value in [('product_sha', 'abc'), ('packaging_sha', 'f' * 40),
-                           ('dependency_sha256', {}), ('run_url', ''), ('parameters', {}),
+                           ('dependency_sha256', {}), ('dependency_sha256', {'Cargo.lock': hashlib.sha256((ROOT / 'Cargo.lock').read_bytes()).hexdigest()}), ('run_url', ''), ('parameters', {}),
                            ('workflow', {}), ('toolchains', {})]:
             record = json.loads(self.records[0].read_text(encoding='utf-8'))
             record[key] = value

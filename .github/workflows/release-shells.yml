@@ -21,6 +21,8 @@ env:
   OPENMATH_SOURCE_REVISION: ${{ inputs.source_sha }}
   VITE_OPENMATH_WEB_SHELL: '1'
   CARGO_TERM_COLOR: always
+  PACKAGING_SHA: ${{ github.sha }}
+  SOURCE_RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}/attempts/${{ github.run_attempt }}
 
 jobs:
   windows:
@@ -41,10 +43,12 @@ jobs:
             tests
       - uses: actions/checkout@v4
         with:
+          ref: ${{ github.sha }}
           path: packaging
           sparse-checkout: |
             scripts
             app/scripts
+            .github/workflows
       - uses: actions/setup-node@v4
         with:
           node-version-file: app/.nvmrc
@@ -105,6 +109,17 @@ jobs:
             $uninstall = Start-Process msiexec.exe -ArgumentList @('/x', $msi, '/qn', '/norestart') -PassThru -Wait
             if ($uninstall.ExitCode -notin @(0,3010)) { throw 'MSI uninstall failed' }
           }
+      - name: 记录 windows 资产来源
+        shell: bash
+        env:
+          SOURCE_PARAMETERS: '{"features":"web-shell","bundles":"msi","default_features":false}'
+        run: |
+          python packaging/scripts/release.py sources record --source . --packaging packaging --scope tauri --platform windows --tag v0.1.0-pre-alpha.5 --product-sha "$OPENMATH_SOURCE_REVISION" --packaging-sha "$PACKAGING_SHA" --run-url "$SOURCE_RUN_URL" --parameters "$SOURCE_PARAMETERS" --validation 'Installed MSI WebView2: version, product SHA, roots 2/3; no full model matrix' --assets-root release-assets --asset OpenMath_0.1.0-pre-alpha.5_x64_zh-CN.msi --output source-records/tauri-windows-sources.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: tauri-windows-sources
+          path: source-records/*.json
+          if-no-files-found: error
       - uses: actions/upload-artifact@v4
         if: always()
         with:
@@ -135,10 +150,12 @@ jobs:
             scripts
       - uses: actions/checkout@v4
         with:
+          ref: ${{ github.sha }}
           path: packaging
           sparse-checkout: |
             scripts
             app/scripts
+            .github/workflows
       - uses: actions/setup-node@v4
         with:
           node-version-file: app/.nvmrc
@@ -221,6 +238,17 @@ jobs:
             adb pull /sdcard/Android/data/org.openmath.openmath/files/package-smoke.json package-evidence/android/result.json
             adb pull /sdcard/Android/data/org.openmath.openmath/files/package-smoke.png package-evidence/android/window.png
             python3 -c 'import json,os; from pathlib import Path; r=json.loads(Path("package-evidence/android/result.json").read_text()); assert r["state"]=="passed" and r["version"]["revision"]==os.environ["OPENMATH_SOURCE_REVISION"]'
+      - name: 记录 android 资产来源
+        shell: bash
+        env:
+          SOURCE_PARAMETERS: '{"features":"web-shell","target":"aarch64,x86_64","compile_sdk":35,"target_sdk":35,"build_tools":"35.0.0","ndk":"28.2.13676358","signing":"persistent-release-key"}'
+        run: |
+          python packaging/scripts/release.py sources record --source . --packaging packaging --scope tauri --platform android --tag v0.1.0-pre-alpha.5 --product-sha "$OPENMATH_SOURCE_REVISION" --packaging-sha "$PACKAGING_SHA" --run-url "$SOURCE_RUN_URL" --parameters "$SOURCE_PARAMETERS" --validation 'Signed APK on API35 x86_64 emulator: version, product SHA, roots 2/3; ARM64 device untested' --assets-root release-assets --asset OpenMath_0.1.0-pre-alpha.5_android.apk --output source-records/tauri-android-sources.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: tauri-android-sources
+          path: source-records/*.json
+          if-no-files-found: error
       - uses: actions/upload-artifact@v4
         if: always()
         with:

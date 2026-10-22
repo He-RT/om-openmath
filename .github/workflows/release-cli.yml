@@ -44,8 +44,11 @@ jobs:
       - uses: actions/checkout@v4
         if: inputs.platform == 'all' || inputs.platform == matrix.platform
         with:
+          ref: ${{ github.sha }}
           path: packaging
-          sparse-checkout: scripts
+          sparse-checkout: |
+            scripts
+            .github/workflows
       - uses: actions/checkout@v4
         if: inputs.platform == 'all' || inputs.platform == matrix.platform
         with:
@@ -81,6 +84,24 @@ jobs:
           CLI_SOURCE_SHA: ${{ inputs.source_sha }}
         run: |
           python packaging/scripts/package_cli.py --source source --platform "$CLI_PLATFORM" --version "$CLI_VERSION" --sha "$CLI_SOURCE_SHA" --output release-assets
+      - name: 记录 CLI 资产的产品与打包来源
+        if: inputs.platform == 'all' || inputs.platform == matrix.platform
+        shell: bash
+        env:
+          CLI_PLATFORM: ${{ matrix.platform }}
+          CLI_VERSION: ${{ inputs.version }}
+          CLI_SOURCE_SHA: ${{ inputs.source_sha }}
+          PACKAGING_SHA: ${{ github.sha }}
+          SOURCE_RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}/attempts/${{ github.run_attempt }}
+          SOURCE_PARAMETERS: '{"profile":"release","locked":true,"target":"${{ matrix.target }}","rustflags":"${{ matrix.rustflags }}"}'
+        run: |
+          python packaging/scripts/release.py sources record --source source --packaging packaging --scope cli --platform "$CLI_PLATFORM" --tag "v$CLI_VERSION" --product-sha "$CLI_SOURCE_SHA" --packaging-sha "$PACKAGING_SHA" --run-url "$SOURCE_RUN_URL" --parameters "$SOURCE_PARAMETERS" --validation 'Extracted ZIP: version and roots 2/3; no GUI or live model tests' --assets-root release-assets --asset "om-cli_${CLI_VERSION}_${CLI_PLATFORM}.zip" --output "source-records/cli-${CLI_PLATFORM}-sources.json"
+      - uses: actions/upload-artifact@v4
+        if: inputs.platform == 'all' || inputs.platform == matrix.platform
+        with:
+          name: cli-sources-${{ matrix.platform }}
+          path: source-records/*.json
+          if-no-files-found: error
       - uses: actions/upload-artifact@v4
         if: inputs.platform == 'all' || inputs.platform == matrix.platform
         with:

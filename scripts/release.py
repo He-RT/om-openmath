@@ -5,6 +5,7 @@ import json
 import plistlib
 import re
 import tomllib
+import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -112,6 +113,10 @@ def finalize(root: Path, tag: str, revision: str, scope: str = "app-web", packag
 
 
 def main() -> None:
+    if len(sys.argv) > 1 and sys.argv[1] == "sources":
+        import release_sources
+        release_sources.main(sys.argv[2:])
+        return
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("command", choices=["verify", "finalize", "verify-payload"])
     parser.add_argument("--tag")

@@ -1,6 +1,6 @@
 # 开发指南
 
-在 `dev` 分支接续，使用 Cargo workspace、npm 和锁文件。[CODEX_HANDOFF.md](../CODEX_HANDOFF.md) 给出交接约定。
+在 `dev` 分支接续，使用 Cargo workspace、npm 和锁文件。[CODEX_HANDOFF.md](../CODEX_HANDOFF.md) 给出交接约定；文件入库、忽略规则与验收档案的边界见 [Git 管理约定](git-management.md)。
 
 当前 `.5` 包括原生 Mac、Web，以及 Tauri 2 完整封装 Web 的 Windows / Android，实施与验收记录统一在 [PRE_ALPHA_5.md](plan/PRE_ALPHA_5.md)。原生 Mac 使用 SwiftUI/AppKit，构建入口为 `bash macos/Scripts/build-native.sh`，自包含包入口为 `bash macos/Scripts/package-native.sh release-assets`；需要 Xcode 27 / macOS 27 SDK，详见 [macos/README.md](../macos/README.md)。Tauri 不生成本版原生 Mac 发行包。
 

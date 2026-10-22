@@ -1,25 +1,73 @@
+# OS metadata and personal editor state.
 .DS_Store
+/.vscode/
+/.idea/
+/*.code-workspace
+*.swp
+*.swo
+*~
+
+# Local automation state and the pre-existing private experiment.
 .omc/
 .superpowers/
+.playwright-mcp/
+ui-concept-demo/
+
+# Rebuildable dependencies and outputs. Generated protocol sources and lockfiles
+# remain versioned; Tauri initializes Android and prepare_android.py configures it.
 target/
 node_modules/
-app/dist/
-app/src/kernel/wasm/
-app/playwright-report/
-app/test-results/
-app/src-tauri/gen/
-.playwright-mcp/
+/app/dist/
+/app/src/kernel/wasm/
+/app/src-tauri/gen/
+/release-assets/
+/package-evidence/
+.build/
+.gradle/
+.kotlin/
+DerivedData/
+
+# Tool caches.
 __pycache__/
-*.pyc
-ios/Frameworks/
-ios/.build/
-ios/Local.xcconfig
-ios/**/xcuserdata/
-ios/TestResults/
-ios/OpenMath/Resources/RustNotices/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.vite/
+.eslintcache
+*.tsbuildinfo
 
-macos/Local.xcconfig
-macos/**/xcuserdata/
-macos/TestResults/
+# Disposable reports at any project level, including the repository root.
+test-results/
+playwright-report/
+blob-report/
+coverage/
+.nyc_output/
 
-macos/OpenMathNative/Resources/AgentRuntime/
+# Native build products, machine-specific signing, and Xcode user state.
+/ios/Frameworks/
+/ios/Local.xcconfig
+/ios/TestResults/
+/ios/OpenMath/Resources/RustNotices/
+/macos/Local.xcconfig
+/macos/TestResults/
+/macos/OpenMathNative/Resources/AgentRuntime/
+xcuserdata/
+*.xcuserstate
+/*.xcresult/
+/*.dSYM/
+
+# Local environment and private signing material. Share templates explicitly.
+.env
+.env.*
+!.env.example
+!.env.*.example
+*.jks
+*.keystore
+*.p12
+*.pfx
+*.mobileprovision
+*.provisionprofile
+
+# Do not blanket-ignore *.log, *.gz, *.obj, *.sqlite*, or *.lock: this repository
+# intentionally versions acceptance evidence, mesh fixtures, and dependency locks.

@@ -2,6 +2,13 @@
 
 > **pre-alpha.5 已公开发布，按用户调整后的范围收尾。** [公开发行页](https://github.com/He-RT/om-openmath/releases/tag/v0.1.0-pre-alpha.5) · [计划与最终记录](docs/plan/PRE_ALPHA_5.md) · [安装与发布记录](docs/acceptance/pre-alpha.5/local-install.md)。A–G3及本地三包安装已通过；公开后验证由用户明确取消，不能记为实测通过。视觉依据仍为 [workbench-v2.md](docs/design/workbench-v2.md) 和四张原型截图。
 
+## 2026-10-22 Git 管理与移动端设计草稿
+
+- 用户明确要求检查整个项目的 Git 管理、优化忽略规则并 push。本次授权覆盖下文旧的“不 stage 无关 .gitignore”限制；原有 `ui-concept-demo/` 规则保留且未检查该目录，`.vscode/` 与 `test-results/` 仍不 stage、不删，只补忽略规则。
+- 检查基线 `b44ba56b`：24,539 个跟踪文件约 150.2 MiB，docs 占体积约 88.2%，Git pack 约 81 MiB；历史最大 blob 约 7.8 MiB。没有已跟踪的依赖 / 主构建目录 / 安装包。旧失败根、数据库与 WAL/SHM、压缩源码和 Xcode 结果是验收档案，保持原字节，不改写历史。
+- `.gitignore` 补根目录及跨项目测试报告、发行输出、IDE 用户配置、工具缓存、局部环境与签名材料。33 个应忽略 / 13 个应保留路径检查通过，现有索引匹配忽略规则为 0。[Git 管理约定](docs/git-management.md)记录长期边界，不用宽泛日志 / 数据库 / 锁文件后缀规则掩盖证据。
+- 前两轮 iPhone / iPad 草稿源稿、选定截图和说明随独立设计提交入库。[草稿 01](docs/design/ios-ipados-workbench.md)为 HTML；[草稿 02](docs/design/ios-ipados-workbench-02.md)为独立 SwiftUI 原生材质预览，macOS 27 承载 iPhone / iPad 布局，未在移动设备运行。`target/ios27-glass-study/OpenMath Glass Study.app`只留本地，模块缓存已清；图集 HTTP8794，旧 Web4180未改。没有原生 iOS 构建或模型请求。
+
 ## 2026-10-21 最新发布与文档收尾
 
 - **2026-10-22磁盘清理：** 用户要求随时清理无用构建缓存；本地仅剩1.8GiB，确认无本地cargo/rustc/Swift/Gradle构建后，仅删除target的debug/release/wasm release下deps/build/incremental中间缓存，释放约16GiB，随后还清理了闲置macos-native/ios-derived/ios-device的模块与Intermediates缓存，清理后系统空间继续回收，最近读数约75GiB可用。保留可执行文件、独立验证器、全部发行包/失败根/验收记录、依赖源与用户数据。后续下载前继续检查空间，不再重复本地全量构建。

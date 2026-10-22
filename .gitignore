@@ -1,8 +1,8 @@
 # OS metadata and personal editor state.
 .DS_Store
-/.vscode/
-/.idea/
-/*.code-workspace
+.vscode/
+.idea/
+*.code-workspace
 *.swp
 *.swo
 *~
@@ -36,6 +36,7 @@ __pycache__/
 .vite/
 .eslintcache
 *.tsbuildinfo
+npm-debug.log*
 
 # Disposable reports at any project level, including the repository root.
 test-results/
@@ -56,6 +57,10 @@ xcuserdata/
 *.xcuserstate
 /*.xcresult/
 /*.dSYM/
+/macos/*.xcresult/
+/macos/*.dSYM/
+/ios/*.xcresult/
+/ios/*.dSYM/
 
 # Local environment and private signing material. Share templates explicitly.
 .env

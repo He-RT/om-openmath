@@ -3,17 +3,7 @@ name: CI
 on:
   push:
     branches: [dev, main]
-    paths-ignore:
-      - 'docs/plan/**'
-      - 'docs/acceptance/**'
-      - 'docs/README.md'
-      - 'CODEX_HANDOFF.md'
   pull_request:
-    paths-ignore:
-      - 'docs/plan/**'
-      - 'docs/acceptance/**'
-      - 'docs/README.md'
-      - 'CODEX_HANDOFF.md'
   workflow_dispatch:
     inputs:
       full_suite:
@@ -33,16 +23,80 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  changes:
+    runs-on: ubuntu-latest
+    outputs:
+      rust: ${{ steps.select.outputs.rust }}
+      frontend: ${{ steps.select.outputs.frontend }}
+      native_macos: ${{ steps.select.outputs.native_macos }}
+      dependencies: ${{ steps.select.outputs.dependencies }}
+      contracts: ${{ steps.select.outputs.contracts }}
+      ios: ${{ steps.select.outputs.ios }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - id: select
+        run: python scripts/ci.py classify
+
+  lightweight:
+    needs: changes
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - run: python scripts/ci.py lightweight
+      - run: python -m unittest discover -s tests -p 'test_ci.py' -v
+      - uses: docker://rhysd/actionlint:1.7.7
+
+  contracts:
+    needs: changes
+    if: needs.changes.outputs.contracts == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - run: rustup show active-toolchain
+      - run: python -X warn_default_encoding -W error::EncodingWarning -m unittest discover -s tests -v
+
+  required:
+    name: CI required
+    if: always()
+    needs: [changes, lightweight, contracts, rust, frontend, native_macos, dependencies, ios]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - run: python scripts/ci.py gate
+        env:
+          NEEDS_JSON: ${{ toJSON(needs) }}
+
   native_macos:
+    needs: changes
+    if: needs.changes.outputs.native_macos == 'true'
     uses: ./.github/workflows/macos-native.yml
     with:
       full_suite: ${{ github.event_name == 'workflow_dispatch' && inputs.full_suite }}
 
   ios:
-    if: github.event_name == 'workflow_dispatch' && inputs.run_ios
+    needs: changes
+    if: needs.changes.outputs.ios == 'true'
     uses: ./.github/workflows/ios.yml
 
   rust:
+    needs: changes
+    if: needs.changes.outputs.rust == 'true'
     runs-on: macos-latest
     steps:
       - uses: actions/checkout@v4
@@ -84,6 +138,8 @@ jobs:
         run: cargo build -p om-kernel --no-default-features --locked --target wasm32-unknown-unknown
 
   frontend:
+    needs: changes
+    if: needs.changes.outputs.frontend == 'true'
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -119,6 +175,8 @@ jobs:
           if-no-files-found: warn
 
   dependencies:
+    needs: changes
+    if: needs.changes.outputs.dependencies == 'true'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4

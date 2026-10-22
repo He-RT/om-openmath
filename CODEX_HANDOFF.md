@@ -2,6 +2,11 @@
 
 > **pre-alpha.5 已公开发布，按用户调整后的范围收尾。** [公开发行页](https://github.com/He-RT/om-openmath/releases/tag/v0.1.0-pre-alpha.5) · [计划与最终记录](docs/plan/PRE_ALPHA_5.md) · [安装与发布记录](docs/acceptance/pre-alpha.5/local-install.md)。A–G3及本地三包安装已通过；公开后验证由用户明确取消，不能记为实测通过。视觉依据仍为 [workbench-v2.md](docs/design/workbench-v2.md) 和四张原型截图。
 
+## 2026-10-23 Git 整改 R1–R3
+
+- 用户要求读取会话 `01a163d2-39f2-79e0-abe7-4bcfb45331ad` 并执行方案。R1–R3 已通过短期分支/PR 推进；规则与常规 CI 由 PR #2 集成 `9225a4e9`，发行来源工具由 PR #3 集成 `f44a2018`。`dev` 已要求 PR 和 GitHub Actions 的 `CI required`（strict、管理员约束），禁止强推/删除，不要求第二人审批；失败文档 PR 的普通合并已被服务器拒绝。
+- [执行结果与回退](docs/git-remediation-results.md)记录实际检查和来源取回；本次结果文档本身通过适用轻量 CI 后集成。22,083 个原验收/设计文件的内容散列及既有路径属性未变。R4 原始根迁移仍待单独明确；旧标签、公开资产、失败根和用户本地目录保持。单代理，无本机 iOS、真实模型或冻结发行矩阵重跑。
+
 ## 2026-10-22 Git 管理与移动端设计草稿
 
 - 用户明确要求检查整个项目的 Git 管理、优化忽略规则并 push。本次授权覆盖下文旧的“不 stage 无关 .gitignore”限制；原有 `ui-concept-demo/` 规则保留且未检查该目录，`.vscode/` 与 `test-results/` 仍不 stage、不删，只补忽略规则。

@@ -27,7 +27,7 @@ enum Orientation: String, CaseIterable, Identifiable {
   }
 }
 @MainActor final class Study: ObservableObject {
-  @Published var view = 0
+  @Published var view = 3
   @Published var scene: Scene = .reading
   @Published var orientation: Orientation = .landscape
   @Published var dark = false
@@ -39,6 +39,13 @@ enum Orientation: String, CaseIterable, Identifiable {
   @Published var editing = false
   @Published var phoneDraft = ""
   @Published var padDraft = ""
+  @Published var duoPose: DuoPose = .flat
+  @Published var duoRotated = false
+  @Published var duoWidth: Double = 890
+  @Published var duoSource = originalSource
+  @Published var duoPanel: Panel? = .steps
+  @Published var duoDraft = ""
+  @Published var duoAnchor: String?
   @Published var notice = ""
   var paper: Color { dark ? Color(red: 0.105, green: 0.116, blue: 0.113) : .white }
   var well: Color { dark ? .white.opacity(0.055) : .black.opacity(0.032) }
@@ -47,6 +54,9 @@ enum Orientation: String, CaseIterable, Identifiable {
   var glass: Glass { clear ? .clear : .regular }
   func selectScene() {
     editing = scene == .editing
+    if scene == .steps { duoPanel = .steps }
+    if scene == .assistant { duoPanel = .assistant }
+    if scene == .editing { duoSource = "solve(x^2 - 5*x + 4 = 0, x)" }
     switch scene {
     case .reading: phonePanel = nil; padPanel = .steps
     case .steps: phonePanel = .steps; padPanel = .steps
@@ -89,8 +99,8 @@ struct ReviewBoard: View {
         Text("iOS & iPadOS").font(.system(size: 13)).foregroundStyle(.secondary)
         Spacer()
         Picker("设备", selection: $study.view) {
-          Text("总览").tag(0); Text("iPhone").tag(1); Text("iPad").tag(2)
-        }.pickerStyle(.segmented).labelsHidden().frame(width: 195)
+          Text("总览").tag(0); Text("iPhone").tag(1); Text("iPad").tag(2); Text("Duo").tag(3)
+        }.pickerStyle(.segmented).labelsHidden().frame(width: 260)
         Picker("场景", selection: $study.scene) {
           ForEach(Scene.allCases) { Text($0.rawValue).tag($0) }
         }.labelsHidden().frame(width: 130)
@@ -119,6 +129,9 @@ struct ReviewBoard: View {
         let phoneColumn = study.view == 1 ? geometry.size.width : min(320.0, geometry.size.width * 0.25)
         let padColumn = study.view == 2 ? geometry.size.width : geometry.size.width - phoneColumn - 34
         let maxHeight = geometry.size.height - 65
+        if study.view == 3 {
+          DuoReviewBoard(available: geometry.size)
+        } else {
         HStack(alignment: .top, spacing: 34) {
           if study.view != 2 {
             DeviceStudy(title: "01  iPhone", caption: "单栏笔记本 · 悬浮操作", width: phoneColumn) {
@@ -155,6 +168,7 @@ struct ReviewBoard: View {
             }.frame(width: padColumn, alignment: .top)
           }
         }.frame(maxWidth: .infinity, alignment: .top)
+        }
       }.padding(.horizontal, 38)
       HStack {
         Text("浅灰源码槽 / 精确结果 / 绿色状态左轨")
@@ -162,7 +176,7 @@ struct ReviewBoard: View {
         if !study.notice.isEmpty {
           Text(study.notice).foregroundStyle(study.green)
         } else {
-          Text("macOS 27 原生材质预览载体 · iPhone / iPad 布局示意")
+          Text("macOS 27 原生材质预览载体 · iPhone / Duo / iPad 布局示意")
         }
       }.font(.system(size: 10)).foregroundStyle(.secondary)
         .padding(.horizontal, 38).padding(.vertical, 18)
@@ -171,6 +185,211 @@ struct ReviewBoard: View {
     .onChange(of: study.scene) { study.selectScene() }
   }
 }
+// Review fixtures, not UIScreen metrics or hardware fold detection. Layout below
+// reads its container; production iOS 27.1 must supply actual reserved regions.
+enum DuoDivision { case vertical, horizontal }
+enum DuoPose: String, CaseIterable, Identifiable {
+  case folded = "合拢", flat = "展开", book = "书本半折", tabletop = "桌面半折"
+  var id: String { rawValue }
+  var canvas: CGSize {
+    switch self {
+    case .folded: CGSize(width: 466, height: 678)
+    case .flat, .book: CGSize(width: 890, height: 626)
+    case .tabletop: CGSize(width: 626, height: 890)
+    }
+  }
+  func division(rotated: Bool) -> DuoDivision? {
+    switch self {
+    case .folded, .flat: nil
+    case .book: rotated ? .horizontal : .vertical
+    case .tabletop: rotated ? .vertical : .horizontal
+    }
+  }
+}
+struct DuoReviewBoard: View {
+  @EnvironmentObject private var study: Study
+  let available: CGSize
+  private var canvas: CGSize {
+    let preset = study.duoPose.canvas
+    return CGSize(width: study.duoWidth, height: study.duoRotated ? preset.width : preset.height)
+  }
+  var body: some View {
+    VStack(spacing: 10) {
+      HStack(spacing: 16) {
+        Text("03  iPhone Duo").font(.system(size: 13, weight: .medium))
+        Spacer()
+        Picker("Duo 姿态", selection: $study.duoPose) {
+          ForEach(DuoPose.allCases) { Text($0.rawValue).tag($0) }
+        }.pickerStyle(.segmented).labelsHidden().frame(width: 338)
+        Button {
+          study.duoRotated.toggle()
+          study.duoWidth = study.duoRotated ? study.duoPose.canvas.height : study.duoPose.canvas.width
+        } label: { Label("旋转", systemImage: "rotate.right") }
+        .buttonStyle(.bordered).accessibilityLabel("旋转 Duo 画布")
+      }.frame(height: 28)
+      HStack(spacing: 10) {
+        Text("可用宽度").foregroundStyle(.secondary)
+        Slider(value: $study.duoWidth, in: 340...1024).frame(width: 190)
+          .accessibilityLabel("Duo 可用宽度")
+        Text("\(Int(canvas.width)) × \(Int(canvas.height))").monospacedDigit().frame(width: 91, alignment: .leading)
+        Text("评审画布 · 非设备安全区测量").foregroundStyle(.tertiary)
+        Spacer()
+        Text("同一文稿 / 同一草稿 / 连续阅读").foregroundStyle(study.green)
+      }.font(.system(size: 10)).frame(height: 21)
+      let scale = min(min(available.width / (canvas.width + 18), (available.height - 101) / (canvas.height + 18)), 1)
+      DuoWorkbench(division: study.duoPose.division(rotated: study.duoRotated))
+        .frame(width: canvas.width, height: canvas.height)
+        .clipShape(RoundedRectangle(cornerRadius: 29))
+        .padding(9).background(.black, in: RoundedRectangle(cornerRadius: 38))
+        .overlay { RoundedRectangle(cornerRadius: 38).strokeBorder(.white.opacity(0.2), lineWidth: 1) }
+        .shadow(color: .black.opacity(0.13), radius: 18, y: 12)
+        .scaleEffect(scale, anchor: .top)
+        .frame(width: (canvas.width + 18) * scale, height: (canvas.height + 18) * scale, alignment: .top)
+        .frame(maxWidth: .infinity)
+      Text("纵向玻璃操作组留在安全边缘；文稿连续滚动，检查内容随可用区域呈现。")
+        .font(.system(size: 10)).foregroundStyle(.secondary)
+    }
+    .onChange(of: study.duoPose) {
+      study.duoWidth = study.duoRotated ? study.duoPose.canvas.height : study.duoPose.canvas.width
+    }
+  }
+}
+struct DuoWorkbench: View {
+  @EnvironmentObject private var study: Study
+  @Environment(\.accessibilityReduceMotion) private var reduceMotion
+  let division: DuoDivision?
+  @State private var scrolled = false
+  @State private var inspectorVisible = true
+  @State private var sheetVisible = false
+  @State private var outline = false
+  @State private var menu = false
+  var body: some View {
+    GeometryReader { geometry in
+      let size = geometry.size
+      let rail: CGFloat = 72 // Review-only safe-edge fixture, not a device inset.
+      let usable = max(0, size.width - rail)
+      let split = usable >= 700 && size.width > size.height
+      let tabletop = division == .horizontal && !split
+      let primary = split && inspectorVisible ? min(usable - 290, max(360, size.width / 2 - 8)) : usable
+      let secondary = max(0, usable - primary - 16)
+      ZStack(alignment: .topLeading) {
+        study.paper
+        // Keep this ScrollView at one structural identity through every resize.
+        Notebook(phone: usable < 600, source: $study.duoSource,
+                 panel: Binding(get: { study.duoPanel }, set: { value in
+                   study.duoPanel = value
+                   if split || tabletop { inspectorVisible = true } else { sheetVisible = true }
+                 }), scrolled: $scrolled, scrollAnchor: $study.duoAnchor,
+                 topInset: 29, bottomInset: tabletop && inspectorVisible ? size.height / 2 + 36 : 40,
+                 deviceName: "iPhone Duo")
+          .frame(width: primary, height: size.height)
+        if split && inspectorVisible {
+          inspector(phone: false, close: { withAnimation { inspectorVisible = false } })
+            .padding(.top, 18).frame(width: secondary, height: size.height)
+            .background(.regularMaterial).offset(x: primary + 16)
+        }
+        if tabletop && inspectorVisible {
+          inspector(phone: true, close: { withAnimation { inspectorVisible = false } })
+            .padding(.top, 15).frame(width: usable, height: max(0, size.height / 2 - 13))
+            .background(.regularMaterial, in: UnevenRoundedRectangle(topLeadingRadius: 22, topTrailingRadius: 22))
+            .offset(y: size.height / 2 + 13)
+        }
+        if let division {
+          fold(division, size: size, usable: usable)
+        }
+        if study.editing {
+          KeyboardStudy().frame(width: primary).frame(height: size.height, alignment: .bottom)
+        }
+        if (!split && !tabletop && sheetVisible) || outline {
+          Color.black.opacity(0.13).frame(width: usable, height: size.height)
+            .onTapGesture { withAnimation { sheetVisible = false; outline = false } }
+          VStack(spacing: 0) {
+            if outline {
+              SheetTitle(title: "目录") { outline = false }
+              Outline(close: { outline = false })
+            } else {
+              Capsule().fill(.secondary.opacity(0.35)).frame(width: 34, height: 5).padding(.vertical, 12)
+              inspector(phone: true, close: { withAnimation { sheetVisible = false } })
+            }
+          }.frame(width: usable, height: min(640, size.height - 28))
+            .background(.regularMaterial, in: UnevenRoundedRectangle(topLeadingRadius: 27, topTrailingRadius: 27))
+            .offset(y: max(28, size.height - 640))
+            .transition(.move(edge: .bottom).combined(with: .opacity))
+        }
+        DuoRail(outer: study.duoPose == .folded, outline: { withAnimation { outline.toggle() } },
+                inspector: {
+                  withAnimation(reduceMotion ? nil : .spring(response: 0.35, dampingFraction: 0.9)) {
+                    if split || tabletop { inspectorVisible.toggle() } else { sheetVisible.toggle() }
+                  }
+                }, more: { withAnimation { menu.toggle() } })
+          .frame(width: rail, height: size.height).offset(x: usable)
+        if menu {
+          FloatingMenu(close: { menu = false }, add: { menu = false; study.hint("草稿仅展示单元格入口。") }, outline: { menu = false; outline = true })
+            .frame(width: min(260, usable - 24)).offset(x: max(12, usable - 272), y: max(14, size.height - 198))
+        }
+      }
+      .clipped()
+      .animation(reduceMotion ? nil : .easeInOut(duration: 0.28), value: split)
+      .onChange(of: split) { _, wide in
+        if wide && sheetVisible { inspectorVisible = true; sheetVisible = false }
+      }
+      .onChange(of: study.scene) {
+        if study.scene == .steps || study.scene == .assistant {
+          if split || tabletop { inspectorVisible = true } else { sheetVisible = true }
+        }
+      }
+      .onChange(of: study.duoPanel) { _, value in
+        if value != nil {
+          if split || tabletop { inspectorVisible = true } else { sheetVisible = true }
+        }
+      }
+    }
+  }
+  private func inspector(phone: Bool, close: @escaping () -> Void) -> some View {
+    Inspector(panel: Binding(get: { study.duoPanel ?? .steps }, set: { study.duoPanel = $0 }),
+              draft: $study.duoDraft, phone: phone, close: close)
+  }
+  @ViewBuilder private func fold(_ axis: DuoDivision, size: CGSize, usable: CGFloat) -> some View {
+    if axis == .vertical {
+      Rectangle().fill(LinearGradient(colors: [.clear, .black.opacity(0.06), .clear], startPoint: .leading, endPoint: .trailing))
+        .frame(width: 16, height: size.height).offset(x: size.width / 2 - 8)
+        .accessibilityLabel("竖向折叠保留区示意").allowsHitTesting(false)
+    } else {
+      Rectangle().fill(LinearGradient(colors: [.clear, .black.opacity(0.07), .clear], startPoint: .top, endPoint: .bottom))
+        .frame(width: usable, height: 20).offset(y: size.height / 2 - 10)
+        .accessibilityLabel("横向折叠保留区示意").allowsHitTesting(false)
+    }
+  }
+}
+struct DuoRail: View {
+  @EnvironmentObject private var study: Study
+  var outer: Bool
+  var outline: () -> Void, inspector: () -> Void, more: () -> Void
+  var body: some View {
+    VStack(spacing: 10) {
+      VStack(spacing: 9) {
+        if outer { Capsule().fill(.black).frame(width: 27, height: 13) }
+        Text("9:41").font(.system(size: 10, weight: .semibold))
+        HStack(spacing: 4) {
+          Image(systemName: "wifi"); Image(systemName: "battery.100percent")
+        }.font(.system(size: 9))
+      }.frame(height: 65)
+      GlassIcon(symbol: "chevron.left", label: "Duo 文稿") { outline() }
+      GlassIcon(symbol: "list.bullet", label: "Duo 目录", action: outline)
+      Spacer(minLength: 14)
+      GlassEffectContainer(spacing: 9) {
+        VStack(spacing: 9) {
+          GlassIcon(symbol: "play.fill", label: "Duo 运行", tint: true) { study.hint("预置求解示例；未调用内核。") }
+          GlassIcon(symbol: "plus", label: "Duo 添加单元格") { study.hint("草稿仅展示单元格入口。") }
+          GlassIcon(symbol: "sidebar.right", label: "Duo 检查面板", tint: true, action: inspector)
+          GlassIcon(symbol: "ellipsis", label: "Duo 更多", action: more)
+        }
+      }
+    }.padding(.top, 10).padding(.bottom, 20)
+      .frame(maxWidth: .infinity).background(study.paper.opacity(0.7))
+  }
+}
+
 struct DeviceStudy<Content: View>: View {
   let title: String, caption: String
   let width: CGFloat
@@ -415,12 +634,16 @@ struct Notebook: View {
   @Binding var source: String
   @Binding var panel: Panel?
   @Binding var scrolled: Bool
+  var scrollAnchor: Binding<String?> = .constant(nil)
+  var topInset: CGFloat? = nil
+  var bottomInset: CGFloat? = nil
+  var deviceName: String? = nil
   var stale: Bool { source != originalSource }
   var body: some View {
     ScrollViewReader { proxy in
       ScrollView {
         VStack(alignment: .leading, spacing: 0) {
-          Text("数学笔记 / 代数").font(.system(size: 10)).foregroundStyle(.secondary).padding(.bottom, 10)
+          Text("数学笔记 / 代数").id("intro").font(.system(size: 10)).foregroundStyle(.secondary).padding(.bottom, 10)
           Text("二次方程与图形").font(.system(size: phone ? 28 : 31, weight: .semibold, design: .serif)).padding(.bottom, 9)
           HStack(spacing: 7) {
             Text("今天 14:02"); Text("·"); Circle().fill(study.green).frame(width: 5, height: 5); Text("本地已保存")
@@ -436,7 +659,7 @@ struct Notebook: View {
                   HStack { Text("Modern"); Spacer(); Text("正在编辑").foregroundStyle(study.green) }.font(.system(size: 10))
                   TextEditor(text: $source).font(.system(size: 13, design: .monospaced))
                     .scrollContentBackground(.hidden).frame(height: 59).padding(.horizontal, -4)
-                    .accessibilityLabel(phone ? "iPhone 数学源码" : "iPad 数学源码")
+                    .accessibilityLabel((deviceName ?? (phone ? "iPhone" : "iPad")) + " 数学源码")
                 }.padding(12).background(study.well, in: RoundedRectangle(cornerRadius: 9))
                   .overlay { RoundedRectangle(cornerRadius: 9).strokeBorder(study.green.opacity(0.6), lineWidth: 1) }
               } else {
@@ -473,9 +696,11 @@ struct Notebook: View {
           Text("代数给出精确值，图形帮助我们看清关系。")
             .font(.system(size: 14, design: .serif)).foregroundStyle(.secondary).padding(.top, 22)
         }
-        .padding(.horizontal, phone ? 23 : 37).padding(.top, phone ? 140 : 119).padding(.bottom, phone ? 125 : 65)
+        .scrollTargetLayout()
+        .padding(.horizontal, phone ? 23 : 37).padding(.top, topInset ?? (phone ? 140 : 119)).padding(.bottom, bottomInset ?? (phone ? 125 : 65))
         .frame(maxWidth: 800, alignment: .leading).frame(maxWidth: .infinity)
       }.scrollIndicators(.hidden)
+        .scrollPosition(id: scrollAnchor, anchor: .top)
         .onScrollGeometryChange(for: Bool.self) { $0.contentOffset.y > 30 } action: { _, value in scrolled = value }
     }
   }

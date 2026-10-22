@@ -15,6 +15,7 @@
 | 查看下一版科研功能与Agent预留 | [下一版计划](plan/NEXT_RELEASE.md) |
 | 查看 `.5` 工作台设计、实施与验收 | [本版计划与完成记录](plan/PRE_ALPHA_5.md)、[工作台 v2](design/workbench-v2.md)、[安装与发布记录](acceptance/pre-alpha.5/local-install.md) |
 | 查阅 `.4` 历史实施与验收 | [历史计划](plan/PRE_ALPHA_4.md)、[历史进度](plan/PRE_ALPHA_4_PROGRESS.md)、[历史验收](acceptance/pre-alpha.4/README.md) |
+| 查看 iPhone / iPhone Duo / iPad 原生玻璃布局草稿 | [草稿 02](design/ios-ipados-workbench-02.md)、[实际预览截图](design/prototypes/ios27-glass/index.html) |
 | 设计 Mac 右侧助手与可操作笔记本的 Pi Agent | [Notebook Agent 草案](design/notebook-agent.md) |
 | 将 Mac UI 完全原生化并与 Agent 整合 | [原生 Mac 客户端方案](design/macos-native-ui.md) |
 | 实施原生 Mac 宿主并统一 Swift Rust Pi 状态 | [宿主与状态契约](design/macos-host-state.md)、[状态 Schema](design/macos-host-state.schema.json) |

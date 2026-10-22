@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="zh-CN" data-theme="light">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light dark">
+  <title>OpenMath · iOS / iPadOS 工作台草稿</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%231D7550'/%3E%3Ctext x='6' y='25' font-family='serif' font-size='26' fill='white'%3E∑%3C/text%3E%3C/svg%3E">
+  <link rel="stylesheet" href="ios-ipados-workbench.css">
+  <script src="ios-ipados-workbench.js" defer></script>
+</head>
+<body>
+  <svg class="icon-defs" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><defs>
+    <symbol id="i-back" viewBox="0 0 24 24"><path d="m15 5-7 7 7 7"/></symbol>
+    <symbol id="i-down" viewBox="0 0 24 24"><path d="m7 10 5 5 5-5"/></symbol>
+    <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+    <symbol id="i-play" viewBox="0 0 24 24"><path d="m8 5 11 7-11 7Z" fill="currentColor" stroke="none"/></symbol>
+    <symbol id="i-check" viewBox="0 0 24 24"><path d="m5 12 4.5 4.5L19 7"/></symbol>
+    <symbol id="i-seal" viewBox="0 0 24 24"><path d="m12 3 3 1 3 1 1 3 2 4-2 3-1 3-3 1-3 2-3-2-3-1-1-3-2-3 2-4 1-3 3-1Z"/><path d="m8 12 3 3 5-6"/></symbol>
+    <symbol id="i-more" viewBox="0 0 24 24"><circle cx="5" cy="12" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/></symbol>
+    <symbol id="i-sidebar" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="3"/><path d="M9 4v16M5.5 8h1M5.5 11h1"/></symbol>
+    <symbol id="i-inspector" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="3"/><path d="M15 4v16"/></symbol>
+    <symbol id="i-outline" viewBox="0 0 24 24"><path d="M9 6h11M9 12h11M9 18h11M4 6h.1M4 12h.1M4 18h.1"/></symbol>
+    <symbol id="i-assistant" viewBox="0 0 24 24"><path d="M6 4h12a3 3 0 0 1 3 3v8a3 3 0 0 1-3 3h-7l-5 3v-3a3 3 0 0 1-3-3V7a3 3 0 0 1 3-3Z"/><path d="M8 9h8M8 13h5"/></symbol>
+    <symbol id="i-close" viewBox="0 0 24 24"><path d="m6 6 12 12M18 6 6 18"/></symbol>
+    <symbol id="i-copy" viewBox="0 0 24 24"><rect x="8" y="8" width="12" height="13" rx="2"/><path d="M16 8V5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h3"/></symbol>
+    <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M12 19V5m-6 6 6-6 6 6"/></symbol>
+    <symbol id="i-share" viewBox="0 0 24 24"><path d="M8 5 12 1l4 4M12 1v13M6 9H4v12h16V9h-2"/></symbol>
+    <symbol id="i-edit" viewBox="0 0 24 24"><path d="m15 4 5 5M4 20l5-1L21 7a2 2 0 0 0-5-5L4 14Z"/></symbol>
+    <symbol id="i-history" viewBox="0 0 24 24"><path d="M3 10a9 9 0 1 1 1 7M3 4v6h6M12 7v6l4 2"/></symbol>
+    <symbol id="i-book" viewBox="0 0 24 24"><path d="M12 5c-4-3-7-2-9-1v15c3-2 6-2 9 0 3-2 6-2 9 0V4c-2-1-5-2-9 1Zm0 0v14"/></symbol>
+    <symbol id="i-chart" viewBox="0 0 24 24"><path d="M4 3v17h17M7 15l4-7 5 5 5-8"/></symbol>
+    <symbol id="i-folder" viewBox="0 0 24 24"><path d="M3 6a2 2 0 0 1 2-2h5l2 3h7a2 2 0 0 1 2 2v10H3Z"/></symbol>
+    <symbol id="i-gear" viewBox="0 0 24 24"><path d="m9 3 6 0 1 3 3 1 2 5-2 5-3 1-1 3H9l-1-3-3-1-2-5 2-5 3-1Z"/><circle cx="12" cy="12" r="3"/></symbol>
+    <symbol id="i-keyboard" viewBox="0 0 24 24"><rect x="2" y="5" width="20" height="14" rx="3"/><path d="M6 9h.1M10 9h.1M14 9h.1M18 9h.1M6 12h.1M10 12h.1M14 12h.1M18 12h.1M7 16h10"/></symbol>
+    <symbol id="i-undo" viewBox="0 0 24 24"><path d="M8 4 3 9l5 5M3 9h11a7 7 0 0 1 0 14"/></symbol>
+    <symbol id="i-target" viewBox="0 0 24 24"><circle cx="12" cy="12" r="7"/><circle cx="12" cy="12" r="2"/><path d="M12 1v4M12 19v4M1 12h4M19 12h4"/></symbol>
+    <symbol id="i-search" viewBox="0 0 24 24"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m16 16 5 5"/></symbol>
+    <symbol id="i-battery" viewBox="0 0 30 16"><rect x="1" y="2" width="24" height="12" rx="3" opacity=".5"/><rect x="3" y="4" width="20" height="8" rx="1.5" fill="currentColor" stroke="none"/><path d="M28 6v4"/></symbol>
+    <symbol id="i-wifi" viewBox="0 0 24 20"><path d="M3 6a14 14 0 0 1 18 0M6 10a9 9 0 0 1 12 0M9 14a4 4 0 0 1 6 0"/><circle cx="12" cy="18" r=".7" fill="currentColor"/></symbol>
+  </defs></svg>
+  <header class="review-bar">
+    <a class="review-brand" href="ios-ipados-workbench.html" aria-label="返回草稿总览"><span class="brand-mark">∑</span><strong>OpenMath</strong><span class="review-slash">/</span><span>iOS & iPadOS</span></a>
+    <nav class="review-controls" aria-label="草稿视图">
+      <div class="segmented" id="view-switch"><button data-view="overview" aria-pressed="true">总览</button><button data-view="phone" aria-pressed="false">iPhone</button><button data-view="pad" aria-pressed="false">iPad</button></div>
+      <select id="state-switch" aria-label="交互场景"><option value="reading">阅读与图形</option><option value="steps">推导步骤</option><option value="assistant">助手</option><option value="variables">变量</option><option value="editing">公式编辑</option><option value="library">文稿列表</option></select>
+      <button class="review-theme" id="theme-switch" aria-label="切换深色模式">深色</button>
+    </nav>
+    <span class="draft-flag">交互草稿 · 01</span>
+  </header>
+  <main class="board">
+    <section class="board-heading"><div><p class="eyebrow">WORKBENCH / APPLE MOBILE</p><h1>同一张数学纸面，随屏幕展开。</h1></div><p class="board-note">沿用 Web 手机端与 Mac 工作台 v2<br>2026.10.22 · 示例数据，不连接内核或模型</p></section>
+    <div id="stage" class="stage" data-view="overview">
+      <section class="device-study phone-study" aria-label="iPhone 草稿"><div class="study-caption"><span><b>01</b> iPhone</span><span>聚焦读写</span></div><div class="scale-slot phone-slot"><div class="device phone"><div id="phone-app" class="screen phone-app"></div></div></div><p class="study-note">笔记本始终为主。目录与检查面板按需展开。</p></section>
+      <section class="device-study pad-study" aria-label="iPad 草稿"><div class="study-caption"><span><b>02</b> iPad</span><div class="orientation-control"><button data-orientation="landscape" aria-pressed="true">横屏</button><button data-orientation="portrait" aria-pressed="false">竖屏</button><button data-orientation="compact" aria-pressed="false">窄窗口</button></div></div><div class="scale-slot pad-slot"><div class="device pad"><div id="pad-app" class="screen pad-app"></div></div></div><p class="study-note">保留 Mac 的分栏关系。窄窗口自动收起辅助面板。</p></section>
+    </div>
+    <footer class="board-footer"><span>纸面 · 源码槽 · 结果左轨</span><span>点击「步骤」、底部「检查面板」或源码，即可试用交互。</span><a href="../ios-ipados-workbench.md">查看设计说明 ↗</a></footer>
+  </main>
+</body>
+</html>

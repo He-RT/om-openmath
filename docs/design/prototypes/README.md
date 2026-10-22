@@ -1,3 +1,15 @@
+# iOS / iPadOS 原生玻璃草稿 02
+
+2026-10-22 · [设计说明](../ios-ipados-workbench-02.md) · [实际截图图集](ios27-glass/index.html) · [SwiftUI 源稿](ios27-glass/GlassWorkbench.swift)
+
+用户要求加强 iOS 27 Liquid Glass 并重写。本稿使用独立 SwiftUI 预览程序，通过 macOS 27 的系统玻璃材质渲染 iPhone / iPad 布局；浏览器仅展示截图。构建 `bash docs/design/prototypes/ios27-glass/build-preview.sh`，产物为 `target/ios27-glass-study/OpenMath Glass Study.app`。不启动 iOS 模拟器，不修改生产客户端。草稿 01 保留如下。
+
+# iOS / iPadOS 工作台草稿 01
+
+2026-10-22 · [设计说明](../ios-ipados-workbench.md) · [交互原型](ios-ipados-workbench.html) · [总览](ios-ipados-overview.jpg)
+
+参考现有 Web 手机端与 Mac 工作台 v2，展示 iPhone 单栏 / sheet、iPad 横屏三栏 / 竖屏两栏 / 窄窗口、公式编辑、文稿列表及深浅色。离线示例，不连接内核或模型，没有修改生产客户端。直接打开 HTML，或用 `python3 -m http.server 8794 --bind 127.0.0.1 --directory docs/design` 查看 `/prototypes/ios-ipados-workbench.html`。
+
 # Mac 助手输入框交互草案
 
 [规格](../agent-composer.md) · [HTML](mac-agent-composer.html) · [截图](mac-agent-composer.png)

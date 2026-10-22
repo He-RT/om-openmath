@@ -19,6 +19,7 @@ WORKFLOWS = {'app-web': '.github/workflows/release.yml', 'cli': '.github/workflo
              'tauri': '.github/workflows/release-shells.yml'}
 PLATFORMS = {'app-web': {'web', 'macos_arm64'}, 'cli': {'macos_arm64', 'windows_x64'},
              'tauri': {'windows', 'android'}}
+CHECK_OVERLAYS = {'app/scripts/check-installed-shell.mjs', 'app/scripts/package-smoke.js'}
 
 
 def sha(value: str) -> str:
@@ -83,6 +84,21 @@ def platform_assets(scope: str, platform: str, version: str) -> set[str]:
     return {name for name in names if name.endswith('.apk' if platform == 'android' else '.msi')}
 
 
+def overlay_inputs(source: Path, packaging: Path, revision: str, scope: str, platform: str) -> list[dict]:
+    changed = git(source, 'diff', '--name-only', '--no-renames', '-z', 'HEAD').decode().split('\0')
+    overlays = []
+    for path in filter(None, changed):
+        # The Windows installer test deliberately copies these two external checks.
+        # Product code changes are never attributed to an otherwise clean commit.
+        if scope != 'tauri' or platform != 'windows' or path not in CHECK_OVERLAYS:
+            raise ValueError(f'Unrecorded modified source: {path}')
+        data = git(packaging, 'show', f'{revision}:{path}')
+        if (source / path).read_bytes() != data:
+            raise ValueError(f'Overlay differs from packaging source: {path}')
+        overlays.append({'path': path, 'sha256': hashlib.sha256(data).hexdigest()})
+    return overlays
+
+
 def record(source: Path, packaging: Path, scope: str, platform: str, tag: str,
            product_sha: str, packaging_sha: str, run_url: str, parameters: dict,
            validation: str, assets_root: Path, assets: list[str], output: Path) -> dict:
@@ -102,6 +118,7 @@ def record(source: Path, packaging: Path, scope: str, platform: str, tag: str,
     product_version = tomllib.loads(git(source, 'show', f'{product_sha}:Cargo.toml').decode())['workspace']['package']['version']
     if tag != 'v' + product_version:
         raise ValueError('Product source version differs from release tag')
+    overlays = overlay_inputs(source, packaging, packaging_sha, scope, platform)
     dependencies = {}
     for path in DEPENDENCIES:
         try:
@@ -120,6 +137,7 @@ def record(source: Path, packaging: Path, scope: str, platform: str, tag: str,
              'product_sha': product_sha, 'packaging_sha': packaging_sha, 'capture': 'build',
              'workflow': {'path': workflow, 'sha': packaging_sha, 'sha256': workflow_hash},
              'run_url': run_url, 'parameters': parameters, 'toolchains': tools(),
+             'overlays': overlays,
              'dependency_sha256': dependencies, 'validation': validation,
              'reproducibility': 'Pinned sources and locks; runner images and external tool downloads may change.',
              'assets': [digest(assets_root / name) for name in sorted(assets)]}
@@ -149,6 +167,14 @@ def validate_record(value: dict, repo: Path) -> None:
     data = git(repo, 'show', f"{workflow['sha']}:{workflow['path']}")
     if hashlib.sha256(data).hexdigest() != workflow.get('sha256'):
         raise ValueError('Workflow digest mismatch')
+    seen = set()
+    for overlay in value.get('overlays', []):
+        path = overlay['path']
+        if scope != 'tauri' or platform != 'windows' or path not in CHECK_OVERLAYS or path in seen:
+            raise ValueError('Unexpected source overlay')
+        seen.add(path)
+        if hashlib.sha256(git(repo, 'show', f"{value['packaging_sha']}:{path}")).hexdigest() != overlay.get('sha256'):
+            raise ValueError('Overlay digest mismatch')
     dependencies = value.get('dependency_sha256', {})
     if not dependencies or 'Cargo.lock' not in dependencies:
         raise ValueError('Missing dependency sources')

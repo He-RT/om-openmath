@@ -80,6 +80,11 @@ class SourceTests(unittest.TestCase):
             with self.assertRaises(ValueError):
                 sources.validate_record(changed, ROOT)
 
+    def test_unrecorded_product_edits_cannot_claim_a_clean_commit(self):
+        with patch.object(sources, 'git', return_value=b'crates/om-core/src/lib.rs\0'):
+            with self.assertRaises(ValueError):
+                sources.overlay_inputs(ROOT, ROOT, self.revision, 'cli', 'macos_arm64')
+
 
 if __name__ == '__main__':
     unittest.main()

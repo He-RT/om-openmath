@@ -20,7 +20,7 @@ class CITests(unittest.TestCase):
         ci.verify_results(self.needs(['docs/git-management.md']))
 
     def test_production_docs_and_unknown_paths_cannot_evade_checks(self):
-        for path in ('docs/design/notebook-agent.md', 'docs/reference/functions.toml', 'new-build-input', '.github/workflows/ci.yml'):
+        for path in ('docs/design/notebook-agent.md', 'docs/reference/functions.toml', 'docs/examples/watermelon.om', 'docs/acceptance/pre-alpha.4/fixtures/grass-block.om', 'docs/plan/PLAN.md', 'new-build-input', '.github/workflows/ci.yml'):
             self.assertTrue(all(v for k, v in ci.classify([path]).items() if k != 'ios'))
 
     def test_changes_on_either_side_of_rename_and_shared_core_require_checks(self):

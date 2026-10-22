@@ -21,6 +21,7 @@ env:
   CARGO_PROFILE_DEV_DEBUG: 0
   CARGO_PROFILE_TEST_DEBUG: 0
   OPENMATH_SOURCE_REVISION: ${{ github.sha }}
+  SOURCE_RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}/attempts/${{ github.run_attempt }}
 
 jobs:
   web:
@@ -55,6 +56,16 @@ jobs:
           version="${TAG#v}"
           cd app/dist
           zip -qr "../../release-assets/OpenMath-web_${version}.zip" .
+      - name: 记录 web 资产来源
+        env:
+          SOURCE_PARAMETERS: '{"build":"npm run build --prefix app","wasm_bindgen":"0.2.129"}'
+        run: |
+          python scripts/release.py sources record --source . --packaging . --scope app-web --platform web --tag "$TAG" --product-sha "$GITHUB_SHA" --packaging-sha "$GITHUB_SHA" --run-url "$SOURCE_RUN_URL" --parameters "$SOURCE_PARAMETERS" --validation 'Production Web E2E and independent original 53 WASM results; no live model rerun' --assets-root release-assets --asset "OpenMath-web_${TAG#v}.zip" --output source-records/app-web-web-sources.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: source-web
+          path: source-records/*.json
+          if-no-files-found: error
       - uses: actions/upload-artifact@v4
         with:
           name: release-web
@@ -78,6 +89,16 @@ jobs:
       - run: npm ci --prefix agent --omit=dev --ignore-scripts
       - run: command -v gpg >/dev/null || brew install gnupg
       - run: bash macos/Scripts/package-native.sh release-assets
+      - name: 记录 macos_arm64 资产来源
+        env:
+          SOURCE_PARAMETERS: '{"build":"macos/Scripts/package-native.sh","signing":"ad-hoc","xcode":"27.0"}'
+        run: |
+          python scripts/release.py sources record --source . --packaging . --scope app-web --platform macos_arm64 --tag "$TAG" --product-sha "$GITHUB_SHA" --packaging-sha "$GITHUB_SHA" --run-url "$SOURCE_RUN_URL" --parameters "$SOURCE_PARAMETERS" --validation 'Native package build and signing checks; local install acceptance recorded separately' --assets-root release-assets --asset "OpenMath_${TAG#v}_aarch64.dmg" --asset "OpenMath_${TAG#v}_macos_arm64.app.zip" --output source-records/app-web-macos_arm64-sources.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: source-macos_arm64
+          path: source-records/*.json
+          if-no-files-found: error
       - uses: actions/upload-artifact@v4
         with:
           name: release-macos-native
@@ -98,6 +119,14 @@ jobs:
           path: release-assets
           merge-multiple: true
       - run: python scripts/release.py finalize --tag "$TAG" --root release-assets --sha "$GITHUB_SHA"
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: source-*
+          path: release-assets
+          merge-multiple: true
+      - run: |
+          python scripts/release.py sources index --repo . --assets-root release-assets --manifest release-assets/release-manifest.json --record release-assets/app-web-web-sources.json --record release-assets/app-web-macos_arm64-sources.json --output release-assets/release-sources.json
+          python scripts/release.py sources verify --repo . --assets-root release-assets --index release-assets/release-sources.json
       - uses: actions/upload-artifact@v4
         with:
           name: complete-mac-web-release

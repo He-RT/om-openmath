@@ -20,8 +20,24 @@ class CITests(unittest.TestCase):
         ci.verify_results(self.needs(['docs/git-management.md']))
 
     def test_production_docs_and_unknown_paths_cannot_evade_checks(self):
-        for path in ('docs/design/notebook-agent.md', 'docs/reference/functions.toml', 'docs/examples/watermelon.om', 'docs/acceptance/pre-alpha.4/fixtures/grass-block.om', 'docs/plan/PLAN.md', 'new-build-input', '.github/workflows/ci.yml'):
+        for path in ('docs/design/notebook-agent.md', 'docs/design/prompts/notebook-operation.md', 'docs/design/macos-storage.schema.json', 'docs/reference/functions.toml', 'docs/examples/watermelon.om', 'docs/acceptance/pre-alpha.4/fixtures/grass-block.om', 'docs/plan/PLAN.md', 'new-build-input', '.github/workflows/ci.yml'):
             self.assertTrue(all(v for k, v in ci.classify([path]).items() if k != 'ios'))
+
+    def test_standalone_glass_study_does_not_build_production_clients(self):
+        for path in ('docs/design/prototypes/ios27-glass/GlassWorkbench.swift',
+                     'docs/design/prototypes/ios27-glass/build-preview.sh',
+                     'docs/design/prototypes/ios27-glass/index.html',
+                     'docs/design/prototypes/ios27-glass/duo-folded.jpg',
+                     'docs/design/ios-ipados-workbench.md',
+                     'docs/design/ios-ipados-workbench-02.md'):
+            with self.subTest(path=path):
+                flags = ci.classify([path])
+                self.assertEqual({k for k, v in flags.items() if v}, {'contracts'})
+                ci.verify_results(self.needs([path]))
+        # The exception must not hide shared production changes in the same PR.
+        flags = ci.classify(['docs/design/prototypes/ios27-glass/GlassWorkbench.swift',
+                             'docs/design/prompts/notebook-operation.md'])
+        self.assertTrue(all(v for k, v in flags.items() if k != 'ios'))
 
     def test_changes_on_either_side_of_rename_and_shared_core_require_checks(self):
         flags = ci.classify(['docs/old.md', 'crates/om-core/src/new.rs'])

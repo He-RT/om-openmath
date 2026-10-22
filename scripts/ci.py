@@ -20,6 +20,12 @@ def classify(paths: list[str], *, manual: bool = False, ios: bool = False) -> di
             selected['contracts'] = True
         elif path in ('.gitignore', '.gitattributes', 'CODEX_HANDOFF.md'):
             pass
+        elif path.startswith('docs/design/prototypes/ios27-glass/') or path in (
+            'docs/design/ios-ipados-workbench.md', 'docs/design/ios-ipados-workbench-02.md'
+        ):
+            # Standalone material study; no production client consumes these files.
+            # Compile the SwiftUI preview locally with its documented macOS SDK.
+            selected['contracts'] = True
         elif path.startswith(('docs/design/', 'docs/reference/', 'docs/examples/', 'docs/acceptance/pre-alpha.4/fixtures/')) or path == 'docs/plan/PLAN.md':
             # These contain production prompts, fixtures and generated function contracts.
             for name in CHECKS[:-1]:

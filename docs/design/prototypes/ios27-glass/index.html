@@ -9,16 +9,21 @@
 <header><strong>∑ OpenMath</strong><span>/ iOS & iPadOS · 草稿 02</span><a href="../../ios-ipados-workbench-02.md">设计说明 ↗</a></header>
 <main>
   <h1>原生 Liquid Glass 材质草稿</h1>
-  <p>这次使用 SwiftUI 系统材质。下方为实际预览窗口截图；原生预览程序已在本机打开。Mac 承载 iPhone / iPad 布局示意。</p>
+  <p>SwiftUI 系统材质，补充 iPhone Duo 的合拢、展开与半折布局。下方为 macOS 27 原生预览截图；设备尺寸与保留区域为评审示意，尚未在 iOS 真机运行。</p>
   <nav aria-label="截图状态">
-    <button data-file="overview.jpg" aria-pressed="true">常规玻璃 · 总览</button>
+    <button data-file="duo-unfolded.jpg" aria-pressed="true">Duo · 展开</button>
+    <button data-file="duo-folded.jpg" aria-pressed="false">Duo · 合拢</button>
+    <button data-file="duo-book.jpg" aria-pressed="false">Duo · 书本半折</button>
+    <button data-file="duo-tabletop.jpg" aria-pressed="false">Duo · 桌面半折</button>
+    <button data-file="duo-dark.jpg" aria-pressed="false">Duo · 深色</button>
+    <button data-file="overview.jpg" aria-pressed="false">iPhone / iPad 总览</button>
     <button data-file="clear-glass.jpg" aria-pressed="false">通透玻璃</button>
     <button data-file="menu.jpg" aria-pressed="false">展开菜单</button>
     <button data-file="phone-steps.jpg" aria-pressed="false">iPhone 步骤</button>
     <button data-file="ipad-portrait.jpg" aria-pressed="false">iPad 竖屏</button>
     <button data-file="dark.jpg" aria-pressed="false">深色</button>
   </nav>
-  <figure><a id="full" href="overview.jpg" target="_blank"><img id="shot" src="overview.jpg" alt="OpenMath iPhone 和 iPad 原生玻璃草稿总览"></a><figcaption><span id="caption">常规玻璃 · 总览</span><span>点击图片查看原尺寸 · 预置内容，不连接内核或模型</span></figcaption></figure>
+  <figure><a id="full" href="duo-unfolded.jpg" target="_blank"><img id="shot" src="duo-unfolded.jpg" alt="OpenMath iPhone Duo 展开：左侧文稿，右侧步骤检查器，边缘纵向玻璃操作组"></a><figcaption><span id="caption" aria-live="polite">Duo · 展开</span><span>点击图片查看原尺寸 · 预置内容，不连接内核或模型</span></figcaption></figure>
   <footer><span>原生源稿：<a href="GlassWorkbench.swift">GlassWorkbench.swift</a> · <a href="build-preview.sh">构建脚本</a></span><span>本机：<code>target/ios27-glass-study/OpenMath Glass Study.app</code></span></footer>
 </main>
 <script>

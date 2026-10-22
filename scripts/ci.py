@@ -20,7 +20,7 @@ def classify(paths: list[str], *, manual: bool = False, ios: bool = False) -> di
             selected['contracts'] = True
         elif path in ('.gitignore', '.gitattributes', 'CODEX_HANDOFF.md'):
             pass
-        elif path.startswith(('docs/design/', 'docs/reference/')):
+        elif path.startswith(('docs/design/', 'docs/reference/', 'docs/examples/', 'docs/acceptance/pre-alpha.4/fixtures/')) or path == 'docs/plan/PLAN.md':
             # These contain production prompts, fixtures and generated function contracts.
             for name in CHECKS[:-1]:
                 selected[name] = True

@@ -80,3 +80,28 @@ python3 scripts/release.py finalize --scope tauri --tag v0.1.0-pre-alpha.5 --roo
 ## 历史多平台发行
 
 `.3` 的 Windows EXE/MSI、独立 CLI、移动模拟器应用与 XCFramework 仍保留在[旧发行页](https://github.com/He-RT/om-openmath/releases/tag/v0.1.0-pre-alpha.3)。其 Windows WebView2、Tauri 安装类型标记和 iOS 签名流程属于历史多平台发行；当前 Mac 为 SwiftUI/AppKit 原生包，不能以旧 Tauri 包或旧移动门禁替代本版验收。历史细节见 [`.3` 发行说明](release-0.1.0-pre-alpha.3.md)、[`.4` 计划](plan/PRE_ALPHA_4.md)及 Git 历史。
+
+## 统一来源索引（后续构建）
+
+三个发行工作流在各平台构建和适用检查成功后，额外输出独立 `*-sources.json`。它记录实际检出的产品 SHA、打包/工作流 SHA、workflow 文件散列、构建参数、工具版本与 runner 镜像、依赖锁和工具链声明的散列、run/attempt URL、检查范围，以及原资产的大小和 SHA256。不可用工具明确记为 unavailable；托管镜像和外部下载并未全部固定，不保证字节级复现。签名私钥和密码不记录。
+
+Mac/Web 工作流在合并现有 manifest 后自动生成并验证 `release-sources.json`。CLI/Tauri 仍允许单独补构建某个平台；下载所选成功 run 的原资产及 source artifacts 后，在本地将所有包、原 manifest 和 source sidecars 放入同一目录，生成新的统一索引。例如仅汇总一次 CLI 补包：
+
+```sh
+# 从每个实际 source record 中取完整 SHA，先确认 origin 为本项目，再逐个取回。
+git fetch origin FULL_PRODUCT_SHA
+git fetch origin FULL_PACKAGING_SHA
+python3 scripts/release.py sources index --repo . --assets-root target/new-release \
+  --manifest target/new-release/cli-release-manifest.json \
+  --record target/new-release/cli-macos_arm64-sources.json \
+  --record target/new-release/cli-windows_x64-sources.json \
+  --output target/new-release/release-sources-cli-01.json
+python3 scripts/release.py sources verify --repo . --assets-root target/new-release \
+  --index target/new-release/release-sources-cli-01.json
+```
+
+完整发行可重复传入三份 `--manifest` 和全部七份平台 `--record`，得到单一入口；补包使用新的索引文件名，并明确覆盖哪些资产。验证要求每个资产恰好有一份来源，来源提交/工作流/依赖锁可从 Git 取回，并与原 manifest、实际资产及 sidecar 的字节散列一致。缺失来源、错误提交、错误平台/工作流/依赖散列、资产篡改和重复来源都会失败；输出文件已存在时拒绝覆盖。索引用于关联可审查的构建记录，不是经过独立签名的供应链证明。
+
+公开新发行或补包时，把索引、它引用的 source sidecars 和原 manifest 一起放入持久 Release；不能只保留会过期的 Actions artifacts 或本机临时文件。校验下载后的资产时使用同一 `sources verify` 入口。
+
+准备新版本时，在适用 CI 和实际产品验收通过的最终产品提交上使用附注标签，记录可能不同的各平台打包 SHA。既有 `.1`–`.5` 轻量标签、清单和公开资产均保持原样；`.5` 的原产品、CLI 和 Tauri 补包具有多提交来源，不能追记为单标签构建。旧版来源取回演练只使用已有产物，不新派发发行或真实模型任务。

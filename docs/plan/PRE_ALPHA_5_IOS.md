@@ -2,7 +2,7 @@
 
 2026-10-23。用户要求开始制作并发布 `.5` 的 iOS / iPadOS 版，先完成内容，只有获得其后续明确许可才能启动模拟器验证。沿用单代理、原生实现、不改系统权限/输入法/外观、按需清理自有构建缓存的约束。此追加范围覆盖旧 `.5` 计划中排除 iOS 的条款；Git 走短期分支 → PR → 适用 CI → dev。
 
-用户已在内容候选完成后允许模拟器验证，追加约束：**通过 Device Hub 管理，同时最多存在一台模拟器（关机也计入），一个型号测完就删除，再创建下一个**。已通过 Xcode 官方组件入口安装 iOS 27.0 运行时，按 0 → iPhone → 0 → iPad → 0 顺序完成；两台测试设备均已从 Device Hub 删除。
+用户已在内容候选完成后允许模拟器验证，追加约束：**通过 Device Hub 管理，同时最多存在一台模拟器（关机也计入），一个型号测完就删除，再创建下一个**。已通过 Xcode 官方组件入口安装 iOS 27.0 运行时，按 0 → iPhone → 0 → iPad → 0 顺序完成，Unicode 修复再按 0 → iPhone → 0 补测；所有测试设备均已从 Device Hub 删除。六个移动资产已于 2026-10-23 追加公开，见[补包记录](../acceptance/pre-alpha.5/ios-release.md)。
 
 ## 交付目标
 
@@ -21,14 +21,16 @@
 
 ## 当前进度
 
-- 基线 `41a49068f33e78e12bee002d35d2d190ccce853f`，分支 `codex/ios-pre-alpha-5`。Xcode / iPhoneOS SDK 27.0、Rust 1.94.0；两个 iOS ARM64 目标已安装。最近磁盘约 78 GiB 可用。
+- 初始基线 `41a49068f33e78e12bee002d35d2d190ccce853f`，实现分支 `codex/ios-pre-alpha-5`。Xcode / iPhoneOS SDK 27.0、Rust 1.94.0；两个 iOS ARM64 目标已安装。最终产品及打包提交为 `c38d678d461c9f12bf3e9ea686af192db51a033c`。
 - [x] 原生工作台内容：纸面、源码槽、状态轨、原生玻璃工具组、宽度布局与控制器持有的编辑/阅读状态。
-- [x] 原生三维实现：Rust 真实采样、SceneKit Metal 显示、相机交互与 OBJ 导出；几何边界检查已过，实际 GPU/触控交互待验证。
+- [x] 原生三维实现：Rust 真实采样、SceneKit Metal 显示、相机交互与 OBJ 导出；几何边界检查及两设备三维/旋转 UI 验收通过。
 - [x] 移动 `.5` 助手实现：Pi 1.0.4 + JavaScriptCore、共享模型 codec、执行/讨论、源码事务/撤销、附件和持久状态。停止后等待旧任务退场；保留同轮中已完成工具的消息配对，不丢弃整条提案。
-- [x] 工程 / 资源 / 包内版本与开发包来源记录入口：独立 `.5` bundle ID 和存储、生成资源一致性、build-only/打包脚本及默认不开模拟器的补包工作流。最终公开来源记录尚未生成。
-- [x] 内容候选 `5c5c473e0076cf622404054a54d44b10fa4e8b09` 的真机 Release / 模拟器 build-for-testing 与三包归档，均为 ARM64、无模拟器运行；候选仍待运行验收和集成后的发行构建。
+- [x] 工程 / 资源 / 包内版本与开发包来源记录：独立 `.5` bundle ID 和存储、生成资源一致性、build-only/打包脚本及默认不开模拟器的补包工作流。最终公开包、manifest、source sidecar 和索引已生成并核对。
+- [x] 内容候选 `5c5c473e0076cf622404054a54d44b10fa4e8b09` 的真机 Release / 模拟器 build-for-testing 与三包归档，均为 ARM64；该阶段只有构建证据，后续运行修复与最终公开来源分别记录。
 - [x] 用户允许后的 iPhone/iPad 验证：`405a1f05d838bbd95d43e403871537a5888905c4`，各 40 项通过、零失败/跳过；两设备均删除。
-- [ ] 集成、公开补包与文档同步
+- [x] PR #7 / #8 通过适用 CI 后普通合入 `dev`；最终固定输入构建成功，六个移动文件已追加到原 `.5` Release，README/安装/模型/发布文档同步。
+
+## 内容候选阶段的检查记录（获许可前）
 
 已完成的无模拟器检查：
 
@@ -39,9 +41,9 @@
 
 候选在 `target/ios-pre-alpha.5/candidate-5c5c473e-assets/`，独立 manifest 记录三个包的大小和 SHA256；真机应用约 18.1 MB、模拟器应用约 23.5 MB、XCFramework 约 90.8 MB。已核对两份 ZIP 内 `.5` 版本、完整 revision、独立 bundle ID、iPhone/iPad 声明及 Pi 资源；没有安装应用。`candidate-5c5c473e.json` 记录本地构建范围。后续进度文档的提交不改变此候选的输入。
 
-已推送三个实现提交并创建 [草稿 PR #7](https://github.com/He-RT/om-openmath/pull/7)，目标为 `dev`；常规 CI 正在运行，iOS 运行项按许可边界跳过。尚未合入或公开移动资产。
+该阶段推送三个实现提交并创建 [草稿 PR #7](https://github.com/He-RT/om-openmath/pull/7)，目标为 `dev`；当时常规 CI 正在运行，iOS 运行项按许可边界跳过，尚未合入或公开移动资产。
 
-尚未执行 iPhone/iPad 的 XCTest/UI、安装回读、硬件键盘/触控、性能、真实模型和 Duo 折叠验证；未创建、启动、安装或运行模拟器。27.1 专用折叠区域/纵向工具栏 API 不在本机 27.0 SDK 内，不能记为 Duo 设备验收。没有 Apple Distribution 签名身份，真机资产为需自行签名的开发应用，不是通用 IPA / TestFlight / App Store 包。
+当时尚未执行 iPhone/iPad 的 XCTest/UI、安装回读、硬件键盘/触控、性能、真实模型和 Duo 折叠验证，未创建或运行模拟器；后续获许可的结果见下节。27.1 专用折叠区域/纵向工具栏 API 不在本机 27.0 SDK 内，不能记为 Duo 设备验收。没有 Apple Distribution 签名身份，真机资产为需自行签名的开发应用，不是通用 IPA / TestFlight / App Store 包。
 
 ## 获许可后的运行修复（以上为许可前记录）
 
@@ -52,3 +54,10 @@
 - `405a1f05` 的双目标候选已构建并归档。iPhone/iPad 各 34 项单元 + 6 项 UI 全通过；原 53 条数学最大耗时分别 92.771 / 622.252 ms。iPad 安装程序与候选 ZIP 的 executable / Pi 资源一致。设备数量最终为 0。
 - [精简验收记录、原始数值和选定截图](../acceptance/pre-alpha.5/ios/README.md)保留失败及覆盖边界。旧候选包和失败根保留，不发布；常规 CI、集成、公开补包及文档同步继续推进。
 - 主实现 `bba0448e` 的完整 CI `39934092109` 已通过，PR #7 合入 `dev` 为 `e060c4ad`。随后 NFC/NFD 源码字节保护补丁在单台临时 iPhone 上通过 5 项针对性测试，设备再次删除，数量为 0；补丁另走 PR/适用 CI，不重复未变化的 UI/渲染验收。最终发行使用包含补丁的提交。
+
+## 最终公开状态
+
+- Unicode 修复 `c38d678d461c9f12bf3e9ea686af192db51a033c` 的适用 CI [39937454919](https://github.com/He-RT/om-openmath/actions/runs/39937454919) 通过；[PR #8](https://github.com/He-RT/om-openmath/pull/8) 普通合入 `dev` 为 `343bf846c7e7797fe0768c59e11cf84c8055f84c`。
+- [发行构建 39937450343](https://github.com/He-RT/om-openmath/actions/runs/39937450343) 的产品和打包输入均固定为 `c38d678d`，两个 ARM64 目标编译、资源一致性、归档与来源校验通过；`run_simulators=false`、`publish=false`，没有再次启动模拟器。
+- 下载该构建的六个文件，核对 ZIP 完整性、包内版本/完整 revision/bundle ID/设备声明/助手资源及来源索引后，手动追加公开。GitHub API 的大小、SHA256 与本地一致；原十资产 ID/大小/散列和原标签均未变化。没有把该 CI 包记为已完成相同字节安装验收。
+- 仅清理自有且已停止使用的六个构建中间缓存目录，Data 卷实际回收约 456 MiB，约 65 GiB 可用；保留 Products、测试产物、XCFramework、依赖、全部包和失败/成功记录。真实模型请求新增 0，模拟器最终数量 0。

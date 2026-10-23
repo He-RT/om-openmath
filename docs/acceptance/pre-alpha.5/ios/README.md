@@ -1,6 +1,6 @@
 # iOS / iPadOS `.5` 运行记录
 
-内容提交：`405a1f05d838bbd95d43e403871537a5888905c4`。Xcode 27.0 / SDK 与运行时 27.0，Rust 1.94.0，ARM64。原生实现经 [PR #7](https://github.com/He-RT/om-openmath/pull/7) 评审；公开补包仍待适用 CI、集成及来源记录。
+完整运行验收提交：`405a1f05d838bbd95d43e403871537a5888905c4`。Xcode 27.0 / SDK 与运行时 27.0，Rust 1.94.0，ARM64。原生实现经 [PR #7](https://github.com/He-RT/om-openmath/pull/7)、Unicode 保护修复经 [PR #8](https://github.com/He-RT/om-openmath/pull/8) 通过适用 CI 后合入 `dev`。最终公开产品与打包提交为 `c38d678d461c9f12bf3e9ea686af192db51a033c`；[公开补包记录](../ios-release.md)列出 CI 构建、来源和散列。本页的本地运行结果不代表 CI 包经过相同字节的安装验收。
 
 用户在内容完成后明确允许验证，并要求通过 Device Hub 管理、同时最多存在一台模拟器（关机也计入）、一个型号完成后删除再创建下一个。完整验收顺序为 0 → iPhone → 0 → iPad → 0，后续 Unicode 修复再按 0 → iPhone → 0 补测；没有修改系统权限、输入法或外观设置。模拟器的应用签名为 ad hoc，真机开发包未签名；未安装到物理设备。
 

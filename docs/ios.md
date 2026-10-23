@@ -1,6 +1,6 @@
 # iOS / iPadOS 原生客户端
 
-`.5` 原生移动内容已完成，双目标候选和 iPhone/iPad 模拟器验收通过，尚待公开补包。用户在内容完成后允许验证；已通过 Device Hub 逐台创建、测试、删除，当前没有保留模拟器。[移动补包计划](plan/PRE_ALPHA_5_IOS.md)与[实际验收记录](acceptance/pre-alpha.5/ios/README.md)列出覆盖和未测项。当前可下载的移动资产仍是 [pre-alpha.3](https://github.com/He-RT/om-openmath/releases/tag/v0.1.0-pre-alpha.3)，不能将其当作 `.5`。
+`.5` 原生 iOS/iPadOS 开发附件已于 2026-10-23 追加到[公开发行页](https://github.com/He-RT/om-openmath/releases/tag/v0.1.0-pre-alpha.5)。产品及打包提交均为 `c38d678d461c9f12bf3e9ea686af192db51a033c`；[补包记录](acceptance/pre-alpha.5/ios-release.md)给出资产散列和构建来源。用户在内容完成后允许验证；已通过 Device Hub 逐台创建、测试、删除，当前没有保留模拟器。[移动补包计划](plan/PRE_ALPHA_5_IOS.md)与[实际验收记录](acceptance/pre-alpha.5/ios/README.md)列出覆盖和未测项。
 
 最低 iOS/iPadOS 27，Apple Silicon 开发环境；一个原生应用同时支持 iPhone 与 iPad。使用 SwiftUI/UIKit/TextKit 2、SwiftMath、原生 Canvas，以及 SceneKit 的 Metal 三维渲染；数学计算复用 Rust 内核。不是 Tauri/WebView 封装。
 
@@ -35,27 +35,40 @@ bash ios/Scripts/build-candidate.sh
 
 ## 获明确许可后的模拟器验证
 
-当前不要执行这一段。用户允许后，才运行：
+本轮已完成验收，不重复启动模拟器。后续本机获得相应许可后，先确认现存数量为 0，再通过 Device Hub 创建并启动一个型号，以其实际 UDID 运行已有编译产物：
+
+```sh
+DEVICE_HUB_UDID='填入 Device Hub 中本次唯一设备的 UDID'
+xcodebuild -project ios/OpenMath.xcodeproj -scheme OpenMath -configuration Release \
+  -destination "platform=iOS Simulator,id=$DEVICE_HUB_UDID" \
+  -derivedDataPath target/ios-pre-alpha.5/simulator \
+  -resultBundlePath target/ios-pre-alpha.5/device-hub-check.xcresult \
+  -parallel-testing-enabled NO -maximum-concurrent-test-simulator-destinations 1 \
+  -collect-test-diagnostics never ARCHS=arm64 ONLY_ACTIVE_ARCH=YES \
+  CODE_SIGNING_ALLOWED=YES CODE_SIGN_IDENTITY=- test-without-building
+```
+
+结果目录每轮使用新名字；测完在 Device Hub 删除设备，再创建下一型号。以下脚本入口供已获许可的 CI 使用，会通过 `simctl` 自行创建/删除设备，不用于本轮要求 Device Hub 管理的本机流程：
 
 ```sh
 bash ios/Scripts/test-simulator.sh phone
 bash ios/Scripts/test-simulator.sh pad
 ```
 
-脚本每轮创建独立模拟器，保存独立 `.xcresult`，结束后只清理该轮模拟器。包括真实 Rust 计算与公式排版、文件、设置、二维、三维、旋转及助手草稿流程；真实外部模型请求不包含在默认用例中。Duo 特定折叠区域和 27.1 行为另记实际覆盖。
+脚本拒绝已有任何模拟器（包含关机设备）的环境，每轮创建独立模拟器，保存独立 `.xcresult`，结束后只清理该轮模拟器。测试包括真实 Rust 计算与公式排版、文件、设置、二维、三维、旋转及助手草稿流程；真实外部模型请求不包含在默认用例中。Duo 特定折叠区域和 27.1 行为另记实际覆盖。
 
 ## 补包与发布
 
-新增 [release-ios.yml](../.github/workflows/release-ios.yml) 默认只构建；`run_simulators` 和 `publish` 都默认关闭，发布要求模拟器检查成功。未得到用户许可前，不派发会启动模拟器的旧 `ios.yml` 或打开新工作流的验证选项。
+[release-ios.yml](../.github/workflows/release-ios.yml) 默认只构建；`run_simulators` 和 `publish` 都默认关闭，自动上传分支要求同次模拟器检查成功。本轮已完成本地运行验收，最终 CI 使用固定 `source_sha` 编译并记录来源后手动追加资产，没有再次启动模拟器；不能将 CI 包写成已安装验收的同一字节包。未得到用户许可前，不派发会启动模拟器的旧 `ios.yml` 或打开新工作流的验证选项。
 
-准备的新增资产为：
+已公开的移动资产为：
 
 - `OpenMath_0.1.0-pre-alpha.5_ios_simulator_arm64.app.zip`：ad hoc 签名的 ARM64 模拟器开发应用。
 - `OpenMath_0.1.0-pre-alpha.5_ios_device_arm64_unsigned.app.zip`：未签名真机开发应用，需要使用自己的签名和描述文件；不能直接安装。
 - `OpenMathKernel_0.1.0-pre-alpha.5.xcframework.zip`：真机 / 模拟器 ARM64 Rust 库与许可。
 - 独立 `ios-release-manifest.json`、`ios-build-sources.json` 与 `ios-release-sources-index.json`，记录完整 Git 输入、工具链、检查范围、大小与 SHA256。
 
-候选源码提交且干净后，用 `package-candidate.sh` 在一个新目录生成资产。公开时只追加新名字，不覆盖原 `.5` 标签、Mac/Web/CLI/Tauri 资产或清单。当前尚未生成可公开的最终移动包，也没有 TestFlight / App Store 发行。
+候选源码提交且干净后，用 `package-candidate.sh` 在一个新目录生成资产。公开时只追加新名字，不覆盖原 `.5` 标签、Mac/Web/CLI/Tauri 资产或清单。本次六个新增文件均已公开；没有 TestFlight / App Store 发行。完整构建与本地运行覆盖分别见[补包记录](acceptance/pre-alpha.5/ios-release.md)。
 
 ## 本机真机安装
 

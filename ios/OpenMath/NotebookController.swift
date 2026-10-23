@@ -5,16 +5,20 @@ import SwiftUI
   var title = "未命名笔记本"
   var cells: [NotebookCell] = []
   var selected: String?
+  var scrollTarget: String?
+  var notebookScrolled = false
   var editorSnapshots: [String: EditorSnapshot] = [:]
   var focusCell: String?
   var config: JSONValue = .null
   var loading = true
+  private(set) var agentCommitting = false
+  let agent = MobileNotebookAgent()
   var busy = false
   private(set) var composingCells = Set<String>()
   var error: String?
   var notice: String?
   var dirty = false
-  var inspector = "docs"
+  var inspector = "ai"
   var showInspector = false
   var stepDetails = false
   var stepExpanded: [String: Bool] = [:]
@@ -28,6 +32,7 @@ import SwiftUI
   var shareURL: URL?
   var showSettings = false
   var showOpen = false
+  var pendingOpenURL: URL?
   var showSaveAs = false
   var showCommands = false
   var aiText: [String: String] = [:]
@@ -75,7 +80,8 @@ import SwiftUI
           "type": .string("set_system_language"), "language": .string(isEnglish ? "en" : "zh-CN"),
         ]))
       loading = false
-      if restoreLastDocument, !ProcessInfo.processInfo.arguments.contains("-OpenMathUITesting") {
+      if let url = pendingOpenURL { pendingOpenURL = nil; await load(url) }
+      else if restoreLastDocument, !ProcessInfo.processInfo.arguments.contains("-OpenMathUITesting") {
         if let bookmark = defaults.data(forKey: "OpenMathLastBookmark") {
           var stale = false
           let url = try URL(
@@ -85,6 +91,7 @@ import SwiftUI
           await load(URL(fileURLWithPath: path))
         }
       }
+      if fileURL == nil { agent.attach(self, document: "untitled") }
     } catch {
       self.error = error.localizedDescription
       loading = false
@@ -150,6 +157,7 @@ import SwiftUI
     }
   }
   func add(_ kind: CellKind = .Math, source: String = "", after: String? = nil) {
+    guard !agentCommitting else { return }
     let input = CellInput(
       kind: kind, source: source,
       dialect: config["general"]["dialect"].string == "wolfram" ? .Wolfram : .Modern)
@@ -176,6 +184,7 @@ import SwiftUI
     }
   }
   func edit(_ id: String, source: String) {
+    guard !agentCommitting else { return }
     guard let i = cells.firstIndex(where: { $0.id == id }), cells[i].input.source != source else {
       return
     }
@@ -190,6 +199,7 @@ import SwiftUI
     if !composingCells.contains(id) { sync(cells[i].input) }
   }
   func update(_ id: String, kind: CellKind? = nil, dialect: Dialect? = nil) {
+    guard !agentCommitting else { return }
     guard let i = cells.firstIndex(where: { $0.id == id }) else { return }
     if let kind { cells[i].input.kind = kind }
     if let dialect { cells[i].input.dialect = dialect }
@@ -212,7 +222,7 @@ import SwiftUI
     }
   }
   func run(_ id: String, next: Bool = false) async {
-    guard !busy, composingCells.isEmpty, let input = cells.first(where: { $0.id == id })?.input
+    guard !agentCommitting, !busy, composingCells.isEmpty, let input = cells.first(where: { $0.id == id })?.input
     else { return }
     busy = true
     let generation = epoch
@@ -264,7 +274,7 @@ import SwiftUI
       output["messages"].array.contains(where: { $0["level"].string == "Error" }) ? .Error : .Done
   }
   func runAll() async {
-    guard composingCells.isEmpty else { return }
+    guard !agentCommitting, !busy, composingCells.isEmpty else { return }
     let batch = batchGeneration
     let generation = epoch
     let ids = cells.filter { $0.input.kind == .Math }.map(\.id)
@@ -279,6 +289,7 @@ import SwiftUI
     for id in Array(activeRequests) { cancelAI(id) }
   }
   func remove(_ id: String) {
+    guard !agentCommitting else { return }
     guard let i = cells.firstIndex(where: { $0.id == id }) else { return }
     composingCells.remove(id)
     cells.remove(at: i)
@@ -287,6 +298,7 @@ import SwiftUI
     markDirty()
   }
   func move(_ id: String, delta: Int) {
+    guard !agentCommitting else { return }
     guard let from = cells.firstIndex(where: { $0.id == id }) else { return }
     let to = min(cells.count - 1, max(0, from + delta))
     guard to != from else { return }
@@ -305,6 +317,7 @@ import SwiftUI
   }
   var notebook: NotebookFile { NotebookFile(title: title, cells: cells.map(\.input)) }
   func rename(_ value: String) {
+    guard !agentCommitting else { return }
     title = value
     enqueue(.object(["type": .string("rename_notebook"), "title": .string(value)]))
     markDirty()
@@ -330,6 +343,7 @@ import SwiftUI
     let revisions = cells.map(\.revision)
     let generation = epoch
     do {
+      let initialSave = document == nil
       if document == nil {
         let dir = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
           .appendingPathComponent("Notebooks", isDirectory: true)
@@ -350,6 +364,7 @@ import SwiftUI
       }
       guard generation == epoch else { return }
       fileURL = document?.fileURL
+      if initialSave, let fileURL { try agent.relocate(document: fileURL.standardizedFileURL.path) }
       if let fileURL { remember(fileURL) }
       dirty = snapshot != notebook || revisions != cells.map(\.revision)
       notice = text("笔记本已保存", "Notebook saved")
@@ -359,6 +374,8 @@ import SwiftUI
     }
   }
   func load(_ url: URL) async {
+    guard !agentCommitting else { return }
+    await agent.stopAndWait()
     if dirty {
       await save()
       guard !dirty else { return }
@@ -408,6 +425,8 @@ import SwiftUI
       cells = file.cells.map { NotebookCell(input: $0, status: $0.kind == .Text ? .Done : .Stale) }
       title = file.title
       selected = cells.first?.id
+      scrollTarget = nil
+      agent.attach(self, document: url.standardizedFileURL.path)
       chatTurns = []
       aiText = [:]
       suggestions = [:]
@@ -419,6 +438,8 @@ import SwiftUI
     }
   }
   func newNotebook() async {
+    guard !agentCommitting else { return }
+    await agent.stopAndWait()
     if dirty {
       await save()
       guard !dirty else { return }
@@ -447,6 +468,8 @@ import SwiftUI
       editorSnapshots = [:]
       focusCell = nil
       selected = nil
+      scrollTarget = nil
+      agent.attach(self, document: "untitled-" + UUID().uuidString)
       title = text("未命名笔记本", "Untitled notebook")
       dirty = false
       busy = false
@@ -488,10 +511,41 @@ import SwiftUI
     }
   }
   func background() async {
+    await agent.stopAndWait()
     interrupt()
     let activity = UIApplication.shared.beginBackgroundTask(withName: "Save notebook draft")
     await save()
     if activity != .invalid { UIApplication.shared.endBackgroundTask(activity) }
+  }
+  func commitAgentNotebook(_ file: NotebookFile, expected: NotebookFile) async throws {
+    guard !agentCommitting, !busy, composingCells.isEmpty, notebook == expected else { throw KernelError.message("文稿已改变，请重新预览") }
+    agentCommitting = true
+    defer { agentCommitting = false }
+    saveTask?.cancel()
+    await sourceWrites?.value
+    await save()
+    guard !dirty, notebook == expected, let document else { throw KernelError.message("修改前文稿保存失败") }
+    let candidate = try KernelClient(config: try SettingsStore.load())
+    do {
+      _ = try await candidate.request(.object(["type": .string("load_notebook"), "file": try JSONDecoder().decode(JSONValue.self, from: JSONEncoder().encode(file))]))
+      try Task.checkCancellation()
+      document.notebook = file; document.updateChangeCount(.done)
+      guard await document.write(operation: .forOverwriting) else {
+        document.notebook = expected
+        guard await document.write(operation: .forOverwriting) else {
+          dirty = true
+          throw KernelError.message("源码保存和回滚均未确认，请检查文稿文件；事务记录已保留")
+        }
+        throw KernelError.message("源码事务保存失败，已恢复原稿")
+      }
+      for id in Array(activeRequests) { cancelAI(id) }
+      kernel?.close(); kernel = candidate
+      transport = LLMTransport(client: candidate) { [weak self] packet in self?.consume(packet) }
+      epoch += 1
+      cells = file.cells.map { NotebookCell(input: $0, status: $0.kind == .Text ? .Done : .Stale) }
+      title = file.title; dirty = false; editorSnapshots = [:]; composingCells = []
+      selected = file.cells.first?.id; notice = text("助手修改已保存，可撤销", "Assistant changes saved; undo available")
+    } catch { candidate.close(); throw error }
   }
   func example(_ value: String) {
     add(source: value)
@@ -574,6 +628,7 @@ import SwiftUI
     }
   }
   func applySettings(_ draft: JSONValue) async throws {
+    await agent.stopAndWait()
     let old = try SettingsStore.load() ?? config
     let validator = try KernelClient()
     defer { validator.close() }

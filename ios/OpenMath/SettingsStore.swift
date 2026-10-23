@@ -6,7 +6,7 @@ struct SettingsStore {
   private let fileURL: URL?
   private let writeMetadata: (Data, URL) throws -> Void
   init(
-    service: String = "org.openmath.mobile.provider", fileURL: URL? = nil,
+    service: String = "org.openmath.mobile.pre-alpha5.provider", fileURL: URL? = nil,
     writeMetadata: @escaping (Data, URL) throws -> Void = { data, url in
       try data.write(to: url, options: [.atomic, .completeFileProtection])
     }
@@ -19,7 +19,7 @@ struct SettingsStore {
     get throws {
       if let fileURL { return fileURL }
       let dir = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask)[0]
-        .appendingPathComponent("OpenMath", isDirectory: true)
+        .appendingPathComponent("OpenMath-pre-alpha.5", isDirectory: true)
       try FileManager.default.createDirectory(at: dir, withIntermediateDirectories: true)
       return dir.appendingPathComponent("settings.json")
     }

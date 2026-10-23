@@ -53,6 +53,25 @@ final class KernelClient: @unchecked Sendable {
     nextID += 1
     return result
   }
+  nonisolated(nonsending) func modelCommand(_ body: JSONValue) async throws -> JSONValue {
+    let bytes = try body.data()
+    _ = try correlation()
+    return try await withCheckedThrowingContinuation { continuation in
+      queue.async { [self] in
+        let buffer = bytes.withUnsafeBytes { om_ios_model_command(handle, $0.bindMemory(to: UInt8.self).baseAddress, $0.count) }
+        defer { om_ios_buffer_free(buffer) }
+        do {
+          guard let pointer = buffer.data, buffer.len > 0 else { throw KernelError.message("模型解码通道已关闭") }
+          let value = try JSONDecoder().decode(JSONValue.self, from: Data(bytes: pointer, count: buffer.len))
+          guard value["bridge_error"].isNull else { throw KernelError.message(value["bridge_error"].string) }
+          continuation.resume(returning: value)
+        } catch { continuation.resume(throwing: error) }
+      }
+    }
+  }
+  nonisolated(nonsending) func scratch(source: String, dialect: String, definitions: Bool) async throws -> KernelPacket {
+    try await request(.object(["type": .string("mobile_scratch"), "source": .string(source), "dialect": .string(dialect), "definitions": .bool(definitions)]))
+  }
   private func decode(_ buffer: OmBuffer) throws -> KernelPacket {
     defer { om_ios_buffer_free(buffer) }
     guard let ptr = buffer.data, buffer.len > 0 else { throw KernelError.message("内核返回空缓冲区") }

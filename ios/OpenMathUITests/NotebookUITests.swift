@@ -20,11 +20,11 @@ final class NotebookUITests: XCTestCase {
     let app = launch()
     XCTAssertTrue(app.buttons["example.quadratic"].waitForExistence(timeout: 30))
     app.buttons["example.quadratic"].tap()
-    XCTAssertTrue(app.staticTexts["solution.-3"].waitForExistence(timeout: 15))
-    XCTAssertTrue(app.staticTexts["solution.1"].exists)
+    XCTAssertTrue(app.descendants(matching: .any)["solution.-3"].firstMatch.waitForExistence(timeout: 15))
+    XCTAssertTrue(app.descendants(matching: .any)["solution.1"].firstMatch.exists)
     screenshot("quadratic-portrait", app)
     XCUIDevice.shared.orientation = .landscapeLeft
-    XCTAssertTrue(app.staticTexts["solution.-3"].exists)
+    XCTAssertTrue(app.descendants(matching: .any)["solution.-3"].firstMatch.exists)
     app.buttons["inspector.steps"].tap()
     XCTAssertTrue(app.staticTexts["steps.title"].waitForExistence(timeout: 5))
     screenshot("steps-landscape", app)
@@ -109,6 +109,30 @@ final class NotebookUITests: XCTestCase {
     XCTAssertTrue(slider.waitForExistence(timeout: 5))
     XCTAssertTrue(app.descendants(matching: .any)["expression.16."].firstMatch.exists)
     screenshot("explore-landscape", app)
+  }
+
+  @MainActor func testActual3DSceneAndAssistantDraftSurviveRotation() {
+    let app = launch()
+    XCTAssertTrue(app.buttons["example.scene"].waitForExistence(timeout: 30))
+    app.buttons["example.scene"].tap()
+    let canvas = app.descendants(matching: .any)["scene.canvas"].firstMatch
+    XCTAssertTrue(canvas.waitForExistence(timeout: 20))
+    app.buttons["图形信息"].tap()
+    XCTAssertTrue(app.staticTexts["scene.geometry"].waitForExistence(timeout: 5))
+    screenshot("scene-portrait", app)
+    XCUIDevice.shared.orientation = .landscapeLeft
+    XCTAssertTrue(canvas.waitForExistence(timeout: 5))
+    screenshot("scene-landscape", app)
+    let inspector = app.buttons["检查面板"].firstMatch
+    XCTAssertTrue(inspector.waitForExistence(timeout: 5)); inspector.tap()
+    app.buttons["助手"].firstMatch.tap()
+    let input = app.textViews["assistant.input"]
+    XCTAssertTrue(input.waitForExistence(timeout: 5))
+    input.tap(); input.typeText("Duo draft 123")
+    XCUIDevice.shared.orientation = .portrait
+    XCTAssertTrue(input.waitForExistence(timeout: 5))
+    XCTAssertEqual(input.value as? String, "Duo draft 123")
+    screenshot("assistant-draft-portrait", app)
   }
 
 }

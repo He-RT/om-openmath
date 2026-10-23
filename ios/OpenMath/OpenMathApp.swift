@@ -11,7 +11,10 @@ import SwiftUI
           controller.scheme == "dark" ? .dark : controller.scheme == "light" ? .light : nil
         )
         .task { if controller.kernel == nil { await controller.start() } }
-        .onOpenURL { url in Task { await controller.load(url) } }
+        .onOpenURL { url in
+          if controller.loading { controller.pendingOpenURL = url }
+          else { Task { await controller.load(url) } }
+        }
         .onChange(of: phase) { _, value in
           if value == .background { Task { await controller.background() } }
         }

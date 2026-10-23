@@ -153,7 +153,7 @@ final class EditorTextView: UITextView {
     guard window != nil, let completion = pendingFocus else { return }
     pendingFocus = nil
     becomeFirstResponder()
-    DispatchQueue.main.async(execute: completion)
+    DispatchQueue.main.async { completion() }
   }
   override func didMoveToWindow() {
     super.didMoveToWindow()
@@ -222,6 +222,7 @@ struct MathCellEditor: View {
         onRun: { next in Task { await controller.run(cell.id, next: next) } }, onTab: accept,
         onEscape: clearGhost,
         onComplete: complete, onPartial: { insertGhost(partial: true) })
+        .padding(.horizontal, 8).background(Color(uiColor: .secondarySystemBackground), in: RoundedRectangle(cornerRadius: 8))
       if !ghost.isEmpty {
         HStack {
           Text(ghost).font(.system(.body, design: .monospaced)).foregroundStyle(.secondary)

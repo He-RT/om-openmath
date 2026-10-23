@@ -12,6 +12,7 @@
 <key>UIApplicationSceneManifest</key><dict><key>UIApplicationSupportsMultipleScenes</key><false/></dict>
 <key>UISupportedInterfaceOrientations</key><array><string>UIInterfaceOrientationPortrait</string><string>UIInterfaceOrientationLandscapeLeft</string><string>UIInterfaceOrientationLandscapeRight</string></array>
 <key>UISupportedInterfaceOrientations~ipad</key><array><string>UIInterfaceOrientationPortrait</string><string>UIInterfaceOrientationPortraitUpsideDown</string><string>UIInterfaceOrientationLandscapeLeft</string><string>UIInterfaceOrientationLandscapeRight</string></array>
+<key>OpenMathSourceRevision</key><string>$(OPENMATH_SOURCE_REVISION)</string>
 <key>OpenMathReleaseVersion</key><string>0.1.0-pre-alpha.5</string>
 <key>UIFileSharingEnabled</key><true/>
 <key>NSLocalNetworkUsageDescription</key><string>连接您明确配置的本地模型服务。</string>

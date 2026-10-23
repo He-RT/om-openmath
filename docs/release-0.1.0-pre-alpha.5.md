@@ -32,7 +32,7 @@ Windows MSI 尚无 Authenticode 签名。Android APK 使用持久发行密钥正
 - 图形工具返回实际几何数据；未注册渲染图片时，助手不能声称已经目视检查图形。数值采样与误差估计不等于严格认证。
 - 三维透明物体仍使用近似排序。部分系统文件选择面板中曾出现有效 `.omnb` 文件的“打开”按钮不可用，原因尚未确定。
 - 若文件面板的“打开”不可用，可在 Finder 右键文件，选择“打开方式 → 其他”，指定本次安装的 OpenMath Preview.app；此路径已在本版 DMG 和 app ZIP 冷启动、保存读回时实际验证。
-- 本版不提供新 iOS 包；不含音视频处理、长对话记忆压缩、提示词管理、多窗口、多预设及思考强度完整编辑器、语法高亮。CLI 为独立 ZIP 补包，未增加 Developer ID／Authenticode 发行签名或 Apple 公证。旧版公开 tag 和资产保持原样。
+- 不含音视频处理、长对话记忆压缩、提示词管理、多窗口、多预设及思考强度完整编辑器、语法高亮。CLI 为独立 ZIP 补包，未增加 Developer ID／Authenticode 发行签名或 Apple 公证。旧版公开 tag 和资产保持原样。
 
 ## 验收与发布记录
 
@@ -43,3 +43,17 @@ CLI 补包的[专用构建](https://github.com/He-RT/om-openmath/actions/runs/39
 Tauri 2 补包的 [Windows 构建](https://github.com/He-RT/om-openmath/actions/runs/39635714219)与 [Android 构建](https://github.com/He-RT/om-openmath/actions/runs/39644931736)均通过实际安装、真实 WebView 中求根 2/3，以及 `.5` / 完整源码 SHA 回读。Android 在 API 35 x86_64 系统检查，未做 ARM64 真机验收；两端未重复真实模型或全部交互检查。源码和打包提交、签名、资产哈希及保留的失败记录见[Tauri 补包记录](acceptance/pre-alpha.5/tauri-release.md)。
 
 公开后的匿名下载、哈希复核和重复安装回读按用户 2026-10-21“不用验证了，同步更新readme等文档”的要求省略，未记为实测通过。资产大小、SHA256 与本地验收详见[安装与发布记录](acceptance/pre-alpha.5/local-install.md)；设计、真实助手场景、数学、性能及数据回归见[本版计划](plan/PRE_ALPHA_5.md)。
+
+## 2026-10-23 iOS / iPadOS 原生补包
+
+新增 SwiftUI/UIKit 原生 `.5` 工作台、SceneKit Metal 三维与 JavaScriptCore Pi 助手，最低 iOS/iPadOS 27。产品源码 `c38d678d461c9f12bf3e9ea686af192db51a033c`；新增资产的完整输入、工具链和 SHA256 见 `ios-release-manifest.json`、`ios-build-sources.json` 和 `ios-release-sources-index.json`。原标签及 Mac/Web/CLI/Windows/Android 资产保持不变。
+
+- ARM64 模拟器应用：`OpenMath_0.1.0-pre-alpha.5_ios_simulator_arm64.app.zip`（ad hoc 签名）。
+- ARM64 真机开发应用：`OpenMath_0.1.0-pre-alpha.5_ios_device_arm64_unsigned.app.zip`，需要自行签名，不能直接安装；不是 TestFlight / App Store 发行。
+- Rust 内核：`OpenMathKernel_0.1.0-pre-alpha.5.xcframework.zip`。
+
+Device Hub 中逐台验收 iPhone 18 Pro 与 iPad Pro 11-inch M5，各 40 项通过、零失败/跳过，含原 53 条数学、保存回读、二维/三维、旋转及助手本地协议回环；两台均已删除，最终没有保留模拟器。完整运行验收提交为 `405a1f05`，后续 Unicode 源码保护补丁另有 5 项针对性测试通过；UI/渲染路径未改。最终[发行构建](https://github.com/He-RT/om-openmath/actions/runs/39937450343)只编译，不重复启动模拟器；CI 包没有做相同字节的安装验收，本地运行证据按实际提交另记。没有真实模型、物理设备或 Duo 折叠硬件验证。
+
+[移动端指南](https://github.com/He-RT/om-openmath/blob/dev/docs/ios.md) · [验收与失败记录](https://github.com/He-RT/om-openmath/blob/dev/docs/acceptance/pre-alpha.5/ios/README.md)
+
+[移动补包来源与散列](https://github.com/He-RT/om-openmath/blob/dev/docs/acceptance/pre-alpha.5/ios-release.md)

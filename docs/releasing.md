@@ -1,6 +1,6 @@
 # 发布流程
 
-当前公开版本为 [0.1.0-pre-alpha.5](https://github.com/He-RT/om-openmath/releases/tag/v0.1.0-pre-alpha.5)，标签 `v0.1.0-pre-alpha.5`，原 Mac/Web 与 CLI 产品源码为 `86da06206c1ce547921ff2fb6ada892c5b090b48`。原版发布原生 Mac DMG、app ZIP、Web ZIP 和 manifest，随后追加两平台 CLI ZIP，以及 Tauri 2 Windows MSI / Android APK。各补包使用独立清单，Tauri 清单记录实际封装源码，不冒用原 tag SHA。完整实施与验收见 [PRE_ALPHA_5.md](plan/PRE_ALPHA_5.md)。
+当前公开版本为 [0.1.0-pre-alpha.5](https://github.com/He-RT/om-openmath/releases/tag/v0.1.0-pre-alpha.5)，标签 `v0.1.0-pre-alpha.5`，原 Mac/Web 与 CLI 产品源码为 `86da06206c1ce547921ff2fb6ada892c5b090b48`。原版发布原生 Mac DMG、app ZIP、Web ZIP 和 manifest，随后追加两平台 CLI ZIP、Tauri 2 Windows MSI / Android APK，以及原生 iOS/iPadOS 开发附件。各补包使用独立清单，记录实际源码，不冒用原 tag SHA。原版实施与验收见 [PRE_ALPHA_5.md](plan/PRE_ALPHA_5.md)，移动补包另见[公开记录](acceptance/pre-alpha.5/ios-release.md)。
 
 ## 版本与构建
 
@@ -34,7 +34,7 @@ python3 scripts/release.py finalize --tag v0.1.0-pre-alpha.5 --root release-asse
 gh workflow run release.yml --ref dev -f tag=v0.1.0-pre-alpha.5
 ```
 
-该流程包含生产 WASM 原 53 条与性能检查、原生 Mac 打包及完整 manifest。产品提交还需核对 Rust、frontend、dependencies、native 各项实际结果，不能只看总体 green；后追加的 Windows / Android 使用下方独立流程，iOS 不属于本版发行门禁。
+该流程包含生产 WASM 原 53 条与性能检查、原生 Mac 打包及完整 manifest。产品提交还需核对 Rust、frontend、dependencies、native 各项实际结果，不能只看总体 green；后追加的 Windows / Android / iOS 使用下方各自流程与实际验收记录，不把原 Mac/Web 检查当成移动端验收。
 
 公开前按计划完成设计、真实助手场景、数学、性能、存储／保存／恢复／撤销回归，并从实际本地三包安装或解压，验证示例西瓜、求根 2/3、版本和完整 SHA。`.5` 的[源码 CI](https://github.com/He-RT/om-openmath/actions/runs/39533915333)与[本地三包验收](acceptance/pre-alpha.5/local-install.md)已通过。
 
@@ -106,8 +106,18 @@ python3 scripts/release.py sources verify --repo . --assets-root target/new-rele
 
 准备新版本时，在适用 CI 和实际产品验收通过的最终产品提交上使用附注标签，记录可能不同的各平台打包 SHA。既有 `.1`–`.5` 轻量标签、清单和公开资产均保持原样；`.5` 的原产品、CLI 和 Tauri 补包具有多提交来源，不能追记为单标签构建。旧版来源取回演练只使用已有产物，不新派发发行或真实模型任务。
 
-## iOS / iPadOS `.5` 追加补包（待完成）
+## iOS / iPadOS `.5` 追加补包
 
-用户于 2026-10-23 追加原生移动版，先完成内容，模拟器验证需其后续明确许可。[移动端计划](plan/PRE_ALPHA_5_IOS.md)记录当前状态；不沿用原 Mac/Web 完成声明。新 [release-ios.yml](../.github/workflows/release-ios.yml) 的两个执行选项默认关闭，只有明确允许模拟器验证后才能打开验证输入，检查通过后才可公开。
+用户于 2026-10-23 追加原生移动版，内容完成后明确允许使用 Device Hub 逐台验证；同时最多存在一台，关机也计入，测完删除后才创建下一台。本轮 iPhone/iPad 各 40 项全过，后续 Unicode 源码身份修复的 5 项针对性测试通过，最终数量为 0。[移动端计划](plan/PRE_ALPHA_5_IOS.md)与[运行记录](acceptance/pre-alpha.5/ios/README.md)分别记载完整验收提交和后续补丁，不沿用原 Mac/Web 完成声明。
 
-资产、签名限制与本地入口见[移动端指南](ios.md#补包与发布)。该补包使用独立 manifest 和来源 sidecar，只向现有 `.5` Release 追加新的移动资产，不移动标签，不覆盖任何旧资产。当前没有公开移动 `.5` 包。
+[release-ios.yml](../.github/workflows/release-ios.yml) 的产品来自 `source_sha`，打包与 workflow 来自 `--ref` 的提交，两者完整 SHA 分开记录。`run_simulators` 和 `publish` 默认关闭，自动上传要求同次模拟器检查通过；只有明确获许可才能打开运行输入。本轮已完成本地模拟器验收，最终发行构建仅编译固定输入：
+
+```sh
+gh workflow run release-ios.yml --ref codex/ios-source-guard \
+  -f source_sha=c38d678d461c9f12bf3e9ea686af192db51a033c \
+  -f run_simulators=false -f publish=false
+```
+
+[39937450343](https://github.com/He-RT/om-openmath/actions/runs/39937450343) 已成功，产品和打包输入均为 `c38d678d461c9f12bf3e9ea686af192db51a033c`，Xcode/SDK 27.0、Rust 1.94.0。下载 `ios-pre-alpha-5-candidate` 后使用 `scripts/release.py sources verify` 检查独立索引、manifest、source sidecar 和三个 ZIP，再手动追加六个文件到原 `.5` Release；不使用 `--clobber`。这次构建没有运行模拟器，其包未做相同字节的安装验收；本地运行结果另行绑定实际提交。
+
+三个 ZIP 为 ARM64 模拟器应用（ad hoc 签名）、ARM64 未签名真机开发应用和 XCFramework；真机应用需自行签名，不能直接安装，不是 TestFlight/App Store 发行。`ios-release-manifest.json`、`ios-build-sources.json` 与 `ios-release-sources-index.json` 一起公开。原标签与十个旧资产的 ID、大小及散列保持不变，新增资产的 API 大小/散列已核对；详见[补包记录](acceptance/pre-alpha.5/ios-release.md)及[移动端指南](ios.md#补包与发布)。

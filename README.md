@@ -21,7 +21,7 @@ Mac 工作台 v2 的原型与实机验收对照；[Web 桌面](docs/acceptance/p
 
 ## 下载与安装
 
-在 [pre-alpha.5 发行页](https://github.com/He-RT/om-openmath/releases/tag/v0.1.0-pre-alpha.5) 下载本版安装包；iOS 开发附件仍使用 [pre-alpha.3](https://github.com/He-RT/om-openmath/releases/tag/v0.1.0-pre-alpha.3)：
+在 [pre-alpha.5 发行页](https://github.com/He-RT/om-openmath/releases/tag/v0.1.0-pre-alpha.5) 下载本版安装包及 iOS/iPadOS 开发附件：
 
 | 平台 | 文件 | 使用方式 |
 |---|---|---|
@@ -31,10 +31,12 @@ Mac 工作台 v2 的原型与实机验收对照；[Web 桌面](docs/acceptance/p
 | macOS 27+ Apple Silicon | `OpenMath_0.1.0-pre-alpha.5_macos_arm64.app.zip` | 解压得到 OpenMath Preview.app |
 | Windows x64 CLI | `om-cli_0.1.0-pre-alpha.5_windows_x64.zip` | 解压后在终端运行 `om.exe`，可加入 PATH |
 | macOS ARM64 CLI | `om-cli_0.1.0-pre-alpha.5_macos_arm64.zip` | 解压后在终端运行 `./om`，可加入 PATH |
-| iOS/iPadOS 27 | 原生 Xcode 工程、ARM64 模拟器应用及 XCFramework | 真机通过本机自动签名安装，见[移动端指南](docs/ios.md) |
+| iOS/iPadOS 27 | ARM64 模拟器应用、未签名真机应用与 XCFramework | 原生 SwiftUI/UIKit；真机需自行签名，见[移动端指南](docs/ios.md) |
 | 浏览器 | `OpenMath-web_0.1.0-pre-alpha.5.zip` | 解压到 HTTP(S) 站点根目录 |
 
 本版 Mac 为自包含原生应用，无需另装 Node、Rust 或 Xcode；使用 ad hoc 签名，尚无 Developer ID 签名或 Apple 公证。Windows MSI 未作 Authenticode 签名，携带 WebView2 引导程序；系统没有 WebView2 时，首次安装需要联网下载运行时。Android 使用持久发行密钥签名，通过系统安装 APK，运行使用系统 WebView。当前不提供 Intel Mac、Windows ARM64 或 Linux 安装包。详细步骤、卸载及校验见[安装指南](docs/install.md)。
+
+原生 iOS/iPadOS `.5` 使用 SwiftUI/UIKit、SceneKit Metal 三维和 JavaScriptCore Pi 助手，真机开发包需要自行签名。iPhone/iPad 各 40 项模拟器检查通过，后续 Unicode 保护补丁另有 5 项通过；最终公开包来自固定提交的 CI 编译，没有重复安装回读。完整来源、大小、SHA256 与未测范围见[移动补包记录](docs/acceptance/pre-alpha.5/ios-release.md)。
 
 `release-manifest.json` 记录原 Mac/Web 三包，`cli-release-manifest.json` 记录两个 CLI ZIP，均对应源码 `86da0620…`；`tauri-release-manifest.json` 单独记录 Windows MSI / Android APK 的实际封装源码、大小和 SHA256。原 tag 与已公开文件不变。CLI 保留现有终端功能，不接入笔记本助手，无需 Node 或图形界面运行时。全部分发包保留相关第三方许可文本。
 
@@ -62,7 +64,7 @@ plot(sin(x)*cos(y),x:-pi..pi,y:-pi..pi,view:"surface")
 
 支持有边界的符号积分、极限/Taylor、机器数值积分、稠密矩阵分解、非刚性 ODE、局部优化/可认证凸二次优化、QR/LM 拟合、统计概率、可重复随机、纯数据解析和 SI 单位。新数值分析不冒充任意精度；未收敛、不可用精度、奇点、错误维度和取消明确报告。
 
-二维曲线、参数图、隐式/区域/场/流线、密度、数据和频数图共同覆盖桌面/Web/iOS；三维网格、图元、样式、变换与旋转/光照先覆盖桌面/Web，CLI 导出 OBJ。iOS 三维明确保留源式并提示未适配。[地月 L2 与完整西瓜笔记本](docs/examples/README.md) 随仓库交付；[真实验收截图](docs/acceptance/r36b/README.md) 可查。
+二维曲线、参数图、隐式/区域/场/流线、密度、数据和频数图共同覆盖桌面/Web/iOS；三维网格、图元、样式、变换与旋转/光照覆盖桌面/Web/iOS，CLI 导出 OBJ。原生移动端使用 SceneKit Metal，支持相机交互及真实 OBJ 导出。[地月 L2 与完整西瓜笔记本](docs/examples/README.md) 随仓库交付；[真实验收截图](docs/acceptance/r36b/README.md) 可查。
 
 ## 从源码运行与构建
 

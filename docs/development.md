@@ -2,7 +2,7 @@
 
 从 `dev` 创建短期任务分支接续，使用 Cargo workspace、npm 和锁文件。[CODEX_HANDOFF.md](../CODEX_HANDOFF.md) 给出交接约定；文件入库、忽略规则与验收档案的边界见 [Git 管理约定](git-management.md)。
 
-当前 `.5` 包括原生 Mac、Web，以及 Tauri 2 完整封装 Web 的 Windows / Android，实施与验收记录统一在 [PRE_ALPHA_5.md](plan/PRE_ALPHA_5.md)。原生 Mac 使用 SwiftUI/AppKit，构建入口为 `bash macos/Scripts/build-native.sh`，自包含包入口为 `bash macos/Scripts/package-native.sh release-assets`；需要 Xcode 27 / macOS 27 SDK，详见 [macos/README.md](../macos/README.md)。Tauri 不生成本版原生 Mac 发行包。
+当前 `.5` 包括原生 Mac、Web，以及 Tauri 2 完整封装 Web 的 Windows / Android，实施与验收记录见 [PRE_ALPHA_5.md](plan/PRE_ALPHA_5.md)；原生 iOS/iPadOS 开发附件已追加公开，[移动补包记录](acceptance/pre-alpha.5/ios-release.md)单独记录实际来源。原生 Mac 使用 SwiftUI/AppKit，构建入口为 `bash macos/Scripts/build-native.sh`，自包含包入口为 `bash macos/Scripts/package-native.sh release-assets`；需要 Xcode 27 / macOS 27 SDK，详见 [macos/README.md](../macos/README.md)。Tauri 不生成本版原生 Mac 发行包。
 
 原生 iOS/iPadOS `.5` 追加范围见[移动计划](plan/PRE_ALPHA_5_IOS.md)及[构建指南](ios.md)。`check-native.sh` 检查宿主逻辑，`build-candidate.sh` 只编译真机/模拟器目标；后者不会创建或启动模拟器。移动端采用 SwiftUI/UIKit、SceneKit Metal 和 JavaScriptCore Pi，新增源码事务、附件和助手持久化，不依赖 Node 进程或 WebView。实际模拟器操作需遵守本轮 Device Hub 单台限制，不默认重跑旧移动工作流。
 
@@ -89,12 +89,12 @@ PowerShell 使用 `$env:OPENMATH_E2E_PREVIEW = '1'`，再运行相同 npm 命令
 
 为新函数加入独立数学期望，以及参数错误、定义域、精确/数值结果和中断的必要用例。保留现有 53 条权威语料的期望。涉及绘图时同时接入 `om-eval` 的数值编译器；涉及新的公式命令时检查 SwiftMath 的真实排版，未知命令仍显示可复制源码。
 
-协议和输出类型不变时，无需改动 C ABI 或重做移动端导航；重建 XCFramework 后运行现有 Swift/界面门禁即可。本机模拟器会占用较多内存，当前用户约定由 GitHub CI 执行手机/平板模拟器测试；本地以真机或构建检查为主：
+协议和输出类型不变时，无需改动 C ABI 或重做移动端导航；重建 XCFramework 后按变化运行相关 Swift/界面检查。常规 CI 不自动启动 iOS 模拟器；运行测试需显式许可，本机须使用 Device Hub 且同时最多存在一台，关机也计入。当前模拟器验收已完成，数量为 0，不重复启动：
 
 ```sh
 bash ios/Scripts/build-kernel.sh
-# 本地验证通过后推送 dev，CI 自动执行两类模拟器门禁。
-# 用户明确需要本地模拟器时，才手动运行 test-simulator.sh phone / pad。
+# 从任务分支提交 PR，适用 CI 通过后合入 dev。
+# 只有明确允许运行模拟器后，才派发 run_ios/run_simulators 或运行测试脚本。
 ```
 
 每轮使用独立模拟器并保留独立 `.xcresult`，结束后移除本轮临时模拟器。文档恢复测试使用独立 UserDefaults，HTTP fixture 使用独立端点，避免前一用例的自动保存或取消请求影响下一用例。仓库文本显式使用 UTF-8；Xcode 环境检查完整读取版本输出。上述基础设施不应因添加数学函数而反复出现同一错误。新协议字段、结果类型或算法行为仍需相应契约测试及各平台适配。

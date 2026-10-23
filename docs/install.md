@@ -1,6 +1,6 @@
 # 安装指南
 
-当前版本为 [0.1.0-pre-alpha.5](https://github.com/He-RT/om-openmath/releases/tag/v0.1.0-pre-alpha.5)，提供原生 Mac、Web、Tauri 2 Windows MSI / Android APK，以及 macOS ARM64 / Windows x64 CLI。iOS 开发附件继续从 [pre-alpha.3](https://github.com/He-RT/om-openmath/releases/tag/v0.1.0-pre-alpha.3) 下载。本项目仍为实验性 pre-alpha；功能边界见[求解指南](solve.md)。
+当前版本为 [0.1.0-pre-alpha.5](https://github.com/He-RT/om-openmath/releases/tag/v0.1.0-pre-alpha.5)，提供原生 Mac、Web、Tauri 2 Windows MSI / Android APK，以及 macOS ARM64 / Windows x64 CLI。原生 iOS/iPadOS 27 开发附件也在同一 `.5` 发行页。本项目仍为实验性 pre-alpha；功能边界见[求解指南](solve.md)。
 
 ## macOS 27+ Apple Silicon
 
@@ -26,7 +26,7 @@ python3 -m http.server 8080
 
 ## 校验下载文件
 
-发行页的 `release-manifest.json` 列出原 Mac/Web 三包，`cli-release-manifest.json` 列出两个 CLI ZIP，均对应原发行源码；`tauri-release-manifest.json` 单独列出 Windows MSI / Android APK 及其实际封装源码。每份清单均含字节数和 SHA256。可自行计算下载文件的散列，与对应条目比较：
+发行页的 `release-manifest.json` 列出原 Mac/Web 三包，`cli-release-manifest.json` 列出两个 CLI ZIP，均对应原发行源码；`tauri-release-manifest.json` 单独列出 Windows MSI / Android APK，`ios-release-manifest.json` 列出三个原生移动 ZIP，分别记录实际产品源码。每份清单均含字节数和 SHA256；移动包另有 `ios-build-sources.json` 与 `ios-release-sources-index.json` 关联完整构建输入。可自行计算下载文件的散列，与对应条目比较：
 
 ```sh
 shasum -a 256 OpenMath_0.1.0-pre-alpha.5_aarch64.dmg
@@ -34,6 +34,7 @@ shasum -a 256 OpenMath_0.1.0-pre-alpha.5_macos_arm64.app.zip
 shasum -a 256 OpenMath-web_0.1.0-pre-alpha.5.zip
 shasum -a 256 om-cli_0.1.0-pre-alpha.5_macos_arm64.zip
 shasum -a 256 OpenMath_0.1.0-pre-alpha.5_android.apk
+shasum -a 256 OpenMath_0.1.0-pre-alpha.5_ios_simulator_arm64.app.zip
 ```
 
 本版发布前本地三包安装与同 SHA CI 已通过；发布后的匿名下载、哈希复核和重复安装回读按用户要求省略，未记为实测通过。详见[安装验收与发布记录](acceptance/pre-alpha.5/local-install.md)。
@@ -69,9 +70,9 @@ om run example.omnb
 om config path
 ```
 
-## iPhone / iPad（旧版开发附件）
+## iPhone / iPad（原生 `.5` 开发附件）
 
-最低 iOS/iPadOS 27。旧版提供 ARM64 模拟器应用和源码 Xcode 工程，真机通过本机自动签名安装；公开 ZIP 不含个人签名材料。`.5` 原生移动补包正在开发，尚未公开；先完成内容，模拟器验证须用户另行允许。详见[原生移动端指南](ios.md)。
+最低 iOS/iPadOS 27。下载 `OpenMath_0.1.0-pre-alpha.5_ios_simulator_arm64.app.zip` 用于 ARM64 模拟器；`OpenMath_0.1.0-pre-alpha.5_ios_device_arm64_unsigned.app.zip` 是需要自行签名的真机开发应用，不能直接安装。内核为 `OpenMathKernel_0.1.0-pre-alpha.5.xcframework.zip`。公开包不含个人签名材料，不是通用 IPA、TestFlight 或 App Store 发行。iPhone/iPad 各 40 项模拟器检查通过，Duo 折叠硬件未验；详见[移动端指南](ios.md)、[运行验收](acceptance/pre-alpha.5/ios/README.md)和[公开包来源](acceptance/pre-alpha.5/ios-release.md)。
 
 ## 常见问题
 

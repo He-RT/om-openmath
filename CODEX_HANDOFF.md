@@ -2,12 +2,13 @@
 
 > **pre-alpha.5 已公开发布，按用户调整后的范围收尾。** [公开发行页](https://github.com/He-RT/om-openmath/releases/tag/v0.1.0-pre-alpha.5) · [计划与最终记录](docs/plan/PRE_ALPHA_5.md) · [安装与发布记录](docs/acceptance/pre-alpha.5/local-install.md)。A–G3及本地三包安装已通过；公开后验证由用户明确取消，不能记为实测通过。视觉依据仍为 [workbench-v2.md](docs/design/workbench-v2.md) 和四张原型截图。
 
-## 2026-10-23 iOS / iPadOS .5 追加开发（当前活动范围）
+## 2026-10-23 iOS / iPadOS .5 追加发行（已公开）
 
-- 用户在内容完成后已允许模拟器验收，要求 **Device Hub 管理、同时最多存在一台（关机也计入），一个型号完成就删除**。按 0 → iPhone → 0 → iPad → 0 执行，两台均已删；后续打包不要再启动模拟器。单代理，不改系统权限/输入法/外观，不调用真实模型。
-- 原生工作台、三维、移动 Pi/JavaScriptCore 助手及打包入口已实现。修复候选 `405a1f05d838bbd95d43e403871537a5888905c4` 双目标构建通过；iPhone 18 Pro / iPad Pro 11-inch M5 各 34 单元 + 6 UI、40 项全通过，原 53 数学最大耗时 92.771 / 622.252 ms。三包及 manifest 在 `target/ios-pre-alpha.5/candidate-405a1f05-assets/`；旧候选/失败根保留不发布。[验收记录](docs/acceptance/pre-alpha.5/ios/README.md)与[计划](docs/plan/PRE_ALPHA_5_IOS.md)记载修复、覆盖及未测项。
-- [PR #7](https://github.com/He-RT/om-openmath/pull/7) 已在完整 CI `39934092109` 通过后普通合并为 `e060c4ad`；产品候选为 `bba0448e`。最后发现 Swift 把 NFC/NFD 源码视为相等的边界，后续分支 `codex/ios-source-guard` 修复准确字节相等和编辑冲突；临时 iPhone 上 5 项针对性测试通过，输入散列与摘要见 `unicode-guard-results.json`。该设备也已从 Device Hub 删除，数量最终 0；移除期间曾挂起，只关闭这台设备后原移除完成。修复另走小型 PR/适用 CI，完成后以其产品 SHA 构建发布，不发旧候选。打包工作流使用现有原生 CI 已成功的 `xcode-27` 托管镜像，固定产品与打包提交；不再启动模拟器或调用真实模型。
-- 最终公开补包及 README 同步尚未完成。27.1 专用 Duo API/折叠硬件与物理设备未测；真机包需自行签名，不是通用 IPA / TestFlight。仓库未启用 auto-merge，不改设置；不用旧 `.5` 资产覆盖新移动来源记录。
+- 用户允许模拟器验收，要求 **Device Hub 管理、同时最多存在一台（关机也计入），一个型号完成就删除**。完整验收及 Unicode 补测按 0 → iPhone → 0 → iPad → 0 → iPhone → 0 执行，最终为 0；不要再启动模拟器。单代理，不改系统权限/输入法/外观，不调用真实模型。
+- 原生工作台、SceneKit Metal 三维与 Pi 1.0.4 / JavaScriptCore 助手已完成。完整运行验收提交 `405a1f05d838bbd95d43e403871537a5888905c4`：iPhone 18 Pro / iPad Pro 11-inch M5 各 34 单元 + 6 UI、40 项通过，原 53 数学最大耗时 92.771 / 622.252 ms；助手为本地合成协议回环。[验收记录](docs/acceptance/pre-alpha.5/ios/README.md)与[计划](docs/plan/PRE_ALPHA_5_IOS.md)保留失败和未测项。
+- [PR #7](https://github.com/He-RT/om-openmath/pull/7) 在完整 CI `39934092109` 通过后普通合入 `e060c4ad`。[PR #8](https://github.com/He-RT/om-openmath/pull/8) 补 NFC/NFD 准确源码身份保护，临时 iPhone 5 项测试及适用 CI `39937454919` 通过，普通合入 `343bf846`；摘要与输入散列在 `unicode-guard-results.json`。
+- 最终产品/打包输入均为 `c38d678d461c9f12bf3e9ea686af192db51a033c`，[发行构建 39937450343](https://github.com/He-RT/om-openmath/actions/runs/39937450343) 成功，未再次运行模拟器。六文件已手动追加公开，GitHub 大小/散列与下载自 CI 的文件一致，原十资产与标签保持不变；[补包记录](docs/acceptance/pre-alpha.5/ios-release.md)含完整来源。公开包没有重复安装回读，不能冒充同一字节运行验收。
+- README、安装、开发、模型、移动指南与发行说明同步。真机包需自行签名，不是通用 IPA / TestFlight；没有物理设备、真实模型或 Duo 折叠/27.1 API 验证。按实际宽度保持文稿状态的 Duo 路径已实现，不声称硬件验收完成。清理六个自有中间缓存，实际回收约 456 MiB，约 65 GiB 可用；所有包、依赖、失败根及测试结果保留。真实模型账本仍 69/80。
 
 ## 2026-10-23 Git 整改 R1–R3
 

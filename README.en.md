@@ -17,7 +17,7 @@ Scientific features include bounded symbolic calculus, machine quadrature, dense
 
 ## Download and use
 
-The [`.5` release](https://github.com/He-RT/om-openmath/releases/tag/v0.1.0-pre-alpha.5) contains Mac/Web packages, a Windows MSI, an Android APK and two CLI ZIPs. `release-manifest.json` covers the original Mac/Web packages and `cli-release-manifest.json` covers the CLI supplements at source revision `86da0620…`. `tauri-release-manifest.json` records the actual wrapper source revision, sizes and SHA256 hashes of the new MSI/APK. The original tag and published files are preserved.
+The [`.5` release](https://github.com/He-RT/om-openmath/releases/tag/v0.1.0-pre-alpha.5) contains Mac/Web packages, a Windows MSI, an Android APK, two CLI ZIPs and native iOS/iPadOS development assets. `release-manifest.json` covers the original Mac/Web packages and `cli-release-manifest.json` covers the CLI supplements at source revision `86da0620…`. Separate Tauri and iOS manifests record each supplement's actual source, sizes and SHA256 hashes. The original tag and published files are preserved.
 
 | Platform | Asset | Usage |
 |---|---|---|
@@ -28,6 +28,7 @@ The [`.5` release](https://github.com/He-RT/om-openmath/releases/tag/v0.1.0-pre-
 | Android 7.0+, ARM64 / x86_64 | `OpenMath_0.1.0-pre-alpha.5_android.apk` | Install the release-signed APK; compileSdk / targetSdk 35 |
 | macOS ARM64 CLI | `om-cli_0.1.0-pre-alpha.5_macos_arm64.zip` | Extract, run `./om`, optionally add to PATH |
 | Windows x64 CLI | `om-cli_0.1.0-pre-alpha.5_windows_x64.zip` | Extract, run `om.exe`, optionally add to PATH |
+| iOS/iPadOS 27 | ARM64 simulator app, unsigned device app and XCFramework | Native SwiftUI/UIKit; device installation requires your own signing |
 
 The Mac application bundles Node, Pi and runtime resources. End users do not need Rust, Xcode, Node or npm. It is ad hoc signed and has no Developer ID signature or Apple notarization. This Preview uses its own `.5` data directory and does not automatically migrate `.4` settings, keys or sessions. Mac keys use the system keychain; browser keys are remembered only by explicit opt-in. Web providers must allow CORS.
 
@@ -35,7 +36,7 @@ Open a [sample notebook](docs/examples/README.md) or enter `solve(x^2 - 5*x + 6 
 
 Windows and Android use Tauri 2 to bundle the complete Web workbench: local WASM computation, 2D/3D plots, the existing assistant, settings, image attachments and exports. Open/save operations use system file pickers. The assistant retains the Web provider/CORS requirements and opt-in WebView credential storage. The Windows MSI has no Authenticode signature and may download WebView2 when missing. Android uses a persistent release signing key and the system WebView. See the [Tauri package record](docs/acceptance/pre-alpha.5/tauri-release.md).
 
-The CLI supplements retain the existing terminal features and do not add the notebook assistant. They need no Node or GUI runtime. iOS development assets remain in [pre-alpha.3](https://github.com/He-RT/om-openmath/releases/tag/v0.1.0-pre-alpha.3). No Intel Mac, Windows ARM64 or Linux installer is provided.
+The CLI supplements retain the existing terminal features and do not add the notebook assistant. They need no Node or GUI runtime. Native iOS/iPadOS 27 development assets are included in `.5`: an ad hoc signed ARM64 simulator app, an unsigned ARM64 device app and the XCFramework. Device installation requires your own signing. See the [mobile guide](docs/ios.md) and [40-test-per-device acceptance record](docs/acceptance/pre-alpha.5/ios/README.md). No Intel Mac, Windows ARM64 or Linux installer is provided.
 
 The original three `.5` packages passed local installation/extraction, actual watermelon rendering, solving for 2/3 and version checks; the source CI passed. At the user's request, anonymous public downloads and repeat installation/readback were omitted after publication. The CLI supplements separately passed extracted-ZIP version and 2/3 checks on each platform; see the [CLI record](docs/acceptance/pre-alpha.5/cli-release.md). See the [release notes](docs/release-0.1.0-pre-alpha.5.md) and [installation and publication record](docs/acceptance/pre-alpha.5/local-install.md) for the exact scope and known limitations.
 
@@ -62,7 +63,7 @@ cargo build -p om-cli --release --locked
 ## Documentation
 
 - [Input language and examples](docs/language.en.md), [solving semantics and limits](docs/solve.en.md)
-- [Current Mac/Web AI configuration and privacy](docs/llm.md), [CLI configuration in English](docs/llm.en.md)
+- [Current Mac/Web/mobile AI configuration and privacy](docs/llm.md), [CLI configuration in English](docs/llm.en.md)
 - [`.5` implementation and acceptance](docs/plan/PRE_ALPHA_5.md), [release process](docs/releasing.md), [protocol](docs/protocol.en.md)
 - [Native iOS/iPadOS development](docs/ios.md), [complete documentation index](docs/README.md)
 

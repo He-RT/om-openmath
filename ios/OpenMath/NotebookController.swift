@@ -187,7 +187,7 @@ import SwiftUI
   }
   func edit(_ id: String, source: String) {
     guard !agentCommitting else { return }
-    guard let i = cells.firstIndex(where: { $0.id == id }), cells[i].input.source != source else {
+    guard let i = cells.firstIndex(where: { $0.id == id }), !cells[i].input.source.utf8.elementsEqual(source.utf8) else {
       return
     }
     cells[i].input.source = source

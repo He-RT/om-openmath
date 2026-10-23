@@ -2,6 +2,19 @@ import XCTest
 @testable import OpenMath
 
 @MainActor final class MobileWorkbenchTests: XCTestCase {
+  func testCanonicalUnicodeEditChangesSourceAndInvalidatesPreview() async throws {
+    let controller = NotebookController(defaults: UserDefaults(suiteName: UUID().uuidString)!)
+    await controller.start(restoreLastDocument: false)
+    defer { controller.kernel?.close() }
+    controller.add(.Text, source: "é")
+    let before = controller.notebook
+    let id = try XCTUnwrap(controller.selected)
+    controller.edit(id, source: "e\u{301}")
+    XCTAssertEqual(Array(controller.cells[0].input.source.utf8), Array("e\u{301}".utf8))
+    XCTAssertNotEqual(controller.notebook, before)
+    do { try await controller.commitAgentNotebook(before, expected: before); XCTFail("Stale Unicode source accepted") }
+    catch { XCTAssertEqual(error.localizedDescription, "文稿已改变，请重新预览") }
+  }
   func testPatchRequiresExactSourceAndRejectsAmbiguousReplacementAndSelfMove() throws {
     let cell = CellInput(id: "cell-a", source: "a+a"), file = NotebookFile(cells: [cell])
     let hash = MobileAgentStore.hash(cell.source)

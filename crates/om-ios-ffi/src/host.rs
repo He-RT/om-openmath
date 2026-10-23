@@ -22,6 +22,13 @@ impl Clock for MonotonicClock {
 type Reply = mpsc::SyncSender<Result<String, String>>;
 enum Input {
     Request(Box<Envelope<Request>>, Reply),
+    Scratch {
+        correlation: u64,
+        source: String,
+        dialect: om_kernel::protocol::Dialect,
+        definitions: bool,
+        reply: Reply,
+    },
     Bytes {
         correlation: u64,
         id: String,
@@ -34,6 +41,7 @@ enum Input {
 struct Shared {
     closed: AtomicBool,
     interrupt: Arc<AtomicBool>,
+    scratch_interrupt: Arc<AtomicBool>,
     jobs: Mutex<BTreeMap<String, LlmCancellation>>,
 }
 #[derive(Serialize)]
@@ -46,6 +54,7 @@ pub struct Host {
     tx: mpsc::SyncSender<Input>,
     shared: Arc<Shared>,
     thread: Mutex<Option<JoinHandle<()>>>,
+    models: Mutex<crate::model::ModelStore>,
 }
 impl Host {
     /// Initialize validated in-memory settings. Swift supplies actual ephemeral keys.
@@ -63,6 +72,7 @@ impl Host {
         let shared = Arc::new(Shared {
             closed: AtomicBool::new(false),
             interrupt: session.interrupt_handle(),
+            scratch_interrupt: Arc::new(AtomicBool::new(false)),
             jobs: Mutex::new(BTreeMap::new()),
         });
         let worker = shared.clone();
@@ -80,6 +90,45 @@ impl Host {
                         Input::Request(envelope, reply) => {
                             let (body, events) = session.handle(envelope.body);
                             (envelope.id, body, events, reply)
+                        }
+                        Input::Scratch {
+                            correlation,
+                            source,
+                            dialect,
+                            definitions,
+                            reply,
+                        } => {
+                            let mut scratch = if definitions {
+                                session
+                                    .fork_working_session(worker.scratch_interrupt.clone())
+                                    .map(|working| working.into_session())
+                                    .map_err(|_| {
+                                        "Cannot create isolated mathematical scope".to_owned()
+                                    })
+                            } else {
+                                Ok(Session::with_cancel_token(
+                                    Default::default(),
+                                    None,
+                                    worker.scratch_interrupt.clone(),
+                                ))
+                            };
+                            let (body, events) = match scratch.as_mut() {
+                                Ok(scratch) => {
+                                    scratch.config.general.reactive = false;
+                                    scratch.config.llm.enabled = false;
+                                    scratch.config.llm.profiles.clear();
+                                    scratch.handle(Request::Evaluate {
+                                        cell_id: "mobile-scratch".into(),
+                                        source,
+                                        dialect,
+                                    })
+                                }
+                                Err(message) => {
+                                    let _ = reply.send(Err(message.clone()));
+                                    continue;
+                                }
+                            };
+                            (correlation, body, events, reply)
                         }
                         Input::Bytes {
                             correlation,
@@ -127,6 +176,7 @@ impl Host {
             tx,
             shared,
             thread: Mutex::new(Some(thread)),
+            models: Mutex::new(Default::default()),
         })
     }
     fn wait(&self, rx: mpsc::Receiver<Result<String, String>>) -> Result<String, String> {
@@ -144,10 +194,59 @@ impl Host {
             }
         }
     }
+    /// Run one scoped single-turn model codec command without transport or tool IO.
+    pub fn model_command(&self, source: &str) -> Result<String, String> {
+        if self.shared.closed.load(Ordering::Acquire) {
+            return Err("Kernel is closed".into());
+        }
+        self.models
+            .lock()
+            .map_err(|_| "Model registry unavailable")?
+            .command(source)
+    }
     /// Dispatch one bounded JSON envelope and return actual response/events.
     pub fn request(&self, source: &str) -> Result<String, String> {
         if source.len() > 16 * 1024 * 1024 || self.shared.closed.load(Ordering::Acquire) {
             return Err("Kernel is closed or envelope exceeds limit".into());
+        }
+        let header: serde_json::Value =
+            serde_json::from_str(source).map_err(|_| "Invalid kernel envelope")?;
+        if header["body"]["type"] == "mobile_function_docs" {
+            let id = header["id"]
+                .as_u64()
+                .filter(|id| *id > 0 && *id <= 9_007_199_254_740_991)
+                .ok_or("Invalid correlation ID")?;
+            return Ok(serde_json::json!({"response":{"id":id,"body":{"type":"mobile_function_docs","documents":om_kernel::capabilities::function_documents()}},"events":[]}).to_string());
+        }
+        if header["body"]["type"] == "mobile_scratch" {
+            let correlation = header["id"]
+                .as_u64()
+                .filter(|id| *id > 0 && *id <= 9_007_199_254_740_991)
+                .ok_or("Invalid correlation ID")?;
+            let text = header["body"]["source"]
+                .as_str()
+                .filter(|text| text.len() <= 65536)
+                .ok_or("Invalid scratch source")?
+                .to_owned();
+            let dialect = serde_json::from_value(header["body"]["dialect"].clone())
+                .map_err(|_| "Invalid dialect")?;
+            let definitions = header["body"]["definitions"]
+                .as_bool()
+                .ok_or("Invalid scratch scope")?;
+            let (tx, rx) = mpsc::sync_channel(1);
+            self.shared
+                .scratch_interrupt
+                .store(false, Ordering::Relaxed);
+            self.tx
+                .try_send(Input::Scratch {
+                    correlation,
+                    source: text,
+                    dialect,
+                    definitions,
+                    reply: tx,
+                })
+                .map_err(|_| "Kernel queue is full or stopped")?;
+            return self.wait(rx);
         }
         let envelope: Envelope<Request> =
             serde_json::from_str(source).map_err(|_| "Invalid kernel envelope")?;
@@ -194,6 +293,7 @@ impl Host {
     /// Directly cancel math even while the owner is busy.
     pub fn interrupt(&self) {
         self.shared.interrupt.store(true, Ordering::Relaxed);
+        self.shared.scratch_interrupt.store(true, Ordering::Relaxed);
     }
     /// Directly cancel a tool's computation flag. Swift also cancels its URLSession task.
     pub fn cancel(&self, id: &str) {

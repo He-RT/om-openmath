@@ -78,14 +78,20 @@ fn capabilities_separate_kernel_presentation_and_future_permissions() {
         };
         assert_eq!(
             c.scene_3d,
-            matches!(platform, HostPlatform::Desktop | HostPlatform::Web)
+            matches!(
+                platform,
+                HostPlatform::Desktop | HostPlatform::Web | HostPlatform::Ios
+            )
         );
         assert!(c.task_permissions.is_none());
         assert_eq!(c.kernel_version, env!("CARGO_PKG_VERSION"));
         assert_eq!(c.function_ids.len(), 248);
         assert_eq!(
             c.rendered_outputs.iter().any(|s| s == "scene_3d"),
-            matches!(platform, HostPlatform::Desktop | HostPlatform::Web)
+            matches!(
+                platform,
+                HostPlatform::Desktop | HostPlatform::Web | HostPlatform::Ios
+            )
         );
         assert!(!c.rendered_outputs.iter().any(|s| s == "interpolation"));
     }

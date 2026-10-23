@@ -44,7 +44,7 @@ pub struct CapabilityInfo {
     pub platform: HostPlatform,
     /// Actual supported UI output families.
     pub rendered_outputs: Vec<String>,
-    /// Documented desktop/Web 3D renderer; actual WebGL2 availability is checked by the host, while mobile stays unsupported.
+    /// Documented desktop/Web/mobile 3D renderer; actual GPU availability is checked by the host.
     pub scene_3d: bool,
     /// Current explicit host artifact formats, independent of notebook/agent write permissions.
     #[serde(default)]
@@ -119,7 +119,10 @@ pub fn capabilities(platform: HostPlatform) -> CapabilityInfo {
             "parameter_exploration",
         ]
     };
-    if matches!(platform, HostPlatform::Desktop | HostPlatform::Web) {
+    if matches!(
+        platform,
+        HostPlatform::Desktop | HostPlatform::Web | HostPlatform::Ios
+    ) {
         rendered_outputs.push("scene_3d");
     }
     CapabilityInfo {
@@ -129,7 +132,10 @@ pub fn capabilities(platform: HostPlatform) -> CapabilityInfo {
         function_ids: ids.into_iter().collect(),
         platform,
         rendered_outputs: rendered_outputs.into_iter().map(String::from).collect(),
-        scene_3d: matches!(platform, HostPlatform::Desktop | HostPlatform::Web),
+        scene_3d: matches!(
+            platform,
+            HostPlatform::Desktop | HostPlatform::Web | HostPlatform::Ios
+        ),
         export_formats: ["svg", "png", "csv", "json", "obj"]
             .into_iter()
             .map(String::from)

@@ -15,7 +15,7 @@ struct RootView: View {
         let inspector: CGFloat = layout.inspector && controller.showInspector ? 340 : 0
         ZStack(alignment: .topLeading) {
           Color(.systemBackground)
-          NotebookView(controller: controller)
+          NotebookView(controller: controller, bottomClearance: layout.inspector ? 0 : 68)
             .frame(width: max(0, geometry.size.width - sidebar - inspector))
             .offset(x: sidebar)
           if sidebar > 0 {
@@ -79,7 +79,7 @@ struct RootView: View {
           if wide {
             Button { outline.toggle() } label: { Image(systemName: "sidebar.left") }.accessibilityLabel(controller.text("文稿目录", "Outline"))
             Menu { ForEach(CellKind.allCases, id: \.self) { kind in Button(kind.rawValue) { controller.add(kind) } } } label: { Image(systemName: "plus") }
-            Button { controller.showInspector.toggle() } label: { Image(systemName: "sidebar.right") }.accessibilityLabel(controller.text("检查面板", "Inspector"))
+            Button { controller.showInspector.toggle() } label: { Image(systemName: "sidebar.right") }.accessibilityLabel(controller.text("检查面板", "Inspector")).accessibilityIdentifier("inspector.toggle")
           }
           Button { controller.showCommands = true } label: { Image(systemName: "command") }
             .keyboardShortcut("k").accessibilityLabel(controller.text("命令", "Commands"))
@@ -176,6 +176,7 @@ struct RootView: View {
 
 struct NotebookView: View {
   @Bindable var controller: NotebookController
+  var bottomClearance: CGFloat = 0
   var body: some View {
     ScrollView {
       LazyVStack(alignment: .leading, spacing: 28) {
@@ -221,7 +222,8 @@ struct NotebookView: View {
         ForEach(controller.cells) { cell in
           NotebookCellView(cell: cell, controller: controller).id(cell.id)
         }
-      }.padding(.horizontal, 24).padding(.vertical, 28).frame(maxWidth: 800).frame(maxWidth: .infinity).scrollTargetLayout()
+      }.padding(.horizontal, 24).padding(.vertical, 28).padding(.bottom, bottomClearance)
+        .frame(maxWidth: 800).frame(maxWidth: .infinity).scrollTargetLayout()
     }
     .scrollPosition(id: $controller.scrollTarget, anchor: .top)
     .onScrollGeometryChange(for: Bool.self) { $0.contentOffset.y > 30 } action: { _, value in controller.notebookScrolled = value }

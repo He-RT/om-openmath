@@ -35,6 +35,10 @@ import UniformTypeIdentifiers
   private var timer: Task<Void, Never>?
   private var authorizedDestinations = Set<String>()
   private var backupDraft = ""
+  @ObservationIgnored private let makeTransport: (KernelClient) -> MobileModelTransport
+  init(makeTransport: @escaping (KernelClient) -> MobileModelTransport = { MobileModelTransport(client: $0) }) {
+    self.makeTransport = makeTransport
+  }
   var profiles: [JSONValue] {
     guard controller?.config["llm"]["enabled"].bool == true else { return [] }
     return controller?.config["llm"]["profiles"].array.filter { ["openai_chat", "anthropic"].contains($0["kind"].string) && !$0["base_url"].string.isEmpty && (!$0["requires_api_key"].bool || !$0["api_key"].string.isEmpty) } ?? []
@@ -108,7 +112,7 @@ import UniformTypeIdentifiers
   }
   func send() async {
     guard !busy, jobs.isEmpty, let controller, !profile.isNull, authorized, !draft.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty,
-      let kernel = controller.kernel else { return }
+      controller.kernel != nil else { return }
     guard controller.composingCells.isEmpty, !controller.agentCommitting else { error = "请先完成当前编辑"; return }
     if execute && !profile["supports_tools"].bool { error = "此模型未声明工具能力，不能执行文稿任务"; return }
     generation = UUID()
@@ -162,7 +166,7 @@ import UniformTypeIdentifiers
       guard let source = Bundle.main.url(forResource: "mobile-agent", withExtension: "js") else { throw KernelError.message("缺少 Pi 运行资源") }
       js.evaluateScript(try String(contentsOf: source, encoding: .utf8))
       guard js.exception == nil else { throw KernelError.message("Pi 运行资源无法初始化") }
-      context = js; transport = MobileModelTransport(client: kernel); busy = true
+      context = js; busy = true
       timer = Task { [weak self] in try? await Task.sleep(for: .seconds(300)); guard !Task.isCancelled else { return }; self?.stop(); self?.outcome = "已达到本轮时间预算" }
       js.objectForKeyedSubscript("mobileStart")?.call(withArguments: [String(decoding: bytes, as: UTF8.self)])
     } catch { self.error = error.localizedDescription; stop() }
@@ -197,7 +201,7 @@ import UniformTypeIdentifiers
       try Task.checkCancellation()
       guard let kernel = controller?.kernel else { throw CancellationError() }
       transport?.close()
-      let transport = MobileModelTransport(client: kernel)
+      let transport = makeTransport(kernel)
       self.transport = transport
       fullInput = payload["request"].pretty
       return try await transport.run(payload, task: taskID, profile: activeProfile) { [weak self] text in self?.streaming += text }

@@ -2,6 +2,8 @@
 
 2026-10-23。用户要求开始制作并发布 `.5` 的 iOS / iPadOS 版，先完成内容，只有获得其后续明确许可才能启动模拟器验证。沿用单代理、原生实现、不改系统权限/输入法/外观、按需清理自有构建缓存的约束。此追加范围覆盖旧 `.5` 计划中排除 iOS 的条款；Git 走短期分支 → PR → 适用 CI → dev。
 
+用户已在内容候选完成后允许模拟器验证，追加约束：**通过 Device Hub 管理，同时最多存在一台模拟器（关机也计入），一个型号测完就删除，再创建下一个**。已通过 Xcode 官方组件入口安装 iOS 27.0 运行时，Device Hub 创建唯一的 iPhone 18 Pro `OpenMath-phone-acceptance`；尚未创建 iPad。
+
 ## 交付目标
 
 - SwiftUI / UIKit 原生工作台，遵循 [原生玻璃草稿 02](../design/ios-ipados-workbench-02.md)：清晰纸面、浅灰源码槽、状态左轨、悬浮原生玻璃工具组。
@@ -40,3 +42,11 @@
 已推送三个实现提交并创建 [草稿 PR #7](https://github.com/He-RT/om-openmath/pull/7)，目标为 `dev`；常规 CI 正在运行，iOS 运行项按许可边界跳过。尚未合入或公开移动资产。
 
 尚未执行 iPhone/iPad 的 XCTest/UI、安装回读、硬件键盘/触控、性能、真实模型和 Duo 折叠验证；未创建、启动、安装或运行模拟器。27.1 专用折叠区域/纵向工具栏 API 不在本机 27.0 SDK 内，不能记为 Duo 设备验收。没有 Apple Distribution 签名身份，真机资产为需自行签名的开发应用，不是通用 IPA / TestFlight / App Store 包。
+
+## 获许可后的运行修复（进行中，以上为许可前记录）
+
+- 首轮 iPhone 33 项单元测试有 3 项失败，6 项 UI 中三维/助手流程失败；失败根 `phone-5c5c473e.xcresult` 保留。设置失败来自模拟器候选仅有 linker 签名，补 Xcode ad hoc 应用签名后两项设置测试通过。53 数学条目中 row 17 首次 1264 ms（FFI 127 ms / 主线程恢复 1132 ms），复测在原 1000 ms 阈值内通过，不放宽阈值。
+- 三维相机接管内部拖动，测试改为从文稿边缘滚动；补底部工具栏滚动留白、44pt 三维操作触点和宽屏检查器 ID。`phone-scene-gutter-02.xcresult` 实测球体 3968 三角形、信息、旋转和助手草稿保留通过。
+- `phone-mobile-loopback-02.xcresult` 完成 6 轮真实 Pi/JavaScriptCore → URLSession 合成协议 → Rust codec → 原生工具回环，验证预览、源码保存、计算/结果 4、回读和撤销；没有外网/真实模型调用。修正快照编码为稳定字段顺序，避免分页引用随机改变。
+- 常规 CI 暴露旧 Web 的 iOS 三维占位断言、FFI enum 大小 lint，以及 `ctutils 0.4.2` 新漏洞 RUSTSEC-2026-0385；更新真实几何断言、Box 请求，锁文件仅升级到修复版 0.4.4。相关 Clippy、4 项桥接测试、Web 类型和 advisories 检查通过，最终 SHA CI 待重跑。
+- 正在准备修复后的准确提交候选，随后最终 iPhone/iPad 串行验收、删除设备、集成和公开补包。旧候选包保留，但不发布。

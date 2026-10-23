@@ -12,7 +12,7 @@ import SwiftUI
   var config: JSONValue = .null
   var loading = true
   private(set) var agentCommitting = false
-  let agent = MobileNotebookAgent()
+  let agent: MobileNotebookAgent
   var busy = false
   private(set) var composingCells = Set<String>()
   var error: String?
@@ -60,7 +60,9 @@ import SwiftUI
   private var aiTimeouts: [String: Double] = [:]
   private var aiScopes: [String: (epoch: Int, cell: String?, revision: Int?)] = [:]
   private let defaults: UserDefaults
-  init(defaults: UserDefaults = .standard) { self.defaults = defaults }
+  init(defaults: UserDefaults = .standard, agent: MobileNotebookAgent? = nil) {
+    self.defaults = defaults; self.agent = agent ?? MobileNotebookAgent()
+  }
   var isEnglish: Bool {
     language == "en" || (language == "auto" && !Locale.current.identifier.hasPrefix("zh"))
   }

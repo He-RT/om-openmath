@@ -14,14 +14,14 @@ bash ios/Scripts/build-kernel.sh
 candidate_revision="$(git rev-parse HEAD)"
 for candidate_platform in device simulator; do
   if [ "$candidate_platform" = device ]; then
-    candidate_destination='generic/platform=iOS'; candidate_action=build
+    candidate_destination='generic/platform=iOS'; candidate_action=build; candidate_signing=NO
   else
-    candidate_destination='generic/platform=iOS Simulator'; candidate_action=build-for-testing
+    candidate_destination='generic/platform=iOS Simulator'; candidate_action=build-for-testing; candidate_signing=YES
   fi
   xcodebuild -project ios/OpenMath.xcodeproj -scheme OpenMath -configuration Release \
     -destination "$candidate_destination" -derivedDataPath "$candidate_output/$candidate_platform" \
     -clonedSourcePackagesDirPath "$candidate_root/target/ios-device/SourcePackages" \
-    -disableAutomaticPackageResolution ARCHS=arm64 ONLY_ACTIVE_ARCH=YES CODE_SIGNING_ALLOWED=NO OPENMATH_SOURCE_REVISION="$candidate_revision" "$candidate_action"
+    -disableAutomaticPackageResolution ARCHS=arm64 ONLY_ACTIVE_ARCH=YES CODE_SIGNING_ALLOWED="$candidate_signing" CODE_SIGN_IDENTITY=- OPENMATH_SOURCE_REVISION="$candidate_revision" "$candidate_action"
   if [ "$candidate_platform" = device ]; then candidate_product='Release-iphoneos'; else candidate_product='Release-iphonesimulator'; fi
   [ "$(/usr/libexec/PlistBuddy -c 'Print :OpenMathSourceRevision' "$candidate_output/$candidate_platform/Build/Products/$candidate_product/OpenMath.app/Info.plist")" = "$candidate_revision" ] || { echo 'Built source revision mismatch'; exit 1; }
 done

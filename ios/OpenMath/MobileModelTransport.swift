@@ -7,9 +7,9 @@ private final class MobileNoRedirect: NSObject, URLSessionTaskDelegate, @uncheck
 @MainActor final class MobileModelTransport {
   private let client: KernelClient
   private let session: URLSession
-  init(client: KernelClient) {
+  init(client: KernelClient, configuration: URLSessionConfiguration = .ephemeral) {
     self.client = client
-    let config = URLSessionConfiguration.ephemeral
+    let config = configuration.copy() as! URLSessionConfiguration
     config.httpCookieStorage = nil; config.urlCache = nil; config.requestCachePolicy = .reloadIgnoringLocalCacheData
     session = URLSession(configuration: config, delegate: MobileNoRedirect(), delegateQueue: nil)
   }

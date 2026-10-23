@@ -16,8 +16,8 @@ struct SceneView: View {
         NativeSceneCanvas(data: data, reset: reset).frame(height: 300)
           .clipShape(RoundedRectangle(cornerRadius: 10)).accessibilityIdentifier("scene.canvas")
         HStack {
-          Button(controller.text("复位视角", "Reset camera")) { reset += 1 }
-          Button(controller.text("图形信息", "Scene information")) { details.toggle() }
+          Button { reset += 1 } label: { Text(controller.text("复位视角", "Reset camera")).frame(minWidth: 44, minHeight: 44) }
+          Button { details.toggle() } label: { Text(controller.text("图形信息", "Scene information")).frame(minWidth: 44, minHeight: 44) }
           Spacer()
           ExportArtifactButton(title: "OBJ", name: "OpenMath-scene", version: data["sampled"].pretty,
             enabled: true, controller: controller) {

@@ -117,15 +117,18 @@ final class NotebookUITests: XCTestCase {
     app.buttons["example.scene"].tap()
     let canvas = app.descendants(matching: .any)["scene.canvas"].firstMatch
     XCTAssertTrue(canvas.waitForExistence(timeout: 20))
+    // Drag the document gutter: a drag inside the scene belongs to its camera.
+    let document = app.scrollViews.firstMatch
+    document.coordinate(withNormalizedOffset: .init(dx: 0.04, dy: 0.8)).press(forDuration: 0.1,
+      thenDragTo: document.coordinate(withNormalizedOffset: .init(dx: 0.04, dy: 0.25)))
     app.buttons["图形信息"].tap()
     XCTAssertTrue(app.staticTexts["scene.geometry"].waitForExistence(timeout: 5))
     screenshot("scene-portrait", app)
     XCUIDevice.shared.orientation = .landscapeLeft
     XCTAssertTrue(canvas.waitForExistence(timeout: 5))
     screenshot("scene-landscape", app)
-    let inspector = app.buttons["检查面板"].firstMatch
+    let inspector = app.buttons["inspector.toggle"].firstMatch
     XCTAssertTrue(inspector.waitForExistence(timeout: 5)); inspector.tap()
-    app.buttons["助手"].firstMatch.tap()
     let input = app.textViews["assistant.input"]
     XCTAssertTrue(input.waitForExistence(timeout: 5))
     input.tap(); input.typeText("Duo draft 123")

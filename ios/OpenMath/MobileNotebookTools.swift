@@ -8,7 +8,8 @@ import Foundation
   init(controller: NotebookController) { self.controller = controller }
   func reset() { snapshots = [:]; previews = [:]; results = [:] }
   private func snapshot(_ file: NotebookFile) throws -> String {
-    let ref = "snapshot-" + MobileAgentStore.hash(String(decoding: try JSONEncoder().encode(file), as: UTF8.self))
+    let encoder = JSONEncoder(); encoder.outputFormatting = .sortedKeys
+    let ref = "snapshot-" + MobileAgentStore.hash(String(decoding: try encoder.encode(file), as: UTF8.self))
     snapshots[ref] = file; return ref
   }
   private func current(_ ref: String, _ controller: NotebookController) throws -> NotebookFile {

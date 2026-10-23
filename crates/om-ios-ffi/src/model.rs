@@ -9,7 +9,7 @@ use std::collections::BTreeMap;
 enum Command {
     Prepare {
         id: String,
-        request: Request,
+        request: Box<Request>,
         message: String,
         task: String,
         turn: String,

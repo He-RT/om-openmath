@@ -91,7 +91,7 @@ impl Session {
     }
 
     pub(super) fn scene_enabled(&self) -> bool {
-        !matches!(self.host_platform, HostPlatform::Ios)
+        true
     }
     /// Shared flag that a host may set while synchronous evaluation is running.
     pub fn interrupt_handle(&self) -> Arc<AtomicBool> {

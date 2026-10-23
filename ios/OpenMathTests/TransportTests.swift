@@ -11,6 +11,7 @@ private final class FixtureProtocol: URLProtocol, @unchecked Sendable {
     var delay: TimeInterval = 0
     var calls: [URLRequest] = []
     var sequence: [Data] = []
+    var responder: (@Sendable (URLRequest, Int) -> Data)?
     func configure(status: Int = 200, body: Data, delay: TimeInterval = 0) {
       lock.lock()
       defer { lock.unlock() }
@@ -19,13 +20,14 @@ private final class FixtureProtocol: URLProtocol, @unchecked Sendable {
       self.delay = delay
       calls = []
       sequence = []
+      responder = nil
     }
     func take(_ request: URLRequest) -> (Int, Data, TimeInterval) {
       lock.lock()
       defer { lock.unlock() }
       calls.append(request)
       return (
-        status, sequence.isEmpty ? body : sequence[min(calls.count - 1, sequence.count - 1)], delay
+        status, responder?(request, calls.count) ?? (sequence.isEmpty ? body : sequence[min(calls.count - 1, sequence.count - 1)]), delay
       )
     }
     func configureSequence(_ values: [Data]) {
@@ -35,6 +37,11 @@ private final class FixtureProtocol: URLProtocol, @unchecked Sendable {
       delay = 0
       calls = []
       sequence = values
+      responder = nil
+    }
+    func configureResponder(_ responder: @escaping @Sendable (URLRequest, Int) -> Data) {
+      lock.lock(); defer { lock.unlock() }
+      status = 200; delay = 0; calls = []; sequence = []; self.responder = responder
     }
     func count() -> Int {
       lock.lock()
@@ -87,7 +94,108 @@ private final class FixtureProtocol: URLProtocol, @unchecked Sendable {
   override func stopLoading() { work?.cancel() }
 }
 
+private enum MobileLoopbackReply {
+  static func response(_ request: URLRequest, round: Int) -> Data {
+    do {
+      var bytes = request.httpBody ?? Data()
+      if bytes.isEmpty, let stream = request.httpBodyStream {
+        stream.open(); defer { stream.close() }
+        var buffer = [UInt8](repeating: 0, count: 4096)
+        while stream.hasBytesAvailable {
+          let count = stream.read(&buffer, maxLength: buffer.count)
+          guard count >= 0 else { throw URLError(.cannotDecodeContentData) }
+          if count == 0 { break }; bytes.append(contentsOf: buffer.prefix(count))
+        }
+      }
+      let wire = try JSONDecoder().decode(JSONValue.self, from: bytes)
+      let tool = wire["messages"].array.last { $0["role"].string == "tool" }
+      let reply = try tool.map { try JSONDecoder().decode(JSONValue.self, from: Data($0["content"].string.utf8)) } ?? .null
+      let name: String, args: JSONValue
+      switch round {
+      case 1: name = "read_notebook"; args = .object(["view": .string("outline"), "limit": .number(1)])
+      case 2:
+        guard reply["ok"].bool else { throw URLError(.cannotParseResponse) }
+        name = "preview_source"; args = .object(["snapshot_ref": reply["data"]["snapshot_ref"], "input": .object(["kind": .string("patch"), "operations": .array([.object([
+          "type": .string("insert_cell"), "client_key": .string("sum"), "after": .null, "kind": .string("Math"), "dialect": .string("Modern"), "source": .string("2+2")])])])])
+      case 3:
+        guard reply["ok"].bool, reply["data"]["valid"].bool else { throw URLError(.cannotParseResponse) }
+        name = "apply_notebook_patch"; args = .object(["preview_ref": reply["data"]["preview_ref"]])
+      case 4:
+        guard reply["ok"].bool else { throw URLError(.cannotParseResponse) }
+        name = "run_cells"; args = .object(["snapshot_ref": reply["data"]["snapshot_ref"], "cell_ids": reply["data"]["changed_cells"], "scope": .string("required")])
+      case 5:
+        guard reply["ok"].bool else { throw URLError(.cannotParseResponse) }
+        name = "inspect_result"; args = .object(["result_ref": reply["data"]["cells"][0]["result_ref"], "part": .string("value")])
+      default:
+        guard round == 6, reply["ok"].bool, reply["data"]["items"][0]["input_form"].string == "4" else { throw URLError(.cannotParseResponse) }
+        return try frame(.object(["content": .string("已写入并计算：4")]), finish: "stop")
+      }
+      let call = JSONValue.object(["index": .number(0), "id": .string("mobile-call-\(round)"), "type": .string("function"), "function": .object(["name": .string(name), "arguments": .string(String(decoding: try args.data(), as: UTF8.self))])])
+      return try frame(.object(["tool_calls": .array([call])]), finish: "tool_calls")
+    } catch {
+      return (try? frame(.object(["content": .string("Local fixture rejected the actual request or tool result")]), finish: "stop")) ?? Data()
+    }
+  }
+  private static func frame(_ delta: JSONValue, finish: String) throws -> Data {
+    let value = JSONValue.object(["id": .string("mobile-fixture-response"), "model": .string("synthetic-no-network"), "choices": .array([.object(["index": .number(0), "delta": delta, "finish_reason": .string(finish)])])])
+    return Data(("data: " + String(decoding: try value.data(), as: UTF8.self) + "\n\ndata: [DONE]\n\n").utf8)
+  }
+}
+
 @MainActor final class TransportTests: XCTestCase {
+  func testMobilePiRunsActualNotebookToolsAndUndoWithSyntheticTransport() async throws {
+    let fixture = FixtureProtocol.Registry()
+    fixture.configureResponder { request, round in MobileLoopbackReply.response(request, round: round) }
+    let host = FixtureProtocol.fixtures.install(fixture)
+    let configuration = URLSessionConfiguration.ephemeral
+    configuration.protocolClasses = [FixtureProtocol.self]
+    let agent = MobileNotebookAgent { MobileModelTransport(client: $0, configuration: configuration) }
+    let defaults = try XCTUnwrap(UserDefaults(suiteName: "org.openmath.mobile-fixture." + UUID().uuidString))
+    let controller = NotebookController(defaults: defaults, agent: agent)
+    await controller.start(restoreLastDocument: false)
+    XCTAssertNil(controller.error)
+    let stored = try SettingsStore.load(), original = stored ?? controller.config
+    var config = controller.config, profile = config["llm"]["profiles"][0]
+    profile["kind"] = .string("openai_chat"); profile["base_url"] = .string("https://\(host)/v1")
+    profile["model"] = .string("synthetic-no-network"); profile["api_key"] = .string("")
+    profile["requires_api_key"] = .bool(false); profile["supports_tools"] = .bool(true)
+    profile["extra_headers"] = .object([:]); profile["extra_body"] = .object([:])
+    config["llm"]["profiles"] = .array([profile]); config["llm"]["enabled"] = .bool(true)
+    for feature in ["chat", "fix", "translate"] { config["llm"][feature] = profile["name"] }
+    defer {
+      agent.stop(); controller.kernel?.close()
+      _ = try? SettingsStore.persist(original, previous: config)
+      if stored == nil {
+        let url = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask)[0].appendingPathComponent("OpenMath-pre-alpha.5/settings.json")
+        try? FileManager.default.removeItem(at: url)
+      }
+    }
+    try await controller.applySettings(config)
+    agent.newConversation(); agent.selectedProfile = profile["name"].string
+    agent.execute = true; agent.allowDestination(); agent.draft = "新增 2+2，计算、检查结果并回复。"
+    await agent.send()
+    for _ in 0..<1000 { if !agent.busy && !agent.settling { break }; try await Task.sleep(for: .milliseconds(10)) }
+    XCTAssertFalse(agent.busy); XCTAssertFalse(agent.settling); XCTAssertNil(agent.error, agent.error ?? "")
+    XCTAssertEqual(fixture.count(), 6, agent.outcome)
+    XCTAssertEqual(controller.cells.count, 1)
+    XCTAssertEqual(controller.cells.first?.input.source, "2+2")
+    XCTAssertEqual(controller.cells.first?.output["items"][0]["input_form"].string, "4")
+    XCTAssertEqual(agent.state.records.last?["canonical"]["parts"][0]["text"].string, "已写入并计算：4")
+    XCTAssertTrue(agent.usage["input"].isNull)
+    let file = try XCTUnwrap(controller.fileURL)
+    XCTAssertEqual(try JSONDecoder().decode(NotebookFile.self, from: Data(contentsOf: file)).cells.first?.source, "2+2")
+    let tools = MobileNotebookTools(controller: controller)
+    let read = JSONValue.object(["view": .string("outline")])
+    let first = await tools.invoke("read_notebook", args: read, execute: false, agent: agent)
+    let second = await tools.invoke("read_notebook", args: read, execute: false, agent: agent)
+    XCTAssertEqual(first["data"]["snapshot_ref"], second["data"]["snapshot_ref"])
+    let transaction = try XCTUnwrap(agent.state.transactions.first { $0.state == "applied" })
+    await agent.undo(transaction.id)
+    XCTAssertTrue(controller.cells.isEmpty)
+    XCTAssertEqual(agent.state.transactions.first?.state, "undone")
+    XCTAssertTrue(try JSONDecoder().decode(NotebookFile.self, from: Data(contentsOf: file)).cells.isEmpty)
+    await agent.stopAndWait()
+  }
   private func probe(status: Int, timeout: Double = 5000, delay: TimeInterval = 0) async throws
     -> [JSONValue]
   {

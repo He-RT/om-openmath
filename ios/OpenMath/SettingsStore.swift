@@ -6,7 +6,7 @@ struct SettingsStore {
   private let fileURL: URL?
   private let writeMetadata: (Data, URL) throws -> Void
   init(
-    service: String = "org.openmath.mobile.provider", fileURL: URL? = nil,
+    service: String = "org.openmath.mobile.pre-alpha5.provider", fileURL: URL? = nil,
     writeMetadata: @escaping (Data, URL) throws -> Void = { data, url in
       try data.write(to: url, options: [.atomic, .completeFileProtection])
     }
@@ -19,7 +19,7 @@ struct SettingsStore {
     get throws {
       if let fileURL { return fileURL }
       let dir = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask)[0]
-        .appendingPathComponent("OpenMath", isDirectory: true)
+        .appendingPathComponent("OpenMath-pre-alpha.5", isDirectory: true)
       try FileManager.default.createDirectory(at: dir, withIntermediateDirectories: true)
       return dir.appendingPathComponent("settings.json")
     }
@@ -33,7 +33,7 @@ struct SettingsStore {
     var data: CFTypeRef?
     let status = SecItemCopyMatching(query as CFDictionary, &data)
     if status == errSecItemNotFound { return nil }
-    guard status == errSecSuccess else { throw KernelError.message("系统凭据库读取失败") }
+    guard status == errSecSuccess else { throw KernelError.message("系统凭据库读取失败 (OSStatus \(status))") }
     return data as? Data
   }
   private func write(_ name: String, _ data: Data?) throws {
@@ -48,16 +48,15 @@ struct SettingsStore {
       ]
       let status = SecItemUpdate(query as CFDictionary, values as CFDictionary)
       if status == errSecItemNotFound {
-        guard
-          SecItemAdd(query.merging(values) { _, new in new } as CFDictionary, nil) == errSecSuccess
-        else { throw KernelError.message("系统凭据库写入失败") }
+        let added = SecItemAdd(query.merging(values) { _, new in new } as CFDictionary, nil)
+        guard added == errSecSuccess else { throw KernelError.message("系统凭据库写入失败 (OSStatus \(added))") }
       } else if status != errSecSuccess {
-        throw KernelError.message("系统凭据库写入失败")
+        throw KernelError.message("系统凭据库写入失败 (OSStatus \(status))")
       }
     } else {
       let status = SecItemDelete(query as CFDictionary)
       guard status == errSecSuccess || status == errSecItemNotFound else {
-        throw KernelError.message("系统凭据库清除失败")
+        throw KernelError.message("系统凭据库清除失败 (OSStatus \(status))")
       }
     }
   }

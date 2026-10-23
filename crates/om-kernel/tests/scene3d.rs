@@ -90,7 +90,7 @@ fn implicit_sphere_has_true_edge_zeros_and_outward_normals_poles_are_not_fake_su
     );
 }
 #[test]
-fn local_axes_do_not_capture_globals_and_ios_keeps_source_without_generating_mesh() {
+fn local_axes_do_not_capture_globals_and_ios_generates_real_mesh() {
     let mut s = Session::new(Default::default(), None);
     s.handle(Request::Evaluate {
         cell_id: "globals".into(),
@@ -107,12 +107,12 @@ fn local_axes_do_not_capture_globals_and_ios_keeps_source_without_generating_mes
     });
     let output = evaluate(&mut s, "plot(sin(x)*cos(y),x:-pi..pi,y:-pi..pi)");
     assert!(
-        matches!(&output.items[0],OutputItem::Scene3D{data:None,unavailable:Some(text),..}if text.contains("尚未适配"))
+        matches!(&output.items[0],OutputItem::Scene3D{data:Some(data),unavailable:None,..}if !data.meshes.is_empty())
     );
     assert!(output.messages.is_empty());
     assert!(matches!(
         s.handle(Request::SampleScene3D { request: r }).0,
-        Response::Error { .. }
+        Response::Scene3D { .. }
     ));
 }
 
@@ -288,8 +288,8 @@ fn frozen_exploration_changes_only_local_3d_geometry_and_ios_does_not_auto_sampl
     assert!(matches!(
         &*result.item,
         OutputItem::Scene3D {
-            data: None,
-            unavailable: Some(_),
+            data: Some(_),
+            unavailable: None,
             ..
         }
     ));

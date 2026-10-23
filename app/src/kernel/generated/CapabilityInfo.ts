@@ -30,7 +30,7 @@ platform: HostPlatform,
  */
 rendered_outputs: Array<string>,
 /**
- * Documented desktop/Web 3D renderer; actual WebGL2 availability is checked by the host, while mobile stays unsupported.
+ * Documented desktop/Web/mobile 3D renderer; actual GPU availability is checked by the host.
  */
 scene_3d: boolean,
 /**

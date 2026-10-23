@@ -43,13 +43,13 @@ def configs(name,settings):
   body='isa = XCBuildConfiguration; baseConfigurationReference = '+signing+'; buildSettings = {'+''.join(f'{k} = {q(v)};' for k,v in vals.items())+'}; name = '+config+';'
   ids.append(add(name+'-'+config,body))
  return add(name+'-configlist','isa = XCConfigurationList; buildConfigurations = '+array(ids)+'; defaultConfigurationIsVisible = 0; defaultConfigurationName = Release;')
-base={'SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD':'NO','ARCHS':'arm64','SUPPORTED_PLATFORMS':'iphoneos iphonesimulator','SDKROOT':'iphoneos','IPHONEOS_DEPLOYMENT_TARGET':'27.0','SWIFT_VERSION':'6.0','SWIFT_STRICT_CONCURRENCY':'complete','TARGETED_DEVICE_FAMILY':'1,2','CLANG_ENABLE_MODULES':'YES','CODE_SIGN_STYLE':'Automatic','CURRENT_PROJECT_VERSION':'2','MARKETING_VERSION':'0.1.0','ENABLE_BITCODE':'NO','ENABLE_TESTABILITY':'YES','PRODUCT_NAME':'$(TARGET_NAME)','SWIFT_EMIT_LOC_STRINGS':'YES'}
+base={'SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD':'NO','ARCHS':'arm64','SUPPORTED_PLATFORMS':'iphoneos iphonesimulator','SDKROOT':'iphoneos','IPHONEOS_DEPLOYMENT_TARGET':'27.0','SWIFT_VERSION':'6.0','SWIFT_STRICT_CONCURRENCY':'complete','TARGETED_DEVICE_FAMILY':'1,2','CLANG_ENABLE_MODULES':'YES','CODE_SIGN_STYLE':'Automatic','CURRENT_PROJECT_VERSION':'5','MARKETING_VERSION':'0.1.0','ENABLE_BITCODE':'NO','ENABLE_TESTABILITY':'YES','PRODUCT_NAME':'$(TARGET_NAME)','SWIFT_EMIT_LOC_STRINGS':'YES'}
 projectConfigs=configs('project',{'CLANG_ENABLE_MODULES':'YES','IPHONEOS_DEPLOYMENT_TARGET':'27.0','SWIFT_VERSION':'6.0'})
 for name,key,files,product,kind in [('OpenMath',appTarget,appFiles,appProduct,'com.apple.product-type.application'),('OpenMathTests',unitTarget,testFiles,unitProduct,'com.apple.product-type.bundle.unit-test'),('OpenMathUITests',uiTarget,uiFiles,uiProduct,'com.apple.product-type.bundle.ui-testing')]:
  src=add(name+'-sources','isa = PBXSourcesBuildPhase; buildActionMask = 2147483647; files = '+array([b for _,b in files])+'; runOnlyForDeploymentPostprocessing = 0;')
  framework=add(name+'-frameworks','isa = PBXFrameworksBuildPhase; buildActionMask = 2147483647; files = '+array([fwBuild]+pkgBuilds if name=='OpenMath' else [])+'; runOnlyForDeploymentPostprocessing = 0;')
  resources=add(name+'-resources','isa = PBXResourcesBuildPhase; buildActionMask = 2147483647; files = '+array(resourceBuilds if name=='OpenMath' else [])+'; runOnlyForDeploymentPostprocessing = 0;')
- settings=dict(base);settings['PRODUCT_BUNDLE_IDENTIFIER']='org.openmath.'+name
+ settings=dict(base);settings['PRODUCT_BUNDLE_IDENTIFIER']='org.openmath.'+name+('.pre-alpha5' if name=='OpenMath' else '.pre-alpha5.tests')
  settings['GENERATE_INFOPLIST_FILE']='YES'
  if name=='OpenMath':
   settings.update({'ASSETCATALOG_COMPILER_APPICON_NAME':'AppIcon','INFOPLIST_FILE':'OpenMath/Info.plist','GENERATE_INFOPLIST_FILE':'NO','INFOPLIST_KEY_UILaunchScreen_Generation':'YES'})

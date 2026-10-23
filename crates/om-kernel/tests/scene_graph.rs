@@ -278,7 +278,7 @@ fn real_earth_moon_l2_fixture_has_high_precision_residual_and_proportional_posit
     });
     let o = eval(&mut s, "scene([sphere([0,0,0],1)],dimensions:3)");
     assert!(
-        matches!(&o.items[0],OutputItem::Scene3D{data:None,unavailable:Some(t),..}if t.contains("尚未适配"))
+        matches!(&o.items[0],OutputItem::Scene3D{data:Some(data),unavailable:None,..}if !data.meshes.is_empty())
     );
 }
 

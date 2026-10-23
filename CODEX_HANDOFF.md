@@ -2,6 +2,12 @@
 
 > **pre-alpha.5 已公开发布，按用户调整后的范围收尾。** [公开发行页](https://github.com/He-RT/om-openmath/releases/tag/v0.1.0-pre-alpha.5) · [计划与最终记录](docs/plan/PRE_ALPHA_5.md) · [安装与发布记录](docs/acceptance/pre-alpha.5/local-install.md)。A–G3及本地三包安装已通过；公开后验证由用户明确取消，不能记为实测通过。视觉依据仍为 [workbench-v2.md](docs/design/workbench-v2.md) 和四张原型截图。
 
+## 2026-10-23 iOS / iPadOS .5 追加开发（当前活动范围）
+
+- 用户在内容完成后已允许模拟器验收，要求 **Device Hub 管理、同时最多存在一台（关机也计入），一个型号完成就删除**。按 0 → iPhone → 0 → iPad → 0 执行，两台均已删；后续打包不要再启动模拟器。单代理，不改系统权限/输入法/外观，不调用真实模型。
+- 原生工作台、三维、移动 Pi/JavaScriptCore 助手及打包入口已实现。修复候选 `405a1f05d838bbd95d43e403871537a5888905c4` 双目标构建通过；iPhone 18 Pro / iPad Pro 11-inch M5 各 34 单元 + 6 UI、40 项全通过，原 53 数学最大耗时 92.771 / 622.252 ms。三包及 manifest 在 `target/ios-pre-alpha.5/candidate-405a1f05-assets/`；旧候选/失败根保留不发布。[验收记录](docs/acceptance/pre-alpha.5/ios/README.md)与[计划](docs/plan/PRE_ALPHA_5_IOS.md)记载修复、覆盖及未测项。
+- [PR #7](https://github.com/He-RT/om-openmath/pull/7) 已退出草稿。`405a1f05` 的前端、依赖、原生 Mac、Rust lint/测试均通过，但最终生成协议一致性发现 `CapabilityInfo.ts` 的一行说明未同步；已运行真实 `export_bindings` 更新。现将生成说明、发行工作流修正与精简验收记录一起提交并重跑适用 CI，通过后普通合并 `dev`；仓库未启用 auto-merge，不改仓库设置。运行代码与已通过的 `405a1f05` 完全相同，后续不重新创建模拟器。最终公开补包及 README 同步尚未完成。27.1 专用 Duo API/折叠硬件与物理设备未测；真机包需自行签名，不是通用 IPA / TestFlight。
+
 ## 2026-10-23 Git 整改 R1–R3
 
 - 用户要求读取会话 `01a163d2-39f2-79e0-abe7-4bcfb45331ad` 并执行方案。R1–R3 已通过短期分支/PR 推进；规则与常规 CI 由 PR #2 集成 `9225a4e9`，发行来源工具由 PR #3 集成 `f44a2018`，PR #5 补正从产品检出目录采集工具版本（相关 CI 通过）。`dev` 已要求 PR 和 GitHub Actions 的 `CI required`（strict、管理员约束），禁止强推/删除，不要求第二人审批；失败文档 PR 的普通合并已被服务器拒绝。

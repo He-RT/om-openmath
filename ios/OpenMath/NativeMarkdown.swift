@@ -207,10 +207,17 @@ struct NativeMarkdown: View {
     }
     if let code = node as? CodeBlock {
       return AnyView(
-        ScrollView(.horizontal) {
-          SwiftUI.Text(code.code).font(.system(.body, design: .monospaced)).textSelection(.enabled)
-            .padding(12)
-        }.background(.quaternary, in: RoundedRectangle(cornerRadius: 10)))
+        VStack(alignment: .leading, spacing: 0) {
+          HStack {
+            SwiftUI.Text(code.language ?? "code").font(.caption).foregroundStyle(.secondary)
+            Spacer()
+            Button { UIPasteboard.general.string = code.code } label: { Image(systemName: "doc.on.doc") }
+              .buttonStyle(.plain).accessibilityLabel("复制代码 / Copy code")
+          }.padding(.horizontal, 12).padding(.vertical, 8)
+          ScrollView(.horizontal) {
+            SwiftUI.Text(code.code).font(.system(.body, design: .monospaced)).textSelection(.enabled).padding(12)
+          }
+        }.background(.quaternary, in: RoundedRectangle(cornerRadius: 8)))
     }
     if node is ThematicBreak { return AnyView(Divider()) }
     if node is BlockQuote {

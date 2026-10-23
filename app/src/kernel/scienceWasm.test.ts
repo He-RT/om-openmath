@@ -122,7 +122,7 @@ it('actual WASM immutable exploration context restores exact state without repla
     const file=request(task,{type:'save_notebook'});if(file.type!=='notebook')throw new Error('no file');expect(file.file.cells).toHaveLength(0);
   }finally{main.free();task.free();}
 });
-it('actual WASM creates original-coordinate 3D samples and mobile fallback suppresses unseen meshes',()=>{
+it('actual WASM creates original-coordinate 3D samples for Web and the native mobile renderer',()=>{
  const kernel=new Kernel();
  try{
   const output=evaluate(kernel,'scene','parametric_plot([cos(u)*sin(v),sin(u)*sin(v),cos(v)],u:0..2*pi,v:0..pi,mesh_points:12)');
@@ -130,7 +130,10 @@ it('actual WASM creates original-coordinate 3D samples and mobile fallback suppr
   for(const p of item.data.meshes[0]!.positions)expect(p[0]**2+p[1]**2+p[2]**2).toBeCloseTo(1,11);
   const obj=request(kernel,{type:'export_scene3_d',data:item.data,title:'actual unit sphere'});if(obj.type!=='artifact')throw new Error('No actual OBJ');expect(Buffer.from(obj.artifact.base64,'base64').toString()).toContain('\nf ');
   request(kernel,{type:'set_host_platform',platform:'ios'});
-  const mobile=evaluate(kernel,'scene','plot(x+y,x:0..1,y:0..1)');const view=mobile.items[0];if(view?.type!=='scene3_d')throw new Error('No explicit mobile fallback');expect(view.data).toBeNull();expect(view.unavailable).toContain('尚未适配');
+  const mobile=evaluate(kernel,'scene','plot(x+y,x:0..1,y:0..1)');const view=mobile.items[0];if(view?.type!=='scene3_d'||!view.data)throw new Error('No actual mobile mesh');
+  expect(view.unavailable).toBeNull();
+  expect(view.data.meshes[0]!.triangles.length).toBeGreaterThan(0);
+  for(const [x,y,z] of view.data.meshes[0]!.positions)expect(z).toBeCloseTo(x+y,11);
  }finally{kernel.free();}
 });
 

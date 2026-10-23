@@ -12,6 +12,26 @@ ROOT = Path(__file__).resolve().parents[1]
 
 
 class ReleaseTests(unittest.TestCase):
+    def test_ios_development_assets_are_complete_and_keep_their_own_manifest(self):
+        from importlib.util import spec_from_file_location, module_from_spec
+        spec = spec_from_file_location('release_ios_fixture', Path(__file__).resolve().parents[1] / 'scripts/release.py')
+        release = module_from_spec(spec)
+        spec.loader.exec_module(release)
+        with tempfile.TemporaryDirectory() as folder:
+            root = Path(folder)
+            names = release.asset_names(release.VERSION, 'ios')
+            self.assertEqual(len(names), 3)
+            self.assertTrue(any('unsigned' in name for name in names))
+            for name in names:
+                (root / name).write_bytes(b'unsigned-development-fixture')
+            release.finalize(root, 'v' + release.VERSION, 'a' * 40, 'ios')
+            manifest = json.loads((root / 'ios-release-manifest.json').read_text(encoding='utf-8'))
+            self.assertEqual({asset['name'] for asset in manifest['assets']}, names)
+            self.assertFalse((root / 'release-manifest.json').exists())
+            (root / next(iter(names))).unlink()
+            with self.assertRaises(ValueError):
+                release.finalize(root, 'v' + release.VERSION, 'a' * 40, 'ios')
+
     @classmethod
     def setUpClass(cls):
         spec = importlib.util.spec_from_file_location("release_tools", ROOT / "scripts/release.py")

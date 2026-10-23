@@ -53,7 +53,8 @@ struct ExploreOutputView: View {
         PlotView(request: output["request"], initial: output["data"], controller: controller, sample: sample, exportParameters: displayed["values"])
           .id("\(item["view_id"].string):\(displayed["revision"].double)").disabled(!fresh || busy || changed)
       } else if output["type"].string == "scene3_d" {
-        SceneUnavailableView(item: output, controller: controller)
+        SceneView(item: output, controller: controller, sample: sampleScene)
+          .id("\(cell.id):\(displayed["revision"].double):scene")
       } else if output["type"].string == "solutions" {
         SolutionCards(item: output, cell: cell, controller: controller)
       } else { Text(output["message"].string).foregroundStyle(.red) }
@@ -118,5 +119,9 @@ struct ExploreOutputView: View {
   private func inspect(_ request: JSONValue) async throws -> KernelPacket {
     guard fresh, let context, let client else { throw KernelError.message("参数探索输出已过期") }
     return try await client.request(.object(["type": .string("inspect_explore_expression"), "context": .string(context), "values": displayed["values"], "source": request["source"], "numeric": request["numeric"]]))
+  }
+  private func sampleScene(_ request: JSONValue) async throws -> KernelPacket {
+    guard fresh, let context, let client else { throw KernelError.message("参数探索输出已过期") }
+    return try await client.request(.object(["type": .string("sample_explore_scene3_d"), "context": .string(context), "values": displayed["values"], "request": request["request"]]))
   }
 }

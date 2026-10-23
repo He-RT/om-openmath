@@ -1,64 +1,64 @@
 # iOS / iPadOS 原生客户端
 
-当前发行 [0.1.0-pre-alpha.3](https://github.com/He-RT/om-openmath/releases/tag/v0.1.0-pre-alpha.3)，保留首次移动交付的 `.2`。最低 iOS/iPadOS 27，支持 iPhone 和 iPad、横竖屏、单窗口及硬件键盘。使用 SwiftUI/UIKit/TextKit 2、SwiftMath 和原生 Canvas；所有计算复用 Rust 内核。
+`.5` 原生移动内容已完成，双目标候选和 iPhone/iPad 模拟器验收通过，尚待公开补包。用户在内容完成后允许验证；已通过 Device Hub 逐台创建、测试、删除，当前没有保留模拟器。[移动补包计划](plan/PRE_ALPHA_5_IOS.md)与[实际验收记录](acceptance/pre-alpha.5/ios/README.md)列出覆盖和未测项。当前可下载的移动资产仍是 [pre-alpha.3](https://github.com/He-RT/om-openmath/releases/tag/v0.1.0-pre-alpha.3)，不能将其当作 `.5`。
 
-`.3` 共用新增的微积分、矩阵、ODE/插值、优化/拟合、统计、数据与单位计算，并提供原生表格/报告、二维图元与曲线、独立参数探索及 SVG/PNG/CSV/JSON 导出。三维场景保留源码并明确提示未适配，不自动采样未展示的大网格。示例与精度边界见[功能目录](reference/README.md)及[科研案例](examples/README.md)。
+最低 iOS/iPadOS 27，Apple Silicon 开发环境；一个原生应用同时支持 iPhone 与 iPad。使用 SwiftUI/UIKit/TextKit 2、SwiftMath、原生 Canvas，以及 SceneKit 的 Metal 三维渲染；数学计算复用 Rust 内核。不是 Tauri/WebView 封装。
 
-## 构建与模拟器安装
+## `.5` 内容
 
-需要 Apple Silicon Mac、Xcode **27.0**、iOS 27 SDK/模拟器，以及仓库固定的 Rust **1.94.0**。执行：
+- 工作台遵循[原生玻璃草稿 02](design/ios-ipados-workbench-02.md)：纸面内容、源码槽、状态左轨、原生悬浮玻璃操作组。iPhone 使用单栏和底部检查器；宽窗口展开文稿与检查器，更宽窗口可打开目录。布局读取容器实际尺寸，不以设备名称或横竖屏重建文稿。
+- iPhone Duo 使用同一尺寸自适应路径。源码、选择、检查器和阅读锚点由文稿控制器持有；真实折叠区域、iOS 27.1 纵向系统工具栏与触屏表现仍须在支持的系统上验证，不能把 Mac 草稿的评审画布数值当作设备安全区。
+- 数学、文本、Ask 单元格可添加、删除、移动和切换方言。文字默认阅读态，双击编辑；数学编辑保留中文合成保护、本地补全、预览与硬件键盘快捷键。
+- 解、成立条件、步骤、变量、结构化值、二维交互图、三维网格/曲线/点/标注及独立参数探索来自内核数据。三维可旋转、平移、缩放、复位与导出真实 OBJ；旧版的“未适配”占位已移除。
+- 助手使用固定 Pi 1.0.4 调度，在系统 JavaScriptCore 内解释执行随包资源；Swift 负责网络、文件和工具，Rust 负责共享模型协议。没有 Node 子进程、系统 shell 或远程脚本下载。
+- 助手分执行/讨论模式。讨论不能改写或运行主文稿；临时计算复制当前数学定义，不重放笔记本源码。执行修改先预览并核对源码散列，源码写入前记录 pending 事务，再保存与记录结果；支持冲突拒绝、操作查询及撤销。
+- 模型仅来自已配置并可用的供应商配置；选择、讨论/执行、图片能力、草稿、对话、操作和事务按文稿持久保存。可新建或回看历史对话，查看本轮完整模型输入和供应商实际报告的用量；未报告的用量不伪造。
+- 附件保留原始文件和散列。图片归一化，PDF 提取带页码的文字，UTF-8 文本分页读取。图片能力由用户按模型启用；音视频识别、OCR 和无可提取文字的扫描 PDF 未加入本轮。API 密钥和额外请求参数保存在 Keychain，不写入笔记本/对话/发行包。
+- 文件菜单提供新建、打开、保存、另存为、分享、Markdown/LaTeX 导出。普通 `.omnb` v1 只保存源码；重新打开不会自动运行全部单元格。自动保存失败会保留修改状态。
+
+`.5` 使用独立 bundle ID `org.openmath.OpenMath.pre-alpha5`、独立设置和 Keychain 服务，不自动导入旧移动版配置。公开资产不包含个人签名材料或测试凭据。
+
+## 不启动模拟器的开发入口
+
+需要 Xcode **27.0** / SDK 27.0、Rust **1.94.0**、Node 与 `app/package-lock.json` 的依赖。所有生成输出按锁文件和固定源稿构建。
 
 ```sh
+npm ci --prefix app
 bash ios/Scripts/verify-environment.sh
-bash ios/Scripts/build-kernel.sh
-python3 ios/Scripts/generate-project.py
+bash ios/Scripts/check-native.sh
+bash ios/Scripts/build-candidate.sh
+```
+
+`check-native.sh` 在 macOS 原生宿主检查 Pi 调度、源码事务、持久化和几何边界。`build-candidate.sh` 构建 ARM64 真机和 ARM64 模拟器目标，但不创建、boot、install、launch 或运行模拟器测试。应用、模块和中间缓存都在 `target/ios-pre-alpha.5/`；Rust XCFramework 在忽略的 `ios/Frameworks/`。
+
+对测试代码做编译检查，可使用 `xcodebuild ... -destination 'generic/platform=iOS Simulator' ... build-for-testing`；它不等于运行测试或验收 UI。
+
+## 获明确许可后的模拟器验证
+
+当前不要执行这一段。用户允许后，才运行：
+
+```sh
 bash ios/Scripts/test-simulator.sh phone
 bash ios/Scripts/test-simulator.sh pad
 ```
 
-工程和包锁文件随源码提交。`build-kernel.sh` 产生 `ios/Frameworks/OpenMathKernel.xcframework`，包含真机 ARM64 与模拟器 ARM64，两者均为 Release Rust 静态库。编译产物不进入 Git。缺少指定 Xcode/SDK 时直接失败。
+脚本每轮创建独立模拟器，保存独立 `.xcresult`，结束后只清理该轮模拟器。包括真实 Rust 计算与公式排版、文件、设置、二维、三维、旋转及助手草稿流程；真实外部模型请求不包含在默认用例中。Duo 特定折叠区域和 27.1 行为另记实际覆盖。
 
-验收脚本只接受 `phone` / `pad`，每轮创建独立模拟器，保存带时间和进程号的 `.xcresult`，结束后清理本轮模拟器。重复开发验证不会覆盖旧证据，也不会因已有结果目录而失败。计算性能阈值保持每项 1 秒，不自动重试失败或跳过用例。
+## 补包与发布
 
-发行模拟器 ZIP 解压为 `OpenMath.app`，只能在 ARM64 iOS 27 模拟器中运行：
+新增 [release-ios.yml](../.github/workflows/release-ios.yml) 默认只构建；`run_simulators` 和 `publish` 都默认关闭，发布要求模拟器检查成功。未得到用户许可前，不派发会启动模拟器的旧 `ios.yml` 或打开新工作流的验证选项。
 
-```sh
-xcrun simctl boot 'iPhone 18 Pro'
-xcrun simctl install booted /绝对路径/OpenMath.app
-xcrun simctl launch booted org.openmath.OpenMath
-```
+准备的新增资产为：
+
+- `OpenMath_0.1.0-pre-alpha.5_ios_simulator_arm64.app.zip`：ad hoc 签名的 ARM64 模拟器开发应用。
+- `OpenMath_0.1.0-pre-alpha.5_ios_device_arm64_unsigned.app.zip`：未签名真机开发应用，需要使用自己的签名和描述文件；不能直接安装。
+- `OpenMathKernel_0.1.0-pre-alpha.5.xcframework.zip`：真机 / 模拟器 ARM64 Rust 库与许可。
+- 独立 `ios-release-manifest.json`、`ios-build-sources.json` 与 `ios-release-sources-index.json`，记录完整 Git 输入、工具链、检查范围、大小与 SHA256。
+
+候选源码提交且干净后，用 `package-candidate.sh` 在一个新目录生成资产。公开时只追加新名字，不覆盖原 `.5` 标签、Mac/Web/CLI/Tauri 资产或清单。当前尚未生成可公开的最终移动包，也没有 TestFlight / App Store 发行。
 
 ## 本机真机安装
 
-1. 连接并解锁设备，信任 Mac，开启开发者模式。
-2. 在未跟踪的 `ios/Local.xcconfig` 写入 `DEVELOPMENT_TEAM = 你的TeamID`。工程通过可选 include 读取此文件。
-3. 使用 `xcrun devicectl list devices` 获取 UDID，运行 `bash ios/Scripts/install-device.sh UDID`，或在 Xcode 打开工程、选择设备、运行。
-4. 如系统提示签名尚未受信任，在设备「设置 → 通用 → VPN 与设备管理」中信任你自己的开发者配置后启动。
+已有源工程可以在 Xcode 以自己的开发者账户编译安装。个人 `DEVELOPMENT_TEAM` 放在未跟踪的 `ios/Local.xcconfig`；连接可信设备后，可运行 `bash ios/Scripts/install-device.sh UDID`。脚本会进行真机签名、安装和启动，应在准备进行该实际操作时使用；本轮尚未执行。
 
-自动签名需要本机 Xcode 的 Apple 账户、证书和可用的开发描述文件。个人配置、证书、描述文件以及签名后的真机应用不作为公开附件。首版不提交 TestFlight 或 App Store；模拟器 ZIP 不是通用 iPhone 安装包。
-
-## 使用
-
-- 数学、文本、Ask 单元格可添加、删除、移动和切换方言。Modern 赋值使用 `let a=2`，Wolfram 赋值使用 `a=2`；执行定义后再执行 `a+1`，将定义改为 5 并执行会重算为 6。
-- ⌘/⇧ Return 运行，Control Space 本地补全，Tab 接受，Escape 取消；触屏提供相同操作。中文合成时禁止运行及接受补全。`\alpha` 加 Tab 输入 α。
-- 窗口可用宽度达到 696 pt 显示检查面板；较窄窗口使用底部面板。安全区与键盘由原生容器统一处理。
-- 解卡片保留精确、数值验证、条件和重数；步骤来自内核记录。绘图使用真实采样，支持平移、缩放、复位和参数滑块。
-- 设置中配置 AI 模型、功能映射和连接探测。首次发送披露目标；探测只发送短请求，不保存草稿。建议必须明确插入或运行。
-- API 密钥、额外请求头和额外请求参数保存在系统 Keychain；笔记本只保存 `.omnb` v1 源码。不要把密钥作为单元格内容输入。
-- 文件菜单提供打开、保存、另存为、分享及 Markdown/LaTeX 导出。自动保存源码；后台取消计算/AI 并保存草稿，恢复时不自动运行全部单元格。
-
-## 接口和所有权
-
-`om-ios-ffi` 独立 crate 提供 C ABI：创建/销毁会话、JSON 请求、HTTP 原始字节、中断、AI 取消和返回缓冲释放。Swift 串行工作队列调用专有 Rust 会话线程，UI 在 MainActor 更新；计算取消直接设置共享标志。每个打开的文档新建会话，旧请求通过文档代次隔离。
-
-请求使用现有 `Envelope<Request>`，回复为 `{response, events}`；事件 id 为 0，回复 id 匹配请求。返回的 `OmBuffer` 仅在释放前可读，调用者必须恰好释放一次，禁止保留旧指针或访问已释放内存。无效 JSON/未知句柄返回错误对象。unsafe 只存在于审计过的 C ABI 输入边界；核心保持禁止 unsafe。
-
-`om-kernel/external-host` 使用 Native 提供商请求格式，并由 Swift 的 URLSession/Keychain 提供网络和凭据；生产 iOS 依赖图不包含桌面配置、Rust keyring 或 Tokio HTTP。拒绝 HTTP 重定向，按原始字节反馈内核解码，取消和超时保留真实失败状态。
-
-SwiftMath 1.7.3 和 swift-markdown 0.9.0，以及 swift-cmark 0.9.0 的提交在 Package.resolved 锁定。数学渲染只将平面 ASCII `operatorname` 映射到 SwiftMath 支持的 upright `mathrm`，原 LaTeX 和可复制源码保持不变；未知命令显示源码。Markdown 不自动下载远程图片。
-
-## 验收与许可
-
-参见 [移动端验收记录](ios-acceptance.md)、[实施进度](plan/PROGRESS.md) 和 [第三方声明](../THIRD_PARTY_NOTICES.md)。CI 在 `xcode-27` 显式选择 Xcode 27.0，验证两架构链接、Swift 单元测试和 iPhone/iPad 界面测试；沿用 Rust/桌面/Web 门禁。官方镜像依据：[runner-images #14404](https://github.com/actions/runner-images/issues/14404)。
-
-首版不提供自动 iCloud 同步、多窗口、专用手写数学识别或 Metal 粒子效果。
+源码工程和包锁文件随仓库提交。C ABI 的返回缓冲只允许释放一次，串行队列与文档代次隔离旧回复；HTTP 原始字节交给 Rust 解码，不把部分工具参数当成完整可执行调用。能力和来源记录均不替代实际设备运行证据。

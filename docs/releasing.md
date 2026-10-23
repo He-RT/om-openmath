@@ -105,3 +105,9 @@ python3 scripts/release.py sources verify --repo . --assets-root target/new-rele
 公开新发行或补包时，把索引、它引用的 source sidecars 和原 manifest 一起放入持久 Release；不能只保留会过期的 Actions artifacts 或本机临时文件。校验下载后的资产时使用同一 `sources verify` 入口。
 
 准备新版本时，在适用 CI 和实际产品验收通过的最终产品提交上使用附注标签，记录可能不同的各平台打包 SHA。既有 `.1`–`.5` 轻量标签、清单和公开资产均保持原样；`.5` 的原产品、CLI 和 Tauri 补包具有多提交来源，不能追记为单标签构建。旧版来源取回演练只使用已有产物，不新派发发行或真实模型任务。
+
+## iOS / iPadOS `.5` 追加补包（待完成）
+
+用户于 2026-10-23 追加原生移动版，先完成内容，模拟器验证需其后续明确许可。[移动端计划](plan/PRE_ALPHA_5_IOS.md)记录当前状态；不沿用原 Mac/Web 完成声明。新 [release-ios.yml](../.github/workflows/release-ios.yml) 的两个执行选项默认关闭，只有明确允许模拟器验证后才能打开验证输入，检查通过后才可公开。
+
+资产、签名限制与本地入口见[移动端指南](ios.md#补包与发布)。该补包使用独立 manifest 和来源 sidecar，只向现有 `.5` Release 追加新的移动资产，不移动标签，不覆盖任何旧资产。当前没有公开移动 `.5` 包。

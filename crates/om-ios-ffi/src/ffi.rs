@@ -104,6 +104,20 @@ pub unsafe extern "C" fn om_ios_create(data: *const u8, len: usize) -> u64 {
     .flatten()
     .unwrap_or(0)
 }
+/// Invoke the shared single-turn model codec; this function never performs HTTP or executes tools.
+/// # Safety
+/// data must point to len readable bytes for this call; null is permitted only when len=0.
+#[unsafe(no_mangle)]
+pub unsafe extern "C" fn om_ios_model_command(id: u64, data: *const u8, len: usize) -> OmBuffer {
+    let result = std::panic::catch_unwind(|| {
+        // SAFETY: the exported caller contract supplies this readable buffer.
+        let bytes = unsafe { input(data, len, 8 * 1024 * 1024) }?;
+        let source = std::str::from_utf8(bytes).map_err(|_| "Invalid UTF-8")?;
+        host(id)?.model_command(source)
+    })
+    .unwrap_or_else(|_| Err("Model command failed".into()));
+    output(result)
+}
 /// Dispatch a JSON request. Errors return a secret-safe bridge_error object.
 /// # Safety
 /// data must point to len readable bytes for this call; null is permitted only when len=0.

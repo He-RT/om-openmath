@@ -22,6 +22,7 @@ struct PlotView: View {
   private var logX:Bool{["log_x","log_log"].contains(scaleMode)}
   private var logY:Bool{["log_y","log_log"].contains(scaleMode)}
   var body: some View {
+    let logarithmicX = logX, logarithmicY = logY
     VStack(alignment: .leading, spacing: 8) {
       GeometryReader { geometry in
         Canvas { context, size in
@@ -32,8 +33,8 @@ struct PlotView: View {
           let rect = CGRect(x: 42, y: 10, width: max(1, size.width - 52), height: size.height - 38)
           func point(_ px: Double, _ py: Double) -> CGPoint {
             CGPoint(
-              x: rect.minX + fraction(px,x[0],x[1],logX) * rect.width,
-              y: rect.maxY - fraction(py,y[0],y[1],logY) * rect.height)
+              x: rect.minX + fraction(px,x[0],x[1],logarithmicX) * rect.width,
+              y: rect.maxY - fraction(py,y[0],y[1],logarithmicY) * rect.height)
           }
           for value in axisTicks(x[0],x[1],logX) {
             let p = point(value, 0)
@@ -365,18 +366,18 @@ struct PlotView: View {
       } catch { if token == revision { failure = error.localizedDescription } }
     }
   }
-  private func format(_ value: Double) -> String {
+  nonisolated private func format(_ value: Double) -> String {
     value.formatted(.number.precision(.significantDigits(1...5)))
   }
-  private func fraction(_ value:Double,_ low:Double,_ high:Double,_ logarithmic:Bool)->Double{
+  nonisolated private func fraction(_ value:Double,_ low:Double,_ high:Double,_ logarithmic:Bool)->Double{
     logarithmic ? (log(value > 0 ? value : low)-log(low))/(log(high)-log(low)) : (value-low)/(high-low)
   }
-  private func axisTicks(_ low:Double,_ high:Double,_ logarithmic:Bool)->[Double]{logarithmic ? ticks(log10(low),log10(high)).map{pow(10,$0)} : ticks(low,high)}
-  private func plotColor(_ name:String)->Color{
+  nonisolated private func axisTicks(_ low:Double,_ high:Double,_ logarithmic:Bool)->[Double]{logarithmic ? ticks(log10(low),log10(high)).map{pow(10,$0)} : ticks(low,high)}
+  nonisolated private func plotColor(_ name:String)->Color{
     if name.hasPrefix("#"),let value=UInt32(name.dropFirst(),radix:16){return Color(red:Double((value>>16)&255)/255,green:Double((value>>8)&255)/255,blue:Double(value&255)/255)}
     switch name{case "blue":return .blue;case "red":return .red;case "orange":return .orange;case "purple":return .purple;case "cyan":return .cyan;default:return .openMathAccent}
   }
-  private func ticks(_ low: Double, _ high: Double) -> [Double] {
+  nonisolated private func ticks(_ low: Double, _ high: Double) -> [Double] {
     guard low.isFinite, high.isFinite, high > low else { return [] }
     let raw = (high - low) / 6
     let power = pow(10, floor(log10(raw)))

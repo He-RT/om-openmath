@@ -1,23 +1,40 @@
 import SwiftUI
 
+/// One notebook view retains its identity while the available window changes.
 struct RootView: View {
   @Bindable var controller: NotebookController
+  @Environment(\.accessibilityReduceMotion) private var reduceMotion
   @State private var wide = false
+  @State private var outline = false
+  @State private var expandedOutline = false
   var body: some View {
     NavigationStack {
       GeometryReader { geometry in
-        HStack(spacing: 0) {
-          NotebookView(controller: controller).frame(maxWidth: .infinity)
-          if geometry.size.width >= 696 {
-            Divider()
-            InspectorView(controller: controller).frame(
-              width: max(320, min(400, geometry.size.width * 0.4)))
+        let layout = MobileWorkbenchLayout(width: geometry.size.width)
+        let sidebar: CGFloat = layout.outline && outline ? 204 : 0
+        let inspector: CGFloat = layout.inspector && controller.showInspector ? 340 : 0
+        ZStack(alignment: .topLeading) {
+          Color(.systemBackground)
+          NotebookView(controller: controller, bottomClearance: layout.inspector ? 0 : 68)
+            .frame(width: max(0, geometry.size.width - sidebar - inspector))
+            .offset(x: sidebar)
+          if sidebar > 0 {
+            NotebookOutline(controller: controller) { outline = false }
+              .frame(width: sidebar, height: geometry.size.height).background(.regularMaterial)
+          }
+          if inspector > 0 {
+            InspectorView(controller: controller)
+              .frame(width: inspector, height: geometry.size.height).background(.regularMaterial)
+              .offset(x: geometry.size.width - inspector)
           }
         }
-        .onChange(of: geometry.size.width, initial: true) { _, width in wide = width >= 696 }
+        .onChange(of: layout.inspector, initial: true) { _, value in wide = value }
+        .onChange(of: layout.outline, initial: true) { _, value in expandedOutline = value }
       }
-      .navigationTitle("OpenMath")
+      .navigationTitle(controller.title)
       .navigationBarTitleDisplayMode(.inline)
+      .toolbarBackground(.hidden, for: .navigationBar)
+      .disabled(controller.agentCommitting)
       .toolbar {
         ToolbarItem(placement: .topBarLeading) {
           Menu {
@@ -56,51 +73,53 @@ struct RootView: View {
             Image(systemName: "line.3.horizontal")
           }.accessibilityLabel(controller.text("文件和设置", "Files and settings"))
             .accessibilityIdentifier("file.menu")
+
         }
         ToolbarItemGroup(placement: .topBarTrailing) {
-          Button {
-            controller.showCommands = true
-          } label: {
-            Image(systemName: "command")
-          }.keyboardShortcut("k").accessibilityLabel(controller.text("命令", "Commands"))
-          if controller.busy {
-            Button {
-              controller.interrupt()
-            } label: {
-              Image(systemName: "stop.fill")
-            }.accessibilityLabel(controller.text("中断", "Interrupt"))
-          } else {
-            Button {
-              Task { await controller.runAll() }
-            } label: {
-              Image(systemName: "play.fill")
-            }.disabled(!controller.composingCells.isEmpty).accessibilityLabel(
-              controller.text("运行全部", "Run all"))
+          if wide {
+            Button { outline.toggle() } label: { Image(systemName: "sidebar.left") }.accessibilityLabel(controller.text("文稿目录", "Outline"))
+            Menu { ForEach(CellKind.allCases, id: \.self) { kind in Button(kind.rawValue) { controller.add(kind) } } } label: { Image(systemName: "plus") }
+            Button { controller.showInspector.toggle() } label: { Image(systemName: "sidebar.right") }.accessibilityLabel(controller.text("检查面板", "Inspector")).accessibilityIdentifier("inspector.toggle")
           }
+          Button { controller.showCommands = true } label: { Image(systemName: "command") }
+            .keyboardShortcut("k").accessibilityLabel(controller.text("命令", "Commands"))
           Button {
-            controller.showInspector.toggle()
-          } label: {
-            Image(systemName: "sidebar.right")
-          }.accessibilityLabel(controller.text("检查面板", "Inspector"))
+            if controller.busy { controller.interrupt() }
+            else { Task { await controller.runAll() } }
+          } label: { Image(systemName: controller.busy ? "stop.fill" : "play.fill") }
+            .disabled(!controller.composingCells.isEmpty)
+            .accessibilityLabel(controller.busy ? controller.text("中断", "Interrupt") : controller.text("运行全部", "Run all"))
         }
       }
       .safeAreaInset(edge: .bottom, spacing: 0) {
-        HStack {
-          Menu {
-            ForEach(CellKind.allCases, id: \.self) { kind in
-              Button(kindName(kind)) { controller.add(kind) }
-            }
-          } label: {
-            Label(controller.text("单元格", "Cell"), systemImage: "plus")
-          }
-          Spacer()
-          Text(
-            controller.dirty
-              ? controller.text("未保存", "Unsaved")
-              : (controller.notice ?? controller.text("本地计算", "Local computation"))
-          ).font(.caption).foregroundStyle(.secondary).lineLimit(1)
-          if controller.busy { ProgressView() }
-        }.padding(.horizontal).padding(.vertical, 9).background(.bar)
+        if !wide {
+        GlassEffectContainer(spacing: 14) {
+          HStack(spacing: 14) {
+            HStack(spacing: 8) {
+              Button { outline.toggle() } label: { Image(systemName: "list.bullet").frame(width: 44, height: 48) }
+                .accessibilityLabel(controller.text("文稿目录", "Outline"))
+              Menu {
+                ForEach(CellKind.allCases, id: \.self) { kind in
+                  Button(kind == .Math ? controller.text("数学", "Math") : kind == .Text ? controller.text("文字", "Text") : controller.text("提问", "Ask")) { controller.add(kind) }
+                }
+              } label: { HStack(spacing: 7) { Image(systemName: "plus"); if !controller.notebookScrolled { Text(controller.text("单元格", "Cell")).transition(.opacity) } }.padding(.horizontal, 14).frame(height: 48) }
+                .accessibilityIdentifier("cell.add")
+            }.padding(.horizontal, 6).glassEffect(.regular.interactive(), in: .capsule)
+            Button { controller.showInspector.toggle() } label: {
+              Image(systemName: "sidebar.right").frame(width: 50, height: 50)
+            }.glassEffect(.regular.tint(Color.openMathAccent.opacity(0.12)).interactive(), in: .circle)
+              .accessibilityLabel(controller.text("检查面板", "Inspector")).accessibilityIdentifier("inspector.toggle")
+          }.font(.system(size: 18)).buttonStyle(.plain)
+        }.padding(.top, 8).padding(.bottom, 10)
+          .animation(reduceMotion ? nil : .easeInOut(duration: 0.2), value: controller.notebookScrolled)
+        }
+      }
+      .sheet(isPresented: Binding(get: { outline && !expandedOutline }, set: { if !expandedOutline { outline = $0 } })) {
+        NavigationStack {
+          NotebookOutline(controller: controller) { outline = false }
+            .navigationTitle(controller.text("文稿目录", "Outline"))
+            .toolbar { ToolbarItem(placement: .confirmationAction) { Button(controller.text("关闭", "Close")) { outline = false } } }
+        }.presentationDetents([.medium, .large]).presentationDragIndicator(.visible)
       }
       .sheet(isPresented: $controller.showOpen) {
         DocumentPicker { url in
@@ -120,7 +139,7 @@ struct RootView: View {
       .sheet(isPresented: $controller.showCommands) { CommandPanel(controller: controller) }
       .sheet(
         isPresented: Binding(
-          get: { controller.showInspector && !wide }, set: { controller.showInspector = $0 })
+          get: { controller.showInspector && !wide }, set: { if !wide { controller.showInspector = $0 } })
       ) {
         NavigationStack {
           InspectorView(controller: controller)
@@ -147,28 +166,28 @@ struct RootView: View {
       } message: {
         Text(controller.error ?? "")
       }
+
       .overlay {
         if controller.loading { ProgressView(controller.text("加载内核…", "Loading kernel…")) }
       }
     }
   }
-  private func kindName(_ kind: CellKind) -> String {
-    kind == .Math
-      ? controller.text("数学", "Math")
-      : kind == .Text ? controller.text("文本", "Text") : controller.text("提问", "Ask")
-  }
 }
 
 struct NotebookView: View {
   @Bindable var controller: NotebookController
-  @State private var scrollID: String?
+  var bottomClearance: CGFloat = 0
   var body: some View {
     ScrollView {
-      LazyVStack(alignment: .leading, spacing: 20) {
+      LazyVStack(alignment: .leading, spacing: 28) {
         TextField(
           controller.text("笔记本标题", "Notebook title"),
           text: Binding(get: { controller.title }, set: controller.rename)
-        ).font(.title2.bold()).accessibilityIdentifier("notebook.title")
+        ).font(.system(.largeTitle, design: .serif, weight: .semibold)).accessibilityIdentifier("notebook.title")
+        HStack(spacing: 7) {
+          Circle().fill(controller.dirty ? Color.secondary : .openMathAccent).frame(width: 5, height: 5)
+          Text(controller.dirty ? controller.text("未保存", "Unsaved") : controller.notice ?? controller.text(controller.fileURL == nil ? "新笔记本" : "本地已保存", controller.fileURL == nil ? "New notebook" : "Saved locally"))
+        }.font(.caption).foregroundStyle(.secondary)
         if controller.cells.isEmpty {
           VStack(alignment: .leading, spacing: 16) {
             Text(controller.text("从一个问题开始", "Start with a question")).font(.largeTitle.bold())
@@ -191,6 +210,9 @@ struct NotebookView: View {
             Button(controller.text("二维数据示例", "2D data example")) {
               controller.example("data_plot([[0,0],[1,2],[2,4]])")
             }.accessibilityIdentifier("example.plot")
+            Button(controller.text("三维场景", "3D scene")) {
+              controller.example("scene([sphere([0,0,0],1)],dimensions:3)")
+            }.accessibilityIdentifier("example.scene")
             Button(controller.text("参数探索示例", "Parameter exploration example")) {
               controller.example("explore(a^2,controls:{a:0..4},initial:{a:2})")
             }.accessibilityIdentifier("example.explore")
@@ -200,18 +222,20 @@ struct NotebookView: View {
         ForEach(controller.cells) { cell in
           NotebookCellView(cell: cell, controller: controller).id(cell.id)
         }
-      }.padding(16).scrollTargetLayout()
+      }.padding(.horizontal, 24).padding(.vertical, 28).padding(.bottom, bottomClearance)
+        .frame(maxWidth: 800).frame(maxWidth: .infinity).scrollTargetLayout()
     }
-    .scrollPosition(id: $scrollID)
+    .scrollPosition(id: $controller.scrollTarget, anchor: .top)
+    .onScrollGeometryChange(for: Bool.self) { $0.contentOffset.y > 30 } action: { _, value in controller.notebookScrolled = value }
     .scrollDismissesKeyboard(.interactively)
-    .background(Color(.systemGroupedBackground))
+    .background(Color(.systemBackground))
   }
 }
 
 struct NotebookCellView: View {
   var cell: NotebookCell
   var controller: NotebookController
-  @State private var editingText = true
+  @State private var editingText = false
   @State private var textSnapshot = EditorSnapshot()
   @State private var aiJob: String?
   @State private var consent = false
@@ -252,7 +276,7 @@ struct NotebookCellView: View {
       if cell.input.kind == .Math {
         MathCellEditor(cell: cell, controller: controller)
       } else if cell.input.kind == .Text && !editingText {
-        NativeMarkdown(source: cell.input.source).onTapGesture { editingText = true }
+        NativeMarkdown(source: cell.input.source).onTapGesture(count: 2) { editingText = true }
       } else {
         NativeTextEditor(
           text: Binding(
@@ -314,12 +338,10 @@ struct NotebookCellView: View {
           Button(controller.text("取消", "Cancel")) { controller.cancelAI(aiJob) }
         }
       }
-    }.padding(14).background(
-      Color(.secondarySystemGroupedBackground), in: RoundedRectangle(cornerRadius: 14)
-    )
-    .overlay {
-      RoundedRectangle(cornerRadius: 14).stroke(
-        controller.selected == cell.id ? Color.openMathAccent.opacity(0.5) : .clear, lineWidth: 1)
+    }.padding(.leading, 16).padding(.vertical, 8)
+    .overlay(alignment: .leading) {
+      Rectangle().fill(railColor).frame(width: 3)
+        .accessibilityHidden(true)
     }
     .simultaneousGesture(TapGesture().onEnded { controller.selected = cell.id })
     .alert(controller.text("将此单元格发送给 AI", "Send cell to AI"), isPresented: $consent) {
@@ -330,6 +352,14 @@ struct NotebookCellView: View {
       Button(controller.text("取消", "Cancel"), role: .cancel) {}
     } message: {
       Text(controller.destination(cell.input.kind == .Ask ? "translate" : "fix"))
+    }
+  }
+  private var railColor: Color {
+    switch cell.status {
+    case .Error: .red
+    case .Stale, .Queued: .secondary.opacity(0.45)
+    case .Running: .orange
+    case .Done: .openMathAccent
     }
   }
   private func ask() {
@@ -349,10 +379,9 @@ struct InspectorView: View {
   var body: some View {
     VStack(spacing: 0) {
       Picker(controller.text("检查面板", "Inspector"), selection: $controller.inspector) {
-        Text(controller.text("参考", "Reference")).tag("docs")
         Text(controller.text("变量", "Variables")).tag("variables")
         Text(controller.text("步骤", "Steps")).tag("steps")
-        Text("AI").tag("ai")
+        Text(controller.text("助手", "Assistant")).tag("ai")
       }.pickerStyle(.segmented).padding()
       if controller.inspector == "steps" {
         StepsPanel(controller: controller)
@@ -422,6 +451,39 @@ struct CommandPanel: View {
             Button(controller.text("关闭", "Close")) { dismiss() }
           }
         }
+    }
+  }
+}
+
+/// Size classes and device names never decide the notebook's identity.
+struct MobileWorkbenchLayout: Equatable {
+  let outline: Bool
+  let inspector: Bool
+  init(width: CGFloat) { outline = width >= 1120; inspector = width >= 820 }
+}
+struct NotebookOutline: View {
+  var controller: NotebookController
+  var close: () -> Void
+  var body: some View {
+    ScrollView {
+      VStack(alignment: .leading, spacing: 12) {
+        Text(controller.text("目录", "Outline")).font(.headline).padding(.bottom, 12)
+        ForEach(Array(controller.cells.enumerated()), id: \.element.id) { index, cell in
+          Button {
+            controller.selected = cell.id
+            controller.scrollTarget = cell.id
+            close()
+          } label: {
+            HStack(alignment: .top, spacing: 9) {
+              Circle().fill(cell.status == .Done ? Color.openMathAccent : .secondary.opacity(0.5)).frame(width: 5, height: 5).padding(.top, 6)
+              VStack(alignment: .leading, spacing: 4) {
+                Text("\(index + 1) · " + (cell.input.kind == .Text ? controller.text("文字", "Text") : controller.text("数学", "Math"))).font(.caption).foregroundStyle(.secondary)
+                Text(cell.input.source.isEmpty ? controller.text("空单元格", "Empty cell") : cell.input.source).font(.system(.caption, design: .monospaced)).lineLimit(2)
+              }
+            }.frame(maxWidth: .infinity, alignment: .leading).padding(8)
+          }.buttonStyle(.plain)
+        }
+      }.padding(18)
     }
   }
 }

@@ -24,15 +24,19 @@
 - [x] 原生三维实现：Rust 真实采样、SceneKit Metal 显示、相机交互与 OBJ 导出；几何边界检查已过，实际 GPU/触控交互待验证。
 - [x] 移动 `.5` 助手实现：Pi 1.0.4 + JavaScriptCore、共享模型 codec、执行/讨论、源码事务/撤销、附件和持久状态。停止后等待旧任务退场；保留同轮中已完成工具的消息配对，不丢弃整条提案。
 - [x] 工程 / 资源 / 包内版本与开发包来源记录入口：独立 `.5` bundle ID 和存储、生成资源一致性、build-only/打包脚本及默认不开模拟器的补包工作流。最终公开来源记录尚未生成。
-- [ ] 最终提交的双目标候选构建与打包（开发源码真机 Release 已过，准备生成准确 revision）。
+- [x] 内容候选 `5c5c473e0076cf622404054a54d44b10fa4e8b09` 的真机 Release / 模拟器 build-for-testing 与三包归档，均为 ARM64、无模拟器运行；候选仍待运行验收和集成后的发行构建。
 - [ ] 用户允许模拟器后验证
 - [ ] 集成、公开补包与文档同步
 
 已完成的无模拟器检查：
 
 - Rust FFI/能力/三维相关 26 项通过；`target/ios-pre-alpha.5/native-math-tests-02.log`。其后 Rust 仅格式调整，当前 `cargo fmt --all -- --check` 通过。
-- 当前 Swift 真机 ARM64 unsigned Release 通过；`device-build-current.log`。较早的 `simulator-build-only.log` 是编译成功记录，不代表最新源码已在模拟器运行。
+- 准确提交候选的真机 ARM64 unsigned Release 与模拟器 `build-for-testing` 均通过；`candidate-5c5c473e-build.log`。模拟器一项只编译应用与测试目标，不运行 XCTest/UI。
 - `check-native.sh` 通过；`host-native-current.log`。使用真实 macOS JavaScriptCore/Pi 调度，覆盖两轮、真实工具调用与持久配对；纯 Swift 覆盖源码冲突拒绝、事务/草稿/附件持久化、部分停止轮次消息配对、运行依赖与非法几何。没有网络请求。
-- 发行契约 8 项、iOS 静态契约 2 项、生成资源一致性、工程生成、actionlint、脚本语法、Git 忽略边界和 diff 空白检查通过。
+- 全部 31 项仓库契约检查通过（含发行 8 项、iOS 静态契约 2 项及来源清单关系）；`contracts-current.log`。生成资源一致性、工程生成、actionlint、脚本语法、Git 忽略边界和 diff 空白检查通过。
+
+候选在 `target/ios-pre-alpha.5/candidate-5c5c473e-assets/`，独立 manifest 记录三个包的大小和 SHA256；真机应用约 18.1 MB、模拟器应用约 23.5 MB、XCFramework 约 90.8 MB。已核对两份 ZIP 内 `.5` 版本、完整 revision、独立 bundle ID、iPhone/iPad 声明及 Pi 资源；没有安装应用。`candidate-5c5c473e.json` 记录本地构建范围。后续进度文档的提交不改变此候选的输入。
+
+已推送三个实现提交并创建 [草稿 PR #7](https://github.com/He-RT/om-openmath/pull/7)，目标为 `dev`；常规 CI 正在运行，iOS 运行项按许可边界跳过。尚未合入或公开移动资产。
 
 尚未执行 iPhone/iPad 的 XCTest/UI、安装回读、硬件键盘/触控、性能、真实模型和 Duo 折叠验证；未创建、启动、安装或运行模拟器。27.1 专用折叠区域/纵向工具栏 API 不在本机 27.0 SDK 内，不能记为 Duo 设备验收。没有 Apple Distribution 签名身份，真机资产为需自行签名的开发应用，不是通用 IPA / TestFlight / App Store 包。

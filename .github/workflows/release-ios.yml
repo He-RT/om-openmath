@@ -1,7 +1,11 @@
 name: iOS iPadOS supplement
+run-name: iOS iPadOS ${{ inputs.source_sha }}
 on:
   workflow_dispatch:
     inputs:
+      source_sha:
+        description: 'Complete source commit already reviewed and validated'
+        required: true
       run_simulators:
         description: 'Requires explicit user simulator permission for this candidate'
         type: boolean
@@ -14,13 +18,22 @@ permissions:
   contents: read
 jobs:
   mobile:
-    runs-on: xcode-27
+    runs-on: macos-latest
+    defaults:
+      run:
+        working-directory: source
     permissions:
       contents: write
     steps:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
+          ref: ${{ inputs.source_sha }}
+          path: source
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          path: packaging
       - name: Reject publication without simulator validation
         if: inputs.publish && !inputs.run_simulators
         run: exit 1
@@ -28,7 +41,7 @@ jobs:
         with:
           node-version: 26.11.1
           cache: npm
-          cache-dependency-path: app/package-lock.json
+          cache-dependency-path: source/app/package-lock.json
       - run: npm ci --prefix app
       - name: Select pinned SDK
         run: |
@@ -57,9 +70,10 @@ jobs:
       - name: Record sources
         env:
           GH_TOKEN: ${{ github.token }}
+          PRODUCT_SHA: ${{ inputs.source_sha }}
           SOURCE_VALIDATION: ${{ inputs.run_simulators && 'ARM64 unsigned device build; the packaged ad hoc signed simulator candidate passed iPhone and iPad XCTest/UI checks. No physical device or real-model coverage.' || 'ARM64 unsigned device and ad hoc signed simulator build-only. No simulator execution, install or real-model coverage.' }}
         run: |
-          python3 scripts/release.py sources record --source . --packaging . --scope ios --platform ios_arm64 --tag v0.1.0-pre-alpha.5 --product-sha "$GITHUB_SHA" --packaging-sha "$GITHUB_SHA" --run-url "$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID" --parameters '{"sdk":"27.0","device":"arm64 unsigned","simulator":"arm64 ad hoc"}' --validation "$SOURCE_VALIDATION" --assets-root target/ios-release-assets --asset OpenMath_0.1.0-pre-alpha.5_ios_device_arm64_unsigned.app.zip --asset OpenMath_0.1.0-pre-alpha.5_ios_simulator_arm64.app.zip --asset OpenMathKernel_0.1.0-pre-alpha.5.xcframework.zip --output target/ios-release-assets/ios-build-sources.json
+          python3 ../packaging/scripts/release.py sources record --source . --packaging ../packaging --scope ios --platform ios_arm64 --tag v0.1.0-pre-alpha.5 --product-sha "$PRODUCT_SHA" --packaging-sha "$GITHUB_SHA" --run-url "$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID" --parameters '{"sdk":"27.0","device":"arm64 unsigned","simulator":"arm64 ad hoc"}' --validation "$SOURCE_VALIDATION" --assets-root target/ios-release-assets --asset OpenMath_0.1.0-pre-alpha.5_ios_device_arm64_unsigned.app.zip --asset OpenMath_0.1.0-pre-alpha.5_ios_simulator_arm64.app.zip --asset OpenMathKernel_0.1.0-pre-alpha.5.xcframework.zip --output target/ios-release-assets/ios-build-sources.json
           python3 scripts/release.py sources index --repo . --assets-root target/ios-release-assets --manifest target/ios-release-assets/ios-release-manifest.json --record target/ios-release-assets/ios-build-sources.json --output target/ios-release-assets/ios-release-sources-index.json
           python3 scripts/release.py sources verify --repo . --assets-root target/ios-release-assets --index target/ios-release-assets/ios-release-sources-index.json
       - name: Append assets without replacing existing names
@@ -72,10 +86,10 @@ jobs:
         with:
           name: ios-pre-alpha-5-candidate
           path: |
-            target/ios-release-assets/*
+            source/target/ios-release-assets/*
       - uses: actions/upload-artifact@v4
         if: always()
         with:
           name: ios-pre-alpha-5-checks
-          path: target/ios-*.xcresult
+          path: source/target/ios-*.xcresult
           if-no-files-found: ignore

@@ -4,8 +4,9 @@
 
 ## 2026-10-23 iOS / iPadOS .5 追加开发（当前活动范围）
 
-- 用户要求制作并发布 `.5` 移动版，**先完成内容，取得其后续明确许可才可启动模拟器验证**。不派发默认会启动模拟器的旧 `ios.yml`；新补包工作流默认 build-only，验证与发布均需显式输入。此范围覆盖旧 `.5` 排除 iOS 的条款，单代理和其他保护约束保持。
-- 工作分支 `codex/ios-pre-alpha-5`，基线 `41a49068`。[计划与实际进度](docs/plan/PRE_ALPHA_5_IOS.md)为当前记录。原生工作台、真实三维、移动 Pi/JavaScriptCore 助手及打包入口已实现；内容候选 `5c5c473e0076cf622404054a54d44b10fa4e8b09` 的真机 unsigned Release 与模拟器 build-for-testing 通过，三包与独立 manifest 在 `target/ios-pre-alpha.5/candidate-5c5c473e-assets/`。宿主逻辑、26 项相关 Rust 和全部 31 项仓库契约通过；[草稿 PR #7](https://github.com/He-RT/om-openmath/pull/7) 等待常规 CI。尚未启动模拟器、做设备验收或公开移动补包。27.1 专用 Duo API 与折叠硬件未验；真机包需自行签名，不能当通用 IPA。下一步先取得用户模拟器许可，再对该候选验收；集成后发行构建和补包来源记录仍待完成。
+- 用户在内容完成后已允许模拟器验收，要求 **Device Hub 管理、同时最多存在一台（关机也计入），一个型号完成就删除**。按 0 → iPhone → 0 → iPad → 0 执行，两台均已删；后续打包不要再启动模拟器。单代理，不改系统权限/输入法/外观，不调用真实模型。
+- 原生工作台、三维、移动 Pi/JavaScriptCore 助手及打包入口已实现。修复候选 `405a1f05d838bbd95d43e403871537a5888905c4` 双目标构建通过；iPhone 18 Pro / iPad Pro 11-inch M5 各 34 单元 + 6 UI、40 项全通过，原 53 数学最大耗时 92.771 / 622.252 ms。三包及 manifest 在 `target/ios-pre-alpha.5/candidate-405a1f05-assets/`；旧候选/失败根保留不发布。[验收记录](docs/acceptance/pre-alpha.5/ios/README.md)与[计划](docs/plan/PRE_ALPHA_5_IOS.md)记载修复、覆盖及未测项。
+- [PR #7](https://github.com/He-RT/om-openmath/pull/7) 已退出草稿。`405a1f05` 的前端、依赖、原生 Mac、Rust lint/测试均通过，但最终生成协议一致性发现 `CapabilityInfo.ts` 的一行说明未同步；已运行真实 `export_bindings` 更新。现将生成说明、发行工作流修正与精简验收记录一起提交并重跑适用 CI，通过后普通合并 `dev`；仓库未启用 auto-merge，不改仓库设置。运行代码与已通过的 `405a1f05` 完全相同，后续不重新创建模拟器。最终公开补包及 README 同步尚未完成。27.1 专用 Duo API/折叠硬件与物理设备未测；真机包需自行签名，不是通用 IPA / TestFlight。
 
 ## 2026-10-23 Git 整改 R1–R3
 

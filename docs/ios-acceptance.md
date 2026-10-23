@@ -2,6 +2,8 @@
 
 此文件区分已运行证据与待验收项，不将设计规范或编译成功当作完整功能验收。
 
+最新 `.5`（2026-10-23）的 [iPhone/iPad 验收记录](acceptance/pre-alpha.5/ios/README.md)另行保存：两设备各 40 项通过，按 Device Hub 单台限制逐个测试后删除；没有本轮真机或真实模型验证。下文为 `.3` 的历史过程与设备结果，不能代替 `.5` 验收。
+
 ## 环境
 
 2026-10-04，Apple Silicon macOS，Xcode 27.0 (27A266a)，Rust 1.94.0。真机/模拟器 ARM64 XCFramework 均已构建。iPhone 18 Pro 和 iPad Pro 11-inch (M5) 模拟器为 iOS 27.0。已配对 iPhone 18 Pro 与 iPad Pro 11-inch 第四代正在执行安装验收。

@@ -1,6 +1,6 @@
 # iOS / iPadOS 原生客户端
 
-`.5` 原生移动补包正在制作，尚未公开。用户要求先完成内容，**获得后续明确许可才能启动模拟器验证**。范围与实际检查见 [移动补包计划](plan/PRE_ALPHA_5_IOS.md)。当前可下载的移动资产仍是 [pre-alpha.3](https://github.com/He-RT/om-openmath/releases/tag/v0.1.0-pre-alpha.3)，不能将其当作 `.5`。
+`.5` 原生移动内容已完成，双目标候选和 iPhone/iPad 模拟器验收通过，尚待公开补包。用户在内容完成后允许验证；已通过 Device Hub 逐台创建、测试、删除，当前没有保留模拟器。[移动补包计划](plan/PRE_ALPHA_5_IOS.md)与[实际验收记录](acceptance/pre-alpha.5/ios/README.md)列出覆盖和未测项。当前可下载的移动资产仍是 [pre-alpha.3](https://github.com/He-RT/om-openmath/releases/tag/v0.1.0-pre-alpha.3)，不能将其当作 `.5`。
 
 最低 iOS/iPadOS 27，Apple Silicon 开发环境；一个原生应用同时支持 iPhone 与 iPad。使用 SwiftUI/UIKit/TextKit 2、SwiftMath、原生 Canvas，以及 SceneKit 的 Metal 三维渲染；数学计算复用 Rust 内核。不是 Tauri/WebView 封装。
 
@@ -50,7 +50,7 @@ bash ios/Scripts/test-simulator.sh pad
 
 准备的新增资产为：
 
-- `OpenMath_0.1.0-pre-alpha.5_ios_simulator_arm64.app.zip`：仅 ARM64 模拟器开发应用。
+- `OpenMath_0.1.0-pre-alpha.5_ios_simulator_arm64.app.zip`：ad hoc 签名的 ARM64 模拟器开发应用。
 - `OpenMath_0.1.0-pre-alpha.5_ios_device_arm64_unsigned.app.zip`：未签名真机开发应用，需要使用自己的签名和描述文件；不能直接安装。
 - `OpenMathKernel_0.1.0-pre-alpha.5.xcframework.zip`：真机 / 模拟器 ARM64 Rust 库与许可。
 - 独立 `ios-release-manifest.json`、`ios-build-sources.json` 与 `ios-release-sources-index.json`，记录完整 Git 输入、工具链、检查范围、大小与 SHA256。

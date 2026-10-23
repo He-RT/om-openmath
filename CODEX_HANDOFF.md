@@ -2,6 +2,11 @@
 
 > **pre-alpha.5 已公开发布，按用户调整后的范围收尾。** [公开发行页](https://github.com/He-RT/om-openmath/releases/tag/v0.1.0-pre-alpha.5) · [计划与最终记录](docs/plan/PRE_ALPHA_5.md) · [安装与发布记录](docs/acceptance/pre-alpha.5/local-install.md)。A–G3及本地三包安装已通过；公开后验证由用户明确取消，不能记为实测通过。视觉依据仍为 [workbench-v2.md](docs/design/workbench-v2.md) 和四张原型截图。
 
+## 2026-10-23 iOS / iPadOS .5 追加开发（当前活动范围）
+
+- 用户要求制作并发布 `.5` 移动版，**先完成内容，取得其后续明确许可才可启动模拟器验证**。不派发默认会启动模拟器的旧 `ios.yml`；新补包工作流默认 build-only，验证与发布均需显式输入。此范围覆盖旧 `.5` 排除 iOS 的条款，单代理和其他保护约束保持。
+- 工作分支 `codex/ios-pre-alpha-5`，基线 `41a49068`。[计划与实际进度](docs/plan/PRE_ALPHA_5_IOS.md)为当前记录。原生工作台、真实三维、移动 Pi/JavaScriptCore 助手及打包入口已实现；当前真机 unsigned Release、宿主逻辑和相关 Rust/静态契约通过，正在准备准确 revision 的双目标候选。尚未启动模拟器、做设备验收或公开移动补包，不能以 `.3` 旧包、旧构建或原生草稿截图当作 `.5` 设备验收。
+
 ## 2026-10-23 Git 整改 R1–R3
 
 - 用户要求读取会话 `01a163d2-39f2-79e0-abe7-4bcfb45331ad` 并执行方案。R1–R3 已通过短期分支/PR 推进；规则与常规 CI 由 PR #2 集成 `9225a4e9`，发行来源工具由 PR #3 集成 `f44a2018`，PR #5 补正从产品检出目录采集工具版本（相关 CI 通过）。`dev` 已要求 PR 和 GitHub Actions 的 `CI required`（strict、管理员约束），禁止强推/删除，不要求第二人审批；失败文档 PR 的普通合并已被服务器拒绝。

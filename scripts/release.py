@@ -46,6 +46,12 @@ def verify_version(root: Path, tag: str) -> str:
 
 
 def asset_names(version: str, scope: str = "app-web") -> set[str]:
+    if scope == "ios":
+        return {
+            f"OpenMath_{version}_ios_simulator_arm64.app.zip",
+            f"OpenMath_{version}_ios_device_arm64_unsigned.app.zip",
+            f"OpenMathKernel_{version}.xcframework.zip",
+        }
     if scope == "tauri":
         return {
             f"OpenMath_{version}_android.apk",
@@ -94,7 +100,7 @@ def finalize(root: Path, tag: str, revision: str, scope: str = "app-web", packag
         raise ValueError("Tauri 打包来源必须包含 Windows 与 Android 的完整 SHA")
     expected = asset_names(version, scope)
     manifest_name = {"app-web": "release-manifest.json", "cli": "cli-release-manifest.json",
-                     "tauri": "tauri-release-manifest.json"}[scope]
+                     "tauri": "tauri-release-manifest.json", "ios": "ios-release-manifest.json"}[scope]
     actual = {path.name for path in root.iterdir()} - {manifest_name}
     if actual != expected:
         raise ValueError(f"发行资产不完整：缺失={sorted(expected - actual)}，额外={sorted(actual - expected)}")
@@ -122,7 +128,7 @@ def main() -> None:
     parser.add_argument("--tag")
     parser.add_argument("--root", type=Path, default=Path("release-assets"))
     parser.add_argument("--sha")
-    parser.add_argument("--scope", choices=["app-web", "cli", "tauri"], default="app-web")
+    parser.add_argument("--scope", choices=["app-web", "cli", "tauri", "ios"], default="app-web")
     parser.add_argument("--windows-packaging-sha")
     parser.add_argument("--android-packaging-sha")
     parser.add_argument("--original", type=Path)

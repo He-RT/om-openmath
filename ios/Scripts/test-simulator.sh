@@ -14,4 +14,11 @@ xcrun simctl boot "$sim_id"
 xcrun simctl bootstatus "$sim_id" -b
 result_path="target/ios-$1-$(date -u +%Y%m%dT%H%M%SZ)-$$.xcresult"
 printf '验收结果：%s\n' "$result_path"
-xcodebuild -project ios/OpenMath.xcodeproj -scheme OpenMath -configuration Release -destination "platform=iOS Simulator,id=$sim_id" -derivedDataPath target/ios-derived -resultBundlePath "$result_path" -parallel-testing-enabled NO -collect-test-diagnostics never -disableAutomaticPackageResolution test
+sim_build="${OPENMATH_IOS_SIMULATOR_BUILD:-target/ios-derived}"
+sim_action=test
+if [ "${OPENMATH_IOS_TEST_WITHOUT_BUILDING:-0}" = 1 ]; then sim_action=test-without-building; fi
+xcodebuild -project ios/OpenMath.xcodeproj -scheme OpenMath -configuration Release \
+  -destination "platform=iOS Simulator,id=$sim_id" -derivedDataPath "$sim_build" \
+  -clonedSourcePackagesDirPath target/ios-device/SourcePackages \
+  -resultBundlePath "$result_path" -parallel-testing-enabled NO -collect-test-diagnostics never \
+  -disableAutomaticPackageResolution ARCHS=arm64 ONLY_ACTIVE_ARCH=YES CODE_SIGNING_ALLOWED=NO "$sim_action"

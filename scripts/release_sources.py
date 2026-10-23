@@ -16,9 +16,9 @@ DEPENDENCIES = ('Cargo.lock', 'app/package-lock.json', 'agent/package-lock.json'
                 'ios/OpenMath.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/Package.resolved',
                 'macos/OpenMathNative.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/Package.resolved')
 WORKFLOWS = {'app-web': '.github/workflows/release.yml', 'cli': '.github/workflows/release-cli.yml',
-             'tauri': '.github/workflows/release-shells.yml'}
+             'tauri': '.github/workflows/release-shells.yml', 'ios': '.github/workflows/release-ios.yml'}
 PLATFORMS = {'app-web': {'web', 'macos_arm64'}, 'cli': {'macos_arm64', 'windows_x64'},
-             'tauri': {'windows', 'android'}}
+             'tauri': {'windows', 'android'}, 'ios': {'ios_arm64'}}
 CHECK_OVERLAYS = {'app/scripts/check-installed-shell.mjs', 'app/scripts/package-smoke.js'}
 
 
@@ -77,6 +77,8 @@ def tools(root: Path) -> dict:
 def platform_assets(scope: str, platform: str, version: str) -> set[str]:
     from release import asset_names
     names = asset_names(version, scope)
+    if scope == 'ios':
+        return names
     if scope == 'app-web':
         return {name for name in names if ('-web_' in name) == (platform == 'web')}
     if scope == 'cli':

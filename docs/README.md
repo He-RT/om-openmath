@@ -7,6 +7,7 @@
 | 需要做什么 | 文档 |
 |---|---|
 | 下载、安装、卸载或校验 | [安装指南](install.md) |
+| 查看原生 iOS / iPadOS `.5` 开发进度和模拟器许可边界 | [移动补包计划](plan/PRE_ALPHA_5_IOS.md)、[移动端指南](ios.md) |
 | 查看 Windows MSI / Android APK 的源码、签名及检查范围 | [Tauri 补包记录](acceptance/pre-alpha.5/tauri-release.md) |
 | 写公式、使用笔记本或终端 | [输入语言](language.md) |
 | 查询全部功能族、当前支持和未来接口 | [全景功能目录](reference/README.md) |

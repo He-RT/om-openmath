@@ -3,6 +3,10 @@ import Foundation
 @main struct MobileContractsFixture {
   static func main() throws {
     let original = NotebookFile(title: "数学🙂", cells: [CellInput(id: "cell-a", source: "a+a")])
+    let composed = NotebookFile(cells: [CellInput(id: "unicode", source: "é")])
+    let decomposed = NotebookFile(cells: [CellInput(id: "unicode", source: "e\u{301}")])
+    precondition(composed.cells[0].source == decomposed.cells[0].source)
+    precondition(composed != decomposed, "Source transactions must compare exact UTF-8, including canonical Unicode variants")
     let target = JSONValue.object(["cell_id": .string("cell-a")]), hash = MobileAgentStore.hash("a+a")
     let update = JSONValue.object(["type": .string("update_cell"), "target": target, "source": .string("let a=5"), "expected_source_hash": .string(hash)])
     let after = try MobileNotebookPatch.apply([update], to: original)

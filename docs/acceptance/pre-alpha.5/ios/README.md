@@ -2,7 +2,7 @@
 
 内容提交：`405a1f05d838bbd95d43e403871537a5888905c4`。Xcode 27.0 / SDK 与运行时 27.0，Rust 1.94.0，ARM64。原生实现经 [PR #7](https://github.com/He-RT/om-openmath/pull/7) 评审；公开补包仍待适用 CI、集成及来源记录。
 
-用户在内容完成后明确允许验证，并要求通过 Device Hub 管理、同时最多存在一台模拟器（关机也计入）、一个型号完成后删除再创建下一个。实际顺序为 0 → iPhone → 0 → iPad → 0；没有修改系统权限、输入法或外观设置。模拟器的应用签名为 ad hoc，真机开发包未签名；未安装到物理设备。
+用户在内容完成后明确允许验证，并要求通过 Device Hub 管理、同时最多存在一台模拟器（关机也计入）、一个型号完成后删除再创建下一个。完整验收顺序为 0 → iPhone → 0 → iPad → 0，后续 Unicode 修复再按 0 → iPhone → 0 补测；没有修改系统权限、输入法或外观设置。模拟器的应用签名为 ad hoc，真机开发包未签名；未安装到物理设备。
 
 | 设备 | 实际结果 | 原 53 条数学用例最大耗时 |
 |---|---|---|
@@ -26,6 +26,7 @@
 - CI 中旧 Web 测试仍要求 iOS 返回三维占位；改为核对真实网格和 `z=x+y` 坐标。FFI 大 enum 经 Box 请求修复；`ctutils` 仅升级 0.4.2 → 0.4.4 修复 RUSTSEC-2026-0385，未忽略漏洞检查。
 - 随后的 CI 生成一致性检查发现能力 DTO 的一行 TypeScript 注释未同步；实际 `export_bindings` 更新后重跑集成检查。修订不改变已测的 Swift/Rust 运行输入，不再创建模拟器。
 - 工具快照的编码固定字段顺序，避免相同文稿的分页引用随机失效；取消后的消息只移除没有结果的调用，保留同一轮已完成配对。
+- 最后复核发现 Swift 默认字符串相等会忽略 NFC/NFD 编码差别，导致这类编辑和源码冲突检查漏报。CellInput/NotebookFile 相等及编辑入口改用准确 UTF-8 字节；实际 iPhone 补测源码冲突、持久化、几何、patch 和完整助手回环共 5 项通过，宿主逻辑检查也通过。[原始摘要与输入文件散列](unicode-guard-results.json)绑定该补丁。补测结束时 Device Hub 移除操作一度无响应，仅关闭这台临时设备后原移除操作完成；最终清单为 0。此补丁不改变 UI/渲染路径，不重跑两端完整 UI。
 
 原始失败根和成功 `.xcresult`、构建/打包日志保留在 `target/ios-pre-alpha.5/`；本目录只保留摘要、数值和选定截图。关键根为 `phone-5c5c473e.xcresult`、`phone-fixes-01.xcresult`、`phone-scene-gutter-02.xcresult`、`phone-mobile-loopback-02.xcresult`、`phone-405a1f05-final.xcresult`、`pad-405a1f05-final.xcresult`。发行资产的完整输入和散列使用独立移动清单记录，不覆盖旧 `.5` 清单。
 

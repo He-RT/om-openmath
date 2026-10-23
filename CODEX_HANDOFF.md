@@ -6,7 +6,8 @@
 
 - 用户在内容完成后已允许模拟器验收，要求 **Device Hub 管理、同时最多存在一台（关机也计入），一个型号完成就删除**。按 0 → iPhone → 0 → iPad → 0 执行，两台均已删；后续打包不要再启动模拟器。单代理，不改系统权限/输入法/外观，不调用真实模型。
 - 原生工作台、三维、移动 Pi/JavaScriptCore 助手及打包入口已实现。修复候选 `405a1f05d838bbd95d43e403871537a5888905c4` 双目标构建通过；iPhone 18 Pro / iPad Pro 11-inch M5 各 34 单元 + 6 UI、40 项全通过，原 53 数学最大耗时 92.771 / 622.252 ms。三包及 manifest 在 `target/ios-pre-alpha.5/candidate-405a1f05-assets/`；旧候选/失败根保留不发布。[验收记录](docs/acceptance/pre-alpha.5/ios/README.md)与[计划](docs/plan/PRE_ALPHA_5_IOS.md)记载修复、覆盖及未测项。
-- [PR #7](https://github.com/He-RT/om-openmath/pull/7) 已退出草稿。`405a1f05` 的前端、依赖、原生 Mac、Rust lint/测试均通过，但最终生成协议一致性发现 `CapabilityInfo.ts` 的一行说明未同步；已运行真实 `export_bindings` 更新。现将生成说明、发行工作流修正与精简验收记录一起提交并重跑适用 CI，通过后普通合并 `dev`；仓库未启用 auto-merge，不改仓库设置。运行代码与已通过的 `405a1f05` 完全相同，后续不重新创建模拟器。最终公开补包及 README 同步尚未完成。27.1 专用 Duo API/折叠硬件与物理设备未测；真机包需自行签名，不是通用 IPA / TestFlight。
+- [PR #7](https://github.com/He-RT/om-openmath/pull/7) 已在完整 CI `39934092109` 通过后普通合并为 `e060c4ad`；产品候选为 `bba0448e`。最后发现 Swift 把 NFC/NFD 源码视为相等的边界，后续分支 `codex/ios-source-guard` 修复准确字节相等和编辑冲突；临时 iPhone 上 5 项针对性测试通过，输入散列与摘要见 `unicode-guard-results.json`。该设备也已从 Device Hub 删除，数量最终 0；移除期间曾挂起，只关闭这台设备后原移除完成。修复另走小型 PR/适用 CI，完成后以其产品 SHA 构建发布，不发旧候选。打包工作流使用现有原生 CI 已成功的 `xcode-27` 托管镜像，固定产品与打包提交；不再启动模拟器或调用真实模型。
+- 最终公开补包及 README 同步尚未完成。27.1 专用 Duo API/折叠硬件与物理设备未测；真机包需自行签名，不是通用 IPA / TestFlight。仓库未启用 auto-merge，不改设置；不用旧 `.5` 资产覆盖新移动来源记录。
 
 ## 2026-10-23 Git 整改 R1–R3
 

@@ -118,6 +118,10 @@ struct CellInput: Codable, Sendable, Identifiable, Equatable {
   var kind: CellKind = .Math
   var source = ""
   var dialect: Dialect = .Modern
+  static func == (lhs: Self, rhs: Self) -> Bool {
+    lhs.id.utf8.elementsEqual(rhs.id.utf8) && lhs.kind == rhs.kind && lhs.dialect == rhs.dialect
+      && lhs.source.utf8.elementsEqual(rhs.source.utf8)
+  }
   var json: JSONValue {
     .object([
       "id": .string(id), "kind": .string(kind.rawValue), "source": .string(source),
@@ -129,6 +133,9 @@ struct NotebookFile: Codable, Sendable, Equatable {
   var version = 1
   var title = "未命名笔记本"
   var cells: [CellInput] = []
+  static func == (lhs: Self, rhs: Self) -> Bool {
+    lhs.version == rhs.version && lhs.title.utf8.elementsEqual(rhs.title.utf8) && lhs.cells == rhs.cells
+  }
   func validate() throws {
     guard version == 1, Set(cells.map(\.id)).count == cells.count,
       cells.allSatisfy({ !$0.id.isEmpty })
